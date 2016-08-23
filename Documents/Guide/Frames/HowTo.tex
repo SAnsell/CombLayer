@@ -1,0 +1,41 @@
+%\section{HowTo}
+\begin{itemize}
+\item Get real surface number by its relative number: SMap.realSurf(divIndex+103) (see createLinks methods)
+\end{itemize}
+
+\subsection{How to put one object into another}
+
+Suppose, we are inserting Spoon into Mug.
+Mug is made up of N cells. Spoon is made of one contained component with outer surface.
+CombLayer provides several methods to put one object into another:
+
+\begin{lstlisting}[language=C++]{Name=essBuild}{floatplacement=H}
+attachSystem::addToInsertForced(System,   *Mug, *Spoon);
+attachSystem::addToInsertSurfCtrl(System, *Mug, *Spoon);
+attachSystem::addToInsertControl(System,  *Mug, *Spoon);
+attachSystem::addToInsertLineCtrl(System, *Mug, *Spoon);
+\end{lstlisting}
+
+\subsubsection{addToInsertForced}
+The outer surface of the Spoon is excluded from the HeadRule of every single cell of Mug.
+Even if Mug contains cells which do not intersect with Spoon (e.g. its handle).
+``Forced'' means ``do it and do not think about it'', but at the same time it means that ``I have got something wrong somewhere in my mental thinking''.
+
+\subsubsection{addToInsertSurfCtrl}
+First, it deconvolves Mug into its surfaces.
+Then for each cell of Mug it calculates intersections between all surfaces of this cell and all surfaces of Mug.
+The Mug is inserted only into those cells of Mug which it intersects.
+
+It is not always better to call {\tt addToInsertSurfCtrl} instead of {\tt addToInsertForced}. \alert{Example needed.}
+
+{\tt addToInsertSurfCtrl} is a very expensive function to call, because you have to check all the surface triplets. So, it runs a bit slower than addToInsertForced, but the geometry will be faster.
+However, there is another method which provides the same trick for less pain.
+
+\subsubsection{addToInsertControl}
+It's a very simple method. Spoon has to have the link points defined.
+The method checks if any of these link point fit inside the outer surface of Mug. If it does, then it cuts Spoon from the Mug.
+It is possible to add a vector of link points to check as a parameter.
+
+\subsubsection{addToInsertLineCtrl}
+Imagine we have a (big) contained component~(Mug) and some (small) object which clips it~(Spoon). The link points are {\bf not} in the Mug~(therefore {\bf addToInsertControl} can not be used), but the lines which connect them are in the Mug.
+The method checks the lines connecting the link points and sorts out the intersections.
