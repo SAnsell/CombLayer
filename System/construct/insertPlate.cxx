@@ -156,12 +156,7 @@ insertPlate::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      zStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-      yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-      zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-      xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
-      zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
-      
+      FixedOffset::populate(Control);      
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       depth=Control.EvalVar<double>(keyName+"Depth");

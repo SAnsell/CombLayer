@@ -467,6 +467,7 @@ makeESS::optionSummary(Simulation& System)
   return;
 }
 
+  
 void
 makeESS::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
@@ -482,6 +483,8 @@ makeESS::makeBeamLine(Simulation& System,
 
   const size_t NSet=IParam.setCnt("beamlines");
   FuncDataBase& Control=System.getDataBase();
+
+  const bool extraFlag=IParam.flag("beamCellTally");
   
   for(size_t j=0;j<NSet;j++)
     {
@@ -504,9 +507,19 @@ makeESS::makeBeamLine(Simulation& System,
 	      Control.addVariable(BL+"Filled",fillFlag);
 	      index++;
 	    }
+
+	  if (IParam.checkItem<int>("beamlines",j,index+1,fillFlag))
+	    {
+	      // setting is CONTROLED as value from variable taken
+	      // otherwise
+	      Control.addVariable(BL+"Filled",fillFlag);
+	      index++;
+	    }
 	  
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
+          if (extraFlag)
+            BLfactory.setExtra();
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
 
@@ -527,6 +540,7 @@ makeESS::makeBeamLine(Simulation& System,
 	    BLfactory.build(System,*CBunker);
 	}
     }
+
   return;
 }
 

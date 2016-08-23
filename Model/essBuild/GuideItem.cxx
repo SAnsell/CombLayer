@@ -397,7 +397,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param  GPtr :: Near neigbour
+    \param GPtr :: Near neigbour
   */
 {
   ELog::RegMethod RegA("GuideItem","createObjects");
@@ -428,6 +428,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
       // Add inner boundary
       Out+=ModelSupport::getComposite(SMap,GI," (-13:14:-15:16) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      addCell("Body",cellIndex-1);
       // Inner metal:
       if (!filled)
 	Out+=ModelSupport::getComposite(SMap,guideIndex,
@@ -447,6 +448,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	  (SMap,guideIndex,"(-1103:1104:-1105:1106) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));      
       if (filled) addCell("Void",cellIndex-1);
+      addCell("Body",cellIndex-1);
       GI+=50;
     }      
   // Inner void

@@ -139,7 +139,7 @@ NMXvariables(FuncDataBase& Control)
   // TEST OF COLLIMATORS IN PIPE:
   Control.addVariable("nmxCollALength",30.0);
   Control.addVariable("nmxCollAMat","Tungsten");
-  
+
   return;
 }
 

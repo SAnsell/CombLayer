@@ -79,7 +79,9 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"
-#include "FixedGroup.h" 
+#include "FixedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h" 
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
 #include "BenderUnit.h"
@@ -94,6 +96,7 @@ namespace beamlineSystem
 GuideLine::GuideLine(const std::string& Key) : 
   attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",2),
+  attachSystem::CellMap(),
   SUItem(200),SULayer(20),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(guideIndex+1),nShapeLayers(0),activeFront(false),
@@ -107,6 +110,7 @@ GuideLine::GuideLine(const std::string& Key) :
 
 GuideLine::GuideLine(const GuideLine& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  attachSystem::CellMap(A),
   SUItem(A.SUItem),SULayer(A.SULayer),
   guideIndex(A.guideIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
@@ -144,6 +148,7 @@ GuideLine::operator=(const GuideLine& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -609,9 +614,10 @@ GuideLine::createObjects(Simulation& System)
   std::string back;
   for(size_t i=0;i<nShapes;i++)
     {
-      // front
+      const std::string GKey("Guide"+StrFunc::makeString(i));
       const std::string front=shapeFrontSurf(false,i);
       back=shapeBackSurf(false,i);
+      
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  // Note that shapeUnits has own offset but
@@ -621,6 +627,8 @@ GuideLine::createObjects(Simulation& System)
 	  if (j)
 	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[j],0.0,Out));
+          addCell("Full",cellIndex-1);
+          addCell(GKey,cellIndex-1);
 	}
       
       // Last one add exclude:
@@ -642,6 +650,7 @@ GuideLine::createObjects(Simulation& System)
       excludeCell.makeComplement();
       Out+=excludeCell.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+      addCell("Shield",cellIndex-1);
     }
   else
     {

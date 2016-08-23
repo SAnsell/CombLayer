@@ -39,7 +39,8 @@ class ShapeUnit;
 */
 
 class GuideLine : public attachSystem::ContainedComp,
-  public attachSystem::FixedGroup
+  public attachSystem::FixedGroup,
+  public attachSystem::CellMap
 {
  private:
 

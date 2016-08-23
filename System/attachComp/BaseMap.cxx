@@ -292,6 +292,7 @@ BaseMap::getItems(const std::string& Key) const
 {
   ELog::RegMethod RegA("BaseMap","getItems(Key)");
 
+  if (Key=="All" || Key=="all") return getItems(); 
   std::vector<int> Out;  
   LCTYPE::const_iterator mc=Items.find(Key);
   return (mc==Items.end()) ? std::vector<int>() : mc->second;
@@ -315,7 +316,9 @@ BaseMap::getItems() const
         if (CN)
           Out.push_back(CN);
     }
-
+  const std::set<int> elmDuplicate(Out.begin(),Out.end());
+  Out.assign(elmDuplicate.begin(),elmDuplicate.end());
+  
   return Out;
 }
 

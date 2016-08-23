@@ -85,6 +85,8 @@
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "PipeCollimator.h"
+#include "AttachSupport.h"
+#include "insertPlate.h"
 
 #include "NMX.h"
 
@@ -150,6 +152,7 @@ NMX::~NMX()
   */
 {}
 
+  
 void
 NMX::setBeamAxis(const FuncDataBase& Control,
 		 const GuideItem& GItem,
@@ -276,6 +279,7 @@ NMX::build(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
+
 
   return;
 }

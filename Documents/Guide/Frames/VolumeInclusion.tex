@@ -42,18 +42,24 @@ The process is as follows:
 \item{Loop over each cell in Mug : MCell}
   \begin{enumerate}
   \item{Calculate intersection of each surface:surface:surface triplet from the set of CC surfaces and MCell surface}
-  \item{If a point is within CC and the MCell exclude the CC from the MCell and goto next cell}
-  \end{itemize}
-\end{itemize}
+  \item{If a point is within CC and the MCell exclude the CC from the
+    MCell and goto next cell}
+  \end{enumerate}
+\end{enumerate}
    
 Thus the spoon is inserted only into those cells of Mug which it intersects.
 
-It is not always better to call {\tt addToInsertSurfCtrl} instead of {\tt addToInsertForced} in cases that if is certain that
-an intersection can must take place (particularly if the CC / Inserting cells have large numbers of surfaces). 
+It is not always better to call {\tt addToInsertSurfCtrl} instead of
+{\tt addToInsertForced} in cases that if is certain that an
+intersection can must take place (particularly if the CC / Inserting
+cells have large numbers of surfaces).
 
-{\tt addToInsertSurfCtrl} is a very expensive function to call, because you have to check all the surface triplets. So, it runs a bit slower than addToInsertForced, but the geometry will be faster.
-The two remaining methods provide similar functionality but with less computational overhead, however, there are cell constructs
-which will cause them to fail.
+{\tt addToInsertSurfCtrl} is a very expensive function to call,
+because you have to check all the surface triplets. So, it runs a bit
+slower than addToInsertForced, but the geometry will be faster.  The
+two remaining methods provide similar functionality but with less
+computational overhead, however, there are cell constructs which will
+cause them to fail.
 
 \subsubsection{addToInsertControl}
 
@@ -63,5 +69,8 @@ It is possible to add a vector of link points to check as a parameter to limit t
 
 \subsubsection{addToInsertLineCtrl}
 
-Imagine we have a (big) contained component~(Mug) and some (small) object which clips it~(Spoon). The link points are {\bf not} in the Mug~(therefore {\bf addToInsertControl} can not be used), but the lines which connect them are in the Mug.
-The method checks the lines connecting the link points and sorts out the intersections.
+Imagine we have a (big) contained component~(Mug) and some (small)
+object which clips it~(Spoon). The link points are {\bf not} in the
+Mug~(therefore {\bf addToInsertControl} can not be used), but the
+lines which connect them are in the Mug.  The method checks the lines
+connecting the link points and sorts out the intersections.

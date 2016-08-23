@@ -47,6 +47,11 @@ class makeESSBL :
   const std::string shutterName;              ///< Shutter name
   const std::string beamName;                 ///< Name of beamline
   
+  bool extraFlag;                             ///< Build extra stuff
+  
+  void addTallyCell(Simulation&,const std::string&,
+		    const std::string&);
+  
  public:
 
   static std::pair<int,int> getBeamNum(const std::string&);
@@ -55,7 +60,9 @@ class makeESSBL :
   makeESSBL(const makeESSBL&);
   makeESSBL& operator=(const makeESSBL&);
   virtual ~makeESSBL();  
-  
+
+  void setExtra() { extraFlag=1; }
+    
   virtual void build(Simulation&,const essSystem::Bunker&);
 
 };
