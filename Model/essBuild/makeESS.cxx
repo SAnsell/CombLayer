@@ -484,8 +484,6 @@ makeESS::makeBeamLine(Simulation& System,
   const size_t NSet=IParam.setCnt("beamlines");
   FuncDataBase& Control=System.getDataBase();
 
-  const bool extraFlag=IParam.flag("beamCellTally");
-  
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",0);
@@ -518,8 +516,6 @@ makeESS::makeBeamLine(Simulation& System,
 	  
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
-          if (extraFlag)
-            BLfactory.setExtra();
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
 

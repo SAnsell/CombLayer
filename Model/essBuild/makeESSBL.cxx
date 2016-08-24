@@ -91,11 +91,9 @@
 
 #include "shortDREAM.h"
 #include "shortODIN.h"
-
 #include "simpleITEM.h"
 
 #include "beamlineConstructor.h"
-#include "insertPlate.h"
 #include "makeESSBL.h"
 
 namespace essSystem
@@ -104,8 +102,7 @@ namespace essSystem
 makeESSBL::makeESSBL(const std::string& SN,
 		     const std::string& BName) : 
   beamlineSystem::beamlineConstructor(),
-  shutterName(SN),beamName(BName),
-  extraFlag(0)
+  shutterName(SN),beamName(BName)
  /*!
     Constructor
     \param SN :: Shutter name
@@ -167,65 +164,6 @@ makeESSBL::getBeamNum(const std::string& Name)
     }
   return Out;
 }
-
-
-void
-makeESSBL::addTallyCell(Simulation& System,
-                        const std::string& shutterName,
-                        const std::string& beamName)
-  /*!
-    Adds a void cell for tallying in the guide if required
-    Note his normally leave a "hole" in the guide so 
-    it is ideally not used unless absolutely needed.
-    
-    \param System :: Simulation to used
-    \param shutterName :: Shutter direction
-    \param beamline :: beamline name
-  */
-{
-  ELog::RegMethod RegA("makeESSBL","addTallyCell");
-  
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::string beamline(beamName);
-  StrFunc::lowerString(beamline);
-  
-  const attachSystem::FixedComp* mainFCPtr=
-    OR.getObject<attachSystem::FixedComp>(shutterName);
-  const GuideItem* mainGIPtr=
-    dynamic_cast<const GuideItem*>(mainFCPtr);
-  if (!mainGIPtr)
-    throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
-
-  const attachSystem::FixedComp* mainAxis=
-    OR.getObject<attachSystem::FixedComp>(beamline+"Axis");
-  if (!mainAxis)
-    throw ColErr::InContainerError<std::string>
-      (beamline+"Axis","Error finding axis");
-
-  const attachSystem::CellMap* GuideA=
-    OR.getObject<attachSystem::CellMap>(beamline+"GA");
-  
-  
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  std::shared_ptr<constructSystem::insertPlate>
-    TPlate(new constructSystem::insertPlate(beamline+"Plate"));
-
-  OR.addObject(TPlate);
-  TPlate->setNoInsert();
-  TPlate->setStep(0.0,-5.0,0);
-  TPlate->setValues(8.0,0.1,8.0,"Void");
-  TPlate->createAll(System,*mainAxis,3);
-
-  if (GuideA)
-    attachSystem::addToInsertLineCtrl(System,*GuideA,"All",*TPlate,*TPlate);
-  attachSystem::addToInsertLineCtrl(System,*mainGIPtr,"All",*TPlate,*TPlate);
-  return;
-}
-
   
 void 
 makeESSBL::build(Simulation& System,
@@ -350,8 +288,6 @@ makeESSBL::build(Simulation& System,
     {
       ELog::EM<<"NON-UNDERSTOOD BEAMLINE : "<<beamName<<ELog::endErr;
     }
-  if (extraFlag)
-    addTallyCell(System,shutterName,beamName);
   return;
 }
 

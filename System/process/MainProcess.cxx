@@ -729,12 +729,10 @@ createESSInputs(inputParam& IParam)
   
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
-  IParam.regMulti("beamCellTally","beamCellTally",1000);
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
 
 
   IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
-  IParam.setDesc("beamCellTally","Creates tally cell in beamline");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
   IParam.setDesc("topMod","Type of top moderator to be built");
