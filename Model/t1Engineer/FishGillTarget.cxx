@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Build/BulletTarget.cxx
+ * File:   t1Engineer/FishGillTarget.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ProtonVoid.h"
 #include "BeamWindow.h"
@@ -195,7 +196,7 @@ FishGillTarget::createAll(Simulation& System,
   ELog::RegMethod RegA("FishGillTarget","createAll");
 
   //  PlateTarObj->setInsertCell(this->getInsertCells());
-  PlateTarObj->createAll(System,FC);
+  PlateTarObj->createAll(System,FC,0);
   
   PressVObj->setMainRadius(PlateTarObj->getMainRadius());
   PressVObj->setInsertCell(this->getInsertCells());

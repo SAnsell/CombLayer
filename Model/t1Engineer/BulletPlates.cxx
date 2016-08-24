@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/BulletPlates.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BulletPlates.h"
 
@@ -78,7 +79,7 @@ namespace ts1System
 {
 
 BulletPlates::BulletPlates(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1)
   /*!
@@ -103,12 +104,8 @@ BulletPlates::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BulletPlates","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedOffset::populate(Control);
+  
   // Blocks:
   nBlock=Control.EvalVar<size_t>(keyName+"NBlocks");
   for(size_t i=0;i<nBlock;i++)
@@ -132,18 +129,19 @@ BulletPlates::populate(const FuncDataBase& Control)
 }
   
 void
-BulletPlates::createUnitVector(const attachSystem::FixedComp& FC)
+BulletPlates::createUnitVector(const attachSystem::FixedComp& FC,
+                               const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed compontent [front of target void vessel]
     - Y Down the beamline
+    \param sideIndex :: link direciton
   */
 {
   ELog::RegMethod RegA("BulletPlates","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
 
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
   
   return;
 }
@@ -263,17 +261,20 @@ BulletPlates::createLinks()
 }
 
 void
-BulletPlates::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+BulletPlates::createAll(Simulation& System,
+                        const attachSystem::FixedComp& FC,
+                        const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: linkPoint 
   */
 {
   ELog::RegMethod RegA("BulletPlates","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

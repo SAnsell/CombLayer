@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/makeT1Eng.cxx
+ * File:   t1Engineer/makeT1Eng.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -62,6 +62,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"

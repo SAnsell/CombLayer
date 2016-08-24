@@ -381,7 +381,7 @@ public:
   /// Does the absolute comparison
   bool operator()(const T& A,const T& B) const
     {
-      return (std::abs<T>(A)<std::abs<T>(B));
+      return (std::abs(A)<std::abs(B));
     }
 
 };

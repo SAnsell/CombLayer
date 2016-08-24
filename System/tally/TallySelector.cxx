@@ -136,6 +136,20 @@ tallyAddition(Simulation& System,
 	      constructSystem::addInsertPlateCell
 		(System,"insertPlate"+StrFunc::makeString(index),
 		 FName,LName,VOffset,XW,ZH);
+              return;
+	    }
+	  if (PType=="free")
+	    {
+	      size_t ptI(2);
+              const Geometry::Vec3D VPos=IParam.getCntVec3D
+                ("TAdd",index,ptI,eMess);
+	      const double XW=
+		IParam.getValueError<double>("TAdd",index,ptI,eMess);
+	      const double ZH=
+		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+              //	      constructSystem::addInsertPlateCell
+              //		(System,"insertPlate"+StrFunc::makeString(index),
+              //		 FName,LName,VOffset,XW,ZH);
 	    }
 	}
     }
