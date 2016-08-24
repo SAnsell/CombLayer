@@ -456,7 +456,9 @@ LineShield::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
-  
+
+
+
   return;
 }
   
@@ -506,13 +508,27 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
   return;
 }
 
+HeadRule
+LineShield::getXSectionIn() const
+  /*!
+    Get the line shield inner void section
+    \return HeadRule of cross-section
+   */
+{
+  ELog::RegMethod RegA("LineShield","getXSectionIn");
+  const std::string Out=
+    ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
+  HeadRule HR(Out);
+  HR.populateSurf();
+  return HR;
+}
   
     
 void
 LineShield::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
-/*!
+  /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

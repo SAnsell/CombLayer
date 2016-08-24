@@ -69,7 +69,6 @@ class insertPlate : public attachSystem::ContainedComp,
 			const long int);
   void createUnitVector(const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
-			const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
 
 
@@ -101,6 +100,9 @@ class insertPlate : public attachSystem::ContainedComp,
 		 const int);
   void setValues(const double,const double,const double,
 		 const std::string&);
+  void createAll(Simulation&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&);
+
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 

@@ -100,7 +100,8 @@ addInsertPlateCell(Simulation& System,
     it is ideally not used unless absolutely needed.
     
     \param System :: Simulation to used
-    \param FCname :: object name
+    \param objName :: object name
+    \param FCname :: FixedComp reference name
     \param linkName :: link direction
     \param XYZStep :: Step in xyz direction
     \param xSize :: x-size
@@ -126,6 +127,49 @@ addInsertPlateCell(Simulation& System,
   TPlate->setStep(XYZStep);
   TPlate->setValues(xSize,0.1,zSize,"Void");
   TPlate->createAll(System,*mainFCPtr,linkIndex);
+
+  return;
+}
+
+void
+addInsertPlateCell(Simulation& System,
+		   const std::string& objName,
+		   const Geometry::Vec3D& CentPos,
+                   const Geometry::Vec3D& YAxis,
+                   const Geometry::Vec3D& ZAxis,
+		   const double xSize,
+		   const double zSize)
+  /*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: new plate name
+    \param CentPos :: Central positoin
+    \param YAxis :: Direction along Y
+    \param ZAxis :: Direction along Z
+    \param xSize :: x-size
+    \param zSize :: zSize
+  */
+{
+  ELog::RegMethod RegA("addInsertObj","addTallyCell");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  
+
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertPlate>
+    TPlate(new constructSystem::insertPlate(objName));
+
+  OR.addObject(TPlate);
+  TPlate->setValues(xSize,0.1,zSize,"Void");
+  TPlate->createAll(System,CentPos,YAxis,ZAxis);
 
   return;
 }

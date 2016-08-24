@@ -31,6 +31,10 @@ void
 addInsertPlateCell(Simulation&,const std::string&,
 		   const std::string&,const std::string&,
 		   const Geometry::Vec3D&,const double,const double);
+void
+addInsertPlateCell(Simulation&,const std::string&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&,
+		   const Geometry::Vec3D&,const double,const double);
   
 }
 

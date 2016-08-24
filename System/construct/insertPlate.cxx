@@ -196,13 +196,13 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   ELog::RegMethod RegA("insertPlate","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  createUnitVector(OG,X,Y,Z);
+  Origin=OG;
+  applyOffset();
   return;
 }
 
 void
 insertPlate::createUnitVector(const Geometry::Vec3D& OG,
-			      const Geometry::Vec3D& XUnit,
 			      const Geometry::Vec3D& YUnit,
 			      const Geometry::Vec3D& ZUnit)
   /*!
@@ -215,10 +215,13 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
 {
   ELog::RegMethod RegA("insertPlate","createUnitVector<Vec>");
 
-  X=XUnit.unit();
-  Y=YUnit.unit();
-  Z=ZUnit.unit();
 
+  Geometry::Vec3D xTest(YUnit.unit()*ZUnit.unit());
+  Geometry::Vec3D yTest(YUnit.unit());
+  Geometry::Vec3D zTest(ZUnit.unit());
+  FixedComp::computeZOffPlane(xTest,yTest,zTest);
+
+  FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
   Origin=OG;
   applyOffset();
 
@@ -510,7 +513,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
     \param FC :: Linear component to set axis etc
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll");
+  ELog::RegMethod RegA("insertPlate","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(OG,FC);
@@ -529,10 +532,33 @@ insertPlate::createAll(Simulation& System,
     \param lIndex :: link Index
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll");
+  ELog::RegMethod RegA("insertPlate","createAll(FC,index)");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
+  mainAll(System);
+  
+  return;
+}
+
+void
+insertPlate::createAll(Simulation& System,
+		       const Geometry::Vec3D& Orig,
+                       const Geometry::Vec3D& YA,
+                       const Geometry::Vec3D& ZA)
+                       
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param Orig :: Origin al point 
+    \param YA :: Origin al point 
+    \param ZA :: ZAxis
+  */
+{
+  ELog::RegMethod RegA("insertPlate","createAll");
+  if (!populated) 
+    populate(System.getDataBase());  
+  createUnitVector(Orig,YA,ZA);
   mainAll(System);
   
   return;

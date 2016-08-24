@@ -898,18 +898,17 @@ CifStore::applyOcc()
 {
   ELog::RegMethod RControl("CifStore","applyOcc");
   int eCnt(0);
-  for(int index=0;index<static_cast<int>(FullCell.size());index++)
+  size_t index(0);
+  while(index<FullCell.size())
     {
       const double Occ=FullCell[index].getOcc();
-      if (Occ<1.0)
+      if (Occ<1.0 && Occ<RNG.rand())
         {
-	  if (Occ<RNG.rand())
-	    {
-	      FullCell.erase(FullCell.begin()+index,FullCell.begin()+index+1);
-	      index--;
-	      eCnt++;
-	    }
+          FullCell.erase(FullCell.begin()+static_cast<long int>(index));
+          eCnt++;
 	}
+      else
+        index++;
     }
   ELog::EM<<"Total deleted -- "<<eCnt<<ELog::endDiag;
   return eCnt;
