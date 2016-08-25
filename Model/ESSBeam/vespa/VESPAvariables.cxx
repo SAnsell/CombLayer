@@ -54,6 +54,7 @@
 #include "ChopperGenerator.h"
 #include "PitGenerator.h"
 #include "PipeGenerator.h"
+#include "JawGenerator.h"
 #include "BladeGenerator.h"
 
 namespace setVariable
@@ -76,6 +77,7 @@ VESPAvariables(FuncDataBase& Control)
   setVariable::PitGenerator PGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
+  setVariable::JawGenerator JawGen;
 
   PipeGen.setPipe(8.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
@@ -132,7 +134,7 @@ VESPAvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"vespaFD",56.0,4.0,8.0);   
   //  Control.addVariable("vespaFBBeamYStep",4.0);
 
-    // VACBOX A : 6.10m target centre
+  // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
   CGen.generateChopper(Control,"vespaChopperC",9.0,12.0,5.55);
   
@@ -170,62 +172,57 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaBInsertRightWall",1.0);
   Control.addVariable("vespaBInsertWallMat","Stainless304");       
 
+  PGen.setFeLayer(6.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"vespaOutPitT0",0.0,25.0,220.0,210.0,40.0);
+
+  CGen.setMainRadius(33.0);
+  CGen.setFrame(80.0,80.0);
+  CGen.generateChopper(Control,"vespaChopperT0",20.0,15.0,9.55);
+
+  // T0 Chopper disk B
+  BGen.setThick({3.4});
+  BGen.setInnerThick({5.4});
+  BGen.setMaterials("Inconnel","Tungsten");
+  //  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.addPhase({-15,165},{30.0,30.0});   // chopper open
+  BGen.generateBlades(Control,"vespaT0Disk",2.0,20.0,30.0);
+
+  Control.addVariable("vespaT0ExitPortShape","Circle");
+  Control.addVariable("vespaT0ExitPortRadius",5.0);
+
   // Guide in wall
   FGen.generateTaper(Control,"vespaFWall",308.0,9.0,9.0,8.5,8.5);
 
-
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"vespaOutPitA",500.0,25.0,220.0,210.0,40.0);
+  PGen.generatePit(Control,"vespaOutPitA",450.0,25.0,220.0,210.0,40.0);
 
   SGen.generateShield(Control,"vespaShieldA",350.0,40.0,40.0,40.0,4,8);
 
   PipeGen.setPipe(9.0,0.5);  // R/T
-  PipeGen.generatePipe(Control,"vespaPipeOutA",7.0,490.0);  
+  PipeGen.generatePipe(Control,"vespaPipeOutA",49.0,400.0);  
 
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"vespaFOutA",482.0,9.0,11.0,8.5,10.0);
- 
-  
-  Control.addVariable("vespaPitCutShape","Circle");
-  Control.addVariable("vespaPitBCutRadius",5.0);
+  FGen.generateTaper(Control,"vespaFOutA",392.0,9.0,11.0,8.5,10.0);
 
-  // Control.addVariable("vespaPitBColletHeight",15.0);
-  // Control.addVariable("vespaPitBColletDepth",15.0);
-  // Control.addVariable("vespaPitBColletWidth",40.0);
-  // Control.addVariable("vespaPitBColletLength",5.0);
-  // Control.addVariable("vespaPitBColletMat","Tungsten");
+  Control.addVariable("vespaT0ExitPortShape","Circle");
+  Control.addVariable("vespaT0ExitPortRadius",5.0);
 
   CGen.generateChopper(Control,"vespaChopperOutA",22.0,12.0,5.55);
+
   // Double Blade chopper
-  Control.addVariable("vespaFOCBladeBXStep",0.0);
-  Control.addVariable("vespaFOCBladeBYStep",0.0);
-  Control.addVariable("vespaFOCBladeBZStep",0.0);
-  Control.addVariable("vespaFOCBladeBXYangle",0.0);
-  Control.addVariable("vespaFOCBladeBZangle",0.0);
-
-  Control.addVariable("vespaFOCBladeBGap",3.0);
-  Control.addVariable("vespaFOCBladeBInnerRadius",25.0);
-  Control.addVariable("vespaFOCBladeBOuterRadius",35.5);
-  Control.addVariable("vespaFOCBladeBNDisk",2);
-
-  Control.addVariable("vespaFOCBladeB0Thick",0.2);
-  Control.addVariable("vespaFOCBladeB1Thick",0.2);
-  Control.addVariable("vespaFOCBladeBInnerMat","Inconnel");
-  Control.addVariable("vespaFOCBladeBOuterMat","B4C");
-  
-  Control.addVariable("vespaFOCBladeBNBlades",1);
-  Control.addVariable("vespaFOCBladeB0PhaseAngle0",0.0);
-  Control.addVariable("vespaFOCBladeB0OpenAngle0",320.12);
-
-  Control.addVariable("vespaFOCBladeB1PhaseAngle0",0.0+30.0);
-  Control.addVariable("vespaFOCBladeB1OpenAngle0",320.12);
-
+  BGen.setThick({0.2,0.2});
+  BGen.setGap(3.0);
+  BGen.addPhase({0.0},{320.0});
+  BGen.addPhase({30.0},{320.0});
+  BGen.generateBlades(Control,"vespaFOCBladeB",0.0,25.0,35.5);
 
   // Guide after wall [17.5m - 3.20] for wall
-  PipeGen.generatePipe(Control,"vespaPipeOutB",2.0,850.0);  //
+  PipeGen.generatePipe(Control,"vespaPipeOutB",2.0,760.0);  //
   Control.addVariable("vespaPipeOutBRadius",9.0);
-  FGen.generateTaper(Control,"vespaFOutB",746.0,9.0,11.0,8.5,10.0);
+  FGen.setYOffset(2.0);
+  FGen.generateTaper(Control,"vespaFOutB",750.0,9.0,11.0,8.5,10.0);
 
   SGen.generateShield(Control,"vespaShieldB",770.0,40.0,40.0,40.0,4,8);
 
@@ -240,9 +237,70 @@ VESPAvariables(FuncDataBase& Control)
 
       SGen.generateShield(Control,shieldName,600.0,40.0,40.0,40.0,4,8);
       PipeGen.generatePipe(Control,vacName,2.0,598.0);  //
+      FGen.clearYOffset();
       FGen.generateRectangle(Control,focusName,594.0,10.0,10.0);
     }
+  
+  PGen.setFeLayer(6.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"vespaOutPitB",3163.0,25.0,220.0,210.0,40.0);
+  
+  Control.addVariable("vespaPitBPortAShape","Circle");
+  Control.addVariable("vespaPitBPortARadius",5.0);
+  Control.addVariable("vespaPitBPortBShape","Circle");
+  Control.addVariable("vespaPitBPortBRadius",5.0);
 
+  // VACBOX for FOC out B
+  CGen.generateChopper(Control,"vespaChopperOutB",19.0,12.0,5.55);
+  // Double Blade chopper
+  BGen.setThick({0.2,0.2});
+  BGen.addPhase({0.0},{320.0});
+  BGen.addPhase({30.0},{320.0});
+  BGen.generateBlades(Control,"vespaFOCBladeOutB",0.0,25.0,35.5);
+
+  SGen.generateShield(Control,"vespaShieldC",200.0,40.0,40.0,40.0,4,8);  
+
+
+    // HUT:  
+  Control.addVariable("vespaCaveYStep",25.0);
+  Control.addVariable("vespaCaveXStep",0.0);
+  Control.addVariable("vespaCaveVoidFront",60.0);
+  Control.addVariable("vespaCaveVoidHeight",100.0);
+  Control.addVariable("vespaCaveVoidDepth",225.0);
+  Control.addVariable("vespaCaveVoidWidth",600.0);
+  Control.addVariable("vespaCaveVoidLength",1000.0);
+
+  Control.addVariable("vespaCaveFeFront",25.0);
+  Control.addVariable("vespaCaveFeLeftWall",15.0);
+  Control.addVariable("vespaCaveFeRightWall",15.0);
+  Control.addVariable("vespaCaveFeRoof",15.0);
+  Control.addVariable("vespaCaveFeFloor",15.0);
+  Control.addVariable("vespaCaveFeBack",15.0);
+
+  Control.addVariable("vespaCaveConcFront",35.0);
+  Control.addVariable("vespaCaveConcLeftWall",35.0);
+  Control.addVariable("vespaCaveConcRightWall",35.0);
+  Control.addVariable("vespaCaveConcRoof",35.0);
+  Control.addVariable("vespaCaveConcFloor",50.0);
+  Control.addVariable("vespaCaveConcBack",35.0);
+
+  Control.addVariable("vespaCaveFeMat","Stainless304");
+  Control.addVariable("vespaCaveConcMat","Concrete");
+
+  // Beam port through front of cave
+  Control.addVariable("vespaCaveCutShape","Circle");
+  Control.addVariable("vespaCaveCutRadius",10.0);
+
+  JawGen.generateJaws(Control,"vespaVJaws",55.0);
+
+  Control.addVariable("vespaSampleYStep",300.0);
+  Control.addVariable("vespaSampleNLayers",2);
+  Control.addVariable("vespaSampleRadius1",1.0);
+  Control.addVariable("vespaSampleRadius2",1.5);
+  Control.addVariable("vespaSampleHeight1",5.0);
+  Control.addVariable("vespaSampleHeight2",6.0);
+  Control.addVariable("vespaSampleMaterial1","H2O");
+  Control.addVariable("vespaSampleMaterial2","Aluminium");
   
   
   return;

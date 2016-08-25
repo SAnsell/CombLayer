@@ -84,10 +84,13 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "ChopperUnit.h"
-#include "DreamHut.h"
 #include "DetectorTank.h"
-#include "CylSample.h"
 #include "LineShield.h"
+#include "Jaws.h"
+#include "HoleShape.h"
+#include "JawSet.h"
+#include "VespaHut.h"
+#include "CylSample.h"
 
 #include "VESPA.h"
 
@@ -131,22 +134,33 @@ VESPA::VESPA(const std::string& keyName) :
   BInsert(new BunkerInsert(newName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
+  OutPitT0(new constructSystem::ChopperPit(newName+"OutPitT0")),
+  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")),
+  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
+  T0ExitPort(new constructSystem::HoleShape(newName+"T0ExitPort")),
+  
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
   ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
 
-  OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOCBladeB")),
-
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
-  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB"))
-  
+  FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
 
+  OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
+  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  FOCDiskOutB(new constructSystem::DiskChopper(newName+"FOCBladeOutB")),
+  PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
+  PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
   
+  ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
+  Cave(new VespaHut(newName+"Cave")),
+
+  VJaws(new constructSystem::JawSet(newName+"VJaws")),
+  Sample(new instrumentSystem::CylSample(newName+"Sample"))
  /*!
     Constructor
  */
@@ -190,7 +204,12 @@ VESPA::VESPA(const std::string& keyName) :
   
   OR.addObject(BInsert);
   OR.addObject(FocusWall);
-
+  
+  OR.addObject(OutPitT0);
+  OR.addObject(ChopperT0);
+  OR.addObject(T0Disk);
+  OR.addObject(T0ExitPort);
+  
   OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);
@@ -205,7 +224,9 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(FocusOutB);
 
   OR.addObject(OutPitB);
-    
+  OR.addObject(PitBPortA);
+  OR.addObject(PitBPortB);
+  
   for(size_t i=0;i<4;i++)
     {
       typedef std::shared_ptr<constructSystem::LineShield> STYPE;
@@ -225,6 +246,12 @@ VESPA::VESPA(const std::string& keyName) :
       OR.addObject(VPipeArray.back());
       OR.addObject(FocusArray.back());
     }
+  
+  OR.addObject(ChopperOutB);
+  OR.addObject(FOCDiskOutB);
+  OR.addObject(Cave);
+  OR.addObject(VJaws);
+  OR.addObject(Sample);
 }
 
   
@@ -384,11 +411,33 @@ VESPA::build(Simulation& System,
   // OUTSIDE:
   //
 
+  OutPitT0->addInsertCell(voidCell);
+  OutPitT0->addFrontWall(bunkerObj,2);
+  OutPitT0->createAll(System,FocusWall->getKey("Guide0"),2);
+
+  // First Chopper
+  ChopperT0->addInsertCell(OutPitT0->getCells("Void"));
+  ChopperT0->createAll(System,FocusWall->getKey("Guide0"),2);
+
+  // Double disk chopper
+  T0Disk->addInsertCell(ChopperT0->getCell("Void"));
+  T0Disk->setCentreFlag(3);  // Z direction
+  T0Disk->setOffsetFlag(1);  // Z direction
+  T0Disk->createAll(System,ChopperT0->getKey("Beam"),0);
+  
+  T0ExitPort->addInsertCell(OutPitT0->getCells("MidLayerBack"));
+  T0ExitPort->addInsertCell(OutPitT0->getCells("Collet"));
+  T0ExitPort->setFaces(OutPitT0->getKey("Inner").getSignedFullRule(2),
+                       OutPitT0->getKey("Mid").getSignedFullRule(-2));
+  T0ExitPort->createAll(System,OutPitT0->getKey("Inner"),2);
+
   OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
   
   ShieldA->addInsertCell(voidCell);
-  ShieldA->setFront(*BInsert,2);
+  ShieldA->addInsertCell(OutPitT0->getCells("Outer"));
+  ShieldA->addInsertCell(OutPitT0->getCells("MidLayer"));
+  ShieldA->setFront(OutPitT0->getKey("Mid"),2);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
   ShieldA->addInsertCell(OutPitA->getCells("MidLayer"));
   ShieldA->setBack(OutPitA->getKey("Mid"),1);
@@ -396,6 +445,8 @@ VESPA::build(Simulation& System,
 
   // Elliptic 6m section
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->setBack(OutPitA->getKey("Inner"),1);
+  VPipeOutA->addInsertCell(OutPitA->getCells("MidLayer"));
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
@@ -424,7 +475,7 @@ VESPA::build(Simulation& System,
   VPipeOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
-  FocusOutB->createAll(System,*VPipeOutB,7,*VPipeOutB,7);
+  FocusOutB->createAll(System,*VPipeOutB,-1,*VPipeOutB,-1);
 
   // Mid section array:
   ShieldArray[0]->addInsertCell(voidCell);
@@ -435,10 +486,31 @@ VESPA::build(Simulation& System,
   FocusArray[0]->addInsertCell(VPipeArray[0]->getCell("Void"));
   FocusArray[0]->createAll(System,*VPipeArray[0],7,*VPipeArray[0],7);
 
+  OutPitB->addInsertCell(voidCell);
+  OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
+
+  PitBPortA->addInsertCell(OutPitB->getCells("MidLayerFront"));
+  PitBPortA->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
+                       OutPitB->getKey("Mid").getSignedFullRule(-1));
+  PitBPortA->createAll(System,OutPitB->getKey("Inner"),2);
+
+  PitBPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
+  PitBPortB->addInsertCell(OutPitB->getCells("Collet"));
+  PitBPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
+                      OutPitB->getKey("Mid").getSignedFullRule(-2));
+  PitBPortB->createAll(System,OutPitB->getKey("Inner"),2);
+  
+  const size_t lastIndex(ShieldArray.size()-1);
   for(size_t i=1;i<ShieldArray.size();i++)
     {
       ShieldArray[i]->addInsertCell(voidCell);
       ShieldArray[i]->setFront(*ShieldArray[i-1],2);
+      if (i+1==ShieldArray.size())
+        {
+          ShieldArray[i]->addInsertCell(OutPitB->getCells("Outer"));
+          ShieldArray[i]->addInsertCell(OutPitB->getCells("MidLayer"));
+          ShieldArray[i]->setBack(OutPitB->getKey("Mid"),1);
+        }
       ShieldArray[i]->createAll(System,*ShieldArray[i-1],2);
       VPipeArray[i]->addInsertCell(ShieldArray[i]->getCell("Void"));
       VPipeArray[i]->createAll(System,*ShieldArray[i-1],2);
@@ -446,6 +518,33 @@ VESPA::build(Simulation& System,
       FocusArray[i]->createAll(System,*VPipeArray[i],7,*VPipeArray[i],7);
     }
 
+    // First Chopper
+  ChopperOutB->addInsertCell(OutPitB->getCells("Void"));
+  ChopperOutB->createAll(System,FocusArray[lastIndex]->getKey("Guide0"),2);
+
+  // Double disk chopper FOC
+  FOCDiskOutB->addInsertCell(ChopperOutB->getCell("Void"));
+  FOCDiskOutB->setCentreFlag(3);  // Z direction
+  FOCDiskOutB->setOffsetFlag(1);  // Z direction
+  FOCDiskOutB->createAll(System,ChopperOutB->getKey("Beam"),0);
+
+  ShieldC->addInsertCell(OutPitB->getCells("Outer"));
+  ShieldC->addInsertCell(voidCell);
+  ShieldC->setFront(OutPitB->getKey("Mid"),2);
+  ShieldC->createAll(System,ChopperOutB->getKey("Beam"),2);
+
+  Cave->addInsertCell(voidCell);
+  Cave->createAll(System,*ShieldC,2);
+
+  ShieldC->addInsertCell(Cave->getCells("FrontWall"));
+  ShieldC->insertObjects(System);
+
+  VJaws->setInsertCell(Cave->getCell("Void"));
+  VJaws->createAll(System,*ShieldC,2);
+
+  Sample->setInsertCell(Cave->getCell("Void"));
+  Sample->createAll(System,*VJaws,2);
+  
   return;
 }
 
