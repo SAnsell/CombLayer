@@ -521,7 +521,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayXStep",0.0);  
   Control.addVariable("GuideBayYStep",0.0);  
   Control.addVariable("GuideBayZStep",0.0);
-  Control.addVariable("GuideBayZangle",0.0);
+  Control.addVariable("GuideBayZAngle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
   Control.addVariable("GuideBayInnerHeight",20.0);
   Control.addVariable("GuideBayInnerDepth",10.3);
@@ -529,10 +529,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayHeight",32.0);
   Control.addVariable("GuideBayDepth",40.0);
   Control.addVariable("GuideBayMat","CastIron");
-  Control.addVariable("GuideBay1XYangle",0.0); 
-  Control.addVariable("GuideBay2XYangle",180.0); 
-  Control.addVariable("GuideBay3XYangle",0.0); 
-  Control.addVariable("GuideBay4XYangle",180.0); 
+  Control.addVariable("GuideBay1XYAngle",0.0); 
+  Control.addVariable("GuideBay2XYAngle",180.0); 
+  Control.addVariable("GuideBay3XYAngle",0.0); 
+  Control.addVariable("GuideBay4XYAngle",180.0); 
   Control.addVariable("GuideBay1NItems",21);  
   Control.addVariable("GuideBay2NItems",21);  
   Control.addVariable("GuideBay3NItems",21);  

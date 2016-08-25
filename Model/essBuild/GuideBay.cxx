@@ -62,13 +62,13 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "ReadFunctions.h"
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "SurInter.h"
 #include "ContainedComp.h"
@@ -84,7 +84,7 @@ namespace essSystem
 
 GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedComp(StrFunc::makeString(Key,BN),6),
+  attachSystem::FixedOffset(StrFunc::makeString(Key,BN),6),
   attachSystem::CellMap(),
   baseKey(Key),bayNumber(BN),
   bayIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -96,11 +96,10 @@ GuideBay::GuideBay(const std::string& Key,const size_t BN)  :
 {}
 
 GuideBay::GuideBay(const GuideBay& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   baseKey(A.baseKey),bayNumber(A.bayNumber),bayIndex(A.bayIndex),
-  cellIndex(A.cellIndex),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  cellIndex(A.cellIndex),
   viewAngle(A.viewAngle),innerHeight(A.innerHeight),
   innerDepth(A.innerDepth),height(A.height),depth(A.depth),
   midRadius(A.midRadius),mat(A.mat),nItems(A.nItems),
@@ -122,14 +121,9 @@ GuideBay::operator=(const GuideBay& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       viewAngle=A.viewAngle;
       innerHeight=A.innerHeight;
       innerDepth=A.innerDepth;
@@ -153,21 +147,15 @@ GuideBay::~GuideBay()
 {}
 
 void
-GuideBay::populate(const Simulation& System)
+GuideBay::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
    \param System :: Simulation to use
  */
 {
   ELog::RegMethod RegA("GuideBay","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  xStep=Control.EvalPair<double>(keyName,baseKey,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseKey,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseKey,"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName,baseKey,"XYangle");
-  zAngle=Control.EvalPair<double>(keyName,baseKey,"Zangle");
+  FixedOffset::populate(baseKey,Control);
   
   height=Control.EvalPair<double>(keyName,baseKey,"Height");
   depth=Control.EvalPair<double>(keyName,baseKey,"Depth");
@@ -195,8 +183,8 @@ GuideBay::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("GuideBay","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  ELog::EM<<"XYANGE ="<<xyAngle<<ELog::endDiag;
+  applyOffset();
 
   return;
 }
@@ -303,9 +291,10 @@ void
 GuideBay::outerMerge(Simulation& System,
 		     GuideBay& otherBay)
   /*!
-    Merge the outer component of the guidebay
+    Merge the outer component of the guidebay to the neighbouring 
+    bay.
     \param System :: simulaiton to use
-    \param otherBay :: Other guidebase
+    \param otherBay :: Other guidebase (neighbour)
   */
 {
   ELog::RegMethod RegA("GuideBay","outerMerge");
@@ -369,7 +358,6 @@ GuideBay::createGuideItems(Simulation& System,
   /*!
     Create the guide items
     \param System :: Simulation to link
-    \param GIndex :: guide Item
     \param ModFC :: Moderator point
     \param lfocusPoint :: left point on moderator for focus
     \param rfocusPoint :: left point on moderator for focus
@@ -411,11 +399,12 @@ GuideBay::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC ::  Central origin
+    \param sideIndex ::  side link point
   */
 {
   ELog::RegMethod RegA("GuideBay","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
