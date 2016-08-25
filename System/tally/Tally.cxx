@@ -30,6 +30,7 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <algorithm>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -319,6 +320,7 @@ Tally::setAngle(const std::string& AVec)
     return 0;
   std::vector<double> Val;
   cosTab.setVector(Val);
+  
   std::sort(Val.begin(),Val.end());
   if (Val.empty()) return 1;
 
@@ -326,7 +328,7 @@ Tally::setAngle(const std::string& AVec)
     Val.erase(Val.begin());
 
   // convert to degrees:
-  if (Val.back()>1.0+Geomtry::zeroTol)
+  if (Val.back()>1.0+Geometry::zeroTol)
     {
       for(double& CN : Val)
         CN=cos(CN);
