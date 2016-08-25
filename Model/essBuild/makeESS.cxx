@@ -655,10 +655,6 @@ makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
 
 void
 makeESS::buildTwister(Simulation& System)
-  /*!
-    Build the reflector twister extraction sytem
-    \param System :: Simulation to use
-   */
 {
   ELog::RegMethod RegA("makeESS","buildTwister");
 
@@ -668,24 +664,33 @@ makeESS::buildTwister(Simulation& System)
   Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
   OR.addObject(Twister);
 
-  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  
   Twister->createAll(System,*Bulk,0);
-  attachSystem::addToInsertForced(System, *Bulk, *Twister);
-  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1"));
+
+  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
+  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
+  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
+  
+  attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
-  //  attachSystem::addToInsertLineCtrl(System,*Twister,TopAFL->getCC("outer"));
+
+  // split Twister by components
+  // for (const ContainedComp & CC : Twister->getCC()) ...
+  // use LineControl for intersections with flight lines
+  
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
+
+  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
   return;
 }
-  
+
 void 
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)

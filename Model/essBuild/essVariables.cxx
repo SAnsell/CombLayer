@@ -473,8 +473,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterXStep",11.0);
   Control.addVariable("TwisterYStep",-62.0);
   Control.addVariable("TwisterZStep",0.0);
-  Control.addVariable("TwisterXYangle",10.0);
-  Control.addVariable("TwisterZangle",0.0);
+  Control.addVariable("TwisterXYAngle",10.0);
+  Control.addVariable("TwisterZAngle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
   Control.addVariable("TwisterShaftMat","Iron10H2O");

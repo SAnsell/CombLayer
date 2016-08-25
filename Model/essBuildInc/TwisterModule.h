@@ -28,13 +28,13 @@ namespace essSystem
 {
 /*!
   \class TwisterModule
-  \author K. Batkov
+  \author Stuart Ansell / Konstantin Batkov
   \version 1.0
   \date March 2016
   \brief Moderator twister plug
 */
 
-class TwisterModule : public attachSystem::ContainedComp,
+class TwisterModule : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
