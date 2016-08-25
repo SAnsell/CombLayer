@@ -330,6 +330,7 @@ Tally::setAngle(const std::string& AVec)
     {
       for(double& CN : Val)
         CN=cos(CN);
+      std::reverse(Val.begin(),Val.end());
     }
   cosTab.setVector(Val);
   return 1;
