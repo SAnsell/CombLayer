@@ -86,6 +86,7 @@ namespace tallySystem
   int setParticleType(Simulation&,const int,const std::string&);
   int setEnergy(Simulation&,const int,const std::string&);
   int setTime(Simulation&,const int,const std::string&);
+  int setAngle(Simulation&,const int,const std::string&);
   int setFormat(Simulation&,const int,const std::string&);
   int setSDField(Simulation&,const int,const std::string&);
   int setSingle(Simulation&,const int);

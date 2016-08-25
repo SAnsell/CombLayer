@@ -1136,6 +1136,35 @@ setTime(Simulation& Sim,const int tNumber,
 }
 
 int
+setAngle(Simulation& Sim,const int tNumber,
+        const std::string& tPart)
+  /*!
+    Set the cos of a tally
+    \param Sim :: Simulation
+    \param tNumber :: tally nubmer
+    \param tPart :: time segment string [MCNPX format]
+    \return number of tallies split
+   */
+{
+  ELog::RegMethod RegA("TallyCreate","setAngle");
+
+  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  Simulation::TallyTYPE::iterator mc;
+  for(mc=tmap.begin();mc!=tmap.end();mc++)
+    {
+      if (tNumber==0 || mc->first==tNumber ||
+          (tNumber<0 && (mc->first % 10) == -tNumber))
+        {
+	  if (mc->second->setAngle(tPart))
+	    fnum++;
+	}
+    }
+
+  return fnum;
+}
+
+int
 setFormat(Simulation& Sim,const int tNumber,
           const std::string& fPart)
   /*!

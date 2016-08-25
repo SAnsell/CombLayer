@@ -183,7 +183,6 @@ GuideBay::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("GuideBay","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  ELog::EM<<"XYANGE ="<<xyAngle<<ELog::endDiag;
   applyOffset();
 
   return;

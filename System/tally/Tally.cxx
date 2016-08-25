@@ -309,13 +309,30 @@ Tally::setTime(const std::string& TVec)
 int
 Tally::setAngle(const std::string& AVec)
   /*!
-    Set the timeTab line
+    Set the cos angular tally
     \param AVec :: vector of the cosine 
     \return 1 on success/0 on failure
   */
 {
   cosTab.clear();
-  return cosTab.processString(AVec);
+  if (!cosTab.processString(AVec))
+    return 0;
+  std::vector<double> Val;
+  cosTab.setVector(Val);
+  std::sort(Val.begin(),Val.end());
+  if (Val.empty()) return 1;
+
+  if (Val.front()< -1.0+Geometry::zeroTol)
+    Val.erase(Val.begin());
+
+  // convert to degrees:
+  if (Val.back()>1.0+Geomtry::zeroTol)
+    {
+      for(double& CN : Val)
+        CN=cos(CN);
+    }
+  cosTab.setVector(Val);
+  return 1;
 }
 
 int

@@ -195,6 +195,7 @@ tallyModification(Simulation& System,
 	    "    Remove the window on an f5 tally\n"
 	    " -- energy {tallyNumber} [string] \n"
 	    " -- time {tallyNumber} [string] \n"
+            " -- cos {tallyNumber} [string] \n"
 	    " -- divide {tallyNumber} [xPts,yPts] : Split tally into "
 	    " multiple pieces \n"
 	    " -- scaleWindow[X/Y] {tallyNumber scale} : Scale the window"
@@ -283,9 +284,14 @@ tallyModification(Simulation& System,
 
       else if (key=="time" && nV>=3)
 	{
-	  ELog::EM<<"NV == "<<nV<<ELog::endDiag;
           if (tallySystem::setTime(System,tNumber,StrItem[1]))
             ELog::EM<<"Error setting tally time "<<
+              StrItem[1]<<ELog::endErr;
+        }
+      else if (key=="cos" && nV>=3)
+	{
+          if (tallySystem::setAngle(System,tNumber,StrItem[1]))
+            ELog::EM<<"Error setting tally cos "<<
               StrItem[1]<<ELog::endErr;
         }
       
@@ -339,7 +345,7 @@ tallyRenumberWork(Simulation& System,
     An amalgumation of values to determine what sort of tallies to put
     in the system.
     \param System :: Simulation to add tallies
-    \param IP :: InputParam
+    \param IParam :: InputParam
   */
 {
   ELog::RegMethod RegA("TallySelector","tallyRenumberWork");
