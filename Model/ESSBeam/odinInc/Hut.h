@@ -3,7 +3,7 @@
  
  * File:   constructInc/Hut.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ class Hut :
   double feFloor;               ///< Token floor depth
   double feNoseFront;           ///< Thickness of front of nose
   double feNoseSide;            ///< Side thickness [not angle correct]
-  double feBack;
+  double feBack;                ///< Last/Rear wall thickness
 
   double concLeftWall;            ///< Left wall
   double concRightWall;           ///< Right wall
@@ -68,7 +68,7 @@ class Hut :
   double concFloor;               ///< Token floor depth
   double concNoseFront;           ///< Thickness of front of nose
   double concNoseSide;            ///< Side thickness [not angle correct]
-  double concBack;
+  double concBack;                ///< Last/Rear wall thickness
 
   double wallYStep;               ///< Step from flat cut point
   double wallThick;               ///< Thickness 

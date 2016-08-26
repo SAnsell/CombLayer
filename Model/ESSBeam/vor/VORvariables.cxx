@@ -137,8 +137,15 @@ VORvariables(FuncDataBase& Control)
   Control.addVariable("vorBInsertRightWall",1.0);
   Control.addVariable("vorBInsertWallMat","Stainless304");       
 
+  // VACUUM PIPE: in bunker wall
+  PipeGen.setPipe(6.0,0.5);
+  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.generatePipe(Control,"vorPipeWall",1.0,318.0);
+
   // Guide in wall
-  FGen.generateTaper(Control,"vorFWall",308.0,6.0,6.0,6.0,6.0);
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"vorFWall",316.0,6.0,6.0,6.0,6.0);
 
   // Shield/Pipe/Guide after bunker wall
   SGen.setRFLayers(3,8);

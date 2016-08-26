@@ -97,7 +97,8 @@ H2FlowGuide::H2FlowGuide(const std::string& baseKey,
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param baseKey :: Butterfly main key
-    \param extraKey :: Specialized name
+    \param extraKey :: H2Wing part name
+    \param finalKey :: Specialized flow name
   */
 {}
 
@@ -304,4 +305,4 @@ H2FlowGuide::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE essSystem

@@ -37,6 +37,8 @@ namespace mainSystem
   void setESSFull(defaultConfig&); 
   void setESSSingle(defaultConfig&,const std::string&,
 		    const std::string&,int);
+  void setESSSingle(defaultConfig&,std::vector<std::string>&);
+
 
 }
 

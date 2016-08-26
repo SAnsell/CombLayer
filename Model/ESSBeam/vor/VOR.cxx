@@ -112,6 +112,7 @@ VOR::VOR(const std::string& keyName) :
 
   
   BInsert(new BunkerInsert(newName+"BInsert")),
+  VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
@@ -151,6 +152,7 @@ VOR::VOR(const std::string& keyName) :
   OR.addObject(DDisk);
 
   OR.addObject(BInsert);
+  OR.addObject(VPipeWall);
   OR.addObject(FocusWall);
 
   OR.addObject(ShieldA);
@@ -260,12 +262,16 @@ VOR::build(Simulation& System,
   if (stopPoint==2) return;
     
   // Make bunker insert
-  BInsert->createAll(System,FocusB->getKey("Guide0"),-1,bunkerObj);
+  BInsert->createAll(System,FocusD->getKey("Guide0"),-1,bunkerObj);
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);
-  // using 7 : mid point
-  FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,0,*BInsert,0);
+
+  VPipeWall->addInsertCell(BInsert->getCell("Void"));
+  VPipeWall->createAll(System,*BInsert,-1);
+
+    // using 7 : mid point
+  FocusWall->addInsertCell(VPipeWall->getCells("Void"));
+  FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
 
   if (stopPoint==3) return;
 

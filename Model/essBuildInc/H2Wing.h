@@ -52,9 +52,9 @@ class H2Wing :
   int engActive;             ///< Engineering active
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
   
-  double xStep;
-  double yStep;
-  double xyOffset;           ///< xy-Angle offset
+  double xStep;                 ///< Step across proton beam direction
+  double yStep;                 ///< Step along proton beam direction
+  double xyOffset;              ///< xy-Angle offset
 
   double bfDepth;               ///< BF moderator lower wall thick
   double bfHeight;              ///< BF moderator upper wall thick
@@ -70,8 +70,8 @@ class H2Wing :
   std::vector<double> Thick;        ///< Layer thickness
   std::vector<double> layerHeight;  ///< Layer veritcal 
   std::vector<double> layerDepth;   ///< layer depth
-  std::vector<int> mat;         ///< Layer material
-  std::vector<double> temp;     ///< Layer temperature
+  std::vector<int> mat;             ///< Layer material
+  std::vector<double> temp;         ///< Layer temperature
 
 
   void populate(const FuncDataBase&);
@@ -88,8 +88,6 @@ class H2Wing :
   void cornerSet(const double,std::array<Geometry::Vec3D,3>&,
 		 std::array<Geometry::Vec3D,3>&) const;
   
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    cornerPair(const size_t,const size_t,const double) const;
 
  public:
 

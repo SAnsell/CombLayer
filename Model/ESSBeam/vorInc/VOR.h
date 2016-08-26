@@ -95,6 +95,8 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Pipe in bunker Insert
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Elliptic forcus in bulkshield [m2.5] 
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 

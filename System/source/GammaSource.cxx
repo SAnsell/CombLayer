@@ -60,6 +60,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
 #include "GammaSource.h"
@@ -68,7 +69,7 @@ namespace SDef
 {
 
 GammaSource::GammaSource(const std::string& keyName) : 
-  FixedComp(keyName,0),cutEnergy(0.0)
+  attachSystem::FixedOffset(keyName,0),cutEnergy(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -76,9 +77,7 @@ GammaSource::GammaSource(const std::string& keyName) :
 {}
 
 GammaSource::GammaSource(const GammaSource& A) : 
-  attachSystem::FixedComp(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),
+  attachSystem::FixedOffset(A),
   particleType(A.particleType),cutEnergy(A.cutEnergy),
   shape(A.shape),width(A.width),height(A.height),
   radius(A.radius),angleSpread(A.angleSpread),
@@ -100,12 +99,7 @@ GammaSource::operator=(const GammaSource& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
+      attachSystem::FixedOffset::operator=(A);
       particleType=A.particleType;
       cutEnergy=A.cutEnergy;
       shape=A.shape;
@@ -224,11 +218,7 @@ GammaSource::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GammaSource","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep"); 
-  yStep=Control.EvalVar<double>(keyName+"YStep"); 
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0); 
+  FixedOffset::populate(Control);
 
   // default photon
   particleType=Control.EvalDefVar<int>(keyName+"ParticleType",2);

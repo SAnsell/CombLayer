@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/H2FlowGuide.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class H2FlowGuide :
   Geometry::Vec3D baseOffset;  ///< Base offset
   Geometry::Vec3D armOffset;   ///< Arm offset
    
-  int wallMat;                   ///< LH2
+  int wallMat;                   ///< inner material 
   double wallTemp;               ///< LH2 temperature [K]
 
   void populate(const FuncDataBase&);
