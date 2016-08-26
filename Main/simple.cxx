@@ -87,6 +87,7 @@
 #include "DefPhysics.h"
 #include "BasicWWE.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "ReadFunctions.h"

@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceCreate.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,11 @@ namespace SDef
 			 Source&);
   void createLensSource(const FuncDataBase&,Source&,
 			const attachSystem::FixedComp&);
+  void createPointSource(const FuncDataBase&,const std::string&,
+			 const attachSystem::FixedComp&,const long int,
+			 const double,Source&);
+  void createPointSource(const FuncDataBase&,const std::string&,
+			 const double,Source&);
   void createSinbadSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);

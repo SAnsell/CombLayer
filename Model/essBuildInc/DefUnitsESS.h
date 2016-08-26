@@ -27,6 +27,7 @@ class FuncDataBase;
 
 namespace mainSystem
 {
+  class defaultConfig;
   class inputParam;
 
   void setDefUnits(FuncDataBase&,inputParam&);

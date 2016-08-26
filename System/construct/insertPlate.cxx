@@ -86,7 +86,7 @@ namespace constructSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1),populated(0),frontActive(0),backActive(0),
@@ -308,6 +308,22 @@ insertPlate::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+
+  // corners 
+  FixedComp::setConnect(6,Origin-X*(width/2.0)-Z*(height/2.0),-X-Z);
+  FixedComp::setConnect(7,Origin+X*(width/2.0)-Z*(height/2.0),X-Z);
+  FixedComp::setConnect(8,Origin-X*(width/2.0)+Z*(height/2.0),-X+Z);
+  FixedComp::setConnect(9,Origin+X*(width/2.0)+Z*(height/2.0),X+Z);
+
+  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+4));
+
+  FixedComp::addLinkSurf(6,-SMap.realSurf(ptIndex+5));
+  FixedComp::addLinkSurf(7,-SMap.realSurf(ptIndex+5));
+  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+6));
+  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+6));
 
   return;
 }

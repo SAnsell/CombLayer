@@ -199,6 +199,8 @@ sourceSelection(Simulation& System,
   const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
   const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
   const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
+  double DistValue(0.0);
+  StrFunc::convert(Dist,DistValue);
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
   const long int linkIndex=getLinkIndex(DSnd);
@@ -249,10 +251,20 @@ sourceSelection(Simulation& System,
   else if (sdefType=="Point" || sdefType=="point")
     {
       if (FCPtr)
-	SDef::createGammaSource(Control,"pointSource",
+        {
+          SDef::createPointSource(Control,"pointSource",
+                                  *FCPtr,linkIndex,DistValue,sourceCard);
+        }
+      else
+	SDef::createPointSource(Control,"pointSource",DistValue,sourceCard);
+    }
+  else if (sdefType=="Disk" || sdefType=="disk")
+    {
+      if (FCPtr)
+	SDef::createGammaSource(Control,"diskSource",
 				*FCPtr,linkIndex,sourceCard);
       else
-	SDef::createGammaSource(Control,"pointSource",
+	SDef::createGammaSource(Control,"diskSource",
 				sourceCard);
     }
   else if (sdefType=="Beam" || sdefType=="beam")

@@ -65,6 +65,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "Simulation.h" 
 #include "SimPHITS.h"

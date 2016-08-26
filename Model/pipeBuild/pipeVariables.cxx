@@ -76,14 +76,14 @@ PipeVariables(FuncDataBase& Control)
   Control.addVariable("TubeObjWLayerThick2",5.0);
   Control.addVariable("TubeObjWLayerThick3",5.0);
 
-  Control.addVariable("pointSourceXStep",0.0);
-  Control.addVariable("pointSourceYStep",1.0);
-  Control.addVariable("pointSourceZStep",0.0);
-  Control.addVariable("pointSourceRadius",0.2);
-  Control.addVariable("pointSourceParticleType",1);  // neutron
-  Control.addVariable("pointSourceASpread",90.0);
-  Control.addVariable("pointSourceEnergy",3.0);
-  Control.addVariable("pointSourceEProb",1.0);
+  Control.addVariable("diskSourceXStep",0.0);
+  Control.addVariable("diskSourceYStep",1.0);
+  Control.addVariable("diskSourceZStep",0.0);
+  Control.addVariable("diskSourceRadius",0.2);
+  Control.addVariable("diskSourceParticleType",1);  // neutron
+  Control.addVariable("diskSourceASpread",90.0);
+  Control.addVariable("diskSourceEnergy",3.0);
+  Control.addVariable("diskSourceEProb",1.0);
   
 
   return;

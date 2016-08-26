@@ -101,6 +101,7 @@
 #include "ContainedComp.h"
 #include "simpleObj.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 
 #include "testAlgebra.h"
 #include "testAttachSupport.h"
