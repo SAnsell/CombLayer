@@ -50,9 +50,9 @@ namespace SDef
 			const attachSystem::FixedComp&);
   void createPointSource(const FuncDataBase&,const std::string&,
 			 const attachSystem::FixedComp&,const long int,
-			 const double,Source&);
+			 const Geometry::Vec3D&,Source&);
   void createPointSource(const FuncDataBase&,const std::string&,
-			 const double,Source&);
+			 const std::string&,Source&);
   void createSinbadSource(const FuncDataBase&,Source&);
   void createTS1Source(const FuncDataBase&,Source&);
   void createTS1GaussianSource(const FuncDataBase&,Source&);

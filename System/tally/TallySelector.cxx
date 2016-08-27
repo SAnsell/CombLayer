@@ -141,7 +141,7 @@ tallyAddition(Simulation& System,
 		(System,PName,FName,LName,VOffset,XW,ZH);
               return;
 	    }
-	  if (PType=="free")
+	  else if (PType=="free")
 	    {
 	      size_t ptI(2);
               const Geometry::Vec3D VPos=IParam.getCntVec3D
@@ -157,7 +157,12 @@ tallyAddition(Simulation& System,
               constructSystem::addInsertPlateCell
                 (System,PName,VPos,YAxis,ZAxis,XW,ZH);
 	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"plate type");
 	}
+      else
+	throw ColErr::InContainerError<std::string>
+	  (key,"TAddition key not known");
     }
   return;
 }

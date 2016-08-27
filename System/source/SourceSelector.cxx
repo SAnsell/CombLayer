@@ -199,10 +199,16 @@ sourceSelection(Simulation& System,
   const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
   const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
   const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
-  double DistValue(0.0);
-  StrFunc::convert(Dist,DistValue);
+
+  Geometry::Vec3D DOffsetStep;
+  double D;
+  if (!StrFunc::convert(Dist,DOffsetStep) && 
+      !StrFunc::convert(Dist,D))
+    DOffsetStep[1]=D;
+  
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
+
   const long int linkIndex=getLinkIndex(DSnd);
 
   if (IParam.flag("sdefVoid"))
@@ -253,10 +259,12 @@ sourceSelection(Simulation& System,
       if (FCPtr)
         {
           SDef::createPointSource(Control,"pointSource",
-                                  *FCPtr,linkIndex,DistValue,sourceCard);
+                                  *FCPtr,linkIndex,DOffsetStep,sourceCard);
         }
       else
-	SDef::createPointSource(Control,"pointSource",DistValue,sourceCard);
+	{
+	  SDef::createPointSource(Control,"pointSource",DObj,sourceCard);
+	}
     }
   else if (sdefType=="Disk" || sdefType=="disk")
     {

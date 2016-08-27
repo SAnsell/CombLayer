@@ -83,6 +83,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
+  IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regFlag("cinder","cinder");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
@@ -112,7 +113,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("mcnp6","MCNP6");
   IParam.regFlag("Monte","Monte");
   IParam.regItem("offset","offset",1,4);
-  IParam.regDefItem<double>("photon","photon",1,0.001);
+  IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
@@ -135,6 +136,7 @@ createInputs(inputParam& IParam)
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti("T","tally",1000,0);
+  IParam.regMulti("TAdd","tallyAdd",1000);
   IParam.regMulti("TC","tallyCells",10000,2,3);
   IParam.regMulti("TGrid","TGrid",10000,2,3);
   IParam.regMulti("TMod","tallyMod",8,1);
@@ -183,10 +185,11 @@ createInputs(inputParam& IParam)
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
-  
+
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");
+  IParam.setDesc("cutWeight","Set the cut weights (wc1/wc2)" );
   IParam.setDesc("ECut","Cut energy");
   IParam.setDesc("cinder","Outer Cinder files");
   IParam.setDesc("d","debug flag");
@@ -236,6 +239,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
+  IParam.setDesc("TAdd","Add a tally component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");
@@ -567,8 +571,8 @@ createESSInputs(inputParam& IParam)
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
   IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
-  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side,supply,return"));
-  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side,supply,return"));
+  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
+  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   
@@ -578,10 +582,8 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
   IParam.regDefItem<int>("nF5", "nF5", 1,0);
-  IParam.regMulti("f5-collimators","f5collimators",30);
 
-  IParam.regFlag("rotate", "rotate");
-  
+
   IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
   IParam.setDesc("beamlines","Creates beamlines on the main model");
   IParam.setDesc("lowMod","Type of low moderator to be built");
@@ -595,10 +597,6 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
 		 "  -- The collimators will be named as F5, F15, etc.\n"
 		 "  -- The corresponding variables must exist.");
-  IParam.setDesc("f5-collimators","Space separated list of theta angles"
-		 "for F5 collimators (theta is defined on page 183 of TDR)");
-  IParam.setDesc("rotate","Rotate geometry to the coordinate system "
-		 "of the MasterModel (proton beam is not rotated!)");
 
   return;
 }

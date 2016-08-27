@@ -69,7 +69,8 @@ class PointSource :
   ~PointSource();
 
   /// set default distance
-  void setDefaultYStep(const double D) { yStep=D; }
+  void setDefaultStep(const Geometry::Vec3D& D)
+  { xStep=D[0]; yStep=D[1], zStep=D[2]; }
   /// Set cut energy
   void setCutEnergy(const double E) { cutEnergy=E; }
 

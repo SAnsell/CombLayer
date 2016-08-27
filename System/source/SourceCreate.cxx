@@ -372,7 +372,7 @@ createPointSource(const FuncDataBase& Control,
 		  const std::string& keyName,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex,
-                  const double D,
+                  const Geometry::Vec3D& D,
 		  Source& Card)
   /*!
     Create the point source -- currently a copy of the photo
@@ -381,13 +381,13 @@ createPointSource(const FuncDataBase& Control,
     \param keyName :: keyname for source
     \param FC :: Link point
     \param linkIndex :: Link point [signed] 
-    \param D :: YStep [default]
+    \param D :: Step [default]
     \param Card :: Source system
   */
 {
   ELog::RegMethod RegA("SourceCreate","createPointSource(FC,link)");
   PointSource GX(keyName);
-  GX.setDefaultYStep(D);
+  GX.setDefaultStep(D);
   GX.createAll(Control,FC,linkIndex,Card);
   return;
 }
@@ -395,21 +395,35 @@ createPointSource(const FuncDataBase& Control,
 void
 createPointSource(const FuncDataBase& Control,
 		  const std::string& keyName,
-                  const double D,
+                  const std::string& DVec,
                   Source& Card)
   /*!
     Create the photon source for gamma-nuclea spectrum
     nuclear experiment source
     \param Control :: Variables data base
     \param keyName :: keyname for Gamma source
-    \param D :: YStep [default]
+    \param D ::Step [default]
     \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createPointSource");
 
+
   PointSource GX(keyName);
-  GX.setDefaultYStep(D);
+  if (!DVec.empty())
+    {
+      double D(0.0);
+      Geometry::Vec3D DOffsetStep;
+      if (!StrFunc::convert(DVec,DOffsetStep) && 
+	  StrFunc::convert(DVec,D))
+	DOffsetStep[1]=D;
+      else
+	ELog::EM<<"DObj "<<DVec<<" not understood "<<ELog::endErr;
+      
+      GX.setDefaultStep(DOffsetStep);
+    }
+
+
   GX.createAll(Control,Card);
   return;
 }
