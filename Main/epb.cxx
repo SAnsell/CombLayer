@@ -72,6 +72,7 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
