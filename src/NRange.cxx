@@ -268,7 +268,6 @@ NRange::processString(const std::string& N)
       flag=StrFunc::section(MS,Value);
       if (!flag) 
 	flag= -1*StrFunc::section(MS,Comp);
-
       if (flag>0)
         {
 	  Items.push_back(NRunit(0,0,Value));	
@@ -318,7 +317,7 @@ NRange::setVector(const std::vector<double>& Vec)
   */
 {
   ELog::RegMethod RegA("NRange","setVector");
-
+  
   Items.erase(Items.begin(),Items.end());
   
   std::vector<double>::const_iterator vc;
@@ -433,7 +432,7 @@ NRange::count() const
   return cnt;
 }
 
-int
+size_t
 NRange::writeVector(std::vector<double>& Vec) const
   /*!
     Sets the values into a vector
@@ -479,7 +478,7 @@ NRange::writeVector(std::vector<double>& Vec) const
 	  start=vc->third;
 	}
     }
-  return static_cast<int>(Vec.size());
+  return Vec.size();
 }
 
 

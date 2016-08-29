@@ -711,9 +711,11 @@ setTallyTime(Simulation& System,const int tNumber,
 
   tallySystem::Tally* TX=System.getTally(tNumber); 
   if (!TX)
-      ELog::EM<<"Error finding tally number "<<tNumber<<ELog::endErr;
-  else
-    TX->setTime(timeStr);
+    throw ColErr::InContainerError<int>(tNumber,"tally number");
+
+  if (TX->setTime(timeStr))
+    throw ColErr::InvalidLine(timeStr,"timeStr",0);
+  
   return;
 }
 
@@ -735,11 +737,8 @@ setF5Angle(Simulation& System,const int tNumber,
   tallySystem::pointTally* TX=
     dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
   if (!TX)
-    {
-      ELog::EM<<"setF5Angle:: Error finding tally number "
-	      <<tNumber<<ELog::endErr;
-      return;
-    }
+    throw ColErr::InContainerError<int>(tNumber,"point tally number");
+
   TX->setCentreAngle(PN,D,A*M_PI/180.0);
   return;
 }
@@ -761,10 +760,9 @@ widenF5Tally(Simulation& System,const int tNumber,
   tallySystem::pointTally* TX=
     dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
   if (!TX)
-    ELog::EM<<"Error finding tally nubmer "<<tNumber
-	    <<ELog::endErr;
-  else
-    TX->widenWindow(dirIndex,scale);
+    throw ColErr::InContainerError<int>(tNumber,"Point tally number");
+
+  TX->widenWindow(dirIndex,scale);
   return;
 }
 
@@ -783,12 +781,11 @@ slideF5Tally(Simulation& System,const int tNumber,
   ELog::RegMethod RegA("TallyCreate","slideF5Tally");
 
   tallySystem::pointTally* TX=
-    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
+    dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber));
   if (!TX)
-    ELog::EM<<"Error finding tally nubmer "<<tNumber
-	    <<ELog::endErr;
-  else
-    TX->slideWindow(dirIndex,scale);
+    throw ColErr::InContainerError<int>(tNumber,"Point tally number");
+
+  TX->slideWindow(dirIndex,scale);
   return;
 }
 
@@ -807,11 +804,8 @@ shiftF5Tally(Simulation& System,const int tNumber,
   tallySystem::pointTally* TX=
     dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
   if (!TX)
-    {
-      ELog::EM<<"Error finding tally nubmer "
-	      <<tNumber<<ELog::endErr;
-      throw ColErr::ExitAbort(RegA.getFull());
-    }
+    throw ColErr::InContainerError<int>(tNumber,"Point tally number");
+
   TX->shiftWindow(scale);
   return;
 }
@@ -835,11 +829,7 @@ divideF5Tally(Simulation& System,const int tNumber,
       tallySystem::pointTally* TX=
 	dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
       if (!TX)
-	{
-	  ELog::EM<<"Error finding tally nubmer "
-		  <<tNumber<<ELog::endErr;
-	  throw ColErr::ExitAbort(RegA.getFull());
-	}
+        throw ColErr::InContainerError<int>(tNumber,"Point tally number");
       TX->divideWindow(xPts,yPts);
     }
   else
@@ -900,16 +890,14 @@ modF5TallyCells(Simulation& System,const int tNumber,
   tallySystem::pointTally* TX=
     dynamic_cast<tallySystem::pointTally*>(System.getTally(tNumber)); 
   if (!TX)
-    ELog::EM<<"Error finding tally nubmer "<<tNumber<<ELog::endErr;
-  else
-    {
-      TX->setActive(1);
-      TX->setParticles("n");                    /// F5 :: tally on neutrons
-      TX->setEnergy("5.0e-10 148log 1e3");
-      TX->setTime("1e-1 10log 1e6");
-      TX->setSpecial("icd");                 // Special to add cell view
-      TX->setCells(cells);
-    }
+    throw ColErr::InContainerError<int>(tNumber,"Point tally number");
+
+  TX->setActive(1);
+  TX->setParticles("n");                    // F5 :: tally on neutrons
+  TX->setEnergy("5.0e-10 148log 1e3");
+  TX->setTime("1e-1 10log 1e6");
+  TX->setSpecial("icd");                 // Special to add cell view
+  TX->setCells(cells);
   return;
 }
 
@@ -925,6 +913,7 @@ addF6Tally(Simulation& System,const int tNumber,
     \param cellList :: Cells to add
    */
 {
+  ELog::RegMethod RegA("TallyCreate[F]","addF6Tally");
   tallySystem::heatTally TX(tNumber);
   TX.addCells(cellList);
   TX.setActive(1);
@@ -1072,8 +1061,10 @@ setEnergy(Simulation& Sim,const int tNumber,
       if (tNumber==0 || mc->first==tNumber ||
           (tNumber<0 && (mc->first % 10) == -tNumber))
         {
-	  if (mc->second->setEnergy(ePart))
+	  if (!mc->second->setEnergy(ePart))
 	    fnum++;
+          else
+            throw ColErr::InvalidLine(ePart,"Energy:ePart",0);
 	}
     }
 
@@ -1127,8 +1118,10 @@ setTime(Simulation& Sim,const int tNumber,
       if (tNumber==0 || mc->first==tNumber ||
           (tNumber<0 && (mc->first % 10) == -tNumber))
         {
-	  if (mc->second->setTime(tPart))
+	  if (!mc->second->setTime(tPart))
 	    fnum++;
+          else
+            throw ColErr::InvalidLine(tPart,"tPart",0);
 	}
     }
 
@@ -1136,7 +1129,7 @@ setTime(Simulation& Sim,const int tNumber,
 }
 
 int
-setAngle(Simulation& Sim,const int tNumber,
+setAngle(Simulation& System,const int tNumber,
         const std::string& tPart)
   /*!
     Set the cos of a tally
@@ -1148,7 +1141,7 @@ setAngle(Simulation& Sim,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setAngle");
 
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  Simulation::TallyTYPE& tmap=System.getTallyMap();
   int fnum(0);
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
@@ -1156,8 +1149,10 @@ setAngle(Simulation& Sim,const int tNumber,
       if (tNumber==0 || mc->first==tNumber ||
           (tNumber<0 && (mc->first % 10) == -tNumber))
         {
-	  if (mc->second->setAngle(tPart))
+	  if (!mc->second->setAngle(tPart))
 	    fnum++;
+          else
+            throw ColErr::InvalidLine(tPart,"tPart",0);
 	}
     }
 

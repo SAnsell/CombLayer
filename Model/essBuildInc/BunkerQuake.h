@@ -46,9 +46,12 @@ class BunkerQuake : public attachSystem::ContainedComp,
  private:
 
   const std::string baseName;     ///< Bunker base name
-
+  const int cutIndex;             ///< Surface index
+  int cellIndex;                  ///< Cell index
+  
   double xGap;                          ///< x stuff
   double zGap;                          ///< Needs to be surface
+  std::vector<int> PFlag;               ///< absolute/ZRelative/XYZ
   std::vector<Geometry::Vec3D> APoint;  ///< Centre points of cut
   std::vector<Geometry::Vec3D> BPoint;  ///< Centre points of cut
 
@@ -56,8 +59,10 @@ class BunkerQuake : public attachSystem::ContainedComp,
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
+			const long int,const long int);
+  void modifyPoints();
+  void createObjects(Simulation&);
+  
  public:
 
   BunkerQuake(const std::string&);
@@ -66,7 +71,7 @@ class BunkerQuake : public attachSystem::ContainedComp,
   virtual ~BunkerQuake();
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+		 const long int,const long int);
 
 };
 

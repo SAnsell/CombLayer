@@ -459,7 +459,7 @@ makeESS::buildBunkerQuake(Simulation& System,
   ELog::EM<<"Calling bunker Quake"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
-      const size_t NItems=IParam.itemCnt("bunkerFeed",j);
+      const size_t NItems=IParam.itemCnt("bunkerQuake",j);
       if (NItems>=1)
         {
           const std::string bunkerName=
@@ -481,7 +481,7 @@ makeESS::buildBunkerQuake(Simulation& System,
           
           std::shared_ptr<BunkerQuake> BF(new BunkerQuake(BPtr->getKeyName()));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,0);  
+          BF->createAll(System,*BPtr,6,0);  
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
           
         }

@@ -228,9 +228,7 @@ tallyModification(Simulation& System,
       
       else if (key=="energy" && nV>=3)
 	{
-          if (tallySystem::setEnergy(System,tNumber,StrItem[1]))
-            ELog::EM<<"Error setting tally energy "<<
-              StrItem[1]<<ELog::endErr;
+          tallySystem::setEnergy(System,tNumber,StrItem[1]);
 	}
       
       else if (key=="single" && nV>=2)
@@ -289,15 +287,11 @@ tallyModification(Simulation& System,
 
       else if (key=="time" && nV>=3)
 	{
-          if (tallySystem::setTime(System,tNumber,StrItem[1]))
-            ELog::EM<<"Error setting tally time "<<
-              StrItem[1]<<ELog::endErr;
+          tallySystem::setTime(System,tNumber,StrItem[1]);
         }
       else if (key=="cos" && nV>=3)
 	{
-          if (tallySystem::setAngle(System,tNumber,StrItem[1]))
-            ELog::EM<<"Error setting tally cos "<<
-              StrItem[1]<<ELog::endErr;
+          tallySystem::setAngle(System,tNumber,StrItem[1]);
         }
       
       else if (key=="nowindow" && nV>=2)

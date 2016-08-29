@@ -299,7 +299,7 @@ Tally::setTime(const std::string& TVec)
   /*!
     Set the timeTab line
     \param TVec :: vector of the time
-    \return 1 on success/0 on failure
+    \return 0 on success/-ve on failure
   */
 {
   ELog::RegMethod RegA("Tally","setTime");
@@ -311,31 +311,36 @@ int
 Tally::setAngle(const std::string& AVec)
   /*!
     Set the cos angular tally
-    \param AVec :: vector of the cosine 
-    \return 1 on success/0 on failure
+    \param AVec :: vector of the cosine as a string
+    \return 0 on success/-ve on failure
   */
 {
+  ELog::RegMethod RegA("Tally","setAngle");
+
   cosTab.clear();
-  if (!cosTab.processString(AVec))
-    return 0;
+  if (cosTab.processString(AVec))
+    return (AVec=="empty" || AVec=="Empty") ? 0  : -1;
+
   std::vector<double> Val;
-  cosTab.setVector(Val);
-  
+  cosTab.writeVector(Val);
+  if (Val.empty()) return -1;
+
   std::sort(Val.begin(),Val.end());
-  if (Val.empty()) return 1;
 
   if (Val.front()< -1.0+Geometry::zeroTol)
     Val.erase(Val.begin());
 
-  // convert to degrees:
+  // convert to cos(degrees): 0 implies 1.0
   if (Val.back()>1.0+Geometry::zeroTol)
     {
       for(double& CN : Val)
-        CN=cos(CN);
+        CN=cos(M_PI*CN/180.0);
+
       std::reverse(Val.begin(),Val.end());
     }
   cosTab.setVector(Val);
-  return 1;
+
+  return 0;
 }
 
 int
@@ -355,7 +360,7 @@ Tally::setEnergy(const std::string& EVec)
   /*!
     Set the energyTab line
     \param EVec :: vector of the energy
-    \return 1 on success/0 on failure
+    \return 0 on success/-ve on failure
   */
 {
   Etab.clear();
