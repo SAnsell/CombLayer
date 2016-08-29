@@ -481,9 +481,7 @@ makeESS::buildBunkerQuake(Simulation& System,
           
           std::shared_ptr<BunkerQuake> BF(new BunkerQuake(BPtr->getKeyName()));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,6,0);  
-          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
-          
+          BF->createAll(System,*BPtr,12,0);  
         }
     }
 

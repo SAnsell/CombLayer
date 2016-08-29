@@ -190,10 +190,11 @@ BunkerQuake::createObjects(Simulation& System)
     {
       const std::string ItemName(keyName+"Cut"+StrFunc::makeString(index));
       const Geometry::Vec3D YDir((BPoint[index]-APoint[index]).unit());
+      const double yGap=BPoint[index].Distance(APoint[index]);
       constructSystem::addInsertPlateCell
-        (System,ItemName,APoint[index],YDir,Z,xGap,zGap);
+        (System,ItemName,APoint[index]+Z*(zGap/2.0),YDir,Z,xGap,yGap,zGap);
     }      
-  
+
   return;
 
     
@@ -217,7 +218,9 @@ BunkerQuake::createAll(Simulation& System,
 
   populate(System.getDataBase());  
   createUnitVector(FC,orgIndex,axisIndex);
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   modifyPoints();
+  createObjects(System);
   return;
 }
 

@@ -221,11 +221,11 @@ EssBunkerVariables(FuncDataBase& Control)
 
   // BUNKER QUAKE:
   Control.addVariable("ABunkerQuakeXGap",13.0);
-  Control.addVariable("ABunkerQuakeZGap",20.0);
+  Control.addVariable("ABunkerQuakeZGap",100.0);
   
   Control.addVariable("ABunkerQuakeNPoint",1);
-  Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(0,0,0));
-  Control.addVariable("ABunkerQuakePtB0",Geometry::Vec3D(30,0,0));
+  Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(750,0,0));
+  Control.addVariable("ABunkerQuakePtB0",Geometry::Vec3D(980,0,0));
 
   
   

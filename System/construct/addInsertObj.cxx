@@ -92,7 +92,7 @@ addInsertPlateCell(Simulation& System,
 		   const std::string& FCname,
 		   const std::string& linkName,
 		   const Geometry::Vec3D& XYZStep,
-		   const double xSize,
+		   const double xSize,const double ySize,
 		   const double zSize)
   /*!
     Adds a void cell for tallying in the guide if required
@@ -105,6 +105,7 @@ addInsertPlateCell(Simulation& System,
     \param linkName :: link direction
     \param XYZStep :: Step in xyz direction
     \param xSize :: x-size
+    \param ySize :: y-size
     \param zSize :: zSize
   */
 {
@@ -125,7 +126,7 @@ addInsertPlateCell(Simulation& System,
   const long int linkIndex=attachSystem::getLinkIndex(linkName);
   OR.addObject(TPlate);
   TPlate->setStep(XYZStep);
-  TPlate->setValues(xSize,0.1,zSize,"Void");
+  TPlate->setValues(xSize,ySize,zSize,"Void");
   TPlate->createAll(System,*mainFCPtr,linkIndex);
 
   return;
@@ -138,6 +139,7 @@ addInsertPlateCell(Simulation& System,
                    const Geometry::Vec3D& YAxis,
                    const Geometry::Vec3D& ZAxis,
 		   const double xSize,
+                   const double ySize,
 		   const double zSize)
   /*!
     Adds a void cell for tallying in the guide if required
@@ -150,6 +152,7 @@ addInsertPlateCell(Simulation& System,
     \param YAxis :: Direction along Y
     \param ZAxis :: Direction along Z
     \param xSize :: x-size
+    \param ySize :: y-size
     \param zSize :: zSize
   */
 {
@@ -157,9 +160,6 @@ addInsertPlateCell(Simulation& System,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  
-
   
   System.populateCells();
   System.validateObjSurfMap();
@@ -168,7 +168,7 @@ addInsertPlateCell(Simulation& System,
     TPlate(new constructSystem::insertPlate(objName));
 
   OR.addObject(TPlate);
-  TPlate->setValues(xSize,0.1,zSize,"Void");
+  TPlate->setValues(xSize,ySize,zSize,"Void");
   TPlate->createAll(System,CentPos,YAxis,ZAxis);
 
   return;

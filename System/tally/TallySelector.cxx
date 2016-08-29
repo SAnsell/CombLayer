@@ -138,7 +138,7 @@ tallyAddition(Simulation& System,
 	      const double ZH=
 		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
 	      constructSystem::addInsertPlateCell
-		(System,PName,FName,LName,VOffset,XW,ZH);
+		(System,PName,FName,LName,VOffset,XW,0.1,ZH);
               return;
 	    }
 	  else if (PType=="free")
@@ -155,7 +155,7 @@ tallyAddition(Simulation& System,
 	      const double ZH=
 		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
               constructSystem::addInsertPlateCell
-                (System,PName,VPos,YAxis,ZAxis,XW,ZH);
+                (System,PName,VPos,YAxis,ZAxis,XW,0.1,ZH);
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"plate type");
