@@ -89,8 +89,10 @@
 
 #include "World.h"
 #include "BunkerInsert.h"
-#include "Bunker.h"
+#include "BunkerRoof.h"
 #include "LayerDivide3D.h"
+#include "Bunker.h"
+
 
 namespace essSystem
 {
@@ -99,75 +101,19 @@ Bunker::Bunker(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   bnkIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
-  cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1)
+  cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1),
+  roofObj(new BunkerRoof(Key))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
-
-Bunker::Bunker(const Bunker& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),
-  bnkIndex(A.bnkIndex),cellIndex(A.cellIndex),
-  leftWallFlag(A.leftWallFlag),rightWallFlag(A.rightWallFlag),
-  rotCentre(A.rotCentre),leftPhase(A.leftPhase),
-  rightPhase(A.rightPhase),leftAngle(A.leftAngle),
-  rightAngle(A.rightAngle),nSectors(A.nSectors),
-  sectPhase(A.sectPhase),nVert(A.nVert),vertFrac(A.vertFrac),
-  nLayers(A.nLayers),wallFrac(A.wallFrac),
-  innerRadius(A.innerRadius),wallRadius(A.wallRadius),
-  floorDepth(A.floorDepth),roofHeight(A.roofHeight),
-  wallThick(A.wallThick),sideThick(A.sideThick),
-  roofThick(A.roofThick),floorThick(A.floorThick),
-  voidMat(A.voidMat),wallMat(A.wallMat),
-  loadFile(A.loadFile),outFile(A.outFile)
-  /*!
-    Copy constructor
-    \param A :: Bunker to copy
-  */
-{}
-
-Bunker&
-Bunker::operator=(const Bunker& A)
-  /*!
-    Assignment operator
-    \param A :: Bunker to copy
-    \return *this
-  */
 {
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
-      leftWallFlag=A.leftWallFlag;
-      rightWallFlag=A.rightWallFlag;
-      rotCentre=A.rotCentre;
-      leftPhase=A.leftPhase;
-      rightPhase=A.rightPhase;
-      leftAngle=A.leftAngle;
-      rightAngle=A.rightAngle;
-      nSectors=A.nSectors;
-      sectPhase=A.sectPhase;
-      nVert=A.nVert;
-      vertFrac=A.vertFrac;
-      nLayers=A.nLayers;
-      wallFrac=A.wallFrac;
-      innerRadius=A.innerRadius;
-      wallRadius=A.wallRadius;
-      floorDepth=A.floorDepth;
-      roofHeight=A.roofHeight;
-      wallThick=A.wallThick;
-      sideThick=A.sideThick;
-      roofThick=A.roofThick;
-      floorThick=A.floorThick;
-      voidMat=A.voidMat;
-      wallMat=A.wallMat;
-    }
-  return *this;
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(roofObj);
 }
+
 
 Bunker::~Bunker() 
   /*!
@@ -240,27 +186,6 @@ Bunker::populate(const FuncDataBase& Control)
   ModelSupport::populateAddRange(Control,nSideVert,keyName+"SideThick",
 				 0,wallThick,sideThickFrac);
   
-
-  
-  nRoofVert=Control.EvalVar<size_t>(keyName+"NRoofVert");
-  nRoofRadial=Control.EvalDefVar<size_t>(keyName+"NRoofRadial",0);
-  nRoofSide=Control.EvalDefVar<size_t>(keyName+"NRoofSide",0);
-  // BOOLEAN NUMBER!!!!!!!
-  activeRoof=Control.EvalDefVar<size_t>(keyName+"ActiveRoof",0);
-
-  ModelSupport::populateDivideLen(Control,nRoofVert,keyName+"RoofVert",
-				  roofThick,roofVert);
-  ModelSupport::populateDivideLen(Control,nRoofRadial,keyName+"RoofRadial",
-				  1.0,roofRadial);
-  ModelSupport::populateDivideLen(Control,nRoofSide,keyName+"RoofSide",
-				  1.0,roofSide);
-  ModelSupport::populateDivide(Control,nRoofVert,keyName+"RoofMat",
-  			       roofMat,roofMatVec);
-
-  
-  loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
-  outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
-
   return;
 }
   
@@ -318,8 +243,6 @@ Bunker::calcSegPosition(const size_t segIndex,
   const double phaseDiff(rightPhase-leftPhase);
   const double angleDiff(rightAngle-leftAngle);
   
-  const double phaseStep((rightPhase-leftPhase)/nSectors);
-
   const double midPhaseStep((segIndex+1<nSectors) ?
                             (sectPhase[segIndex+1]-sectPhase[segIndex+1])/2.0 :
                             (sectPhase[segIndex]-sectPhase[segIndex-1])/2.0 );
@@ -358,10 +281,8 @@ Bunker::createSurfaces(const bool revX)
   Geometry::Vec3D AWallDir(X);
   Geometry::Vec3D BWallDir(X);
   // rotation of axis:
-  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,-ZRotAxis).
-    rotate(AWallDir);
-  Geometry::Quaternion::calcQRotDeg(rightAngle+rightPhase,-ZRotAxis).
-    rotate(BWallDir);
+  Geometry::Quaternion::calcQRotDeg(leftAngle+leftPhase,-ZRotAxis).rotate(AWallDir);
+  Geometry::Quaternion::calcQRotDeg(rightAngle+rightPhase,-ZRotAxis).rotate(BWallDir);
   Geometry::Quaternion::calcQRotDeg
     ((leftAngle+leftPhase+rightAngle+rightPhase)/2.0,-ZRotAxis).
     rotate(CentAxis);
@@ -378,6 +299,7 @@ Bunker::createSurfaces(const bool revX)
   
   // Divider
   ModelSupport::buildPlane(SMap,bnkIndex+1,rotCentre,CentAxis);
+  
   ModelSupport::buildCylinder(SMap,bnkIndex+7,rotCentre,Z,wallRadius);
 
   ModelSupport::buildPlane(SMap,bnkIndex+3,AWall,AWallDir);
@@ -417,24 +339,21 @@ Bunker::createSurfaces(const bool revX)
 
   double phase(leftPhase);
   const double phaseStep((rightPhase-leftPhase)/nSectors);
-  const double angleStep((rightAngle-leftAngle)/nSectors);
 
   SMap.addMatch(divIndex,SMap.realSurf(bnkIndex+3));
   for(size_t i=1;i<nSectors;i++)
     {
       divIndex++;
-      phase+=phaseStep;
+      phase+=phaseStep;  //Y
       const double F= (sectPhase[i]-leftPhase)/phaseDiff;
       const double angle= leftAngle+F*angleDiff;
             
-      Geometry::Vec3D DPosition(Origin-rotCentre);
-      Geometry::Quaternion::calcQRotDeg(sectPhase[i],-ZRotAxis).
-	rotate(DPosition);
+      Geometry::Vec3D DPosition(Origin-rotCentre); // Y 
+      Geometry::Quaternion::calcQRotDeg(sectPhase[i],-ZRotAxis).rotate(DPosition);
       DPosition+=rotCentre;
       
       Geometry::Vec3D DDir(X);      
-      Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-ZRotAxis).
-	rotate(DDir);
+      Geometry::Quaternion::calcQRotDeg(sectPhase[i]+angle,-ZRotAxis).rotate(DDir);
       ModelSupport::buildPlane(SMap,divIndex,DPosition,DDir);
     }
   divIndex++;
@@ -522,9 +441,6 @@ Bunker::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
   setCell("floor",cellIndex-1);
 
-  // Divide the roof into sector as well
-  
-    
   // Main wall not divided
   int divIndex(bnkIndex+1000);
 
@@ -542,9 +458,8 @@ Bunker::createObjects(Simulation& System,
       else
 	Out+=ModelSupport::getComposite(SMap,rwIndex," -4 ");
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
-      if (i+1==nSectors)
-        addCell("roofFarEdge",cellIndex-1);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out+Inner));
+
       addCell("roof"+StrFunc::makeString(i),cellIndex-1);
 
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,
@@ -575,48 +490,37 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
 {
   ELog::RegMethod RegA("Bunker","createMainRoof");
 
-  size_t AS=activeRoof;  // binary system
+  // Note that createSector has to convert these numbers
+  // to realSurf so no need to pre-parse via SMap.
+  const int outerSurf(bnkIndex+17);
 
   const int lwIndex((leftWallFlag) ? bnkIndex+10 : bnkIndex);
   const int rwIndex((rightWallFlag) ? bnkIndex+10 : bnkIndex);
   int divIndex(bnkIndex+1000);
 
-  for(size_t i=0;AS && i<nSectors;i++)
+  const std::string Out=ModelSupport::getComposite(SMap,bnkIndex," 1 ");
+  roofObj->initialize(System.getDataBase(),*this,6);
+  roofObj->setVertSurf(SMap.realSurf(bnkIndex+6),SMap.realSurf(bnkIndex+16));
+  roofObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
+  roofObj->setDivider(Out);
+  for(size_t i=0;i<nSectors;i++)
     {
-      if (AS & 1)
-        {
-	  ModelSupport::LayerDivide3D LD3(keyName+"mainRoof"+
-					  StrFunc::makeString(i));
-	  const int LW=(i) ? divIndex+1 : lwIndex+3;
-	  const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;	  
-
-	  // Front/back??
-	  LD3.setSurfPair(0,SMap.realSurf(innerSurf),
-			  SMap.realSurf(bnkIndex+17));
-	  LD3.setSurfPair(1,SMap.realSurf(bnkIndex+6),
-			  SMap.realSurf(bnkIndex+16));
-	  LD3.setSurfPair(2,SMap.realSurf(LW),SMap.realSurf(RW));
-
-	  LD3.setFractions(0,roofRadial);
-	  LD3.setFractions(1,roofVert);
-	  LD3.setFractions(2,roofSide);
-	  ELog::EM<<"Read == "<<keyName<<"Def.xml"<<ELog::endDiag;
-	  LD3.setXMLdata(keyName+"Def.xml","RoofMat",keyName+".xml");
-
-	  LD3.divideCell(System,getCell("roof"+StrFunc::makeString(i)));
-	  ELog::EM<<"Read == "<<keyName<<"Def.xml"<<ELog::endDiag;
+      const std::string SectNum(StrFunc::makeString(i));
+      const int LW=(i) ? divIndex+1 : lwIndex+3;
+      const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;
+      const int cellN=getCell("roof"+SectNum); 
+      roofObj->createSector
+	(System,i,cellN,SMap.realSurf(LW),SMap.realSurf(RW));
       
-	  removeCell("roof"+StrFunc::makeString(i));
-	  addSurfs("roof"+StrFunc::makeString(i),LD3.getSurfs());
-	  addCells("roof"+StrFunc::makeString(i),LD3.getCells());
+      removeCell("roof"+SectNum);
+      addCells("roof",roofObj->getCells("Sector"+SectNum));
+      if (i+1==nSectors)
+        addCells("roofFarEdge",roofObj->getCells("Sector"+SectNum));
 
-	}
-      AS>>=1;
       divIndex++;
     }
   return;
 }
-
   
 void
 Bunker::createMainWall(Simulation& System)
@@ -649,86 +553,14 @@ Bunker::createMainWall(Simulation& System)
 	  LD3.setFractions(1,vertFrac);
 	  LD3.setFractions(2,wallFrac);
 	  
-	  LD3.setXMLdata(keyName+"Def.xml","WallMat",keyName+".xml");
+	  LD3.setMaterialXML(keyName+"Def.xml","WallMat",keyName+".xml",
+			     ModelSupport::EvalMatString(wallMat));
 	  LD3.divideCell(System,CN);
 	  removeCell("frontWall",i);
 	  addSurfs(CName,LD3.getSurfs());
 	  addCells(CName,LD3.getCells());
 	}
       AS>>=1;
-    }
-  return;
-}
-
-
-void 
-Bunker::layerProcess(Simulation& System)
-  /*!
-    Processes the splitting of the surfaces into a multilayer system
-    \param System :: Simulation to work on
-  */
-{
-  ELog::RegMethod RegA("Bunker","layerProcess");
-  // Steel layers
-  //  layerSpecial(System);
-
-  if (nRoofVert>1)
-    {
-      std::string OutA,OutB;
-      ModelSupport::surfDivide DA;      
-      for(size_t i=1;i<nRoofVert;i++)
-	{
-	  DA.addFrac(roofVert[i-1]);
-	  DA.addMaterial(roofMatVec[i-1]);
-	}
-      DA.addMaterial(roofMatVec.back());
-      size_t AS=activeRoof;  // binary system
-      int BNIndex(bnkIndex+5001);
-      for(size_t iSector=0;iSector<nSectors;iSector++)
-	{
-	  if (!(AS & 1))  // only process roof sections not give
-	    {
-	      // Cell Specific:
-	      const int firstCell(cellIndex);
-	      DA.setCellN(getCell("roof"+StrFunc::makeString(iSector)));
-	      DA.setOutNum(cellIndex,BNIndex);
-	      ModelSupport::mergeTemplate<Geometry::Plane,
-					  Geometry::Plane> surroundRule;
-	      
-	      surroundRule.setSurfPair(SMap.realSurf(bnkIndex+6),
-				       SMap.realSurf(bnkIndex+16));
-	      
-	      OutA=ModelSupport::getComposite(SMap,bnkIndex," 6 ");
-	      OutB=ModelSupport::getComposite(SMap,bnkIndex," -16 ");
-	      
-	      surroundRule.setInnerRule(OutA);
-	      surroundRule.setOuterRule(OutB);
-	      
-	      DA.addRule(&surroundRule);
-	      DA.activeDivideTemplate(System);
-	      
-	      cellIndex=DA.getCellNum();
-
-              //
-              // This construct finds the cell number in roofN and
-              // in roofFarSide if it exists 
-	      const int CN=removeCell("roof"+StrFunc::makeString(iSector));
-              const std::string roofItem=removeCellNumber(CN);
-              if (!roofItem.empty())
-                setCells(roofItem,firstCell,cellIndex-1);
-
-	      setCells("roof"+StrFunc::makeString(iSector)
-		       ,firstCell,cellIndex-1);
-	      BNIndex+=300;
-	    }
-	  AS>>=1;	  
-	}
-    }
-
-  for(size_t iSector=0;iSector<nSectors;iSector++)
-    {
-      addCells("roof",getCells("roof"+StrFunc::makeString(iSector)));
-      addCells("frontWall",getCells("sector"+StrFunc::makeString(iSector)));
     }
   return;
 }
@@ -842,7 +674,7 @@ Bunker::createAll(Simulation& System,
   createSurfaces(reverseX);
   createLinks();
   createObjects(System,FC,linkIndex);
-  layerProcess(System);
+  //  layerProcess(System);
   insertObjects(System);              
 
   return;

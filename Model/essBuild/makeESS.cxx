@@ -91,7 +91,6 @@
 #include "CylPreMod.h"
 #include "PreModWing.h"
 #include "IradCylinder.h"
-#include "SupplyPipe.h"
 #include "BulkModule.h"
 #include "TwisterModule.h"
 #include "ShutterBay.h"
@@ -400,7 +399,64 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
 
   const size_t NSet=IParam.setCnt("bunkerFeed");
 
-  
+  ELog::EM<<"CAlling bunker Feed"<<ELog::endDiag;
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("bunkerFeed",j);
+      if (NItems>=3)
+        {
+          const std::string bunkerName=
+            IParam.getValue<std::string>("bunkerFeed",j,0);
+          const size_t segNumber=
+            IParam.getValue<size_t>("bunkerFeed",j,1);
+          const std::string feedName=
+            IParam.getValue<std::string>("bunkerFeed",j,2);
+
+          // bunkerA/etc should be a map
+          std::shared_ptr<Bunker> BPtr;
+          if (bunkerName=="BunkerA" || bunkerName=="ABunker")
+            BPtr=ABunker;
+          else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
+            BPtr=BBunker;
+          else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+            BPtr=CBunker;
+          else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+            BPtr=DBunker;
+          else
+            throw ColErr::InContainerError<std::string>
+              (bunkerName,"bunkerName not know");
+          
+          std::shared_ptr<BunkerFeed> BF
+            (new BunkerFeed("BunkerFeed",j));
+          OR.addObject(BF);
+          BF->createAll(System,*BPtr,segNumber,feedName);  
+          
+          bFeedArray.push_back(BF);
+          //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
+          
+        }
+    }
+
+  return;
+}
+
+void
+makeESS::buildBunkerQuake(Simulation& System,
+			  const mainSystem::inputParam& IParam)
+  /*!
+    Build the bunker earthquake dilitation join
+    \param System :: Simulation
+    \param IParam :: Input data
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerQuake");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerQuake");
+
+  ELog::EM<<"CAlling bunker Feed"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("bunkerFeed",j);
@@ -583,9 +639,12 @@ makeESS::makeBunker(Simulation& System,
 
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
+  if (IParam.flag("bunkerQuake"))
+    buildBunkerQuake(System,IParam);
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
+      // THIS IS HORIFFICALLY INEFFICENT :: FIX
       TopCurtain->addInsertCell("Top",74123);
       TopCurtain->addInsertCell("Lower",74123);
       TopCurtain->addInsertCell("Mid",74123);

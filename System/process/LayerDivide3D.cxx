@@ -90,19 +90,72 @@ namespace ModelSupport
 LayerDivide3D::LayerDivide3D(const std::string& Key)  :
   FixedComp(Key,0),
   divIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
-  cellIndex(divIndex+1),DGPtr(0)
+  cellIndex(divIndex+1),
+  WallID({"Sector","Vert","Radial"}),DGPtr(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
+LayerDivide3D::LayerDivide3D(const LayerDivide3D& A) : 
+  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  Centre(A.Centre),divIndex(A.divIndex),cellIndex(A.cellIndex),
+  AFrac(A.AFrac),BFrac(A.BFrac),CFrac(A.CFrac),
+  ALen(A.ALen),BLen(A.BLen),CLen(A.CLen),WallID(A.WallID),
+  AWall(A.AWall),BWall(A.BWall),CWall(A.CWall),divider(A.divider),
+  DGPtr((A.DGPtr) ? new DivideGrid(*A.DGPtr) : 0),
+  objName(A.objName),
+  loadFile(A.loadFile),outputFile(A.outputFile)
+  /*!
+    Copy constructor
+    \param A :: LayerDivide3D to copy
+  */
+{}
+
+LayerDivide3D&
+LayerDivide3D::operator=(const LayerDivide3D& A)
+  /*!
+    Assignment operator
+    \param A :: LayerDivide3D to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      Centre=A.Centre;
+      cellIndex=A.cellIndex;
+      AFrac=A.AFrac;
+      BFrac=A.BFrac;
+      CFrac=A.CFrac;
+      ALen=A.ALen;
+      BLen=A.BLen;
+      CLen=A.CLen;
+      WallID=A.WallID;
+      AWall=A.AWall;
+      BWall=A.BWall;
+      CWall=A.CWall;
+      divider=A.divider;
+      delete DGPtr;
+      DGPtr=(A.DGPtr) ? new DivideGrid(*A.DGPtr) : 0;
+      objName=A.objName;
+      loadFile=A.loadFile;
+      outputFile=A.outputFile;
+    }
+  return *this;
+}
 
 LayerDivide3D::~LayerDivide3D() 
   /*!
     Destructor
   */
-{}
+{
+  delete DGPtr;
+}
 
 
 size_t
@@ -277,22 +330,32 @@ LayerDivide3D::setFractions(const size_t index,
 }
 
 void
-LayerDivide3D::setXMLdata(const std::string& xmlFile,
-			  const std::string& xmlItem,
-			  const std::string& xmlOut)
+LayerDivide3D::setIndexNames(const std::string& A,
+			     const std::string& B,
+			     const std::string& C)
   /*!
-    Simple setter and getter for LayerDivide3D
-    \param xmlFile :: XML input file
-    \param xmlItem :: XML item
-    \param xmlOut :: XML output file name
+    Set the secton names
+    \param A :: First Name
+    \param B :: Second Name
+    \param C :: Third Name
   */
 {
-  loadFile=xmlFile;
-  objName=xmlItem;
-  outputFile=xmlOut;
+  WallID[0]=A;
+  WallID[1]=B;
+  WallID[2]=C;
   return;
 }
-
+  
+void
+LayerDivide3D::setDivider(const std::string& SurfStr)
+  /*!
+    Set the divider string
+    \param SurfStr :: Divider String
+  */
+{
+  divider=SurfStr;
+  return;
+}
   
 void
 LayerDivide3D::checkDivide() const
@@ -302,13 +365,81 @@ LayerDivide3D::checkDivide() const
 {
   ELog::RegMethod RegA("LayerDivide3D","checkDivide");
   if (!(AWall.first*AWall.second))
-    throw ColErr::EmptyValue<int>("Wall A not set");
+    throw ColErr::EmptyValue<int>("Section A not set");
   if (!(BWall.first*BWall.second))
-    throw ColErr::EmptyValue<int>("Wall B not set");
+    throw ColErr::EmptyValue<int>("Section B not set");
   if (!(CWall.first*CWall.second))
-    throw ColErr::EmptyValue<int>("Wall C not set");
+    throw ColErr::EmptyValue<int>("Section C not set");
   return;
 }
+
+void
+LayerDivide3D::setMaterials(const std::string& DefMat)
+  /*!
+    Processes the material setting 
+    \param DefMat :: Default Material						
+  */
+{
+  ELog::RegMethod Rega("LayerDivide3D","setMaterials");
+  
+  if (!DGPtr)
+    DGPtr=new DivideGrid(DefMat);
+  DGPtr->setMaterial(0,0,0,DefMat);
+  return;
+}
+
+void
+LayerDivide3D::setMaterials(const size_t index,
+			    const std::vector<std::string>& DefMatVec)
+  /*!
+    Processes the material setting 
+    \param index :: [0-2] offset nubmer
+    \param DefMatVec :: Default Material list
+  */
+{
+  ELog::RegMethod Rega("LayerDivide3D","setMaterials(Vec)");
+
+  if (index>2)
+    throw ColErr::IndexError<size_t>(index,2,"index out of range");
+
+  if (!DGPtr)
+    DGPtr=new DivideGrid(DefMatVec.front());
+
+  if (!index)
+    for(size_t i=0;i<DefMatVec.size();i++)
+      DGPtr->setMaterial(i+1,0,0,DefMatVec[i]);
+  else if (index==1)
+    for(size_t i=0;i<DefMatVec.size();i++)
+      DGPtr->setMaterial(0,i+1,0,DefMatVec[i]);
+  else 
+    for(size_t i=0;i<DefMatVec.size();i++)
+      DGPtr->setMaterial(0,0,i+1,DefMatVec[i]);
+      
+  return;
+}
+
+void
+LayerDivide3D::setMaterialXML(const std::string& LFile,
+			      const std::string& ObjName,
+			      const std::string& OutName,
+			      const std::string& DefMat)
+  /*!
+    Processes the material setting 
+    \param LFile :: Load file name
+  */
+{
+  ELog::RegMethod Rega("LayerDivide3D","setMaterials(XML)");
+
+  objName=ObjName;
+  loadFile=LFile;
+  outputFile=OutName;
+  
+  if (!DGPtr)
+    DGPtr=new DivideGrid(DefMat);
+  DGPtr->loadXML(loadFile,objName);
+  return;
+}
+
   
 void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
@@ -325,7 +456,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
 
-
   const MonteCarlo::Object* CPtr=System.findQhull(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
@@ -335,9 +465,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
   BLen=processSurface(1,BWall,BFrac);
   CLen=processSurface(2,CWall,CFrac);
 
-  if (!DGPtr)
-    DGPtr=new DivideGrid(DB.getKey(CPtr->getMat()));
-  DGPtr->loadXML(loadFile,objName);
 
   std::string Out;
   int aIndex(divIndex);

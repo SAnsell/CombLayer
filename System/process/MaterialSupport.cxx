@@ -184,6 +184,24 @@ EvalMatName(const std::string& matName)
   throw ColErr::InContainerError<std::string>(matName,"Material not present");
 }
 
+const std::string&
+EvalMatString(const int matIndex)
+  /*!
+    Convert a material number into the string
+    \param matIndex :: Material to change
+    \return matName
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalMatString");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
+  if(!DB.hasKey(matIndex))
+    throw ColErr::InContainerError<int>(matIndex,"Material not present");
+
+  return DB.getKey(matIndex);
+}
+
 /// \cond TEMPLATE  
 template int 
 EvalMat(const FuncDataBase&,const std::string&,

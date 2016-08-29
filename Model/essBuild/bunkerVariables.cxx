@@ -81,12 +81,14 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerNLayers",1);
   Control.addVariable(AKey+"BunkerNSegment",5);
   Control.addVariable(AKey+"BunkerActiveSegment",0);
-  Control.addVariable(AKey+"BunkerActiveRoof",0);
+  Control.addVariable(AKey+"BunkerRoofActive",0);
 
-  Control.addVariable(AKey+"BunkerNRoofVert",20);
-  Control.addVariable(AKey+"BunkerNRoofSide",1);
-  Control.addVariable(AKey+"BunkerNRoofRadial",12);
+  Control.addVariable(AKey+"BunkerRoofNVert",20);
+  Control.addVariable(AKey+"BunkerRoofNMedial",1);
+  Control.addVariable(AKey+"BunkerRoofNRadial",12);
+  Control.addVariable(AKey+"BunkerRoofNBasicVert",5);
 
+  
   Control.addVariable(AKey+"BunkerNSide",5);
   Control.addVariable(AKey+"BunkerNSideVert",5);
   Control.addVariable(AKey+"BunkerNSideThick",5);
@@ -104,14 +106,19 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerWallMat","Steel71");
   Control.addVariable(AKey+"BunkerRoofMat","Aluminium");
 
-  Control.addVariable(AKey+"BunkerRoofVert1",10.0);
 
+  Control.addVariable(AKey+"BunkerNBasicVert",5);
+  Control.addVariable(AKey+"BunkerRoofVert1",20.0);
+  Control.addVariable(AKey+"BunkerRoofVert2",40.0);
+  Control.addVariable(AKey+"BunkerRoofVert3",70.0);
+  Control.addVariable(AKey+"BunkerRoofVert4",30.0);
+  
 
   Control.addVariable(AKey+"BunkerRoofMat0","CarstonConc");
+  Control.addVariable(AKey+"BunkerRoofMat1","CastIron");
+  Control.addVariable(AKey+"BunkerRoofMat2","CarstonConc");
   Control.addVariable(AKey+"BunkerRoofMat3","CastIron");
-  Control.addVariable(AKey+"BunkerRoofMat6","CarstonConc");
-  Control.addVariable(AKey+"BunkerRoofMat14","CastIron");
-  Control.addVariable(AKey+"BunkerRoofMat16","CarstonConc");
+  Control.addVariable(AKey+"BunkerRoofMat4","CarstonConc");
 
   Control.addVariable(AKey+"BunkerWallMat0","CarstenConc");
   Control.addVariable(AKey+"BunkerWallMat1","CastIron");
@@ -170,9 +177,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(BKey+"BunkerActiveSegment",0);
   Control.addVariable(BKey+"BunkerActiveRoof",0);
 
-  Control.addVariable(BKey+"BunkerNRoofVert",5);
-  Control.addVariable(BKey+"BunkerNRoofSide",1);
-  Control.addVariable(BKey+"BunkerNRoofRadial",4);
+  Control.addVariable(BKey+"BunkerRoofNVert",5);
+  Control.addVariable(BKey+"BunkerRoofNMedial",1);
+  Control.addVariable(BKey+"BunkerRoofNRadial",4);
 
   Control.addVariable(BKey+"BunkerNSide",5);
   Control.addVariable(BKey+"BunkerNSideVert",5);
@@ -196,8 +203,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(BKey+"BunkerLoadFile","BBunkerDef.xml");
   Control.addVariable(BKey+"BunkerOutFile","BBunker.xml");
-
   
+  ELog::EM<<"B key == "<<BKey<<ELog::endDiag;
+  Control.addVariable(BKey+"BunkerRoofNBasicVert",1);
   return;
 }
 

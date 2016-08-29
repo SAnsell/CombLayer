@@ -577,6 +577,7 @@ createESSInputs(inputParam& IParam)
                                  std::string("void"));
   
   IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
+  IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);
   
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));

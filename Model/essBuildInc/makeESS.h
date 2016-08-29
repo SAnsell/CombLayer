@@ -101,10 +101,10 @@ class makeESS
   std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
   
   // Butterly
-  /// Primary Upper Mod 
-  std::shared_ptr<constructSystem::ModBase> TopMod;
-  std::shared_ptr<DiskLayerMod> TopPreMod;         ///< Top mod 
-  std::shared_ptr<DiskLayerMod> TopCapMod;         ///< Lower mod
+
+  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod 
+  std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod 
+  std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod
 
   std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
   std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
@@ -140,20 +140,16 @@ class makeESS
 
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 
-  
-  void topFlightLines(Simulation&);
-  void lowFlightLines(Simulation&);
+
   void createGuides(Simulation&);
 
   void buildLowButterfly(Simulation&);
-  void buildLowPreMod(Simulation&);
+  void buildLowerPipe(Simulation&,const std::string&);
+
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
 
   void buildTopButterfly(Simulation&);
-  void buildLowerPipe(Simulation&,const std::string&);
-
-  void buildTopPreMod(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
@@ -165,6 +161,8 @@ class makeESS
   void buildPillars(Simulation&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
+  void buildBunkerQuake(Simulation&,
+			const mainSystem::inputParam&);
   void buildPreWings(Simulation&,const std::string&);
   void buildTwister(Simulation&);
 
