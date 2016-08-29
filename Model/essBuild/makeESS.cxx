@@ -100,6 +100,7 @@
 #include "Bunker.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
+#include "BunkerQuake.h"
 #include "Curtain.h"
 #include "ConicModerator.h"
 #include "makeESSBL.h"
@@ -436,7 +437,6 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           
         }
     }
-
   return;
 }
 
@@ -456,18 +456,14 @@ makeESS::buildBunkerQuake(Simulation& System,
 
   const size_t NSet=IParam.setCnt("bunkerQuake");
 
-  ELog::EM<<"CAlling bunker Feed"<<ELog::endDiag;
+  ELog::EM<<"Calling bunker Quake"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("bunkerFeed",j);
-      if (NItems>=3)
+      if (NItems>=1)
         {
           const std::string bunkerName=
-            IParam.getValue<std::string>("bunkerFeed",j,0);
-          const size_t segNumber=
-            IParam.getValue<size_t>("bunkerFeed",j,1);
-          const std::string feedName=
-            IParam.getValue<std::string>("bunkerFeed",j,2);
+            IParam.getValue<std::string>("bunkerQuake",j,0);
 
           // bunkerA/etc should be a map
           std::shared_ptr<Bunker> BPtr;
@@ -483,12 +479,9 @@ makeESS::buildBunkerQuake(Simulation& System,
             throw ColErr::InContainerError<std::string>
               (bunkerName,"bunkerName not know");
           
-          std::shared_ptr<BunkerFeed> BF
-            (new BunkerFeed("BunkerFeed",j));
+          std::shared_ptr<BunkerQuake> BF(new BunkerQuake(BPtr->getKeyName()));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,segNumber,feedName);  
-          
-          bFeedArray.push_back(BF);
+          BF->createAll(System,*BPtr,0);  
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
           
         }

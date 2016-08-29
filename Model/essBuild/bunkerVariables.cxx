@@ -69,7 +69,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
     \param BKey :: Key for B/D bunker
 */
 {
-  ELog::RegMethod RegA("essVariables[F]","setBunkerVar");
+  ELog::RegMethod RegA("bunkerVariables[F]","setBunkerVar");
 
 
   Control.addVariable(AKey+"BunkerLeftPhase",-65.0);
@@ -204,7 +204,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(BKey+"BunkerLoadFile","BBunkerDef.xml");
   Control.addVariable(BKey+"BunkerOutFile","BBunker.xml");
   
-  ELog::EM<<"B key == "<<BKey<<ELog::endDiag;
   Control.addVariable(BKey+"BunkerRoofNBasicVert",1);
   return;
 }
@@ -220,7 +219,15 @@ EssBunkerVariables(FuncDataBase& Control)
   setBunkerVar(Control,"A","B");
   setBunkerVar(Control,"C","D");
 
+  // BUNKER QUAKE:
+  Control.addVariable("ABunkerQuakeXGap",13.0);
+  Control.addVariable("ABunkerQuakeZGap",20.0);
+  
+  Control.addVariable("ABunkerQuakeNPoint",1);
+  Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(0,0,0));
+  Control.addVariable("ABunkerQuakePtB0",Geometry::Vec3D(30,0,0));
 
+  
   
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);
