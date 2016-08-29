@@ -77,12 +77,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
-#include "surfDBase.h"
-#include "surfDIter.h"
-#include "surfDivide.h"
-#include "mergeTemplate.h"
-
-#include "World.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 

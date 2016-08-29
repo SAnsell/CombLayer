@@ -82,6 +82,7 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "CompBInsert.h"
 #include "ChopperUnit.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
@@ -128,7 +129,8 @@ BIFROST::BIFROST(const std::string& keyName) :
   
   AppB(new constructSystem::Aperture(newName+"AppB")),
 
-  BInsert(new BunkerInsert(newName+"BInsert")),
+  //  BInsert(new BunkerInsert(newName+"BInsert")),
+  BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
@@ -394,16 +396,18 @@ BIFROST::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
+  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BInsert->addInsertCell(74123);
   BInsert->createAll(System,*AppB,2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
+  
+  //  VPipeWall->addInsertCell(BInsert->getCell("Void"));
+  //  VPipeWall->createAll(System,*BInsert,-1);
 
-  VPipeWall->addInsertCell(BInsert->getCell("Void"));
-  VPipeWall->createAll(System,*BInsert,-1);
-
-    // using 7 : mid point
-  FocusWall->addInsertCell(VPipeWall->getCells("Void"));
-  FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+  // using 7 : mid point
+  //  FocusWall->addInsertCell(VPipeWall->getCells("Void"));
+  //  FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
 
   if (stopPoint==3) return;                      // STOP Out of bunker
   

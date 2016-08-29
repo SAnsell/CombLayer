@@ -197,6 +197,20 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostBInsertWallMat","Stainless304");       
 
 
+
+  // NEW BEAM INSERT:
+  Control.addVariable("bifrostCInsertNBox",2);
+  Control.addVariable("bifrostCInsertHeight",30.0);
+  Control.addVariable("bifrostCInsertWidth",48.0);
+  Control.addVariable("bifrostCInsertHeight1",20.0);
+  Control.addVariable("bifrostCInsertWidth1",28.0);
+  Control.addVariable("bifrostCInsertLength0",150.0);
+  Control.addVariable("bifrostCInsertLength1",200.0);
+  Control.addVariable("bifrostCInsertMat0","D2O");
+  Control.addVariable("bifrostCInsertMat1","H2O");       
+
+
+
   // VACUUM PIPE: in bunker wall
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);

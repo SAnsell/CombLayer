@@ -50,7 +50,8 @@ namespace constructSystem
 }
 
 namespace essSystem
-{  
+{
+  class CompBInsert;
   class GuideItem;
   class DetectorTank;
   class BifrostHut;
@@ -127,7 +128,7 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::Aperture> AppB;
 
   /// Bunker insert
-  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  std::shared_ptr<essSystem::CompBInsert> BInsert;
   /// Pipe in bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
