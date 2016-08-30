@@ -406,8 +406,8 @@ BIFROST::build(Simulation& System,
   //  VPipeWall->createAll(System,*BInsert,-1);
 
   // using 7 : mid point
-  //  FocusWall->addInsertCell(VPipeWall->getCells("Void"));
-  //  FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+  FocusWall->addInsertCell(BInsert->getCells("Item"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
   if (stopPoint==3) return;                      // STOP Out of bunker
   

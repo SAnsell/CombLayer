@@ -32,7 +32,7 @@ namespace essSystem
   \version 1.0
   \author S. Ansell
   \date June 2015
-  \brief Bulk around Reflector
+  \brief Multi-layer Beam insert
 */
 
 class CompBInsert : public attachSystem::ContainedComp,
@@ -49,6 +49,10 @@ class CompBInsert : public attachSystem::ContainedComp,
   std::vector<double> height;
   std::vector<double> length;
   std::vector<int> mat;
+
+  size_t NWall;                   ///< Number of walls
+  std::vector<double> wallThick;  ///< wall thickness
+  std::vector<int> wallMat;       ///< Wall materials.
     
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

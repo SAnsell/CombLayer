@@ -127,7 +127,20 @@ CompBInsert::populate(const FuncDataBase& Control)
       width.push_back(W);
       length.push_back(L);
       mat.push_back(M);
-    }  
+    }
+  
+  NWall=Control.EvalVar<size_t>(keyName+"NWall");
+  double T;
+  for(size_t index=0;index<NWall;index++)
+    {
+      const std::string SNum=StrFunc::makeString(index);                                                                
+      T=Control.EvalPair<double>(keyName+"WallThick"+SNum,keyName+"WallThick");
+      M=ModelSupport::EvalMat<int>(Control,keyName+"WallMat"+SNum,keyName+"WallMat");
+      wallThick.push_back(T);
+      wallMat.push_back(M);
+    }
+  wallThick.push_back(0.0);
+  
   return;
 }
   
@@ -159,16 +172,23 @@ CompBInsert::createSurfaces()
   double L(0.0);
   for(size_t index=0;index<NBox;index++)
     {
-      ModelSupport::buildPlane(SMap,SI+1,Origin+Y*L,Y);
-      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(width[index]/2.0),X);
-      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(width[index]/2.0),X);
-      ModelSupport::buildPlane(SMap,SI+5,Origin-Z*(height[index]/2.0),Z);
-      ModelSupport::buildPlane(SMap,SI+6,Origin+Z*(height[index]/2.0),Z);
+      double T(0.0);
+      int SWI(SI);
+      for(size_t wallIndex=0;wallIndex<=NWall;wallIndex++)
+        {
+          ModelSupport::buildPlane(SMap,SWI+1,Origin+Y*(T+L),Y);
+          ModelSupport::buildPlane(SMap,SWI+3,Origin-X*(T+width[index]/2.0),X);
+          ModelSupport::buildPlane(SMap,SWI+4,Origin+X*(T+width[index]/2.0),X);
+          ModelSupport::buildPlane(SMap,SWI+5,Origin-Z*(T+height[index]/2.0),Z);
+          ModelSupport::buildPlane(SMap,SWI+6,Origin+Z*(T+height[index]/2.0),Z);
+          SWI+=10;
+          T+=wallThick[wallIndex];
+        }
       L+=length[index];
-      SI+=10;
-    }      
-  ModelSupport::buildPlane(SMap,SI+1,Origin+Y*L,Y);
+      SI+=100;
+    }
   
+  ModelSupport::buildPlane(SMap,SI+1,Origin+Y*L,Y);
   return;
 }
   
@@ -183,12 +203,29 @@ CompBInsert::createObjects(Simulation& System)
   
   std::string Out;
   int SI(insIndex);
+
   for(size_t index=0;index<NBox;index++)
     {
-      Out=ModelSupport::getComposite(SMap,SI,"1 -11 3 -4 5 -6 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[index],0.0,Out));
-      setCell("Item",cellIndex-1);
-      addOuterUnionSurf(Out);
+      HeadRule Inner;
+      int SWI(SI);
+      const std::string front=ModelSupport::getComposite(SMap,SI," 1 -101 ");
+      for(size_t wallIndex=0;wallIndex<=NWall;wallIndex++)
+        {
+          Out=ModelSupport::getComposite(SMap,SWI," 3 -4 5 -6 ");
+          const int M=(!wallIndex) ? mat[index] : wallMat[wallIndex-1];
+          System.addCell(MonteCarlo::Qhull(cellIndex++,M,0.0,front+Out+Inner.display()));
+
+          if (!wallIndex)
+            addCell("Item",cellIndex-1);
+          else
+            addCell("Wall",cellIndex-1);
+          
+          Inner.procString(Out);
+          Inner.makeComplement();
+          SWI+=10;
+        }
+      addOuterUnionSurf(Out+front);
+      SI+=100;
     }
   return;
 }
@@ -208,25 +245,26 @@ CompBInsert::createLinks()
   
   size_t LOffset(0);
   double L(0.0);
+  const int WIOffset(static_cast<int>(NWall)*10);
   int SI(insIndex);
-  
+
+  const double T=std::accumulate(wallThick.begin(),wallThick.end(),0.0);
+
   for(size_t index=0;index<NBox;index++)
     {
+      FixedComp::setConnect(LOffset+2,Origin-X*(T+width[index]/2.0),-X);
+      FixedComp::setConnect(LOffset+3,Origin+X*(T+width[index]/2.0),X);
+      FixedComp::setConnect(LOffset+4,Origin-Z*(T+height[index]/2.0),-Z);
+      FixedComp::setConnect(LOffset+5,Origin+Z*(T+height[index]/2.0),Z);
 
-      FixedComp::setConnect(LOffset+2,Origin-X*(width[index]/2.0),-X);
-      FixedComp::setConnect(LOffset+3,Origin+X*(width[index]/2.0),X);
-      FixedComp::setConnect(LOffset+4,Origin-Z*(height[index]/2.0),-Z);
-      FixedComp::setConnect(LOffset+5,Origin+Z*(height[index]/2.0),Z);
+      FixedComp::setLinkSurf(2,SMap.realSurf(SI+WIOffset+3));
+      FixedComp::setLinkSurf(3,-SMap.realSurf(SI+WIOffset+4));
+      FixedComp::setLinkSurf(4,SMap.realSurf(SI+WIOffset+5));
+      FixedComp::setLinkSurf(5,-SMap.realSurf(SI+WIOffset+6));
 
-      FixedComp::setLinkSurf(2,SMap.realSurf(SI+3));
-      FixedComp::setLinkSurf(3,-SMap.realSurf(SI+4));
-      FixedComp::setLinkSurf(4,SMap.realSurf(SI+5));
-      FixedComp::setLinkSurf(5,-SMap.realSurf(SI+6));
-      
-      
       L+=length[index];
       LOffset+=6;
-      SI+=10;
+      SI+=100;
     }
   FixedComp::setConnect(1,Origin+Y*L,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+1));
