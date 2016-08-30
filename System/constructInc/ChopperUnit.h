@@ -50,6 +50,9 @@ class ChopperUnit :
   const int houseIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
+  bool vertZAxis;           ///< Reorientate Z to Vec3D(0,0,1)
+  Geometry::Vec3D BY;       ///< Old reorientation
+  
   double height;            ///< height from chopper rotor centre
   double width;             ///< width [across]
   double depth;             ///< depth 
@@ -109,6 +112,8 @@ class ChopperUnit :
   ChopperUnit& operator=(const ChopperUnit&);
   virtual ~ChopperUnit();
 
+  /// force orientation vertial
+  void setZVertical() { vertZAxis=1; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

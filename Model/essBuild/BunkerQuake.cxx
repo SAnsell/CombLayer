@@ -186,7 +186,7 @@ BunkerQuake::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BunkerQuake","createObjects");
 
-  for(size_t index;index<APoint.size();index++)
+  for(size_t index=0;index<APoint.size();index++)
     {
       const std::string ItemName(keyName+"Cut"+StrFunc::makeString(index));
       const Geometry::Vec3D YDir((BPoint[index]-APoint[index]).unit());

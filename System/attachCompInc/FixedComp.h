@@ -70,6 +70,8 @@ class FixedComp
 
   const LinkUnit& operator[](const size_t) const; 
 
+  void reOrientate(const size_t,const Geometry::Vec3D&);
+  
   // Operator Set:
   void createUnitVector();
   void createUnitVector(const FixedComp&);

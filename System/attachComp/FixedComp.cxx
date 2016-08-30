@@ -268,6 +268,52 @@ FixedComp::makeOrthogonal()
   
   return;
 }
+
+void
+FixedComp::reOrientate(const size_t index,
+                       const Geometry::Vec3D& ADir)
+  /*!
+    Reorientate the system to have the index axis orientated
+    along the axisDir.
+    Compute the normal vector to the plane axisDir/Axis[index]
+    and the rotation required to move axis[index] -> axisDir.
+    then applied to the other two axis vectors.
+    \param index :: index to orientate round [0-2]
+    \param ADir :: axis direction
+   */
+{
+  ELog::RegMethod RegA("FixedComp","reorientate");
+
+  
+  if (index>3)
+    throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
+  
+  Geometry::Vec3D axisDir(ADir.unit());  
+
+  std::vector<Geometry::Vec3D*> AVec({&X,&Y,&Z});
+
+  const double cosTheta=axisDir.dotProd( *AVec[index]);
+  // Both checks with tolerance:
+  if (cosTheta-Geometry::zeroTol>1.0) return;
+  if (cosTheta+1.0<Geometry::zeroTol)
+    {
+      for(Geometry::Vec3D* A : AVec)
+        *A *=-1;
+      return;
+    }
+  
+  // Calc normal
+  const Geometry::Vec3D n=axisDir * *AVec[index];
+  
+  const double rotAngle=acos(cosTheta);
+  const Geometry::Quaternion QR
+    (Geometry::Quaternion::calcQRot(-rotAngle,n));
+
+  QR.rotate(*AVec[(index+1) % 3]);
+  QR.rotate(*AVec[(index+2) % 3]);
+  *AVec[index]=axisDir;
+  return;
+}
   
 void
 FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,

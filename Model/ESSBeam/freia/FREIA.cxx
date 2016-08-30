@@ -302,14 +302,16 @@ FREIA::build(Simulation& System,
   
   // First (green chopper)
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->setZVertical();
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
   DDisk->setCentreFlag(3);  // Z direction
   DDisk->setOffsetFlag(1);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
+  DDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
 
+  return;
     // First (green chopper)
   ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperB->createAll(System,ChopperA->getKey("Beam"),2);
