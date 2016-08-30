@@ -85,7 +85,7 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(houseIndex+1),vertZAxis(0),
+  cellIndex(houseIndex+1),
   RS(new constructSystem::RingSeal(Key+"Ring")),
   IPA(new constructSystem::InnerPort(Key+"IPortA")),
   IPB(new constructSystem::InnerPort(Key+"IPortB"))
@@ -106,7 +106,7 @@ ChopperUnit::ChopperUnit(const ChopperUnit& A) :
   attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   houseIndex(A.houseIndex),cellIndex(A.cellIndex),
-  vertZAxis(A.vertZAxis),height(A.height),
+  height(A.height),
   width(A.width),depth(A.depth),length(A.length),
   shortHeight(A.shortHeight),shortWidth(A.shortWidth),
   mainRadius(A.mainRadius),mainThick(A.mainThick),
@@ -142,7 +142,6 @@ ChopperUnit::operator=(const ChopperUnit& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      vertZAxis=A.vertZAxis;
       height=A.height;
       width=A.width;
       depth=A.depth;
@@ -253,14 +252,10 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
   Main.createUnitVector(FC,sideIndex);
 
   //  Main.applyShift(0.0,0,0,beamZStep);
-  if (vertZAxis)
-    {
-      BuildBeam.reOrientate(2,Geometry::Vec3D(0,0,1));
-      Main.reOrientate(2,Geometry::Vec3D(0,0,1));
-    }
 
   applyOffset();  
   setDefault("Main");
+  ELog::EM<<"Key ["<<keyName<<"] Y == "<<Y<<" : "<<Z<<ELog::endDiag;
   return;
 }
 

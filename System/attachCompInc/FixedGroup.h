@@ -67,7 +67,8 @@ class FixedGroup : public FixedComp
   virtual FixedComp& getKey(const std::string&);
   virtual const FixedComp& getKey(const std::string&) const;
 
-
+  
+  void setAxisControl(const size_t,const Geometry::Vec3D&);
 
 };
 

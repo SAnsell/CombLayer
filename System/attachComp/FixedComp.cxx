@@ -62,7 +62,7 @@ namespace attachSystem
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL) :
   keyName(KN),X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
  /*!
     Constructor 
     \param KN :: KeyName
@@ -73,7 +73,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL) :
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& O) :
   keyName(KN),X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),Origin(O),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),primeAxis(0),Origin(O),LU(NL)
   /*!
     Constructor 
     \param KN :: KeyName
@@ -88,7 +88,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& yV,
 		     const Geometry::Vec3D& zV) :
   keyName(KN),X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
-  Origin(O),LU(NL)
+  Origin(O),primeAxis(0),LU(NL)
   /*!
     Constructor 
     \param KN :: KeyName
@@ -102,7 +102,9 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 
 FixedComp::FixedComp(const FixedComp& A) : 
   keyName(A.keyName),SMap(A.SMap),X(A.X),Y(A.Y),Z(A.Z),
-  Origin(A.Origin),beamAxis(A.beamAxis),LU(A.LU)
+  Origin(A.Origin),beamAxis(A.beamAxis),
+  orientateAxis(A.orientateAxis),primeAxis(A.primeAxis),
+  LU(A.LU)
   /*!
     Copy constructor
     \param A :: FixedComp to copy
@@ -125,27 +127,35 @@ FixedComp::operator=(const FixedComp& A)
       Z=A.Z;
       Origin=A.Origin;
       beamAxis=A.beamAxis;
+      orientateAxis=A.orientateAxis;
+      primeAxis=A.primeAxis;
       LU=A.LU;
     }
   return *this;
 }
 
+
 void
-FixedComp::createUnitVector()
+FixedComp::setAxisControl(const size_t axisIndex,
+			  const Geometry::Vec3D& NAxis)
   /*!
-    Create the unit vectors
+    Set the new reorientation axis
+    \param axisIndex :: X/Y/Z for reorientation [0-2]
+    \param NAxis :: New Axis 
   */
 {
-  ELog::RegMethod RegA("FixedComp","createUnitVector");
+  ELog::RegMethod Rega("FixedComp","setAxisControl");
+  if (NAxis.abs()<Geometry::zeroTol)
+    throw ColErr::NumericalAbort("NAxis is zero");
+  if (axisIndex>2)
+    throw ColErr::IndexError<size_t>(axisIndex,2,"axisIndex");
   
-  ELog::EM<<"Using TS2 axis origin system"<<ELog::endErr;
-
-  Z=Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
-  Y=Geometry::Vec3D(0,0,-1);
-  X=Y*Z;
-  beamAxis=Y;
+  
+  orientateAxis=NAxis.unit(); ///< Axis for reorientation
+  primeAxis=axisIndex+1;
   return;
 }
+  
 
 void
 FixedComp::createUnitVector(const FixedComp& FC)
@@ -162,6 +172,8 @@ FixedComp::createUnitVector(const FixedComp& FC)
   Origin=FC.Origin;
   beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
+  if (primeAxis)
+    reOrientate(primeAxis-1,orientateAxis);
 
   return;
 }
@@ -184,6 +196,9 @@ FixedComp::createUnitVector(const FixedComp& FC,
   beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
+  if (primeAxis)
+    reOrientate(primeAxis-1,orientateAxis);
+  
   return;
 }
 
@@ -225,11 +240,38 @@ FixedComp::createUnitVector(const FixedComp& FC,
     xTest=FC.getY();
   
   computeZOffPlane(xTest,yTest,zTest);
-
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
   return;
 }
 
+void
+FixedComp::createUnitVector(const Geometry::Vec3D& OG,
+			    const Geometry::Vec3D& XAxis,
+                            const Geometry::Vec3D& YAxis,
+			    const Geometry::Vec3D& ZAxis)
+  /*!
+    Create the unit vectors [using beam directions]
+    \param OG :: Origin
+    \param XAxis :: Direction for X
+    \param YAxis :: Direction for Y
+    \param ZAxis :: Direction for Z
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
+
+  //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
+  X=XAxis.unit();
+  Y=YAxis.unit();
+  Z=ZAxis.unit();
+  makeOrthogonal();
+  Origin=OG;
+  beamOrigin=OG;
+  beamAxis=Y;
+  if (primeAxis)
+    reOrientate(primeAxis-1,orientateAxis);
+  return;
+}
+  
 void
 FixedComp::makeOrthogonal()
   /*!
@@ -347,31 +389,6 @@ FixedComp::computeZOffPlane(const Geometry::Vec3D& XAxis,
   return;
 }
 
-void
-FixedComp::createUnitVector(const Geometry::Vec3D& OG,
-			    const Geometry::Vec3D& XAxis,
-                            const Geometry::Vec3D& YAxis,
-			    const Geometry::Vec3D& ZAxis)
-  /*!
-    Create the unit vectors [using beam directions]
-    \param OG :: Origin
-    \param XAxis :: Direction for X
-    \param YAxis :: Direction for Y
-    \param ZAxis :: Direction for Z
-  */
-{
-  ELog::RegMethod RegA("FixedComp","createUnitVector(Vec3D,Vec3D,Vec3D))");
-
-  //Geometry::Vec3D(-1,0,0);          // Gravity axis [up]
-  X=XAxis.unit();
-  Y=YAxis.unit();
-  Z=ZAxis.unit();
-  makeOrthogonal();
-  Origin=OG;
-  beamOrigin=OG;
-  beamAxis=Y;
-  return;
-}
 
 void
 FixedComp::applyShift(const double xStep,

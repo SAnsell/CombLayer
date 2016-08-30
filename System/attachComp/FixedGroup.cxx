@@ -267,5 +267,23 @@ FixedGroup::setDefault(const std::string& defKey)
   
 }
 
+void
+FixedGroup::setAxisControl(const size_t axisIndex,
+			     const Geometry::Vec3D& NAxis)
+  /*!
+    Set the new reorientation axis for a group
+    \param axisIndex :: X/Y/Z for reorientation [0-2]
+    \param NAxis :: New Axis 
+  */
+{
+  ELog::RegMethod Rega("FixedGroup","setAxisControl");
+
+  for(FTYPE::value_type& MItem : FMap)
+    MItem.second->setAxisControl(axisIndex,NAxis);
+  return;
+}
+
+
+  
 
 }  // NAMESPACE attachSystem
