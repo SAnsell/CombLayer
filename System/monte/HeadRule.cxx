@@ -235,6 +235,7 @@ HeadRule::partMatched(const HeadRule& A) const
 {
   ELog::RegMethod RegA("HeadRule","partMatched");
 
+  if (!A.HeadNode && !HeadNode) return 1;
   if (!A.HeadNode || !HeadNode) return 0;
   std::vector<const Rule*> AVec=
     findTopNodes();
@@ -432,6 +433,89 @@ HeadRule::subMatched(const HeadRule& A,
   // EVERYTHING FAILED !!!
   return 0;
 }  
+
+HeadRule
+HeadRule::getLevel(const size_t levelNumber) const
+  /*!
+    Disect the rule to just the required level
+    \param levelNumber :: Level required
+    \return HeadRule of level only
+   */
+{
+  ELog::RegMethod RegA("HeadRule","getLevel");
+
+  HeadRule Out;
+  if (!HeadNode) return Out;
+
+  
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+
+  size_t activeLevel(0);
+  //  int statePoint(HeadNode->type());
+  
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop(); 
+
+      // Process level:
+      if (tmpA->getParent() &&
+          tmpA->getParent()->type()!=tmpA->type())
+	activeLevel++;
+      // Process level:
+
+
+      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
+      if (SurX)
+	{
+          // SPECIAL CASE FOR flat top level
+          if (!tmpA->getParent())
+              activeLevel++;
+      // Process level:
+          
+          if (activeLevel==levelNumber+1)
+            {
+
+              const Rule* RParent=tmpA->getParent();
+              if (!RParent || RParent->type()==1)
+                Out.addIntersection(tmpA);
+              else if (RParent && RParent->type()== -1)
+                Out.addUnion(tmpA);
+              else 
+                ELog::EM<<"Unable to deal with type:"
+                        <<RParent->type()<<ELog::endErr;
+            }
+        }
+      else                           // PROCESS LEAF NODE:
+        {
+          if (activeLevel<=levelNumber || 1>0)
+            {
+              Rule* tmpB=tmpA->leaf(0);
+              Rule* tmpC=tmpA->leaf(1);
+              if (tmpB || tmpC)
+                {
+                  if (tmpB)
+                    {
+                      TreeLevel.push(activeLevel);
+                      TreeLine.push(tmpB);
+                    }
+                  if (tmpC)
+                    {
+                      TreeLevel.push(activeLevel);
+                      TreeLine.push(tmpC);
+                    }
+                }
+            }
+        }
+    }
+  return Out;
+}
+
 
 void
 HeadRule::reset() 

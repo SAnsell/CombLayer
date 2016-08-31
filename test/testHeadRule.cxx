@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "RuleBinary.h"
@@ -121,6 +122,7 @@ testHeadRule::applyTest(const int extra)
       &testHeadRule::testFindNodes,      
       &testHeadRule::testFindTopNodes,
       &testHeadRule::testGetComponent,
+      &testHeadRule::testGetLevel,
       &testHeadRule::testInterceptRule,
       &testHeadRule::testLevel,
       &testHeadRule::testPartEqual,
@@ -136,6 +138,7 @@ testHeadRule::applyTest(const int extra)
       "FindNodes",
       "FindTopNodes",
       "GetComponent",
+      "GetLevel",
       "InterceptRule",
       "Level",
       "PartEqual",
@@ -547,28 +550,36 @@ testHeadRule::testGetLevel()
 
   createSurfaces();
   // object : surf : level found
-  typedef std::tuple<std::string,int,int> TTYPE;
+  typedef std::tuple<std::string,size_t,std::string> TTYPE;
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",5,1));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",4,0));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",7,-1));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) ",8,2));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0," 1 -2 3 -4 "));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",1," (5:-6) "));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) ",2," 7 -8 "));
+  Tests.push_back(TTYPE("1 ",3," "));
+  Tests.push_back(TTYPE("1 ",0,"1 "));
+  Tests.push_back(TTYPE("1 2 ",0,"1  2"));
   
-  HeadRule A;
   for(const TTYPE& tc : Tests)
     {
-      HeadRule tmp;
-      if (!tmp.procString(std::get<0>(tc)))
+      HeadRule tmp,res;
+      const std::string item(std::get<2>(tc));
+      
+      if (!tmp.procString(std::get<0>(tc)) ||
+          (!StrFunc::isEmpty(item) && !res.procString(item) ))
 	{
 	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)
+                  <<" ++ "<<std::get<2>(tc)
 		  <<ELog::endDiag;
 	  return -1;
 	}
-      const int Res=tmp.level(std::get<1>(tc));
-      if (Res!=std::get<2>(tc))
+
+      HeadRule outLevel=tmp.getLevel(std::get<1>(tc));
+      const bool resFlag=(outLevel.partMatched(res));
+
+      if (!resFlag)
 	{
-	  ELog::EM<<"A == "<<A.display()<<ELog::endDebug;
-	  ELog::EM<<"Res["<<std::get<2>(tc)<<"] == "<<Res<<ELog::endDebug;
+	  ELog::EM<<"ALevel == "<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Res["<<res.display()<<"] == "<<outLevel.display()<<ELog::endDiag;
 	  return -1;
 	}
     }
