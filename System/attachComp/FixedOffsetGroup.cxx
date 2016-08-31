@@ -64,10 +64,13 @@ namespace attachSystem
 {
 
 void
-offset::copy(double& XS,double& YS,double& ZS,
+offset::copy(double& PreXYA,double& PreZA,
+             double& XS,double& YS,double& ZS,
              double& XYA,double& ZA) const
   /*!
     Copy data to external variables
+    \param PreXYA :: preXYAngle value
+    \param PreZA :: preZAngle value
     \param XS :: XStep value
     \param YS :: YStep value    
     \param ZS :: ZStep value
@@ -75,6 +78,8 @@ offset::copy(double& XS,double& YS,double& ZS,
     \param ZA :: ZAngle value
   */
 {
+  PreXYA=preXYAngle; 
+  PreZA=preZAngle;   
   XS=xStep;
   YS=yStep;
   ZS=zStep;
@@ -86,7 +91,8 @@ offset::copy(double& XS,double& YS,double& ZS,
 FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
 				   const std::string& KN,
 				   const size_t NL) :
-  FixedGroup(mainKey,KN,NL),xStep(0.0),yStep(0.0),zStep(0.0),
+  FixedGroup(mainKey,KN,NL),preXYAngle(0.0),
+  preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
   xyAngle(0.0),zAngle(0.0)
  /*!
     Constructor 
@@ -101,8 +107,8 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
 				   const std::string& BKey,
 				   const size_t BNL) :
   FixedGroup(mainKey,AKey,ANL,BKey,BNL),
-  xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0)
+  preXYAngle(0.0),preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)  
  /*!
     Constructor 
     \param mainKey :: KeyName [main system]
@@ -121,8 +127,8 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
                                    const std::string& CKey,
                                    const size_t CNL) :
   FixedGroup(mainKey,AKey,ANL,BKey,BNL,CKey,CNL),
-  xStep(0.0),yStep(0.0),zStep(0.0),
-  xyAngle(0.0),zAngle(0.0)
+  preXYAngle(0.0),preZAngle(0.0),xStep(0.0),yStep(0.0),zStep(0.0),
+  xyAngle(0.0),zAngle(0.0)  
  /*!
     Constructor 
     \param mainKey :: KeyName [main system]
@@ -138,8 +144,9 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
 
 FixedOffsetGroup::FixedOffsetGroup(const FixedOffsetGroup& A) : 
   FixedGroup(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),GOffset(A.GOffset)
+  preXYAngle(A.preXYAngle),preZAngle(A.preZAngle),xStep(A.xStep),
+  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),GOffset(A.GOffset)
   /*!
     Copy constructor
     \param A :: FixedOffsetGroup to copy
@@ -157,6 +164,8 @@ FixedOffsetGroup::operator=(const FixedOffsetGroup& A)
   if (this!=&A)
     {
       FixedGroup::operator=(A);
+      preXYAngle=A.preXYAngle;
+      preZAngle=A.preZAngle;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -180,7 +189,8 @@ FixedOffsetGroup::populateOffset(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("FixedOffsetGroup","populate");
 
-  
+  GO.preXYAngle=Control.EvalDefVar<double>(keyItem+"PreXYAngle",0.0);
+  GO.preZAngle=Control.EvalDefVar<double>(keyItem+"PreZAngle",0.0);
   GO.xStep=Control.EvalDefVar<double>(keyItem+"XStep",0.0);
   GO.yStep=Control.EvalDefVar<double>(keyItem+"YStep",0.0);
   GO.zStep=Control.EvalDefVar<double>(keyItem+"ZStep",0.0);
@@ -207,6 +217,8 @@ FixedOffsetGroup::populate(const FuncDataBase& Control)
     }
   
  
+  preXYAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",0.0);
+  preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",0.0);
   xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
   yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
@@ -231,8 +243,11 @@ FixedOffsetGroup::applyOffset()
         throw ColErr::InContainerError<std::string>
           (FCmc.first,"Offset not found");
       const offset& GO=mc->second;
+      FCmc.second->applyAngleRotate(preXYAngle+GO.preXYAngle,
+                                    preZAngle+GO.preZAngle);
       FCmc.second->applyShift(xStep+GO.xStep,yStep+GO.yStep,zStep+GO.zStep);
       FCmc.second->applyAngleRotate(xyAngle+GO.xyAngle,zAngle+GO.zAngle);
+      FCmc.second->reOrientate();
     }
   return;
 }

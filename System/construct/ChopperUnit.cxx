@@ -255,7 +255,6 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
 
   applyOffset();  
   setDefault("Main");
-  ELog::EM<<"Key ["<<keyName<<"] Y == "<<Y<<" : "<<Z<<ELog::endDiag;
   return;
 }
 

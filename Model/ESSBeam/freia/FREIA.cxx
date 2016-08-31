@@ -302,8 +302,8 @@ FREIA::build(Simulation& System,
   
   // First (green chopper)
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperA->getKey("Main").setAxisControl(2,ZVert);
-  ChopperA->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -315,8 +315,8 @@ FREIA::build(Simulation& System,
 
     // First (green chopper)
   ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperB->getKey("Main").setAxisControl(2,ZVert);
-  ChopperB->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperB->getKey("Main").setAxisControl(3,ZVert);
+  ChopperB->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperB->createAll(System,ChopperA->getKey("Beam"),2);
   
   // Double disk chopper
@@ -333,8 +333,8 @@ FREIA::build(Simulation& System,
 
   // 8.5m FOC chopper
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperC->getKey("Main").setAxisControl(2,ZVert);
-  ChopperC->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperC->getKey("Main").setAxisControl(3,ZVert);
+  ChopperC->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperC->createAll(System,BendD->getKey("Guide0"),2);
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
@@ -351,8 +351,8 @@ FREIA::build(Simulation& System,
 
     // 8.5m FOC chopper
   ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperD->getKey("Main").setAxisControl(2,ZVert);
-  ChopperD->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperD->getKey("Main").setAxisControl(3,ZVert);
+  ChopperD->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperD->createAll(System,BendE->getKey("Guide0"),2);
   // Double disk chopper
   WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
@@ -368,8 +368,8 @@ FREIA::build(Simulation& System,
 
   // 11.1m FOC chopper
   ChopperE->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperE->getKey("Main").setAxisControl(2,ZVert);
-  ChopperE->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperE->getKey("Main").setAxisControl(3,ZVert);
+  ChopperE->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperE->createAll(System,BendF->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -392,19 +392,19 @@ FREIA::build(Simulation& System,
   
   OutPitA->addInsertCell(voidCell);
   OutPitA->addFrontWall(bunkerObj,2);
-  OutPitA->setAxisControl(2,ZVert);
+  OutPitA->setAxisControl(3,ZVert);
   OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
   OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
                     OutPitA->getKey("Mid").getSignedFullRule(-2));
-  OutACut->createAll(System,OutPitA->getKey("Inner"),2);
+  OutACut->createAll(System,FocusWall->getKey("Guide0"),2);
 
   // 15m WBC chopper
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
-  ChopperOutA->getKey("Main").setAxisControl(2,ZVert);
-  ChopperOutA->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperOutA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperOutA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   // Double disk chopper
   WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
@@ -413,8 +413,8 @@ FREIA::build(Simulation& System,
   WBC3Disk->createAll(System,ChopperOutA->getKey("BuildBeam"),0);
 
   ChopperOutB->addInsertCell(OutPitA->getCell("Void"));
-  ChopperOutB->getKey("Main").setAxisControl(2,ZVert);
-  ChopperOutB->getKey("BuildBeam").setAxisControl(2,ZVert);
+  ChopperOutB->getKey("Main").setAxisControl(3,ZVert);
+  ChopperOutB->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   // Double disk chopper
@@ -424,7 +424,8 @@ FREIA::build(Simulation& System,
   FOC3Disk->createAll(System,ChopperOutB->getKey("BuildBeam"),0);
   
   JawPit->addInsertCell(voidCell);
-  JawPit->createAll(System,OutPitA->getKey("Inner"),0);
+  JawPit->setAxisControl(-3,ZVert);
+  JawPit->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));

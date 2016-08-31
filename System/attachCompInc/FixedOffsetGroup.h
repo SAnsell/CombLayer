@@ -37,13 +37,16 @@ namespace attachSystem
   
 struct offset
 {
+  double preXYAngle;  ///< pre-xy Angle
+  double preZAngle;   ///< pre-z Angle
   double xStep;       ///< x step
   double yStep;       ///< y step
   double zStep;       ///< z step
   double xyAngle;     ///< xy Angle
   double zAngle;      ///< z Angle
 
-  void copy(double&,double&,double&,double&,double&) const;
+  void copy(double&,double&,double&,double&,
+	    double&,double&,double&) const;
 };
   
 /*!
@@ -58,6 +61,8 @@ class FixedOffsetGroup  : public FixedGroup
 {
  protected:
 
+  double preXYAngle;  ///< pre-shift xy Angle
+  double preZAngle;   ///< pre-shift z Angle
   double xStep;       ///< x step
   double yStep;       ///< y step
   double zStep;       ///< z step

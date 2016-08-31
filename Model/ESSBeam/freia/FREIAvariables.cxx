@@ -79,7 +79,7 @@ FREIAvariables(FuncDataBase& Control)
   
   SGen.addWall(1,30.0,"CastIron");
   SGen.addRoof(1,30.0,"CastIron");
-  SGen.addFloor(1,30.0,"CastIron");
+  SGen.addFloor(1,50.0,"Concrete");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
@@ -216,7 +216,7 @@ FREIAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"freiaFOC3Blade",0.0,40.0,75.0);
 
 
-  PipeGen.generatePipe(Control,"freiaPipeOutA",2.0,450.0);
+  PipeGen.generatePipe(Control,"freiaPipeOutA",30.0,450.0);
   FGen.generateTaper(Control,"freiaOutFA",442.0,4.0,4.0,20.0,16.0);
 
   PGen.setFeLayer(6.0);
@@ -230,7 +230,7 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaOutACutShape","Circle");
   Control.addVariable("freiaOutACutRadius",5.0);
   
-  SGen.generateShield(Control,"freiaShieldA",470.0,40.0,40.0,40.0,4,8);
+  SGen.generateShield(Control,"freiaShieldA",470.0,40.0,40.0,60.0,4,8);
   JawGen.generateJaws(Control,"freiaCaveJaws",0.0);
 
   Control.addVariable("freiaOutBCutBackShape","Circle");

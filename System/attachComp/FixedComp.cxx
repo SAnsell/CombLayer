@@ -73,7 +73,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL) :
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& O) :
   keyName(KN),X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
-  Z(Geometry::Vec3D(0,0,1)),primeAxis(0),Origin(O),LU(NL)
+  Z(Geometry::Vec3D(0,0,1)),Origin(O),primeAxis(0),LU(NL)
   /*!
     Constructor 
     \param KN :: KeyName
@@ -136,23 +136,23 @@ FixedComp::operator=(const FixedComp& A)
 
 
 void
-FixedComp::setAxisControl(const size_t axisIndex,
+FixedComp::setAxisControl(const long int axisIndex,
 			  const Geometry::Vec3D& NAxis)
   /*!
     Set the new reorientation axis
-    \param axisIndex :: X/Y/Z for reorientation [0-2]
+    \param axisIndex :: X/Y/Z for reorientation [1-3]
     \param NAxis :: New Axis 
   */
 {
   ELog::RegMethod Rega("FixedComp","setAxisControl");
   if (NAxis.abs()<Geometry::zeroTol)
     throw ColErr::NumericalAbort("NAxis is zero");
-  if (axisIndex>2)
-    throw ColErr::IndexError<size_t>(axisIndex,2,"axisIndex");
+  if (axisIndex>3 || axisIndex<-3)
+    throw ColErr::IndexError<long int>(axisIndex,2,"axisIndex");
   
   
   orientateAxis=NAxis.unit(); ///< Axis for reorientation
-  primeAxis=axisIndex+1;
+  primeAxis=axisIndex;
   return;
 }
   
@@ -172,8 +172,9 @@ FixedComp::createUnitVector(const FixedComp& FC)
   Origin=FC.Origin;
   beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
-  if (primeAxis)
-    reOrientate(primeAxis-1,orientateAxis);
+
+  if (primeAxis>0) reOrientate();
+
 
   return;
 }
@@ -196,8 +197,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
-  if (primeAxis)
-    reOrientate(primeAxis-1,orientateAxis);
+  if (primeAxis>0) reOrientate();
   
   return;
 }
@@ -267,8 +267,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   Origin=OG;
   beamOrigin=OG;
   beamAxis=Y;
-  if (primeAxis)
-    reOrientate(primeAxis-1,orientateAxis);
+  if (primeAxis>0) reOrientate();
   return;
 }
   
@@ -308,6 +307,22 @@ FixedComp::makeOrthogonal()
   if (ZDir.dotProd(Z)<0.0)
     Z*-1;
   
+  return;
+}
+
+void
+FixedComp::reOrientate()
+  /*!
+    Calling function to reOrientate
+  */
+{
+  ELog::RegMethod RegA("FixedComp","reOrientate");
+
+  if (primeAxis>0)
+    reOrientate(static_cast<size_t>(primeAxis)-1,orientateAxis);
+  else if (primeAxis<0)
+    reOrientate(static_cast<size_t>(-primeAxis)-1,orientateAxis);
+  primeAxis=0;
   return;
 }
 

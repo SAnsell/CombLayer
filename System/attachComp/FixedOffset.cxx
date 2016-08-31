@@ -163,6 +163,7 @@ FixedOffset::applyOffset()
   FixedComp::applyAngleRotate(preXYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xyAngle,zAngle);
+  FixedComp::reOrientate();      // this might still be active
   return;
 }
 
