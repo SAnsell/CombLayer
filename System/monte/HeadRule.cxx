@@ -493,7 +493,7 @@ HeadRule::getLevel(const size_t levelNumber) const
         }
       else                           // PROCESS LEAF NODE:
         {
-          if (activeLevel<=levelNumber || 1>0)
+          if (activeLevel<=levelNumber)
             {
               Rule* tmpB=tmpA->leaf(0);
               Rule* tmpC=tmpA->leaf(1);

@@ -558,6 +558,12 @@ testHeadRule::testGetLevel()
   Tests.push_back(TTYPE("1 ",3," "));
   Tests.push_back(TTYPE("1 ",0,"1 "));
   Tests.push_back(TTYPE("1 2 ",0,"1  2"));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) (12 13)",1," 5:-6 "));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) (7 (12:13))",1,
+                        " 5:-6:12:13 "));
+  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6:(7 -8)) (7 (12:13))",2,
+                        " 7 -8 "));
+  Tests.push_back(TTYPE("1 2 ",0,"1  2"));
   
   for(const TTYPE& tc : Tests)
     {
