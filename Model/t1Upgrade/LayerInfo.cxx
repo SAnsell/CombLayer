@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/LayerInfo.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ namespace ts1System
 
 LayerInfo::LayerInfo(const double A,const double B,
 		     const double C,const double D,
-		     const double E,const double F)
+		     const double E,const double F) :
+  mat(0),Temp(0.0)
 /*!
   Ugly constructor
   \param A :: Front/Back
@@ -68,7 +69,8 @@ LayerInfo::LayerInfo(const double A,const double B,
 }
 
 LayerInfo::LayerInfo(const double A,const double B,
-		     const double C)
+		     const double C) :
+  mat(0),Temp(0.0)
 /*!
   Ugly constructor
   \param A :: Front/Back by 2
@@ -165,7 +167,7 @@ LayerInfo::setMat(const int M,const double T)
    */
 {
   mat=M;
-  Temp=fabs(T);
+  Temp=std::abs(T);
   return;
 }
 
@@ -183,8 +185,5 @@ LayerInfo::Item(const size_t Index) const
     }
   return V[Index];
 }
-
-
-
   
 }  // NAMESPACE ts1System

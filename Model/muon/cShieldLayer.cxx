@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muon/cShieldLayer.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,13 +67,14 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "cShieldLayer.h"
 
 namespace muSystem
 {
 
 cShieldLayer::cShieldLayer(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
   csLayerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(csLayerIndex+1)
   /*!
@@ -83,10 +84,8 @@ cShieldLayer::cShieldLayer(const std::string& Key)  :
 {}
 
 cShieldLayer::cShieldLayer(const cShieldLayer& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   csLayerIndex(A.csLayerIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xAngle(A.xAngle),yAngle(A.yAngle),zAngle(A.zAngle),
   height(A.height),depth(A.depth),width(A.width),
   steelMat(A.steelMat),nLay(A.nLay)
   /*!
@@ -105,15 +104,9 @@ cShieldLayer::operator=(const cShieldLayer& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xAngle=A.xAngle;
-      yAngle=A.yAngle;
-      zAngle=A.zAngle;
       height=A.height;
       depth=A.depth;
       width=A.width;
@@ -138,13 +131,7 @@ cShieldLayer::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("cShieldLayer","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xAngle=Control.EvalVar<double>(keyName+"Xangle");
-  yAngle=Control.EvalVar<double>(keyName+"Yangle");  
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedOffset::populate(Control);
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -157,19 +144,18 @@ cShieldLayer::populate(const FuncDataBase& Control)
 }
 
 void
-cShieldLayer::createUnitVector(const attachSystem::FixedComp& FC)
+cShieldLayer::createUnitVector(const attachSystem::FixedComp& FC,
+                               const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Object for origin
+    \param sideIndex :: link point [signed]
   */
 {
   ELog::RegMethod RegA("cShieldLayer","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(0,0,zAngle);  
-  applyAngleRotate(0,yAngle,0);
-  
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -277,18 +263,20 @@ cShieldLayer::createLinks()
 
 void
 cShieldLayer::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC)
+			const attachSystem::FixedComp& FC,
+                        const long int sideIndex)
 
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: Link point/direction
   */
 {
   ELog::RegMethod RegA("cShieldLayer","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
@@ -296,4 +284,4 @@ cShieldLayer::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE muSystem

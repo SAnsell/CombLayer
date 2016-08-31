@@ -435,9 +435,9 @@ FREIA::build(Simulation& System,
   ShieldA->setBack(JawPit->getKey("Mid"),1);
   ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
-  
+
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->createAll(System,*ShieldA,1);
+  VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);

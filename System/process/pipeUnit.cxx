@@ -81,7 +81,8 @@ pipeUnit::pipeUnit(const std::string& Key,const size_t Index) :
   attachSystem::FixedComp(StrFunc::makeString(Key,Index),3),
   attachSystem::ContainedComp(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1),nAngle(6),prev(0),next(0)
+  cellIndex(surfIndex+1),nAngle(6),prev(0),next(0),
+  activeFlag(511)
  /*!
    Constructor
    \param Key :: KeyName for full pipe

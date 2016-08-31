@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muon/muVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,12 +166,7 @@ MuonVariables(FuncDataBase& Control)
   Control.addVariable("ThirdCollInnerMat","Copper");     // Copper
 
   // Collimator shield 1 (Layered if needed)
-  Control.addVariable("FirstShieldXStep",0.0);  
   Control.addVariable("FirstShieldYStep",189.8);  
-  Control.addVariable("FirstShieldZStep",0.0);
-  Control.addVariable("FirstShieldXangle",0.0);
-  Control.addVariable("FirstShieldYangle",0.0);
-  Control.addVariable("FirstShieldZangle",0.0);    
   Control.addVariable("FirstShieldHeight",160.5);  
   Control.addVariable("FirstShieldDepth",100.0);  
   Control.addVariable("FirstShieldWidth",140.0);          
@@ -192,12 +187,8 @@ MuonVariables(FuncDataBase& Control)
 
   
   // Collimator shield 3 - Layered
-  Control.addVariable("ThirdShieldXStep",0.0);  
   Control.addVariable("ThirdShieldYStep",298.3);  
   Control.addVariable("ThirdShieldZStep",-24.2);
-  Control.addVariable("ThirdShieldXangle",0.0);
-  Control.addVariable("ThirdShieldYangle",0.0);
-  Control.addVariable("ThirdShieldZangle",0.0);  
   Control.addVariable("ThirdShieldHeight",320.0);  
   Control.addVariable("ThirdShieldDepth",76.0);  
   Control.addVariable("ThirdShieldWidth",166.0);        
@@ -567,11 +558,7 @@ MuonVariables(FuncDataBase& Control)
 
   // Shield Plug - Layered
   Control.addVariable("ShieldPlugXStep",392.675);  
-  Control.addVariable("ShieldPlugYStep",0.0);  
-  Control.addVariable("ShieldPlugZStep",0.0);
-  Control.addVariable("ShieldPlugXangle",0.0);
-  Control.addVariable("ShieldPlugYangle",0.0);
-  Control.addVariable("ShieldPlugZangle",90.0);  
+  Control.addVariable("ShieldPlugZAngle",90.0);  
   Control.addVariable("ShieldPlugHeight",240.0);  
   Control.addVariable("ShieldPlugDepth",191.55);  
   Control.addVariable("ShieldPlugWidth",240.0);        
