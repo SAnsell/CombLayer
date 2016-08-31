@@ -421,7 +421,7 @@ FREIA::build(Simulation& System,
   FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
   FOC3Disk->setCentreFlag(3);  // Z direction
   FOC3Disk->setOffsetFlag(1);  // Z direction
-  FOC3Disk->createAll(System,ChopperOutB->getKey("BuidBeam"),0);
+  FOC3Disk->createAll(System,ChopperOutB->getKey("BuildBeam"),0);
   
   JawPit->addInsertCell(voidCell);
   JawPit->createAll(System,OutPitA->getKey("Inner"),0);
