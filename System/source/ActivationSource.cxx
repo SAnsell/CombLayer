@@ -60,9 +60,12 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "WorkData.h"
-#include "World.h"
+#include "MXcards.h"
+#include "Zaid.h"
+#include "Material.h"
+#include "DBMaterial.h"
+#include "Simulation.h"
 #include "ActivationSource.h"
 
 namespace SDef
@@ -81,6 +84,71 @@ ActivationSource::~ActivationSource()
   */
 {}
 
+void
+ActivationSource::setBox(const Geometry::Vec3D& APt,
+			 const Geometry::Vec3D& BPt)
+  /*!
+    Set the box coordinates
+    \param APt :: Lower corner
+    \param BPt :: Upper corner
+   */
+
+{
+  ELog::RegMethod RegA("ActivationSource","setBox");
+
+  for(size_t i=0;i<3;i++)
+    if (BPt[i]-APt[i]<Geometry::zeroTol)
+      ELog::EM<<"Error with box coordinate: [Low - Hig] required :"
+	      <<APt<<":"<<BPt<<ELog::endErr;
+      
+  ABoxPt=APt;
+  BBoxPt=BPt;
+  return;
+}
+
+void
+ActivationSource::setBiasConst(const Geometry::Vec3D& Cent,
+			       const Geometry::Vec3D& AVec,
+			       const double D,const double A)
+  /*!
+    Set the box coordinates
+    \param Cent :: Origin Point
+    \param AVec :: Axis direction
+   */
+
+{
+  ELog::RegMethod RegA("ActivationSource","setBiasConst");
+
+  Origin=Cent;
+  Axis=AVec;
+  distWeight=D;
+  angleWeight=A;
+
+  return;
+}
+  
+void
+ActivationSource::addMaterial(const std::string& matName,
+			      const std::string& matFile)
+  /*!
+    Add a material to the system
+   */
+{
+  ELog::RegMethod RegA("ActivationSource","addMaterial");
+
+  
+  WorkData Flux;
+
+  if (!Flux.load(matFile,1,2,0))
+    throw ColErr::FileError(0,matFile,"Not Loaded");
+
+  const int matN=
+    ModelSupport::DBMaterial::Instance().getIndex(matName);
+
+  matFlux.emplace(matN,Flux);
+  return;
+}
+  
 
 void
 ActivationSource::createSource(Simulation& System)

@@ -77,6 +77,7 @@
 #include "masterRotate.h"
 #include "objectRegister.h"
 #include "ChipIRSource.h"
+#include "WorkData.h"
 #include "ActivationSource.h"
 #include "SourceSelector.h"
 

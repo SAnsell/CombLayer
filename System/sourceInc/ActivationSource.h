@@ -50,6 +50,7 @@ class ActivationSource
   Geometry::Vec3D ABoxPt;         ///< Bounding box corner
   Geometry::Vec3D BBoxPt;         ///< Bounding box corner
 
+  std::map<int,WorkData> matFlux; ///< material / flux
 
  public:
 

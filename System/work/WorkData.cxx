@@ -762,7 +762,7 @@ WorkData::load(const std::string& Fname,const int xCol,
     \return -ve on error / 0 on success
   */ 
 {
-  ELog::RegMethod REgA("WorkData","load");
+  ELog::RegMethod RegA("WorkData","load");
 
   std::ifstream IX;
   if (!Fname.empty())
