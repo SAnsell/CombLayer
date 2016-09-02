@@ -79,6 +79,9 @@ createInputs(inputParam& IParam)
 
   std::vector<std::string> RItems(10,"");
 
+  IParam.regItem("actFile","actFile");
+  IParam.regItem("actBox","actBox");
+  IParam.regItem("actWeight","actWeight");
   IParam.regFlag("a","axis");
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
@@ -122,7 +125,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
-  IParam.regItem("SF","sdefFile");
+  IParam.regItem("sdefFile","sdefFile");
   IParam.regDefItem<int>("SI","sdefIndex",1,1);
 
   std::vector<std::string> SItems(3,"");
@@ -186,6 +189,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
+  IParam.setDesc("actFile","FluxData : Outfile");
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");
@@ -225,7 +229,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("r","Renubmer cells");
   IParam.setDesc("report","Report a position/axis");
   IParam.setDesc("s","RND Seed");
-  IParam.setDesc("SF","File read source");
+  IParam.setDesc("sdefFile","File(s) for source");
   IParam.setDesc("SA","Source Angle [deg]");
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");

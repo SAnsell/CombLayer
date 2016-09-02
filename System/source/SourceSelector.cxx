@@ -77,6 +77,8 @@
 #include "masterRotate.h"
 #include "objectRegister.h"
 #include "ChipIRSource.h"
+#include "ActivationSource.h"
+#include "SourceSelector.h"
 
 namespace SDef
 {
@@ -254,6 +256,9 @@ sourceSelection(Simulation& System,
     SDef::createGammaSource(Control,"gammaSource",sourceCard);
   else if (sdefType=="Laser" || sdefType=="laser")
     SDef::createGammaSource(Control,"laserSource",sourceCard);
+  else if (sdefType=="Activation" || sdefType=="activation")
+    activationSelection(System,IParam);
+  //    SDef::activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
       if (FCPtr)
@@ -305,6 +310,7 @@ sourceSelection(Simulation& System,
   else
     {
       ELog::EM<<"sdefType :\n"
+	"Actiation :: Activation source \n"
 	"TS1 :: Target station one \n"
 	"TS2 :: Target station two \n"
 	"TS1Gauss :: Target station one [old gaussian beam] sigma = 15 mm \n"
@@ -323,4 +329,68 @@ sourceSelection(Simulation& System,
   return;
 }
 
+void
+activationSelection(Simulation& System,
+		    const mainSystem::inputParam& IParam)
+  /*!
+    Select all the info for activation output
+    \param System :: Simuation to use
+    \param IParam :: input parameters
+   */
+{
+  ELog::RegMethod RegA("SourceSelector","activationSelection");
+
+  //File for input/
+  if (IParam.flag("actFile"))
+    {
+      const std::string OName=
+	IParam.getDefValue<std::string>("test.source","actFile",0,1);
+    }
+
+  size_t index(0);
+  const Geometry::Vec3D APt=
+    IParam.getCntVec3D("actBox",0,index,"Start Point of box not defined");
+  const Geometry::Vec3D BPt=
+    IParam.getCntVec3D("actBox",0,index,"End Point of box not defined");
+
+  // WEIGHTING:
+  index=0;
+  const Geometry::Vec3D CPoint=
+    IParam.getCntVec3D("actBias",0,index,"Start Point of box not defined");
+  const Geometry::Vec3D Axis=
+    IParam.getCntVec3D("actBias",0,index,"Axis Line not defined");
+  const double distW=IParam.getDefValue<double>(2.0,"actBias",0,index);
+  const double angleW=IParam.getDefValue<double>(2.0,"actBias",0,index+1);
+
+  // MATERIAL:
+  std::vector<std::string> MatName;
+  std::vector<std::string> MatFile;
+  const size_t nP=IParam.setCnt("actMat");
+  for(size_t index=0;index<nP;index++)
+    {
+      const size_t nItems=IParam.itemCnt("actMat",index);
+      for(size_t j=0;j<nItems+1;j+=2)
+	{
+	  MatName.push_back
+	    (IParam.getValueError<std::string>
+	     ("actMat",index,j,"Material Name"));
+	  MatFile.push_back
+	    (IParam.getValueError<std::string>
+	     ("actMat",index,j+1,"Material File"));
+	}
+    }      
+  
+  SDef::ActivationSource AS;
+  AS.setBiasConst(CPoint,Axis,distW,angleW);
+  AS.setBox(APt,BPt);
+
+
+  for(size_t i=0;i<MatName.size();i++)
+    AS.addMaterial(MatName[i],MatFile[i]);
+
+  return;
+}
+  
+
+  
 } // NAMESPACE SDef
