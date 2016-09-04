@@ -376,8 +376,8 @@ FREIA::build(Simulation& System,
   FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
   FOC2Disk->setCentreFlag(3);  // Z direction
   FOC2Disk->setOffsetFlag(1);  // Z direction
-  FOC2Disk->createAll(System,ChopperE->getKey("BuildBeam"),0);
-
+  FOC2Disk->createAll(System,ChopperE->getKey("BuildBeam"),0);  
+  
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert

@@ -508,9 +508,10 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
       const std::string SectNum(StrFunc::makeString(i));
       const int LW=(i) ? divIndex+1 : lwIndex+3;
       const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;
-      const int cellN=getCell("roof"+SectNum); 
-      roofObj->createSector
-	(System,i,cellN,SMap.realSurf(LW),SMap.realSurf(RW));
+      const int cellN=getCell("roof"+SectNum);
+
+      roofObj->createSector(System,i,cellN,
+			    SMap.realSurf(LW),SMap.realSurf(RW));
       
       removeCell("roof"+SectNum);
       addCells("roof",roofObj->getCells("Sector"+SectNum));

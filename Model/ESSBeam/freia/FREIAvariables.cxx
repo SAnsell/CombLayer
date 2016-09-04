@@ -134,6 +134,7 @@ FREIAvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"freiaWFMBlade",0.0,40.0,75.0);
 
+  PipeGen.setPipe(14.0,0.5);
   PipeGen.generatePipe(Control,"freiaPipeD",2.0,125.0);
   FGen.generateBender(Control,"freiaBD",121.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
@@ -215,7 +216,6 @@ FREIAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"freiaFOC3Blade",0.0,40.0,75.0);
 
 
-  PipeGen.setPipe(14.0,0.5);
   PipeGen.generatePipe(Control,"freiaPipeOutA",30.0,450.0);
   FGen.generateTaper(Control,"freiaOutFA",442.0,4.0,4.0,20.0,16.0);
 

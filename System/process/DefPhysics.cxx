@@ -249,7 +249,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
           
           Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
           LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
-          ELog::EM<<"LP == "<<LP<<ELog::endDiag;
           LP.makeUnit();
 
           double angleZ=180.0*acos(LP[0])/M_PI;
@@ -272,9 +271,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  
 	  const Geometry::Quaternion QR=
 	    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(1,0,0),AxisVec);
-	  ELog::EM<<"Axis == "<<QR.getAxis()<<":"
-		  <<180*QR.getTheta()/M_PI<<":::"
-		  <<AxisVec<<ELog::endDiag;
           MR.addRotation(QR.getAxis(),
                          Geometry::Vec3D(0,0,0),-180.0*QR.getTheta()/M_PI);
         }
