@@ -245,7 +245,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  const std::string CItem=
             IParam.getDefValue<std::string>("2","angle",2);
 
-          const int zeroFlag=IParam.getDefValue<int>(0,"angle",3);
 	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
           
           Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
@@ -257,6 +256,27 @@ setDefRotation(const mainSystem::inputParam& IParam)
           if (LP[1]>0.0) angleZ*=-1;
           MR.addRotation(Geometry::Vec3D(0,0,1),
                          Geometry::Vec3D(0,0,0),angleZ);
+        }
+      else  if (AItem=="objAxis" || AItem=="ObjAxis")
+        {
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("2","angle",2);
+
+	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
+	  
+
+	  const Geometry::Vec3D AxisVec=
+            GIPtr->getSignedLinkAxis(sideIndex);
+	  
+	  const Geometry::Quaternion QR=
+	    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(1,0,0),AxisVec);
+	  ELog::EM<<"Axis == "<<QR.getAxis()<<":"
+		  <<180*QR.getTheta()/M_PI<<":::"
+		  <<AxisVec<<ELog::endDiag;
+          MR.addRotation(QR.getAxis(),
+                         Geometry::Vec3D(0,0,0),-180.0*QR.getTheta()/M_PI);
         }
       else if (AItem=="free" || AItem=="FREE")
 	{

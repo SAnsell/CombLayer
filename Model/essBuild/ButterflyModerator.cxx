@@ -235,6 +235,7 @@ int
 ButterflyModerator::getCommonSurf(const long int) const
   /*!
     Only components have reference values
+    \param  :: sideIndex
     \return surface number
   */
   
@@ -246,8 +247,10 @@ ButterflyModerator::getCommonSurf(const long int) const
 int
 ButterflyModerator::getLayerSurf(const size_t,const long int) const
 /*!
-    Only components have reference values
-    \return layer surface
+  [PLACEHOLDER] Only components have reference values
+    \param  :: layer, 0 is inner moderator [0-6]
+    \param  :: Side [0-3] // mid sides   
+  \return layer surface
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLayerSurf");
@@ -258,6 +261,8 @@ std::string
 ButterflyModerator::getLayerString(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
+    \param  :: layer, 0 is inner moderator [0-6]
+    \param  :: Side [0-3] // mid sides   
     \return surface string
   */
 {
@@ -269,9 +274,9 @@ Geometry::Vec3D
 ButterflyModerator::getSurfacePoint(const size_t,
 				    const long int) const
   /*!
-    Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    [PLACEHOLDER] Given a side and a layer calculate the link point
+    \param  :: layer, 0 is inner moderator [0-6]
+    \param  :: Side [0-3] // mid sides   
     \return Surface point
   */
 {

@@ -212,7 +212,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // Guide in wall
   FGen.clearYOffset();  
-  FGen.generateTaper(Control,"dreamFWall",308.0,6.0,6.0,6.0,6.0);
+  FGen.generateTaper(Control,"dreamFWall",318.0,6.0,6.0,6.0,6.0);
 
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);
@@ -223,7 +223,7 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"dreamPipeOutA",2.0,1422.0);  //
 
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"dreamFOutA",1422,4.5,4.97,2.24,3.05);
+  FGen.generateTaper(Control,"dreamFOutA",1418.0,4.5,4.97,2.24,3.05);
 
   // Guide after wall [+17.5m] after section 1  
   PipeGen.generatePipe(Control,"dreamPipeOutB",2.0,1750.0);

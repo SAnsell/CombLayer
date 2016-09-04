@@ -252,7 +252,7 @@ setESSSingle(defaultConfig& A,
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
      "NMX","VESPA","VOR","SHORTDREAM"};
 
-
+  size_t beamLineIndex(0);
   while(!LItems.empty())
     {
       bool portFlag=0;
@@ -260,7 +260,6 @@ setESSSingle(defaultConfig& A,
         {
           const std::string beamItem=LItems.front();
           const std::string portItem=(LItems.size()>1) ? LItems[1] : "";
-          
       
           std::map<std::string,std::string>::const_iterator mc=
             beamDef.find(beamItem);
@@ -272,25 +271,28 @@ setESSSingle(defaultConfig& A,
           
           if (mc!=beamDef.end())
             {
+	      ELog::EM<<"Beam Def  == "<<mc->first<<ELog::endDiag;
               if (!portFlag || portItem.empty())
                 {
-                  A.setMultiOption("beamlines",0,mc->second+" "+beamItem);
+                  A.setMultiOption("beamlines",beamLineIndex,
+				   mc->second+" "+beamItem);
                   A.setVar(mc->second+"Active",1);
                   if (filled)
                     A.setVar(mc->second+"Filled",1);
                 }
               else
                 {
-                  A.setMultiOption("beamlines",0,portItem+" "+beamItem);
+                  A.setMultiOption("beamlines",beamLineIndex,
+				   portItem+" "+beamItem);
                   A.setVar(portItem+"Active",1);
                   if (filled)
                     A.setVar(portItem+"Filled",1);
                 }
+	      beamLineIndex++;
             }
           else
             throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
         }
-      
       if (portFlag)
         LItems.erase(LItems.begin(),LItems.begin()+1);
       else

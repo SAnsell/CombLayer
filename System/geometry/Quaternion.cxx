@@ -135,17 +135,17 @@ Quaternion::calcQVRot(const Geometry::Vec3D& A,
     a vector and the new target vector rotated about the
     origin
     \param A :: Original vector
-    \param APrime :: Vector that is rotated too
-    \return Quaternion that rotates A to APrime
+    \param APrime :: Vector that is rotated to A
+    \return Quaternion that rotates APrime to A
   */
 {
   Geometry::Vec3D Axis=A*APrime;
   Axis.makeUnit();
   double Angle=A.dotProd(APrime)/(A.abs()*APrime.abs());
 
-  Angle=
-    (std::abs(Angle)<1.0-Geometry::zeroTol) ?
-      acos(Angle) : 0.0;
+  // Note the test for the 1.0+epsilon error:
+  Angle=(std::abs(Angle)<1.0-Geometry::zeroTol) ?
+    acos(Angle) : 0.0;
     
   Axis*=sin(Angle/2.0);
   return Quaternion(cos(Angle/2.0),Axis);

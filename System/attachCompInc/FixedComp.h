@@ -188,6 +188,7 @@ class FixedComp
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
 
+  /// remove secondary control on axis
   void clearAxisControl() { primeAxis=0; }
   void setAxisControl(const long int,const Geometry::Vec3D&);
   virtual void applyRotation(const localRotate&);
