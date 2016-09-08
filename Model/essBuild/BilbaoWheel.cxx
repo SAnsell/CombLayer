@@ -562,19 +562,22 @@ BilbaoWheel::createObjects(Simulation& System)
 
   int SI(wheelIndex);
   int nInner(0); // number of inner cells (must be 1)
+  int mat(0);
   for(size_t i=0;i<nLayers;i++)
     {
+      mat = matNum[matTYPE[i]];
+
       Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
 
-      if ((matTYPE[i]==3) && (engActive))
+      if ((engActive) && (mat==wMat))
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,matNum[matTYPE[i]],mainTemp,Out));  
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	  CellMap::setCell("Inner",cellIndex-1);
 	  nInner++;
 	  if (nInner>1)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
 	} else
-	  divideRadial(System, Out, matNum[matTYPE[i]]);
+	  divideRadial(System, Out, mat);
 
       SI+=10;
     }
