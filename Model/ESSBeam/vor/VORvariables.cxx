@@ -147,12 +147,108 @@ VORvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vorFWall",316.0,6.0,6.0,6.0,6.0);
 
+  PGen.setFeLayer(6.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"vorOutPitA",0.0,25.0,120.0,110.0,40.0);
+
+  CGen.setMainRadius(33.0);
+  CGen.setFrame(80.0,80.0);
+  CGen.generateChopper(Control,"vorChopperOutA",20.0,15.0,9.55);
+
+  Control.addVariable("vorFOCExitPortShape","Circle");
+  Control.addVariable("vorFOCExitPortRadius",5.0);
+
+
+  // FOC DISK A
+  BGen.setThick({0.2});
+  BGen.setInnerThick({0.4});
+  BGen.setMaterials("Inconnel","B4C");
+  BGen.addPhase({-15,165},{30.0,30.0});   // chopper open
+  BGen.generateBlades(Control,"vorFOCDisk",2.0,20.0,30.0);
+
   // Shield/Pipe/Guide after bunker wall
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"vorShieldA",1430.0,40.0,40.0,40.0,3,8);
 
-  PipeGen.generatePipe(Control,"vorPipeOutA",2.0,208.0);
-  FGen.generateTaper(Control,"vorFOutA",204.0,3.4028,3.87,4.2,5.906);
+  PipeGen.generatePipe(Control,"vorPipeOutA",2.0,1176.0);
+  FGen.generateTaper(Control,"vorFOutA",1170.0,3.4028,3.87,4.2,5.906);
+
+  PGen.setFeLayer(6.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"vorOutPitB",1200.0,25.0,120.0,110.0,40.0);
+
+  Control.addVariable("vorFOCEntryPortBShape","Circle");
+  Control.addVariable("vorFOCEntryPortBRadius",5.0);
+
+  Control.addVariable("vorFOCExitPortBShape","Circle");
+  Control.addVariable("vorFOCExitPortBRadius",5.0);
+
+  CGen.setMainRadius(26.0);
+  CGen.setFrame(60.0,60.0);
+  CGen.generateChopper(Control,"vorChopperOutB",22.0,10.0,4.55);    
+
+  // FOCB single disk chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"vorFOCBBlade",0.0,70.0,90.0);
+
+  SGen.setRFLayers(3,8);
+  SGen.generateShield(Control,"vorShieldB",900.0,40.0,40.0,40.0,3,8);
+
+  PipeGen.generatePipe(Control,"vorPipeOutC",2.0,814.0);
+  FGen.generateTaper(Control,"vorFOutC",808.0,4.0,4.0,20.0,16.0);
+  
+
+      // HUT:
+  Control.addVariable("vorCaveXStep",80.0);
+  Control.addVariable("vorCaveYStep",800.0);
+  Control.addVariable("vorCaveVoidHeight",200.0);
+  Control.addVariable("vorCaveVoidDepth",183.0);
+  Control.addVariable("vorCaveVoidWidth",640.0);
+  Control.addVariable("vorCaveVoidLength",600.0);
+  Control.addVariable("vorCaveVoidFrontCut",160.0);
+  Control.addVariable("vorCaveVoidBackCut",90.0);
+  Control.addVariable("vorCaveVoidFrontStep",60.0);
+  Control.addVariable("vorCaveVoidBackStep",60.0);
+
+  Control.addVariable("vorCaveFeThick",25.0);
+  Control.addVariable("vorCaveConcThick",35.0);
+
+  Control.addVariable("vorCaveFeMat","Stainless304");
+  Control.addVariable("vorCaveConcMat","Concrete");
+
+
+  Control.addVariable("vorCavePortShape","Circle");
+  Control.addVariable("vorCavePortRadius",5.0);
+
+    // DetectorTank
+  Control.addVariable("vorTankYStep",300.0);
+
+  Control.addVariable("vorTankNLayers",2.0);
+  Control.addVariable("vorTankInnerRadius",10.0);
+  Control.addVariable("vorTankOuterRadius",300.0);
+  Control.addVariable("vorTankHeight",100.0);
+  Control.addVariable("vorTankMidAngle",-40.0);
+  Control.addVariable("vorTankFrontThick",2.0);
+  Control.addVariable("vorTankInnerThick",2.0);
+  Control.addVariable("vorTankRoofThick",1.0);
+  Control.addVariable("vorTankBackThick",3.0);
+  Control.addVariable("vorTankWallMat","Stainless304");
+
+  
+  // SAMPLE
+  Control.addVariable("vorSampleXStep",0.0);
+  Control.addVariable("vorSampleYStep",0.0);
+  Control.addVariable("vorSampleZStep",0.0);
+  Control.addVariable("vorSampleXYangle",0.0);
+  Control.addVariable("vorSampleZangle",0.0);
+  Control.addVariable("vorSampleNLayers",2.0);
+  Control.addVariable("vorSampleRadius1",0.5);
+  Control.addVariable("vorSampleRadius2",0.6);
+  Control.addVariable("vorSampleHeight1",2.0);
+  Control.addVariable("vorSampleHeight2",2.1);
+  Control.addVariable("vorSampleMaterial1","H2O");
+  Control.addVariable("vorSampleMaterial2","Aluminium");
 
   return;
 }

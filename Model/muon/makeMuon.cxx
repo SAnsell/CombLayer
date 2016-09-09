@@ -315,10 +315,12 @@ makeMuon::build(Simulation* SimPtr,
       // Shield plug 
       ShieldPlugObj->addInsertCell(74123);
       ShieldPlugObj->createAll(*SimPtr,World::masterOrigin(),0);
+      attachSystem::addToInsertForced(*SimPtr,*MuRoomObj,*ShieldPlugObj);
 
       // Muon vacuum tube 4 & 5    
       MuTube4Obj->createAll(*SimPtr,World::masterOrigin());
       attachSystem::addToInsertForced(*SimPtr,*ShieldPlugObj,*MuTube4Obj);
+      attachSystem::addToInsertForced(*SimPtr,*MuTube4Obj,*MuTube2Obj);
 
       MuTube5Obj->addInsertCell(74123);
       MuTube5Obj->createAll(*SimPtr,World::masterOrigin());      
