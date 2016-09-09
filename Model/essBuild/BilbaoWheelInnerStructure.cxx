@@ -175,17 +175,17 @@ namespace essSystem
     brickGapWidth=Control.EvalVar<double>(keyName+"BrickGapWidth");
     brickGapMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickGapMat");
 
-    nSectors=Control.EvalVar<int>(keyName+"NSectors");
+    nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
     if (nSectors<1)
       ELog::EM << "NSectors must be >= 1" << ELog::endErr;
     secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
     secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
 
-    nBrickSectors=Control.EvalVar<int>(keyName+"NBrickSectors");
+    nBrickSectors=Control.EvalVar<size_t>(keyName+"NBrickSectors");
     if (nBrickSectors>nSectors)
       throw ColErr::RangeError<double>(nBrickSectors, 0, nSectors, "nBrickSectors can not exceed nSectors:");
 
-    nSteelLayers=Control.EvalVar<int>(keyName+"NSteelLayers");
+    nSteelLayers=Control.EvalVar<size_t>(keyName+"NSteelLayers");
     brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
 
     return;
@@ -223,7 +223,7 @@ namespace essSystem
   int SIsec(insIndex+0);
   Geometry::Plane *p[nSectors*2];
   int i=0; // plane counter
-  for (int j=0; j<nSectors; j++)
+  for (size_t j=0; j<nSectors; j++)
     {
       theta = j*dTheta;
       // -dTheta is needed to shoot a proton in the center of a sector, but not between them
@@ -239,7 +239,7 @@ namespace essSystem
   // bricks
   i=0;
   Geometry::Plane *pmin, *pmax;
-  for (int j=0; j<nSectors; j++)
+  for (size_t j=0; j<nSectors; j++)
     {
       //      std::cout << j << std::endl;
       pmin = p[i+2];
@@ -288,7 +288,7 @@ namespace essSystem
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
     else 
       {
-	for (int j=0; j<nSectors; j++)
+	for (size_t j=0; j<nSectors; j++)
 	  {
 	    // Tungsten
 	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
@@ -421,7 +421,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   void
   BilbaoWheelInnerStructure::createBricks(Simulation& System, attachSystem::FixedComp& Wheel,
 					  const std::string side1, const std::string side2,
-					  const int sector)
+					  const size_t sector)
   /*
     Create cells for bricks in the given sector
    */
@@ -435,7 +435,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
     const std::string outerCyl = Wheel.getLinkString(9);
 
     std::string Out,Out1;
-    int SI(insIndex+1000*(sector+1));
+    int SI(insIndex+1000*(static_cast<int>(sector)+1));
     // He layer in front of the bricks
     Out = ModelSupport::getComposite(SMap, SI, " 5 ");
     System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+outerCyl));
@@ -446,10 +446,10 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 
     // bricks
     std::string layerStr;
-    for (int i=0; i<nBrickLayers; i++)
+    for (size_t i=0; i<nBrickLayers; i++)
       {
 	layerStr = ModelSupport::getComposite(SMap, SI, " -5  6 ");
-	int SJ(insIndex+1000*(sector+1));
+	int SJ(insIndex+1000*(static_cast<int>(sector)+1));
 	for (int j=0; j<27; j++) // !!! TMP
 	  {
 	    int bOffset = i%2 ? SJ+10 : SJ;

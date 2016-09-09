@@ -50,14 +50,14 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   double brickGapWidth;           ///< Distance between bricks in normal to radial direction
   int    brickGapMat;             ///< Material of gap between bricks
 
-  int    nSectors;                ///< Number of sectors in Tungsten
+  size_t nSectors;                ///< Number of sectors in Tungsten
   double secSepThick;             ///< Thickness of sector separator
   int    secSepMat;               ///< Material of sector separator
 
-  int    nBrickSectors;           ///< number of sectors filled with bricks
-  int    nBrickLayers;            ///< number of radial brick layers
+  size_t nBrickSectors;           ///< number of sectors filled with bricks
+  size_t nBrickLayers;            ///< number of radial brick layers
   std::vector<int>  nBricks;      ///< number of bricks in each radial layer
-  int    nSteelLayers;            ///< number of brick layers made of steel (counting from internal cylinder)
+  size_t nSteelLayers;            ///< number of brick layers made of steel (counting from internal cylinder)
   int    brickSteelMat;           ///< Steel brick material
 
   void populate(const FuncDataBase&);
@@ -70,10 +70,10 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   void createBrickSurfaces(const attachSystem::FixedComp&,
 			   const Geometry::Plane*, const Geometry::Plane*, const size_t);
   void createBricks(Simulation&, attachSystem::FixedComp&,
-		    const std::string, const std::string, const int);
+		    const std::string, const std::string, const size_t);
 
   // polar angle of the given sector's centre. Clockwise starting from -Y
-  inline double getSectorAngle(int i) const { return (2*(i+1)-1)*M_PI/nSectors * 180.0/M_PI; }
+  inline double getSectorAngle(size_t i) const { return (2*(i+1)-1)*M_PI/nSectors * 180.0/M_PI; }
 
  public:
 
