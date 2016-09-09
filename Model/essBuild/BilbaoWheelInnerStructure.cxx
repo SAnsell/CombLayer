@@ -316,104 +316,107 @@ namespace essSystem
     return; 
   }
 
-  void
-  BilbaoWheelInnerStructure::createBrickSurfaces(const attachSystem::FixedComp& Wheel,
-						 const Geometry::Plane *pSide1,
-						 const Geometry::Plane *pSide2,
-						 const int sector)
+void
+BilbaoWheelInnerStructure::createBrickSurfaces
+(const attachSystem::FixedComp& Wheel,const Geometry::Plane *pSide1,
+ const Geometry::Plane *pSide2,const size_t sector)
   /*
     Creates surfaces for individual Tungsten bricks
-    pSide1 :: wheel segment side plane
-    pSide2 :: wheel segment side plane
-    sector :: number of sector for surface index offset
-   */
-  {
-    ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
+    \pararm Wheel 
+    \param pSide1 :: wheel segment side plane
+    \parampSide2 :: wheel segment side plane
+    \param sector :: number of sector for surface index offset
+    \todo THIS METHOD IS SIMPLY A MESS.
+  */
+{
+  ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
+  
+  const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
+  const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
+  
+  const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
+  
+  const double sectorAngle = getSectorAngle(sector)*M_PI/180.0;
+  Geometry::Vec3D nearPt(125*sin(sectorAngle), -125*cos(sectorAngle), 0);
+  nearPt += Origin;
+  
+  Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
+  Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
+  Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
+  
+  // radial planes
+  int SI(insIndex+1000*(static_cast<int>(sector)+1));
+  // first (outermost) layer
+  Geometry::Plane *prad1 = 0; // first radial plane of the bricks
+  Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
+  size_t iLayer=0;
+  for (;;) // while we are between outer and inner cylinders
+    {
+      if (iLayer==0)
+	{
+	  // CHANGE FROM (0,0,0) as that is a NORMAL!!!
+	  prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3,Geometry::Vec3D(0.0, 0.0, 0.0));
+	}
+      else
+	{
+	  // plane which goes after brick and gap
+	  ModelSupport::buildShiftedPlane(SMap, SI+5, prad1,
+					  -(brickLen+brickGapLen)*iLayer);
+	}
+      
+      // back side of the brick
+      Geometry::Plane *ptmp =
+	ModelSupport::buildShiftedPlane
+	(SMap, SI+6, prad1,-((brickLen+brickGapLen)*iLayer+brickLen));
+      try
+	{
+	  p4 = SurInter::getPoint(ptmp,innerCyl,pz,nearPt);
+	}
+      catch (ColErr::IndexError<size_t>& IE)
+	{
+	  //	    std::cout << "does not intersept" << std::endl;
+	}
 
-    const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
-    const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
-
-    const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
-
-    const double sectorAngle = getSectorAngle(sector)*M_PI/180.0;
-    Geometry::Vec3D nearPt(125*sin(sectorAngle), -125*cos(sectorAngle), 0);
-    nearPt += Origin;
-
-    Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
-    Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
-    Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
-
-    // radial planes
-    int SI(insIndex+1000*(sector+1));
-    // first (outermost) layer
-    Geometry::Plane *prad1 = 0; // first radial plane of the bricks
-    Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
-    int iLayer=0;
-    for (;;) // while we are between outer and inner cylinders
-      {
-	if (iLayer==0)
-	  {
-	    //std::cout << "here" << sector << " " << " " << SI << " " << iLayer << std::endl;
-	    prad1 = ModelSupport::buildPlane(SMap, SI+5, p1, p2, p3,
-					     Geometry::Vec3D(0.0, 0.0, 0.0));
-	  }
-	else
-	  {
-	    // plane which goes after brick and gap
-	    ModelSupport::buildShiftedPlane(SMap, SI+5, prad1, -(brickLen+brickGapLen)*iLayer);
-	  }
-
-	// back side of the brick
-	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SI+6, prad1,
-								-((brickLen+brickGapLen)*iLayer+brickLen));
-	try
-	  {
-	    p4 = SurInter::getPoint(ptmp, innerCyl, pz, nearPt);
-	  }
-	catch (ColErr::IndexError<size_t>& IE)
-	  {
-	    //	    std::cout << "did not intersept" << std::endl;
-	  }
-
-	if (p4.abs()>Geometry::zeroTol) // if back of the brick crosses inner surface
-	  {
-	    nBrickLayers = iLayer;
-	    //	    ELog::EM << "Number of birck layers: " << nBrickLayers << ELog::endDiag;
-	    break;
-	  }
-
-	iLayer++;
-	SI += 10;
-      }
-
-    // tangential (perpendicular to radial) planes
-    // only 2 layers are needed since other layers use the same planes
-    Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
-    int SJ(insIndex+1000*(sector+1));
-    for (int i=0; i<50; i++)
-      {
-	// 1st layer
-	if (i==0)
-	  ptan1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
-	else // after brick and gap
-	  ModelSupport::buildShiftedPlane(SMap, SJ+1, ptan1,
-					  i*(brickWidth+brickGapWidth)); 
-	
-	// after brick
-	Geometry::Plane *ptmp = ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
-					i*(brickWidth+brickGapWidth)+brickWidth);
-	
-	// 2nd layer
-	// after brick
-	ModelSupport::buildShiftedPlane(SMap, SJ+11, ptan1,
-					(2*i+1)*(brickWidth+brickGapWidth)/2.0-brickWidth-brickGapWidth);
-	// after brick and gap
-	ModelSupport::buildShiftedPlane(SMap, SJ+12, ptan1,
+      // if back of the brick crosses inner surface
+      if (p4.abs()>Geometry::zeroTol) 
+	{
+	  nBrickLayers = iLayer;
+	  break;
+	}
+      
+      iLayer++;
+      SI += 10;
+    }
+  
+  // tangential (perpendicular to radial) planes
+  // only 2 layers are needed since other layers use the same planes
+  Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
+  int SJ(insIndex+1000*(static_cast<int>(sector)+1));
+  for (int i=0; i<50; i++)
+    {
+      // 1st layer
+      if (i==0)
+	ptan1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
+      else // after brick and gap
+	ModelSupport::buildShiftedPlane(SMap, SJ+1, ptan1,
+					i*(brickWidth+brickGapWidth)); 
+      
+      // after brick
+      ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
+				      i*(brickWidth+brickGapWidth)+brickWidth);
+      
+      // 2nd layer
+      // after brick
+      ModelSupport::buildShiftedPlane(SMap, SJ+11, ptan1,
+				      (2*i+1)*(brickWidth+brickGapWidth)/2.0-brickWidth-brickGapWidth);
+      // after brick and gap
+      ModelSupport::buildShiftedPlane(SMap, SJ+12, ptan1,
 					(2*i+1)*(brickWidth+brickGapWidth)/2.0+brickWidth-brickWidth-brickGapWidth);
-
+	
 	SJ += 20;
       }
-  }
+    return;
+}
 
   void
   BilbaoWheelInnerStructure::createBricks(Simulation& System, attachSystem::FixedComp& Wheel,

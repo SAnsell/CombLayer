@@ -68,7 +68,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   void createLinks();
 
   void createBrickSurfaces(const attachSystem::FixedComp&,
-			   const Geometry::Plane*, const Geometry::Plane*, const int);
+			   const Geometry::Plane*, const Geometry::Plane*, const size_t);
   void createBricks(Simulation&, attachSystem::FixedComp&,
 		    const std::string, const std::string, const int);
 
