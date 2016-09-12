@@ -42,6 +42,8 @@ class ActivationSource
 {
  private:
 
+  size_t nPoints;                 ///< Number of points
+  
   Geometry::Vec3D Origin;         ///< Origin 
   Geometry::Vec3D Axis;           ///< Beam Axis
   double distWeight;              ///< Distance weight
@@ -59,13 +61,15 @@ class ActivationSource
   ActivationSource& operator=(const ActivationSource&);
   ~ActivationSource();
 
-  /// Set cut energy
+  /// Set number of output points
+  void setNPoints(const size_t N) { nPoints=N; }
   void addMaterial(const std::string&,const std::string&);
+
   void setBiasConst(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		    const double,const double);
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
     
-  void createSource(Simulation&);
+  void createSource(Simulation&,const std::string&);
 		 
   
 };

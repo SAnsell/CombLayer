@@ -65,6 +65,7 @@
 #include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "ModeCard.h"
 #include "Simulation.h"
 #include "ActivationSource.h"
 
@@ -132,11 +133,11 @@ ActivationSource::addMaterial(const std::string& matName,
 			      const std::string& matFile)
   /*!
     Add a material to the system
+    \parma matName :: material name 
    */
 {
   ELog::RegMethod RegA("ActivationSource","addMaterial");
 
-  
   WorkData Flux;
 
   if (!Flux.load(matFile,1,2,0))
@@ -151,14 +152,22 @@ ActivationSource::addMaterial(const std::string& matName,
   
 
 void
-ActivationSource::createSource(Simulation& System)
+ActivationSource::createSource(Simulation& System,
+                               const std::string& outputName)
   /*!
     Create all the source
     \param Simuation :: 
     \param souceCard :: Source Term
+    \param outputName :: Output file
    */
 {
-  ELog::RegMethod RegA("ActivationSource","createSourcce");
+  ELog::RegMethod RegA("ActivationSource","createSource");
+
+  for(size_t i=0;i<nPoints;i++)
+    {
+      // construct cone on axis
+    }
+  
   return;
 }
 

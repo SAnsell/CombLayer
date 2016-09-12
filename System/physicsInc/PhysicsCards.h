@@ -47,7 +47,7 @@ class PhysicsCards
 {
  private:
   
-  int nps;                             ///< number of particles to run
+  size_t nps;                          ///< number of particles to run
   int histp;                           ///< Add a histp line
   tallySystem::NList<int> histpCells;  ///< cells for the histp list
 
@@ -123,7 +123,8 @@ class PhysicsCards
   PWTControl& getPWTCard() { return *PWTCard; }
   /// Access DXTControl card
   DXTControl& getDXTCard() { return *DXTCard; }
-  
+  /// Access to NPS
+  size_t getNPS() const { return nps; }     
   // ALL Particle/Type
   int processCard(const std::string&);
   void removeCell(const int);
@@ -135,7 +136,7 @@ class PhysicsCards
   
   void setPWT(const std::vector<int>&,const double =1.0);
   void setPWT(const int,const double);
-  void setNPS(const int N) { nps=N; }      ///< Set the Number of particles
+  void setNPS(const size_t N) { nps=N; }      ///< Set the Number of particles
   void setRND(const long int,const long int =0);
   template<typename T>
   void setPTRAC(const std::string&,const T&);

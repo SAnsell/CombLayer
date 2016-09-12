@@ -342,11 +342,8 @@ activationSelection(Simulation& System,
   ELog::RegMethod RegA("SourceSelector","activationSelection");
 
   //File for input/
-  if (IParam.flag("actFile"))
-    {
-      const std::string OName=
-	IParam.getDefValue<std::string>("test.source","actFile",0,1);
-    }
+  const std::string OName=
+    IParam.getDefValue<std::string>("test.source","actFile",0,1);
 
   size_t index(0);
   const Geometry::Vec3D APt=
@@ -385,9 +382,11 @@ activationSelection(Simulation& System,
   AS.setBiasConst(CPoint,Axis,distW,angleW);
   AS.setBox(APt,BPt);
 
-
   for(size_t i=0;i<MatName.size();i++)
     AS.addMaterial(MatName[i],MatFile[i]);
+
+  AS.setNPoints(System.getPC().getNPS());
+  AS.createSource(System,OName);
 
   return;
 }

@@ -342,7 +342,7 @@ setDefaultPhysics(Simulation& System,
   const std::string PModel=IParam.getValue<std::string>("physModel");
   setPhysicsModel(lea,PModel);
 
-  PC.setNPS(IParam.getValue<int>("nps"));
+  PC.setNPS(IParam.getValue<size_t>("nps"));
   PC.setRND(IParam.getValue<long int>("random"));	
   PC.setVoidCard(IParam.flag("void"));
 
