@@ -29,10 +29,10 @@ namespace essSystem
 
 /*!
   \class WedgeItem
-  \author S. Ansell
+  \author S. Ansell / K. Batkov
   \version 1.0
-  \date April 2013
-  \brief Wedge Item  [single shutter]
+  \date September 2016
+  \brief Flight line Wedge Item
 */
 
 class WedgeItem : public attachSystem::ContainedComp,
@@ -40,17 +40,14 @@ class WedgeItem : public attachSystem::ContainedComp,
 {
  private:
 
-  const std::string baseName;     ///< BaseName
-  const int wedgeIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
+  const int wedgeIndex;          ///< Index of surface offset
+  int cellIndex;                 ///< Cell index
 
+  double length;                 ///< Length
+  double  width;                 ///< Base width
+  double  theta;                 ///< Angular position. theta=0 along the proton beam.
 
-  size_t nLayer;
-  std::vector<double> radius;    ///< Radial cuts [nlayer-1]
-  std::vector<double> width;     ///< width of external
-  std::vector<double> height;    ///< height of external
-
-  int mat;                     ///< reflector material
+  int mat;                       ///< material
 
   // Functions:
 
@@ -58,18 +55,20 @@ class WedgeItem : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
-  void createObjects(Simulation&,const FixedComp&,const size_t,const size_t);
+  void createObjects(Simulation&,
+		     const FixedComp&,const int,
+		     const FixedComp&, const int, const int);
   void createLinks();
 
  public:
 
-  WedgeItem(const int,const std::string&);
+  WedgeItem(const std::string&);
   WedgeItem(const WedgeItem&);
   WedgeItem& operator=(const WedgeItem&);
   virtual ~WedgeItem();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t);
+  void createAll(Simulation&,const attachSystem::FixedComp&, const int,
+		 const attachSystem::FixedComp&, const int, const int);
   
 };
 

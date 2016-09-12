@@ -539,7 +539,12 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TSMainBuildingDepth",  750.0);
   Control.addVariable("TSMainBuildingMainMat",  "Concrete");
   Control.addVariable("TSMainBuildingRoomMat",  "Void");
-  
+
+  Control.addVariable("WedgeItemLength",5.0);
+  Control.addVariable("WedgeItemWidth", 10.0);
+  Control.addVariable("WedgeItemTheta", 45.0);
+  Control.addVariable("WedgeItemMat","Void");
+
   
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);

@@ -81,10 +81,9 @@
 namespace essSystem
 {
 
-WedgeItem::WedgeItem(const int BN,const std::string& Key)  :
+WedgeItem::WedgeItem(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key+StrFunc::makeString(BN),6),
-  baseName(Key),
+  attachSystem::FixedOffset(Key,6),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wedgeIndex+1)
   /*!
@@ -95,10 +94,10 @@ WedgeItem::WedgeItem(const int BN,const std::string& Key)  :
 
 WedgeItem::WedgeItem(const WedgeItem& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  baseName(A.baseName),wedgeIndex(A.wedgeIndex),
+  wedgeIndex(A.wedgeIndex),
   cellIndex(A.cellIndex),
-  nLayer(A.nLayer),radius(A.radius),width(A.width),
-  height(A.height),mat(A.mat)
+  length(A.length),width(A.width),
+  theta(A.theta),mat(A.mat)
   /*!
     Copy constructor
     \param A :: WedgeItem to copy
@@ -118,10 +117,9 @@ WedgeItem::operator=(const WedgeItem& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      nLayer=A.nLayer;
-      radius=A.radius;
+      length=A.length;
       width=A.width;
-      height=A.height;
+      theta=A.theta;
       mat=A.mat;
     }
   return *this;
@@ -143,27 +141,15 @@ WedgeItem::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("WedgeItem","populate");
 
   FixedOffset::populate(Control);
+
+  ELog::EM<< "keyName: " << keyName << ELog::endDiag;
   
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"NLayer",baseName+"Mat");				 
+  length=Control.EvalVar<double>(keyName+"Length");
+  width=Control.EvalVar<double>(keyName+"Width");
+  theta=Control.EvalVar<double>(keyName+"Theta");
 
-  nLayer=Control.EvalPair<size_t>(keyName,baseName,"NLayer");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-  if (!nLayer) return;
-  
-  for(size_t i=0;i<nLayer;i++)
-    {
-      const std::string AStr=StrFunc::makeString(i);
-      const std::string BStr=StrFunc::makeString(i+1);
-      if (i) 
-	radius.push_back(Control.EvalPair<double>
-			 (keyName,baseName,"Radius"+AStr));
-	  
- 	width.push_back(Control.EvalPair<double>
-			(keyName,baseName,"Width"+BStr));
-	height.push_back(Control.EvalPair<double>
-			 (keyName,baseName,"Height"+BStr));
-
-    }
   return;
 }
   
@@ -191,20 +177,13 @@ WedgeItem::createSurfaces()
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
-  // rotation of axis:
+  // divider:
+  ModelSupport::buildPlane(SMap,wedgeIndex+3,Origin,X);
 
-  int RI(wedgeIndex);
-  ModelSupport::buildPlane(SMap,wedgeIndex,Origin,Y);  
-  for(size_t i=0;i<nLayer;i++)
-    {
-      if (i)
-	ModelSupport::buildCylinder(SMap,RI+7,Origin,Z,radius[i-1]);
-      ModelSupport::buildPlane(SMap,RI+3,Origin-X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,RI+4,Origin+X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,RI+5,Origin-Z*(height[i]/2.0),Z);
-      ModelSupport::buildPlane(SMap,RI+6,Origin+Z*(height[i]/2.0),Z);
-      RI+=10;
-    }
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+1,Origin-Y*width/2.0,Y,Z,theta);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+2,Origin+Y*width/2.0,Y,Z,theta);
+
+  ModelSupport::buildCylinder(SMap,wedgeIndex+7,Origin,Z,100);
 
   return;
 }
@@ -212,34 +191,25 @@ WedgeItem::createSurfaces()
 void
 WedgeItem::createObjects(Simulation& System,
 			 const attachSystem::FixedComp& FC,
-			 const size_t innerIndex,
-			 const size_t outerIndex)
+			 const int baseSurf,
+			 const attachSystem::FixedComp& FL,
+			 const int top, const int bottom)
   /*!
     Adds the all the components
-    \param System :: Simulation to create objects in
-    \param FC :: Main body 
-    \param innerIndex :: Index of inner surf [typically 0]
-    \param outerIndex :: Index of outer surf [typically 1]
+    \param System :: Simulation item
+    other parameters are the same as in WedgeItem::createAll
   */
 {
   ELog::RegMethod RegA("WedgeItem","createObjects");
 
   std::string Out;
-  int RI(wedgeIndex);
-  for(size_t i=0;i<nLayer;i++)
-    {
-      Out=ModelSupport::getComposite(SMap,RI,wedgeIndex,"1M 3 -4 5 -6 ");
-      Out+=(i) ? 
-	ModelSupport::getComposite(SMap,RI," 7 ") :
-	FC.getLinkString(innerIndex);
 
-      Out+=(i!=nLayer-1) ? 
-	ModelSupport::getComposite(SMap,RI+10," -7 ") :
-	FC.getLinkString(outerIndex);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-      RI+=10;
-    }
+  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 3 1 -2 7 ") +
+    FC.getSignedLinkString(baseSurf) +
+    FL.getSignedLinkString(top) + FL.getSignedLinkString(bottom);
   
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+
   addOuterSurf(Out);
   return;
 }
@@ -252,39 +222,23 @@ WedgeItem::createLinks()
 {
   ELog::RegMethod RegA("WedgeItem","createLinks");
 
-  if (nLayer>1)
-    {
-      size_t index(0);
-      for(size_t j=0;j<2;j++)
-        {
-	  const size_t i(nLayer-(j+1));
-	  
-	  FixedComp::setConnect(index,Origin-Z*height[i]/2.0,-Z);  // base
-	  FixedComp::setConnect(index+1,Origin+Z*height[i]/2.0,Z);  // base
-	  FixedComp::setConnect(index+2,Origin+Y*radius[i],Y);   // outer point
-	  
-	  const int RI(static_cast<int>(i)*10+wedgeIndex);
-	  FixedComp::setLinkSurf(index,-SMap.realSurf(RI+5));
-	  FixedComp::setLinkSurf(index+1,SMap.realSurf(RI+6));
-	  FixedComp::setLinkSurf(index+2,SMap.realSurf(RI+7));
-	  index+=3;
-	}
-    }
   return;
 }
 
 
 void
 WedgeItem::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC,
-		     const size_t innerSide, 
-		     const size_t outerSide)
+		     const attachSystem::FixedComp& FC, const int baseSurf,
+		     const attachSystem::FixedComp& FL,
+		     const int top, const int bottom)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
-    \param innerSide :: Inner link surface 
-    \param outerSide :: Outer link surface 
+    \param baseSurf :: base surface of the wedge
+    \param FL :: Flight line the wedge is inserted to
+    \param top :: top link surface
+    \param bottom :: bottom link surface
   */
 {
   ELog::RegMethod RegA("WedgeItem","createAll");
@@ -294,7 +248,7 @@ WedgeItem::createAll(Simulation& System,
   createUnitVector(FC);
   createSurfaces();
   createLinks();
-  createObjects(System,FC,innerSide,outerSide);
+  createObjects(System,FC,baseSurf,FL,top,bottom);
   insertObjects(System);              
 
   return;

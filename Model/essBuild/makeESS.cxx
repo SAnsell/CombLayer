@@ -108,6 +108,7 @@
 #include "F5Calc.h"
 #include "F5Collimator.h"
 #include "TSMainBuilding.h"
+#include "WedgeItem.h"
 
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -138,7 +139,7 @@ makeESS::makeESS() :
   Bulk(new BulkModule("Bulk")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
   TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
-
+  FLWedge(new WedgeItem("WedgeItem")),
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),
@@ -173,6 +174,8 @@ makeESS::makeESS() :
 
   OR.addObject(Bulk);
   OR.addObject(TSMainBuildingObj);
+
+  OR.addObject(FLWedge);
 
   OR.addObject(ShutterBayObj);
   OR.addObject(ABunker);
@@ -923,7 +926,9 @@ makeESS::build(Simulation& System,
       buildTwister(System);
     }
 
-  
+  // flight line wedges
+  FLWedge->createAll(System, *Bulk, -3, *TopAFL, -11, 12);
+
   if (lowModType != "None")
     makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
