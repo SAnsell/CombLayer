@@ -96,7 +96,7 @@ WedgeItem::WedgeItem(const WedgeItem& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   wedgeIndex(A.wedgeIndex),
   cellIndex(A.cellIndex),
-  length(A.length),width(A.width),
+  length(A.length),baseWidth(A.baseWidth),
   theta(A.theta),mat(A.mat)
   /*!
     Copy constructor
@@ -118,7 +118,7 @@ WedgeItem::operator=(const WedgeItem& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       length=A.length;
-      width=A.width;
+      baseWidth=A.baseWidth;
       theta=A.theta;
       mat=A.mat;
     }
@@ -142,10 +142,8 @@ WedgeItem::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  ELog::EM<< "keyName: " << keyName << ELog::endDiag;
-  
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   theta=Control.EvalVar<double>(keyName+"Theta");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
@@ -170,20 +168,25 @@ WedgeItem::createUnitVector(const attachSystem::FixedComp& FC)
 }
   
 void
-WedgeItem::createSurfaces()
+WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
   /*!
     Create All the surfaces
   */
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
+  // we assume that baseSurf is cylinder
+  const Geometry::Cylinder* outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseSurf));
+  const double outerR = outerCyl->getRadius();
+  innerR = outerR-length;
+  
   // divider:
   ModelSupport::buildPlane(SMap,wedgeIndex+3,Origin,X);
 
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+1,Origin-Y*width/2.0,Y,Z,theta);
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+2,Origin+Y*width/2.0,Y,Z,theta);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+1,Origin-Y*baseWidth/2.0,Y,Z,theta);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+2,Origin+Y*baseWidth/2.0,Y,Z,theta);
 
-  ModelSupport::buildCylinder(SMap,wedgeIndex+7,Origin,Z,100);
+  ModelSupport::buildCylinder(SMap,wedgeIndex+7,Origin,Z, innerR);
 
   return;
 }
@@ -215,13 +218,24 @@ WedgeItem::createObjects(Simulation& System,
 }
 
 void
-WedgeItem::createLinks()
+WedgeItem::createLinks(const attachSystem::FixedComp& FL)
   /*!
     Create all the linkes [OutGoing]
   */
 {
   ELog::RegMethod RegA("WedgeItem","createLinks");
 
+
+  Geometry::Vec3D dirWedge(Y+FL.getCentre());
+  Geometry::Quaternion::calcQRotDeg(-theta,Z).rotate(dirWedge);
+
+  FixedComp::setConnect(0,Geometry::Vec3D(dirWedge.X()*innerR, dirWedge.Y()*innerR, dirWedge.Z()),
+			Geometry::Vec3D(-dirWedge.X()*innerR, -dirWedge.Y()*innerR, dirWedge.Z()));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(wedgeIndex+7));
+
+  //  ELog::EM << getLinkPt(0) << ELog::endDiag;
+  //  ELog::EM << getLinkAxis(0) << ELog::endDiag;
+  
   return;
 }
 
@@ -243,11 +257,10 @@ WedgeItem::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("WedgeItem","createAll");
   
-
   populate(System.getDataBase());
   createUnitVector(FC);
-  createSurfaces();
-  createLinks();
+  createSurfaces(FC, baseSurf);
+  createLinks(FL);
   createObjects(System,FC,baseSurf,FL,top,bottom);
   insertObjects(System);              
 

@@ -928,6 +928,7 @@ makeESS::build(Simulation& System,
 
   // flight line wedges
   FLWedge->createAll(System, *Bulk, -3, *TopAFL, -11, 12);
+  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*FLWedge);
 
   if (lowModType != "None")
     makeBeamLine(System,IParam);

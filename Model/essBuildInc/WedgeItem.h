@@ -43,8 +43,9 @@ class WedgeItem : public attachSystem::ContainedComp,
   const int wedgeIndex;          ///< Index of surface offset
   int cellIndex;                 ///< Cell index
 
+  double innerR;                 ///< Radius of inner cylinder (calculated in createSurfaces)
   double length;                 ///< Length
-  double  width;                 ///< Base width
+  double baseWidth;              ///< Base width
   double  theta;                 ///< Angular position. theta=0 along the proton beam.
 
   int mat;                       ///< material
@@ -54,11 +55,11 @@ class WedgeItem : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
+  void createSurfaces(const attachSystem::FixedComp&, const int);
   void createObjects(Simulation&,
-		     const FixedComp&,const int,
-		     const FixedComp&, const int, const int);
-  void createLinks();
+		     const attachSystem::FixedComp&,const int,
+		     const attachSystem::FixedComp&, const int, const int);
+  void createLinks(const attachSystem::FixedComp&);
 
  public:
 
