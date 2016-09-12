@@ -371,8 +371,8 @@ GuideBay::createGuideItems(Simulation& System,
     \param System :: Simulation to link
     \param GIndex :: guide Item
     \param ModFC :: Moderator point
-    \param lfocusPoint :: left point on moderator for focus
-    \param rfocusPoint :: left point on moderator for focus
+    \param lfocusIndex :: left point on moderator for focus
+    \param rfocusIndex :: left point on moderator for focus
   */
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
