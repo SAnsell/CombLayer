@@ -229,7 +229,7 @@ BunkerRoof::createSector(Simulation& System,
   LD3.setSurfPair(2,baseSurf,topSurf);
   LD3.setDivider(divider);
 
-  const bool AFlag (activeRoof & (1 >> sectNum));
+  const bool AFlag (activeRoof & (1 << sectNum));
 
   if (AFlag)
     {

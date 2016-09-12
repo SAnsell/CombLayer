@@ -227,7 +227,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
-  IParam.setDesc("report","Report a position/axis");
+  IParam.setDesc("report","Report a position/axis (show info on points etc)");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("sdefFile","File(s) for source");
   IParam.setDesc("SA","Source Angle [deg]");

@@ -90,6 +90,7 @@
 #include "World.h"
 #include "BunkerInsert.h"
 #include "BunkerRoof.h"
+#include "BunkerWall.h"
 #include "LayerDivide3D.h"
 #include "Bunker.h"
 
@@ -102,7 +103,7 @@ Bunker::Bunker(const std::string& Key)  :
   attachSystem::CellMap(),attachSystem::SurfMap(),
   bnkIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
   cellIndex(bnkIndex+1),leftWallFlag(1),rightWallFlag(1),
-  roofObj(new BunkerRoof(Key))
+  roofObj(new BunkerRoof(Key)),wallObj(new BunkerWall(Key))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -112,6 +113,7 @@ Bunker::Bunker(const std::string& Key)  :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(roofObj);
+  OR.addObject(wallObj);
 }
 
 
@@ -423,14 +425,14 @@ Bunker::createObjects(Simulation& System,
   int rwIndex(bnkIndex);
   if (leftWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 -3 13 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 -3 13 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("leftWall",cellIndex-1);
       lwIndex+=10;
     }
   if (rightWallFlag)
     {
-      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 4 -14 5 -6 ");
+      Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -7 4 -14 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+Inner));
       setCell("rightWall",cellIndex-1);
       rwIndex+=10;
@@ -466,6 +468,7 @@ Bunker::createObjects(Simulation& System,
 				     " 1 7 -17 1M -2M 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       addCell("frontWall",cellIndex-1);
+      addCell("frontWall"+StrFunc::makeString(i),cellIndex-1);
       divIndex++;
     }
 
@@ -503,6 +506,7 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
   roofObj->setVertSurf(SMap.realSurf(bnkIndex+6),SMap.realSurf(bnkIndex+16));
   roofObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
   roofObj->setDivider(Out);
+
   for(size_t i=0;i<nSectors;i++)
     {
       const std::string SectNum(StrFunc::makeString(i));
@@ -532,38 +536,38 @@ Bunker::createMainWall(Simulation& System)
 {
   ELog::RegMethod RegA("Bunker","createMainWall");
 
-  size_t AS=activeSegment;  // binary system
-  
-  for(size_t i=0;AS && i<nSectors;i++)
+
+  // Note that createSector has to convert these numbers
+  // to realSurf so no need to pre-parse via SMap.
+  const int innerSurf(bnkIndex+7);
+  const int outerSurf(bnkIndex+17);
+
+  const int lwIndex((leftWallFlag) ? bnkIndex+10 : bnkIndex);
+  const int rwIndex((rightWallFlag) ? bnkIndex+10 : bnkIndex);
+  int divIndex(bnkIndex+1000);
+
+  const std::string Out=ModelSupport::getComposite(SMap,bnkIndex," 1 ");
+
+  wallObj->initialize(System.getDataBase(),*this,0);
+  wallObj->setVertSurf(SMap.realSurf(bnkIndex+5),SMap.realSurf(bnkIndex+6));  //XXX
+  wallObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
+  wallObj->setDivider(Out);
+
+  for(size_t i=0;i<nSectors;i++)
     {
-      const std::string CName="Sector"+StrFunc::makeString(i);
-      if (AS & 1)
-        {
-	  const int CN=getCell("frontWall",i);
-	  ModelSupport::LayerDivide3D LD3(keyName+"MainWall"+
-					  StrFunc::makeString(i));
-          ELog::EM<<"CellMAP "<<LD3.getKeyName()<<ELog::endDiag;
-	  LD3.setSurfPair(0,SMap.realSurf(bnkIndex+1001+static_cast<int>(i)),
-			  SMap.realSurf(bnkIndex+1002+static_cast<int>(i)));
-	  
-	  LD3.setSurfPair(1,SMap.realSurf(bnkIndex+5),
-		  SMap.realSurf(bnkIndex+6));
-	  LD3.setSurfPair(2,SMap.realSurf(bnkIndex+7),
-			  SMap.realSurf(bnkIndex+17));
-	  LD3.setFractions(0,segDivide);
-	  LD3.setFractions(1,vertFrac);
-	  LD3.setFractions(2,wallFrac);
-	  
-	  LD3.setMaterialXML(keyName+"Def.xml","WallMat",keyName+".xml",
-			     ModelSupport::EvalMatString(wallMat));
-	  LD3.divideCell(System,CN);
-	  removeCell("frontWall",i);
-	  addSurfs(CName,LD3.getSurfs());
-	  addCells(CName,LD3.getCells());
-	}
-      AS>>=1;
+      const std::string SectNum(StrFunc::makeString(i));
+      const int LW=(i) ? divIndex+1 : lwIndex+3;
+      const int RW=(i+1!=nSectors) ? divIndex+2 : rwIndex+4;
+      const int cellN=getCell("frontWall"+SectNum);
+
+      wallObj->createSector(System,i,cellN,
+			    SMap.realSurf(LW),SMap.realSurf(RW));
+      
+      removeCell("frontWall"+SectNum);
+      addCells("frontWall",wallObj->getCells("Sector"+SectNum));
+      divIndex++;
     }
-  return;
+  return;  
 }
 
   

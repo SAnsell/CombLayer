@@ -194,7 +194,7 @@ tallyModification(Simulation& System,
 	{
 	  ELog::EM<<"TMod Help "<<ELog::endBasic;
 	  ELog::EM<<
-	    " -- particle {tallyNumber} [oldtype] [newtype] \n"
+	    " -- particle {tallyNumber} [newtype] \n"
 	    "    Change the particle on a tally to the new type\n"
 	    " -- nowindow {tallyNum}\n"
 	    "    Remove the window on an f5 tally\n"
@@ -289,7 +289,7 @@ tallyModification(Simulation& System,
 	{
           tallySystem::setTime(System,tNumber,StrItem[1]);
         }
-      else if (key=="cos" && nV>=3)
+      else if ((key=="cos" || key=="angle") && nV>=3)
 	{
           tallySystem::setAngle(System,tNumber,StrItem[1]);
         }

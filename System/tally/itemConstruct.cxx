@@ -110,7 +110,7 @@ itemConstruct::processItem(Simulation& System,
     \param Index :: index of the -T card
    */
 {
-  ELog::RegMethod RegA("itemConstruct","processPoint");
+  ELog::RegMethod RegA("itemConstruct","processItem");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<2)
