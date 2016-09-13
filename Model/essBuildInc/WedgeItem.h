@@ -62,7 +62,7 @@ class WedgeItem : public attachSystem::ContainedComp,
 
  public:
 
-  WedgeItem(const std::string&);
+  WedgeItem(const std::string&, const size_t);
   WedgeItem(const WedgeItem&);
   WedgeItem& operator=(const WedgeItem&);
   virtual ~WedgeItem();

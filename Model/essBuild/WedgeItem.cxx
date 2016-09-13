@@ -82,9 +82,9 @@
 namespace essSystem
 {
 
-WedgeItem::WedgeItem(const std::string& Key)  :
+WedgeItem::WedgeItem(const std::string& Key, const size_t Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wedgeIndex+1)
   /*!

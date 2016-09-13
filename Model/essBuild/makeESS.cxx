@@ -139,7 +139,7 @@ makeESS::makeESS() :
   Bulk(new BulkModule("Bulk")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
   TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
-  FLWedge(new WedgeItem("WedgeItem")),
+  FLWedge(new WedgeItem("FLWedge", 1)),
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),

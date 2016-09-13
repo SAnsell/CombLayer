@@ -540,15 +540,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TSMainBuildingMainMat",  "Concrete");
   Control.addVariable("TSMainBuildingRoomMat",  "Void");
 
-  Control.addVariable("WedgeItemXStep", 8.9);
-  Control.addVariable("WedgeItemYStep", 5.4);
-  Control.addVariable("WedgeItemZStep", 13.7);
-  Control.addVariable("WedgeItemXYAngle", -45.0);
-  Control.addVariable("WedgeItemLength",30.0); // Naja
-  Control.addVariable("WedgeItemBaseWidth", 4.446+0.5*2); // Naja
-  Control.addVariable("WedgeItemTipWidth", 1.407+0.5*2); // Naja
-  Control.addVariable("WedgeItemMat","Void");
-
   
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);
@@ -575,6 +566,8 @@ EssVariables(FuncDataBase& Control)
   EssWheel(Control);
   EssBunkerVariables(Control);
   EssIradVariables(Control);
+
+  EssFlightLineWedgesVariables(Control);
 
   F5Variables(Control);
 
@@ -660,6 +653,27 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Active",0);
 
 
+    }
+  return;
+}
+
+void
+EssFlightLineWedgesVariables(FuncDataBase& Control)
+{
+  ELog::RegMethod RegA("essVariables[F]","EssFlightLineWedgesVariables");
+
+  for (size_t i=0; i<13; i++)
+    {
+      const std::string baseKey = StrFunc::makeString("FLWedge", i+1);
+
+      Control.addVariable(baseKey+"XStep", 8.9);
+      Control.addVariable(baseKey+"YStep", 5.4);
+      Control.addVariable(baseKey+"ZStep", 13.7);
+      Control.addVariable(baseKey+"XYAngle", -45.0-i*5);
+      Control.addVariable(baseKey+"Length",30.0); // Naja
+      Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
+      Control.addVariable(baseKey+"TipWidth", 1.407+0.5*2); // Naja
+      Control.addVariable(baseKey+"Mat","SS316L");
     }
   return;
 }
