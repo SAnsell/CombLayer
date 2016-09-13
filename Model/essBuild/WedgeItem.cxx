@@ -176,15 +176,13 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
   // we assume that baseSurf is cylinder
-  const Geometry::Cylinder* outerCyl =
-    SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseSurf));
-  const double outerR = outerCyl->getRadius();
+  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseSurf));
   
   // divider:
   const Geometry::Plane *pZ = ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
 
   // aux planes:
-  const Geometry::Vec3D nearPt(Origin+Y*outerR);
+  const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
   const Geometry::Plane *p103 = ModelSupport::buildPlane(SMap,wedgeIndex+103,
 							 Origin-X*baseWidth/2.0,X);
   const Geometry::Plane *p104 = ModelSupport::buildPlane(SMap,wedgeIndex+104,
@@ -236,24 +234,42 @@ WedgeItem::createObjects(Simulation& System,
 }
 
 void
-WedgeItem::createLinks(const attachSystem::FixedComp& FL)
+WedgeItem::createLinks()
   /*!
     Create all the linkes [OutGoing]
   */
 {
   ELog::RegMethod RegA("WedgeItem","createLinks");
 
+  const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
+  const Geometry::Plane *pX = ModelSupport::buildPlane(SMap, wedgeIndex+1003,
+						       Origin, X);
+  const Geometry::Plane *pZ = SMap.realPtr<Geometry::Plane>(wedgeIndex+5);
+  const Geometry::Plane *pBC = SMap.realPtr<Geometry::Plane>(wedgeIndex+1);
 
-  /*  Geometry::Vec3D dirWedge(Y+FL.getCentre());
-  //  Geometry::Quaternion::calcQRotDeg(-theta,Z).rotate(dirWedge);
+  const Geometry::Plane *p3 = SMap.realPtr<Geometry::Plane>(wedgeIndex+3);
+  const Geometry::Plane *p4 = SMap.realPtr<Geometry::Plane>(wedgeIndex+4);
 
-  FixedComp::setConnect(0,Geometry::Vec3D(dirWedge.X()*innerR, dirWedge.Y()*innerR, dirWedge.Z()),
-			Geometry::Vec3D(-dirWedge.X()*innerR, -dirWedge.Y()*innerR, dirWedge.Z()));
-  FixedComp::setLinkSurf(0,-SMap.realSurf(wedgeIndex+7));
-  */
-  //  ELog::EM << getLinkPt(0) << ELog::endDiag;
-  //  ELog::EM << getLinkAxis(0) << ELog::endDiag;
+  const Geometry::Vec3D pt0 = SurInter::getPoint(pX, pZ, outerCyl, nearPt);
+
+  // points on the edges of WedgeItem
+  const Geometry::Vec3D A = SurInter::getPoint(p4, outerCyl, pZ, nearPt);
+  const Geometry::Vec3D B = SurInter::getPoint(p3, outerCyl, pZ, nearPt);
+  const Geometry::Vec3D C = SurInter::getPoint(pZ, p4, pBC, nearPt);
+  const Geometry::Vec3D D = SurInter::getPoint(pZ, p3, pBC, nearPt);
+
+  FixedComp::setConnect(0, pt0, Y);
+  FixedComp::setLinkSurf(0, outerCyl->getName());
+
+  FixedComp::setConnect(1, (C+D)/2, -Y);
+  FixedComp::setLinkSurf(1, -pBC->getName());
+
+  FixedComp::setConnect(2, (A+C)/2, -p4->getNormal());
+  FixedComp::setLinkSurf(2, p4->getName());
   
+  FixedComp::setConnect(3, (B+D)/2, p3->getNormal());
+  FixedComp::setLinkSurf(3, -p3->getName());
+
   return;
 }
 
@@ -278,7 +294,7 @@ WedgeItem::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces(FC, baseSurf);
-  createLinks(FL);
+  createLinks();
   createObjects(System,FC,baseSurf,FL,top,bottom);
   insertObjects(System);              
 

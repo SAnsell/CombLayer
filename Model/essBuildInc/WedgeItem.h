@@ -49,6 +49,9 @@ class WedgeItem : public attachSystem::ContainedComp,
 
   int mat;                       ///< material
 
+  // aux variables, non-populated
+  Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
+
   // Functions:
 
   void populate(const FuncDataBase&);
@@ -58,7 +61,7 @@ class WedgeItem : public attachSystem::ContainedComp,
   void createObjects(Simulation&,
 		     const attachSystem::FixedComp&,const int,
 		     const attachSystem::FixedComp&, const int, const int);
-  void createLinks(const attachSystem::FixedComp&);
+  void createLinks();
 
  public:
 
