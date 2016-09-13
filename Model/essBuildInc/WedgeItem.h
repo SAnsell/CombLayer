@@ -43,9 +43,9 @@ class WedgeItem : public attachSystem::ContainedComp,
   const int wedgeIndex;          ///< Index of surface offset
   int cellIndex;                 ///< Cell index
 
-  double innerR;                 ///< Radius of inner cylinder (calculated in createSurfaces)
   double length;                 ///< Length
   double baseWidth;              ///< Base width
+  double tipWidth;               ///< Tip width
 
   int mat;                       ///< material
 

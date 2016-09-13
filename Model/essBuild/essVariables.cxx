@@ -540,6 +540,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TSMainBuildingMainMat",  "Concrete");
   Control.addVariable("TSMainBuildingRoomMat",  "Void");
 
+  Control.addVariable("WedgeItemXStep", 8.9);
+  Control.addVariable("WedgeItemYStep", 5.4);
+  Control.addVariable("WedgeItemZStep", 13.7);
   Control.addVariable("WedgeItemXYAngle", -45.0);
   Control.addVariable("WedgeItemLength",30.0); // Naja
   Control.addVariable("WedgeItemBaseWidth", 4.446+0.5*2); // Naja

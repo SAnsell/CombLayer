@@ -77,6 +77,7 @@
 #include "ContainedComp.h"
 #include "World.h"
 #include "WedgeItem.h"
+#include "SurInter.h"
 
 namespace essSystem
 {
@@ -143,6 +144,7 @@ WedgeItem::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
+  tipWidth=Control.EvalVar<double>(keyName+"TipWidth");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -174,17 +176,35 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
   // we assume that baseSurf is cylinder
-  const Geometry::Cylinder* outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseSurf));
+  const Geometry::Cylinder* outerCyl =
+    SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseSurf));
   const double outerR = outerCyl->getRadius();
-  innerR = outerR-length;
   
   // divider:
-  ModelSupport::buildPlane(SMap,wedgeIndex+1,Origin,Y);
+  const Geometry::Plane *pZ = ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
 
-  ModelSupport::buildPlane(SMap,wedgeIndex+3,Origin-X*baseWidth/2.0, X);
-  ModelSupport::buildPlane(SMap,wedgeIndex+4,Origin+X*baseWidth/2.0, X);
+  // aux planes:
+  const Geometry::Vec3D nearPt(Origin+Y*outerR);
+  const Geometry::Plane *p103 = ModelSupport::buildPlane(SMap,wedgeIndex+103,
+							 Origin-X*baseWidth/2.0,X);
+  const Geometry::Plane *p104 = ModelSupport::buildPlane(SMap,wedgeIndex+104,
+							 Origin+X*baseWidth/2.0,X);
 
-  ModelSupport::buildCylinder(SMap,wedgeIndex+7,Origin,Z, innerR);
+  // inclination of side plane with respect to Y-axis
+  const double alpha = std::atan((baseWidth-tipWidth)/2.0/length) * 180.0/M_PI;
+
+  // points on the outerCyl surface
+  const Geometry::Vec3D A = SurInter::getPoint(p103, outerCyl, pZ, nearPt);
+  const Geometry::Vec3D B = SurInter::getPoint(p104, outerCyl, pZ, nearPt);
+
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3, A, X, Z,  alpha);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4, B, X, Z, -alpha);
+
+  // aux plane between points AB
+  const Geometry::Plane *pAB  = ModelSupport::buildPlane(SMap, wedgeIndex+101,
+							 (A+B)/2, Y);
+
+  ModelSupport::buildShiftedPlane(SMap,wedgeIndex+1, pAB, -length);
 
   return;
 }
@@ -205,7 +225,7 @@ WedgeItem::createObjects(Simulation& System,
 
   std::string Out;
 
-  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 7 ") +
+  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ") +
     FC.getSignedLinkString(baseSurf) +
     FL.getSignedLinkString(top) + FL.getSignedLinkString(bottom);
   
@@ -224,13 +244,13 @@ WedgeItem::createLinks(const attachSystem::FixedComp& FL)
   ELog::RegMethod RegA("WedgeItem","createLinks");
 
 
-  Geometry::Vec3D dirWedge(Y+FL.getCentre());
-  Geometry::Quaternion::calcQRotDeg(-theta,Z).rotate(dirWedge);
+  /*  Geometry::Vec3D dirWedge(Y+FL.getCentre());
+  //  Geometry::Quaternion::calcQRotDeg(-theta,Z).rotate(dirWedge);
 
   FixedComp::setConnect(0,Geometry::Vec3D(dirWedge.X()*innerR, dirWedge.Y()*innerR, dirWedge.Z()),
 			Geometry::Vec3D(-dirWedge.X()*innerR, -dirWedge.Y()*innerR, dirWedge.Z()));
   FixedComp::setLinkSurf(0,-SMap.realSurf(wedgeIndex+7));
-
+  */
   //  ELog::EM << getLinkPt(0) << ELog::endDiag;
   //  ELog::EM << getLinkAxis(0) << ELog::endDiag;
   
