@@ -97,7 +97,7 @@ WedgeItem::WedgeItem(const WedgeItem& A) :
   wedgeIndex(A.wedgeIndex),
   cellIndex(A.cellIndex),
   length(A.length),baseWidth(A.baseWidth),
-  theta(A.theta),mat(A.mat)
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: WedgeItem to copy
@@ -119,7 +119,6 @@ WedgeItem::operator=(const WedgeItem& A)
       cellIndex=A.cellIndex;
       length=A.length;
       baseWidth=A.baseWidth;
-      theta=A.theta;
       mat=A.mat;
     }
   return *this;
@@ -144,7 +143,6 @@ WedgeItem::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
-  theta=Control.EvalVar<double>(keyName+"Theta");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -181,10 +179,10 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
   innerR = outerR-length;
   
   // divider:
-  ModelSupport::buildPlane(SMap,wedgeIndex+3,Origin,X);
+  ModelSupport::buildPlane(SMap,wedgeIndex+1,Origin,Y);
 
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+1,Origin-Y*baseWidth/2.0,Y,Z,theta);
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+2,Origin+Y*baseWidth/2.0,Y,Z,theta);
+  ModelSupport::buildPlane(SMap,wedgeIndex+3,Origin-X*baseWidth/2.0, X);
+  ModelSupport::buildPlane(SMap,wedgeIndex+4,Origin+X*baseWidth/2.0, X);
 
   ModelSupport::buildCylinder(SMap,wedgeIndex+7,Origin,Z, innerR);
 
@@ -207,7 +205,7 @@ WedgeItem::createObjects(Simulation& System,
 
   std::string Out;
 
-  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 3 1 -2 7 ") +
+  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 7 ") +
     FC.getSignedLinkString(baseSurf) +
     FL.getSignedLinkString(top) + FL.getSignedLinkString(bottom);
   

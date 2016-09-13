@@ -46,7 +46,6 @@ class WedgeItem : public attachSystem::ContainedComp,
   double innerR;                 ///< Radius of inner cylinder (calculated in createSurfaces)
   double length;                 ///< Length
   double baseWidth;              ///< Base width
-  double  theta;                 ///< Angular position. theta=0 along the proton beam.
 
   int mat;                       ///< material
 
