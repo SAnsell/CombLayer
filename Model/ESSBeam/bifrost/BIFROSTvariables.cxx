@@ -205,7 +205,7 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostCInsertHeight1",20.0);
   Control.addVariable("bifrostCInsertWidth1",28.0);
   Control.addVariable("bifrostCInsertLength0",150.0);
-  Control.addVariable("bifrostCInsertLength1",200.0);
+  Control.addVariable("bifrostCInsertLength1",210.0);
   Control.addVariable("bifrostCInsertMat0","D2O");
   Control.addVariable("bifrostCInsertMat1","H2O");
 
@@ -220,21 +220,13 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipeWall",1.0,318.0);
+  PipeGen.generatePipe(Control,"bifrostPipeWall",1.0,348.0);
   // Guide in wall
-  FGen.generateTaper(Control,"bifrostFWall",314.0,4.0,5.232, 4.0,5.232);
+  FGen.generateTaper(Control,"bifrostFWall",344.0,4.0,5.232, 4.0,5.232);
 
   FGen.setGuideMat("Glass");
   PipeGen.setMat("Stainless304");
   
-  // VACUUM PIPE: LEAVING BUNKER
-  PipeGen.setPipe(6.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"bifrostPipe",1.0,318.0);
-  // Guide in wall
-  FGen.generateTaper(Control,"bifrostFWall",316.0,4.0,4.64, 4.0,4.64);
-
   // Shield: leaving bunker
   SGen.generateShield(Control,"bifrostShieldA",6500.0,40.0,40.0,40.0,4,8);
   // VACUUM PIPE: leaving bunker
