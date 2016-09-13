@@ -37,7 +37,6 @@ namespace constructSystem
 
 namespace moderatorSystem
 {
-  class TaperedFlightLine;
   class FlightLine;
 }
 
@@ -51,6 +50,7 @@ namespace moderatorSystem
 
 namespace essSystem
 {
+  class WedgedFlightLine;
   class WheelBase;
   class Wheel;
   class BilbaoWheel;
@@ -101,8 +101,8 @@ class makeESS
   std::shared_ptr<TaperedDiskPreMod> LowPreMod;         ///< Lower mod 
   std::shared_ptr<TaperedDiskPreMod> LowCapMod;         ///< Upper mod
 
-  std::shared_ptr<moderatorSystem::TaperedFlightLine> LowAFL;  ///< Lower Mode FL
-  std::shared_ptr<moderatorSystem::TaperedFlightLine> LowBFL;  ///< Lower Mode FL
+  std::shared_ptr<essSystem::WedgedFlightLine> LowAFL;  ///< Lower Mode FL
+  std::shared_ptr<essSystem::WedgedFlightLine> LowBFL;  ///< Lower Mode FL
   
   // Butterly
   /// Primary Upper Mod 
@@ -116,8 +116,8 @@ class makeESS
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
 
-  std::shared_ptr<moderatorSystem::TaperedFlightLine> TopAFL;  ///< Top Mode FL
-  std::shared_ptr<moderatorSystem::TaperedFlightLine> TopBFL;  ///< Top Mode FL
+  std::shared_ptr<essSystem::WedgedFlightLine> TopAFL;  ///< Top Mode FL
+  std::shared_ptr<essSystem::WedgedFlightLine> TopBFL;  ///< Top Mode FL
 
   std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 
