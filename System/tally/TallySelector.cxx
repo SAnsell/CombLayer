@@ -112,7 +112,7 @@ tallyAddition(Simulation& System,
 	    " -- plate object fixedComp linkPt Vec3D(x,y,z) "
 	    "xSize zSize \n";
 	  ELog::EM<<
-	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis)"
+	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
 	    "xSize zSize \n";
 	  ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
@@ -137,8 +137,13 @@ tallyAddition(Simulation& System,
 		IParam.getValueError<double>("TAdd",index,ptI,eMess);
 	      const double ZH=
 		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	      const double YT=
+		IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	      const std::string mat=
+		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
+
 	      constructSystem::addInsertPlateCell
-		(System,PName,FName,LName,VOffset,XW,0.1,ZH);
+		(System,PName,FName,LName,VOffset,XW,YT,ZH,mat);
               return;
 	    }
 	  else if (PType=="free")
@@ -151,11 +156,15 @@ tallyAddition(Simulation& System,
               const Geometry::Vec3D ZAxis=IParam.getCntVec3D
                 ("TAdd",index,ptI,eMess);
 	      const double XW=
-		IParam.getValueError<double>("TAdd",index,ptI,eMess);
+		IParam.getValueError<double>("TAdd",index,ptI,eMess); 
 	      const double ZH=
 		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
-              constructSystem::addInsertPlateCell
-                (System,PName,VPos,YAxis,ZAxis,XW,0.1,ZH);
+	      const double YH=
+		IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	      const std::string mat=
+		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
+             constructSystem::addInsertPlateCell
+	       (System,PName,VPos,YAxis,ZAxis,XW,YH,ZH,mat);
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"plate type");

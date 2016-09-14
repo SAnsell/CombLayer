@@ -148,7 +148,6 @@ PhysicsCards::operator=(const PhysicsCards& A)
   if (this!=&A)
     {
       nps=A.nps;
-      *RAND= *A.RAND;
       histp=A.histp;
       histpCells=A.histpCells;
       *RAND=*A.RAND;

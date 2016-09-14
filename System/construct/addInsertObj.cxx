@@ -93,7 +93,7 @@ addInsertPlateCell(Simulation& System,
 		   const std::string& linkName,
 		   const Geometry::Vec3D& XYZStep,
 		   const double xSize,const double ySize,
-		   const double zSize)
+		   const double zSize,const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
     Note his normally leave a "hole" in the guide so 
@@ -107,6 +107,7 @@ addInsertPlateCell(Simulation& System,
     \param xSize :: x-size
     \param ySize :: y-size
     \param zSize :: zSize
+    \param mat :: Material 
   */
 {
   ELog::RegMethod RegA("addInsertObj","addTallyCell");
@@ -126,7 +127,7 @@ addInsertPlateCell(Simulation& System,
   const long int linkIndex=attachSystem::getLinkIndex(linkName);
   OR.addObject(TPlate);
   TPlate->setStep(XYZStep);
-  TPlate->setValues(xSize,ySize,zSize,"Void");
+  TPlate->setValues(xSize,ySize,zSize,mat);
   TPlate->createAll(System,*mainFCPtr,linkIndex);
 
   return;
@@ -140,7 +141,8 @@ addInsertPlateCell(Simulation& System,
                    const Geometry::Vec3D& ZAxis,
 		   const double xSize,
                    const double ySize,
-		   const double zSize)
+		   const double zSize,
+		   const std::string& mat)
   /*!
     Adds a void cell for tallying in the guide if required
     Note his normally leave a "hole" in the guide so 
@@ -154,6 +156,7 @@ addInsertPlateCell(Simulation& System,
     \param xSize :: x-size
     \param ySize :: y-size
     \param zSize :: zSize
+    \param mat :: material
   */
 {
   ELog::RegMethod RegA("addInsertObj","addTallyCell");
@@ -168,7 +171,8 @@ addInsertPlateCell(Simulation& System,
     TPlate(new constructSystem::insertPlate(objName));
 
   OR.addObject(TPlate);
-  TPlate->setValues(xSize,ySize,zSize,"Void");
+  TPlate->setValues(xSize,ySize,zSize,mat);
+
   TPlate->createAll(System,CentPos,YAxis,ZAxis);
 
   return;

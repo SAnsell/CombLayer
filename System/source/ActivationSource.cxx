@@ -115,6 +115,8 @@ ActivationSource::setBiasConst(const Geometry::Vec3D& Cent,
     Set the box coordinates
     \param Cent :: Origin Point
     \param AVec :: Axis direction
+    \param D :: Distance weight
+    \param A :: Angle weight
    */
 
 {
