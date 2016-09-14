@@ -123,20 +123,82 @@ WedgedFlightLine::populate(const FuncDataBase& Control)
 
 void
 WedgedFlightLine::buildWedges(Simulation& System,
-			      const attachSystem::FixedComp& outerFC,
-			      const long int outerIndex)
+			   const attachSystem::FixedComp& originFC,
+			   const long int originIndex,
+			   const attachSystem::FixedComp& innerFC,
+			   const long int innerIndex,
+			   const attachSystem::FixedComp& outerFC,
+			   const long int outerIndex)
 /*!
-  Builds the flight line wedges
-    \param outerFC :: Edge of bulk shield 
-    \param outerIndex :: Side index of bulk shield
- */
+  Builds the flight line wedges.
+  Arguments are the same as in createAll.
+*/
 {
   ELog::RegMethod RegA("WedgedFlightLine","buildWedges");
 
   if (nWedges<1) return;
 
-  std::shared_ptr<WedgeItem> FLWedge(new WedgeItem(keyName+"Wedge", 1));
-  FLWedge->createAll(System, outerFC, static_cast<int>(outerIndex), *this, -11, 12);
+  for (size_t i=0; i<nWedges; i++)
+    {
+      std::shared_ptr<WedgeItem> wedge(new WedgeItem(keyName+"Wedge", i+1));
+      //      OR.addObject(wedge);
+      wedge->createAll(System, outerFC, static_cast<int>(outerIndex), *this, -11, 12);
+      wedges.push_back(wedge);
+    }
+
+
+  // rebuild the Inner cell
+  deleteCell(System, "Inner"); //delete  cell and get its attributes
+
+  std::string Out;
+  int index(0);
+  int sepIndex(0);
+  const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
+  const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
+  const std::string floor = " " + StrFunc::makeString(SMap.realSurf(flightIndex+5)) + " ";
+  const std::string roof = " " + StrFunc::makeString(SMap.realSurf(flightIndex+6)) + " ";
+
+  cellIndex += 1000; // offset away from TaperedFlightLine
+
+  for (size_t i=0; i<nWedges+1; i++)
+    {
+      index = flightIndex+static_cast<int>(i);
+      if (i<nWedges)
+	{
+	  sepIndex = ModelSupport::buildPlaneRotAxis(SMap, index,
+						     wedges[i]->getCentre(),
+						     wedges[i]->getLinkAxis(0),
+						     Z, 90)->getName();
+	  ELog::EM << "Why sepIndex != index?" << ELog::endCrit;
+	}
+
+      Out = floor + roof + innerCut + outerCut;
+      if (i==0)
+	{
+	  Out += StrFunc::makeString(-sepIndex) + " " +
+	    StrFunc::makeString(SMap.realSurf(flightIndex+3)) + " " +
+	    //	StrFunc::makeString(-SMap.realSurf(flightIndex+4)) + 
+	    "(" + wedges[i]->getLinkString(1) + ":" +
+	    wedges[i]->getLinkString(3) + ")";
+	}
+      else if (i<nWedges)
+	{
+	  /*	  Out += StrFunc::makeString(-index) + " " + // current wedge direction
+	    StrFunc::makeString(index-1000) + " " + // prev wedge direction
+	    "(" + wedges[i]->getLinkString(1) + ":" +  wedges[i]->getLinkString(3) + ")" + // current wedge
+	    "(" + wedges[i-1]->getLinkString(1) + ":" +  wedges[i-1]->getSignedLinkString(-3) + ")" + // prev wedge
+	  */
+	    }
+      else if (i==nWedges)
+	{
+	  Out += StrFunc::makeString(sepIndex) + " " +
+	    StrFunc::makeString(-SMap.realSurf(flightIndex+4)) + " " +
+	    "(" + wedges[i-1]->getLinkString(1) + ":" + wedges[i-1]->getLinkString(2) + ")";
+	  
+	}
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+    }
+
   //  attachSystem::addToInsertSurfCtrl(System,*this,*FLWedge);
 
   return;
@@ -171,7 +233,8 @@ WedgedFlightLine::createAll(Simulation& System,
 						innerFC, innerIndex,
 						outerFC, outerIndex);
   populate(System.getDataBase());
-  buildWedges(System, outerFC, outerIndex);
+  buildWedges(System, originFC, originIndex, innerFC, innerIndex,
+	      outerFC, outerIndex);
     
   return;
 }

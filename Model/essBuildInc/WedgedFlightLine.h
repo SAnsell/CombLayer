@@ -40,6 +40,8 @@ namespace essSystem
   \brief WedgedFlightLine: Tapered flight line with wedges
 */
 
+  class WedgeItem;
+  
 class WedgedFlightLine : public moderatorSystem::TaperedFlightLine
 {
  private:
@@ -48,10 +50,14 @@ class WedgedFlightLine : public moderatorSystem::TaperedFlightLine
   int cellIndex;                ///< Cell index
 
   size_t nWedges;                  ///< number of wedges to build
+  std::vector<std::shared_ptr<WedgeItem> > wedges; ///< array of wedges
 
   void populate(const FuncDataBase&);
-  void buildWedges(Simulation&, const attachSystem::FixedComp&,const long int);
-
+  void buildWedges(Simulation&,
+		   const attachSystem::FixedComp&,const long int,
+		   const attachSystem::FixedComp&,const long int,
+		   const attachSystem::FixedComp&,const long int);
+  
  public:
 
   WedgedFlightLine(const std::string&);
