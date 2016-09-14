@@ -192,7 +192,7 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaBInsertWallMat","Stainless304");       
 
   // Guide in wall
-  FGen.generateTaper(Control,"freiaFWall",308.0,6.0,6.0,6.0,6.0);
+  FGen.generateTaper(Control,"freiaFWall",346.0,6.0,6.0,6.0,6.0);
 
   CGen.setMainRadius(56.0);
   CGen.setFrame(120.0,120.0);

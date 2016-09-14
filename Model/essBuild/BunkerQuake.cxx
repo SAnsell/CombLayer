@@ -192,7 +192,8 @@ BunkerQuake::createObjects(Simulation& System)
       const Geometry::Vec3D YDir((BPoint[index]-APoint[index]).unit());
       const double yGap=BPoint[index].Distance(APoint[index]);
       constructSystem::addInsertPlateCell
-        (System,ItemName,APoint[index]+Z*(zGap/2.0),YDir,Z,xGap,yGap,zGap);
+        (System,ItemName,APoint[index]+Z*(zGap/2.0),YDir,Z,
+         xGap,yGap,zGap,"Void");
     }      
 
   return;

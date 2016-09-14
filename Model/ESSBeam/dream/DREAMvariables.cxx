@@ -212,7 +212,7 @@ DREAMvariables(FuncDataBase& Control)
 
   // Guide in wall
   FGen.clearYOffset();  
-  FGen.generateTaper(Control,"dreamFWall",318.0,6.0,6.0,6.0,6.0);
+  FGen.generateTaper(Control,"dreamFWall",346.0,6.0,6.0,6.0,6.0);
 
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);

@@ -90,6 +90,49 @@ VacTank::VacTank(const std::string& Key)  :
   */
 {}
 
+VacTank::VacTank(const VacTank& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  tankIndex(A.tankIndex),cellIndex(A.cellIndex),
+  radius(A.radius),length(A.length),frontThick(A.frontThick),
+  sideThick(A.sideThick),backThick(A.backThick),
+  noseLen(A.noseLen),windowThick(A.windowThick),
+  windowRadius(A.windowRadius),windowInsetLen(A.windowInsetLen),
+  wallMat(A.wallMat),windowMat(A.windowMat)
+  /*!
+    Copy constructor
+    \param A :: VacTank to copy
+  */
+{}
+
+VacTank&
+VacTank::operator=(const VacTank& A)
+  /*!
+    Assignment operator
+    \param A :: VacTank to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      radius=A.radius;
+      length=A.length;
+      frontThick=A.frontThick;
+      sideThick=A.sideThick;
+      backThick=A.backThick;
+      noseLen=A.noseLen;
+      windowThick=A.windowThick;
+      windowRadius=A.windowRadius;
+      windowInsetLen=A.windowInsetLen;
+      wallMat=A.wallMat;
+      windowMat=A.windowMat;
+    }
+  return *this;
+}
 
 VacTank::~VacTank() 
  /*!
