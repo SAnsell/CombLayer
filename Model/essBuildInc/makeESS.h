@@ -77,7 +77,6 @@ namespace essSystem
   class LOKI;
   class VOR;
   class BunkerFeed;
-  class WedgeItem;
   /*!
     \class makeESS
     \version 1.0
@@ -148,8 +147,6 @@ class makeESS
 
   std::shared_ptr<TSMainBuilding> TSMainBuildingObj;
 
-  std::shared_ptr<WedgeItem> FLWedge; ///< Flight line wedges (todo: replace by WedgeArray)
-  
   void topFlightLines(Simulation&);
   void lowFlightLines(Simulation&);
   void createGuides(Simulation&);

@@ -78,6 +78,8 @@
 #include "CellMap.h"
 #include "surfExpand.h"
 #include "TaperedFlightLine.h"
+#include "FixedOffset.h"
+#include "WedgeItem.h"
 #include "WedgedFlightLine.h"
 
 namespace essSystem
@@ -93,12 +95,53 @@ WedgedFlightLine::WedgedFlightLine(const std::string& Key)  :
   */
 {}
 
+  /*
+  WedgedFlightLine::WedgedFlightLine(const WedgedFlightLine&A) :
+    moderatorSystem::TaperedFlightLine(A),
+    flightIndex(A.flightIndex),cellIndex(A.cellIndex),
+    nWedges(A.nWedges)
+  {
+  }*/
+  
 WedgedFlightLine::~WedgedFlightLine() 
  /*!
    Destructor
  */
 {}
 
+void
+WedgedFlightLine::populate(const FuncDataBase& Control)
+/*!
+  Populate all the variables
+  \param Control :: Variable data base
+*/
+{
+  ELog::RegMethod RegA("WedgedFlightLine","populate");
+
+  nWedges=Control.EvalDefVar<size_t>(keyName+"NWedges", 0);
+}
+
+void
+WedgedFlightLine::buildWedges(Simulation& System,
+			      const attachSystem::FixedComp& outerFC,
+			      const long int outerIndex)
+/*!
+  Builds the flight line wedges
+    \param outerFC :: Edge of bulk shield 
+    \param outerIndex :: Side index of bulk shield
+ */
+{
+  ELog::RegMethod RegA("WedgedFlightLine","buildWedges");
+
+  if (nWedges<1) return;
+
+  std::shared_ptr<WedgeItem> FLWedge(new WedgeItem(keyName+"Wedge", 1));
+  FLWedge->createAll(System, outerFC, static_cast<int>(outerIndex), *this, -11, 12);
+  //  attachSystem::addToInsertSurfCtrl(System,*this,*FLWedge);
+
+  return;
+}
+  
 
 void
 WedgedFlightLine::createAll(Simulation& System,
@@ -112,10 +155,12 @@ WedgedFlightLine::createAll(Simulation& System,
     Global creation of the basic flight line connecting two
     objects
     \param System :: Simulation to add vessel to
+    \param originFC :: Origin
+    \param originIndex :: Use side index from Origin
     \param innerFC :: Moderator Object
     \param innerIndex :: Use side index from moderator
     \param outerFC :: Edge of bulk shield 
-    \param outerIndex :: Use side index from moderator
+    \param outerIndex :: Side index of bulk shield
 
   */
 {
@@ -125,6 +170,9 @@ WedgedFlightLine::createAll(Simulation& System,
 						originFC, originIndex,
 						innerFC, innerIndex,
 						outerFC, outerIndex);
+  populate(System.getDataBase());
+  buildWedges(System, outerFC, outerIndex);
+    
   return;
 }
 

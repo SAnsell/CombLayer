@@ -37,7 +37,7 @@ namespace setVariable
   void EssWheel(FuncDataBase&);
   void EssProtonBeam(FuncDataBase&);
   void EssIradVariables(FuncDataBase&);
-  void EssFlightLineWedgesVariables(FuncDataBase&);
+  void EssFlightLineVariables(FuncDataBase&);
 
   // ESS Beamlines
   void BEERvariables(FuncDataBase&);

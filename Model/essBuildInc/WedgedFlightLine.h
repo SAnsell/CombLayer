@@ -46,7 +46,11 @@ class WedgedFlightLine : public moderatorSystem::TaperedFlightLine
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
-    
+
+  size_t nWedges;                  ///< number of wedges to build
+
+  void populate(const FuncDataBase&);
+  void buildWedges(Simulation&, const attachSystem::FixedComp&,const long int);
 
  public:
 
