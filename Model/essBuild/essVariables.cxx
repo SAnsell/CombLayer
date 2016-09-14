@@ -609,19 +609,49 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
-  Control.addVariable("TopAFlightNWedges",1);
+  const int TopAFlightNWedges = 14;
+  Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
+
+  const double t1 = 50.2; // approx by eye to be b/w beam lines - reference needed
+  const double dt1 = 11.95; // Rickard Holmberg ESS-0037906, ESS-0038057
+  const double t2 = 99.6; // approx by eye to be b/w beam lines - reference needed
+  const double dt2 = 5.975; // Rickard Holmberg ESS-0037906, ESS-0038057
+  std::vector<double> TopAFlightWedgeTheta = {t1, t1+dt1, t1+dt1*2, t1+dt1*3,
+					      92.55,
+					      t2, t2+dt2, t2+dt2*2, t2+dt2*3, t2+dt2*4, t2+dt2*5, t2+dt2*6, t2+dt2*7, t2+dt2*8, t2+dt2*9, t2+dt2*10};
   
-  for (size_t i=0; i<13; i++)
+  for (size_t i=0; i<TopAFlightNWedges; i++)
     {
       const std::string baseKey = StrFunc::makeString("TopAFlightWedge", i+1);
-      
-      Control.addVariable(baseKey+"XStep", 8.9);
-      Control.addVariable(baseKey+"YStep", 5.4);
-      Control.addVariable(baseKey+"ZStep", 13.7);
-      Control.addVariable(baseKey+"XYAngle", -45.0-i*5);
+
+      if (i==4)
+	{
+	  Control.addVariable(baseKey+"BaseWidth", 16.38+0.6*2); // Naja
+	  Control.addVariable(baseKey+"TipWidth",  13.361 + 0.6*2); // Naja
+
+	  Control.addVariable(baseKey+"XStep", 0.0);
+	  Control.addVariable(baseKey+"YStep", 0.0); ELog::EM << "Why crashes with XYAngle=-90 and YStep=0?" << ELog::endCrit;
+	  Control.addVariable(baseKey+"ZStep", 13.7);
+	}
+      else
+	{
+	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
+	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
+	  if (i<4)
+	    {
+	      Control.addVariable(baseKey+"XStep", 8.9);
+	      Control.addVariable(baseKey+"YStep", 5.4);
+	      Control.addVariable(baseKey+"ZStep", 13.7);
+	    }
+	  else
+	    {
+	      Control.addVariable(baseKey+"XStep", 8.9);
+	      Control.addVariable(baseKey+"YStep", -5.4);
+	      Control.addVariable(baseKey+"ZStep", 13.7);
+	    }
+	}
+      Control.addVariable(baseKey+"XYAngle", -TopAFlightWedgeTheta[i]);
       Control.addVariable(baseKey+"Length",30.0); // Naja
-      Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
-      Control.addVariable(baseKey+"TipWidth", 1.407+0.5*2); // Naja
       Control.addVariable(baseKey+"Mat","SS316L");
     }
 
