@@ -148,7 +148,7 @@ WedgedFlightLine::buildWedges(Simulation& System,
 
 
   // rebuild the Inner cell
-  deleteCell(System, "Inner"); //delete  cell and get its attributes
+  const std::pair<int,double> MatInfo=deleteCellWithData(System, "Inner");
 
   std::string Out;
   int index(0);
@@ -197,7 +197,7 @@ WedgedFlightLine::buildWedges(Simulation& System,
 	  
 	    }
       sepIndexPrev = sepIndex;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,MatInfo.first,MatInfo.second,Out));
     }
 
   //  attachSystem::addToInsertSurfCtrl(System,*this,*FLWedge);
