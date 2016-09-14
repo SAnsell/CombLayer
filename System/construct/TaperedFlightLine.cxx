@@ -286,10 +286,10 @@ TaperedFlightLine::createObjects(Simulation& System,
     Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
   addOuterSurf("inner",Out);
 
-
   // Make inner object
   Out+=innerCut+outerCut;
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
+  setCell("Inner", cellIndex-1);
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
