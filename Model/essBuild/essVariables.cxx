@@ -584,10 +584,31 @@ EssBeamLinesVariables(FuncDataBase& Control)
   return;
 }
 
+double
+EssFlightLineVariablesGetBeta(double a)
+/*!
+Recalculate engineering angle (measured from Ox towards Oy with respect to (0,0))
+to the wedge XYAngle (measured from Oy towards -Ox with respect to the wedge's focal point (XStep, YStep)
+\param a :: engineering angle [deg]
+Return the wedge XYAngle [deg]
+ */
+{
+  ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariablesGetBeta");
+
+  a *= M_PI/180;
+  const double R = 200;
+  const double x0 = 8.0;
+  const double y0 = 4.8;
+  return -std::atan((R*cos(a)-x0)/(R*sin(a)-y0)) * 180/M_PI;
+}
+
+  
 void
 EssFlightLineVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariables");
+
+  ELog::EM << 9.1 << " " << EssFlightLineVariablesGetBeta(9.1) << ELog::endDiag;
 
   // upper flight lines
   
