@@ -196,7 +196,7 @@ TaperedFlightLine::createSurfaces()
   if (anglesZ[1]>Geometry::zeroTol)
     ModelSupport::buildCone(SMap,flightIndex+6,Origin+Z*(height/2.0),Z,90-anglesZ[1],Origin[2]>0 ? 1 : -1);
   else
-    ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),zDircB);
+    ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),-zDircB);
 
 
   double layT(0.0);
@@ -218,7 +218,7 @@ TaperedFlightLine::createSurfaces()
       if (anglesZ[1]>Geometry::zeroTol)
 	ModelSupport::buildCone(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],Origin[2]>0 ?  1 : -1);
       else
-	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0)+zDircB*layT,zDircB);
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
 
     }
 
@@ -273,17 +273,11 @@ TaperedFlightLine::createObjects(Simulation& System,
 
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
-  if (anglesZ[1]>Geometry::zeroTol)
-    Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
-  else
-    Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
   addOuterSurf("outer",Out);
 
   // Inner Void
-  if (anglesZ[1]>Geometry::zeroTol)
-    Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
-  else
-    Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
   addOuterSurf("inner",Out);
 
   // Make inner object
@@ -295,12 +289,8 @@ TaperedFlightLine::createObjects(Simulation& System,
   for(size_t i=0;i<nLayer;i++)
     {
       const int II(static_cast<int>(i));
-      if (anglesZ[1]>Geometry::zeroTol)
-	Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
-				       "13 -14 15 16 (-3:4:-5:-6) ");
-      else
-	Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
-				       "13 -14 15 -16 (-3:4:-5:6) ");
+      Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
+				     "13 -14 15 16 (-3:4:-5:-6) ");
       Out+=innerCut+outerCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
     }
