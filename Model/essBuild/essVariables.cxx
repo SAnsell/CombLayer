@@ -550,7 +550,8 @@ EssVariables(FuncDataBase& Control)
   DREAMvariables(Control);
   ESTIAvariables(Control);
   FREIAvariables(Control);
-  LOKIvariables(Control); 
+  LOKIvariables(Control);
+  MAGICvariables(Control);
   NMXvariables(Control);
   ODINvariables(Control);
   VESPAvariables(Control);
