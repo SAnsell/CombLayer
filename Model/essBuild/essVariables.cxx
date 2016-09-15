@@ -608,6 +608,12 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
+  // The moderator focal points are (89,54)
+  // The wedge focus at (80,48). This is a result of the line of sight from
+  // the neutron beam channels towards the moderator
+  const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
+  const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
+  
   const int TopAFlightNWedges = 14;
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
@@ -644,14 +650,14 @@ EssFlightLineVariables(FuncDataBase& Control)
 	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
 	  if (i<5)
 	    {
-	      Control.addVariable(baseKey+"XStep", 8.9);
-	      Control.addVariable(baseKey+"YStep", 5.4);
+	      Control.addVariable(baseKey+"XStep", wedgeFocusX);
+	      Control.addVariable(baseKey+"YStep", wedgeFocusY);
 	      Control.addVariable(baseKey+"ZStep", 13.7);
 	    }
 	  else
 	    {
-	      Control.addVariable(baseKey+"XStep", 8.9);
-	      Control.addVariable(baseKey+"YStep", -5.4);
+	      Control.addVariable(baseKey+"XStep", wedgeFocusX);
+	      Control.addVariable(baseKey+"YStep", -wedgeFocusY);
 	      Control.addVariable(baseKey+"ZStep", 13.7);
 	    }
 	}
@@ -711,13 +717,13 @@ EssFlightLineVariables(FuncDataBase& Control)
 	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
 	  if (i<10)
 	    {
-	      Control.addVariable(baseKey+"XStep", -8.9);
-	      Control.addVariable(baseKey+"YStep", -5.4);
+	      Control.addVariable(baseKey+"XStep", -wedgeFocusX);
+	      Control.addVariable(baseKey+"YStep", -wedgeFocusY);
 	    }
 	  else
 	    {
-	      Control.addVariable(baseKey+"XStep", -8.9);
-	      Control.addVariable(baseKey+"YStep", 5.4);
+	      Control.addVariable(baseKey+"XStep", -wedgeFocusX);
+	      Control.addVariable(baseKey+"YStep", wedgeFocusY);
 	    }
 	}
       Control.addVariable(baseKey+"XYAngle", -TopBFlightWedgeTheta[i-1]);
