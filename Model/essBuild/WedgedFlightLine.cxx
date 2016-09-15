@@ -169,38 +169,41 @@ WedgedFlightLine::buildWedges(Simulation& System,
 						     wedges[i]->getCentre(),
 						     wedges[i]->getLinkAxis(0),
 						     Z, 90)->getName();
+	  // sepIndex - from the Wedge space
+	  // index - from the TopAFlight space
 	  ELog::EM << "Why sepIndex != index? " << sepIndex << " " << index << ELog::endCrit;
 	}
 
       Out = floor + roof + innerCut + outerCut;
       if (i==0)
 	{
-	  Out += StrFunc::makeString(-sepIndex) + " " +
-	    StrFunc::makeString(SMap.realSurf(flightIndex+3)) + " " +
-	    //	StrFunc::makeString(-SMap.realSurf(flightIndex+4)) + 
-	    "(" + wedges[i]->getLinkString(1) + ":" +
-	    wedges[i]->getLinkString(3) + ")";
+	  // sepIndex-1 and "-1" = StrFunc::makeString(-sepIndex)
+	  Out += ModelSupport::getComposite(SMap,sepIndex-1, flightIndex,
+					    " -1 3M ") +
+	    "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")";
 	}
       else if (i==nWedges)
 	{
-	  Out += StrFunc::makeString(sepIndex) + " " +
-	    StrFunc::makeString(-SMap.realSurf(flightIndex+4)) + " " +
-	    "(" + wedges[i-1]->getLinkString(1) + ":" + wedges[i-1]->getLinkString(2) + ")";
-	  
+	  // sepIndex-1 and "1" = StrFunc::makeString(sepIndex)
+	  Out += ModelSupport::getComposite(SMap,sepIndex-1, flightIndex,
+						 " 1 -4M ") +
+	    "("+wedges[i-1]->getLinkString(1)+":"+wedges[i-1]->getLinkString(2)+")";
 	}
       else
 	{
-	  Out += StrFunc::makeString(-sepIndex) + " " + // current wedge direction
-	    StrFunc::makeString(sepIndexPrev) + " " + // prev wedge direction
-	    "(" + wedges[i]->getLinkString(1) + ":" +  wedges[i]->getLinkString(3) + ")" + // current wedge
-	    "(" + wedges[i-1]->getLinkString(1) + ":" +  wedges[i-1]->getLinkString(2) + ")"; // prev wedge
-	  
-	    }
+	  // current and prev wedge directions:
+	  Out += ModelSupport::getComposite(SMap,sepIndex-1, sepIndexPrev-1,
+					    " -1 1M ") +
+	    // current wedge
+	    "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")"+
+	     // prev wedge
+	    "("+wedges[i-1]->getLinkString(1)+":"+wedges[i-1]->getLinkString(2)+")";
+	}
       sepIndexPrev = sepIndex;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,MatInfo.first,MatInfo.second,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,
+				       MatInfo.first,MatInfo.second,
+				       Out));
     }
-
-  //  attachSystem::addToInsertSurfCtrl(System,*this,*FLWedge);
 
   return;
 }
