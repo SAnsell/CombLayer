@@ -157,10 +157,11 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setWindow(-1.0,0.3);
   PipeGen.setFlange(-1.0,1.0);
 
-  PipeGen.generatePipe(Control,"lokiPipeCollA",6.0,145.0);
-  PipeGen.generatePipe(Control,"lokiPipeCollAX",6.0,145.0);
-  PipeGen.generatePipe(Control,"lokiPipeCollB",6.0,145.0);
-  PipeGen.generatePipe(Control,"lokiPipeCollC",6.0,145.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollA",6.0,135.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollAX",6.0,135.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollB",6.0,135.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollC",6.0,135.0);
+
   // Small :: Grid Collimator A:
   RotGen.setMain(25.0,1.0);
   RotGen.setWall(1.0,"Aluminium");

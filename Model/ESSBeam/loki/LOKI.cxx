@@ -324,8 +324,7 @@ LOKI::registerObjects()
 
   return;
 }
-  
-  
+
 void
 LOKI::setBeamAxis(const FuncDataBase& Control,
 		  const GuideItem& GItem,
@@ -473,6 +472,7 @@ LOKI::build(Simulation& System,
   VPipeCollA->addInsertCell(CollA->getCell("Void0"));  // multiple units
   VPipeCollA->createAll(System,CollA->getKey("Hole"),-1);
 
+  return;
   FocusCollA->addInsertCell(VPipeCollA->getCells("Void"));
   FocusCollA->createAll(System,*VPipeCollA,0,*VPipeCollA,0);
 

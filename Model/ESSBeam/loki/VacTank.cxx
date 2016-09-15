@@ -135,7 +135,6 @@ VacTank::operator=(const VacTank& A)
   return *this;
 }
 
-
 VacTank::~VacTank() 
  /*!
    Destructor
