@@ -118,6 +118,8 @@ class LOKI : public attachSystem::CopiedComp
 
   /// Vacuum pipe in CoolA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCollA;
+  /// Vacuum pipe in CoolA (second position)
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollAX;
   /// Vacuum pipe in CollB
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCollB;
   /// Vacuum pipe in CollC
@@ -155,6 +157,8 @@ class LOKI : public attachSystem::CopiedComp
   std::shared_ptr<VacTank> VTank;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
+
+  void registerObjects();
   
  public:
   

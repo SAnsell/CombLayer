@@ -141,11 +141,11 @@ VORvariables(FuncDataBase& Control)
   PipeGen.setPipe(6.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
-  PipeGen.generatePipe(Control,"vorPipeWall",1.0,318.0);
+  PipeGen.generatePipe(Control,"vorPipeWall",1.0,348.0);
 
   // Guide in wall
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"vorFWall",316.0,6.0,6.0,6.0,6.0);
+  FGen.generateTaper(Control,"vorFWall",346.0,6.0,6.0,6.0,6.0);
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);

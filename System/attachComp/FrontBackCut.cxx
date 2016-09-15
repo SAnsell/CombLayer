@@ -78,6 +78,36 @@ FrontBackCut::FrontBackCut() :
     Constructor [default]
   */
 {}
+
+FrontBackCut::FrontBackCut(const FrontBackCut& A) : 
+  activeFront(A.activeFront),frontCut(A.frontCut),
+  frontDivider(A.frontDivider),activeBack(A.activeBack),
+  backCut(A.backCut),backDivider(A.backDivider)
+  /*!
+    Copy constructor
+    \param A :: FrontBackCut to copy
+  */
+{}
+
+FrontBackCut&
+FrontBackCut::operator=(const FrontBackCut& A)
+  /*!
+    Assignment operator
+    \param A :: FrontBackCut to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      activeFront=A.activeFront;
+      frontCut=A.frontCut;
+      frontDivider=A.frontDivider;
+      activeBack=A.activeBack;
+      backCut=A.backCut;
+      backDivider=A.backDivider;
+    }
+  return *this;
+}
   
 
 FrontBackCut::~FrontBackCut()
