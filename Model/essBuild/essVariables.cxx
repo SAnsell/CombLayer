@@ -601,7 +601,6 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleZTop",1.1);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel ESS-0032315.3
   Control.addVariable("TopAFlightAngleZBase",1.33); // Step up angle ESS-0032315.3
 
-
   //  Control.Parse("TopFlyTotalHeight");
   Control.addVariable("TopAFlightHeight", 2.9);     // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
@@ -616,10 +615,16 @@ EssFlightLineVariables(FuncDataBase& Control)
   const double dt1 = 11.95; // Rickard Holmberg ESS-0037906, ESS-0038057
   const double t2 = 99.6; // approx by eye to be b/w beam lines - reference needed
   const double dt2 = 5.975; // Rickard Holmberg ESS-0037906, ESS-0038057
-  std::vector<double> TopAFlightWedgeTheta = {t1, t1+dt1, t1+dt1*2, t1+dt1*3,
-					      92.55,
-					      t2, t2+dt2, t2+dt2*2, t2+dt2*3, t2+dt2*4, t2+dt2*5, t2+dt2*6, t2+dt2*7, t2+dt2*8, t2+dt2*9, t2+dt2*10};
   
+  std::vector<double> TopAFlightWedgeTheta;
+  TopAFlightWedgeTheta.push_back(t1);
+  for (size_t i=1; i<=3; i++)
+    TopAFlightWedgeTheta.push_back(t1+dt1*i);
+  TopAFlightWedgeTheta.push_back(92.55); // central, the thick one
+  TopAFlightWedgeTheta.push_back(t2);
+  for (size_t i=1; i<=8; i++)
+    TopAFlightWedgeTheta.push_back(t2+dt2*i);
+
   for (size_t i=0; i<TopAFlightNWedges; i++)
     {
       const std::string baseKey = StrFunc::makeString("TopAFlightWedge", i+1);
