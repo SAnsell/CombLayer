@@ -625,11 +625,11 @@ EssFlightLineVariables(FuncDataBase& Control)
   for (size_t i=1; i<=8; i++)
     TopAFlightWedgeTheta.push_back(t2+dt2*i);
 
-  for (size_t i=0; i<TopAFlightNWedges; i++)
+  for (size_t i=1; i<=TopAFlightNWedges; i++)
     {
-      const std::string baseKey = StrFunc::makeString("TopAFlightWedge", i+1);
+      const std::string baseKey = StrFunc::makeString("TopAFlightWedge", i);
 
-      if (i==4)
+      if (i==5) // central, the thick one
 	{
 	  Control.addVariable(baseKey+"BaseWidth", 16.38+0.6*2); // Naja
 	  Control.addVariable(baseKey+"TipWidth",  13.361 + 0.6*2); // Naja
@@ -642,7 +642,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 	{
 	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
 	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
-	  if (i<4)
+	  if (i<5)
 	    {
 	      Control.addVariable(baseKey+"XStep", 8.9);
 	      Control.addVariable(baseKey+"YStep", 5.4);
@@ -655,7 +655,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 	      Control.addVariable(baseKey+"ZStep", 13.7);
 	    }
 	}
-      Control.addVariable(baseKey+"XYAngle", -TopAFlightWedgeTheta[i]);
+      Control.addVariable(baseKey+"XYAngle", -TopAFlightWedgeTheta[i-1]);
       Control.addVariable(baseKey+"Length",30.0); // Naja
       Control.addVariable(baseKey+"Mat","SS316L");
     }
@@ -679,6 +679,53 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.Parse("TopAFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
+
+  const int TopBFlightNWedges = 13;
+  Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
+  std::vector<double> TopBFlightWedgeTheta;
+  const double t3 = 212.3; // guess
+  TopBFlightWedgeTheta.push_back(t3);
+  for (size_t i=1; i<=8; i++)
+    TopBFlightWedgeTheta.push_back(t3+dt2*i);
+  TopBFlightWedgeTheta.push_back(270);
+  const double t4 = 285.5; // guess
+  TopBFlightWedgeTheta.push_back(t4);
+  for (size_t i=1; i<=2; i++)
+    TopBFlightWedgeTheta.push_back(t4+dt1*i);
+
+    for (size_t i=1; i<=TopAFlightNWedges; i++)
+    {
+      const std::string baseKey = StrFunc::makeString("TopBFlightWedge", i);
+
+      if (i==10) // central, the thick one
+	{
+	  Control.addVariable(baseKey+"BaseWidth", 45); // guess
+	  Control.addVariable(baseKey+"TipWidth",  13.361 + 0.6*2); // guess
+
+	  Control.addVariable(baseKey+"XStep", 0.0);
+	  Control.addVariable(baseKey+"YStep", 0.0);
+	}
+      else
+	{
+	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
+	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
+	  if (i<10)
+	    {
+	      Control.addVariable(baseKey+"XStep", -8.9);
+	      Control.addVariable(baseKey+"YStep", -5.4);
+	    }
+	  else
+	    {
+	      Control.addVariable(baseKey+"XStep", -8.9);
+	      Control.addVariable(baseKey+"YStep", 5.4);
+	    }
+	}
+      Control.addVariable(baseKey+"XYAngle", -TopBFlightWedgeTheta[i-1]);
+      Control.addVariable(baseKey+"Length",i==10 ? 150.0 : 30.0); // 30:Naja 150:guess
+      Control.addVariable(baseKey+"Mat","SS316L");
+      Control.addVariable(baseKey+"ZStep", 13.7);
+    }
+
 
   // lower flight lines
 
