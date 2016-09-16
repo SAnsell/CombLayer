@@ -263,7 +263,12 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
 	  Control.addVariable(keyName+IndexStr+"PhaseAngle"+jStr,CRef[j]);
 	  Control.addVariable(keyName+IndexStr+"OpenAngle"+jStr,ORef[j]);
 	}
-    }  
+    }
+
+  // Checks:
+  if (innerRadius>outerRadius-Geometry::zeroTol)
+    ELog::EM<<"Failure outerRadius["<<outerRadius
+            <<"] < innerRadius["<<innerRadius<<"]"<<ELog::endErr;
   return;
 
 }

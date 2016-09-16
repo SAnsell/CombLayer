@@ -173,8 +173,8 @@ FixedComp::createUnitVector(const FixedComp& FC)
   beamOrigin=FC.beamOrigin;
   beamAxis=FC.beamAxis;
 
-  if (primeAxis>0) reOrientate();
-
+  if (primeAxis>0)
+      reOrientate();
 
   return;
 }
@@ -218,7 +218,6 @@ FixedComp::createUnitVector(const FixedComp& FC,
       createUnitVector(FC);
       return;
     }
-
   const size_t linkIndex=
     (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
     static_cast<size_t>(-sideIndex-1) ;
@@ -238,8 +237,9 @@ FixedComp::createUnitVector(const FixedComp& FC,
     zTest=FC.getY();
   else if (fabs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     xTest=FC.getY();
-  
+
   computeZOffPlane(xTest,yTest,zTest);
+
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
   return;
 }
@@ -263,6 +263,7 @@ FixedComp::createUnitVector(const Geometry::Vec3D& OG,
   X=XAxis.unit();
   Y=YAxis.unit();
   Z=ZAxis.unit();
+  
   makeOrthogonal();
   Origin=OG;
   beamOrigin=OG;
@@ -299,14 +300,13 @@ FixedComp::makeOrthogonal()
   const Geometry::Vec3D XDir(X);
   X=(Y*Z).unit();
   if (XDir.dotProd(X)<0.0)
-    X*-1;
+    X*=-1;
 
   // Calc Z' to be close to Z
   const Geometry::Vec3D ZDir(Z);
-  Z=(Y*Z).unit();
+  Z=(Y*X).unit();
   if (ZDir.dotProd(Z)<0.0)
-    Z*-1;
-  
+    Z*=-1;
   return;
 }
 

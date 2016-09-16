@@ -455,7 +455,7 @@ pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
 
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(&FC);
-  BAxis=(TwinPtr) ?  TwinPtr->getBY()*-1.0 : FC.getLinkAxis(0);
+  BAxis=(TwinPtr) ?  -TwinPtr->getBY() : FC.getLinkAxis(0);
   
   BOrigin=(TwinPtr) ?
     TwinPtr->getBeamStart() : FC.getLinkPt(0); 

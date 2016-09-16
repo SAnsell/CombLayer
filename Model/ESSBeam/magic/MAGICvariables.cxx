@@ -81,16 +81,16 @@ MAGICvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
 
-  SGen.addWall(1,20.0,"CastIron");
-  SGen.addRoof(1,20.0,"CastIron");
-  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addWall(1,25.0,"CastIron");
+  SGen.addRoof(1,25.0,"CastIron");
+  SGen.addFloor(1,25.0,"Concrete");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
   // extent of beamline
   Control.addVariable("magicStopPoint",0);
-  Control.addVariable("magicAxisXYAngle",0.0);   // rotation
+  Control.addVariable("magicAxisXYAngle",0.3);   // rotation
   Control.addVariable("magicAxisZAngle",0.5);   // rotation
   Control.addVariable("magicAxisZStep",0.0);   // rotation
 
@@ -100,6 +100,90 @@ MAGICvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"magicPipeB",2.0,46.0);
 
+  // out to 6.18m
+  PipeGen.generatePipe(Control,"magicPipeC",5.0,10.0);
+
+  FGen.setGuideMat("SiCrystal");
+  FGen.clearYOffset();
+  FGen.generateBender(Control,"magicBC",5.0,3.0,3.0,3.0,3.0,
+                      298.43,0.0);
+
+  CGen.setMainRadius(30.0);
+  CGen.setFrame(80.0,80.0);
+  CGen.generateChopper(Control,"magicChopperA",22.0,10.0,4.55);
+
+  // Double Blade chopper
+  BGen.setThick({0.2,0.2});
+  BGen.setGap(1.0);
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"magicPSCBlade",0.0,18.0,22.5);
+
+
+  // out from ChopA (6.5m) to 12m
+  PipeGen.generatePipe(Control,"magicPipeD",3.0,650.0);
+
+  FGen.setGuideMat("Aluminium");
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"magicFD",646.0 ,2.7,4.08  ,2.4,4.06 );
+
+  // out (12m to 19m)
+  PipeGen.generatePipe(Control,"magicPipeE",3.0,600.0);
+  FGen.generateTaper(Control,"magicFE",596.0 ,4.08,4.93, 4.06,4.79 );
+  // out (19m to bunker wall)
+  PipeGen.generatePipe(Control,"magicPipeF",3.0,550.0);
+  FGen.generateTaper(Control,"magicFF",546.0 ,4.93,5.60,  4.79,5.50 );
+
+    // BEAM INSERT:
+  Control.addVariable("magicBInsertHeight",20.0);
+  Control.addVariable("magicBInsertWidth",28.0);
+  Control.addVariable("magicBInsertTopWall",1.0);
+  Control.addVariable("magicBInsertLowWall",1.0);
+  Control.addVariable("magicBInsertLeftWall",1.0);
+  Control.addVariable("magicBInsertRightWall",1.0);
+  Control.addVariable("magicBInsertWallMat","Stainless304");       
+  FGen.generateTaper(Control,"magicFWall",346.0 ,5.60,5.89, 5.50,5.80 );
+  
+  // 28m to 38m
+  SGen.generateShield(Control,"magicShieldA",1000.0,40.0,40.0,60.0,4,8);
+  PipeGen.generatePipe(Control,"magicPipeOutA",5.0,994.0);
+  FGen.generateTaper(Control,"magicOutFA",990.0, 5.89,6.65, 5.80,6.60 );
+
+  // 38m to 48m
+  SGen.generateShield(Control,"magicShieldB",1000.0,40.0,40.0,60.0,4,8);
+  PipeGen.generatePipe(Control,"magicPipeOutB",5.0,994.0);
+  FGen.generateTaper(Control,"magicOutFB",990.0, 6.65,7.20, 6.60,7.18 );
+ 
+  // 48m to 58m
+  SGen.generateShield(Control,"magicShieldC",1000.0,40.0,40.0,60.0,4,8);
+  PipeGen.generatePipe(Control,"magicPipeOutC",5.0,994.0);
+  FGen.generateTaper(Control,"magicOutFC",990.0, 7.20,7.60, 7.18,7.58 );
+
+  // 58m to 68m
+  SGen.generateShield(Control,"magicShieldD",1000.0,40.0,40.0,60.0,4,8);
+  PipeGen.generatePipe(Control,"magicPipeOutD",5.0,994.0);
+  FGen.generateTaper(Control,"magicOutFD",990.0, 7.20,7.60, 7.18,7.58 );
+
+  // 68m to 78m
+  SGen.generateShield(Control,"magicShieldE",1000.0,40.0,40.0,60.0,4,8);
+  PipeGen.generatePipe(Control,"magicPipeOutE",5.0,994.0);
+  FGen.generateTaper(Control,"magicOutFE",990.0, 7.20,7.60, 7.18,7.58 );
+  
+  // 78 to 83m
+  SGen.generateShield(Control,"magicShieldF",500.0,40.0,40.0,60.0,4,8);
+  PipeGen.generatePipe(Control,"magicPipeOutF",5.0,550.0);
+  FGen.generateTaper(Control,"magicOutFF",546.0, 7.20,7.60, 7.18,7.58 );
+
+  PGen.setFeLayer(6.0);
+  PGen.setConcLayer(10.0);
+  PGen.generatePit(Control,"magicPolarizerPit",560.0,300.0,150.0,120.0,30.0);
+
+  // 78 to 83m
+  SGen.generateShield(Control,"magicShieldG",1000.0,40.0,40.0,60.0,4,8);
+  Control.addVariable("magicShieldGYStep",300.0);
+  PipeGen.generatePipe(Control,"magicPipeOutG",5.0,994.0);
+  FGen.generateTaper(Control,"magicOutFG",990.0, 7.20,7.60, 7.18,7.58 );
+  
   Control.addVariable("magicAppAInnerWidth",4.0);
   Control.addVariable("magicAppAInnerHeight",4.0);
   Control.addVariable("magicAppAWidth",12.0);
