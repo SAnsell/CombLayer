@@ -131,6 +131,28 @@ WedgeItem::~WedgeItem()
   */
 {}
 
+double
+WedgeItem::getFixedXYAngle(double a)
+/*!
+Recalculate the XYAngle used by engineers (measured from Oy towards Ox
+with respect to (0,0)) to the wedge XYAngle (measured from Oy
+towards -Ox with respect to the wedge's focal point (XStep, YStep)
+\param a :: engineering angle [deg]
+Return the wedge XYAngle [deg]
+*/
+{
+  ELog::RegMethod RegA("WedgeItem","getFixedXYAngle");
+
+  const double arad = a*M_PI/180;
+  const double R = 200;
+
+  double beta = std::atan2(R*std::cos(arad)-xStep,  R*std::sin(arad)-yStep);
+  beta *= 180/M_PI;
+  beta *= -1;
+
+  return beta;
+}
+  
 void
 WedgeItem::populate(const FuncDataBase& Control)
  /*!
@@ -145,6 +167,9 @@ WedgeItem::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
   tipWidth=Control.EvalVar<double>(keyName+"TipWidth");
+
+  theta=Control.EvalVar<double>(keyName+"Theta");
+  xyAngle = getFixedXYAngle(theta);
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 

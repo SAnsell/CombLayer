@@ -46,6 +46,7 @@ class WedgeItem : public attachSystem::ContainedComp,
   double length;                 ///< Length
   double baseWidth;              ///< Base width
   double tipWidth;               ///< Tip width
+  double theta;                  ///< Engineering angle with respect to (0,0) in TSC. Calculated counterclockwise from OY. Used to set XYAngle
 
   int mat;                       ///< material
 
@@ -53,6 +54,8 @@ class WedgeItem : public attachSystem::ContainedComp,
   Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
 
   // Functions:
+
+  double getFixedXYAngle(double a);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
