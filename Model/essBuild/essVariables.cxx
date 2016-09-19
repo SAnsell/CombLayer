@@ -642,8 +642,8 @@ EssFlightLineVariables(FuncDataBase& Control)
 
       if (i==5) // central, the thick one
 	{
-	  Control.addVariable(baseKey+"BaseWidth", 16.38+0.6*2); // Naja
-	  Control.addVariable(baseKey+"TipWidth",  13.361 + 0.6*2); // Naja
+	  Control.addVariable(baseKey+"BaseWidth", 12.0+2*30*std::tan(4*M_PI/180));  // Rickard Holmberg slide 14
+	  Control.addVariable(baseKey+"TipWidth",  12.0); // Rickard Holmberg slide 14
 
 	  Control.addVariable(baseKey+"XStep", 0.0);
 	  Control.addVariable(baseKey+"YStep", 0.0);
