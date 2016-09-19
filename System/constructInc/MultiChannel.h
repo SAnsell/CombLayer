@@ -44,6 +44,8 @@ class MultiChannel : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
 
   int setFlag;                  ///< Structures set
+  HeadRule topRule;             ///< Base surface rule
+  HeadRule baseRule;            ///< Top surface rule
   Geometry::Surface* topSurf;   ///< top face
   Geometry::Surface* baseSurf;  ///< lower face
 
@@ -62,7 +64,7 @@ class MultiChannel : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
-  void processSurface(const int,const double,const double);
+  void processSurface(const size_t,const double,const double);
   void createObjects(Simulation&);
   void createLinks();
 

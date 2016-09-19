@@ -187,11 +187,11 @@ MAGICvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"magicMCGuideA",100.0, 7.20,7.60);
   Control.addVariable("magicShieldGZAngle",10.0);
 
- 
-  
-  Control.addVariable("magicMCANBlade",3);
+   
+  Control.addVariable("magicMCANBlades",3);
   Control.addVariable("magicMCABladeThick",1.0);
   Control.addVariable("magicMCALength",50.0);
+  Control.addVariable("magicMCAYStep",50.0);
     
   Control.addVariable("magicMCABladeMat","Tungsten");
   Control.addVariable("magicMCAVoidMat","Void");

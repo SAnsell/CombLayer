@@ -349,12 +349,14 @@ MAGIC::build(Simulation& System,
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
+  // NOTE: Guide numbers links point round guide not +/- x, z
   MCInsertA->addInsertCell(MCGuideA->getCells("Guide0Void"));
-  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),2,
-                          MCGuideA->getKey("Guide0"),3);
-
-  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),5,6);
-  MCInsertA->createAll(System,*MCGuideA,0);
+  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),3,
+                          MCGuideA->getKey("Guide0"),5);
+  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),4,6);
+  MCInsertA->createAll(System,MCGuideA->getKey("Guide0"),0);
+  ELog::EM<<"Origin == "<<MCGuideA->getKey("Guide0").getSignedLinkPt(0)
+	  <<ELog::endDiag;
 
   
   ShieldF->addInsertCell(voidCell);
