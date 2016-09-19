@@ -339,7 +339,7 @@ LineShield::createObjects(Simulation& System)
   // Loop over all segments:
   std::string FBStr;
   int SI(shieldIndex);
-  int WI,RI,FI;    
+  int WI(shieldIndex),RI(shieldIndex),FI(shieldIndex);    
   for(size_t index=0;index<nSeg;index++)
     {
       FBStr=((index) ?
@@ -364,7 +364,7 @@ LineShield::createObjects(Simulation& System)
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 	  WI+=10;
 	}
-      
+
       // Roof on top of walls are contained:
       RI=shieldIndex;
       for(size_t i=1;i<nRoofLayers;i++)
@@ -374,7 +374,7 @@ LineShield::createObjects(Simulation& System)
 			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
 	  RI+=10;
 	}
-      
+    
       // Floor complete:
       FI=shieldIndex;
       for(size_t i=1;i<nFloorLayers;i++)

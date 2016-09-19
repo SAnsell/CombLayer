@@ -1264,7 +1264,9 @@ ExitAbort::what() const throw()
      \return char* to the string values
    */
 {
-  std::string Item=OutLine+
+  static std::string Item;
+
+  Item=OutLine+
     "\nExit Stack:\n"+CodeLocation;
   return Item.c_str();
 }

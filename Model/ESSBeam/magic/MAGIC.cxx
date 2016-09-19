@@ -89,6 +89,7 @@
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
+#include "MultiChannel.h"
 #include "HoleShape.h"
 
 #include "MAGIC.h"
@@ -137,7 +138,9 @@ MAGIC::MAGIC(const std::string& keyName) :
   FocusOutF(new beamlineSystem::GuideLine(newName+"OutFF")),
 
   PolarizerPit(new constructSystem::ChopperPit(newName+"PolarizerPit")),
-
+  MCGuideA(new beamlineSystem::GuideLine(newName+"MCGuideA")),
+  MCInsertA(new constructSystem::MultiChannel(newName+"MCA")),
+  
   ShieldG(new constructSystem::LineShield(newName+"ShieldG")),
   VPipeOutG(new constructSystem::VacuumPipe(newName+"PipeOutG")),
   FocusOutG(new beamlineSystem::GuideLine(newName+"OutFG")),
@@ -341,6 +344,14 @@ MAGIC::build(Simulation& System,
 
   PolarizerPit->addInsertCell(voidCell);
   PolarizerPit->createAll(System,*ShieldE,2);
+
+
+  MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
+  MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
+
+  //  MCGuideA->addInsertCell(MCGuideA->getKey("getCells("Void"));
+  //  MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
+
   
   ShieldF->addInsertCell(voidCell);
   ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
@@ -360,6 +371,7 @@ MAGIC::build(Simulation& System,
   ShieldG->addInsertCell(PolarizerPit->getCells("MidLayer"));
   ShieldG->setFront(PolarizerPit->getKey("Mid"),2);
   ShieldG->createAll(System,*ShieldF,2);
+
 
 
   //  AppA->addInsertCell(bunkerObj.getCell("MainVoid"));

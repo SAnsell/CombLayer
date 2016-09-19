@@ -25,11 +25,9 @@ class sinbadSource
   double weight;                ///< neutron weight
   Geometry::Vec3D CentPoint;    ///< Origin Point [Start shutter]
   Geometry::Vec3D Direction;    ///< Direction of centre
-  double angleSpread;           ///< Angle spread
-  double radialSpread;          ///< Radial spread
   std::vector<double> Energy;   ///< Energies [MeV]
   std::vector<double> EWeight;  ///< Weights
-   std::vector<double> EG;  
+  std::vector<double> EG;       ///< ??
 
   void loadEnergy(const std::string&);
   void createSourceSinbad(SDef::Source&);

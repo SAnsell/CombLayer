@@ -100,6 +100,7 @@ DREAMvariables(FuncDataBase& Control)
   
 
   PipeGen.generatePipe(Control,"dreamPipeB",2.0,46.0);
+  FGen.clearYOffset();
   FGen.generateTaper(Control,"dreamFB",44.0,2.5,2.5,4.5,4.5);   
   //  Control.addVariable("dreamFBBeamYStep",4.0);
  
@@ -137,7 +138,7 @@ DREAMvariables(FuncDataBase& Control)
   // T0 chopper:
   CGen.generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
   // T0 Chopper disk A/B
-  BGen.setMaterials("Inconnel","Void");
+  BGen.setMaterials("Inconnel","Tungsten");
   BGen.setThick({5.0});
   BGen.setInnerThick({5.4});
   BGen.addPhase({95,275},{30.0,30.0});
@@ -220,7 +221,7 @@ DREAMvariables(FuncDataBase& Control)
   // Guide after wall [17.5m - 3.20] for wall
 
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.generatePipe(Control,"dreamPipeOutA",2.0,1422.0);  //
+  PipeGen.generatePipe(Control,"dreamPipeOutA",2.5,1422.0);  //
 
   FGen.clearYOffset();
   FGen.generateTaper(Control,"dreamFOutA",1418.0,4.5,4.97,2.24,3.05);

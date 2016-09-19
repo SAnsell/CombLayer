@@ -40,12 +40,13 @@ class MultiChannel : public attachSystem::ContainedComp,
 {
  private:
 
-  const int collIndex;          ///< Hole index
+  const int chnIndex;           ///< Hole index
   int cellIndex;                ///< Cell index
 
   int setFlag;                  ///< Structures set
-  int topSurf;                  ///< top face
-  int baseSurf;                 ///< base face
+  Geometry::Surface* topSurf;   ///< top face
+  Geometry::Surface* baseSurf;  ///< lower face
+
   HeadRule divider;             ///< divider
 
   HeadRule leftStruct;           ///< common left face
@@ -61,6 +62,7 @@ class MultiChannel : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
+  void processSurface(const int,const double,const double);
   void createObjects(Simulation&);
   void createLinks();
 

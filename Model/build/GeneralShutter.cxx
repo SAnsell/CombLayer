@@ -101,20 +101,25 @@ GeneralShutter::GeneralShutter(const GeneralShutter& A) :
   attachSystem::TwinComp(A),attachSystem::ContainedComp(A),
   shutterNumber(A.shutterNumber),baseName(A.baseName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  populated(A.populated),divideSurf(A.divideSurf),DPlane(A.DPlane),
-  voidXoffset(A.voidXoffset),innerRadius(A.innerRadius),
-  outerRadius(A.outerRadius),totalHeight(A.totalHeight),
-  totalDepth(A.totalDepth),totalWidth(A.totalWidth),
-  upperSteel(A.upperSteel),lowerSteel(A.lowerSteel),
-  shutterHeight(A.shutterHeight),voidZOffset(A.voidZOffset),
+  populated(A.populated),divideSurf(A.divideSurf),
+  DPlane(A.DPlane),voidXoffset(A.voidXoffset),
+  innerRadius(A.innerRadius),outerRadius(A.outerRadius),
+  totalHeight(A.totalHeight),totalDepth(A.totalDepth),
+  totalWidth(A.totalWidth),upperSteel(A.upperSteel),
+  lowerSteel(A.lowerSteel),shutterHeight(A.shutterHeight),
+  shutterDepth(A.shutterDepth),voidZOffset(A.voidZOffset),
   centZOffset(A.centZOffset),closedZShift(A.closedZShift),
-  openZShift(A.openZShift),voidDivide(A.voidDivide),voidHeight(A.voidHeight),
-  voidHeightInner(A.voidHeightInner),voidWidthInner(A.voidWidthInner),
-  voidHeightOuter(A.voidHeightOuter),voidWidthOuter(A.voidWidthOuter),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),shutterMat(A.shutterMat),
-  closed(A.closed),reversed(A.reversed),
-  SBlock(A.SBlock),XYAxis(A.XYAxis),BeamAxis(A.BeamAxis),
-  zSlope(A.zSlope),frontPt(A.frontPt),endPt(A.endPt),upperCell(A.upperCell),
+  openZShift(A.openZShift),voidDivide(A.voidDivide),
+  voidHeight(A.voidHeight),voidHeightInner(A.voidHeightInner),
+  voidWidthInner(A.voidWidthInner),
+  voidHeightOuter(A.voidHeightOuter),
+  voidWidthOuter(A.voidWidthOuter),clearGap(A.clearGap),
+  clearBoxStep(A.clearBoxStep),clearBoxLen(A.clearBoxLen),
+  clearCent(A.clearCent),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  shutterMat(A.shutterMat),closed(A.closed),
+  reversed(A.reversed),SBlock(A.SBlock),XYAxis(A.XYAxis),
+  BeamAxis(A.BeamAxis),zSlope(A.zSlope),targetPt(A.targetPt),
+  frontPt(A.frontPt),endPt(A.endPt),upperCell(A.upperCell),
   lowerCell(A.lowerCell),innerVoidCell(A.innerVoidCell)
   /*!
     Copy constructor
@@ -146,6 +151,7 @@ GeneralShutter::operator=(const GeneralShutter& A)
       upperSteel=A.upperSteel;
       lowerSteel=A.lowerSteel;
       shutterHeight=A.shutterHeight;
+      shutterDepth=A.shutterDepth;
       voidZOffset=A.voidZOffset;
       centZOffset=A.centZOffset;
       closedZShift=A.closedZShift;
@@ -156,6 +162,10 @@ GeneralShutter::operator=(const GeneralShutter& A)
       voidWidthInner=A.voidWidthInner;
       voidHeightOuter=A.voidHeightOuter;
       voidWidthOuter=A.voidWidthOuter;
+      clearGap=A.clearGap;
+      clearBoxStep=A.clearBoxStep;
+      clearBoxLen=A.clearBoxLen;
+      clearCent=A.clearCent;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       shutterMat=A.shutterMat;
@@ -165,6 +175,7 @@ GeneralShutter::operator=(const GeneralShutter& A)
       XYAxis=A.XYAxis;
       BeamAxis=A.BeamAxis;
       zSlope=A.zSlope;
+      targetPt=A.targetPt;
       frontPt=A.frontPt;
       endPt=A.endPt;
       upperCell=A.upperCell;
@@ -173,7 +184,6 @@ GeneralShutter::operator=(const GeneralShutter& A)
     }
   return *this;
 }
-
 
 GeneralShutter::~GeneralShutter() 
   /*!

@@ -89,11 +89,12 @@ boxUnit::boxUnit(const std::string& Key,const size_t index) :
   attachSystem::FixedComp(StrFunc::makeString(Key,index),6),
   attachSystem::ContainedComp(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1),prev(0),next(0),maxExtent(0.0)
+  cellIndex(surfIndex+1),prev(0),next(0),maxExtent(0.0),
+  activeFlag(0),nSides(0)
  /*!
    Constructor
    \param Key :: keyname (base)
-   \param index ::  
+   \param index ::  offset number
   */
 {}
 
@@ -285,7 +286,6 @@ boxUnit::calcXZ(const Geometry::Vec3D& PA,
     Calculate the Z-axis
     \parma PA :: Previous Axis
     \param PB :: Unit vector [next point]
-    \param ZA :: Z-Axis on output
   */
 {
   ELog::RegMethod RegA("boxUnit","calcXZ");
@@ -449,6 +449,7 @@ boxUnit::createObjects(Simulation& System)
   /*!
     Construct the object and the outside bracket
     for the system
+    \param System :: Simulation to build into
    */
 {
   ELog::RegMethod RegA("boxUnit","createObjects");
@@ -634,6 +635,7 @@ double
 boxUnit::getTanAngle(const Geometry::Vec3D& OAxis) const
   /*!
     Determine the angle 
+    \param OAxis : Original primary axis
    */
 {
   // Both normalized [Assumed]

@@ -42,6 +42,7 @@ namespace constructSystem
   class DiskChopper;
   class Jaws;
   class LineShield;
+  class MultiChannel;
   class RotaryCollimator;
   class VacuumPipe;
   class VacuumWindow;
@@ -149,6 +150,10 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutF;
   /// Polarizer Pit
   std::shared_ptr<constructSystem::ChopperPit> PolarizerPit;
+  /// Holder for the multichannel guide
+  std::shared_ptr<beamlineSystem::GuideLine> MCGuideA;
+  /// Mutlichannel device
+  std::shared_ptr<constructSystem::MultiChannel> MCInsertA;
 
   /// Shield 
   std::shared_ptr<constructSystem::LineShield> ShieldG;
@@ -158,6 +163,11 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutG;
 
 
+
+
+
+
+  
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;
 

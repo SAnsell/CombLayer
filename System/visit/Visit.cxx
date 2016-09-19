@@ -64,14 +64,15 @@
 #include "Visit.h"
 
 Visit::Visit() :
-  nPts(0,0,0)
+  outType(VISITenum::cellID),nPts(0,0,0)
   /*!
     Constructor
   */
 {}
 
 Visit::Visit(const Visit& A) : 
-  Origin(A.Origin),XYZ(A.XYZ),nPts(A.nPts),mesh(A.mesh)
+  outType(A.outType),Origin(A.Origin),
+  XYZ(A.XYZ),nPts(A.nPts),mesh(A.mesh)
   /*!
     Copy constructor
     \param A :: Visit to copy
@@ -88,6 +89,7 @@ Visit::operator=(const Visit& A)
 {
   if (this!=&A)
     {
+      outType=A.outType;
       Origin=A.Origin;
       XYZ=A.XYZ;
       nPts=A.nPts;

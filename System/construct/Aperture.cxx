@@ -91,6 +91,42 @@ Aperture::Aperture(const std::string& Key)  :
   */
 {}
 
+Aperture::Aperture(const Aperture& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  appIndex(A.appIndex),cellIndex(A.cellIndex),
+  innerWidth(A.innerWidth),innerHeight(A.innerHeight),
+  width(A.width),height(A.height),depth(A.depth),
+  nLayers(A.nLayers),voidMat(A.voidMat),defMat(A.defMat)
+  /*!
+    Copy constructor
+    \param A :: Aperture to copy
+  */
+{}
+
+Aperture&
+Aperture::operator=(const Aperture& A)
+  /*!
+    Assignment operator
+    \param A :: Aperture to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      cellIndex=A.cellIndex;
+      innerWidth=A.innerWidth;
+      innerHeight=A.innerHeight;
+      width=A.width;
+      height=A.height;
+      depth=A.depth;
+      nLayers=A.nLayers;
+      voidMat=A.voidMat;
+      defMat=A.defMat;
+    }
+  return *this;
+}
 
 Aperture::~Aperture() 
   /*!
@@ -243,5 +279,5 @@ Aperture::createAll(Simulation& System,
 }
 
   
-}  // NAMESPACE ts1System
+}  // NAMESPACE constructSystem
 

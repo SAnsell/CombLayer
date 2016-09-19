@@ -71,6 +71,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "surfDBase.h"
 #include "MultiChannel.h"
 
 
@@ -80,15 +81,60 @@ namespace constructSystem
 MultiChannel::MultiChannel(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
-  collIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(collIndex+1),setFlag(0)
+  chnIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  cellIndex(chnIndex+1),setFlag(0)
   /*!
     Default constructor
     \param Key :: Key name for variables
   */
 {}
   
+MultiChannel::MultiChannel(const MultiChannel& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  chnIndex(A.chnIndex),cellIndex(A.cellIndex),
+  setFlag(A.setFlag),topSurf(A.topSurf),baseSurf(A.baseSurf),
+  divider(A.divider),leftStruct(A.leftStruct),
+  rightStruct(A.rightStruct),nBlades(A.nBlades),
+  bladeThick(A.bladeThick),length(A.length),
+  bladeMat(A.bladeMat),voidMat(A.voidMat)
+  /*!
+    Copy constructor
+    \param A :: MultiChannel to copy
+  */
+{}
 
+MultiChannel&
+MultiChannel::operator=(const MultiChannel& A)
+  /*!
+    Assignment operator
+    \param A :: MultiChannel to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      
+      cellIndex=A.cellIndex;
+      setFlag=A.setFlag;
+      divider=A.divider;
+      leftStruct=A.leftStruct;
+      rightStruct=A.rightStruct;
+      nBlades=A.nBlades;
+      bladeThick=A.bladeThick;
+      length=A.length;
+      bladeMat=A.bladeMat;
+      voidMat=A.voidMat;
+    }
+  return *this;
+}
+
+
+  
 void
 MultiChannel::populate(const FuncDataBase& Control)
   /*!
@@ -130,6 +176,34 @@ MultiChannel::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
+MultiChannel::processSurface(const int index,
+                             const double aFrac,
+                             const double bFrac)
+  /*!
+    Process the surfaces and convert them into merged layers
+  */
+{
+  ELog::RegMethod RegA("MultiChannel","processSurface");
+  //
+  // Currently we only can deal with two types of surface [ plane/plane
+  // and plane/cylinder
+  
+  int surfN(chnIndex+index*10+3);
+  Geometry::Surface* PX=
+    ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,aFrac,surfN);
+  SMap.addToIndex(surfN,PX->getName());
+  attachSystem::SurfMap::addSurf("bladesA",surfN);
+
+  surfN=chnIndex+index*10+4;
+  PX=ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,bFrac,surfN);
+  SMap.addToIndex(surfN+1,PX->getName());
+  attachSystem::SurfMap::addSurf("bladesB",surfN+1);
+
+  return;
+}
+
+
+void
 MultiChannel::createSurfaces()
   /*!
     Create All the surfaces
@@ -137,9 +211,18 @@ MultiChannel::createSurfaces()
 {
   ELog::RegMethod RegA("MultiChannel","createSurface");
 
-  ModelSupport::buildPlane(SMap,collIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,collIndex+2,Origin+Y*(length/2.0),Y);
-  
+
+  ModelSupport::buildPlane(SMap,chnIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,chnIndex+2,Origin+Y*(length/2.0),Y);
+
+  // first problem is to determine the build step:
+  const double TotalD=topSurf->distance(Origin)+
+    baseSurf->distance(Origin);
+  ELog::EM<<"Distance == "<<TotalD<<ELog::endDiag;
+  for(size_t i=0;i<nBlades;i++)
+    {
+      
+    }
   return;
 }
 
@@ -156,13 +239,13 @@ MultiChannel::createObjects(Simulation& System)
   if ((setFlag & 2) !=2)
     throw ColErr::EmptyContainer("outerStruct not set");
 
-  Out=ModelSupport::getComposite(SMap,collIndex,"1 -2");
+  Out=ModelSupport::getComposite(SMap,chnIndex,"1 -2");
   // Out+=innerStruct.display()+outerStruct.display();
   
   // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   // addCell("Main",cellIndex-1);
   
-  // Out=ModelSupport::getComposite(SMap,collIndex,"1 -2");
+  // Out=ModelSupport::getComposite(SMap,chnIndex,"1 -2");
   // addOuterSurf(Out);
   return;
 }
@@ -176,9 +259,9 @@ MultiChannel::createLinks()
   ELog::RegMethod RegA("MultiChannel","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(collIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(chnIndex+1));
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(collIndex+2));      
+  FixedComp::setLinkSurf(1,SMap.realSurf(chnIndex+2));      
   
   return;
 }
@@ -193,8 +276,14 @@ MultiChannel::setFaces(const int BS,const int TS)
 {
   ELog::RegMethod RegA("MultiChannel","setFaces");
 
-  baseSurf=BS;
-  topSurf=TS;
+  // DEAL WITH MIRROR PLANES:
+  baseSurf=SMap.realSurfPtr(BS);
+  topSurf=SMap.realSurfPtr(TS);
+  if (!baseSurf)
+    throw ColErr::InContainerError<int>(BS,"BaseSurf");
+  if (!topSurf)
+    throw ColErr::InContainerError<int>(TS,"TopSurf");
+
   setFlag ^= 1;
   return;
 }
@@ -211,9 +300,9 @@ MultiChannel::setFaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("MultiChannel","setFaces<FC>");
 
-  baseSurf=FC.getSignedLinkSurf(BS);
-  topSurf=FC.getSignedLinkSurf(TS);
-  setFlag ^= 1;
+  const int baseSurfN=FC.getSignedLinkSurf(BS);
+  const int topSurfN=FC.getSignedLinkSurf(TS);
+  setFaces(baseSurfN,topSurfN);
   return;
 }
   

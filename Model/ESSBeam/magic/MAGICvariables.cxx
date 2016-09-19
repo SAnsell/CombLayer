@@ -183,6 +183,24 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicShieldGYStep",300.0);
   PipeGen.generatePipe(Control,"magicPipeOutG",5.0,994.0);
   FGen.generateTaper(Control,"magicOutFG",990.0, 7.20,7.60, 7.18,7.58 );
+
+  FGen.generateRectangle(Control,"magicMCGuideA",100.0, 7.20,7.60);
+  Control.addVariable("magicShieldGZAngle",10.0);
+
+  
+
+  
+  
+  Control.addVariable("magicMCAInnerWidth",4.0);
+  Control.addVariable("magicMCAInnerHeight",4.0);
+  Control.addVariable("magicMCAWidth",12.0);
+  Control.addVariable("magicMCAHeight",12.0);
+  Control.addVariable("magicMCADepth",5.0);
+  Control.addVariable("magicMCAYStep",7.0);
+  Control.addVariable("magicMCADefMat","Tungsten");
+
+
+  
   
   Control.addVariable("magicAppAInnerWidth",4.0);
   Control.addVariable("magicAppAInnerHeight",4.0);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transport/PointPointDetector.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,12 +159,15 @@ PointDetector::addEvent(const MonteCarlo::neutron& N)
   
   if (N.OPtr)
     {
-      const int matNum=(N.OPtr) ? N.OPtr->getMat() : -1; 
-      std::map<int,double>::iterator mc=
-	cnt.find(matNum);
+      const int matNum=(N.OPtr) ? N.OPtr->getMat() : -1;
+      const double W=N.weight/(N.travel*N.travel);   // r^2 term +
+                                                     // weight
+      
+      std::map<int,double>::iterator mc=cnt.find(matNum);
       if (mc==cnt.end())
-	cnt.insert(std::pair<int,double>(matNum,0.0));
-      mc->second += N.weight/(N.travel*N.travel);   // r^2 term + weight
+	cnt.emplace(matNum,W);
+      else
+        mc->second += W;
     }
   nps++;
   return;
