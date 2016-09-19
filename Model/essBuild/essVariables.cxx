@@ -49,6 +49,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "variableSetup.h"
+#include "Exception.h"
 #include "essVariables.h"
 
 namespace setVariable
@@ -585,7 +586,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
 }
 
 double
-EssFlightLineVariablesGetBeta(double a)
+EssFlightLineVariablesGetBeta(double a, double x0, double y0, double R)
 /*!
 Recalculate engineering angle (measured from Ox towards Oy with respect to (0,0))
 to the wedge XYAngle (measured from Oy towards -Ox with respect to the wedge's focal point (XStep, YStep)
@@ -595,11 +596,16 @@ Return the wedge XYAngle [deg]
 {
   ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariablesGetBeta");
 
-  a *= M_PI/180;
-  const double R = 200;
-  const double x0 = 8.0;
-  const double y0 = 4.8;
-  return -std::atan((R*cos(a)-x0)/(R*sin(a)-y0)) * 180/M_PI;
+  const double arad = a * M_PI/180;
+  /*  const double R = 200;
+  const double x0 = -8.0;
+  const double y0 = -4.8;*/
+  double beta1 = std::atan((R*std::cos(arad)-y0)/(R*std::sin(arad)-x0)) * 180/M_PI;
+  double beta2 = std::atan2(R*std::cos(arad)-y0, R*std::sin(arad)-x0)* 180/M_PI + 180;
+  //  if (a>270) beta2 -= 90;
+  
+  ELog::EM << a << " " << beta1 << "\t" << beta2 << ELog::endDiag;
+  return beta2;
 }
 
   
@@ -607,8 +613,6 @@ void
 EssFlightLineVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariables");
-
-  ELog::EM << 9.1 << " " << EssFlightLineVariablesGetBeta(9.1) << ELog::endDiag;
 
   // upper flight lines
   
@@ -707,48 +711,38 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  const int TopBFlightNWedges = 13;
+  const int TopBFlightNWedges = 12;
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
-  const double t3 = 212.3; // guess
+  const double t3 = 270-(9.1+dt2*8); // email from Rickard Holmberg 15 Sep, slide 5
   TopBFlightWedgeTheta.push_back(t3);
   for (size_t i=1; i<=8; i++)
     TopBFlightWedgeTheta.push_back(t3+dt2*i);
-  TopBFlightWedgeTheta.push_back(270);
-  const double t4 = 285.5; // guess
+  const double t4 = 270+15.45; // email from Rickard Holmberg 15 Sep, slide 6
   TopBFlightWedgeTheta.push_back(t4);
   for (size_t i=1; i<=2; i++)
     TopBFlightWedgeTheta.push_back(t4+dt1*i);
 
-    for (size_t i=1; i<=TopAFlightNWedges; i++)
+  if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
+    throw ColErr::RangeError<int>(TopBFlightNWedges,0,
+				  static_cast<int>(TopBFlightWedgeTheta.size()),
+				  "NWedges should not exceed size of TopBFlightWedgeTheta");
+  
+  for (size_t i=1; i<=TopBFlightNWedges; i++)
     {
       const std::string baseKey = StrFunc::makeString("TopBFlightWedge", i);
 
-      if (i==10) // central, the thick one
-	{
-	  Control.addVariable(baseKey+"BaseWidth", 45); // guess
-	  Control.addVariable(baseKey+"TipWidth",  13.361 + 0.6*2); // guess
+      Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
+      Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
+      const double xstep = -wedgeFocusX;
+      const double ystep = (i<=9) ? -wedgeFocusY : wedgeFocusY;
+      Control.addVariable(baseKey+"XStep", xstep);
+      Control.addVariable(baseKey+"YStep", ystep);
 
-	  Control.addVariable(baseKey+"XStep", 0.0);
-	  Control.addVariable(baseKey+"YStep", 0.0);
-	}
-      else
-	{
-	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
-	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
-	  if (i<10)
-	    {
-	      Control.addVariable(baseKey+"XStep", -wedgeFocusX);
-	      Control.addVariable(baseKey+"YStep", -wedgeFocusY);
-	    }
-	  else
-	    {
-	      Control.addVariable(baseKey+"XStep", -wedgeFocusX);
-	      Control.addVariable(baseKey+"YStep", wedgeFocusY);
-	    }
-	}
-      Control.addVariable(baseKey+"XYAngle", -TopBFlightWedgeTheta[i-1]);
-      Control.addVariable(baseKey+"Length",i==10 ? 150.0 : 30.0); // 30:Naja 150:guess
+      Control.addVariable(baseKey+"XYAngle",
+			  -270+EssFlightLineVariablesGetBeta(TopBFlightWedgeTheta[i-1], xstep, ystep, 200));
+
+      Control.addVariable(baseKey+"Length", 30.0); // Naja
       Control.addVariable(baseKey+"Mat","SS316L");
       Control.addVariable(baseKey+"ZStep", 13.7);
     }
