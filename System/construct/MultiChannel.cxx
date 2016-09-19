@@ -159,7 +159,7 @@ MultiChannel::populate(const FuncDataBase& Control)
 
 void
 MultiChannel::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
+                               const long int sideIndex)
   /*!
     Create the unit vectors: Note only to construct front/back surf
     \param FC :: Centre point
@@ -181,6 +181,9 @@ MultiChannel::processSurface(const int index,
                              const double bFrac)
   /*!
     Process the surfaces and convert them into merged layers
+    \param index :: index offset 
+    \param aFrac :: Frac of side A
+    \param bFrac :: Frac of side B 
   */
 {
   ELog::RegMethod RegA("MultiChannel","processSurface");
@@ -370,9 +373,10 @@ MultiChannel::createAll(Simulation& System,
     \param sideIndex :: position of linkpoint
   */
 {
-  ELog::RegMethod RegA("MultiChannel","createAllNoPopulate");
+  ELog::RegMethod RegA("MultiChannel","createAll");
 
   populate(System.getDataBase());
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);

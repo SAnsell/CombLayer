@@ -349,8 +349,12 @@ MAGIC::build(Simulation& System,
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
-  //  MCGuideA->addInsertCell(MCGuideA->getKey("getCells("Void"));
-  //  MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
+  MCInsertA->addInsertCell(MCGuideA->getCells("Guide0Void"));
+  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),2,
+                          MCGuideA->getKey("Guide0"),3);
+
+  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),5,6);
+  MCInsertA->createAll(System,*MCGuideA,0);
 
   
   ShieldF->addInsertCell(voidCell);

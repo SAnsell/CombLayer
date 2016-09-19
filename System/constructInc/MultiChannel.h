@@ -49,8 +49,8 @@ class MultiChannel : public attachSystem::ContainedComp,
 
   HeadRule divider;             ///< divider
 
-  HeadRule leftStruct;           ///< common left face
-  HeadRule rightStruct;          ///< common right face
+  HeadRule leftStruct;          ///< common left face
+  HeadRule rightStruct;         ///< common right face
 
   size_t nBlades;               ///< Number of blades
   double bladeThick;            ///< thickness of blade

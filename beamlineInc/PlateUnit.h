@@ -95,7 +95,9 @@ class PlateUnit : public ShapeUnit
 				const size_t) const;
   virtual std::string getExclude(const ModelSupport::surfRegister&,
 				 const size_t) const;
-
+  virtual void addSideLinks(const ModelSupport::surfRegister&,
+			    attachSystem::FixedComp&) const;
+  
   virtual void createSurfaces(ModelSupport::surfRegister&,
 			      const std::vector<double>&);
 };

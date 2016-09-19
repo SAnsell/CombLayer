@@ -138,7 +138,7 @@ DREAMvariables(FuncDataBase& Control)
   // T0 chopper:
   CGen.generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
   // T0 Chopper disk A/B
-  BGen.setMaterials("Inconnel","Tungsten");
+  BGen.setMaterials("Inconnel","Void");
   BGen.setThick({5.0});
   BGen.setInnerThick({5.4});
   BGen.addPhase({95,275},{30.0,30.0});

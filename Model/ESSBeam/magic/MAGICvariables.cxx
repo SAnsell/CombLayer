@@ -187,20 +187,16 @@ MAGICvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"magicMCGuideA",100.0, 7.20,7.60);
   Control.addVariable("magicShieldGZAngle",10.0);
 
+ 
   
-
-  
-  
-  Control.addVariable("magicMCAInnerWidth",4.0);
-  Control.addVariable("magicMCAInnerHeight",4.0);
-  Control.addVariable("magicMCAWidth",12.0);
-  Control.addVariable("magicMCAHeight",12.0);
-  Control.addVariable("magicMCADepth",5.0);
-  Control.addVariable("magicMCAYStep",7.0);
-  Control.addVariable("magicMCADefMat","Tungsten");
+  Control.addVariable("magicMCANBlade",3);
+  Control.addVariable("magicMCABladeThick",1.0);
+  Control.addVariable("magicMCALength",50.0);
+    
+  Control.addVariable("magicMCABladeMat","Tungsten");
+  Control.addVariable("magicMCAVoidMat","Void");
 
 
-  
   
   Control.addVariable("magicAppAInnerWidth",4.0);
   Control.addVariable("magicAppAInnerHeight",4.0);
