@@ -585,30 +585,6 @@ EssBeamLinesVariables(FuncDataBase& Control)
   return;
 }
 
-double
-EssFlightLineVariablesGetBeta(double a, double x0, double y0, double R)
-/*!
-Recalculate engineering angle (measured from Ox towards Oy with respect to (0,0))
-to the wedge XYAngle (measured from Oy towards -Ox with respect to the wedge's focal point (XStep, YStep)
-\param a :: engineering angle [deg]
-Return the wedge XYAngle [deg]
- */
-{
-  ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariablesGetBeta");
-
-  const double arad = a * M_PI/180;
-  /*  const double R = 200;
-  const double x0 = -8.0;
-  const double y0 = -4.8;*/
-  double beta1 = std::atan((R*std::cos(arad)-y0)/(R*std::sin(arad)-x0)) * 180/M_PI;
-  double beta2 = std::atan2(R*std::cos(arad)-y0, R*std::sin(arad)-x0)* 180/M_PI + 180;
-  //  if (a>270) beta2 -= 90;
-  
-  ELog::EM << a << " " << beta1 << "\t" << beta2 << ELog::endDiag;
-  return beta2;
-}
-
-  
 void
 EssFlightLineVariables(FuncDataBase& Control)
 {
@@ -642,20 +618,24 @@ EssFlightLineVariables(FuncDataBase& Control)
   const int TopAFlightNWedges = 14;
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
-  const double t1 = 50.2; // approx by eye to be b/w beam lines - reference needed
-  const double dt1 = 11.95; // Rickard Holmberg ESS-0037906, ESS-0038057
-  const double t2 = 99.6; // approx by eye to be b/w beam lines - reference needed
+  const double t1 = 3.5+11.95*3; // Rickard Holmberg: slides 9-10
+  const double dt1 = 11.95; // Rickard Holmberg ESS-0037906, ESS-0038057 + slide 7
+  const double t2 = -9.1; // Rickard Holmberg slide 12
   const double dt2 = 5.975; // Rickard Holmberg ESS-0037906, ESS-0038057
   
   std::vector<double> TopAFlightWedgeTheta;
   TopAFlightWedgeTheta.push_back(t1);
   for (size_t i=1; i<=3; i++)
-    TopAFlightWedgeTheta.push_back(t1+dt1*i);
-  TopAFlightWedgeTheta.push_back(92.55); // central, the thick one
+    TopAFlightWedgeTheta.push_back(t1-dt1*i);
+
+  TopAFlightWedgeTheta.push_back(-2.8); // central wedge: Rickard Holmberg slide 14
   TopAFlightWedgeTheta.push_back(t2);
   for (size_t i=1; i<=8; i++)
-    TopAFlightWedgeTheta.push_back(t2+dt2*i);
+    TopAFlightWedgeTheta.push_back(t2-dt2*i);
 
+  double xstep(0);
+  double ystep(0);
+  
   for (size_t i=1; i<=TopAFlightNWedges; i++)
     {
       const std::string baseKey = StrFunc::makeString("TopAFlightWedge", i);
@@ -666,27 +646,22 @@ EssFlightLineVariables(FuncDataBase& Control)
 	  Control.addVariable(baseKey+"TipWidth",  13.361 + 0.6*2); // Naja
 
 	  Control.addVariable(baseKey+"XStep", 0.0);
-	  Control.addVariable(baseKey+"YStep", 0.0); ELog::EM << "Why crashes with XYAngle=-90 and YStep=0?" << ELog::endCrit;
-	  Control.addVariable(baseKey+"ZStep", 13.7);
+	  Control.addVariable(baseKey+"YStep", 0.0);
 	}
       else
 	{
 	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
 	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
-	  if (i<5)
-	    {
-	      Control.addVariable(baseKey+"XStep", wedgeFocusX);
-	      Control.addVariable(baseKey+"YStep", wedgeFocusY);
-	      Control.addVariable(baseKey+"ZStep", 13.7);
-	    }
-	  else
-	    {
-	      Control.addVariable(baseKey+"XStep", wedgeFocusX);
-	      Control.addVariable(baseKey+"YStep", -wedgeFocusY);
-	      Control.addVariable(baseKey+"ZStep", 13.7);
-	    }
+
+	  xstep = wedgeFocusX;
+	  ystep = (i<=4) ? wedgeFocusY : -wedgeFocusY;
+	  Control.addVariable(baseKey+"XStep", xstep);
+	  Control.addVariable(baseKey+"YStep", ystep);
 	}
-      Control.addVariable(baseKey+"XYAngle", -TopAFlightWedgeTheta[i-1]);
+      Control.addVariable(baseKey+"ZStep", 13.7);
+
+      Control.addVariable(baseKey+"Theta", TopAFlightWedgeTheta[i-1]);
+
       Control.addVariable(baseKey+"Length",30.0); // Naja
       Control.addVariable(baseKey+"Mat","SS316L");
     }
@@ -714,14 +689,15 @@ EssFlightLineVariables(FuncDataBase& Control)
   const int TopBFlightNWedges = 12;
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
-  const double t3 = 270-(9.1+dt2*8); // email from Rickard Holmberg 15 Sep, slide 5
+
+  const double t3 = (9.1+dt2*8)-180; // email from Rickard Holmberg 15 Sep, slide 5
   TopBFlightWedgeTheta.push_back(t3);
   for (size_t i=1; i<=8; i++)
-    TopBFlightWedgeTheta.push_back(t3+dt2*i);
-  const double t4 = 270+15.45; // email from Rickard Holmberg 15 Sep, slide 6
+    TopBFlightWedgeTheta.push_back(t3-dt2*i);
+  const double t4 = -15.45-180; // email from Rickard Holmberg 15 Sep, slide 6
   TopBFlightWedgeTheta.push_back(t4);
   for (size_t i=1; i<=2; i++)
-    TopBFlightWedgeTheta.push_back(t4+dt1*i);
+    TopBFlightWedgeTheta.push_back(t4-dt1*i);
 
   if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
     throw ColErr::RangeError<int>(TopBFlightNWedges,0,
@@ -734,17 +710,17 @@ EssFlightLineVariables(FuncDataBase& Control)
 
       Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
       Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
+
       const double xstep = -wedgeFocusX;
       const double ystep = (i<=9) ? -wedgeFocusY : wedgeFocusY;
       Control.addVariable(baseKey+"XStep", xstep);
       Control.addVariable(baseKey+"YStep", ystep);
+      Control.addVariable(baseKey+"ZStep", 13.7);
 
-      Control.addVariable(baseKey+"XYAngle",
-			  -270+EssFlightLineVariablesGetBeta(TopBFlightWedgeTheta[i-1], xstep, ystep, 200));
+      Control.addVariable(baseKey+"Theta", TopBFlightWedgeTheta[i-1]);
 
       Control.addVariable(baseKey+"Length", 30.0); // Naja
       Control.addVariable(baseKey+"Mat","SS316L");
-      Control.addVariable(baseKey+"ZStep", 13.7);
     }
 
 
