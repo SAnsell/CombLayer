@@ -3,7 +3,7 @@
  
  * File:   construct/BasicFlightLine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,6 +91,57 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
+  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
+  flightIndex(A.flightIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),height(A.height),width(A.width),
+  innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
+  lMat(A.lMat),attachRule(A.attachRule)
+  /*!
+    Copy constructor
+    \param A :: BasicFlightLine to copy
+  */
+{
+  anglesXY[0]=A.anglesXY[0];
+  anglesXY[1]=A.anglesXY[1];
+  anglesZ[0]=A.anglesZ[0];
+  anglesZ[1]=A.anglesZ[1];
+
+}
+
+BasicFlightLine&
+BasicFlightLine::operator=(const BasicFlightLine& A)
+  /*!
+    Assignment operator
+    \param A :: BasicFlightLine to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      anglesXY[2]=A.anglesXY[2];
+      anglesZ[2]=A.anglesZ[2];
+      height=A.height;
+      width=A.width;
+      innerMat=A.innerMat;
+      nLayer=A.nLayer;
+      lThick=A.lThick;
+      lMat=A.lMat;
+      attachRule=A.attachRule;
+    }
+  return *this;
+}
 
 BasicFlightLine::~BasicFlightLine() 
  /*!

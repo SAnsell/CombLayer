@@ -39,9 +39,12 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
- private:
+ protected:
   
   const int flightIndex;        ///< Index of surface offset
+
+ private:
+  
   int cellIndex;                ///< Cell index
   
   double xStep;                 ///< Offset on X 

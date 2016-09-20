@@ -188,8 +188,8 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicShieldGZAngle",10.0);
 
    
-  Control.addVariable("magicMCANBlades",3);
-  Control.addVariable("magicMCABladeThick",1.0);
+  Control.addVariable("magicMCANBlades",12);
+  Control.addVariable("magicMCABladeThick",0.2);
   Control.addVariable("magicMCALength",50.0);
   Control.addVariable("magicMCAYStep",50.0);
     

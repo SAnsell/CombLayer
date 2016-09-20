@@ -199,19 +199,15 @@ MultiChannel::processSurface(const size_t index,
   
   const int surfN(chnIndex+static_cast<int>(index)*10+3);
   int surfNX(surfN);
-  ELog::EM<<"Create "<<surfN<<" "<<surfN+1<<ELog::endDiag;
 
   Geometry::Surface* PX=
     ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,aFrac,surfNX);
   SMap.addToIndex(surfN,PX->getName());
-  attachSystem::SurfMap::addSurf("bladesA",surfN);
+  addSurf("bladesA",surfN);
 
-
-  ELog::EM<<"P "<<*PX<<ELog::endDiag;
   PX=ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,bFrac,surfNX);
   SMap.addToIndex(surfN+1,PX->getName());
-  attachSystem::SurfMap::addSurf("bladesB",surfN+1);
-  ELog::EM<<"P "<<*PX<<ELog::endDiag;
+  addSurf("bladesB",surfN+1);
   return;
 }
 
@@ -223,16 +219,13 @@ MultiChannel::createSurfaces()
 {
   ELog::RegMethod RegA("MultiChannel","createSurface");
 
-
   ModelSupport::buildPlane(SMap,chnIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,chnIndex+2,Origin+Y*(length/2.0),Y);
-  ELog::EM<<"A "<<*baseSurf<<ELog::endDiag;
-  ELog::EM<<"B "<<*topSurf<<ELog::endDiag;
   
   // first problem is to determine the build step:
   const double TotalD=topSurf->distance(Origin)+
     baseSurf->distance(Origin);
-  ELog::EM<<"Total distance == "<<TotalD<<ELog::endDiag;
+
   if (TotalD<nBlades*bladeThick+Geometry::zeroTol)
     throw ColErr::SizeError<double>(TotalD,nBlades*bladeThick,
       "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
@@ -270,11 +263,9 @@ MultiChannel::createObjects(Simulation& System)
     {
       Out=BHR.display()+ModelSupport::getComposite(SMap,SN," -3 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FB));
-      ELog::EM<<"SN["<<i<<"] == "<<Out<<ELog::endDiag;
 
       Out=ModelSupport::getComposite(SMap,SN," 3 -4 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out+FB));
-      ELog::EM<<"SNX["<<i<<"] == "<<Out<<ELog::endDiag;
       
       Out=ModelSupport::getComposite(SMap,SN," 4 ");
       BHR.procString(Out);
@@ -283,10 +274,8 @@ MultiChannel::createObjects(Simulation& System)
   // LAST Volume
   Out=BHR.display()+topRule.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FB));
-  ELog::EM<<"CX:"<<Out<<ELog::endDiag;
   
   Out=FB+baseRule.display()+" "+topRule.display();
-  ELog::EM<<"Out == "<<Out<<" ::: "<<FB<<ELog::endDiag;
   addOuterSurf(Out);
   return;
 }
@@ -317,7 +306,6 @@ MultiChannel::setFaces(const int BS,const int TS)
 {
   ELog::RegMethod RegA("MultiChannel","setFaces");
 
-  ELog::EM<<"BS == "<<BS<<" "<<TS<<ELog::endDiag;
   // DEAL WITH MIRROR PLANES:
   baseSurf=SMap.realSurfPtr(BS);
   topSurf=SMap.realSurfPtr(TS);
@@ -332,8 +320,6 @@ MultiChannel::setFaces(const int BS,const int TS)
   // NOTE: Top rule is complement originally
   if (TS<0) topRule.makeComplement();
   if (BS<0) baseRule.makeComplement();
-  ELog::EM<<"TSRR == "<<topRule.display()<<ELog::endDiag;
-  ELog::EM<<"BSRR == "<<baseRule.display()<<ELog::endDiag;
   setFlag ^= 1;
   return;
 }
