@@ -74,6 +74,8 @@ namespace essSystem
   class Curtain;
   class F5Collimator;
   class BunkerFeed;
+  class WedgeFlightLine;
+      
   /*!
     \class makeESS
     \version 1.0
@@ -97,8 +99,8 @@ class makeESS
   std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
   std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
 
-  std::shared_ptr<moderatorSystem::BasicFlightLine> LowAFL;  ///< Lower Mode FL
-  std::shared_ptr<moderatorSystem::BasicFlightLine> LowBFL;  ///< Lower Mode FL
+  std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
+  std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
   
   // Butterly
 
@@ -111,8 +113,8 @@ class makeESS
   std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopAFL;  ///< Top Mod FL
-  std::shared_ptr<moderatorSystem::BasicFlightLine> TopBFL;  ///< Top Mod FL
+  std::shared_ptr<essSystem::WedgeFlightLine> TopAFL;  ///< Top Mod FL
+  std::shared_ptr<essSystem::WedgeFlightLine> TopBFL;  ///< Top Mod FL
 
   std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 

@@ -173,22 +173,20 @@ WedgeFlightLine::buildWedges(Simulation& System,
     {
       std::shared_ptr<WedgeItem> wedgeObj(new WedgeItem(keyName+"Wedge",i+1));
       OR.addObject(wedgeObj);
-      wedgeObj->createAll(System,outerFC,static_cast<int>(outerIndex),
-                       *this,-11,12);
+      wedgeObj->createAll(System,outerFC,outerIndex,*this,-11,-12);
       wedges.push_back(wedgeObj);
     }
 
   // rebuild the Inner cell
-  const std::pair<int,double> MatInfo=deleteCellWithData(System,"Inner");
+  const std::pair<int,double> MatInfo=deleteCellWithData(System,"innerVoid");
 
   std::string Out;
 
   const std::string baseOut=
     innerFC.getSignedLinkString(innerIndex)+
     outerFC.getSignedLinkString(outerIndex)+
-    ModelSupport::getComposite(SMap,flightIndex," 5 6 ") ;
+    ModelSupport::getComposite(SMap,flightIndex," 5 -6 ") ;
 
- 
   // Create the radial surfaces that divide the wedges 
   int index(flightIndex+1001);
   for(size_t i=0;i<nWedges;i++,index++)

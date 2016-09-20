@@ -130,8 +130,10 @@ BasicFlightLine::operator=(const BasicFlightLine& A)
       zStep=A.zStep;
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
-      anglesXY[2]=A.anglesXY[2];
-      anglesZ[2]=A.anglesZ[2];
+      anglesXY[0]=A.anglesXY[0];
+      anglesXY[1]=A.anglesXY[1];
+      anglesZ[0]=A.anglesZ[0];
+      anglesZ[1]=A.anglesZ[1];
       height=A.height;
       width=A.width;
       innerMat=A.innerMat;
@@ -293,8 +295,6 @@ BasicFlightLine::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BasicFlightLine","createObjects");
   
-
-
   const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
   const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
   
