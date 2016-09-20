@@ -120,12 +120,7 @@ TaperedFlightLine::populate(const FuncDataBase& Control)
   anglesZ[0]=Control.EvalVar<double>(keyName+"AngleZTop");
   anglesZ[1]=Control.EvalVar<double>(keyName+"AngleZBase");
 
-  if (height<Geometry::zeroTol) {
-    //    ELog::EM << "height<0 - this 'if' made memory problems before commenting out - fix this" << ELog::endDiag;
-    // height=Control.EvalVar<double>(keyName+"Height"); // otherwise it was set by setHeight()
-  }
-
-  height=Control.EvalVar<double>(keyName+"Height"); // otherwise it was set by setHeight()
+  height=Control.EvalVar<double>(keyName+"Height");
   width=Control.EvalVar<double>(keyName+"Width");
 
   innerMat=ModelSupport::EvalDefMat<int>(Control,keyName+"InnerMat",0);
@@ -145,7 +140,7 @@ TaperedFlightLine::populate(const FuncDataBase& Control)
   
 void
 TaperedFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
-				  const long int sideIndex)
+				    const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -189,12 +184,16 @@ TaperedFlightLine::createSurfaces()
   // The following ifs check whether the flight line should be tappered
   // and builds either cone or plane
   if (anglesZ[0]>Geometry::zeroTol)
-    ModelSupport::buildCone(SMap,flightIndex+5,Origin-Z*(height/2.0),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it (same applies to all cones below)
+    ModelSupport::buildCone(SMap,flightIndex+5,
+			    Origin-Z*(height/2.0),Z,90-anglesZ[0],
+			    Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it (same applies to all cones below)
   else
     ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
 
   if (anglesZ[1]>Geometry::zeroTol)
-    ModelSupport::buildCone(SMap,flightIndex+6,Origin+Z*(height/2.0),Z,90-anglesZ[1],Origin[2]>0 ? 1 : -1);
+    ModelSupport::buildCone(SMap,flightIndex+6,
+			    Origin+Z*(height/2.0),Z,90-anglesZ[1],
+			    Origin[2]>0 ? 1 : -1);
   else
     ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),-zDircB);
 
@@ -211,14 +210,22 @@ TaperedFlightLine::createSurfaces()
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
 
       if (anglesZ[0]>Geometry::zeroTol)
-	ModelSupport::buildCone(SMap,flightIndex+II*10+15,Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],Origin[2]>0 ? -1 : 1);
+	ModelSupport::buildCone(SMap,flightIndex+II*10+15,
+				Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],
+				Origin[2]>0 ? -1 : 1);
       else
-	ModelSupport::buildPlane(SMap,flightIndex+II*10+15, Origin-Z*(height/2.0)-zDircA*layT,zDircA);
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
+				 Origin-Z*(height/2.0)-zDircA*layT,
+				 zDircA);
 
       if (anglesZ[1]>Geometry::zeroTol)
-	ModelSupport::buildCone(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],Origin[2]>0 ?  1 : -1);
+	ModelSupport::buildCone(SMap,flightIndex+II*10+16,
+				Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],
+				Origin[2]>0 ?  1 : -1);
       else
-	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
+	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
+				 Origin+Z*(height/2.0)+zDircB*layT,
+				 -zDircB); // '-' in order to have the same sign for planes and corresponding cones
 
     }
 
@@ -270,6 +277,9 @@ TaperedFlightLine::createObjects(Simulation& System,
   const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
   const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
 
+  setLinkSignedCopy(0,innerFC,innerIndex);
+  setLinkSignedCopy(1,outerFC,outerIndex);
+
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
   Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
@@ -282,7 +292,8 @@ TaperedFlightLine::createObjects(Simulation& System,
   // Make inner object
   Out+=innerCut+outerCut;
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
-  setCell("Inner", cellIndex-1);
+  setCell("Inner", cellIndex-1); // used in WedgedFlightLine
+  CellMap::addCell("innerVoid",cellIndex-1);
 
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
@@ -292,6 +303,7 @@ TaperedFlightLine::createObjects(Simulation& System,
 				     "13 -14 15 16 (-3:4:-5:-6) ");
       Out+=innerCut+outerCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
+      CellMap::addCell("Layer"+StrFunc::makeString(i+1),cellIndex-1);
     }
   
   return;
@@ -327,7 +339,4 @@ TaperedFlightLine::createAll(Simulation& System,
   return;
 }
 
-
-
-  
 }  // NAMESPACE moderatorSystem

@@ -86,8 +86,6 @@ class TaperedFlightLine : public attachSystem::ContainedGroup,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);
 
-  void setHeight(double h) {height = h;}
-  
 };
 
 }
