@@ -85,23 +85,16 @@
 namespace essSystem
 {
 
-WedgedFlightLine::WedgedFlightLine(const std::string& Key)  :
-  moderatorSystem::TaperedFlightLine(Key),
-  flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flightIndex+1)
+WedgedFlightLine::WedgedFlightLine(const std::string& TKey) :
+  moderatorSystem::TaperedFlightLine(TKey),
+  wedgeIndex(ModelSupport::objectRegister::Instance().cell(TKey+"Wedge")),
+  cellIndex(wedgeIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-  /*
-  WedgedFlightLine::WedgedFlightLine(const WedgedFlightLine&A) :
-    moderatorSystem::TaperedFlightLine(A),
-    flightIndex(A.flightIndex),cellIndex(A.cellIndex),
-    nWedges(A.nWedges)
-  {
-  }*/
   
 WedgedFlightLine::~WedgedFlightLine() 
  /*!
@@ -119,6 +112,7 @@ WedgedFlightLine::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("WedgedFlightLine","populate");
 
   nWedges=Control.EvalDefVar<size_t>(keyName+"NWedges", 0);
+  return;
 }
 
 void
@@ -135,76 +129,60 @@ WedgedFlightLine::buildWedges(Simulation& System,
 */
 {
   ELog::RegMethod RegA("WedgedFlightLine","buildWedges");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   if (nWedges<1) return;
 
   for (size_t i=0; i<nWedges; i++)
     {
-      std::shared_ptr<WedgeItem> wedge(new WedgeItem(keyName+"Wedge", i+1));
-      //      OR.addObject(wedge);
-      wedge->createAll(System, outerFC, static_cast<int>(outerIndex), *this, -11, 12);
+      std::shared_ptr<WedgeItem> wedge(new WedgeItem(keyName+"Wedge",i+1));
+      OR.addObject(wedge);
+      wedge->createAll(System,outerFC,static_cast<int>(outerIndex),*this,-11,12);
       wedges.push_back(wedge);
     }
-
 
   // rebuild the Inner cell
   const std::pair<int,double> MatInfo=deleteCellWithData(System, "Inner");
 
   std::string Out;
-  int index(0);
   int sepIndex(0), sepIndexPrev(0);
-  const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
-  const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
-  const std::string floor = " " + StrFunc::makeString(SMap.realSurf(flightIndex+5)) + " ";
-  const std::string roof = " " + StrFunc::makeString(SMap.realSurf(flightIndex+6)) + " ";
 
-  cellIndex += 1000; // offset away from TaperedFlightLine
+  const std::string baseOut=
+    innerFC.getSignedLinkString(innerIndex)+
+    outerFC.getSignedLinkString(outerIndex)+
+    ModelSupport::getComposite(SMap,flightIndex," 5 6 ") ;
 
-  for (size_t i=0; i<nWedges+1; i++)
+ 
+  // Create the radial surfaces that divide the wedges 
+  int index(flightIndex+1001);
+  for(size_t i=0;i<nWedges;i++,index++)
+    ModelSupport::buildPlaneRotAxis(SMap,index,
+                                    wedges[i]->getCentre(),
+                                    wedges[i]->getLinkAxis(0),
+                                    Z,90.0);
+
+  // Create the void radial objects
+  index=flightIndex+1000;
+  int prevIndex(-(flightIndex+2));  // trick to get flightIndex+3 surface
+  std::string prevWedge;
+  for (size_t i=0;i<nWedges;i++)
     {
-      index = flightIndex+1000+static_cast<int>(i);
-      if (i<nWedges)
-	{
-	  sepIndex = ModelSupport::buildPlaneRotAxis(SMap, index+1,
-						     wedges[i]->getCentre(),
-						     wedges[i]->getLinkAxis(0),
-						     Z, 90)->getName();
-	  // sepIndex - from the Wedge space
-	  // index - from the TopAFlight space
-	  ELog::EM << "Why sepIndex != index? " << sepIndex << " " << index << ELog::endCrit;
-	}
-
-      Out = floor + roof + innerCut + outerCut;
-      if (i==0)
-	{
-	  // sepIndex-1 and "-1" = StrFunc::makeString(-sepIndex)
-	  Out += ModelSupport::getComposite(SMap,index, flightIndex,
-					    " 1 3M ") +
-	    "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")";
-	}
-      else if (i==nWedges)
-	{
-	  // sepIndex-1 and "1" = StrFunc::makeString(sepIndex)
-	  Out += ModelSupport::getComposite(SMap,index-1, flightIndex,
-						 " -1 -4M ") +
-	    "("+wedges[i-1]->getLinkString(1)+":"+wedges[i-1]->getLinkString(2)+")";
-	}
-      else
-	{
-	  // current and prev wedge directions:
-	  Out += ModelSupport::getComposite(SMap,index, sepIndexPrev-1,
-					    " 1 1M ") +
-	    // current wedge
-	    "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")"+
-	     // prev wedge
-	    "("+wedges[i-1]->getLinkString(1)+":"+wedges[i-1]->getLinkString(2)+")";
-	}
-      sepIndexPrev = sepIndex;
+      Out= ModelSupport::getComposite(SMap,index,prevIndex," 1 -1M ") +
+        "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")"+prevWedge;
       System.addCell(MonteCarlo::Qhull(cellIndex++,
-				       MatInfo.first,MatInfo.second,
-				       Out));
+                                       MatInfo.first,MatInfo.second,
+                                       Out+baseOut));
+      prevWedge=" ("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(2)+") ";
+      
+      prevIndex=index++;
     }
+  Out = ModelSupport::getComposite(SMap,index-1, flightIndex," -1 -4M ") + prevWedge;
 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,
+                                   MatInfo.first,MatInfo.second,
+                                   Out+baseOut));
+  
   return;
 }
   

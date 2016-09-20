@@ -40,7 +40,7 @@ class TaperedFlightLine : public attachSystem::ContainedGroup,
   public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
- private:
+ protected:
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index

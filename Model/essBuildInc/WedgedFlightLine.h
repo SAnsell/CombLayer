@@ -46,7 +46,7 @@ class WedgedFlightLine : public moderatorSystem::TaperedFlightLine
 {
  private:
   
-  const int flightIndex;        ///< Index of surface offset
+  const int wedgeIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
   size_t nWedges;                  ///< number of wedges to build

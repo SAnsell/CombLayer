@@ -265,7 +265,6 @@ TaperedFlightLine::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TaperedFlightLine","createObjects");
-  
 
 
   const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
