@@ -135,6 +135,11 @@ BasicFlightLine::populate(const FuncDataBase& Control)
       lMat.push_back(ModelSupport::EvalMat<int>
 		     (Control,keyName+"LinerMat"+idxStr));
     }  
+
+  tapSurf=Control.EvalDefVar<std::string>(keyName+"TapSurf", "plane");
+  if ( (tapSurf!="plane") && (tapSurf!="cone"))
+    throw ColErr::InvalidLine(tapSurf,keyName+"TapSurf can be either 'plane' or 'cone'");
+
   return;
 }
   
@@ -183,14 +188,14 @@ BasicFlightLine::createSurfaces()
 
   // The following ifs check whether the flight line should be tappered
   // and builds either cone or plane
-  if (anglesZ[0]>Geometry::zeroTol)
+  if ((anglesZ[0]>Geometry::zeroTol) && (tapSurf=="cone"))
     ModelSupport::buildCone(SMap,flightIndex+5,
 			    Origin-Z*(height/2.0),Z,90-anglesZ[0],
 			    Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it
   else
     ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
 
-  if (anglesZ[1]>Geometry::zeroTol)
+  if ((anglesZ[1]>Geometry::zeroTol) && (tapSurf=="cone"))
     ModelSupport::buildCone(SMap,flightIndex+6,
 			    Origin+Z*(height/2.0),Z,90-anglesZ[1],
 			    Origin[2]>0 ? 1 : -1); // SA: this is weird, but I do not know a better way to do it
@@ -209,7 +214,7 @@ BasicFlightLine::createSurfaces()
       ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
 
-      if (anglesZ[0]>Geometry::zeroTol)
+      if ((anglesZ[0]>Geometry::zeroTol) && (tapSurf=="cone"))
 	ModelSupport::buildCone(SMap,flightIndex+II*10+15,
 				Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],
 				Origin[2]>0 ? -1 : 1);
@@ -218,7 +223,7 @@ BasicFlightLine::createSurfaces()
 				 Origin-Z*(height/2.0)-zDircA*layT,
 				 zDircA);
 
-      if (anglesZ[1]>Geometry::zeroTol)
+      if ((anglesZ[1]>Geometry::zeroTol) && (tapSurf=="cone"))
 	ModelSupport::buildCone(SMap,flightIndex+II*10+16,
 				Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],
 				Origin[2]>0 ?  1 : -1);

@@ -592,6 +592,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   // upper flight lines
   
+  Control.addVariable("TopAFlightTapSurf", "cone");
   Control.addVariable("TopAFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
 
@@ -667,6 +668,7 @@ EssFlightLineVariables(FuncDataBase& Control)
     }
 
   
+  Control.addVariable("TopBFlightTapSurf", "cone");
   Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
@@ -726,6 +728,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   // lower flight lines
 
+  Control.addVariable("LowAFlightTapSurf", "cone");
   Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
@@ -746,6 +749,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
+  Control.addVariable("LowBFlightTapSurf", "cone");
   Control.addVariable("LowBFlightXStep",0.0);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowBFlightXYangle",180.0);  // Angle out

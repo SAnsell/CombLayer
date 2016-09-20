@@ -61,6 +61,8 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
 
+  std::string tapSurf;          ///< Type of surfaces used for tapering (plane|cone)
+
   std::string attachRule;       ///< Attached rule
   
   void populate(const FuncDataBase&);
