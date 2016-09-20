@@ -69,7 +69,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "World.h"
-#include "TaperedFlightLine.h"
+#include "BasicFlightLine.h"
 #include "WedgedFlightLine.h"
 #include "FlightLine.h"
 #include "AttachSupport.h"

@@ -26,7 +26,7 @@ class Simulation;
 
 namespace moderatorSystem
 {
-  class TaperedFlightLine;
+  class BasicFlightLine;
 }
 
 namespace essSystem
@@ -42,7 +42,7 @@ namespace essSystem
 
   class WedgeItem;
   
-class WedgedFlightLine : public moderatorSystem::TaperedFlightLine
+class WedgedFlightLine : public moderatorSystem::BasicFlightLine
 {
  private:
   

@@ -77,7 +77,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "surfExpand.h"
-#include "TaperedFlightLine.h"
+#include "BasicFlightLine.h"
 #include "FixedOffset.h"
 #include "WedgeItem.h"
 #include "WedgedFlightLine.h"
@@ -86,7 +86,7 @@ namespace essSystem
 {
 
 WedgedFlightLine::WedgedFlightLine(const std::string& TKey) :
-  moderatorSystem::TaperedFlightLine(TKey),
+  moderatorSystem::BasicFlightLine(TKey),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(TKey+"Wedge")),
   cellIndex(wedgeIndex+1)
   /*!
@@ -210,7 +210,7 @@ WedgedFlightLine::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("WedgedFlightLine","createAll");
 
-  moderatorSystem::TaperedFlightLine::createAll(System,
+  moderatorSystem::BasicFlightLine::createAll(System,
 						originFC, originIndex,
 						innerFC, innerIndex,
 						outerFC, outerIndex);

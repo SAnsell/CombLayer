@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/BasicFlightLine.h
+ * File:   constructInc/TiltedFlightLine.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -30,16 +30,16 @@ namespace moderatorSystem
 /*!
   \class BasicFlightLine
   \version 1.0
-  \author S. Ansell
-  \date April 2011
+  \author S. Ansell, K. Batkov
+  \date Oct 2015
   \brief BasicFlightLine [insert object]
 */
 
-class BasicFlightLine : public attachSystem::ContainedGroup,
+class BasicFlightLine : public attachSystem::ContainedGroup, 
   public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
- private:
+ protected:
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
@@ -85,7 +85,6 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);
 
-  
 };
 
 }
