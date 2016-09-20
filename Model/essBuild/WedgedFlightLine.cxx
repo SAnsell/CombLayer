@@ -165,7 +165,7 @@ WedgedFlightLine::buildWedges(Simulation& System,
       index = flightIndex+1000+static_cast<int>(i);
       if (i<nWedges)
 	{
-	  sepIndex = ModelSupport::buildPlaneRotAxis(SMap, index,
+	  sepIndex = ModelSupport::buildPlaneRotAxis(SMap, index+1,
 						     wedges[i]->getCentre(),
 						     wedges[i]->getLinkAxis(0),
 						     Z, 90)->getName();
@@ -178,22 +178,22 @@ WedgedFlightLine::buildWedges(Simulation& System,
       if (i==0)
 	{
 	  // sepIndex-1 and "-1" = StrFunc::makeString(-sepIndex)
-	  Out += ModelSupport::getComposite(SMap,sepIndex-1, flightIndex,
-					    " -1 3M ") +
+	  Out += ModelSupport::getComposite(SMap,index, flightIndex,
+					    " 1 3M ") +
 	    "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")";
 	}
       else if (i==nWedges)
 	{
 	  // sepIndex-1 and "1" = StrFunc::makeString(sepIndex)
-	  Out += ModelSupport::getComposite(SMap,sepIndex-1, flightIndex,
-						 " 1 -4M ") +
+	  Out += ModelSupport::getComposite(SMap,index-1, flightIndex,
+						 " -1 -4M ") +
 	    "("+wedges[i-1]->getLinkString(1)+":"+wedges[i-1]->getLinkString(2)+")";
 	}
       else
 	{
 	  // current and prev wedge directions:
-	  Out += ModelSupport::getComposite(SMap,sepIndex-1, sepIndexPrev-1,
-					    " -1 1M ") +
+	  Out += ModelSupport::getComposite(SMap,index, sepIndexPrev-1,
+					    " 1 1M ") +
 	    // current wedge
 	    "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")"+
 	     // prev wedge
