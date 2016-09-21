@@ -51,6 +51,7 @@ class IradCylinder : public attachSystem::ContainedComp,
   int mat;                        ///< Main material
   std::vector<int> wallMat;       ///< Wall material
 
+  int    sampleActive;            ///< samples are not built if set to zero
   double sampleX;                 ///< Sample X step     
   double sampleY;                 ///< Sample Z step     
   double sampleZ;                 ///< Sample Z step
