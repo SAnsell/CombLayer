@@ -318,6 +318,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle",180.0);
   Control.addVariable("TopAFlightZangle",0.0);
+  Control.addVariable("TopAFlightTapSurf","cone");  // Step down angle
   Control.addVariable("TopAFlightAngleZTop",1.0);  // Step down angle
   Control.addVariable("TopAFlightAngleZBase",1.0); // Step up angle
 
@@ -691,7 +692,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   const double t1 = 3.5+11.95*3.0; // Rickard Holmberg: slides 9-10
   const double dt1 = 11.95; // Rickard Holmberg ESS-0037906, ESS-0038057 + slide 7
-  const double t2 = -9.1; // Rickard Holmberg slide 12
+  const double t2 = -9.1;   // Rickard Holmberg slide 12
   const double dt2 = 5.975; // Rickard Holmberg ESS-0037906, ESS-0038057
   
   std::vector<double> TopAFlightWedgeTheta;
@@ -822,6 +823,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
   Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
 
+  Control.addVariable("LowBFlightTapSurf","cone");  // Step down angle
   Control.addVariable("LowBFlightXStep",0.0);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
   Control.addVariable("LowBFlightXYangle",180.0);  // Angle out

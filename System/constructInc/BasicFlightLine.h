@@ -3,7 +3,7 @@
  
  * File:   constructInc/BasicFlightLine.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
 
+  int tapFlag;                  ///< Taper type flag
   std::string attachRule;       ///< Attached rule
   
   void populate(const FuncDataBase&);

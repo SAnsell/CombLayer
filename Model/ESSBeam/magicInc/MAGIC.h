@@ -155,6 +155,11 @@ class MAGIC : public attachSystem::CopiedComp
   /// Mutlichannel device
   std::shared_ptr<constructSystem::MultiChannel> MCInsertA;
 
+  /// Holder for the multichannel guide
+  std::shared_ptr<beamlineSystem::GuideLine> MCGuideB;
+  /// Mutlichannel device
+  std::shared_ptr<constructSystem::MultiChannel> MCInsertB;
+
   /// Shield 
   std::shared_ptr<constructSystem::LineShield> ShieldG;
   /// Vac pipe out of PitA

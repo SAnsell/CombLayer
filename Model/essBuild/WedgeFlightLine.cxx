@@ -185,8 +185,8 @@ WedgeFlightLine::buildWedges(Simulation& System,
   const std::string baseOut=
     innerFC.getSignedLinkString(innerIndex)+
     outerFC.getSignedLinkString(outerIndex)+
-    ModelSupport::getComposite(SMap,flightIndex," 5 -6 ") ;
-
+    ModelSupport::getComposite(SMap,flightIndex," 5 6 ") ;
+  
   // Create the radial surfaces that divide the wedges 
   int index(flightIndex+1001);
   for(size_t i=0;i<nWedges;i++,index++)
