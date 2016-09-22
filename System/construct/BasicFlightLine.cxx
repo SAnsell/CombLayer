@@ -245,8 +245,6 @@ BasicFlightLine::createSurfaces()
 
   const int zFlag(-1);
   //  const int zFlag(1);
-  if (tapFlag)
-    ELog::EM<<"Z flag == "<<zFlag<<":: "<<Origin<<ELog::endDiag;
   if (anglesZ[0]>Geometry::zeroTol && tapFlag)
     {
       ModelSupport::buildCone(SMap,flightIndex+5,

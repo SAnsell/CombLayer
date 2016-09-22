@@ -453,10 +453,7 @@ Cone::write(std::ostream& OX) const
   const double TA=tan((M_PI*alpha)/180.0);    // tan^2(angle)
   cx<<TA*TA;
   if (cutFlag)
-    {
-      cx<<" "<<((Ndir<0) ? -cutFlag : cutFlag);
-      std::cout<<cx.str()<<" "<<Ndir<<std::endl;
-    }
+    cx<<" "<<((Ndir<0) ? -cutFlag : cutFlag);
   
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
