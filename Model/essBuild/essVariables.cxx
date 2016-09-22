@@ -660,6 +660,8 @@ EssFlightLineVariables(FuncDataBase& Control)
 	{
 	  Control.addVariable(baseKey+"BaseWidth", 12.0+2*length*std::tan(4*M_PI/180));  // Rickard Holmberg slide 14
 
+	  Control.addVariable(baseKey+"TipAngle",  8.0); // Rickard Holmberg slide 14
+
 	  Control.addVariable(baseKey+"XStep", 0.0);
 	  Control.addVariable(baseKey+"YStep", 0.0);
 	}
@@ -734,7 +736,6 @@ EssFlightLineVariables(FuncDataBase& Control)
 	  length = defLength;
 	  width = defWidth;
 	}
-
 
       Control.addVariable(baseKey+"BaseWidth", width);
       Control.addVariable(baseKey+"TipAngle",  6.0); // ESS-003805
