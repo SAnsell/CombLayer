@@ -659,7 +659,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariables");
 
   // upper flight lines
-  
+
+  Control.addVariable("TopAFlightTapSurf", "cone");
   Control.addVariable("TopAFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
 
@@ -709,23 +710,37 @@ EssFlightLineVariables(FuncDataBase& Control)
   double xstep(0);
   double ystep(0);
   
+  const double defLength = 30.0; // default length ESS-003805
+  const double defWidth  = 5.7; // default base width ESS-003805
+  double length(defLength), width(defWidth);
+
   for (size_t i=1;i<=TopAFlightNWedges;i++)
     {
       const std::string baseKey =
         StrFunc::makeString("TopAFlightWedge", i);
-      
+
+      if (i==1)
+	{
+	  length = 25.0; // shorter due to interference with the wheel
+	  width = 5.8;
+	}
+      else
+	{
+	  length = defLength;
+	  width = defWidth;
+	}
+
       if (i==5) // central, the thick one
 	{
 	  Control.addVariable(baseKey+"BaseWidth", 12.0+2*30*std::tan(4*M_PI/180));  // Rickard Holmberg slide 14
-	  Control.addVariable(baseKey+"TipWidth",  12.0); // Rickard Holmberg slide 14
+	  Control.addVariable(baseKey+"TipAngle",  8.0); // Rickard Holmberg slide 14
 
 	  Control.addVariable(baseKey+"XStep", 0.0);
 	  Control.addVariable(baseKey+"YStep", 0.0);
 	}
       else
 	{
-	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
-	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
+	  Control.addVariable(baseKey+"BaseWidth", width); // ESS-0038057
 
 	  xstep = wedgeFocusX;
 	  ystep = (i<=4) ? wedgeFocusY : -wedgeFocusY;
@@ -734,13 +749,15 @@ EssFlightLineVariables(FuncDataBase& Control)
 	}
       Control.addVariable(baseKey+"ZStep", 13.7);
 
+      Control.addVariable(baseKey+"TipAngle", 6.0); // ESS-0038057, ESS-003805
       Control.addVariable(baseKey+"Theta", TopAFlightWedgeTheta[i-1]);
 
-      Control.addVariable(baseKey+"Length",30.0); // Naja
+      Control.addVariable(baseKey+"Length",length); // ESS-0038057
       Control.addVariable(baseKey+"Mat","SS316L");
     }
 
   // B FLIGHT COORECTED
+  Control.addVariable("TopBFlightTapSurf", "cone");
   Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
@@ -785,8 +802,19 @@ EssFlightLineVariables(FuncDataBase& Control)
     {
       const std::string baseKey = StrFunc::makeString("TopBFlightWedge", i);
 
-      Control.addVariable(baseKey+"BaseWidth",4.446+0.5*2); // Naja
-      Control.addVariable(baseKey+"TipWidth", 1.407+0.5*2); // Naja
+      if (i==12)
+	{
+	  length = 25.0; // shorter due to interference with the wheel
+	  width = 5.8;
+	}
+      else
+	{
+	  length = defLength;
+	  width = defWidth;
+	}
+
+      Control.addVariable(baseKey+"BaseWidth",width); // Naja
+      Control.addVariable(baseKey+"TipAngle",  6.0); // ESS-003805
 
       const double xstep = -wedgeFocusX;
       const double ystep = (i<=9) ? -wedgeFocusY : wedgeFocusY;
@@ -796,7 +824,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 
       Control.addVariable(baseKey+"Theta", TopBFlightWedgeTheta[i-1]);
 
-      Control.addVariable(baseKey+"Length", 30.0); // Naja
+      Control.addVariable(baseKey+"Length", length);
       Control.addVariable(baseKey+"Mat","SS316L");
     }
 

@@ -79,7 +79,6 @@
 #include "SurInter.h"
 #include "WedgeItem.h"
 
-
 namespace essSystem
 {
 
@@ -167,7 +166,7 @@ WedgeItem::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
-  tipWidth=Control.EvalVar<double>(keyName+"TipWidth");
+  tipAngle=Control.EvalVar<double>(keyName+"TipAngle");
 
   theta=Control.EvalVar<double>(keyName+"Theta");
   xyAngle = getFixedXYAngle(theta);
@@ -188,13 +187,13 @@ WedgeItem::createUnitVector(const attachSystem::FixedComp& FC)
 
   FixedComp::createUnitVector(FC);
   FixedOffset::applyOffset();
-
+  
   return;
 }
   
 void
 WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
-                          const long int baseLinkPt)
+			  const long int baseLinkPt)
   /*!
     Create All the surfaces
     \param FC :: FixedComp for outer surface
@@ -203,9 +202,9 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
-  // we assume that baseSurf is cylinder
+  // we assume that baseLinkPt is cylinder
   outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseLinkPt));
-
+  
   // divider:
   const Geometry::Plane *pZ =
     ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
@@ -217,22 +216,19 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
   const Geometry::Plane *p104 = ModelSupport::buildPlane(SMap,wedgeIndex+104,
 							 Origin+X*baseWidth/2.0,X);
 
-  // inclination of side plane with respect to Y-axis
-  const double alpha = std::atan((baseWidth-tipWidth)/2.0/length) * 180.0/M_PI;
-
   // points on the outerCyl surface
   const Geometry::Vec3D A = SurInter::getPoint(p103,outerCyl,pZ,nearPt);
   const Geometry::Vec3D B = SurInter::getPoint(p104,outerCyl,pZ,nearPt);
 
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3,A,X,Z,alpha);
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4,B,X,Z,-alpha);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3,A,X,Z,tipAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4,B,X,Z,-tipAngle/2.0);
 
   // aux plane between points AB
   const Geometry::Plane *pAB=
     ModelSupport::buildPlane(SMap,wedgeIndex+101,(A+B)/2,Y);
 
   ModelSupport::buildShiftedPlane(SMap,wedgeIndex+1,pAB,-length);
-  
+
   return;
 }
 
@@ -242,7 +238,7 @@ WedgeItem::createObjects(Simulation& System,
 			 const long int baseLinkPt,
 			 const attachSystem::FixedComp& FL,
 			 const long int topLinkPt,
-                         const long int bottomLinkPt)
+			 const long int bottomLinkPt)
   /*!
     Adds the all the components
     \param System :: Simulation item
@@ -251,14 +247,13 @@ WedgeItem::createObjects(Simulation& System,
     \param FL :: Flight line the wedge is inserted to
     \param topLinkPt :: top link surface
     \param bottomLinkPt :: bottom link surface
-
   */
 {
   ELog::RegMethod RegA("WedgeItem","createObjects");
 
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ")+
+  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ")+
     FC.getSignedLinkString(baseLinkPt)+
     FL.getSignedLinkString(topLinkPt)+
     FL.getSignedLinkString(bottomLinkPt);
@@ -313,14 +308,13 @@ WedgeItem::createLinks()
 void
 WedgeItem::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-                     const long int baseLinkPt,
+		     const long int baseLinkPt,
 		     const attachSystem::FixedComp& FL,
 		     const long int topLinkPt,
-                     const long int bottomLinkPt)
+		     const long int bottomLinkPt)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-
     \param FC :: Central origin
     \param baseLinkPt :: base surface of the wedge
     \param FL :: Flight line the wedge is inserted to
@@ -332,7 +326,7 @@ WedgeItem::createAll(Simulation& System,
   
   populate(System.getDataBase());
   createUnitVector(FC);
-  createSurfaces(FC,baseLinkPt);
+  createSurfaces(FC, baseLinkPt);
   createLinks();
   createObjects(System,FC,baseLinkPt,FL,topLinkPt,bottomLinkPt);
   insertObjects(System);              
