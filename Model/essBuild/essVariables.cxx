@@ -639,7 +639,6 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   const double defLength = 30.0; // default length ESS-003805
   const double defWidth  = 5.7; // default base width ESS-003805
-  const double alpha = 6 * M_PI/180.0; // base-to-tip full angle for small wedges ESS-003805
   double length(defLength), width(defWidth);
   
   for (size_t i=1; i<=TopAFlightNWedges; i++)
@@ -660,7 +659,6 @@ EssFlightLineVariables(FuncDataBase& Control)
       if (i==5) // central, the thick one
 	{
 	  Control.addVariable(baseKey+"BaseWidth", 12.0+2*length*std::tan(4*M_PI/180));  // Rickard Holmberg slide 14
-	  Control.addVariable(baseKey+"TipWidth",  12.0); // Rickard Holmberg slide 14
 
 	  Control.addVariable(baseKey+"XStep", 0.0);
 	  Control.addVariable(baseKey+"YStep", 0.0);
@@ -668,7 +666,6 @@ EssFlightLineVariables(FuncDataBase& Control)
       else
 	{
 	  Control.addVariable(baseKey+"BaseWidth", width); // ESS-0038057
-	  Control.addVariable(baseKey+"TipWidth", width-2.0*length*std::tan(alpha/2.0)); // ESS-0038057
 
 	  xstep = wedgeFocusX;
 	  ystep = (i<=4) ? wedgeFocusY : -wedgeFocusY;
@@ -677,6 +674,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 	}
       Control.addVariable(baseKey+"ZStep", 13.7);
 
+      Control.addVariable(baseKey+"TipAngle", 6.0); // ESS-0038057, ESS-003805
       Control.addVariable(baseKey+"Theta", TopAFlightWedgeTheta[i-1]);
 
       Control.addVariable(baseKey+"Length",length); // ESS-0038057
@@ -739,7 +737,7 @@ EssFlightLineVariables(FuncDataBase& Control)
 
 
       Control.addVariable(baseKey+"BaseWidth", width);
-      Control.addVariable(baseKey+"TipWidth",  width-2.0*length*std::tan(alpha/2.0)); // ESS-003805
+      Control.addVariable(baseKey+"TipAngle",  6.0); // ESS-003805
 
       const double xstep = -wedgeFocusX;
       const double ystep = (i<=9) ? -wedgeFocusY : wedgeFocusY;

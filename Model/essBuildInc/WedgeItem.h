@@ -45,7 +45,7 @@ class WedgeItem : public attachSystem::ContainedComp,
 
   double length;                 ///< Length
   double baseWidth;              ///< Base width
-  double tipWidth;               ///< Tip width
+  double tipAngle;               ///< Wedge tip angle (full)
   double theta;                  ///< Engineering angle with respect to (0,0) in TSC. Calculated counterclockwise from OY. Used to set XYAngle
 
   int mat;                       ///< material

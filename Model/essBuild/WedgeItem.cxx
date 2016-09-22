@@ -166,7 +166,7 @@ WedgeItem::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   baseWidth=Control.EvalVar<double>(keyName+"BaseWidth");
-  tipWidth=Control.EvalVar<double>(keyName+"TipWidth");
+  tipAngle=Control.EvalVar<double>(keyName+"TipAngle");
 
   theta=Control.EvalVar<double>(keyName+"Theta");
   xyAngle = getFixedXYAngle(theta);
@@ -213,15 +213,12 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
   const Geometry::Plane *p104 = ModelSupport::buildPlane(SMap,wedgeIndex+104,
 							 Origin+X*baseWidth/2.0,X);
 
-  // inclination of side plane with respect to Y-axis
-  const double alpha = std::atan((baseWidth-tipWidth)/2.0/length) * 180.0/M_PI;
-
   // points on the outerCyl surface
   const Geometry::Vec3D A = SurInter::getPoint(p103, outerCyl, pZ, nearPt);
   const Geometry::Vec3D B = SurInter::getPoint(p104, outerCyl, pZ, nearPt);
 
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3, A, X, Z,  alpha);
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4, B, X, Z, -alpha);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3, A, X, Z,  tipAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4, B, X, Z, -tipAngle/2.0);
 
   // aux plane between points AB
   const Geometry::Plane *pAB  = ModelSupport::buildPlane(SMap, wedgeIndex+101,
