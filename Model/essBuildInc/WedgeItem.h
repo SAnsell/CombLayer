@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/WedgeItem.h
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,10 @@ class WedgeItem : public attachSystem::ContainedComp,
   double length;                 ///< Length
   double baseWidth;              ///< Base width
   double tipAngle;               ///< Wedge tip angle (full)
-  double theta;                  ///< Engineering angle with respect to (0,0) in TSC. Calculated counterclockwise from OY. Used to set XYAngle
-
+  ///  Engineering angle with respect to (0,0) in TSC.
+  ///  Calculated counterclockwise from OY. Used to set XYAngle
+  double theta;
+  
   int mat;                       ///< material
 
   // aux variables, non-populated
@@ -55,15 +57,15 @@ class WedgeItem : public attachSystem::ContainedComp,
 
   // Functions:
 
-  double getFixedXYAngle(double a);
+  double getFixedXYAngle(const double) const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces(const attachSystem::FixedComp&, const int);
-  void createObjects(Simulation&,
-		     const attachSystem::FixedComp&,const int,
-		     const attachSystem::FixedComp&, const int, const int);
+  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createObjects(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const attachSystem::FixedComp&,
+		     const long int, const long int);
   void createLinks();
 
  public:
@@ -73,8 +75,9 @@ class WedgeItem : public attachSystem::ContainedComp,
   WedgeItem& operator=(const WedgeItem&);
   virtual ~WedgeItem();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&, const int,
-		 const attachSystem::FixedComp&, const int, const int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int,
+		 const long int);
   
 };
 

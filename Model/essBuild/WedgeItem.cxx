@@ -3,7 +3,7 @@
  
  * File:   essBuild/WedgeItem.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,13 +76,13 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "World.h"
-#include "WedgeItem.h"
 #include "SurInter.h"
+#include "WedgeItem.h"
 
 namespace essSystem
 {
 
-WedgeItem::WedgeItem(const std::string& Key, const size_t Index)  :
+WedgeItem::WedgeItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -90,6 +90,7 @@ WedgeItem::WedgeItem(const std::string& Key, const size_t Index)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param Index :: Offset index
   */
 {}
 
@@ -132,23 +133,22 @@ WedgeItem::~WedgeItem()
 {}
 
 double
-WedgeItem::getFixedXYAngle(double a)
-/*!
-Recalculate the XYAngle used by engineers (measured from Oy towards Ox
-with respect to (0,0)) to the wedge XYAngle (measured from Oy
-towards -Ox with respect to the wedge's focal point (XStep, YStep)
-\param a :: engineering angle [deg]
-Return the wedge XYAngle [deg]
-*/
+WedgeItem::getFixedXYAngle(const double angle) const
+  /*!
+    Recalculate the XYAngle used by engineers (measured from Oy towards Ox
+    with respect to (0,0)) to the wedge XYAngle (measured from Oy
+    towards -Ox with respect to the wedge's focal point (XStep, YStep)
+    \param angle :: engineering angle [deg]
+    Return the wedge XYAngle [deg]
+  */
 {
   ELog::RegMethod RegA("WedgeItem","getFixedXYAngle");
 
-  const double arad = a*M_PI/180;
+  const double arad = angle*M_PI/180;
   const double R = 200;
 
   double beta = std::atan2(R*std::cos(arad)-xStep,  R*std::sin(arad)-yStep);
-  beta *= 180/M_PI;
-  beta *= -1;
+  beta *= -180.0/M_PI;
 
   return beta;
 }
@@ -186,25 +186,28 @@ WedgeItem::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("WedgeItem","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  FixedOffset::applyOffset();
+  
   return;
 }
   
 void
-WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
+WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
+			  const long int baseLinkPt)
   /*!
     Create All the surfaces
+    \param FC :: FixedComp for outer surface
+    \param baseLinkPt :: Outer surface
   */
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
-  // we assume that baseSurf is cylinder
-  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseSurf));
+  // we assume that baseLinkPt is cylinder
+  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseLinkPt));
   
   // divider:
-  const Geometry::Plane *pZ = ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
+  const Geometry::Plane *pZ =
+    ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
 
   // aux planes:
   const Geometry::Vec3D nearPt(Origin+Y*outerCyl->getRadius());
@@ -214,17 +217,17 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
 							 Origin+X*baseWidth/2.0,X);
 
   // points on the outerCyl surface
-  const Geometry::Vec3D A = SurInter::getPoint(p103, outerCyl, pZ, nearPt);
-  const Geometry::Vec3D B = SurInter::getPoint(p104, outerCyl, pZ, nearPt);
+  const Geometry::Vec3D A = SurInter::getPoint(p103,outerCyl,pZ,nearPt);
+  const Geometry::Vec3D B = SurInter::getPoint(p104,outerCyl,pZ,nearPt);
 
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3, A, X, Z,  tipAngle/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4, B, X, Z, -tipAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+3,A,X,Z,tipAngle/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,wedgeIndex+4,B,X,Z,-tipAngle/2.0);
 
   // aux plane between points AB
-  const Geometry::Plane *pAB  = ModelSupport::buildPlane(SMap, wedgeIndex+101,
-							 (A+B)/2, Y);
+  const Geometry::Plane *pAB=
+    ModelSupport::buildPlane(SMap,wedgeIndex+101,(A+B)/2,Y);
 
-  ModelSupport::buildShiftedPlane(SMap,wedgeIndex+1, pAB, -length);
+  ModelSupport::buildShiftedPlane(SMap,wedgeIndex+1,pAB,-length);
 
   return;
 }
@@ -232,22 +235,28 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC, const int baseSurf)
 void
 WedgeItem::createObjects(Simulation& System,
 			 const attachSystem::FixedComp& FC,
-			 const int baseSurf,
+			 const long int baseLinkPt,
 			 const attachSystem::FixedComp& FL,
-			 const int top, const int bottom)
+			 const long int topLinkPt,
+			 const long int bottomLinkPt)
   /*!
     Adds the all the components
     \param System :: Simulation item
-    other parameters are the same as in WedgeItem::createAll
+    \param FC :: Central origin
+    \param baseLinkPt :: base surface of the wedge
+    \param FL :: Flight line the wedge is inserted to
+    \param topLinkPt :: top link surface
+    \param bottomLinkPt :: bottom link surface
   */
 {
   ELog::RegMethod RegA("WedgeItem","createObjects");
 
   std::string Out;
 
-  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ") +
-    FC.getSignedLinkString(baseSurf) +
-    FL.getSignedLinkString(top) + FL.getSignedLinkString(bottom);
+  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ")+
+    FC.getSignedLinkString(baseLinkPt)+
+    FL.getSignedLinkString(topLinkPt)+
+    FL.getSignedLinkString(bottomLinkPt);
   
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
@@ -298,26 +307,28 @@ WedgeItem::createLinks()
 
 void
 WedgeItem::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC, const int baseSurf,
+		     const attachSystem::FixedComp& FC,
+		     const long int baseLinkPt,
 		     const attachSystem::FixedComp& FL,
-		     const int top, const int bottom)
+		     const long int topLinkPt,
+		     const long int bottomLinkPt)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
-    \param baseSurf :: base surface of the wedge
+    \param baseLinkPt :: base surface of the wedge
     \param FL :: Flight line the wedge is inserted to
-    \param top :: top link surface
-    \param bottom :: bottom link surface
+    \param topLinkPt :: top link surface
+    \param bottomLinkPt :: bottom link surface
   */
 {
   ELog::RegMethod RegA("WedgeItem","createAll");
   
   populate(System.getDataBase());
   createUnitVector(FC);
-  createSurfaces(FC, baseSurf);
+  createSurfaces(FC, baseLinkPt);
   createLinks();
-  createObjects(System,FC,baseSurf,FL,top,bottom);
+  createObjects(System,FC,baseLinkPt,FL,topLinkPt,bottomLinkPt);
   insertObjects(System);              
 
   return;
