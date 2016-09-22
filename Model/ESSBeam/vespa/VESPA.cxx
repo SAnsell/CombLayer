@@ -158,6 +158,8 @@ VESPA::VESPA(const std::string& keyName) :
   PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
   
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
+  VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
+  FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
   Cave(new VespaHut(newName+"Cave")),
 
   VJaws(new constructSystem::JawSet(newName+"VJaws")),
@@ -539,6 +541,14 @@ VESPA::build(Simulation& System,
 
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));
   ShieldC->insertObjects(System);
+
+  VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
+  VPipeOutC->addInsertCell(Cave->getCells("FrontWall"));
+  VPipeOutC->addInsertCell(Cave->getCells("Void"));
+  VPipeOutC->createAll(System,ChopperOutB->getKey("Beam"),2);
+
+  FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
+  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
 
   VJaws->setInsertCell(Cave->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);

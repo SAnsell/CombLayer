@@ -182,6 +182,10 @@ class VESPA : public attachSystem::CopiedComp
 
   /// Shield out of PitB
   std::shared_ptr<constructSystem::LineShield> ShieldC;
+  /// Vac pipe to hutch
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
+  /// Tapered guide to hutch
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
 
   /// Vespa hut
   std::shared_ptr<VespaHut> Cave;

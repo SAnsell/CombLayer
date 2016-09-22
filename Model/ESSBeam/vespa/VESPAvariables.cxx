@@ -190,7 +190,7 @@ VESPAvariables(FuncDataBase& Control)
 
 
   // Guide in wall
-  FGen.generateTaper(Control,"vespaFWall",308.0,9.0,9.0,8.5,8.5);
+  FGen.generateTaper(Control,"vespaFWall",344.0,9.0,9.0,8.5,8.5);
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
@@ -258,6 +258,10 @@ VESPAvariables(FuncDataBase& Control)
 
   SGen.generateShield(Control,"vespaShieldC",200.0,40.0,40.0,40.0,4,8);  
 
+  PipeGen.generatePipe(Control,"vespaPipeOutC",16.0,225.0);  //
+  Control.addVariable("vespaPipeOutCRadius",9.0);
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"vespaFOutC",220.0,9.0,11.0,8.5,10.0);
 
     // HUT:  
   Control.addVariable("vespaCaveYStep",25.0);
