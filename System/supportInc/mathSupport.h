@@ -24,15 +24,15 @@
 
 /*!
   \struct IncSeq
-  \brief allows a simple increment to take place
+  \brief Allows a simple increment to take place
   \author S. Ansell
   \version 1.0
   \date September 2012
 */
 struct IncSeq{ 
-  size_t v;
-  size_t operator()(){return v++;} 
-  IncSeq():v(0){}
+  size_t v;                          ///< Value 
+  size_t operator()(){return v++;}   ///< increment
+IncSeq():v(0){}                      ///< Constructor
 };
 
 size_t lowBitIndex(const unsigned int&);

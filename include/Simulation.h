@@ -170,8 +170,9 @@ class Simulation
   const FuncDataBase& getDataBase() const { return DB; }
   /// Get PhysicsCards
   physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
-  /// Access weight control
-  const OTYPE& getCells() const { return OList; } ///< Get cells
+
+  
+  const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells
   Geometry::Transform* createSourceTransform();
   

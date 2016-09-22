@@ -456,7 +456,7 @@ SupplyBox::createAll(Simulation& System,
     \param orgLayerIndex :: Link point for origin  [0 for origin]
     \param orgSideIndex :: Link point for X,Y,Z axis [0 for origin]
     \param exitSideIndex :: layer to pass pipe out via
-    \param ExtraLC :: Point to extra Layer Object if exist [pre-mod]
+    \param LC :: Point to extra Layer Object if exist [pre-mod]
     \param extraSide :: Side to track through object
   */
 {

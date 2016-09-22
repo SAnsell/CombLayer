@@ -79,7 +79,8 @@ class ControlElement : public FuelElement,
   ControlElement& operator=(const ControlElement&);
   virtual ~ControlElement() {}   ///< Destructor
 
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+  virtual void createAll(Simulation&,
+			 const attachSystem::FixedComp&,
 			 const Geometry::Vec3D&,const FuelLoad&);
 
 };
