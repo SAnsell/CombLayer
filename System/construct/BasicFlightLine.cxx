@@ -57,7 +57,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Cone.h"
 #include "Line.h"
 #include "Rules.h"
 #include "varList.h"
@@ -86,12 +85,66 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
   attachSystem::FixedComp(Key,12),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(flightIndex+1),nLayer(0)
+  cellIndex(flightIndex+1),nLayer(0),tapFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
+
+BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
+  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
+  flightIndex(A.flightIndex),cellIndex(A.cellIndex),
+  xStep(A.xStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  zAngle(A.zAngle),height(A.height),width(A.width),
+  innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
+  lMat(A.lMat),tapFlag(A.tapFlag),attachRule(A.attachRule)
+  /*!
+    Copy constructor
+    \param A :: BasicFlightLine to copy
+  */
+{
+  anglesXY[0]=A.anglesXY[0];
+  anglesXY[1]=A.anglesXY[1];
+  anglesZ[0]=A.anglesZ[0];
+  anglesZ[1]=A.anglesZ[1];
+
+}
+
+BasicFlightLine&
+BasicFlightLine::operator=(const BasicFlightLine& A)
+  /*!
+    Assignment operator
+    \param A :: BasicFlightLine to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      xStep=A.xStep;
+      zStep=A.zStep;
+      xyAngle=A.xyAngle;
+      zAngle=A.zAngle;
+      anglesXY[0]=A.anglesXY[0];
+      anglesXY[1]=A.anglesXY[1];
+      anglesZ[0]=A.anglesZ[0];
+      anglesZ[1]=A.anglesZ[1];
+      height=A.height;
+      width=A.width;
+      innerMat=A.innerMat;
+      nLayer=A.nLayer;
+      lThick=A.lThick;
+      lMat=A.lMat;
+      tapFlag=A.tapFlag;
+      attachRule=A.attachRule;
+    }
+  return *this;
+}
 
 BasicFlightLine::~BasicFlightLine() 
  /*!
@@ -134,18 +187,22 @@ BasicFlightLine::populate(const FuncDataBase& Control)
       lThick.push_back(Control.EvalVar<double>(keyName+"LinerThick"+idxStr));
       lMat.push_back(ModelSupport::EvalMat<int>
 		     (Control,keyName+"LinerMat"+idxStr));
-    }  
+    }
 
-  tapSurf=Control.EvalDefVar<std::string>(keyName+"TapSurf", "plane");
-  if ( (tapSurf!="plane") && (tapSurf!="cone"))
-    throw ColErr::InvalidLine(tapSurf,keyName+"TapSurf can be either 'plane' or 'cone'");
+  const std::string tapSurf=
+    Control.EvalDefVar<std::string>(keyName+"TapSurf","plane");
+  if (tapSurf!="plane" && tapSurf!="cone")
+    throw ColErr::InvalidLine
+      (tapSurf,keyName+":TapSurf is not 'plane' or 'cone'");
+  
+  tapFlag=(tapSurf=="cone") ? 1 : 0;
 
   return;
 }
   
 void
 BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
-				    const long int sideIndex)
+				  const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -186,23 +243,29 @@ BasicFlightLine::createSurfaces()
   ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
 
-  // The following ifs check whether the flight line should be tappered
-  // and builds either cone or plane
-  if ((anglesZ[0]>Geometry::zeroTol) && (tapSurf=="cone"))
-    ModelSupport::buildCone(SMap,flightIndex+5,
-			    Origin-Z*(height/2.0),Z,90-anglesZ[0],
-			    Origin[2]>0 ? -1 : 1); // SA: this is weird, but I do not know a better way to do it
+  const int zFlag(-1);
+  //  const int zFlag(1);
+  if (tapFlag)
+    ELog::EM<<"Z flag == "<<zFlag<<":: "<<Origin<<ELog::endDiag;
+  if (anglesZ[0]>Geometry::zeroTol && tapFlag)
+    {
+      ModelSupport::buildCone(SMap,flightIndex+5,
+                              Origin-Z*(height/2.0),Z,90.0-anglesZ[0],
+                              zFlag);
+    }
   else
     ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
 
-  if ((anglesZ[1]>Geometry::zeroTol) && (tapSurf=="cone"))
-    ModelSupport::buildCone(SMap,flightIndex+6,
-			    Origin+Z*(height/2.0),Z,90-anglesZ[1],
-			    Origin[2]>0 ? 1 : -1); // SA: this is weird, but I do not know a better way to do it
+  if (anglesZ[1]>Geometry::zeroTol && tapFlag)
+    {
+      ModelSupport::buildCone(SMap,flightIndex+6,
+                              Origin+Z*(height/2.0),Z,90-anglesZ[1],
+                              -zFlag);
+    }
   else
     ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),-zDircB);
-
-
+  
+ 
   double layT(0.0);
   for(size_t i=0;i<nLayer;i++)
     {
@@ -214,50 +277,55 @@ BasicFlightLine::createSurfaces()
       ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
 
-      if ((anglesZ[0]>Geometry::zeroTol) && (tapSurf=="cone"))
-	ModelSupport::buildCone(SMap,flightIndex+II*10+15,
-				Origin-Z*(height/2.0+layT),Z,90-anglesZ[0],
-				Origin[2]>0 ? -1 : 1);
+      if (anglesZ[0]>Geometry::zeroTol && tapFlag)
+         {
+           ModelSupport::buildCone(SMap,flightIndex+II*10+15,
+                                   Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0],
+                                   zFlag);
+         }
       else
-	ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
-				 Origin-Z*(height/2.0)-zDircA*layT,
-				 zDircA);
+        ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
+                                 Origin-Z*(height/2.0)-zDircA*layT,zDircA);
 
-      if ((anglesZ[1]>Geometry::zeroTol) && (tapSurf=="cone"))
-	ModelSupport::buildCone(SMap,flightIndex+II*10+16,
-				Origin+Z*(height/2.0+layT),Z,90-anglesZ[1],
-				Origin[2]>0 ?  1 : -1);
+      if ((anglesZ[1]>Geometry::zeroTol) && tapFlag)
+        {
+          ModelSupport::buildCone(SMap,flightIndex+II*10+16,
+                                  Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1],
+                                  -zFlag);
+        }
       else
-	ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
-				 Origin+Z*(height/2.0)+zDircB*layT,
-				 -zDircB); // '-' in order to have the same sign for planes and corresponding cones
-
+        ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
+                                 Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
     }
 
   // CREATE LINKS
-  int signVal(-1);
-  for(size_t i=3;i<7;i++)
-    {
-      const int sNum(flightIndex+static_cast<int>(10*nLayer+i));
-      FixedComp::setLinkSurf(i-1,signVal*SMap.realSurf(sNum));
-      const int tNum(flightIndex+static_cast<int>(i));
-      FixedComp::setLinkSurf(i+5,signVal*SMap.realSurf(tNum));
-      signVal*=-1;
-    } 
 
+  const int sNum(flightIndex+static_cast<int>(10*nLayer));
+
+  FixedComp::setLinkSurf(2,-SMap.realSurf(sNum+3));
+  FixedComp::setLinkSurf(3,SMap.realSurf(sNum+4));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(sNum+5));
+  FixedComp::setLinkSurf(5,-SMap.realSurf(sNum+6));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0)-xDircA*layT,-xDircA);
   FixedComp::setConnect(3,Origin+X*(width/2.0)+xDircB*layT,xDircB);
   FixedComp::setConnect(4,Origin-Z*(height/2.0)-zDircA*layT,-zDircA);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0)+zDircB*layT,zDircB);
-
+  FixedComp::setConnect(5,Origin+Z*(height/2.0)+zDircB*layT,-zDircB);
   FixedComp::setConnect(6,Origin,-Y);
   FixedComp::setConnect(7,Origin,Y);
+
+  // Inner surfaces:
   FixedComp::setConnect(8,Origin-X*(width/2.0),-xDircA);
   FixedComp::setConnect(9,Origin+X*(width/2.0),xDircB);
   FixedComp::setConnect(10,Origin-Z*(height/2.0),-zDircA);
-  FixedComp::setConnect(11,Origin+Z*(height/2.0),zDircB);
+  FixedComp::setConnect(11,Origin+Z*(height/2.0),-zDircB);
 
+  FixedComp::setLinkSurf(8,-SMap.realSurf(flightIndex+3));
+  FixedComp::setLinkSurf(9,SMap.realSurf(flightIndex+4));
+  FixedComp::setLinkSurf(10,-SMap.realSurf(flightIndex+5));
+  FixedComp::setLinkSurf(11,-SMap.realSurf(flightIndex+6));
+
+  
   return;
 }
 
@@ -277,14 +345,13 @@ BasicFlightLine::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BasicFlightLine","createObjects");
-
-
+  
   const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
   const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
-
+  
   setLinkSignedCopy(0,innerFC,innerIndex);
   setLinkSignedCopy(1,outerFC,outerIndex);
-
+  
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
   Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
@@ -294,12 +361,11 @@ BasicFlightLine::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
   addOuterSurf("inner",Out);
 
+
   // Make inner object
   Out+=innerCut+outerCut;
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
-  setCell("Inner", cellIndex-1); // used in WedgedFlightLine
   CellMap::addCell("innerVoid",cellIndex-1);
-
   //Flight layers:
   for(size_t i=0;i<nLayer;i++)
     {
@@ -309,11 +375,12 @@ BasicFlightLine::createObjects(Simulation& System,
       Out+=innerCut+outerCut;
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
       CellMap::addCell("Layer"+StrFunc::makeString(i+1),cellIndex-1);
-    }
+    }      
   
   return;
 }
 
+  
 void
 BasicFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,
@@ -344,4 +411,7 @@ BasicFlightLine::createAll(Simulation& System,
   return;
 }
 
+
+
+  
 }  // NAMESPACE moderatorSystem

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/WedgedFlightLine.h
+ * File:   essBuildInc/WedgeFlightLine.h
  *
  * Copyright (c) 2016 by Stuart Ansell / Konstantin Batkov
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_WedgedFlightLine_h
-#define essSystem_WedgedFlightLine_h
+#ifndef essSystem_WedgeFlightLine_h
+#define essSystem_WedgeFlightLine_h
 
 class Simulation;
 
@@ -32,17 +32,19 @@ namespace moderatorSystem
 namespace essSystem
 {
 
+class WedgeItem;
+ 
 /*!
-  \class WedgedFlightLine
+  \class WedgeFlightLine
   \version 1.0
   \author Konstantin Batkov
-  \date Sep 2016
-  \brief WedgedFlightLine: Tapered flight line with wedges
+  \date September 2016
+  \brief Tapered flight line with wedges
 */
 
-  class WedgeItem;
+
   
-class WedgedFlightLine : public moderatorSystem::BasicFlightLine
+class WedgeFlightLine : public moderatorSystem::BasicFlightLine
 {
  private:
   
@@ -60,10 +62,10 @@ class WedgedFlightLine : public moderatorSystem::BasicFlightLine
   
  public:
 
-  WedgedFlightLine(const std::string&);
-  //  WedgedFlightLine(const WedgedFlightLine&);
-  //  WedgedFlightLine& operator=(const WedgedFlightLine&);
-  ~WedgedFlightLine();
+  WedgeFlightLine(const std::string&);
+  WedgeFlightLine(const WedgeFlightLine&);
+  WedgeFlightLine& operator=(const WedgeFlightLine&);
+  ~WedgeFlightLine();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/WedgedFlightLine.cxx
+ * File:   essModel/WedgeFlightLine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,12 +80,12 @@
 #include "BasicFlightLine.h"
 #include "FixedOffset.h"
 #include "WedgeItem.h"
-#include "WedgedFlightLine.h"
+#include "WedgeFlightLine.h"
 
 namespace essSystem
 {
 
-WedgedFlightLine::WedgedFlightLine(const std::string& TKey) :
+WedgeFlightLine::WedgeFlightLine(const std::string& TKey) :
   moderatorSystem::BasicFlightLine(TKey),
   wedgeIndex(ModelSupport::objectRegister::Instance().cell(TKey+"Wedge")),
   cellIndex(wedgeIndex+1)
@@ -95,72 +95,104 @@ WedgedFlightLine::WedgedFlightLine(const std::string& TKey) :
   */
 {}
 
+WedgeFlightLine::WedgeFlightLine(const WedgeFlightLine& A) : 
+  moderatorSystem::BasicFlightLine(A),
+  wedgeIndex(A.wedgeIndex),cellIndex(A.cellIndex),
+  nWedges(A.nWedges),wedges(A.wedges)
+  /*!
+    Copy constructor
+    \param A :: WedgeFlightLine to copy
+  */
+{}
+
+WedgeFlightLine&
+WedgeFlightLine::operator=(const WedgeFlightLine& A)
+  /*!
+    Assignment operator
+    \param A :: WedgeFlightLine to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      moderatorSystem::BasicFlightLine::operator=(A);
+      cellIndex=A.cellIndex;
+      nWedges=A.nWedges;
+      wedges=A.wedges;
+    }
+  return *this;
+}
+
   
-WedgedFlightLine::~WedgedFlightLine() 
+WedgeFlightLine::~WedgeFlightLine() 
  /*!
    Destructor
  */
 {}
 
 void
-WedgedFlightLine::populate(const FuncDataBase& Control)
+WedgeFlightLine::populate(const FuncDataBase& Control)
 /*!
   Populate all the variables
   \param Control :: Variable data base
 */
 {
-  ELog::RegMethod RegA("WedgedFlightLine","populate");
+  ELog::RegMethod RegA("WedgeFlightLine","populate");
 
   nWedges=Control.EvalDefVar<size_t>(keyName+"NWedges", 0);
   return;
 }
 
 void
-WedgedFlightLine::buildWedges(Simulation& System,
+WedgeFlightLine::buildWedges(Simulation& System,
 			   const attachSystem::FixedComp& originFC,
 			   const long int originIndex,
 			   const attachSystem::FixedComp& innerFC,
 			   const long int innerIndex,
 			   const attachSystem::FixedComp& outerFC,
 			   const long int outerIndex)
-/*!
-  Builds the flight line wedges.
-  Arguments are the same as in createAll.
-*/
+  /*!
+    Builds the flight line wedges.
+    Arguments are the same as in createAll.
+    \param System :: Simulation to add vessel to
+    \param originFC :: Origin
+    \param originIndex :: Use side index from Origin
+    \param innerFC :: Moderator Object
+    \param innerIndex :: Use side index from moderator
+    \param outerFC :: Edge of bulk shield 
+    \param outerIndex :: Side index of bulk shield
+  */
 {
-  ELog::RegMethod RegA("WedgedFlightLine","buildWedges");
+  ELog::RegMethod RegA("WedgeFlightLine","buildWedges");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   if (nWedges<1) return;
 
-  for (size_t i=0; i<nWedges; i++)
+  for(size_t i=0;i<nWedges;i++)
     {
-      std::shared_ptr<WedgeItem> wedge(new WedgeItem(keyName+"Wedge",i+1));
-      OR.addObject(wedge);
-      wedge->createAll(System,outerFC,static_cast<int>(outerIndex),*this,-11,12);
-      wedges.push_back(wedge);
+      std::shared_ptr<WedgeItem> wedgeObj(new WedgeItem(keyName+"Wedge",i+1));
+      OR.addObject(wedgeObj);
+      wedgeObj->createAll(System,outerFC,outerIndex,*this,-11,-12);
+      wedges.push_back(wedgeObj);
     }
 
   // rebuild the Inner cell
-  const std::pair<int,double> MatInfo=deleteCellWithData(System, "Inner");
+  const std::pair<int,double> MatInfo=deleteCellWithData(System,"innerVoid");
 
   std::string Out;
-  int sepIndex(0), sepIndexPrev(0);
 
   const std::string baseOut=
     innerFC.getSignedLinkString(innerIndex)+
     outerFC.getSignedLinkString(outerIndex)+
     ModelSupport::getComposite(SMap,flightIndex," 5 6 ") ;
-
- 
+  
   // Create the radial surfaces that divide the wedges 
   int index(flightIndex+1001);
   for(size_t i=0;i<nWedges;i++,index++)
     ModelSupport::buildPlaneRotAxis(SMap,index,
                                     wedges[i]->getCentre(),
-                                    wedges[i]->getLinkAxis(0),
-                                    Z,90.0);
+                                    wedges[i]->getY(),Z,90.0);
 
   // Create the void radial objects
   index=flightIndex+1000;
@@ -168,16 +200,20 @@ WedgedFlightLine::buildWedges(Simulation& System,
   std::string prevWedge;
   for (size_t i=0;i<nWedges;i++)
     {
-      Out= ModelSupport::getComposite(SMap,index,prevIndex," 1 -1M ") +
-        "("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(3)+")"+prevWedge;
+      Out= ModelSupport::getComposite(SMap,index,prevIndex," 1 -1M ")+
+        "("+wedges[i]->getLinkString(1)+":"+
+        wedges[i]->getLinkString(3)+")"+prevWedge;
+      
       System.addCell(MonteCarlo::Qhull(cellIndex++,
                                        MatInfo.first,MatInfo.second,
                                        Out+baseOut));
-      prevWedge=" ("+wedges[i]->getLinkString(1)+":"+wedges[i]->getLinkString(2)+") ";
+      prevWedge=" ("+wedges[i]->getLinkString(1)+":"+
+        wedges[i]->getLinkString(2)+") ";
       
       prevIndex=index++;
     }
-  Out = ModelSupport::getComposite(SMap,index-1, flightIndex," -1 -4M ") + prevWedge;
+  Out=ModelSupport::getComposite(SMap,index-1,flightIndex," -1 -4M ")
+    +prevWedge;
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,
                                    MatInfo.first,MatInfo.second,
@@ -188,7 +224,7 @@ WedgedFlightLine::buildWedges(Simulation& System,
   
 
 void
-WedgedFlightLine::createAll(Simulation& System,
+WedgeFlightLine::createAll(Simulation& System,
 			   const attachSystem::FixedComp& originFC,
 			   const long int originIndex,
 			   const attachSystem::FixedComp& innerFC,
@@ -208,15 +244,16 @@ WedgedFlightLine::createAll(Simulation& System,
 
   */
 {
-  ELog::RegMethod RegA("WedgedFlightLine","createAll");
+  ELog::RegMethod RegA("WedgeFlightLine","createAll");
 
   moderatorSystem::BasicFlightLine::createAll(System,
-						originFC, originIndex,
-						innerFC, innerIndex,
-						outerFC, outerIndex);
+                                              originFC, originIndex,
+                                              innerFC, innerIndex,
+                                              outerFC, outerIndex);
   populate(System.getDataBase());
-  buildWedges(System, originFC, originIndex, innerFC, innerIndex,
-	      outerFC, outerIndex);
+  buildWedges(System,originFC,originIndex,
+              innerFC,innerIndex,
+	      outerFC,outerIndex);
     
   return;
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/TiltedFlightLine.h
+ * File:   constructInc/BasicFlightLine.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,18 +30,21 @@ namespace moderatorSystem
 /*!
   \class BasicFlightLine
   \version 1.0
-  \author S. Ansell, K. Batkov
-  \date Oct 2015
+  \author S. Ansell
+  \date April 2011
   \brief BasicFlightLine [insert object]
 */
 
-class BasicFlightLine : public attachSystem::ContainedGroup, 
+class BasicFlightLine : public attachSystem::ContainedGroup,
   public attachSystem::FixedComp,
   public attachSystem::CellMap
 {
  protected:
   
   const int flightIndex;        ///< Index of surface offset
+
+ private:
+  
   int cellIndex;                ///< Cell index
   
   double xStep;                 ///< Offset on X 
@@ -61,8 +64,7 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   std::vector<double> lThick;   ///< Linear Thickness 
   std::vector<int> lMat;        ///< Layer Material
 
-  std::string tapSurf;          ///< Type of surfaces used for tapering (plane|cone)
-
+  int tapFlag;                  ///< Taper type flag
   std::string attachRule;       ///< Attached rule
   
   void populate(const FuncDataBase&);
@@ -87,6 +89,7 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int);
 
+  
 };
 
 }
