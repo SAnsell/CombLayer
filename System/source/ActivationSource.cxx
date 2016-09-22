@@ -79,6 +79,38 @@ ActivationSource::ActivationSource() :
   */
 {}
 
+ActivationSource::ActivationSource(const ActivationSource& A) : 
+  nPoints(A.nPoints),Origin(A.Origin),Axis(A.Axis),
+  distWeight(A.distWeight),angleWeight(A.angleWeight),
+  ABoxPt(A.ABoxPt),BBoxPt(A.BBoxPt),matFlux(A.matFlux)
+  /*!
+    Copy constructor
+    \param A :: ActivationSource to copy
+  */
+{}
+
+ActivationSource&
+ActivationSource::operator=(const ActivationSource& A)
+  /*!
+    Assignment operator
+    \param A :: ActivationSource to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      nPoints=A.nPoints;
+      Origin=A.Origin;
+      Axis=A.Axis;
+      distWeight=A.distWeight;
+      angleWeight=A.angleWeight;
+      ABoxPt=A.ABoxPt;
+      BBoxPt=A.BBoxPt;
+      matFlux=A.matFlux;
+    }
+  return *this;
+}
+
 ActivationSource::~ActivationSource() 
   /*!
     Destructor

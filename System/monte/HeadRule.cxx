@@ -1691,6 +1691,50 @@ HeadRule::createAddition(const int InterFlag,const Rule* NRptr)
 
 
 int
+HeadRule::procSurface(const Geometry::Surface* SPtr) 
+  /*!
+    Process a rule as a HeadRule
+    \param SPTr :: Surface rule
+    \returns 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","procSurface");
+
+
+  delete HeadNode;
+  HeadNode=0;
+  if (SPtr)
+    {
+      HeadNode=new SurfPoint(SPtr,SPtr->getName());
+      return 1;
+    }
+
+  return 0; 
+}
+
+int
+HeadRule::procRule(const Rule* RPtr) 
+  /*!
+    Process a rule as a HeadRule
+    \para RPTr :: Rule to add
+    \returns 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","procRule");
+
+
+  delete HeadNode;
+  HeadNode=0;
+  if (RPtr)
+    {
+      HeadNode=RPtr->clone();
+      return 1;
+    }
+
+  return 0; 
+}
+
+int
 HeadRule::procString(const std::string& Line) 
   /*!
     Processes the cell string. This is an internal function

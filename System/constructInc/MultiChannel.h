@@ -44,13 +44,15 @@ class MultiChannel : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
 
   int setFlag;                  ///< Structures set
+  HeadRule topRule;             ///< Base surface rule
+  HeadRule baseRule;            ///< Top surface rule
   Geometry::Surface* topSurf;   ///< top face
   Geometry::Surface* baseSurf;  ///< lower face
 
   HeadRule divider;             ///< divider
 
-  HeadRule leftStruct;           ///< common left face
-  HeadRule rightStruct;          ///< common right face
+  HeadRule leftStruct;          ///< common left face
+  HeadRule rightStruct;         ///< common right face
 
   size_t nBlades;               ///< Number of blades
   double bladeThick;            ///< thickness of blade
@@ -62,7 +64,7 @@ class MultiChannel : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces();
-  void processSurface(const int,const double,const double);
+  void processSurface(const size_t,const double,const double);
   void createObjects(Simulation&);
   void createLinks();
 

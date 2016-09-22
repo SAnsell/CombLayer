@@ -287,7 +287,7 @@ GuideLine::addGuideUnit(const size_t index,
 
   const std::string GKey="Guide"+StrFunc::makeString(index);
 
-  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,2);
+  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,6);
   
   const std::string PGKey=(index) ? 
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
@@ -409,7 +409,6 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
-
 	}
       else if (typeID=="Bend")
 	{
@@ -625,6 +624,8 @@ GuideLine::createObjects(Simulation& System)
 	  if (j)
 	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[j],0.0,Out));
+          if (!j)
+            addCell(GKey+"Void",cellIndex-1);
           addCell("Full",cellIndex-1);
           addCell(GKey,cellIndex-1);
 	}
@@ -781,6 +782,9 @@ GuideLine::createGuideLinks()
                              shapeUnits[i]->getEndAxis());
 
         }
+      shapeUnits[i]->addSideLinks(SMap,guideFC);
+
+      
       GI+=100;
     }
   return;

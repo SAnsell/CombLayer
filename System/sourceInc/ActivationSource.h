@@ -35,7 +35,7 @@ namespace SDef
   \version 1.0
   \author S. Ansell
   \date September 2016
-  \brief Creates an active sourcex
+  \brief Creates an active projection source
 */
 
 class ActivationSource 

@@ -95,6 +95,7 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicAxisZStep",0.0);   // rotation
 
   FGen.setGuideMat("Copper");
+  FGen.setThickness(0.5,0.4);
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"magicFA",350.0,11.0,3.0 ,4.0,3.0);
 
@@ -184,24 +185,29 @@ MAGICvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"magicPipeOutG",5.0,994.0);
   FGen.generateTaper(Control,"magicOutFG",990.0, 7.20,7.60, 7.18,7.58 );
 
-  FGen.generateRectangle(Control,"magicMCGuideA",100.0, 7.20,7.60);
-  Control.addVariable("magicShieldGZAngle",10.0);
+  FGen.generateRectangle(Control,"magicMCGuideA",150.0, 7.20,7.60);
+  Control.addVariable("magicMCGuideAZAngle",-0.25);
 
-  
+  FGen.generateRectangle(Control,"magicMCGuideB",150.0, 7.20,7.60);
+  Control.addVariable("magicMCGuideBZAngle",-0.25);
+   
+  Control.addVariable("magicMCANBlades",6);
+  Control.addVariable("magicMCABladeThick",0.2);
+  Control.addVariable("magicMCALength",148.0);
+  Control.addParse<double>("magicMCAYStep","magicMCALength/2.0");
+    
+  Control.addVariable("magicMCABladeMat","SiCrystal");
+  Control.addVariable("magicMCAVoidMat","Void");
 
-  
-  
-  Control.addVariable("magicMCAInnerWidth",4.0);
-  Control.addVariable("magicMCAInnerHeight",4.0);
-  Control.addVariable("magicMCAWidth",12.0);
-  Control.addVariable("magicMCAHeight",12.0);
-  Control.addVariable("magicMCADepth",5.0);
-  Control.addVariable("magicMCAYStep",7.0);
-  Control.addVariable("magicMCADefMat","Tungsten");
 
+  Control.addVariable("magicMCBNBlades",6);
+  Control.addVariable("magicMCBBladeThick",0.2);
+  Control.addVariable("magicMCBLength",125.0);
+  Control.addParse<double>("magicMCBYStep","magicMCBLength/2.0");
+    
+  Control.addVariable("magicMCBBladeMat","SiCrystal");
+  Control.addVariable("magicMCBVoidMat","Void");
 
-  
-  
   Control.addVariable("magicAppAInnerWidth",4.0);
   Control.addVariable("magicAppAInnerHeight",4.0);
   Control.addVariable("magicAppAWidth",12.0);

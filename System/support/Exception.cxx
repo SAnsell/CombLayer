@@ -1320,6 +1320,7 @@ template class ColErr::IndexError<unsigned int>;
 template class ColErr::IndexError<long int>;
 template class ColErr::IndexError<size_t>;
 template class ColErr::SizeError<size_t>;
+template class ColErr::SizeError<double>;
 template class ColErr::InContainerError<Geometry::Vec3D>;
 template class ColErr::InContainerError<std::string>;
 template class ColErr::InContainerError<int>;

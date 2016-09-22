@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -93,7 +94,8 @@ MultiChannel::MultiChannel(const MultiChannel& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   chnIndex(A.chnIndex),cellIndex(A.cellIndex),
-  setFlag(A.setFlag),topSurf(A.topSurf),baseSurf(A.baseSurf),
+  setFlag(A.setFlag),topRule(A.topRule),baseRule(A.baseRule),
+  topSurf(A.topSurf),baseSurf(A.baseSurf),
   divider(A.divider),leftStruct(A.leftStruct),
   rightStruct(A.rightStruct),nBlades(A.nBlades),
   bladeThick(A.bladeThick),length(A.length),
@@ -121,6 +123,10 @@ MultiChannel::operator=(const MultiChannel& A)
       
       cellIndex=A.cellIndex;
       setFlag=A.setFlag;
+      topSurf=A.topSurf;
+      baseSurf=A.baseSurf;
+      topRule=A.topRule;
+      baseRule=A.baseRule;
       divider=A.divider;
       leftStruct=A.leftStruct;
       rightStruct=A.rightStruct;
@@ -159,7 +165,7 @@ MultiChannel::populate(const FuncDataBase& Control)
 
 void
 MultiChannel::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
+                               const long int sideIndex)
   /*!
     Create the unit vectors: Note only to construct front/back surf
     \param FC :: Centre point
@@ -176,11 +182,14 @@ MultiChannel::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-MultiChannel::processSurface(const int index,
+MultiChannel::processSurface(const size_t index,
                              const double aFrac,
                              const double bFrac)
   /*!
     Process the surfaces and convert them into merged layers
+    \param index :: index offset 
+    \param aFrac :: Frac of side A
+    \param bFrac :: Frac of side B 
   */
 {
   ELog::RegMethod RegA("MultiChannel","processSurface");
@@ -188,20 +197,19 @@ MultiChannel::processSurface(const int index,
   // Currently we only can deal with two types of surface [ plane/plane
   // and plane/cylinder
   
-  int surfN(chnIndex+index*10+3);
+  const int surfN(chnIndex+static_cast<int>(index)*10+3);
+  int surfNX(surfN);
+
   Geometry::Surface* PX=
-    ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,aFrac,surfN);
+    ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,aFrac,surfNX);
   SMap.addToIndex(surfN,PX->getName());
-  attachSystem::SurfMap::addSurf("bladesA",surfN);
+  addSurf("bladesA",surfN);
 
-  surfN=chnIndex+index*10+4;
-  PX=ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,bFrac,surfN);
+  PX=ModelSupport::surfDBase::generalSurf(topSurf,baseSurf,bFrac,surfNX);
   SMap.addToIndex(surfN+1,PX->getName());
-  attachSystem::SurfMap::addSurf("bladesB",surfN+1);
-
+  addSurf("bladesB",surfN+1);
   return;
 }
-
 
 void
 MultiChannel::createSurfaces()
@@ -211,17 +219,26 @@ MultiChannel::createSurfaces()
 {
   ELog::RegMethod RegA("MultiChannel","createSurface");
 
-
   ModelSupport::buildPlane(SMap,chnIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,chnIndex+2,Origin+Y*(length/2.0),Y);
-
+  
   // first problem is to determine the build step:
   const double TotalD=topSurf->distance(Origin)+
     baseSurf->distance(Origin);
-  ELog::EM<<"Distance == "<<TotalD<<ELog::endDiag;
+
+  if (TotalD<nBlades*bladeThick+Geometry::zeroTol)
+    throw ColErr::SizeError<double>(TotalD,nBlades*bladeThick,
+      "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
+  
+  const double voidThick((TotalD-nBlades*bladeThick)/(nBlades+1.0));
+
+  double DPosA(voidThick);
+  double DPosB(voidThick+bladeThick);
   for(size_t i=0;i<nBlades;i++)
     {
-      
+      processSurface(i,1.0-DPosA/TotalD,1.0-DPosB/TotalD);
+      DPosA+=voidThick+bladeThick;
+      DPosB+=voidThick+bladeThick;
     }
   return;
 }
@@ -236,17 +253,30 @@ MultiChannel::createObjects(Simulation& System)
   ELog::RegMethod RegA("MultiChannel","createObjects");
   std::string Out;
 
-  if ((setFlag & 2) !=2)
-    throw ColErr::EmptyContainer("outerStruct not set");
 
-  Out=ModelSupport::getComposite(SMap,chnIndex,"1 -2");
-  // Out+=innerStruct.display()+outerStruct.display();
+  std::string FB=ModelSupport::getComposite(SMap,chnIndex,"1 -2");
+  FB+=leftStruct.display()+rightStruct.display();
+
+  HeadRule BHR(baseRule);
+  int SN(chnIndex);
+  for(size_t i=0;i<nBlades;i++)
+    {
+      Out=BHR.display()+ModelSupport::getComposite(SMap,SN," -3 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FB));
+
+      Out=ModelSupport::getComposite(SMap,SN," 3 -4 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,bladeMat,0.0,Out+FB));
+      
+      Out=ModelSupport::getComposite(SMap,SN," 4 ");
+      BHR.procString(Out);
+      SN+=10;
+    }
+  // LAST Volume
+  Out=BHR.display()+topRule.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+FB));
   
-  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  // addCell("Main",cellIndex-1);
-  
-  // Out=ModelSupport::getComposite(SMap,chnIndex,"1 -2");
-  // addOuterSurf(Out);
+  Out=FB+baseRule.display()+" "+topRule.display();
+  addOuterSurf(Out);
   return;
 }
 
@@ -284,6 +314,12 @@ MultiChannel::setFaces(const int BS,const int TS)
   if (!topSurf)
     throw ColErr::InContainerError<int>(TS,"TopSurf");
 
+  baseRule.procSurface(baseSurf);
+  topRule.procSurface(topSurf);
+
+  // NOTE: Top rule is complement originally
+  if (TS<0) topRule.makeComplement();
+  if (BS<0) baseRule.makeComplement();
   setFlag ^= 1;
   return;
 }
@@ -316,7 +352,7 @@ MultiChannel::setDivider(const HeadRule& HR)
   ELog::RegMethod RegA("MultiChannel","setInner");
 
   divider=HR;
-  setFlag ^= 2;
+  setFlag ^= 4;
   return;
 }
 
@@ -332,7 +368,7 @@ MultiChannel::setLeftRight(const HeadRule& LR,const HeadRule& RR)
 
   leftStruct=LR;
   rightStruct=RR;
-  setFlag ^= 4;
+  setFlag ^= 2;
   return;
 }
 
@@ -352,7 +388,7 @@ MultiChannel::setLeftRight(const FixedComp& FCA,const long int lIndex,
 
   leftStruct=FCA.getSignedFullRule(lIndex);
   rightStruct=FCB.getSignedFullRule(rIndex);
-  setFlag ^= 4;
+  setFlag ^= 2;
   return;
 }
 
@@ -370,14 +406,19 @@ MultiChannel::createAll(Simulation& System,
     \param sideIndex :: position of linkpoint
   */
 {
-  ELog::RegMethod RegA("MultiChannel","createAllNoPopulate");
+  ELog::RegMethod RegA("MultiChannel","createAll");
 
-  populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
-  createSurfaces();
-  createObjects(System);
-  createLinks();
-  insertObjects(System);
+
+
+  if (setFlag & 3)
+    {
+      populate(System.getDataBase());
+      createUnitVector(FC,sideIndex);
+      createSurfaces();
+      createObjects(System);
+      createLinks();
+      insertObjects(System);
+    }
   return;
 }
 

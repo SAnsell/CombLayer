@@ -179,7 +179,7 @@ surfDBase::generalSurf(const Geometry::Surface* pSurf,
     \param sSurf :: secondary surface
     \param newItem :: Plane number to start with
     \param fraction :: Weight between the two surface
-    \return surface number created
+    \return surface created
    */
 {
   ELog::RegMethod RegA("surfDBase","generalSurf");

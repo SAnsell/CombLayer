@@ -151,42 +151,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModConic3WallMat","Aluminium");
   Control.addVariable("LowModConic3Wall",0.2);
 
-  // FLIGHT LINE
 
-  Control.addVariable("LowAFlightXStep",0.0); // Step from centre
-  Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
-  Control.addVariable("LowAFlightZangle",0.0);  // Angle out
-  Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
-  Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("LowAFlightAngleZTop",0.0);  // Step down angle
-  Control.addVariable("LowAFlightAngleZBase",0.0); // Step up angle
-  Control.addVariable("LowAFlightHeight",7.6);     // Full height = LowFlyTotalHeight
-  Control.addVariable("LowAFlightWidth",10.7);     // Full width
-  Control.addVariable("LowAFlightNLiner",1);      // Liner
-  Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
-  Control.addVariable("LowAFlightLinerMat1","Aluminium");      // Liner
-  Control.addVariable("LowAFlightLinerThick2",1.5);      // Liner
-  Control.addVariable("LowAFlightLinerMat2","H2O");      // Liner
-  Control.addVariable("LowAFlightLinerThick3",0.2);      // Liner
-  Control.addVariable("LowAFlightLinerMat3","Aluminium");      // Liner
-  Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
-  Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
-
-  Control.addVariable("LowBFlightXStep",0.0);     // Angle
-  Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
-  Control.addVariable("LowBFlightZangle",0.0);     // Angle out
-  Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
-  Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
-  Control.addVariable("LowBFlightAngleZBase",0.0); // Step up angle
-  Control.addVariable("LowBFlightHeight",7.6);     // Full height = LowFlyTotalHeight
-  Control.addVariable("LowBFlightWidth",10.7);     // Full width
-  Control.addVariable("LowBFlightNLiner",1);      // Liner
-  Control.addVariable("LowBFlightLinerThick1",0.5);   
-  Control.addVariable("LowBFlightLinerMat1","Aluminium");      
-  // 
   Control.addVariable("LowPreNLayers",4);  
   Control.addVariable("LowPreHeight1",0.2);  
   Control.addVariable("LowPreDepth1",0.2);  
@@ -353,6 +318,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle",180.0);
   Control.addVariable("TopAFlightZangle",0.0);
+  Control.addVariable("TopAFlightTapSurf","cone");  // Step down angle
   Control.addVariable("TopAFlightAngleZTop",1.0);  // Step down angle
   Control.addVariable("TopAFlightAngleZBase",1.0); // Step up angle
 
@@ -468,7 +434,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
 
-
   // Twister
   Control.addVariable("TwisterXStep",11.0);
   Control.addVariable("TwisterYStep",-62.0);
@@ -566,7 +531,8 @@ EssVariables(FuncDataBase& Control)
   EssWheel(Control);
   EssBunkerVariables(Control);
   EssIradVariables(Control);
-
+  EssFlightLineVariables(Control);
+  
   F5Variables(Control);
 
   Control.addVariable("sdefEnergy",2000.0);
@@ -678,6 +644,201 @@ EssBeamLinesVariables(FuncDataBase& Control)
 
 
     }
+  return;
+}
+
+
+
+void
+EssFlightLineVariables(FuncDataBase& Control)
+  /*!
+    Set the flightline variables
+    \param Control :: Database for variables
+   */
+{
+  ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariables");
+
+  // upper flight lines
+  
+  Control.addVariable("TopAFlightXStep", 0.0);      // Step from centre
+  Control.addVariable("TopAFlightZStep", 0.0);      // Step from centre
+
+  Control.addVariable("TopAFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
+  Control.addVariable("TopAFlightXYangle",180.0);
+  Control.addVariable("TopAFlightZangle",0.0);
+  // Step down angle !!! 1.455 is too much -
+  // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("TopAFlightAngleZTop",1.1);
+  // Step up angle ESS-0032315.3
+  Control.addVariable("TopAFlightAngleZBase",1.33); 
+
+  // Full height = TopFlyTotalHeight
+  Control.addVariable("TopAFlightHeight", 2.9);     
+  Control.addVariable("TopAFlightWidth", 10.7);     // Full width
+  Control.addVariable("TopAFlightNLiner", 1);      // Liner
+  Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
+  Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
+
+  // The moderator focal points are (89,54)
+  // The wedge focus at (80,48). This is a result of the line of sight from
+  // the neutron beam channels towards the moderator
+  const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
+  const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
+
+  // CCHNAGED FROM 14
+  const int TopAFlightNWedges = 14;
+  Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
+
+  const double t1 = 3.5+11.95*3.0; // Rickard Holmberg: slides 9-10
+  const double dt1 = 11.95; // Rickard Holmberg ESS-0037906, ESS-0038057 + slide 7
+  const double t2 = -9.1;   // Rickard Holmberg slide 12
+  const double dt2 = 5.975; // Rickard Holmberg ESS-0037906, ESS-0038057
+  
+  std::vector<double> TopAFlightWedgeTheta;
+  TopAFlightWedgeTheta.push_back(t1);
+  for (size_t i=1; i<=3; i++)
+    TopAFlightWedgeTheta.push_back(t1-dt1*i);
+
+  // central wedge: Rickard Holmberg slide 14
+  TopAFlightWedgeTheta.push_back(-2.8);
+  TopAFlightWedgeTheta.push_back(t2);
+  for (size_t i=1; i<=8; i++)
+    TopAFlightWedgeTheta.push_back(t2-dt2*i);
+
+  double xstep(0);
+  double ystep(0);
+  
+  for (size_t i=1;i<=TopAFlightNWedges;i++)
+    {
+      const std::string baseKey =
+        StrFunc::makeString("TopAFlightWedge", i);
+      
+      if (i==5) // central, the thick one
+	{
+	  Control.addVariable(baseKey+"BaseWidth", 12.0+2*30*std::tan(4*M_PI/180));  // Rickard Holmberg slide 14
+	  Control.addVariable(baseKey+"TipWidth",  12.0); // Rickard Holmberg slide 14
+
+	  Control.addVariable(baseKey+"XStep", 0.0);
+	  Control.addVariable(baseKey+"YStep", 0.0);
+	}
+      else
+	{
+	  Control.addVariable(baseKey+"BaseWidth", 4.446+0.5*2); // Naja
+	  Control.addVariable(baseKey+"TipWidth",  1.407+0.5*2); // Naja
+
+	  xstep = wedgeFocusX;
+	  ystep = (i<=4) ? wedgeFocusY : -wedgeFocusY;
+	  Control.addVariable(baseKey+"XStep", xstep);
+	  Control.addVariable(baseKey+"YStep", ystep);
+	}
+      Control.addVariable(baseKey+"ZStep", 13.7);
+
+      Control.addVariable(baseKey+"Theta", TopAFlightWedgeTheta[i-1]);
+
+      Control.addVariable(baseKey+"Length",30.0); // Naja
+      Control.addVariable(baseKey+"Mat","SS316L");
+    }
+
+  // B FLIGHT COORECTED
+  Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
+  Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
+  Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
+  Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
+  Control.addVariable("TopBFlightXYangle", 0.0);
+  Control.addVariable("TopBFlightZangle", 0.0);
+  Control.Parse("TopAFlightAngleZTop");
+  Control.addVariable("TopBFlightAngleZTop");  //   // Step down angle
+  Control.Parse("TopAFlightAngleZBase");
+  Control.addVariable("TopBFlightAngleZBase"); // Step up angle
+  Control.Parse("TopAFlightHeight");
+  Control.addVariable("TopBFlightHeight");  // Full hieght
+  Control.Parse("TopAFlightWidth");
+  Control.addVariable("TopBFlightWidth");     // Full width
+  Control.addVariable("TopBFlightNLiner", 1);     
+  Control.Parse("TopAFlightLinerThick1"); 
+  Control.addVariable("TopBFlightLinerThick1"); 
+  Control.addVariable("TopBFlightLinerMat1","Aluminium");
+
+  const int TopBFlightNWedges = 12;
+  Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
+  std::vector<double> TopBFlightWedgeTheta;
+
+  // email from Rickard Holmberg 15 Sep, slide 5
+  const double t3 = (9.1+dt2*8.0)-180.0; 
+  TopBFlightWedgeTheta.push_back(t3);
+  for (size_t i=1;i<=8;i++)
+    TopBFlightWedgeTheta.push_back(t3-dt2*i);
+
+  // email from Rickard Holmberg 15 Sep, slide 6
+  const double t4 = -15.45-180; 
+  TopBFlightWedgeTheta.push_back(t4);
+  for (size_t i=1; i<=2; i++)
+    TopBFlightWedgeTheta.push_back(t4-dt1*i);
+
+  if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
+    throw ColErr::RangeError<int>(TopBFlightNWedges,0,
+				  static_cast<int>(TopBFlightWedgeTheta.size()),
+				  "NWedges should not exceed size of TopBFlightWedgeTheta");
+  
+  for (size_t i=1; i<=TopBFlightNWedges; i++)
+    {
+      const std::string baseKey = StrFunc::makeString("TopBFlightWedge", i);
+
+      Control.addVariable(baseKey+"BaseWidth",4.446+0.5*2); // Naja
+      Control.addVariable(baseKey+"TipWidth", 1.407+0.5*2); // Naja
+
+      const double xstep = -wedgeFocusX;
+      const double ystep = (i<=9) ? -wedgeFocusY : wedgeFocusY;
+      Control.addVariable(baseKey+"XStep", xstep);
+      Control.addVariable(baseKey+"YStep", ystep);
+      Control.addVariable(baseKey+"ZStep", 13.7);
+
+      Control.addVariable(baseKey+"Theta", TopBFlightWedgeTheta[i-1]);
+
+      Control.addVariable(baseKey+"Length", 30.0); // Naja
+      Control.addVariable(baseKey+"Mat","SS316L");
+    }
+
+
+  // lower flight lines
+
+  Control.addVariable("LowAFlightXStep",0.0); // Step from centre
+  Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
+  Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
+  Control.addVariable("LowAFlightZangle",0.0);  // Angle out
+  Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
+  Control.addVariable("LowAFlightAngleZTop",0.9);  // Step down angle ESS-0032315.3
+  Control.addVariable("LowAFlightAngleZBase",0.9); // Step up angle ESS-0032315.3
+  Control.addVariable("LowAFlightHeight",6.1);     // Full height =
+  Control.addVariable("LowAFlightWidth",10.7);     // Full width
+  Control.addVariable("LowAFlightNLiner",1);      // Liner
+  Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
+  Control.addVariable("LowAFlightLinerMat1","Aluminium");      // Liner
+  Control.addVariable("LowAFlightLinerThick2",1.5);      // Liner
+  Control.addVariable("LowAFlightLinerMat2","H2O");      // Liner
+  Control.addVariable("LowAFlightLinerThick3",0.2);      // Liner
+  Control.addVariable("LowAFlightLinerMat3","Aluminium");      // Liner
+  Control.addVariable("LowAFlightLinerThick4",0.3);      // Liner
+  Control.addVariable("LowAFlightLinerMat4","Void");      // Liner
+
+  Control.addVariable("LowBFlightTapSurf","cone");  // Step down angle
+  Control.addVariable("LowBFlightXStep",0.0);     // Angle
+  Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
+  Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
+  Control.addVariable("LowBFlightZangle",0.0);     // Angle out
+  Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
+  Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
+  Control.addVariable("LowBFlightAngleZTop",0.9);  // Step down angle
+  Control.addVariable("LowBFlightAngleZBase",0.9); // Step up angle
+  Control.addVariable("LowBFlightHeight",6.1);     // Full height 
+  Control.addVariable("LowBFlightWidth",10.7);     // Full width
+  Control.addVariable("LowBFlightNLiner",1);      // Liner
+  Control.addVariable("LowBFlightLinerThick1",0.4);   
+  Control.addVariable("LowBFlightLinerMat1","Aluminium");      
+
+
   return;
 }
 

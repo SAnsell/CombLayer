@@ -140,7 +140,10 @@ MAGIC::MAGIC(const std::string& keyName) :
   PolarizerPit(new constructSystem::ChopperPit(newName+"PolarizerPit")),
   MCGuideA(new beamlineSystem::GuideLine(newName+"MCGuideA")),
   MCInsertA(new constructSystem::MultiChannel(newName+"MCA")),
-  
+
+  MCGuideB(new beamlineSystem::GuideLine(newName+"MCGuideB")),
+  MCInsertB(new constructSystem::MultiChannel(newName+"MCB")),
+
   ShieldG(new constructSystem::LineShield(newName+"ShieldG")),
   VPipeOutG(new constructSystem::VacuumPipe(newName+"PipeOutG")),
   FocusOutG(new beamlineSystem::GuideLine(newName+"OutFG")),
@@ -176,7 +179,39 @@ MAGIC::MAGIC(const std::string& keyName) :
   OR.addObject(FocusE);
   OR.addObject(VPipeF);
   OR.addObject(FocusF);
+  OR.addObject(BInsert);
+  OR.addObject(FocusWall);
+  OR.addObject(ShieldA);
+  OR.addObject(VPipeOutA);
 
+  OR.addObject(ShieldB);
+  OR.addObject(VPipeOutB);  
+  OR.addObject(FocusOutB);
+
+  OR.addObject(ShieldC);
+  OR.addObject(VPipeOutC);  
+  OR.addObject(FocusOutC);
+
+    OR.addObject(ShieldD);
+  OR.addObject(VPipeOutD);  
+  OR.addObject(FocusOutD);
+
+  OR.addObject(ShieldE);
+  OR.addObject(VPipeOutE);  
+  OR.addObject(FocusOutE);
+
+  OR.addObject(ShieldF);
+  OR.addObject(VPipeOutF);  
+  OR.addObject(FocusOutF);
+
+  OR.addObject(PolarizerPit);
+  OR.addObject(MCGuideA);  
+  OR.addObject(MCInsertA);
+
+  OR.addObject(ShieldG);
+  OR.addObject(VPipeOutG);  
+  OR.addObject(FocusOutG);
+  
   OR.addObject(AppA);
 
 }
@@ -345,12 +380,17 @@ MAGIC::build(Simulation& System,
   PolarizerPit->addInsertCell(voidCell);
   PolarizerPit->createAll(System,*ShieldE,2);
 
-
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
-  //  MCGuideA->addInsertCell(MCGuideA->getKey("getCells("Void"));
-  //  MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
+  // NOTE: Guide numbers links point round guide not +/- x, z
+  MCInsertA->addInsertCell(MCGuideA->getCells("Guide0Void"));
+  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),4,
+                          MCGuideA->getKey("Guide0"),6);
+  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),3,5);
+  MCInsertA->createAll(System,MCGuideA->getKey("Guide0"),0);
+  ELog::EM<<"Origin == "<<MCGuideA->getKey("Guide0").getSignedLinkPt(0)
+	  <<ELog::endDiag;
 
   
   ShieldF->addInsertCell(voidCell);
