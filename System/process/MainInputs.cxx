@@ -189,7 +189,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
-  IParam.setDesc("actFile","FluxData : Outfile");
+  IParam.setDesc("actFile","FluxData : Outfile (for activity)");
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");

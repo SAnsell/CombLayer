@@ -37,19 +37,13 @@ namespace pipeSystem
 */
 
 class pipeTube : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
   
   const int tubeIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;             ///< X Step
-  double yStep;             ///< Y Step
-  double zStep;             ///< Z Step
-  double xyAngle;           ///< xy rotation angle
-  double zAngle;            ///< z rotation angle
 
   double length;            ///< Total length
   double height;            ///< Total height 
@@ -65,7 +59,7 @@ class pipeTube : public attachSystem::ContainedComp,
   std::vector<int> wallMatList; 
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -78,7 +72,8 @@ class pipeTube : public attachSystem::ContainedComp,
   pipeTube& operator=(const pipeTube&);
   ~pipeTube();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
     
 };
 
