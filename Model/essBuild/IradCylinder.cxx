@@ -175,6 +175,8 @@ IradCylinder::populate(const FuncDataBase& Control)
   temp=Control.EvalVar<double>(keyName+"Temp");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
+  sampleActive=Control.EvalDefVar<int>(keyName+"SampleActive", 1);
+
   sampleX=Control.EvalVar<double>(keyName+"SampleX");
   sampleY=Control.EvalVar<double>(keyName+"SampleY");
   sampleZ=Control.EvalVar<double>(keyName+"SampleZ");
@@ -205,6 +207,16 @@ IradCylinder::createInnerObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("IradCylinder","createInnerObjects");
+
+  if (!sampleActive)
+    {
+      std::string Out=ModelSupport::getComposite(SMap,iradIndex," -7 1 -2 ");
+
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+      addCell("Samples",cellIndex-1);
+
+      return;
+    }
 
   const size_t NX(2*static_cast<size_t>(radius/sampleX));
   const size_t NY(static_cast<size_t>(length/sampleY));
