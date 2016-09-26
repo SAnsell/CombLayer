@@ -106,14 +106,13 @@ main(int argc,char* argv[])
   Simulation* SimPtr(0);
   try
     {
-      SimPtr=createSimulation(IParam,Names,Oname);
-      if (!SimPtr) return -1;
-      
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createPipeInputs(IParam);
 
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
       
       setVariable::PipeVariables(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);

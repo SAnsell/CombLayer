@@ -65,6 +65,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -81,7 +82,9 @@ namespace pipeSystem
 {
 
 makePipe::makePipe() :
-  TubeObj(new pipeSystem::pipeTube("TubeObj"))
+  ATube(new pipeSystem::pipeTube("ATube")),
+  BTube(new pipeSystem::pipeTube("BTube")),
+  CTube(new pipeSystem::pipeTube("CTube"))
   /*!
     Constructor
   */
@@ -89,12 +92,16 @@ makePipe::makePipe() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(TubeObj);
+  OR.addObject(ATube);
+  OR.addObject(BTube);
+  OR.addObject(CTube);
 
 }
 
 makePipe::makePipe(const makePipe& A) : 
-  TubeObj(new pipeSystem::pipeTube(*(A.TubeObj)))
+  ATube(new pipeSystem::pipeTube(*(A.ATube))),
+  BTube(new pipeSystem::pipeTube(*(A.BTube))),
+  CTube(new pipeSystem::pipeTube(*(A.CTube)))
   /*!
     Copy constructor
     \param A :: makePipe to copy
@@ -111,7 +118,9 @@ makePipe::operator=(const makePipe& A)
 {
   if (this!=&A)
     {
-      *TubeObj=*A.TubeObj;
+      *ATube=*A.ATube;
+      *BTube=*A.BTube;
+      *CTube=*A.CTube;
     }
   return *this;
 }
@@ -136,8 +145,15 @@ makePipe::build(Simulation* SimPtr,
 
   int voidCell(74123);
 
-  TubeObj->addInsertCell(voidCell);
-  TubeObj->createAll(*SimPtr,World::masterOrigin());
+  ATube->addInsertCell(voidCell);
+  ATube->createAll(*SimPtr,World::masterOrigin(),0);
+
+  BTube->addInsertCell(voidCell);
+  
+  BTube->createAll(*SimPtr,*ATube,2);
+
+  CTube->addInsertCell(voidCell);
+  CTube->createAll(*SimPtr,*BTube,2);
   return;
 }
 
