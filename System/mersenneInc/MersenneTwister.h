@@ -106,7 +106,7 @@ class MTRand
   uint32 saveState[N+1];  ///< internal state (include left)
   uint32 state[N];   ///< internal state
   uint32 *pNext;     ///< next value to get from state
-  int left;          ///< number of values left before reload needed
+  uint32 left;          ///< number of values left before reload needed
 
   // Methods:
   void reload();

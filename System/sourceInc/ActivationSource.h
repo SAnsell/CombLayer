@@ -53,6 +53,8 @@ class ActivationSource
   std::map<int,double> volCorrection;   ///< cell / flux
   
 
+  void createFluxVolumes(Simulation&);
+  
  public:
 
   ActivationSource();

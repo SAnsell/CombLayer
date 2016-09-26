@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
+#include <fstream> 
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -61,6 +61,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "Object.h"
 #include "WorkData.h"
 #include "MXcards.h"
 #include "Zaid.h"
@@ -110,6 +111,60 @@ ActivationSource::setBox(const Geometry::Vec3D& APt,
   return;
 }
 
+void
+ActivationSource::createFluxVolumes(Simulation& System)
+ /*!
+   Process a number of points to get the volume
+   \param System :: Simulation to use
+ */
+{
+  ELog::RegMethod RegA("ActivationSource","createFluxVolumes");
+
+  RNG.createSave();
+
+  nTotal=0;
+  size_t index=0;
+  const Geometry::Vec3D BDiff(BBoxPt-ABoxPt);
+  const double xStep(BDiff[0]);
+  const double yStep(BDiff[1]);
+  const double zStep(BDiff[2]);
+  MonteCarlo::Object* cellPtr(0);
+  while(index<nPoints)
+    {
+      Geometry::Vec3D testPt(xStep*RNG.rand(),yStep*RNG.rand(),
+			     zStep*RNG.rand());
+      testPt+=ABoxPt;
+
+      cellPtr=System.findCell(testPt,cellPtr);
+      if (!cellPtr)
+	throw ColErr::InContainerError<Geometry::Vec3D>
+	  (testPt,"Point not in cell");
+      const int matN=cellPtr->getMat();
+      if (matN!=0)
+	{
+	  const int cellN=cellPtr->getName();
+	  std::map<int,double>::iterator mc=
+	    volCorrection.find(cellN);
+	  if (mc==volCorrection.end())
+	    volCorrection.emplace(cellN,1.0);
+	  else
+	    mc->second+=1.0;
+
+	  index++;
+	}
+      nTotal++;
+      if (!(nTotal % (50*nPoints)))
+	ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<ELog::endDiag;
+    }
+  // correct volumes by Nan
+  const double boxVol=BDiff.volume()/static_cast<double>(nTotal);
+  for(std::map<int,double>::value_type MItem : volCorrection)
+    MItem.second*=boxVol;
+
+  return;
+}
+  
+  
   
 void
 ActivationSource::createSource(Simulation& System,
@@ -123,20 +178,10 @@ ActivationSource::createSource(Simulation& System,
 {
   ELog::RegMethod RegA("ActivationSource","createSource");
 
-
-  RNG.createSave();
-  for(size_t i=0;i<nPoints;i++)
-    {
-      ELog::EM<<"Rand["<<i<<"] = "<<RNG.rand()<<ELog::endDiag;
-      // construct cone on axis
-    }
+  // First loop is to generate all the points within the set
+  // it allows volumes to be effectively calculated.
+  //
   
-  RNG.loadSave();
-  for(size_t i=0;i<nPoints;i++)
-    {
-      ELog::EM<<"Rand = "<<RNG.rand()<<ELog::endDiag;
-      // construct cone on axis
-    }
 
 
   
