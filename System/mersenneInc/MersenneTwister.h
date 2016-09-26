@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   mersenneInc/MersenneTwister.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,7 +102,8 @@ class MTRand
  private:
 
   enum { M = 397 };  ///<  period parameter
-	
+
+  uint32 saveState[N+1];  ///< internal state (include left)
   uint32 state[N];   ///< internal state
   uint32 *pNext;     ///< next value to get from state
   int left;          ///< number of values left before reload needed
@@ -152,6 +153,8 @@ class MTRand
   void seed();
 	
   // Saving and loading generator state
+  void createSave();
+  void loadSave();
   void save(uint32*) const;  // to array of size SAVE
   void load(uint32* const);  // from such array
 		      

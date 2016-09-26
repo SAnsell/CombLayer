@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   mersenne/MersenneTwister.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,8 +358,28 @@ MTRand::reload()
     *p = twist(p[M-N], p[0], p[1]);
   *p = twist(p[M-N], p[0], state[0]);
   
-  left = N;
+  left = static_cast<int>(N);
   pNext = state;
+  return;
+}
+
+void
+MTRand::createSave() 
+  /*!
+    Create a saved array
+   */
+{
+  save(saveState);
+  return;
+}
+
+void
+MTRand::loadSave()
+  /*!
+    Load a saved array
+   */
+{
+  load(saveState);
   return;
 }
 
@@ -386,9 +406,9 @@ MTRand::load(uint32 *const loadArray)
     \param loadArray :: Array to get data [N Items long]
   */
 {
-  uint32 *s = state;
-  uint32 *la = loadArray;
-  int i = N;
+  uint32* s = state;
+  uint32* la = loadArray;
+  uint32 i = N;
   for(; i--; *s++ = *la++) {}
   left = *la;
   pNext = &state[N-left];

@@ -34,6 +34,7 @@
 #include <memory>
 
 #include "Exception.h"
+#include "MersenneTwister.h"
 #include "FileReport.h"
 #include "GTKreport.h"
 #include "NameStack.h"
@@ -69,6 +70,8 @@
 #include "Simulation.h"
 #include "ActivationSource.h"
 
+extern MTRand RNG;
+
 namespace SDef
 {
 
@@ -99,7 +102,7 @@ ActivationSource::setBox(const Geometry::Vec3D& APt,
 
   for(size_t i=0;i<3;i++)
     if (BPt[i]-APt[i]<Geometry::zeroTol)
-      ELog::EM<<"Error with box coordinate: [Low - Hig] required :"
+      ELog::EM<<"Error with box coordinate: [Low - High] required :"
 	      <<APt<<":"<<BPt<<ELog::endErr;
       
   ABoxPt=APt;
@@ -113,17 +116,29 @@ ActivationSource::createSource(Simulation& System,
                                const std::string& outputName)
   /*!
     Create all the source
-    \param Simuation :: 
+    \param System :: Simuation 
     \param souceCard :: Source Term
     \param outputName :: Output file
    */
 {
   ELog::RegMethod RegA("ActivationSource","createSource");
 
+
+  RNG.createSave();
   for(size_t i=0;i<nPoints;i++)
     {
+      ELog::EM<<"Rand["<<i<<"] = "<<RNG.rand()<<ELog::endDiag;
       // construct cone on axis
     }
+  
+  RNG.loadSave();
+  for(size_t i=0;i<nPoints;i++)
+    {
+      ELog::EM<<"Rand = "<<RNG.rand()<<ELog::endDiag;
+      // construct cone on axis
+    }
+
+
   
   return;
 }

@@ -364,15 +364,15 @@ activationSelection(Simulation& System,
   ELog::EM<<"CellDir == "<<CellDir<<ELog::endDiag;
   ELog::EM<<"FileDir == "<<OName<<ELog::endDiag;
   
-  // SDef::ActivationSource AS;
+  SDef::ActivationSource AS;
   // AS.setBiasConst(CPoint,Axis,distW,angleW);
-  // AS.setBox(APt,BPt);
+  AS.setBox(APt,BPt);
 
   // for(size_t i=0;i<MatName.size();i++)
   //   AS.addMaterial(MatName[i],MatFile[i]);
 
-  // AS.setNPoints(System.getPC().getNPS());
-  // AS.createSource(System,OName);
+  AS.setNPoints(System.getPC().getNPS());
+  AS.createSource(System,OName);
 
   return;
 }
