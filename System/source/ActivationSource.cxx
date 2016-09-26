@@ -72,44 +72,12 @@
 namespace SDef
 {
 
-ActivationSource::ActivationSource() :
-  distWeight(2.0),angleWeight(2.0)
+ActivationSource::ActivationSource() 
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */
 {}
 
-ActivationSource::ActivationSource(const ActivationSource& A) : 
-  nPoints(A.nPoints),Origin(A.Origin),Axis(A.Axis),
-  distWeight(A.distWeight),angleWeight(A.angleWeight),
-  ABoxPt(A.ABoxPt),BBoxPt(A.BBoxPt),matFlux(A.matFlux)
-  /*!
-    Copy constructor
-    \param A :: ActivationSource to copy
-  */
-{}
-
-ActivationSource&
-ActivationSource::operator=(const ActivationSource& A)
-  /*!
-    Assignment operator
-    \param A :: ActivationSource to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      nPoints=A.nPoints;
-      Origin=A.Origin;
-      Axis=A.Axis;
-      distWeight=A.distWeight;
-      angleWeight=A.angleWeight;
-      ABoxPt=A.ABoxPt;
-      BBoxPt=A.BBoxPt;
-      matFlux=A.matFlux;
-    }
-  return *this;
-}
 
 ActivationSource::~ActivationSource() 
   /*!
@@ -139,52 +107,7 @@ ActivationSource::setBox(const Geometry::Vec3D& APt,
   return;
 }
 
-void
-ActivationSource::setBiasConst(const Geometry::Vec3D& Cent,
-			       const Geometry::Vec3D& AVec,
-			       const double D,const double A)
-  /*!
-    Set the box coordinates
-    \param Cent :: Origin Point
-    \param AVec :: Axis direction
-    \param D :: Distance weight
-    \param A :: Angle weight
-   */
-
-{
-  ELog::RegMethod RegA("ActivationSource","setBiasConst");
-
-  Origin=Cent;
-  Axis=AVec;
-  distWeight=D;
-  angleWeight=A;
-
-  return;
-}
   
-void
-ActivationSource::addMaterial(const std::string& matName,
-			      const std::string& matFile)
-  /*!
-    Add a material to the system
-    \parma matName :: material name 
-   */
-{
-  ELog::RegMethod RegA("ActivationSource","addMaterial");
-
-  WorkData Flux;
-
-  if (!Flux.load(matFile,1,2,0))
-    throw ColErr::FileError(0,matFile,"Not Loaded");
-
-  const int matN=
-    ModelSupport::DBMaterial::Instance().getIndex(matName);
-
-  matFlux.emplace(matN,Flux);
-  return;
-}
-  
-
 void
 ActivationSource::createSource(Simulation& System,
                                const std::string& outputName)

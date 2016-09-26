@@ -78,6 +78,7 @@
 #include "objectRegister.h"
 #include "ChipIRSource.h"
 #include "WorkData.h"
+#include "ActiveWeight.h"
 #include "ActivationSource.h"
 #include "SourceSelector.h"
 
@@ -259,6 +260,8 @@ sourceSelection(Simulation& System,
     SDef::createGammaSource(Control,"laserSource",sourceCard);
   else if (sdefType=="Activation" || sdefType=="activation")
     activationSelection(System,IParam);
+  else if (sdefType=="ActiveWeight" || sdefType=="activeWeight")
+    activeWeight(System,IParam);
   //    SDef::activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
@@ -311,7 +314,8 @@ sourceSelection(Simulation& System,
   else
     {
       ELog::EM<<"sdefType :\n"
-	"Actiation :: Activation source \n"
+	"Activation :: Activation source \n"
+        "ActiveWeight :: Activation weighted source \n"
 	"TS1 :: Target station one \n"
 	"TS2 :: Target station two \n"
 	"TS1Gauss :: Target station one [old gaussian beam] sigma = 15 mm \n"
@@ -332,6 +336,49 @@ sourceSelection(Simulation& System,
 
 void
 activationSelection(Simulation& System,
+                     const mainSystem::inputParam& IParam)
+ /*!
+    Select all the info for activation output from
+    fluxes.
+    \param System :: Simuation to use
+    \param IParam :: input parameters
+   */
+{
+  ELog::RegMethod RegA("SourceSelector","activationSelection");
+
+  //File for output:
+  const std::string OName=
+    IParam.getDefValue<std::string>("test.source","actOut",0,0);
+
+  size_t index(0);
+  const Geometry::Vec3D APt=
+    IParam.getCntVec3D("actBox",0,index,"Start Point of box not defined");
+  const Geometry::Vec3D BPt=
+    IParam.getCntVec3D("actBox",0,index,"End Point of box not defined");
+
+
+  // Directories for input:
+  const std::string CellDir=
+    IParam.getValue<std::string>("actFile",0,0);
+
+  ELog::EM<<"CellDir == "<<CellDir<<ELog::endDiag;
+  ELog::EM<<"FileDir == "<<OName<<ELog::endDiag;
+  
+  // SDef::ActivationSource AS;
+  // AS.setBiasConst(CPoint,Axis,distW,angleW);
+  // AS.setBox(APt,BPt);
+
+  // for(size_t i=0;i<MatName.size();i++)
+  //   AS.addMaterial(MatName[i],MatFile[i]);
+
+  // AS.setNPoints(System.getPC().getNPS());
+  // AS.createSource(System,OName);
+
+  return;
+}
+  
+void
+activeWeight(Simulation& System,
 		    const mainSystem::inputParam& IParam)
   /*!
     Select all the info for activation output
@@ -376,9 +423,10 @@ activationSelection(Simulation& System,
 	    (IParam.getValueError<std::string>
 	     ("actMat",index,j+1,"Material File"));
 	}
-    }      
-  
-  SDef::ActivationSource AS;
+    }
+
+
+  SDef::ActiveWeight AS;
   AS.setBiasConst(CPoint,Axis,distW,angleW);
   AS.setBox(APt,BPt);
 

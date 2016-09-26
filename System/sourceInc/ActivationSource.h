@@ -43,16 +43,15 @@ class ActivationSource
  private:
 
   size_t nPoints;                 ///< Number of points
-  
-  Geometry::Vec3D Origin;         ///< Origin 
-  Geometry::Vec3D Axis;           ///< Beam Axis
-  double distWeight;              ///< Distance weight
-  double angleWeight;             ///< Angular weight
-  
+  size_t nTotal;                  ///< Total points
+   
   Geometry::Vec3D ABoxPt;         ///< Bounding box corner
   Geometry::Vec3D BBoxPt;         ///< Bounding box corner
 
-  std::map<int,WorkData> matFlux; ///< material / flux
+  std::map<int,WorkData> cellFlux;      ///< cell / flux
+
+  std::map<int,double> volCorrection;   ///< cell / flux
+  
 
  public:
 
@@ -63,15 +62,12 @@ class ActivationSource
 
   /// Set number of output points
   void setNPoints(const size_t N) { nPoints=N; }
-  void addMaterial(const std::string&,const std::string&);
-
-  void setBiasConst(const Geometry::Vec3D&,const Geometry::Vec3D&,
-		    const double,const double);
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
-    
-  void createSource(Simulation&,const std::string&);
-		 
   
+  void createVolumeCount();
+  void createOutput(const std::string&);
+
+  void createSource(Simulation&,const std::string&);
 };
 
 }

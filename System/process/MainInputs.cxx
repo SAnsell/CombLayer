@@ -80,6 +80,7 @@ createInputs(inputParam& IParam)
   std::vector<std::string> RItems(10,"");
 
   IParam.regItem("actFile","actFile");
+  IParam.regItem("actOut","actOut");
   IParam.regItem("actBox","actBox");
   IParam.regItem("actWeight","actWeight");
   IParam.regFlag("a","axis");
@@ -190,6 +191,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("x","xml",10000,1);
 
   IParam.setDesc("actFile","FluxData : Outfile");
+  IParam.setDesc("actOut","Output source file");
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");
