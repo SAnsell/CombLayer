@@ -372,7 +372,7 @@ activationSelection(Simulation& System,
   //   AS.addMaterial(MatName[i],MatFile[i]);
 
   AS.setNPoints(System.getPC().getNPS());
-  AS.createSource(System,OName);
+  AS.createSource(System,CellDir,OName);
 
   return;
 }

@@ -51,10 +51,12 @@ class ActivationSource
 
   std::map<int,WorkData> cellFlux;      ///< cell / flux
   std::map<int,double> volCorrection;   ///< cell / flux
-  
+
+  std::vector<int> cellOrder;           ///< Cell order 
+  std::vector<double> Intflux;          ///< integrated flux
 
   void createFluxVolumes(Simulation&);
-  void readFluxes();
+  void readFluxes(const std::string&);
   
  public:
 
@@ -70,7 +72,7 @@ class ActivationSource
   void createVolumeCount();
   void createOutput(const std::string&);
 
-  void createSource(Simulation&,const std::string&);
+  void createSource(Simulation&,const std::string&,const std::string&);
 };
 
 }

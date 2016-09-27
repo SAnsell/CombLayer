@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/filesystem.hpp>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -43,6 +44,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -169,24 +171,84 @@ ActivationSource::createFluxVolumes(Simulation& System)
   
 
 void
-ActivationSource::readFluxes()
+ActivationSource::readFluxes(const std::string& inputFileBase)
    /*!
      Read the fluxes from the given file[s]
+     \param inputFileBase :: FileBase e.g CellXXX were XXX is the cell
+     number
    */
 {
   ELog::RegMethod RegA("ActivationSource","readFluxes");
+  typedef std::map<int,double> VTYPE;
 
+  std::ifstream IX;
+  for(const VTYPE::value_type& VItem : volCorrection)
+    {
+      const std::string fluxDir
+        (inputFileBase+StrFunc::makeString(VItem.first)+"/spectra");
+      
+      IX.open(fluxDir);
+      if (IX.good())
+        {
+          WorkData WF;
+
+          // dump first line
+          std::string SLine=StrFunc::getLine(IX,512);
+          // read energy bins:
+          std::vector<double> energy;
+          std::vector<double> gamma;
+          double E,G;
+          do
+            {
+              SLine=StrFunc::getLine(IX,512);
+              while(StrFunc::section(SLine,E))
+                {
+                  energy.push_back(E);
+                }
+            }
+          while(IX.good() && StrFunc::isEmpty(SLine));
+
+          // effective lose of SLine:= MUTLIGROUP ....
+          size_t timeIndex(0);
+          while(timeStep!=timeIndex && IX.good())
+            {
+              SLine=StrFunc::getLine(IX,512);
+              if (!StrFunc::section(SLine,G))  // line with words
+                timeIndex++;
+            }
+          ELog::EM<<"Processing :"<<SLine<<ELog::endDiag;
+          
+          // NOW Read Gamma flux
+          double totalFlux(0.0);
+          do
+            {
+              SLine=StrFunc::getLine(IX,512);
+              while(StrFunc::section(SLine,G))
+                {
+                  gamma.push_back(G);
+                  totalFlux+=G;
+                }
+            }
+          while(IX.good() && StrFunc::isEmpty(SLine));
+
+          WF.setData(energy,gamma);
+          cellFlux.emplace(VItem.first,WF);
+        }
+      IX.close();
+    }
   return;
 }
   
   
 void
 ActivationSource::createSource(Simulation& System,
+                               const std::string& inputFileBase,
                                const std::string& outputName)
   /*!
     Create all the source
     \param System :: Simuation 
     \param souceCard :: Source Term
+    \param inputFileBase :: input file key
     \param outputName :: Output file
    */
 {
@@ -196,6 +258,7 @@ ActivationSource::createSource(Simulation& System,
   // it allows volumes to be effectively calculated.
   //
   createFluxVolumes(System);
+  readFluxes(inputFileBase);
 
 
   

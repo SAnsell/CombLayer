@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   endf/ENDF.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -368,6 +368,7 @@ double
 loglinear(const double& x1,const double& x2,const double& y1,
 	  const double& y2,const double& aimX)
   /*!
+    Interpolate a point in a log-linear graph
     \param x1 :: x1 point [low]
     \param x2 :: x2 point [high]
     \param y1 :: y1 point [at x1]
