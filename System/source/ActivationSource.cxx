@@ -89,6 +89,7 @@ ActivationSource::~ActivationSource()
   */
 {}
 
+
 void
 ActivationSource::setBox(const Geometry::Vec3D& APt,
 			 const Geometry::Vec3D& BPt)
@@ -157,13 +158,26 @@ ActivationSource::createFluxVolumes(Simulation& System)
 	ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<ELog::endDiag;
     }
   // correct volumes by Nan
-  const double boxVol=BDiff.volume()/static_cast<double>(nTotal);
-  for(std::map<int,double>::value_type MItem : volCorrection)
+  const double boxVol=static_cast<double>(nTotal)/BDiff.volume();
+  for(std::map<int,double>::value_type& MItem : volCorrection)
     MItem.second*=boxVol;
 
+  for(const std::map<int,double>::value_type& MItem : volCorrection)
+    ELog::EM<<"Cell["<<MItem.first<<"] == "<<MItem.second<<ELog::endDiag;
   return;
 }
   
+
+void
+ActivationSource::readFluxes()
+   /*!
+     Read the fluxes from the given file[s]
+   */
+{
+  ELog::RegMethod RegA("ActivationSource","readFluxes");
+
+  return;
+}
   
   
 void
@@ -181,7 +195,7 @@ ActivationSource::createSource(Simulation& System,
   // First loop is to generate all the points within the set
   // it allows volumes to be effectively calculated.
   //
-  
+  createFluxVolumes(System);
 
 
   

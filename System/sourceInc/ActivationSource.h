@@ -42,6 +42,7 @@ class ActivationSource
 {
  private:
 
+  size_t timeStep;                ///< Time step from cinder
   size_t nPoints;                 ///< Number of points
   size_t nTotal;                  ///< Total points
    
@@ -49,11 +50,11 @@ class ActivationSource
   Geometry::Vec3D BBoxPt;         ///< Bounding box corner
 
   std::map<int,WorkData> cellFlux;      ///< cell / flux
-
   std::map<int,double> volCorrection;   ///< cell / flux
   
 
   void createFluxVolumes(Simulation&);
+  void readFluxes();
   
  public:
 
