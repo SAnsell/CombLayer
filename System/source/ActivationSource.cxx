@@ -71,6 +71,7 @@
 #include "DBMaterial.h"
 #include "ModeCard.h"
 #include "Simulation.h"
+#include "activeUnit.h"
 #include "ActivationSource.h"
 
 extern MTRand RNG;
@@ -115,7 +116,7 @@ ActivationSource::setBox(const Geometry::Vec3D& APt,
 }
 
 void
-ActivationSource::createFluxVolumes(Simulation& System)
+ActivationSource::createFluxVolumes(const Simulation& System)
  /*!
    Process a number of points to get the volume
    \param System :: Simulation to use
@@ -127,6 +128,11 @@ ActivationSource::createFluxVolumes(Simulation& System)
 
   nTotal=0;
   size_t index=0;
+  fluxPt.clear();
+  cellID.clear();
+  fluxPt.reserve(nPoints);
+  cellID.reserve(nPoints);
+  
   const Geometry::Vec3D BDiff(BBoxPt-ABoxPt);
   const double xStep(BDiff[0]);
   const double yStep(BDiff[1]);
@@ -152,17 +158,27 @@ ActivationSource::createFluxVolumes(Simulation& System)
 	    volCorrection.emplace(cellN,1.0);
 	  else
 	    mc->second+=1.0;
-
+	  fluxPt.push_back(testPt);
+	  cellID.push_back(cellN);
 	  index++;
 	}
       nTotal++;
       if (!(nTotal % (50*nPoints)))
 	ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<ELog::endDiag;
     }
-  // correct volumes by Nan
-  const double boxVol=static_cast<double>(nTotal)/BDiff.volume();
+  // correct volumes by correct count
+  const double boxVol=BDiff.volume()/static_cast<double>(nTotal);
   for(std::map<int,double>::value_type& MItem : volCorrection)
     MItem.second*=boxVol;
+
+  // normalisze cellFlux
+  for(std::map<int,activeUnit>::value_type& CA : cellFlux)
+    {
+      std::map<int,double>::const_iterator mc=
+	volCorrection.find(CA.first);
+      
+      CA.second.normalize(mc->second);
+    }
 
   for(const std::map<int,double>::value_type& MItem : volCorrection)
     ELog::EM<<"Cell["<<MItem.first<<"] == "<<MItem.second<<ELog::endDiag;
@@ -232,10 +248,41 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
           while(IX.good() && StrFunc::isEmpty(SLine));
 
           WF.setData(energy,gamma);
-          cellFlux.emplace(VItem.first,WF);
+	  
+          cellFlux.emplace(VItem.first,activeUnit(WF));
         }
       IX.close();
     }
+  return;
+}
+
+void
+ActivationSource::writePoints(const Simulation& System,
+			      const std::string& outputName) const
+  /*!
+    This writes out the points for MCNP to read them in.
+    The method uses loadSave from RNG to needs to be paired
+    with a createSave which is done in calcVolumes.
+    
+    \param outputName :: Output file name
+   */
+{
+  ELog::RegMethod RegA("ActiationSource","writePoints");
+
+  std::ofstream OX;
+  OX.open(outputName.c_str());
+
+
+  for(size_t i=0;i<nPoints;i++)
+    {
+      const Geometry::Vec3D& Pt=fluxPt[i];
+      const int& cellN=cellID[i];
+      std::map<int,activeUnit>::const_iterator mc=
+	cellFlux.find(cellN);
+
+      mc->second.writePhoton(OX,Pt);
+    }
+  OX.close();
   return;
 }
   

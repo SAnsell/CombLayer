@@ -49,14 +49,18 @@ class ActivationSource
   Geometry::Vec3D ABoxPt;         ///< Bounding box corner
   Geometry::Vec3D BBoxPt;         ///< Bounding box corner
 
-  std::map<int,WorkData> cellFlux;      ///< cell / flux
-  std::map<int,double> volCorrection;   ///< cell / flux
+  std::map<int,double> volCorrection;   ///< cell / volume
+  std::map<int,activeUnit> cellFlux;    ///< cell[active] : flux data
+  std::vector<Geometry::Vec3D> fluxPt;  ///< Flux emmision points
+  std::vector<int> cellID;              ///< cell ID for points
 
-  std::vector<int> cellOrder;           ///< Cell order 
-  std::vector<double> Intflux;          ///< integrated flux
+  
 
-  void createFluxVolumes(Simulation&);
+  void createVolumeCount();
+  void createFluxVolumes(const Simulation&);
   void readFluxes(const std::string&);
+
+  void writePoints(const Simulation&,const std::string&) const;
   
  public:
 
@@ -69,7 +73,7 @@ class ActivationSource
   void setNPoints(const size_t N) { nPoints=N; }
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
-  void createVolumeCount();
+
   void createOutput(const std::string&);
 
   void createSource(Simulation&,const std::string&,const std::string&);

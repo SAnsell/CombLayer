@@ -78,6 +78,7 @@
 #include "objectRegister.h"
 #include "ChipIRSource.h"
 #include "WorkData.h"
+#include "activeUnit.h"
 #include "ActiveWeight.h"
 #include "ActivationSource.h"
 #include "SourceSelector.h"
@@ -348,7 +349,7 @@ activationSelection(Simulation& System,
 
   //File for output:
   const std::string OName=
-    IParam.getDefValue<std::string>("test.source","actOut",0,0);
+    IParam.getDefValue<std::string>("Data.ssw","actOut",0,0);
 
   size_t index(0);
   const Geometry::Vec3D APt=
