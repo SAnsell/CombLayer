@@ -116,7 +116,6 @@
 #include "testConvex2D.h"
 #include "testCylinder.h"
 #include "testDBMaterial.h"
-#include "testDBCN.h"
 #include "testDoubleErr.h"
 #include "testElement.h"
 #include "testEllipticCyl.h"
@@ -907,16 +906,9 @@ physicsTest(const int type,const int extra)
   if (type==0)
     {
       TestFunc::Instance().reportTest(std::cout);
-      std::cout<<"testDBCN          (1)"<<std::endl;
-      std::cout<<"testExtControl    (2)"<<std::endl;
+      std::cout<<"testExtControl    (1)"<<std::endl;
     }
   if(type==1 || type<0)
-    {
-      testDBCN A;
-      const int X=A.applyTest(extra);
-      if (X) return X;
-    }
-  if(type==2 || type<0)
     {
       testExtControl A;
       const int X=A.applyTest(extra);
