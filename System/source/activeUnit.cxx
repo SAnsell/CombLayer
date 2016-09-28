@@ -151,8 +151,6 @@ activeUnit::XInverse(const double R) const
   const double yB=cellFlux[IX+1];
 
   const double frac=(R-yA)/(yB-yA);
-  ELog::EM<<"XXX == "<<IX<<" ::"<<
-    cellFlux[IX]<<" ++ "<<R<<" ++ "<<cellFlux[IX+1]<<ELog::endDiag;
 
   return energy[IX]+frac*(energy[IX+1]-energy[IX]);
 }
@@ -169,22 +167,23 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt) const
     \param Pt :: Point for interaction
   */
 {
-  //boost::format FMT("%12.6e %12.6e %12.6e");// %12.6f %12.6f %12.6f");
+  boost::format FMT("% 12.6e %|14t| % 12.6e %|28t| % 12.6e");
+  boost::format FMTB("% 12.6e %|14t| % 12.6e");
   const double thetaAngle=2*M_PI*RNG.rand();
   const double z=2.0*(RNG.rand()-0.5);
   const double sinZ=sqrt(1-z*z);
-  Geometry::Vec3D uvw(sinZ*cos(thetaAngle),sinZ*sin(thetaAngle),z);
+  const Geometry::Vec3D uvw(sinZ*cos(thetaAngle),sinZ*sin(thetaAngle),z);
 
   const double R=RNG.rand();
   const double E=XInverse(R);
 
-  ELog::EM<<"FAil on one"<<ELog::endDiag;
-
-  ELog::EM<<"FAil on one"<<ELog::endDiag;
   //  OX<<(FMT % Pt.X() % Pt.Y() % Pt.Z())<<std::endl;
-  ELog::EM<<"FAil on one"<<ELog::endDiag;
-  //  OX<<(FMT % Pt)<<std::endl;
-   OX<<2<<" "<<Pt<<" "<<uvw<<" "<<E<<" "<<1.0<<std::endl;
+  OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
+  OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
+  OX<<"  "<<(FMTB % E % integralFlux)<<std::endl;
+
+
+  //  OX<<2<<" "<<Pt<<" "<<uvw<<" "<<E<<" "<<1.0<<std::endl;
   return;
 }
   

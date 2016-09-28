@@ -201,78 +201,99 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
 
 
   boost::filesystem::directory_iterator curDIR(boost::filesystem::current_path());
-  boost::filesystem::directory_iterator endDIR;
+  const boost::filesystem::directory_iterator endDIR;
 
+  std::vector<std::string> fileNames;
+  std::vector<int> cellNumList;
   while(curDIR != endDIR)
     {
-      if (0>1 && boost::filesystem::is_directory(*curDIR))
+      if (boost::filesystem::is_directory(*curDIR))
         {
           const std::string fileName(curDIR->path().filename().string());
-          const std::string testBase(fileName.substr(0,inputFileBase.length()));
-          const std::string testNumber(fileName.substr(inputFileBase.length()));
-          ELog::EM<<"Searching "<<fileName<<ELog::endDiag;
-          int cellNumber;
-          if (testBase==inputFileBase &&
-              StrFunc::convert(testNumber,cellNumber))
-            {
-              ELog::EM<<"Found "<<fileName<<" :: "<<cellNumber<<ELog::endDiag;
-              const std::string fluxFile=fileName+"/spectra";
-              std::ifstream IX;
-              IX.open(fluxFile.c_str());
-              if (IX.good())
-                {
-                  // dump first line
-                  std::string SLine=StrFunc::getLine(IX,512);
-                  // read energy bins:
-                  std::vector<double> energy;
-                  std::vector<double> gamma;
-                  gamma.push_back(0.0);
-                  double E,G;
-                  do
-                    {
-                      SLine=StrFunc::getLine(IX,512);
-                      while(StrFunc::section(SLine,E))
-                        {
-                          energy.push_back(E);
-                        }
-                    }
-                  while(IX.good() && StrFunc::isEmpty(SLine));
-
-                  // effective lose of SLine:= MUTLIGROUP ....
-                  size_t timeIndex(0);
-                  while(timeStep!=timeIndex && IX.good())
-                    {                      
-                      SLine=StrFunc::getLine(IX,512);
-                      if (!StrFunc::section(SLine,G))  // line with words
-                        timeIndex++;
-                    }
-
-                  // NOW Read Gamma flux
-                  double totalFlux(0.0);
-                  do
-                    {
-                      SLine=StrFunc::getLine(IX,512);
-                      while(StrFunc::section(SLine,G))
-                        {
-                          gamma.push_back(G);
-                          totalFlux+=G;
-                        }
-                    }
-                  while(IX.good() && StrFunc::isEmpty(SLine));
-
-                  ELog::EM<<"ASDFAS F"<<cellNumber<<" "<<energy.size()<<" "<<gamma.size()<<ELog::endDiag;
-                  //             activeUnit AU(energy,gamma);
-                  //                  cellFlux.emplace(cellNumber,activeUnit(energy,gamma));
-                  ELog::EM<<"OUT"<<cellNumber<<ELog::endDiag;
-                }
-              ELog::EM<<"CLOSE"<<cellNumber<<ELog::endDiag;
-            }
-        }
-      ELog::EM<<"NEXT "<<*curDIR<<ELog::endDiag;
-      curDIR++;
+	  if (fileName.length()>inputFileBase.length())
+	    {
+	      const std::string testBase(fileName.substr(0,inputFileBase.length()));
+	      const std::string testNumber(fileName.substr(inputFileBase.length()));
+	      int cellNumber;
+	      if (testBase==inputFileBase &&
+		  StrFunc::convert(testNumber,cellNumber))
+		{
+		  const std::string fluxFile=fileName+"/spectra";
+		  fileNames.push_back(fluxFile);
+		  cellNumList.push_back(cellNumber);
+		}
+	    }
+	}
+      ++curDIR;
     }
-  ELog::EM<<"FINAK "<<ELog::endDiag;          
+  processFluxFiles(fileNames,cellNumList);
   return;
+}
+
+
+void
+ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
+				   const std::vector<int>& cellNumbers)
+  /*!
+    Read the files
+    \param cellNumbers :: cell numbers to use
+    \param fluxFiles :: files to read and procduce
+   */
+{
+  ELog::RegMethod RegA("ActivationSource","processfluxFiles");
+
+  for(size_t index=0;index<fluxFiles.size();index++)
+    {
+      std::ifstream IX;
+      IX.open(fluxFiles[index].c_str());
+      ELog::EM<<"Processing Spectra : "<<fluxFiles[index]<<ELog::endDiag;
+      if (IX.good())
+	{
+	  // dump first line
+	  std::string SLine=StrFunc::getLine(IX,512);
+	  // read energy bins:
+	  std::vector<double> energy;
+	  std::vector<double> gamma;
+	  gamma.push_back(0.0);
+	  double E,G;
+	  do
+	    {
+	      SLine=StrFunc::getLine(IX,512);
+	      while(StrFunc::section(SLine,E))
+		{
+		  energy.push_back(E);
+		}
+	    }
+	  while(IX.good() && StrFunc::isEmpty(SLine));
+	  
+	  // effective lose of SLine:= MUTLIGROUP ....
+	  size_t timeIndex(0);
+	  while(timeStep!=timeIndex && IX.good())
+	    {                      
+	      SLine=StrFunc::getLine(IX,512);
+	      if (!StrFunc::section(SLine,G))  // line with words
+		timeIndex++;
+	    }
+	  
+	  // NOW Read Gamma flux
+	  double totalFlux(0.0);
+	  do
+	    {
+	      SLine=StrFunc::getLine(IX,512);
+	      while(StrFunc::section(SLine,G))
+		{
+		  gamma.push_back(G);
+		  totalFlux+=G;
+		}
+	    }
+	  while(IX.good() && StrFunc::isEmpty(SLine));
+
+	  cellFlux.emplace(cellNumbers[index],activeUnit(energy,gamma));
+	}
+      IX.close();
+    }
+  return;
+
 }
 
 void
@@ -289,7 +310,8 @@ ActivationSource::writePoints(const std::string& outputName) const
 
   std::ofstream OX;
   OX.open(outputName.c_str());
-  
+
+  OX<<"ActivationSource Write"<<std::endl;
   OX<<nPoints<<std::endl;
   for(size_t i=0;i<nPoints;i++)
     {
@@ -322,10 +344,7 @@ ActivationSource::createSource(Simulation& System,
   // First loop is to generate all the points within the set
   // it allows volumes to be effectively calculated.
   //
-
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   readFluxes(inputFileBase);
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   createFluxVolumes(System);
   writePoints(outputName);
 

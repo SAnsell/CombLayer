@@ -59,6 +59,9 @@ class ActivationSource
   void createVolumeCount();
   void createFluxVolumes(const Simulation&);
   void readFluxes(const std::string&);
+  void processFluxFiles(const std::vector<std::string>&,
+			const std::vector<int>&);
+
 
   void writePoints(const std::string&) const;
   
