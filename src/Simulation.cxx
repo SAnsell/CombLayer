@@ -102,7 +102,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation()  :
-  mcnpType(0),CNum(100000),OSMPtr(new ModelSupport::ObjSurfMap),
+  mcnpVersion(6),CNum(100000),OSMPtr(new ModelSupport::ObjSurfMap),
   PhysPtr(new physicsSystem::PhysicsCards)
   /*!
     Start of simulation Object
@@ -112,7 +112,7 @@ Simulation::Simulation()  :
 }
 
 Simulation::Simulation(const Simulation& A)  :
-  mcnpType(A.mcnpType),inputFile(A.inputFile),
+  mcnpVersion(A.mcnpVersion),inputFile(A.inputFile),
   CNum(A.CNum),DB(A.DB),
   OSMPtr(new ModelSupport::ObjSurfMap),
   TList(A.TList),  cellOutOrder(A.cellOutOrder),
@@ -246,6 +246,20 @@ Simulation::deleteTally()
     delete MVal.second;
 
   TItem.erase(TItem.begin(),TItem.end());
+  return;
+}
+
+
+void
+Simulation::setMCNPversion(const int V)
+  /*!
+    Sets the MCNP version number 
+    Use 10 for MCNPX
+    \param V :: Version
+   */
+{
+  mcnpVersion=V;
+  PhysPtr->setMCNPversion(V);
   return;
 }
 
@@ -1617,35 +1631,33 @@ Simulation::writePhysics(std::ostream& OX) const
   OX<<"c --------------- PHYSICS CARDS --------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
 
-  if (mcnpType!=1)
+  // Processing for point tallies
+  std::map<int,tallySystem::Tally*>::const_iterator mc;
+  std::vector<int> Idum;
+  std::vector<Geometry::Vec3D> Rdum;
+  for(mc=TItem.begin();mc!=TItem.end();mc++)
     {
-      // Processing for point tallies
-      std::map<int,tallySystem::Tally*>::const_iterator mc;
-      std::vector<int> Idum;
-      std::vector<Geometry::Vec3D> Rdum;
-      for(mc=TItem.begin();mc!=TItem.end();mc++)
-	{
-	  const tallySystem::pointTally* Ptr=
-	    dynamic_cast<const tallySystem::pointTally*>(mc->second);
-	  if(Ptr && Ptr->hasRdum())
-	    {
-	      Idum.push_back(Ptr->getKey());
-	      for(size_t i=0;i<4;i++)
-		Rdum.push_back(Ptr->getWindowPt(i));
-	      Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
-	    }
-	}
-      if (!Idum.empty())
-	{
-	  OX<<"idum "<<Idum.size()<<" ";
-	  copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-	  OX<<std::endl;
-	  OX<<"rdum       "<<Rdum.front()<<std::endl;
-	  std::vector<Geometry::Vec3D>::const_iterator vc;
-	  for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-	    OX<<"           "<< *vc<<std::endl;
-	}
+      const tallySystem::pointTally* Ptr=
+        dynamic_cast<const tallySystem::pointTally*>(mc->second);
+      if(Ptr && Ptr->hasRdum())
+        {
+          Idum.push_back(Ptr->getKey());
+          for(size_t i=0;i<4;i++)
+            Rdum.push_back(Ptr->getWindowPt(i));
+          Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
+        }
     }
+  if (!Idum.empty())
+    {
+      OX<<"idum "<<Idum.size()<<" ";
+      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
+      OX<<std::endl;
+      OX<<"rdum       "<<Rdum.front()<<std::endl;
+      std::vector<Geometry::Vec3D>::const_iterator vc;
+      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
+        OX<<"           "<< *vc<<std::endl;
+    }
+  
   // Remaining Physics cards
   PhysPtr->write(OX,cellOutOrder,voidCells);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;

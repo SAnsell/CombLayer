@@ -88,8 +88,7 @@ class Simulation
 
  protected:
 
-  int mcnpType;                         ///< MCNP(X) type
-
+  int mcnpVersion;                      ///< version of mcnp
   std::string inputFile;                ///< Input file
   std::string cmdLine;                  ///< Command line : historical recall 
   int CNum;                             ///< Number of complementary components
@@ -150,8 +149,9 @@ class Simulation
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
 
+  /// is the system MCNP6
+  bool isMCNP6() const { return mcnpVersion!=10; }
   
-
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
@@ -225,11 +225,8 @@ class Simulation
 
   // Tally processing
 
-  bool isMCNP6() { return (mcnpType==1) ? 1 : 0; }  ///< get a state
-  void setMcnpType(const int T) { mcnpType=T; }  ///< Set type
   void removeAllTally();
   int removeTally(const int);
-
 
   int addTally(const tallySystem::Tally&);
   tallySystem::Tally* getTally(const int) const;
@@ -242,7 +239,9 @@ class Simulation
 
   void setEnergy(const double);
   void setENDF7();
-
+  /// set MCNPversion
+  void setMCNPversion(const int);
+  
   void renumberAll();
   void renumberCells(const std::vector<int>&,const std::vector<int>&);
   void renumberSurfaces(const std::vector<int>&,const std::vector<int>&);

@@ -46,7 +46,8 @@ namespace physicsSystem
 class PhysicsCards 
 {
  private:
-  
+
+  int mcnpVersion;                     ///< Version of MCNP(X) 
   size_t nps;                          ///< number of particles to run
   int histp;                           ///< Add a histp line
   tallySystem::NList<int> histpCells;  ///< cells for the histp list
@@ -129,6 +130,8 @@ class PhysicsCards
   int processCard(const std::string&);
   void removeCell(const int);
 
+  /// set MCNP version
+  void setMCNPversion(const int V) { mcnpVersion=V;} 
   // Special for type: vol
   void setVolume(const std::vector<int>&,const double =1.0);
   void setVolume(const int,const double);

@@ -114,7 +114,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
-  IParam.regFlag("mcnp6","MCNP6");
+  IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regItem("offset","offset",1,4);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
@@ -221,7 +221,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("md5","MD5 track of cells");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
-  IParam.setDesc("MCNP6","MCNP6 output");
+  IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");

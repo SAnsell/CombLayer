@@ -631,7 +631,7 @@ pointTally::writeMCNP6(std::ostream& OX) const
 {
   ELog::RegMethod RegA("pointTally","writeMCNP6");
   
-  if (Window.size()==4)   // anything else no supported yet
+  if (Window.size()==4)   // anything else is not supported yet
     {
       std::ostringstream cx;
       cx.str("");
