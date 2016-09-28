@@ -38,18 +38,24 @@ namespace SDef
   \brief Creates an active projection source
 */
 
-struct activeUnit 
+class activeUnit 
 {
-
+ private:
+  
   double volume;            ///< Volume by MC calc
   double integralFlux;      ///< Total flux
-  WorkData cellFlux;        ///< Integrated flux [normalized to 1.0]
 
-  activeUnit(const WorkData&);
+  std::vector<double> energy;      ///< Integrated energy
+  std::vector<double> cellFlux;    ///< Integrated flux [normalized to 1.0]
+
+ public:
+  
+  activeUnit(const std::vector<double>&,const std::vector<double>&);
   activeUnit(const activeUnit&);
   activeUnit& operator=(const activeUnit&);
   ~activeUnit();
 
+  double XInverse(const double) const;
   void normalize(const double);
   void writePhoton(std::ostream&,const Geometry::Vec3D&) const;
 

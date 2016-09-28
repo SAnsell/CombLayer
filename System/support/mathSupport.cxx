@@ -9,7 +9,7 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *s
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -732,6 +732,8 @@ template class mathSupport::PIndex<double>;
 template class mathSupport::PSep<double>;
 
 template long int indexPos(const std::vector<double>&,const double&);
+template long int indexPos(const std::vector<DError::doubleErr>&,
+                           const DError::doubleErr&);
 
 template void indexSort(const std::vector<double>&,std::vector<int>&);
 template void indexSort(const std::vector<int>&,std::vector<int>&);

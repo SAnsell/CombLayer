@@ -60,7 +60,7 @@ class ActivationSource
   void createFluxVolumes(const Simulation&);
   void readFluxes(const std::string&);
 
-  void writePoints(const Simulation&,const std::string&) const;
+  void writePoints(const std::string&) const;
   
  public:
 

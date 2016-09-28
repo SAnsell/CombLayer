@@ -79,7 +79,8 @@ extern MTRand RNG;
 namespace SDef
 {
 
-ActivationSource::ActivationSource() 
+ActivationSource::ActivationSource() :
+  timeStep(2),nPoints(0),nTotal(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */
@@ -124,8 +125,6 @@ ActivationSource::createFluxVolumes(const Simulation& System)
 {
   ELog::RegMethod RegA("ActivationSource","createFluxVolumes");
 
-  RNG.createSave();
-
   nTotal=0;
   size_t index=0;
   fluxPt.clear();
@@ -149,23 +148,29 @@ ActivationSource::createFluxVolumes(const Simulation& System)
 	throw ColErr::InContainerError<Geometry::Vec3D>
 	  (testPt,"Point not in cell");
       const int matN=cellPtr->getMat();
+      // test for Material / cellFlux / volume.
       if (matN!=0)
 	{
 	  const int cellN=cellPtr->getName();
-	  std::map<int,double>::iterator mc=
-	    volCorrection.find(cellN);
-	  if (mc==volCorrection.end())
-	    volCorrection.emplace(cellN,1.0);
-	  else
-	    mc->second+=1.0;
-	  fluxPt.push_back(testPt);
-	  cellID.push_back(cellN);
-	  index++;
-	}
+          if (cellFlux.find(cellN)!=cellFlux.end())
+            {
+              std::map<int,double>::iterator mc=
+                volCorrection.find(cellN);
+              if (mc==volCorrection.end())
+                volCorrection.emplace(cellN,1.0);
+              else
+                mc->second+=1.0;
+              fluxPt.push_back(testPt);
+              cellID.push_back(cellN);
+              index++;
+            }
+        }
       nTotal++;
       if (!(nTotal % (50*nPoints)))
 	ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<ELog::endDiag;
     }
+  ELog::EM<<"FINAL nPoints/Ntotal == "<<nPoints<<":"<<nTotal<<ELog::endDiag;
+
   // correct volumes by correct count
   const double boxVol=BDiff.volume()/static_cast<double>(nTotal);
   for(std::map<int,double>::value_type& MItem : volCorrection)
@@ -179,7 +184,6 @@ ActivationSource::createFluxVolumes(const Simulation& System)
       
       CA.second.normalize(mc->second);
     }
-
   for(const std::map<int,double>::value_type& MItem : volCorrection)
     ELog::EM<<"Cell["<<MItem.first<<"] == "<<MItem.second<<ELog::endDiag;
   return;
@@ -190,80 +194,94 @@ void
 ActivationSource::readFluxes(const std::string& inputFileBase)
    /*!
      Read the fluxes from the given file[s]
-     \param inputFileBase :: FileBase e.g CellXXX were XXX is the cell
-     number
+     \param inputFileBase :: FileBase e.g CellXXX were XXX is the cell number
    */
 {
   ELog::RegMethod RegA("ActivationSource","readFluxes");
-  typedef std::map<int,double> VTYPE;
 
-  std::ifstream IX;
-  for(const VTYPE::value_type& VItem : volCorrection)
+
+  boost::filesystem::directory_iterator curDIR(boost::filesystem::current_path());
+  boost::filesystem::directory_iterator endDIR;
+
+  while(curDIR != endDIR)
     {
-      const std::string fluxDir
-        (inputFileBase+StrFunc::makeString(VItem.first)+"/spectra");
-      
-      IX.open(fluxDir);
-      if (IX.good())
+      if (0>1 && boost::filesystem::is_directory(*curDIR))
         {
-          WorkData WF;
-
-          // dump first line
-          std::string SLine=StrFunc::getLine(IX,512);
-          // read energy bins:
-          std::vector<double> energy;
-          std::vector<double> gamma;
-          double E,G;
-          do
+          const std::string fileName(curDIR->path().filename().string());
+          const std::string testBase(fileName.substr(0,inputFileBase.length()));
+          const std::string testNumber(fileName.substr(inputFileBase.length()));
+          ELog::EM<<"Searching "<<fileName<<ELog::endDiag;
+          int cellNumber;
+          if (testBase==inputFileBase &&
+              StrFunc::convert(testNumber,cellNumber))
             {
-              SLine=StrFunc::getLine(IX,512);
-              while(StrFunc::section(SLine,E))
+              ELog::EM<<"Found "<<fileName<<" :: "<<cellNumber<<ELog::endDiag;
+              const std::string fluxFile=fileName+"/spectra";
+              std::ifstream IX;
+              IX.open(fluxFile.c_str());
+              if (IX.good())
                 {
-                  energy.push_back(E);
-                }
-            }
-          while(IX.good() && StrFunc::isEmpty(SLine));
+                  // dump first line
+                  std::string SLine=StrFunc::getLine(IX,512);
+                  // read energy bins:
+                  std::vector<double> energy;
+                  std::vector<double> gamma;
+                  gamma.push_back(0.0);
+                  double E,G;
+                  do
+                    {
+                      SLine=StrFunc::getLine(IX,512);
+                      while(StrFunc::section(SLine,E))
+                        {
+                          energy.push_back(E);
+                        }
+                    }
+                  while(IX.good() && StrFunc::isEmpty(SLine));
 
-          // effective lose of SLine:= MUTLIGROUP ....
-          size_t timeIndex(0);
-          while(timeStep!=timeIndex && IX.good())
-            {
-              SLine=StrFunc::getLine(IX,512);
-              if (!StrFunc::section(SLine,G))  // line with words
-                timeIndex++;
-            }
-          ELog::EM<<"Processing :"<<SLine<<ELog::endDiag;
-          
-          // NOW Read Gamma flux
-          double totalFlux(0.0);
-          do
-            {
-              SLine=StrFunc::getLine(IX,512);
-              while(StrFunc::section(SLine,G))
-                {
-                  gamma.push_back(G);
-                  totalFlux+=G;
-                }
-            }
-          while(IX.good() && StrFunc::isEmpty(SLine));
+                  // effective lose of SLine:= MUTLIGROUP ....
+                  size_t timeIndex(0);
+                  while(timeStep!=timeIndex && IX.good())
+                    {                      
+                      SLine=StrFunc::getLine(IX,512);
+                      if (!StrFunc::section(SLine,G))  // line with words
+                        timeIndex++;
+                    }
 
-          WF.setData(energy,gamma);
-	  
-          cellFlux.emplace(VItem.first,activeUnit(WF));
+                  // NOW Read Gamma flux
+                  double totalFlux(0.0);
+                  do
+                    {
+                      SLine=StrFunc::getLine(IX,512);
+                      while(StrFunc::section(SLine,G))
+                        {
+                          gamma.push_back(G);
+                          totalFlux+=G;
+                        }
+                    }
+                  while(IX.good() && StrFunc::isEmpty(SLine));
+
+                  ELog::EM<<"ASDFAS F"<<cellNumber<<" "<<energy.size()<<" "<<gamma.size()<<ELog::endDiag;
+                  //             activeUnit AU(energy,gamma);
+                  //                  cellFlux.emplace(cellNumber,activeUnit(energy,gamma));
+                  ELog::EM<<"OUT"<<cellNumber<<ELog::endDiag;
+                }
+              ELog::EM<<"CLOSE"<<cellNumber<<ELog::endDiag;
+            }
         }
-      IX.close();
+      ELog::EM<<"NEXT "<<*curDIR<<ELog::endDiag;
+      curDIR++;
     }
+  ELog::EM<<"FINAK "<<ELog::endDiag;          
   return;
 }
 
 void
-ActivationSource::writePoints(const Simulation& System,
-			      const std::string& outputName) const
+ActivationSource::writePoints(const std::string& outputName) const
   /*!
     This writes out the points for MCNP to read them in.
     The method uses loadSave from RNG to needs to be paired
     with a createSave which is done in calcVolumes.
-    
+
     \param outputName :: Output file name
    */
 {
@@ -271,8 +289,8 @@ ActivationSource::writePoints(const Simulation& System,
 
   std::ofstream OX;
   OX.open(outputName.c_str());
-
-
+  
+  OX<<nPoints<<std::endl;
   for(size_t i=0;i<nPoints;i++)
     {
       const Geometry::Vec3D& Pt=fluxPt[i];
@@ -304,9 +322,12 @@ ActivationSource::createSource(Simulation& System,
   // First loop is to generate all the points within the set
   // it allows volumes to be effectively calculated.
   //
-  createFluxVolumes(System);
-  readFluxes(inputFileBase);
 
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
+  readFluxes(inputFileBase);
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
+  createFluxVolumes(System);
+  writePoints(outputName);
 
   
   return;

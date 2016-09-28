@@ -32,7 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -49,6 +49,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
+#include "mathSupport.h"
 #include "WorkData.h"
 #include "activeUnit.h"
 
@@ -57,18 +58,21 @@ extern MTRand RNG;
 namespace SDef
 {
 
-activeUnit::activeUnit(const WorkData& WF) :
+activeUnit::activeUnit(const std::vector<double>& E,
+                       const std::vector<double>& G) :
   volume(0.0),integralFlux(0.0),
-  cellFlux(WF)
+  energy(E),cellFlux(G)
   /*!
     Constructor 
+    \param E :: Energy
+    \param G :: gamma value
   */
 {}
 
   
 activeUnit::activeUnit(const activeUnit& A) :
   volume(A.volume),integralFlux(A.integralFlux),
-  cellFlux(A.cellFlux)
+  energy(A.energy),cellFlux(A.cellFlux)
   /*!
     Copy Constructor 
     \param A :: activeUnit to copy
@@ -87,6 +91,7 @@ activeUnit::operator=(const activeUnit& A)
     {
       volume=A.volume;
       integralFlux=A.integralFlux;
+      energy=A.energy;
       cellFlux=A.cellFlux;
     }
   return *this;
@@ -110,24 +115,50 @@ activeUnit::normalize(const double V)
 
   integralFlux=0.0;
 
-  const std::vector<DError::doubleErr> YData= cellFlux.getYdata();
   std::vector<double> YOut;
-  for(const DError::doubleErr& DV : YData)
-    integralFlux+=DV.getVal();
+  for(const double& FV : cellFlux)
+    integralFlux+=FV;
 
   if (integralFlux>Geometry::zeroTol)
     {
       double prevSum(0.0);
-      for(const DError::doubleErr& DV : YData)
+      for(double& FV : cellFlux)
 	{
-	  prevSum+=DV.getVal();
-	  YOut.push_back(prevSum/integralFlux);
+	  prevSum+=FV;
+	  FV=prevSum/integralFlux;
 	}
       volume=V;
-      integralFlux/=V;  // need to normalize 
+      integralFlux/=V;  // need to normalize
     }
   return;
 }
+
+double
+activeUnit::XInverse(const double R) const
+  /*!
+    Inverse the y data [as based]
+    \param R :: Value to search for
+  */
+{
+
+  long int index=indexPos(cellFlux,R);
+  const size_t IX=static_cast<size_t>(index);
+  if (index<0 || IX>=cellFlux.size())
+    throw ColErr::RangeError<double>(R,cellFlux.front(),
+                                     cellFlux.back(),"value out of range");
+  
+  const double yA=cellFlux[IX];
+  const double yB=cellFlux[IX+1];
+
+  const double frac=(R-yA)/(yB-yA);
+  ELog::EM<<"XXX == "<<IX<<" ::"<<
+    cellFlux[IX]<<" ++ "<<R<<" ++ "<<cellFlux[IX+1]<<ELog::endDiag;
+
+  return energy[IX]+frac*(energy[IX+1]-energy[IX]);
+}
+
+
+
   
 void
 activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt) const
@@ -135,10 +166,25 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt) const
     Calculate the energy based on RNG nubmer and 
     write a photon in a random direction
     \parma OX :: Output stream
-    \param R :: Random number between 0.0 and 1.0. 
-    \return  energy value
+    \param Pt :: Point for interaction
   */
 {
+  //boost::format FMT("%12.6e %12.6e %12.6e");// %12.6f %12.6f %12.6f");
+  const double thetaAngle=2*M_PI*RNG.rand();
+  const double z=2.0*(RNG.rand()-0.5);
+  const double sinZ=sqrt(1-z*z);
+  Geometry::Vec3D uvw(sinZ*cos(thetaAngle),sinZ*sin(thetaAngle),z);
+
+  const double R=RNG.rand();
+  const double E=XInverse(R);
+
+  ELog::EM<<"FAil on one"<<ELog::endDiag;
+
+  ELog::EM<<"FAil on one"<<ELog::endDiag;
+  //  OX<<(FMT % Pt.X() % Pt.Y() % Pt.Z())<<std::endl;
+  ELog::EM<<"FAil on one"<<ELog::endDiag;
+  //  OX<<(FMT % Pt)<<std::endl;
+   OX<<2<<" "<<Pt<<" "<<uvw<<" "<<E<<" "<<1.0<<std::endl;
   return;
 }
   

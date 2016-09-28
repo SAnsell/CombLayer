@@ -79,7 +79,7 @@ class WorkData
   WorkData& rebin(const WorkData&);
   WorkData& binDivide(const double);
   WorkData& xScale(const double);
-
+  double XInverse(const double) const;
 
   /// set weight
   void setWeight(const double W) { weight=W; }

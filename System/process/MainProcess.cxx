@@ -399,7 +399,7 @@ createSimulation(inputParam& IParam,
 
   // has default value
   SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
-
+  
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 
   return SimPtr;
