@@ -910,10 +910,12 @@ GuideLine::addEndCut(const attachSystem::FixedComp& EC,
 }
 
 HeadRule
-GuideLine::getXSection(const size_t shapeIndex) const
+GuideLine::getXSection(const size_t shapeIndex,
+                       const size_t shapeLayerIndex) const
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
+    \param shapelayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {
@@ -923,26 +925,32 @@ GuideLine::getXSection(const size_t shapeIndex) const
     throw ColErr::IndexError<size_t>(shapeIndex,nShapes,"shapeIndex/nShapes");
 
   const std::string shapeLayer=
-    shapeUnits[shapeIndex]->getString(SMap,nShapeLayers-1);
+    shapeUnits[shapeIndex]->getString(SMap,nShapeLayers-(shapeLayerIndex+1));
 
   return HeadRule(shapeLayer);
 }
 
 HeadRule
-GuideLine::getXSectionOut(const size_t shapeIndex) const
+GuideLine::getXSectionOut(const size_t shapeIndex,
+                          const size_t shapeLayerIndex) const
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
+    \param shapelayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {
-  ELog::RegMethod RegA("GuideLine","getXSection");
+  ELog::RegMethod RegA("GuideLine","getXSectionOut");
 
   if (shapeIndex>=nShapes)
     throw ColErr::IndexError<size_t>(shapeIndex,nShapes,"shapeIndex/nShapes");
+  if (shapeLayerIndex>=nShapeLayers)
+    throw ColErr::IndexError<size_t>(shapeLayerIndex,nShapeLayers,
+                                     "shapeLayerIndex/nShapeLayers");
 
+  
   const std::string shapeLayer=
-    shapeUnits[shapeIndex]->getExclude(SMap,nShapeLayers-1);
+    shapeUnits[shapeIndex]->getExclude(SMap,nShapeLayers-(shapeLayerIndex+1));
 
   return HeadRule(shapeLayer);
 }
