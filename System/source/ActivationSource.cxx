@@ -293,6 +293,7 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
 	{
 	  // dump first line
 	  std::string SLine=StrFunc::getLine(IX,512);
+          std::string timeLine;
 	  // read energy bins:
 	  std::vector<double> energy;
 	  std::vector<double> gamma;
@@ -317,11 +318,8 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
 	      SLine=StrFunc::getLine(IX,512);
 	      if (!StrFunc::section(SLine,G))  // line with words
 		timeIndex++;
-              // try to extract integral value
-              std::string item;
-              const size_t itemCnt((timeIndex==1) ? 3 : 4);
-              for(size_t i=0;i<itemCnt && StrFunc::section(SLine,item);i++) ;
-              intFlag=StrFunc::section(item,totalFlux);
+              // store time line for later:
+              timeLine=SLine;
 	    }
 	  
 	  // NOW Read Gamma flux
@@ -333,9 +331,14 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
                 gamma.push_back(G);
 	    }
 	  while(IX.good() && StrFunc::isEmpty(SLine));
-          if (!intFlag)
-            throw ColErr::FileError(static_cast<int>(index),fluxFiles[index],
-                                    "Failed to get totalFlux");
+
+          ELog::EM<<"Time == "<<timeLine<<ELog::endDiag;
+          const size_t itemCnt((timeStep==1) ? 3 : 4);
+          for(size_t i=0;i<itemCnt && StrFunc::section(timeLine,item);i++) ;
+          if (StrFunc::section(item,totalFlux);
+              throw ColErr::FileError(static_cast<int>(index),fluxFiles[index],
+                                      "Failed to get totalFlux");
+              
           ELog::EM<<"Gamma total == "<<totalFlux<<ELog::endDiag;
           
 	  cellFlux.emplace(cellNumbers[index],activeUnit(totalFlux,energy,gamma));

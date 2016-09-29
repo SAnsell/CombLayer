@@ -95,7 +95,7 @@ tallyAddition(Simulation& System,
     \param IParam :: Parameters
   */
 {
-  ELog::RegMethod RegA("TallySelector[F]","Addtion");
+  ELog::RegMethod RegA("TallySelector[F]","Addition");
   const size_t nP=IParam.setCnt("TAdd");
 
   for(size_t index=0;index<nP;index++)
