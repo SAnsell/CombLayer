@@ -244,12 +244,13 @@ BaseMap::getItem(const std::string& Key) const
 {
   ELog::RegMethod RegA("BaseMap","getItem");
 
-  size_t index(0);
+  size_t index;
   const std::string::size_type pos=Key.rfind("#");
-  if (pos!=std::string::npos)
-    StrFunc::convert(Key.subStr(pos),index);
+  if (pos!=std::string::npos && 
+      StrFunc::convert(Key.substr(pos),index))
+    return getItem(Key.substr(0,pos));
     
-  return getItem(Key,index);
+  return getItem(Key,0);
 }
 
 int
