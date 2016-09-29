@@ -86,6 +86,41 @@ ActivationSource::ActivationSource() :
   */
 {}
 
+ActivationSource::ActivationSource(const ActivationSource& A) : 
+  timeStep(A.timeStep),nPoints(A.nPoints),nTotal(A.nTotal),
+  ABoxPt(A.ABoxPt),BBoxPt(A.BBoxPt),
+  volCorrection(A.volCorrection),cellFlux(A.cellFlux),
+  fluxPt(A.fluxPt),cellID(A.cellID)
+  /*!
+    Copy constructor
+    \param A :: ActivationSource to copy
+  */
+{}
+
+ActivationSource&
+ActivationSource::operator=(const ActivationSource& A)
+  /*!
+    Assignment operator
+    \param A :: ActivationSource to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      timeStep=A.timeStep;
+      nPoints=A.nPoints;
+      nTotal=A.nTotal;
+      ABoxPt=A.ABoxPt;
+      BBoxPt=A.BBoxPt;
+      volCorrection=A.volCorrection;
+      cellFlux=A.cellFlux;
+      fluxPt=A.fluxPt;
+      cellID=A.cellID;
+    }
+  return *this;
+}
+
+
 
 ActivationSource::~ActivationSource() 
   /*!
@@ -102,7 +137,6 @@ ActivationSource::setBox(const Geometry::Vec3D& APt,
     \param APt :: Lower corner
     \param BPt :: Upper corner
    */
-
 {
   ELog::RegMethod RegA("ActivationSource","setBox");
 
@@ -131,12 +165,13 @@ ActivationSource::createFluxVolumes(const Simulation& System)
   cellID.clear();
   fluxPt.reserve(nPoints);
   cellID.reserve(nPoints);
-  
+  ELog::EM<<"Volume == "<<ABoxPt<<" : "<<BBoxPt<<ELog::endDiag;
   const Geometry::Vec3D BDiff(BBoxPt-ABoxPt);
   const double xStep(BDiff[0]);
   const double yStep(BDiff[1]);
   const double zStep(BDiff[2]);
   MonteCarlo::Object* cellPtr(0);
+  size_t reportScore(nPoints/10);
   while(index<nPoints)
     {
       Geometry::Vec3D testPt(xStep*RNG.rand(),yStep*RNG.rand(),
@@ -166,8 +201,11 @@ ActivationSource::createFluxVolumes(const Simulation& System)
             }
         }
       nTotal++;
-      if (!(nTotal % (50*nPoints)))
-	ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<ELog::endDiag;
+      if (!(nTotal % (reportScore*nPoints)))
+        {
+          ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<" found="<<index<<ELog::endDiag;
+          reportScore*=2;
+        }
     }
   ELog::EM<<"FINAL nPoints/Ntotal == "<<nPoints<<":"<<nTotal<<ELog::endDiag;
 
@@ -209,11 +247,12 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
     {
       if (boost::filesystem::is_directory(*curDIR))
         {
+          const size_t iLen=inputFileBase.length();
           const std::string fileName(curDIR->path().filename().string());
-	  if (fileName.length()>inputFileBase.length())
+	  if (fileName.length()>iLen)
 	    {
-	      const std::string testBase(fileName.substr(0,inputFileBase.length()));
-	      const std::string testNumber(fileName.substr(inputFileBase.length()));
+	      const std::string testBase(fileName.substr(0,iLen));
+	      const std::string testNumber(fileName.substr(iLen));
 	      int cellNumber;
 	      if (testBase==inputFileBase &&
 		  StrFunc::convert(testNumber,cellNumber))
@@ -226,6 +265,9 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
 	}
       ++curDIR;
     }
+  if (cellNumList.empty())
+    throw ColErr::InContainerError<std::string>(inputFileBase,"cellNumList empty");
+  
   processFluxFiles(fileNames,cellNumList);
   return;
 }
@@ -267,28 +309,36 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
 	  while(IX.good() && StrFunc::isEmpty(SLine));
 	  
 	  // effective lose of SLine:= MUTLIGROUP ....
+          double totalFlux(0.0);
 	  size_t timeIndex(0);
+          int intFlag;
 	  while(timeStep!=timeIndex && IX.good())
 	    {                      
 	      SLine=StrFunc::getLine(IX,512);
 	      if (!StrFunc::section(SLine,G))  // line with words
 		timeIndex++;
+              // try to extract integral value
+              std::string item;
+              const size_t itemCnt((timeIndex==1) ? 3 : 4);
+              for(size_t i=0;i<itemCnt && StrFunc::section(SLine,item);i++) ;
+              intFlag=StrFunc::section(item,totalFlux);
 	    }
 	  
 	  // NOW Read Gamma flux
-	  double totalFlux(0.0);
+
 	  do
 	    {
 	      SLine=StrFunc::getLine(IX,512);
 	      while(StrFunc::section(SLine,G))
-		{
-		  gamma.push_back(G);
-		  totalFlux+=G;
-		}
+                gamma.push_back(G);
 	    }
 	  while(IX.good() && StrFunc::isEmpty(SLine));
-
-	  cellFlux.emplace(cellNumbers[index],activeUnit(energy,gamma));
+          if (!intFlag)
+            throw ColErr::FileError(static_cast<int>(index),fluxFiles[index],
+                                    "Failed to get totalFlux");
+          ELog::EM<<"Gamma total == "<<totalFlux<<ELog::endDiag;
+          
+	  cellFlux.emplace(cellNumbers[index],activeUnit(totalFlux,energy,gamma));
 	}
       IX.close();
     }
@@ -311,7 +361,8 @@ ActivationSource::writePoints(const std::string& outputName) const
   std::ofstream OX;
   OX.open(outputName.c_str());
 
-  OX<<"ActivationSource Write"<<std::endl;
+  OX<<"ActivationSource TStep="<<StrFunc::makeString(timeStep)
+    <<" Source == "<<ABoxPt<<" :: "<<BBoxPt<<std::endl;
   OX<<nPoints<<std::endl;
   for(size_t i=0;i<nPoints;i++)
     {

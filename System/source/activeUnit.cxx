@@ -58,12 +58,14 @@ extern MTRand RNG;
 namespace SDef
 {
 
-activeUnit::activeUnit(const std::vector<double>& E,
+activeUnit::activeUnit(const double IF,
+                       const std::vector<double>& E,
                        const std::vector<double>& G) :
-  volume(0.0),integralFlux(0.0),
+  volume(0.0),integralFlux(IF),
   energy(E),cellFlux(G)
   /*!
     Constructor 
+    \param IF :: integral flux
     \param E :: Energy
     \param G :: gamma value
   */
@@ -113,23 +115,22 @@ activeUnit::normalize(const double V)
 {
   ELog::RegMethod RegA("activeUnit","normalize");
 
-  integralFlux=0.0;
+  double normFlux=0.0;
 
   std::vector<double> YOut;
   for(const double& FV : cellFlux)
-    integralFlux+=FV;
+    normFlux+=FV;
 
-  if (integralFlux>Geometry::zeroTol)
+  if (normFlux>Geometry::zeroTol)
     {
       double prevSum(0.0);
       for(double& FV : cellFlux)
 	{
 	  prevSum+=FV;
-	  FV=prevSum/integralFlux;
+	  FV=prevSum/normFlux;
 	}
-      volume=V;
-      integralFlux/=V;  // need to normalize
     }
+  volume=V;
   return;
 }
 

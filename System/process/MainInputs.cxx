@@ -78,11 +78,17 @@ createInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainProcess[F]","createInputs");
 
   std::vector<std::string> RItems(10,"");
+  
+  IParam.regMulti("activation","activation",10000,1);
 
+  // DEPRECATED:
   IParam.regItem("actFile","actFile");
   IParam.regItem("actOut","actOut");
   IParam.regItem("actBox","actBox");
+  IParam.regItem("actTimeStep","actTimeStep");
   IParam.regItem("actWeight","actWeight");
+  // DEPRECATED (END)
+  
   IParam.regFlag("a","axis");
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);

@@ -50,7 +50,8 @@ class activeUnit
 
  public:
   
-  activeUnit(const std::vector<double>&,const std::vector<double>&);
+  activeUnit(const double,const std::vector<double>&,
+	     const std::vector<double>&);
   activeUnit(const activeUnit&);
   activeUnit& operator=(const activeUnit&);
   ~activeUnit();

@@ -74,6 +74,8 @@ class ActivationSource
 
   /// Set number of output points
   void setNPoints(const size_t N) { nPoints=N; }
+  /// set time segment number 
+  void setTimeSegment(const size_t T) { timeStep=T+1; }
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
   
 

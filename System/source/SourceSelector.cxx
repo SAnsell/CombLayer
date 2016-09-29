@@ -345,33 +345,68 @@ activationSelection(Simulation& System,
 {
   ELog::RegMethod RegA("SourceSelector","activationSelection");
 
-  //File for output:
-  const std::string OName=
-    IParam.getDefValue<std::string>("Data.ssw","actOut",0,0);
 
-  size_t index(0);
-  const Geometry::Vec3D APt=
-    IParam.getCntVec3D("actBox",0,index,"Start Point of box not defined");
-  const Geometry::Vec3D BPt=
-    IParam.getCntVec3D("actBox",0,index,"End Point of box not defined");
+  const size_t nP=IParam.setCnt("activation");
 
-
-  // Directories for input:
-  const std::string CellDir=
-    IParam.getValue<std::string>("actFile",0,0);
-
-  ELog::EM<<"CellDir == "<<CellDir<<ELog::endDiag;
-  ELog::EM<<"FileDir == "<<OName<<ELog::endDiag;
+  Geometry::Vec3D APt,BPt;
+  std::string OName="Data.ssw";
+  std::string cellDir="Cell";
+  size_t timeSeg(1);
+  size_t nVol=System.getPC().getNPS();
+  
+  for(size_t index=0;index<nP;index++)
+    {
+      std::string eMess
+	("Insufficient item for activation["+StrFunc::makeString(index)+"]");
+      const std::string key=
+	IParam.getValueError<std::string>("activation",index,0,eMess);
+      eMess+=" at key "+key;
+      if (key=="help")
+        {
+          ELog::EM<<"activation help:"<<ELog::endBasic;
+          ELog::EM<<"-- timeStep index :: sets the time step from cinder\n"
+                  <<"-- box Vec3D Vec3D :: corner points of box to sample\n"
+                  <<"-- out string :: output file [def:Data.ssw]\n"
+                  <<"-- cell string :: cell header name [def: Cell]\n"
+                  <<"-- nVol size :: number of point for vol sample [def: npts]"
+                  <<ELog::endBasic;
+        }
+      else if (key=="box")
+        {
+          size_t ptI(1);
+          APt=IParam.getCntVec3D("activation",index,ptI,
+                               "Start point of box not defined");
+          BPt=IParam.getCntVec3D("activation",index,ptI,
+                               "End point of box not defined");
+        }
+      else if (key=="out")
+        {
+          OName=IParam.getValueError<std::string>("activation",index,1,eMess);
+        }
+      else if (key=="cell")
+        {
+          cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
+        }
+      else if (key=="timeStep")
+        {
+          timeSeg=IParam.getValueError<size_t>("activation",index,1,eMess);
+        }
+      else if (key=="nVol")
+        {
+          nVol=IParam.getValueError<size_t>("activation",index,1,eMess);
+        }
+      else
+        {
+          throw ColErr::InContainerError<std::string>
+            (key,"Key not found for activation");
+        }
+    }
   
   SDef::ActivationSource AS;
-  // AS.setBiasConst(CPoint,Axis,distW,angleW);
   AS.setBox(APt,BPt);
-
-  // for(size_t i=0;i<MatName.size();i++)
-  //   AS.addMaterial(MatName[i],MatFile[i]);
-
-  AS.setNPoints(System.getPC().getNPS());
-  AS.createSource(System,CellDir,OName);
+  AS.setTimeSegment(timeSeg);
+  AS.setNPoints(nVol);
+  AS.createSource(System,cellDir,OName);
 
   return;
 }

@@ -247,8 +247,8 @@ BaseMap::getItem(const std::string& Key) const
   size_t index;
   const std::string::size_type pos=Key.rfind("#");
   if (pos!=std::string::npos && 
-      StrFunc::convert(Key.substr(pos),index))
-    return getItem(Key.substr(0,pos));
+      StrFunc::convert(Key.substr(pos+1),index))
+    return getItem(Key.substr(0,pos),index);
     
   return getItem(Key,0);
 }
