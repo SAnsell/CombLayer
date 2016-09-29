@@ -243,7 +243,13 @@ BaseMap::getItem(const std::string& Key) const
   */
 {
   ELog::RegMethod RegA("BaseMap","getItem");
-  return getItem(Key,0);
+
+  size_t index(0);
+  const std::string::size_type pos=Key.rfind("#");
+  if (pos!=std::string::npos)
+    StrFunc::convert(Key.subStr(pos),index);
+    
+  return getItem(Key,index);
 }
 
 int
@@ -262,8 +268,9 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
 
   if (Index>=mc->second.size())
-    throw ColErr::IndexError<size_t>(Index,0,
-                                     "Object:"+getFCKeyName()+" Key["+Key+"] index error");
+    throw ColErr::IndexError<size_t>
+      (Index,0,"Object:"+getFCKeyName()+" Key["+Key+"] index error");
+  
   return mc->second[Index];
 }
 
