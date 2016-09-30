@@ -278,6 +278,13 @@ BilbaoWheel::makeShaftSurfaces()
       SI+=10;
     }
 
+  double H(wheelHeight()/2.0-caseThick+caseThickIn);
+  // first void step in the inner part
+  ModelSupport::buildPlane(SMap,wheelIndex+2105,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2106,Origin+Z*H,Z);
+  ModelSupport::buildCylinder(SMap,wheelIndex+2107,Origin,Z,
+			      coolantRadiusIn+voidThick);
+
   return;
 }
 
@@ -308,8 +315,12 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // void (which connects to the Wheel void)
   // upper cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -1027 -56 46 2027" );
+    (SMap,wheelIndex, " -1027 -2106 46 2027" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  Out=ModelSupport::getComposite
+    (SMap,wheelIndex, " -2107 1027 -2106 246 " );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+
   // lower cell
   Out=ModelSupport::getComposite
     (SMap,wheelIndex, " -1027 55 -45" );
@@ -334,7 +345,8 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	}
       if (i==nShaftLayers-1)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 56M -2006M ");
+	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex,
+					 " (-2007 56M -2006M) : (-2107M -2106M 6M) ");
 	  addOuterSurf("Shaft",Out);  
 	}
       SI += 10;
@@ -632,7 +644,7 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 "1027 55 -56 -537 (-125:126:527)");
+				 "2107 55 -56 -537 (-125:126:527)");
   divideRadial(System, Out, 0);
   
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");	
