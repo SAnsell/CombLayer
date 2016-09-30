@@ -268,7 +268,7 @@ BilbaoWheel::makeShaftSurfaces()
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","makeShaftSurfaces");
-  
+
   ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);  
 
   int SI(wheelIndex);
@@ -462,10 +462,17 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);  
 
-  H+=caseThickIn;
-  ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);  
+  H+=caseThick;
+  ModelSupport::buildPlane(SMap,wheelIndex+245,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+246,Origin+Z*H,Z);
 
+  H-=caseThick;
+  H+=caseThickIn;
+  ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);
+
+  H-=caseThickIn;
+  H+=caseThick;
   H+=voidThick;
   ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);  
   ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);  

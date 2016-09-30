@@ -116,7 +116,7 @@ class BilbaoWheel : public WheelBase
   {
     return targetHeight+
       2.0*(voidTungstenThick+steelTungstenThick+coolantThick+
-	   caseThickIn+voidThick);
+	   caseThick+voidThick);
   }
 
   //  virtual int getCell() const { return mainShaftCell; }
