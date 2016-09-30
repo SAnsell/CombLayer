@@ -335,7 +335,6 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
 std::string
 BilbaoWheel::getSQSurface(const double R, const double e)
-
   /*
     Return MCNP(X) surface card for SQ ellipsoids
   */

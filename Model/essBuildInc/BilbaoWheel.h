@@ -43,11 +43,11 @@ class BilbaoWheel : public WheelBase
 {
  private:
   
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
+  double xStep;                  ///< X step
+  double yStep;                  ///< y step
+  double zStep;                  ///< Z step
+  double xyAngle;                ///< xy angle
+  double zAngle;                 ///< zAngle step
 
   int engActive;                 ///< Engineering active flag
   std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
@@ -67,18 +67,18 @@ class BilbaoWheel : public WheelBase
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
 
-  double mainTemp;               ///< Main temperature 
+  double mainTemp;                  ///< Main temperature 
   
-  size_t nSectors;               ///< number of sectors for LayerDivide3D
-  size_t nLayers;                ///< number of radial layers
-  std::vector<double> radius;    ///< cylinder radii
-  std::vector<int> matTYPE;      ///< Material type
+  size_t nSectors;                  ///< number of sectors for LayerDivide3D
+  size_t nLayers;                   ///< number of radial layers
+  std::vector<double> radius;       ///< cylinder radii
+  std::vector<int> matTYPE;         ///< Material type
 
   // shaft
   double shaftHeight;               ///< Shaft Height (above origin)
-  size_t nShaftLayers;           ///< Number of shaft layers
-  std::vector<double> shaftRadius; ///< shaft radii
-  std::vector<int> shaftMat;     ///< shaft materials
+  size_t nShaftLayers;              ///< Number of shaft layers
+  std::vector<double> shaftRadius;  ///< shaft radii
+  std::vector<int> shaftMat;        ///< shaft materials
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material
