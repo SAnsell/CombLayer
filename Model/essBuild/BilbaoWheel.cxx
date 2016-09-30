@@ -296,8 +296,13 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
   // steel : inner shroud above/below
+  // upper cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex," -1027 45 -46 (-35 : 36 2017)" ); 
+    (SMap,wheelIndex," -1027 -46 36 2017" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  // lower cell
+  Out=ModelSupport::getComposite
+    (SMap,wheelIndex," -1027 45 -35" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void (which connects to the Wheel void)
