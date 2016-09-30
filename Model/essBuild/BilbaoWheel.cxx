@@ -317,13 +317,18 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite
     (SMap,wheelIndex, " -1027 -2106 46 2027" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  // side
   Out=ModelSupport::getComposite
     (SMap,wheelIndex, " -2107 1027 -2106 246 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // lower cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -1027 55 -45" );
+    (SMap,wheelIndex, " -1027 2105 -45" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  // side
+  Out=ModelSupport::getComposite
+    (SMap,wheelIndex, " -2107 1027 2105 -245 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // shaft
@@ -341,12 +346,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 26 -2006N ");
+	  if (i>2) // temporary to get rid of geom error
+	    Out=ModelSupport::getComposite
+	      (SMap,SI,SI-10,wheelIndex," -2007 2007M 2106N -2006N ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
 	}
       if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex,
-					 " (-2007 56M -2006M) : (-2107M -2106M 6M) ");
+					 " (-2007 56M -2006M) : (-2107M -2106M 2105M) ");
 	  addOuterSurf("Shaft",Out);  
 	}
       SI += 10;
