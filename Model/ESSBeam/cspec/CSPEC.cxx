@@ -195,6 +195,7 @@ CSPEC::build(Simulation& System,
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
+  ELog::EM<<"HASDFA F"<<ELog::endDiag;
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
   

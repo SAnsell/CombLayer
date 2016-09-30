@@ -337,7 +337,7 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
           std::string item;
           const size_t itemCnt((timeStep==1) ? 3 : 4);
           for(size_t i=0;i<itemCnt && StrFunc::section(timeLine,item);i++) ;
-          if (StrFunc::section(item,totalFlux))
+          if (!StrFunc::section(item,totalFlux))
             throw ColErr::FileError(static_cast<int>(index),fluxFiles[index],
                                     "Failed to get totalFlux");
               

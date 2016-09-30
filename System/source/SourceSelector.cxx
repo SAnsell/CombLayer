@@ -217,8 +217,6 @@ sourceSelection(Simulation& System,
   const long int linkIndex=getLinkIndex(DSnd);
 
   // NOTE: No return to allow active SSW systems
-  if (IParam.flag("sdefVoid"))
-    sourceCard.deactivate();
 
   // If a chipIR style directional source
   if (IParam.flag("sdefFile"))
@@ -329,6 +327,8 @@ sourceSelection(Simulation& System,
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	
+  if (IParam.flag("sdefVoid"))
+    sourceCard.deactivate();
 
   return;
 }

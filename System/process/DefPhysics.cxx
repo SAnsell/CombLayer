@@ -384,7 +384,7 @@ setDefaultPhysics(Simulation& System,
        "<="+StrFunc::makeString(cutMin));
   
   PC.setMode("n p "+PList+elcAdd);
-  PC.setPrintNum("10 20 50 110");
+  PC.setPrintNum("10 20 50 110 120");
   System.processCellsImp();
 
   PC.setCells("imp",1,0);            // Set a zero cell	  
@@ -450,7 +450,7 @@ setNeutronPhysics(Simulation& System)
   
   physicsSystem::PhysicsCards& PC=System.getPC();
   PC.setMode("n");
-  PC.setPrintNum("10 20 50 110");
+  PC.setPrintNum("10 20 50 110 120");
   System.processCellsImp();
   PC.setCells("imp",1,0);            // Set a zero cell
   
