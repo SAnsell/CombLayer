@@ -300,10 +300,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
     (SMap,wheelIndex," -1027 45 -46 (-35 : 36 2017)" ); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  // void
+  // void (which connects to the Wheel void)
+  // upper cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -1027 55 -56 (-45 : 46 2027)" );	
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+    (SMap,wheelIndex, " -1027 -56 46 2027" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  // lower cell
+  Out=ModelSupport::getComposite
+    (SMap,wheelIndex, " -1027 55 -45" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // shaft
   int SI(wheelIndex);
