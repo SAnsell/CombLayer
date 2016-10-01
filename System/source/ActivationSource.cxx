@@ -32,7 +32,9 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#ifndef NO_REGEX
 #include <boost/filesystem.hpp>
+#endif
 
 #include "Exception.h"
 #include "MersenneTwister.h"
@@ -237,8 +239,10 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
 {
   ELog::RegMethod RegA("ActivationSource","readFluxes");
 
-
-  boost::filesystem::directory_iterator curDIR(boost::filesystem::current_path());
+#ifndef NO_REGEX
+  
+  boost::filesystem::directory_iterator curDIR
+    (boost::filesystem::current_path());
   const boost::filesystem::directory_iterator endDIR;
 
   std::vector<std::string> fileNames;
@@ -269,6 +273,7 @@ ActivationSource::readFluxes(const std::string& inputFileBase)
     throw ColErr::InContainerError<std::string>(inputFileBase,"cellNumList empty");
   
   processFluxFiles(fileNames,cellNumList);
+#endif
   return;
 }
 
