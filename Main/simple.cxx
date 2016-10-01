@@ -150,7 +150,6 @@ main(int argc,char* argv[])
 	  SimPtr->resetAll();
 	  
 	  SimPtr->readMaster(Fname);
-	  SDef::sourceSelection(*SimPtr,IParam);
 	  
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         

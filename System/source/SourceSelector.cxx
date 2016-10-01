@@ -225,8 +225,11 @@ sourceSelection(Simulation& System,
       return;
     }
   
-  const std::string sdefType=IParam.getValue<std::string>("sdefType");
-  ELog::EM<<"SDEF == "<<sdefType<<ELog::endDiag;
+  std::string sdefType=IParam.getValue<std::string>("sdefType");
+  if (sdefType.empty() && IParam.flag("kcode"))
+    sdefType="kcode";
+  ELog::EM<<"SDef == "<<sdefType<<" flag= "<<sdefType.empty()<<" "
+	  <<IParam.flag("kcode")<<ELog::endDiag;
   
   if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);
@@ -283,6 +286,7 @@ sourceSelection(Simulation& System,
     }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
+      ELog::EM<<"SDEF == :: Beam"<<ELog::endDiag;
       if (FCPtr)
 	SDef::createBeamSource(Control,"beamSource",
 			       *FCPtr,linkIndex,sourceCard);
@@ -307,6 +311,10 @@ sourceSelection(Simulation& System,
   
       // Basic TS2 source
       SDef::createTS2Source(Control,sourceCard);
+    }
+  else if (sdefType=="kcode")
+    {
+      ELog::EM<<"kcode sdef selected"<<ELog::endDiag;
     }
   else
     {

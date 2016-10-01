@@ -74,8 +74,6 @@
 #include "SimInput.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "makeSNS.h"
 
@@ -121,7 +119,6 @@ main(int argc,char* argv[])
       snsSystem::makeSNS SNSObj;
       World::createOuterObjects(*SimPtr);
       SNSObj.build(SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

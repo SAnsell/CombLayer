@@ -120,7 +120,6 @@ main(int argc,char* argv[])
       pipeSystem::makePipe pipeObj;
       World::createOuterObjects(*SimPtr);
       pipeObj.build(SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

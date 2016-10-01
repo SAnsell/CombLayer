@@ -215,10 +215,11 @@ BeamSource::populate(const FuncDataBase& Control)
 
   attachSystem::FixedOffset::populate(Control);
 
-  // default photon
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",1); 
+  // default neutron
+  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",1);
+  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
   radius=Control.EvalVar<double>(keyName+"Radius"); 
-  angleSpread=Control.EvalVar<double>(keyName+"ASpread"); 
+
 
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
@@ -230,9 +231,13 @@ BeamSource::populate(const FuncDataBase& Control)
   if (!populateEnergy(EList,EPList) &&
       !populateEFile(EFile,1,11))
     {
-      double E=Control.EvalVar<double>(keyName+"EStart"); 
-      const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
-      const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
+      double defEnergy(1.0);
+      StrFunc::convert(EList,defEnergy);
+      
+      double E=Control.EvalDefVar<double>(keyName+"EStart",defEnergy); 
+      ELog::EM<<"Default energy == "<<E<<ELog::endDiag;
+      const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
+      const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
       const double EStep((EEnd-E)/(nE+1));
       for(size_t i=0;i<nE;i++)
 	{
@@ -269,7 +274,6 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("BeamSource","createSource");
-
   
   sourceCard.setActive();
 

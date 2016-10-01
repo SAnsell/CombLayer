@@ -69,7 +69,6 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "ContainedComp.h"
@@ -81,9 +80,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "SimValid.h"
 
@@ -132,8 +128,6 @@ main(int argc,char* argv[])
       World::createOuterObjects(*SimPtr);
       T1Obj.build(SimPtr,IParam);
       
-      SDef::sourceSelection(*SimPtr,IParam);
-
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
       ELog::EM<<"T1REAL : variable hash:"
