@@ -226,10 +226,9 @@ sourceSelection(Simulation& System,
     }
   
   std::string sdefType=IParam.getValue<std::string>("sdefType");
-  if (sdefType.empty() && IParam.flag("kcode"))
+  if (sdefType.empty() && IParam.hasKey("kcode") &&
+      IParam.flag("kcode"))
     sdefType="kcode";
-  ELog::EM<<"SDef == "<<sdefType<<" flag= "<<sdefType.empty()<<" "
-	  <<IParam.flag("kcode")<<ELog::endDiag;
   
   if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);

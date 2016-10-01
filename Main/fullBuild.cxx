@@ -74,7 +74,7 @@
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "makeTS2.h"
-k#include "chipDataStore.h"
+#include "chipDataStore.h"
 #include "mainJobs.h"
 #include "World.h"
 #include "Volumes.h"
@@ -167,4 +167,3 @@ main(int argc,char* argv[])
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }
-
