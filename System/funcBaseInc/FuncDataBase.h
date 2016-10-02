@@ -135,6 +135,9 @@ class FuncDataBase
   std::vector<std::string> getKeys() const { return VList.getKeys(); }
   std::string variableHash() const;
 
+  // RESET of active
+  void resetActive();
+  
 };
 
 #endif

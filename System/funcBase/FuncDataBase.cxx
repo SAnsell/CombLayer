@@ -1088,6 +1088,17 @@ FuncDataBase::writeXML(const std::string& FName) const
   return;
 }
 
+void
+FuncDataBase::resetActive()
+  /*!
+    Reset the active flag on all variables
+   */
+{
+  ELog::RegMethod RegA("FuncDataBase","resetActive");
+  VList.resetActive();
+  
+  return;
+}
 
 size_t
 FuncDataBase::convPartVec(const std::string& A,

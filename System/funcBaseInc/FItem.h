@@ -38,7 +38,6 @@ class FItem
   
   int index;          ///< Identifier
 
-
  protected:
 
   int active;         ///< Active [read] 
@@ -67,6 +66,8 @@ class FItem
 
   /// Accessor to active
   int isActive() const { return active; }
+  /// reset active
+  void resetActive() { active=0; }
   ///\cond ABSTRACT
 
   virtual int getValue(Geometry::Vec3D&) const= 0;
@@ -75,7 +76,7 @@ class FItem
   virtual int getValue(long int&) const= 0; 
   virtual int getValue(double&) const= 0;
   virtual int getValue(std::string&) const= 0; 
-
+  
   virtual std::string typeKey() const =0;
   virtual void write(std::ostream&) const=0;  
   ///\endcond ABSTRACT

@@ -87,6 +87,8 @@ class varList
   template<typename T>
   FItem* createFType(const int,const T&);
 
+  void resetActive();
+  
   std::vector<std::string> getKeys() const;
   void writeActive(std::ostream&) const;
   void writeAll(std::ostream&) const;

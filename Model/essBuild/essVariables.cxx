@@ -544,6 +544,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("portSourceNE",2);
 
 
+  // FINAL:
+  Control.resetActive();
   return;
 }
 
