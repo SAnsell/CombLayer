@@ -85,7 +85,8 @@ class CSPEC : public attachSystem::CopiedComp
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> BendB;
 
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,
+		   const GuideItem&,const bool);
   
  public:
   

@@ -57,7 +57,7 @@ class activeUnit
   ~activeUnit();
 
   double XInverse(const double) const;
-  void normalize(const double);
+  void normalize(const double,const double);
   void writePhoton(std::ostream&,const Geometry::Vec3D&) const;
 
 };

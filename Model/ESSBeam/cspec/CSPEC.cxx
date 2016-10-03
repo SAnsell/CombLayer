@@ -137,23 +137,25 @@ CSPEC::~CSPEC()
 {}
 
 void
-CSPEC::setBeamAxis(const GuideItem& GItem,
+CSPEC::setBeamAxis(const FuncDataBase& Control,
+		   const GuideItem& GItem,
                    const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Database of variables
     \param GItem :: Guide Item to 
     \param reverseZ :: Reverse axis
    */
 {
   ELog::RegMethod RegA("CSPEC","setBeamAxis");
 
-  cspecAxis->createUnitVector(GItem);
+  cspecAxis->populate(Control);
+  cspecAxis->createUnitVector(GItem,0);
   cspecAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   cspecAxis->setLinkCopy(1,GItem.getKey("Main"),1);
   cspecAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   cspecAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
+  
   cspecAxis->linkShift(3);
   cspecAxis->linkShift(4);
   cspecAxis->linkAngleRotate(3);
@@ -163,6 +165,7 @@ CSPEC::setBeamAxis(const GuideItem& GItem,
     cspecAxis->reverseZ();
   return;
 }
+
 
   
 void 
@@ -189,13 +192,13 @@ CSPEC::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(GItem,1);
-  FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
-  FocusA->createAll(System,GItem.getKey("Beam"),-1,
-		    GItem.getKey("Beam"),-1);
+  setBeamAxis(Control,GItem,1);
 
-  ELog::EM<<"HASDFA F"<<ELog::endDiag;
+  FocusA->addInsertCell(GItem.getCells("Void"));
+  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
+  FocusA->addEndCut(GItem.getKey("Beam"),-2);
+  FocusA->createAll(System,*cspecAxis,-3,*cspecAxis,-3);
+
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
   

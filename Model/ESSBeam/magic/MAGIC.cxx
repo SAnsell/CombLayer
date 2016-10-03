@@ -224,10 +224,11 @@ MAGIC::~MAGIC()
 
 void
 MAGIC::setBeamAxis(const FuncDataBase& Control,
-                     const GuideItem& GItem,
-                     const bool reverseZ)
+		   const GuideItem& GItem,
+		   const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Database of variables
     \param GItem :: Guide Item to 
     \param reverseZ :: Reverse axis
    */

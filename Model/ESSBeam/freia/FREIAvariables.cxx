@@ -96,7 +96,9 @@ FREIAvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.0);
-  FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0,10.593,17.566,
+  FGen.setThickness(0.5,0.4);
+  // was 10.593 to 17.566 
+  FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0,10.593,15.566,
                       7000.0,90.0);
 
   // Pipe in gamma shield
@@ -221,7 +223,7 @@ FREIAvariables(FuncDataBase& Control)
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"freiaOutPitA",0.0,40.0,170.0,150.0,30.0);
+  PGen.generatePit(Control,"freiaOutPitA",0.0,40.0,190.0,170.0,30.0);
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);

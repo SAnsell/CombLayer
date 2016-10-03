@@ -212,18 +212,24 @@ ActivationSource::createFluxVolumes(const Simulation& System)
   ELog::EM<<"FINAL nPoints/Ntotal == "<<nPoints<<":"<<nTotal<<ELog::endDiag;
 
   // correct volumes by correct count
-  const double boxVol=BDiff.volume()/static_cast<double>(nTotal);
-  for(std::map<int,double>::value_type& MItem : volCorrection)
-    MItem.second*=boxVol;
+  // volcorrection has good count : divide by total count and multiply by total volume
+  const double boxVol= BDiff.volume()/static_cast<double>(nTotal);
 
   // normalisze cellFlux
+  // The volume self cancels since flux was per volume and this is not:
+  // BUT need to scale by fractional total:
+
   for(std::map<int,activeUnit>::value_type& CA : cellFlux)
     {
       std::map<int,double>::const_iterator mc=
 	volCorrection.find(CA.first);
-      
-      CA.second.normalize(mc->second);
+      CA.second.normalize(static_cast<double>(nPoints)/mc->second,
+			  boxVol*mc->second);
     }
+
+  for(std::map<int,double>::value_type& MItem : volCorrection)
+    MItem.second*=boxVol;
+  
   for(const std::map<int,double>::value_type& MItem : volCorrection)
     ELog::EM<<"Cell["<<MItem.first<<"] == "<<MItem.second<<ELog::endDiag;
   return;
@@ -317,11 +323,11 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
 	  // effective lose of SLine:= MUTLIGROUP ....
           double totalFlux(0.0);
 	  size_t timeIndex(0);
-          int intFlag;
+	  
 	  while(timeStep!=timeIndex && IX.good())
 	    {                      
 	      SLine=StrFunc::getLine(IX,512);
-	      if (!StrFunc::section(SLine,G))  // line with words
+	      if (!StrFunc::sectionCINDER(SLine,G))  // line with words
 		timeIndex++;
               // store time line for later:
               timeLine=SLine;
@@ -332,7 +338,7 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
 	  do
 	    {
 	      SLine=StrFunc::getLine(IX,512);
-	      while(StrFunc::section(SLine,G))
+	      while(StrFunc::sectionCINDER(SLine,G))
                 gamma.push_back(G);
 	    }
 	  while(IX.good() && StrFunc::isEmpty(SLine));

@@ -753,6 +753,61 @@ sectionMCNPX(std::string& A,T& out)
   return 0;
 }
 
+template<>
+int
+sectionCINDER(std::string& A,double& out)
+/*!
+  Takes a character string and evaluates 
+  the first [T] object. The string is then filled with
+  spaces upto the end of the [T] object.
+  This version deals with MCNPX numbers. Those
+  are numbers that are crushed together like
+  - 5.4938-004
+  \param out :: place for output
+  \param A :: string for input and output. 
+  \return 1 on success 0 on failure
+*/
+{
+  if (A.empty()) return 0;
+  std::istringstream cx;
+  double retval;
+  cx.str(A);
+  cx.clear();
+  cx>>retval;
+  if (!cx.fail())
+    {
+      //      const int xpt=static_cast<int>(cx.tellg());
+      const long int xpt=cx.tellg();
+      const int xc=cx.get();
+      if (cx.fail())
+	{
+	  A.erase(0,static_cast<size_t>(xpt));
+	  out=retval;
+	  return 1;
+	}
+      else if (isspace(xc) || xc==',')
+	{
+	  A.erase(0,static_cast<size_t>(xpt+1));
+	  out=retval;
+	  return 1;
+	}
+      else if (xc=='-' && xpt>3)
+	{
+	  const std::string held=A;
+	  double revA,revB;
+	  if (sectPartNum(A,revA) && sectPartNum(A,revB))
+	    {
+	      out=0.0;
+	      return 1;
+	    }
+	  A=held;
+	}
+    }
+
+  
+  return 0;
+}
+
 
 void
 writeMCNPX(const std::string& Line,std::ostream& OX)

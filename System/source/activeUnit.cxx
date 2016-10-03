@@ -107,9 +107,11 @@ activeUnit::~activeUnit()
 
 
 void
-activeUnit::normalize(const double V)
+activeUnit::normalize(const double fracValue,
+		      const double V)
   /*!
     Normalize and integrate the volumes
+    \param fracValue :: fraction ratio of volume in sampled volume
     \param V :: Volume of object
    */
 {
@@ -130,6 +132,7 @@ activeUnit::normalize(const double V)
 	  FV=prevSum/normFlux;
 	}
     }
+  integralFlux*=fracValue;
   volume=V;
   return;
 }
@@ -179,10 +182,17 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt) const
   const double E=XInverse(R);
 
   //  OX<<(FMT % Pt.X() % Pt.Y() % Pt.Z())<<std::endl;
-  OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
-  OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
-  OX<<"  "<<(FMTB % E % integralFlux)<<std::endl;
-
+  if (E>1e-3)  // below threshold
+    {
+      OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
+      OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
+      OX<<"  "<<(FMTB % E % integralFlux)<<std::endl;
+    }
+  else
+    {
+      ELog::EM<<"Ditching "<<E<<" "<<integralFlux<<ELog::endDiag;
+    }
+   
 
   //  OX<<2<<" "<<Pt<<" "<<uvw<<" "<<E<<" "<<1.0<<std::endl;
   return;

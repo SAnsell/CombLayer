@@ -45,6 +45,7 @@ private:
   int testFullBlock();  
   int testItemize();    
   int testSection();
+  int testSectionCinder();
   int testSectionRange();    
   int testSectPartNum();
   int testSingleLine();

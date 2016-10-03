@@ -119,26 +119,21 @@ setESSFull(defaultConfig& A)
 
   const std::map<std::string,std::string> beamDef=
     {
-      //      {"NMX","G4BLine18"},
-      //      {"SHORTDREAM","G4BLine9"},
-      //      {"SHORTDREAM2","G4BLine1"},
-      //      {"SHORTODIN","G4BLine7"},
-      //      {"DREAM","G4BLine17"},
-      //      {"VOR","G4BLine3"},   // also 17  
-      //      {"LOKI","G4BLine5"},
-      //      {"ODIN","G4BLine15"}
-      {"VOR","G4BLine1"},   // also 17
-      {"SHORTDREAM","G4BLine3"},
-      {"SHORTODIN","G4BLine5"},
-      {"LOKI","G4BLine7"},
-      {"SHORTDREAM2","G4BLine9"},
-      {"DREAM","G4BLine17"},
-      {"CSPEC","G4BLine15"},
-      {"VESPA","G4BLine11"},
-      {"ODIN","G4BLine15"}
-    };     
+      {"MAGIC","G4BLine6"},          // W6
+      {"BIFROST","G4BLine4"},    // W4
+      {"NMX","G4BLine1"},        // W1
+      {"VOR","G3BLine10"},   // also 17
+      {"LOKI","G4BLine17"},
+      {"DREAM","G4BLine19"},
+      // {"CSPEC","G4BLine3"},
+       {"VESPA","G3BLine7"},
+      {"FREIA","G4BLine15"}     // N5
+      // {"ODIN","G2BLine2"}
+    };
+  
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","VESPA","VOR","SHORTDREAM","SHORTDREAM2","LOKI"};
+    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2","LOKI",
+     "MAGIC","VESPA","VOR"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;
