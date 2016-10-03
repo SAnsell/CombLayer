@@ -285,6 +285,20 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+2107,Origin,Z,
 			      coolantRadiusIn+voidThick);
 
+  H += 10.0;
+  ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
+
+  H+= voidThick;
+  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2126,Origin+Z*H,Z);
+
+  double R(coolantRadiusIn);
+  R -= 10;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2117,Origin,Z,R);
+  R += voidThick;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
+  
   return;
 }
 
