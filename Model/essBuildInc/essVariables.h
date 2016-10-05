@@ -49,6 +49,7 @@ namespace setVariable
   void FREIAvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
   void MAGICvariables(FuncDataBase&);
+  void MIRACLESvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void ODINvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);

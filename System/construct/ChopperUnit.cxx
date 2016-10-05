@@ -574,7 +574,6 @@ ChopperUnit::createLinks()
 
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-
   return;
 }
 

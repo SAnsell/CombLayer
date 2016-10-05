@@ -1126,7 +1126,7 @@ FixedComp::getSignedLinkAxis(const long int sideIndex) const
 
   if (sideIndex==0)
     return Y;
-
+  
   const LinkUnit& LItem=getSignedLU(sideIndex);
   return (sideIndex>0)  ? LItem.getAxis() : -LItem.getAxis();
 }

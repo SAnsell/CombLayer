@@ -168,14 +168,13 @@ Bunker::populate(const FuncDataBase& Control)
 
   // BOOLEAN NUMBER!!!!!!!
   activeSegment=Control.EvalDefVar<size_t>(keyName+"ActiveSegment",0);
-  
   nVert=Control.EvalVar<size_t>(keyName+"NVert");
   midZ=Control.EvalDefVar<double>(keyName+"MidZ",0.0);
   ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",
 				  -floorDepth,midZ,roofHeight,vertFrac);
   for(size_t i=0;i<vertFrac.size();i++)
     vertFrac[i]=(vertFrac[i]+floorDepth)/(floorDepth+roofHeight);
-
+  
   // SIDE LAYERS:
   
   sideFlag=Control.EvalDefVar<int>(keyName+"SideFlag",0);

@@ -78,8 +78,9 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp","visit",
                              "beer","bifrost","cspec","dream","estia",
-			     "freia","loki","magic","nmx","odin","vor",
-			     "vespa","shortDream","shortOdin","longLoki",
+			     "freia","loki","magic","miracles","nmx",
+                             "odin","vor","vespa","shortDream",
+                             "shortOdin","longLoki",
 			     "commonVar","simpleItem"
     	 	             ]);
 

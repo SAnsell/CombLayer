@@ -217,7 +217,7 @@ setESSSingle(defaultConfig& A,
   
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
-    { {"MIRACLES","G4BLine5"},
+    { 
      {"HEIMDAL","G4BLine8"},
      {"SLEIPNIR","G4BLine13"},   // N9
      {"ANNI","G3BLine3"},        // E3
@@ -227,6 +227,7 @@ setESSSingle(defaultConfig& A,
   const std::map<std::string,std::string> beamDef=
     {{"NMX","G4BLine1"},        // W1
      {"BIFROST","G4BLine4"},    // W4
+     {"MIRACLES","G4BLine5"},   // W5
      {"SHORTDREAM","G4BLine17"},
      {"SHORTODIN","G1BLine4"},
      {"TREX","G4BLine7"},       // W7
@@ -244,7 +245,7 @@ setESSSingle(defaultConfig& A,
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "MAGIC","NMX","VESPA","VOR","SHORTDREAM"};
+     "MAGIC","MIRACLES","NMX","VESPA","VOR","SHORTDREAM"};
 
   size_t beamLineIndex(0);
   while(!LItems.empty())
