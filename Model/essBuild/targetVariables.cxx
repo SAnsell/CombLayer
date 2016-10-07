@@ -63,17 +63,19 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
   Control.addVariable("BilbaoWheelEngineeringActive", 1);
   
-  Control.addVariable("BilbaoWheelNShaftLayers",5);
-  Control.addVariable("BilbaoWheelShaftRadius1",14.0);
-  Control.addVariable("BilbaoWheelShaftMat1","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius2",15.0);
-  Control.addVariable("BilbaoWheelShaftMat2","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius3",17.0);
-  Control.addVariable("BilbaoWheelShaftMat3",0);
+  Control.addVariable("BilbaoWheelNShaftLayers",6);
+  Control.addVariable("BilbaoWheelShaftRadius1",5.0);
+  Control.addVariable("BilbaoWheelShaftMat1","SS316L785");
+  Control.addVariable("BilbaoWheelShaftRadius2",13.5);
+  Control.addVariable("BilbaoWheelShaftMat2","SS316L3925");
+  Control.addVariable("BilbaoWheelShaftRadius3",14.0);
+  Control.addVariable("BilbaoWheelShaftMat3","SS316L785");
   Control.addVariable("BilbaoWheelShaftRadius4",20.0);
-  Control.addVariable("BilbaoWheelShaftMat4","Iron");
-  Control.addVariable("BilbaoWheelShaftRadius5",22.0);
-  Control.addVariable("BilbaoWheelShaftMat5",0);
+  Control.addVariable("BilbaoWheelShaftMat4","SS316L3925");
+  Control.addVariable("BilbaoWheelShaftRadius5",23.0);
+  Control.addVariable("BilbaoWheelShaftMat5","SS316L785");
+  Control.addVariable("BilbaoWheelShaftRadius6",25.0);
+  Control.addVariable("BilbaoWheelShaftMat6","Void");
 
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
