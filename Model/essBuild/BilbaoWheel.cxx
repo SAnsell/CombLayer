@@ -294,9 +294,7 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2126,Origin+Z*H,Z);
 
-  double R(radius[0]);
-  ModelSupport::buildCylinder(SMap,wheelIndex+2117,Origin,Z,R);
-  R += voidThick;
+  double R = radius[0]+voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
   
   return;
@@ -349,15 +347,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // upper cell - inner steel
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
-				 " -2117 46 -2116 2007M" );
+				 " -17 46 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - void around inner steel - horizontal part
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
-				 " -2117 2116 -2126 2007M " );
+				 " -17 2116 -2126 2007M " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
   // upper cell - void around inner steel - vertical part
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2117 46 -2126 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 17 46 -2126 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   
