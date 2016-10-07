@@ -316,7 +316,13 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   std::string Out;
 
   // Main body [disk]
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-7 5 -6");	  
+  // central voids. There is the layer with holes between them -
+  // it is added in the for.. loop below (if (i==2))
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+10,
+				 " -2007M 5 -6");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
+				 "-7 5 -6 2007M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
   // steel : inner shroud above/below
@@ -386,7 +392,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 2136 -2006M ");
       else if (i==2)
 	Out=ModelSupport::getComposite
-	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 6N -2006N ");
+	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 5N -2006N "); // layer with holes
       else
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
