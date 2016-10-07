@@ -361,9 +361,11 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // upper cell - inner steel - inner void
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+2*10,
 				 " -7 36 -2136 2007M" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+1*10,
+				 " 36 -2136 -2007M  " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // upper cell - void around inner steel - horizontal part
@@ -381,21 +383,16 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   for (size_t i=0; i<nShaftLayers; i++)
     {
       if (i==0)
-	{
-	  Out=ModelSupport::getComposite
-	    (SMap,SI,wheelIndex," -2007 6M -2006M ");
-	  System.addCell(MonteCarlo::Qhull
-			 (cellIndex++,shaftMat[i],mainTemp,Out));
-	}
+	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 2136 -2006M ");
+      else if (i==2)
+	Out=ModelSupport::getComposite
+	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 36N -2006N ");
       else
-	{
-	  Out=ModelSupport::getComposite
-	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 26 -2006N ");
-	  if (i>2) // temporary to get rid of geom error
-	    Out=ModelSupport::getComposite
-	      (SMap,SI,SI-10,wheelIndex," -2007 2007M 2106N -2006N ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
-	}
+	Out=ModelSupport::getComposite
+	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
+
+      System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
+
       if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex,
@@ -404,6 +401,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 					 " (-2118M -2126M 46M) ");
 	  addOuterSurf("Shaft",Out);  
 	}
+
       SI += 10;
     }
   
