@@ -322,7 +322,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // steel : inner shroud above/below
   // upper cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex," -1027 -46 36 2017" );
+    (SMap,wheelIndex," -1027 -46 36 17" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // lower cell
   Out=ModelSupport::getComposite
@@ -352,7 +352,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // upper cell - inner steel - outer side layer
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
-				 " 7 -17 46 -2116 2007M" );
+				 " 7 -17 36 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - inner steel - top layer
   Out=ModelSupport::getComposite(SMap,wheelIndex,
@@ -363,7 +363,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // upper cell - inner steel - inner void
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
-				 " -7 46 -2136 2007M" );
+				 " -7 36 -2136 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // upper cell - void around inner steel - horizontal part
