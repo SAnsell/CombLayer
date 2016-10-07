@@ -298,10 +298,9 @@ BilbaoWheel::makeShaftSurfaces()
   H -= radius[0]-innerRadius;
   ModelSupport::buildPlane(SMap,wheelIndex+2136,Origin+Z*H,Z);
 
-
   double R = radius[0]+voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
-  
+
   return;
 }
 
@@ -362,7 +361,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - inner steel - top layer
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
+				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
 				 " -7 2136 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
@@ -393,6 +392,9 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
       else if (i==2)
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 5N -2006N "); // layer with holes
+      else if (i==nShaftLayers-1)
+	Out=ModelSupport::getComposite
+	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2116N -2006N ");
       else
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
