@@ -361,21 +361,21 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // upper cell - inner steel - inner void
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+2*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
 				 " -7 36 -2136 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+1*10,
-				 " 36 -2136 -2007M  " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+10,
+				 " 6 -2136 -2007M  " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // upper cell - void around inner steel - horizontal part
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
 				 " -17 2116 -2126 2007M " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // upper cell - void around inner steel - vertical part
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 17 46 -2126 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   
   // shaft
@@ -386,7 +386,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 2136 -2006M ");
       else if (i==2)
 	Out=ModelSupport::getComposite
-	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 36N -2006N ");
+	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 6N -2006N ");
       else
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
@@ -667,20 +667,30 @@ BilbaoWheel::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -517 35 -36");
   divideRadial(System, Out, heMat);
 
-  // Void above/below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 15 -16 (-5 : 6 2007)" );
+  // Void above W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
+				 " -7M 6 -16 2007N" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  // Void below W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 15 -5 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  // Steel above/below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 25 -26 (-15 : 16 2007)" );
+  // Steel above W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
+				 " -7M 16 -26 2007N " );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
+  // Steel below W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 25 -15 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 
-  // Coolant
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-				 " -7M 35 -36 (-25 : 26 2007)" );	// He above/below W
+  // Coolant above steel
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
+				 " -7M 26 -36 2007N " );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
+  // Coolant below steel
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI, " -7M 35 -25  " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
