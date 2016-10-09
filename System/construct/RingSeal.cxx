@@ -82,7 +82,7 @@ RingSeal::RingSeal(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   ringIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ringIndex+1)
+  cellIndex(ringIndex+1),setFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -94,7 +94,9 @@ RingSeal::RingSeal(const RingSeal& A) :
   attachSystem::CellMap(A),
   ringIndex(A.ringIndex),cellIndex(A.cellIndex),
   NSection(A.NSection),NTrack(A.NTrack),radius(A.radius),
-  deltaRad(A.deltaRad),thick(A.thick),mat(A.mat)
+  deltaRad(A.deltaRad),thick(A.thick),mat(A.mat),
+  setFlag(A.setFlag),innerStruct(A.innerStruct),
+  outerStruct(A.outerStruct)
   /*!
     Copy constructor
     \param A :: RingSeal to copy
@@ -121,11 +123,12 @@ RingSeal::operator=(const RingSeal& A)
       deltaRad=A.deltaRad;
       thick=A.thick;
       mat=A.mat;
+      setFlag=A.setFlag;
+      innerStruct=A.innerStruct;
+      outerStruct=A.outerStruct;
     }
   return *this;
 }
-
-
 
 RingSeal::~RingSeal() 
   /*!
@@ -149,9 +152,10 @@ RingSeal::populate(const FuncDataBase& Control)
   radius=Control.EvalVar<double>(keyName+"Radius");
   thick=Control.EvalVar<double>(keyName+"Thick");
   deltaRad=Control.EvalDefVar<double>(keyName+"DeltaRad",thick);
-    
+  deltaAngle=Control.EvalDefVar<double>(keyName+"DeltaAngle",0.0);
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
+  
   return;
 }
 
@@ -181,20 +185,32 @@ RingSeal::createSurfaces()
 {
   ELog::RegMethod RegA("RingSeal","createSurfaces");
   
-  ModelSupport::buildPlane(SMap,ringIndex+1,Origin-Y*thick,Y);
-  ModelSupport::buildPlane(SMap,ringIndex+2,Origin+Y*thick,Y);
+  ModelSupport::buildPlane(SMap,ringIndex+1,Origin-Y*(thick/2.0),Y);
+  ModelSupport::buildPlane(SMap,ringIndex+2,Origin+Y*(thick/2.0),Y);
+  
+  if (!(setFlag & 1))
+    {
+      const Geometry::Cylinder* CPtr=
+	ModelSupport::buildCylinder(SMap,ringIndex+7,Origin,Y,radius);
+      innerStruct.procSurface(CPtr);
+    }
+  if (!(setFlag & 2))
+    {
+      const Geometry::Cylinder* CPtr=
+	ModelSupport::buildCylinder(SMap,ringIndex+17,Origin,Y,radius+deltaRad);
+      outerStruct.procSurface(CPtr);
+      outerStruct.makeComplement();
+    }
     
-  ModelSupport::buildCylinder(SMap,ringIndex+7,Origin,Y,radius-deltaRad);
-  ModelSupport::buildCylinder(SMap,ringIndex+17,Origin,Y,radius+deltaRad);
   if (NSection>1)
     {
       const double angleR=360.0/static_cast<double>(NSection);
-      const Geometry::Quaternion QHalfSeg=
-        Geometry::Quaternion::calcQRotDeg(angleR/2.0,Y);
+      const Geometry::Quaternion QStartSeg=
+        Geometry::Quaternion::calcQRotDeg(deltaAngle+angleR/2.0,Y);
       const Geometry::Quaternion QSeg=
         Geometry::Quaternion::calcQRotDeg(angleR,Y);
       Geometry::Vec3D DPAxis(X);
-      QHalfSeg.rotate(DPAxis);
+      QStartSeg.rotate(DPAxis);
       int DI(ringIndex);
       for(size_t i=0;i<NSection;i++)
         {
@@ -218,7 +234,9 @@ RingSeal::createObjects(Simulation& System)
   
   std::string Out,SealStr;
 
-  SealStr=ModelSupport::getComposite(SMap,ringIndex," 1 -2 7 -17");
+  SealStr=ModelSupport::getComposite(SMap,ringIndex," 1 -2 ");
+  SealStr+=innerStruct.display()+outerStruct.display();
+
   if (NSection>1)
     {
       // start from segment:1 and do seg:0 at end 
@@ -253,6 +271,8 @@ RingSeal::generateInsert(Simulation& System)
   */
 {
   ELog::RegMethod RegA("RingSeal","generateInsert");
+
+  if (standardInsert) return;
   
   const size_t maxN(std::max<size_t>(NTrack,12));
   const double angleR=360.0/static_cast<double>(maxN);
@@ -276,9 +296,7 @@ RingSeal::generateInsert(Simulation& System)
     addInsertCell(CN);
 
   return;
-}
-
-  
+}  
 
 void
 RingSeal::createLinks()
@@ -307,6 +325,49 @@ RingSeal::createLinks()
 }
 
 void
+RingSeal::setInner(const HeadRule& HR)
+  /*!
+    Set the inner volume
+    \param HR :: Headrule of inner surfaces
+  */
+{
+  ELog::RegMethod RegA("RingSeal","setInner");
+
+  innerStruct=HR;
+  innerStruct.makeComplement();
+  setFlag ^= 1;
+  return;
+}
+
+void
+RingSeal::setInnerExclude(const HeadRule& HR)
+  /*!
+    Set the inner volume (without inverse)
+    \param HR :: Headrule of inner surfaces
+  */
+{
+  ELog::RegMethod RegA("RingSeal","setInnerExclude");
+
+  innerStruct=HR;
+  setFlag ^= 1;
+  return;
+}
+
+void
+RingSeal::setOuter(const HeadRule& HR)
+  /*!
+    Set the outer volume
+    \param HR :: Headrule of outer surfaces
+  */
+{
+  ELog::RegMethod RegA("RingSeal","setInner");
+  
+  outerStruct=HR;
+  setFlag ^= 2;
+  return;
+}
+  
+void
 RingSeal::createAll(Simulation& System,
                        const attachSystem::FixedComp& beamFC,
                        const long int FIndex)
@@ -322,10 +383,9 @@ RingSeal::createAll(Simulation& System,
   System.populateCells();
   populate(System.getDataBase());
   createUnitVector(beamFC,FIndex);
-  generateInsert(System);       // Done here so that cells not invalid
+  generateInsert(System);           // Done here so that cells not invalid
   createSurfaces();    
-  createObjects(System);
-  
+  createObjects(System);  
   createLinks();
   insertObjects(System);   
 

@@ -477,7 +477,8 @@ buildFullSimulation(Simulation* SimPtr,
     Carry out the construction of the geometry
     and wieght/tallies
     \param SimPtr :: Simulation point
-    \param IParam
+    \param IParam :: input pararmeter
+    \param OName :: output file name
    */
   
 {

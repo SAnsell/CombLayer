@@ -406,8 +406,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkZangle",0.0);
   Control.addVariable("BulkNLayer",3);
 
-  Control.Parse("BeRefRadius+BeRefWallThick+0.2");
-  Control.addVariable("BulkRadius1");
+  Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
   /*!
     \todo : This is ugly conterintuative
     and going to break if anyone make a change

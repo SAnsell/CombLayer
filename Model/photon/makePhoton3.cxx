@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/makePhoton.cxx
+ * File:   photon/makePhoton3.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
+#include "stringCombine.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -63,29 +64,28 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "LayerComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "insertPlate.h"
+#include "insertSphere.h"
 #include "World.h"
 #include "AttachSupport.h"
-#include "CylContainer.h"
-#include "CylLayer.h"
-#include "TubeMod.h"
-#include "B4CCollimator.h"
+#include "plateInfo.h"
+#include "PlateMod.h"
 #include "EQDetector.h"
-#include "makePhoton.h"
+#include "ModContainer.h"
+#include "VacuumVessel.h"
 
-#include "Debug.h"
+#include "makePhoton3.h"
 
 namespace photonSystem
 {
 
-makePhoton::makePhoton() :
-  CatcherObj(new CylLayer("Catcher")),
-  OuterObj(new CylContainer("Outer")),
-  PrimObj(new CylLayer("PrimMod")),
-  CarbonObj(new CylLayer("Carbon")),
-  ModObj(new TubeMod("D2OMod")),
-  B4CObj(new B4CCollimator("B4CCol")),
-  ND2(new EQDetector("ND2"))
+makePhoton3::makePhoton3() :
+  Chamber(new photonSystem::VacuumVessel("Chamber")),
+  ModContObj(new photonSystem::ModContainer("MetalCont"))
+
   
   /*!
     Constructor
@@ -94,84 +94,40 @@ makePhoton::makePhoton() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(CatcherObj);
-  OR.addObject(OuterObj);
-  OR.addObject(PrimObj);
-  OR.addObject(CarbonObj);
-  OR.addObject(ModObj);
-  OR.addObject(B4CObj);
-  OR.addObject(ND2);
+  OR.addObject(Chamber);
+  OR.addObject(ModContObj);
 
 }
 
-makePhoton::makePhoton(const makePhoton& A) : 
-  OuterObj(new CylContainer(*A.OuterObj)),
-  PrimObj(new CylLayer(*A.PrimObj)),
-  CarbonObj(new CylLayer(*A.CarbonObj))
-  /*!
-    Copy constructor
-    \param A :: makePhoton to copy
-  */
-{}
-
-makePhoton&
-makePhoton::operator=(const makePhoton& A)
-  /*!
-    Assignment operator
-    \param A :: makePhoton to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      *OuterObj = *A.OuterObj;
-      *PrimObj = *A.PrimObj;
-    }
-  return *this;
-}
 
 
-makePhoton::~makePhoton()
+makePhoton3::~makePhoton3()
   /*!
     Destructor
    */
 {}
 
-
 void 
-makePhoton::build(Simulation* SimPtr,
-		  const mainSystem::inputParam& IParam)
-/*!
+makePhoton3::build(Simulation* SimPtr,
+		   const mainSystem::inputParam& IParam)
+  /*!
     Carry out the full build
     \param SimPtr :: Simulation system
     \param IParam :: Input parameters
    */
 {
   // For output stream
-  ELog::RegMethod RControl("makePhoton","build");
+  ELog::RegMethod RControl("makePhoton3","build");
 
   int voidCell(74123);
 
+  Chamber->addInsertCell(voidCell);
+  Chamber->createAll(*SimPtr,World::masterOrigin(),0);
   
-  OuterObj->addInsertCell(voidCell);
-  OuterObj->createAll(*SimPtr,World::masterOrigin());
-  return;
-  CatcherObj->addInsertCell(voidCell);
-  CatcherObj->createAll(*SimPtr,*OuterObj,-1);
-  /*
-  PrimObj->createAll(*SimPtr,*OuterObj,-1);
-  attachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*PrimObj);
+  ModContObj->addInsertCell(Chamber->getCell("Void",0));
+  ModContObj->createAll(*SimPtr,*Chamber,0);
 
-  ModObj->addInsertCell(voidCell);
-  ModObj->createAll(*SimPtr,*PrimObj,2);
 
-  B4CObj->addInsertCell(voidCell);
-  B4CObj->createAll(*SimPtr,*ModObj,2);
-  */
-  ND2->addInsertCell(voidCell);
-  ND2->createAll(*SimPtr,*CatcherObj,0);
-
-  //  atitachSystem::addToInsertLineCtrl(*SimPtr,*OuterObj,*ModObj);
   return;
 }
 

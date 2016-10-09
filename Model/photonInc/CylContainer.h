@@ -38,18 +38,13 @@ namespace photonSystem
 class CylContainer :
     public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
   const int cylIndex;
   int cellIndex;
 
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy rotation angle
-  double zAngle;                  ///< z rotation angle
 
   std::vector<double> radius;         ///< cylinder radii
   std::vector<double> height;         ///< Full heights
