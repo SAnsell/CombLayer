@@ -67,6 +67,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "BoundOuter.h"
 #include "insertPlate.h"
 #include "insertSphere.h"
 #include "World.h"
@@ -76,6 +77,8 @@
 #include "EQDetector.h"
 #include "ModContainer.h"
 #include "VacuumVessel.h"
+#include "CylLayer.h"
+#include "He3Tubes.h"
 
 #include "makePhoton3.h"
 
@@ -84,8 +87,11 @@ namespace photonSystem
 
 makePhoton3::makePhoton3() :
   Chamber(new photonSystem::VacuumVessel("Chamber")),
-  ModContObj(new photonSystem::ModContainer("MetalCont"))
-
+  ModContObj(new photonSystem::ModContainer("MetalCont")),
+  ModObj(new photonSystem::CylLayer("PrimMod")),
+  leftTubes(new photonSystem::He3Tubes("LeftTubes")),
+  rightTubes(new photonSystem::He3Tubes("RightTubes"))
+  
   
   /*!
     Constructor
@@ -96,6 +102,9 @@ makePhoton3::makePhoton3() :
 
   OR.addObject(Chamber);
   OR.addObject(ModContObj);
+  OR.addObject(ModObj);
+  OR.addObject(leftTubes);
+  OR.addObject(rightTubes);
 
 }
 
@@ -127,6 +136,12 @@ makePhoton3::build(Simulation* SimPtr,
   ModContObj->addInsertCell(Chamber->getCell("Void",0));
   ModContObj->createAll(*SimPtr,*Chamber,0);
 
+  ModObj->addInsertCell(ModContObj->getCell("Void"));
+  ModObj->setOuter(ModContObj->getSignedFullRule(9));
+  ModObj->createAll(*SimPtr,*ModContObj,-1);
+  
+  leftTubes->addInsertCell(voidCell);
+  leftTubes->createAll(*SimPtr,World::masterOrigin(),0);
 
   return;
 }

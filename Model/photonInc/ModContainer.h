@@ -57,7 +57,10 @@ class ModContainer : public attachSystem::ContainedComp,
   int mat;                     ///< Outer material
   double temp;                 ///< temperature
 
+  /// Front [flat] flange
   std::shared_ptr<constructSystem::RingFlange> FrontFlange;
+  /// Back [with hole] flange
+  std::shared_ptr<constructSystem::RingFlange> BackFlange;
 
   
   void populate(const FuncDataBase&);

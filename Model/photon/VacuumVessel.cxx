@@ -81,14 +81,17 @@ VacuumVessel::VacuumVessel(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
-  cellIndex(vacIndex+1)
+  cellIndex(vacIndex+1),
+  CentPort(new constructSystem::RingFlange(keyName+"CentPort"))
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {
-  //  ModelSupport::objectRegister& OR=
-  //    ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(CentPort);
 }
 
 VacuumVessel::VacuumVessel(const VacuumVessel& A) : 
@@ -97,7 +100,7 @@ VacuumVessel::VacuumVessel(const VacuumVessel& A) :
   vacIndex(A.vacIndex),cellIndex(A.cellIndex),length(A.length),
   radius(A.radius),thick(A.thick),backThick(A.backThick),
   doorStep(A.doorStep),doorThick(A.doorThick),voidMat(A.voidMat),
-  mat(A.mat)
+  mat(A.mat),CentPort(A.CentPort)
   /*!
     Copy constructor
     \param A :: VacuumVessel to copy
@@ -228,7 +231,7 @@ VacuumVessel::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,vacIndex," 2 -8 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
-  addCell("Void",cellIndex-1);
+  addCell("FrontVoid",cellIndex-1);
 
 
   // metal layers
@@ -261,8 +264,8 @@ VacuumVessel::createLinks()
   FixedComp::setConnect(0,Origin-Y*(length/2.0+backThick),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+11));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0+doorThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+8));
+  FixedComp::setConnect(1,Origin+Y*(length/2.0+doorStep+doorThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+18));
   FixedComp::setBridgeSurf(1,SMap.realSurf(vacIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(radius+thick),-X);
@@ -279,7 +282,24 @@ VacuumVessel::createLinks()
 
   return;
 }
-  
+
+void
+VacuumVessel::buildPorts(Simulation& System)
+  /*!
+    Build the external Ports/flanges
+    \param System :: Simulation for building
+   */
+{
+  ELog::RegMethod RegA("VacuumVessel","buildPorts");
+
+  CentPort->addInsertCell(getInsertCells());   // main void
+  CentPort->addInsertCell(getCells("Door"));
+  CentPort->addInsertCell(getCells("FrontVoid"));
+  CentPort->createAll(System,*this,2);
+
+  return;
+}
+
 void
 VacuumVessel::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
@@ -298,7 +318,9 @@ VacuumVessel::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
+  buildPorts(System);
   insertObjects(System);       
+
 
 
   return;

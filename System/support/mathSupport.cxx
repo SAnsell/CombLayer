@@ -288,7 +288,7 @@ normalDist(const double x)
 }
 
 template<typename T>
-double
+T
 norm(const std::vector<T>& Vec)
 /*!
   Function to calculate the mean of a vector.
@@ -636,6 +636,65 @@ mathFunc::crossSort(std::vector<T>& pVec,std::vector<U>& Base)
   return;
 }
 
+template<typename T>
+std::vector<T>
+mathFunc::filter(const std::vector<T>& YVec,const size_t N)
+  /*!
+    Filter the data with a centre average filter
+    \param YVec :: Vector of points
+    \param N :: number of points
+  */
+{
+
+  const size_t NHalf(N/2);
+  std::vector<T> Out(YVec.size());
+  T Sum(0);
+
+  T Cnt(0);
+  for(size_t i=1;i<N/2 && i<=YVec.size();i++)
+    {
+      Sum+=YVec[i-1];
+      Cnt++;
+    }
+
+  for(size_t i=0;i<YVec.size();i++)
+    {
+      if (i+NHalf<YVec.size())
+	{
+	  Cnt++;
+	  Sum+=YVec[i+NHalf];
+	}
+      if (i>NHalf)
+	{
+	  Cnt--;
+	  Sum-=YVec[i-NHalf];
+	}
+      Out[i]=Sum/Cnt;
+    }
+  return Out;
+}
+  
+template<typename T>
+T
+mean(const std::vector<T>& Vec)
+/*!
+  Function to calculate the mean of a vector.
+  \param Vec :: vector to use
+  \returns \f$ \sqrt{V.V} \f$
+*/
+{
+
+  T Sum(0);
+  T Cnt(0);
+  if (Vec.empty()) return Sum;
+
+  for(const T& A : Vec)
+    {
+      Sum+= A;
+      Cnt++;
+    }
+  return Sum/Cnt;
+}
 
 template<typename T>
 void 
@@ -745,6 +804,7 @@ template void indexSort(const std::vector<int>&,std::vector<size_t>&);
 //                        std::vector<size_t>&);
 
 template double norm(const std::vector<double>&);
+template double mean(const std::vector<double>&);
 
 //template void mathFunc::crossSort(std::vector<int>&,
 //				  std::vector<RMCbox::Atom*>&);

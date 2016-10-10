@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "TubeMod.h"
@@ -73,7 +74,7 @@ namespace photonSystem
 {
       
 TubeMod::TubeMod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
   cellIndex(modIndex+1)
   /*!
@@ -83,10 +84,9 @@ TubeMod::TubeMod(const std::string& Key) :
 {}
 
 TubeMod::TubeMod(const TubeMod& A) :
-   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),outerRadius(A.outerRadius),outerHeight(A.outerHeight),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  modIndex(A.modIndex),cellIndex(A.cellIndex),
+  outerRadius(A.outerRadius),outerHeight(A.outerHeight),
   outerMat(A.outerMat),Tubes(A.Tubes)
   /*!
     Copy constructor
@@ -105,13 +105,8 @@ TubeMod::operator=(const TubeMod& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       outerRadius=A.outerRadius;
       outerHeight=A.outerHeight;
       outerMat=A.outerMat;
@@ -145,12 +140,7 @@ TubeMod::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("TubeMod","populate");
 
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
@@ -183,9 +173,8 @@ TubeMod::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TubeMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  applyOffset();
+    
   return;
 }
 

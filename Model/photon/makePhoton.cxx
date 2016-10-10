@@ -64,6 +64,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
+#include "BoundOuter.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "CylContainer.h"

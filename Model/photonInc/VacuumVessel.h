@@ -63,6 +63,9 @@ class VacuumVessel : public attachSystem::ContainedComp,
   int voidMat;                 ///< inner material
   int mat;                     ///< Outer material
 
+  /// central port
+  std::shared_ptr<constructSystem::RingFlange> CentPort;
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -70,7 +73,7 @@ class VacuumVessel : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void buildPorts(Simulation&);
   
  public:
 

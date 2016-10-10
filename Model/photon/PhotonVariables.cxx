@@ -97,6 +97,27 @@ PhotonVariables(FuncDataBase& Control)
 		      "1.3202298449e+05 1.9013627678e+04 ");
 
   // PHOTONMOD3:
+  Control.addVariable("LeftTubesPreXYAngle",10.0);
+  Control.addVariable("LeftTubesYStep",600.0);
+  Control.addVariable("LeftTubesNTubes",8);
+  Control.addVariable("LeftTubesGap",0.2);
+  Control.addVariable("LeftTubesLength",60.0);
+  Control.addVariable("LeftTubesRadius",2.5);
+  Control.addVariable("LeftTubesWallThick",0.5);
+  Control.addVariable("LeftTubesWallMat","Stainless304");
+  Control.addVariable("LeftTubesMat","Helium");
+
+  Control.addVariable("RightTubesPreXYAngle",10.0);
+  Control.addVariable("RightTubesYStep",600.0);
+  Control.addVariable("RightTubesNTubes",8);
+  Control.addVariable("RightTubesGap",0.2);
+  Control.addVariable("RightTubesLength",60.0);
+  Control.addVariable("RightTubesRadius",2.5);
+  Control.addVariable("RightTubesWallThick",0.5);
+  Control.addVariable("RightTubesWallMat","Stainless304");
+  Control.addVariable("RightTubesMat","Helium");
+  
+
   Control.addVariable("ChamberLength",300.0);
   Control.addVariable("ChamberRadius",150.0);
   Control.addVariable("ChamberThick",5.0);
@@ -105,29 +126,64 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("ChamberDoorStep",8.0);
   Control.addVariable("ChamberMat","Stainless304");
   Control.addVariable("ChamberVoidMat","Void");
-  
-  Control.addVariable("MetalContLength",20.0);
-  Control.addVariable("MetalContRadius",5.0);
-  Control.addVariable("MetalContThick",1.0);
+
+
+  Control.addVariable("ChamberCentPortNSection",1);
+  Control.addVariable("ChamberCentPortNTrack",12);
+  Control.addVariable("ChamberCentPortYStep",-1.0);
+  Control.addVariable("ChamberCentPortRadius",10.0);
+  Control.addVariable("ChamberCentPortThick",8.0);
+  Control.addVariable("ChamberCentPortDeltaRad",2.0);
+  Control.addVariable("ChamberCentPortMat","Stainless304");
+  Control.addVariable("ChamberCentPortNBolts",5);
+  Control.addVariable("ChamberCentPortBoltRadius",0.5);
+  Control.addVariable("ChamberCentPortBoltMat","Copper");
+
+  Control.addVariable("ChamberCentPortWindowFlag",1);
+
+  Control.addVariable("ChamberCentPortWindowThick",0.3);
+  Control.addVariable("ChamberCentPortWindowStep",3.0);
+  Control.addVariable("ChamberCentPortWindowMat","Aluminium");
+
+
+
+  Control.addVariable("MetalContLength",9.0);
+  Control.addVariable("MetalContRadius",3.0);
+  Control.addVariable("MetalContThick",0.25);
   Control.addVariable("MetalContMat","Aluminium");
 
+  Control.addVariable("MetalContFFlangeYStep",-0.6);
   Control.addVariable("MetalContFFlangeNSection",1);
   Control.addVariable("MetalContFFlangeNTrack",12);
-  Control.addParse<double>("MetalContFFlangeRadius",
-			   "MetalContRadius+MetalContThick");
-  Control.addVariable("MetalContFFlangeThick",1.0);
-  Control.addVariable("MetalContFFlangeDeltaRad",2.0);
+  Control.addParse<double>("MetalContFFlangeRadius","MetalContRadius");
+  Control.addVariable("MetalContFFlangeThick",1.2);
+  Control.addVariable("MetalContFFlangeDeltaRad",1.8);
   Control.addVariable("MetalContFFlangeMat","Stainless304");
-  Control.addVariable("MetalContFFlangeNBolts",5);
-  Control.addVariable("MetalContFFlangeBoltRadius",0.5);
+  Control.addVariable("MetalContFFlangeNBolts",6);
+  Control.addVariable("MetalContFFlangeBoltRadius",0.6);
   Control.addVariable("MetalContFFlangeBoltMat","Copper");
 
-  Control.addVariable("MetalContFFlangeWindowFlag",1);
+  Control.addVariable("MetalContFFlangeWindowFlag",-1);
+  Control.addVariable("MetalContFFlangeWindowStep",0.3);
   Control.addVariable("MetalContFFlangeWindowMat","Aluminium");
-  Control.addVariable("MetalContFFlangeWindowThick",0.3);
+  Control.addVariable("MetalContFFlangeWindowThick",0.6);  
 
-  
-  
+  Control.addVariable("MetalContBFlangeYStep",-0.6);
+  Control.addVariable("MetalContBFlangeNSection",1);
+  Control.addVariable("MetalContBFlangeNTrack",12);
+  Control.addParse<double>("MetalContBFlangeRadius","MetalContRadius");
+  Control.addVariable("MetalContBFlangeThick",1.2);
+  Control.addVariable("MetalContBFlangeDeltaRad",1.8);
+  Control.addVariable("MetalContBFlangeMat","Stainless304");
+  Control.addVariable("MetalContBFlangeNBolts",6);
+  Control.addVariable("MetalContBFlangeBoltRadius",0.6);
+  Control.addVariable("MetalContBFlangeBoltMat","Copper");
+
+  Control.addVariable("MetalContBFlangeWindowFlag",-1);
+  Control.addVariable("MetalContBFlangeWindowStep",0.3);
+  Control.addVariable("MetalContBFlangeWindowMat","Aluminium");
+  Control.addVariable("MetalContBFlangeWindowThick",0.6);  
+
   
   // PHOTONMOD2:
  

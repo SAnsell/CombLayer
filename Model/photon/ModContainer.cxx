@@ -78,11 +78,12 @@ namespace photonSystem
 {
       
 ModContainer::ModContainer(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12),
   attachSystem::CellMap(),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
   cellIndex(modIndex+1),
-  FrontFlange(new constructSystem::RingFlange(keyName+"FFlange"))
+  FrontFlange(new constructSystem::RingFlange(keyName+"FFlange")),
+  BackFlange(new constructSystem::RingFlange(keyName+"BFlange"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -92,6 +93,7 @@ ModContainer::ModContainer(const std::string& Key) :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(FrontFlange);
+  OR.addObject(BackFlange);
 
 }
 
@@ -256,6 +258,9 @@ ModContainer::createLinks()
   FixedComp::setConnect(5,Origin+Z*(radius+thick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(modIndex+17));
 
+  FixedComp::setConnect(8,Origin-X*radius,X);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+7));
+
   return;
 }
 
@@ -273,6 +278,13 @@ ModContainer::buildFlanges(Simulation& System)
   FrontFlange->addInsertCell(getInsertCells());
   FrontFlange->setInnerExclude(getSignedFullRule(3));
   FrontFlange->createAll(System,*this,2);
+
+  
+  BackFlange->addInsertCell(getCells("Skin"));
+  BackFlange->addInsertCell(getCells("Void"));
+  BackFlange->addInsertCell(getInsertCells());
+  BackFlange->setInnerExclude(getSignedFullRule(3));
+  BackFlange->createAll(System,*this,1);
 
   return;
 }

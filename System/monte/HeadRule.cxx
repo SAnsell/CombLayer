@@ -1735,6 +1735,28 @@ HeadRule::procRule(const Rule* RPtr)
 }
 
 int
+HeadRule::procSurfNum(const int SN)
+  /*!
+    Processes a surface number
+    \param SN :: Signed surface number
+    \returns 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","procSurfNum");
+
+  if (!SN) return 0;
+
+  delete HeadNode;
+
+  // Now replace all free planes/Surfaces with appropiate Rxxx
+  SurfPoint* SurX=new SurfPoint();
+  SurX->setKeyN(SN);
+  HeadNode=SurX;
+
+  return 1; 
+}
+
+int
 HeadRule::procString(const std::string& Line) 
   /*!
     Processes the cell string. This is an internal function

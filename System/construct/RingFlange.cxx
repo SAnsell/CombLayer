@@ -239,7 +239,7 @@ RingFlange::addWindow(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,Out+radSurf));
       addCell("window",cellIndex-1);
       
-      if (windowFlag>1)
+      if (windowFlag>0)
 	{
 	  Out=ModelSupport::getComposite(SMap,windowIndex,ringIndex," 2 -2M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+radSurf));
@@ -275,7 +275,7 @@ RingFlange::addBolts(Simulation& System)
       
       const double angleBR=360.0/static_cast<double>(nBolts);
       Geometry::Vec3D BAxis(Z*boltCentDist);
-
+      ELog::EM<<keyName<<" == "<<boltCentDist<<ELog::endDiag;
       const Geometry::Quaternion QStart=
 	Geometry::Quaternion::calcQRotDeg(rotAngleOffset,Y);
 
