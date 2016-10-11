@@ -83,6 +83,10 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionHeight;///< height of the 2nd step connection thickness
   double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
+
+  double shaftBaseDepth;            ///< shaft depth (below origin)
+  double shaftBaseSupportHeight;    ///< base support height
+  double shaftBaseSupportRadius;    ///< base support radius
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material

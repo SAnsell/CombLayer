@@ -113,6 +113,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionHeight(A.shaft2StepConnectionHeight),
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
+  shaftBaseDepth(A.shaftBaseDepth),
+  shaftBaseSupportHeight(A.shaftBaseSupportHeight),
+  shaftBaseSupportRadius(A.shaftBaseSupportRadius),
   wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
@@ -166,6 +169,9 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionHeight=A.shaft2StepConnectionHeight;
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
+      shaftBaseDepth=A.shaftBaseDepth;
+      shaftBaseSupportHeight=A.shaftBaseSupportHeight;
+      shaftBaseSupportRadius=A.shaftBaseSupportRadius;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -266,6 +272,14 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
 
+  shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
+  shaftBaseSupportHeight=Control.EvalVar<double>(keyName+"ShaftBaseSupportHeight");
+  shaftBaseSupportRadius=Control.EvalVar<double>(keyName+"ShaftBaseSupportRadius");
+  if (shaftBaseSupportRadius>radius[0]+voidThick)
+    throw ColErr::RangeError<double>(shaftBaseSupportRadius, 0, radius[0]+voidThick,
+				     "ShaftBaseSupportRadius must not exceed Radius1 + VoidThick");
+
+  
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
@@ -301,11 +315,10 @@ BilbaoWheel::makeShaftSurfaces()
 
   // 2nd void step
   H += shaft2StepHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
+  //  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2126,Origin+Z*H,Z);
 
   double H1 = H;
@@ -332,6 +345,17 @@ BilbaoWheel::makeShaftSurfaces()
 
   R += voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2137,Origin,Z,R);
+
+  // shaft base
+  H = 0.0;
+  H += shaftBaseDepth;
+  ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
+  
+  H -= shaftBaseSupportHeight;
+  ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
+
+  R = shaftBaseSupportRadius;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
   
   return;
 }
@@ -433,6 +457,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " -2127 2007M 2156 -2166 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
+  // shaft base
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2207 2205 -2105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2215 -2105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+  // shaft base support
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2205 -2215 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   
   
   // shaft layers
@@ -457,11 +490,11 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
       if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-					 " ((-2007M -2006) : "
-					 " (-2107 -2106) : "
-					 " (-2137 -2166) : "
-					 " (-2118 -2126)) 2105 ");
-	  addOuterSurf("Shaft",Out);  
+					 " (((-2007M -2006) : " // top
+                                         "   (-2107  -2106) : " // 1st step
+                                         "   (-2137 -2166)) 2105) : " // connection
+					 " (-2118 -2126 2205) "); // 2nd step and base
+	  addOuterSurf("Shaft",Out);
 	}
 
       SI += 10;
