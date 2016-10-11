@@ -109,7 +109,11 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),
   nShaftLayers(A.nShaftLayers),shaftRadius(A.shaftRadius),
-  shaftMat(A.shaftMat),wMat(A.wMat),heMat(A.heMat),
+  shaftMat(A.shaftMat),shaft2StepHeight(A.shaft2StepHeight),
+  shaft2StepConnectionHeight(A.shaft2StepConnectionHeight),
+  shaft2StepConnectionDist(A.shaft2StepConnectionDist),
+  shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
+  wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
   /*!
@@ -158,6 +162,10 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       nShaftLayers=A.nShaftLayers;
       shaftRadius=A.shaftRadius;
       shaftMat=A.shaftMat;
+      shaft2StepHeight=A.shaft2StepHeight;
+      shaft2StepConnectionHeight=A.shaft2StepConnectionHeight;
+      shaft2StepConnectionDist=A.shaft2StepConnectionDist;
+      shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -251,6 +259,12 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
 
   shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");
+  shaft2StepHeight=Control.EvalVar<double>(keyName+"Shaft2StepHeight");
+  shaft2StepConnectionHeight=Control.EvalVar<double>(keyName+"Shaft2StepConnectionHeight");
+  shaft2StepConnectionDist=Control.EvalVar<double>(keyName+"Shaft2StepConnectionDist");
+  shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
+  if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
+    throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
 
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
@@ -286,7 +300,7 @@ BilbaoWheel::makeShaftSurfaces()
 			      coolantRadiusIn+voidThick);
 
   // 2nd void step
-  H += 10.0;
+  H += shaft2StepHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
@@ -303,17 +317,17 @@ BilbaoWheel::makeShaftSurfaces()
   double R = radius[0]+voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
 
-  H = H1;
-  H += 10.0;
+  H = H1-voidThick;
+  H += shaft2StepConnectionDist;
   ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
 
-  H += 5;
+  H += shaft2StepConnectionHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
 
   H += voidThick;
   ModelSupport::buildPlane(SMap,wheelIndex+2166,Origin+Z*H,Z);
 
-  R = shaftRadius[nShaftLayers-1]+10;
+  R = shaft2StepConnectionRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2127,Origin,Z,R);
 
   R += voidThick;
