@@ -82,19 +82,19 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 7);
   Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 35);
 
-  Control.addVariable("BilbaoWheelShaftBaseDepth",50.0);
+  Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
 
-  Control.addVariable("BilbaoWheelCatcherTopSteelThick",5.0);
+  Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);
   
   Control.addVariable("BilbaoWheelCatcherHeight",10.0);
-  Control.addVariable("BilbaoWheelCatcherRadius",40.0);
+  Control.addVariable("BilbaoWheelCatcherRadius",42.0);
   Control.addVariable("BilbaoWheelCatcherMiddleHeight",10.0);
-  Control.addVariable("BilbaoWheelCatcherMiddleRadius",30.0);
+  Control.addVariable("BilbaoWheelCatcherMiddleRadius",32.0);
   Control.addVariable("BilbaoWheelCatcherNotchDepth",5.0);
-  Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);
-  Control.addVariable("BilbaoWheelCatcherRingRadius",35.0);
-  Control.addVariable("BilbaoWheelCatcherRingDepth",20.0);
-  Control.addVariable("BilbaoWheelCatcherRingThick",1.0);
+  Control.addVariable("BilbaoWheelCatcherNotchRadius",22.0);
+  Control.addVariable("BilbaoWheelCatcherRingRadius",34.0);
+  Control.addVariable("BilbaoWheelCatcherRingDepth",24.0);
+  Control.addVariable("BilbaoWheelCatcherRingThick",2.0);
 
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
