@@ -85,6 +85,7 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
 
   double shaftBaseDepth;            ///< shaft depth (below origin)
+  double catcherTopSteelThick; ///< thickness of top steel plate
   double catcherHeight;    ///< catcher total height
   double catcherRadius;    ///< catcher rotal radius
   double catcherMiddleHeight;///< catcher mid height

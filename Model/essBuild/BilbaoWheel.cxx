@@ -114,6 +114,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
   shaftBaseDepth(A.shaftBaseDepth),
+  catcherTopSteelThick(A.catcherTopSteelThick),
   catcherHeight(A.catcherHeight),
   catcherRadius(A.catcherRadius),
   catcherMiddleHeight(A.catcherMiddleHeight),
@@ -177,6 +178,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       shaftBaseDepth=A.shaftBaseDepth;
+      catcherTopSteelThick=A.catcherTopSteelThick;
       catcherHeight=A.catcherHeight;
       catcherRadius=A.catcherRadius;
       catcherMiddleHeight=A.catcherMiddleHeight;
@@ -287,6 +289,9 @@ BilbaoWheel::populate(const FuncDataBase& Control)
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
+
+  catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
+  
   catcherHeight=Control.EvalVar<double>(keyName+"CatcherHeight");
   catcherRadius=Control.EvalVar<double>(keyName+"CatcherRadius");
   if (catcherRadius>radius[0]+voidThick)
@@ -344,6 +349,8 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2106,Origin+Z*H,Z);
   ModelSupport::buildCylinder(SMap,wheelIndex+2107,Origin,Z,
 			      coolantRadiusIn+voidThick);
+
+  ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*(H+catcherTopSteelThick),Z);
 
   // 2nd void step
   H += shaft2StepHeight;
@@ -445,20 +452,23 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // upper cell
   Out=ModelSupport::getComposite
     (SMap,wheelIndex, " -1027 -2106 46 2118" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // side
   Out=ModelSupport::getComposite
     (SMap,wheelIndex, " -2107 1027 -2106 246 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // lower cell
-  Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -1027 2105 -45" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 17 2105 -45" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -17 2115 -45" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 17 -2118 2115 -2105 " );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // side
   Out=ModelSupport::getComposite
     (SMap,wheelIndex, " -2107 1027 2105 -245 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // 2nd void step
   // upper cell - inner steel - outer side layer
@@ -509,16 +519,16 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // wheel catcher
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2207 2205 -2105 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2207 2205 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // two cells are needed since there is CatcherRing between them
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2247 2215 -2105 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2247 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2237 2217 2215 -2105 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2237 2217 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2225 -2105 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2225 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // shaft base catcher
@@ -533,7 +543,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2227 2235 -2225 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // ring
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2245 -2105 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2245 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 -2245 2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
@@ -838,7 +848,7 @@ BilbaoWheel::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // Void below W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 15 -5 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // Steel above W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
