@@ -114,10 +114,10 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
   shaftBaseDepth(A.shaftBaseDepth),
-  shaftBaseSupportHeight(A.shaftBaseSupportHeight),
-  shaftBaseSupportRadius(A.shaftBaseSupportRadius),
-  shaftBaseSupportMiddleHeight(A.shaftBaseSupportMiddleHeight),
-  shaftBaseSupportMiddleRadius(A.shaftBaseSupportMiddleRadius),
+  shaftBaseCatcherHeight(A.shaftBaseCatcherHeight),
+  shaftBaseCatcherRadius(A.shaftBaseCatcherRadius),
+  shaftBaseCatcherMiddleHeight(A.shaftBaseCatcherMiddleHeight),
+  shaftBaseCatcherMiddleRadius(A.shaftBaseCatcherMiddleRadius),
   wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
@@ -172,10 +172,10 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       shaftBaseDepth=A.shaftBaseDepth;
-      shaftBaseSupportHeight=A.shaftBaseSupportHeight;
-      shaftBaseSupportRadius=A.shaftBaseSupportRadius;
-      shaftBaseSupportMiddleHeight=A.shaftBaseSupportMiddleHeight;
-      shaftBaseSupportMiddleRadius=A.shaftBaseSupportMiddleRadius;
+      shaftBaseCatcherHeight=A.shaftBaseCatcherHeight;
+      shaftBaseCatcherRadius=A.shaftBaseCatcherRadius;
+      shaftBaseCatcherMiddleHeight=A.shaftBaseCatcherMiddleHeight;
+      shaftBaseCatcherMiddleRadius=A.shaftBaseCatcherMiddleRadius;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -277,14 +277,14 @@ BilbaoWheel::populate(const FuncDataBase& Control)
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
-  shaftBaseSupportHeight=Control.EvalVar<double>(keyName+"ShaftBaseSupportHeight");
-  shaftBaseSupportRadius=Control.EvalVar<double>(keyName+"ShaftBaseSupportRadius");
-  if (shaftBaseSupportRadius>radius[0]+voidThick)
-    throw ColErr::RangeError<double>(shaftBaseSupportRadius, 0, radius[0]+voidThick,
-				     "ShaftBaseSupportRadius must not exceed Radius1 + VoidThick");
+  shaftBaseCatcherHeight=Control.EvalVar<double>(keyName+"ShaftBaseCatcherHeight");
+  shaftBaseCatcherRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherRadius");
+  if (shaftBaseCatcherRadius>radius[0]+voidThick)
+    throw ColErr::RangeError<double>(shaftBaseCatcherRadius, 0, radius[0]+voidThick,
+				     "ShaftBaseCatcherRadius must not exceed Radius1 + VoidThick");
 
-  shaftBaseSupportMiddleHeight=Control.EvalVar<double>(keyName+"ShaftBaseSupportMiddleHeight");
-  shaftBaseSupportMiddleRadius=Control.EvalVar<double>(keyName+"ShaftBaseSupportMiddleRadius");
+  shaftBaseCatcherMiddleHeight=Control.EvalVar<double>(keyName+"ShaftBaseCatcherMiddleHeight");
+  shaftBaseCatcherMiddleRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherMiddleRadius");
 
   
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
@@ -358,15 +358,15 @@ BilbaoWheel::makeShaftSurfaces()
   H += shaftBaseDepth;
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
   
-  H -= shaftBaseSupportHeight;
+  H -= shaftBaseCatcherHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
-  R = shaftBaseSupportRadius;
+  R = shaftBaseCatcherRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
 
   // shadt base - middle part
-  H -= shaftBaseSupportMiddleHeight;
+  H -= shaftBaseCatcherMiddleHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
-  R = shaftBaseSupportMiddleRadius;
+  R = shaftBaseCatcherMiddleRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
   
   return;
