@@ -83,12 +83,12 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 35);
 
   Control.addVariable("BilbaoWheelShaftBaseDepth",50.0);
-  Control.addVariable("BilbaoWheelShaftBaseCatcherHeight",10.0);
-  Control.addVariable("BilbaoWheelShaftBaseCatcherRadius",40.0);
-  Control.addVariable("BilbaoWheelShaftBaseCatcherMiddleHeight",10.0);
-  Control.addVariable("BilbaoWheelShaftBaseCatcherMiddleRadius",30.0);
-  Control.addVariable("BilbaoWheelShaftBaseCatcherNotchDepth",5.0);
-  Control.addVariable("BilbaoWheelShaftBaseCatcherNotchRadius",20.0);
+  Control.addVariable("BilbaoWheelCatcherHeight",10.0);
+  Control.addVariable("BilbaoWheelCatcherRadius",40.0);
+  Control.addVariable("BilbaoWheelCatcherMiddleHeight",10.0);
+  Control.addVariable("BilbaoWheelCatcherMiddleRadius",30.0);
+  Control.addVariable("BilbaoWheelCatcherNotchDepth",5.0);
+  Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);
 
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);

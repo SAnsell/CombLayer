@@ -114,12 +114,12 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
   shaftBaseDepth(A.shaftBaseDepth),
-  shaftBaseCatcherHeight(A.shaftBaseCatcherHeight),
-  shaftBaseCatcherRadius(A.shaftBaseCatcherRadius),
-  shaftBaseCatcherMiddleHeight(A.shaftBaseCatcherMiddleHeight),
-  shaftBaseCatcherMiddleRadius(A.shaftBaseCatcherMiddleRadius),
-  shaftBaseCatcherNotchDepth(A.shaftBaseCatcherNotchDepth),
-  shaftBaseCatcherNotchRadius(A.shaftBaseCatcherNotchRadius),
+  catcherHeight(A.catcherHeight),
+  catcherRadius(A.catcherRadius),
+  catcherMiddleHeight(A.catcherMiddleHeight),
+  catcherMiddleRadius(A.catcherMiddleRadius),
+  catcherNotchDepth(A.catcherNotchDepth),
+  catcherNotchRadius(A.catcherNotchRadius),
   wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
@@ -174,12 +174,12 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       shaftBaseDepth=A.shaftBaseDepth;
-      shaftBaseCatcherHeight=A.shaftBaseCatcherHeight;
-      shaftBaseCatcherRadius=A.shaftBaseCatcherRadius;
-      shaftBaseCatcherMiddleHeight=A.shaftBaseCatcherMiddleHeight;
-      shaftBaseCatcherMiddleRadius=A.shaftBaseCatcherMiddleRadius;
-      shaftBaseCatcherNotchDepth=A.shaftBaseCatcherNotchDepth;
-      shaftBaseCatcherNotchRadius=A.shaftBaseCatcherNotchRadius;
+      catcherHeight=A.catcherHeight;
+      catcherRadius=A.catcherRadius;
+      catcherMiddleHeight=A.catcherMiddleHeight;
+      catcherMiddleRadius=A.catcherMiddleRadius;
+      catcherNotchDepth=A.catcherNotchDepth;
+      catcherNotchRadius=A.catcherNotchRadius;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -281,26 +281,26 @@ BilbaoWheel::populate(const FuncDataBase& Control)
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
-  shaftBaseCatcherHeight=Control.EvalVar<double>(keyName+"ShaftBaseCatcherHeight");
-  shaftBaseCatcherRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherRadius");
-  if (shaftBaseCatcherRadius>radius[0]+voidThick)
-    throw ColErr::RangeError<double>(shaftBaseCatcherRadius, 0, radius[0]+voidThick,
-				     "ShaftBaseCatcherRadius must not exceed Radius1 + VoidThick");
+  catcherHeight=Control.EvalVar<double>(keyName+"CatcherHeight");
+  catcherRadius=Control.EvalVar<double>(keyName+"CatcherRadius");
+  if (catcherRadius>radius[0]+voidThick)
+    throw ColErr::RangeError<double>(catcherRadius, 0, radius[0]+voidThick,
+				     "CatcherRadius must not exceed Radius1 + VoidThick");
 
-  shaftBaseCatcherMiddleHeight=Control.EvalVar<double>(keyName+"ShaftBaseCatcherMiddleHeight");
-  shaftBaseCatcherMiddleRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherMiddleRadius");
-  if (shaftBaseCatcherMiddleRadius>shaftBaseCatcherRadius)
-    throw ColErr::RangeError<double>(shaftBaseCatcherMiddleRadius, 0, shaftBaseCatcherRadius,
-				     "ShaftBaseCatcherMiddleRadius must not exceed ShaftBaseCatcherRadius");
+  catcherMiddleHeight=Control.EvalVar<double>(keyName+"CatcherMiddleHeight");
+  catcherMiddleRadius=Control.EvalVar<double>(keyName+"CatcherMiddleRadius");
+  if (catcherMiddleRadius>catcherRadius)
+    throw ColErr::RangeError<double>(catcherMiddleRadius, 0, catcherRadius,
+				     "CatcherMiddleRadius must not exceed CatcherRadius");
 
-  shaftBaseCatcherNotchDepth=Control.EvalVar<double>(keyName+"ShaftBaseCatcherNotchDepth");
-  if (shaftBaseCatcherNotchDepth>shaftBaseCatcherMiddleHeight)
-    throw ColErr::RangeError<double>(shaftBaseCatcherNotchDepth, 0, shaftBaseCatcherMiddleHeight,
-				     "ShaftBaseCatcherNotchDepth must not exceed ShaftBaseCatcherMiddleHeight");
-  shaftBaseCatcherNotchRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherNotchRadius");
-  if (shaftBaseCatcherNotchRadius>shaftBaseCatcherMiddleRadius)
-    throw ColErr::RangeError<double>(shaftBaseCatcherNotchRadius, 0, shaftBaseCatcherMiddleRadius,
-				     "ShaftBaseCatcherNotchRadius must not exceed ShaftBaseCatcherMiddleRadius");
+  catcherNotchDepth=Control.EvalVar<double>(keyName+"CatcherNotchDepth");
+  if (catcherNotchDepth>catcherMiddleHeight)
+    throw ColErr::RangeError<double>(catcherNotchDepth, 0, catcherMiddleHeight,
+				     "CatcherNotchDepth must not exceed CatcherMiddleHeight");
+  catcherNotchRadius=Control.EvalVar<double>(keyName+"CatcherNotchRadius");
+  if (catcherNotchRadius>catcherMiddleRadius)
+    throw ColErr::RangeError<double>(catcherNotchRadius, 0, catcherMiddleRadius,
+				     "CatcherNotchRadius must not exceed CatcherMiddleRadius");
 
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
@@ -374,20 +374,20 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
   
   // shaft base - catcher
-  H -= shaftBaseCatcherHeight;
+  H -= catcherHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
-  R = shaftBaseCatcherRadius;
+  R = catcherRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
 
-  H -= shaftBaseCatcherMiddleHeight;
+  H -= catcherMiddleHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
-  R = shaftBaseCatcherMiddleRadius;
+  R = catcherMiddleRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
 
   // notch
-  H += shaftBaseCatcherNotchDepth;
+  H += catcherNotchDepth;
   ModelSupport::buildPlane(SMap,wheelIndex+2235,Origin-Z*H,Z);
-  R = shaftBaseCatcherNotchRadius;
+  R = catcherNotchRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
   
   return;

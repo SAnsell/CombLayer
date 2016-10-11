@@ -85,12 +85,12 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
 
   double shaftBaseDepth;            ///< shaft depth (below origin)
-  double shaftBaseCatcherHeight;    ///< base support height
-  double shaftBaseCatcherRadius;    ///< base support radius
-  double shaftBaseCatcherMiddleHeight;///< base support mid height
-  double shaftBaseCatcherMiddleRadius;///< base support mid radius
-  double shaftBaseCatcherNotchDepth; ///< catcher notch depth
-  double shaftBaseCatcherNotchRadius; ///< catcher notch radius
+  double catcherHeight;    ///< catcher total height
+  double catcherRadius;    ///< catcher rotal radius
+  double catcherMiddleHeight;///< catcher mid height
+  double catcherMiddleRadius;///< catchr mid radius
+  double catcherNotchDepth; ///< catcher notch depth
+  double catcherNotchRadius; ///< catcher notch radius
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material
