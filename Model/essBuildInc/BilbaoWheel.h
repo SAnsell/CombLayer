@@ -91,6 +91,9 @@ class BilbaoWheel : public WheelBase
   double catcherMiddleRadius;///< catchr mid radius
   double catcherNotchDepth; ///< catcher notch depth
   double catcherNotchRadius; ///< catcher notch radius
+  double catcherRingRadius; ///< catcher ring radius
+  double catcherRingDepth; ///< catcher ring depth (below origin)
+  double catcherRingThick; ///< catcher ring thickness
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material

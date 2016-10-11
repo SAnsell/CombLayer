@@ -89,6 +89,9 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCatcherMiddleRadius",30.0);
   Control.addVariable("BilbaoWheelCatcherNotchDepth",5.0);
   Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);
+  Control.addVariable("BilbaoWheelCatcherRingRadius",35.0);
+  Control.addVariable("BilbaoWheelCatcherRingDepth",20.0);
+  Control.addVariable("BilbaoWheelCatcherRingThick",1.0);
 
   Control.addVariable("BilbaoWheelXStep",0.0);
   Control.addVariable("BilbaoWheelYStep",112.2);
