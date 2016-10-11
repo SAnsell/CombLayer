@@ -118,6 +118,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftBaseCatcherRadius(A.shaftBaseCatcherRadius),
   shaftBaseCatcherMiddleHeight(A.shaftBaseCatcherMiddleHeight),
   shaftBaseCatcherMiddleRadius(A.shaftBaseCatcherMiddleRadius),
+  shaftBaseCatcherNotchDepth(A.shaftBaseCatcherNotchDepth),
+  shaftBaseCatcherNotchRadius(A.shaftBaseCatcherNotchRadius),
   wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
@@ -176,6 +178,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftBaseCatcherRadius=A.shaftBaseCatcherRadius;
       shaftBaseCatcherMiddleHeight=A.shaftBaseCatcherMiddleHeight;
       shaftBaseCatcherMiddleRadius=A.shaftBaseCatcherMiddleRadius;
+      shaftBaseCatcherNotchDepth=A.shaftBaseCatcherNotchDepth;
+      shaftBaseCatcherNotchRadius=A.shaftBaseCatcherNotchRadius;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -285,8 +289,19 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   shaftBaseCatcherMiddleHeight=Control.EvalVar<double>(keyName+"ShaftBaseCatcherMiddleHeight");
   shaftBaseCatcherMiddleRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherMiddleRadius");
+  if (shaftBaseCatcherMiddleRadius>shaftBaseCatcherRadius)
+    throw ColErr::RangeError<double>(shaftBaseCatcherMiddleRadius, 0, shaftBaseCatcherRadius,
+				     "ShaftBaseCatcherMiddleRadius must not exceed ShaftBaseCatcherRadius");
 
-  
+  shaftBaseCatcherNotchDepth=Control.EvalVar<double>(keyName+"ShaftBaseCatcherNotchDepth");
+  if (shaftBaseCatcherNotchDepth>shaftBaseCatcherMiddleHeight)
+    throw ColErr::RangeError<double>(shaftBaseCatcherNotchDepth, 0, shaftBaseCatcherMiddleHeight,
+				     "ShaftBaseCatcherNotchDepth must not exceed ShaftBaseCatcherMiddleHeight");
+  shaftBaseCatcherNotchRadius=Control.EvalVar<double>(keyName+"ShaftBaseCatcherNotchRadius");
+  if (shaftBaseCatcherNotchRadius>shaftBaseCatcherMiddleRadius)
+    throw ColErr::RangeError<double>(shaftBaseCatcherNotchRadius, 0, shaftBaseCatcherMiddleRadius,
+				     "ShaftBaseCatcherNotchRadius must not exceed ShaftBaseCatcherMiddleRadius");
+
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
@@ -358,16 +373,22 @@ BilbaoWheel::makeShaftSurfaces()
   H += shaftBaseDepth;
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
   
+  // shaft base - catcher
   H -= shaftBaseCatcherHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
   R = shaftBaseCatcherRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
 
-  // shadt base - middle part
   H -= shaftBaseCatcherMiddleHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
   R = shaftBaseCatcherMiddleRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
+
+  // notch
+  H += shaftBaseCatcherNotchDepth;
+  ModelSupport::buildPlane(SMap,wheelIndex+2235,Origin-Z*H,Z);
+  R = shaftBaseCatcherNotchRadius;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
   
   return;
 }
@@ -469,7 +490,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " -2127 2007M 2156 -2166 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  // shaft base
+  // wheel catcher
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2207 2205 -2105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2217 2215 -2105 ");
@@ -477,12 +498,17 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2225 -2105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  // shaft base support
+  // shaft base catcher
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2205 -2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  // shaft base support - middle part
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2215 -2225 ");
-    System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  // shaft base catcher - middle part
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2215 -2235 "); // -2217 2215 -2225
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2227 2235 -2225 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  // notch
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2227 2235 -2225 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   
   
   // shaft layers
