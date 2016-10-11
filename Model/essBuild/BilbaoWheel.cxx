@@ -116,6 +116,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftBaseDepth(A.shaftBaseDepth),
   shaftBaseSupportHeight(A.shaftBaseSupportHeight),
   shaftBaseSupportRadius(A.shaftBaseSupportRadius),
+  shaftBaseSupportMiddleHeight(A.shaftBaseSupportMiddleHeight),
+  shaftBaseSupportMiddleRadius(A.shaftBaseSupportMiddleRadius),
   wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
@@ -172,6 +174,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftBaseDepth=A.shaftBaseDepth;
       shaftBaseSupportHeight=A.shaftBaseSupportHeight;
       shaftBaseSupportRadius=A.shaftBaseSupportRadius;
+      shaftBaseSupportMiddleHeight=A.shaftBaseSupportMiddleHeight;
+      shaftBaseSupportMiddleRadius=A.shaftBaseSupportMiddleRadius;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -279,6 +283,9 @@ BilbaoWheel::populate(const FuncDataBase& Control)
     throw ColErr::RangeError<double>(shaftBaseSupportRadius, 0, radius[0]+voidThick,
 				     "ShaftBaseSupportRadius must not exceed Radius1 + VoidThick");
 
+  shaftBaseSupportMiddleHeight=Control.EvalVar<double>(keyName+"ShaftBaseSupportMiddleHeight");
+  shaftBaseSupportMiddleRadius=Control.EvalVar<double>(keyName+"ShaftBaseSupportMiddleRadius");
+
   
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
@@ -353,9 +360,14 @@ BilbaoWheel::makeShaftSurfaces()
   
   H -= shaftBaseSupportHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
-
   R = shaftBaseSupportRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
+
+  // shadt base - middle part
+  H -= shaftBaseSupportMiddleHeight;
+  ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
+  R = shaftBaseSupportMiddleRadius;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
   
   return;
 }
@@ -460,12 +472,17 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // shaft base
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2207 2205 -2105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2215 -2105 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2217 2215 -2105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2225 -2105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // shaft base support
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2205 -2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  // shaft base support - middle part
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2215 -2225 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   
   
   // shaft layers

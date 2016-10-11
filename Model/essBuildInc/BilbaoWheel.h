@@ -87,6 +87,8 @@ class BilbaoWheel : public WheelBase
   double shaftBaseDepth;            ///< shaft depth (below origin)
   double shaftBaseSupportHeight;    ///< base support height
   double shaftBaseSupportRadius;    ///< base support radius
+  double shaftBaseSupportMiddleHeight;///< base support mid height
+  double shaftBaseSupportMiddleRadius;///< base support mid radius
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material
