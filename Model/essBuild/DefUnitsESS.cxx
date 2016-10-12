@@ -67,13 +67,15 @@ setDefUnits(FuncDataBase& Control,
   defaultConfig A("");
   if (IParam.flag("defaultConfig"))
     {
+      const size_t ICnt=IParam.itemCnt("defaultConfig",0);
       const std::string Key=IParam.getValue<std::string>("defaultConfig");
-      
-      std::vector<std::string> LItems=
-	IParam.getObjectItems("defaultConfig",0);
 
-      const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
-      const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
+      const std::string sndItem=(ICnt>1) ? 
+	IParam.getValue<std::string>("defaultConfig",1) : "";
+      const std::string extraItem=(ICnt>2) ? 
+	IParam.getValue<std::string>("defaultConfig",2) : "";
+      const int filled=(ICnt>3) ? 
+	IParam.getValue<int>("defaultConfig",3) : 0;
 
       if (Key=="Main")
 	setESS(A);
@@ -82,14 +84,13 @@ setDefUnits(FuncDataBase& Control,
       else if (Key=="PortsOnly")
 	setESSPortsOnly(A,sndItem,extraItem);
       else if (Key=="Single")
-	setESSSingle(A,LItems);
+	setESSSingle(A,sndItem,extraItem,filled);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
 	  ELog::EM<<"  Main : Everything that works"<<ELog::endDiag;
 	  ELog::EM<<"  Full : Beamline on every port"<<ELog::endDiag;
-	  ELog::EM<<"  PortsOnly [lower/upper] : Nothing beyond beamport "
-		  <<ELog::endDiag;
+	  ELog::EM<<"  PortsOnly [lower/upper] : Nothing beyond beamport "<<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
@@ -130,7 +131,8 @@ setESSFull(defaultConfig& A)
       {"VOR","G4BLine1"},   // also 17
       {"SHORTDREAM","G4BLine3"},
       {"SHORTODIN","G4BLine5"},
-      {"LOKI","G4BLine7"},
+      {"LOKI","G4BLine14"},
+      {"SMART","G4BLine13"},   // also 17
       {"SHORTDREAM2","G4BLine9"},
       {"DREAM","G4BLine17"},
       {"CSPEC","G4BLine15"},
@@ -138,7 +140,7 @@ setESSFull(defaultConfig& A)
       {"ODIN","G4BLine15"}
     };     
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","VESPA","VOR","SHORTDREAM","SHORTDREAM2","LOKI"};
+    {"NMX","CSPEC","DREAM","VESPA","VOR","SMART","SHORTDREAM","SHORTDREAM2","LOKI"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;
@@ -208,18 +210,21 @@ setESSPortsOnly(defaultConfig& A,const std::string& lvl,
 
 void
 setESSSingle(defaultConfig& A,
-	     std::vector<std::string>& LItems)
+	     const std::string& beamItem,
+	     const std::string& portItem,
+	     int filled)
 
   /*!
     Default configuration for ESS for testing single beamlines
     for building
     \param A :: Paramter for default config
-    \param LItems :: single selection
+    \param beamItem :: Additional value for beamline name
+    \param portItem :: Additional value for port number/item
+    \param active :: Active flag
    */
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
-  
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     {{"BIFROST","G4BLine4"},
@@ -242,7 +247,9 @@ setESSSingle(defaultConfig& A,
      {"VESPA","G3BLine7"},      // E7
      {"VOR","G3BLine10"},       // E11  [CHANGED TO FIT]
      {"SIMPLE","G4BLine17"},
-     {"LOKI","G4BLine17"},      // N7
+     {"LOKI","G4BLine14"},      // N7
+     {"SMART","G3BLine7"},       
+     {"LONGLOKI","G4BLine17"},      // N7
      {"ODIN","G2BLine2"},       // Lower S2
      {"ESTIA","G3BLine2"},      // E2
      {"FREIA","G4BLine15"},     // N5
@@ -250,56 +257,41 @@ setESSSingle(defaultConfig& A,
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "NMX","VESPA","VOR","SHORTDREAM"};
-
-
-  while(!LItems.empty())
+     "NMX","VESPA","VOR","SMART", "SHORTDREAM","LONGLOKI"};
+  
+  std::map<std::string,std::string>::const_iterator mc=
+    beamDef.find(beamItem);
+  if (filled<0)  // deactivation if set
+    filled=0;
+  else if (!filled && beamFilled.find(beamItem)!=beamFilled.end())
+    filled=1;
+    
+  if (mc!=beamDef.end())
     {
-      bool portFlag=0;
-      if (LItems.front()!="Single")
-        {
-          const std::string beamItem=LItems.front();
-          const std::string portItem=(LItems.size()>1) ? LItems[1] : "";
-          
-      
-          std::map<std::string,std::string>::const_iterator mc=
-            beamDef.find(beamItem);
-	
-          portFlag=beamDef.find(portItem)==beamDef.end();
-      
-          const int filled =
-            (beamFilled.find(beamItem)==beamFilled.end()) ? 0 : 1;
-          
-          if (mc!=beamDef.end())
-            {
-              if (!portFlag || portItem.empty())
-                {
-                  A.setMultiOption("beamlines",0,mc->second+" "+beamItem);
-                  A.setVar(mc->second+"Active",1);
-                  if (filled)
-                    A.setVar(mc->second+"Filled",1);
-                }
-              else
-                {
-                  A.setMultiOption("beamlines",0,portItem+" "+beamItem);
-                  A.setVar(portItem+"Active",1);
-                  if (filled)
-                    A.setVar(portItem+"Filled",1);
-                }
-            }
-          else
-            throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
-        }
-      
-      if (portFlag)
-        LItems.erase(LItems.begin(),LItems.begin()+1);
+      if (portItem.empty())
+	{
+	  A.setMultiOption("beamlines",0,mc->second+" "+beamItem);
+	  A.setVar(mc->second+"Active",1);
+	  if (filled)
+	    A.setVar(mc->second+"Filled",1);
+	}
       else
-        LItems.erase(LItems.begin());
+	{
+	  A.setMultiOption("beamlines",0,portItem+" "+beamItem);
+	  A.setVar(portItem+"Active",1);
+	  if (filled)
+	    A.setVar(portItem+"Filled",1);
+	}
     }
+  else
+    throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
+
+  ELog::EM<<"TEST of "<<beamItem<<" Only "<<ELog::endDiag;
   return;
 }
 
 void
+
 setESS(defaultConfig& A)
   /*!
     Default configuration for ESS
@@ -318,11 +310,12 @@ setESS(defaultConfig& A)
       {"DREAM","G4BLine14"},
       {"CSPEC","G4BLine13"},
       {"VOR","G4BLine7"},   // also 17  
-      {"LOKI","G4BLine4"},
+      {"SMART","G4BLine25"},   // also 17  
+      {"LOKI","G4BLine14"},
       {"ODIN","G4BLine19"}
     };     
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","VOR","LOKI"};
+    {"NMX","CSPEC","DREAM","VOR","SMART","LOKI"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;

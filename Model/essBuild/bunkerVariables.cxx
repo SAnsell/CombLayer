@@ -97,7 +97,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerFloorDepth",120.0);
   Control.addVariable(AKey+"BunkerRoofHeight",190.0);
 
-  Control.addVariable(AKey+"BunkerWallThick",320.0);
+  Control.addVariable(AKey+"BunkerWallThick",350.0); //was 320
   Control.addVariable(AKey+"BunkerSideThick",80.0);
   Control.addVariable(AKey+"BunkerRoofThick",195.0);
   Control.addVariable(AKey+"BunkerFloorThick",100.0);
@@ -192,7 +192,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(BKey+"BunkerFloorDepth",120.0);
   Control.addVariable(BKey+"BunkerRoofHeight",190.0);
 
-  Control.addVariable(BKey+"BunkerWallThick",320.0);
+  Control.addVariable(BKey+"BunkerWallThick",350.0); //320
   Control.addVariable(BKey+"BunkerSideThick",80.0);
   Control.addVariable(BKey+"BunkerRoofThick",195.0);
   Control.addVariable(BKey+"BunkerFloorThick",100.0);

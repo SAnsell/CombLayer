@@ -40,10 +40,12 @@ namespace constructSystem
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
+  class PipeCollimator;
 }
 
 namespace essSystem
 {  
+  class CompBInsert;
   class GuideItem;
   class LokiHut;
   class VacTank;
@@ -85,6 +87,14 @@ class LOKI : public attachSystem::CopiedComp
   /// Guide to first chopper
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
+
+    /// Vac box for second chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperAExtra;
+
+  /// two single disks
+  std::shared_ptr<constructSystem::DiskChopper> SDiskAEFirst;
+  std::shared_ptr<constructSystem::DiskChopper> SDiskAESecond;
+
   /// Vacuum pipe from first chopper to second
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Guide from first to second chopper
@@ -93,7 +103,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Vac box for second chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
   /// Single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> SDiskB;
+  std::shared_ptr<constructSystem::DiskChopper> DDiskB;
 
   /// Vacuum pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
@@ -103,32 +113,83 @@ class LOKI : public attachSystem::CopiedComp
   /// Vac box for third chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
   /// Single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> SDiskC;
+  std::shared_ptr<constructSystem::DiskChopper> DDiskC;
 
   /// Vacuum pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Guide to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
+  /// Bunker insert
+  //std::shared_ptr<essSystem::BunkerInsert> BInsert; // old and simple
+  std::shared_ptr<essSystem::CompBInsert> BInsert;
+
+  /// Vacuum ouside of the bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeFExtra;
+  /// Guide outside bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusFExtra;
+
+  
+  /// Guide inside bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusFBunker;
+
+   /// Chopper pit for first outer bunker chopper
+  std::shared_ptr<constructSystem::ChopperPit> PitD;
+  /// Guide from Chopper to exterior
+ // std::shared_ptr<beamlineSystem::GuideLine> GuidePitDFront;
+  // /// Guide from Chopper to exterior
+  // std::shared_ptr<beamlineSystem::GuideLine> GuidePitDBack;
+
+
+    /// Vac box for fifth chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  /// two single disks
+  std::shared_ptr<constructSystem::DiskChopper> SDiskDFirst;
+  std::shared_ptr<constructSystem::DiskChopper> SDiskDSecond;
+
+//hole in choppet pit D to insert guide
+  std::shared_ptr<constructSystem::HoleShape> CutG;
+    // Piece after wall
+  std::shared_ptr<constructSystem::LineShield> ShieldG;
+    /// Vacuum pipe after bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
+  /// Guide after bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+//collimator block
+  std::shared_ptr<constructSystem::PipeCollimator> CollG;
+ //aperture after second collimator
+  std::shared_ptr<constructSystem::Aperture> AppA;
+
+   //Second collimator block, shielding around it, etc
+  std::shared_ptr<constructSystem::LineShield> ShieldH;
+    /// Vacuum pipe after bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
+  /// Guide after bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusH;
+//collimator block
+  std::shared_ptr<constructSystem::PipeCollimator> CollH;
+//aperture after second collimator
+  std::shared_ptr<constructSystem::Aperture> AppB;
+
+
+  /// Cave
+  std::shared_ptr<LokiHut> Cave;
+  /// Guide entering the cave
+  std::shared_ptr<beamlineSystem::GuideLine> FocusK;
+  /// Detector tank
+  std::shared_ptr<VacTank> Tank;
+
+
   /// Cutting grid at bunker wall
   std::shared_ptr<constructSystem::RotaryCollimator> GridA;
   /// Rotary collimator [first to wall]
-  std::shared_ptr<constructSystem::RotaryCollimator> CollA;
-
-
-  /// Vacuum pipe in CoolA
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollA;
-  /// Vacuum pipe in CollB
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollB;
-  /// Vacuum pipe in CollC
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeCollC;
-
+  //std::shared_ptr<constructSystem::PipeCollimator> CollG;
   /// Guide in CollA
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCollA;
-  /// Guide in CollB
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCollB;
-  /// Guide in CollC
-  std::shared_ptr<beamlineSystem::GuideLine> FocusCollC;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCA0;
+  /// Guide in CollA
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCA1;
+  /// Guide in CollA
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCA2;
 
   /// Space in wall for grid cutter
   std::shared_ptr<constructSystem::insertPlate> CBoxB;
@@ -146,14 +207,7 @@ class LOKI : public attachSystem::CopiedComp
 
   /// Final Cutting grid 
   std::shared_ptr<constructSystem::RotaryCollimator> GridD;
-
-  /// Cave
-  std::shared_ptr<LokiHut> Cave;
-  /// Guide to sample
-  std::shared_ptr<beamlineSystem::GuideLine> CaveGuide;
-  /// Vacuum tank
-  std::shared_ptr<VacTank> VTank;
-
+  
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:

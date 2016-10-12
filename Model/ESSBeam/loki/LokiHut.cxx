@@ -3,7 +3,7 @@
  
  * File:   essModel/LokiHut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,61 +90,6 @@ LokiHut::LokiHut(const std::string& Key) :
   */
 {}
 
-LokiHut::LokiHut(const LokiHut& A) : 
-  attachSystem::FixedOffsetGroup(A),
-  attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),  
-  hutIndex(A.hutIndex),cellIndex(A.cellIndex),voidHeight(A.voidHeight),
-  voidWidth(A.voidWidth),voidDepth(A.voidDepth),
-  voidLength(A.voidLength),feFront(A.feFront),feLeftWall(A.feLeftWall),
-  feRightWall(A.feRightWall),feRoof(A.feRoof),feFloor(A.feFloor),
-  feBack(A.feBack),concFront(A.concFront),concLeftWall(A.concLeftWall),
-  concRightWall(A.concRightWall),concRoof(A.concRoof),
-  concFloor(A.concFloor),concBack(A.concBack),feMat(A.feMat),
-  concMat(A.concMat)
-  /*!
-    Copy constructor
-    \param A :: LokiHut to copy
-  */
-{}
-
-LokiHut&
-LokiHut::operator=(const LokiHut& A)
-  /*!
-    Assignment operator
-    \param A :: LokiHut to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedOffsetGroup::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
-      voidHeight=A.voidHeight;
-      voidWidth=A.voidWidth;
-      voidDepth=A.voidDepth;
-      voidLength=A.voidLength;
-      feFront=A.feFront;
-      feLeftWall=A.feLeftWall;
-      feRightWall=A.feRightWall;
-      feRoof=A.feRoof;
-      feFloor=A.feFloor;
-      feBack=A.feBack;
-      concFront=A.concFront;
-      concLeftWall=A.concLeftWall;
-      concRightWall=A.concRightWall;
-      concRoof=A.concRoof;
-      concFloor=A.concFloor;
-      concBack=A.concBack;
-      feMat=A.feMat;
-      concMat=A.concMat;
-    }
-  return *this;
-}
-
-  
 LokiHut::~LokiHut() 
   /*!
     Destructor
