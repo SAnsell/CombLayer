@@ -503,7 +503,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // upper cell - inner steel - outer side layer
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
-				 " 7 -17 36 -2116 2007M" );
+				 " 7 -17 26 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - inner steel - top layer
   Out=ModelSupport::getComposite(SMap,wheelIndex,
@@ -843,10 +843,13 @@ BilbaoWheel::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 116 -36 ");
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 116 -26 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 35 ");
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 25 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -25 35 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 115 -116 ");
 	}
       if (i==1)
