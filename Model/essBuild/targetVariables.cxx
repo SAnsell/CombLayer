@@ -102,9 +102,12 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelXYangle",0.0);
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
-  ELog::EM << "BilbaoWheelTargetHeight is set to 7.9 as in the MasterModel. Why not 8.0?" << ELog::endCrit;
+  Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",74.5); // TSM141108V3000
+
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2); // TSM141108V3000: upper 0.2, lower 0.3
+  Control.addVariable("BilbaoWheelSteelTungstenInnerThick", 0.5); // TSM141108V3000: upper 0.2, lower 0.3
   Control.addVariable("BilbaoWheelTemp",600.0);
   Control.addVariable("BilbaoWheelCoolantThick",0.5);
   Control.addVariable("BilbaoWheelCaseThick",1.0);

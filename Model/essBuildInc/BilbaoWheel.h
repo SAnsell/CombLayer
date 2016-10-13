@@ -53,8 +53,11 @@ class BilbaoWheel : public WheelBase
   std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
   double targetHeight;           ///< Total height of target
+  double targetInnerHeight;      ///< Inner height of target wheel (R<Tungsten)
+  double targetInnerHeightRadius; ///< Radius of the inner height of target wheel (R<Tungsten)
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
   double steelTungstenThick;     ///< Steel thickness below/above Tungsten
+  double steelTungstenInnerThick; ///< Steel thickness below/above Tungsten in the inner part
   double caseThickIn;            ///< Thickness of coolant (inner wheel)
   double coolantThick;           ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
