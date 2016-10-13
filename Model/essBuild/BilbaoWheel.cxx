@@ -353,7 +353,7 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*(H+catcherTopSteelThick),Z);
 
   // 2nd void step
-  H += shaft2StepHeight;
+  H = shaft2StepHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;

@@ -77,10 +77,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftRadius6",25.0);
   Control.addVariable("BilbaoWheelShaftMat6","Void");
 
-  Control.addVariable("BilbaoWheelShaft2StepHeight",10);
-  Control.addVariable("BilbaoWheelShaft2StepConnectionHeight",5);
-  Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 7);
-  Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 35);
+  Control.addVariable("BilbaoWheelShaft2StepHeight",15);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionHeight",4);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 5);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 27.5);  // TSM141108V3000
 
   Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
 
@@ -108,11 +108,11 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelTemp",600.0);
   Control.addVariable("BilbaoWheelCoolantThick",0.5);
   Control.addVariable("BilbaoWheelCaseThick",1.0);
-  Control.addVariable("BilbaoWheelCaseThickIn",4.0);
+  Control.addVariable("BilbaoWheelCaseThickIn",3.0);  // TSM141108V3000
   Control.addVariable("BilbaoWheelVoidThick",2.0);
 
   Control.addVariable("BilbaoWheelInnerRadius",45); // TSM141108V3000
-  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.07);
+  Control.addVariable("BilbaoWheelCoolantRadiusIn",64.575); // TSM141108V3000
   Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
   Control.addVariable("BilbaoWheelCaseRadius",129.15);
   Control.addVariable("BilbaoWheelVoidRadius",131.15);
