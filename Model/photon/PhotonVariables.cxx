@@ -63,12 +63,12 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("laserSourceParticleType",1);     
 
   Control.addVariable("laserSourceXStep",0.0);       
-  Control.addVariable("laserSourceYStep",-5.0);
+  Control.addVariable("laserSourceYStep",40.0);
   Control.addVariable("laserSourceZStep",0.0);       
 
   Control.addVariable("laserSourceShape",0);
   Control.addVariable("laserSourceRadius",0.1);       
-  Control.addVariable("laserSourceASpread",3.0);       
+  Control.addVariable("laserSourceASpread",30.0);       
   Control.addVariable("laserSourceEStart",1.0);       
   Control.addVariable("laserSourceNE",10);       
   //  Control.addVariable("laserSourceEEnd",80.0);     
@@ -97,8 +97,8 @@ PhotonVariables(FuncDataBase& Control)
 		      "1.3202298449e+05 1.9013627678e+04 ");
 
   // PHOTONMOD3:
-  Control.addVariable("LeftTubesPreXYAngle",10.0);
-  Control.addVariable("LeftTubesYStep",600.0);
+  Control.addVariable("LeftTubesPreXYAngle",0.0);
+  Control.addVariable("LeftTubesYStep",470.0);
   Control.addVariable("LeftTubesNTubes",8);
   Control.addVariable("LeftTubesGap",0.2);
   Control.addVariable("LeftTubesLength",60.0);
@@ -107,6 +107,16 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("LeftTubesWallMat","Stainless304");
   Control.addVariable("LeftTubesMat","Helium");
 
+
+  Control.addVariable("LeftCollYStep",-50.0);
+  Control.addVariable("LeftCollNTubes",4);
+  Control.addVariable("LeftCollLength",60.0);
+  Control.addVariable("LeftCollRadius",1.25);
+  Control.addVariable("LeftCollCentSpc",3.0);
+  Control.addVariable("LeftCollWallThick",0.2);
+  Control.addVariable("LeftCollWallMat","Copper");
+
+  
   Control.addVariable("RightTubesPreXYAngle",10.0);
   Control.addVariable("RightTubesYStep",600.0);
   Control.addVariable("RightTubesNTubes",8);
@@ -116,15 +126,20 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("RightTubesWallThick",0.5);
   Control.addVariable("RightTubesWallMat","Stainless304");
   Control.addVariable("RightTubesMat","Helium");
-  
 
-  Control.addVariable("ChamberLength",300.0);
-  Control.addVariable("ChamberRadius",150.0);
-  Control.addVariable("ChamberThick",5.0);
-  Control.addVariable("ChamberBackThick",5.0);
-  Control.addVariable("ChamberDoorThick",5.0);
-  Control.addVariable("ChamberDoorStep",8.0);
+  
+  Control.addVariable("ChamberWallThick",4.0);
+  Control.addVariable("ChamberFrontLength",100.0);
+  Control.addVariable("ChamberRadius",90.0);
+  Control.addVariable("ChamberBackLength",100.0);
+  Control.addVariable("ChamberWidth",120.0);
+  Control.addVariable("ChamberHeight",120.0);
+  Control.addVariable("ChamberDoorRadius",46.0);
+  Control.addVariable("ChamberDoorThick",4.0);
+  Control.addVariable("ChamberDoorEdge",6.0);
+  
   Control.addVariable("ChamberMat","Stainless304");
+  Control.addVariable("ChamberDoorMat","Aluminium");
   Control.addVariable("ChamberVoidMat","Void");
 
 
@@ -145,9 +160,15 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("ChamberCentPortWindowStep",3.0);
   Control.addVariable("ChamberCentPortWindowMat","Aluminium");
 
-
+  Control.addVariable("BaseSupportYStep",45.0);
+  Control.addVariable("BaseSupportZStep",-13.5);
+  Control.addVariable("BaseSupportLength",90.0);
+  Control.addVariable("BaseSupportWidth",120.0);
+  Control.addVariable("BaseSupportHeight",6.0);
+  Control.addVariable("BaseSupportMat","Aluminium");
 
   Control.addVariable("MetalContLength",9.0);
+  Control.addVariable("MetalContYStep",50.0);
   Control.addVariable("MetalContRadius",3.0);
   Control.addVariable("MetalContThick",0.25);
   Control.addVariable("MetalContMat","Aluminium");
@@ -184,6 +205,37 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("MetalContBFlangeWindowMat","Aluminium");
   Control.addVariable("MetalContBFlangeWindowThick",0.6);  
 
+
+
+  Control.addVariable("PrimModXStep",0.0);
+  Control.addVariable("PrimModYStep",0.0);
+  Control.addVariable("PrimModZStep",0.0);
+  Control.addVariable("PrimModXYangle",0.0);
+  Control.addVariable("PrimModZangle",0.0);
+  Control.addVariable("PrimModNLayers",1);
+  Control.addVariable("PrimModOuterRadius",2.05);
+
+  // Impossibly thin Be coat
+  Control.addVariable("PrimMod0NUnits",2);
+  Control.addVariable("PrimMod0Thick",1.0);
+  Control.addVariable("PrimMod0Mat0","Graphite");
+
+  // Tungsten centre layer
+  Control.addVariable("PrimMod1NUnits",1);
+  Control.addVariable("PrimMod1Thick",2.35);
+  Control.addVariable("PrimMod1Mat0","Lead");
+
+  // Carbon
+  Control.addVariable("PrimMod2NUnits",1);
+  Control.addVariable("PrimMod2Thick",1.20);
+  Control.addVariable("PrimMod2Mat0","Tungsten");
+
+  // Poly
+  Control.addVariable("PrimMod3NUnits",1);
+  Control.addVariable("PrimMod3Thick",4.0);
+  Control.addVariable("PrimMod3Mat0","Poly");
+
+  
   
   // PHOTONMOD2:
  
@@ -236,7 +288,7 @@ PhotonVariables(FuncDataBase& Control)
   // PHOTON ONE:
 
   
-    Control.addVariable("OuterXStep",0.0);
+  Control.addVariable("OuterXStep",0.0);
   Control.addVariable("OuterYStep",0.0);
   Control.addVariable("OuterZStep",0.0);
   Control.addVariable("OuterXYangle",0.0);
@@ -255,28 +307,51 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("PrimModZStep",0.0);
   Control.addVariable("PrimModXYangle",0.0);
   Control.addVariable("PrimModZangle",0.0);
-  Control.addVariable("PrimModNLayers",4);
+  Control.addVariable("PrimModNLayers",6);
   Control.addVariable("PrimModOuterRadius",2.05);
 
-  // Impossibly thin Be coat
-  Control.addVariable("PrimMod0NUnits",1);
-  Control.addVariable("PrimMod0Thick",0.3);
-  Control.addVariable("PrimMod0Mat0","Aluminium");
+  // Catcher
+  Control.addVariable("PrimMod0NUnits",3);
+  Control.addVariable("PrimModRadius0",0.5);
+  Control.addVariable("PrimModRadius1",0.7);
+  Control.addVariable("PrimMod0Thick",1.19);
+  Control.addVariable("PrimMod0Mat0","Lithium");
+  Control.addVariable("PrimMod0Mat1","Aluminium");
+  Control.addVariable("PrimMod0Mat2","Graphite");
 
-  // Tungsten centre layer
-  Control.addVariable("PrimMod1NUnits",1);
-  Control.addVariable("PrimMod1Thick",2.35);
-  Control.addVariable("PrimMod1Mat0","Lead");
 
-  // Carbon
+  // Top of catcher
+  Control.addVariable("PrimMod1NUnits",2);
+  Control.addVariable("PrimMod1Thick",0.2);
+  Control.addVariable("PrimMod1Radius0",0.7);
+  Control.addVariable("PrimMod1Mat0","Aluminium");
+  Control.addVariable("PrimMod1Mat1","Graphite");
+
+  // Poly Layer / Al layer
   Control.addVariable("PrimMod2NUnits",1);
-  Control.addVariable("PrimMod2Thick",1.20);
-  Control.addVariable("PrimMod2Mat0","Tungsten");
+  Control.addVariable("PrimMod2Thick",1.0);
+  Control.addVariable("PrimMod2Mat0","Poly");
 
-  // Poly
+  // Poly Layer / Al layer
   Control.addVariable("PrimMod3NUnits",1);
-  Control.addVariable("PrimMod3Thick",4.0);
+  Control.addVariable("PrimMod3Thick",1.0);
   Control.addVariable("PrimMod3Mat0","Poly");
+
+    // Poly Layer / Al layer
+  Control.addVariable("PrimMod4NUnits",2);
+  Control.addVariable("PrimMod4Thick",1.0);
+  Control.addVariable("PrimMod4Radius0",0.7);
+  Control.addVariable("PrimMod4Mat0","Void");
+  Control.addVariable("PrimMod4Mat1","Poly");
+
+  // Poly Layer / Al layer
+  Control.addVariable("PrimMod5NUnits",2);
+  Control.addVariable("PrimMod5Thick",1.0);
+  Control.addVariable("PrimMod5Radius0",0.7);
+  Control.addVariable("PrimMod5Mat0","Void");
+  Control.addVariable("PrimMod5Mat1","Poly");
+
+  
 
   // // Impossibly thin Be coat
   // Control.addVariable("PrimMod2NUnits",1); 
@@ -288,43 +363,6 @@ PhotonVariables(FuncDataBase& Control)
   // Control.addVariable("PrimMod3Thick",0.025);
   // Control.addVariable("PrimMod3Mat0","Void");
 
-  // Zr layer
-  Control.addVariable("PrimMod4NUnits",1);
-  Control.addVariable("PrimMod4Thick",1.225);
-  Control.addVariable("PrimMod4Mat0","ZrH2");
-
-  // Next Void Gap 
-  Control.addVariable("PrimMod5CopyCell",3);
-  // Be Layer 
-  Control.addVariable("PrimMod6CopyCell",2);
-  // W Layer 
-  Control.addVariable("PrimMod7CopyCell",1);
-  // Be Layer 
-  Control.addVariable("PrimMod8CopyCell",2);
-    //  Void Gap 
-  Control.addVariable("PrimMod9CopyCell",3);
-
-  // Next Void Gap 
-  Control.addVariable("PrimMod11CopyCell",3);
-  // Be Layer 
-  Control.addVariable("PrimMod12CopyCell",2);
-  // W Layer 
-  Control.addVariable("PrimMod13CopyCell",1);
-  // Be Layer 
-  Control.addVariable("PrimMod14CopyCell",2);
-    //  Void Gap 
-  Control.addVariable("PrimMod15CopyCell",3);
-  //  ZrH
-  Control.addVariable("PrimMod16CopyCell",4);
-
-  // Next Void Gap 
-  Control.addVariable("PrimMod17CopyCell",3);
-  // Be Layer 
-  Control.addVariable("PrimMod18CopyCell",2);
-  // W Layer 
-  Control.addVariable("PrimMod19CopyCell",1);
-  // Be Layer 
-  Control.addVariable("PrimMod20CopyCell",2);
     //  Void Gap 
   Control.addVariable("PrimMod21CopyCell",3);
    

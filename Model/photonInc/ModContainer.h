@@ -3,7 +3,7 @@
  
  * File:   photonInc/ModContainer.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,7 +80,11 @@ class ModContainer : public attachSystem::ContainedComp,
   ModContainer& operator=(const ModContainer&);
   virtual ~ModContainer();
   virtual ModContainer* clone() const;
-  
+
+  const attachSystem::FixedComp& getFrontFlange() const;
+  const attachSystem::FixedComp& getBackFlange() const;
+
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

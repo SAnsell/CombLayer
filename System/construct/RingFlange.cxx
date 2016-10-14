@@ -226,6 +226,10 @@ RingFlange::addWindow(Simulation& System)
 
   if (windowFlag)
     {
+      // Add links: EXTRA:
+      const size_t NLink=NConnect();
+      if (NLink<12) setNConnect(12);
+
       std::string Out;
       int windowIndex(ringIndex+2000);
       ModelSupport::buildPlane(SMap,windowIndex+1,
@@ -248,9 +252,19 @@ RingFlange::addWindow(Simulation& System)
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+radSurf));
 	  addCell("window",cellIndex-1);
 	  Out=ModelSupport::getComposite(SMap,ringIndex," 1 -2 ");
+
 	}
       // exclude:
-      addOuterUnionSurf(Out+radSurf);      
+      addOuterUnionSurf(Out+radSurf);
+
+      // Add links:	  
+      setConnect(6,Origin+Y*(windowStep-windowThick/2.0),-Y);
+      setConnect(7,Origin+Y*(windowStep+windowThick/2.0),Y);
+      setLinkSurf(6,-SMap.realSurf(windowIndex+1));
+      setLinkSurf(7,SMap.realSurf(windowIndex+2));
+
+
+
     }
   
   return;
@@ -275,7 +289,6 @@ RingFlange::addBolts(Simulation& System)
       
       const double angleBR=360.0/static_cast<double>(nBolts);
       Geometry::Vec3D BAxis(Z*boltCentDist);
-      ELog::EM<<keyName<<" == "<<boltCentDist<<ELog::endDiag;
       const Geometry::Quaternion QStart=
 	Geometry::Quaternion::calcQRotDeg(rotAngleOffset,Y);
 

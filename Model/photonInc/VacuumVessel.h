@@ -52,15 +52,21 @@ class VacuumVessel : public attachSystem::ContainedComp,
   const int vacIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  double length;               ///< length of object
+  double wallThick;            ///< Outer thickenss
+    
+  double frontLength;          ///< length of front part
   double radius;               ///< radius [inneer]
-  double thick;                ///< Outer thickenss
 
-  double backThick;            ///< Back thicnkess
-  double doorStep;             ///< Door out step
+  double backLength;             ///< length of front part
+  double width;               ///< width of back volume
+  double height;              ///< height of back volume
+  
+  double doorRadius;            ///< Door out step
+  double doorEdge;            ///< Door out step
   double doorThick;            ///< Door out step
 
   int voidMat;                 ///< inner material
+  int doorMat;                     ///< Outer material
   int mat;                     ///< Outer material
 
   /// central port
@@ -81,7 +87,6 @@ class VacuumVessel : public attachSystem::ContainedComp,
   VacuumVessel(const VacuumVessel&);
   VacuumVessel& operator=(const VacuumVessel&);
   virtual ~VacuumVessel();
-  virtual VacuumVessel* clone() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

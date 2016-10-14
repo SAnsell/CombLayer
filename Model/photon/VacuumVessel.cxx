@@ -94,60 +94,12 @@ VacuumVessel::VacuumVessel(const std::string& Key) :
   OR.addObject(CentPort);
 }
 
-VacuumVessel::VacuumVessel(const VacuumVessel& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),  
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),length(A.length),
-  radius(A.radius),thick(A.thick),backThick(A.backThick),
-  doorStep(A.doorStep),doorThick(A.doorThick),voidMat(A.voidMat),
-  mat(A.mat),CentPort(A.CentPort)
-  /*!
-    Copy constructor
-    \param A :: VacuumVessel to copy
-  */
-{}
-
-VacuumVessel&
-VacuumVessel::operator=(const VacuumVessel& A)
-  /*!
-    Assignment operator
-    \param A :: VacuumVessel to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
-      length=A.length;
-      radius=A.radius;
-      thick=A.thick;
-      backThick=A.backThick;
-      doorStep=A.doorStep;
-      doorThick=A.doorThick;
-      voidMat=A.voidMat;
-      mat=A.mat;
-    }
-  return *this;
-}
 
 VacuumVessel::~VacuumVessel()
   /*!
     Destructor
   */
 {}
-
-VacuumVessel*
-VacuumVessel::clone() const
-  /*!
-    Clone copy constructor
-    \return copy of this
-  */
-{
-  return new VacuumVessel(*this);
-}
 
 void
 VacuumVessel::populate(const FuncDataBase& Control)
@@ -160,13 +112,20 @@ VacuumVessel::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  frontLength=Control.EvalVar<double>(keyName+"FrontLength");
   radius=Control.EvalVar<double>(keyName+"Radius");
-  length=Control.EvalVar<double>(keyName+"Length");
-  thick=Control.EvalVar<double>(keyName+"Thick");
-  backThick=Control.EvalVar<double>(keyName+"BackThick");
+    
+  backLength=Control.EvalVar<double>(keyName+"BackLength");
+  width=Control.EvalVar<double>(keyName+"Width");
+  height=Control.EvalVar<double>(keyName+"Width");
+
+  doorRadius=Control.EvalVar<double>(keyName+"DoorRadius");
   doorThick=Control.EvalVar<double>(keyName+"DoorThick");
-  doorStep=Control.EvalVar<double>(keyName+"DoorStep");
+  doorEdge=Control.EvalVar<double>(keyName+"DoorEdge");
+
   voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  doorMat=ModelSupport::EvalMat<int>(Control,keyName+"DoorMat");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   return;
@@ -196,20 +155,38 @@ VacuumVessel::createSurfaces()
 {
   ELog::RegMethod RegA("VacuumVessel","createSurfaces");
 
-  // inner/outer surfaces:
-  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);  
+  // inner surfaces: 
+  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*backLength,Y);
+  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*frontLength,Y);
+  ModelSupport::buildPlane(SMap,vacIndex+101,Origin,Y);
+ 
   ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+thick);
 
-  ModelSupport::buildPlane(SMap,vacIndex+11,Origin-Y*(length/2.0+backThick),Y);
 
-  const double sphereRadius=(doorStep*doorStep+radius*radius)/(2*doorStep);
-  const double sphereY=length/2.0-(sphereRadius-doorStep);
+  ModelSupport::buildPlane(SMap,vacIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,vacIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,vacIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+6,Origin+Z*(height/2.0),Z);
 
-  ModelSupport::buildSphere(SMap,vacIndex+8,Origin+Y*sphereY,sphereRadius);
-  ModelSupport::buildSphere(SMap,vacIndex+18,Origin+Y*sphereY,
-			    sphereRadius+doorThick);
+  // outer walls:
+  ModelSupport::buildPlane(SMap,vacIndex+11,Origin-Y*(backLength+wallThick),Y);
+  ModelSupport::buildPlane(SMap,vacIndex+12,Origin+Y*(frontLength+wallThick),Y);
+  ModelSupport::buildPlane(SMap,vacIndex+111,Origin-Y*wallThick,Y);
+
+  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+wallThick);
+
+  ModelSupport::buildPlane(SMap,vacIndex+13,Origin-X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,vacIndex+14,Origin+X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,vacIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+
+  // door
+  ModelSupport::buildCylinder(SMap,vacIndex+27,Origin,Y,doorRadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+37,Origin,Y,doorRadius+doorEdge);
+  ModelSupport::buildPlane(SMap,vacIndex+22,
+			   Origin+Y*(frontLength+wallThick+doorThick),Y);
+
+  
   return; 
 }
 
@@ -224,31 +201,54 @@ VacuumVessel::createObjects(Simulation& System)
 
   std::string Out;
 
-  // Inner void
-  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -2 -7 ");
+  // Inner void (Cyl)
+  Out=ModelSupport::getComposite(SMap,vacIndex,"  101 -2 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
   addCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -8 ");
+  // Inner void (Box)
+  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -101 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out));
-  addCell("FrontVoid",cellIndex-1);
+  addCell("Void",cellIndex-1);
 
-
-  // metal layers
-  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -2 -17 7");
+  // Metal front
+  Out=ModelSupport::getComposite(SMap,vacIndex," 101 -2 7 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  addCell("Skin",cellIndex-1);
+  addCell("Wall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -1 -17 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex,
+				 " -101 111 -17 (-13 : 14 : -15 : 16 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  addCell("Skin",cellIndex-1);
+  addCell("Wall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -17 -18 8 ");
+  Out=ModelSupport::getComposite
+    (SMap,vacIndex," 11 -101  13 -14 15 -16 ( -1:-3:4:-5:6 )");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  addCell("Wall",cellIndex-1);
+
+  // DOOR
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -17 27");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  addCell("Wall",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -27");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("DoorVoid",cellIndex-1);
+
+  // set forward door
+  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -22 -37 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,doorMat,0.0,Out));
   addCell("Door",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -22 37 -17");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  addCell("Edge",cellIndex-1);
+
   
-  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -17 (-18 : -2)");
+  Out=ModelSupport::getComposite(SMap,vacIndex," -22 -17 111");
   addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex," -101 13 -14 15 -16 11");
+  addOuterUnionSurf(Out);
 
   return; 
 }
@@ -261,24 +261,24 @@ VacuumVessel::createLinks()
 {  
   ELog::RegMethod RegA("VacuumVessel","createLinks");
   
-  FixedComp::setConnect(0,Origin-Y*(length/2.0+backThick),-Y);
+  FixedComp::setConnect(0,Origin-Y*(backLength+wallThick),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+11));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0+doorStep+doorThick),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+18));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(vacIndex+2));
+  FixedComp::setConnect(1,Origin+Y*(frontLength+wallThick+doorThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+22));
 
-  FixedComp::setConnect(2,Origin-X*(radius+thick),-X);
+  FixedComp::setConnect(2,Origin-X*(radius+wallThick),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+17));
-  
-  FixedComp::setConnect(3,Origin+X*(radius+thick),-X);
+
+  FixedComp::setConnect(3,Origin+X*(radius+wallThick),X);
   FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+17));
-
-  FixedComp::setConnect(4,Origin-Z*(radius+thick),-Z);
+  
+  FixedComp::setConnect(4,Origin-Z*(radius+wallThick),-Z);
   FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+17));
-
-  FixedComp::setConnect(5,Origin+Z*(radius+thick),Z);
+  
+  FixedComp::setConnect(5,Origin+Z*(radius+wallThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+17));
+  
 
   return;
 }
@@ -292,9 +292,10 @@ VacuumVessel::buildPorts(Simulation& System)
 {
   ELog::RegMethod RegA("VacuumVessel","buildPorts");
 
+
   CentPort->addInsertCell(getInsertCells());   // main void
   CentPort->addInsertCell(getCells("Door"));
-  CentPort->addInsertCell(getCells("FrontVoid"));
+  CentPort->addInsertCell(getCells("DoorVoid"));
   CentPort->createAll(System,*this,2);
 
   return;

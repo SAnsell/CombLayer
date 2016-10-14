@@ -47,9 +47,11 @@ namespace photonSystem
   class TubeMod;
   class B4CCollimator;
   class He3Tubes;
+  class TableSupport;
   class EQDetector;
   class ModContainer;
   class VacuumVessel;
+  class TubeCollimator;
    
   /*!
     \class makePhoton3
@@ -65,9 +67,11 @@ class makePhoton3
 
   std::shared_ptr<VacuumVessel> Chamber;        ///< Vacuum vesse
   std::shared_ptr<ModContainer> ModContObj;     ///< Container
-  std::shared_ptr<CylLayer> ModObj;              ///< Moderator
+  std::shared_ptr<CylLayer> ModObj;             ///< Moderator
+  std::shared_ptr<TableSupport> BaseSupport;          ///< Moderator
   std::shared_ptr<He3Tubes> leftTubes;          ///< Detectors
   std::shared_ptr<He3Tubes> rightTubes;         ///< Detectors
+  std::shared_ptr<TubeCollimator> leftColl;     ///< collimator
 
   void buildWings(Simulation&);
   

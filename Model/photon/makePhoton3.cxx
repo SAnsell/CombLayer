@@ -78,7 +78,9 @@
 #include "ModContainer.h"
 #include "VacuumVessel.h"
 #include "CylLayer.h"
+#include "TableSupport.h"
 #include "He3Tubes.h"
+#include "TubeCollimator.h"
 
 #include "makePhoton3.h"
 
@@ -89,8 +91,10 @@ makePhoton3::makePhoton3() :
   Chamber(new photonSystem::VacuumVessel("Chamber")),
   ModContObj(new photonSystem::ModContainer("MetalCont")),
   ModObj(new photonSystem::CylLayer("PrimMod")),
+  BaseSupport(new photonSystem::TableSupport("BaseSupport")),
   leftTubes(new photonSystem::He3Tubes("LeftTubes")),
-  rightTubes(new photonSystem::He3Tubes("RightTubes"))
+  rightTubes(new photonSystem::He3Tubes("RightTubes")),
+  leftColl(new photonSystem::TubeCollimator("LeftColl"))
   
   
   /*!
@@ -103,8 +107,10 @@ makePhoton3::makePhoton3() :
   OR.addObject(Chamber);
   OR.addObject(ModContObj);
   OR.addObject(ModObj);
+  OR.addObject(BaseSupport);
   OR.addObject(leftTubes);
   OR.addObject(rightTubes);
+  OR.addObject(leftColl);
 
 }
 
@@ -137,12 +143,18 @@ makePhoton3::build(Simulation* SimPtr,
   ModContObj->createAll(*SimPtr,*Chamber,0);
 
   ModObj->addInsertCell(ModContObj->getCell("Void"));
-  ModObj->setOuter(ModContObj->getSignedFullRule(9));
-  ModObj->createAll(*SimPtr,*ModContObj,-1);
-  
-  leftTubes->addInsertCell(voidCell);
-  leftTubes->createAll(*SimPtr,World::masterOrigin(),0);
+  ModObj->setOuter(ModContObj->getSignedFullRule(9));    
+  ModObj->createAll(*SimPtr,ModContObj->getBackFlange(),7);
 
+  BaseSupport->addInsertCell(Chamber->getCell("Void"));
+  BaseSupport->createAll(*SimPtr,*Chamber,0);
+    
+  leftTubes->addInsertCell(voidCell);
+  leftTubes->createAll(*SimPtr,*ModObj,-1);
+
+  leftColl->addInsertCell(voidCell);
+  leftColl->createAll(*SimPtr,*leftTubes,0);
+  
   return;
 }
 

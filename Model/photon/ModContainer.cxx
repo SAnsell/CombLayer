@@ -264,6 +264,26 @@ ModContainer::createLinks()
   return;
 }
 
+const attachSystem::FixedComp&
+ModContainer::getFrontFlange() const
+  /*!
+    Access to front flange
+    \return Flange object
+   */
+{
+ return *FrontFlange;
+}
+ 
+const attachSystem::FixedComp&
+ModContainer::getBackFlange() const
+  /*!
+    Access to back flange
+    \return Flange object
+   */
+{
+ return *BackFlange;
+}
+  
 void
 ModContainer::buildFlanges(Simulation& System)
   /*!

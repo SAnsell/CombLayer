@@ -790,4 +790,4 @@ ReflectRods::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE ts1System
