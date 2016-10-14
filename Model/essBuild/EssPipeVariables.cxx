@@ -79,10 +79,10 @@ EssPipeVariables(FuncDataBase& Control)
     ({"HPARA","Aluminium20K","Void","Aluminium"});
 
   const std::vector<std::string> matConnect
-    ({ "HPARA","SS316L","Void","SS316L"});
+    ({ "HPARA","Aluminium20K","Void","Aluminium"});
 
   const std::vector<std::string> matInvar
-    ({"HPARA","Invar36","Void","Invar36"});
+    ({"HPARA","Aluminium20K","Void","Aluminium"});
 
   const std::vector<double> temp({20.0,20.0,300.0,300.0});
 
