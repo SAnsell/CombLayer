@@ -76,6 +76,7 @@
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
 #include "TargetBase.h"
+#include "gridUnit.h"
 #include "hexUnit.h"
 #include "Cannelloni.h"
 
@@ -169,14 +170,13 @@ Cannelloni::~Cannelloni()
 {}
 
 void
-Cannelloni::populate(const Simulation& System)
+Cannelloni::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database of variables
   */
 {
   ELog::RegMethod RegA("Cannelloni","populate");
-  const FuncDataBase& Control=System.getDataBase();
 
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
@@ -199,7 +199,6 @@ Cannelloni::populate(const Simulation& System)
   targetTemp=Control.EvalVar<double>(keyName+"TargetTemp");
   waterTemp=Control.EvalVar<double>(keyName+"WaterTemp");
   externTemp=Control.EvalVar<double>(keyName+"ExternTemp");
-
 
   return;
 }
@@ -564,7 +563,7 @@ Cannelloni::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("Cannelloni","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System);
