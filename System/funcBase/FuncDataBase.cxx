@@ -1167,6 +1167,8 @@ template std::string FuncDataBase::EvalVar(const std::string&) const;
 template double FuncDataBase::EvalDefVar(const std::string&,
 					 const double&) const;
 template int FuncDataBase::EvalDefVar(const std::string&,const int&) const;
+template long int
+FuncDataBase::EvalDefVar(const std::string&,const long int&) const;
 
 template size_t 
 FuncDataBase::EvalDefVar(const std::string&,const size_t&) const;

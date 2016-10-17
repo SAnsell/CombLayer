@@ -116,21 +116,25 @@ TubeCollimator::populate(const FuncDataBase& Control)
 
   layoutType=Control.EvalVar<std::string>(keyName+"LayoutType");
   boundaryType=Control.EvalVar<std::string>(keyName+"BoundaryType");
-  
-  setBoundary(Control);
-  setLayout(Control);
+
+  nTubeLayers=Control.EvalDefVar<long int>(keyName+"NTubeLayers",0);
+  boundaryRotAngle=
+    Control.EvalDefPair<double>(keyName+"BoundaryRotAngle",
+				keyName+"RotAngle",0.0);
+  layoutRotAngle=
+    Control.EvalDefPair<double>(keyName+"LayoutRotAngle",
+				keyName+"RotAngle",0.0);
+
   return;
 }
 
 void
-TubeCollimator::setLayout(const FuncDataBase& Control)
+TubeCollimator::setLayout()
   /*!
     Sets the layout vectors
-    \param Control :: Database for variables
   */
 {
   ELog::RegMethod RegA("TubeCollimator","setLayout");
-
 
   if (layoutType=="square" || layoutType=="Square")
     {
@@ -149,11 +153,8 @@ TubeCollimator::setLayout(const FuncDataBase& Control)
     }
 
 
-  const double rotAngle=
-    Control.EvalDefPair<double>(keyName+"LayoutRotAngle",
-				keyName+"RotAngle",0.0);
   const Geometry::Quaternion Qab=
-    Geometry::Quaternion::calcQRotDeg(rotAngle,Y);
+    Geometry::Quaternion::calcQRotDeg(layoutRotAngle,Y);
   Qab.rotate(AAxis);
   Qab.rotate(BAxis);
 
@@ -165,26 +166,22 @@ void
 TubeCollimator::setBoundary(const FuncDataBase& Control)
   /*!
     Set the boundary
-    \param Control :: Database for variables
    */
 {
   ELog::RegMethod RegA("TubeCollimator","setBoundary");
 
   std::string Out;
-  const double rotAngle=
-    Control.EvalDefPair<double>(keyName+"BoundaryRotAngle",
-				keyName+"RotAngle",0.0);
 
   if (boundaryType=="Rectangle" || boundaryType=="rectangle")
     {
       const double width=
-	Control.EvalVar<double>(keyName+"Width");
+	Control.EvalVar<double>(keyName+"BoundaryWidth");
       const double height=
-	Control.EvalVar<double>(keyName+"Height");
+	Control.EvalVar<double>(keyName+"BoundaryHeight");
       Geometry::Vec3D AX(X);
       Geometry::Vec3D BZ(Z);
        const Geometry::Quaternion Qab=
-	 Geometry::Quaternion::calcQRotDeg(rotAngle,Y);
+	 Geometry::Quaternion::calcQRotDeg(boundaryRotAngle,Y);
        Qab.rotate(AX);
        Qab.rotate(BZ);
 
@@ -218,7 +215,7 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
     }
   else if (boundaryType=="Free" || boundaryType=="free")
     {
-      nTubeLayers=Control.EvalVar<long int>(keyName+"NTubeLayers");
+
       if (nTubeLayers<=0)
 	throw ColErr::RangeError<long int>
 	  (0,50,nTubeLayers,"boundaryType:Free > 0");
@@ -244,9 +241,9 @@ TubeCollimator::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("TubeCollimator","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  // Default layout [rectangular]
-  AAxis=X;
-  BAxis=Z;
+
+  // Default layout 
+  setLayout();
   
   return;
 }
@@ -259,7 +256,7 @@ TubeCollimator::createTubes(Simulation& System)
     \param System :: simluation to use
   */
 {
-  ELog::RegMethod RegA("VacuumVessel","createSurfaces");
+  ELog::RegMethod RegA("TubeCollimator","createTubes");
 
   ModelSupport::buildPlane(SMap,rodIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,rodIndex+2,Origin+Y*(length/2.0),Y);
@@ -274,7 +271,7 @@ TubeCollimator::createTubes(Simulation& System)
   // Outer boundary:
   const std::string OutBoundary=boundaryString();
   std::string HoleStr;
-  
+      
   bool acceptFlag(1);
   long int step(0);   
   while(acceptFlag || (nTubeLayers>0 && step<nTubeLayers))
@@ -285,25 +282,26 @@ TubeCollimator::createTubes(Simulation& System)
 	  {
 	    if (std::abs(i)==step || std::abs(j)==step)
 	      {
-		const Geometry::Vec3D CPoint=AAxis*i+BAxis*j;
+		const Geometry::Vec3D CPoint=AAxis*(centSpc*i)+BAxis*(centSpc*j);
 		if (boundary.isValid(CPoint))
 		  {
 		    acceptFlag=1;
 		    ModelSupport::buildCylinder(SMap,RI+7,CPoint,Y,radius);
 		    ModelSupport::buildCylinder(SMap,RI+8,CPoint,Y,radius+wallThick);
 
-		    Out=ModelSupport::getComposite(SMap,rodIndex," -7 ");
+		    Out=ModelSupport::getComposite(SMap,RI," -7 ");
 		    System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
 
-		    Out=ModelSupport::getComposite(SMap,rodIndex," 7 -17 ");
-		    System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+		    Out=ModelSupport::getComposite(SMap,RI," 7 -8 ");
+		    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr));
 
-		    Out=ModelSupport::getComposite(SMap,rodIndex," 17 ");
+		    Out=ModelSupport::getComposite(SMap,RI," 8 ");
 		    HoleStr+=Out;
 		    RI+=10;
 		  }
 	      }
 	  }
+      step++;
     }
   
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,OutBoundary+FBStr+HoleStr));
@@ -364,6 +362,7 @@ TubeCollimator::createAll(Simulation& System,
   populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
+  setBoundary(System.getDataBase());
   createTubes(System);
   createLinks();
   insertObjects(System);       

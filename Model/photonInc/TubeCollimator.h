@@ -58,14 +58,15 @@ class TubeCollimator : public attachSystem::ContainedComp,
   double centSpc;           ///< Hole-Hole centre spacing
   int wallMat;              ///< Material liner
   
-
+  double boundaryRotAngle;  ///< Rotation angle of the boundary
+  double layoutRotAngle;    ///< Rotation angle of the layout axis
   
   Geometry::Vec3D AAxis;    ///< Basis set for layout [first]
   Geometry::Vec3D BAxis;    ///< Basic sef for layout [second]
   HeadRule boundary;        ///< Semi-infinite headRule for centre-boundary
 
   void setBoundary(const FuncDataBase&);
-  void setLayout(const FuncDataBase&);
+  void setLayout();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
