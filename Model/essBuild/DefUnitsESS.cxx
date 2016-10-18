@@ -123,7 +123,7 @@ setESSFull(defaultConfig& A)
       {"BIFROST","G4BLine4"},    // W4
       {"NMX","G4BLine1"},        // W1
       {"VOR","G3BLine10"},   // also 17
-      {"LOKI","G4BLine17"},
+      {"LOKI","G4BLine14"},
       {"DREAM","G4BLine19"},
       // {"CSPEC","G4BLine3"},
        {"VESPA","G3BLine7"},
@@ -237,7 +237,7 @@ setESSSingle(defaultConfig& A,
      {"VESPA","G3BLine7"},      // E7
      {"VOR","G3BLine10"},       // E11  [CHANGED TO FIT]
      {"SIMPLE","G4BLine17"},
-     {"LOKI","G4BLine17"},      // N7
+     {"LOKI","G4BLine14"},      // N7
      {"ODIN","G2BLine2"},       // Lower S2
      {"ESTIA","G3BLine2"},      // E2
      {"FREIA","G4BLine15"},     // N5
