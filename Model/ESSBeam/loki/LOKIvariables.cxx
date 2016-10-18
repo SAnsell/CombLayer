@@ -91,7 +91,7 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setFlange(-4.0,1.0);
 
   Control.addVariable("lokiAxisXStep",0.0); //TEMP ask Clara
-  Control.addVariable("lokiAxisXYAngle",1.0); // not with the bender! starting angle 1 degree from the port in the horizontal rotation
+  Control.addVariable("lokiAxisXYAngle",0.0); // not with the bender! starting angle 1 degree from the port in the horizontal rotation
   Control.addVariable("lokiAxisZAngle",0.0);
 
   FGen.setGuideMat("Aluminium"); //all guides are aluminum according to Damian //used to be copper before
@@ -152,17 +152,17 @@ LOKIvariables(FuncDataBase& Control)
 
 //parameters adopted from VOR, mixed, TEMP, to be FIXED!!!
 
-  CGen.setMainRadius(26.0);
-  CGen.setFrame(60.0,60.0);
-  CGen.generateChopper(Control,"lokiChopperA",9.0,15.7,7.0);    
+  CGen.setMainRadius(62.5);   // diameter 70.0 emali
+  CGen.setFrame(160.0,160.0);
+  CGen.generateChopper(Control,"lokiChopperA",9.0,15.7,5.3);    
 
   // Double Blade chopper
   BGen.setMaterials("Aluminium","Aluminium");
   BGen.setThick({2.0,2.0});
   BGen.setGap(1.0);
-  BGen.addPhase({30.0},{120.0});
-  BGen.addPhase({30.0},{120.0});
-  BGen.generateBlades(Control,"lokiDBladeA",0.0,10.0,22.50);
+  BGen.addPhase({-60.0},{120.0});
+  BGen.addPhase({-60.0},{120.0});
+  BGen.generateBlades(Control,"lokiDBladeA",0.95,10.0,35.0);
 
 
   // straight guide between first and second chopper

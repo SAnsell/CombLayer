@@ -347,6 +347,8 @@ LOKI::build(Simulation& System,
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+  
   FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(Control);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
@@ -371,6 +373,8 @@ LOKI::build(Simulation& System,
 
   // First chopper unit
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  //  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  //  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperA->createAll(System,BendB->getKey("Guide0"),2); 
 
   // Double disk chopper
