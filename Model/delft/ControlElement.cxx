@@ -375,11 +375,12 @@ ControlElement::createLinks()
 }
 
 void
-ControlElement::createAll(Simulation& System,const FixedComp& FC,
+ControlElement::createAll(Simulation& System,
+                          const attachSystem::FixedComp& FC,
 			  const Geometry::Vec3D& OG,
 			  const FuelLoad& FuelSystem)
   /*!
-    Global creation of the hutch
+    Global creation of the control item
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Unit
     \param OG :: Origin

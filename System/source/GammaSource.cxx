@@ -305,7 +305,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("GammaSource","createSource");
 
-  ELog::EM<<"Source ::"<<shape<<ELog::endDiag;
+  ELog::EM<<"Source shape ::"<<shape<<ELog::endDiag;
   sourceCard.setComp("par",particleType);            /// photon (2)
     
   // Energy:

@@ -75,9 +75,6 @@
 #include "defaultConfig.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "makeESS.h"
 
@@ -123,7 +120,6 @@ main(int argc,char* argv[])
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
-      //      SDef::sourceSelection(*SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

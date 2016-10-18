@@ -1088,6 +1088,17 @@ FuncDataBase::writeXML(const std::string& FName) const
   return;
 }
 
+void
+FuncDataBase::resetActive()
+  /*!
+    Reset the active flag on all variables
+   */
+{
+  ELog::RegMethod RegA("FuncDataBase","resetActive");
+  VList.resetActive();
+  
+  return;
+}
 
 size_t
 FuncDataBase::convPartVec(const std::string& A,
@@ -1156,6 +1167,8 @@ template std::string FuncDataBase::EvalVar(const std::string&) const;
 template double FuncDataBase::EvalDefVar(const std::string&,
 					 const double&) const;
 template int FuncDataBase::EvalDefVar(const std::string&,const int&) const;
+template long int
+FuncDataBase::EvalDefVar(const std::string&,const long int&) const;
 
 template size_t 
 FuncDataBase::EvalDefVar(const std::string&,const size_t&) const;

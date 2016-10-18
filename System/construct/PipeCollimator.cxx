@@ -232,7 +232,7 @@ PipeCollimator::setInner(const HeadRule& HR)
 void
 PipeCollimator::setInnerExclude(const HeadRule& HR)
   /*!
-    Set the inner volume
+    Set the inner volume (without inverse)
     \param HR :: Headrule of inner surfaces
   */
 {

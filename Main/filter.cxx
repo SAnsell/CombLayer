@@ -123,7 +123,6 @@ main(int argc,char* argv[])
       filterSystem::makeFilter FObj;
       World::createOuterObjects(*SimPtr);
       FObj.build(*SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

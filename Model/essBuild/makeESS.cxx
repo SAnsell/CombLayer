@@ -71,6 +71,7 @@
 #include "World.h"
 #include "BasicFlightLine.h"
 #include "FlightLine.h"
+#include "WedgeFlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -122,19 +123,18 @@ makeESS::makeESS() :
   LowPreMod(new DiskPreMod("LowPreMod")),
   LowCapMod(new DiskPreMod("LowCapMod")),
   
-  LowAFL(new moderatorSystem::BasicFlightLine("LowAFlight")),
-  LowBFL(new moderatorSystem::BasicFlightLine("LowBFlight")),
+  LowAFL(new essSystem::WedgeFlightLine("LowAFlight")),
+  LowBFL(new essSystem::WedgeFlightLine("LowBFlight")),
 
   TopPreMod(new DiskLayerMod("TopPreMod")),
   TopCapMod(new DiskLayerMod("TopCapMod")),
 
-  TopAFL(new moderatorSystem::BasicFlightLine("TopAFlight")),
-  TopBFL(new moderatorSystem::BasicFlightLine("TopBFlight")),
+  TopAFL(new essSystem::WedgeFlightLine("TopAFlight")),
+  TopBFL(new essSystem::WedgeFlightLine("TopBFlight")),
   ModPipes(new ESSPipes()),
 
   Bulk(new BulkModule("Bulk")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
-
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),

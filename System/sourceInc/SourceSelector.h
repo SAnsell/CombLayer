@@ -28,6 +28,8 @@ namespace SDef
 {
   long int getLinkIndex(const std::string&);
   void sourceSelection(Simulation&,const mainSystem::inputParam&);
+  void activationSelection(Simulation&,const mainSystem::inputParam&);
+  void activeWeight(Simulation&,const mainSystem::inputParam&);
 }
 
 #endif

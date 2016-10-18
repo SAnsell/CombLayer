@@ -120,8 +120,7 @@ main(int argc,char* argv[])
       delftSystem::makeDelft RObj(IParam.getValue<std::string>("modType"));
       World::createOuterObjects(*SimPtr);
       RObj.build(SimPtr,IParam);
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  
+
       RObj.setSource(SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

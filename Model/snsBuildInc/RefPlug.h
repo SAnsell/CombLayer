@@ -37,18 +37,13 @@ namespace snsSystem
 
 class RefPlug : public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int refIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy rotation angle
-  double zAngle;                  ///< z rotation angle
   double height;                  ///< Be height
   double depth;                  ///< Be depth
 
@@ -59,7 +54,8 @@ class RefPlug : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -79,7 +75,8 @@ class RefPlug : public attachSystem::ContainedComp,
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getCommonSurf(const long int) const;
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

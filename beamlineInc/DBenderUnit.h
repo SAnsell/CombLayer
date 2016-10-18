@@ -40,7 +40,7 @@ class DBenderUnit : public ShapeUnit
 
   Geometry::Vec3D RCentA;      ///< Rotation centre
   Geometry::Vec3D RCentB;      ///< Rotation centre
-  Geometry::Vec3D RAxisA;      ///< Rotation axis [horr p;ane ]
+  Geometry::Vec3D RAxisA;      ///< Rotation axis [horr plane ]
   Geometry::Vec3D RAxisB;      ///< Rotation axis [vert plane]
   
   Geometry::Vec3D RPlaneFrontA;    ///< Towards Centre direction
@@ -101,9 +101,13 @@ class DBenderUnit : public ShapeUnit
 				const size_t) const;
   virtual std::string getExclude(const ModelSupport::surfRegister&,
 				 const size_t) const;
+  virtual void addSideLinks(const ModelSupport::surfRegister&,
+			    attachSystem::FixedComp&) const;
 
   virtual void createSurfaces(ModelSupport::surfRegister&,
 		      const std::vector<double>&);
+
+  
 };
 
 }

@@ -81,7 +81,7 @@ namespace constructSystem
 SupplyPipe::SupplyPipe(const std::string& Key)  :
   attachSystem::FixedComp(Key,2),optName(""),
   pipeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(pipeIndex+1),wallOffset(2),
+  cellIndex(pipeIndex+1),NSegIn(0),wallOffset(2),
   Coaxial(Key+"CoAx"),nAngle(12)
   /*!
 

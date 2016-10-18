@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   workInc/WorkData.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class WorkData
   WorkData& rebin(const WorkData&);
   WorkData& binDivide(const double);
   WorkData& xScale(const double);
-
+  double XInverse(const double) const;
 
   /// set weight
   void setWeight(const double W) { weight=W; }

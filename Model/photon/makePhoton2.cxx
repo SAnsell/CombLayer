@@ -67,6 +67,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "BoundOuter.h"
 #include "insertPlate.h"
 #include "insertSphere.h"
 #include "World.h"

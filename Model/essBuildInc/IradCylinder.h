@@ -43,6 +43,8 @@ class IradCylinder : public attachSystem::ContainedComp,
   const int iradIndex;            ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
+  int sampleActive;               ///< samples are not built if set to zero
+  
   double radius;                  ///< Main radius [from built object]
   double length;                  ///< Length of cylinder
   std::vector<double> wallThick;  ///< Wall thicknesses
@@ -50,6 +52,7 @@ class IradCylinder : public attachSystem::ContainedComp,
   double temp;                    ///< Temperature
   int mat;                        ///< Main material
   std::vector<int> wallMat;       ///< Wall material
+
 
   double sampleX;                 ///< Sample X step     
   double sampleY;                 ///< Sample Z step     

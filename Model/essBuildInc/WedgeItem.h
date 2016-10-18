@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/WedgeItem.h
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@ namespace essSystem
 
 /*!
   \class WedgeItem
-  \author S. Ansell
+  \author S. Ansell / K. Batkov
   \version 1.0
-  \date April 2013
-  \brief Wedge Item  [single shutter]
+  \date September 2016
+  \brief Flight line Wedge Item
 */
 
 class WedgeItem : public attachSystem::ContainedComp,
@@ -40,36 +40,44 @@ class WedgeItem : public attachSystem::ContainedComp,
 {
  private:
 
-  const std::string baseName;     ///< BaseName
-  const int wedgeIndex;           ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
+  const int wedgeIndex;          ///< Index of surface offset
+  int cellIndex;                 ///< Cell index
 
+  double length;                 ///< Length
+  double baseWidth;              ///< Base width
+  double tipWidth;               ///< Tip width
+  ///  Engineering angle with respect to (0,0) in TSC.
+  ///  Calculated counterclockwise from OY. Used to set XYAngle
+  double theta;                  
 
-  size_t nLayer;
-  std::vector<double> radius;    ///< Radial cuts [nlayer-1]
-  std::vector<double> width;     ///< width of external
-  std::vector<double> height;    ///< height of external
+  int mat;                       ///< material
 
-  int mat;                     ///< reflector material
+  // aux variables, non-populated
+  Geometry::Cylinder *outerCyl;  ///< outer cylinder (base surface)
 
   // Functions:
+
+  double getFixedXYAngle(const double) const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
-  void createObjects(Simulation&,const FixedComp&,const size_t,const size_t);
+  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createObjects(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const attachSystem::FixedComp&,
+		     const long int, const long int);
   void createLinks();
 
  public:
 
-  WedgeItem(const int,const std::string&);
+  WedgeItem(const std::string&,const size_t);
   WedgeItem(const WedgeItem&);
   WedgeItem& operator=(const WedgeItem&);
   virtual ~WedgeItem();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t);
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int,
+		 const long int);
   
 };
 

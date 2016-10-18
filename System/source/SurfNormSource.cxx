@@ -3,7 +3,7 @@
  
  * File:   source/SurfNormSource.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,14 +70,46 @@ namespace SDef
 SurfNormSource::SurfNormSource(const std::string& K) :
   attachSystem::FixedComp(K,0),
   particleType(1),angleSpread(0.0),surfNum(0),
-  cutEnergy(0.0)
+  cutEnergy(0.0),height(0.0),weight(1.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param K :: main keyname 
   */
 {}
 
+SurfNormSource::SurfNormSource(const SurfNormSource& A) : 
+  attachSystem::FixedComp(A),
+  particleType(A.particleType),angleSpread(A.angleSpread),
+  surfNum(A.surfNum),cutEnergy(A.cutEnergy),height(A.height),
+  weight(A.weight),Energy(A.Energy),EWeight(A.EWeight)
+  /*!
+    Copy constructor
+    \param A :: SurfNormSource to copy
+  */
+{}
 
+SurfNormSource&
+SurfNormSource::operator=(const SurfNormSource& A)
+  /*!
+    Assignment operator
+    \param A :: SurfNormSource to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      particleType=A.particleType;
+      angleSpread=A.angleSpread;
+      surfNum=A.surfNum;
+      cutEnergy=A.cutEnergy;
+      height=A.height;
+      weight=A.weight;
+      Energy=A.Energy;
+      EWeight=A.EWeight;
+    }
+  return *this;
+}
 
 SurfNormSource::~SurfNormSource() 
   /*!
@@ -294,8 +326,10 @@ SurfNormSource::createAll(const FuncDataBase& Control,
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-   */
+    \param FC :: FixedComp to get surface from
+    \param sideIndex :: link point for surface
+    \param souceCard :: Source Term [output]
+  */
 {
   ELog::RegMethod RegA("SurfNormSource","createAll<FC,linkIndex>");
 

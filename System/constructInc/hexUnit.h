@@ -33,22 +33,9 @@ namespace constructSystem
   \brief Deals with a number of tubes in a plate
  */
 
-class hexUnit
+class hexUnit : public gridUnit
 {
  private:  
-
-  bool empty;                       ///< Flag to turn cell off
-  bool cut;                         ///< Flag if cell cut by outer boundary
-  int iA;                           ///< Index A
-  int iB;                           ///< Index B
-  Geometry::Vec3D Centre;           ///< Centre 
-
-  std::vector<hexUnit*> hexLink;    ///< Links
-  std::vector<int> cylSurf;         ///< Cylinder numbers
-  std::vector<int> surfKey;         ///< Surf keys
-  int cellNumber;                   ///< Designated cell number
-  
-  std::string cutStr;               ///< External cutting surf
   
  public:
 
@@ -60,33 +47,7 @@ class hexUnit
   hexUnit& operator=(const hexUnit&); 
   ~hexUnit() {}  ///< Destructor
 
-  /// Index value 
-  int getIndex() const { return 1000*iA+iB; }
-  /// Void cell
-  bool isEmpty() const { return empty; }
-  bool isComplete() const;
-  /// access cutter flag
-  bool isCut() const { return cut; }
-  bool isConnected(const hexUnit&) const;
-  /// access cutter string
-  const std::string& getCut() const { return cutStr; }
-  size_t nLinks() const;
-  /// Access centre
-  const Geometry::Vec3D& getCentre() const { return Centre; }
-  void setSurf(const size_t,const int); 
-  /// Simple setter
-  void setCutString(const std::string& S) { cutStr=S; }
-  void clearLinks();
-
-  bool hasLink(const size_t) const;
-
-  void setCyl(const int);
-  void addCyl(const int);
-
-  std::string getShell() const;
-  std::string getInner() const;
-
-  void write(std::ostream&) const;
+  bool isConnected(const gridUnit&) const;
 
 };
 

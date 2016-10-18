@@ -77,6 +77,11 @@
 #include "masterRotate.h"
 #include "objectRegister.h"
 #include "ChipIRSource.h"
+#include "WorkData.h"
+#include "activeUnit.h"
+#include "ActiveWeight.h"
+#include "ActivationSource.h"
+#include "SourceSelector.h"
 
 namespace SDef
 {
@@ -211,11 +216,7 @@ sourceSelection(Simulation& System,
 
   const long int linkIndex=getLinkIndex(DSnd);
 
-  if (IParam.flag("sdefVoid"))
-    {
-      sourceCard.deactivate();
-      return;      
-    }
+  // NOTE: No return to allow active SSW systems
 
   // If a chipIR style directional source
   if (IParam.flag("sdefFile"))
@@ -224,8 +225,10 @@ sourceSelection(Simulation& System,
       return;
     }
   
-  const std::string sdefType=IParam.getValue<std::string>("sdefType");
-  ELog::EM<<"SDEF == "<<sdefType<<ELog::endDiag;
+  std::string sdefType=IParam.getValue<std::string>("sdefType");
+  if (sdefType.empty() && IParam.hasKey("kcode") &&
+      IParam.flag("kcode"))
+    sdefType="kcode";
   
   if (sdefType=="TS1")
     SDef::createTS1Source(Control,sourceCard);
@@ -254,6 +257,11 @@ sourceSelection(Simulation& System,
     SDef::createGammaSource(Control,"gammaSource",sourceCard);
   else if (sdefType=="Laser" || sdefType=="laser")
     SDef::createGammaSource(Control,"laserSource",sourceCard);
+  else if (sdefType=="Activation" || sdefType=="activation")
+    activationSelection(System,IParam);
+  else if (sdefType=="ActiveWeight" || sdefType=="activeWeight")
+    activeWeight(System,IParam);
+  //    SDef::activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
       if (FCPtr)
@@ -277,6 +285,7 @@ sourceSelection(Simulation& System,
     }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
+      ELog::EM<<"SDEF == :: Beam"<<ELog::endDiag;
       if (FCPtr)
 	SDef::createBeamSource(Control,"beamSource",
 			       *FCPtr,linkIndex,sourceCard);
@@ -302,9 +311,15 @@ sourceSelection(Simulation& System,
       // Basic TS2 source
       SDef::createTS2Source(Control,sourceCard);
     }
+  else if (sdefType=="kcode")
+    {
+      ELog::EM<<"kcode sdef selected"<<ELog::endDiag;
+    }
   else
     {
       ELog::EM<<"sdefType :\n"
+	"Activation :: Activation source \n"
+        "ActiveWeight :: Activation weighted source \n"
 	"TS1 :: Target station one \n"
 	"TS2 :: Target station two \n"
 	"TS1Gauss :: Target station one [old gaussian beam] sigma = 15 mm \n"
@@ -319,8 +334,152 @@ sourceSelection(Simulation& System,
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	
+  if (IParam.flag("sdefVoid"))
+    sourceCard.deactivate();
 
   return;
 }
 
+void
+activationSelection(Simulation& System,
+                     const mainSystem::inputParam& IParam)
+ /*!
+    Select all the info for activation output from
+    fluxes.
+    \param System :: Simuation to use
+    \param IParam :: input parameters
+   */
+{
+  ELog::RegMethod RegA("SourceSelector","activationSelection");
+
+
+  const size_t nP=IParam.setCnt("activation");
+
+  Geometry::Vec3D APt,BPt;
+  std::string OName="Data.ssw";
+  std::string cellDir="Cell";
+  size_t timeSeg(1);
+  size_t nVol=System.getPC().getNPS();
+  
+  for(size_t index=0;index<nP;index++)
+    {
+      std::string eMess
+	("Insufficient item for activation["+StrFunc::makeString(index)+"]");
+      const std::string key=
+	IParam.getValueError<std::string>("activation",index,0,eMess);
+      eMess+=" at key "+key;
+      if (key=="help")
+        {
+          ELog::EM<<"activation help:"<<ELog::endBasic;
+          ELog::EM<<"-- timeStep index :: sets the time step from cinder\n"
+                  <<"-- box Vec3D Vec3D :: corner points of box to sample\n"
+                  <<"-- out string :: output file [def:Data.ssw]\n"
+                  <<"-- cell string :: cell header name [def: Cell]\n"
+                  <<"-- nVol size :: number of point for vol sample [def: npts]"
+                  <<ELog::endBasic;
+        }
+      else if (key=="box")
+        {
+          size_t ptI(1);
+          APt=IParam.getCntVec3D("activation",index,ptI,
+                               "Start point of box not defined");
+          BPt=IParam.getCntVec3D("activation",index,ptI,
+                               "End point of box not defined");
+        }
+      else if (key=="out")
+        {
+          OName=IParam.getValueError<std::string>("activation",index,1,eMess);
+        }
+      else if (key=="cell")
+        {
+          cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
+        }
+      else if (key=="timeStep")
+        {
+          timeSeg=IParam.getValueError<size_t>("activation",index,1,eMess);
+        }
+      else if (key=="nVol")
+        {
+          nVol=IParam.getValueError<size_t>("activation",index,1,eMess);
+        }
+      else
+        {
+          throw ColErr::InContainerError<std::string>
+            (key,"Key not found for activation");
+        }
+    }
+  
+  SDef::ActivationSource AS;
+  AS.setBox(APt,BPt);
+  AS.setTimeSegment(timeSeg);
+  AS.setNPoints(nVol);
+  AS.createSource(System,cellDir,OName);
+
+  return;
+}
+  
+void
+activeWeight(Simulation& System,
+		    const mainSystem::inputParam& IParam)
+  /*!
+    Select all the info for activation output
+    \param System :: Simuation to use
+    \param IParam :: input parameters
+   */
+{
+  ELog::RegMethod RegA("SourceSelector","activationSelection");
+
+  //File for input/
+  const std::string OName=
+    IParam.getDefValue<std::string>("test.source","actFile",0,1);
+
+  size_t index(0);
+  const Geometry::Vec3D APt=
+    IParam.getCntVec3D("actBox",0,index,"Start Point of box not defined");
+  const Geometry::Vec3D BPt=
+    IParam.getCntVec3D("actBox",0,index,"End Point of box not defined");
+
+  // WEIGHTING:
+  index=0;
+  const Geometry::Vec3D CPoint=
+    IParam.getCntVec3D("actBias",0,index,"Start Point of box not defined");
+  const Geometry::Vec3D Axis=
+    IParam.getCntVec3D("actBias",0,index,"Axis Line not defined");
+  const double distW=IParam.getDefValue<double>(2.0,"actBias",0,index);
+  const double angleW=IParam.getDefValue<double>(2.0,"actBias",0,index+1);
+
+  // MATERIAL:
+  std::vector<std::string> MatName;
+  std::vector<std::string> MatFile;
+  const size_t nP=IParam.setCnt("actMat");
+  for(size_t index=0;index<nP;index++)
+    {
+      const size_t nItems=IParam.itemCnt("actMat",index);
+      for(size_t j=0;j<nItems+1;j+=2)
+	{
+	  MatName.push_back
+	    (IParam.getValueError<std::string>
+	     ("actMat",index,j,"Material Name"));
+	  MatFile.push_back
+	    (IParam.getValueError<std::string>
+	     ("actMat",index,j+1,"Material File"));
+	}
+    }
+
+
+  SDef::ActiveWeight AS;
+  AS.setBiasConst(CPoint,Axis,distW,angleW);
+  AS.setBox(APt,BPt);
+
+  for(size_t i=0;i<MatName.size();i++)
+    AS.addMaterial(MatName[i],MatFile[i]);
+
+  AS.setNPoints(System.getPC().getNPS());
+  AS.createSource(System,OName);
+
+  return;
+}
+  
+
+  
 } // NAMESPACE SDef

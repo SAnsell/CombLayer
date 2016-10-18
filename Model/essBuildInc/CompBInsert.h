@@ -45,10 +45,10 @@ class CompBInsert : public attachSystem::ContainedComp,
   int cellIndex;                 ///< Cell index
 
   size_t NBox;                   ///< number of boxes
-  std::vector<double> width;     ///< width of each box
-  std::vector<double> height;
-  std::vector<double> length;
-  std::vector<int> mat;
+  std::vector<double> width;     ///< inner width of each box
+  std::vector<double> height;    ///< inner height of each box
+  std::vector<double> length;    ///< extent of each box
+  std::vector<int> mat;          ///< inner material 
 
   size_t NWall;                   ///< Number of walls
   std::vector<double> wallThick;  ///< wall thickness

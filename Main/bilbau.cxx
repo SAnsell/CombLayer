@@ -128,7 +128,6 @@ main(int argc,char* argv[])
       bibSystem::makeBib BibObj;
       World::createOuterObjects(*SimPtr);
       BibObj.build(*SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
             
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

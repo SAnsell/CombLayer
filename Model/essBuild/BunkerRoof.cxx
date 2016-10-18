@@ -222,14 +222,14 @@ BunkerRoof::createSector(Simulation& System,
   
   ModelSupport::LayerDivide3D LD3(keyName+"mainRoof"+
 				  StrFunc::makeString(sectNum));
-  
+
   // Front/back??
   LD3.setSurfPair(0,innerSurf,outerSurf);
   LD3.setSurfPair(1,lwIndex,rwIndex);
   LD3.setSurfPair(2,baseSurf,topSurf);
   LD3.setDivider(divider);
-  
-  const bool AFlag (activeRoof & (1 >> sectNum));
+
+  const bool AFlag (activeRoof & (1 << sectNum));
 
   if (AFlag)
     {

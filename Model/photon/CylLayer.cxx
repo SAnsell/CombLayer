@@ -3,7 +3,7 @@
  
  * File:   photon/CylLayer.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,8 +65,9 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "LayerComp.h"
+#include "BoundOuter.h"
 #include "CylLayer.h"
 
 namespace photonSystem
@@ -89,7 +90,8 @@ LInfo::resize(const size_t N)
 }
       
 CylLayer::CylLayer(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::BoundOuter(),
   layerIndex(ModelSupport::objectRegister::Instance().cell(Key)), 
   cellIndex(layerIndex+1)
   /*!
@@ -105,10 +107,10 @@ CylLayer::~CylLayer()
 {}
 
 CylLayer::CylLayer(const CylLayer& A) :
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::BoundOuter(A),
   layerIndex(A.layerIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),outerRadius(A.outerRadius),
+  outerRadius(A.outerRadius),
   nLayers(A.nLayers),LVec(A.LVec)
   /*!
     Copy constructor
@@ -127,13 +129,9 @@ CylLayer::operator=(const CylLayer& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::BoundOuter::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       outerRadius=A.outerRadius;
       nLayers=A.nLayers;
       LVec=A.LVec;
@@ -160,12 +158,9 @@ CylLayer::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CylLayer","populate");
 
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
+
+  // Master values
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
@@ -214,9 +209,7 @@ CylLayer::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("CylLayer","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }
@@ -230,8 +223,12 @@ CylLayer::createSurfaces()
   ELog::RegMethod RegA("CylLayer","createSurfaces");
 
   // Outer surface:
-  ModelSupport::buildCylinder(SMap,layerIndex+8,
-			      Origin,Y,outerRadius);
+  if (!(BoundOuter::setFlag & 2))
+    {
+      ModelSupport::buildCylinder(SMap,layerIndex+8,
+				  Origin,Y,outerRadius);
+      outerStruct.procSurfNum(-SMap.realSurf(layerIndex+8));
+    }
 	  
   // Divide plane
   int index(layerIndex);
@@ -273,7 +270,8 @@ CylLayer::createObjects(Simulation& System)
 
       // Inner cell:
       if (LI.nDisk==1)
-	Out=ModelSupport::getComposite(SMap,layerIndex," -8 ");
+	Out=outerStruct.display();
+      //	Out=ModelSupport::getComposite(SMap,layerIndex," -8 ");
       else 
 	Out=ModelSupport::getComposite(SMap,subIndex," -7 ");
 	    
@@ -290,15 +288,16 @@ CylLayer::createObjects(Simulation& System)
       // Outer cell [if required]:
       if (LI.nDisk>1)
 	{
-	  Out=ModelSupport::getComposite(SMap,subIndex,layerIndex," 7 -8M ");
+	  Out=ModelSupport::getComposite(SMap,subIndex," 7 ");
+	  Out+=outerStruct.display();
 	  System.addCell(MonteCarlo::Qhull
 			 (cellIndex++,LI.Mat.back(),LI.Temp.back(),
 			  Out+layOut));
 	}
       index+=100;
     }
-  Out=ModelSupport::getComposite(SMap,layerIndex,index," 1 -8 -1M");
-  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,layerIndex,index," 1 -1M");
+  addOuterSurf(Out+outerStruct.display());
   return; 
 }
 

@@ -71,6 +71,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -273,7 +274,7 @@ FREIA::build(Simulation& System,
   ELog::RegMethod RegA("FREIA","build");
 
   ELog::EM<<"\nBuilding FREIA on : "<<GItem.getKeyName()<<ELog::endDiag;
-
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
@@ -302,7 +303,8 @@ FREIA::build(Simulation& System,
   
   // First (green chopper)
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  ChopperA->setZVertical();
+  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -311,16 +313,18 @@ FREIA::build(Simulation& System,
   DDisk->setOffsetFlag(1);  // Z direction
   DDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
 
-  return;
+
     // First (green chopper)
   ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->getKey("Main").setAxisControl(3,ZVert);
+  ChopperB->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperB->createAll(System,ChopperA->getKey("Beam"),2);
-
+  
   // Double disk chopper
   WFMDisk->addInsertCell(ChopperB->getCell("Void"));
   WFMDisk->setCentreFlag(3);  // Z direction
   WFMDisk->setOffsetFlag(1);  // Z direction
-  WFMDisk->createAll(System,ChopperB->getKey("Beam"),0);
+  WFMDisk->createAll(System,ChopperB->getKey("BuildBeam"),0);
 
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
@@ -330,12 +334,14 @@ FREIA::build(Simulation& System,
 
   // 8.5m FOC chopper
   ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperC->getKey("Main").setAxisControl(3,ZVert);
+  ChopperC->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperC->createAll(System,BendD->getKey("Guide0"),2);
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
   FOCDiskC->setCentreFlag(3);  // Z direction
   FOCDiskC->setOffsetFlag(1);  // Z direction
-  FOCDiskC->createAll(System,ChopperC->getKey("Beam"),0);
+  FOCDiskC->createAll(System,ChopperC->getKey("BuildBeam"),0);
 
 
   VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -346,12 +352,14 @@ FREIA::build(Simulation& System,
 
     // 8.5m FOC chopper
   ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperD->getKey("Main").setAxisControl(3,ZVert);
+  ChopperD->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperD->createAll(System,BendE->getKey("Guide0"),2);
   // Double disk chopper
   WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
   WBC2Disk->setCentreFlag(3);  // Z direction
   WBC2Disk->setOffsetFlag(1);  // Z direction
-  WBC2Disk->createAll(System,ChopperD->getKey("Beam"),0);
+  WBC2Disk->createAll(System,ChopperD->getKey("BuildBeam"),0);
 
   VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
@@ -361,21 +369,23 @@ FREIA::build(Simulation& System,
 
   // 11.1m FOC chopper
   ChopperE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperE->getKey("Main").setAxisControl(3,ZVert);
+  ChopperE->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperE->createAll(System,BendF->getKey("Guide0"),2);
 
   // Double disk chopper
   FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
   FOC2Disk->setCentreFlag(3);  // Z direction
   FOC2Disk->setOffsetFlag(1);  // Z direction
-  FOC2Disk->createAll(System,ChopperE->getKey("Beam"),0);
-
+  FOC2Disk->createAll(System,ChopperE->getKey("BuildBeam"),0);  
+  
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
   BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
-    // using 7 : mid point
+    // using 7 : mid point 
   FocusWall->addInsertCell(BInsert->getCell("Void"));
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
@@ -383,34 +393,40 @@ FREIA::build(Simulation& System,
   
   OutPitA->addInsertCell(voidCell);
   OutPitA->addFrontWall(bunkerObj,2);
+  OutPitA->setAxisControl(3,ZVert);
   OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
   OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
                     OutPitA->getKey("Mid").getSignedFullRule(-2));
-  OutACut->createAll(System,OutPitA->getKey("Inner"),2);
+  OutACut->createAll(System,FocusWall->getKey("Guide0"),2);
 
   // 15m WBC chopper
   ChopperOutA->addInsertCell(OutPitA->getCell("Void"));
+  ChopperOutA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperOutA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   // Double disk chopper
   WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
   WBC3Disk->setCentreFlag(3);  // Z direction
   WBC3Disk->setOffsetFlag(1);  // Z direction
-  WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
+  WBC3Disk->createAll(System,ChopperOutA->getKey("BuildBeam"),0);
 
   ChopperOutB->addInsertCell(OutPitA->getCell("Void"));
+  ChopperOutB->getKey("Main").setAxisControl(3,ZVert);
+  ChopperOutB->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperOutB->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   // Double disk chopper
   FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
   FOC3Disk->setCentreFlag(3);  // Z direction
   FOC3Disk->setOffsetFlag(1);  // Z direction
-  FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
+  FOC3Disk->createAll(System,ChopperOutB->getKey("BuildBeam"),0);
   
   JawPit->addInsertCell(voidCell);
-  JawPit->createAll(System,OutPitA->getKey("Inner"),0);
+  JawPit->setAxisControl(-3,ZVert);
+  JawPit->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
@@ -421,9 +437,9 @@ FREIA::build(Simulation& System,
   ShieldA->setBack(JawPit->getKey("Mid"),1);
   ShieldA->createAll(System,OutPitA->getKey("Inner"),0);
   //  ShieldA->insertComponent(System,"Void",*VPipeOutA)
-  
+
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->createAll(System,*ShieldA,1);
+  VPipeOutA->createAll(System,ChopperOutA->getKey("Beam"),2);
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);

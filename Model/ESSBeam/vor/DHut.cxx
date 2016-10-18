@@ -80,7 +80,7 @@ namespace essSystem
 {
 
 DHut::DHut(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Outer",6),
+  attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutIndex+1)
@@ -141,9 +141,11 @@ DHut::createUnitVector(const attachSystem::FixedComp& FC,
   yStep+=voidLength/2.0+concThick+feThick;
 
   attachSystem::FixedComp& Outer=getKey("Outer");
+  attachSystem::FixedComp& Mid=getKey("Mid");
   attachSystem::FixedComp& Inner=getKey("Inner");
 
   Outer.createUnitVector(FC,sideIndex);
+  Mid.createUnitVector(FC,sideIndex);
   Inner.createUnitVector(FC,sideIndex);
   applyOffset();
   setDefault("Inner");
@@ -270,6 +272,7 @@ DHut::createLinks()
   ELog::RegMethod RegA("DHut","createLinks");
 
   attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
+  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
   // INNER VOID
@@ -289,7 +292,23 @@ DHut::createLinks()
 
   
     // OUTER VOID
-  const double TThick(feThick+concThick);
+  double TThick(feThick);
+  midFC.setConnect(0,Origin-Y*(TThick+voidLength/2.0),-Y);
+  midFC.setConnect(1,Origin+Y*(TThick+voidLength/2.0),Y);
+  midFC.setConnect(2,Origin-X*(TThick+voidWidth/2.0),-X);
+  midFC.setConnect(3,Origin+X*(TThick+voidWidth/2.0),X);
+  midFC.setConnect(4,Origin-Z*(TThick+voidDepth),-Z);
+  midFC.setConnect(5,Origin+Z*(TThick+voidHeight),Z);  
+
+  midFC.setLinkSurf(0,-SMap.realSurf(hutIndex+101));
+  midFC.setLinkSurf(1,SMap.realSurf(hutIndex+102));
+  midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+103));
+  midFC.setLinkSurf(3,SMap.realSurf(hutIndex+104));
+  midFC.setLinkSurf(4,-SMap.realSurf(hutIndex+105));
+  midFC.setLinkSurf(5,SMap.realSurf(hutIndex+106));
+
+  // OUTER VOID
+  TThick+=concThick;
   outerFC.setConnect(0,Origin-Y*(TThick+voidLength/2.0),-Y);
   outerFC.setConnect(1,Origin+Y*(TThick+voidLength/2.0),Y);
   outerFC.setConnect(2,Origin-X*(TThick+voidWidth/2.0),-X);

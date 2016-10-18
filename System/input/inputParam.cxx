@@ -302,7 +302,7 @@ size_t
 inputParam::setCnt(const std::string& K) const
   /*!
     Count number of groups
-    \param K :: Key to seach
+    \param K :: Key to search
     \return Grp count 
    */
 {

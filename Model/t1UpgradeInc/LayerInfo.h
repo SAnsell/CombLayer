@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/LayerInfo.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@ class LayerInfo
   void setMat(const int,const double);
   void setRounds(const double,const double,const double);
 
-  double front() const { return V[0]; }
+  ///\cond SIMPLE
+  double front() const { return V[0]; }  
   double back() const { return V[1]; }
   double left() const { return V[2]; }  
   double right() const { return V[3]; }  
@@ -71,7 +72,7 @@ class LayerInfo
   
   int getMat() const { return mat; }
   double getTemp() const { return Temp; }
-  
+  ///\endcond SIMPLE
 };
 
 }

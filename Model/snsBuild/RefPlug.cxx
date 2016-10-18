@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "RefPlug.h"
@@ -74,7 +75,7 @@ namespace snsSystem
 
 RefPlug::RefPlug(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
   /*!
@@ -86,10 +87,9 @@ RefPlug::RefPlug(const std::string& Key) :
 RefPlug::RefPlug(const RefPlug& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),height(A.height),depth(A.depth),
+  attachSystem::FixedOffset(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
+  height(A.height),depth(A.depth),
   radius(A.radius),temp(A.temp),mat(A.mat)
   /*!
     Copy constructor
@@ -109,13 +109,8 @@ RefPlug::operator=(const RefPlug& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       height=A.height;
       depth=A.depth;
       radius=A.radius;
@@ -149,13 +144,8 @@ RefPlug::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("RefPlug","populate");
-
+  FixedOffset::populate(Control);
     // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
 
@@ -189,16 +179,16 @@ RefPlug::populate(const FuncDataBase& Control)
 }
 
 void
-RefPlug::createUnitVector(const attachSystem::FixedComp& FC)
+RefPlug::createUnitVector(const attachSystem::FixedComp& FC,
+                          const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
   */
 {
   ELog::RegMethod RegA("RefPlug","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  FixedOffset::applyOffset();
 
   return;
 }
@@ -447,17 +437,19 @@ RefPlug::getLayerSurf(const size_t layerIndex,
 
 void
 RefPlug::createAll(Simulation& System,
-		   const attachSystem::FixedComp& FC)
+		   const attachSystem::FixedComp& FC,
+                   const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: FixedComponent for origin
+    \param FC :: FixedComp for origin
+    \param sideIndex :: link point
    */
 {
   ELog::RegMethod RegA("RefPlug","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

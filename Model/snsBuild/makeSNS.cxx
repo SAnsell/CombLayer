@@ -64,6 +64,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -119,7 +120,7 @@ makeSNS::build(Simulation* SimPtr,
   tarOuterObj->createAll(*SimPtr,World::masterOrigin());
 
   refObj->addInsertCell(voidCell);
-  refObj->createAll(*SimPtr,World::masterOrigin());
+  refObj->createAll(*SimPtr,World::masterOrigin(),0);
 
   attachSystem::addToInsertSurfCtrl(*SimPtr,*refObj,*tarOuterObj);
 

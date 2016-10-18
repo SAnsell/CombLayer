@@ -593,6 +593,32 @@ WorkData::xScale(const double Scale)
   return *this;
 }
 
+double
+WorkData::XInverse(const double YValue) const
+  /*!
+    Given a value Y find the value X that corresponds to it
+    Assumes that Ydata is ordered.
+    \param YValue :: YValue
+    \return X value [linear split]
+   */
+{
+  ELog::RegMethod RegA("WorkData","XInverse");
+  
+  long int index=indexPos(Yvec,DataTYPE::value_type(YValue));
+  const size_t IX=static_cast<size_t>(index);
+  if (index<0 || IX>=Yvec.size())
+    throw ColErr::RangeError<double>(YValue,Yvec.front().getVal(),
+                                     Yvec.back().getVal(),"value out of range");
+
+  const double yA=Yvec[IX].getVal();
+  const double yB=Yvec[IX+1].getVal();
+  const double frac=(YValue-yA)/(yB-yA);
+  ELog::EM<<"IX == "<<IX<<" ::"<<
+    Yvec[IX]<<" ++ "<<YValue<<" ++ "<<Yvec[IX+1]<<ELog::endDiag;
+
+  return XCoord[IX]+frac*(XCoord[IX+1]-XCoord[IX]);
+}
+
 
 WorkData&
 WorkData::addFactor(const WorkData& A,const double Scale)
@@ -762,7 +788,7 @@ WorkData::load(const std::string& Fname,const int xCol,
     \return -ve on error / 0 on success
   */ 
 {
-  ELog::RegMethod REgA("WorkData","load");
+  ELog::RegMethod RegA("WorkData","load");
 
   std::ifstream IX;
   if (!Fname.empty())

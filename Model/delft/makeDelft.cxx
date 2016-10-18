@@ -362,6 +362,7 @@ makeDelft::setSource(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
 
+  
   if (IParam.flag("kcode"))
     {
       const size_t NItems=IParam.itemCnt("kcode",0);
@@ -468,9 +469,8 @@ makeDelft::build(Simulation* SimPtr,
     }
   
   makeBlocks(*SimPtr);
-  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
   makeRabbit(*SimPtr);
-  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
+
   // ELog::EM<<"Insert to be removed "<<ELog::endWarn;
   if (ColdMod)
     {

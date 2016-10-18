@@ -46,7 +46,11 @@ class makePipe
 {
  private:
 
-  std::shared_ptr<pipeSystem::pipeTube> TubeObj;   ///< Main tube
+
+  std::shared_ptr<pipeSystem::pipeTube> ATube;   ///< pre-tube
+  std::shared_ptr<pipeSystem::pipeTube> BTube;   ///< Main tube
+  std::shared_ptr<pipeSystem::pipeTube> CTube;   ///< collector tube
+
 
  public:
   

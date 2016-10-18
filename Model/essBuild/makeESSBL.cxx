@@ -80,12 +80,14 @@
 #include "ODIN.h"
 #include "BEER.h"
 #include "BIFROST.h"
+#include "CSPEC.h"
+#include "DREAM.h"
 #include "ESTIA.h"
 #include "FREIA.h"
 #include "LOKI.h"
+#include "MAGIC.h"
+#include "MIRACLES.h"
 #include "NMX.h"
-#include "DREAM.h"
-#include "CSPEC.h"
 #include "VESPA.h"
 #include "VOR.h"
 
@@ -224,8 +226,20 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="LOKI")
     {
       // LOKI beamline
-      LOKI LokiBL("loki");
-      LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      LOKI lokiBL("loki");
+      lokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="MAGIC")
+    {
+      MAGIC magicBL("magic");
+      magicBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
+
+  else if (beamName=="MIRACLES")
+    {
+      // NMX beamline
+      MIRACLES miraclesBL("miracles");
+      miraclesBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
     {

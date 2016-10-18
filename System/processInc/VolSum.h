@@ -3,7 +3,7 @@
  
  * File:   processInc/VolSum.h
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,12 +47,12 @@ class VolSum
   typedef std::map<int,volUnit> tvTYPE; 
   // Input data
   Geometry::Vec3D Origin;                   ///< Origin
-  Geometry::Vec3D X;                        ///< Axis of box
-  Geometry::Vec3D Y;                       
-  Geometry::Vec3D Z;
+  Geometry::Vec3D X;                        ///< Axis of box (X)
+  Geometry::Vec3D Y;                        ///< Axis of box (Y)
+  Geometry::Vec3D Z;                        ///< Axis of box (Z)
 
-  double fracX;
-  double fracY;
+  double fracX;                             ///< area xy-plane to total surface
+  double fracY;                             ///< area-xyplane / total surface
   
   double fullVol;                           ///< Full volume  
   double totalDist;                         ///< Total distance

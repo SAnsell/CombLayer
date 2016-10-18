@@ -48,13 +48,16 @@ class FixedComp
   Geometry::Vec3D Z;            ///< Z-coordinate 
   Geometry::Vec3D Origin;       ///< Origin  
 
-  Geometry::Vec3D beamOrigin;   ///< Neutron origin [if different]
-  Geometry::Vec3D beamAxis;     ///< Neutron direction [if different]
+  Geometry::Vec3D beamOrigin;    ///< Neutron origin [if different]
+  Geometry::Vec3D beamAxis;      ///< Neutron direction [if different]
+  Geometry::Vec3D orientateAxis; ///< Axis for reorientation
+  long int primeAxis;      ///< X/Y/Z Axis for reorientation [-ve for delay]
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
   static void computeZOffPlane(const Geometry::Vec3D&,
 			       const Geometry::Vec3D&,
 			       Geometry::Vec3D&);
+  
   void makeOrthogonal();
   
  public:
@@ -70,10 +73,10 @@ class FixedComp
 
   const LinkUnit& operator[](const size_t) const; 
 
+  void reOrientate();
   void reOrientate(const size_t,const Geometry::Vec3D&);
   
   // Operator Set:
-  void createUnitVector();
   void createUnitVector(const FixedComp&);
   void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   void createUnitVector(const FixedComp&,const long int);
@@ -185,6 +188,9 @@ class FixedComp
   void calcLinkAxis(const long int,Geometry::Vec3D&,
 		    Geometry::Vec3D&,Geometry::Vec3D&) const;
 
+  /// remove secondary control on axis
+  void clearAxisControl() { primeAxis=0; }
+  void setAxisControl(const long int,const Geometry::Vec3D&);
   virtual void applyRotation(const localRotate&);
   virtual void applyRotation(const Geometry::Vec3D&,const double);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);

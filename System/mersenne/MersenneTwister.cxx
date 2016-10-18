@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   mersenne/MersenneTwister.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ MTRand::randInt()
   // Pull a 32-bit integer from the generator state
   // Every other access function simply transforms the numbers extracted here
 	
-  if(left == 0) reload();
+  if(!left) reload();
   --left;
 		
   uint32 s1;
@@ -268,9 +268,9 @@ MTRand::seed(uint32 *const bigSeed, const uint32 seedLength)
  */
 {
   initialize(19650218UL);
-  int i = 1;
+  uint32 i = 1;
   uint32 j = 0;
-  int k = (N > seedLength) ? static_cast<int>(N) : seedLength;
+  uint32 k = (N > seedLength) ? N : seedLength;
   for( ; k; --k )
     {
       state[i] =
@@ -284,7 +284,7 @@ MTRand::seed(uint32 *const bigSeed, const uint32 seedLength)
   for( k = N - 1; k; --k )
     {
       state[i] =
-      state[i] ^ ( (state[i-1] ^ (state[i-1] >> 30)) * 1566083941U );
+	state[i] ^ ( (state[i-1] ^ (state[i-1] >> 30)) * 1566083941U );
       state[i] -= i;
       state[i] &= 0xffffffffU;
       ++i;
@@ -333,7 +333,7 @@ MTRand::initialize(const uint32 seed)
 {
   uint32 *s = state;
   uint32 *r = state;
-  int i = 1;
+  uint32 i = 1;
   *s++ = seed & 0xffffffffUL;
   for( ; i < N; ++i )
     {
@@ -363,6 +363,26 @@ MTRand::reload()
   return;
 }
 
+void
+MTRand::createSave() 
+  /*!
+    Create a saved array
+   */
+{
+  save(saveState);
+  return;
+}
+
+void
+MTRand::loadSave()
+  /*!
+    Load a saved array
+   */
+{
+  load(saveState);
+  return;
+}
+
 
 void 
 MTRand::save(uint32* saveArray) const
@@ -371,11 +391,12 @@ MTRand::save(uint32* saveArray) const
     \param saveArray :: Array to place data [must be pre-allocated]
   */
 {
-  uint32 *sa = saveArray;
+  uint32* sa = saveArray;
   const uint32 *s = state;
   int i = N;
   for(; i--; *sa++ = *s++) {}
   *sa = left;
+  return;
 }
 
 
@@ -386,10 +407,10 @@ MTRand::load(uint32 *const loadArray)
     \param loadArray :: Array to get data [N Items long]
   */
 {
-  uint32 *s = state;
-  uint32 *la = loadArray;
-  int i = N;
-  for(; i--; *s++ = *la++) {}
+  uint32* s = state;
+  uint32* la = loadArray;
+  for(uint32 i=N;i;i--)
+    *s++ = *la++;
   left = *la;
   pNext = &state[N-left];
 }

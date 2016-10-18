@@ -24,15 +24,15 @@
 
 /*!
   \struct IncSeq
-  \brief allows a simple increment to take place
+  \brief Allows a simple increment to take place
   \author S. Ansell
   \version 1.0
   \date September 2012
 */
 struct IncSeq{ 
-  size_t v;
-  size_t operator()(){return v++;} 
-  IncSeq():v(0){}
+  size_t v;                          ///< Value 
+  size_t operator()(){return v++;}   ///< increment
+IncSeq():v(0){}                      ///< Constructor
 };
 
 size_t lowBitIndex(const unsigned int&);
@@ -100,7 +100,9 @@ T d2dxQuadratic(const typename std::vector<T>::const_iterator&,
 		const typename std::vector<T>::const_iterator&);
 
 template<typename T>
-double norm(const std::vector<T>&);       ///< Calculate the norm of a vector (\f$ ||V|| \f$)
+T norm(const std::vector<T>&);
+
+
  
 /// Create an index of the vector in sorted order.
 template<typename T,typename U> 
@@ -133,6 +135,12 @@ namespace mathFunc
   template<template<typename T,typename Alloc>  class V,typename T,typename Alloc> 
     T minDifference(const V<T,Alloc>&,const T&);
   //  template<typename LTYPEtypename T> T minSeperation(const LTYPE<T>&);
+
+  template<typename T>
+  std::vector<T> filter(const std::vector<T>&,const size_t);
+
+  template<typename T>
+  T mean(const std::vector<T>&);
 
 }
 

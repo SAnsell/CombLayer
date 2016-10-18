@@ -44,7 +44,7 @@ class RingSeal :
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
- private:
+ protected:
   
   const int ringIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
@@ -53,10 +53,16 @@ class RingSeal :
   size_t NTrack;        ///< Track number [for find cells]
   double radius;        ///< main innner radius
   double deltaRad;      ///< main innner radius
+  double deltaAngle;      ///< main innner radius
   double thick;         ///< main inner thickness
   
-  int mat;             ///< Port Seal material
-      
+  int mat;              ///< Port Seal material
+
+  bool standardInsert;          ///< If set do standard object insert
+  int setFlag;                  ///< Structures set
+  HeadRule innerStruct;         ///< Front face
+  HeadRule outerStruct;         ///< Back face
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
@@ -70,6 +76,12 @@ class RingSeal :
   RingSeal(const RingSeal&);
   RingSeal& operator=(const RingSeal&);
   virtual ~RingSeal();
+
+  /// Normal object insert path
+  void setStandardInsert() { standardInsert=1; }
+  void setInner(const HeadRule&);
+  void setInnerExclude(const HeadRule&);
+  void setOuter(const HeadRule&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

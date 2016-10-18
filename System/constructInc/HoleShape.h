@@ -55,6 +55,7 @@ class HoleShape : public attachSystem::ContainedComp,
   Geometry::Vec3D rotCentre;       ///< Centre position
   double rotAngle;                 ///< Angle of whole system [true pos]
 
+  size_t cutFlag;                    ///< Add faces to boundary cut [1/2]
   HeadRule frontFace;                ///< Front face
   HeadRule backFace;                 ///< Back face
   
@@ -91,6 +92,7 @@ class HoleShape : public attachSystem::ContainedComp,
   
   void populate(const FuncDataBase&);
 
+  void setCutFaceFlag(const size_t);
   void setFaces(const int,const int);
   void setFaces(const HeadRule&,const HeadRule&);
   void setMasterAngle(const double);

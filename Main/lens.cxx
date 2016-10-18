@@ -107,88 +107,45 @@ main(int argc,char* argv[])
 
   std::string Oname;
   std::vector<std::string> Names;  
-  std::map<std::string,std::string> AddValues;  
-  std::map<std::string,double> IterVal;           // Variable to iterate
-  
-  // PROCESS INPUT:
-  InputControl::mainVector(argc,argv,Names);
-  mainSystem::inputParam IParam;
-  createLensInputs(IParam);
 
-  const int iteractive(IterVal.empty() ? 0 : 1);   
 
-  Simulation* SimPtr=createSimulation(IParam,Names,Oname);
-  if (!SimPtr) return -1;
 
-  // The big variable setting
-  setVariable::LensModel(SimPtr->getDataBase());
-  InputModifications(SimPtr,IParam,Names);
-
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
+  Simulation* SimPtr(0);
   try
     {
-      while(MCIndex<multi)
-	{
-	  if (MCIndex)
-	    {
-	      ELog::EM.setActive(4);    // write error only
-	      ELog::FM.setActive(4);    
-	      ELog::RN.setActive(0);    
-	    }
-	  SimPtr->resetAll();
+      
+      // PROCESS INPUT:
+      InputControl::mainVector(argc,argv,Names);
+      mainSystem::inputParam IParam;
+      createLensInputs(IParam);
+
+            
+      SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+      
+      // The big variable setting
+      setVariable::LensModel(SimPtr->getDataBase());
+      InputModifications(SimPtr,IParam,Names);
+      mainSystem::setVariables(*SimPtr,IParam,Names);
+      mainSystem::setMaterialsDataBase(IParam);
+
+      Simulation* SimPtr=createSimulation(IParam,Names,Oname);
+      if (!SimPtr) return -1;
+
 	  
-	  lensSystem::makeLens lensObj;
-	  World::createOuterObjects(*SimPtr);
-	  lensObj.build(SimPtr);
+      lensSystem::makeLens lensObj;
+      World::createOuterObjects(*SimPtr);
+      lensObj.build(SimPtr);
 
-	  SimPtr->removeComplements();
-	  SimPtr->removeDeadSurfaces(0);         
-
-	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  lensObj.createTally(*SimPtr,IParam);
-
-	  if (createVTK(IParam,SimPtr,Oname))
-	    {
-	      delete SimPtr;
-	      ModelSupport::objectRegister::Instance().reset();
-	      ModelSupport::surfIndex::Instance().reset();
-	      return 0;
-	    }
-	  if (IParam.flag("endf"))
-	    SimPtr->setENDF7();
-
-	  SimProcess::importanceSim(*SimPtr,IParam);
-	  SimProcess::inputProcessForSim(*SimPtr,IParam); // eneryg
-
-	  tallyModification(*SimPtr,IParam);
-	  // Ensure we done loop
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-
-	  // outer void to zero
-	  // RENUMBER:
-	  mainSystem::renumberCells(*SimPtr,IParam);
-
-	  // WEIGHTS:
-	  if (IParam.flag("weight") || IParam.flag("tallyWeight"))
-	    SimPtr->calcAllVertex();
+      mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
+      lensObj.createTally(*SimPtr,IParam);
 
 
-	  do
-	    {
-	      SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	      MCIndex++;
-	    }
-	  while(!iteractive && MCIndex<multi);
-	}
+      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
+      
     }
   catch (ColErr::ExitAbort& EA)
     {
@@ -198,14 +155,19 @@ main(int argc,char* argv[])
     }
   catch (ColErr::ExBase& A)
     {
-      ELog::EM<<"\nEXCEPTION FAILURE :: "
+      ELog::EM<<"EXCEPTION FAILURE :: "
 	      <<A.what()<<ELog::endCrit;
       exitFlag= -1;
     }
-
-  delete SimPtr; 
+  catch (...)
+    {
+      ELog::EM<<"GENERAL EXCEPTION"<<ELog::endCrit;
+      exitFlag=-3;
+    }
+  
+  delete SimPtr;
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
-
 }
+

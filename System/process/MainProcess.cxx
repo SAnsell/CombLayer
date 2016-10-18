@@ -389,17 +389,17 @@ createSimulation(inputParam& IParam,
 
   Simulation* SimPtr;
   if (IParam.flag("PHITS"))
-      SimPtr=new SimPHITS;
+    SimPtr=new SimPHITS;
   else if (IParam.flag("FLUKA"))
-      SimPtr=new SimFLUKA;
+    SimPtr=new SimFLUKA;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else 
     SimPtr=new Simulation;
 
-  if (IParam.flag("mcnp6"))
-    SimPtr->setMcnpType(1);
-
+  // has default value
+  SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+  
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 
   return SimPtr;
@@ -477,7 +477,8 @@ buildFullSimulation(Simulation* SimPtr,
     Carry out the construction of the geometry
     and wieght/tallies
     \param SimPtr :: Simulation point
-    \param IParam
+    \param IParam :: input pararmeter
+    \param OName :: output file name
    */
   
 {

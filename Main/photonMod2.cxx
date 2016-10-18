@@ -75,10 +75,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
-#include "tallyConstructFactory.h"
 #include "World.h"
 #include "SimInput.h"
 
@@ -126,8 +122,6 @@ main(int argc,char* argv[])
       World::createOuterObjects(*SimPtr);
       LObj.build(SimPtr,IParam);
       
-      SDef::sourceSelection(*SimPtr,IParam);
-
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       // Ensure we done loop
       ELog::EM<<"PHOTONMOD : variable hash: "

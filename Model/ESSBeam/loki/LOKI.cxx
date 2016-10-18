@@ -85,6 +85,7 @@
 #include "Bunker.h"
 #include "ChopperUnit.h"
 
+#include "FrontBackCut.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
 #include "Hut.h"

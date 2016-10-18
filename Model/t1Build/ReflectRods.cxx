@@ -72,6 +72,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+#include "gridUnit.h"
 #include "hexUnit.h"
 #include "ReflectRods.h"
 
@@ -790,4 +791,4 @@ ReflectRods::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE ts1System

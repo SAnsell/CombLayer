@@ -203,7 +203,7 @@ ODINvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"odinOutFB",847.0,4.0,4.0,20.0,16.0);
   
   // HUT:
-  Control.addVariable("odinCaveYStep",900.0);
+  Control.addVariable("odinCaveYStep",2900.0);
   Control.addVariable("odinCaveVoidHeight",300.0);
   Control.addVariable("odinCaveVoidDepth",183.0);
   Control.addVariable("odinCaveVoidWidth",600.0);

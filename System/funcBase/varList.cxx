@@ -103,6 +103,18 @@ varList::~varList()
 }
 
 void
+varList::resetActive()
+  /*!
+    Reset the active unit
+  */
+{
+  for(varStore::value_type& VC : varName)
+    VC.second->resetActive();
+      
+}
+
+
+void
 varList::deleteMem() 
   /*!
     Erase and clear the list of variables
@@ -192,11 +204,11 @@ varList::copyVar(const std::string& newKey,const std::string& oldKey)
     \param newKey :: new variable name
     \param oldKey :: existing variable to copy [must exist]
   */
-{
+{ 
   ELog::RegMethod RegA("varList","copyVar");
 
   if (newKey==oldKey) return;
-  
+
   std::map<std::string,FItem*>::iterator ac;
   std::map<std::string,FItem*>::const_iterator bc;
 
@@ -241,7 +253,7 @@ varList::copyVarSet(const std::string& oldHead,const std::string& newHead)
   // NOTE: map is ORDERED
   // Thus we only need to find ONE value and then iterate through
 
-  
+
   std::map<std::string,FItem*>::const_iterator oldMC;
   const size_t subLen=oldHead.length();
   
@@ -381,6 +393,7 @@ varList::addVar(const std::string& Name,const T& Value)
   */
 {
   std::map<std::string,FItem*>::iterator vc;
+
   vc=varName.find(Name);
   FItem* Ptr(0);
   if (vc!=varName.end())

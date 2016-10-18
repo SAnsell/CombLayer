@@ -61,7 +61,6 @@ sinbadSource::sinbadSource() :
 sinbadSource::sinbadSource(const sinbadSource& A) : 
   cutEnergy(A.cutEnergy),weight(A.weight),
   CentPoint(A.CentPoint),Direction(A.Direction),
-  angleSpread(A.angleSpread),radialSpread(A.radialSpread),
   Energy(A.Energy),EWeight(A.EWeight)
   /*!
     Copy constructor
@@ -83,8 +82,6 @@ sinbadSource::operator=(const sinbadSource& A)
       weight=A.weight;
       CentPoint=A.CentPoint;
       Direction=A.Direction;
-      angleSpread=A.angleSpread;
-      radialSpread=A.radialSpread;
       Energy=A.Energy;
       EWeight=A.EWeight;
     }

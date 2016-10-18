@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "CylContainer.h"
@@ -75,7 +76,7 @@ namespace photonSystem
 
 CylContainer::CylContainer(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   cylIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(cylIndex+1),mainCell(0)
   /*!
@@ -86,10 +87,9 @@ CylContainer::CylContainer(const std::string& Key) :
 
 CylContainer::CylContainer(const CylContainer& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),
-  cylIndex(A.cylIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),height(A.height),
+  attachSystem::FixedOffset(A),
+  cylIndex(A.cylIndex),cellIndex(A.cellIndex),
+  radius(A.radius),height(A.height),
   mat(A.mat),temp(A.temp),mainCell(A.mainCell)
   /*!
     Copy constructor
@@ -109,13 +109,8 @@ CylContainer::operator=(const CylContainer& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       radius=A.radius;
       height=A.height;
       mat=A.mat;
@@ -151,12 +146,7 @@ CylContainer::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CylContainer","populate");
 
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   double R,H,T;
   int M;
@@ -190,9 +180,7 @@ CylContainer::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("CylContainer","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }

@@ -28,6 +28,7 @@ namespace essSystem
 {
   class BunkerMainWall;
   class BunkerRoof;
+  class BunkerWall;
   class BunkerInsert;
   
 /*!
@@ -77,6 +78,8 @@ class Bunker : public attachSystem::ContainedComp,
 
   /// Roof component
   std::shared_ptr<BunkerRoof> roofObj;              
+  /// Roof component
+  std::shared_ptr<BunkerWall> wallObj;              
 
   // SIDES:
 

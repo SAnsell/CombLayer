@@ -56,18 +56,13 @@ struct LInfo
 */
 
 class CylLayer : public attachSystem::ContainedComp,
-   public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public attachSystem::BoundOuter
 {
  private:
 
   const int layerIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle rotation [deg]
-  double zAngle;                ///< horizontal rotation [deg]
 
   double outerRadius;                ///< Outer radius
   size_t nLayers;                    ///< Layer count

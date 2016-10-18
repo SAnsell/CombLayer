@@ -322,7 +322,8 @@ objectRegister::getInternalObject(const std::string& Name)
 	{
 	  attachSystem::FixedGroup* FGPtr=
 	    dynamic_cast<attachSystem::FixedGroup*>(mcx->second.get());
-	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	  return (FGPtr && FGPtr->hasKey(tail)) ?
+            &(FGPtr->getKey(tail)) : 0;
 	}
       // Fall through here to test whole name:
     }

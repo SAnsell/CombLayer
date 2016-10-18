@@ -78,7 +78,17 @@ createInputs(inputParam& IParam)
   ELog::RegMethod RegA("MainProcess[F]","createInputs");
 
   std::vector<std::string> RItems(10,"");
+  
+  IParam.regMulti("activation","activation",10000,1);
 
+  // DEPRECATED:
+  IParam.regItem("actFile","actFile");
+  IParam.regItem("actOut","actOut");
+  IParam.regItem("actBox","actBox");
+  IParam.regItem("actTimeStep","actTimeStep");
+  IParam.regItem("actWeight","actWeight");
+  // DEPRECATED (END)
+  
   IParam.regFlag("a","axis");
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
@@ -110,7 +120,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
-  IParam.regFlag("mcnp6","MCNP6");
+  IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regItem("offset","offset",1,4);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
@@ -122,7 +132,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
-  IParam.regItem("SF","sdefFile");
+  IParam.regItem("sdefFile","sdefFile");
   IParam.regDefItem<int>("SI","sdefIndex",1,1);
 
   std::vector<std::string> SItems(3,"");
@@ -186,6 +196,8 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
+  IParam.setDesc("actFile","FluxData for input");
+  IParam.setDesc("actOut","Output source file");
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");
@@ -215,7 +227,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("md5","MD5 track of cells");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
-  IParam.setDesc("MCNP6","MCNP6 output");
+  IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
@@ -223,9 +235,9 @@ createInputs(inputParam& IParam)
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
-  IParam.setDesc("report","Report a position/axis");
+  IParam.setDesc("report","Report a position/axis (show info on points etc)");
   IParam.setDesc("s","RND Seed");
-  IParam.setDesc("SF","File read source");
+  IParam.setDesc("sdefFile","File(s) for source");
   IParam.setDesc("SA","Source Angle [deg]");
   IParam.setDesc("SI","Source Index value [1:2]");
   IParam.setDesc("SObj","Source Initialization Object");

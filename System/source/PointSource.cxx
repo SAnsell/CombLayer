@@ -70,8 +70,8 @@ namespace SDef
 {
 
 PointSource::PointSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),
-  cutEnergy(0.0)
+  FixedOffset(keyName,0),particleType(1),
+  cutEnergy(0.0),angleSpread(0.0),weight(1.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name

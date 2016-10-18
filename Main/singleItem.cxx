@@ -120,7 +120,6 @@ main(int argc,char* argv[])
       singleItemSystem::makeSingleItem singleItemObj;
       World::createOuterObjects(*SimPtr);
       singleItemObj.build(*SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
             

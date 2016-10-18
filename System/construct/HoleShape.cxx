@@ -81,7 +81,8 @@ HoleShape::HoleShape(const std::string& Key) :
   attachSystem::CellMap(),
   holeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(holeIndex+1),shapeType(0),
-  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0)
+  angleOffset(0),radialStep(0.0),radius(0.0),xradius(0.0),
+  cutFlag(0)
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -95,7 +96,7 @@ HoleShape::HoleShape(const HoleShape& A) :
   shapeType(A.shapeType),angleCentre(A.angleCentre),
   angleOffset(A.angleOffset),radialStep(A.radialStep),
   radius(A.radius),xradius(A.xradius),rotCentre(A.rotCentre),
-  rotAngle(A.rotAngle),frontFace(A.frontFace),
+  rotAngle(A.rotAngle),cutFlag(A.cutFlag),frontFace(A.frontFace),
   backFace(A.backFace)
   /*!
     Copy constructor
@@ -124,6 +125,7 @@ HoleShape::operator=(const HoleShape& A)
       radius=A.radius;
       rotCentre=A.rotCentre;
       rotAngle=A.rotAngle;
+      cutFlag=A.cutFlag;
       frontFace=A.frontFace;
       backFace=A.backFace;
     }
@@ -515,6 +517,8 @@ HoleShape::createObjects(Simulation& System)
 		 (cellIndex++,0,0.0,Out+frontFace.display()+
 		  backFace.display()));
   addCell("Void",cellIndex-1);
+  if (cutFlag & 1) Out+=frontFace.display();
+  if (cutFlag & 2) Out+=backFace.display();
   addOuterSurf(Out);
   return;
 }
@@ -553,6 +557,17 @@ HoleShape::setMasterAngle(const double masterAngle)
 }
 
 void
+HoleShape::setCutFaceFlag(const size_t F)
+  /*!
+    Set the face cut flag
+    \param F :: Flag [1 for front / 2 for back /3 both] 
+   */
+{
+  cutFlag=F;
+  return;
+}
+  
+void
 HoleShape::createAllNoPopulate(Simulation& System,
                                const attachSystem::FixedComp& FC,
                                const long int sideIndex)
@@ -573,7 +588,7 @@ HoleShape::createAllNoPopulate(Simulation& System,
     
   return;
 }
-  
+
 void
 HoleShape::createAll(Simulation& System,
                      const attachSystem::FixedComp& FC,
