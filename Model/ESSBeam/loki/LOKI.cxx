@@ -110,6 +110,7 @@ LOKI::LOKI(const std::string& keyN) :
   lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
   
+  ShutterA(new constructSystem::insertPlate(newName+"BlockShutter")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
 
@@ -187,12 +188,13 @@ LOKI::LOKI(const std::string& keyN) :
 
   OR.addObject(BendA);
 
-  OR.addObject(ChopperA);
-  OR.addObject(DDiskA);
-
+  OR.addObject(ShutterA);
   OR.addObject(VPipeB);
   OR.addObject(BendB);
 
+  OR.addObject(ChopperA);
+  OR.addObject(DDiskA);
+  
   OR.addObject(ChopperAExtra);
   OR.addObject(SDiskAEFirst);
   OR.addObject(SDiskAESecond);
@@ -244,7 +246,8 @@ LOKI::LOKI(const std::string& keyN) :
 LOKI::LOKI(const LOKI& A) : 
   attachSystem::CopiedComp(A),
   stopPoint(A.stopPoint),lokiAxis(A.lokiAxis),BendA(A.BendA),
-  VPipeB(A.VPipeB),BendB(A.BendB),ChopperA(A.ChopperA),
+  VPipeB(A.VPipeB),ShutterA(A.ShutterA),BendB(A.BendB),
+  ChopperA(A.ChopperA),
   DDiskA(A.DDiskA),VPipeC(A.VPipeC),FocusC(A.FocusC),
   VPipeD(A.VPipeD),BendD(A.BendD),ChopperB(A.ChopperB),
   DDiskB(A.DDiskB),VPipeE(A.VPipeE),FocusE(A.FocusE),
@@ -270,6 +273,7 @@ LOKI::operator=(const LOKI& A)
       stopPoint=A.stopPoint;
       lokiAxis=A.lokiAxis;
       BendA=A.BendA;
+      ShutterA=A.ShutterA;
       VPipeB=A.VPipeB;
       BendB=A.BendB;
       ChopperA=A.ChopperA;
@@ -347,7 +351,7 @@ LOKI::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-
+  
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
   
   FuncDataBase& Control=System.getDataBase();
@@ -366,23 +370,31 @@ LOKI::build(Simulation& System,
 
   if (stopPoint==1) return;                // STOP At monolith edge
 
+
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
  
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
 
+
+  ShutterA->setNoInsert();
+  ShutterA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ShutterA->setAxisControl(3,ZVert);
+  ShutterA->createAll(System,BendB->getKey("Guide0"),-1);
+  ShutterA->insertComponent(System,"Main",*VPipeB);
+  
   // First chopper unit
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  //  ChopperA->getKey("Main").setAxisControl(3,ZVert);
-  //  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
+  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperA->createAll(System,BendB->getKey("Guide0"),2); 
 
   // Double disk chopper
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
   DDiskA->setCentreFlag(3);  // Z direction
   DDiskA->setOffsetFlag(1);  // X direction
-  DDiskA->createAll(System,ChopperA->getKey("Beam"),0);
+  DDiskA->createAll(System,ChopperA->getKey("BuildBeam"),0);
 
   // Vacuum pipe and guide between first and second chopper units
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));

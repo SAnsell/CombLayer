@@ -94,7 +94,10 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiAxisXYAngle",0.0); // not with the bender! starting angle 1 degree from the port in the horizontal rotation
   Control.addVariable("lokiAxisZAngle",0.0);
 
-  FGen.setGuideMat("Aluminium"); //all guides are aluminum according to Damian //used to be copper before
+  FGen.setGuideMat("Aluminium"); //all guides are aluminum according
+                                 //to Damian //used to be copper
+                                 //before
+  FGen.setThickness(0.5,0.5);
   FGen.setYOffset(0.0);
   FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0); //2nd, 3rd param = width of the guide//last parameter - angle for the horizontal (0 degrees) or vertical (90 degrees bender)
   //up or down bending -- -90 or +90, 0.0 = horizontal bending? //6125.0
@@ -102,6 +105,16 @@ LOKIvariables(FuncDataBase& Control)
   //FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0,10.593,17.566,
    //                   7000.0,90.0);
 
+
+
+  Control.addVariable("lokiBlockShutterHeight",66.3);
+  Control.addVariable("lokiBlockShutterWidth",38.8);
+  Control.addVariable("lokiBlockShutterDepth",49.3);
+  Control.addParse<double>("lokiBlockShutterYStep","lokiBlockShutterDepth/2.0");
+  Control.addVariable("lokiBlockShutterDefMat","Stainless304");
+  
+  
+  
   // Pipe
    PipeGen.generatePipe(Control,"lokiPipeB",0.2,92.15); //52 = 2 cm bigger than the guide
    Control.addVariable("lokiPipeBRadius",5);
