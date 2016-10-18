@@ -26,6 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
+  class gridUnit;
   class hexUnit;
 }
 
@@ -35,7 +36,7 @@ namespace photonSystem
   \class TubeCollimator
   \version 1.0
   \author S. Ansell
-  \date November 2012
+  \date October 2016
   \brief Mesh of rod inserted into an object
 */
 
@@ -43,6 +44,8 @@ class TubeCollimator : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
 {
  private:
+
+  typedef std::map<int,constructSystem::gridUnit*> MTYPE;
   
   const int rodIndex;          ///< Index of surface offset
   int cellIndex;               ///< Cell index
@@ -50,7 +53,10 @@ class TubeCollimator : public attachSystem::ContainedComp,
 
   std::string layoutType;      ///< layout type
   std::string boundaryType;    ///< boundary type
+  size_t nLinks;               ///< Hole links
   long int nTubeLayers;       ///< Number of tubes [-ve for boundary]
+
+  MTYPE GGrid;    ///< Rec/Hex vector
   
   double length;            ///< length
   double radius;            ///< Hole radius
@@ -60,20 +66,34 @@ class TubeCollimator : public attachSystem::ContainedComp,
   
   double boundaryRotAngle;  ///< Rotation angle of the boundary
   double layoutRotAngle;    ///< Rotation angle of the layout axis
+  bool gridExclude;         ///< Exclude the grid
   
   Geometry::Vec3D AAxis;    ///< Basis set for layout [first]
   Geometry::Vec3D BAxis;    ///< Basic sef for layout [second]
+  Geometry::Vec3D CAxis;    ///< Basic sef for layout [third] 
   HeadRule boundary;        ///< Semi-infinite headRule for centre-boundary
 
+  void clearGGrid();
+  constructSystem::gridUnit* newGridUnit
+    (const long int,const long int,const Geometry::Vec3D&) const;
+  const Geometry::Vec3D& getGridAxis(const size_t) const;
+  
   void setBoundary(const FuncDataBase&);
   void setLayout();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createLinks();
+
+  void createCentres();
+  void createJoinLinks();
+  void createJoinSurf();
+  void createCells(Simulation&);
+  std::string calcBoundary(const constructSystem::gridUnit*) const;
   void createTubes(Simulation&);
 
   std::string boundaryString() const;
+
   
  public:
 

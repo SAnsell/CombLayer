@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/LineIntersectVisit.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,7 @@ class LineIntersectVisit : public Global::BaseVisit
     const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*);
     const std::vector<Geometry::Vec3D>& getPoints(const Geometry::Surface*,
 		  const Geometry::Surface*,const int);
+
     Geometry::Vec3D getPoint(const Geometry::Surface*);
     Geometry::Vec3D getPoint(const Geometry::Surface*,
 			     const Geometry::Surface*,const int);

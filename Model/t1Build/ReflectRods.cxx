@@ -88,6 +88,7 @@ ReflectRods::ReflectRods(const std::string& Key,const size_t index)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param index :: unit number
   */
 {}
 
@@ -578,8 +579,7 @@ ReflectRods::createLinkSurf()
 		  surNum=SMap.realSurf(planeIndex);
 		  surNum*=-1;
 		}
-	      const int JA=ac->first+
-		constructSystem::hexUnit::hexIndex(i);
+	      const int JA=ac->first+APtr->gridIndex(i);
 	      bc=HVec.find(JA);
 	      if (bc!=HVec.end())
 		bc->second->setSurf((i+3) % 6,-surNum);

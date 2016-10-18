@@ -356,7 +356,7 @@ Cannelloni::createLinkSurf()
 	  constructSystem::hexUnit* APtr = ac->second;
 	  if (!APtr->hasLink(i))
 	    {
-	      const int JA=ac->first+constructSystem::hexUnit::hexIndex(i);
+	      const int JA=ac->first+APtr->gridIndex(i);
 	      bc=HVec.find(JA);
 	      if (bc!=HVec.end())   // now construct link surface
 		{

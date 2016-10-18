@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1Build/TubeCollimator.cxx
+ * File:   photon/TubeCollimator.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -73,6 +73,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "gridUnit.h"
+#include "hexUnit.h"
 #include "TubeCollimator.h"
 
 namespace photonSystem
@@ -94,8 +96,21 @@ TubeCollimator::~TubeCollimator()
     Destructor
   */
 {
+  clearGGrid();
 }
 
+void
+TubeCollimator::clearGGrid()
+  /*!
+    Remove all the points from a map
+   */
+{
+  for(MTYPE::value_type& mv : GGrid)
+    delete mv.second;
+  
+ GGrid.clear();
+ return;
+}
 
 void
 TubeCollimator::populate(const FuncDataBase& Control)
@@ -124,10 +139,45 @@ TubeCollimator::populate(const FuncDataBase& Control)
   layoutRotAngle=
     Control.EvalDefPair<double>(keyName+"LayoutRotAngle",
 				keyName+"RotAngle",0.0);
+  gridExclude=Control.EvalDefVar<int>(keyName+"GridExclude",0);
 
   return;
 }
 
+constructSystem::gridUnit*
+TubeCollimator::newGridUnit(const long int i,const long int j,
+			    const Geometry::Vec3D& C) const
+  /*!
+    Allocate a new grid based on layout
+    \param i :: First Index 
+    \param j :: Second Index 
+    \param C :: Centre 
+    \return new gridUnit [correct type ]
+   */
+{
+  if (layoutType=="hexagon")
+    return new constructSystem::hexUnit(i,j,C);
+    
+  return 0;
+}
+
+const Geometry::Vec3D&
+TubeCollimator::getGridAxis(const size_t Index) const
+  /*!
+    Calculate the direction based on a Index 
+    \param Index :: Index value [0-6] / [0-4]
+    \return Vector for normal of plane
+  */
+{
+  static const Geometry::Vec3D* HVUnit[3]={&AAxis,&CAxis,&BAxis};
+  static const Geometry::Vec3D* SVUnit[2]={&AAxis,&BAxis};
+  
+  if (layoutType=="square")
+    return *(SVUnit[Index % 2]);
+
+  return *(HVUnit[Index % 3]);
+}
+  
 void
 TubeCollimator::setLayout()
   /*!
@@ -138,13 +188,17 @@ TubeCollimator::setLayout()
 
   if (layoutType=="square" || layoutType=="Square")
     {
+      layoutType="square";  // simple check later
       AAxis=X;
       BAxis=Z;
+      nLinks=4;
     }
   else if (layoutType=="hexagon" || layoutType=="Hexagon")
     {
+      layoutType="hexagon";  // simple check later
       AAxis=X;
       BAxis=X*cos(M_PI/3.0)+Z*sin(M_PI/3.0);
+      nLinks=6;
     }
   else
     {
@@ -247,8 +301,186 @@ TubeCollimator::createUnitVector(const attachSystem::FixedComp& FC,
   
   return;
 }
-  
 
+
+void
+TubeCollimator::createCentres()
+  /*!
+    Calculate the positions of all the centres
+  */
+{
+  ELog::RegMethod RegA("TubeCollimator","createCentres");
+
+  clearGGrid();
+  bool acceptFlag(1);
+  long int step(0);   
+  while(acceptFlag || (nTubeLayers>0 && step<nTubeLayers))
+    {
+      acceptFlag=0;
+      for(long int i=-step;i<=step;i++)
+	for(long int j=-step;j<=step;j++)
+	  {
+	    if (std::abs(i)==step || std::abs(j)==step)
+	      {
+		const Geometry::Vec3D CPoint=AAxis*(centSpc*i)+BAxis*(centSpc*j);
+		if (boundary.isValid(CPoint))
+		  {
+		    acceptFlag=1;
+		    GGrid.insert(MTYPE::value_type((i*1000+j),
+						   newGridUnit(i,j,CPoint)));
+		  }
+	      }
+	  }
+      step++;
+    }
+  return;
+}
+
+void
+TubeCollimator::createJoinLinks()
+  /*!
+    Create all the linked points
+    \todo thst can be combined with createJoinSurf
+   */
+{
+  ELog::RegMethod RegA("TubeCollimator","createJoinLinks");
+
+  const size_t nLinksHalf(nLinks/2);
+  for(MTYPE::value_type& AG : GGrid)
+    {
+      constructSystem::gridUnit* APtr=AG.second;
+      ELog::EM<<"APTR == ["<<APtr->getAIndex()<<"]["
+	      <<APtr->getBIndex()<<"] "<<ELog::endDiag;
+      for(size_t i=0;i<nLinks;i++)
+        {
+          const int JA=AG.first+APtr->gridIndex(i);
+	  ELog::EM<<"JA["<<APtr->getIndex()
+		  <<"]["<<i<<"] == "<<JA<<ELog::endDiag;
+          MTYPE::iterator bc=GGrid.find(JA);
+          if (bc!=GGrid.end())
+            {
+              ELog::EM<<"Link == "<<ELog::endDiag;
+              bc->second->setLink(i+nLinksHalf,APtr);
+	      APtr->setLink(i,bc->second);
+            }
+        }
+    }
+  return;
+}
+  
+void
+TubeCollimator::createJoinSurf()
+  /*!
+    Create the link surfaces
+  */
+{
+  ELog::RegMethod RegA("TubeCollimator","createLinkSurf");
+
+  const size_t nLinksHalf(nLinks/2);
+  int planeIndex(rodIndex+1001);
+
+  for(MTYPE::value_type& AG : GGrid)
+    {
+      constructSystem::gridUnit* APtr=AG.second;
+      // iterate over the index set [6/4]
+      for(size_t i=0;i<nLinks;i++)
+	{
+	  if (APtr->hasLink(i) && !APtr->hasSurfLink(i))
+	    {
+	      const constructSystem::gridUnit* BPtr=APtr->getLink(i);
+	      const Geometry::Vec3D DCent=(APtr->getCentre()+BPtr->getCentre())/2.0;
+	      const Geometry::Vec3D HAxis=(APtr->getCentre()-BPtr->getCentre()).unit();
+	      int surNum;
+	      ModelSupport::buildPlane(SMap,planeIndex,DCent,HAxis);
+	      surNum=SMap.realSurf(planeIndex);
+	      const int JA=AG.first+APtr->gridIndex(i);
+	      MTYPE::iterator bc=GGrid.find(JA);
+	      if (bc!=GGrid.end())
+		bc->second->setSurf(i+nLinksHalf,-surNum);
+	      APtr->setSurf(i,surNum);
+	    }	      
+	  planeIndex++;
+	}
+    }
+  return;
+}
+
+
+void
+TubeCollimator::createCells(Simulation& System)
+  /*!
+    Create the inidivual cells
+    \param System :: Simulation to add to system
+   */
+{
+  ELog::RegMethod RegA("TubeCollimator","createTubes");
+  
+  ModelSupport::buildPlane(SMap,rodIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,rodIndex+2,Origin+Y*(length/2.0),Y);
+
+  const std::string FBStr=
+    ModelSupport::getComposite(SMap,rodIndex," 1 -2 ");
+  const std::string OutBoundary=boundaryString();
+  
+  int RI(rodIndex);
+  for(const MTYPE::value_type& MU : GGrid)
+    {
+      const constructSystem::gridUnit* APtr= MU.second;
+      // Create Inner plane here just to help order stuff
+      ModelSupport::buildCylinder(SMap,RI+7,APtr->getCentre(),Y,radius);
+      ModelSupport::buildCylinder(SMap,RI+8,APtr->getCentre(),Y,radius+wallThick);
+
+      std::string CylA=ModelSupport::getComposite(SMap,RI," -7 ");
+      std::string CylB=ModelSupport::getComposite(SMap,RI," 7 -8 ");
+      std::string Out=APtr->getInner()+
+      	ModelSupport::getComposite(SMap,RI," 8 ");
+
+      if (!APtr->isComplete())
+	{
+	  const std::string OutB=calcBoundary(APtr);
+	  Out+=OutBoundary;
+	}
+
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,CylA+FBStr));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,CylB+FBStr));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+      RI+=10;
+    }
+  addOuterSurf(OutBoundary+FBStr);
+  return;
+}
+
+std::string
+TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
+ /*!
+   Calculate the intersection of the headrule of the gridUnit
+   and the various sides of the boundary.
+   \param APtr :: GridUnit to use
+ */
+{
+  ELog::RegMethod RegA("TubeCollimator","calcBoundary");
+  
+  // The gridUnit has a convex closed boundary.
+  // The only surfaces that can freely intersect the boundary are the open
+  // surface.
+
+  for(size_t i=0;i<nLinks;i++)
+    {
+      if (APtr->hasSurfLink(i) &&
+	  (!APtr->hasSurfLink(i+1) || !APtr->hasSurfLink(nLinks+i-1)))
+	{
+	  // Calc mid point of plane:
+	  const Geometry::Vec3D& CentPt=APtr->getCentre();
+	  const Geometry::Plane* PlanePtr=SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
+	  
+	  //l	  Geometry::Vec3D MidPt=
+	}
+    }
+  return "";
+  
+}
+
+  
 void
 TubeCollimator::createTubes(Simulation& System)
   /*!
@@ -295,7 +527,10 @@ TubeCollimator::createTubes(Simulation& System)
 		    Out=ModelSupport::getComposite(SMap,RI," 7 -8 ");
 		    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr));
 
-		    Out=ModelSupport::getComposite(SMap,RI," 8 ");
+		    if (!gridExclude)
+		      Out=ModelSupport::getComposite(SMap,RI," 8 ");
+
+                    GGrid.insert(MTYPE::value_type((i*1000+j),newGridUnit(i,j,CPoint)));
 		    HoleStr+=Out;
 		    RI+=10;
 		  }
@@ -309,7 +544,6 @@ TubeCollimator::createTubes(Simulation& System)
   
   return; 
 }
-
 
 std::string
 TubeCollimator::boundaryString() const
@@ -363,7 +597,16 @@ TubeCollimator::createAll(Simulation& System,
 
   createUnitVector(FC,sideIndex);
   setBoundary(System.getDataBase());
-  createTubes(System);
+  if (gridExclude)
+    {
+      createCentres();
+      createJoinLinks();
+      createJoinSurf();
+      createCells(System);
+    }
+  else
+    createTubes(System);
+        
   createLinks();
   insertObjects(System);       
 

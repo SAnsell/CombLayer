@@ -42,8 +42,8 @@ class gridUnit
 
   bool empty;                       ///< Flag to turn cell off
   bool cut;                         ///< Flag if cell cut by outer boundary
-  int iA;                           ///< Index A
-  int iB;                           ///< Index B
+  long int iA;                           ///< Index A
+  long int iB;                           ///< Index B
   Geometry::Vec3D Centre;           ///< Centre 
 
   std::vector<gridUnit*> gridLink;  ///< Links
@@ -55,18 +55,20 @@ class gridUnit
   
  public:
 
-  gridUnit(const size_t,const int,const int,const Geometry::Vec3D&);  
-  gridUnit(const size_t,const int,const int,const bool,const Geometry::Vec3D&);
+  gridUnit(const size_t,const long int,
+	   const long int,const Geometry::Vec3D&);  
+  gridUnit(const size_t,const long int,const long int,
+	   const bool,const Geometry::Vec3D&);
   gridUnit(const gridUnit&);
   gridUnit& operator=(const gridUnit&); 
   virtual ~gridUnit() {}  ///< Destructor
 
   /// accessor to iA
-  int getAIndex() const { return iA; }
+  long int getAIndex() const { return iA; }
   /// accessor to iB
-  int getBIndex() const { return iB; }
+  long int getBIndex() const { return iB; }
   /// Index value 
-  int getIndex() const { return 1000*iA+iB; }
+  long int getIndex() const { return 1000*iA+iB; }
   /// Void cell
   bool isEmpty() const { return empty; }
   /// access cutter flag
@@ -75,14 +77,26 @@ class gridUnit
   const std::string& getCut() const { return cutStr; }
   /// Access centre
   const Geometry::Vec3D& getCentre() const { return Centre; }
+
+  /// accessor to links
+  const gridUnit* getLink(const size_t index) const
+  { return gridLink[index % gridLink.size()]; }
+  /// accessor to surface numbers
+  int getSurf(const size_t index) const
+  { return surfKey[index % surfKey.size()]; }
+  
   /// Simple setter
   void setCutString(const std::string& S) { cutStr=S; }
+  void setLink(const size_t,gridUnit*);
   void setSurf(const size_t,const int); 
   void clearLinks();
   bool isComplete() const;
   bool hasLink(const size_t) const;
+  bool hasSurfLink(const size_t) const;
   size_t nLinks() const;
+
   
+  virtual int gridIndex(const size_t) const =0;
   virtual bool isConnected(const gridUnit&) const =0;
 
   void setCyl(const int);

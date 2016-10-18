@@ -60,8 +60,8 @@ operator<<(std::ostream& OX,const gridUnit& A)
   return OX;
 }
 
-gridUnit::gridUnit(const size_t nLink,const int aI,const int bI,
-		   const Geometry::Vec3D& C) : 
+gridUnit::gridUnit(const size_t nLink,const long int aI,
+		   const long int bI,const Geometry::Vec3D& C) : 
   empty(0),cut(0),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
   cellNumber(0)
   /*!
@@ -75,8 +75,9 @@ gridUnit::gridUnit(const size_t nLink,const int aI,const int bI,
   clearLinks();
 }
 
-gridUnit::gridUnit(const size_t nLink,const int aI,const int bI,
-                   const bool cF,const Geometry::Vec3D& C) : 
+gridUnit::gridUnit(const size_t nLink,const long int aI,
+		   const long int bI,const bool cF,
+		   const Geometry::Vec3D& C) : 
   empty(0),cut(cF),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
   cellNumber(0)
   /*!
@@ -181,6 +182,20 @@ gridUnit::hasLink(const size_t index) const
 */
 {
   ELog::RegMethod RegA("gridUnit","hasLink");
+  if (index>gridLink.size())
+    throw ColErr::IndexError<size_t>(index,gridLink.size(),"index in gridLink");
+    
+  return (!gridLink[index]) ? 0 : 1;
+}
+
+bool
+gridUnit::hasSurfLink(const size_t index) const
+/*!
+  Determine if the surface has an key
+  \param index :: gird surface index
+*/
+{
+  ELog::RegMethod RegA("gridUnit","hasSurfLink");
   if (index>surfKey.size())
     throw ColErr::IndexError<size_t>(index,surfKey.size(),"index in surfKey");
     
@@ -198,6 +213,18 @@ gridUnit::nLinks() const
     (std::count_if(surfKey.begin(),surfKey.end(),
                    std::bind(std::not_equal_to<int>(),
                              std::placeholders::_1,0)));
+}
+
+void
+gridUnit::setLink(const size_t Index,gridUnit* GUnit) 
+  /*!
+    Set the gridUnit links
+    \param Index :: Index for the gridUnit
+    \param GUnit :: Grid unit
+   */
+{
+  gridLink[Index % gridLink.size()] = GUnit;
+  return;
 }
 
 void
@@ -248,6 +275,7 @@ gridUnit::getInner() const
   return cx.str();
 }
 
+  
 void
 gridUnit::write(std::ostream& OX) const
   /*!
