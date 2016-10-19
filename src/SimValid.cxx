@@ -60,6 +60,8 @@
 #include "Simulation.h"
 #include "SimValid.h"
 
+#include "debugMethod.h"
+
 extern MTRand RNG;
 
 namespace ModelSupport
@@ -105,6 +107,7 @@ SimValid::run(const Simulation& System,const size_t N) const
   */
 {
   ELog::RegMethod RegA("SimValid","run");
+  ELog::debugMethod DebA;
   
   const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
   MonteCarlo::Object* InitObj(0);
@@ -165,20 +168,24 @@ SimValid::run(const Simulation& System,const size_t N) const
 	  ELog::EM<<"I/SN == "<<i<<" "<<SN<<ELog::endCrit;
 	  for(size_t j=0;j<Pts.size();j++)
 	    {
-	      ELog::EM<<"Pos["<<j<<"]=="<<Pts[j].Pt<<" :: "
-		      <<Pts[j].objN<<" "<<Pts[j].surfN<<ELog::endDiag;
+	      ELog::EM<<"Pos["<<j<<"]=="<<Pts[j].Pt<<" :: Obj:"
+		      <<Pts[j].objN<<" Surf:"<<Pts[j].surfN<<ELog::endDiag;
 	    }
 
-	  const size_t index(Pts.size()-2);
+	  const size_t index(Pts.size()-3);
 	  ELog::EM<<"Base Obj == "<<*Pts[index].OPtr
 		  <<ELog::endDiag;
 	  ELog::EM<<"Next Obj == "<<*Pts[index+1].OPtr
 		  <<ELog::endDiag;
-	  OPtr=Pts[index].OPtr;
 	  // RESET:
 	  TNeut.Pos=Pts[index].Pt;  // Reset point
 	  OPtr=Pts[index].OPtr;
-
+          SN=Pts[index].surfN;
+          DebA.activate();
+          ELog::EM<<"RESET POS== "<<TNeut.Pos<<ELog::endDiag;
+          ELog::EM<<"RESET Obj== "<<OPtr->getName()<<ELog::endDiag;
+          ELog::EM<<"RESET SurfN== "<<Pts[index].surfN<<ELog::endDiag;
+          ELog::EM<<"----------------------------------"<<ELog::endDebug;
 	  OPtr=OSMPtr->findNextObject(Pts[index].surfN,
 				      TNeut.Pos,OPtr->getName());	    
 	  if (OPtr)
@@ -198,6 +205,10 @@ SimValid::run(const Simulation& System,const size_t N) const
 	      ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDiag;
 	      ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDiag;
 	    }
+          ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
+          ELog::EM<<"--------------"<<ELog::endDiag;
+          
+          int SNX= OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
 	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
 	  return 0;
 	}

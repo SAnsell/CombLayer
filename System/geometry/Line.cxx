@@ -400,7 +400,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   ELog::RegMethod RegA("Line","intersect(cone)");
 
   const Geometry::Vec3D V=CObj.getCentre();  // cone vertex
-  const Geometry::Vec3D A=CObj.getNormal();  // cone vertex
+  const Geometry::Vec3D A=CObj.getNormal();  // cone normal
 
   // reduced origin
   const Geometry::Vec3D b=Origin-V;
@@ -408,22 +408,47 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   const double AdotB=A.dotProd(b);
   const double BdotN=b.dotProd(Direct);
   const double gamma2=CObj.getCosAngle()*CObj.getCosAngle();
-  // Failed on side
 
-  ///\todo BUG HERE
-  if ((CObj.getCutFlag()>0 && AdotB<0) ||
-      (CObj.getCutFlag()<0 && AdotB>0))
-    return 0;
 
+      ///\todo BUG HERE
+  //  if ((CObj.getCutFlag()>0 && AdotB<0) ||
+  //      (CObj.getCutFlag()<0 && AdotB>0))
+  //    return 0;
+  
   double C[3];  
   C[0]=AdotN*AdotN-gamma2;
   C[1]=2.0*(AdotB*AdotN-gamma2*BdotN);
   C[2]=AdotB*AdotB-gamma2*b.dotProd(b);
 
+  
   std::pair<std::complex<double>,std::complex<double> > SQ;
   const size_t ix = solveQuadratic(C,SQ);
+
   // This takes the centre displacement into account:
-  return lambdaPair(ix,SQ,PntOut);  
+  std::vector<Geometry::Vec3D> testOut;
+  const size_t nP=lambdaPair(ix,SQ,testOut);
+  if (!nP) return 0;
+  
+  const int cF=CObj.getCutFlag();
+  if (!cF)
+    {
+      for(const Geometry::Vec3D& Pnt : testOut)
+        PntOut.push_back(Pnt);
+      return nP;
+    }
+
+  size_t nOut(0);
+  for(const Geometry::Vec3D& Pnt : testOut)
+    {
+      const Geometry::Vec3D bPt=Pnt-V;
+      const double AdotB=A.dotProd(bPt);
+      if (cF*AdotB>0.0)
+        {
+          PntOut.push_back(Pnt);
+          nOut++;
+        }
+    }    
+  return nOut;
 }
 
 size_t

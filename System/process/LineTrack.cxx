@@ -197,7 +197,6 @@ LineTrack::calculateError(const Simulation& ASim)
   */
 {
   ELog::RegMethod RegA("LineTrack","calculate");
-  ELog::debugMethod DegA;
   ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"-------------------"<<ELog::endDiag;
   

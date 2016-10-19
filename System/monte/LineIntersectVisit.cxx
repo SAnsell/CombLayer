@@ -277,7 +277,7 @@ void
 LineIntersectVisit::procTrack(const Geometry::Surface* surfID) 
   /*!
     Sorts the PtOut and distances
-    with a closes first order.
+    with a "closest first" order.
     \param surfID :: surface ID
   */
 {
