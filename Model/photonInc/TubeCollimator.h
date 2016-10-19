@@ -71,7 +71,9 @@ class TubeCollimator : public attachSystem::ContainedComp,
   Geometry::Vec3D AAxis;    ///< Basis set for layout [first]
   Geometry::Vec3D BAxis;    ///< Basic sef for layout [second]
   Geometry::Vec3D CAxis;    ///< Basic sef for layout [third] 
+
   HeadRule boundary;        ///< Semi-infinite headRule for centre-boundary
+  HeadRule voidBoundary;    ///< Semi-infinite headRule for actual void
 
   void clearGGrid();
   constructSystem::gridUnit* newGridUnit

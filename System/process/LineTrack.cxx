@@ -192,7 +192,7 @@ LineTrack::calculate(const Simulation& ASim)
 void
 LineTrack::calculateError(const Simulation& ASim)
   /*!
-    Calculate the track
+    Calculate the track [assuming everything has gone wrong]
     \param ASim :: Simulation to use						
   */
 {
@@ -259,14 +259,15 @@ LineTrack::calculateError(const Simulation& ASim)
 		  for(size_t i=0;i<SV.size();i++)
 		    if (SV[i]->onSurface(nOut.Pos))
 		      ELog::EM<<"Surf == "<<*SV[i]<<ELog::endDiag;
-
 		}
 	      if (prevOPtr)
 		ELog::EM<<"PrevObject = "<<*prevOPtr<<ELog::endDiag;
+              
 	      ELog::EM<<"Point = "<<MR.calcRotate(nOut.Pos)<<ELog::endDiag;
 	      ELog::EM<<"DIR = "<<nOut.uVec<<ELog::endDiag;
 	      ELog::EM<<"Init = "<<MR.calcRotate(InitPt)<<ELog::endDiag;
 	      ELog::EM<<"Final = "<<MR.calcRotate(EndPt)<<ELog::endDiag;
+              
 	      ELog::EM<<ELog::endErr;
 	    }
 

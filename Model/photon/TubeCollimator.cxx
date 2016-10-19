@@ -254,6 +254,9 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
        Out=ModelSupport::getComposite(SMap,rodIndex," 5003 -5004 5005 -5006 ");
        boundary.procString(Out);
        boundary.populateSurf();
+       Out=ModelSupport::getComposite(SMap,rodIndex," 6003 -6004 6005 -6006 ");
+       voidBoundary.procString(Out);
+       voidBoundary.populateSurf();
     }
   else if (boundaryType=="Circle" || boundaryType=="circle")
     {
@@ -266,6 +269,9 @@ TubeCollimator::setBoundary(const FuncDataBase& Control)
       Out=ModelSupport::getComposite(SMap,rodIndex," -5007 ");
       boundary.procString(Out);
       boundary.populateSurf();
+      Out=ModelSupport::getComposite(SMap,rodIndex," -6007 ");
+      voidBoundary.procString(Out);
+      voidBoundary.populateSurf();
     }
   else if (boundaryType=="Free" || boundaryType=="free")
     {
@@ -349,17 +355,12 @@ TubeCollimator::createJoinLinks()
   for(MTYPE::value_type& AG : GGrid)
     {
       constructSystem::gridUnit* APtr=AG.second;
-      ELog::EM<<"APTR == ["<<APtr->getAIndex()<<"]["
-	      <<APtr->getBIndex()<<"] "<<ELog::endDiag;
       for(size_t i=0;i<nLinks;i++)
         {
           const int JA=AG.first+APtr->gridIndex(i);
-	  ELog::EM<<"JA["<<APtr->getIndex()
-		  <<"]["<<i<<"] == "<<JA<<ELog::endDiag;
           MTYPE::iterator bc=GGrid.find(JA);
           if (bc!=GGrid.end())
             {
-              ELog::EM<<"Link == "<<ELog::endDiag;
               bc->second->setLink(i+nLinksHalf,APtr);
 	      APtr->setLink(i,bc->second);
             }
@@ -456,6 +457,7 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
    Calculate the intersection of the headrule of the gridUnit
    and the various sides of the boundary.
    \param APtr :: GridUnit to use
+   \return string to cut with
  */
 {
   ELog::RegMethod RegA("TubeCollimator","calcBoundary");
@@ -472,8 +474,22 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
 	  // Calc mid point of plane:
 	  const Geometry::Vec3D& CentPt=APtr->getCentre();
 	  const Geometry::Plane* PlanePtr=SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
-	  
-	  //l	  Geometry::Vec3D MidPt=
+          // could just calc distance and project along normal but
+          // this is easier.
+          const Geometry::Vec3D MidPt=SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
+          Geometry::Vec3D LineNormal=Y*(MidPt-CentPt);
+
+          std::vector<Geometry::Vec3D> Pts;
+          std::vector<int> SNum;
+          HeadRule InnerControl(APtr->getInner());
+          InnerControl.populateSurf();
+            
+          if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
+            {
+              for(size_t i=0;i<SNum.size();i++)
+                ELog::EM<<"Point["<<APtr->getIndex()<<"]["<<i<<"] == "<<Pts[i]<<" : "<<SNum[i]<<ELog::endDiag;
+            }
+          
 	}
     }
   return "";

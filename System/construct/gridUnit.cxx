@@ -181,11 +181,7 @@ gridUnit::hasLink(const size_t index) const
   \param index :: gird surface index
 */
 {
-  ELog::RegMethod RegA("gridUnit","hasLink");
-  if (index>gridLink.size())
-    throw ColErr::IndexError<size_t>(index,gridLink.size(),"index in gridLink");
-    
-  return (!gridLink[index]) ? 0 : 1;
+  return (!gridLink[index % gridLink.size()] ) ? 0 : 1;
 }
 
 bool
@@ -195,11 +191,7 @@ gridUnit::hasSurfLink(const size_t index) const
   \param index :: gird surface index
 */
 {
-  ELog::RegMethod RegA("gridUnit","hasSurfLink");
-  if (index>surfKey.size())
-    throw ColErr::IndexError<size_t>(index,surfKey.size(),"index in surfKey");
-    
-  return (surfKey[index]==0) ? 0 : 1;
+  return (surfKey[index % surfKey.size()]==0) ? 0 : 1;
 }
 
 size_t
