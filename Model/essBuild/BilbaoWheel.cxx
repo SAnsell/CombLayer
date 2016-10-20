@@ -707,17 +707,23 @@ BilbaoWheel::buildHoles(Simulation& System,
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,sides+top+bot));
       return;
     }
-
+  const int SI0(wheelIndex+30000);
+  const int SIstep(10);
+  
   // create surfaces
-  int SI(wheelIndex+30000);
+  int SI(SI0);
   double theta(0.0);
-  const double dTheta = 360.0/nSectors;
+  const double dTheta = 360.0/nSectors; // angular length of hole+mat
+  const double dThetaHole = dTheta/4.0; // angular length of the hole
 
   for (size_t j=0; j<nSectors; j++)
     {
       theta = j*dTheta+dTheta/2.0;
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
-      SI += 10;
+      theta += dThetaHole;
+      ModelSupport::buildPlaneRotAxis(SMap, SI+2, Origin, X, Z, theta);
+
+      SI += SIstep;
     }
   // add 1st surface again with reversed normal - to simplify building cells
   SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+30001));
@@ -725,12 +731,16 @@ BilbaoWheel::buildHoles(Simulation& System,
 
   // build cells
   std::string Out;
-  SI=wheelIndex+30000;
+  SI=SI0;
   for(size_t j=0;j<nSectors;j++)
     {
-      Out=ModelSupport::getComposite(SMap,SI," 1 -11 ");
+      Out=ModelSupport::getComposite(SMap,SI," 1 -2 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+sides+top+bot));
+
+      Out=ModelSupport::getComposite(SMap,SI," 2 -11 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides+top+bot));
-      SI+=10;
+
+      SI+=SIstep;
     }
   
   return; 
