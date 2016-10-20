@@ -689,7 +689,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 			const std::string& sides,
 			const std::string& bot,
 			const std::string& top,
-			const int mat,const double temp)
+			const int mat)
 /*!
   Create surfaces and cells for the holes in the given layer
   \param System :: Simulation
@@ -697,14 +697,13 @@ BilbaoWheel::buildHoles(Simulation& System,
   \param bot    :: bottom surface
   \param top    :: top surface
   \param mat    :: material
-  \param temp   :: temperature
  */
 {
   ELog::RegMethod RegA("BilbaoWheel","buildHoles");
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,sides+top+bot));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides+top+bot));
       return;
     }
   const int SI0(wheelIndex+30000);
@@ -917,7 +916,7 @@ BilbaoWheel::createObjects(Simulation& System)
 	  buildHoles(System,Out,
 		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
-		     mat,mainTemp);
+		     mat);
 	}
       
       if (i==1)

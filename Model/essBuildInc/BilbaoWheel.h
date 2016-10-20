@@ -124,7 +124,7 @@ class BilbaoWheel : public WheelBase
 
   void buildHoles(Simulation&,
 		  const std::string&,const std::string&,const std::string&,
-		  const int,const double);
+		  const int);
 
   public:
 
