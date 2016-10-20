@@ -328,7 +328,7 @@ TubeCollimator::createCentres()
 	  {
 	    if (std::abs(i)==step || std::abs(j)==step)
 	      {
-		const Geometry::Vec3D CPoint=AAxis*(centSpc*i)+BAxis*(centSpc*j);
+		const Geometry::Vec3D CPoint=Origin+AAxis*(centSpc*i)+BAxis*(centSpc*j);
 		if (boundary.isValid(CPoint))
 		  {
 		    acceptFlag=1;
@@ -439,7 +439,8 @@ TubeCollimator::createCells(Simulation& System)
       if (!APtr->isComplete())
 	{
 	  const std::string OutB=calcBoundary(APtr);
-	  Out+=OutBoundary;
+	  Out+=OutB;
+	  //	  Out+=OutBoundary;
 	}
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,CylA+FBStr));
@@ -466,6 +467,7 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
   // The only surfaces that can freely intersect the boundary are the open
   // surface.
 
+  std::string Out(" ");
   for(size_t i=0;i<nLinks;i++)
     {
       if (APtr->hasSurfLink(i) &&
@@ -477,7 +479,8 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
           // could just calc distance and project along normal but
           // this is easier.
           const Geometry::Vec3D MidPt=SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
-          Geometry::Vec3D LineNormal=Y*(MidPt-CentPt);
+	  //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
+	  Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
 
           std::vector<Geometry::Vec3D> Pts;
           std::vector<int> SNum;
@@ -486,13 +489,15 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
             
           if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
             {
-              for(size_t i=0;i<SNum.size();i++)
-                ELog::EM<<"Point["<<APtr->getIndex()<<"]["<<i<<"] == "<<Pts[i]<<" : "<<SNum[i]<<ELog::endDiag;
-            }
-          
+	      for(size_t j=0;j<SNum.size();j++)
+		{
+		  if (InnerControl.isValid(Pts[j],SNum[j]))
+		    Out+=StrFunc::makeString(-SNum[j])+" ";
+		}
+	    }
 	}
     }
-  return "";
+  return Out;
   
 }
 

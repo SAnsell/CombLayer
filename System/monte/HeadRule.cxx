@@ -1968,7 +1968,7 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
 
 size_t
 HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
-			       const Geometry::Vec3D& Unit,
+			       const Geometry::Vec3D& VUnit,
 			       std::vector<Geometry::Vec3D>& Pts,
 			       std::vector<int>& SNum) const
   /*!
@@ -1984,7 +1984,8 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
 
 
-  MonteCarlo::LineIntersectVisit LI(Org,Unit);
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  const Geometry::Vec3D Unit=VUnit.unit();
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();
