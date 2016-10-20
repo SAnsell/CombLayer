@@ -64,6 +64,9 @@ class BilbaoWheel : public WheelBase
   double voidThick;              ///< void surrounding thickness
   
   double innerRadius;            ///< Inner core
+  double innerHoleHeight;        ///< Vent hole height at the inner radius
+  double innerHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
+  double innerHoleXYangle;       ///< XY angle offset of inner holes
   double coolantRadiusIn;        ///< Inner coolant radius
   double coolantRadiusOut;       ///< Outer coolant radius
   double caseRadius;             ///< Outer case radius

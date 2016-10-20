@@ -104,6 +104,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),
+  innerHoleHeight(A.innerHoleHeight),
+  innerHoleSize(A.innerHoleSize),
+  innerHoleXYangle(A.innerHoleXYangle),
   coolantRadiusIn(A.coolantRadiusIn),
   coolantRadiusOut(A.coolantRadiusOut),
   caseRadius(A.caseRadius),voidRadius(A.voidRadius),
@@ -165,6 +168,9 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       caseThick=A.caseThick;
       voidThick=A.voidThick;
       innerRadius=A.innerRadius;
+      innerHoleHeight=A.innerHoleHeight;
+      innerHoleSize=A.innerHoleSize;
+      innerHoleXYangle=A.innerHoleXYangle;
       coolantRadiusIn=A.coolantRadiusIn;
       coolantRadiusOut=A.coolantRadiusOut;
       caseRadius=A.caseRadius;
@@ -254,7 +260,16 @@ BilbaoWheel::populate(const FuncDataBase& Control)
       matTYPE.push_back(M);
     }
 
-  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");  
+  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+  innerHoleHeight=Control.EvalVar<double>(keyName+"InnerHoleHeight");
+  innerHoleSize=Control.EvalVar<double>(keyName+"InnerHoleSize");
+  if (innerHoleSize>1.0)
+    throw ColErr::RangeError<double>(innerHoleSize, 0, 1,
+				     keyName+"InnerHoleSize is the fraction of"
+				     " hole angular length with respect to"
+				     " hole+steel length.");
+  innerHoleXYangle=Control.EvalVar<double>(keyName+"InnerHoleXYangle");
+
   coolantRadiusIn=Control.EvalVar<double>(keyName+"CoolantRadiusIn");  
   coolantRadiusOut=Control.EvalVar<double>(keyName+"CoolantRadiusOut");  
   caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
@@ -714,11 +729,11 @@ BilbaoWheel::buildHoles(Simulation& System,
   int SI(SI0);
   double theta(0.0);
   const double dTheta = 360.0/nSectors; // angular length of hole+mat
-  const double dThetaHole = dTheta/4.0; // angular length of the hole
+  const double dThetaHole = dTheta * innerHoleSize; // angular length of the hole
 
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta+dTheta/2.0;
+      theta = j*dTheta+innerHoleXYangle;
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
       theta += dThetaHole;
       ModelSupport::buildPlaneRotAxis(SMap, SI+2, Origin, X, Z, theta);
