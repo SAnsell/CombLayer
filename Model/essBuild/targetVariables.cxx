@@ -116,8 +116,8 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelInnerRadius",45); // TSM141108V3000
   Control.addVariable("BilbaoWheelInnerHoleHeight",4.5); // TSM141108V3000
-  Control.addVariable("BilbaoWheelInnerHoleSize",0.25);
-  Control.addVariable("BilbaoWheelInnerHoleXYangle",1.0);
+  Control.addVariable("BilbaoWheelInnerHoleSize",0.25); // value not known=>approx
+  Control.addVariable("BilbaoWheelInnerHoleXYangle",-1.0);  // value not known=>approx to put a hole on the Y-axis (0,65,0) to increase high-energy noise for conservative reasons
 
   Control.addVariable("BilbaoWheelCoolantRadiusIn",64.575); // TSM141108V3000
   Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
