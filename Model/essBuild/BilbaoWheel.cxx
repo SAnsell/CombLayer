@@ -687,13 +687,15 @@ BilbaoWheel::divideRadial(Simulation& System,
 void
 BilbaoWheel::buildHoles(Simulation& System,
 			const std::string& sides,
-			const std::string& topbot,
+			const std::string& bot,
+			const std::string& top,
 			const int mat,const double temp)
 /*!
   Create surfaces and cells for the holes in the given layer
   \param System :: Simulation
   \param sides  :: side surfaces
-  \param topbot :: top/bottom surfaces
+  \param bot    :: bottom surface
+  \param top    :: top surface
   \param mat    :: material
   \param temp   :: temperature
  */
@@ -702,7 +704,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 
   if (nSectors<2)
     {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,sides+topbot));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,sides+top+bot));
       return;
     }
 
@@ -727,7 +729,7 @@ BilbaoWheel::buildHoles(Simulation& System,
   for(size_t j=0;j<nSectors;j++)
     {
       Out=ModelSupport::getComposite(SMap,SI," 1 -11 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides+topbot));  
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides+top+bot));
       SI+=10;
     }
   
@@ -902,9 +904,10 @@ BilbaoWheel::createObjects(Simulation& System)
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
-	  Out1=ModelSupport::getComposite(SMap,wheelIndex," 115 -116 "); // top+bottom
-	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	  buildHoles(System,Out,Out1,mat,mainTemp);
+	  buildHoles(System,Out,
+		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
+		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
+		     mat,mainTemp);
 	}
       
       if (i==1)
