@@ -42,15 +42,16 @@ class gridUnit
 
   bool empty;                       ///< Flag to turn cell off
   bool cut;                         ///< Flag if cell cut by outer boundary
-  long int iA;                           ///< Index A
-  long int iB;                           ///< Index B
+  long int iA;                      ///< Index A
+  long int iB;                      ///< Index B
   Geometry::Vec3D Centre;           ///< Centre 
 
   std::vector<gridUnit*> gridLink;  ///< Links
   std::vector<int> cylSurf;         ///< Cylinder numbers
   std::vector<int> surfKey;         ///< Surf keys
   int cellNumber;                   ///< Designated cell number
-  
+
+  bool boundaryClosed;              ///< Closed within boundary
   std::string cutStr;               ///< External cutting surf
   
  public:
@@ -101,7 +102,9 @@ class gridUnit
 
   void setCyl(const int);
   void addCyl(const int);
-
+  bool isBoundaryClosed() const { return boundaryClosed; }
+  void setBoundaryClosed() { boundaryClosed=1; }
+  
   virtual std::string getShell() const;
   virtual std::string getInner() const;
 

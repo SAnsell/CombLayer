@@ -63,7 +63,7 @@ operator<<(std::ostream& OX,const gridUnit& A)
 gridUnit::gridUnit(const size_t nLink,const long int aI,
 		   const long int bI,const Geometry::Vec3D& C) : 
   empty(0),cut(0),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
-  cellNumber(0)
+  cellNumber(0),boundaryClosed(0)
   /*!
     Constructor
     \param nLink :: number of links
@@ -79,7 +79,7 @@ gridUnit::gridUnit(const size_t nLink,const long int aI,
 		   const long int bI,const bool cF,
 		   const Geometry::Vec3D& C) : 
   empty(0),cut(cF),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
-  cellNumber(0)
+  cellNumber(0),boundaryClosed(0)
   /*!
     Constructor
     \param aI :: Index A
@@ -95,7 +95,7 @@ gridUnit::gridUnit(const gridUnit& A) :
   empty(A.empty),cut(A.cut),iA(A.iA),iB(A.iB),
   Centre(A.Centre),gridLink(A.gridLink),cylSurf(A.cylSurf),
   surfKey(A.surfKey),cellNumber(A.cellNumber),
-  cutStr(A.cutStr)
+  boundaryClosed(A.boundaryClosed),cutStr(A.cutStr)
   /*!
     Copy constructor
     \param A :: gridUnit to copy
@@ -120,6 +120,7 @@ gridUnit::operator=(const gridUnit& A)
       cylSurf=A.cylSurf;
       surfKey=A.surfKey;
       cellNumber=A.cellNumber;
+      boundaryClosed=A.boundaryClosed;
       cutStr=A.cutStr;
     }
   return *this;
@@ -179,6 +180,7 @@ gridUnit::hasLink(const size_t index) const
 /*!
   Determine if the surface has an key
   \param index :: gird surface index
+  \return true if link is set
 */
 {
   return (!gridLink[index % gridLink.size()] ) ? 0 : 1;
@@ -189,6 +191,7 @@ gridUnit::hasSurfLink(const size_t index) const
 /*!
   Determine if the surface has an key
   \param index :: gird surface index
+  \return true if surface is set
 */
 {
   return (surfKey[index % surfKey.size()]==0) ? 0 : 1;

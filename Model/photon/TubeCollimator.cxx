@@ -181,7 +181,8 @@ TubeCollimator::getGridAxis(const size_t Index) const
 void
 TubeCollimator::setLayout()
   /*!
-    Sets the layout vectors
+    Sets the layout vectors baesd on the 
+    value in layoutType.
   */
 {
   ELog::RegMethod RegA("TubeCollimator","setLayout");
@@ -206,7 +207,6 @@ TubeCollimator::setLayout()
 	(layoutType,"layout type not supported");
     }
 
-
   const Geometry::Quaternion Qab=
     Geometry::Quaternion::calcQRotDeg(layoutRotAngle,Y);
   Qab.rotate(AAxis);
@@ -220,6 +220,7 @@ void
 TubeCollimator::setBoundary(const FuncDataBase& Control)
   /*!
     Set the boundary
+    \param Control :: 
    */
 {
   ELog::RegMethod RegA("TubeCollimator","setBoundary");
@@ -389,8 +390,11 @@ TubeCollimator::createJoinSurf()
 	  if (APtr->hasLink(i) && !APtr->hasSurfLink(i))
 	    {
 	      const constructSystem::gridUnit* BPtr=APtr->getLink(i);
-	      const Geometry::Vec3D DCent=(APtr->getCentre()+BPtr->getCentre())/2.0;
-	      const Geometry::Vec3D HAxis=(APtr->getCentre()-BPtr->getCentre()).unit();
+	      const Geometry::Vec3D DCent=
+                (APtr->getCentre()+BPtr->getCentre())/2.0;
+	      const Geometry::Vec3D HAxis=
+                (APtr->getCentre()-BPtr->getCentre()).unit();
+
 	      int surNum;
 	      ModelSupport::buildPlane(SMap,planeIndex,DCent,HAxis);
 	      surNum=SMap.realSurf(planeIndex);
@@ -402,10 +406,81 @@ TubeCollimator::createJoinSurf()
 	    }	      
 	  planeIndex++;
 	}
+      calcGapInside(APtr);
+
     }
   return;
 }
 
+bool
+TubeCollimator::calcGapInside(constructSystem::gridUnit* APtr)
+  /*!
+    Determine if the cell is closed within the boundary
+    \param APtr :: Pointer to gridUnit which maybe closed
+    \return true if close in open (and set flag in APtr)
+  */
+{
+  ELog::RegMethod RegA("TubeCollimator","calcGapInside");
+
+  if (!APtr->isComplete())
+    {
+      size_t gapA;
+      for(gapA=0;gapA<nLinks;gapA++)
+        {
+          if (APtr->hasSurfLink(gapA) &&
+              !APtr->hasSurfLink(gapA+1))
+            break;
+        }
+      
+      size_t gapB;
+      for(gapB=1;gapB<=nLinks;gapB++)
+        {
+          if (APtr->hasSurfLink(gapB) &&
+              !APtr->hasSurfLink(gapB-1))
+            {
+              gapB %= nLinks;
+              break;
+            }
+        }
+
+      if (gapA!=gapB &&
+          gapA!=nLinks && gapB!=nLinks &&
+          ((gapA+1) % nLinks !=gapB) &&
+          ((gapB+1) % nLinks !=gapA) )
+        {
+          // Test gap
+          // Calc mid point of plane:
+	  const Geometry::Vec3D& CentPt=APtr->getCentre();
+	  const Geometry::Plane* PlanePtrA=
+            SMap.realPtr<Geometry::Plane>(APtr->getSurf(gapA));
+	  const Geometry::Plane* PlanePtrB=
+            SMap.realPtr<Geometry::Plane>(APtr->getSurf(gapB));
+          const Geometry::Vec3D MidPtA=
+            SurInter::getLinePoint(CentPt,PlanePtrA->getNormal(),PlanePtrA);
+          const Geometry::Vec3D MidPtB=
+            SurInter::getLinePoint(CentPt,PlanePtrB->getNormal(),PlanePtrB);
+          const Geometry::Vec3D LineNormalA=(MidPtA-CentPt).unit()*Y;
+          const Geometry::Vec3D LineNormalB=(MidPtB-CentPt).unit()*Y;
+          const double lnDP(LineNormalA.dotProd(LineNormalB));
+          if (std::abs(lnDP)<1.0-Geometry::zeroTol)
+            {
+              Geometry::Line lineA(MidPtA,LineNormalA);
+              Geometry::Line lineB(MidPtB,LineNormalB);
+              const std::pair<Geometry::Vec3D,Geometry::Vec3D>
+                CP=lineA.closestPoints(lineB);
+              if (CP.first.Distance(CP.second)<Geometry::zeroTol)
+                {
+                  if (voidBoundary.isValid(CP.first))
+                    {
+                      APtr->setBoundaryClosed();
+                      return 1;
+                    }
+                }
+            }
+        }
+    }
+  return 0;
+}
 
 void
 TubeCollimator::createCells(Simulation& System)
@@ -475,12 +550,14 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
 	{
 	  // Calc mid point of plane:
 	  const Geometry::Vec3D& CentPt=APtr->getCentre();
-	  const Geometry::Plane* PlanePtr=SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
+	  const Geometry::Plane* PlanePtr=
+            SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
           // could just calc distance and project along normal but
           // this is easier.
-          const Geometry::Vec3D MidPt=SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
+          const Geometry::Vec3D MidPt=
+            SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
 	  //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
-	  Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
+	  const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
 
           std::vector<Geometry::Vec3D> Pts;
           std::vector<int> SNum;

@@ -160,6 +160,39 @@ Line::closestPoint(const Geometry::Vec3D& Pt) const
   return getPoint(lambda);
 }
 
+std::pair<Geometry::Vec3D,Geometry::Vec3D>
+Line::closestPoints(const Line& A) const
+  /*!
+    Get the closest point on this line to another line
+    Solved with A.direct and direct are perpendicular to
+    connecting vector (w_c). P(s) is point on this, Q(t)
+    is point on A.
+    \param A :: line to use
+    
+    \returns Points on this line / line A
+  */
+{
+  const Geometry::Vec3D W0=Origin-A.Origin;
+
+  const double uv=Direct.dotProd(A.Direct);
+  const double uw=W0.dotProd(Direct);
+  const double vw=W0.dotProd(A.Direct);
+
+  // s := (uv.vw - uw) / (1-uv.uv)
+  // t := (vw - uv.uw) / (1-uv.uv) 
+
+  // always > 0.0
+  const double divFactor=1.0-uv*uv;
+  if (divFactor<Geometry::zeroTol)
+    return std::pair<Geometry::Vec3D,Geometry::Vec3D>(Origin,A.Origin);
+
+  const double s=(uv*vw-uw)/divFactor;
+  const double t=(vw-uw*uv)/divFactor;
+  
+  return std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    (getPoint(s),A.getPoint(t));
+}
+
 double
 Line::distance(const Geometry::Vec3D& A) const
   /*!
