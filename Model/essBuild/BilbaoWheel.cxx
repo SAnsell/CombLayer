@@ -689,7 +689,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 			const std::string& sides,
 			const std::string& bot,
 			const std::string& top,
-			const int mat)
+			const int mat,const int surfOffset)
 /*!
   Create surfaces and cells for the holes in the given layer
   \param System :: Simulation
@@ -697,6 +697,7 @@ BilbaoWheel::buildHoles(Simulation& System,
   \param bot    :: bottom surface
   \param top    :: top surface
   \param mat    :: material
+  \param surfOffset :: surface offset (needed since we call this method several times)
  */
 {
   ELog::RegMethod RegA("BilbaoWheel","buildHoles");
@@ -706,7 +707,7 @@ BilbaoWheel::buildHoles(Simulation& System,
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides+top+bot));
       return;
     }
-  const int SI0(wheelIndex+30000);
+  const int SI0(wheelIndex+30000+surfOffset);
   const int SIstep(10);
   
   // create surfaces
@@ -916,7 +917,7 @@ BilbaoWheel::createObjects(Simulation& System)
 	  buildHoles(System,Out,
 		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
-		     mat);
+		     mat,0);
 	}
       
       if (i==1)
@@ -961,7 +962,6 @@ BilbaoWheel::createObjects(Simulation& System)
 	{
 	  divideRadial(System, Out, mat);
 	}
-      
 
       SI+=10;
     }
