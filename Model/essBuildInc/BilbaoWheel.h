@@ -90,6 +90,11 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
 
+  double shaftHoleHeight;        ///< Vent hole height at the shaft radius
+  double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
+  double shaftHoleXYangle;       ///< XY angle offset of shaft holes
+
+  
   double shaftBaseDepth;            ///< shaft depth (below origin)
   double catcherTopSteelThick; ///< thickness of top steel plate
   double catcherHeight;    ///< catcher total height
@@ -127,7 +132,8 @@ class BilbaoWheel : public WheelBase
 
   void buildHoles(Simulation&,
 		  const std::string&,const std::string&,const std::string&,
-		  const int, const int);
+		  const int, const double, const double,const double,
+		  const int);
 
   public:
 

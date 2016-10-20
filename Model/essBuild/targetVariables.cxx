@@ -82,6 +82,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 5);  // TSM141108V3000
   Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 27.5);  // TSM141108V3000
 
+  Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
+  Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
+  
   Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
 
   Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);

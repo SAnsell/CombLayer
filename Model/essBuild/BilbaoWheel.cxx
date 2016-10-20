@@ -119,6 +119,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionHeight(A.shaft2StepConnectionHeight),
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
+  shaftHoleHeight(A.shaftHoleHeight),
+  shaftHoleSize(A.shaftHoleSize),
+  shaftHoleXYangle(A.shaftHoleXYangle),
   shaftBaseDepth(A.shaftBaseDepth),
   catcherTopSteelThick(A.catcherTopSteelThick),
   catcherHeight(A.catcherHeight),
@@ -189,6 +192,9 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionHeight=A.shaft2StepConnectionHeight;
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
+      shaftHoleHeight=A.shaftHoleHeight;
+      shaftHoleSize=A.shaftHoleSize;
+      shaftHoleXYangle=A.shaftHoleXYangle;
       shaftBaseDepth=A.shaftBaseDepth;
       catcherTopSteelThick=A.catcherTopSteelThick;
       catcherHeight=A.catcherHeight;
@@ -311,6 +317,14 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
+  shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
+  shaftHoleSize=Control.EvalVar<double>(keyName+"ShaftHoleSize");
+  if (shaftHoleSize>1.0)
+    throw ColErr::RangeError<double>(shaftHoleSize, 0, 1,
+				     keyName+"ShaftHoleSize is the fraction of"
+				     " hole angular length with respect to"
+				     " hole+steel length.");
+  shaftHoleXYangle=Control.EvalVar<double>(keyName+"ShaftHoleXYangle");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
 
@@ -599,9 +613,18 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
       if (i==0)
 	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 2136 -2006M ");
       else if (i==2)
+	{
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 5N -2006N "); // layer with holes
-      else if (i==nShaftLayers-1)
+	buildHoles(System,
+		   ModelSupport::getComposite(SMap,SI,SI-10," -2007 2007M "),
+		   ModelSupport::getComposite(SMap,wheelIndex," 5 "),
+		   ModelSupport::getComposite(SMap,wheelIndex," -2006 "),
+		   shaftMat[i],shaftHoleSize,shaftHoleXYangle,shaftHoleHeight,
+		   1000);
+	SI += 10;
+	continue;
+	} else if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 2166N -2006N ");
@@ -704,7 +727,11 @@ BilbaoWheel::buildHoles(Simulation& System,
 			const std::string& sides,
 			const std::string& bot,
 			const std::string& top,
-			const int mat,const int surfOffset)
+			const int mat,
+			const double hs,
+			const double xyAngle,
+			const double height,
+			const int surfOffset)
 /*!
   Create surfaces and cells for the holes in the given layer
   \param System :: Simulation
@@ -712,6 +739,9 @@ BilbaoWheel::buildHoles(Simulation& System,
   \param bot    :: bottom surface
   \param top    :: top surface
   \param mat    :: material
+  \param hs     :: hole size (fraction of dTheta)
+  \param xyAngle :: XY offset
+  \param height :: hole height
   \param surfOffset :: surface offset (needed since we call this method several times)
  */
 {
@@ -729,11 +759,11 @@ BilbaoWheel::buildHoles(Simulation& System,
   int SI(SI0);
   double theta(0.0);
   const double dTheta = 360.0/nSectors; // angular length of hole+mat
-  const double dThetaHole = dTheta * innerHoleSize; // angular length of the hole
+  const double dThetaHole = dTheta * hs; // angular length of the hole
 
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta+innerHoleXYangle;
+      theta = j*dTheta+xyAngle;
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
       theta += dThetaHole;
       ModelSupport::buildPlaneRotAxis(SMap, SI+2, Origin, X, Z, theta);
@@ -744,8 +774,8 @@ BilbaoWheel::buildHoles(Simulation& System,
   SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+30001));
 
   // hole top/bottom
-  ModelSupport::buildPlane(SMap,SI0+5,Origin-Z*innerHoleHeight/2.0,Z);
-  ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*innerHoleHeight/2.0,Z);
+  ModelSupport::buildPlane(SMap,SI0+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*height/2.0,Z);
 
   // build cells
   std::string Out;
@@ -944,7 +974,8 @@ BilbaoWheel::createObjects(Simulation& System)
 	  buildHoles(System,Out,
 		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
-		     mat,0);
+		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
+		     0);
 	}
       
       if (i==1)
