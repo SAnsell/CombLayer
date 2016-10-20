@@ -684,6 +684,57 @@ BilbaoWheel::divideRadial(Simulation& System,
   return;
 }
 
+void
+BilbaoWheel::buildHoles(Simulation& System,
+			const std::string& sides,
+			const std::string& topbot,
+			const int mat,const double temp)
+/*!
+  Create surfaces and cells for the holes in the given layer
+  \param System :: Simulation
+  \param sides  :: side surfaces
+  \param topbot :: top/bottom surfaces
+  \param mat    :: material
+  \param temp   :: temperature
+ */
+{
+  ELog::RegMethod RegA("BilbaoWheel","buildHoles");
+
+  if (nSectors<2)
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,sides+topbot));
+      return;
+    }
+
+  // create surfaces
+  int SI(wheelIndex+30000);
+  double theta(0.0);
+  const double dTheta = 360.0/nSectors;
+
+  for (size_t j=0; j<nSectors; j++)
+    {
+      theta = j*dTheta+dTheta/2.0;
+      ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
+      SI += 10;
+    }
+  // add 1st surface again with reversed normal - to simplify building cells
+  SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+30001));
+
+
+  // build cells
+  std::string Out;
+  SI=wheelIndex+30000;
+  for(size_t j=0;j<nSectors;j++)
+    {
+      Out=ModelSupport::getComposite(SMap,SI," 1 -11 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides+topbot));  
+      SI+=10;
+    }
+  
+  return; 
+
+ 
+}
   
 void
 BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC,
@@ -850,8 +901,12 @@ BilbaoWheel::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -25 35 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 115 -116 ");
+	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
+	  Out1=ModelSupport::getComposite(SMap,wheelIndex," 115 -116 "); // top+bottom
+	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  buildHoles(System,Out,Out1,mat,mainTemp);
 	}
+      
       if (i==1)
 	{
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 117 -17M 5 -6 ");
@@ -890,8 +945,11 @@ BilbaoWheel::createObjects(Simulation& System)
 	  nInner++;
 	  if (nInner>1)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
-	} else
+	} else if (i!=0)
+	{
 	  divideRadial(System, Out, mat);
+	}
+      
 
       SI+=10;
     }
