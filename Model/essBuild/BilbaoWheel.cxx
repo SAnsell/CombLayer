@@ -775,34 +775,47 @@ BilbaoWheel::buildHoles(Simulation& System,
   // add 1st surface again with reversed normal - to simplify building cells
   SMap.addMatch(SI+1,SMap.realSurf(SI0+1));
 
-  // hole top/bottom
-  ModelSupport::buildPlane(SMap,SI0+5,Origin+Z*(z0-height/2.0),Z);
-  ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*(z0+height/2.0),Z);
-
-  // build cells
   std::string Out;
   SI=SI0;
 
-  // cell below holes
-  Out=ModelSupport::getComposite(SMap,SI0," -5 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+bot+sides));
-
-  // cell above holes
-  Out=ModelSupport::getComposite(SMap,SI0," 6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+top+sides+bot));
-
-  // holes
-  for(size_t j=0;j<nSectors;j++)
+  if (height>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 5M -6M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+sides));
+      // hole top/bottom
+      ModelSupport::buildPlane(SMap,SI0+5,Origin+Z*(z0-height/2.0),Z);
+      ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*(z0+height/2.0),Z);
 
-      Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 5M -6M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+      // cell below holes
+      Out=ModelSupport::getComposite(SMap,SI0," -5 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+bot+sides));
 
-      SI+=SIstep;
+      // cell above holes
+      Out=ModelSupport::getComposite(SMap,SI0," 6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+top+sides+bot));
+
+      // holes
+      for(size_t j=0;j<nSectors;j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 5M -6M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+sides));
+
+	  Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 5M -6M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+
+	  SI+=SIstep;
+	}
+    } else // if height <= 0 => build full height holes
+    {
+      for(size_t j=0;j<nSectors;j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+sides+top+bot));
+
+	  Out=ModelSupport::getComposite(SMap,SI,SI0," 2 -11 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides+top+bot));
+
+	  SI+=SIstep;
+	}
     }
-  
   return; 
 
  
@@ -971,8 +984,8 @@ BilbaoWheel::createObjects(Simulation& System)
 	  buildHoles(System,Out,
 		     ModelSupport::getComposite(SMap,wheelIndex," 116 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -26 "),
-		     mat,innerHoleSize,innerHoleXYangle,0.1,
-		     4.05, 4000);
+		     mat,innerHoleSize,innerHoleXYangle,-1,
+		     0.0, 4000);
 
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 25 ");
