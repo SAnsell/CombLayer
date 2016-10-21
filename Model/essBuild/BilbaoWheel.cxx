@@ -511,37 +511,18 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " -2007M 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
-  // layer before (inside) rings
+  // layer before (inside) circle of pipes
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20," 105 -106 2007M -2307 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
-  // layer with rings
-  int SJ(wheelIndex+2300);
-  if (nSectors<2)
-    {
-      Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 2307 -2317 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-    } else
-    {
-      for (size_t j=0; j<nSectors; j++)
-	{
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ," 105 -106 -8M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ," 105 -106 8M -9M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ,SJ+10,
-					 " (105 -106 2307 -2317) (9M 1M) (9N -1N)");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+  // layer with circle of pipes
+  buildCirclePipes(System,
+		   ModelSupport::getComposite(SMap,wheelIndex," 2307 -2317 "),
+		   ModelSupport::getComposite(SMap,wheelIndex," 105 -106 "));
 
-	  SJ+=10;
-	}
-    }
-
-  // layer after (outside) rings
+  // layer after (outside) circle of pipes
   Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 2317 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-
-
   
   // steel above
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 106 -116 2007M");
@@ -884,10 +865,43 @@ BilbaoWheel::buildHoles(Simulation& System,
 	}
     }
   return; 
-
- 
 }
-  
+
+void
+BilbaoWheel::buildCirclePipes(Simulation& System,
+			      const std::string& sides,
+			      const std::string& bottop)
+/*!
+  Build circle of pipes
+  \param System :: Simulation
+  \param sides  :: side surfaces
+  \param bottop :: bottom and top surfaces
+ */
+{
+  ELog::RegMethod RegA("BilbaoWheel","buildCirclePipes");
+  std::string Out;
+  int SJ(wheelIndex+2300);
+  if (nSectors<2)
+    {
+      Out=sides+bottop;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+    } else
+    {
+      for (size_t j=0; j<nSectors; j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,SJ," -8 ") + bottop;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,SJ," 8 -9 ") + bottop;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," (9 1) (9M -1M)");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,
+					   Out+bottop+sides));
+	  SJ+=10;
+	}
+    }
+  return;
+}
+
 void
 BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
