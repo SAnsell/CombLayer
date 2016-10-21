@@ -621,7 +621,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 		   ModelSupport::getComposite(SMap,wheelIndex," 5 "),
 		   ModelSupport::getComposite(SMap,wheelIndex," -2006 "),
 		   shaftMat[i],shaftHoleSize,shaftHoleXYangle,shaftHoleHeight,
-		   1000);
+		   0.0, 1000);
 	SI += 10;
 	continue;
 	} else if (i==nShaftLayers-1)
@@ -731,6 +731,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 			const double hs,
 			const double xyAngle,
 			const double height,
+			const double z0,
 			const int surfOffset)
 /*!
   Create surfaces and cells for the holes in the given layer
@@ -742,6 +743,7 @@ BilbaoWheel::buildHoles(Simulation& System,
   \param hs     :: hole size (fraction of dTheta)
   \param xyAngle :: XY offset
   \param height :: hole height
+  \param z0     :: center of the holes along the axis collinear with 'height'
   \param surfOffset :: surface offset (needed since we call this method several times)
  */
 {
@@ -771,11 +773,11 @@ BilbaoWheel::buildHoles(Simulation& System,
       SI += SIstep;
     }
   // add 1st surface again with reversed normal - to simplify building cells
-  SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+30001));
+  SMap.addMatch(SI+1,SMap.realSurf(SI0+1));
 
   // hole top/bottom
-  ModelSupport::buildPlane(SMap,SI0+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,SI0+5,Origin+Z*(z0-height/2.0),Z);
+  ModelSupport::buildPlane(SMap,SI0+6,Origin+Z*(z0+height/2.0),Z);
 
   // build cells
   std::string Out;
@@ -788,7 +790,8 @@ BilbaoWheel::buildHoles(Simulation& System,
   // cell above holes
   Out=ModelSupport::getComposite(SMap,SI0," 6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+top+sides+bot));
-  
+
+  // holes
   for(size_t j=0;j<nSectors;j++)
     {
       Out=ModelSupport::getComposite(SMap,SI,SI0," 1 -2 5M -6M ");
@@ -963,8 +966,15 @@ BilbaoWheel::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 116 -26 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
+	  ELog::EM << Out << ELog::endDiag;
+	  buildHoles(System,Out,
+		     ModelSupport::getComposite(SMap,wheelIndex," 116 "),
+		     ModelSupport::getComposite(SMap,wheelIndex," -26 "),
+		     mat,innerHoleSize,innerHoleXYangle,0.1,
+		     4.05, 4000);
+
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 25 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -25 35 ");
@@ -975,7 +985,7 @@ BilbaoWheel::createObjects(Simulation& System)
 		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
 		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
-		     0);
+		     0.0, 0);
 	}
       
       if (i==1)
