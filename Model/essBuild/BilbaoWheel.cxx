@@ -391,7 +391,8 @@ BilbaoWheel::makeShaftSurfaces()
       SI+=10;
     }
 
-  double H(wheelHeight()/2.0-caseThick+caseThickIn);
+  // '-1.0' is needed - overwise TopAFlight will cut the outer void:
+  double H(wheelHeight()/2.0-caseThick+caseThickIn-1.0);
   // first void step in the inner part
   ModelSupport::buildPlane(SMap,wheelIndex+2105,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2106,Origin+Z*H,Z);
