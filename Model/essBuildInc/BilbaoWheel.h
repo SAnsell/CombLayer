@@ -106,6 +106,10 @@ class BilbaoWheel : public WheelBase
   double catcherRingRadius; ///< catcher ring radius
   double catcherRingDepth; ///< catcher ring depth (below origin)
   double catcherRingThick; ///< catcher ring thickness
+
+  double circlePipesBigRad;   /// Big radius of circle of pipes]
+  double circlePipesRad;      /// Radius of pipes in the circle of pipes
+  double circlePipesWallThick; /// Thickness of pipes in the circle of pipes
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material

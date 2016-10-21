@@ -133,6 +133,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   catcherRingRadius(A.catcherRingRadius),
   catcherRingDepth(A.catcherRingDepth),
   catcherRingThick(A.catcherRingThick),
+  circlePipesBigRad(A.circlePipesBigRad),
+  circlePipesRad(A.circlePipesRad),
+  circlePipesWallThick(A.circlePipesWallThick),
   wMat(A.wMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
@@ -206,6 +209,9 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       catcherRingRadius=A.catcherRingRadius;
       catcherRingDepth=A.catcherRingDepth;
       catcherRingThick=A.catcherRingThick;
+      circlePipesBigRad=A.circlePipesBigRad;
+      circlePipesRad=A.circlePipesRad;
+      circlePipesWallThick=A.circlePipesWallThick;
       wMat=A.wMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
@@ -355,6 +361,10 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   catcherRingDepth=Control.EvalVar<double>(keyName+"CatcherRingDepth");
   catcherRingThick=Control.EvalVar<double>(keyName+"CatcherRingThick");
 
+  circlePipesBigRad=Control.EvalVar<double>(keyName+"CirclePipesBigRad");
+  circlePipesRad=Control.EvalVar<double>(keyName+"CirclePipesRad");
+  circlePipesWallThick=Control.EvalVar<double>(keyName+"CirclePipesWallThick");
+
   wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
@@ -452,7 +462,35 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
   R += catcherRingThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
-  
+
+
+  // circle of pipes
+  R = circlePipesBigRad-circlePipesRad-circlePipesWallThick;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2307,Origin,Z,R);
+  R = circlePipesBigRad+circlePipesRad+circlePipesWallThick;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2317,Origin,Z,R);
+
+  int SJ(wheelIndex+2300);
+  double theta, x0, y0;
+  const double dTheta = 360.0/nSectors;
+  R = circlePipesBigRad;
+  for (size_t j=0; j<nSectors; j++)
+    {
+      theta = j*dTheta;
+      x0 = R*sin(theta * M_PI/180.0);
+      y0 = -R*cos(theta * M_PI/180.0);
+      ModelSupport::buildCylinder(SMap,SJ+8,Origin+X*x0+Y*y0,Z,circlePipesRad);
+      ModelSupport::buildCylinder(SMap,SJ+9,Origin+X*x0+Y*y0,Z,
+				  circlePipesRad+circlePipesWallThick);
+      // dummy plane to separate voids between circles:
+      ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Z, theta);
+
+      SJ+=10;
+    }
+  // add 1st surface again with reversed normal - to simplify building cells
+  SMap.addMatch(SJ+9,SMap.realSurf(wheelIndex+2309));
+  SMap.addMatch(SJ+1,SMap.realSurf(wheelIndex+2301));
+
   return;
 }
 
@@ -472,10 +510,39 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+10,
 				 " -2007M 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
-				 "-7 105 -106 2007M");
+
+  // layer before (inside) rings
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20," 105 -106 2007M -2307 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
+  // layer with rings
+  int SJ(wheelIndex+2300);
+  if (nSectors<2)
+    {
+      Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 2307 -2317 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+    } else
+    {
+      for (size_t j=0; j<nSectors; j++)
+	{
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ," 105 -106 -8M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ," 105 -106 8M -9M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ,SJ+10,
+					 " (105 -106 2307 -2317) (9M 1M) (9N -1N)");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+
+	  SJ+=10;
+	}
+    }
+
+  // layer after (outside) rings
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 2317 -7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
+
+
+  
   // steel above
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 106 -116 2007M");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));

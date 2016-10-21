@@ -271,12 +271,12 @@ namespace essSystem
     if (!CM)
       throw ColErr::DynamicConv("FixedComp","CellMap",Wheel.getKeyName());
 
-    const std::pair<int,double> MatInfo=CM->deleteCellWithData(System, "Inner");
-    const int innerMat = MatInfo.first;
+    std::pair<int,double> MatInfo=CM->deleteCellWithData(System, "Inner");
+    int innerMat = MatInfo.first;
     temp = MatInfo.second;
 
-    const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
-    const std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+    std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+    std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
 
     //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr));
     
@@ -311,8 +311,15 @@ namespace essSystem
 	  }
       }
 
+    // radial layers in the coolants above/below steel
+    //MatInfo = CM->deleteCellWithData(System, "CoolantAboveSteel");
+    //    innerMat = MatInfo.first;
+    //    temp = MatInfo.second;
 
-
+    //    vertStr =  // top+bottom
+    //    cylStr = Wheel.getLinkString(9) + " a " + Wheel.getLinkString(10) + "b"; // min+max radii
+    //    ELog::EM << "cylStr" << cylStr << ELog::endDiag;
+    
     return; 
   }
 
