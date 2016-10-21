@@ -763,9 +763,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightZangle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
-  ELog::EM << "LowAFlightAngleZ{Top,Base} changed from 0.9 to 0 -- otherwise geometry error" << ELog::endDiag;
-  Control.addVariable("LowAFlightAngleZTop",0.0);  // Must be 0.9: Step down angle ESS-0032315.3
-  Control.addVariable("LowAFlightAngleZBase",0.0); // Must be 0.9: Step up angle ESS-0032315.3
+  Control.addVariable("LowAFlightAngleZTop",0.9);  // Step down angle ESS-0032315.3
+  Control.addVariable("LowAFlightAngleZBase",0.9); // Step up angle ESS-0032315.3
   Control.addVariable("LowAFlightHeight",6.1);     // Full height = LowFlyTotalHeight
   Control.addVariable("LowAFlightWidth",10.7);     // Full width
   Control.addVariable("LowAFlightNLiner",1);      // Liner
@@ -785,9 +784,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightZangle",0.0);     // Angle out
   Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
-    ELog::EM << "LowBFlightAngleZ{Top,Base} changed from 0.9 to 0 -- otherwise geometry error" << ELog::endDiag;
-  Control.addVariable("LowBFlightAngleZTop",0.0);  // Step down angle
-  Control.addVariable("LowBFlightAngleZBase",0.0); // Step up angle
+  Control.addVariable("LowBFlightAngleZTop",0.9);  // Step down angle
+  Control.addVariable("LowBFlightAngleZBase",0.9); // Step up angle
   Control.addVariable("LowBFlightHeight",6.1);     // Full height = LowFlyTotalHeight
   Control.addVariable("LowBFlightWidth",10.7);     // Full width
   Control.addVariable("LowBFlightNLiner",1);      // Liner
