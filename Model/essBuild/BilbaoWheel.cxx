@@ -980,7 +980,6 @@ BilbaoWheel::createObjects(Simulation& System)
       if (i==0)
 	{
 	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
-	  ELog::EM << Out << ELog::endDiag;
 	  buildHoles(System,Out,
 		     ModelSupport::getComposite(SMap,wheelIndex," 116 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -26 "),
@@ -988,8 +987,16 @@ BilbaoWheel::createObjects(Simulation& System)
 		     0.0, 4000);
 
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 25 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+	  //	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 25 ");
+	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
+	  buildHoles(System,Out,
+		     ModelSupport::getComposite(SMap,wheelIndex," 25 "),
+		     ModelSupport::getComposite(SMap,wheelIndex," -115 "),
+		     mat,innerHoleSize,innerHoleXYangle,-1,
+		     0.0, 5000);
+
+	  
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -25 35 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
