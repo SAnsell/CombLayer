@@ -1059,27 +1059,26 @@ BilbaoWheel::createObjects(Simulation& System)
   divideRadial(System, Out, heMat);
 
   // Void above W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
-				 " -7M 6 -16 117" );
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 6 -16 117" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // Void below W
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 15 -5 117 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // Steel above W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
-				 " -7M 16 -26 117 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 16 -26 117 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // Steel below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI, " -7M 25 -15 117 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 25 -15 117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 
   // Coolant above steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,wheelIndex+20,
-				 " -7M 26 -36 117 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI, " -7M 26 -36 117 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
+  CellMap::setCell("CoolantAboveSteel",cellIndex-1);
+
   // Coolant below steel
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI, " -7M 35 -25 117 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
@@ -1165,7 +1164,6 @@ BilbaoWheel::createLinks()
 	}
       SI+=10;
     }
-
 
   return;
 }
