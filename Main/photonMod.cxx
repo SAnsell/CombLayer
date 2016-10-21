@@ -63,6 +63,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "Simulation.h" 
 #include "SimPHITS.h"
@@ -141,8 +142,6 @@ main(int argc,char* argv[])
 	  photonSystem::makePhoton LObj;
 	  World::createOuterObjects(*SimPtr);
 	  LObj.build(SimPtr,IParam);
-
-	  SDef::sourceSelection(*SimPtr,IParam);
 
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         

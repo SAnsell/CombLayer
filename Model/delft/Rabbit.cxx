@@ -88,6 +88,7 @@ Rabbit::Rabbit(const std::string& Key,const int index)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param index :: ID number
   */
 {}
 
@@ -138,7 +139,7 @@ void
 Rabbit::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("Rabbit","populate");
@@ -189,7 +190,6 @@ Rabbit::createUnitVector(const ReactorGrid& RG)
     - X Across the Face
     - Z up (towards the target)
     \param RG :: Reactor Grid
-    \param sideIndex :: Inteenti
   */
 {
   ELog::RegMethod RegA("Rabbit","createUnitVector");
@@ -200,9 +200,8 @@ Rabbit::createUnitVector(const ReactorGrid& RG)
 
   const std::pair<size_t,size_t> GPt=RG.getElementNumber(objName);
   Origin=RG.getCellOrigin(GPt.first,GPt.second);
+  FixedOffset::applyOffset();
 
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
-  attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
   return;
 }
 
@@ -385,3 +384,4 @@ Rabbit::createAll(Simulation& System,
 
 
 } // NAMESPACE delftSystem
+

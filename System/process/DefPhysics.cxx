@@ -245,18 +245,34 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  const std::string CItem=
             IParam.getDefValue<std::string>("2","angle",2);
 
-          const int zeroFlag=IParam.getDefValue<int>(0,"angle",3);
 	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
           
           Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
           LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
-          ELog::EM<<"LP == "<<LP<<ELog::endDiag;
           LP.makeUnit();
 
           double angleZ=180.0*acos(LP[0])/M_PI;
           if (LP[1]>0.0) angleZ*=-1;
           MR.addRotation(Geometry::Vec3D(0,0,1),
                          Geometry::Vec3D(0,0,0),angleZ);
+        }
+      else  if (AItem=="objAxis" || AItem=="ObjAxis")
+        {
+	  const attachSystem::FixedComp* GIPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
+	  const std::string CItem=
+            IParam.getDefValue<std::string>("2","angle",2);
+
+	  const long int sideIndex=attachSystem::getLinkIndex(CItem);
+	  
+
+	  const Geometry::Vec3D AxisVec=
+            GIPtr->getSignedLinkAxis(sideIndex);
+	  
+	  const Geometry::Quaternion QR=
+	    Geometry::Quaternion::calcQVRot(Geometry::Vec3D(1,0,0),AxisVec);
+          MR.addRotation(QR.getAxis(),
+                         Geometry::Vec3D(0,0,0),-180.0*QR.getTheta()/M_PI);
         }
       else if (AItem=="free" || AItem=="FREE")
 	{
@@ -265,6 +281,15 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
 			 -rotAngle);		  
 	}
+      else if (AItem=="help" || AItem=="Help")
+        {
+          ELog::EM<<"Angle help ::\n"
+                  <<"  free rotAngle :: Rotate about Z axis \n"
+                  <<"  objPoint  FC link :: Rotate linkPt to (X,0,0) \n"
+                  <<"  objAxis  FC link :: Rotate link-axit to X \n"
+                  <<"  object  FC link :: Rotate Axis about Z to "
+                  <<ELog::endDiag;
+        }
       else 
 	retFlag=AItem;
     }
@@ -326,7 +351,7 @@ setDefaultPhysics(Simulation& System,
   const std::string PModel=IParam.getValue<std::string>("physModel");
   setPhysicsModel(lea,PModel);
 
-  PC.setNPS(IParam.getValue<int>("nps"));
+  PC.setNPS(IParam.getValue<size_t>("nps"));
   PC.setRND(IParam.getValue<long int>("random"));	
   PC.setVoidCard(IParam.flag("void"));
 
@@ -346,13 +371,20 @@ setDefaultPhysics(Simulation& System,
   
   std::string PList("h / d t s a");
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
+  const double cutUp=IParam.getValue<double>("cutWeight",0);  // [1keV
+  const double cutMin=IParam.getValue<double>("cutWeight",1);  // [1keV def]
   const double elcEnergy=IParam.getValue<double>("electron");
-  const double phtEnergy=IParam.getValue<double>("photon");
+  const double phtEnergy=IParam.getValue<double>("photon");  // [1keV def]
   const double phtModel=IParam.getValue<double>("photonModel");
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
+  if (std::abs(cutUp)<=std::abs(cutMin))
+    throw ColErr::NumericalAbort
+      ("CutUp<=cutMin: "+StrFunc::makeString(cutUp)+
+       "<="+StrFunc::makeString(cutMin));
+  
   PC.setMode("n p "+PList+elcAdd);
-  PC.setPrintNum("10 20 50 110");
+  PC.setPrintNum("10 20 50 110 120");
   System.processCellsImp();
 
   PC.setCells("imp",1,0);            // Set a zero cell	  
@@ -362,10 +394,10 @@ setDefaultPhysics(Simulation& System,
   
   physicsSystem::PStandard* allCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
-  allCut->setValues(2,1e+8,0.0);
+  allCut->setValues(4,1e+8,0.0,cutUp,cutMin);
   physicsSystem::PStandard* photonCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut","p");
-  photonCut->setValues(2,1e+8,phtEnergy);
+  photonCut->setValues(4,1e+8,phtEnergy,cutUp,cutMin);
 
   if (elcEnergy>=0.0)
     {
@@ -418,7 +450,7 @@ setNeutronPhysics(Simulation& System)
   
   physicsSystem::PhysicsCards& PC=System.getPC();
   PC.setMode("n");
-  PC.setPrintNum("10 20 50 110");
+  PC.setPrintNum("10 20 50 110 120");
   System.processCellsImp();
   PC.setCells("imp",1,0);            // Set a zero cell
   

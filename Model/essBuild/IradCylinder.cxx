@@ -90,12 +90,13 @@ IradCylinder::IradCylinder(const std::string& Key) :
 {}
 
 IradCylinder::IradCylinder(const IradCylinder& A) : 
-  attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   iradIndex(A.iradIndex),cellIndex(A.cellIndex),
-  radius(A.radius),length(A.length),wallThick(A.wallThick),
-  temp(A.temp),mat(A.mat),wallMat(A.wallMat)
+  sampleActive(A.sampleActive),radius(A.radius),
+  length(A.length),wallThick(A.wallThick),temp(A.temp),
+  mat(A.mat),wallMat(A.wallMat),sampleX(A.sampleX),
+  sampleY(A.sampleY),sampleZ(A.sampleZ)
   /*!
     Copy constructor
     \param A :: IradCylinder to copy
@@ -116,16 +117,19 @@ IradCylinder::operator=(const IradCylinder& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      sampleActive=A.sampleActive;
       radius=A.radius;
       length=A.length;
       wallThick=A.wallThick;
       temp=A.temp;
       mat=A.mat;
       wallMat=A.wallMat;
+      sampleX=A.sampleX;
+      sampleY=A.sampleY;
+      sampleZ=A.sampleZ;
     }
   return *this;
 }
-
 
   
 IradCylinder*
@@ -175,10 +179,14 @@ IradCylinder::populate(const FuncDataBase& Control)
   temp=Control.EvalVar<double>(keyName+"Temp");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-  sampleX=Control.EvalVar<double>(keyName+"SampleX");
-  sampleY=Control.EvalVar<double>(keyName+"SampleY");
-  sampleZ=Control.EvalVar<double>(keyName+"SampleZ");
-
+  // INNER SAMPLES:
+  sampleActive=Control.EvalDefVar<int>(keyName+"SampleActive", 1);
+  if (sampleActive)
+    {
+      sampleX=Control.EvalVar<double>(keyName+"SampleX");
+      sampleY=Control.EvalVar<double>(keyName+"SampleY");
+      sampleZ=Control.EvalVar<double>(keyName+"SampleZ");
+    }
   return;
 }
 
@@ -205,6 +213,19 @@ IradCylinder::createInnerObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("IradCylinder","createInnerObjects");
+
+  // CREATE Simple cell if samples are not active:
+  if (!sampleActive)
+    {
+      std::string Out=ModelSupport::getComposite(SMap,iradIndex," -7 1 -2 ");
+
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,temp,Out));
+      addCell("Samples",cellIndex-1);
+      return;
+    }
+
+
+  // CREATE divided cell if sample Active
 
   const size_t NX(2*static_cast<size_t>(radius/sampleX));
   const size_t NY(static_cast<size_t>(length/sampleY));

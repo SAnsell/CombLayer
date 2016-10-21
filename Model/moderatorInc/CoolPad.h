@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/CoolPad.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ class CoolPad :  public attachSystem::ContainedComp,
   const int padIndex;               ///< Index of surface offset
   int cellIndex;                    ///< Cell index
   
-  size_t fixIndex;                  ///< Index in Ref/Fixed system
   double xStep;                     ///< Step accross surface
   double zStep;                     ///< Step down/up
   double thick;                     ///< Thickness of system
@@ -55,6 +54,8 @@ class CoolPad :  public attachSystem::ContainedComp,
 
   int Mat;                          ///< Al (inner) material
 
+  HeadRule hotSurf;                 ///< hot surface to cool
+  
   std::vector<Geometry::Vec3D> CPts;  ///< Channel points
   double IWidth;                      ///< Inner width
   double IDepth;                     ///< Inner height
@@ -62,8 +63,9 @@ class CoolPad :  public attachSystem::ContainedComp,
 
   void populate(const FuncDataBase&);
 
-  void createUnitVector(const attachSystem::FixedComp&);
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createWaterTrack(Simulation&);
 
@@ -74,7 +76,8 @@ class CoolPad :  public attachSystem::ContainedComp,
   CoolPad& operator=(const CoolPad&);
   virtual ~CoolPad();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

@@ -375,7 +375,8 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: SNS Flux to Dose conversion (mrem/hour)\n"
+	      <<"  DOSE :: SNS Flux to Dose conversion (uSv/hour)\n"
+              <<"  DOSEPHOTON :: SNS Flux-Dose conversion [photon] (uSv/hour)\n"
 	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;

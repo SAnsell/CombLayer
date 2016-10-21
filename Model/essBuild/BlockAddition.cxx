@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BlockAddition.h"
@@ -75,7 +76,7 @@ namespace essSystem
 
 BlockAddition::BlockAddition(const std::string& Key) :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   blockIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(blockIndex+1),active(0),nLayers(0),
   edgeSurf(0)
@@ -87,10 +88,9 @@ BlockAddition::BlockAddition(const std::string& Key) :
 
 BlockAddition::BlockAddition(const BlockAddition& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),
+  attachSystem::FixedOffset(A),
   blockIndex(A.blockIndex),cellIndex(A.cellIndex),
-  active(A.active),xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
+  active(A.active),length(A.length),
   height(A.height),width(A.width),nLayers(A.nLayers),
   wallThick(A.wallThick),waterMat(A.waterMat),
   edgeSurf(A.edgeSurf)
@@ -112,14 +112,9 @@ BlockAddition::operator=(const BlockAddition& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       active=A.active;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       length=A.length;
       height=A.height;
       width=A.width;
@@ -172,11 +167,7 @@ BlockAddition::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BlockAddition","populate");
 
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
+  FixedOffset::populate(Control);
 
   // Extension
   length=Control.EvalVar<double>(keyName+"Length");   
@@ -218,21 +209,20 @@ BlockAddition::createUnitVector(const Geometry::Vec3D& O,
   /*!
     Create the unit vectors
     \param O :: Origin [calc from edge point]
-    \param YAxis :: Direction of Y Axis 
-    \param FC :: FixedComp [for Z]
+    \param YAxis :: Direction of Y Axis
+    \param ZAxis :: Direction of Z Axis 
   */
 {
   ELog::RegMethod RegA("BlockAddition","createUnitVector");
   const Geometry::Plane* PPtr=
     SMap.realPtr<Geometry::Plane>(edgeSurf);
-  
+
   Origin=O;
   Z=ZAxis;
   Y=YAxis;
   X=Z*Y;
-  
-  applyShift(xStep+wallThick.back(),yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  xStep+=wallThick.back();
+  applyOffset();
   if (PPtr && PPtr->getNormal().dotProd(X)<0.0)
     X*=-1.0;
   return;
@@ -282,7 +272,7 @@ BlockAddition::rotateItem(std::string LString)
   /*!
     Given a string convert to an angle rotate form
     \param LString :: Link string
-    \return string
+    \return string of rotated surface
   */
 {
   ELog::RegMethod RegA("BlockAddtion","rotateItem");

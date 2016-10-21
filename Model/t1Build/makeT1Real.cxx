@@ -34,11 +34,8 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
-
-
 #include "Exception.h"
-#include "FileReport.h"
+#include "FileReport.h" 
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "GTKreport.h"
@@ -236,7 +233,7 @@ makeT1Real::flightLines(Simulation* SimPtr)
   H2FL->addBoundarySurf("inner",Out);  
   H2FL->addBoundarySurf("outer",Out);  
   H2FL->createAll(*SimPtr,*Lh2ModObj,1);
-
+  
   RefObj->addToInsertChain(CH4NorthFL->getCC("outer"));
   Out=RefObj->getComposite(" 3 -12 ");
   Out1=Lh2ModObj->getComposite(" (-61:64)  ");

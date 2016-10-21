@@ -94,9 +94,9 @@ namespace tallySystem
   
 void
 tallyConstruct::initStatic()
-/*!
-  Initialize the static members
-*/
+  /*!
+    Initialize the static members
+  */
 {
   typedef std::map<std::string,int> MTYPE;
   chipGridPos.insert(MTYPE::value_type("chipTable1",0));
@@ -121,7 +121,47 @@ tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) :
 {
   initStatic();
 }
-  
+
+tallyConstruct::tallyConstruct(const tallyConstruct& A) : 
+  basicConstruct(A),
+  pointPtr(new pointConstruct(*A.pointPtr)),
+  gridPtr(new gridConstruct(*A.gridPtr)),
+  meshPtr(new meshConstruct(*A.meshPtr)),
+  fluxPtr(new fluxConstruct(*A.fluxPtr)),
+  heatPtr(new heatConstruct(*A.heatPtr)),
+  itemPtr(new itemConstruct(*A.itemPtr)),
+  surfPtr(new surfaceConstruct(*A.surfPtr)),
+  fissionPtr(new fissionConstruct(*A.fissionPtr))
+  /*!
+    Copy constructor
+    \param A :: tallyConstruct to copy
+  */
+{}
+
+tallyConstruct&
+tallyConstruct::operator=(const tallyConstruct& A)
+  /*!
+    Assignment operator
+    \param A :: tallyConstruct to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      basicConstruct::operator=(A);
+
+      *pointPtr=*A.pointPtr;
+      *gridPtr=*A.gridPtr;
+      *meshPtr=*A.meshPtr;
+      *fluxPtr=*A.fluxPtr;
+      *heatPtr=*A.heatPtr;
+      *itemPtr=*A.itemPtr;
+      *surfPtr=*A.surfPtr;
+      *fissionPtr=*A.fissionPtr;
+    }
+  return *this;
+}
+
   
 tallyConstruct::~tallyConstruct()
 /*!

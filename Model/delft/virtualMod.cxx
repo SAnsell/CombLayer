@@ -3,7 +3,7 @@
  
  * File:   delft/virtualMod.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "virtualMod.h"
 
@@ -59,7 +60,7 @@ namespace delftSystem
 {
 
 virtualMod::virtualMod(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6)
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -67,7 +68,7 @@ virtualMod::virtualMod(const std::string& Key)  :
 {}
 
 virtualMod::virtualMod(const virtualMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A)
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A)
   /*!
     Copy constructor
     \param A :: virtualMod to copy
@@ -85,7 +86,7 @@ virtualMod::operator=(const virtualMod& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
     }
   return *this;
 }

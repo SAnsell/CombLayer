@@ -40,7 +40,11 @@ namespace physicsSystem
   \author S. Ansell
   \date February 2016
   \brief Adds zone (ranged int) support 
-  \tparam 
+  \tparam T :: Data type
+
+  Provides a range of intergers groups an associated data with
+  that range. 
+  E.g. 11-13 : 4.5, 14-18:7.5 ...
 */
 template<typename T>
 class ZoneUnit 

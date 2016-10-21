@@ -3,7 +3,7 @@
  
  * File:   delftInc/delftH2Moderator.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,6 @@ class delftH2Moderator : public virtualMod
   
   const int hydIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;             ///< X Step
-  double yStep;             ///< Y Step
-  double zStep;             ///< Z Step
 
   double depth;             ///< Total depth [Max]
   double sideRadius;        ///< Side (height+width) radius

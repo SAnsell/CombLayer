@@ -95,6 +95,7 @@ class Tally
   void setCinderEnergy(const std::string&); 
   virtual int setSDField(const double);
   virtual int setSDField(const std::string&);
+  /// Combine two tallies if possible [no-op default]
   virtual int mergeTally(const Tally&)
   { return 0; }
   

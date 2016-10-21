@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/TS2ModifyTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -203,7 +203,7 @@ TS2ModifyTarget::populate(const Simulation& System)
 	(Control,keyIndex+"LayerMat",keyName+"ConeLayerMat");
       Item.layerThick=
 	Control.EvalPair<double>(keyIndex,keyName+"Cone","LayerThick");
-      Item.layerThick*=cos(M_PI*fabs(Item.angleA)/180.0);
+      Item.layerThick*=cos(M_PI*std::abs(Item.angleA)/180.0);
       //      Item.defCutPlane();
       CCut.push_back(Item);
     }

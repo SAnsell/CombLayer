@@ -46,7 +46,7 @@ class ProtonVoid : public attachSystem::ContainedComp,
 
   double viewRadius;            ///< Radius of proton tube
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces();
   void createLinks();
@@ -62,7 +62,8 @@ class ProtonVoid : public attachSystem::ContainedComp,
   int getVoidCell() const { return protonVoidCell; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

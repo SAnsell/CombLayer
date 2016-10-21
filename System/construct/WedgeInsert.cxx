@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/WedgeInsert.cxx
+ * File:   construct/WedgeInsert.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -82,6 +82,7 @@ WedgeInsert::WedgeInsert(const std::string& Key,const size_t Index) :
   /*!
     Constructor
     \param Key :: Name of construction key
+    \param Index :: Index number for component
   */
 {}
 
@@ -273,8 +274,9 @@ WedgeInsert::createObjects(Simulation& System,
     Create the wedge using the surfaces from layer 1/2 of 
     LC
     \param System :: Simulation to add results
-    \param  LC :: LayerComp
-    \param  sideIndex :: Intersecting side
+    \param  FC :: LayerComp (passed as a FC)
+    \param layerIndex :: layer leve to connect Wedge too
+    \param sideIndex :: Intersecting side
   */
 {
   ELog::RegMethod RegA("WedgeInsert","createObjects");

@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class BunkerInsert : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap
+  public attachSystem::FixedOffset,public attachSystem::CellMap,
+  public attachSystem::FrontBackCut
 {
  private:
   

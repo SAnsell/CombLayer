@@ -67,6 +67,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "Simulation.h" 
 #include "SimPHITS.h"
@@ -150,8 +151,6 @@ main(int argc,char* argv[])
 	  World::createOuterObjects(*SimPtr);
 	  dObj.build(*SimPtr,IParam);
       
-	  SDef::sourceSelection(*SimPtr,IParam);
-
 	  SimPtr->removeComplements();
 	  SimPtr->removeDeadSurfaces(0);         
 	  ModelSupport::setDefaultPhysics(*SimPtr,IParam);

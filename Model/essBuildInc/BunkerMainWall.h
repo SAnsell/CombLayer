@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerMainWall.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ class BunkerMainWall
  private:
 
   std::map<size_t,std::string> MatMap;         ///< Hash key : mat type
-  ///< Hash key : CornerPoints
+
+  /// Hash key : CornerPoints
   std::map<size_t,std::vector<Geometry::Vec3D>> PointMap;
 
 
@@ -66,8 +67,9 @@ class BunkerMainWall
 				  const size_t,const size_t) const;
   void setMaterial(const size_t,const size_t,
 		   const size_t,const std::string&);
-  const std::string& getMatString
-    (const size_t,const size_t,const size_t) const;
+
+  const std::string& getMatString(const size_t,
+				  const size_t,const size_t) const;
 
   void setPoints(const size_t,const size_t,
 		 const size_t,const std::vector<Geometry::Vec3D>&);

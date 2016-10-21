@@ -295,9 +295,10 @@ makeDelft::makeBlocks(Simulation& System)
   
   SPType GB(new SpaceBlock("Box",1));
   GB->addInsertCell(Pool->getCells("Water"));
-  int flag=GB->createAll(System,*GridPlate,1);  
-  if (flag<0) return;
-  if (flag>0)
+  GB->createAll(System,*GridPlate,1);
+  
+  if (GB->getActiveFlag()<0) return;
+  if (GB->getActiveFlag()>0)
     {
       OR.addObject(GB);
       SBox.push_back(GB);
@@ -305,9 +306,8 @@ makeDelft::makeBlocks(Simulation& System)
 
   GB=SPType(new SpaceBlock("Box",2));
   GB->addInsertCell(Pool->getCells("Water"));
-  flag=GB->createAll(System,*GridPlate,2);  
-  if (flag<0) return;
-  if (flag>0)
+  GB->createAll(System,*GridPlate,2);  
+  if (GB->getActiveFlag()>0)
     {
       OR.addObject(GB);
       SBox.push_back(GB);
@@ -362,6 +362,7 @@ makeDelft::setSource(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
 
+  
   if (IParam.flag("kcode"))
     {
       const size_t NItems=IParam.itemCnt("kcode",0);
@@ -468,9 +469,8 @@ makeDelft::build(Simulation* SimPtr,
     }
   
   makeBlocks(*SimPtr);
-  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
   makeRabbit(*SimPtr);
-  ELog::EM<<"ASDFSDAF "<<ELog::endDiag;
+
   // ELog::EM<<"Insert to be removed "<<ELog::endWarn;
   if (ColdMod)
     {

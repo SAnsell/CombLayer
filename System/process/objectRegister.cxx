@@ -322,7 +322,8 @@ objectRegister::getInternalObject(const std::string& Name)
 	{
 	  attachSystem::FixedGroup* FGPtr=
 	    dynamic_cast<attachSystem::FixedGroup*>(mcx->second.get());
-	  return (FGPtr->hasKey(tail)) ? &(FGPtr->getKey(tail)) : 0;
+	  return (FGPtr && FGPtr->hasKey(tail)) ?
+            &(FGPtr->getKey(tail)) : 0;
 	}
       // Fall through here to test whole name:
     }
@@ -637,7 +638,6 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::vector<int> Out;
       for(const int CN : activeCells)
         Out.push_back(calcRenumber(CN));
-      ELog::EM<<"All size == "<<Out.size()<<ELog::endDiag;
       return Out;
     }
   
@@ -645,7 +645,6 @@ objectRegister::getObjectRange(const std::string& objName) const
 
   const int BStart=getCell(objName);
   const int BRange=getRange(objName);
-  ELog::EM<<"ObjName = "<<objName<<" "<<BStart<<" "<<BRange<<ELog::endDiag;
   if (BStart==0)
     throw ColErr::InContainerError<std::string>
       (objName,"Object name not found");

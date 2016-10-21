@@ -57,7 +57,6 @@
 #include "NList.h"
 #include "NRange.h"
 #include "nameCard.h"
-#include "dbcnCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"
 #include "PWTControl.h"
@@ -68,7 +67,7 @@ namespace physicsSystem
 {
 
 PhysicsCards::PhysicsCards() :
-  nps(10000),histp(0),
+  mcnpVersion(6),nps(10000),histp(0),
   RAND(new nameCard("RAND",0)),
   PTRAC(new nameCard("PTRAC",0)),
   dbCard(new nameCard("dbcn",1)),
@@ -117,7 +116,8 @@ PhysicsCards::PhysicsCards() :
 }
 
 PhysicsCards::PhysicsCards(const PhysicsCards& A) : 
-  nps(A.nps),histp(A.histp),histpCells(A.histpCells),
+  mcnpVersion(A.mcnpVersion),nps(A.nps),
+  histp(A.histp),histpCells(A.histpCells),
   RAND(new nameCard(*A.RAND)), PTRAC(new nameCard(*A.PTRAC)),
   dbCard(new nameCard(*dbCard)),
   Basic(A.Basic),mode(A.mode),
@@ -147,8 +147,8 @@ PhysicsCards::operator=(const PhysicsCards& A)
 {
   if (this!=&A)
     {
+      mcnpVersion=A.mcnpVersion;
       nps=A.nps;
-      *RAND= *A.RAND;
       histp=A.histp;
       histpCells=A.histpCells;
       *RAND=*A.RAND;
@@ -809,7 +809,12 @@ PhysicsCards::setRND(const long int N,
     \param H :: History
   */
 {
-  if (N) RAND->setRegItem("SEED",N);
+
+  if (N)
+    {
+      if (mcnpVersion==10) dbCard->setRegItem("rndSeed",N);
+      RAND->setRegItem("SEED",N);
+    }
   if (H) RAND->setRegItem("HIST",H);
 
   return;
@@ -1008,7 +1013,7 @@ PhysicsCards::write(std::ostream& OX,
 	cx<<" -500000000 "<<histpCells;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
-  RAND->write(OX);
+  if (mcnpVersion!=10) RAND->write(OX);
   PTRAC->write(OX);
   
   mode.write(OX);

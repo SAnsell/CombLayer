@@ -318,21 +318,22 @@ BulkShield::createShutters(Simulation& System,
     {
       if (i==chipShutter && chipFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new ChipIRShutterFlat(i,"shutter","chipShutter")));
+			(new ChipIRShutterFlat(i+1,"shutter","chipShutter")));
       else if (i==imatShutter && imatFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new IMatShutter(i,"shutter","imatShutter")));
+			(new IMatShutter(i+1,"shutter","imatShutter")));
       else if (i==zoomShutter && zoomFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new ZoomShutter(i,"shutter","zoomShutter")));
+			(new ZoomShutter(i+1,"shutter","zoomShutter")));
       else if (i==letShutter && letFlag)
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new BlockShutter(i,"shutter","letShutter")));
+			(new BlockShutter(i+1,"shutter","letShutter")));
       else
 	GData.push_back(std::shared_ptr<GeneralShutter>
-			(new GeneralShutter(i,"shutter")));
-      // Not registered under KeyName
-      OR.addObject(StrFunc::makeString(std::string("shutter"),i),GData.back());
+			(new GeneralShutter(i+1,"shutter")));
+      OR.addObject(GData.back());
+      //      OR.addObject(StrFunc::makeString(std::string("shutter"),i),
+      //      GData.back());
     }
 
   MonteCarlo::Qhull* shutterObj=System.findQhull(shutterCell);
@@ -363,13 +364,14 @@ BulkShield::createBulkInserts(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BulkShield","createBulkInserts");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
   const bool chipFlag(!IParam.flag("exclude") || 
 		      !IParam.compValue("E",std::string("chipIR")));
   const bool imatFlag(!IParam.flag("exclude") || 
-   		      (!IParam.compValue("E",std::string("Imat")) &&
+   		      (!IParam.compValue("E",std::string("imat")) &&
 		       !IParam.compValue("E",std::string("IMat"))) );
 
   for(size_t i=0;i<numberBeamLines;i++)

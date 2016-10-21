@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/makeFilter.cxx
+ * File:   filter/makeFilter.cxx
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -63,6 +63,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BoundOuter.h"
 #include "LayerComp.h"
 #include "World.h"
 #include "AttachSupport.h"
@@ -133,5 +134,5 @@ makeFilter::build(Simulation& System,
 }
 
 
-}   // NAMESPACE filterxsSystem
+}   // NAMESPACE filterSystem
 

@@ -66,16 +66,15 @@
 #include "Qhull.h"
 #include "DefPhysics.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceSelector.h"
 #include "makeTS2.h"
 #include "chipDataStore.h"
-#include "TallySelector.h"
 #include "mainJobs.h"
 #include "World.h"
 #include "Volumes.h"
@@ -134,8 +133,6 @@ main(int argc,char* argv[])
       World::createOuterObjects(*SimPtr);
       moderatorSystem::makeTS2 TS2Obj;
       TS2Obj.build(SimPtr,IParam);
-      // This for chipObjBuild
-      SDef::sourceSelection(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       ELog::EM<<"FULLBUILD : variable hash: "
@@ -170,4 +167,3 @@ main(int argc,char* argv[])
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
 }
-

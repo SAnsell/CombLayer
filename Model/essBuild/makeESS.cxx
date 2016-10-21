@@ -72,6 +72,7 @@
 #include "BasicFlightLine.h"
 #include "WedgeFlightLine.h"
 #include "FlightLine.h"
+#include "WedgeFlightLine.h"
 #include "AttachSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -92,15 +93,17 @@
 #include "CylPreMod.h"
 #include "PreModWing.h"
 #include "IradCylinder.h"
-#include "SupplyPipe.h"
 #include "BulkModule.h"
 #include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
+#include "DiskPreMod.h"
+#include "DiskLayerMod.h"
 #include "TaperedDiskPreMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
+#include "BunkerQuake.h"
 #include "Curtain.h"
 #include "ConicModerator.h"
 #include "makeESSBL.h"
@@ -508,7 +511,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
 
   const size_t NSet=IParam.setCnt("bunkerFeed");
 
-  
+  ELog::EM<<"CAlling bunker Feed"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("bunkerFeed",j);
@@ -545,6 +548,53 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           
         }
     }
+  return;
+}
+
+void
+makeESS::buildBunkerQuake(Simulation& System,
+			  const mainSystem::inputParam& IParam)
+  /*!
+    Build the bunker earthquake dilitation join
+    \param System :: Simulation
+    \param IParam :: Input data
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerQuake");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerQuake");
+
+  ELog::EM<<"Calling bunker Quake"<<ELog::endDiag;
+  for(size_t j=0;j<NSet;j++)
+    {
+      const size_t NItems=IParam.itemCnt("bunkerQuake",j);
+      if (NItems>=1)
+        {
+          const std::string bunkerName=
+            IParam.getValue<std::string>("bunkerQuake",j,0);
+
+          // bunkerA/etc should be a map
+          std::shared_ptr<Bunker> BPtr;
+          if (bunkerName=="BunkerA" || bunkerName=="ABunker")
+            BPtr=ABunker;
+          else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
+            BPtr=BBunker;
+          else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+            BPtr=CBunker;
+          else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+            BPtr=DBunker;
+          else
+            throw ColErr::InContainerError<std::string>
+              (bunkerName,"bunkerName not know");
+          
+          std::shared_ptr<BunkerQuake> BF(new BunkerQuake(BPtr->getKeyName()));
+          OR.addObject(BF);
+          BF->createAll(System,*BPtr,12,0);  
+        }
+    }
 
   return;
 }
@@ -575,6 +625,7 @@ makeESS::optionSummary(Simulation& System)
   return;
 }
 
+  
 void
 makeESS::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
@@ -590,7 +641,7 @@ makeESS::makeBeamLine(Simulation& System,
 
   const size_t NSet=IParam.setCnt("beamlines");
   FuncDataBase& Control=System.getDataBase();
-  
+
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("beamlines",0);
@@ -605,6 +656,14 @@ makeESS::makeBeamLine(Simulation& System,
 
 	  Control.addVariable(BL+"Active",1);
 	  int fillFlag(0);
+	  if (IParam.checkItem<int>("beamlines",j,index+1,fillFlag))
+	    {
+	      // setting is CONTROLED as value from variable taken
+	      // otherwise
+	      Control.addVariable(BL+"Filled",fillFlag);
+	      index++;
+	    }
+
 	  if (IParam.checkItem<int>("beamlines",j,index+1,fillFlag))
 	    {
 	      // setting is CONTROLED as value from variable taken
@@ -635,6 +694,7 @@ makeESS::makeBeamLine(Simulation& System,
 	    BLfactory.build(System,*CBunker);
 	}
     }
+
   return;
 }
 
@@ -681,9 +741,12 @@ makeESS::makeBunker(Simulation& System,
 
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
+  if (IParam.flag("bunkerQuake"))
+    buildBunkerQuake(System,IParam);
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
+      // THIS IS HORIFFICALLY INEFFICENT :: FIX
       TopCurtain->addInsertCell("Top",74123);
       TopCurtain->addInsertCell("Lower",74123);
       TopCurtain->addInsertCell("Mid",74123);
@@ -710,40 +773,46 @@ makeESS::makeBunker(Simulation& System,
         
   return;
 }
-
+  
 void
 makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
+  /*!
+    Build pre wings :: These are little layers of pre-moderator that
+    drop into the flight-line space 
+    \param System :: Simulation
+    \param lowModType :: key for lower moderator type
+   */
 {
   ELog::RegMethod RegA("makeESS","buildPreWings");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
   enum Side {bottom, top};
   
   TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
   OR.addObject(TopPreWing);
-  TopPreWing->createAll(System, *TopPreMod, 9, false, top, *TopMod);
+  TopPreWing->createAll(System,*TopPreMod,9,false,top, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
 
   TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
   OR.addObject(TopCapWing);
-  TopCapWing->createAll(System, *TopCapMod, 10, false, bottom, *TopMod);
+  TopCapWing->createAll(System,*TopCapMod,10,false,bottom, *TopMod);
   attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
 
   if (lowModType != "None")
     {
       LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
       OR.addObject(LowPreWing);
-      LowPreWing->createAll(System, *LowPreMod, 9, true, bottom, *LowMod);
+      LowPreWing->createAll(System,*LowPreMod,9,true,bottom, *LowMod);
       attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
 
       LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
       OR.addObject(LowCapWing);
-      LowCapWing->createAll(System, *LowCapMod, 10, true, top, *LowMod);
+      LowCapWing->createAll(System,*LowCapMod,10,true,top, *LowMod);
       attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
     }
+  return;
 }
-  
+
 void
 makeESS::buildTwister(Simulation& System)
 {
@@ -755,18 +824,22 @@ makeESS::buildTwister(Simulation& System)
   Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
   OR.addObject(Twister);
 
-  Twister->createAll(System,*Bulk);
+  Twister->createAll(System,*Bulk,0);
 
-  attachSystem::addToInsertForced(System, *Bulk, *Twister); // no other option
-  attachSystem::addToInsertForced(System, *ShutterBayObj, *Twister);
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System, *Twister, PBeam->getCC("Sector1")); ELog::EM << "remove this line after R is set correctly " << ELog::endDiag;
+  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
+  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
+  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
+  
+  attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
 
-  // split Twister by components (Shaft and Body)
+  // split Twister by components
   // for (const ContainedComp & CC : Twister->getCC()) ...
   // use LineControl for intersections with flight lines
   
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
@@ -777,7 +850,7 @@ makeESS::buildTwister(Simulation& System)
 
   return;
 }
-  
+
 void 
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
@@ -790,6 +863,7 @@ makeESS::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("makeESS","build");
 
+  const FuncDataBase& Control=System.getDataBase();
   int voidCell(74123);
 
   const std::string lowPipeType=IParam.getValue<std::string>("lowPipe");
@@ -801,9 +875,10 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
-
-  //  const size_t nF5 = IParam.getValue<size_t>("nF5");
-
+  const size_t nF5=IParam.getValue<size_t>("nF5");
+  const int engActive=Control.EvalPair<int>
+    ("BulkEngineeringActive","EngineeringActive");
+  
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
@@ -812,7 +887,7 @@ makeESS::build(Simulation& System,
     }
   
   makeTarget(System,targetType);
-  Reflector->globalPopulate(System.getDataBase());
+  Reflector->globalPopulate(Control);
 
   // lower moderator
   if (lowModType != "None")
@@ -917,7 +992,6 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
 				    PBeam->getCC("Sector3"));
 
-  const int engActive = System.getDataBase().EvalPair<int>("Bulk", "", "EngineeringActive");
   if (engActive)
     {
       buildTwister(System);
@@ -927,8 +1001,10 @@ makeESS::build(Simulation& System,
     makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
 
+  
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
+
   if (lowModType != "None")
     ModPipes->buildLowPipes(System,lowPipeType);
   ModPipes->buildTopPipes(System,topPipeType);

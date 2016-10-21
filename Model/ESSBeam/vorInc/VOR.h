@@ -89,50 +89,57 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
 
 
-
-
-  /// Vac box for 
-  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
-  /// Double disk chopper Housing
-  std::shared_ptr<constructSystem::ChopperHousing> DDiskHouse;
-  /// Pipe between chopper 1 and the wall
-  //  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Elliptic forcus in bulkshield [m2.5]
-  //  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  /// Pipe to bunker Insert
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// Elliptic guide to bunker inset
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Pipe in bunker Insert
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Elliptic forcus in bulkshield [m2.5] 
-  std::shared_ptr<beamlineSystem::GuideLine> FocusBExtra;
-
-   /// Chopper pit for first outer bunker chopper
-  std::shared_ptr<constructSystem::ChopperPit> PitA;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitAFront;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitABack;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
 
-  /// Chopper pit for first outer bunker chopper
-  std::shared_ptr<constructSystem::ChopperPit> PitB;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBFront;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<beamlineSystem::GuideLine> GuidePitBBack;
-  /// Guide from Chopper to exterior
-  std::shared_ptr<constructSystem::DiskChopper> ChopperB;
+  /// Shield for Chopper Out-A
+  std::shared_ptr<constructSystem::ChopperPit> OutPitA;
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  /// FOC disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> FOCDisk;
+  /// Collimator hole 
+  std::shared_ptr<constructSystem::HoleShape> FOCExitPort;
 
-  /// Elliptic focus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  
+  /// First outer shield section
+  std::shared_ptr<constructSystem::LineShield> ShieldA;
+  /// Pipe leaving bunker
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
+  /// Guide leaving the bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;  
 
-  /// Elliptic focus in bulkshield [m2.5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusE;
+  /// Shield for Chopper Out-A
+  std::shared_ptr<constructSystem::ChopperPit> OutPitB;
+  /// Vac box for first chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  /// FOC disk chopper
+  std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
+  /// Collimator hole [front]
+  std::shared_ptr<constructSystem::HoleShape> FOCEntryPortB;
+  /// Collimator hole [exit]
+  std::shared_ptr<constructSystem::HoleShape> FOCExitPortB;
 
-
+    /// First outer shield section
+  std::shared_ptr<constructSystem::LineShield> ShieldB;
+  /// Pipe leaving bunker
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
+  /// Guide leaving the bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;  
+  
   /// Cave
   std::shared_ptr<DHut> Cave;
-  /// Guide entering the cave
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
-  
+  /// Collimator hole 
+  std::shared_ptr<constructSystem::HoleShape> CavePort;
   /// Detector tank
   std::shared_ptr<DetectorTank> Tank;
 

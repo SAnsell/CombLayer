@@ -63,6 +63,7 @@
 #include "FixedOffset.h"
 #include "BeamSource.h"
 #include "GammaSource.h"
+#include "PointSource.h"
 #include "SurfNormSource.h"
 #include "LensSource.h"
 #include "SourceCreate.h"
@@ -388,6 +389,67 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
 }
 
 void
+createPointSource(const FuncDataBase& Control,
+		  const std::string& keyName,
+		  const attachSystem::FixedComp& FC,
+		  const long int linkIndex,
+                  const Geometry::Vec3D& D,
+		  Source& Card)
+  /*!
+    Create the point source -- currently a copy of the photo
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param keyName :: keyname for source
+    \param FC :: Link point
+    \param linkIndex :: Link point [signed] 
+    \param D :: Step [default]
+    \param Card :: Source system
+  */
+{
+  ELog::RegMethod RegA("SourceCreate","createPointSource(FC,link)");
+  PointSource GX(keyName);
+  GX.setDefaultStep(D);
+  GX.createAll(Control,FC,linkIndex,Card);
+  return;
+}
+  
+void
+createPointSource(const FuncDataBase& Control,
+		  const std::string& keyName,
+                  const std::string& DVec,
+                  Source& Card)
+  /*!
+    Create the photon source for gamma-nuclea spectrum
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param keyName :: keyname for Gamma source
+    \param D ::Step [default]
+    \param Card :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createPointSource");
+
+
+  PointSource GX(keyName);
+  if (!DVec.empty())
+    {
+      double D(0.0);
+      Geometry::Vec3D DOffsetStep;
+      if (!StrFunc::convert(DVec,DOffsetStep) && 
+	  StrFunc::convert(DVec,D))
+	DOffsetStep[1]=D;
+      else
+	ELog::EM<<"DObj "<<DVec<<" not understood "<<ELog::endErr;
+      
+      GX.setDefaultStep(DOffsetStep);
+    }
+
+
+  GX.createAll(Control,Card);
+  return;
+}
+
+void
 createBeamSource(const FuncDataBase& Control,
 		  const std::string& keyName,Source& Card)
   /*!
@@ -401,6 +463,7 @@ createBeamSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createBeamSource");
 
   BeamSource GX(keyName);
+  
   GX.createAll(Control,Card);
   return;
 }

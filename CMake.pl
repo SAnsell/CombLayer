@@ -6,7 +6,7 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","bilbau","photonMod2","t1Real",
+my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod3","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","t3Expt",
 		"filter","singleItem","testMain"); 
 
@@ -78,8 +78,9 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp","visit",
                              "beer","bifrost","cspec","dream","estia",
-			     "freia","loki","nmx","odin","vor","vespa",
-			     "shortDream","shortOdin","longLoki",
+			     "freia","loki","magic","miracles","nmx",
+                             "odin","vor","vespa","shortDream",
+                             "shortOdin","longLoki",
 			     "commonVar","simpleItem"
     	 	             ]);
 
@@ -198,6 +199,14 @@ $gM->addDepUnit("photonMod2", ["photon","visit","src","simMC",
 			      "work","xml","poly","support","weights",
 			      "md5","global","attachComp","visit","poly"]);
 
+$gM->addDepUnit("photonMod3", ["photon","visit","src","simMC",
+			      "construct","physics","input","process",
+			      "transport","scatMat","endf","crystal",
+			      "source","monte","funcBase","log","monte",
+			      "tally","geometry","mersenne","src","world",
+			      "work","xml","poly","support","weights",
+			      "md5","global","attachComp","visit","poly"]);
+
 $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 			 "construct","physics","input","process",
 			 "transport","scatMat","endf","crystal",
@@ -278,7 +287,7 @@ $gM->addDepUnit("epb",      ["epbBuild","visit","src","physics",
 			     "attachComp","visit"]);
 
 
-$gM->addDepUnit("muBeam",      ["muon","visit","src","physics",
+$gM->addDepUnit("muBeam",   ["muon","visit","src","physics",
 			     "simMC","input","source","monte","funcBase","log",
 			     "tally","construct","crystal","transport",
 			     "scatMat","md5","endf","process","world",

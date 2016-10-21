@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/BeFullBlock.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,16 +39,12 @@ namespace delftSystem
 */
 
 class BeFullBlock : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
   const int insertIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< Offset on X to front
-  double yStep;                 ///< Offset on Y to front
-  double zStep;                 ///< Offset on Z top front
 
   double width;                 ///< Width
   double height;                ///< Height

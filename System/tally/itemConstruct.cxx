@@ -110,7 +110,7 @@ itemConstruct::processItem(Simulation& System,
     \param Index :: index of the -T card
    */
 {
-  ELog::RegMethod RegA("itemConstruct","processPoint");
+  ELog::RegMethod RegA("itemConstruct","processItem");
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<2)
@@ -239,7 +239,7 @@ void
 itemConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<

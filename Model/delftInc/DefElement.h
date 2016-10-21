@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/DefElement.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,8 @@ class DefElement  : public RElement
  private:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const Geometry::Vec3D&);
   
   void createSurfaces();
   void createObjects(Simulation&);
@@ -55,7 +56,7 @@ class DefElement  : public RElement
   DefElement& operator=(const DefElement&);
   virtual ~DefElement() {}   ///< Destructor
 
-  void createAll(Simulation&,const FixedComp&,
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const Geometry::Vec3D&,const FuelLoad&);
 
 };

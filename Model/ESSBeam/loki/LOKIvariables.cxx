@@ -153,6 +153,15 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"lokiPipeF",6.0,35.0);
   FGen.generateRectangle(Control,"lokiFF",31.0,3.0,3.0);
 
+  PipeGen.setPipe(5.0,0.5);
+  PipeGen.setWindow(-1.0,0.3);
+  PipeGen.setFlange(-1.0,1.0);
+
+  PipeGen.generatePipe(Control,"lokiPipeCollA",6.0,135.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollAX",6.0,135.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollB",6.0,135.0);
+  PipeGen.generatePipe(Control,"lokiPipeCollC",6.0,135.0);
+
   // Small :: Grid Collimator A:
   RotGen.setMain(25.0,1.0);
   RotGen.setWall(1.0,"Aluminium");
@@ -164,11 +173,11 @@ LOKIvariables(FuncDataBase& Control)
   RotGen.generatePinHole(Control,"lokiGridC",2.0,-15.0,180.0);
   RotGen.generatePinHole(Control,"lokiGridD",2.0,-15.0,180.0);
 
-  RotGen.setMain(30.0,300.0);
+  RotGen.setMain(30.0,150.0);
   RotGen.resetHoles();
-  RotGen.addHole("Rectangle",   4.0,4.0,    0.0, 17.50);
-  RotGen.addHole("Rectangle",   6.0,6.0,  120.0, 17.50);
-  RotGen.addHole("Rectangle",   5.0,5.0,  240.0, 17.50);
+  RotGen.addHole("Rectangle",   8.0,8.0,    0.0, 17.50);
+  RotGen.addHole("Rectangle",   8.0,8.0,  120.0, 17.50);
+  RotGen.addHole("Rectangle",   8.0,8.0,  240.0, 17.50);
   RotGen.generatePinHole(Control,"lokiCollA",1.0,-17.5,180.0);
   RotGen.generatePinHole(Control,"lokiCollB",5.0,-17.5,180.0);
   RotGen.generatePinHole(Control,"lokiCollC",5.0,-17.5,180.0);
@@ -180,7 +189,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCBoxBDefMat","Void");
 
   // first guide in loki collimator
-  FGen.generateRectangle(Control,"lokiFCA0",296.0,3.0,3.0);
+  FGen.generateRectangle(Control,"lokiFCollA",144.0,3.0,3.0);
 
   // HUT:
   Control.addVariable("lokiCaveYStep",0.0);

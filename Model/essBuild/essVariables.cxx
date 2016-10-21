@@ -153,7 +153,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("LowModConic3WallMat","Aluminium");
   Control.addVariable("LowModConic3Wall",0.2);
 
-  // 
+
   Control.addVariable("LowPreNLayers",4);  
   Control.addVariable("LowPreHeight1",0.2);  
   Control.addVariable("LowPreDepth1",0.2);  
@@ -326,14 +326,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefTopVoidThick",2.3);
   Control.addVariable("BeRefLowRefMat","Be5H2O");
   Control.addVariable("BeRefTopRefMat","Be5H2O");
-  //  Control.addVariable("BeRefRefMat","Be300K");
-
   Control.addVariable("BeRefTopWallMat","SS316L");
   Control.addVariable("BeRefLowWallMat","SS316L");
   Control.addVariable("BeRefTargSepMat","Iron10H2O");
-
-  ///< TODO : Fix double variable dependency !!!
-  
   Control.addVariable("BeRefInnerStructureBeRadius", 12.5);
   Control.addVariable("BeRefInnerStructureBeMat", "Be10H2O");
   Control.addVariable("BeRefInnerStructureBeWallThick", 0.3);
@@ -359,8 +354,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkZangle",0.0);
   Control.addVariable("BulkNLayer",3);
 
-  Control.Parse("BeRefRadius+BeRefWallThick+0.2");
-  Control.addVariable("BulkRadius1");
+  Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
   /*!
     \todo : This is ugly conterintuative
     and going to break if anyone make a change
@@ -413,7 +407,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayXStep",0.0);  
   Control.addVariable("GuideBayYStep",0.0);  
   Control.addVariable("GuideBayZStep",0.0);
-  Control.addVariable("GuideBayZangle",0.0);
+  Control.addVariable("GuideBayZAngle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
   Control.addVariable("GuideBayInnerHeight",20.0);
   Control.addVariable("GuideBayInnerDepth",10.3);
@@ -421,10 +415,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayHeight",32.0);
   Control.addVariable("GuideBayDepth",40.0);
   Control.addVariable("GuideBayMat","CastIron");
-  Control.addVariable("GuideBay1XYangle",0.0); 
-  Control.addVariable("GuideBay2XYangle",180.0); 
-  Control.addVariable("GuideBay3XYangle",0.0); 
-  Control.addVariable("GuideBay4XYangle",180.0); 
+  Control.addVariable("GuideBay1XYAngle",0.0); 
+  Control.addVariable("GuideBay2XYAngle",180.0); 
+  Control.addVariable("GuideBay3XYAngle",0.0); 
+  Control.addVariable("GuideBay4XYAngle",180.0); 
   Control.addVariable("GuideBay1NItems",21);  
   Control.addVariable("GuideBay2NItems",21);  
   Control.addVariable("GuideBay3NItems",21);  
@@ -436,7 +430,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterXStep",11.0);
   Control.addVariable("TwisterYStep",-62.0);
   Control.addVariable("TwisterZStep",0.0);
-  Control.addVariable("TwisterXYangle",10.0);
+  Control.addVariable("TwisterXYAngle",10.0);
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
@@ -479,7 +473,9 @@ EssVariables(FuncDataBase& Control)
   DREAMvariables(Control);
   ESTIAvariables(Control);
   FREIAvariables(Control);
-  LOKIvariables(Control); 
+  LOKIvariables(Control);
+  MAGICvariables(Control);
+  MIRACLESvariables(Control);
   NMXvariables(Control);
   ODINvariables(Control);
   VESPAvariables(Control);
@@ -494,9 +490,7 @@ EssVariables(FuncDataBase& Control)
   EssWheel(Control);
   EssBunkerVariables(Control);
   EssIradVariables(Control);
-
   EssFlightLineVariables(Control);
-
   F5Variables(Control);
 
   Control.addVariable("sdefEnergy",2000.0);
@@ -513,6 +507,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("portSourceNE",2);
 
 
+  // FINAL:
+  Control.resetActive();
   return;
 }
   
@@ -587,6 +583,10 @@ EssBeamLinesVariables(FuncDataBase& Control)
 
 void
 EssFlightLineVariables(FuncDataBase& Control)
+  /*!
+    Set the flightline variables
+    \param Control :: Database for variables
+   */
 {
   ELog::RegMethod RegA("essVariables[F]","EssFlightLineVariables");
 
@@ -629,7 +629,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   for (size_t i=1; i<=3; i++)
     TopAFlightWedgeTheta.push_back(t1-dt1*i);
 
-  TopAFlightWedgeTheta.push_back(-2.8); // central wedge: Rickard Holmberg slide 14
+  // central wedge: Rickard Holmberg slide 14
+  TopAFlightWedgeTheta.push_back(-2.8);
   TopAFlightWedgeTheta.push_back(t2);
   for (size_t i=1; i<=8; i++)
     TopAFlightWedgeTheta.push_back(t2-dt2*i);

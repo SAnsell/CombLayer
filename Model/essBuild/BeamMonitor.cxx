@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeamMonitor.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -80,7 +81,7 @@ namespace essSystem
 {
 
 BeamMonitor::BeamMonitor(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   monIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(monIndex+1)
   /*!
@@ -88,6 +89,38 @@ BeamMonitor::BeamMonitor(const std::string& Key) :
     \param Key :: Keyname for system
   */
 {}
+
+BeamMonitor::BeamMonitor(const BeamMonitor& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  monIndex(A.monIndex),cellIndex(A.cellIndex),nSec(A.nSec),
+  radius(A.radius),thick(A.thick),mat(A.mat),halfThick(A.halfThick)
+  /*!
+    Copy constructor
+    \param A :: BeamMonitor to copy
+  */
+{}
+
+BeamMonitor&
+BeamMonitor::operator=(const BeamMonitor& A)
+  /*!
+    Assignment operator
+    \param A :: BeamMonitor to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      cellIndex=A.cellIndex;
+      nSec=A.nSec;
+      radius=A.radius;
+      thick=A.thick;
+      mat=A.mat;
+      halfThick=A.halfThick;
+    }
+  return *this;
+}
 
 BeamMonitor::~BeamMonitor()
   /*!
@@ -104,15 +137,7 @@ BeamMonitor::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamMonitor","populate");
 
-
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
-  sideW=Control.EvalVar<double>(keyName+"BoxSide");   
+  FixedOffset::populate(Control);
 
   nSec=Control.EvalVar<size_t>(keyName+"BoxNSections");   
   double RW(0.0);
@@ -142,28 +167,6 @@ BeamMonitor::populate(const FuncDataBase& Control)
       thick.push_back(TW);
       mat.push_back(MW);
     }
-
-  /*
-  frameSide=Control.EvalVar<double>(keyName+"BoxSide5");    
-  frameHeightA=Control.EvalVar<double>(keyName+"BoxHeightA5");    
-  frameHeightB=Control.EvalVar<double>(keyName+"BoxHeightB5");    
-  frameHeightC=Control.EvalVar<double>(keyName+"BoxHeightC5");    
-  frameHeightD=Control.EvalVar<double>(keyName+"BoxHeightD5");    
-  frameWidthA=Control.EvalVar<double>(keyName+"BoxWidthA5");    
-  frameWidthB=Control.EvalVar<double>(keyName+"BoxWidthB5");    
-  frameWidthC=Control.EvalVar<double>(keyName+"BoxWidthC5");    
-  frameThickA=Control.EvalVar<double>(keyName+"BoxThickA5");    
-  frameThickB=Control.EvalVar<double>(keyName+"BoxThickB5");    
-  frameThickC=Control.EvalVar<double>(keyName+"BoxThickC5");    
-
-  tubeN=Control.EvalVar<int>(keyName+"BoxTubeN");      
-  tubeRadius=Control.EvalVar<double>(keyName+"BoxTubeRadius");    
-  tubeThick=Control.EvalVar<double>(keyName+"BoxTubeThick");    
-  
-  tubeHe=Control.EvalVar<int>(keyName+"BoxTubeHeMat");   
-  tubeAl=Control.EvalVar<int>(keyName+"BoxTubeAlMat");  
-  extTubeHe=Control.EvalVar<int>(keyName+"BoxExtHeMat");
-  */
   return;
 }
 
@@ -178,9 +181,7 @@ BeamMonitor::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BeamMonitor","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  applyOffset();
   return;
 }
 

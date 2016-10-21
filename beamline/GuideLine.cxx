@@ -80,7 +80,9 @@
 #include "LinkUnit.h"  
 #include "FixedComp.h" 
 #include "ContainedComp.h"
-#include "FixedGroup.h" 
+#include "FixedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h" 
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
 #include "BenderUnit.h"
@@ -95,6 +97,7 @@ namespace beamlineSystem
 GuideLine::GuideLine(const std::string& Key) : 
   attachSystem::ContainedComp(),
   attachSystem::FixedGroup(Key,"Shield",6,"GuideOrigin",2),
+  attachSystem::CellMap(),
   SUItem(200),SULayer(20),
   guideIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(guideIndex+1),nShapeLayers(0),activeFront(false),
@@ -108,6 +111,7 @@ GuideLine::GuideLine(const std::string& Key) :
 
 GuideLine::GuideLine(const GuideLine& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedGroup(A),
+  attachSystem::CellMap(A),
   SUItem(A.SUItem),SULayer(A.SULayer),
   guideIndex(A.guideIndex),cellIndex(A.cellIndex),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
@@ -145,6 +149,7 @@ GuideLine::operator=(const GuideLine& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -283,7 +288,7 @@ GuideLine::addGuideUnit(const size_t index,
 
   const std::string GKey="Guide"+StrFunc::makeString(index);
 
-  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,2);
+  attachSystem::FixedComp& guideFC=FixedGroup::addKey(GKey,6);
   
   const std::string PGKey=(index) ? 
     "Guide"+StrFunc::makeString(index-1) :  "GuideOrigin";
@@ -405,7 +410,6 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  SU->setXAxis(X,Z);      
 	  SU->constructConvex();
 	  shapeUnits.push_back(SU);
-
 	}
       else if (typeID=="Bend")
 	{
@@ -487,10 +491,8 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   attachSystem::FixedComp& guideFC=FixedGroup::getKey("GuideOrigin");
 
   guideFC.createUnitVector(beamFC,beamLP);
-
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
-
   setDefault("GuideOrigin");
   return;
 }
@@ -610,9 +612,10 @@ GuideLine::createObjects(Simulation& System)
   std::string back;
   for(size_t i=0;i<nShapes;i++)
     {
-      // front
+      const std::string GKey("Guide"+StrFunc::makeString(i));
       const std::string front=shapeFrontSurf(false,i);
       back=shapeBackSurf(false,i);
+      
       for(size_t j=0;j<nShapeLayers;j++)
 	{
 	  // Note that shapeUnits has own offset but
@@ -622,6 +625,10 @@ GuideLine::createObjects(Simulation& System)
 	  if (j)
 	    Out+=shapeUnits[i]->getExclude(SMap,j-1);
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,layerMat[j],0.0,Out));
+          if (!j)
+            addCell(GKey+"Void",cellIndex-1);
+          addCell("Full",cellIndex-1);
+          addCell(GKey,cellIndex-1);
 	}
       
       // Last one add exclude:
@@ -643,6 +650,7 @@ GuideLine::createObjects(Simulation& System)
       excludeCell.makeComplement();
       Out+=excludeCell.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
+      addCell("Shield",cellIndex-1);
     }
   else
     {
@@ -775,6 +783,9 @@ GuideLine::createGuideLinks()
                              shapeUnits[i]->getEndAxis());
 
         }
+      shapeUnits[i]->addSideLinks(SMap,guideFC);
+
+      
       GI+=100;
     }
   return;
@@ -900,10 +911,12 @@ GuideLine::addEndCut(const attachSystem::FixedComp& EC,
 }
 
 HeadRule
-GuideLine::getXSection(const size_t shapeIndex) const
+GuideLine::getXSection(const size_t shapeIndex,
+                       const size_t shapeLayerIndex) const
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
+    \param shapelayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {
@@ -913,26 +926,32 @@ GuideLine::getXSection(const size_t shapeIndex) const
     throw ColErr::IndexError<size_t>(shapeIndex,nShapes,"shapeIndex/nShapes");
 
   const std::string shapeLayer=
-    shapeUnits[shapeIndex]->getString(SMap,nShapeLayers-1);
+    shapeUnits[shapeIndex]->getString(SMap,nShapeLayers-(shapeLayerIndex+1));
 
   return HeadRule(shapeLayer);
 }
 
 HeadRule
-GuideLine::getXSectionOut(const size_t shapeIndex) const
+GuideLine::getXSectionOut(const size_t shapeIndex,
+                          const size_t shapeLayerIndex) const
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
+    \param shapelayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {
-  ELog::RegMethod RegA("GuideLine","getXSection");
+  ELog::RegMethod RegA("GuideLine","getXSectionOut");
 
   if (shapeIndex>=nShapes)
     throw ColErr::IndexError<size_t>(shapeIndex,nShapes,"shapeIndex/nShapes");
+  if (shapeLayerIndex>=nShapeLayers)
+    throw ColErr::IndexError<size_t>(shapeLayerIndex,nShapeLayers,
+                                     "shapeLayerIndex/nShapeLayers");
 
+  
   const std::string shapeLayer=
-    shapeUnits[shapeIndex]->getExclude(SMap,nShapeLayers-1);
+    shapeUnits[shapeIndex]->getExclude(SMap,nShapeLayers-(shapeLayerIndex+1));
 
   return HeadRule(shapeLayer);
 }

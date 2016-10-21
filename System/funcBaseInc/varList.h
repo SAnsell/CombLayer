@@ -77,6 +77,7 @@ class varList
   void addVar(const std::string&,const T&);
   template<typename T>
   void setVar(const std::string&,const T&);
+  void removeVar(const std::string&);
 
   /// Accessors to begin
   varStore::const_iterator begin() const { return varName.begin(); }
@@ -86,6 +87,8 @@ class varList
   template<typename T>
   FItem* createFType(const int,const T&);
 
+  void resetActive();
+  
   std::vector<std::string> getKeys() const;
   void writeActive(std::ostream&) const;
   void writeAll(std::ostream&) const;

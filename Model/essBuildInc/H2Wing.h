@@ -53,9 +53,9 @@ class H2Wing :
   int bfType;                ///< Type (BF1 or BF2)
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
   
-  double xStep;
-  double yStep;
-  double xyOffset;           ///< xy-Angle offset
+  double xStep;                 ///< Step across proton beam direction
+  double yStep;                 ///< Step along proton beam direction
+  double xyOffset;              ///< xy-Angle offset
 
   // bfDepth and bfHeight are needed due to ButterflyModerator wallDepth and wallHeight
   double bfDepth;               ///< BF moderator lower wall thick
@@ -72,8 +72,8 @@ class H2Wing :
   std::vector<double> Thick;        ///< Layer thickness
   std::vector<double> layerHeight;  ///< Layer veritcal 
   std::vector<double> layerDepth;   ///< layer depth
-  std::vector<int> mat;         ///< Layer material
-  std::vector<double> temp;     ///< Layer temperature
+  std::vector<int> mat;             ///< Layer material
+  std::vector<double> temp;         ///< Layer temperature
 
   std::string sideRule;         ///< Side rule
 
@@ -91,8 +91,6 @@ class H2Wing :
   void cornerSet(const double,std::array<Geometry::Vec3D,3>&,
 		 std::array<Geometry::Vec3D,3>&) const;
   
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    cornerPair(const size_t,const size_t,const double) const;
 
  public:
 

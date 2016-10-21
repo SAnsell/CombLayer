@@ -362,11 +362,11 @@ H2Moderator::createLinks()
   ELog::RegMethod RegA("H2Moderator","createLinks");
 
   // set Links:
-  FixedComp::setConnect(0,getSurfacePoint(0,6),-Y);
-  FixedComp::setConnect(1,getSurfacePoint(1,6),Y);
-  FixedComp::setConnect(2,getSurfacePoint(2,6),-X);
-  FixedComp::setConnect(3,getSurfacePoint(3,6),X);
-  FixedComp::setConnect(4,getSurfacePoint(4,6),-Z);
+  FixedComp::setConnect(0,getSurfacePoint(5,1),-Y);
+  FixedComp::setConnect(1,getSurfacePoint(5,2),Y);
+  FixedComp::setConnect(2,getSurfacePoint(5,3),-X);
+  FixedComp::setConnect(3,getSurfacePoint(5,4),X);
+  FixedComp::setConnect(4,getSurfacePoint(5,5),-Z);
   FixedComp::setConnect(5,getSurfacePoint(5,6),Z);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(h2Index+61));
@@ -409,7 +409,6 @@ H2Moderator::getSurfacePoint(const size_t layerIndex,
       mc=modLayer.find(i*10+SI+1);
       T+=(mc!=modLayer.end()) ? mc->second : layer[i];
     }
-
   switch(SI)
     {
     case 0:
@@ -439,7 +438,6 @@ H2Moderator::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("H2Moderator","getLayerString");
-  ELog::EM<<"CONTORL CHECK for Layer/side order "<<ELog::endErr;
 
   if (sideIndex>6 || sideIndex<-6 || !sideIndex) 
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
@@ -520,7 +518,6 @@ H2Moderator::createAll(Simulation& System,
 
   createUnitVector(FC);
   createSurfaces();
-//  createObjects(System);
   createObjects(System);
   createLinks();
   insertObjects(System);       

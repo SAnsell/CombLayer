@@ -211,12 +211,14 @@ BladeGenerator::addPhase(const std::vector<double>& CAngle,
 }
   
 void
-BladeGenerator::generateBlades(FuncDataBase& Control,const std::string& keyName,
-			       const double yStep,const double innerRadius,
+BladeGenerator::generateBlades(FuncDataBase& Control,
+                               const std::string& keyName,
+			       const double yStep,
+                               const double innerRadius,
 			       const double outerRadius) const
 
   /*!
-    Primary funciton for setting the variables
+    Primary function for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: y-offset 
@@ -261,7 +263,12 @@ BladeGenerator::generateBlades(FuncDataBase& Control,const std::string& keyName,
 	  Control.addVariable(keyName+IndexStr+"PhaseAngle"+jStr,CRef[j]);
 	  Control.addVariable(keyName+IndexStr+"OpenAngle"+jStr,ORef[j]);
 	}
-    }  
+    }
+
+  // Checks:
+  if (innerRadius>outerRadius-Geometry::zeroTol)
+    ELog::EM<<"Failure outerRadius["<<outerRadius
+            <<"] < innerRadius["<<innerRadius<<"]"<<ELog::endErr;
   return;
 
 }

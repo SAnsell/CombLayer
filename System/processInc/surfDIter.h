@@ -35,8 +35,10 @@ void populateDivideLen(const FuncDataBase&,const size_t,
 void populateDivide(const FuncDataBase&,const size_t,
 		    const std::string&,std::vector<double>&);
 
-void populateDivide(const FuncDataBase&,const size_t,
-		    const std::string&,const double,std::vector<double>&);
+
+ void populateDivide(const FuncDataBase&,const size_t,
+		     const std::string&,const std::string&,
+		     std::vector<std::string>&);
 
 void populateDivide(const FuncDataBase&,const size_t,
 		    const std::string&,const int,std::vector<int>&);

@@ -121,6 +121,8 @@ class FuncDataBase
   void setVariable(const std::string&,const T&);
   void setVariable(const std::string&);
 
+  void removeVariable(const std::string&);
+  
   int hasVariable(const std::string&) const;
 
   void writeAll(const std::string&) const; 
@@ -133,6 +135,9 @@ class FuncDataBase
   std::vector<std::string> getKeys() const { return VList.getKeys(); }
   std::string variableHash() const;
 
+  // RESET of active
+  void resetActive();
+  
 };
 
 #endif

@@ -80,6 +80,8 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
   /*!
     Given a line (origin:N) find the intersects wiht MainHR that
     satisfy sndHR
+    \param Origin :: Origin of line
+    \param N :: Normal of line
     \param mainHR :: Main headRule    
     \param sndHR :: Secondary/ Bridge rule
    */
@@ -107,6 +109,25 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
     throw ColErr::SizeError<size_t>(out.size(),1,"Out points not singular");
 
   return out.front();
+}
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D& Origin,
+             const Geometry::Vec3D& Axis,
+	     const Geometry::Plane* PPtr)
+  /*!
+    Calculate the line though a plane
+    This is a specialization of getLinePoint because
+    a plane will only have one (at most) intersection points
+
+    \param Origin :: Origin of the line
+    \param Axis :: axis direction
+    \param PPtr :: plane object
+    \return Point on intersect
+  */
+{
+  MonteCarlo::LineIntersectVisit trackLine(Origin,Axis);
+  return trackLine.getPoint(PPtr);
 }
 
 Geometry::Vec3D

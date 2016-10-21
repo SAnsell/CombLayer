@@ -92,6 +92,7 @@ class LineShield :
   virtual ~LineShield();
 
 
+  HeadRule getXSectionIn() const;
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
   

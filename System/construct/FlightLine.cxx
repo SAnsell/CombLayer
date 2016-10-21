@@ -3,7 +3,7 @@
  
  * File:   construct/FlightLine.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -154,7 +154,7 @@ void
 FlightLine::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Contro :: Database to use
  */
 {
   ELog::RegMethod RegA("FlightLine","populate");
@@ -226,7 +226,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
-    \param originIndex :: Index for centre of rotation
+    \param origIndex :: Index for centre of rotation
     \param sideIndex :: Index on fixed unit
   */
 {
@@ -257,7 +257,7 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
-    \param originIndex :: Index for centre 
+    \param origIndex :: Index for centre 
     \param sideIndex :: Index on fixed unit
   */
 {
@@ -550,7 +550,7 @@ FlightLine::createObjects(Simulation& System,
     surface FC and exluding the object give by CC.
     \param System :: Simulation to create objects in
     \param FC :: Surface linked object
-    \param surfSing :: Sign of the surface
+    \param surfSign :: Sign of the surface
     \param sideIndex :: side index
     \param CC :: Inner Object
   */
@@ -604,7 +604,7 @@ FlightLine::processIntersectMajor(Simulation& System,
     \param System :: Simulation to use    
     \param CC :: Contained object [Must have outer key]
     \param iKey :: Name of inner key [from CC]
-    \param oKey :: Name of outer key [from this -- not used yet]
+    \param :: Name of outer key [from this -- not used yet]
    */
 {
   ELog::RegMethod RegA("FlightLine","processIntersectMajor");
@@ -642,7 +642,7 @@ FlightLine::processIntersectMinor(Simulation& System,
     cuts into the surround guide material and the middle
     \param System :: Simulation to use    
     \param CC :: Contained object [Must have outer key]
-    \param iKey :: Name of inner key [from CC -- not used yet]
+    \param :: Name of inner key [from CC -- not used yet]
     \param oKey :: Name of outer key [from this]
   */
 {
@@ -705,8 +705,8 @@ FlightLine::createAll(Simulation& System,
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
+    \param FC :: Moderator Object (or innner link)
     \param sideIndex :: Side index [ +/- 1:Index]
-    \param FC :: Moderator Object
   */
 {
   ELog::RegMethod RegA("FlightLine","createAll(FC,int)");
@@ -792,8 +792,5 @@ FlightLine::createAll(Simulation& System,
 
   return;
 }
-
-
-
   
 }  // NAMESPACE moderatorSystem

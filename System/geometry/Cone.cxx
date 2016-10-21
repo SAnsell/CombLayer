@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Cone.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -453,7 +453,8 @@ Cone::write(std::ostream& OX) const
   const double TA=tan((M_PI*alpha)/180.0);    // tan^2(angle)
   cx<<TA*TA;
   if (cutFlag)
-    cx<<" "<<cutFlag;
+    cx<<" "<<((Ndir<0) ? -cutFlag : cutFlag);
+  
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }

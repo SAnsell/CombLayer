@@ -71,6 +71,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -85,6 +86,8 @@
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "PipeCollimator.h"
+#include "AttachSupport.h"
+#include "insertPlate.h"
 
 #include "NMX.h"
 
@@ -150,6 +153,7 @@ NMX::~NMX()
   */
 {}
 
+  
 void
 NMX::setBeamAxis(const FuncDataBase& Control,
 		 const GuideItem& GItem,
@@ -203,10 +207,11 @@ NMX::build(Simulation& System,
 
   GuideA->addInsertCell(GItem.getCells("Void"));
   GuideA->addFrontCut(GItem.getKey("Beam"),-1);
-  ELog::EM<<"Front == "<<GItem.getKey("Beam").getSignedLinkString(-1)<<ELog::endDiag;
   GuideA->addEndCut(GItem.getKey("Beam"),-2);
   GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
+  //  ELog::EM<<"Front == "<<GuideA.getKey("Beam").getSignedLinkString(-1)
+  //          <<ELog::endDiag;
 
 
   // PIPE after gamma shield
@@ -215,6 +220,7 @@ NMX::build(Simulation& System,
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
   BendA->createAll(System,*VPipeA,0,*VPipeA,0);
+
 
   // PIPE from 10m to 14m
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -252,6 +258,7 @@ NMX::build(Simulation& System,
   BendE->createAll(System,BendD->getKey("Guide0"),2,
 		   BendD->getKey("Guide0"),2);
 
+
   // EXPERIMENTAL WAY TO PLACE A SIMPLE COLLIMATOR   
   CollA->setInnerExclude(BendC->getXSectionOut());
   CollA->setOuter(VPipeC->getSignedFullRule(-3));
@@ -273,6 +280,7 @@ NMX::build(Simulation& System,
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
+
 
   return;
 }

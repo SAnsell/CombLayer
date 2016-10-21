@@ -46,13 +46,17 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "TallyCreate.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
-#include "TallySelector.h" 
+#include "addInsertObj.h"
+#include "TallySelector.h"
+
+
 #include "basicConstruct.h"
 #include "pointConstruct.h"
 #include "meshConstruct.h"
@@ -80,7 +84,97 @@ tallySelection(Simulation& System,const mainSystem::inputParam& IParam)
 
   return TallyBuilder.tallySelection(System,IParam);
 }
- 
+
+
+void
+tallyAddition(Simulation& System,
+	      const mainSystem::inputParam& IParam)
+  /*
+    Applies a large number of modifications to the tally system
+    \param System :: Simulation to get tallies from 
+    \param IParam :: Parameters
+  */
+{
+  ELog::RegMethod RegA("TallySelector[F]","Addition");
+  const size_t nP=IParam.setCnt("TAdd");
+
+  for(size_t index=0;index<nP;index++)
+    {
+      const std::string eMess
+	("Insufficient item for TAdd["+StrFunc::makeString(index)+"]");
+      const std::string key=
+	IParam.getValueError<std::string>("TAdd",index,0,eMess);
+      
+      if(key=="help")
+	{
+	  ELog::EM<<"TAdd Help "<<ELog::endBasic;
+	  ELog::EM<<
+	    " -- plate object fixedComp linkPt Vec3D(x,y,z) "
+	    "xSize zSize \n";
+	  ELog::EM<<
+	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
+	    "xSize zSize \n";
+	  ELog::EM<<ELog::endBasic;
+	  ELog::EM<<ELog::endErr;
+          return;
+	}
+      const std::string PType=
+	IParam.getValueError<std::string>("TAdd",index,1,eMess);
+
+      const std::string PName="insertPlate"+StrFunc::makeString(index);
+      if (key=="Plate" || key=="plate")
+	{
+	  if (PType=="object")
+	    {
+	      const std::string FName=
+		IParam.getValueError<std::string>("TAdd",index,2,eMess);
+	      const std::string LName=
+		IParam.getValueError<std::string>("TAdd",index,3,eMess);
+	      size_t ptI(4);
+	      const Geometry::Vec3D VOffset=IParam.getCntVec3D
+		("TAdd",index,ptI,eMess);
+	      const double XW=
+		IParam.getValueError<double>("TAdd",index,ptI,eMess);
+	      const double ZH=
+		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	      const double YT=
+		IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	      const std::string mat=
+		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
+
+	      constructSystem::addInsertPlateCell
+		(System,PName,FName,LName,VOffset,XW,YT,ZH,mat);
+              return;
+	    }
+	  else if (PType=="free")
+	    {
+	      size_t ptI(2);
+              const Geometry::Vec3D VPos=IParam.getCntVec3D
+                ("TAdd",index,ptI,eMess);
+              const Geometry::Vec3D YAxis=IParam.getCntVec3D
+                ("TAdd",index,ptI,eMess);
+              const Geometry::Vec3D ZAxis=IParam.getCntVec3D
+                ("TAdd",index,ptI,eMess);
+	      const double XW=
+		IParam.getValueError<double>("TAdd",index,ptI,eMess); 
+	      const double ZH=
+		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	      const double YH=
+		IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	      const std::string mat=
+		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
+             constructSystem::addInsertPlateCell
+	       (System,PName,VPos,YAxis,ZAxis,XW,YH,ZH,mat);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"plate type");
+	}
+      else
+	throw ColErr::InContainerError<std::string>
+	  (key,"TAddition key not known");
+    }
+  return;
+}
 
 void
 tallyModification(Simulation& System,
@@ -91,7 +185,7 @@ tallyModification(Simulation& System,
     \param IParam :: Parameters
   */
 {
-  ELog::RegMethod RegA("TallySelector","tallyModification");
+  ELog::RegMethod RegA("TallySelector[F]","tallyModification");
   const size_t nP=IParam.setCnt("TMod");
 
   for(size_t i=0;i<nP;i++)
@@ -105,17 +199,17 @@ tallyModification(Simulation& System,
 	StrItem.push_back
 	  (IParam.getValue<std::string>("TMod",i,j));
 
-      int errFlag(1);
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "<<ELog::endBasic;
 	  ELog::EM<<
-	    " -- particle {tallyNumber} [oldtype] [newtype] \n"
+	    " -- particle {tallyNumber} [newtype] \n"
 	    "    Change the particle on a tally to the new type\n"
 	    " -- nowindow {tallyNum}\n"
 	    "    Remove the window on an f5 tally\n"
 	    " -- energy {tallyNumber} [string] \n"
 	    " -- time {tallyNumber} [string] \n"
+            " -- cos {tallyNumber} [string] \n"
 	    " -- divide {tallyNumber} [xPts,yPts] : Split tally into "
 	    " multiple pieces \n"
 	    " -- scaleWindow[X/Y] {tallyNumber scale} : Scale the window"
@@ -143,9 +237,7 @@ tallyModification(Simulation& System,
       
       else if (key=="energy" && nV>=3)
 	{
-          if (tallySystem::setEnergy(System,tNumber,StrItem[1]))
-            ELog::EM<<"Error setting tally energy "<<
-              StrItem[1]<<ELog::endErr;
+          tallySystem::setEnergy(System,tNumber,StrItem[1]);
 	}
       
       else if (key=="single" && nV>=2)
@@ -204,10 +296,11 @@ tallyModification(Simulation& System,
 
       else if (key=="time" && nV>=3)
 	{
-	  ELog::EM<<"NV == "<<nV<<ELog::endDiag;
-          if (tallySystem::setTime(System,tNumber,StrItem[1]))
-            ELog::EM<<"Error setting tally time "<<
-              StrItem[1]<<ELog::endErr;
+          tallySystem::setTime(System,tNumber,StrItem[1]);
+        }
+      else if ((key=="cos" || key=="angle") && nV>=3)
+	{
+          tallySystem::setAngle(System,tNumber,StrItem[1]);
         }
       
       else if (key=="nowindow" && nV>=2)
@@ -260,7 +353,7 @@ tallyRenumberWork(Simulation& System,
     An amalgumation of values to determine what sort of tallies to put
     in the system.
     \param System :: Simulation to add tallies
-    \param IP :: InputParam
+    \param IParam :: InputParam
   */
 {
   ELog::RegMethod RegA("TallySelector","tallyRenumberWork");

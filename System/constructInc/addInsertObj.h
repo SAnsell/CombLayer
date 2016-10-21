@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testDBCN.h
+ * File:   constructInc/addInsertObj.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,32 +19,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testDBCN_h
-#define testDBCN_h 
+#ifndef constructSystem_addInsertObj_h
+#define constructSystem_addInsertObj_h
 
-/*!
-  \class testDBCN
-  \brief Tests the class Object
-  \author S. Ansell
-  \date December 2006
-  \version 1.0
+class Simulation;
 
-  Test the processing of object component
-*/
-
-class testDBCN 
+namespace constructSystem
 {
-private:
 
-  int testSimpleWrite();
+void
+addInsertPlateCell(Simulation&,const std::string&,
+		   const std::string&,const std::string&,
+		   const Geometry::Vec3D&,const double,
+		   const double,const double,const std::string&);
+void
+addInsertPlateCell(Simulation&,const std::string&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&,
+		   const Geometry::Vec3D&,const double,
+		   const double,const double,const std::string&);
   
-public:
-  
-  testDBCN();
-  ~testDBCN();
-  
-  int applyTest(const int);       
-
-};
+}
 
 #endif
+ 

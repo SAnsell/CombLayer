@@ -80,6 +80,7 @@ template<typename T> int sectPartNum(std::string&,T&);
 template<typename T> int section(std::string&,T&);
 /// Convert and cut a string for MCNPX
 template<typename T> int sectionMCNPX(std::string&,T&);
+template<typename T> int sectionCINDER(std::string&,T&);
 template<typename T> int itemize(std::string&,std::string&,T&);
 
 

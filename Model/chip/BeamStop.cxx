@@ -3,7 +3,7 @@
  
  * File:   chip/BeamStop.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,7 +309,7 @@ BeamStop::createDefSurfaces()
       const beamBlock& BB=BBlock[static_cast<size_t>(i)];
       totalThick+=BB.thickness;
       Geometry::Vec3D RAxis;
-      if (fabs(BB.angle)>1e-3)
+      if (std::abs(BB.angle)>1e-3)
 	{
 	  RAxis= Y;
 	  Geometry::Quaternion::calcQRotDeg(BB.angle,Z).rotate(RAxis);
@@ -360,7 +360,7 @@ BeamStop::createObjects(Simulation& System)
     {
       const beamBlock& BB=BBlock[static_cast<size_t>(i)];
       totalThick+=BB.thickness;
-      if (fabs(BB.angle)<1e-3)
+      if (std::abs(BB.angle)<1e-3)
 	{
 	  Out=Base+Prev+
 	    ModelSupport::getComposite(SMap,stopIndex+i*10," -101 ");

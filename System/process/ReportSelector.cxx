@@ -95,7 +95,9 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
 	  ELog::EM<<"report Help "<<ELog::endBasic;
 	  ELog::EM<<
 	    " -- object [fixedName] linkPoint ::"
-	    "    write out the fixedPoint and axis\n";
+	    "    write out the fixedPoint and axis\n"
+            " -- variable [variableName] ::"
+            "  write out the value of the variable\n";
           ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;

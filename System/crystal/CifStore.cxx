@@ -3,7 +3,7 @@
  
  * File:   crystal/CifStore.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <limits>
 #include <boost/multi_array.hpp>
 
 #include "MersenneTwister.h"
@@ -61,7 +62,8 @@ namespace Crystal
 {
 
 CifStore::CifStore() : 
-  tableNumber(0),exafsAtom(-1),exafsType(-1)
+  tableNumber(0),exafsAtom(std::numeric_limits<size_t>::max()),
+  exafsType(-1)
   /// Default Constructor
 {}
 
@@ -759,7 +761,7 @@ CifStore::inCube(const Geometry::Vec3D& Pt,const double R) const
   return 1;
 }
 
-long int
+size_t
 CifStore::setCentralAtom(const std::string& CentAtom,const size_t index) 
   /*!
     Sets the central atom from the main list
@@ -769,7 +771,7 @@ CifStore::setCentralAtom(const std::string& CentAtom,const size_t index)
   */
 {
   ELog::RegMethod RControl("CifStore","setCentralAtom");
-  exafsAtom=-1;
+  exafsAtom=std::numeric_limits<size_t>::max();
   // DETERMINE THE CENTRAL TYPE:
   NTYPE::const_iterator mc=Nmap.find(CentAtom);
   if (mc!=Nmap.end())  // found in table
@@ -809,11 +811,10 @@ CifStore::setCentralAtom(const std::string& CentAtom,const size_t index)
 	    }
 	}
     }
-  if (exafsAtom<0)
-    {
-      ELog::EM<<"Failed to find atom:"<<CentAtom<<"["<<index<<"]"<<ELog::endErr;
+  if (exafsAtom>Atoms.size())
+    ELog::EM<<"Failed to find atom:"
+	    <<CentAtom<<"["<<index<<"]"<<ELog::endErr;
 
-    }
   return exafsAtom;
 }
 
@@ -830,7 +831,7 @@ CifStore::makeAtoms(const double Radius)
   FullCell.clear();
   // CACL OFFSET:
   Geometry::Vec3D Offset,RPosOff;
-  if (exafsAtom>=0 && exafsAtom<static_cast<int>(Atoms.size()))
+  if (exafsAtom<Atoms.size())
     {
       ELog::EM<<"Offset Pos == "<<Cell[exafsAtom].getPos()<<ELog::endDiag;
       Offset=Cell[exafsAtom].getPos();
@@ -882,7 +883,7 @@ CifStore::makeAtoms(const double Radius)
 	    }
 	}
   // OUTPUT SORT:
-  if (exafsAtom>=0)
+  if (exafsAtom<Atoms.size())
     sort(FullCell.begin(),FullCell.end(),nearCentre());
   return;
 }
@@ -897,18 +898,17 @@ CifStore::applyOcc()
 {
   ELog::RegMethod RControl("CifStore","applyOcc");
   int eCnt(0);
-  for(int index=0;index<static_cast<int>(FullCell.size());index++)
+  size_t index(0);
+  while(index<FullCell.size())
     {
       const double Occ=FullCell[index].getOcc();
-      if (Occ<1.0)
+      if (Occ<1.0 && Occ<RNG.rand())
         {
-	  if (Occ<RNG.rand())
-	    {
-	      FullCell.erase(FullCell.begin()+index,FullCell.begin()+index+1);
-	      index--;
-	      eCnt++;
-	    }
+          FullCell.erase(FullCell.begin()+static_cast<long int>(index));
+          eCnt++;
 	}
+      else
+        index++;
     }
   ELog::EM<<"Total deleted -- "<<eCnt<<ELog::endDiag;
   return eCnt;
@@ -934,6 +934,11 @@ CifStore::writeFeff(const std::string& Fname)
 {
   ELog::RegMethod RControl("CifStore","writeFeff");
 
+  if (exafsAtom>=Z.size())
+    {
+      ELog::EM<<"Failed to find a central EXAFS atom "<<ELog::endErr;
+      return;
+    }
   std::ofstream FileOX;
   if (!Fname.empty())
     {
@@ -950,8 +955,7 @@ CifStore::writeFeff(const std::string& Fname)
   OX<<" POTENTUALS"<<std::endl;
   OX<<" *    ipot   Z  element"<<std::endl;
   // EXAFS atom first:
-  OX<<"         0 "<<Z[exafsAtom]
-    <<" "<<exafsType<<std::endl;
+  OX<<"         0 "<<Z[exafsAtom]<<" "<<exafsType<<std::endl;
 
       
 
@@ -975,7 +979,7 @@ CifStore::writeFeff(const std::string& Fname)
     {
       nmc=Nmap.find(vc->getName());
       const Geometry::Vec3D& RP=vc->getPos();
-      for(int i=0;i<3;i++)
+      for(size_t i=0;i<3;i++)
 	OX<<std::setw(10)<<RP[i]<<" ";
       OX<<std::setw(5)<< (nmc!=Nmap.end() ? nmc->second : -1); 
       OX<<" "<<std::setw(8)<<vc->getName()<<" ";
@@ -1006,7 +1010,7 @@ CifStore::calcLatticeFactor(const int h,const int k,const int l) const
   for(vc=Cell.begin();vc!=Cell.end();vc++)
     {
       const Geometry::Vec3D XP=makeCartisian(vc->getPos());
-      const double factor=vc->getEdgeFactor();
+      //      const double factor=vc->getEdgeFactor();
       F+=exp(I*(K.dotProd(XP)));
     }
   return real(F*conj(F));

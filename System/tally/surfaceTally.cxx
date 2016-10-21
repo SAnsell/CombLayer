@@ -61,7 +61,6 @@ surfaceTally::surfaceTally(const int ID) :
   Tally(ID),fluxType((ID % 10)==2)
   /*!
     Constructor
-    \param fluxFlag :: make a surface flux tally
     \param ID :: Identity number of tally
   */
 {}

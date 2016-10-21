@@ -103,6 +103,18 @@ varList::~varList()
 }
 
 void
+varList::resetActive()
+  /*!
+    Reset the active unit
+  */
+{
+  for(varStore::value_type& VC : varName)
+    VC.second->resetActive();
+      
+}
+
+
+void
 varList::deleteMem() 
   /*!
     Erase and clear the list of variables
@@ -192,11 +204,11 @@ varList::copyVar(const std::string& newKey,const std::string& oldKey)
     \param newKey :: new variable name
     \param oldKey :: existing variable to copy [must exist]
   */
-{
+{ 
   ELog::RegMethod RegA("varList","copyVar");
 
   if (newKey==oldKey) return;
-  
+
   std::map<std::string,FItem*>::iterator ac;
   std::map<std::string,FItem*>::const_iterator bc;
 
@@ -228,7 +240,8 @@ varList::copyVar(const std::string& newKey,const std::string& oldKey)
 void
 varList::copyVarSet(const std::string& oldHead,const std::string& newHead) 
   /*!
-    Copy a variable into the var system [with new number]
+    Copy a set of variables all with "oldHead" and 
+    changed to "newSet"system [with new number]
     \param oldHead :: Old head name
     \param newHead :: replacement head name
   */
@@ -240,7 +253,7 @@ varList::copyVarSet(const std::string& oldHead,const std::string& newHead)
   // NOTE: map is ORDERED
   // Thus we only need to find ONE value and then iterate through
 
-  
+
   std::map<std::string,FItem*>::const_iterator oldMC;
   const size_t subLen=oldHead.length();
   
@@ -342,6 +355,32 @@ varList::setValue(const int Key,const T& Value)
   return;
 }
 
+void
+varList::removeVar(const std::string& Name)
+  /*!
+    Remove a variable
+    \param Name :: Name of variable
+    \todo Improve varList as this is rubbish code
+  */
+{
+  ELog::RegMethod RegA("varList","removeVar");
+
+  varStore::iterator mc=varName.find(Name);
+  if (mc==varName.end())
+    throw ColErr::InContainerError<std::string>(Name,"Name");
+
+  std::map<int,FItem*>::iterator ic=varItem.find(mc->second->getIndex());
+  if (ic==varItem.end())
+    throw ColErr::InContainerError<int>(mc->second->getIndex(),
+                                        "NAME [INT] "+Name);
+
+  delete mc->second;
+  varItem.erase(ic);
+  varName.erase(mc);
+  return;
+}
+
+
 template<typename T>
 void
 varList::addVar(const std::string& Name,const T& Value) 
@@ -354,6 +393,7 @@ varList::addVar(const std::string& Name,const T& Value)
   */
 {
   std::map<std::string,FItem*>::iterator vc;
+
   vc=varName.find(Name);
   FItem* Ptr(0);
   if (vc!=varName.end())

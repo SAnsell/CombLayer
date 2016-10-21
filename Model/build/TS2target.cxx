@@ -735,9 +735,9 @@ TS2target::addProtonLine(Simulation& System,
     \param index :: Index of the proton cutting surface [6 typically (-7)]
    */
 {
-  ELog::RegMethod RegA("TS2Target","addProtonLine");
+  ELog::RegMethod RegA("TS2target","addProtonLine");
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
-  PLine->createAll(System,*this,2,refFC,index);
+  PLine->createAll(System,*this,3,refFC,index);
   createBeamWindow(System);
   System.populateCells();
   System.createObjSurfMap();

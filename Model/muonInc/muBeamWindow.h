@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muonInc/muBeamWindow.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,17 +44,17 @@ class muBeamWindow : public attachSystem::FixedComp,
   int cellIndex;                  ///< Cell index
 
   double xStep;                   ///< XStep value
-  double yStep;
-  double zStep;   
-  double xAngle;
-  double yAngle;  
-  double zAngle;
+  double yStep;                   ///< yStep
+  double zStep;                   ///< Zstep 
+  double xAngle;                  ///< xAxis rotation Angle [applied last]
+  double yAngle;                  ///< yAxis rotation Angle [applied mid]
+  double zAngle;                  ///< zAxis rotation Angle [applied first]
      // flange cylinder
-  double flCylOutRadius;
-  double flCylInRadius; 
-  double flCylThick;  
+  double flCylOutRadius;          ///< Flange outer radius
+  double flCylInRadius;           ///< Flange inner radius
+  double flCylThick;              ///< Flange thickness
      // window
-  double windowThick; 
+  double windowThick;             ///< Window thickness
      // small cylinder
   double smCylOutRadius;
   double smCylThick;  
@@ -81,8 +81,8 @@ class muBeamWindow : public attachSystem::FixedComp,
   double bigCylThick;  
 
   // materials
-  int vessMat;
-  int windowMat;
+  int vessMat;                   ///< Main body material
+  int windowMat;                 ///< Window mat
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

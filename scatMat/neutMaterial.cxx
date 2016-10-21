@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   scatMat/neutMaterial.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,8 +272,9 @@ neutMaterial::dSdOdE(const MonteCarlo::neutron& NIn,
     Determines the weight, relative to the total cross section
     of a neutron exiting with the channel NOut.
     Uses Ideal gas equation:
-    \param Wave :: Wavelength [incomming]
-    \return New wavelength
+    \param NIn :: Input neutorn
+    \param NOut :: Output neutorn
+    \return Cross-section from A-B [Barns]
   */
 {
   ELog::RegMethod RegA("neutMaterial","dSdOdE");

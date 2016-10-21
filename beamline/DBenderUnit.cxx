@@ -51,6 +51,9 @@
 #include "Surface.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "ShapeUnit.h"
 #include "DBenderUnit.h"
 
@@ -399,6 +402,32 @@ DBenderUnit::getString(const ModelSupport::surfRegister& SMap,
   const int SN(static_cast<int>(layerN)*layerSep);
   return ModelSupport::getComposite
     (SMap,shapeIndex+SN,shapeIndex," 1001M 1002M 5 -6 7 -8 ");
+}
+
+  
+void
+DBenderUnit::addSideLinks(const ModelSupport::surfRegister& SMap,
+                         attachSystem::FixedComp& FC) const
+  /*!
+    Add link points to the guide unit
+    \param SMap :: Surface Map 
+    \param FC :: FixedComp to use
+   */
+{
+  ELog::RegMethod RegA("BenderUnit","addSideLinks");
+
+  FC.setLinkSurf(2,SMap.realSurf(shapeIndex+5));
+  FC.setLinkSurf(3,SMap.realSurf(shapeIndex+6));
+  FC.setLinkSurf(4,SMap.realSurf(shapeIndex+7));
+  FC.setLinkSurf(5,SMap.realSurf(shapeIndex+8));
+
+  const Geometry::Vec3D MCentre= calcWidthCent(0);
+  FC.setConnect(2,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),-RAxisA);
+  FC.setConnect(3,MCentre+RCentA*RadiusA+RAxisA*((aWidth+bWidth)/4.0),RAxisA);
+  FC.setConnect(4,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),-RAxisB);
+  FC.setConnect(5,MCentre+RCentB*RadiusB+RAxisB*((aHeight+bHeight)/4.0),RAxisB);
+
+  return;
 }
 
 std::string

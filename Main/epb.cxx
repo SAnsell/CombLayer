@@ -72,6 +72,7 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
@@ -87,9 +88,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "makeEPB.h"
 
@@ -124,51 +122,17 @@ main(int argc,char* argv[])
 
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-
-  // The big variable setting
       setVariable::EPBVariables(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
   
       // Definitions section 
-      int MCIndex(0);
-      const int multi=IParam.getValue<int>("multi");
-      
       epbSystem::makeEPB EPBObj;
       World::createOuterObjects(*SimPtr);
       EPBObj.build(SimPtr,IParam);
-      
-      SDef::sourceSelection(*SimPtr,IParam);
-      
-      SimPtr->removeComplements();
-      SimPtr->removeDeadSurfaces(0);         
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
 
-      ModelSupport::setDefRotation(IParam);
-      SimPtr->masterRotation();
-
-      const int renumCellWork=tallySelection(*SimPtr,IParam);
-      if (createVTK(IParam,SimPtr,Oname))
-	{
-	  delete SimPtr;
-	  ModelSupport::objectRegister::Instance().reset();
-          ModelSupport::surfIndex::Instance().reset();
-	  return 0;
-	}
+            mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       
-      SimProcess::importanceSim(*SimPtr,IParam);
-      SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-      if (renumCellWork)
-	tallyRenumberWork(*SimPtr,IParam);
-      tallyModification(*SimPtr,IParam);
-            
-      // Ensure we done loop
-      do
-	{
-	  SimProcess::writeIndexSim(*SimPtr,Oname,MCIndex);
-	  MCIndex++;
-	}
-      while(MCIndex<multi);
-
+      
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
@@ -195,5 +159,4 @@ main(int argc,char* argv[])
   ModelSupport::objectRegister::Instance().reset();
   ModelSupport::surfIndex::Instance().reset();
   return exitFlag;
-
 }

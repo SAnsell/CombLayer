@@ -30,6 +30,7 @@
 #include <map>
 #include <vector>
 #include <iterator>
+#include <algorithm>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -298,7 +299,7 @@ Tally::setTime(const std::string& TVec)
   /*!
     Set the timeTab line
     \param TVec :: vector of the time
-    \return 1 on success/0 on failure
+    \return 0 on success/-ve on failure
   */
 {
   ELog::RegMethod RegA("Tally","setTime");
@@ -309,13 +310,37 @@ Tally::setTime(const std::string& TVec)
 int
 Tally::setAngle(const std::string& AVec)
   /*!
-    Set the timeTab line
-    \param AVec :: vector of the cosine 
-    \return 1 on success/0 on failure
+    Set the cos angular tally
+    \param AVec :: vector of the cosine as a string
+    \return 0 on success/-ve on failure
   */
 {
+  ELog::RegMethod RegA("Tally","setAngle");
+
   cosTab.clear();
-  return cosTab.processString(AVec);
+  if (cosTab.processString(AVec))
+    return (AVec=="empty" || AVec=="Empty") ? 0  : -1;
+
+  std::vector<double> Val;
+  cosTab.writeVector(Val);
+  if (Val.empty()) return -1;
+
+  std::sort(Val.begin(),Val.end());
+
+  if (Val.front()< -1.0+Geometry::zeroTol)
+    Val.erase(Val.begin());
+
+  // convert to cos(degrees): 0 implies 1.0
+  if (Val.back()>1.0+Geometry::zeroTol)
+    {
+      for(double& CN : Val)
+        CN=cos(M_PI*CN/180.0);
+
+      std::reverse(Val.begin(),Val.end());
+    }
+  cosTab.setVector(Val);
+
+  return 0;
 }
 
 int
@@ -335,7 +360,7 @@ Tally::setEnergy(const std::string& EVec)
   /*!
     Set the energyTab line
     \param EVec :: vector of the energy
-    \return 1 on success/0 on failure
+    \return 0 on success/-ve on failure
   */
 {
   Etab.clear();
@@ -475,7 +500,7 @@ void
 Tally::setCinderEnergy(const std::string&)
   /*!
     Set the energyTab line
-    \param pType :: Particle type [not used]
+    \param :: Particle type [not used]
   */
 {
   ELog::RegMethod RegA("Tally","setCinderEnergy");

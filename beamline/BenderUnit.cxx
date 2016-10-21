@@ -51,6 +51,9 @@
 #include "Surface.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "ShapeUnit.h"
 #include "BenderUnit.h"
 
@@ -68,8 +71,8 @@ BenderUnit::BenderUnit(const int ON,const int LS)  :
 {}
 
 BenderUnit::BenderUnit(const BenderUnit& A) : 
-  ShapeUnit(A),
-  RCent(A.RCent),RAxis(A.RAxis),RPlane(A.RPlane),Radius(A.Radius),
+  ShapeUnit(A),RCent(A.RCent),RAxis(A.RAxis),RPlane(A.RPlane),
+  Qxy(A.Qxy),Qz(A.Qz),Radius(A.Radius),
   aHeight(A.aHeight),bHeight(A.bHeight),aWidth(A.aWidth),
   bWidth(A.bWidth),Length(A.Length),rotAng(A.rotAng),
   AXVec(A.AXVec),AYVec(A.AYVec),AZVec(A.AZVec),BXVec(A.BXVec),
@@ -94,6 +97,8 @@ BenderUnit::operator=(const BenderUnit& A)
       RCent=A.RCent;
       RAxis=A.RAxis;
       RPlane=A.RPlane;
+      Qxy=A.Qxy;
+      Qz=A.Qz;
       Radius=A.Radius;
       aHeight=A.aHeight;
       bHeight=A.bHeight;
@@ -163,8 +168,8 @@ BenderUnit::setValues(const double HA,const double HB,
     \param HB :: Height [End]
     \param WA :: Width [start]
     \param WB :: Width [end]
-    \param L :: Length
-    \param Rad :: Rad
+    \param L :: Length [centre line of bend]
+    \param Rad :: Radius of bend [centre line]
     \param BA :: Bend angle relative to Z axis [deg]
    */
 {
@@ -200,31 +205,30 @@ BenderUnit::setOriginAxis(const Geometry::Vec3D& O,
   AXVec=XAxis;
   AYVec=YAxis;
   AZVec=ZAxis;
-  // Now calc. exit point
 
   BXVec=XAxis;
   BYVec=YAxis;
   BZVec=ZAxis;
 
-  // Now calculate RAxis:
+  // Now calculate rotation axis of main bend:
   RAxis=ZAxis;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(rotAng,YAxis);
+  Qz=Geometry::Quaternion::calcQRotDeg(rotAng,YAxis);
   Qz.rotate(RAxis);
+
 
   
   RPlane=YAxis*RAxis;
   RCent=begPt+RPlane*Radius;
-  
+
   // calc angle and rotation:
   const double theta = Length/Radius;
-  endPt+=RPlane*(2*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRot(-theta,RAxis);
+  endPt+=RPlane*(2.0*Radius*pow(sin(theta/2.0),2.0))+AYVec*(Radius*sin(theta));
+  Qxy=Geometry::Quaternion::calcQRot(-theta,RAxis);
 
   Qxy.rotate(BXVec);
   Qxy.rotate(BYVec);
   Qxy.rotate(BZVec);
+
   return;
 }
 
@@ -260,10 +264,10 @@ BenderUnit::calcWidthCent(const bool plusSide) const
       return RCent;
     }
 
-  if (fabs(OutValues.first.imag())<Geometry::zeroTol &&
+  if (std::abs(OutValues.first.imag())<Geometry::zeroTol &&
       OutValues.first.real()>0.0)
     return midPt+LDir*OutValues.first.real();
-  if (fabs(OutValues.second.imag())<Geometry::zeroTol &&
+  if (std::abs(OutValues.second.imag())<Geometry::zeroTol &&
       OutValues.second.real()>0.0)
     return midPt+LDir*OutValues.second.real();
   
@@ -330,6 +334,31 @@ BenderUnit::getString(const ModelSupport::surfRegister& SMap,
   const int SN(static_cast<int>(layerN)*layerSep);
   return ModelSupport::getComposite
     (SMap,shapeIndex+SN,shapeIndex," 1M 5 -6 7 -8 ");
+}
+
+void
+BenderUnit::addSideLinks(const ModelSupport::surfRegister& SMap,
+                         attachSystem::FixedComp& FC) const
+  /*!
+    Add link points to the guide unit
+    \param SMap :: Surface Map 
+    \param FC :: FixedComp to use
+   */
+{
+  ELog::RegMethod RegA("BenderUnit","addSideLinks");
+
+  FC.setLinkSurf(2,SMap.realSurf(shapeIndex+5));
+  FC.setLinkSurf(3,SMap.realSurf(shapeIndex+6));
+  FC.setLinkSurf(4,SMap.realSurf(shapeIndex+7));
+  FC.setLinkSurf(5,SMap.realSurf(shapeIndex+8));
+
+  const Geometry::Vec3D MCentre= calcWidthCent(0);
+  FC.setConnect(2,MCentre+RCent*Radius+RAxis*((aHeight+bHeight)/4.0),-RAxis);
+  FC.setConnect(3,MCentre+RCent*Radius+RAxis*((aHeight+bHeight)/4.0),RAxis);
+  FC.setConnect(4,MCentre+RCent*(Radius-aWidth/2.0),-RPlane);
+  FC.setConnect(5,MCentre+RCent*(Radius+aWidth/2.0),RPlane);
+
+  return;
 }
 
 std::string

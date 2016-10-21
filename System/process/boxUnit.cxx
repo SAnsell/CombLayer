@@ -89,11 +89,12 @@ boxUnit::boxUnit(const std::string& Key,const size_t index) :
   attachSystem::FixedComp(StrFunc::makeString(Key,index),6),
   attachSystem::ContainedComp(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(surfIndex+1),prev(0),next(0),maxExtent(0.0)
+  cellIndex(surfIndex+1),prev(0),next(0),maxExtent(0.0),
+  activeFlag(0),nSides(0)
  /*!
    Constructor
    \param Key :: keyname (base)
-   \param index ::  
+   \param index ::  offset number
   */
 {}
 
@@ -269,8 +270,7 @@ boxUnit::populate(const size_t AF,const std::vector<boxValues>& CV)
   boxVar=CV;
 
   checkForward();
-  if (prev) 
-    ZUnit=prev->getZUnit();
+  if (prev) ZUnit=prev->getZUnit();
   const Geometry::Vec3D& pAxis((prev) ? prev->getAxis() : Axis);
   const Geometry::Vec3D& nAxis((next) ? -next->getAxis() : -Axis);
   calcNorm(0,Axis,pAxis);
@@ -286,7 +286,6 @@ boxUnit::calcXZ(const Geometry::Vec3D& PA,
     Calculate the Z-axis
     \parma PA :: Previous Axis
     \param PB :: Unit vector [next point]
-    \param ZA :: Z-Axis on output
   */
 {
   ELog::RegMethod RegA("boxUnit","calcXZ");
@@ -358,11 +357,13 @@ boxUnit::createSurfaces()
     {
       ModelSupport::buildPlane(SMap,surfIndex+1,APt,ANorm);
       ASurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+1)));
+      ASurf.populateSurf();
     }
   if (!BSurf.hasRule())
     {
       ModelSupport::buildPlane(SMap,surfIndex+2,BPt,BNorm);
       BSurf=HeadRule(StrFunc::makeString(SMap.realSurf(surfIndex+2)));
+      BSurf.populateSurf();
     }
   
   // No need to delete surfaces [in SMap]
@@ -381,6 +382,9 @@ boxUnit::createSurfaces()
 	  const boxValues& boxVal(boxVar[i]);
 	  for(size_t j=0;j<nSides;j++)
 	    {
+	      // ELog::EM<<"Point["<<j<<"] == "<<
+	      // 	boxVal.getDatum(j,APt,XUnit,ZUnit)<<":"<<
+	      // 	boxVal.getAxis(j,XUnit,ZUnit)<<ELog::endDiag;
 	      ModelSupport::buildPlane(SMap,surfOffset+cnt,
 				       boxVal.getDatum(j,APt,XUnit,ZUnit),
 				       boxVal.getAxis(j,XUnit,ZUnit));
@@ -445,6 +449,7 @@ boxUnit::createObjects(Simulation& System)
   /*!
     Construct the object and the outside bracket
     for the system
+    \param System :: Simulation to build into
    */
 {
   ELog::RegMethod RegA("boxUnit","createObjects");
@@ -630,6 +635,7 @@ double
 boxUnit::getTanAngle(const Geometry::Vec3D& OAxis) const
   /*!
     Determine the angle 
+    \param OAxis : Original primary axis
    */
 {
   // Both normalized [Assumed]

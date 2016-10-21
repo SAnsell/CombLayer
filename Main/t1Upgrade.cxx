@@ -134,8 +134,6 @@ main(int argc,char* argv[])
       World::createOuterObjects(*SimPtr);
       T1Obj.build(SimPtr,IParam);
       
-      SDef::sourceSelection(*SimPtr,IParam);
-
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

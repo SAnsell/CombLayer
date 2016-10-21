@@ -75,22 +75,24 @@
 #include "GuideLine.h"
 #include "GuideItem.h"
 #include "essVariables.h"
+#include "AttachSupport.h"
 
 #include "ODIN.h"
 #include "BEER.h"
 #include "BIFROST.h"
+#include "CSPEC.h"
+#include "DREAM.h"
 #include "ESTIA.h"
 #include "FREIA.h"
 #include "LOKI.h"
+#include "MAGIC.h"
+#include "MIRACLES.h"
 #include "NMX.h"
-#include "DREAM.h"
-#include "CSPEC.h"
 #include "VESPA.h"
 #include "VOR.h"
 
 #include "shortDREAM.h"
 #include "shortODIN.h"
-
 #include "simpleITEM.h"
 
 #include "beamlineConstructor.h"
@@ -165,7 +167,6 @@ makeESSBL::getBeamNum(const std::string& Name)
   return Out;
 }
   
-  
 void 
 makeESSBL::build(Simulation& System,
 		 const Bunker& bunkerObj)
@@ -186,7 +187,6 @@ makeESSBL::build(Simulation& System,
     OR.getObject<attachSystem::FixedComp>(shutterName);
   const GuideItem* mainGIPtr=
     dynamic_cast<const GuideItem*>(mainFCPtr);
-
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
 	
@@ -194,6 +194,7 @@ makeESSBL::build(Simulation& System,
     {
       BEER beerBL("beer");
       beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      
     }  
   else if (beamName=="BIFROST")
     {
@@ -225,8 +226,20 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="LOKI")
     {
       // LOKI beamline
-      LOKI LokiBL("loki");
-      LokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      LOKI lokiBL("loki");
+      lokiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="MAGIC")
+    {
+      MAGIC magicBL("magic");
+      magicBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }  
+
+  else if (beamName=="MIRACLES")
+    {
+      // NMX beamline
+      MIRACLES miraclesBL("miracles");
+      miraclesBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
     {
@@ -273,7 +286,7 @@ makeESSBL::build(Simulation& System,
     {
       // LOKI beamline
       simpleITEM simpleBL("simple");
-      simpleBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+      simpleBL.build(System,*mainGIPtr,bunkerObj,voidCell);      
     }
   else if (beamName=="JSANS" || beamName=="JRef")
     {

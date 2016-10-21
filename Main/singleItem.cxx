@@ -58,9 +58,9 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
-#include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "ContainedComp.h"
@@ -71,12 +71,10 @@
 #include "DefPhysics.h"
 #include "Volumes.h"
 #include "variableSetup.h"
-#include "defaultConfig.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "makeSingleItem.h"
 
@@ -122,7 +120,6 @@ main(int argc,char* argv[])
       singleItemSystem::makeSingleItem singleItemObj;
       World::createOuterObjects(*SimPtr);
       singleItemObj.build(*SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
             

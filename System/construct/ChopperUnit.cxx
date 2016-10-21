@@ -82,7 +82,7 @@ namespace constructSystem
 {
 
 ChopperUnit::ChopperUnit(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
@@ -106,20 +106,20 @@ ChopperUnit::ChopperUnit(const ChopperUnit& A) :
   attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
   houseIndex(A.houseIndex),cellIndex(A.cellIndex),
-  height(A.height),width(A.width),depth(A.depth),
-  length(A.length),shortHeight(A.shortHeight),
-  shortWidth(A.shortWidth),mainRadius(A.mainRadius),
-  mainThick(A.mainThick),motorRadius(A.motorRadius),
-  motorOuter(A.motorOuter),motorStep(A.motorStep),
-  portRadius(A.portRadius),portOuter(A.portOuter),
-  portStep(A.portStep),portWindow(A.portWindow),
-  portNBolt(A.portNBolt),portBoltRad(A.portBoltRad),
-  portBoltAngOff(A.portBoltAngOff),portSeal(A.portSeal),
-  portSealMat(A.portSealMat),portWindowMat(A.portWindowMat),
-  motorNBolt(A.motorNBolt),motorBoltRad(A.motorBoltRad),
-  motorBoltAngOff(A.motorBoltAngOff),motorSeal(A.motorSeal),
-  motorSealMat(A.motorSealMat),motorMat(A.motorMat),
-  boltMat(A.boltMat),wallMat(A.wallMat),
+  height(A.height),
+  width(A.width),depth(A.depth),length(A.length),
+  shortHeight(A.shortHeight),shortWidth(A.shortWidth),
+  mainRadius(A.mainRadius),mainThick(A.mainThick),
+  motorRadius(A.motorRadius),motorOuter(A.motorOuter),
+  motorStep(A.motorStep),portRadius(A.portRadius),
+  portOuter(A.portOuter),portStep(A.portStep),
+  portWindow(A.portWindow),portNBolt(A.portNBolt),
+  portBoltRad(A.portBoltRad),portBoltAngOff(A.portBoltAngOff),
+  portSeal(A.portSeal),portSealMat(A.portSealMat),
+  portWindowMat(A.portWindowMat),motorNBolt(A.motorNBolt),
+  motorBoltRad(A.motorBoltRad),motorBoltAngOff(A.motorBoltAngOff),
+  motorSeal(A.motorSeal),motorSealMat(A.motorSealMat),
+  motorMat(A.motorMat),boltMat(A.boltMat),wallMat(A.wallMat),
   RS(new RingSeal(*A.RS)),IPA(new InnerPort(*A.IPA)),
   IPB(new InnerPort(*A.IPB))
   /*!
@@ -234,7 +234,7 @@ ChopperUnit::populate(const FuncDataBase& Control)
 
 void
 ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
-				 const long int sideIndex)
+                              const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -244,15 +244,17 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("ChopperUnit","createUnitVector");
 
   attachSystem::FixedComp& Main=getKey("Main");
+  attachSystem::FixedComp& BuildBeam=getKey("BuildBeam");
   attachSystem::FixedComp& Beam=getKey("Beam");
 
   Beam.createUnitVector(FC,sideIndex);
+  BuildBeam.createUnitVector(FC,sideIndex);
   Main.createUnitVector(FC,sideIndex);
-  applyOffset();
+
   //  Main.applyShift(0.0,0,0,beamZStep);
 
+  applyOffset();  
   setDefault("Main");
-
   return;
 }
 
@@ -311,7 +313,7 @@ ChopperUnit::createSurfaces()
   ModelSupport::buildCylinder(SMap,houseIndex+1017,Origin,Y,motorOuter);
 
   // Construct beamport:
-  setDefault("Beam");
+  setDefault("BuildBeam");
   ModelSupport::buildCylinder(SMap,houseIndex+2007,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,houseIndex+2017,Origin,Y,portOuter);
 
@@ -450,7 +452,7 @@ ChopperUnit::createObjects(Simulation& System)
   ELog::RegMethod RegA("ChopperUnit","createObjects");
 
   const attachSystem::FixedComp& Main=getKey("Main");
-  const attachSystem::FixedComp& Beam=getKey("Beam");
+  const attachSystem::FixedComp& Beam=getKey("BuildBeam");
   const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
   
   std::string Out,FBStr,EdgeStr,SealStr;
@@ -524,11 +526,11 @@ ChopperUnit::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
   IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->createAll(System,FixedGroup::getKey("Beam"),0,Out);
+  IPA->createAll(System,FixedGroup::getKey("BuildBeam"),0,Out);
 
   Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
   IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->createAll(System,FixedGroup::getKey("Beam"),0,Out);
+  IPB->createAll(System,FixedGroup::getKey("BuildBeam"),0,Out);
   
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 5 -6 7 8 9 10");
@@ -563,14 +565,15 @@ ChopperUnit::createLinks()
   mainFC.setLinkSurf(4,-SMap.realSurf(houseIndex+5));
   mainFC.setLinkSurf(5,SMap.realSurf(houseIndex+6));
 
+  // These are protected from ZVertial re-orientation
   const Geometry::Vec3D BC(beamFC.getCentre());
   const Geometry::Vec3D BY(beamFC.getY());
+  
   beamFC.setConnect(0,BC-BY*(length/2.0),-BY);
   beamFC.setConnect(1,BC+BY*(length/2.0),BY);
 
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-
   return;
 }
 

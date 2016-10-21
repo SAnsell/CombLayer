@@ -870,6 +870,18 @@ FuncDataBase::addVariable(const std::string& Name,const char* V)
   return;
 }
 
+void
+FuncDataBase::removeVariable(const std::string& Name)
+  /*!
+    Remove this function 
+     - can cause problems re-evaluating other variables if dependeny
+    \param Name :: Name of the variable
+  */
+{
+  VList.removeVar(Name);
+  return;
+}
+
 template<typename T>
 void
 FuncDataBase::addParse(const std::string& Name,const std::string& VParse)
@@ -892,7 +904,7 @@ FuncDataBase::copyVar(const std::string& Name,const std::string& otherVar)
     Adds this function if the Code system has been 
     executed
     \param Name :: Name of the variable
-    \param otherVar :: Othe variables
+    \param otherVar :: Other variable
   */
 {
   VList.copyVar(Name,otherVar);
@@ -1076,6 +1088,17 @@ FuncDataBase::writeXML(const std::string& FName) const
   return;
 }
 
+void
+FuncDataBase::resetActive()
+  /*!
+    Reset the active flag on all variables
+   */
+{
+  ELog::RegMethod RegA("FuncDataBase","resetActive");
+  VList.resetActive();
+  
+  return;
+}
 
 size_t
 FuncDataBase::convPartVec(const std::string& A,
@@ -1144,6 +1167,8 @@ template std::string FuncDataBase::EvalVar(const std::string&) const;
 template double FuncDataBase::EvalDefVar(const std::string&,
 					 const double&) const;
 template int FuncDataBase::EvalDefVar(const std::string&,const int&) const;
+template long int
+FuncDataBase::EvalDefVar(const std::string&,const long int&) const;
 
 template size_t 
 FuncDataBase::EvalDefVar(const std::string&,const size_t&) const;

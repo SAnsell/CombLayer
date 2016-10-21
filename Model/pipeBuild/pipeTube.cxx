@@ -71,6 +71,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
@@ -84,7 +85,7 @@ namespace pipeSystem
 
 pipeTube::pipeTube(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   tubeIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(tubeIndex+1)
   /*!
@@ -95,14 +96,12 @@ pipeTube::pipeTube(const std::string& Key) :
 
 pipeTube::pipeTube(const pipeTube& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   tubeIndex(A.tubeIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
-  height(A.height),width(A.width),innerHeight(A.innerHeight),
-  innerWidth(A.innerWidth),wallMat(A.wallMat),
-  nWallLayers(A.nWallLayers),wallFracList(A.wallFracList),
-  wallMatList(A.wallMatList)
+  length(A.length),height(A.height),width(A.width),
+  innerHeight(A.innerHeight),innerWidth(A.innerWidth),
+  wallMat(A.wallMat),nWallLayers(A.nWallLayers),
+  wallFracList(A.wallFracList),wallMatList(A.wallMatList)
   /*!
     Copy constructor
     \param A :: pipeTube to copy
@@ -120,14 +119,9 @@ pipeTube::operator=(const pipeTube& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       length=A.length;
       height=A.height;
       width=A.width;
@@ -157,11 +151,7 @@ pipeTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("pipeTube","populate");
 
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
+  FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -184,16 +174,18 @@ pipeTube::populate(const FuncDataBase& Control)
 }
 
 void
-pipeTube::createUnitVector(const attachSystem::FixedComp& FC)
+pipeTube::createUnitVector(const attachSystem::FixedComp& FC,
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("pipeTube","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  yStep+=length/2.0;
+  FixedOffset::applyOffset();
 
   return;
 }
@@ -334,17 +326,19 @@ pipeTube::layerProcess(Simulation& System)
   
 void
 pipeTube::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point
+    \param sideIndex :: sideIndex for link point
    */
 {
   ELog::RegMethod RegA("pipeTube","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
 
   createSurfaces();
   createObjects(System);

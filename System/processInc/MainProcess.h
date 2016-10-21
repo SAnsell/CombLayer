@@ -51,29 +51,6 @@ namespace mainSystem
   void incRunTimeVariable(FuncDataBase&,
 			  const std::map<std::string,double>&);
 
-
-  void createBilbauInputs(inputParam&);
-  void createBNCTInputs(inputParam&);
-  void createCuInputs(inputParam&);
-  void createD4CInputs(inputParam&);
-  void createDelftInputs(inputParam&);
-  void createEPBInputs(inputParam&);
-  void createESSInputs(inputParam&);
-  void createFilterInputs(inputParam&);
-  void createFullInputs(inputParam&);
-  void createGammaInputs(inputParam&);
-  void createLensInputs(inputParam&);
-  void createMuonInputs(inputParam&);
-  void createPhotonInputs(inputParam&);
-  void createPipeInputs(inputParam&);
-  void createSiliconInputs(inputParam&);
-  void createSinbadInputs(inputParam&);
-  void createSingleItemInputs(inputParam&);
-  void createSNSInputs(inputParam&);
-  void createTS1Inputs(inputParam&);
-  void createTS3ExptInputs(inputParam&);
-  void createInputs(inputParam&);
-
   void renumberCells(Simulation&,const inputParam&);
 
   void setVariables(Simulation&,const inputParam&,std::vector<std::string>&);

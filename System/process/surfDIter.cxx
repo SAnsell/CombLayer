@@ -150,6 +150,31 @@ populateDivide(const FuncDataBase& Control,const size_t N,
 
 void
 populateDivide(const FuncDataBase& Control,const size_t N,
+	       const std::string& Name,const std::string& defValue,
+	       std::vector<std::string>& Vec)
+  /*!
+    Function to populate an integer vector
+    with a set of points bases on a name type 
+    \param Control :: Function data base
+    \param N :: Number of points to get
+    \param Name :: BaseName of divide name
+    \param defValue :: Default starting value
+    \param Vec :: Vector to populate [and clear]
+  */
+{
+  Vec.clear();
+  std::string defV=defValue;
+  for(size_t i=0;i<N;i++)
+    {
+      defV=Control.EvalDefVar<std::string>
+	(Name+StrFunc::makeString(i),defV);
+      Vec.push_back(defV);
+    }
+  return;
+}
+  
+void
+populateDivide(const FuncDataBase& Control,const size_t N,
 	       const std::string& Name,const double defValue,
 	       std::vector<double>& Vec)
   /*!

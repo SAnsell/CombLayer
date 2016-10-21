@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   instrumentInc/CylSample.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,18 +36,12 @@ namespace instrumentSystem
 */
 
 class CylSample : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int samIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy rotation angle
-  double zAngle;                  ///< z rotation angle
 
   size_t nLayers;                     ///< number of layers
   std::vector<double> radius;         ///< cylinder radii
@@ -58,7 +52,8 @@ class CylSample : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

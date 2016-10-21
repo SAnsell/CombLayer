@@ -71,12 +71,23 @@ ChopperGenerator::ChopperGenerator() :
   */
 {}
 
+
+ChopperGenerator::~ChopperGenerator() 
+ /*!
+   Destructor
+ */
+{}
+
 ChopperGenerator::ChopperGenerator(const ChopperGenerator& A) : 
   mainZStep(A.mainZStep),height(A.height),width(A.width),
   shortWidth(A.shortWidth),shortHeight(A.shortHeight),
   mainRadius(A.mainRadius),windowThick(A.windowThick),
-  ringRadius(A.ringRadius),wallMat(A.wallMat),
-  sealMat(A.sealMat),windowMat(A.windowMat)
+  ringRadius(A.ringRadius),motorRadius(A.motorRadius),
+  motorOuter(A.motorOuter),portRadius(A.portRadius),
+  portOuter(A.portOuter),portWidth(A.portWidth),
+  portHeight(A.portHeight),portBoltStep(A.portBoltStep),
+  wallMat(A.wallMat),sealMat(A.sealMat),
+  windowMat(A.windowMat)
   /*!
     Copy constructor
     \param A :: ChopperGenerator to copy
@@ -101,18 +112,19 @@ ChopperGenerator::operator=(const ChopperGenerator& A)
       mainRadius=A.mainRadius;
       windowThick=A.windowThick;
       ringRadius=A.ringRadius;
+      motorRadius=A.motorRadius;
+      motorOuter=A.motorOuter;
+      portRadius=A.portRadius;
+      portOuter=A.portOuter;
+      portWidth=A.portWidth;
+      portHeight=A.portHeight;
+      portBoltStep=A.portBoltStep;
       wallMat=A.wallMat;
       sealMat=A.sealMat;
       windowMat=A.windowMat;
     }
   return *this;
 }
-
-ChopperGenerator::~ChopperGenerator() 
- /*!
-   Destructor
- */
-{}
 
 void
 ChopperGenerator::setMainRadius(const double R)

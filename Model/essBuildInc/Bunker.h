@@ -27,6 +27,8 @@ class Simulation;
 namespace essSystem
 {
   class BunkerMainWall;
+  class BunkerRoof;
+  class BunkerWall;
   class BunkerInsert;
   
 /*!
@@ -74,15 +76,10 @@ class Bunker : public attachSystem::ContainedComp,
   size_t nLayers;                ///< number of outgoing layers
   std::vector<double> wallFrac;  ///< thicknesss (fractions)
 
-  // ROOF
-  size_t activeRoof;              ///< Activeity for roof segments
-  size_t nRoofVert;               ///< number of layers
-  size_t nRoofRadial;             ///< number of radial layers
-  size_t nRoofSide;               ///< number of radial layers
-  std::vector<double> roofVert;    ///< Roof fractions
-  std::vector<double> roofRadial;  ///< Roof fractions
-  std::vector<double> roofSide;    ///< Roof fractions 
-  std::vector<int> roofMatVec;     ///< radial layer
+  /// Roof component
+  std::shared_ptr<BunkerRoof> roofObj;              
+  /// Roof component
+  std::shared_ptr<BunkerWall> wallObj;              
 
   // SIDES:
 

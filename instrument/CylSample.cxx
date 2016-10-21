@@ -3,7 +3,7 @@
  
  * File:   instrument/CylSample.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "CylSample.h"
 
@@ -72,7 +73,7 @@ namespace instrumentSystem
 {
 
 CylSample::CylSample(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   samIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(samIndex+1)
   /*!
@@ -82,10 +83,9 @@ CylSample::CylSample(const std::string& Key) :
 {}
 
 CylSample::CylSample(const CylSample& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  samIndex(A.samIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),nLayers(A.nLayers),radius(A.radius),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  samIndex(A.samIndex),cellIndex(A.cellIndex),
+  nLayers(A.nLayers),radius(A.radius),
   height(A.height),mat(A.mat)
   /*!
     Copy constructor
@@ -104,13 +104,8 @@ CylSample::operator=(const CylSample& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       nLayers=A.nLayers;
       radius=A.radius;
       height=A.height;
@@ -134,13 +129,8 @@ CylSample::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("CylSample","populate");
 
-
+  FixedOffset::populate(Control);
     // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   for(size_t i=0;i<nLayers;i++)
@@ -167,9 +157,7 @@ CylSample::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("CylSample","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-  
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }
@@ -204,18 +192,16 @@ CylSample::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("CylSample","createObjects");
 
-  std::string Out;
+  std::string Out,OutInner;
   int SI(samIndex);
   for(size_t i=0;i<nLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,SI," -7 5 -6 ");
-
-      if (i==nLayers-1) addOuterSurf(Out);
-      if (i)
-	Out+=ModelSupport::getComposite(SMap,SI-10," (7:-5:6) ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+OutInner));
+      OutInner=ModelSupport::getComposite(SMap,SI," (7:-5:6) ");
       SI+=10;
     }
+  addOuterSurf(Out);
   return; 
 }
 

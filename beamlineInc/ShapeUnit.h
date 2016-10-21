@@ -27,6 +27,10 @@ namespace Geometry
   class Convex2D;
 }
 
+namespace attachSystem
+{
+  class FixedComp;
+}
 
 namespace beamlineSystem
 {
@@ -80,6 +84,9 @@ class ShapeUnit
   virtual std::string getExclude(const ModelSupport::surfRegister&,
 				 const size_t) const =0;
 
+  virtual void addSideLinks(const ModelSupport::surfRegister&,
+			    attachSystem::FixedComp&) const =0;
+  
   virtual void createSurfaces(ModelSupport::surfRegister&,
 		      const std::vector<double>&) =0;
   ///\endcond ABSTRACT

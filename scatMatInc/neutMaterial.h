@@ -96,7 +96,6 @@ class neutMaterial
   double getCoh() const { return scoh; }        ///< Coherrent x-sec
   double getInc() const { return sinc; }        ///< Incoherrent x-sec
   double getAbs() const { return sabs; }        ///< Absorption x-section
-  double getScatFrac(const double) const;    
 
   // get Scattering prob
   virtual double ScatTotalRatio(const double) const;

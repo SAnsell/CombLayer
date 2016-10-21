@@ -3,7 +3,7 @@
  
  * File:   support/Exception.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1264,7 +1264,9 @@ ExitAbort::what() const throw()
      \return char* to the string values
    */
 {
-  std::string Item=OutLine+
+  static std::string Item;
+
+  Item=OutLine+
     "\nExit Stack:\n"+CodeLocation;
   return Item.c_str();
 }
@@ -1318,6 +1320,7 @@ template class ColErr::IndexError<unsigned int>;
 template class ColErr::IndexError<long int>;
 template class ColErr::IndexError<size_t>;
 template class ColErr::SizeError<size_t>;
+template class ColErr::SizeError<double>;
 template class ColErr::InContainerError<Geometry::Vec3D>;
 template class ColErr::InContainerError<std::string>;
 template class ColErr::InContainerError<int>;

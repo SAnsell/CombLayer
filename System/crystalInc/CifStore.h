@@ -53,7 +53,7 @@ class CifStore
   double V0;                          ///< Volume [V0]
   
   size_t tableNumber;                 ///< Table number [not used]
-  long int exafsAtom;                   ///< Central atom
+  size_t exafsAtom;                   ///< Central atom
   int exafsType;                      ///< Central atom (type)
 
   ZTYPE Zmap;                         ///< Map of Z + Ion [from symbol]
@@ -93,7 +93,7 @@ class CifStore
   double originDistance(const Geometry::Vec3D&) const;
   double volume() const;
   double aveOcc() const;
-  long int setCentralAtom(const std::string&,const size_t =0);
+  size_t setCentralAtom(const std::string&,const size_t =0);
   void makeAtoms(const double);
   int applyOcc();
   void primaryRotation(const Triple<int>&,const Geometry::Vec3D&,

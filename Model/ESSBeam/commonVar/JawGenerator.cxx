@@ -89,7 +89,7 @@ JawGenerator::generateJaws(FuncDataBase& Control,const std::string& keyName,
   //
   // Jaw X
   Control.addVariable(keyName+"VertXStep",0.0);
-  Control.addVariable(keyName+"VertYStep",-5.0);
+  Control.addVariable(keyName+"VertYStep",yStep-5.0);
   Control.addVariable(keyName+"VertZStep",0.0);
   Control.addVariable(keyName+"VertXYangle",180.0);
   Control.addVariable(keyName+"VertZangle",0.0);
@@ -117,7 +117,7 @@ JawGenerator::generateJaws(FuncDataBase& Control,const std::string& keyName,
 
   // Jaw XZ
   Control.addVariable(keyName+"DiagXStep",0.0);
-  Control.addVariable(keyName+"DiagYStep",5.0);
+  Control.addVariable(keyName+"DiagYStep",yStep+5.0);
   Control.addVariable(keyName+"DiagZStep",0.0);
   Control.addVariable(keyName+"DiagXAngle",0.0);
   Control.addVariable(keyName+"DiagYAngle",45.0);
@@ -139,7 +139,6 @@ JawGenerator::generateJaws(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"DiagYHeight",9.0);
   Control.addVariable(keyName+"DiagZHeight",28.0);
   Control.addVariable(keyName+"DiagWallThick",2.0);
-
 
   Control.addVariable(keyName+"DiagxJawMat","Tungsten");
   Control.addVariable(keyName+"DiagzJawMat","Tungsten");

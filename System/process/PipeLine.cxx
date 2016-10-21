@@ -89,12 +89,14 @@ PipeLine::PipeLine(const std::string& Key)  :
 PipeLine::PipeLine(const PipeLine& A) : 
   keyName(A.keyName),nCylinder(A.nCylinder),CV(A.CV),
   Pts(A.Pts),layerSurf(A.layerSurf),commonSurf(A.commonSurf),
-  activeFlags(A.activeFlags)
+  activeFlags(A.activeFlags),nAngle(A.nAngle),
+  startSurf(A.startSurf)
   /*!
     Copy constructor
     \param A :: PipeLine to copy
   */
-{}
+{
+}
 
 PipeLine&
 PipeLine::operator=(const PipeLine& A)
@@ -112,6 +114,7 @@ PipeLine::operator=(const PipeLine& A)
       layerSurf=A.layerSurf;
       commonSurf=A.commonSurf;
       activeFlags=A.activeFlags;
+      nAngle=A.nAngle;
       startSurf=A.startSurf;
       clearPUnits();
     }

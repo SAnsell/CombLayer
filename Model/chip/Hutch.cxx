@@ -1152,7 +1152,6 @@ ChipIRHutch::addCollimators(Simulation& System,
 {
   ELog::RegMethod RegA("ChipIRHutch","addCollimators");
 
-  const masterRotate& MR=masterRotate::Instance();
   chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
   
   PreColObj->addInsertCell(collimatorVoid);

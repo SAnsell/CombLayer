@@ -76,7 +76,6 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "Window.h"
-#include "t1Vessel.h"
 #include "ProtonVoid.h"
 #include "BeamWindow.h"
 #include "t1CylVessel.h"

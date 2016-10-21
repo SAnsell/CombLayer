@@ -3,7 +3,7 @@
  
  * File:   geomInc/Vec2D.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,7 +92,7 @@ class Vec2D
   Geometry::Vec2D component(const Geometry::Vec2D&) const; 
   Geometry::Vec2D cutComponent(const Geometry::Vec2D&) const;
   ///< Calculate the volmue of a cube X*Y
-  double volume() const { return fabs(x*y); }
+  double volume() const { return std::abs(x*y); }
 
   double dotProd(const Vec2D&) const;
   double abs() const;    

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeFullBlock.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeFullBlock.h"
 
@@ -82,7 +83,7 @@ namespace delftSystem
 {
 
 BeFullBlock::BeFullBlock(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insertIndex+1)
   /*!
@@ -90,6 +91,37 @@ BeFullBlock::BeFullBlock(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+BeFullBlock::BeFullBlock(const BeFullBlock& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  insertIndex(A.insertIndex),cellIndex(A.cellIndex),
+  width(A.width),height(A.height),length(A.length),mat(A.mat)
+  /*!
+    Copy constructor
+    \param A :: BeFullBlock to copy
+  */
+{}
+
+BeFullBlock&
+BeFullBlock::operator=(const BeFullBlock& A)
+  /*!
+    Assignment operator
+    \param A :: BeFullBlock to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      cellIndex=A.cellIndex;
+      width=A.width;
+      height=A.height;
+      length=A.length;
+      mat=A.mat;
+    }
+  return *this;
+}
 
 BeFullBlock::~BeFullBlock() 
  /*!
@@ -106,18 +138,12 @@ BeFullBlock::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeFullBlock","populate");
 
-
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  attachSystem::FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
 
   return;
 }
@@ -131,12 +157,13 @@ BeFullBlock::createUnitVector(const attachSystem::FixedComp& FC,
     - X Across the Face
     - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
+    \param sideIndex :: Side Direction for link point
   */
 {
   ELog::RegMethod RegA("BeFullBlock","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyShift(xStep,yStep,zStep);
+  applyOffset();
 
   return;
 }
@@ -209,7 +236,7 @@ BeFullBlock::createAll(Simulation& System,
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
-    \param sideIndex :: Side index
+    \param sideIndex :: Side index for link point 
   */
 {
   ELog::RegMethod RegA("BeFullBlock","createAll");

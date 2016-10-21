@@ -50,7 +50,8 @@ class AirBoxElement  : public RElement
   int wallMat;            ///< Wall material 
   int waterMat;           ///< Water coolant 
 
-  void populate(const FuncDataBase&,const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void populateWaterMat(const attachSystem::FixedComp&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const Geometry::Vec3D&);
   

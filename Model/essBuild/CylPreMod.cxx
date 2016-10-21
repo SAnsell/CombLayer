@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"

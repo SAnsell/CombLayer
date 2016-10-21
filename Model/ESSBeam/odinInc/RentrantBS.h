@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/RentrantBS.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,10 +61,10 @@ class RentrantBS :
   double outerFeStep;             ///< Step in [if radius bigger
   double outerCut;                ///< First cut length [void]
 
-  double innerRadius;
-  double innerFeRadius;
+  double innerRadius;             ///< First inner radius [enterance]
+  double innerFeRadius;           ///< Second inner radius 
   double innerFeStep;             ///< Step in [if radius bigger]
-  double innerCut;
+  double innerCut;                ///< Beam Axis step between first/second radii
 
   int b4cMat;                 ///< B4c layer material
   int feMat;                  ///< Fe layer material 

@@ -116,6 +116,8 @@ FixedGroup::FixedGroup(const std::string& mainKey,
     \param ANL :: Size of Fixed group
     \param BKey :: Key Two
     \param BNL :: Size of Fixed group
+    \param CKey :: Key Three
+    \param CNL :: Size of Fixed group
   */
 {
   ELog::RegMethod RegA("FixedGroup","constructor(string,string)");
@@ -203,7 +205,8 @@ FixedGroup::addKey(const std::string& Key,const size_t NL)
   
   FTYPE::iterator mc=FMap.find(Key);
   if (mc!=FMap.end())
-    throw ColErr::InContainerError<std::string>(Key,"Key in FMap");
+    throw ColErr::InContainerError<std::string>
+      (Key,"Key present in FMap:"+keyName);
 
   registerKey(Key,NL);
   mc=FMap.find(Key);
@@ -222,7 +225,7 @@ FixedGroup::getKey(const std::string& Key)
   
   FTYPE::iterator mc=FMap.find(Key);
   if (mc==FMap.end())
-    throw ColErr::InContainerError<std::string>(Key,"Key in FMap");
+    throw ColErr::InContainerError<std::string>(Key,"Key in FMap:"+keyName);
   return *(mc->second);
 }
   
@@ -238,7 +241,7 @@ FixedGroup::getKey(const std::string& Key) const
   
   FTYPE::const_iterator mc=FMap.find(Key);
   if (mc==FMap.end())
-    throw ColErr::InContainerError<std::string>(Key,"Key in FMap");
+    throw ColErr::InContainerError<std::string>(Key,"Key in FMap:"+keyName);
   return *(mc->second);
 }
 
@@ -264,5 +267,23 @@ FixedGroup::setDefault(const std::string& defKey)
   
 }
 
+void
+FixedGroup::setAxisControl(const long int axisIndex,
+                           const Geometry::Vec3D& NAxis)
+  /*!
+    Set the new reorientation axis for a group
+    \param axisIndex :: X/Y/Z for reorientation [1-3]
+    \param NAxis :: New Axis 
+  */
+{
+  ELog::RegMethod Rega("FixedGroup","setAxisControl");
+
+  for(FTYPE::value_type& MItem : FMap)
+    MItem.second->setAxisControl(axisIndex,NAxis);
+  return;
+}
+
+
+  
 
 }  // NAMESPACE attachSystem

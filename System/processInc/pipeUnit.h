@@ -76,9 +76,9 @@ class pipeUnit : public attachSystem::FixedComp,
   HeadRule ASurf;           ///< Start point rule if used [inward facing]
   HeadRule BSurf;           ///< End point rule if used [inward facing]
 
-  size_t activeFlag;           ///< Flag for active layers
+  size_t activeFlag;                  ///< Flag for active layers
   std::vector<cylValues> cylVar;      ///< Cylinder variables
-  std::set<int> cellCut;        ///< Cells the pipe 
+  std::set<int> cellCut;              ///< Cells the pipe 
   
   void calcNorm(const int,const Geometry::Vec3D&,
 		const Geometry::Vec3D&);

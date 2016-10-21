@@ -126,7 +126,7 @@ boxValues::getExtent() const
   /*!
     Determine the maximum extent
     \return Extent value
-   */
+  */
 {
   if  (SDist.empty())
     return 0.0;
@@ -159,16 +159,21 @@ boxValues::getAxis(const size_t Index,
 		   const Geometry::Vec3D& ZDir) const
   /*!
     Calculate the point on the plane direction
+    \param Index :: side Index
     \param XDir  :: X Unit vector
     \param ZDir  :: Z Unit vector
+    \return Direction away from box surface
   */
 {
   ELog::RegMethod RegA("boxValues","getDatum");
   if (Index>=NSides || !setFlag)
     throw ColErr::IndexError<size_t>(Index,NSides,RegA.getFull());
 
-      
+  //ELog::EM<<"XY == "<<XDir<<" :: "<<ZDir<<ELog::endDiag;
    Geometry::Vec3D Axis(SAxis[Index]);
+   //   ELog::EM<<"SAxis == "<<Axis<<":"
+   //	   <<XDir*Axis.X()<<" :: "<<ZDir*Axis.Z()<<ELog::endDiag;
+
    return XDir*Axis.X()+ZDir*Axis.Z();
 }
 

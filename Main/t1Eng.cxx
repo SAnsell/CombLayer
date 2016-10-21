@@ -63,6 +63,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "Simulation.h" 
 #include "SimPHITS.h"
@@ -74,10 +75,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
-#include "tallyConstructFactory.h"
 #include "World.h"
 #include "SimInput.h"
 
@@ -124,7 +121,6 @@ main(int argc,char* argv[])
       ts1System::makeT1Eng T1Obj;
       World::createOuterObjects(*SimPtr);
       T1Obj.build(SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

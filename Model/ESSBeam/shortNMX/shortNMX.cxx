@@ -69,6 +69,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"

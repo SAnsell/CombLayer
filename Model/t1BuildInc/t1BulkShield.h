@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/t1BulkShield.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,8 @@ class t1BulkShield : public attachSystem::FixedComp,
 {
  private:
   
-  const int bulkIndex;            ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-  int populated;                  ///< 1:var
+  const int bulkIndex;               ///< Index of surface offset
+  int cellIndex;                     ///< Cell index
   const size_t numberBeamLines;      ///< Number of beamlines
 
   /// Data for shutter
@@ -77,7 +76,7 @@ class t1BulkShield : public attachSystem::FixedComp,
 
   // Functions:
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector();
   void createLinks();
 
@@ -93,24 +92,24 @@ class t1BulkShield : public attachSystem::FixedComp,
   t1BulkShield& operator=(const t1BulkShield&);
   virtual ~t1BulkShield();
 
-  static const size_t sandalsShutter;  // North 1
-  static const size_t prismaShutter;  // North 2
-  static const size_t surfShutter;  // North 3
-  static const size_t crispShutter;  // North 4
-  static const size_t loqShutter;  // North 5
-  static const size_t irisShutter;  // North 6
-  static const size_t polarisIIShutter;  // North 7
-  static const size_t toscaShutter;  // North 8
-  static const size_t hetShutter;  // North 9
-  static const size_t mapsShutter;  // South 1
-  static const size_t vesuvioShutter;  // South 2
-  static const size_t sxdShutter;  // South 3
-  static const size_t merlinShutter;  // South 4
-  static const size_t s5Shutter;  // South 5
-  static const size_t mariShutter;  // South 6
-  static const size_t gemShutter;  // South 7
-  static const size_t hrpdShutter;  // South 8
-  static const size_t pearlShutter;  // South 9
+  static const size_t sandalsShutter;     ///< North 1
+  static const size_t prismaShutter;      ///< North 2
+  static const size_t surfShutter;        ///< North 3
+  static const size_t crispShutter;       ///< North 4
+  static const size_t loqShutter;         ///< North 5
+  static const size_t irisShutter;        ///< North 6
+  static const size_t polarisIIShutter;   ///< North 7
+  static const size_t toscaShutter;       ///< North 8
+  static const size_t hetShutter;         ///< North 9
+  static const size_t mapsShutter;        ///< South 1
+  static const size_t vesuvioShutter;     ///< South 2
+  static const size_t sxdShutter;         ///< South 3
+  static const size_t merlinShutter;      ///< South 4
+  static const size_t s5Shutter;          ///< South 5
+  static const size_t mariShutter;        ///< South 6
+  static const size_t gemShutter;         ///< South 7
+  static const size_t hrpdShutter;        ///< South 8
+  static const size_t pearlShutter;       ///< South 9
 
   /// Access outer limit
   double getORadius() const { return outerRadius; }

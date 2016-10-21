@@ -194,7 +194,6 @@ WeightControl::processPtString(std::string ptStr)
   if (ptStr.size()>1)
     {
       const std::string Input(ptStr);
-      ELog::EM<<"Pt == "<<Input<<ELog::endDiag;
       const char SP=static_cast<char>(std::toupper(ptStr[0]));
       const char TP=static_cast<char>(std::toupper(ptStr[1]));
       if (SP!='T' && SP!='S')  // fail
@@ -644,7 +643,7 @@ WeightControl::calcCellTrack(const Simulation& System,
   CTrack.clear();
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
-  
+
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
@@ -652,8 +651,11 @@ WeightControl::calcCellTrack(const Simulation& System,
 	{
 	  index.push_back(CellPtr->getName());  // this should be cellN ??
 	  Pts.push_back(CellPtr->getCofM());
+          ELog::EM<<"Cell Track = "<<initPt<<" : "<<index.back()
+                  <<" : [COM] "<<Pts.back()<<ELog::endDiag;
 	}
     }
+
   cTrack(System,initPt,Pts,index,CTrack);
   return;
 }

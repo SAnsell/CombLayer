@@ -84,6 +84,7 @@ testSupport::applyTest(const int extra)
       &testSupport::testFullBlock,
       &testSupport::testItemize,
       &testSupport::testSection,
+      &testSupport::testSectionCinder,
       &testSupport::testSectionRange,
       &testSupport::testSectPartNum,
       &testSupport::testSingleLine,
@@ -102,6 +103,7 @@ testSupport::applyTest(const int extra)
       "FullBlock",
       "Itemize",
       "Section",
+      "SectionCinder",
       "SectionRange",
       "SectPartNum",
       "SingleLine",
@@ -447,6 +449,49 @@ testSupport::testSection()
 		  <<ELog::endDiag;
 	  ELog::EM<<"Final string :"<<std::get<2>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Found string :"<<TLine<<ELog::endDiag;
+	  return -1;
+	}
+      cnt++;
+    }
+  return 0;
+}
+
+int
+testSupport::testSectionCinder()
+  /*!
+    Applies a test to sectionCinder
+    \retval -1 :: failed to section a string
+    \retval 0 on success
+  */
+{
+  ELog::RegMethod RegA("testSupport","testSectionCinder");
+
+  // type : Init string : final : results : (outputs)
+  typedef std::tuple<std::string,double,int> TTYPE;
+  std::vector<TTYPE> Tests({
+      TTYPE("3.456-190",3.456e-129,1),
+	TTYPE("3.456x190",3.456e-129,0),
+	TTYPE("3.456e1",34.56,1)
+	});
+  
+  int cnt(1);
+  for(const TTYPE& tc : Tests)
+    {
+      std::string outS;
+      double outD(0.0);
+
+      std::string TLine=std::get<0>(tc);
+      const int resultFlag=sectionCINDER(TLine,outD);
+      const double resVal(std::get<1>(tc));
+			  
+      if (resultFlag!=std::get<2>(tc) ||
+	  std::abs(outD-resVal)>1e-5)
+	{
+	  ELog::EM<<"TEST :: "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Result == "<<resultFlag<<" ("
+		  <<std::get<2>(tc)<<")"<<ELog::endDiag;
+	  ELog::EM<<"Output[double] == "<<outD<<":"<<std::get<2>(tc)
+		  <<ELog::endDiag;
 	  return -1;
 	}
       cnt++;

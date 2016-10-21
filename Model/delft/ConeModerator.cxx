@@ -66,6 +66,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -151,20 +152,17 @@ ConeModerator::~ConeModerator()
 {}
 
 void
-ConeModerator::populate(const Simulation& System)
+ConeModerator::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database
   */
 {
   ELog::RegMethod RegA("ConeModerator","populate");
+
+
+  FixedOffset::populate(Control);
   
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
   depth=Control.EvalVar<double>(keyName+"Depth");
   length=Control.EvalVar<double>(keyName+"Length");
   innerAngle=Control.EvalVar<double>(keyName+"InnerAngle");
@@ -197,12 +195,14 @@ ConeModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
 {
   ELog::RegMethod RegA("ConeModerator","createUnitVector");
   // Opposite since other face:
+
   X=CUnit.getBX();
   Y=CUnit.getBY();
   Z=CUnit.getBZ();
 
   Origin=CUnit.getBeamStart();
-  Origin+=X*xStep+Y*(yStep-fCut)+Z*zStep;
+  yStep-=fCut;
+  applyOffset();
   return;
 }
 
@@ -259,8 +259,6 @@ ConeModerator::createObjects(Simulation& System)
 
   std::string Out;  
 
-  Out=ModelSupport::getComposite(SMap,coneIndex," -7 1 -12 ");
-  addOuterSurf(Out);
 
   Out=ModelSupport::getComposite(SMap,coneIndex," -7 1 -2 (17:-11) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
@@ -280,6 +278,9 @@ ConeModerator::createObjects(Simulation& System)
   // Cap :
   Out=ModelSupport::getComposite(SMap,coneIndex," -7 2 -12 37");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,coneIndex," -7 1 -12 ");
+  addOuterSurf(Out);
 
   return;
 }
@@ -303,7 +304,7 @@ ConeModerator::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ConeModerator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FUnit);
   createSurfaces();
@@ -314,4 +315,4 @@ ConeModerator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE moderatorSystem
+}  // NAMESPACE delftSystem

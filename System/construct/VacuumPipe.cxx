@@ -80,7 +80,7 @@ namespace constructSystem
 {
 
 VacuumPipe::VacuumPipe(const std::string& Key) : 
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedOffset(Key,11),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1),activeFront(0),activeBack(0),
@@ -443,10 +443,10 @@ VacuumPipe::createLinks()
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
 
-  FixedComp::setConnect(2,Origin-X*((radius+feThick)/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*((radius+feThick)/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*((radius+feThick)/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*((radius+feThick)/2.0),Z);
+  FixedComp::setConnect(2,Origin-X*radius,-X);
+  FixedComp::setConnect(3,Origin+X*radius,X);
+  FixedComp::setConnect(4,Origin-Z*radius,-Z);
+  FixedComp::setConnect(5,Origin+Z*radius,Z);
 
   if (activeFront)
     {
@@ -482,6 +482,16 @@ VacuumPipe::createLinks()
 
   // MID Point: [NO SURF]
   FixedComp::setConnect(6,(endPoints[1]+endPoints[0])/2.0,Y);
+  
+  FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
+  FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
+  FixedComp::setConnect(9,Origin-Z*flangeRadius,-Z);
+  FixedComp::setConnect(10,Origin+Z*flangeRadius,Z);
+
+  FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+17));
+  FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+17));
+  FixedComp::setLinkSurf(9,SMap.realSurf(vacIndex+107));
+  FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+107));
 
   return;
 }

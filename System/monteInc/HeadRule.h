@@ -121,6 +121,9 @@ class HeadRule
   void makeComplement();
   HeadRule complement() const;
 
+  int procSurface(const Geometry::Surface*);
+  int procSurfNum(const int);
+  int procRule(const Rule*);
   int procString(const std::string&);
 
   void addIntersection(const int);

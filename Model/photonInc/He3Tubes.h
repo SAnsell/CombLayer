@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/Apperature.h
+ * File:   photonInc/He3Tubes.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,41 +19,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_Apperature_h
-#define constructSystem_Apperature_h
+#ifndef photonSystem_He3Tubes_h
+#define photonSystem_He3Tubes_h
 
 class Simulation;
 
-
 namespace constructSystem
 {
+  class RingSeal;
+  class RingFlange;
+}
 
+namespace photonSystem
+{
+  
 /*!
-  \class Apperature
-  \version 1.0
+  \class He3Tubes
   \author S. Ansell
-  \date May 2012
-  \brief Apperature system
+  \version 1.0
+  \date October 2016
+  \brief Specialized for a vacuum vessel
+
+  Cylindrical with semi-spherical front/back Doors
 */
 
-class Apperature : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
-
-{  
+class He3Tubes : public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
+{
  private:
- 
-  const int appIndex;           ///< Index of surface offset
+
+  const int heIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  double innerWidth;                ///< inner width
-  double innerHeight;               ///< inner height
-  double width;                     ///< full width
-  double height;                    ///< full height
-  double depth;                     ///< full depth
-  size_t nLayers;                   ///< number of extra layers
+  size_t nTubes;               ///< Number of tubes
+  double length;               ///< length of object
+  double radius;               ///< radius [inneer]
+  double wallThick;            ///< Outer thickenss
 
-  int voidMat;                  ///< void material
-  int defMat;                   ///< Main material
+  double gap;                  ///< Gap between tubes
+  double separation;           ///< separation between centres
+
+  int wallMat;                 ///< wall material
+  int mat;                     ///< inner material
+
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -63,15 +72,16 @@ class Apperature : public attachSystem::ContainedComp,
   void createObjects(Simulation&);
   void createLinks();
 
+  
  public:
 
-  Apperature(const std::string&);
-  Apperature(const Apperature&);
-  Apperature& operator=(const Apperature&);
-  ~Apperature();
-
-  void createAll(Simulation&,
-		 const attachSystem::FixedComp&,
+  He3Tubes(const std::string&);
+  He3Tubes(const He3Tubes&);
+  He3Tubes& operator=(const He3Tubes&);
+  virtual ~He3Tubes();
+  virtual He3Tubes* clone() const;
+  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };
 

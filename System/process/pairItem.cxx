@@ -3,7 +3,7 @@
  
  * File:   process/pairItem.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ std::string
 pairItem<T,U>::typeINFO() const
   /*!
     Combinded typenaem info 
-    \return nameed types spaced deliminated
+    \return named types: spaced deliminated
   */
 {
   return U::classType()+" "+T::classType();
@@ -180,6 +180,7 @@ int
 pairItem<T,U>::createSurface(const double,const int)
   /*!
     Dummy do nothing call for all none active objects
+    \return 0
   */
 {
   ELog::EM<<"Calling empty function:"

@@ -39,17 +39,10 @@ namespace SDef
 */
 
 class GammaSource : 
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset
 {
  private:
-  
-  double xStep;                 ///< Step in X
-  double yStep;                 ///< Step in Y
-  double zStep;                 ///< Step in Z
-
-  double xyAngle;               ///< Rotate XY angle
-  double zAngle;                ///< Rotate XY angle
-  
+    
   int particleType;             ///< Particle Type
   double cutEnergy;             ///< Energy cut point
 

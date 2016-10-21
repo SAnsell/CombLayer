@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBase.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -232,8 +232,8 @@ collInsertBase::equalExternal(const collInsertBase& ZB) const
   const Geometry::Vec3D ZBnonYOrg=ZB.Origin-Y*ZB.Origin.dotProd(ZB.Y);
   const Geometry::Vec3D nonYOrg=Origin-Y*Origin.dotProd(Y);
   
-  return (fabs(ZB.width-width)>Geometry::zeroTol ||
-	  fabs(ZB.height-height)>Geometry::zeroTol ||
+  return (std::abs(ZB.width-width)>Geometry::zeroTol ||
+	  std::abs(ZB.height-height)>Geometry::zeroTol ||
 	  ZBnonYOrg!=nonYOrg) ? 0 : 1;
 }
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   supportInc/regexSupport.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,5 +57,6 @@ int findPattern(std::istream&,const boost::regex&,std::string&);
 
 } // NAMESPACE StrFunc
 
-#endif
+#endif  // NO_REGEX
+
 #endif

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/TwisterModule.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,28 +28,20 @@ namespace essSystem
 {
 /*!
   \class TwisterModule
-  \author K. Batkov
+  \author Stuart Ansell / Konstantin Batkov
   \version 1.0
   \date March 2016
   \brief Moderator twister plug
 */
 
-class TwisterModule : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp,
+class TwisterModule : public attachSystem::ContainedGroup,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  private:
 
   const int tIndex;               ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  int engActive;                  ///< Engineering active flag
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
 
   double shaftRadius;             ///< Shaft radius
   double shaftHeight;             ///< Shaft height
@@ -72,7 +64,8 @@ class TwisterModule : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -86,7 +79,8 @@ class TwisterModule : public attachSystem::ContainedComp,
   virtual TwisterModule* clone() const;
   virtual ~TwisterModule();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

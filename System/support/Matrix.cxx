@@ -3,7 +3,7 @@
  
  * File:   support/Matrix.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,8 +311,8 @@ Matrix<T>::operator==(const Matrix<T>& A) const
 	for(size_t j=0;j<this->ny;j++)
 	  {
 	    const T diff=this->V[i][j]-A.V[i][j];
-	    if (fabs(diff)>maxDiff)
-	      maxDiff=fabs(diff);
+	    if (std::abs<T>(diff)>maxDiff)
+	      maxDiff=std::abs<T>(diff);
 	    if (fabs(this->V[i][j])>maxS)
 	      maxS=fabs(this->V[i][j]);
 	  }
@@ -394,9 +394,9 @@ Matrix<T>::GaussJordan(Matrix<T>& B)
 	      for(size_t k=0;k<this->nx;k++)
 		if (!pivoted[k])
 		  {
-		    if (fabs(this->V[j][k]) >=bigItem)
+		    if (std::abs<T>(this->V[j][k]) >=bigItem)
 		      {
-			bigItem=fabs(this->V[j][k]);
+			bigItem=std::abs<T>(this->V[j][k]);
 			irow=j;
 			icol=k;
 		      }
@@ -419,7 +419,7 @@ Matrix<T>::GaussJordan(Matrix<T>& B)
       indxrow[i]=irow;
       indxcol[i]=icol;
 
-      if (fabs(this->V[icol][icol])>1e-80)
+      if (std::abs<double>(this->V[icol][icol])>1e-80)
 	{
 	  ELog::EM<<"Singular matrix"<<ELog::endCrit;
 	  return 1;
@@ -576,12 +576,12 @@ Matrix<T>::factor()
   for(size_t i=0;i<this->nx-1;i++)       //loop over each row
     {
       size_t jmax=i;
-      Pmax=fabs(this->V[i][i]);
+      Pmax=std::abs<T>(this->V[i][i]);
       for(size_t j=i+1;j<this->nx;j++)     // find max in Row i
         {
-	  if (fabs(this->V[i][j])>Pmax)
+	  if (std::abs<T>(this->V[i][j])>Pmax)
             {
-	      Pmax=fabs(this->V[i][j]);
+	      Pmax=std::abs<T>(this->V[i][j]);
 	      jmax=j;
 	    }
 	}
@@ -658,7 +658,7 @@ Matrix<T>::lubcmp(size_t* rowperm,int& interchange)
       big=0.0;
       for(size_t j=0;j<this->nx;j++)
 	{
-	  const T temp=fabs(this->V[i][j]);
+	  const T temp=std::abs<T>(this->V[i][j]);
 	  if (temp > big) 
 	    big=temp;
 	}
@@ -688,7 +688,7 @@ Matrix<T>::lubcmp(size_t* rowperm,int& interchange)
           for (size_t k=0;k<j;k++)
             sum -= this->V[i][k] * this->V[k][j];
           this->V[i][j]=sum;
-	  dum=vv[i] * fabs(sum);
+	  dum=vv[i] * std::abs<T>(sum);
           if (dum >= big)
             {
               big=dum;
@@ -708,7 +708,7 @@ Matrix<T>::lubcmp(size_t* rowperm,int& interchange)
         }
 
       rowperm[j]=imax;
-      if (fabs(this->V[j][j]) < 1e-28) 
+      if (std::abs<T>(this->V[j][j]) < 1e-28) 
         this->V[j][j]=1e-14;
       if (j != this->nx-1)
         {
@@ -838,7 +838,7 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
     }
   for(size_t i=0;i<this->nx;i++)
     for(size_t j=i+1;j<this->nx;j++)
-      if (fabs(this->V[i][j]-this->V[j][i])>1e-6)
+      if (std::abs<T>(this->V[i][j]-this->V[j][i])>1e-6)
         {
 	  ELog::EM<<"Matrix not Symmetric"<<ELog::endCrit;
 	  ELog::EM<<(*this)<<ELog::endErr;
@@ -869,9 +869,9 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
       sm=0.0;           // sum of off-diagonal terms
       for(size_t ip=0;ip<this->nx-1;ip++)
 	for(size_t iq=ip+1;iq<this->nx;iq++)
-	  sm+=fabs(A.V[ip][iq]);
+	  sm+=std::abs<T>(A.V[ip][iq]);
 
-      if (fabs(sm)<1e-31)           // Nothing to do return...
+      if (std::abs<T>(sm)<1e-31)           // Nothing to do return...
 	{
 	  // Make OUTPUT -- D + A
 	  for(size_t ix=0;ix<this->nx;ix++)
@@ -886,25 +886,25 @@ Matrix<T>::Diagonalise(Matrix<T>& EigenVec,Matrix<T>& DiagMatrix) const
 	{
 	  for(size_t iq=ip+1;iq<this->nx;iq++)
 	    {
-	      T g=100.0*fabs(A.V[ip][iq]);
-	      // After 4 sweeps skip if off diagonal small
+	      const T g=100.0*std::abs<T>(A.V[ip][iq]);
+	      // After 4 sweeps skip if off-diagonal is small
 	      if (i>6 && 
-		  static_cast<float>(fabs(Diag[ip]+g))==
-		  static_cast<float>(fabs(Diag[ip])) &&
-		  static_cast<float>(fabs(Diag[iq]+g))==
-		  static_cast<float>(fabs(Diag[iq])))
+		  static_cast<float>(std::abs<T>(Diag[ip]+g))==
+		  static_cast<float>(std::abs<T>(Diag[ip])) &&
+		  static_cast<float>(std::abs<T>(Diag[iq]+g))==
+		  static_cast<float>(std::abs<T>(Diag[iq])))
 		A.V[ip][iq]=0;
 
-	      else if (fabs(A.V[ip][iq])>tresh)
+	      else if (std::abs<T>(A.V[ip][iq])>tresh)
 		{
 		  T h=Diag[iq]-Diag[ip];
-		  if (static_cast<float>((fabs(h)+g)) == 
-		      static_cast<float>(fabs(h)))
+		  if (static_cast<float>((std::abs<T>(h)+g)) == 
+		      static_cast<float>(std::abs<T>(h)))
 		    tanAngle=A.V[ip][iq]/h;      // tanAngle=1/(2theta)
 		  else
 		    {
 		      theta=0.5*h/A.V[ip][iq];
-		      tanAngle=1.0/(fabs(theta)+sqrt(1.0+theta*theta));
+		      tanAngle=1.0/(std::abs<T>(theta)+sqrt(1.0+theta*theta));
 		      if (theta<0.0)
 			tanAngle = -tanAngle;
 		    }

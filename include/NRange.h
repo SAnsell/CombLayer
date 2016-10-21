@@ -75,7 +75,7 @@ class NRange
   void addComp(const double);
   template<typename T>
   void setVector(const std::vector<T>&);
-  int writeVector(std::vector<double>&) const;
+  size_t writeVector(std::vector<double>&) const;
   void write(std::ostream&) const;             ///< Write out the range 
 
 };

@@ -85,18 +85,18 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxAxisYStep",0.0);
   Control.addVariable("nmxAxisZStep",0.0);
   Control.addVariable("nmxAxisXYAngle",0.0);   // rotation 
-  Control.addVariable("nmxAxisZAngle",0.0);
+  Control.addVariable("nmxAxisZAngle",1.0);
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.1);
   FGen.generateTaper(Control,"nmxGA",350.0,3.0,3.0,3.0,4.5);
-  Control.addVariable("nmxGABeamZAngle",-1.0);       
+  Control.addVariable("nmxGABeamZAngle",0.0);         // -1.0 [BEND]
 
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
   
-  const double bendAngle(-180.0);
-  const double bendRadius(120000.0);  
+  const double bendAngle(90.0);
+  const double bendRadius(120000.0);    // 1.2km 
   FGen.generateBender(Control,"nmxBA",394.0,3.0,3.0,3.0,4.5,
                       bendRadius,bendAngle);
 
@@ -139,7 +139,7 @@ NMXvariables(FuncDataBase& Control)
   // TEST OF COLLIMATORS IN PIPE:
   Control.addVariable("nmxCollALength",30.0);
   Control.addVariable("nmxCollAMat","Tungsten");
-  
+
   return;
 }
 

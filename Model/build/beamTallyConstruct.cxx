@@ -425,7 +425,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
     ELog::EM<<"Window == "<<*vc<<ELog::endDebug;
 
   // Apply rotation
-  if (fabs(pointZRot)>Geometry::zeroTol)
+  if (std::abs(pointZRot)>Geometry::zeroTol)
     {
       const Geometry::Vec3D Z=ShutterPtr->getZ();
       const Geometry::Quaternion Qxy=
@@ -502,7 +502,7 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
     ELog::EM<<"Window == "<<VPt<<ELog::endDiag;
 
   // Apply rotation
-  if (fabs(pointZRot)>Geometry::zeroTol)
+  if (std::abs(pointZRot)>Geometry::zeroTol)
     {
       const Geometry::Vec3D Z=ShutterPtr->getZ();
       const Geometry::Quaternion

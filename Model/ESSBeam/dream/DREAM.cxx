@@ -71,6 +71,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -408,7 +409,6 @@ DREAM::build(Simulation& System,
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
 
-
   if (stopPoint==3) return;                      // STOP At bunker edge
   // Section to 17m
   
@@ -417,18 +417,14 @@ DREAM::build(Simulation& System,
   ShieldA->createAll(System,*BInsert,2);
 
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
-  VPipeOutA->setFront(bunkerObj,2);
-  VPipeOutA->setBack(*ShieldA,-2);
   VPipeOutA->createAll(System,FocusWall->getKey("Guide0"),2);
-  
-    
+      
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,7,*VPipeOutA,7);
+  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
   // Section to 34m
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
-
 
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->setFront(*ShieldB,-1);

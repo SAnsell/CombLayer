@@ -73,6 +73,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
@@ -132,6 +133,7 @@ LOKI::LOKI(const std::string& keyN) :
 
 
   VPipeCollA(new constructSystem::VacuumPipe(newName+"PipeCollA")),
+  VPipeCollAX(new constructSystem::VacuumPipe(newName+"PipeCollAX")),
   VPipeCollB(new constructSystem::VacuumPipe(newName+"PipeCollB")),
   VPipeCollC(new constructSystem::VacuumPipe(newName+"PipeCollC")),
 
@@ -157,78 +159,63 @@ LOKI::LOKI(const std::string& keyN) :
   */
 {
   ELog::RegMethod RegA("LOKI","LOKI");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  
-  // This necessary:
-  OR.cell(newName+"Axis");
-  OR.addObject(lokiAxis);
-
-  OR.addObject(BendA);
-
-  OR.addObject(ChopperA);
-  OR.addObject(DDiskA);
-
-  OR.addObject(VPipeB);
-  OR.addObject(BendB);
-
-  OR.addObject(VPipeC);
-  OR.addObject(FocusC);
-
-  OR.addObject(VPipeD);
-  OR.addObject(BendD);
-
-  OR.addObject(ChopperB);
-  OR.addObject(SDiskB);
-  
-  OR.addObject(VPipeE);
-  OR.addObject(FocusE);
-
-  OR.addObject(ChopperC);
-  OR.addObject(SDiskC);
-  
-  OR.addObject(VPipeF);
-  OR.addObject(FocusF);
-
-  OR.addObject(GridA);
-  OR.addObject(CollA);
-  
-  OR.addObject(VPipeCollA);
-  OR.addObject(VPipeCollB);
-  OR.addObject(VPipeCollC);
-
-  OR.addObject(FocusCollA);
-  OR.addObject(FocusCollB);
-  OR.addObject(FocusCollC);
-  
-  OR.addObject(CBoxB);
-  OR.addObject(GridB);
-  OR.addObject(CollB);
-  OR.addObject(GridC);
-  OR.addObject(CollC);
-  OR.addObject(GridD);
-
-  OR.addObject(Cave);
-  OR.addObject(CaveGuide);
-  OR.addObject(VTank);
-
+  registerObjects();
 }
 
 LOKI::LOKI(const LOKI& A) : 
   attachSystem::CopiedComp(A),
-  stopPoint(A.stopPoint),lokiAxis(A.lokiAxis),BendA(A.BendA),
-  VPipeB(A.VPipeB),BendB(A.BendB),ChopperA(A.ChopperA),
-  DDiskA(A.DDiskA),VPipeC(A.VPipeC),FocusC(A.FocusC),
-  VPipeD(A.VPipeD),BendD(A.BendD),ChopperB(A.ChopperB),
-  SDiskB(A.SDiskB),VPipeE(A.VPipeE),FocusE(A.FocusE),
-  ChopperC(A.ChopperC),SDiskC(A.SDiskC),VPipeF(A.VPipeF),
-  FocusF(A.FocusF),GridA(A.GridA)
+  stopPoint(A.stopPoint),
+  lokiAxis(new attachSystem::FixedOffset(*A.lokiAxis)),
+  BendA(new beamlineSystem::GuideLine(*A.BendA)),
+  VPipeB(new constructSystem::VacuumPipe(*A.VPipeB)),
+  BendB(new beamlineSystem::GuideLine(*A.BendB)),
+  ChopperA(new constructSystem::ChopperUnit(*A.ChopperA)),
+  DDiskA(new constructSystem::DiskChopper(*A.DDiskA)),
+  VPipeC(new constructSystem::VacuumPipe(*A.VPipeC)),
+  FocusC(new beamlineSystem::GuideLine(*A.FocusC)),
+  VPipeD(new constructSystem::VacuumPipe(*A.VPipeD)),
+  BendD(new beamlineSystem::GuideLine(*A.BendD)),
+  ChopperB(new constructSystem::ChopperUnit(*A.ChopperB)),
+  SDiskB(new constructSystem::DiskChopper(*A.SDiskB)),
+  VPipeE(new constructSystem::VacuumPipe(*A.VPipeE)),
+  FocusE(new beamlineSystem::GuideLine(*A.FocusE)),
+  ChopperC(new constructSystem::ChopperUnit(*A.ChopperC)),
+  SDiskC(new constructSystem::DiskChopper(*A.SDiskC)),
+  
+  VPipeF(new constructSystem::VacuumPipe(*A.VPipeF)),
+  FocusF(new beamlineSystem::GuideLine(*A.FocusF)),
+
+  GridA(new constructSystem::RotaryCollimator(*A.GridA)),
+  CollA(new constructSystem::RotaryCollimator(*A.CollA)),
+
+  VPipeCollA(new constructSystem::VacuumPipe(*A.VPipeCollA)),
+  VPipeCollAX(new constructSystem::VacuumPipe(*A.VPipeCollAX)),
+  VPipeCollB(new constructSystem::VacuumPipe(*A.VPipeCollB)),
+  VPipeCollC(new constructSystem::VacuumPipe(*A.VPipeCollC)),
+
+  FocusCollA(new beamlineSystem::GuideLine(*A.FocusCollA)),
+  FocusCollB(new beamlineSystem::GuideLine(*A.FocusCollB)),
+  FocusCollC(new beamlineSystem::GuideLine(*A.FocusCollC)),
+
+  CBoxB(new constructSystem::insertPlate(*CBoxB)),
+  GridB(new constructSystem::RotaryCollimator(*A.GridB)),
+  CollB(new constructSystem::RotaryCollimator(*A.CollB)),
+
+  GridC(new constructSystem::RotaryCollimator(*A.GridC)),
+  CollC(new constructSystem::RotaryCollimator(*A.CollC)),
+
+  GridD(new constructSystem::RotaryCollimator(*A.GridD)),
+
+  Cave(new LokiHut(*A.Cave)),
+  CaveGuide(new beamlineSystem::GuideLine(*A.CaveGuide)),
+  VTank(new VacTank(*A.VTank))
   /*!
     Copy constructor
     \param A :: LOKI to copy
   */
-{}
+{
+  registerObjects();
+}
 
 LOKI&
 LOKI::operator=(const LOKI& A)
@@ -266,12 +253,77 @@ LOKI::operator=(const LOKI& A)
 }
 
 
-
 LOKI::~LOKI()
   /*!
     Destructor
   */
 {}
+
+void
+LOKI::registerObjects()
+  /*!
+    Register all the objects with the object register
+  */
+{
+  ELog::RegMethod RegA("LOKI","registerObjects");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  // This necessary:
+  OR.cell(newName+"Axis");
+  OR.addObject(lokiAxis);
+
+  OR.addObject(BendA);
+
+  OR.addObject(ChopperA);
+  OR.addObject(DDiskA);
+
+  OR.addObject(VPipeB);
+  OR.addObject(BendB);
+
+  OR.addObject(VPipeC);
+  OR.addObject(FocusC);
+
+  OR.addObject(VPipeD);
+  OR.addObject(BendD);
+
+  OR.addObject(ChopperB);
+  OR.addObject(SDiskB);
+  
+  OR.addObject(VPipeE);
+  OR.addObject(FocusE);
+
+  OR.addObject(ChopperC);
+  OR.addObject(SDiskC);
+  
+  OR.addObject(VPipeF);
+  OR.addObject(FocusF);
+
+  OR.addObject(GridA);
+  OR.addObject(CollA);
+  
+  OR.addObject(VPipeCollA);
+  OR.addObject(VPipeCollAX);
+  OR.addObject(VPipeCollB);
+  OR.addObject(VPipeCollC);
+
+  OR.addObject(FocusCollA);
+  OR.addObject(FocusCollB);
+  OR.addObject(FocusCollC);
+  
+  OR.addObject(CBoxB);
+  OR.addObject(GridB);
+  OR.addObject(CollB);
+  OR.addObject(GridC);
+  OR.addObject(CollC);
+  OR.addObject(GridD);
+
+  OR.addObject(Cave);
+  OR.addObject(CaveGuide);
+  OR.addObject(VTank);
+
+  return;
+}
 
 void
 LOKI::setBeamAxis(const FuncDataBase& Control,
@@ -320,7 +372,8 @@ LOKI::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+  
   FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(Control);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
@@ -345,6 +398,8 @@ LOKI::build(Simulation& System,
   
   // First [6m]
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);  
   ChopperA->createAll(System,BendB->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -410,18 +465,21 @@ LOKI::build(Simulation& System,
 
   CollA->addInsertCell(bunkerObj.getCell("MainVoid"));
   CollA->createAll(System,GridA->getKey("Beam"),2);
-  attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
-				   CollA->getKey("Main"),*CollA);  
+  attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
+                                    CollA->getKey("Main"),*CollA);  
+
 
   ELog::EM<<"CollA == "<<CollA->getKey("Beam").getSignedLinkPt(3)
 	  <<ELog::endDiag;
 
   VPipeCollA->addInsertCell(CollA->getCell("Void0"));  // multiple units
-  VPipeCollA->createAll(System,CollA->getKey("Beam"),2);
+  VPipeCollA->createAll(System,CollA->getKey("Hole"),-1);
 
+  return;
   FocusCollA->addInsertCell(VPipeCollA->getCells("Void"));
   FocusCollA->createAll(System,*VPipeCollA,0,*VPipeCollA,0);
 
+  return;
   //  FocusCA0->addInsertCell(CollA->getCell("Void0"));
   //  FocusCA0->createAll(System,CollA->getKey("Beam"),0,
   //                      CollA->getKey("Beam"),0);

@@ -105,6 +105,9 @@ class inputParam
   T getDefValue(const T&,const std::string&,const size_t =0) const;
   template<typename T>
     T getDefValue(const T&,const std::string&,const size_t,const size_t) const;
+  template<typename T>
+  T getValueError(const std::string&,const size_t,const size_t,
+		  const std::string&) const;
 
 
   const std::vector<std::string>&

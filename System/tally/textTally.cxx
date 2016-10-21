@@ -117,8 +117,8 @@ void
 textTally::renumberCell(const int ,const int )
   /*!
     Renumber the cell based on the old/New numbers
-    \param oldN :: Old number to find
-    \param newN :: new number to replace the cell with
+    \param :: Old number to find
+    \param :: new number to replace the cell with
    */
 {
   ELog::RegMethod RegA("textTally","renumberCell");
@@ -130,8 +130,8 @@ void
 textTally::renumberSurf(const int,const int )
   /*!
     Renumber the cell based on the old/New numbers
-    \param oldN :: Old number to find
-    \param newN :: new number to replace the surface with
+    \param :: Old number to find
+    \param :: new number to replace the surface with
    */
 {
   ELog::RegMethod RegA("textTally","renumberCell");

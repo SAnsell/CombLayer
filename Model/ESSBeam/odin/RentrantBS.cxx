@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/RentrantBS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,6 +89,60 @@ RentrantBS::RentrantBS(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+RentrantBS::RentrantBS(const RentrantBS& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  bstopIndex(A.bstopIndex),cellIndex(A.cellIndex),
+  width(A.width),height(A.height),depth(A.depth),
+  length(A.length),b4cThick(A.b4cThick),feRadius(A.feRadius),
+  feLength(A.feLength),outerRadius(A.outerRadius),
+  outerFeRadius(A.outerFeRadius),outerFeStep(A.outerFeStep),
+  outerCut(A.outerCut),innerRadius(A.innerRadius),
+  innerFeRadius(A.innerFeRadius),innerFeStep(A.innerFeStep),
+  innerCut(A.innerCut),b4cMat(A.b4cMat),feMat(A.feMat),
+  concMat(A.concMat)
+  /*!
+    Copy constructor
+    \param A :: RentrantBS to copy
+  */
+{}
+
+RentrantBS&
+RentrantBS::operator=(const RentrantBS& A)
+  /*!
+    Assignment operator
+    \param A :: RentrantBS to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      width=A.width;
+      height=A.height;
+      depth=A.depth;
+      length=A.length;
+      b4cThick=A.b4cThick;
+      feRadius=A.feRadius;
+      feLength=A.feLength;
+      outerRadius=A.outerRadius;
+      outerFeRadius=A.outerFeRadius;
+      outerFeStep=A.outerFeStep;
+      outerCut=A.outerCut;
+      innerRadius=A.innerRadius;
+      innerFeRadius=A.innerFeRadius;
+      innerFeStep=A.innerFeStep;
+      innerCut=A.innerCut;
+      b4cMat=A.b4cMat;
+      feMat=A.feMat;
+      concMat=A.concMat;
+    }
+  return *this;
+}
 
 RentrantBS::~RentrantBS() 
   /*!

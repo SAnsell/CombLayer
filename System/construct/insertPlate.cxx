@@ -79,13 +79,14 @@
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "SurInter.h"
+#include "AttachSupport.h"
 #include "insertPlate.h"
 
 namespace constructSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1),populated(0),frontActive(0),backActive(0),
@@ -156,12 +157,7 @@ insertPlate::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      zStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-      yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-      zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-      xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",0.0);
-      zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
-      
+      FixedOffset::populate(Control);      
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       depth=Control.EvalVar<double>(keyName+"Depth");
@@ -194,19 +190,19 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param LC :: LinearComponent to attach to
+    \param FC :: LinearComponent to attach to
   */
 {
   ELog::RegMethod RegA("insertPlate","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  createUnitVector(OG,X,Y,Z);
+  Origin=OG;
+  applyOffset();
   return;
 }
 
 void
 insertPlate::createUnitVector(const Geometry::Vec3D& OG,
-			      const Geometry::Vec3D& XUnit,
 			      const Geometry::Vec3D& YUnit,
 			      const Geometry::Vec3D& ZUnit)
   /*!
@@ -219,10 +215,13 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
 {
   ELog::RegMethod RegA("insertPlate","createUnitVector<Vec>");
 
-  X=XUnit.unit();
-  Y=YUnit.unit();
-  Z=ZUnit.unit();
 
+  Geometry::Vec3D xTest(YUnit.unit()*ZUnit.unit());
+  Geometry::Vec3D yTest(YUnit.unit());
+  Geometry::Vec3D zTest(ZUnit.unit());
+  FixedComp::computeZOffPlane(xTest,yTest,zTest);
+
+  FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
   Origin=OG;
   applyOffset();
 
@@ -310,6 +309,22 @@ insertPlate::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
 
+  // corners 
+  FixedComp::setConnect(6,Origin-X*(width/2.0)-Z*(height/2.0),-X-Z);
+  FixedComp::setConnect(7,Origin+X*(width/2.0)-Z*(height/2.0),X-Z);
+  FixedComp::setConnect(8,Origin-X*(width/2.0)+Z*(height/2.0),-X+Z);
+  FixedComp::setConnect(9,Origin+X*(width/2.0)+Z*(height/2.0),X+Z);
+
+  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+4));
+
+  FixedComp::addLinkSurf(6,-SMap.realSurf(ptIndex+5));
+  FixedComp::addLinkSurf(7,-SMap.realSurf(ptIndex+5));
+  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+6));
+  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+6));
+
   return;
 }
 
@@ -338,7 +353,7 @@ insertPlate::setFrontSurf(const attachSystem::FixedComp& FC,
   /*!
     Add a front surface 
     \param FC :: Front cut
-    \param sideIndex :: side intec
+    \param sideIndex :: side intection
   */
 {
   ELog::RegMethod RegA("insertPlate","setFrontSurf");
@@ -357,7 +372,7 @@ insertPlate::setBackSurf(const attachSystem::FixedComp& FC,
   /*!
     Add a front surface 
     \param FC :: Front cut
-    \param sideIndex :: side intec
+    \param sideIndex :: side intection
   */
 {
   ELog::RegMethod RegA("insertPlate","setFrontSurf");
@@ -381,40 +396,19 @@ insertPlate::findObjects(Simulation& System)
 {
   ELog::RegMethod RegA("insertPlate","findObjects");
 
-
+  typedef std::map<int,MonteCarlo::Object*> MTYPE;
+  
   System.populateCells();
   System.validateObjSurfMap();
-  
-  if (getInsertCells().empty())
-    {
-      std::set<int> ICells;
-      // Process all the corners:
-      // care not to include self
-      MonteCarlo::Object* OPtr(System.findCell(Origin,0));
-      if (OPtr)
-	ICells.insert(OPtr->getName());
-      
-      for(int i=0;i<8;i++)
-        {
-          const double mX((i%2) ? -1.0 : 1.0);
-          const double mY(((i>>1)%2) ? -1.0 : 1.0);
-          const double mZ(((i>>2)%2) ? -1.0 : 1.0);
-          
-          Geometry::Vec3D TP(Origin);
-          TP+=X*(mX*width/2.0);
-          TP+=Y*(mY*depth/2.0);
-          TP+=Z*(mZ*height/2.0);
-          OPtr=System.findCell(TP,OPtr);
-	  if (OPtr)
-	    ICells.insert(OPtr->getName());
-	  else
-	    ELog::EM<<"Object not present "<<ELog::endErr;
 
-        }
-      
-      for(const int IC : ICells)
-	attachSystem::ContainedComp::addInsertCell(IC);
-    }
+  MTYPE OMap;
+  attachSystem::lineIntersect(System,*this,OMap);
+
+  // Add exclude string
+  MTYPE::const_iterator ac;
+  for(ac=OMap.begin();ac!=OMap.end();ac++)
+    attachSystem::ContainedComp::addInsertCell(ac->first);
+  
   
   return;
 }
@@ -424,14 +418,27 @@ insertPlate::setStep(const double XS,const double YS,
 		       const double ZS)
   /*!
     Set the values but NOT the populate flag
-    \param XS :: X-size [width]
-    \param YS :: Y-size [depth] 
-    \param ZS :: Z-size [height]
+    \param XS :: X-step [width]
+    \param YS :: Y-step [depth] 
+    \param ZS :: Z-step [height]
    */
 {
   xStep=XS;
   yStep=YS;
   zStep=ZS;
+  return;
+}
+
+void
+insertPlate::setStep(const Geometry::Vec3D& XYZ)
+  /*!
+    Set the values but NOT the populate flag
+    \param XYZ :: X/Y/Z
+   */
+{
+  xStep=XYZ[0];
+  yStep=XYZ[1];
+  zStep=XYZ[2];
   return;
 }
 
@@ -522,7 +529,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
     \param FC :: Linear component to set axis etc
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll");
+  ELog::RegMethod RegA("insertPlate","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(OG,FC);
@@ -541,10 +548,33 @@ insertPlate::createAll(Simulation& System,
     \param lIndex :: link Index
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll");
+  ELog::RegMethod RegA("insertPlate","createAll(FC,index)");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
+  mainAll(System);
+  
+  return;
+}
+
+void
+insertPlate::createAll(Simulation& System,
+		       const Geometry::Vec3D& Orig,
+                       const Geometry::Vec3D& YA,
+                       const Geometry::Vec3D& ZA)
+                       
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param Orig :: Origin al point 
+    \param YA :: Origin al point 
+    \param ZA :: ZAxis
+  */
+{
+  ELog::RegMethod RegA("insertPlate","createAll");
+  if (!populated) 
+    populate(System.getDataBase());  
+  createUnitVector(Orig,YA,ZA);
   mainAll(System);
   
   return;

@@ -3,7 +3,7 @@
  
  * File:   photonInc/TubeMod.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,18 +53,12 @@ struct TUnit
 */
 
 class TubeMod : public attachSystem::ContainedComp,
-   public attachSystem::FixedComp
+   public attachSystem::FixedOffset
 {
  private:
 
   const int modIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle rotation [deg]
-  double zAngle;                ///< horizontal rotation [deg]
 
   double outerRadius;           ///< Outer volume
   double outerHeight;           ///< Outer height [from origin]

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/ProtonVoid.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,14 +126,13 @@ ProtonVoid::~ProtonVoid()
 {}
 
 void
-ProtonVoid::populate(const Simulation& System)
+ProtonVoid::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("ProtonVoid","populate");  
-  const FuncDataBase& Control=System.getDataBase();
 
   // Master values
   viewRadius=Control.EvalVar<double>(keyName+"ViewRadius");
@@ -152,6 +151,7 @@ ProtonVoid::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("ProtonVoid","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC);
+  ELog::EM<<"Centre == "<<Origin<<ELog::endDiag;
   return;
 }
 
@@ -219,22 +219,17 @@ ProtonVoid::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ProtonVoid","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(TargetFC);
   createSurfaces();
-  const std::string TSurf=(tIndex<0) ? 
-    TargetFC.getLinkComplement(static_cast<size_t>(-(tIndex+1))) : 
-    TargetFC.getLinkString(static_cast<size_t>(tIndex));
-
-  const std::string RSurf=(rIndex<0) ?
-    RefFC.getLinkComplement(static_cast<size_t>(-(rIndex+1))) :
-    RefFC.getLinkString(static_cast<size_t>(rIndex));
+  const std::string TSurf=TargetFC.getSignedLinkString(tIndex);
+  const std::string RSurf=RefFC.getSignedLinkString(rIndex);
   createObjects(System,TSurf,RSurf);
   createLinks();
   insertObjects(System);       
   //  buildChannels(System);
-//  insertObjects(System);       
+  //  insertObjects(System);       
 
   return;
 }

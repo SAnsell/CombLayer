@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   muonInc/profileMon.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,18 +35,13 @@ namespace muSystem
   \brief profile monitor
 */
 
-class profileMon : public attachSystem::FixedComp,
+class profileMon : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
   
   const int profMonIndex;            ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xyAngle;               ///< Angle (rotation)
 
   double height;                ///< Height
   double depth;                 ///< Depth
@@ -55,7 +50,8 @@ class profileMon : public attachSystem::FixedComp,
   int steelMat;                   ///Material: Steel
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -68,7 +64,8 @@ class profileMon : public attachSystem::FixedComp,
   profileMon& operator=(const profileMon&);
   virtual ~profileMon();
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);  
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);  
 };
 
 }

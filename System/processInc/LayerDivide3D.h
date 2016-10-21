@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/LayerDivide3D.h
+ * File:   processInc/LayerDivide3D.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,12 +54,13 @@ class LayerDivide3D  : public attachSystem::FixedComp,
   size_t ALen;                   ///< Number of A Segments
   size_t BLen;                   ///< Number of B Segments
   size_t CLen;                   ///< Number of C segments
-  
+
+  std::vector<std::string> WallID;  ///< ID names for each wall
   std::pair<int,int> AWall;      ///< A wall surf numbers
   std::pair<int,int> BWall;      ///< B wall surf numbers
   std::pair<int,int> CWall;      ///< C wall surf numbers
-
   std::string divider;           ///< divider string [if any]
+
   DivideGrid* DGPtr;             ///< Main divider materials
 
   std::string objName;           ///< XML component name
@@ -90,8 +91,15 @@ class LayerDivide3D  : public attachSystem::FixedComp,
 
   void setSurfPair(const size_t,const int,const int);
   void setFractions(const size_t,const std::vector<double>&);
-  void setXMLdata(const std::string&,const std::string&,
+
+  void setIndexNames(const std::string&,const std::string&,
 		  const std::string&);
+  void setDivider(const std::string&);
+
+  void setMaterials(const std::string&);
+  void setMaterials(const size_t,const std::vector<std::string>&);
+  void setMaterialXML(const std::string&,const std::string&,
+		      const std::string&,const std::string&);
   
   void divideCell(Simulation&,const int);
     

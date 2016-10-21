@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/BulletPlates.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,21 +33,18 @@ namespace ts1System
   \author S. Ansell
   \date February 2015
   \brief W/Ta plates 
+  
+  Plates for inclusion with the bullet target but can be
+  used for any inner contained component.
 */
 
 class BulletPlates : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int ptIndex;            ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< X position
-  double yStep;                 ///< Y position
-  double zStep;
-  double xyAngle;
-  double zAngle;
   
   size_t nBlock;                ///< nBlock
   std::vector<double> tBlock;   ///< Vector of block thickness
@@ -61,7 +58,7 @@ class BulletPlates : public attachSystem::ContainedComp,
   int waterMat;                 ///< Water material
 
   void populate(const FuncDataBase&);  
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -75,7 +72,8 @@ class BulletPlates : public attachSystem::ContainedComp,
 
   /// acessor to main radius
   double getMainRadius() const { return radius+taThick; }
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

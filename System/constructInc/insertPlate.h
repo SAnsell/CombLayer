@@ -50,6 +50,7 @@ class insertPlate : public attachSystem::ContainedComp,
   bool frontActive;              ///< Front rule set
   HeadRule frontSurf;            ///< Front rule
   HeadRule frontBridge;          ///< Front Bridge/divider rule
+
   bool backActive;               ///< back Active
   HeadRule backSurf;             ///< Back Rule
   HeadRule backBridge;           ///< Back Bridge/divider Rule
@@ -68,7 +69,6 @@ class insertPlate : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createUnitVector(const Geometry::Vec3D&,
-			const Geometry::Vec3D&,
 			const Geometry::Vec3D&,
 			const Geometry::Vec3D&);
 
@@ -92,14 +92,19 @@ class insertPlate : public attachSystem::ContainedComp,
   void setFrontSurf(const attachSystem::FixedComp&,const long int);
   void setBackSurf(const attachSystem::FixedComp&,const long int);
   void findObjects(Simulation&);
-    
+
+  void setMat(const int M) { defMat=M; } 
   void setStep(const double,const double,const double);
+  void setStep(const Geometry::Vec3D&);
   void setAngles(const double,const double);
 
   void setValues(const double,const double,const double,
 		 const int);
   void setValues(const double,const double,const double,
 		 const std::string&);
+  void createAll(Simulation&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&);
+
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 

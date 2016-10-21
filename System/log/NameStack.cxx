@@ -30,7 +30,7 @@ namespace ELog
 {
 
 NameStack::NameStack() :
-  indentLevel(0)
+  extraLevel(0),indentLevel(0)
   /*!
     Constructor
   */

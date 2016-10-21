@@ -243,6 +243,13 @@ BaseMap::getItem(const std::string& Key) const
   */
 {
   ELog::RegMethod RegA("BaseMap","getItem");
+
+  size_t index;
+  const std::string::size_type pos=Key.rfind("#");
+  if (pos!=std::string::npos && 
+      StrFunc::convert(Key.substr(pos+1),index))
+    return getItem(Key.substr(0,pos),index);
+    
   return getItem(Key,0);
 }
 
@@ -262,8 +269,9 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
 
   if (Index>=mc->second.size())
-    throw ColErr::IndexError<size_t>(Index,0,
-                                     "Object:"+getFCKeyName()+" Key["+Key+"] index error");
+    throw ColErr::IndexError<size_t>
+      (Index,0,"Object:"+getFCKeyName()+" Key["+Key+"] index error");
+  
   return mc->second[Index];
 }
 
@@ -292,6 +300,7 @@ BaseMap::getItems(const std::string& Key) const
 {
   ELog::RegMethod RegA("BaseMap","getItems(Key)");
 
+  if (Key=="All" || Key=="all") return getItems(); 
   std::vector<int> Out;  
   LCTYPE::const_iterator mc=Items.find(Key);
   return (mc==Items.end()) ? std::vector<int>() : mc->second;
@@ -315,7 +324,9 @@ BaseMap::getItems() const
         if (CN)
           Out.push_back(CN);
     }
-
+  const std::set<int> elmDuplicate(Out.begin(),Out.end());
+  Out.assign(elmDuplicate.begin(),elmDuplicate.end());
+  
   return Out;
 }
 

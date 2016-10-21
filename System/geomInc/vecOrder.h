@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/vecOrder.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,11 +44,11 @@ class vecOrder : public std::binary_function<Vec3D,Vec3D,bool>
   bool operator()(const Vec3D& A,const Vec3D& B)
     {
       const double PTol(1e-8); 
-      if (fabs(A.X()-B.X())>PTol)
+      if (std::abs(A.X()-B.X())>PTol)
 	return (A.X()<B.X());
-      if (fabs(A.Y()-B.Y())>PTol)
+      if (std::abs(A.Y()-B.Y())>PTol)
 	return (A.Y()<B.Y());
-      if (fabs(A.Z()-B.Z())>PTol)
+      if (std::abs(A.Z()-B.Z())>PTol)
 	return (A.Z()<B.Z());
       return 0;
     }

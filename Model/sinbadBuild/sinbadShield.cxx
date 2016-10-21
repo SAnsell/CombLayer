@@ -111,7 +111,7 @@ sinbadShield::populate(const Simulation& System)
       H=Control.EvalDefVar<double>
 	(StrFunc::makeString(keyName+"HeightSlab",i),heightSlab);
       height.push_back(H);
-      if(HM<L) 
+      if(HM<H) 
 	HM=H;
 
       M=ModelSupport::EvalMat<int>

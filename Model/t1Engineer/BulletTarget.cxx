@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   t1Build/BulletTarget.cxx
+ * File:   t1Engineer/BulletTarget.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ProtonVoid.h"
 #include "BeamWindow.h"
@@ -172,9 +173,9 @@ BulletTarget::addProtonLine(Simulation& ,
 			     const long int )
   /*!
     Add a proton void cell
-    \param System :: Simualation
-    \param refFC :: reflector
-    \param index :: Index of line
+    \param  :: Simualation
+    \param  :: reflector
+    \param  :: Index of line
    */
 {
   ELog::RegMethod RegA("BulletTarget","addProtonLine");
@@ -200,7 +201,7 @@ BulletTarget::createAll(Simulation& System,
   PressVObj->createAll(System,FC);
 
   PlateTarObj->setInsertCell(PressVObj->getInnerCells());
-  PlateTarObj->createAll(System,FC);
+  PlateTarObj->createAll(System,FC,0);
 
   for(std::shared_ptr<BulletDivider> DPtr : DObj)
     {

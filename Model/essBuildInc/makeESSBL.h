@@ -55,7 +55,7 @@ class makeESSBL :
   makeESSBL(const makeESSBL&);
   makeESSBL& operator=(const makeESSBL&);
   virtual ~makeESSBL();  
-  
+
   virtual void build(Simulation&,const essSystem::Bunker&);
 
 };

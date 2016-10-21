@@ -60,6 +60,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
@@ -127,7 +128,6 @@ main(int argc,char* argv[])
       bibSystem::makeBib BibObj;
       World::createOuterObjects(*SimPtr);
       BibObj.build(*SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
             
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

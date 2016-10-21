@@ -65,18 +65,21 @@ namespace essSystem
   class TwisterModule;
   class ShutterBay;
   class ProtonTube;
+  class PreModWing;
   class GuideBay;
   class BeamMonitor;
+  class DiskPreMod;
+  class DiskLayerMod;
   class TaperedDiskPreMod;
   class Bunker;
+  class TwisterModule;
   class RoofPillars;
   class Curtain;
   class F5Collimator;
-  class TSMainBuilding;
-  class ODIN;
-  class LOKI;
-  class VOR;
   class BunkerFeed;
+  class WedgeFlightLine;
+  class TSMainBuilding;
+      
   /*!
     \class makeESS
     \version 1.0
@@ -104,26 +107,24 @@ class makeESS
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
   
   // Butterly
-  /// Primary Upper Mod 
-  std::shared_ptr<constructSystem::ModBase> TopMod;
-  std::shared_ptr<TaperedDiskPreMod> TopPreMod;         ///< Top mod 
-  std::shared_ptr<TaperedDiskPreMod> TopCapMod;         ///< Lower mod
+  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod 
+  std::shared_ptr<TaperedDiskPreMod> TopPreMod;            ///< Top mod 
+  std::shared_ptr<TaperedDiskPreMod> TopCapMod;            ///< Lower mod
 
   std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
   std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
   std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
-
-  std::shared_ptr<essSystem::WedgeFlightLine> TopAFL;  ///< Top Mode FL
-  std::shared_ptr<essSystem::WedgeFlightLine> TopBFL;  ///< Top Mode FL
+  std::shared_ptr<essSystem::WedgeFlightLine> TopAFL;  ///< Top Mod FL
+  std::shared_ptr<essSystem::WedgeFlightLine> TopBFL;  ///< Top Mod FL
 
   std::unique_ptr<ESSPipes> ModPipes;       ///< Moderator pipes
 
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
-
+  
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  
   /// Array of Guidies
@@ -143,23 +144,17 @@ class makeESS
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
 
   /// collimators for F5 tallies
-  std::vector<std::shared_ptr<F5Collimator>> F5array;
-
+  std::vector<std::shared_ptr<F5Collimator>> F5array; 
   std::shared_ptr<TSMainBuilding> TSMainBuildingObj;
-
-  void topFlightLines(Simulation&);
-  void lowFlightLines(Simulation&);
   void createGuides(Simulation&);
 
   void buildLowButterfly(Simulation&);
-  void buildLowPreMod(Simulation&);
+  void buildLowerPipe(Simulation&,const std::string&);
+
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
 
   void buildTopButterfly(Simulation&);
-  void buildLowerPipe(Simulation&,const std::string&);
-
-  void buildTopPreMod(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
@@ -171,13 +166,13 @@ class makeESS
   void buildPillars(Simulation&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
-
+  void buildBunkerQuake(Simulation&,
+			const mainSystem::inputParam&);
+  void buildPreWings(Simulation&,const std::string&);
+  void buildTwister(Simulation&);
 
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used
   void buildF5Collimator(Simulation&, const mainSystem::inputParam&); // when -f5-collimators is used
-
-  void buildPreWings(Simulation&, const std::string&);
-  void buildTwister(Simulation&);
 
   void optionSummary(Simulation&);
 

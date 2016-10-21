@@ -62,6 +62,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
@@ -119,8 +120,7 @@ main(int argc,char* argv[])
       delftSystem::makeDelft RObj(IParam.getValue<std::string>("modType"));
       World::createOuterObjects(*SimPtr);
       RObj.build(SimPtr,IParam);
-      ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-	  
+
       RObj.setSource(SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);

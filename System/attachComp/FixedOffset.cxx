@@ -128,6 +128,29 @@ FixedOffset::populate(const FuncDataBase& Control)
   return;
   
 }
+
+void
+FixedOffset::populate(const std::string& baseName,
+		      const FuncDataBase& Control)
+  /*!
+    Populate the variables
+    \param baseName :: second default basename 
+    \param Control :: Control data base
+   */
+{
+  ELog::RegMethod RegA("FixedOffset","populate(baseName)");
+
+  // defaults used to fixedoffset can be used in a setting class.
+  preXYAngle=Control.EvalDefPair<double>(keyName,baseName,"PreXYAngle",preXYAngle);
+  preZAngle=Control.EvalDefPair<double>(keyName,baseName,"PreZAngle",preZAngle);
+  xStep=Control.EvalDefPair<double>(keyName,baseName,"XStep",xStep);
+  yStep=Control.EvalDefPair<double>(keyName,baseName,"YStep",yStep);
+  zStep=Control.EvalDefPair<double>(keyName,baseName,"ZStep",zStep);
+  xyAngle=Control.EvalDefPair<double>(keyName,baseName,"XYAngle",xyAngle);
+  zAngle=Control.EvalDefPair<double>(keyName,baseName,"ZAngle",zAngle);
+  return;
+  
+}
   
 void
 FixedOffset::applyOffset()
@@ -140,6 +163,7 @@ FixedOffset::applyOffset()
   FixedComp::applyAngleRotate(preXYAngle,preZAngle);
   FixedComp::applyShift(xStep,yStep,zStep);
   FixedComp::applyAngleRotate(xyAngle,zAngle);
+  FixedComp::reOrientate();      // this might still be active
   return;
 }
 

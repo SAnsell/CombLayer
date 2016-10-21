@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BlockAddition.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,19 +37,13 @@ namespace essSystem
 
 class BlockAddition :  public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int blockIndex;          ///< Index of surface offset
   int cellIndex;                 ///< Cell index
   int active;                    ///< Box active
-
-  double xStep;                  ///< xStep direction
-  double yStep;                  ///< yStep direction
-  double zStep;                  ///< zStep direction
-  double xyAngle;                ///< Rotation angle
-  double zAngle;                 ///< up/down angle
 
   double length;                 ///< Length
   double height;                 ///< height

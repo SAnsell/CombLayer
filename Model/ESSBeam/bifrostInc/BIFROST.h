@@ -36,7 +36,7 @@ namespace instrumentSystem
 
 namespace constructSystem
 {  
-  class Apperature;
+  class Aperture;
   class ChopperUnit;
   class ChopperPit;
   class DiskChopper;
@@ -50,7 +50,8 @@ namespace constructSystem
 }
 
 namespace essSystem
-{  
+{
+  class CompBInsert;
   class GuideItem;
   class DetectorTank;
   class BifrostHut;
@@ -86,7 +87,7 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
   /// Tungsten apperature after gamma focus
-  std::shared_ptr<constructSystem::Apperature> AppA;
+  std::shared_ptr<constructSystem::Aperture> AppA;
 
   /// Vac box for first chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
@@ -124,10 +125,10 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
   /// Tungsten apperature after gamma focus
-  std::shared_ptr<constructSystem::Apperature> AppB;
+  std::shared_ptr<constructSystem::Aperture> AppB;
 
   /// Bunker insert
-  std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  std::shared_ptr<essSystem::CompBInsert> BInsert;
   /// Pipe in bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall

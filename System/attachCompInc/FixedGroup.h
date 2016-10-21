@@ -39,7 +39,7 @@ class FixedGroup : public FixedComp
   /// Fixed Storage
   typedef std::shared_ptr<attachSystem::FixedComp> CompTYPE;
   /// Map storage
-  typedef std::map<std::string,CompTYPE > FTYPE;
+  typedef std::map<std::string,CompTYPE> FTYPE;
   /// Named Container
   FTYPE FMap;
 
@@ -67,7 +67,8 @@ class FixedGroup : public FixedComp
   virtual FixedComp& getKey(const std::string&);
   virtual const FixedComp& getKey(const std::string&) const;
 
-
+  
+  void setAxisControl(const long int,const Geometry::Vec3D&);
 
 };
 

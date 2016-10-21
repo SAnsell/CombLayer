@@ -72,16 +72,18 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
-#include "Apperature.h"
+#include "Aperture.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "CompBInsert.h"
 #include "ChopperUnit.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
@@ -103,7 +105,7 @@ BIFROST::BIFROST(const std::string& keyName) :
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
-  AppA(new constructSystem::Apperature(newName+"AppA")),
+  AppA(new constructSystem::Aperture(newName+"AppA")),
 
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
@@ -126,9 +128,10 @@ BIFROST::BIFROST(const std::string& keyName) :
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
   
-  AppB(new constructSystem::Apperature(newName+"AppB")),
+  AppB(new constructSystem::Aperture(newName+"AppB")),
 
-  BInsert(new BunkerInsert(newName+"BInsert")),
+  //  BInsert(new BunkerInsert(newName+"BInsert")),
+  BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
@@ -303,7 +306,7 @@ BIFROST::build(Simulation& System,
     Carry out the full build
     \param System :: Simulation system
     \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
+    \param bunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
    */
 {
@@ -394,16 +397,18 @@ BIFROST::build(Simulation& System,
   if (stopPoint==2) return;                      // STOP At bunker edge
   // IN WALL
   // Make bunker insert
+  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BInsert->addInsertCell(74123);
   BInsert->createAll(System,*AppB,2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
+  
+  //  VPipeWall->addInsertCell(BInsert->getCell("Void"));
+  //  VPipeWall->createAll(System,*BInsert,-1);
 
-  VPipeWall->addInsertCell(BInsert->getCell("Void"));
-  VPipeWall->createAll(System,*BInsert,-1);
-
-    // using 7 : mid point
-  FocusWall->addInsertCell(VPipeWall->getCells("Void"));
-  FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+  // using 7 : mid point
+  FocusWall->addInsertCell(BInsert->getCells("Item"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
   if (stopPoint==3) return;                      // STOP Out of bunker
   
@@ -411,7 +416,6 @@ BIFROST::build(Simulation& System,
   // First put pit into the main void
   OutPitA->addInsertCell(voidCell);
   OutPitA->createAll(System,FocusWall->getKey("Shield"),2);
-  
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(*BInsert,2);

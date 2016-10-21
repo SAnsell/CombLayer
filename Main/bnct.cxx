@@ -75,6 +75,7 @@
 #include "PhysicsCards.h"
 #include "BasicWWE.h"
 #include "MainProcess.h"
+#include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
 #include "SurInter.h"
@@ -135,7 +136,6 @@ main(int argc,char* argv[])
       bnctSystem::makeBNCT BNCTObj;
       World::createOuterObjects(*SimPtr);
       BNCTObj.build(SimPtr,IParam);
-      SDef::sourceSelection(*SimPtr,IParam);
           
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

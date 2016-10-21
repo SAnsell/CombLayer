@@ -131,11 +131,10 @@ void
 BoxLine::clearPUnits()
   /*!
     Tidy up the PUnit vector
-   */
+  */
 {
-  std::vector<boxUnit*>::iterator vc;
-  for(vc=PUnits.begin();vc!=PUnits.end();vc++)
-    delete *vc;
+  for(boxUnit* BPtr : PUnits)
+    delete BPtr;
   PUnits.clear();
   return;
 }
@@ -237,11 +236,13 @@ BoxLine::addSurfPoint(const Geometry::Vec3D& Pt,
   if (LSurf.procString(surfStr)!=1)
     throw ColErr::InvalidLine("surfStr",surfStr,0);
 
+  LSurf.populateSurf();
   layerSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),LSurf));
   if (!commonStr.empty())
     {
       if (CSurf.procString(commonStr)!=1)
 	throw ColErr::InvalidLine("commonStr",commonStr,0);
+      CSurf.populateSurf();
     }
   // insert empty rule if needed
   commonSurf.insert(std::map<size_t,HeadRule>::value_type(Pts.size(),CSurf));
@@ -363,6 +364,7 @@ BoxLine::createUnits(Simulation& System)
     {
       boxUnit* PU=new boxUnit(keyName,i);
       PU->setPoints(Pts[i-1],Pts[i]);
+      PU->setZUnit(ZAxis);
       if (layerSurf.find(i-1)!=layerSurf.end())
 	{
 	  PtRule=layerSurf[i-1];

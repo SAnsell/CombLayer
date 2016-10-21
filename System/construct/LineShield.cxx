@@ -339,7 +339,7 @@ LineShield::createObjects(Simulation& System)
   // Loop over all segments:
   std::string FBStr;
   int SI(shieldIndex);
-  int WI,RI,FI;    
+  int WI(shieldIndex),RI(shieldIndex),FI(shieldIndex);    
   for(size_t index=0;index<nSeg;index++)
     {
       FBStr=((index) ?
@@ -364,7 +364,7 @@ LineShield::createObjects(Simulation& System)
 			 (cellIndex++,wallMat[i],0.0,Out+FBStr));
 	  WI+=10;
 	}
-      
+
       // Roof on top of walls are contained:
       RI=shieldIndex;
       for(size_t i=1;i<nRoofLayers;i++)
@@ -374,7 +374,7 @@ LineShield::createObjects(Simulation& System)
 			 (cellIndex++,roofMat[i],0.0,Out+FBStr));
 	  RI+=10;
 	}
-      
+    
       // Floor complete:
       FI=shieldIndex;
       for(size_t i=1;i<nFloorLayers;i++)
@@ -438,7 +438,7 @@ LineShield::createLinks()
     {
       FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);      
       FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),Y);
+        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),-Y);
     }
   
   if (!activeBack)
@@ -456,7 +456,9 @@ LineShield::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(RI+6));
-  
+
+
+
   return;
 }
   
@@ -506,13 +508,27 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
   return;
 }
 
+HeadRule
+LineShield::getXSectionIn() const
+  /*!
+    Get the line shield inner void section
+    \return HeadRule of cross-section
+   */
+{
+  ELog::RegMethod RegA("LineShield","getXSectionIn");
+  const std::string Out=
+    ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
+  HeadRule HR(Out);
+  HR.populateSurf();
+  return HR;
+}
   
     
 void
 LineShield::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
-/*!
+  /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

@@ -337,7 +337,7 @@ tubeUnit::getCell(const ModelSupport::surfRegister& SMap,
     Create the surface cell for a particular index, counting
     from the centre out
     \param SMap :: surface register for the build region
-    \param cylIindex :: index of cylindrical layer 
+    \param cylIndex :: index of cylindrical layer 
     \return cell string [object unit]
   */
 {

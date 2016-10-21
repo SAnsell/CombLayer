@@ -235,6 +235,7 @@ HeadRule::partMatched(const HeadRule& A) const
 {
   ELog::RegMethod RegA("HeadRule","partMatched");
 
+  if (!A.HeadNode && !HeadNode) return 1;
   if (!A.HeadNode || !HeadNode) return 0;
   std::vector<const Rule*> AVec=
     findTopNodes();
@@ -432,6 +433,89 @@ HeadRule::subMatched(const HeadRule& A,
   // EVERYTHING FAILED !!!
   return 0;
 }  
+
+HeadRule
+HeadRule::getLevel(const size_t levelNumber) const
+  /*!
+    Disect the rule to just the required level
+    \param levelNumber :: Level required
+    \return HeadRule of level only
+   */
+{
+  ELog::RegMethod RegA("HeadRule","getLevel");
+
+  HeadRule Out;
+  if (!HeadNode) return Out;
+
+  
+  std::stack<Rule*> TreeLine;
+  std::stack<size_t> TreeLevel;
+  TreeLine.push(HeadNode);
+  TreeLevel.push(0);
+
+  size_t activeLevel(0);
+  //  int statePoint(HeadNode->type());
+  
+  while(!TreeLine.empty())
+    {
+      Rule* tmpA=TreeLine.top();
+      activeLevel=TreeLevel.top();
+      TreeLine.pop();
+      TreeLevel.pop(); 
+
+      // Process level:
+      if (tmpA->getParent() &&
+          tmpA->getParent()->type()!=tmpA->type())
+	activeLevel++;
+      // Process level:
+
+
+      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
+      if (SurX)
+	{
+          // SPECIAL CASE FOR flat top level
+          if (!tmpA->getParent())
+              activeLevel++;
+      // Process level:
+          
+          if (activeLevel==levelNumber+1)
+            {
+
+              const Rule* RParent=tmpA->getParent();
+              if (!RParent || RParent->type()==1)
+                Out.addIntersection(tmpA);
+              else if (RParent && RParent->type()== -1)
+                Out.addUnion(tmpA);
+              else 
+                ELog::EM<<"Unable to deal with type:"
+                        <<RParent->type()<<ELog::endErr;
+            }
+        }
+      else                           // PROCESS LEAF NODE:
+        {
+          if (activeLevel<=levelNumber)
+            {
+              Rule* tmpB=tmpA->leaf(0);
+              Rule* tmpC=tmpA->leaf(1);
+              if (tmpB || tmpC)
+                {
+                  if (tmpB)
+                    {
+                      TreeLevel.push(activeLevel);
+                      TreeLine.push(tmpB);
+                    }
+                  if (tmpC)
+                    {
+                      TreeLevel.push(activeLevel);
+                      TreeLine.push(tmpC);
+                    }
+                }
+            }
+        }
+    }
+  return Out;
+}
+
 
 void
 HeadRule::reset() 
@@ -1607,6 +1691,72 @@ HeadRule::createAddition(const int InterFlag,const Rule* NRptr)
 
 
 int
+HeadRule::procSurface(const Geometry::Surface* SPtr) 
+  /*!
+    Process a rule as a HeadRule
+    \param SPTr :: Surface rule
+    \returns 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","procSurface");
+
+
+  delete HeadNode;
+  HeadNode=0;
+  if (SPtr)
+    {
+      HeadNode=new SurfPoint(SPtr,SPtr->getName());
+      return 1;
+    }
+
+  return 0; 
+}
+
+int
+HeadRule::procRule(const Rule* RPtr) 
+  /*!
+    Process a rule as a HeadRule
+    \para RPTr :: Rule to add
+    \returns 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","procRule");
+
+
+  delete HeadNode;
+  HeadNode=0;
+  if (RPtr)
+    {
+      HeadNode=RPtr->clone();
+      return 1;
+    }
+
+  return 0; 
+}
+
+int
+HeadRule::procSurfNum(const int SN)
+  /*!
+    Processes a surface number
+    \param SN :: Signed surface number
+    \returns 1 on success
+  */
+{
+  ELog::RegMethod RegA("HeadRule","procSurfNum");
+
+  if (!SN) return 0;
+
+  delete HeadNode;
+
+  // Now replace all free planes/Surfaces with appropiate Rxxx
+  SurfPoint* SurX=new SurfPoint();
+  SurX->setKeyN(SN);
+  HeadNode=SurX;
+
+  return 1; 
+}
+
+int
 HeadRule::procString(const std::string& Line) 
   /*!
     Processes the cell string. This is an internal function
@@ -1818,7 +1968,7 @@ HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
 
 size_t
 HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
-			       const Geometry::Vec3D& Unit,
+			       const Geometry::Vec3D& VUnit,
 			       std::vector<Geometry::Vec3D>& Pts,
 			       std::vector<int>& SNum) const
   /*!
@@ -1834,7 +1984,8 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");
 
 
-  MonteCarlo::LineIntersectVisit LI(Org,Unit);
+  MonteCarlo::LineIntersectVisit LI(Org,VUnit);
+  const Geometry::Vec3D Unit=VUnit.unit();
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();

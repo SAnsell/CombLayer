@@ -225,6 +225,7 @@ ChopperPit::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   
   setDefault("Inner");
+
   return;
 }
 
@@ -278,7 +279,6 @@ ChopperPit::createSurfaces()
 
   if (colletMat>=0)
     {
-      //      ELog::EM<<ELog::endErr;
       // Collet on iron exit wall:
       ModelSupport::buildPlane(SMap,pitIndex+102,
 			       Origin+Y*(colletDepth+voidLength/2.0),Y);  

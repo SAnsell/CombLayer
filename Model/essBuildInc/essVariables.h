@@ -38,6 +38,7 @@ namespace setVariable
   void EssProtonBeam(FuncDataBase&);
   void EssIradVariables(FuncDataBase&);
   void EssFlightLineVariables(FuncDataBase&);
+  void F5Variables(FuncDataBase&);
 
   // ESS Beamlines
   void BEERvariables(FuncDataBase&);
@@ -47,6 +48,8 @@ namespace setVariable
   void ESTIAvariables(FuncDataBase&);
   void FREIAvariables(FuncDataBase&);
   void LOKIvariables(FuncDataBase&);
+  void MAGICvariables(FuncDataBase&);
+  void MIRACLESvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void ODINvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);

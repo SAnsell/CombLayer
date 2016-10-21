@@ -52,6 +52,9 @@
 #include "Surface.h"
 #include "generateSurf.h"
 #include "ModelSupport.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "ShapeUnit.h"
 #include "PlateUnit.h"
 
@@ -312,7 +315,7 @@ PlateUnit::addPairPoint(const Geometry::Vec3D& PA,
 Geometry::Vec3D
 PlateUnit::frontPt(const size_t Index,const double T) const
   /*!
-    Calculate the real point based on the offest
+    Calculate the real point based on the offset
     \param Index :: Index point
     \param T :: Offset distance (T)
     \return real point 
@@ -426,6 +429,39 @@ PlateUnit::getString(const ModelSupport::surfRegister& SMap,
   return ModelSupport::getComposite(SMap,shapeIndex,cx.str());
 }
 
+
+void
+PlateUnit::addSideLinks(const ModelSupport::surfRegister& SMap,
+                        attachSystem::FixedComp& FC) const
+  /*!
+    Add link points to the guide unit
+    \param SMap :: Surface Map 
+    \param FC :: FixedComp to use
+   */
+{
+  ELog::RegMethod RegA("PlateUnit","addSideLinks");
+
+  FC.setLinkSurf(2,SMap.realSurf(shapeIndex+1));
+  FC.setLinkSurf(3,SMap.realSurf(shapeIndex+2));
+  FC.setLinkSurf(4,SMap.realSurf(shapeIndex+3));
+  FC.setLinkSurf(5,SMap.realSurf(shapeIndex+4));
+
+
+  for(size_t i=0;i<4;i++)
+    {
+      const Geometry::Vec3D PA=frontPt(i,0.0);
+      const Geometry::Vec3D PB=frontPt(i+1,0.0);
+      const Geometry::Vec3D BA=backPt(i,0.0);
+      const Geometry::Vec3D BB=backPt(i+1,0.0);
+      Geometry::Vec3D Norm=(BA-PA)*(PB-PA);
+      Norm.makeUnit();
+      if (!rotateFlag) Norm*=-1;
+      FC.setConnect(i+2,(PA+PB+BA+BA)/4.0,Norm);
+    } 
+  return;
+}
+
+  
 std::string
 PlateUnit::getExclude(const ModelSupport::surfRegister& SMap,
 		      const size_t layerN) const

@@ -97,8 +97,8 @@ EdgeWater::EdgeWater(const std::string& key) :
   cellIndex(edgeIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param baseKey :: Base Name for item in search
-    \param extraKey :: extra [specialized] Name for item in search
+    \param key :: Name for item in search
+
   */
 {}
 
@@ -253,7 +253,7 @@ EdgeWater::createObjects(Simulation& System,
   /*!
     Adds the main components
     \param System :: Simulation to create objects in
-    \param divition surface on lobe
+    \param divider :: surface on lobe
     \param container string :: wing surface edge of reflector
   */
 {
@@ -311,8 +311,8 @@ EdgeWater::getLayerSurf(const size_t ,
 			const long int ) const
   /*!
     Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-3]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param  :: layer, 0 is inner moderator [0-3]
+    \param  :: Side [0-3] // mid sides   
     \return Surface point
   */
 {
@@ -325,8 +325,8 @@ EdgeWater::getLayerString(const size_t,
 			  const long int) const
   /*!
     Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param  :: layer, 0 is inner moderator [0-6]
+    \param  :: Side [0-3] // mid sides   
     \return Surface point
   */
 {
@@ -346,7 +346,8 @@ EdgeWater::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed object just for origin/axis
-    \param cutString :: external surface cut
+    \param sideIndex :: link point to create on
+    \param container :: bounding edge -- replace with headrule.
   */
 {
   ELog::RegMethod RegA("EdgeWater","createAll");
