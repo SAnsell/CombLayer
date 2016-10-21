@@ -472,7 +472,7 @@ TubeCollimator::calcGapInside(constructSystem::gridUnit* APtr)
                 {
                   if (voidBoundary.isValid(CP.first))
                     {
-                      APtr->setBoundaryClosed();
+                      APtr->setBoundary(gapA+1,gapB+1);
                       return 1;
                     }
                 }
@@ -499,9 +499,9 @@ TubeCollimator::createCells(Simulation& System)
   const std::string OutBoundary=boundaryString();
   
   int RI(rodIndex);
-  for(const MTYPE::value_type& MU : GGrid)
+  for(MTYPE::value_type& MU : GGrid)
     {
-      const constructSystem::gridUnit* APtr= MU.second;
+      constructSystem::gridUnit* APtr= MU.second;
       // Create Inner plane here just to help order stuff
       ModelSupport::buildCylinder(SMap,RI+7,APtr->getCentre(),Y,radius);
       ModelSupport::buildCylinder(SMap,RI+8,APtr->getCentre(),Y,radius+wallThick);
@@ -527,8 +527,9 @@ TubeCollimator::createCells(Simulation& System)
   return;
 }
 
+  
 std::string
-TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
+TubeCollimator::calcBoundary(constructSystem::gridUnit* APtr) const
  /*!
    Calculate the intersection of the headrule of the gridUnit
    and the various sides of the boundary.
@@ -548,28 +549,39 @@ TubeCollimator::calcBoundary(const constructSystem::gridUnit* APtr) const
       if (APtr->hasSurfLink(i) &&
 	  (!APtr->hasSurfLink(i+1) || !APtr->hasSurfLink(nLinks+i-1)))
 	{
-	  // Calc mid point of plane:
-	  const Geometry::Vec3D& CentPt=APtr->getCentre();
-	  const Geometry::Plane* PlanePtr=
-            SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
-          // could just calc distance and project along normal but
-          // this is easier.
-          const Geometry::Vec3D MidPt=
-            SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
-	  //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
-	  const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
-
-          std::vector<Geometry::Vec3D> Pts;
-          std::vector<int> SNum;
-          HeadRule InnerControl(APtr->getInner());
-          InnerControl.populateSurf();
-            
-          if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
-            {
-	      for(size_t j=0;j<SNum.size();j++)
+	  // maybe overlap with neighbouring cutting surfaces
+	  constructSystem::gridUnit* LPtr=APtr->getLink(i);
+	  int extraSurfN=LPtr->clearBoundary((i+3) % nLinks);
+	  if (extraSurfN)
+	    {
+	      Out+=StrFunc::makeString(extraSurfN)+" ";
+	      extraSurfN=0;
+	    }
+	  if (!extraSurfN)
+	    {
+	      // Calc mid point of plane:
+	      const Geometry::Vec3D& CentPt=APtr->getCentre();
+	      const Geometry::Plane* PlanePtr=
+		SMap.realPtr<Geometry::Plane>(APtr->getSurf(i));
+	      // could just calc distance and project along normal but
+	      // this is easier.
+	      const Geometry::Vec3D MidPt=
+		SurInter::getLinePoint(CentPt,PlanePtr->getNormal(),PlanePtr);
+	      //          Geometry::Vec3D LineNormal=((MidPt-CentPt)*Y).unit();
+	      const Geometry::Vec3D LineNormal=(MidPt-CentPt)*Y;
+	      
+	      std::vector<Geometry::Vec3D> Pts;
+	      std::vector<int> SNum;
+	      HeadRule InnerControl(APtr->getInner());
+	      InnerControl.populateSurf();
+	      
+	      if (voidBoundary.calcSurfIntersection(MidPt,LineNormal,Pts,SNum))
 		{
-		  if (InnerControl.isValid(Pts[j],SNum[j]))
-		    Out+=StrFunc::makeString(-SNum[j])+" ";
+		  for(size_t j=0;j<SNum.size();j++)
+		    {
+		      if (InnerControl.isValid(Pts[j],SNum[j]))
+			Out+=StrFunc::makeString(-SNum[j])+" ";
+		    }
 		}
 	    }
 	}
@@ -610,28 +622,27 @@ TubeCollimator::createTubes(Simulation& System)
       for(long int i=-step;i<=step;i++)
 	for(long int j=-step;j<=step;j++)
 	  {
-	    if (std::abs(i)==step || std::abs(j)==step)
+	    const Geometry::Vec3D CPoint=
+	      AAxis*(centSpc*i)+BAxis*(centSpc*j);
+	    if ((std::abs(i)==step || std::abs(j)==step) &&
+		boundary.isValid(CPoint))
 	      {
-		const Geometry::Vec3D CPoint=AAxis*(centSpc*i)+BAxis*(centSpc*j);
-		if (boundary.isValid(CPoint))
-		  {
-		    acceptFlag=1;
-		    ModelSupport::buildCylinder(SMap,RI+7,CPoint,Y,radius);
-		    ModelSupport::buildCylinder(SMap,RI+8,CPoint,Y,radius+wallThick);
-
-		    Out=ModelSupport::getComposite(SMap,RI," -7 ");
-		    System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
-
-		    Out=ModelSupport::getComposite(SMap,RI," 7 -8 ");
-		    System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr));
-
-		    if (!gridExclude)
-		      Out=ModelSupport::getComposite(SMap,RI," 8 ");
-
-                    GGrid.insert(MTYPE::value_type((i*1000+j),newGridUnit(i,j,CPoint)));
-		    HoleStr+=Out;
-		    RI+=10;
-		  }
+		acceptFlag=1;
+		ModelSupport::buildCylinder(SMap,RI+7,CPoint,Y,radius);
+		ModelSupport::buildCylinder(SMap,RI+8,CPoint,Y,radius+wallThick);
+		
+		Out=ModelSupport::getComposite(SMap,RI," -7 ");
+		System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+FBStr));
+		
+		Out=ModelSupport::getComposite(SMap,RI," 7 -8 ");
+		System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr));
+		
+		if (!gridExclude)
+		  Out=ModelSupport::getComposite(SMap,RI," 8 ");
+		
+		GGrid.insert(MTYPE::value_type((i*1000+j),newGridUnit(i,j,CPoint)));
+		HoleStr+=Out;
+		RI+=10;
 	      }
 	  }
       step++;

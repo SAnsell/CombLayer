@@ -63,7 +63,7 @@ operator<<(std::ostream& OX,const gridUnit& A)
 gridUnit::gridUnit(const size_t nLink,const long int aI,
 		   const long int bI,const Geometry::Vec3D& C) : 
   empty(0),cut(0),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
-  cellNumber(0),boundaryClosed(0)
+  cellNumber(0),boundaryClosed(std::pair<size_t,size_t>(0,0))
   /*!
     Constructor
     \param nLink :: number of links
@@ -79,7 +79,7 @@ gridUnit::gridUnit(const size_t nLink,const long int aI,
 		   const long int bI,const bool cF,
 		   const Geometry::Vec3D& C) : 
   empty(0),cut(cF),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
-  cellNumber(0),boundaryClosed(0)
+  cellNumber(0),boundaryClosed(std::pair<size_t,size_t>(0,0))
   /*!
     Constructor
     \param aI :: Index A
@@ -139,6 +139,55 @@ gridUnit::clearLinks()
   return;
 }
 
+void
+gridUnit::setBoundary(const size_t A,const size_t B)
+  /*!
+    Set the boundary side piont [+1 index / 0 imples none]
+    This is note checked to be within nLink
+    \param A :: First index
+    \param b :: Second index
+   */
+{
+  boundaryClosed.first=A;
+  boundaryClosed.second=B;
+  return;
+}
+  
+void
+gridUnit::clearBoundary() 
+  /*!
+    Clear a surface point
+   */
+{
+  boundaryClosed.first=0;
+  boundaryClosed.second=0;
+  return;
+}
+
+int
+gridUnit::clearBoundary(const size_t side)
+  /*!
+    Test and set a closed boundary
+    \param side :: Side to test
+    \return 1 if boundary valid
+  */
+{
+  // NO Work
+  if (boundaryClosed.first != side+1 &&
+      boundaryClosed.second != side+1) return 0;
+
+  const size_t linkSurf=(boundaryClosed.first == side+1 )
+    ? boundaryClosed.second-1 : boundaryClosed.first-1;
+
+  if (linkSurf>=surfKey.size())
+    throw ColErr::IndexError<size_t>
+      (linkSurf,surfKey.size(),"linkSurf exceeds surfKey");
+    
+  boundaryClosed.first=0;
+  boundaryClosed.second=0;
+  return surfKey[linkSurf];
+}
+  
 void
 gridUnit::setCyl(const int surfN)
   /*!

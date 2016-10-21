@@ -91,7 +91,7 @@ class TubeCollimator : public attachSystem::ContainedComp,
   void createJoinLinks();
   void createJoinSurf();  
   void createCells(Simulation&);
-  std::string calcBoundary(const constructSystem::gridUnit*) const;
+  std::string calcBoundary(constructSystem::gridUnit*) const;
   void createTubes(Simulation&);
 
   std::string boundaryString() const;

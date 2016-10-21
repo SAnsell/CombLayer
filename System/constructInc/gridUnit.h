@@ -51,7 +51,8 @@ class gridUnit
   std::vector<int> surfKey;         ///< Surf keys
   int cellNumber;                   ///< Designated cell number
 
-  bool boundaryClosed;              ///< Closed within boundary
+  /// surfaces that close boundary
+  std::pair<size_t,size_t> boundaryClosed;
   std::string cutStr;               ///< External cutting surf
   
  public:
@@ -82,6 +83,8 @@ class gridUnit
   /// accessor to links
   const gridUnit* getLink(const size_t index) const
   { return gridLink[index % gridLink.size()]; }
+  gridUnit* getLink(const size_t index) 
+  { return gridLink[index % gridLink.size()]; }
   /// accessor to surface numbers
   int getSurf(const size_t index) const
   { return surfKey[index % surfKey.size()]; }
@@ -102,8 +105,17 @@ class gridUnit
 
   void setCyl(const int);
   void addCyl(const int);
-  bool isBoundaryClosed() const { return boundaryClosed; }
-  void setBoundaryClosed() { boundaryClosed=1; }
+  /// access flag  and boundary
+
+  void clearBoundary();
+  void setBoundary(const size_t,const size_t);
+  /// Accessor
+  const std::pair<size_t,size_t>&
+    getBoundary() const { return boundaryClosed; }
+  /// determine if se have work to do
+  bool isBoundary() const
+    { return (boundaryClosed.first && boundaryClosed.second); }
+  int clearBoundary(const size_t);
   
   virtual std::string getShell() const;
   virtual std::string getInner() const;
