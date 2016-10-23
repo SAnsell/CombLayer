@@ -79,6 +79,7 @@
 #include "FlightLine.h"
 #include "FlightCluster.h"
 #include "TallyCreate.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 #include "TallyCreate.h"
 #include "LensTally.h"

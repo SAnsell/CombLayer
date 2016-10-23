@@ -80,17 +80,14 @@
 #include "ContainedComp.h"
 #include "SurInter.h"
 #include "AttachSupport.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 
 namespace constructSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1),populated(0),frontActive(0),backActive(0),
-  defMat(0),delayInsert(0)
+  insertObject(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -98,13 +95,8 @@ insertPlate::insertPlate(const std::string& Key)  :
 {}
 
 insertPlate::insertPlate(const insertPlate& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),
-  populated(A.populated),frontActive(A.frontActive),
-  frontSurf(A.frontSurf),backActive(A.backActive),
-  backSurf(A.backSurf),width(A.width),height(A.height),
-  depth(A.depth),defMat(A.defMat),delayInsert(A.delayInsert)
+  insertObject(A),
+  width(A.width),height(A.height),depth(A.depth)
   /*!
     Copy constructor
     \param A :: insertPlate to copy
@@ -121,21 +113,10 @@ insertPlate::operator=(const insertPlate& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
-      populated=A.populated;
-      frontActive=A.frontActive;
-      frontSurf=A.frontSurf;
-      backActive=A.backActive;
-      backSurf=A.backSurf;
+      insertObject::operator=(A);
       width=A.width;
       height=A.height;
       depth=A.depth;
-      defMat=A.defMat;
-      delayInsert=A.delayInsert;
     }
   return *this;
 }
@@ -157,12 +138,10 @@ insertPlate::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      FixedOffset::populate(Control);      
+      insertObject::populate(Control);
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       depth=Control.EvalVar<double>(keyName+"Depth");
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
-      populated=1;
     }
   return;
 }
@@ -338,7 +317,7 @@ insertPlate::createObjects(Simulation& System)
   ELog::RegMethod RegA("insertPlate","createObjects");
   
   std::string Out=
-    ModelSupport::getSetComposite(SMap,ptIndex,"1 -2 3 -4 5 -6");
+    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 3 -4 5 -6 ");
   if (frontActive) Out+=frontSurf.display()+frontBridge.display();
   if (backActive) Out+=backSurf.display()+backBridge.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
@@ -347,113 +326,6 @@ insertPlate::createObjects(Simulation& System)
   return;
 }
 
-void
-insertPlate::setFrontSurf(const attachSystem::FixedComp& FC,
-                          const long int sideIndex)
-  /*!
-    Add a front surface 
-    \param FC :: Front cut
-    \param sideIndex :: side intection
-  */
-{
-  ELog::RegMethod RegA("insertPlate","setFrontSurf");
-
-  frontActive=1;
-  frontSurf=FC.getSignedMainRule(sideIndex);
-  frontBridge=FC.getSignedCommonRule(sideIndex);
-  frontSurf.populateSurf();
-  frontBridge.populateSurf();
-  return;
-}
-
-void
-insertPlate::setBackSurf(const attachSystem::FixedComp& FC,
-                         const long int sideIndex)
-  /*!
-    Add a front surface 
-    \param FC :: Front cut
-    \param sideIndex :: side intection
-  */
-{
-  ELog::RegMethod RegA("insertPlate","setFrontSurf");
-
-  backActive=1;
-  backSurf=FC.getSignedMainRule(sideIndex);
-  backBridge=FC.getSignedCommonRule(sideIndex);
-  backSurf.populateSurf();
-  backBridge.populateSurf();
-  return;
-}
-  
-void
-insertPlate::findObjects(Simulation& System)
-  /*!
-    Insert the objects into the main simulation. It is separated
-    from creation since we need to determine those object that 
-    need to have an exclude item added to them.
-    \param System :: Simulation to add object to
-  */
-{
-  ELog::RegMethod RegA("insertPlate","findObjects");
-
-  typedef std::map<int,MonteCarlo::Object*> MTYPE;
-  
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  MTYPE OMap;
-  attachSystem::lineIntersect(System,*this,OMap);
-
-  // Add exclude string
-  MTYPE::const_iterator ac;
-  for(ac=OMap.begin();ac!=OMap.end();ac++)
-    attachSystem::ContainedComp::addInsertCell(ac->first);
-  
-  
-  return;
-}
-
-void
-insertPlate::setStep(const double XS,const double YS,
-		       const double ZS)
-  /*!
-    Set the values but NOT the populate flag
-    \param XS :: X-step [width]
-    \param YS :: Y-step [depth] 
-    \param ZS :: Z-step [height]
-   */
-{
-  xStep=XS;
-  yStep=YS;
-  zStep=ZS;
-  return;
-}
-
-void
-insertPlate::setStep(const Geometry::Vec3D& XYZ)
-  /*!
-    Set the values but NOT the populate flag
-    \param XYZ :: X/Y/Z
-   */
-{
-  xStep=XYZ[0];
-  yStep=XYZ[1];
-  zStep=XYZ[2];
-  return;
-}
-
-void
-insertPlate::setAngles(const double XS,const double ZA)
-  /*!
-    Set the values but NOT the populate flag
-    \param XY :: XY angel
-    \param ZA :: Z angle
-   */
-{
-  xyAngle=XS;
-  zAngle=ZA;
-  return;
-}
 
 void
 insertPlate::setValues(const double XS,const double YS,
@@ -504,11 +376,9 @@ insertPlate::mainAll(Simulation& System)
    */
 {
   ELog::RegMethod RegA("insertPlate","mainAll");
-
   
   createSurfaces();
   createLinks();
-
 
   if (!delayInsert)
     findObjects(System);
@@ -549,6 +419,7 @@ insertPlate::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("insertPlate","createAll(FC,index)");
+  
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
@@ -562,7 +433,6 @@ insertPlate::createAll(Simulation& System,
 		       const Geometry::Vec3D& Orig,
                        const Geometry::Vec3D& YA,
                        const Geometry::Vec3D& ZA)
-                       
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -579,6 +449,5 @@ insertPlate::createAll(Simulation& System,
   
   return;
 }
- 
-  
+   
 }  // NAMESPACE constructSystem

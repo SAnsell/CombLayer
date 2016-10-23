@@ -37,34 +37,17 @@ namespace constructSystem
   for fluxes/tallies etc
 */
 
-class insertPlate : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class insertPlate : public constructSystem::insertObject
 {
  private:
-  
-  const int ptIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-  int populated;                 ///< externally set values
-
-  bool frontActive;              ///< Front rule set
-  HeadRule frontSurf;            ///< Front rule
-  HeadRule frontBridge;          ///< Front Bridge/divider rule
-
-  bool backActive;               ///< back Active
-  HeadRule backSurf;             ///< Back Rule
-  HeadRule backBridge;           ///< Back Bridge/divider Rule
-  
+    
   double width;             ///< Full Width
   double height;            ///< Full Height
   double depth;             ///< Full Depth 
-
-  int defMat;               ///< Material
-  bool delayInsert;       ///< Delay insertion         
   
-  void populate(const FuncDataBase&);
+  virtual void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,
-			const attachSystem::FixedComp&);
+				const attachSystem::FixedComp&);
 
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -84,19 +67,7 @@ class insertPlate : public attachSystem::ContainedComp,
   insertPlate(const std::string&);
   insertPlate(const insertPlate&);
   insertPlate& operator=(const insertPlate&);
-  ~insertPlate();
-
-  /// set delay flag
-  void setNoInsert() { delayInsert=1; }
-
-  void setFrontSurf(const attachSystem::FixedComp&,const long int);
-  void setBackSurf(const attachSystem::FixedComp&,const long int);
-  void findObjects(Simulation&);
-
-  void setMat(const int M) { defMat=M; } 
-  void setStep(const double,const double,const double);
-  void setStep(const Geometry::Vec3D&);
-  void setAngles(const double,const double);
+  virtual ~insertPlate();
 
   void setValues(const double,const double,const double,
 		 const int);

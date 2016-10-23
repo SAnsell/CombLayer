@@ -109,11 +109,15 @@ tallyAddition(Simulation& System,
 	{
 	  ELog::EM<<"TAdd Help "<<ELog::endBasic;
 	  ELog::EM<<
-	    " -- plate object fixedComp linkPt Vec3D(x,y,z) "
-	    "xSize zSize \n";
+	    " -- plate object fixedComp linkPt +Vec3D(x,y,z) "
+	    "xSize zSize {ySize=0.1} {mat-Void}\n";
 	  ELog::EM<<
 	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
-	    "xSize zSize \n";
+	    "xSize zSize {ySize=0.1} {mat=Void}\n";
+	  ELog::EM<<
+	    " -- sphere object fixedComp linkPt +Vec3D(x,y,z) radius \n";
+	  ELog::EM<<
+	    " -- sphere free Vec3D(x,y,z) radius \n";
 	  ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;
@@ -121,57 +125,81 @@ tallyAddition(Simulation& System,
       const std::string PType=
 	IParam.getValueError<std::string>("TAdd",index,1,eMess);
 
-      const std::string PName="insertPlate"+StrFunc::makeString(index);
+      size_t ptI;
+      std::string FName,LName;
+      Geometry::Vec3D VPos,YAxis,ZAxis;
       if (key=="Plate" || key=="plate")
 	{
+	  size_t ptI;
+	  const std::string PName="insertPlate"+StrFunc::makeString(index);
+	  if (PType=="object")
+	    {
+	      ptI=4;
+	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
+	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
+	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else if (PType=="free")
+	    {
+	      ptI=2;
+              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              ZAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"plate type");
+	  
+	  const double XW=
+	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
+	  const double ZH=
+	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	  const double YT=
+	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	  const std::string mat=
+		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
+	  
+	  if (PType=="object")
+	    constructSystem::addInsertPlateCell
+	      (System,PName,FName,LName,VPos,XW,YT,ZH,mat);
+	  else
+	    constructSystem::addInsertPlateCell
+	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
+	  
+	    
+	  return;
+	}
+      else if (key=="Sphere" || key=="sphere")
+	{
+	  const std::string PName="insertSphere"+StrFunc::makeString(index);
+	  size_t ptI;
 	  if (PType=="object")
 	    {
 	      const std::string FName=
 		IParam.getValueError<std::string>("TAdd",index,2,eMess);
 	      const std::string LName=
 		IParam.getValueError<std::string>("TAdd",index,3,eMess);
-	      size_t ptI(4);
-	      const Geometry::Vec3D VOffset=IParam.getCntVec3D
-		("TAdd",index,ptI,eMess);
-	      const double XW=
-		IParam.getValueError<double>("TAdd",index,ptI,eMess);
-	      const double ZH=
-		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
-	      const double YT=
-		IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
-	      const std::string mat=
-		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
-
-	      constructSystem::addInsertPlateCell
-		(System,PName,FName,LName,VOffset,XW,YT,ZH,mat);
-              return;
-	    }
-	  else if (PType=="free")
-	    {
-	      size_t ptI(2);
-              const Geometry::Vec3D VPos=IParam.getCntVec3D
-                ("TAdd",index,ptI,eMess);
-              const Geometry::Vec3D YAxis=IParam.getCntVec3D
-                ("TAdd",index,ptI,eMess);
-              const Geometry::Vec3D ZAxis=IParam.getCntVec3D
-                ("TAdd",index,ptI,eMess);
-	      const double XW=
-		IParam.getValueError<double>("TAdd",index,ptI,eMess); 
-	      const double ZH=
-		IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
-	      const double YH=
-		IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
-	      const std::string mat=
-		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
-             constructSystem::addInsertPlateCell
-	       (System,PName,VPos,YAxis,ZAxis,XW,YH,ZH,mat);
+	      ptI=4;
 	    }
 	  else
-	    throw ColErr::InContainerError<std::string>(PType,"plate type");
+	    ptI=2;
+	  
+	  VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	  const double radius=
+	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
+	  const std::string mat=
+	    IParam.getDefValue<std::string>("Void","TAdd",index,ptI+1);
+
+	  if (PType=="object")
+	    constructSystem::addInsertSphereCell
+	      (System,PName,FName,LName,VPos,radius,mat);
+	  else if (PType=="free")
+	    {
+	      constructSystem::addInsertSphereCell
+		(System,PName,VPos,radius,mat);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
 	}
-      else
-	throw ColErr::InContainerError<std::string>
-	  (key,"TAddition key not known");
     }
   return;
 }

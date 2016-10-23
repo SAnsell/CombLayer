@@ -67,6 +67,10 @@
 #include "Simulation.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -75,28 +79,23 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "World.h"
+#include "insertObject.h"
 #include "insertSphere.h"
 
 namespace constructSystem
 {
 
 insertSphere::insertSphere(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1),populated(0),
-  defMat(0)
+  insertObject(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
 
-insertSphere::insertSphere(const insertSphere& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),populated(A.populated),
-  radius(A.radius),defMat(A.defMat)
+insertSphere::insertSphere(const insertSphere& A) :
+  insertObject(A),radius(A.radius)
   /*!
     Copy constructor
     \param A :: insertSphere to copy
@@ -113,14 +112,8 @@ insertSphere::operator=(const insertSphere& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
-      populated=A.populated;
+      insertObject::operator=(A);
       radius=A.radius;
-      defMat=A.defMat;
     }
   return *this;
 }
@@ -143,10 +136,8 @@ insertSphere::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      attachSystem::FixedOffset::populate(Control);
+      insertObject::populate(Control);
       radius=Control.EvalVar<double>(keyName+"Radius");
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
-      populated=1;
     }
   return;
 }
@@ -168,48 +159,6 @@ insertSphere::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
-void
-insertSphere::createUnitVector(const Geometry::Vec3D& OG,
-			      const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param FC :: Fixed component for axis 
-  */
-{
-  ELog::RegMethod RegA("insertSphere","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-
-  Origin=OG;
-  applyOffset();
-  return;
-}
-
-void
-insertSphere::createUnitVector(const Geometry::Vec3D& OG,
-			      const Geometry::Vec3D& XUnit,
-			      const Geometry::Vec3D& YUnit,
-			      const Geometry::Vec3D& ZUnit)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param XUnit :: Xdirection
-    \param YUnit :: Xdirection
-    \param ZUnit :: Xdirection
-  */
-{
-  ELog::RegMethod RegA("insertSphere","createUnitVector<Vec>");
-
-  X=XUnit.unit();
-  Y=YUnit.unit();
-  Z=ZUnit.unit();
-
-  Origin=OG;
-  applyOffset();
-
-  return;
-}
 
 void
 insertSphere::createSurfaces()
@@ -330,6 +279,23 @@ insertSphere::setValues(const double R,const int Mat)
 }
 
 void
+insertSphere::setValues(const double R,const std::string& MatName)
+  /*!
+    Set the values and populate flag
+    \param R :: Radius
+    \param MatName :: Material number
+   */
+{
+  ELog::RegMethod RegA("insertPlate","setValues(string)");
+  
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  radius=R;
+  defMat=DB.processMaterial(MatName);
+  populated=1;
+  return;
+}
+
+void
 insertSphere::mainAll(Simulation& System)
   /*!
     Common part to createAll:
@@ -354,8 +320,9 @@ insertSphere::mainAll(Simulation& System)
 
 
 void
-insertSphere::createAll(Simulation& System,const Geometry::Vec3D& OG,
-		       const attachSystem::FixedComp& FC)
+insertSphere::createAll(Simulation& System,
+			const Geometry::Vec3D& OG,
+			const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -366,7 +333,8 @@ insertSphere::createAll(Simulation& System,const Geometry::Vec3D& OG,
   ELog::RegMethod RegA("insertSphere","createAll");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(OG,FC);
+  createUnitVector(FC,0);
+  Origin=OG;
   mainAll(System);
   return;
 }
@@ -386,6 +354,27 @@ insertSphere::createAll(Simulation& System,
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
+
+  mainAll(System);
+  
+  return;
+}
+
+void
+insertSphere::createAll(Simulation& System,
+			const Geometry::Vec3D& Orig)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param Orig :: Centre
+  */
+{
+  ELog::RegMethod RegA("insertSphere","createAll");
+  if (!populated) 
+    populate(System.getDataBase());  
+  createUnitVector(World::masterOrigin(),0);
+  Origin=Orig;
+
   mainAll(System);
   
   return;

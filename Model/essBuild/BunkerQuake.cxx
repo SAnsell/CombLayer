@@ -82,6 +82,7 @@
 #include "DBMaterial.h"
 #include "surfDIter.h"
 #include "LayerDivide3D.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 #include "addInsertObj.h"
 #include "BunkerQuake.h"

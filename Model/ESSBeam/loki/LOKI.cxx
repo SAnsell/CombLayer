@@ -77,6 +77,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 #include "Jaws.h"
 #include "GuideLine.h"

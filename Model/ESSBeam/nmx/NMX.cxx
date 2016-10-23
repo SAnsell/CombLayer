@@ -87,6 +87,7 @@
 #include "LineShield.h"
 #include "PipeCollimator.h"
 #include "AttachSupport.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 
 #include "NMX.h"
