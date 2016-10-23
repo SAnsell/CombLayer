@@ -76,6 +76,7 @@
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
+#include "FrontBackCut.h"
 #include "FlightLine.h"
 #include "FlightCluster.h"
 #include "TallyCreate.h"

@@ -79,6 +79,7 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "SurInter.h"
 #include "insertObject.h"
 #include "insertPlate.h"

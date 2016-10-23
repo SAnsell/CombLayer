@@ -76,6 +76,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "MXcards.h"
 #include "Zaid.h"
 #include "Material.h"

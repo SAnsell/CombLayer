@@ -49,7 +49,6 @@ class FrontBackCut
   HeadRule backCut;            ///< Back cut
   HeadRule backDivider;        ///< Back divider
 
-
  public:
 
   FrontBackCut();
@@ -72,7 +71,15 @@ class FrontBackCut
   bool backActive() const { return activeBack; }
   std::string frontRule() const;
   std::string backRule() const;
-  
+
+  /// accessor
+  const HeadRule& getFrontRule() const { return frontCut; }
+  /// accessor
+  const HeadRule& getBackRule() const { return backCut; }
+  /// accessor
+  const HeadRule& getFrontBridgeRule() const { return frontDivider; }
+  /// accessor
+  const HeadRule& getBackBridgeRule() const { return backDivider; }
 };
 
 }

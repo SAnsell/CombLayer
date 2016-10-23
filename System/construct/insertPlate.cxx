@@ -78,6 +78,7 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "SurInter.h"
 #include "AttachSupport.h"
 #include "insertObject.h"
@@ -215,9 +216,9 @@ insertPlate::createSurfaces()
 {
   ELog::RegMethod RegA("insertPlate","createSurface");
 
-  if (!frontActive)
+  if (!frontActive())
     ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*depth/2.0,Y);
-  if (!backActive)
+  if (!backActive())
     ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*depth/2.0,Y);
 
 
@@ -227,15 +228,15 @@ insertPlate::createSurfaces()
   ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
 
 
-  if (!frontActive)
+  if (!frontActive())
     setSurf("Front",ptIndex+1);
   else
-    setSurf("Front",frontSurf.getPrimarySurface());
+    setSurf("Front",getFrontRule().getPrimarySurface());
 
-  if (!backActive)
+  if (!backActive())
     setSurf("Back",SMap.realSurf(ptIndex+2));
   else
-    setSurf("Back",frontSurf.getPrimarySurface());
+    setSurf("Back",getBackRule().getPrimarySurface());
 
   setSurf("Left",SMap.realSurf(ptIndex+3));
   setSurf("Right",SMap.realSurf(ptIndex+4));
@@ -252,12 +253,13 @@ insertPlate::createLinks()
 {
   ELog::RegMethod RegA("insertPlate","createLinks");
 
-  if (frontActive)
+  if (frontActive())
     {
-      FixedComp::setLinkSurf(0,frontSurf);
-      FixedComp::setBridgeSurf(0,frontBridge);
+      setLinkSurf(0,getFrontRule());
+      setLinkSurf(0,getFrontBridgeRule());
       FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontBridge),-Y);
+        (0,SurInter::getLinePoint(Origin,Y,getFrontRule(),
+				  getFrontBridgeRule()),-Y);
     }
   else
     {
@@ -265,12 +267,13 @@ insertPlate::createLinks()
       FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
     }
 
-  if (backActive)
+  if (backActive())
     {
-      FixedComp::setLinkSurf(1,backSurf);
-      FixedComp::setBridgeSurf(1,backBridge);
+      FixedComp::setLinkSurf(1,getBackRule());
+      FixedComp::setBridgeSurf(1,getBackBridgeRule());
       FixedComp::setConnect
-        (1,SurInter::getLinePoint(Origin,Y,backSurf,backBridge),Y);
+        (1,SurInter::getLinePoint(Origin,Y,getBackRule(),
+				  getBackBridgeRule()),Y);
     }
   else
     {
@@ -318,8 +321,8 @@ insertPlate::createObjects(Simulation& System)
   
   std::string Out=
     ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 3 -4 5 -6 ");
-  if (frontActive) Out+=frontSurf.display()+frontBridge.display();
-  if (backActive) Out+=backSurf.display()+backBridge.display();
+  Out+=frontRule();
+  Out+=backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   addCell("Main",cellIndex-1);
   addOuterSurf(Out);

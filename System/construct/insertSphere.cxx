@@ -78,6 +78,7 @@
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "CellMap.h"
+#include "FrontBackCut.h"
 #include "ContainedComp.h"
 #include "World.h"
 #include "insertObject.h"
