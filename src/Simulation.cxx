@@ -65,6 +65,7 @@
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
+#include "sswTally.h"
 #include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
@@ -412,6 +413,21 @@ Simulation::getTally(const int Index) const
   vc=TItem.find(Index);
   if (vc!=TItem.end())
     return vc->second;
+  return 0;
+}
+
+tallySystem::sswTally*
+Simulation::getSSWTally() const
+  /*!
+    Gets the sswTally 
+    \return Tally pointer ( or 0 on null)
+   */
+{
+  std::map<int,tallySystem::Tally*>::const_iterator vc; 
+  vc=TItem.find(0);
+  if (vc!=TItem.end())
+    return dynamic_cast<tallySystem::sswTally*>(vc->second);
+
   return 0;
 }
 
@@ -788,9 +804,8 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
 
   TallyTYPE::iterator tc;
   for(tc=TItem.begin();tc!=TItem.end();tc++)
-    {
-      tc->second->renumberSurf(KeyN,NsurfN);
-    }
+    tc->second->renumberSurf(KeyN,NsurfN);
+
   PhysPtr->substituteSurface(KeyN,NsurfN);
   
   return 0;

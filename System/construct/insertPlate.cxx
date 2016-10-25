@@ -188,7 +188,6 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param XUnit :: X-direction
     \param YUnit :: Y-direction
     \param ZUnit :: Z-direction
   */
@@ -200,7 +199,7 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   Geometry::Vec3D yTest(YUnit.unit());
   Geometry::Vec3D zTest(ZUnit.unit());
   FixedComp::computeZOffPlane(xTest,yTest,zTest);
-
+  ELog::EM<<"KLey == "<<xTest<<":"<<yTest<<":"<<zTest<<ELog::endDiag;
   FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
   Origin=OG;
   applyOffset();

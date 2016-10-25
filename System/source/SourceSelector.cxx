@@ -420,7 +420,7 @@ activationSelection(Simulation& System,
   
 void
 activeWeight(Simulation& System,
-		    const mainSystem::inputParam& IParam)
+             const mainSystem::inputParam& IParam)
   /*!
     Select all the info for activation output
     \param System :: Simuation to use
@@ -430,8 +430,8 @@ activeWeight(Simulation& System,
   ELog::RegMethod RegA("SourceSelector","activationSelection");
 
   //File for input/
-  const std::string OName=
-    IParam.getDefValue<std::string>("test.source","actFile",0,1);
+  const std::string OName="test.source";
+  //    IParam.getDefValue<std::string>("test.source","actFile",0,1);
 
   size_t index(0);
   const Geometry::Vec3D APt=

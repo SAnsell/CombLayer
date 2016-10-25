@@ -61,7 +61,8 @@
 #include "heatConstruct.h" 
 #include "itemConstruct.h" 
 #include "surfaceConstruct.h" 
-#include "fissionConstruct.h" 
+#include "fissionConstruct.h"
+#include "sswConstruct.h" 
 #include "tallyConstructFactory.h"
 
 namespace tallySystem
@@ -147,5 +148,14 @@ tallyConstructFactory::makeFission() const
   return new fissionConstruct();
 }
  
+sswConstruct*
+tallyConstructFactory::makeSSW() const
+  /*!
+    Return SSW tally constructor
+    \return sswConstruct
+  */
+{
+  return new sswConstruct();
+}
 
 } // NAMESPACE tallySystem

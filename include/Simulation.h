@@ -30,6 +30,7 @@ namespace Geometry
 namespace tallySystem
 {
   class Tally;
+  class sswTally;
 }
 
 namespace Surface 
@@ -230,6 +231,7 @@ class Simulation
 
   int addTally(const tallySystem::Tally&);
   tallySystem::Tally* getTally(const int) const;
+  tallySystem::sswTally* getSSWTally() const;
   /// Access tally items
   TallyTYPE& getTallyMap() { return TItem; }
   /// Access constant

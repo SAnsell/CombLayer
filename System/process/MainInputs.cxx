@@ -81,14 +81,6 @@ createInputs(inputParam& IParam)
   
   IParam.regMulti("activation","activation",10000,1);
 
-  // DEPRECATED:
-  IParam.regItem("actFile","actFile");
-  IParam.regItem("actOut","actOut");
-  IParam.regItem("actBox","actBox");
-  IParam.regItem("actTimeStep","actTimeStep");
-  IParam.regItem("actWeight","actWeight");
-  // DEPRECATED (END)
-  
   IParam.regFlag("a","axis");
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
@@ -190,14 +182,11 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
-  IParam.regItem("wwgZMesh","wwgZMesh",3,125);
-  
+  IParam.regItem("wwgZMesh","wwgZMesh",3,125);  
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
-  IParam.setDesc("actFile","FluxData for input");
-  IParam.setDesc("actOut","Output source file");
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");

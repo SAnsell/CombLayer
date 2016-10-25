@@ -337,6 +337,7 @@ insertSphere::createAll(Simulation& System,
   createUnitVector(FC,0);
   Origin=OG;
   mainAll(System);
+    
   return;
 }
 
@@ -357,7 +358,7 @@ insertSphere::createAll(Simulation& System,
   createUnitVector(FC,lIndex);
 
   mainAll(System);
-  
+      
   return;
 }
 
@@ -377,7 +378,7 @@ insertSphere::createAll(Simulation& System,
   Origin=Orig;
 
   mainAll(System);
-  
+
   return;
 }
   

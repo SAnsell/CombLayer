@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/fluxConstruct.cxx
+ * File:   tally/sswConstruct.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -56,6 +56,7 @@
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
+#include "surfRegister.h"
 #include "objectRegister.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -66,107 +67,116 @@
 #include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
+#include "LinkSupport.h"
 #include "Simulation.h"
 
 #include "inputParam.h"
 
+#include "sswTally.h" 
 #include "TallySelector.h" 
 #include "basicConstruct.h" 
-#include "fluxConstruct.h" 
+#include "sswConstruct.h" 
 
 namespace tallySystem
 {
 
-fluxConstruct::fluxConstruct() 
+sswConstruct::sswConstruct() :
+  basicConstruct()
   /// Constructor
 {}
 
-fluxConstruct::fluxConstruct(const fluxConstruct&) 
+sswConstruct::sswConstruct(const sswConstruct&) 
   /// Copy Constructor
 {}
 
-fluxConstruct&
-fluxConstruct::operator=(const fluxConstruct&) 
+sswConstruct&
+sswConstruct::operator=(const sswConstruct&) 
   /// Assignment operator
 {
   return *this;
 }
 
 int
-fluxConstruct::processFlux(Simulation& System,
-			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
-  /*!
-    Add flux tally (s) as needed
+sswConstruct::processSSW(Simulation& System,
+			 const mainSystem::inputParam& IParam,
+			 const size_t Index) const
+/*!
+    Add ssw tally as needed
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
 {
-  ELog::RegMethod RegA("fluxConstruct","processFlux");
+  ELog::RegMethod RegA("sswConstruct","processSSW");
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
     throw ColErr::IndexError<size_t>(NItems,4,
 				     "Insufficient items for tally");
-  // PARTICLE TYPE
-  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
-  const std::string MType(IParam.getValue<std::string>("tally",Index,2));
-  const std::string cellKey(IParam.getValue<std::string>("tally",Index,3)); 
 
-  // Get Material number:
-  int matN(0);
-  if (!StrFunc::convert(MType,matN))
+  std::string eMess
+    ("Insufficient item for activation["+StrFunc::makeString(Index)+"]");
+        
+  const std::string PType=
+    IParam.getValueError<std::string>("tally",Index,1,eMess); 
+  eMess+="with key["+PType+"]";
+
+  std::vector<int> SList;
+  if (PType=="object")
     {
-      if (MType=="All" || MType=="all")
-	matN=-2;
-      else if (MType=="AllNonVoid" || MType=="allNonVoid")
-	matN=-1;
-      else
-	{
-	  matN=ModelSupport::DBMaterial::Instance().getIndex(MType);
-	}
+      const std::string FCName=
+        IParam.getValueError<std::string>("tally",Index,2,eMess);
+      const std::string linkPt=
+        IParam.getValueError<std::string>("tally",Index,3,eMess);
+      const attachSystem::FixedComp* FCPtr=
+        OR.getObjectThrow<attachSystem::FixedComp>
+        (FCName,"FixedComp");
+      
+      const long int sideIndex(attachSystem::getLinkIndex(linkPt));
+      const std::set<int> OutSurf=
+        FCPtr->getSignedMainRule(sideIndex).getSurfSet();
+      for(const int CN : OutSurf)
+        SList.push_back(CN);
     }
-  
-  const std::vector<int> cells=
-    getCellSelection(System,matN,cellKey);
+  else if (PType=="surfMap" || PType=="SurfMap")
+    {
+      const std::string SMName=
+        IParam.getValueError<std::string>("tally",Index,2,eMess);
+      const std::string surfObj=
+        IParam.getValueError<std::string>("tally",Index,3,eMess);
+      const attachSystem::SurfMap* SMPtr=
+        OR.getObjectThrow<attachSystem::SurfMap>(SMName,"SurfMap");
+      
+      SList=SMPtr->getSurfs(surfObj);
+    }
+  else
+    throw ColErr::InContainerError<std::string>(PType,"PType not known");
 
-  if (cells.empty())
-    throw ColErr::InContainerError<std::string>
-      (cellKey+"/"+StrFunc::makeString(MType),"cell/mat not present in model");
-  
-
-  const int nTally=System.nextTallyNum(4);
-  tallySystem::addF4Tally(System,nTally,PType,cells);
-  tallySystem::Tally* TX=System.getTally(nTally); 
-  TX->setPrintField("e f");
-  const std::string Comment=
-    "tally: "+StrFunc::makeString(nTally)+
-    " mat : "+StrFunc::makeString(matN)+":"+
-    cellKey;
-  TX->setComment(Comment);
-  return 0;
+  tallySystem::sswTally* SSWX=tallySystem::addSSWTally(System);
+  SSWX->addSurfaces(SList);
+  // additional work needed on renumbering (?)
+  return 1;
 }
 
 
 void
-fluxConstruct::writeHelp(std::ostream& OX) const
+sswConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
     \param OX :: output stream
   */
 {
-  OX<<"Flux tally :\n"
-    "particles material(int) cells \n"
-    " -- material can be: \n"
-    "      zaid number \n"
-    "      material name \n"
-    "      material number \n"
-    "      -1 :: [all] \n"
-    "  -- cells can be \n"
-    "          objectName [cellOffset cellCount]\n"
-    "          objectName \n "
-    "          CellNumber-CellNumber\n";
+  OX<<"SSW tally :\n"
+    "Format :: keyWord components \n"
+    " -- particle [particle string] \n"
+    " -- object FCname linkSurf \n";
+  
   return;
 }
   

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/tallyConstructFactory.h
+ * File:   tallyInc/sswConstruct.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,55 +19,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tallyConstructFactory_h
-#define tallySystem_tallyConstructFactory_h
+#ifndef tallySystem_sswConstruct_h
+#define tallySystem_sswConstruct_h
 
+namespace attachSystem
+{
+  class FixedComp;
+}
+
+
+class Simulation;
 
 namespace tallySystem
 {
 
-  class pointConstruct;
-  class gridConstruct;
-  class meshConstruct;
-  class fluxConstruct;
-  class heatConstruct;
-  class itemConstruct;
-  class surfaceConstruct;
-  class fissionConstruct;
-  class sswConstruct;
 /*!
-  \class tallyConstructFactory
-  \brief Creates a 
+  \class sswConstruct
   \version 1.0
-  \date October 2013
   \author S. Ansell
+  \date October 2016
+  \brief Constructs an SSW 
 
-  Class to determine to what complexity the tally constructors can
-  have.
+  Provides linkage to its outside on FixedComp[0]
 */
 
-class tallyConstructFactory
+class sswConstruct : virtual public basicConstruct
 {
- private:
-
  public:
-
-  tallyConstructFactory() {}       ///<  constructor
-  ~tallyConstructFactory() {}      ///<  destructor
   
-  pointConstruct* makePoint() const;
-  gridConstruct* makeGrid() const;
-  meshConstruct* makeMesh() const;
-  fluxConstruct* makeFlux() const;
-  heatConstruct* makeHeat() const;
-  itemConstruct* makeItem() const;
-  surfaceConstruct* makeSurf() const;
-  fissionConstruct* makeFission() const;
-  sswConstruct* makeSSW() const;
 
+  sswConstruct();
+  sswConstruct(const sswConstruct&);
+  sswConstruct& operator=(const sswConstruct&);
+  virtual ~sswConstruct() {}  ///< Destructor
+
+  int processSSW(Simulation&,const mainSystem::inputParam&,
+		  const size_t) const;
+
+  virtual void writeHelp(std::ostream&) const;
 };
 
 }
 
 #endif
-
+ 

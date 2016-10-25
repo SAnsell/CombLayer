@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/tallyConstructFactory.h
+ * File:   tallyInc/sswTally.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,55 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tallyConstructFactory_h
-#define tallySystem_tallyConstructFactory_h
-
+#ifndef tallySystem_sswTally_h
+#define tallySystem_sswTally_h
 
 namespace tallySystem
 {
-
-  class pointConstruct;
-  class gridConstruct;
-  class meshConstruct;
-  class fluxConstruct;
-  class heatConstruct;
-  class itemConstruct;
-  class surfaceConstruct;
-  class fissionConstruct;
-  class sswConstruct;
 /*!
-  \class tallyConstructFactory
-  \brief Creates a 
+  \class sswTally
   \version 1.0
-  \date October 2013
+  \date October 2016
   \author S. Ansell
-
-  Class to determine to what complexity the tally constructors can
-  have.
+  \brief Hold a ssw tally [single item]
 */
-
-class tallyConstructFactory
+class sswTally : public Tally
 {
  private:
 
- public:
-
-  tallyConstructFactory() {}       ///<  constructor
-  ~tallyConstructFactory() {}      ///<  destructor
+  std::vector<int> surfList;               ///< List of surfaces
   
-  pointConstruct* makePoint() const;
-  gridConstruct* makeGrid() const;
-  meshConstruct* makeMesh() const;
-  fluxConstruct* makeFlux() const;
-  heatConstruct* makeHeat() const;
-  itemConstruct* makeItem() const;
-  surfaceConstruct* makeSurf() const;
-  fissionConstruct* makeFission() const;
-  sswConstruct* makeSSW() const;
+ public:
+  
+  explicit sswTally(const int);
+  sswTally(const sswTally&);
+  sswTally& operator=(const sswTally&);
+  virtual ~sswTally();
+  virtual sswTally* clone() const; 
+    
+  /// ClassName
+  virtual std::string className() const 
+      { return "sswTally"; }
 
+  void addSurfaces(const std::vector<int>&);
+  virtual void renumberSurf(const int,const int);
+
+  virtual void write(std::ostream&) const;
 };
 
-}
+
+}  // NAMESPACE tallySystem
 
 #endif
-

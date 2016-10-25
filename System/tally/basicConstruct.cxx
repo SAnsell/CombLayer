@@ -225,7 +225,6 @@ basicConstruct::convertRange(const std::string& Word,int& RA,int &RB)
   return 1;
 }
 
-
 int
 basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
 			      const std::string& keyName,
@@ -343,11 +342,14 @@ basicConstruct::getCellSelection(const Simulation& System,
   else  
     matCell=System.getCellWithMaterial(matN);
 
+  if (!cells.size())
+    ELog::EM<<ELog::endErr;
   std::set_intersection(cells.begin(),cells.end(),
                         matCell.begin(),matCell.end(),
                         std::back_inserter(Out));
   return Out;
 }
+
 
   // TEMPLATE INSTANCES:
 template int 

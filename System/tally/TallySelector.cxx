@@ -64,6 +64,7 @@
 #include "heatConstruct.h"
 #include "itemConstruct.h"
 #include "surfaceConstruct.h"
+#include "sswConstruct.h"
 #include "tallyConstructFactory.h"
 #include "tallyConstruct.h"
 
@@ -110,12 +111,12 @@ tallyAddition(Simulation& System,
 	  ELog::EM<<"TAdd Help "<<ELog::endBasic;
 	  ELog::EM<<
 	    " -- plate object fixedComp linkPt +Vec3D(x,y,z) "
-	    "xSize zSize {ySize=0.1} {mat-Void}\n";
+	    "xSize zSize {ySize=0.1} {mat=Void}\n";
 	  ELog::EM<<
 	    " -- plate free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis) "
 	    "xSize zSize {ySize=0.1} {mat=Void}\n";
 	  ELog::EM<<
-	    " -- sphere object fixedComp linkPt +Vec3D(x,y,z) radius \n";
+	    " -- sphere object FixedComp linkPt +Vec3D(x,y,z) radius \n";
 	  ELog::EM<<
 	    " -- sphere free Vec3D(x,y,z) radius \n";
 	  ELog::EM<<ELog::endBasic;
@@ -200,7 +201,11 @@ tallyAddition(Simulation& System,
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
 	}
+      else
+        throw ColErr::InContainerError<std::string>
+          (key,"key not known in TAdd");
     }
+  
   return;
 }
 
@@ -255,8 +260,11 @@ tallyModification(Simulation& System,
 	}
 
       int tNumber(0);
-      if (nV<2 || !StrFunc::convert(StrItem[0],tNumber))
-        ELog::EM<<"Failed to convert tally number "<<ELog::endErr;	  
+      if (nV<2 || (!StrFunc::convert(StrItem[0],tNumber) &&
+                   StrItem[0]!="SSW"))
+        ELog::EM<<"Failed to convert tally number "<<ELog::endErr;
+      if (StrItem[0]=="SSW")
+        tNumber=-1000;
       
       if(key=="particle" && nV>=3)
         {

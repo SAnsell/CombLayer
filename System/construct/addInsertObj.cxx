@@ -214,7 +214,6 @@ addInsertSphereCell(Simulation& System,
     TSphere(new constructSystem::insertSphere(objName));
 
   OR.addObject(TSphere);
-  
   TSphere->setValues(radius,mat);
   TSphere->createAll(System,CentPos);
 
