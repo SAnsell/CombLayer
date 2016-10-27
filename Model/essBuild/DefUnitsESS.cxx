@@ -71,9 +71,9 @@ setDefUnits(FuncDataBase& Control,
       
       std::vector<std::string> LItems=
 	IParam.getObjectItems("defaultConfig",0);
-
       const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
       const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
+
 
       if (Key=="Main")
 	setESS(A);
@@ -214,7 +214,6 @@ setESSSingle(defaultConfig& A,
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
-  
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
@@ -257,17 +256,15 @@ setESSSingle(defaultConfig& A,
           const std::string portItem=(LItems.size()>1) ? LItems[1] : "";
       
           std::map<std::string,std::string>::const_iterator mc=
-            beamDef.find(beamItem);
-	
-          portFlag=beamDef.find(portItem)==beamDef.end();
-      
+            beamDef.find(beamItem);	  
+          portFlag=
+	    (portItem.find("BLine")!=std::string::npos);
           const int filled =
             (beamFilled.find(beamItem)==beamFilled.end()) ? 0 : 1;
           
           if (mc!=beamDef.end())
             {
-	      ELog::EM<<"Beam Def  == "<<mc->first<<ELog::endDiag;
-              if (!portFlag || portItem.empty())
+              if (!portFlag)
                 {
                   A.setMultiOption("beamlines",beamLineIndex,
 				   mc->second+" "+beamItem);
@@ -289,9 +286,9 @@ setESSSingle(defaultConfig& A,
             throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
         }
       if (portFlag)
-        LItems.erase(LItems.begin(),LItems.begin()+1);
-      else
         LItems.erase(LItems.begin());
+      
+      LItems.erase(LItems.begin());
     }
   return;
 }
