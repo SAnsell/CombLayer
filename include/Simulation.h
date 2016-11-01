@@ -213,7 +213,7 @@ class Simulation
 
   int removeDeadSurfaces(const int); 
   int removeCells(const int,const int); 
-  int removeCell(const int);
+  void removeCell(const int);
   int removeAllSurface(const int);
   int substituteAllSurface(const int,const int);
   void voidObject(const std::string&);

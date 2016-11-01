@@ -419,11 +419,9 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
                   <<"] == "<<TPoint<<ELog::endDiag;
           sourcePt.push_back(TPoint);
         }
-    }
-  
+    }  
   return;
 }
-
 
 void
 WeightControl::calcPoints(std::vector<Geometry::Vec3D>& Pts,
@@ -633,13 +631,12 @@ WeightControl::calcCellTrack(const Simulation& System,
   /*!
     Calculate a given track for a point
     \param System :: Simulation to use
-    \param Pt :: point for outgoing track
+    \param initPt :: point for outgoing track
     \param cellVec :: Cells to track
     \param CTrack :: Cell Weights for output 
    */
 {
   ELog::RegMethod RegA("WeightControl","calcCellTrack(Vec3D)");
-
   CTrack.clear();
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
@@ -678,7 +675,6 @@ WeightControl::procObject(const Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-
   const size_t nSet=IParam.setCnt("weightObject");
   // default values:
   procParam(IParam,"weightControl",0,0);
@@ -694,9 +690,11 @@ WeightControl::procObject(const Simulation& System,
 	}
       // local values:
       procParam(IParam,"weightObject",iSet,1);
-      
-      objectList.insert(Key);
+
+      ELog::EM<<"ObjCell== "<<Key<<ELog::endDiag;
+      objectList.insert(Key);      
       const std::vector<int> objCells=OR.getObjectRange(Key);
+      
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
 

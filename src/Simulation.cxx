@@ -707,6 +707,8 @@ Simulation::removeCells(const int startN,const int endN)
 {
   ELog::RegMethod RegItem("Simulation","removeCells");
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   // It seems quicker to create a new map and copy
   OTYPE newOList;
@@ -718,44 +720,46 @@ Simulation::removeCells(const int startN,const int endN)
 	  (vc->first>=startN && (endN<0 || vc->first<=endN)))
 	{
 	  ST.checkDelete(this,vc->second);
+          PhysPtr->removeCell(vc->first);
+          OR.removeActiveCell(vc->first);
 	  delete vc->second;
 	}
       else
 	newOList.insert(OTYPE::value_type(vc->first,vc->second));
     }
   OList=newOList;
+
 // Now process Physics so importance/volume cards can be set
 //  processCellsImp();
 //  ELog::CellM.processReport(std::cout);
   return 1;
 }
 
-int
-Simulation::removeCell(const int Index)
+void
+Simulation::removeCell(const int cellNumber)
   /*!
-    Removes the cell
-    \param Index :: cell to remove
-    \return 1 on success  0 on failure
-  */
+    Removes the cell [Must exist]
+    \param cellNumber :: cell to remove
+   */
 {
   ELog::RegMethod RegItem("Simulation","removeCell");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  OTYPE::iterator vc=OList.find(Index);
+  OTYPE::iterator vc=OList.find(cellNumber);
   if (vc==OList.end())
-    {
-      ELog::EM<<"Cell Not found:"<<Index<<ELog::endErr;
-      return 0;
-    }
+    throw ColErr::InContainerError<int>(cellNumber,"cellNumber in OList");
   
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
   ST.checkDelete(this,vc->second);
   delete vc->second;
   OList.erase(vc);
-  
-// Now process Physics so importance/volume cards can be set
-//  processCellsImp();
 
-  return 1;
+  // Add Volume unit [default]:
+  PhysPtr->removeCell(cellNumber);
+  OR.removeActiveCell(cellNumber);
+
+  return;
 }
 
 int 
