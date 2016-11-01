@@ -659,11 +659,7 @@ objectRegister::getObjectRange(const std::string& objName) const
     {
       sc=activeCells.find(i);
       if (sc!=activeCells.end())
-        {
-          ELog::EM<<"TestingX == "<<objName<<" "<<i<<ELog::endDiag;
-               
-          Out.push_back(*sc);
-        }
+	Out.push_back(*sc);
     }
 
   for(int& CN : Out)
