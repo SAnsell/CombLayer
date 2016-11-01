@@ -86,9 +86,9 @@ class Mesh3D
 	       const std::vector<double>&,const std::vector<size_t>&,
 	       const std::vector<double>&,const std::vector<size_t>&);
 	       
-  /// Set reference point
-  void setRefPt(const Geometry::Vec3D& Pt)
-  { writeFlag ^= 1; RefPoint=Pt; } 
+  /// Set reference point [
+  void setRefPt(const Geometry::Vec3D&);
+
   
   
   void write(std::ostream&) const;

@@ -619,6 +619,7 @@ WeightControl::calcCellTrack(const Simulation& System,
 	  Pts.push_back(CellPtr->getCofM());
 	}
     }
+  
   cTrack(System,curPlane,Pts,index,CTrack);
   return;
 }
@@ -1025,7 +1026,7 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
 	    bCnt[index].push_back
 	      (IParam.getValue<size_t>(itemName,i));
 	  else
-	    boundaryVal[index].push_back
+            boundaryVal[index].push_back
 	      (IParam.getValue<double>(itemName,i));
 	}
     }
@@ -1129,7 +1130,7 @@ void
 WeightControl::help() const
   /*!
     Write out the help
-v  */
+  */
 {
   ELog::RegMethod RegA("WeightControl","help");
   ELog::EM<<"Weight help :: "<<ELog::endDiag;

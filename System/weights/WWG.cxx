@@ -242,7 +242,7 @@ WWG::writeWWINP(const std::string& FName) const
   for(const std::vector<double>& CV : WMesh)
     for(const double W : CV)
       StrFunc::writeLine(OX,W,itemCnt,6);
-    
+  
   OX.close();
 		       
   return;
