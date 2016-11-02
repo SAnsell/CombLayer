@@ -177,6 +177,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wDD","weightDD",100,1);
 
 
+  IParam.regMulti("wFCL","wFCL",25,0);
   IParam.regMulti("wWWG","wWWG",25,0);
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
@@ -261,6 +262,9 @@ createInputs(inputParam& IParam)
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
   IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
+  IParam.setDesc("wDD","Dxtran Diagnostic [set -wDXT help] ");
+  IParam.setDesc("wWWG","Weight WindowGenerator Mesh  ");
+  IParam.setDesc("wFCL","Forced Collision ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");

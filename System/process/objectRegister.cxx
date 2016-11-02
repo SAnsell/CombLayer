@@ -644,26 +644,28 @@ objectRegister::getObjectRange(const std::string& objName) const
 
   const int BStart=getCell(objName);
   const int BRange=getRange(objName);
+
   if (BStart==0)
     throw ColErr::InContainerError<std::string>
       (objName,"Object name not found");
   
   if (!BRange)
     return std::vector<int>();
-
   // Loop forward to find first element in set :
   // then step forward until out of range.
   std::vector<int> Out;
   std::set<int>::const_iterator sc=activeCells.end();
+
   for(int i=BStart;i<BRange+BStart;i++)
     {
       sc=activeCells.find(i);
       if (sc!=activeCells.end())
 	Out.push_back(*sc);
+      
     }
-
   for(int& CN : Out)
     CN=calcRenumber(CN);
+
   return Out;
 }
   

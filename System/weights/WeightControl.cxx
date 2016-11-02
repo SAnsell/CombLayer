@@ -62,7 +62,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightModification.h"
 #include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"
@@ -962,7 +961,6 @@ WeightControl::processWeights(Simulation& System,
       wwgCreate(System,IParam);
             
     }
-
   if (IParam.flag("weightTemp"))
     scaleTempWeights(System,10.0);
   if (IParam.flag("tallyWeight"))
@@ -1148,6 +1146,8 @@ WeightControl::help() const
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
   ELog::EM<<"-- wwgCalc --::"<<ELog::endDiag;
   procCalcHelp();
+
+  ELog::EM<<"-- wFCL --::"<<ELog::endDiag;
 
   ELog::EM<<"-- weightTemp --::"<<ELog::endDiag;
   ELog::EM<<"-- tallyWeight --::"<<ELog::endDiag;

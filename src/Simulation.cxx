@@ -2079,8 +2079,6 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
       newMap.insert(OTYPE::value_type(nNum,vc->second));
       WM.renumberCell(cNum,nNum);
 
-      OR.renumberActiveCell(cNum,nNum);
-      
       if (!vc->second->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);
