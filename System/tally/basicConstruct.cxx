@@ -343,7 +343,9 @@ basicConstruct::getCellSelection(const Simulation& System,
     matCell=System.getCellWithMaterial(matN);
 
   if (!cells.size())
-    ELog::EM<<ELog::endErr;
+    throw ColErr::InContainerError<std::string>
+      (keyName,"cell emepty for mat:"+StrFunc::makeString(matN));
+
   std::set_intersection(cells.begin(),cells.end(),
                         matCell.begin(),matCell.end(),
                         std::back_inserter(Out));
