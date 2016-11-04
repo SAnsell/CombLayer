@@ -173,7 +173,8 @@ ActivationSource::createFluxVolumes(const Simulation& System)
   const double yStep(BDiff[1]);
   const double zStep(BDiff[2]);
   MonteCarlo::Object* cellPtr(0);
-  size_t reportScore(nPoints/10);
+  size_t reportScore(nPoints*1);
+  ELog::EM<<"Report == "<<reportScore<<ELog::endDiag;
   while(index<nPoints)
     {
       Geometry::Vec3D testPt(xStep*RNG.rand(),yStep*RNG.rand(),
@@ -203,7 +204,7 @@ ActivationSource::createFluxVolumes(const Simulation& System)
             }
         }
       nTotal++;
-      if (!(nTotal % (reportScore*nPoints)))
+      if (!(nTotal % reportScore))
         {
           ELog::EM<<"Ntotal/nPoints == "<<nTotal<<":"<<nPoints<<" found="<<index<<ELog::endDiag;
           reportScore*=2;
@@ -354,7 +355,8 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
               
           ELog::EM<<"Gamma total == "<<totalFlux<<ELog::endDiag;
           
-	  cellFlux.emplace(cellNumbers[index],activeUnit(totalFlux,energy,gamma));
+	  cellFlux.emplace(cellNumbers[index],
+                           activeUnit(totalFlux,energy,gamma));
 	}
       IX.close();
     }
