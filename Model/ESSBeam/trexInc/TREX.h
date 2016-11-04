@@ -83,7 +83,7 @@ class TREX : public attachSystem::CopiedComp
   /// First bender
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
-  //Bunker Insert
+  /// Bunker Insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
       
   void setBeamAxis(const FuncDataBase&,const GuideItem&,
