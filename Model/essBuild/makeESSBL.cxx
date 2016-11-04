@@ -77,7 +77,6 @@
 #include "essVariables.h"
 #include "AttachSupport.h"
 
-#include "ODIN.h"
 #include "BEER.h"
 #include "BIFROST.h"
 #include "CSPEC.h"
@@ -88,6 +87,8 @@
 #include "MAGIC.h"
 #include "MIRACLES.h"
 #include "NMX.h"
+#include "ODIN.h"
+#include "TREX.h"
 #include "VESPA.h"
 #include "VOR.h"
 
@@ -252,6 +253,12 @@ makeESSBL::build(Simulation& System,
       // Odin beamline
       ODIN OdinBL("odin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="TREX")
+    {
+      // Odin beamline
+      TREX TrexBL("trex");
+      TrexBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VESPA")
     {

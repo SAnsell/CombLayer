@@ -57,9 +57,10 @@ namespace setVariable
 {
 
 FocusGenerator::FocusGenerator() :
-  substrateThick(0.5),voidThick(1.5),
-  yStepActive(0),yStep(0.0),zStep(0.0),
-  guideMat("Aluminium")
+  substrateThick(0.5),supportThick(0.0),
+  voidThick(1.5),yStepActive(0),
+  yStep(0.0),zStep(0.0),
+  guideMat("Aluminium"),supportMat("Void")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -67,9 +68,10 @@ FocusGenerator::FocusGenerator() :
 {}
 
 FocusGenerator::FocusGenerator(const FocusGenerator& A) : 
-  substrateThick(A.substrateThick),voidThick(A.voidThick),
+  substrateThick(A.substrateThick),
+  supportThick(A.supportThick),voidThick(A.voidThick),
   yStepActive(A.yStepActive),yStep(A.yStep),zStep(A.zStep),
-  guideMat(A.guideMat)
+  guideMat(A.guideMat),supportMat(A.supportMat)
   /*!
     Copy constructor
     \param A :: FocusGenerator to copy
@@ -87,11 +89,13 @@ FocusGenerator::operator=(const FocusGenerator& A)
   if (this!=&A)
     {
       substrateThick=A.substrateThick;
+      supportThick=A.supportThick;
       voidThick=A.voidThick;
       yStepActive=A.yStepActive;
       yStep=A.yStep;
       zStep=A.zStep;
       guideMat=A.guideMat;
+      supportMat=A.supportMat;
     }
   return *this;
 }
@@ -103,6 +107,60 @@ FocusGenerator::~FocusGenerator()
  */
 {}
 
+
+void
+FocusGenerator::writeLayers(FuncDataBase& Control,
+			    const std::string& keyName,
+			    const double length) const
+/*!
+    Generate the common layer variables variables
+    \param Control :: Functional data base
+    \param keyName :: main name
+    \param length :: total length
+   */
+{
+  ELog::RegMethod RegA("FocusGenerator","writeLayers");
+  const size_t activeSupport((supportThick>Geometry::zeroTol) ? 1 : 0);
+
+  Control.addVariable(keyName+"Length",length);       
+  Control.addVariable(keyName+"XStep",0.0);       
+  if (!yStepActive)
+    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
+  else
+    Control.addVariable<double>(keyName+"YStep",yStep);
+  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
+  Control.addVariable(keyName+"ZStep",zStep);       
+  Control.addVariable(keyName+"XYAngle",0.0);       
+  Control.addVariable(keyName+"ZAngle",0.0);
+  Control.addVariable(keyName+"BeamXYAngle",0.0);       
+
+  Control.addVariable(keyName+"NShapes",1);
+  Control.addVariable(keyName+"NShapeLayers",3+activeSupport);
+  Control.addVariable(keyName+"ActiveShield",0);
+
+  Control.addVariable(keyName+"LayerThick1",substrateThick);  // glass thick
+  if (activeSupport)
+    {
+      Control.addVariable(keyName+"LayerThick2",supportThick);
+      Control.addVariable(keyName+"LayerThick3",voidThick);
+      Control.addVariable(keyName+"LayerMat2",supportMat);
+      Control.addVariable(keyName+"LayerMat3","Void");       
+    }
+  else
+    {
+      Control.addVariable(keyName+"LayerThick2",voidThick);
+      Control.addVariable(keyName+"LayerMat2","Void");
+    }
+      
+
+  Control.addVariable(keyName+"LayerMat0","Void");
+  Control.addVariable(keyName+"LayerMat1",guideMat);
+
+  return;
+  
+}
+  
+  
 void
 FocusGenerator::generateTaper(FuncDataBase& Control,
 			      const std::string& keyName,
@@ -121,27 +179,9 @@ FocusGenerator::generateTaper(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("FocusGenerator","generateTaper");
-  Control.addVariable(keyName+"Length",length);       
-  Control.addVariable(keyName+"XStep",0.0);       
-  if (!yStepActive)
-    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
-  else
-    Control.addVariable<double>(keyName+"YStep",yStep);
-  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
-  Control.addVariable(keyName+"ZStep",zStep);       
-  Control.addVariable(keyName+"XYAngle",0.0);       
-  Control.addVariable(keyName+"ZAngle",0.0);
 
-  Control.addVariable(keyName+"NShapes",1);       
-  Control.addVariable(keyName+"NShapeLayers",3);
-  Control.addVariable(keyName+"ActiveShield",0);
-
-  Control.addVariable(keyName+"LayerThick1",substrateThick);  // glass thick
-  Control.addVariable(keyName+"LayerThick2",voidThick);
-
-  Control.addVariable(keyName+"LayerMat0","Void");
-  Control.addVariable(keyName+"LayerMat1",guideMat);
-  Control.addVariable(keyName+"LayerMat2","Void");       
+    
+  writeLayers(Control,keyName,length);
   
   Control.addVariable(keyName+"0TypeID","Taper");
   Control.addVariable(keyName+"0HeightStart",VS);
@@ -169,27 +209,7 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("FocusGenerator","generateTaper");
-  Control.addVariable(keyName+"Length",length);       
-  Control.addVariable(keyName+"XStep",0.0);       
-  if (!yStepActive)
-    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
-  else
-    Control.addVariable<double>(keyName+"YStep",yStep);
-  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
-  Control.addVariable(keyName+"ZStep",0.0);       
-  Control.addVariable(keyName+"XYAngle",0.0);       
-  Control.addVariable(keyName+"ZAngle",0.0);
-
-  Control.addVariable(keyName+"NShapes",1);       
-  Control.addVariable(keyName+"NShapeLayers",3);
-  Control.addVariable(keyName+"ActiveShield",0);
-
-  Control.addVariable(keyName+"LayerThick1",substrateThick);  // glass thick
-  Control.addVariable(keyName+"LayerThick2",voidThick);
-
-  Control.addVariable(keyName+"LayerMat0","Void");
-  Control.addVariable(keyName+"LayerMat1",guideMat);
-  Control.addVariable(keyName+"LayerMat2","Void");       
+  writeLayers(Control,keyName,length);
   
   Control.addVariable(keyName+"0TypeID","Rectangle");
   Control.addVariable(keyName+"0Height",V);
@@ -220,33 +240,8 @@ FocusGenerator::generateBender(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("FocusGenerator","generateBender");
-  
-  // Bender in section so use cut system
-  Control.addVariable(keyName+"Length",length);
-    
-  Control.addVariable(keyName+"XStep",0.0);       
-  if (!yStepActive)
-    Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
-  else
-    Control.addVariable<double>(keyName+"YStep",yStep);
-  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
 
-  Control.addVariable(keyName+"ZStep",0.0);       
-  Control.addVariable(keyName+"XYAngle",0.0);
-  Control.addVariable(keyName+"ZAngle",0.0);
-  Control.addVariable(keyName+"BeamXYAngle",0.0);       
-
-
-  Control.addVariable(keyName+"NShapes",1);       
-  Control.addVariable(keyName+"NShapeLayers",3);
-  Control.addVariable(keyName+"ActiveShield",0);
-
-  Control.addVariable(keyName+"LayerThick1",substrateThick);  // glass thick
-  Control.addVariable(keyName+"LayerThick2",voidThick);
-
-  Control.addVariable(keyName+"LayerMat0","Void");
-  Control.addVariable(keyName+"LayerMat1",guideMat);
-  Control.addVariable(keyName+"LayerMat2","Void");       
+  writeLayers(Control,keyName,length);
 
   Control.addVariable(keyName+"0TypeID","Bend");
   Control.addVariable(keyName+"0AHeight",VS);

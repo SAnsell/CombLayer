@@ -127,8 +127,8 @@ setESSFull(defaultConfig& A)
       {"DREAM","G4BLine19"},
       // {"CSPEC","G4BLine3"},
        {"VESPA","G3BLine7"},
-      {"FREIA","G4BLine15"}     // N5
-      // {"ODIN","G2BLine2"}
+      {"FREIA","G4BLine15"},     // N5
+      {"ODIN","G2BLine2"}
     };
   
   const std::set<std::string> beamFilled=
@@ -244,7 +244,8 @@ setESSSingle(defaultConfig& A,
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "MAGIC","MIRACLES","NMX","VESPA","VOR","SHORTDREAM"};
+     "MAGIC","MIRACLES","NMX","TREX","VESPA",
+     "VOR","SHORTDREAM"};
 
   size_t beamLineIndex(0);
   while(!LItems.empty())

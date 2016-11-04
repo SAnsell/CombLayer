@@ -52,6 +52,7 @@ namespace setVariable
   void MIRACLESvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
   void ODINvariables(FuncDataBase&);
+  void TREXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);
   void VESPAvariables(FuncDataBase&);
 

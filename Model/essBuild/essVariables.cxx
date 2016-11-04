@@ -519,6 +519,7 @@ EssVariables(FuncDataBase& Control)
   MIRACLESvariables(Control);
   NMXvariables(Control);
   ODINvariables(Control);
+  TREXvariables(Control);
   VESPAvariables(Control);
   VORvariables(Control);
   simpleITEMvariables(Control);

@@ -273,6 +273,7 @@ BIFROST::setBeamAxis(const FuncDataBase& Control,
                      const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Database of variables
     \param GItem :: Guide Item to 
     \param reverseZ :: Reverse axis
    */
