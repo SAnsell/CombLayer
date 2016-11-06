@@ -261,7 +261,6 @@ sourceSelection(Simulation& System,
     activationSelection(System,IParam);
   else if (sdefType=="ActiveWeight" || sdefType=="activeWeight")
     activeWeight(System,IParam);
-  //    SDef::activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
       if (FCPtr)
@@ -390,7 +389,7 @@ activationSelection(Simulation& System,
         {
           OName=IParam.getValueError<std::string>("activation",index,1,eMess);
         }
-      else if (key=="cell")
+      else if (key=="cell" || key=="cellDir")
         {
           cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
         }

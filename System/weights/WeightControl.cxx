@@ -1147,7 +1147,8 @@ WeightControl::help() const
   ELog::EM<<"-- wwgCalc --::"<<ELog::endDiag;
   procCalcHelp();
 
-  ELog::EM<<"-- wFCL --::"<<ELog::endDiag;
+  ELog::EM<<"-- wFCL --:: Set forced collision"<<ELog::endDiag;
+  ELog::EM<<"-- wIMP --:: Set Importance"<<ELog::endDiag;
 
   ELog::EM<<"-- weightTemp --::"<<ELog::endDiag;
   ELog::EM<<"-- tallyWeight --::"<<ELog::endDiag;
