@@ -104,11 +104,11 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       
 
       Control.addVariable(KItem+"BunkerFloorDepth",120.0);
-      Control.addVariable(KItem+"BunkerRoofHeight",190.0);
+      Control.addVariable(KItem+"BunkerRoofHeight",170.0); 
       
       Control.addVariable(KItem+"BunkerWallThick",350.0);
       Control.addVariable(KItem+"BunkerSideThick",80.0);
-      Control.addVariable(KItem+"BunkerRoofThick",195.0);
+      Control.addVariable(KItem+"BunkerRoofThick",175.0);
       Control.addVariable(KItem+"BunkerFloorThick",100.0);
       
       Control.addVariable(KItem+"BunkerVoidMat","Void");
@@ -119,11 +119,12 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       // WALL LAYERED
       Control.addVariable(KItem+"BunkerWallNBasic",10);      
 
+      // ROOF LAYERED
       Control.addVariable(KItem+"BunkerNBasicVert",5);
-      Control.addVariable(KItem+"BunkerRoofVert1",20.0);
-      Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",70.0);
-      Control.addVariable(KItem+"BunkerRoofVert4",30.0);
+      Control.addVariable(KItem+"BunkerRoofVert1",30.0);
+      Control.addVariable(KItem+"BunkerRoofVert2",45.0);
+      Control.addVariable(KItem+"BunkerRoofVert3",45.0);
+      Control.addVariable(KItem+"BunkerRoofVert4",35.0);
   
       
       Control.addVariable(KItem+"BunkerRoofMat0","CarstonConc");
