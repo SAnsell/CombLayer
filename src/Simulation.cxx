@@ -1604,9 +1604,16 @@ Simulation::writeMaterial(std::ostream& OX) const
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
 
+
+
+  if (!PhysPtr->getMode().hasElm("h"))
+    DB.deactivateParticle("h");
+  
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
+    {
+      DB.setActive(mp->second->getMat());
+    }
 
   DB.writeMCNPX(OX);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;

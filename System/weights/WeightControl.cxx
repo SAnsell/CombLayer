@@ -938,7 +938,7 @@ WeightControl::processWeights(Simulation& System,
   if (IParam.flag("weightType"))
     procType(IParam);
   if (IParam.flag("weight"))
-      setWeights(System);
+    setWeights(System);
       
   // requirements for vertex:
   if (IParam.flag("weightObject") ||

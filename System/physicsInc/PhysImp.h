@@ -59,14 +59,15 @@ class PhysImp
   void clear();
 
   int hasElm(const std::string&) const;
+  std::string getParticles() const;
   /// Type accessor
   const std::string& getType() const { return type; }
-
+  
   ///< Get particle count
   size_t particleCount() const { return particles.size(); }
   bool isEmpty() const { return impNum.empty(); }
   int removeParticle(const std::string&);
-
+  
   double getValue(const int) const;
   void setValue(const int,const double);
 

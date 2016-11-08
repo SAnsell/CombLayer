@@ -1597,6 +1597,30 @@ DBMaterial::writeCinder(std::ostream& OX) const
 }
 
 void
+DBMaterial::deactivateParticle(const std::string& P)
+  /*!
+    Deactivate information for particular particle 
+    - currently only h (proton)
+    \param P :: Particle to deactivate
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","deactivateParticle");
+
+  // cut hydrogen
+  if (P=="h")
+    {
+      for(MTYPE::value_type& MT : MStore)
+        {
+          MT.second.removeMX(P);
+          MT.second.removeLib(P);
+        }
+    }
+
+  return;
+}
+
+  
+void
 DBMaterial::writeMCNPX(std::ostream& OX) const
   /*!
     Write everything out to the stream

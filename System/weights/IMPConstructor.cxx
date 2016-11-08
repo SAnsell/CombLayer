@@ -88,11 +88,10 @@ IMPConstructor::processUnit(Simulation& System,
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-    
-  physicsSystem::PhysicsCards& PC=System.getPC();
 
+  physicsSystem::PhysicsCards& PC=System.getPC();
   
-  double value;
+  int value;
   std::string particle=IParam.getValueError<std::string>
     ("wIMP",setIndex,0,"No particle for wIMP ");
 
@@ -103,14 +102,15 @@ IMPConstructor::processUnit(Simulation& System,
     }
   else
     {
-      value=IParam.getValueError<double>
-	("wIMP",setIndex,index,"No fractional for wIMP");
+      value=IParam.getValueError<int>
+	("wIMP",setIndex,index,"No value for wIMP");
       index++;
     }
-  
+
   const std::string objName=
     IParam.getValueError<std::string>
     ("wIMP",setIndex,index,"No objName for wIMP");
+
   const std::vector<int> Cells=
     OR.getObjectRange(objName);
   if (Cells.empty())
@@ -118,8 +118,18 @@ IMPConstructor::processUnit(Simulation& System,
       (objName,"Empty cell");
 
   if (particle.empty())
-    for(const int CN : Cells)
-      PC.setCells("imp",CN,value);
+    {
+      Simulation::OTYPE& CellObjects=System.getCells();
+      // Special to set cells in OBJECT
+      for(const int CN : Cells)
+        {
+          PC.setCells("imp",CN,value);
+          Simulation::OTYPE::iterator mc=
+            CellObjects.find(CN);
+          if (mc!=CellObjects.end())
+            mc->second->setImp(value);
+        }
+    }
   else
     for(const int CN : Cells)
       PC.setCells("imp",particle,CN,value);
@@ -127,6 +137,4 @@ IMPConstructor::processUnit(Simulation& System,
   return;
 }
 
-
-  
 } // Namespace physicsSystem

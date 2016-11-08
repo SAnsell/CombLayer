@@ -369,10 +369,16 @@ setDefaultPhysics(Simulation& System,
 
   const FuncDataBase& Control=System.getDataBase();
   
-  std::string PList("h / d t s a");
+  std::string PList=
+    IParam.getDefValue<std::string>("h / d t s a","mode",0);
+  if (PList=="empty" || PList=="Empty")
+    PList=" ";
+  
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double cutUp=IParam.getValue<double>("cutWeight",0);  // [1keV
   const double cutMin=IParam.getValue<double>("cutWeight",1);  // [1keV def]
+  const double cutTime=IParam.getDefValue<double>(1e8,"cutTime",0); 
+  
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");  // [1keV def]
   const double phtModel=IParam.getValue<double>("photonModel");
@@ -390,14 +396,14 @@ setDefaultPhysics(Simulation& System,
   PC.setCells("imp",1,0);            // Set a zero cell	  
   physicsSystem::PStandard* NCut=
     PC.addPhysCard<physicsSystem::PStandard>("cut","n");
-  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
+  NCut->setValues(4,cutTime,0.0,0.4,-0.1);
   
   physicsSystem::PStandard* allCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
-  allCut->setValues(4,1e+8,0.0,cutUp,cutMin);
+  allCut->setValues(4,cutTime,0.0,cutUp,cutMin);
   physicsSystem::PStandard* photonCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut","p");
-  photonCut->setValues(4,1e+8,phtEnergy,cutUp,cutMin);
+  photonCut->setValues(4,cutTime,phtEnergy,cutUp,cutMin);
 
   if (elcEnergy>=0.0)
     {
@@ -420,14 +426,21 @@ setDefaultPhysics(Simulation& System,
   else
     pp->setValues(PHMax);
 
-
-  physicsSystem::PStandard* pa=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","/ d t s a "+elcAdd);
-  pa->setValues(EMax);
   
-  physicsSystem::PStandard* ph=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
-  ph->setValues(EMax);
+  if (!PList.empty())
+    {
+      std::string::size_type hpos=PList.find("h");
+      if (PList.find("h")!=std::string::npos)
+        {
+          physicsSystem::PStandard* ph=
+            PC.addPhysCard<physicsSystem::PStandard>("phys","h");
+          ph->setValues(EMax);
+          PList.erase(hpos,1);
+        }
+      physicsSystem::PStandard* pa=
+        PC.addPhysCard<physicsSystem::PStandard>("phys",PList+elcAdd);
+      pa->setValues(EMax);
+    }
 
   
   return; 
