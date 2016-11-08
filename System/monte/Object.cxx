@@ -1197,9 +1197,18 @@ Object::str() const
   */
 {
   std::ostringstream cx;
-  cx<<ObjName<<" "<<MatN;
-  if (MatN!=0)
-    cx<<" "<<density;
+  cx<<ObjName<<" ";
+  if (imp)
+    {
+      cx<<MatN;
+      if (MatN!=0)
+	cx<<" "<<density;
+    }
+  else
+    {
+      cx<<"0 ";
+    }
+  
   cx<<" "<<HRule.display();
   return cx.str();
 }
