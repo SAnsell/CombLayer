@@ -77,6 +77,8 @@ class VacuumPipe :
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material 
   int windowMat;                ///< Window material 
+
+  size_t nDivision;             ///< Number divisions
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -86,6 +88,7 @@ class VacuumPipe :
 
   void getShiftedSurf(const HeadRule&,const int,const int,const double);
   void applyActiveFrontBack();
+  void createDivision(Simulation&);
   
  public:
 

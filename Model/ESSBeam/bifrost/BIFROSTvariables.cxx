@@ -129,6 +129,7 @@ BIFROSTvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeC",2.0,400.0);
+  Control.addVariable("bifrostPipeCNDivision",3);
 
   FGen.clearYOffset();
   FGen.generateTaper(Control,"bifrostFC",396.0, 5.0 ,13.0, 5.0,13.0);   

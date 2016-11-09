@@ -72,7 +72,10 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "SurInter.h"
+#include "LayerDivide1D.h"
+#include "LayerDivide3D.h"
 
 #include "VacuumPipe.h"
 
@@ -172,6 +175,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
+  nDivision=Control.EvalDefVar<size_t>(keyName+"NDivision",0);
   return;
 }
 
@@ -403,6 +407,7 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
+  addCell("MainSteel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
@@ -423,12 +428,42 @@ VacuumPipe::createObjects(Simulation& System)
   // Outer
   Out=ModelSupport::getComposite(SMap,vacIndex,"-107 ");
   addOuterSurf(Out+frontStr+backStr);
-
-  
   
   return;
 }
 
+
+void
+VacuumPipe::createDivision(Simulation& System)
+  /*!
+    Divide the vacuum pipe into sections if needed
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("VacuumPipe","createDivision");
+  if (nDivision)
+    {
+      ModelSupport::LayerDivide1D LD1(keyName+"Division");
+      
+      // Simple front/back
+      ELog::EM<<"AHERE "<<ELog::endDiag;
+      LD1.setSurfPair(vacIndex+101,vacIndex+102);
+      LD1.setFractions(nDivision);
+      //      LD3.setIndexNames("Radial","Medial","Vert");
+      const int cellN=getCell("MainSteel");
+            
+            
+      ELog::EM<<"BHERE "<<ELog::endDiag;
+      LD1.divideCell(System,cellN); 
+      ELog::EM<<"CHERE "<<ELog::endDiag;
+      removeCell("MainSteel");
+      addCells("MainSteel",LD1.getCells());
+    }
+  
+  
+  return;
+}
+  
 void
 VacuumPipe::createLinks()
   /*!
@@ -577,8 +612,9 @@ VacuumPipe::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();    
-  createObjects(System);  
+  createObjects(System);
   createLinks();
+  createDivision(System);
   insertObjects(System);   
   
   return;

@@ -217,7 +217,6 @@ BunkerRoof::createSector(Simulation& System,
 {
   ELog::RegMethod RegA("BunkerRoof","createSector");
 
-
   std::vector<double> empty;
   
   ModelSupport::LayerDivide3D LD3(keyName+"mainRoof"+
