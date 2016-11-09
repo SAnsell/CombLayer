@@ -112,6 +112,7 @@
 #include "F5Calc.h"
 #include "F5Collimator.h"
 #include "TSMainBuilding.h"
+#include "MatMesh.h"
 
 #include "localRotate.h"
 #include "masterRotate.h"
@@ -1016,6 +1017,11 @@ makeESS::build(Simulation& System,
       MR.addRotation(Geometry::Vec3D(1,0,0), Geometry::Vec3D(0,0,0), -90.0);
       MR.addRotation(Geometry::Vec3D(0,1,0), Geometry::Vec3D(0,0,0), 180.0);
     }
+
+  MatMesh m(System);
+  //  m.Dump("mesh.dat", -40, 40, -40, 40, -20, 20, 200, 200, 100);
+  m.Dump("mesh.dat", -40, 40, -40, 40, -20, 20,
+	 20, 20, 10);
   
   return;
 }
