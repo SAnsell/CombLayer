@@ -443,7 +443,6 @@ VacuumPipe::createDivision(Simulation& System)
   ELog::RegMethod RegA("VacuumPipe","createDivision");
   if (nDivision)
     {
-      ELog::EM<<"In division"<<ELog::endDiag;
       ModelSupport::surfDivide DA;
       DA.setBasicSplit(nDivision,feMat);
       

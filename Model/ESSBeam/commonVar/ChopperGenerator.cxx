@@ -230,7 +230,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortANBolt",8);
   Control.addVariable(keyName+"IPortABoltStep",portBoltStep);
   Control.addVariable(keyName+"IPortABoltRadius",0.3);
-  Control.addVariable(keyName+"IPortABoltMat","Stainless304");
+  Control.addVariable(keyName+"IPortABoltMat","ChipIRSteel");
   
   // PORT B
   Control.addParse<double>(keyName+"IPortBYStep",
@@ -248,9 +248,9 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBNBolt",8);
   Control.addVariable(keyName+"IPortBBoltStep",portBoltStep);
   Control.addVariable(keyName+"IPortBBoltRadius",0.3);
-  Control.addVariable(keyName+"IPortBBoltMat","Stainless304");
+  Control.addVariable(keyName+"IPortBBoltMat","ChipIRSteel");
     
-  Control.addVariable(keyName+"BoltMat","Stainless304");
+  Control.addVariable(keyName+"BoltMat","ChipIRSteel");
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat","Void");
   return;
