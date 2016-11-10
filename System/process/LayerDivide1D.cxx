@@ -148,7 +148,7 @@ LayerDivide1D::processSurface(const std::pair<int,int>& WallSurf,
     }
   // -------------------------------------------------------------
   
-  int surfN(divIndex+1000);
+  int surfN(divIndex+1);
   SMap.addMatch(surfN,WallSurf.first);
   attachSystem::SurfMap::addSurf(surGroup,surfN);
   surfN++;
@@ -343,7 +343,6 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
 
-
   ALen=processSurface(AWall,AFrac);
 
   std::string Out;
@@ -355,12 +354,14 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
         ModelSupport::getComposite(SMap,aIndex,"1 -2");
       
       const int Mat=DGPtr->getMaterial(i+1,0,0);
-      
+      ELog::EM<<"ADD Cell"<<ACut<<ELog::endDiag;
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
                                        ACut+divider));
+      ELog::EM<<"Post Remove"<<ELog::endDiag;
       attachSystem::CellMap::addCell("LD1:"+layerNum,cellIndex-1);
     }
   System.removeCell(cellN);
+  ELog::EM<<"Post Remove"<<ELog::endDiag;
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,ALen,ALen);
 

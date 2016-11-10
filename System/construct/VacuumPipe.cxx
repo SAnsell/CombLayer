@@ -74,8 +74,7 @@
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "SurInter.h"
-#include "LayerDivide1D.h"
-#include "LayerDivide3D.h"
+#include "surfDivide.h"
 
 #include "VacuumPipe.h"
 
@@ -331,6 +330,7 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+102,
 			       Origin+Y*(length/2.0-flangeLength),Y);
+	    
       if (activeWindow & 2)
 	{
 
@@ -443,24 +443,22 @@ VacuumPipe::createDivision(Simulation& System)
   ELog::RegMethod RegA("VacuumPipe","createDivision");
   if (nDivision)
     {
-      ModelSupport::LayerDivide1D LD1(keyName+"Division");
+      ELog::EM<<"In division"<<ELog::endDiag;
+      ModelSupport::surfDivide DA;
+      DA.setBasicSplit(nDivision,feMat);
       
-      // Simple front/back
-      ELog::EM<<"AHERE "<<ELog::endDiag;
-      LD1.setSurfPair(vacIndex+101,vacIndex+102);
-      LD1.setFractions(nDivision);
-      //      LD3.setIndexNames("Radial","Medial","Vert");
-      const int cellN=getCell("MainSteel");
-            
-            
-      ELog::EM<<"BHERE "<<ELog::endDiag;
-      LD1.divideCell(System,cellN); 
-      ELog::EM<<"CHERE "<<ELog::endDiag;
+      DA.init();
+      DA.setCellN(getCell("MainSteel"));
+      DA.setOutNum(cellIndex,vacIndex+1000);
+      DA.makePair<Geometry::Plane>(SMap.realSurf(vacIndex+101),
+				   SMap.realSurf(vacIndex+102));
+
+      DA.activeDivide(System);
+      cellIndex=DA.getCellNum();
       removeCell("MainSteel");
-      addCells("MainSteel",LD1.getCells());
+      addCells("MainSteel",DA.getCells());
     }
-  
-  
+   
   return;
 }
   
