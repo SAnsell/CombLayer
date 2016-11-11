@@ -17,11 +17,17 @@ namespace essSystem
   public:
     MatMesh(Simulation &);
     virtual ~MatMesh();
-    void Dump(const std::string &f,
-	      const double& xmin, const double& xmax,
-	      const double& ymin, const double& ymax,
-	      const double& zmin, const double& zmax,
-	      const size_t& nX, const size_t& nY, const size_t& nZ) const;
+    void Dump(const std::vector<double>& vx,
+	      const std::vector<double>& vy,
+	      const std::vector<double>& vz,
+	      const char *fname) const;
+    void Dump(const Geometry::Vec3D &startPt,
+	      const Geometry::Vec3D &endPt,
+	      const size_t nX, const size_t nY, const size_t nZ,
+	      const char *fname) const;
+    std::vector<int> getMaterials(const Geometry::Vec3D &center,
+				  double *stepXYZ, size_t N) const;
+    std::string getMaterialString(std::vector<int>) const;
 
   };
 }
