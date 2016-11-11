@@ -27,7 +27,7 @@ namespace essSystem
 	      const char *fname) const;
     std::vector<int> getMaterials(const Geometry::Vec3D &center,
 				  double *stepXYZ, size_t N) const;
-    std::string getMaterialString(std::vector<int>) const;
+    std::string getMaterials(std::vector<int>) const;
 
   };
 }

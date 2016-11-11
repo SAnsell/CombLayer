@@ -50,9 +50,9 @@ namespace essSystem
   }
 
   std::string
-  MatMesh::getMaterialString(std::vector<int> vmat) const
+  MatMesh::getMaterials(std::vector<int> vmat) const
   {
-    ELog::RegMethod RControl("MatMesh","getMaterialString(std::vector<int>)");
+    ELog::RegMethod RControl("MatMesh","getMaterials(std::vector<int>)");
     std::ostringstream buffer;
 
     std::sort(vmat.begin(), vmat.end());
@@ -146,7 +146,7 @@ namespace essSystem
 	  stepXYZ[2] = zmax-zmin;
 	  vmat = getMaterials(Pt, stepXYZ, 1000);
 	  fmesh << xmin << " " << xmax << " " << ymin << " " << ymax << " " << zmin << " " << zmax << "\t";
-	  fmesh << "\t" << getMaterialString(vmat) << std::endl;;
+	  fmesh << "\t" << getMaterials(vmat) << std::endl;;
 	}
       }
     }
