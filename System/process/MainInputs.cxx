@@ -587,6 +587,7 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
+  IParam.regDefItem<int>("matmesh", "matmesh", 1, 0);
   
   IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
   IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
@@ -606,6 +607,7 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("topPipe","Type of top moderator pipework");
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("iradObj","Build an irradiation object [void for none]");
+  IParam.setDesc("matmesh","Generate material mesh (e.g. to compare two geometries).");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
   IParam.setDesc("bunker","Build bunker [void for none [A-D]");
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
