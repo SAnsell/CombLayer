@@ -58,7 +58,8 @@ class surfDivide
 
   std::vector<int> material;        ///< Material list
   std::vector<double> frac;         ///< Fractions
-
+  std::vector<int> cellBuilt;       ///< List of built cells
+  
   void preDivide(Simulation&);
   void populateSurfaces();
   void clearRules();
@@ -82,7 +83,10 @@ class surfDivide
 
   /// Access cell number
   int getCellNum() const { return outCellN; }
-
+  /// accessor to built cells
+  const std::vector<int>& getCells() const
+  { return cellBuilt; }
+  
   void init();
   
   template<typename T> void makePair(const int,const int);
@@ -101,6 +105,8 @@ class surfDivide
   void addInnerSingle(const int);
   void addOuterSingle(const int);
 
+  /// Add a fraction
+  void setBasicSplit(const size_t,const int);
   /// Add a fraction
   void addFrac(const double);
   /// Add a Material

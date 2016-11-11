@@ -118,7 +118,6 @@ CellWeight::updateWM(const double eCut,
   std::vector<double> DVec=EVec;
   std::fill(DVec.begin(),DVec.end(),1.0);
 
-    
   // Work on minW first:
   const double minW=calcMinWeight(scaleFactor,weightPower);
   const double factor=(minW<minWeight) ?
@@ -130,6 +129,8 @@ CellWeight::updateWM(const double eCut,
       double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
       if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
       W=std::pow(W,weightPower);
+
+
       if (W>=minWeight)
         {
           for(size_t i=0;i<EVec.size();i++)
@@ -158,7 +159,7 @@ CellWeight::invertWM(const double eCut,
     \param weightPower :: scale power factor on W
   */
 {
-  ELog::RegMethod RegA("CellWeight","updateWM");
+  ELog::RegMethod RegA("CellWeight","invertWM");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  

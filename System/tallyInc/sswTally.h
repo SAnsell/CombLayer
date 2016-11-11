@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/ImportControl.h
+ * File:   tallyInc/sswTally.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,32 +19,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_ImportControl_h
-#define WeightSystem_ImportControl_h
+#ifndef tallySystem_sswTally_h
+#define tallySystem_sswTally_h
 
-///\file 
-
-namespace mainSystem
+namespace tallySystem
 {
-  class inputParam;
-}
+/*!
+  \class sswTally
+  \version 1.0
+  \date October 2016
+  \author S. Ansell
+  \brief Hold a ssw tally [single item]
+*/
+class sswTally : public Tally
+{
+ private:
 
-class Simulation;
+  std::vector<int> surfList;               ///< List of surfaces
+  
+ public:
+  
+  explicit sswTally(const int);
+  sswTally(const sswTally&);
+  sswTally& operator=(const sswTally&);
+  virtual ~sswTally();
+  virtual sswTally* clone() const; 
+    
+  /// ClassName
+  virtual std::string className() const 
+      { return "sswTally"; }
 
-namespace WeightSystem
-{ 
-  void zeroImp(Simulation&,const int,const int);
-  void simulationImp(Simulation&,const mainSystem::inputParam&);
-  void FCL(Simulation&,const mainSystem::inputParam&);
-  void IMP(Simulation&,const mainSystem::inputParam&);
-  void ExtField(Simulation&,const mainSystem::inputParam&);
-  void EnergyCellCut(Simulation&,const mainSystem::inputParam&);
-  void DXT(Simulation&,const mainSystem::inputParam&);
-  void PWT(Simulation&,const mainSystem::inputParam&);
-  void SBias(Simulation&,const mainSystem::inputParam&);
-  void removePhysImp(Simulation&,const std::string&);
-}
+  void addSurfaces(const std::vector<int>&);
+  virtual void renumberSurf(const int,const int);
 
+  virtual void write(std::ostream&) const;
+};
+
+
+}  // NAMESPACE tallySystem
 
 #endif
- 

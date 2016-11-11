@@ -1044,7 +1044,7 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
 	  const int pAB=isDirectionValid(IPts[i],NS);
 	  const int mAB=isDirectionValid(IPts[i],-NS);
 	  const int normD=surfIndex[i]->sideDirection(IPts[i],N.uVec);
-
+          
 	  if (direction<0)
 	    {
 	      if (pAB!=mAB)  // out going positive surface
@@ -1197,9 +1197,18 @@ Object::str() const
   */
 {
   std::ostringstream cx;
-  cx<<ObjName<<" "<<MatN;
-  if (MatN!=0)
-    cx<<" "<<density;
+  cx<<ObjName<<" ";
+  if (imp)
+    {
+      cx<<MatN;
+      if (MatN!=0)
+	cx<<" "<<density;
+    }
+  else
+    {
+      cx<<"0 ";
+    }
+  
   cx<<" "<<HRule.display();
   return cx.str();
 }

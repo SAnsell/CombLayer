@@ -434,7 +434,6 @@ BaseMap::removeItem(const std::string& Key,
   LCTYPE::iterator mc=Items.find(Key);
   if (mc==Items.end())
     throw ColErr::InContainerError<std::string>(Key,"Key not present");
-
   std::vector<int>& SRef(mc->second);
   if (SRef.size()<=Index)
     throw ColErr::InContainerError<size_t>(Index,"Index not present in :"+Key);

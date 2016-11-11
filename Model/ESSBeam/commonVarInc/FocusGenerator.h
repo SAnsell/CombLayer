@@ -44,13 +44,16 @@ class FocusGenerator
 
   
   double substrateThick;   ///< substrate thickness
+  double supportThick;     ///< substrate support thickness
   double voidThick;        ///< clearance thickness
   bool yStepActive;        ///< Y step active
   double yStep;            ///< Y step
   double zStep;            ///< Z step
   
   std::string guideMat;    ///< Main guide material
+  std::string supportMat;    ///< Main guide material
 
+  void writeLayers(FuncDataBase&,const std::string&,const double) const;
   
  public:
 
@@ -62,9 +65,15 @@ class FocusGenerator
   /// set guide material
   void setGuideMat(const std::string& matName)
   { guideMat=matName; }
+  /// set guide material + support
+  void setGuideMat(const std::string& AName,const std::string& BName)
+  { guideMat=AName; supportMat=BName; }
   /// set thickness
   void setThickness(const double S,const double V)
-  { substrateThick=S;voidThick=V; }
+  { substrateThick=S;supportThick=0.0,voidThick=V; }
+  /// set thickness with support
+  void setThickness(const double S,const double Extra,const double V)
+  { substrateThick=S;supportThick=Extra,voidThick=V; }
 
   /// set the y step
   void setYOffset(const double D)

@@ -35,19 +35,17 @@ namespace constructSystem
 
 class hexUnit : public gridUnit
 {
- private:  
-  
  public:
 
-  static int hexIndex(const size_t);
 
-  hexUnit(const int,const int,const Geometry::Vec3D&);  
-  hexUnit(const int,const int,const bool,const Geometry::Vec3D&);
+  hexUnit(const long int,const long int,const Geometry::Vec3D&);  
+  hexUnit(const long int,const long int,const bool,const Geometry::Vec3D&);
   hexUnit(const hexUnit&);
   hexUnit& operator=(const hexUnit&); 
   ~hexUnit() {}  ///< Destructor
 
-  bool isConnected(const gridUnit&) const;
+  virtual bool isConnected(const gridUnit&) const;
+  virtual int gridIndex(const size_t) const;
 
 };
 

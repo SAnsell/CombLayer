@@ -90,7 +90,6 @@ class DBMaterial
   void setNeutMaterial(const int,const scatterSystem::neutMaterial*);
 
 
-
   bool createMaterial(const std::string&);
   int processMaterial(const std::string&);
 
@@ -101,6 +100,8 @@ class DBMaterial
   void removeThermal(const std::string&);
   void cloneMaterial(const std::string&,const std::string&);
   void overwriteMaterial(const std::string&,const std::string&);
+
+  void deactivateParticle(const std::string&);
   
   void resetActive();
   void setActive(const int);

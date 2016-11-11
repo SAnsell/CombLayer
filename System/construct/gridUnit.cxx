@@ -60,10 +60,10 @@ operator<<(std::ostream& OX,const gridUnit& A)
   return OX;
 }
 
-gridUnit::gridUnit(const size_t nLink,const int aI,const int bI,
-		   const Geometry::Vec3D& C) : 
+gridUnit::gridUnit(const size_t nLink,const long int aI,
+		   const long int bI,const Geometry::Vec3D& C) : 
   empty(0),cut(0),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
-  cellNumber(0)
+  cellNumber(0),boundaryClosed(std::pair<size_t,size_t>(0,0))
   /*!
     Constructor
     \param nLink :: number of links
@@ -75,10 +75,11 @@ gridUnit::gridUnit(const size_t nLink,const int aI,const int bI,
   clearLinks();
 }
 
-gridUnit::gridUnit(const size_t nLink,const int aI,const int bI,
-                   const bool cF,const Geometry::Vec3D& C) : 
+gridUnit::gridUnit(const size_t nLink,const long int aI,
+		   const long int bI,const bool cF,
+		   const Geometry::Vec3D& C) : 
   empty(0),cut(cF),iA(aI),iB(bI),Centre(C),gridLink(nLink),surfKey(nLink),
-  cellNumber(0)
+  cellNumber(0),boundaryClosed(std::pair<size_t,size_t>(0,0))
   /*!
     Constructor
     \param aI :: Index A
@@ -94,7 +95,7 @@ gridUnit::gridUnit(const gridUnit& A) :
   empty(A.empty),cut(A.cut),iA(A.iA),iB(A.iB),
   Centre(A.Centre),gridLink(A.gridLink),cylSurf(A.cylSurf),
   surfKey(A.surfKey),cellNumber(A.cellNumber),
-  cutStr(A.cutStr)
+  boundaryClosed(A.boundaryClosed),cutStr(A.cutStr)
   /*!
     Copy constructor
     \param A :: gridUnit to copy
@@ -119,6 +120,7 @@ gridUnit::operator=(const gridUnit& A)
       cylSurf=A.cylSurf;
       surfKey=A.surfKey;
       cellNumber=A.cellNumber;
+      boundaryClosed=A.boundaryClosed;
       cutStr=A.cutStr;
     }
   return *this;
@@ -137,6 +139,55 @@ gridUnit::clearLinks()
   return;
 }
 
+void
+gridUnit::setBoundary(const size_t A,const size_t B)
+  /*!
+    Set the boundary side piont [+1 index / 0 imples none]
+    This is note checked to be within nLink
+    \param A :: First index
+    \param b :: Second index
+   */
+{
+  boundaryClosed.first=A;
+  boundaryClosed.second=B;
+  return;
+}
+  
+void
+gridUnit::clearBoundary() 
+  /*!
+    Clear a surface point
+   */
+{
+  boundaryClosed.first=0;
+  boundaryClosed.second=0;
+  return;
+}
+
+int
+gridUnit::clearBoundary(const size_t side)
+  /*!
+    Test and set a closed boundary
+    \param side :: Side to test
+    \return 1 if boundary valid
+  */
+{
+  // NO Work
+  if (boundaryClosed.first != side+1 &&
+      boundaryClosed.second != side+1) return 0;
+
+  const size_t linkSurf=(boundaryClosed.first == side+1 )
+    ? boundaryClosed.second-1 : boundaryClosed.first-1;
+
+  if (linkSurf>=surfKey.size())
+    throw ColErr::IndexError<size_t>
+      (linkSurf,surfKey.size(),"linkSurf exceeds surfKey");
+    
+  boundaryClosed.first=0;
+  boundaryClosed.second=0;
+  return surfKey[linkSurf];
+}
+  
 void
 gridUnit::setCyl(const int surfN)
   /*!
@@ -178,13 +229,21 @@ gridUnit::hasLink(const size_t index) const
 /*!
   Determine if the surface has an key
   \param index :: gird surface index
+  \return true if link is set
 */
 {
-  ELog::RegMethod RegA("gridUnit","hasLink");
-  if (index>surfKey.size())
-    throw ColErr::IndexError<size_t>(index,surfKey.size(),"index in surfKey");
-    
-  return (surfKey[index]==0) ? 0 : 1;
+  return (!gridLink[index % gridLink.size()] ) ? 0 : 1;
+}
+
+bool
+gridUnit::hasSurfLink(const size_t index) const
+/*!
+  Determine if the surface has an key
+  \param index :: gird surface index
+  \return true if surface is set
+*/
+{
+  return (surfKey[index % surfKey.size()]==0) ? 0 : 1;
 }
 
 size_t
@@ -198,6 +257,18 @@ gridUnit::nLinks() const
     (std::count_if(surfKey.begin(),surfKey.end(),
                    std::bind(std::not_equal_to<int>(),
                              std::placeholders::_1,0)));
+}
+
+void
+gridUnit::setLink(const size_t Index,gridUnit* GUnit) 
+  /*!
+    Set the gridUnit links
+    \param Index :: Index for the gridUnit
+    \param GUnit :: Grid unit
+   */
+{
+  gridLink[Index % gridLink.size()] = GUnit;
+  return;
 }
 
 void
@@ -248,6 +319,7 @@ gridUnit::getInner() const
   return cx.str();
 }
 
+  
 void
 gridUnit::write(std::ostream& OX) const
   /*!

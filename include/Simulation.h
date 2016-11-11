@@ -30,6 +30,7 @@ namespace Geometry
 namespace tallySystem
 {
   class Tally;
+  class sswTally;
 }
 
 namespace Surface 
@@ -212,7 +213,7 @@ class Simulation
 
   int removeDeadSurfaces(const int); 
   int removeCells(const int,const int); 
-  int removeCell(const int);
+  void removeCell(const int);
   int removeAllSurface(const int);
   int substituteAllSurface(const int,const int);
   void voidObject(const std::string&);
@@ -230,6 +231,7 @@ class Simulation
 
   int addTally(const tallySystem::Tally&);
   tallySystem::Tally* getTally(const int) const;
+  tallySystem::sswTally* getSSWTally() const;
   /// Access tally items
   TallyTYPE& getTallyMap() { return TItem; }
   /// Access constant

@@ -160,6 +160,39 @@ Line::closestPoint(const Geometry::Vec3D& Pt) const
   return getPoint(lambda);
 }
 
+std::pair<Geometry::Vec3D,Geometry::Vec3D>
+Line::closestPoints(const Line& A) const
+  /*!
+    Get the closest point on this line to another line
+    Solved with A.direct and direct are perpendicular to
+    connecting vector (w_c). P(s) is point on this, Q(t)
+    is point on A.
+    \param A :: line to use
+    
+    \returns Points on this line / line A
+  */
+{
+  const Geometry::Vec3D W0=Origin-A.Origin;
+
+  const double uv=Direct.dotProd(A.Direct);
+  const double uw=W0.dotProd(Direct);
+  const double vw=W0.dotProd(A.Direct);
+
+  // s := (uv.vw - uw) / (1-uv.uv)
+  // t := (vw - uv.uw) / (1-uv.uv) 
+
+  // always > 0.0
+  const double divFactor=1.0-uv*uv;
+  if (divFactor<Geometry::zeroTol)
+    return std::pair<Geometry::Vec3D,Geometry::Vec3D>(Origin,A.Origin);
+
+  const double s=(uv*vw-uw)/divFactor;
+  const double t=(vw-uw*uv)/divFactor;
+  
+  return std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    (getPoint(s),A.getPoint(t));
+}
+
 double
 Line::distance(const Geometry::Vec3D& A) const
   /*!
@@ -400,7 +433,7 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   ELog::RegMethod RegA("Line","intersect(cone)");
 
   const Geometry::Vec3D V=CObj.getCentre();  // cone vertex
-  const Geometry::Vec3D A=CObj.getNormal();  // cone vertex
+  const Geometry::Vec3D A=CObj.getNormal();  // cone normal
 
   // reduced origin
   const Geometry::Vec3D b=Origin-V;
@@ -408,22 +441,47 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   const double AdotB=A.dotProd(b);
   const double BdotN=b.dotProd(Direct);
   const double gamma2=CObj.getCosAngle()*CObj.getCosAngle();
-  // Failed on side
 
-  ///\todo BUG HERE
-  if ((CObj.getCutFlag()>0 && AdotB<0) ||
-      (CObj.getCutFlag()<0 && AdotB>0))
-    return 0;
 
+      ///\todo BUG HERE
+  //  if ((CObj.getCutFlag()>0 && AdotB<0) ||
+  //      (CObj.getCutFlag()<0 && AdotB>0))
+  //    return 0;
+  
   double C[3];  
   C[0]=AdotN*AdotN-gamma2;
   C[1]=2.0*(AdotB*AdotN-gamma2*BdotN);
   C[2]=AdotB*AdotB-gamma2*b.dotProd(b);
 
+  
   std::pair<std::complex<double>,std::complex<double> > SQ;
   const size_t ix = solveQuadratic(C,SQ);
+
   // This takes the centre displacement into account:
-  return lambdaPair(ix,SQ,PntOut);  
+  std::vector<Geometry::Vec3D> testOut;
+  const size_t nP=lambdaPair(ix,SQ,testOut);
+  if (!nP) return 0;
+  
+  const int cF=CObj.getCutFlag();
+  if (!cF)
+    {
+      for(const Geometry::Vec3D& Pnt : testOut)
+        PntOut.push_back(Pnt);
+      return nP;
+    }
+
+  size_t nOut(0);
+  for(const Geometry::Vec3D& Pnt : testOut)
+    {
+      const Geometry::Vec3D bPt=Pnt-V;
+      const double AdotB=A.dotProd(bPt);
+      if (cF*AdotB>0.0)
+        {
+          PntOut.push_back(Pnt);
+          nOut++;
+        }
+    }    
+  return nOut;
 }
 
 size_t

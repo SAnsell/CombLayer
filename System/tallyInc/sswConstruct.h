@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   include/WeightModification.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   tallyInc/sswConstruct.h
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightModification_h
-#define WeightModification_h
+#ifndef tallySystem_sswConstruct_h
+#define tallySystem_sswConstruct_h
+
+namespace attachSystem
+{
+  class FixedComp;
+}
+
 
 class Simulation;
 
-
-namespace WeightSystem
+namespace tallySystem
 {
-  void vecModReduction(Simulation&,const int,const int);
-  void addForcedCollision(Simulation&,const double);
-  void setNuclearZero(Simulation&,const int,const int);
+
+/*!
+  \class sswConstruct
+  \version 1.0
+  \author S. Ansell
+  \date October 2016
+  \brief Constructs an SSW 
+
+  Provides linkage to its outside on FixedComp[0]
+*/
+
+class sswConstruct : virtual public basicConstruct
+{
+ public:
+  
+
+  sswConstruct();
+  sswConstruct(const sswConstruct&);
+  sswConstruct& operator=(const sswConstruct&);
+  virtual ~sswConstruct() {}  ///< Destructor
+
+  int processSSW(Simulation&,const mainSystem::inputParam&,
+		  const size_t) const;
+
+  virtual void writeHelp(std::ostream&) const;
+};
+
 }
 
 #endif
+ 

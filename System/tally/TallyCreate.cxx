@@ -60,6 +60,7 @@
 #include "cellFluxTally.h"
 #include "fissionTally.h"
 #include "surfaceTally.h"
+#include "sswTally.h"
 #include "tallyFactory.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -219,7 +220,7 @@ addF1Tally(Simulation& System,const int tNum,
 
   return;
 }
-
+  
 void
 addF4Tally(Simulation& System,const int tallyNum,
 	   const std::string& pType,const std::vector<int>& Units)
@@ -263,6 +264,21 @@ addF7Tally(Simulation& System,const int tallyNum,
   System.addTally(TX);
 
   return;
+}
+
+  
+sswTally*
+addSSWTally(Simulation& System)
+  /*!
+    Add a SSW tally to ASim [if it doesn't already have one]
+    \param System :: Simulation item    
+    \return Tally pointer
+   */
+{
+  sswTally TX(0);
+  System.addTally(TX);
+  
+  return System.getSSWTally();
 }
 
 void
@@ -1285,11 +1301,14 @@ setParticleType(Simulation& Sim,const int tNumber,
   for(mc=tmap.begin();mc!=tmap.end();mc++)
     {
       if (tNumber==0 || mc->first==tNumber ||
-          (tNumber<0 && (mc->first % 10) == -tNumber))
+          (tNumber<0 && (mc->first % 10) == -tNumber) ||
+          (tNumber== -1000 && mc->first==0))
 	{
           mc->second->setParticles(nPart);
           fnum++;
 	}
+
+        
     }
   return fnum;
 }
@@ -1379,6 +1398,6 @@ getLastTallyNumber(const Simulation& ASim,const int type)
     }
   return outN;
 }
-
+  
 
 }  // NAMESPACE tallySystem

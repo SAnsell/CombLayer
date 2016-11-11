@@ -73,6 +73,8 @@
 #include "ZoneUnit.h"
 #include "ExtConstructor.h"
 #include "PWTConstructor.h"
+#include "FCLConstructor.h"
+#include "IMPConstructor.h"
 #include "DXTConstructor.h"
 #include "ELPTConstructor.h"
 #include "ImportControl.h"
@@ -102,6 +104,8 @@ zeroImp(Simulation& System,const int initCell,
     Zero cell importances in a range
     \param System :: Simulation 
     \param initCell :: inital cell to searcha
+    \param cellRange :: range of cells to zero 
+						
    */
 {
   ELog::RegMethod RegA("ImportControl[F]","zeroImp");
@@ -227,13 +231,60 @@ ExtField(Simulation& System,
   ELog::RegMethod RegA("ImportControl","ExtField");
 
   // currently only first item / get all
-  std::vector<std::string> StrItem;
+
   const size_t NGrp=IParam.setCnt("wExt");
 
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ExtConstructor A;
       A.processUnit(System,IParam,grpIndex);
+    }
+  return;
+}
+
+void
+FCL(Simulation& System,
+    const mainSystem::inputParam& IParam)
+  /*!
+    Control FCL card on the in individual cells
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl","FCL");
+
+  // currently only first item / get all
+
+  const size_t nSet=IParam.setCnt("wFCL");
+  if (nSet)
+    {
+      physicsSystem::FCLConstructor A;
+      A.init(System);
+      for(size_t index=0;index<nSet;index++)
+        A.processUnit(System,IParam,index);
+    }
+  return;
+}
+
+void
+IMP(Simulation& System,
+    const mainSystem::inputParam& IParam)
+  /*!
+    Control IMP card on the in individual cells
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("ImportControl","IMP");
+
+  // currently only first item / get all
+
+  const size_t nSet=IParam.setCnt("wIMP");
+  if (nSet)
+    {
+      physicsSystem::IMPConstructor A;
+      for(size_t index=0;index<nSet;index++)
+        A.processUnit(System,IParam,index);
     }
   return;
 }

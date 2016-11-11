@@ -178,24 +178,13 @@ getAttachPointWithXYZ(const std::string& FCName,
 
   const long int index=getLinkIndex(linkName);
   // All these calls throw on error
-  if (index<0)
-    {
-      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
-    }
-  else if (index>0)
-    {
-      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
-    }
-  else
-    {
-      Pt=FC->getCentre();
-      YAxis=-FC->getY();
-    }
-  
+  Pt=FC->getSignedLinkPt(index);
+  YAxis=FC->getSignedLinkAxis(index);
   ZAxis=FC->getZ();
-  XAxis= -(YAxis*ZAxis).unit();
+
+  FixedComp::computeZOffPlane(XAxis,YAxis,ZAxis);
+  XAxis= (YAxis*ZAxis).unit();
+
   return 1;
 }
 

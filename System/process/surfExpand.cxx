@@ -59,9 +59,9 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
-#include "ArbPoly.h"
 #include "Cylinder.h"
 #include "Plane.h"
+
 #include "surfaceFactory.h"
 #include "surfVector.h"
 #include "surfExpand.h"

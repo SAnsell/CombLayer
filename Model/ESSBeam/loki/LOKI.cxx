@@ -67,8 +67,7 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FrontBackCut.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -76,6 +75,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -110,8 +110,8 @@ LOKI::LOKI(const std::string& keyN) :
   lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
   
-  ShutterA(new constructSystem::insertPlate(newName+"BlockShutter")),
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  ShutterA(new constructSystem::insertPlate(newName+"BlockShutter")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
 
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
@@ -154,7 +154,6 @@ LOKI::LOKI(const std::string& keyN) :
   // SDiskDSecond(new constructSystem::DiskChopper(newName+"SBladeDSecond")),
 
   DDiskD(new constructSystem::DiskChopper(newName+"DBladeD")),
-
   CutD(new constructSystem::HoleShape(newName+"CutD")),
 
   CutG(new constructSystem::HoleShape(newName+"CutG")),
@@ -494,6 +493,10 @@ LOKI::build(Simulation& System,
   FocusFBunker->addInsertCell(PitD->getCells("MidLayer"));
   FocusFBunker->addInsertCell(PitD->getCells("Outer"));
 
+
+  ELog::EM<<"Axis == "<<FocusFBunker->getKey("Guide0").getSignedLinkAxis(2)
+	  <<ELog::endDiag;
+  
   // BInsert->insertComponent(System,"Void",*FocusFBunker);
 
 

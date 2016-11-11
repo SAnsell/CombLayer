@@ -91,6 +91,7 @@ class LayerDivide3D  : public attachSystem::FixedComp,
 
   void setSurfPair(const size_t,const int,const int);
   void setFractions(const size_t,const std::vector<double>&);
+  void setFractions(const size_t,const size_t);
 
   void setIndexNames(const std::string&,const std::string&,
 		  const std::string&);

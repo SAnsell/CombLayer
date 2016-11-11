@@ -54,13 +54,14 @@ class FixedComp
   long int primeAxis;      ///< X/Y/Z Axis for reorientation [-ve for delay]
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
-  static void computeZOffPlane(const Geometry::Vec3D&,
-			       const Geometry::Vec3D&,
-			       Geometry::Vec3D&);
   
   void makeOrthogonal();
   
  public:
+
+  static void computeZOffPlane(const Geometry::Vec3D&,
+			       const Geometry::Vec3D&,
+			       Geometry::Vec3D&);
 
   FixedComp(const std::string&,const size_t);
   FixedComp(const std::string&,const size_t,const Geometry::Vec3D&);

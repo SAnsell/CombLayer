@@ -208,7 +208,7 @@ objectRegister::renumberActiveCell(const int oldCellN,
   */
 {
   ELog::RegMethod RegA("objectRegister","renumberActive");
-  
+
   std::set<int>::iterator sc=activeCells.find(oldCellN);
   if (sc==activeCells.end())
     throw ColErr::InContainerError<int>(oldCellN,"Cell number");
@@ -551,7 +551,7 @@ int
 objectRegister::calcRenumber(const int CN) const
   /*!
     Take a cell number and calculate the renumber [not ideal]
-    \param CN :: oirignal cell number
+    \param CN :: orignal cell number
     \return correct offset nubmer
    */
 {
@@ -597,17 +597,16 @@ objectRegister::getObjectRange(const std::string& objName) const
       if (Out.empty())
         {
           ELog::EM<<"EMPTY NAME::Possible names == "<<ELog::endDiag;
-          std::vector<std::string> NAME=
-            CPtr->getNames();
-          
+          std::vector<std::string> NameVec=CPtr->getNames();
+          for(const std::string CName : NameVec)
+            ELog::EM<<"  "<<CName<<ELog::endDiag;
           throw ColErr::InContainerError<std::string>
             (objName,"Object empty");
-
         }
       
       for(int& CN : Out)
         CN=calcRenumber(CN);
-      
+
       return Out;
     }
 
@@ -628,11 +627,11 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::iota(Out.begin(),Out.end(),ANum);
       for(int& CN : Out)
         CN=calcRenumber(CN);
+
       return Out;
     }
 
   // SPECIALS:
-  
   if (objName=="All" || objName=="all")
     {
       std::vector<int> Out;
@@ -645,29 +644,28 @@ objectRegister::getObjectRange(const std::string& objName) const
 
   const int BStart=getCell(objName);
   const int BRange=getRange(objName);
+
   if (BStart==0)
     throw ColErr::InContainerError<std::string>
       (objName,"Object name not found");
   
   if (!BRange)
     return std::vector<int>();
-
   // Loop forward to find first element in set :
   // then step forward until out of range.
-  std::set<int>::const_iterator sc=activeCells.end();
-  for(int i=BStart;i<BRange+BStart &&
-        sc==activeCells.end();i++)
-    sc=activeCells.find(i);
-
   std::vector<int> Out;
-  while(sc!=activeCells.end() &&
-        *sc<BStart+BRange)
+  std::set<int>::const_iterator sc=activeCells.end();
+
+  for(int i=BStart;i<BRange+BStart;i++)
     {
-      Out.push_back(*sc);
-      sc++;
+      sc=activeCells.find(i);
+      if (sc!=activeCells.end())
+	Out.push_back(*sc);
+      
     }
   for(int& CN : Out)
     CN=calcRenumber(CN);
+
   return Out;
 }
   

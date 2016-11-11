@@ -144,6 +144,19 @@ Mesh3D::setMesh(const std::vector<double>& XV,
   return;
 }
 
+void
+Mesh3D::setRefPt(const Geometry::Vec3D& Pt)
+  /*!
+    Sets the reference point
+    \param Pt :: Point to reference             
+    \todo Handle master rotation
+  */
+{
+  writeFlag ^= 1;
+  RefPoint=Pt;
+  return;
+} 
+
 std::string
 Mesh3D::getType() const
   /*!
@@ -273,6 +286,7 @@ Mesh3D::writeWWINP(std::ostream& OX,const int tallyN,
   
   return;
 }
+
 
   
 void

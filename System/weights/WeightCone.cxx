@@ -62,7 +62,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightModification.h"
 #include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"

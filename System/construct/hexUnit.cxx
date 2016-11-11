@@ -48,7 +48,7 @@
 namespace constructSystem
 {
 
-hexUnit::hexUnit(const int aI,const int bI,
+hexUnit::hexUnit(const long int aI,const long int bI,
 		   const Geometry::Vec3D& C) :
   gridUnit(6,aI,bI,C)
   /*!
@@ -59,8 +59,8 @@ hexUnit::hexUnit(const int aI,const int bI,
   */
 {}
 
-hexUnit::hexUnit(const int aI,const int bI,const bool cF,
-		   const Geometry::Vec3D& C) : 
+hexUnit::hexUnit(const long int aI,const long int bI,
+		 const bool cF,const Geometry::Vec3D& C) : 
   gridUnit(6,aI,bI,cF,C)
   /*!
     Constructor
@@ -95,7 +95,7 @@ hexUnit::operator=(const hexUnit& A)
 }
 
 int
-hexUnit::hexIndex(const size_t index)
+hexUnit::gridIndex(const size_t index) const
   /*!
     Convert Index[0-5] into an modification of the base index
     \param index :: value between 0 and 5 
@@ -132,8 +132,8 @@ hexUnit::isConnected(const gridUnit& TU) const
     \return true if within one unit
   */
 {
-  const int dA=iA-TU.getAIndex();
-  const int dB=iB-TU.getBIndex();
+  const long int dA=iA-TU.getAIndex();
+  const long int dB=iB-TU.getBIndex();
   if ((dA*dB==0 || dA+dB==0) && (dA==1 || dB==1 || dB==-1 || dA==-1)) 
     return 1;
 

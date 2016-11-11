@@ -261,7 +261,6 @@ sourceSelection(Simulation& System,
     activationSelection(System,IParam);
   else if (sdefType=="ActiveWeight" || sdefType=="activeWeight")
     activeWeight(System,IParam);
-  //    SDef::activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
       if (FCPtr)
@@ -390,7 +389,7 @@ activationSelection(Simulation& System,
         {
           OName=IParam.getValueError<std::string>("activation",index,1,eMess);
         }
-      else if (key=="cell")
+      else if (key=="cell" || key=="cellDir")
         {
           cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
         }
@@ -420,7 +419,7 @@ activationSelection(Simulation& System,
   
 void
 activeWeight(Simulation& System,
-		    const mainSystem::inputParam& IParam)
+             const mainSystem::inputParam& IParam)
   /*!
     Select all the info for activation output
     \param System :: Simuation to use
@@ -430,8 +429,8 @@ activeWeight(Simulation& System,
   ELog::RegMethod RegA("SourceSelector","activationSelection");
 
   //File for input/
-  const std::string OName=
-    IParam.getDefValue<std::string>("test.source","actFile",0,1);
+  const std::string OName="test.source";
+  //    IParam.getDefValue<std::string>("test.source","actFile",0,1);
 
   size_t index(0);
   const Geometry::Vec3D APt=

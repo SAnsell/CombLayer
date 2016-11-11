@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/ImportControl.h
+ * File:   weightsInc/IMPConstructor.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,32 +19,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_ImportControl_h
-#define WeightSystem_ImportControl_h
+#ifndef WeightSystem_IMPConstructor_h
+#define WeightSystem_IMPConstructor_h
 
 ///\file 
+
+class Simulation;
+namespace Geometry
+{
+  class Plane;
+}
+
+/*!
+  \namespace WeightSystem
+  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
+  \author S. Ansell
+  \version 1.0
+  \date April 2009
+*/
+
+class Simluation;
 
 namespace mainSystem
 {
   class inputParam;
 }
 
-class Simulation;
+namespace physicsSystem
+{
+  
+class IMPConstructor 
+{
+ private:
 
-namespace WeightSystem
-{ 
-  void zeroImp(Simulation&,const int,const int);
-  void simulationImp(Simulation&,const mainSystem::inputParam&);
-  void FCL(Simulation&,const mainSystem::inputParam&);
-  void IMP(Simulation&,const mainSystem::inputParam&);
-  void ExtField(Simulation&,const mainSystem::inputParam&);
-  void EnergyCellCut(Simulation&,const mainSystem::inputParam&);
-  void DXT(Simulation&,const mainSystem::inputParam&);
-  void PWT(Simulation&,const mainSystem::inputParam&);
-  void SBias(Simulation&,const mainSystem::inputParam&);
-  void removePhysImp(Simulation&,const std::string&);
+  void writeHelp(std::ostream&) const;
+    
+ public:
+
+  IMPConstructor() {}
+  IMPConstructor(const IMPConstructor&) {}
+  IMPConstructor& operator=(const IMPConstructor&) { return *this; }
+  ~IMPConstructor() {}  ///< Destructor
+
+  void processUnit(Simulation&,const mainSystem::inputParam&,
+		   const size_t);
+};
+
 }
-
 
 #endif
  

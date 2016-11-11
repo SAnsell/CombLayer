@@ -62,7 +62,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "WeightModification.h"
 #include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"
@@ -419,11 +418,9 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
                   <<"] == "<<TPoint<<ELog::endDiag;
           sourcePt.push_back(TPoint);
         }
-    }
-  
+    }  
   return;
 }
-
 
 void
 WeightControl::calcPoints(std::vector<Geometry::Vec3D>& Pts,
@@ -621,6 +618,7 @@ WeightControl::calcCellTrack(const Simulation& System,
 	  Pts.push_back(CellPtr->getCofM());
 	}
     }
+  
   cTrack(System,curPlane,Pts,index,CTrack);
   return;
 }
@@ -633,13 +631,12 @@ WeightControl::calcCellTrack(const Simulation& System,
   /*!
     Calculate a given track for a point
     \param System :: Simulation to use
-    \param Pt :: point for outgoing track
+    \param initPt :: point for outgoing track
     \param cellVec :: Cells to track
     \param CTrack :: Cell Weights for output 
    */
 {
   ELog::RegMethod RegA("WeightControl","calcCellTrack(Vec3D)");
-
   CTrack.clear();
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
@@ -678,7 +675,6 @@ WeightControl::procObject(const Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-
   const size_t nSet=IParam.setCnt("weightObject");
   // default values:
   procParam(IParam,"weightControl",0,0);
@@ -694,9 +690,11 @@ WeightControl::procObject(const Simulation& System,
 	}
       // local values:
       procParam(IParam,"weightObject",iSet,1);
-      
-      objectList.insert(Key);
+
+      ELog::EM<<"ObjCell== "<<Key<<ELog::endDiag;
+      objectList.insert(Key);      
       const std::vector<int> objCells=OR.getObjectRange(Key);
+      
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
 
@@ -940,7 +938,7 @@ WeightControl::processWeights(Simulation& System,
   if (IParam.flag("weightType"))
     procType(IParam);
   if (IParam.flag("weight"))
-      setWeights(System);
+    setWeights(System);
       
   // requirements for vertex:
   if (IParam.flag("weightObject") ||
@@ -963,7 +961,6 @@ WeightControl::processWeights(Simulation& System,
       wwgCreate(System,IParam);
             
     }
-
   if (IParam.flag("weightTemp"))
     scaleTempWeights(System,10.0);
   if (IParam.flag("tallyWeight"))
@@ -1027,7 +1024,7 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
 	    bCnt[index].push_back
 	      (IParam.getValue<size_t>(itemName,i));
 	  else
-	    boundaryVal[index].push_back
+            boundaryVal[index].push_back
 	      (IParam.getValue<double>(itemName,i));
 	}
     }
@@ -1131,7 +1128,7 @@ void
 WeightControl::help() const
   /*!
     Write out the help
-v  */
+  */
 {
   ELog::RegMethod RegA("WeightControl","help");
   ELog::EM<<"Weight help :: "<<ELog::endDiag;
@@ -1149,6 +1146,9 @@ v  */
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
   ELog::EM<<"-- wwgCalc --::"<<ELog::endDiag;
   procCalcHelp();
+
+  ELog::EM<<"-- wFCL --:: Set forced collision"<<ELog::endDiag;
+  ELog::EM<<"-- wIMP --:: Set Importance"<<ELog::endDiag;
 
   ELog::EM<<"-- weightTemp --::"<<ELog::endDiag;
   ELog::EM<<"-- tallyWeight --::"<<ELog::endDiag;

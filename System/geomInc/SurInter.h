@@ -54,6 +54,10 @@ getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
 
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
+	     const Geometry::Plane*);
+
+Geometry::Vec3D
+getLinePoint(const Geometry::Vec3D&,const Geometry::Vec3D&,
 	     const HeadRule&,const HeadRule&);
 	     
   

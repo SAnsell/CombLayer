@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/insertSphere.h
-*
+ * File:   constructInc/insertObject.h
+ *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,61 +19,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_insertSphere_h
-#define constructSystem_insertSphere_h
+#ifndef constructSystem_insertObject_h
+#define constructSystem_insertObject_h
 
 class Simulation;
 
 namespace constructSystem
 {
 /*!
-  \class insertSphere
+  \class insertObject
   \version 1.0
   \author S. Ansell
-  \date June 2016
-  \brief Spherical insert object
+  \date November 2011
+  \brief Plate inserted in object 
   
-  Designed to be a quick spher to put an object into a model
+  Designed to be a quick plate to put an object into a model
   for fluxes/tallies etc
 */
 
-class insertSphere : public insertObject
+class insertObject : public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset,public attachSystem::CellMap,
+  public attachSystem::SurfMap,public attachSystem::FrontBackCut
 {
- private:
+ protected:
   
-
-  double radius;             ///< Full Width
-
+  const int ptIndex;             ///< Index of surface offset
+  int cellIndex;                 ///< Cell index
+  int populated;                 ///< externally set values
+  
+  int defMat;               ///< Material
+  bool delayInsert;       ///< Delay insertion         
+  
   virtual void populate(const FuncDataBase&);
-
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
-
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
   virtual void findObjects(Simulation&);
-
-  void mainAll(Simulation&);
 
  public:
 
-  insertSphere(const std::string&);
-  insertSphere(const insertSphere&);
-  insertSphere& operator=(const insertSphere&);
-  virtual ~insertSphere();
+  insertObject(const std::string&);
+  insertObject(const insertObject&);
+  insertObject& operator=(const insertObject&);
+  ~insertObject();
 
-  void setValues(const double,const int);
-  void setValues(const double,const std::string&);
+  /// set delay flag
+  void setNoInsert() { delayInsert=1; }
 
-  void createAll(Simulation&,const Geometry::Vec3D&,
-		 const attachSystem::FixedComp&);
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(Simulation&,const Geometry::Vec3D&);
-
+  void setMat(const int M) { defMat=M; } 
+  void setStep(const double,const double,const double);
+  void setStep(const Geometry::Vec3D&);
+  void setAngles(const double,const double);
   
 };
 

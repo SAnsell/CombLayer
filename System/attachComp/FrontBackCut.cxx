@@ -115,7 +115,8 @@ FrontBackCut::~FrontBackCut()
     Destructor
   */
 {}
-  
+
+
 void
 FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
                        const long int sideIndex)
@@ -130,6 +131,8 @@ FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
   frontCut=WFC.getSignedFullRule(sideIndex);
   frontDivider=WFC.getSignedCommonRule(sideIndex);
+  frontCut.populateSurf();
+  frontDivider.populateSurf();
   activeFront=1;
   return;
 }
@@ -148,6 +151,8 @@ FrontBackCut::setBack(const attachSystem::FixedComp& WFC,
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
   backCut=WFC.getSignedMainRule(sideIndex);
   backDivider=WFC.getSignedCommonRule(sideIndex);
+  backCut.populateSurf();
+  backDivider.populateSurf();
   activeBack=1;
   return;
 }

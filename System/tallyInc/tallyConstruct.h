@@ -58,6 +58,7 @@ class tallyConstruct  : public basicConstruct
   itemConstruct* itemPtr;             ///< Items : Beamline/named system
   surfaceConstruct* surfPtr;          ///< Surface [f1]
   fissionConstruct* fissionPtr;       ///< Fission f7
+  sswConstruct* sswPtr;               ///< SSW tally
 
   virtual void helpTallyType(const std::string&) const;
 

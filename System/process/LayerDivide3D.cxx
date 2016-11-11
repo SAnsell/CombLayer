@@ -330,6 +330,31 @@ LayerDivide3D::setFractions(const size_t index,
 }
 
 void
+LayerDivide3D::setFractions(const size_t index,const size_t NF)
+  /*!
+    Set the fractions
+    \param index :: Type index 0 to 2
+    \param NF :: linear fractions
+   */
+{
+  ELog::RegMethod RegA("LayerDivide3D","setFractions(size)");
+
+  if (!NF)
+    throw ColErr::SizeError<size_t>(NF,1,"NF cant be zero");
+
+  std::vector<double> FV;
+  const double gap(1.0/static_cast<double>(NF));
+  double step(0.0);
+  for(size_t i=0;i<NF;i++)
+    {
+      step+=gap;
+      FV.push_back(step);
+    }
+  setFractions(index,FV);
+  return;
+}
+
+void
 LayerDivide3D::setIndexNames(const std::string& A,
 			     const std::string& B,
 			     const std::string& C)
@@ -406,15 +431,21 @@ LayerDivide3D::setMaterials(const size_t index,
     DGPtr=new DivideGrid(DefMatVec.front());
 
   if (!index)
-    for(size_t i=0;i<DefMatVec.size();i++)
-      DGPtr->setMaterial(i+1,0,0,DefMatVec[i]);
+    {
+      for(size_t i=0;i<DefMatVec.size();i++)
+        DGPtr->setMaterial(i+1,0,0,DefMatVec[i]);
+    }
   else if (index==1)
-    for(size_t i=0;i<DefMatVec.size();i++)
-      DGPtr->setMaterial(0,i+1,0,DefMatVec[i]);
-  else 
-    for(size_t i=0;i<DefMatVec.size();i++)
-      DGPtr->setMaterial(0,0,i+1,DefMatVec[i]);
-      
+    {
+      for(size_t i=0;i<DefMatVec.size();i++)
+        DGPtr->setMaterial(0,i+1,0,DefMatVec[i]);
+    }
+  else
+    {
+      for(size_t i=0;i<DefMatVec.size();i++)
+        DGPtr->setMaterial(0,0,i+1,DefMatVec[i]);
+    }
+  
   return;
 }
 

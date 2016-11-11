@@ -43,7 +43,7 @@ class Material
   int Mnum;                        ///< Material Number (Necessary)  
   std::string Name;                ///< Material Name (un-necessary)
   std::vector<Zaid> zaidVec;       ///< vector of zaids
-  std::map<std::string,MXcards> mxCards;     ///< List of MX cards   
+  std::map<std::string,MXcards> mxCards;     ///< particle:MX card
   
   std::vector<std::string> Libs;    ///< Library extra
   std::vector<std::string> SQW;     ///< s(q,w) 
@@ -109,6 +109,9 @@ class Material
 
   /// remove mt cards
   void removeSQW() { SQW.clear(); }
+  void removeMX(const std::string&);
+  void removeLib(const std::string&);
+    
   void changeLibrary(const int,const char);
 
   void listComponent() const;

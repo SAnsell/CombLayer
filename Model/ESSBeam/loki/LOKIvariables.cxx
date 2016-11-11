@@ -190,15 +190,12 @@ LOKIvariables(FuncDataBase& Control)
   //  // Control.addVariable("lokiPipeBVoidMat","Void");
 
 
-
-
   FGen.setYOffset(-244.75);
   FGen.generateRectangle(Control,"lokiFC",489.5,2.5,3.0);
   Control.addVariable("lokiFCMonoNShapes",1);       
   Control.addVariable("lokiFCMonoNShapeLayers",1);
   Control.addVariable("lokiFCMonoActiveShield",0);
   Control.addVariable("lokiFCMonoLayerThick1",1.0);  //material thick
-
 
 
   //second chopper
@@ -214,9 +211,6 @@ LOKIvariables(FuncDataBase& Control)
   BGen.setThick({0.5});
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"lokiSBladeAESecond",0.0,10.0,22.50);
-
-
-
 
   // Bender D (straight guide between second and third chopper)
   PipeGen.generatePipe(Control,"lokiPipeD",2.0,282.0); //282 = 2 cm longer than the guide
@@ -256,8 +250,8 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCutDRadius",36.0); //should not be radius
 
 // Guide inside the bunker wall
- FGen.setYOffset(-176.3); //to make it fit the bunker insert. number guessed, how it can be estimated/calculated
- FGen.generateBender(Control,"lokiFFBunker",352.6,2.5,2.5,2.5,2.5,6125.0,-90.0); 
+  FGen.setYOffset(-176.3); //to make it fit the bunker insert. number guessed, how it can be estimated/calculated
+  FGen.generateBender(Control,"lokiFFBunker",352.6,2.5,2.5,2.5,2.5,6125.0,-90.0); 
 
   // Pipe around the guide ouside of the bunker and first part of the guide ouside of the bunker
   PipeGen.generatePipe(Control,"lokiPipeFExtra",0.5,19.0); //TEMP!!! Random numbers

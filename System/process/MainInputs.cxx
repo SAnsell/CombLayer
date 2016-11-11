@@ -81,19 +81,13 @@ createInputs(inputParam& IParam)
   
   IParam.regMulti("activation","activation",10000,1);
 
-  // DEPRECATED:
-  IParam.regItem("actFile","actFile");
-  IParam.regItem("actOut","actOut");
-  IParam.regItem("actBox","actBox");
-  IParam.regItem("actTimeStep","actTimeStep");
-  IParam.regItem("actWeight","actWeight");
-  // DEPRECATED (END)
-  
   IParam.regFlag("a","axis");
   IParam.regItem("angle","angle",1,4);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
+  IParam.regMulti("cutTime","cutTime",100,1);
+  IParam.regItem("mode","mode");
   IParam.regFlag("cinder","cinder");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
@@ -185,19 +179,19 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wDD","weightDD",100,1);
 
 
+  IParam.regMulti("wFCL","wFCL",25,0);
   IParam.regMulti("wWWG","wWWG",25,0);
+  IParam.regMulti("wIMP","wIMP",25,0);
+    
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
-  IParam.regItem("wwgZMesh","wwgZMesh",3,125);
-  
+  IParam.regItem("wwgZMesh","wwgZMesh",3,125);  
   
   IParam.regDefItem<std::string>("X","xmlout",1,"Model.xml");
   IParam.regMulti("x","xml",10000,1);
 
-  IParam.setDesc("actFile","FluxData for input");
-  IParam.setDesc("actOut","Output source file");
   IParam.setDesc("angle","Orientate to component [name]");
   IParam.setDesc("axis","Rotate to main axis rotation [TS2]");
   IParam.setDesc("c","Cells to protect");
@@ -272,6 +266,10 @@ createInputs(inputParam& IParam)
   IParam.setDesc("w","weightBias");
   IParam.setDesc("wExt","Extraction biasisng [see: -wExt help]");
   IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
+  IParam.setDesc("wDD","Dxtran Diagnostic [set -wDXT help] ");
+  IParam.setDesc("wWWG","Weight WindowGenerator Mesh  ");
+  IParam.setDesc("wIMP","set imp partile imp object(s)  ");
+  IParam.setDesc("wFCL","Forced Collision ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
   IParam.setDesc("WType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
