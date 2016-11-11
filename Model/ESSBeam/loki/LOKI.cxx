@@ -150,8 +150,12 @@ LOKI::LOKI(const std::string& keyN) :
   PitD(new constructSystem::ChopperPit(newName+"PitD")),
   ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
 
-  SDiskDFirst(new constructSystem::DiskChopper(newName+"SBladeDFirst")),
-  SDiskDSecond(new constructSystem::DiskChopper(newName+"SBladeDSecond")),
+  // SDiskDFirst(new constructSystem::DiskChopper(newName+"SBladeDFirst")),
+  // SDiskDSecond(new constructSystem::DiskChopper(newName+"SBladeDSecond")),
+
+  DDiskD(new constructSystem::DiskChopper(newName+"DBladeD")),
+
+  CutD(new constructSystem::HoleShape(newName+"CutD")),
 
   CutG(new constructSystem::HoleShape(newName+"CutG")),
   ShieldG(new constructSystem::LineShield(newName+"ShieldG")),
@@ -222,8 +226,12 @@ LOKI::LOKI(const std::string& keyN) :
 
   OR.addObject(PitD);
   OR.addObject(ChopperD);
-  OR.addObject(SDiskDFirst);
-  OR.addObject(SDiskDSecond);
+  OR.addObject(DDiskD);
+
+  // OR.addObject(SDiskDFirst);
+  // OR.addObject(SDiskDSecond);
+
+  OR.addObject(CutD);
 
   OR.addObject(CutG);
   OR.addObject(ShieldG);
@@ -289,6 +297,7 @@ LOKI::operator=(const LOKI& A)
       FocusE=A.FocusE;
       ChopperC=A.ChopperC;
       DDiskC=A.DDiskC;
+      DDiskD=A.DDiskD;
       VPipeF=A.VPipeF;
       FocusF=A.FocusF;
       GridA=A.GridA;
@@ -462,11 +471,17 @@ LOKI::build(Simulation& System,
 
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->addInsertCell(74123);
+
+  BInsert->addInsertCell(PitD->getCells("Void"));
+  BInsert->addInsertCell(PitD->getCells("MidLayer"));
+  BInsert->addInsertCell(PitD->getCells("Outer"));
+
+
+
   //BInsert->createAll(System,*FocusC->getKey("Guide0"),-1,bunkerObj);
   BInsert->createAll(System,FocusC->getKey("Guide0"),2,bunkerObj);
-  //BInsert->createAll(System,*FocusC,-2,bunkerObj); //should be focusF for the full model
+  //BInsert->createAll(System,*FocusC,-2,bunkerObj); //should be focusF for the full model - not full, model with many choppers
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
-
 
   // BInsert->createAll(System,FocusC->getKey("Guide0"),-1,bunkerObj); //should be focusF for the full model
   // attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
@@ -475,43 +490,64 @@ LOKI::build(Simulation& System,
   FocusFBunker->addInsertCell(BInsert->getCells("Item"));
   FocusFBunker->createAll(System,*BInsert,7,*BInsert,7); // 0,*BInsert,0);
 
+  FocusFBunker->addInsertCell(PitD->getCells("Void"));
+  FocusFBunker->addInsertCell(PitD->getCells("MidLayer"));
+  FocusFBunker->addInsertCell(PitD->getCells("Outer"));
+
   // BInsert->insertComponent(System,"Void",*FocusFBunker);
 
 
-
-return;
 //Chopper pit(=shielding)
   PitD->addInsertCell(voidCell);
   PitD->addFrontWall(bunkerObj,2);
   PitD->createAll(System,FocusFBunker->getKey("Guide0"),2);
-  attachSystem::addToInsertControl(System,*PitD,"Outer", *BInsert, *BInsert);
+  //attachSystem::addToInsertControl(System,*PitD,"Outer", *BInsert, *BInsert);
+
+  if (stopPoint==3) return;                      // STOP Out of bunker
      
+
+
+
+//Cut through pitD to accomodate bunker insert that sticks into the void of pipeD
+
+  //Cut throught chopper pit for guide and pipe that are following it 
+  CutD->addInsertCell(PitD->getCells("MidLayerBack"));
+  CutD->addInsertCell(PitD->getCells("Collet"));
+  CutD->setFaces(PitD->getKey("Inner").getSignedFullRule(2),
+                    PitD->getKey("Mid").getSignedFullRule(-2));
+  CutD->createAll(System,PitD->getKey("Inner"),2);
+
+
+  //BInsert->addInsertCell(ShieldG->getCell("Void"));
+  BInsert->addInsertCell(CutD->getCell("Void")); //to make it belong to the both 
+  BInsert->addInsertCell(CutD->getCells("MidLayer"));
+  //VPipeG->createAll(System,ChopperD->getKey("Beam"),2);
+
+
+
+
 
  //Vacuum pipe and guide outside of the bunker wall, inside chopper pit D
   VPipeFExtra->addInsertCell(PitD->getCells("Void"));
- // VPipeFExtra->addInsertCell(PitD->getCells("MidLayer"));
- // VPipeFExtra->addInsertCell(PitD->getCells("Outer"));
- // VPipeFExtra->addEndCut(PitD->getKey("Inner").getSignedLinkString(1));
+  VPipeFExtra->addInsertCell(PitD->getCells("MidLayer"));
+  VPipeFExtra->addInsertCell(PitD->getCells("Outer"));
+// VPipeFExtra->addEndCut(PitD->getKey("Inner").getSignedLinkString(1));
   VPipeFExtra->createAll(System,FocusFBunker->getKey("Guide0"),2);
 
   FocusFExtra->addInsertCell(VPipeFExtra->getCells("Void"));
   FocusFExtra->createAll(System,*VPipeFExtra,0,*VPipeFExtra,0);
 
-
   //Chopper unit
   ChopperD->addInsertCell(PitD->getCell("Void"));
   ChopperD->createAll(System,FocusFExtra->getKey("Guide0"),2);
 
-  // Two single Disks
-  SDiskDFirst->addInsertCell(ChopperD->getCell("Void"));
-  SDiskDFirst->setCentreFlag(3);  // Z direction
-  SDiskDFirst->setOffsetFlag(1);  // X direction
-  SDiskDFirst->createAll(System,ChopperD->getKey("Beam"),0);
+  // Double disk chopper
+  DDiskD->addInsertCell(ChopperD->getCell("Void"));
+  DDiskD->setCentreFlag(3);  // Z direction
+  DDiskD->setOffsetFlag(1);  // X direction
+  DDiskD->createAll(System,ChopperD->getKey("BuildBeam"),0);  
 
-  SDiskDSecond->addInsertCell(ChopperD->getCell("Void"));
-  SDiskDSecond->setCentreFlag(-3);  // Z direction
-  SDiskDSecond->setOffsetFlag(1);  // X direction
-  SDiskDSecond->createAll(System,ChopperD->getKey("Beam"),0);           
+     
 
  //Beamline Shileding
   ShieldG->addInsertCell(voidCell);
@@ -541,7 +577,7 @@ return;
   CollG->setOuter(ShieldG->getXSectionIn());
   CollG->addInsertCell(ShieldG->getCell("Void"));
   CollG->createAll(System,*VPipeG,-1);
-
+ return; 
 //Aperture after first collimator drum
 //  AppA->addInsertCell(ShieldG->getCell("Void"));
   System.populateCells();
