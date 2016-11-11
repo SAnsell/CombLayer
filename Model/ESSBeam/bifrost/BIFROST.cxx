@@ -329,6 +329,9 @@ BIFROST::build(Simulation& System,
   FocusA->addEndCut(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*bifrostAxis,-3,*bifrostAxis,-3); 
 
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
   
   if (stopPoint==1) return;                      // STOP At monolith
 

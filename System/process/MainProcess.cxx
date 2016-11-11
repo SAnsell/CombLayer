@@ -74,6 +74,12 @@
 
 #include "MainProcess.h"
 
+
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+
 namespace mainSystem
 {
 
@@ -492,7 +498,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);         
   ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-  
+
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
