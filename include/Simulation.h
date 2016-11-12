@@ -128,7 +128,6 @@ class Simulation
   void writeCinderMat() const;
   void writeHTape() const;
 
-  //  int populateCells();
   int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
   int removeComplement(MonteCarlo::Qhull&) const;
@@ -180,7 +179,8 @@ class Simulation
 
   int removeComplements(); 
 
-  int populateCells();  // SHOULD BE PROTECTED
+  int populateCells();  
+  int populateCells(const std::vector<int>&);  
 
   int calcVertex(const int); 
   void calcAllVertex();

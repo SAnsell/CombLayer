@@ -78,6 +78,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "Bunker.h"
 #include "CompBInsert.h"
 
@@ -86,7 +87,7 @@ namespace essSystem
 
 CompBInsert::CompBInsert(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7),
-  attachSystem::CellMap(),
+  attachSystem::CellMap(),attachSystem::FrontBackCut(),
   insIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insIndex+1)
   /*!
@@ -177,7 +178,7 @@ CompBInsert::createSurfaces()
       int SWI(SI);
       for(size_t wallIndex=0;wallIndex<=NWall;wallIndex++)
         {
-          ModelSupport::buildPlane(SMap,SWI+1,Origin+Y*(T+L),Y);
+	  ModelSupport::buildPlane(SMap,SWI+1,Origin+Y*(T+L),Y);
           ModelSupport::buildPlane(SMap,SWI+3,Origin-X*(T+width[index]/2.0),X);
           ModelSupport::buildPlane(SMap,SWI+4,Origin+X*(T+width[index]/2.0),X);
           ModelSupport::buildPlane(SMap,SWI+5,Origin-Z*(T+height[index]/2.0),Z);
@@ -188,8 +189,13 @@ CompBInsert::createSurfaces()
       L+=length[index];
       SI+=100;
     }
-  
+	    
   ModelSupport::buildPlane(SMap,SI+1,Origin+Y*L,Y);
+  if (!frontActive())
+    setFront(SMap.realSurf(insIndex+1));
+  if (!backActive())
+    setBack(-SMap.realSurf(SI+1));
+
   return;
 }
   
@@ -205,16 +211,24 @@ CompBInsert::createObjects(Simulation& System)
   std::string Out;
   int SI(insIndex);
 
+  std::string frontBack;
   for(size_t index=0;index<NBox;index++)
     {
       HeadRule Inner;
       int SWI(SI);
-      const std::string front=ModelSupport::getComposite(SMap,SI," 1 -101 ");
+      frontBack= (index) ?
+	ModelSupport::getComposite(SMap,SI," 1 ") :
+	frontRule();
+      frontBack+= ((index+1)!=NBox) ?
+	ModelSupport::getComposite(SMap,SI," -101 ") :
+	backRule();
+
       for(size_t wallIndex=0;wallIndex<=NWall;wallIndex++)
         {
           Out=ModelSupport::getComposite(SMap,SWI," 3 -4 5 -6 ");
           const int M=(!wallIndex) ? mat[index] : wallMat[wallIndex-1];
-          System.addCell(MonteCarlo::Qhull(cellIndex++,M,0.0,front+Out+Inner.display()));
+          System.addCell(MonteCarlo::Qhull(cellIndex++,M,0.0,
+					   frontBack+Out+Inner.display()));
 
           if (!wallIndex)
             addCell("Item",cellIndex-1);
@@ -225,7 +239,7 @@ CompBInsert::createObjects(Simulation& System)
           Inner.makeComplement();
           SWI+=10;
         }
-      addOuterUnionSurf(Out+front);
+      addOuterUnionSurf(Out+frontBack);
       SI+=100;
     }
   return;
@@ -241,6 +255,7 @@ CompBInsert::createLinks()
 
   setNConnect(NBox*6+1);
 
+  
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(insIndex+1));
   

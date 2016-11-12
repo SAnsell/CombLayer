@@ -269,6 +269,35 @@ class RangeError : public ExBase
 };
 
 /*!
+  \class OrderError
+  \brief Error in order of number
+  \author Stuart Ansell
+  \date November 2016
+  \version 1.0
+
+  Records the two items A should be <= B
+*/
+ 
+template<typename T>
+class OrderError : public ExBase
+{
+ private:
+
+  const T lowValue;         ///< Current value
+  const T highValue;          ///< Min Value
+
+  void setOutLine();
+
+ public:
+
+  OrderError(const T&,const T&,const std::string&);
+  OrderError(const OrderError<T>& A);
+  OrderError<T>& operator=(const OrderError<T>&);
+  virtual ~OrderError() throw() {}   ///< Destructor 
+ 
+};
+
+/*!
   \class ArrayError
   \brief Error Range in an array/list etc
   \author Stuart Ansell

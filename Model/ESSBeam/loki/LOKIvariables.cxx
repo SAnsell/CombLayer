@@ -328,10 +328,10 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCollGMat","Copper"); 
 
   Control.addVariable("lokiAppAInnerWidth",5.0);
-  Control.addVariable("lokiAppAInnerHeight",50.0);
+  Control.addVariable("lokiAppAInnerHeight",5.0);
   Control.addVariable("lokiAppAWidth",100.0);
-  Control.addVariable("lokiAppAHeight",5.0);
-  Control.addVariable("lokiAppADepth",5.0);
+  Control.addVariable("lokiAppAHeight",20.0);
+  Control.addVariable("lokiAppADepth",20.0);
   Control.addVariable("lokiAppAYStep",5.0); 
   Control.addVariable("lokiAppADefMat","Tungsten");
 

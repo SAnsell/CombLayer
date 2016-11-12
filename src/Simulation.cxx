@@ -1090,6 +1090,40 @@ Simulation::populateCells()
   return -retVal;
 }
 
+int 
+Simulation::populateCells(const std::vector<int>& cellVec)
+  /*!
+    Place a surface* with each keyN in the cell list 
+    Generate the Qhull map.
+    \param cellVec :: Cells to consider
+    \retval 0 on success, 
+    \retval -1 failed to find surface key
+  */
+{
+  ELog::RegMethod RegA("Simulation","populateCells");
+  
+  OTYPE::iterator oc;
+
+  for(const int CN : cellVec)
+    {
+      oc=OList.find(CN);
+      if (oc==OList.end()) return -1;
+      MonteCarlo::Qhull& workObj= *(oc->second);
+      try
+        {
+	  workObj.populate();
+	  workObj.createSurfaceList();
+	}
+      catch (ColErr::InContainerError<int>& A)
+        {
+	  ELog::EM<<"Cell "<<workObj.getName()<<" failed on surface :"
+		  <<A.getItem()<<ELog::endCrit;
+	  throw;
+	}
+    }
+  return 0;
+}
+
 void
 Simulation::populateWCells()
   /*!

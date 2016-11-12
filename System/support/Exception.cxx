@@ -496,6 +496,65 @@ RangeError<T>::setOutLine()
 }
 
 //-------------------------
+// OrderError
+//-------------------------
+template<typename T>
+OrderError<T>::OrderError(const T& aV,const T& bV,
+			  const std::string& Place) :
+  ExBase(0,Place),lowValue(aV),highValue(bV)
+  /*!
+    Set a RangeError
+    \param aV :: low value 
+    \param bV :: high value 
+    \param Place :: String describing the place
+  */
+{
+  setOutLine();
+}
+
+template<typename T>
+OrderError<T>::OrderError(const OrderError<T>& A) :
+  ExBase(A),lowValue(A.lowValue),highValue(A.highValue)
+  /*!
+    Copy constructor
+    \param A :: OrderError to copy
+  */
+{}
+
+
+template<typename T>
+OrderError<T>&
+OrderError<T>::operator=(const OrderError<T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+    }
+  return *this;
+}
+
+template<typename T>
+void
+OrderError<T>::setOutLine()
+  /*!
+    Writes out the range and aim point
+    to Outline
+  */
+{
+  std::stringstream cx;
+  cx<<"OrderError<>"<<std::endl;
+  cx<<getErr()<<" value == "<<lowValue<<
+    " = NOT LESS THAN = "<<highValue;
+  OutLine=cx.str();
+  return;
+}
+
+//-------------------------
 // ArrayError
 //-------------------------
 
@@ -1339,6 +1398,7 @@ template class ColErr::CastError<TimeData::WorkSpace>;
 template class ColErr::CastError<SDef::SrcBase>;
 template class ColErr::CastError<Geometry::Surface>;
 template class ColErr::CastError<void>;
+template class ColErr::OrderError<double>;
 template class ColErr::RangeError<double>;
 template class ColErr::RangeError<int>;
 template class ColErr::RangeError<long int>;
@@ -1347,3 +1407,4 @@ template class ColErr::TypeConvError<Geometry::Vec3D,double>;
 template class ColErr::TypeConvError<double,Geometry::Vec3D>;
 
 ///\endcond TEMPLATE
+ 

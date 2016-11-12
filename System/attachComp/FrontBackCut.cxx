@@ -116,6 +116,72 @@ FrontBackCut::~FrontBackCut()
   */
 {}
 
+void
+FrontBackCut::setFront(const int FSurf)
+  /*!
+    Set a front wall
+    \param FSurf :: Front surface [signed]
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+
+  frontCut.procSurfNum(FSurf);
+  frontCut.populateSurf();
+  frontDivider.reset();
+  activeFront=1;
+  return;
+}
+
+void
+FrontBackCut::setBack(const int BSurf)
+  /*!
+    Set a back wall
+    \param BSurf :: Back surface [signed]
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBack(int)");
+
+  backCut.procSurfNum(BSurf);
+  backCut.populateSurf();
+  backDivider.reset();
+  activeBack=1;
+  return;
+}
+
+void
+FrontBackCut::setFront(const std::string& FRule)
+  /*!
+    Set a front wall
+    \param FRule :: Front rule string
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(string)");
+
+    // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
+  if (!frontCut.procString(FRule))
+    throw ColErr::InvalidLine(FRule,"FRule failed");
+  frontCut.populateSurf();
+  frontDivider.reset();
+  activeFront=1;
+  return;
+}
+
+void
+FrontBackCut::setBack(const std::string& FRule)
+  /*!
+    Set a back wall
+    \param BRule :: Back rule string
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBack(string)");
+
+  if (!backCut.procString(FRule))
+    throw ColErr::InvalidLine(FRule,"FRule failed");
+  backCut.populateSurf();
+  backDivider.reset();
+  activeBack=1;
+  return;
+}
 
 void
 FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
