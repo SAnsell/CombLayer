@@ -117,6 +117,38 @@ FrontBackCut::~FrontBackCut()
 {}
 
 void
+FrontBackCut::setFront(const int FSurf)
+  /*!
+    Set a front wall
+    \param FSurf :: Front surface [signed]
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+
+  frontCut.procSurfNum(FSurf);
+  frontCut.populateSurf();
+  frontDivider.reset();
+  activeFront=1;
+  return;
+}
+
+void
+FrontBackCut::setBack(const int BSurf)
+  /*!
+    Set a back wall
+    \param BSurf :: Back surface [signed]
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setBack(int)");
+
+  backCut.procSurfNum(BSurf);
+  backCut.populateSurf();
+  backDivider.reset();
+  activeBack=1;
+  return;
+}
+
+void
 FrontBackCut::setFront(const std::string& FRule)
   /*!
     Set a front wall

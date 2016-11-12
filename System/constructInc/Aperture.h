@@ -37,7 +37,8 @@ namespace constructSystem
 */
 
 class Aperture : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::FrontBackCut
 
 {  
  private:

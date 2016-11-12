@@ -74,6 +74,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "Aperture.h"
 
 namespace constructSystem
@@ -81,7 +82,8 @@ namespace constructSystem
 
 Aperture::Aperture(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,14),
+  attachSystem::FrontBackCut(),
   appIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(appIndex+1)
 
@@ -93,6 +95,7 @@ Aperture::Aperture(const std::string& Key)  :
 
 Aperture::Aperture(const Aperture& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::FrontBackCut(A),
   appIndex(A.appIndex),cellIndex(A.cellIndex),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   width(A.width),height(A.height),depth(A.depth),
@@ -115,6 +118,7 @@ Aperture::operator=(const Aperture& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
       innerWidth=A.innerWidth;
       innerHeight=A.innerHeight;
@@ -142,7 +146,7 @@ Aperture::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("VacuumBox","populate");
-  
+   
   FixedOffset::populate(Control);
 
   // Void + Fe special:
@@ -152,6 +156,15 @@ Aperture::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
 
+  if (height-innerHeight/2.0<Geometry::zeroTol)
+    throw ColErr::OrderError<double>(innerHeight/2.0,height,
+				     "innerHeight/Height");
+  if (depth-innerHeight/2.0<Geometry::zeroTol)
+    throw ColErr::OrderError<double>(innerHeight/2.0,depth,
+				     "innerHeight/Depth");
+  if (width-innerWidth<Geometry::zeroTol)
+    throw ColErr::OrderError<double>(innerWidth,width,"innerWidth/Width");
+  
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
 
@@ -249,6 +262,25 @@ Aperture::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(appIndex+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(appIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(appIndex+6));
+
+  // 8 corners [FRONT/BACK]
+  for(size_t i=0;i<4;i++)
+    {
+      FixedComp::setLinkSurf(i+6,-SMap.realSurf(appIndex+1));
+      FixedComp::setLinkSurf(i+10,SMap.realSurf(appIndex+2));
+    }
+  Geometry::Vec3D platePt(Origin-Y*(depth/2.0));
+  FixedComp::setConnect(6,platePt-X*(width/2.0),-X);
+  FixedComp::setConnect(7,platePt+X*(width/2.0),X);
+  FixedComp::setConnect(8,platePt-Z*(height/2.0),-Z);
+  FixedComp::setConnect(9,platePt+Z*(height/2.0),Z);
+
+  platePt=Origin+Y*(depth/2.0);
+  FixedComp::setConnect(10,platePt-X*(width/2.0),-X);
+  FixedComp::setConnect(11,platePt+X*(width/2.0),X);
+  FixedComp::setConnect(12,platePt-Z*(height/2.0),-Z);
+  FixedComp::setConnect(13,platePt+Z*(height/2.0),Z);
+  
   
   return;
 }
