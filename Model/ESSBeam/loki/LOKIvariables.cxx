@@ -86,16 +86,26 @@ LOKIvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  PipeGen.setPipe(12.0,0.5);
+  PipeGen.setPipe(2.5,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
   
-  Control.addVariable("lokiAxisXYAngle",1.0);   // rotation 
+  Control.addVariable("lokiAxisXStep",0.0);   // TEMP : ask Clara
+  Control.addVariable("lokiAxisXYAngle",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisZAngle",0.0);
 
-  FGen.setGuideMat("Copper");
+  FGen.setGuideMat("Aluminium");
+
+  FGen.setThickness(0.5,0.5);
   FGen.setYOffset(0.0);
-  FGen.generateBender(Control,"lokiBA",350.0,3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0);
+
+
+  Control.addVariable("lokiBlockShutterHeight",66.3);
+  Control.addVariable("lokiBlockShutterWidth",38.8);
+  Control.addVariable("lokiBlockShutterDepth",49.3);
+  Control.addParse<double>("lokiBlockShutterYStep","lokiBlockShutterDepth/2.0");
+  Control.addVariable("lokiBlockShutterDefMat","Stainless304");
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeB",2.0,46.0);

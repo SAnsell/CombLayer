@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/MainProcess.cxx
+ * File:   process/MainInputs.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -33,7 +33,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,25 +43,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "InputControl.h"
 #include "inputParam.h"
-#include "support.h"
-#include "masterWrite.h"
-#include "objectRegister.h"
-#include "surfIndex.h"
-#include "Simulation.h"
-#include "SimPHITS.h"
-#include "SimFLUKA.h"
-#include "neutron.h"
-#include "Detector.h"
-#include "DetGroup.h"
-#include "SimMonte.h"
-#include "variableSetup.h"
-#include "defaultConfig.h"
-
 #include "MainInputs.h"
 
 namespace mainSystem
