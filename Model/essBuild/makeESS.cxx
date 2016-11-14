@@ -64,6 +64,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "FrontBackCut.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -109,7 +110,7 @@
 // F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
-
+#include "Chicane.h"
 #include "makeESS.h"
 
 namespace essSystem
@@ -400,7 +401,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
 
   const size_t NSet=IParam.setCnt("bunkerFeed");
 
-  ELog::EM<<"CAlling bunker Feed"<<ELog::endDiag;
+  ELog::EM<<"Calling bunker Feed"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("bunkerFeed",j);
@@ -436,6 +437,59 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
           
         }
+    }
+  return;
+}
+
+void
+makeESS::buildBunkerChicane(Simulation& System,
+                            const mainSystem::inputParam& IParam)
+  /*!
+    Build the chicane
+    \param System :: Simulation
+    \param IParam :: Input data
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerChicane");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerChicane");
+
+  ELog::EM<<"Calling bunker Chicane"<<ELog::endDiag;
+  for(size_t j=0;j<NSet;j++)
+    {
+      const std::string errMess="bunkerChicane "+StrFunc::makeString(j);
+      const std::string bunkerName=
+        IParam.getValueError<std::string>
+        ("bunkerChicane",j,0,"BunkerName "+errMess);
+
+      const size_t segNumber=
+        IParam.getValueError<size_t>
+        ("bunkerChicane",j,1,"SegmentNumber "+errMess);
+      
+      // bunkerA/etc should be a map
+      std::shared_ptr<Bunker> BPtr;
+      if (bunkerName=="BunkerA" || bunkerName=="ABunker")
+        BPtr=ABunker;
+      else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
+        BPtr=BBunker;
+      else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+        BPtr=CBunker;
+      else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+        BPtr=DBunker;
+      else
+        throw ColErr::InContainerError<std::string>
+          (bunkerName,"bunkerName not know");
+          
+      std::shared_ptr<Chicane> CF
+        (new Chicane("BunkerChicane"+StrFunc::makeString(j)));
+      OR.addObject(CF);
+      CF->createAll(System,*BPtr,segNumber);
+
+      attachSystem::addToInsertLineCtrl(System,*BPtr,"roof",*CF,*CF);
+      attachSystem::addToInsertLineCtrl(System,*BPtr,"frontWall",*CF,*CF);
     }
   return;
 }
@@ -487,6 +541,7 @@ makeESS::buildBunkerQuake(Simulation& System,
 
   return;
 }
+
   
 void
 makeESS::buildPillars(Simulation& System)
@@ -632,6 +687,9 @@ makeESS::makeBunker(Simulation& System,
     buildBunkerFeedThrough(System,IParam);
   if (IParam.flag("bunkerQuake"))
     buildBunkerQuake(System,IParam);
+  if (IParam.flag("bunkerChicane"))
+    buildBunkerChicane(System,IParam);
+
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {

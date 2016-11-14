@@ -93,6 +93,7 @@
 #include "BunkerRoof.h"
 #include "BunkerWall.h"
 #include "LayerDivide3D.h"
+#include "Chicane.h"
 #include "Bunker.h"
 
 

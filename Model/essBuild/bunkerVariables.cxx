@@ -253,6 +253,14 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BunkerFeedTrack1",Geometry::Vec3D(0,0,-10));
   Control.addVariable("BunkerFeedTrack2",Geometry::Vec3D(0,100,-10));
 
+
+  Control.addVariable("BunkerChicane0NBlocks", 1);
+  Control.addVariable("BunkerChicane0Length", 200.0);
+  Control.addVariable("BunkerChicane0Width",  20.0);
+  Control.addVariable("BunkerChicane0Height", 30.0);
+  Control.addVariable("BunkerChicane0Mat", "Void");
+
+  
   return;
 }
   

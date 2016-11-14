@@ -26,11 +26,12 @@ class Simulation;
 
 namespace essSystem
 {
+
   class BunkerMainWall;
   class BunkerRoof;
   class BunkerWall;
   class BunkerInsert;
-  
+  class Chicane;  
 /*!
   \class Bunker
   \version 1.0
