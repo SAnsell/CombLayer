@@ -334,7 +334,7 @@ Chicane::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(BUnit,segIndex);
-  ELog::EM<<"Origin == "<<Origin<<" A:"<<Y<<ELog::endDiag;
+
   createSurfaces();
   createObjects(System);
   createLinks();

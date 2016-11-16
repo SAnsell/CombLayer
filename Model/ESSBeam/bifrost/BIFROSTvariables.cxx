@@ -116,9 +116,15 @@ BIFROSTvariables(FuncDataBase& Control)
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
   CGen.setMainRadius(38.122);
   CGen.setFrame(86.5,86.5);
-  CGen.generateChopper(Control,"bifrostChopperA",8.0,12.0,6.55);
+  CGen.generateChopper(Control,"bifrostChopperA", 8.0, 12.0 ,6.55);
 
-  // Double Blade chopper
+  // // T0 chopper if needed
+  //  CGen.generateChopper(Control,"bifrostChopperA", 20.0, 36.0 ,32.0);
+  // BGen.setMaterials("Inconnel","Tungsten");
+  // BGen.setThick({20.0});
+  // BGen.addPhase({95},{60.0});
+  // BGen.generateBlades(Control,"bifrostDBlade",10.0,25.0,35.0);
+
   BGen.setThick({0.2,0.2});
   BGen.addPhase({95,275},{60.0,60.0});
   BGen.addPhase({95,275},{60.0,60.0});
