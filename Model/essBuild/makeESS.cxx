@@ -876,7 +876,7 @@ makeESS::build(Simulation& System,
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
-  const int matmesh=IParam.getValue<int>("matmesh");
+  const int matmesh=IParam.getValue<int>("matmesh"); // generate material mesh
 
   const size_t nF5=IParam.getValue<size_t>("nF5");
   const int engActive=Control.EvalPair<int>
@@ -1020,8 +1020,12 @@ makeESS::build(Simulation& System,
       MR.addRotation(Geometry::Vec3D(0,1,0), Geometry::Vec3D(0,0,0), 180.0);
     }
 
-  MatMesh m(System);
-  m.Dump(matmesh);
+  if (matmesh) // generate material mesh
+    {
+      MatMesh m(System);
+      m.Dump(matmesh);
+    }
+
   return;
 }
 
