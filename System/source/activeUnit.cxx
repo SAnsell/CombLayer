@@ -163,12 +163,14 @@ activeUnit::XInverse(const double R) const
 
   
 void
-activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt) const
+activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
+			const double weight) const
   /*!
     Calculate the energy based on RNG nubmer and 
     write a photon in a random direction
     \parma OX :: Output stream
     \param Pt :: Point for interaction
+    \param weight :: Scaling factor 
   */
 {
   boost::format FMT("% 12.6e %|14t| % 12.6e %|28t| % 12.6e");
@@ -186,7 +188,7 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt) const
     {
       OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
       OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
-      OX<<"  "<<(FMTB % E % integralFlux)<<std::endl;
+      OX<<"  "<<(FMTB % E % (weight*integralFlux))<<std::endl;
     }
   else
     {

@@ -82,7 +82,8 @@ namespace SDef
 {
 
 ActivationSource::ActivationSource() :
-  timeStep(2),nPoints(0),nTotal(0)
+  timeStep(2),nPoints(0),nTotal(0),
+  weightDist(-1.0),scale(1.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */
@@ -152,6 +153,21 @@ ActivationSource::setBox(const Geometry::Vec3D& APt,
   return;
 }
 
+void
+ActivationSource::setWeightPoint(const Geometry::Vec3D& Pt,
+			   const double distScale)
+  /*!
+    Allow scaling realtive to a point base on R^2 distance
+    \param Pt :: point
+    \param distScale :: distance scale 
+   */
+{
+  weightPt=Pt;
+  weightDist=distScale;
+  return;
+}
+    
+  
 void
 ActivationSource::createFluxVolumes(const Simulation& System)
  /*!
@@ -364,6 +380,22 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
 
 }
 
+double
+ActivationSource::calcWeight(const Geometry::Vec3D& Pt) const
+  /*!
+    Calculate the base weight
+    \param Pt :: Point
+    \return base weight
+  */
+{
+  if (weightDist<Geometry::zeroTol)
+    return scale;
+  double D=(weightPt.Distance(Pt))/weightDist;
+  if (D<0.1) D=0.1;
+
+  return scale/(D*D);
+}
+  
 void
 ActivationSource::writePoints(const std::string& outputName) const
   /*!
@@ -388,8 +420,8 @@ ActivationSource::writePoints(const std::string& outputName) const
       const int& cellN=cellID[i];
       std::map<int,activeUnit>::const_iterator mc=
 	cellFlux.find(cellN);
-
-      mc->second.writePhoton(OX,Pt);
+      const double weight=calcWeight(Pt);
+      mc->second.writePhoton(OX,Pt,weight);
     }
   OX.close();
   return;
