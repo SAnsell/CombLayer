@@ -185,7 +185,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyZStep",0.0);
   Control.addVariable("TopFlyXYangle",90.0);
   Control.addVariable("TopFlyZangle",0.0);
-  Control.addVariable("TopFlyTotalHeight",4.9); // 4.6
+  Control.addVariable("TopFlyTotalHeight",5.2); // 5.2 makes 3 cm of Hydrogen
   Control.addVariable("TopFlyWallMat","Aluminium");
   Control.addVariable("TopFlyWallDepth",0.0);
   Control.addVariable("TopFlyWallHeight",0.3);
