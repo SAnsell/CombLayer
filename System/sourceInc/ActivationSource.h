@@ -56,7 +56,8 @@ class ActivationSource
 
   Geometry::Vec3D weightPt;       ///< Centre weight intensity
   double weightDist;              ///< Centre weight scalar
-  double scale;                   ///< scalar
+  double externalScale;           ///< intensity scale [external]
+  double scale;                   ///< internal scale
 
   void createVolumeCount();
   void createFluxVolumes(const Simulation&);
@@ -65,7 +66,7 @@ class ActivationSource
 			const std::vector<int>&);
 
   double calcWeight(const Geometry::Vec3D&) const;
-
+  void normalizeScale();
   void writePoints(const std::string&) const;
   
  public:
@@ -81,7 +82,7 @@ class ActivationSource
   void setTimeSegment(const size_t T) { timeStep=T+1; }
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
   /// set scalar
-  void setScale(const double S) { scale=S; }
+  void setScale(const double S) { externalScale=S; }  
   void setWeightPoint(const Geometry::Vec3D&,const double);
   
 

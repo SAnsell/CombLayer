@@ -190,13 +190,6 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
       OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
       OX<<"  "<<(FMTB % E % (weight*integralFlux))<<std::endl;
     }
-  else
-    {
-      ELog::EM<<"Ditching "<<E<<" "<<integralFlux<<ELog::endDiag;
-    }
-   
-
-  //  OX<<2<<" "<<Pt<<" "<<uvw<<" "<<E<<" "<<1.0<<std::endl;
   return;
 }
   

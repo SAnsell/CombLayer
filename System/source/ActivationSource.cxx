@@ -83,7 +83,7 @@ namespace SDef
 
 ActivationSource::ActivationSource() :
   timeStep(2),nPoints(0),nTotal(0),
-  weightDist(-1.0),scale(1.0)
+  weightDist(-1.0),externalScale(1.0),scale(1.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */
@@ -93,7 +93,9 @@ ActivationSource::ActivationSource(const ActivationSource& A) :
   timeStep(A.timeStep),nPoints(A.nPoints),nTotal(A.nTotal),
   ABoxPt(A.ABoxPt),BBoxPt(A.BBoxPt),
   volCorrection(A.volCorrection),cellFlux(A.cellFlux),
-  fluxPt(A.fluxPt),cellID(A.cellID)
+  fluxPt(A.fluxPt),cellID(A.cellID),
+  weightPt(A.weightPt),weightDist(A.weightDist),
+  externalScale(A.externalScale),scale(A.scale)
   /*!
     Copy constructor
     \param A :: ActivationSource to copy
@@ -119,11 +121,13 @@ ActivationSource::operator=(const ActivationSource& A)
       cellFlux=A.cellFlux;
       fluxPt=A.fluxPt;
       cellID=A.cellID;
+      weightPt=A.weightPt;
+      weightDist=A.weightDist;
+      externalScale=A.externalScale;
+      scale=A.scale;
     }
   return *this;
 }
-
-
 
 ActivationSource::~ActivationSource() 
   /*!
@@ -388,12 +392,35 @@ ActivationSource::calcWeight(const Geometry::Vec3D& Pt) const
     \return base weight
   */
 {
+  
   if (weightDist<Geometry::zeroTol)
     return scale;
+
   double D=(weightPt.Distance(Pt))/weightDist;
   if (D<0.1) D=0.1;
 
   return scale/(D*D);
+}
+
+void
+ActivationSource::normalizeScale()
+  /*!
+    Normalizes the scale to integral of 1.0
+  */
+{
+  ELog::RegMethod RegA("ActivationSource","normalizeScale");
+
+  scale=1.0;
+  if (weightDist>Geometry::zeroTol)
+    {
+      double sum(0.0);
+      for(const Geometry::Vec3D& Pt : fluxPt)
+        sum+=calcWeight(Pt);
+      
+      scale=static_cast<double>(fluxPt.size())/sum;
+      ELog::EM<<"Normalization scale == "<<scale<<ELog::endDiag;
+    }
+  return;
 }
   
 void
@@ -413,14 +440,14 @@ ActivationSource::writePoints(const std::string& outputName) const
 
   OX<<"ActivationSource TStep="<<StrFunc::makeString(timeStep)
     <<" Source == "<<ABoxPt<<" :: "<<BBoxPt<<std::endl;
-  OX<<nPoints<<std::endl;
+  OX<<-nPoints<<std::endl;
   for(size_t i=0;i<nPoints;i++)
     {
       const Geometry::Vec3D& Pt=fluxPt[i];
       const int& cellN=cellID[i];
       std::map<int,activeUnit>::const_iterator mc=
 	cellFlux.find(cellN);
-      const double weight=calcWeight(Pt);
+      const double weight=calcWeight(Pt)*externalScale;
       mc->second.writePhoton(OX,Pt,weight);
     }
   OX.close();
@@ -447,6 +474,7 @@ ActivationSource::createSource(Simulation& System,
   //
   readFluxes(inputFileBase);
   createFluxVolumes(System);
+  normalizeScale();
   writePoints(outputName);
 
   
