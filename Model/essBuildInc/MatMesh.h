@@ -28,6 +28,6 @@ namespace essSystem
 	      const Geometry::Vec3D &endPt,
 	      const size_t nX, const size_t nY, const size_t nZ,
 	      const char *fname) const;
-    void Dump(const int &n, const char *fname) const;
+    void Dump(const int &n, const char *fname=0) const;
   };
 }

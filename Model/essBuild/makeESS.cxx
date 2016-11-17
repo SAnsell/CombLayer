@@ -1021,10 +1021,7 @@ makeESS::build(Simulation& System,
     }
 
   MatMesh m(System);
-  //  m.Dump("mesh.dat", -40, 40, -40, 40, -20, 20, 200, 200, 100);
-  //  m.Dump("mesh.dat", -40, 40, -40, 40, -20, 20, 20, 20, 10);
-
-  m.Dump(matmesh, ("mesh" + std::to_string(matmesh) + ".dat").c_str());
+  m.Dump(matmesh);
   return;
 }
 
