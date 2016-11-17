@@ -25,6 +25,7 @@
 #include <sstream>
 #include "FileReport.h"
 #include "OutputLog.h"
+#include "Exception.h"
 #include "MatMesh.h"
 
 namespace essSystem
@@ -113,6 +114,7 @@ namespace essSystem
 		     const char *fname) const
   {
     ELog::RegMethod RControl("MatMesh","Dump(vx, vy, vz, fname)");
+    ELog::EM << "Dumping material mesh into\t" << fname << ELog::endBasic;
 
     const size_t nX = vx.size()-1;
     const size_t nY = vy.size()-1;
@@ -157,7 +159,7 @@ namespace essSystem
 		     const size_t nX, const size_t nY, const size_t nZ,
 		     const char *fname) const
   {
-    /*
+    /*!
       Dumps a mesh with materials in ASCII file 'fname'
       \param startPt :: Point with min coordinates
       \param endPt :: Point with max coordinates
@@ -167,7 +169,7 @@ namespace essSystem
       \param fname :: output file name
     */
 
-    ELog::RegMethod RControl("MatMesh","Dump(start, end, nx, ny, nz)");
+    ELog::RegMethod RControl("MatMesh","Dump(start, end, nx, ny, nz, fname)");
 
     Geometry::Vec3D Origin = startPt; // start corner (x,y,z=min)
     Geometry::Vec3D XYZ = endPt-Origin;
@@ -191,4 +193,32 @@ namespace essSystem
     return;
   }
 
+  void MatMesh::Dump(const int &n, const char *fname) const
+  {
+    /*!
+      Dumps a mesh with materials in ASCII file 'fname'.
+      The mesh is defined by the pre-defined index 'n'.
+    */
+    ELog::RegMethod RControl("MatMesh","Dump(n, fname)");
+
+
+    if (n==1)
+      {
+        Geometry::Vec3D ptStart(-70, -70, -80);
+        Geometry::Vec3D ptEnd(70, 70, -20);
+        Dump(ptStart, ptEnd, 10, 10, 10, fname);
+      }
+    else if (n==6)
+      {
+	std::vector<double> vx {-67, -56.2333, -45.4667, -34.7, -30.8633, -27.0267, -23.19, -19.3533, -15.5167, -11.68, -10.8545, -10.0291, -9.20364, -8.37818, -7.55273, -6.72727, -5.90182, -5.07636, -4.25091, -3.42545, -2.6, -2.3, -1.8, -1.5, -1.1, -0.8, 0.8, 1.1, 1.5, 1.8, 2.3, 2.6, 3.42545, 4.25091, 5.07636, 5.90182, 6.72727, 7.55273, 8.37818, 9.20364, 10.0291, 10.8545, 11.68, 15.5167, 19.3533, 23.19, 27.0267, 30.8633, 34.7, 45.4667, 56.2333, 67};
+	std::vector<double> vy {-67, -56.2333, -45.4667, -34.7, -29.85, -25, -20.15, -15.3, -15, -14.5, -14.2, -12.8476, -11.4952, -10.1429, -8.79048, -7.4381, -6.08571, -4.73333, -3.38095, -2.02857, -0.67619, 0.67619, 2.02857, 3.38095, 4.73333, 6.08571, 7.4381, 8.79048, 10.1429, 11.4952, 12.8476, 14.2, 14.5, 15, 15.3, 20.15, 25, 29.85, 34.7, 45.4667, 56.2333, 67};
+	std::vector<double> vz {-75, -68.22, -61.44, -54.66, -47.88, -41.1, -40.7, -40.1, -39.8, -37.81, -35.82, -33.83, -31.84, -29.85, -27.86, -25.87, -23.88, -21.89, -19.9, -19.6, -18.6, -18.3, -17.8, -17.4, -17, -16.7, -16.2, -15.9, -15.5, -15.2, -13.6, -13.3, -12.9, -12.6, -12.1, -11.8, -11.4, -11, -10.5, -10.3, -10.2, -7.3, -7, 7, 7.3, 10.3, 10.6, 11.1, 11.4, 11.8, 12.1, 13.7, 14, 14.4, 14.7, 15.2, 15.5, 15.8, 16.5, 16.8, 17.1, 19.1, 21.1, 23.1, 25.1, 27.1, 29.1, 31.1, 33.1, 35.1, 37.1, 37.4, 38, 38.4, 45.72, 53.04, 60.36, 67.68, 75};
+	Dump(vx, vy, vz, fname);
+      }
+    else
+      {
+	throw ColErr::ExitAbort("matmesh==" + std::to_string(n) + " not supported");
+	//	throw ColErr::RangeError<int>(n, 0, 0, "not supported");
+      }
+  }
 }

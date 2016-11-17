@@ -17,6 +17,9 @@ namespace essSystem
   public:
     MatMesh(Simulation &);
     virtual ~MatMesh();
+    std::string getMaterials(std::vector<int>) const;
+    std::vector<int> getMaterials(const Geometry::Vec3D &center,
+				  double *stepXYZ, size_t N) const;
     void Dump(const std::vector<double>& vx,
 	      const std::vector<double>& vy,
 	      const std::vector<double>& vz,
@@ -25,9 +28,6 @@ namespace essSystem
 	      const Geometry::Vec3D &endPt,
 	      const size_t nX, const size_t nY, const size_t nZ,
 	      const char *fname) const;
-    std::vector<int> getMaterials(const Geometry::Vec3D &center,
-				  double *stepXYZ, size_t N) const;
-    std::string getMaterials(std::vector<int>) const;
-
+    void Dump(const int &n, const char *fname) const;
   };
 }
