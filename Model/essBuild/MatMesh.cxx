@@ -53,6 +53,10 @@ namespace essSystem
   std::string
   MatMesh::getMaterials(std::vector<int> vmat) const
   {
+    /*!
+      Convert array of integer material IDs into string
+      \param vmat :: array of materials
+     */
     ELog::RegMethod RControl("MatMesh","getMaterials(std::vector<int>)");
     std::ostringstream buffer;
 
@@ -76,6 +80,12 @@ namespace essSystem
   std::vector<int>
   MatMesh::getMaterials(const Geometry::Vec3D &center, double *stepXYZ, size_t N) const
   {
+    /*!
+      Calculate material fractions in the given cell
+      \param center :: coordinates of the cell centre
+      \param stepXYZ :: cell size
+      \param N :: number of randm points to sample
+     */
     ELog::RegMethod RControl("MatMesh","getMaterials");
 
     std::vector<int> vmat;
@@ -108,6 +118,12 @@ namespace essSystem
 		     const std::vector<double>& vz,
 		     const char *fname) const
   {
+    /*!
+      Dump material mesh defined by XYZ boundaries into ASCII file
+      \param vx :: array of boundaries along the x-axis
+      \param vy :: array of boundaries along the y-axis
+      \param vz :: array of boundaries along the z-axis
+     */
     ELog::RegMethod RControl("MatMesh","Dump(vx, vy, vz, fname)");
     ELog::EM << "Dumping material mesh into\t" << fname << ELog::endBasic;
 
