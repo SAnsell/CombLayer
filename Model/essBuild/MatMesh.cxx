@@ -80,16 +80,11 @@ namespace essSystem
 
     std::vector<int> vmat;
     double x, y, z, r;
-    double xmin = 100000;
-    double xmax = -10000;
-
     MonteCarlo::Object *ObjPtr(0);
 
     for (size_t i=0; i<N; i++) {
       r = (rand() % 100)/100.0 - 0.5; // -0.5 ... 0.5
       x = center[0] + r*stepXYZ[0];
-      if (x<xmin) xmin=x;
-      if (x>xmax) xmax=x;
 
       r = (rand() % 100)/100.0 - 0.5;
       y = center[1] + r*stepXYZ[1];
