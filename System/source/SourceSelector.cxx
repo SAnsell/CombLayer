@@ -79,6 +79,7 @@
 #include "ChipIRSource.h"
 #include "WorkData.h"
 #include "activeUnit.h"
+#include "activeFluxPt.h"
 #include "ActiveWeight.h"
 #include "ActivationSource.h"
 #include "SourceSelector.h"

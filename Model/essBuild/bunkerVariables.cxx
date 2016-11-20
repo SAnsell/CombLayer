@@ -88,9 +88,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
     {
       Control.addVariable(KItem+"BunkerWallActive",0);
 
-      Control.addVariable(KItem+"BunkerWallNVert",20);
-      Control.addVariable(KItem+"BunkerWallNMedial",2);
-      Control.addVariable(KItem+"BunkerWallNRadial",12);
+      Control.addVariable(KItem+"BunkerWallNVert",8);
+      Control.addVariable(KItem+"BunkerWallNMedial",8);
+      Control.addVariable(KItem+"BunkerWallNRadial",0);
 
       Control.addVariable(KItem+"BunkerRoofNVert",20);
       Control.addVariable(KItem+"BunkerRoofNMedial",1);
@@ -255,6 +255,7 @@ EssBunkerVariables(FuncDataBase& Control)
 
 
   Control.addVariable("BunkerChicane0NBlocks", 1);
+  Control.addVariable("BunkerChicane0ZStep",200.0);
   Control.addVariable("BunkerChicane0Length", 200.0);
   Control.addVariable("BunkerChicane0Width",  20.0);
   Control.addVariable("BunkerChicane0Height", 30.0);

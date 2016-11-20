@@ -141,7 +141,7 @@ Chicane::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("Chicane","populate");
-
+  ELog::EM<<"Key name == "<<keyName<<ELog::endDiag;
   FixedOffset::populate(Control);
 
   nBlock=Control.EvalVar<size_t>(keyName+"NBlocks");

@@ -51,13 +51,12 @@ class ActivationSource
 
   std::map<int,double> volCorrection;   ///< cell / volume
   std::map<int,activeUnit> cellFlux;    ///< cell[active] : flux data
-  std::vector<Geometry::Vec3D> fluxPt;  ///< Flux emmision points
-  std::vector<int> cellID;              ///< cell ID for points
+  std::vector<activeFluxPt> fluxPt;     ///< Flux emmision points [nps values]
+
 
   Geometry::Vec3D weightPt;       ///< Centre weight intensity
   double weightDist;              ///< Centre weight scalar
   double externalScale;           ///< intensity scale [external]
-  double scale;                   ///< internal scale
 
   void createVolumeCount();
   void createFluxVolumes(const Simulation&);

@@ -62,6 +62,7 @@ activeUnit::activeUnit(const double IF,
                        const std::vector<double>& E,
                        const std::vector<double>& G) :
   volume(0.0),integralFlux(IF),
+  scaleCnt(0),scaleIntegral(0.0),
   energy(E),cellFlux(G)
   /*!
     Constructor 
@@ -74,6 +75,7 @@ activeUnit::activeUnit(const double IF,
   
 activeUnit::activeUnit(const activeUnit& A) :
   volume(A.volume),integralFlux(A.integralFlux),
+  scaleCnt(A.scaleCnt),scaleIntegral(A.scaleIntegral),
   energy(A.energy),cellFlux(A.cellFlux)
   /*!
     Copy Constructor 
@@ -93,8 +95,11 @@ activeUnit::operator=(const activeUnit& A)
     {
       volume=A.volume;
       integralFlux=A.integralFlux;
+      scaleCnt=A.scaleCnt;
+      scaleIntegral=A.scaleIntegral;
       energy=A.energy;
       cellFlux=A.cellFlux;
+
     }
   return *this;
 }  
@@ -159,8 +164,40 @@ activeUnit::XInverse(const double R) const
   return energy[IX]+frac*(energy[IX+1]-energy[IX]);
 }
 
+void
+activeUnit::zeroScale()
+  /*!
+    Aero the scaleIntegral
+  */
+{
+  scaleIntegral=0.0;
+  scaleCnt=0;
+  return;
+}
+  
+void
+activeUnit::addScaleSum(const double S)
+  /*!
+    Add a integral contribution to sum
+    \param S :: value to add
+   */
+{
+  scaleCnt++;
+  scaleIntegral+=S;
+  return;
+}
 
+double
+activeUnit::getScaleFlux() const
+  /*!
+    return normalized scale flux value
+    \return value
+  */
+{
+  return (scaleCnt) ? scaleIntegral/static_cast<double>(scaleCnt) : 1.0;
+}
 
+  
   
 void
 activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
@@ -170,7 +207,7 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
     write a photon in a random direction
     \parma OX :: Output stream
     \param Pt :: Point for interaction
-    \param weight :: Scaling factor 
+    \param weight :: External Scaling factor 
   */
 {
   boost::format FMT("% 12.6e %|14t| % 12.6e %|28t| % 12.6e");
@@ -188,7 +225,7 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
     {
       OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
       OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
-      OX<<"  "<<(FMTB % E % (weight*integralFlux))<<std::endl;
+      OX<<"  "<<(FMTB % E % (weight*getScaleFlux()))<<std::endl;
     }
   return;
 }
