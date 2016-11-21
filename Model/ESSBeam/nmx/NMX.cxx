@@ -204,8 +204,7 @@ NMX::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(System.getDataBase(),GItem,1);
-
+  setBeamAxis(System.getDataBase(),GItem,0);
   GuideA->addInsertCell(GItem.getCells("Void"));
   GuideA->addFrontCut(GItem.getKey("Beam"),-1);
   GuideA->addEndCut(GItem.getKey("Beam"),-2);

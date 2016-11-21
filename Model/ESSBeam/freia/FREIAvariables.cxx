@@ -92,7 +92,7 @@ FREIAvariables(FuncDataBase& Control)
   // extent of beamline
   Control.addVariable("freiaStopPoint",0);
   Control.addVariable("freiaAxisXYAngle",0.0);   // rotation
-  Control.addVariable("freiaAxisZAngle",0.0);   // rotation 
+  Control.addVariable("freiaAxisZAngle",0.0);   // down slope
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.0);

@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
@@ -74,6 +75,7 @@
 #include "FlightLine.h"
 #include "WedgeFlightLine.h"
 #include "AttachSupport.h"
+#include "LinkSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
@@ -441,6 +443,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
   return;
 }
 
+
 void
 makeESS::buildBunkerChicane(Simulation& System,
                             const mainSystem::inputParam& IParam)
@@ -465,10 +468,6 @@ makeESS::buildBunkerChicane(Simulation& System,
         IParam.getValueError<std::string>
         ("bunkerChicane",j,0,"BunkerName "+errMess);
 
-      const size_t segNumber=
-        IParam.getValueError<size_t>
-        ("bunkerChicane",j,1,"SegmentNumber "+errMess);
-      
       // bunkerA/etc should be a map
       std::shared_ptr<Bunker> BPtr;
       if (bunkerName=="BunkerA" || bunkerName=="ABunker")
@@ -482,11 +481,33 @@ makeESS::buildBunkerChicane(Simulation& System,
       else
         throw ColErr::InContainerError<std::string>
           (bunkerName,"bunkerName not know");
-          
+
       std::shared_ptr<Chicane> CF
         (new Chicane("BunkerChicane"+StrFunc::makeString(j)));
       OR.addObject(CF);
-      CF->createAll(System,*BPtr,segNumber);
+      CF->addInsertCell(74123);
+
+      // Positioned relative to segment:
+      size_t segNumber(0);
+      const std::string segObj=
+        IParam.getValueError<std::string>
+        ("bunkerChicane",j,1,"SegmentNumber "+errMess);
+      
+      if (!StrFunc::convert(segObj,segNumber))
+	{ 
+	  const std::string linkName=
+	    IParam.getValueError<std::string>
+	    ("bunkerChicane",j,2,"SegmentNumber "+errMess);
+	  const attachSystem::FixedComp* FCPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
+
+	  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+          CF->createAll(System,*FCPtr,linkIndex);
+	}
+      else
+	{
+          CF->createAll(System,*BPtr,segNumber);
+	}
 
       attachSystem::addToInsertLineCtrl(System,*BPtr,"roof",*CF,*CF);
       attachSystem::addToInsertLineCtrl(System,*BPtr,"frontWall",*CF,*CF);
@@ -682,13 +703,6 @@ makeESS::makeBunker(Simulation& System,
 
   if (bunkerType.find("noPillar")==std::string::npos)
     buildPillars(System);
-
-  if (IParam.flag("bunkerFeed"))
-    buildBunkerFeedThrough(System,IParam);
-  if (IParam.flag("bunkerQuake"))
-    buildBunkerQuake(System,IParam);
-  if (IParam.flag("bunkerChicane"))
-    buildBunkerChicane(System,IParam);
 
 
   if (bunkerType.find("noCurtain")==std::string::npos)
@@ -922,7 +936,15 @@ makeESS::build(Simulation& System,
       makeBeamLine(System,IParam);
       ModPipes->buildLowPipes(System,lowPipeType);
     }
-  
+   // Add feedthoughs/chicanes 
+
+  if (IParam.flag("bunkerFeed"))
+    buildBunkerFeedThrough(System,IParam);
+  if (IParam.flag("bunkerQuake"))
+    buildBunkerQuake(System,IParam);
+  if (IParam.flag("bunkerChicane"))
+    buildBunkerChicane(System,IParam);
+
   buildF5Collimator(System, nF5);
 
   return;
