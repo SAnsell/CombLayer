@@ -658,6 +658,12 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   " 28064.70c     0.000004315 ", "lwtr.10t", MLib);
   MObj.setDensity(-2.35);
   MDB.resetMaterial(MObj);
+
+  // Aluminium (tmp for matmesh7 only)
+  MObj.setMaterial(imat++, "AluminiumBe", " 13027.70c 1.0 ", "al27.12t", MLib);
+  MObj.setDensity(-2.7);
+  MDB.resetMaterial(MObj);
+
   
   return;
 }
