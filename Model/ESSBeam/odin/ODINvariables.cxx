@@ -152,11 +152,11 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBInsertLowWall",1.0);
   Control.addVariable("odinBInsertLeftWall",1.0);
   Control.addVariable("odinBInsertRightWall",1.0);
-  Control.addVariable("odinBInsertWallMat","Stainless304");       
+  Control.addVariable("odinBInsertWallMat","CastIron");       
 
   // BEAM INSERT:
   FGen.clearYOffset();
-  FGen.generateRectangle(Control,"odinFWall",318.0,4.5,4.5);
+  FGen.generateRectangle(Control,"odinFWall",346.0,4.5,4.5);
 
   // Pit on exit:
   PGen.setFeLayer(6.0);
@@ -198,10 +198,19 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinOutBCutBackShape","Circle");
   Control.addVariable("odinOutBCutBackRadius",5.0);
 
-  SGen.generateShield(Control,"odinShieldB",900.0,80.0,80.0,80.0,2,8);  
+  SGen.generateShield(Control,"odinShieldB",2700.0,80.0,80.0,80.0,4,8);  
   PipeGen.generatePipe(Control,"odinPipeOutB",2.0,855.0);
   FGen.generateTaper(Control,"odinOutFB",847.0,4.0,4.0,20.0,16.0);
-  
+
+  PipeGen.generatePipe(Control,"odinPipeOutC",2.0,905.0);
+  FGen.generateTaper(Control,"odinOutFC",897.0,4.0,4.0,20.0,16.0);
+
+  PipeGen.generatePipe(Control,"odinPipeOutD",2.0,905.0);
+  FGen.generateTaper(Control,"odinOutFD",897.0,4.0,4.0,20.0,16.0);
+
+  PipeGen.generatePipe(Control,"odinPipeOutE",2.0,190.0);
+  FGen.generateTaper(Control,"odinOutFE",185.0,4.0,4.0,20.0,16.0);
+
   // HUT:
   Control.addVariable("odinCaveYStep",2900.0);
   Control.addVariable("odinCaveVoidHeight",300.0);
@@ -227,7 +236,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinCaveConcNoseSide",35.0);
   Control.addVariable("odinCaveConcBack",35.0);
 
-  Control.addVariable("odinCaveFeMat","Stainless304");
+  Control.addVariable("odinCaveFeMat","CastIron");
   Control.addVariable("odinCaveConcMat","Concrete");
    
   // WALL for Hut
@@ -235,7 +244,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinCaveWallThick",45.0);
   Control.addVariable("odinCaveWallXGap",6.0);
   Control.addVariable("odinCaveWallZGap",6.0);
-  Control.addVariable("odinCaveWallMat","Stainless304");
+  Control.addVariable("odinCaveWallMat","CastIron");
 
   // Beam port through front of cave
   Control.addVariable("odinCaveCutShape","Circle");
@@ -286,7 +295,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinBeamStopInnerFeStep",35.0);
   Control.addVariable("odinBeamStopInnerCut",70.0);
   
-  Control.addVariable("odinBeamStopFeMat","Stainless304");
+  Control.addVariable("odinBeamStopFeMat","CastIron");
   Control.addVariable("odinBeamStopConcMat","Concrete");
 
   return;

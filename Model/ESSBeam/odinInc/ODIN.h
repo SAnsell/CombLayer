@@ -146,11 +146,26 @@ class ODIN : public attachSystem::CopiedComp
 
   /// First Shield wall
   std::shared_ptr<constructSystem::LineShield> ShieldB;  
-  /// Pipe from 15.0 to 20m 
+  /// Pipe from 15.0 to 22m 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Beamline from bunker to hutch
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
-  
+
+  /// Pipe from 22.0 to 30m 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
+  /// Beamline from bunker to hutch
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
+
+  /// Pipe from 30.0 to Cave 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutD;
+  /// Beamline from bunker to hutch
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutD;
+
+  /// Pipe into cave
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutE;
+  /// Beamline from bunker to hutch
+  std::shared_ptr<beamlineSystem::GuideLine> FocusOutE;
+
   
   /// Main cave
   std::shared_ptr<essSystem::Hut> Cave;

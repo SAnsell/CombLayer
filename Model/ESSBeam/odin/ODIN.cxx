@@ -141,11 +141,19 @@ ODIN::ODIN(const std::string& keyName) :
   OutBCutBack(new constructSystem::HoleShape(newName+"OutBCutBack")),
   ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
   FOC6Disk(new constructSystem::DiskChopper(newName+"FOC6Blade")),
-
   
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"OutFB")),
+
+  VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
+  FocusOutC(new beamlineSystem::GuideLine(newName+"OutFC")),
+
+  VPipeOutD(new constructSystem::VacuumPipe(newName+"PipeOutD")),
+  FocusOutD(new beamlineSystem::GuideLine(newName+"OutFD")),
+
+  VPipeOutE(new constructSystem::VacuumPipe(newName+"PipeOutE")),
+  FocusOutE(new beamlineSystem::GuideLine(newName+"OutFE")),
 
   Cave(new essSystem::Hut(newName+"Cave")),
   CaveCut(new constructSystem::HoleShape(newName+"CaveCut")),
@@ -208,6 +216,15 @@ ODIN::ODIN(const std::string& keyName) :
   OR.addObject(ShieldB);
   OR.addObject(VPipeOutB);
   OR.addObject(FocusOutB);
+
+  OR.addObject(VPipeOutC);
+  OR.addObject(FocusOutC);
+
+  OR.addObject(VPipeOutD);
+  OR.addObject(FocusOutD);
+
+  OR.addObject(VPipeOutE);
+  OR.addObject(FocusOutE);
 
 
   OR.addObject(Cave);
@@ -412,6 +429,24 @@ ODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+
+  VPipeOutC->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutC->createAll(System,*VPipeOutB,2);
+
+  FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
+  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
+
+  VPipeOutD->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutD->createAll(System,*VPipeOutC,2);
+
+  FocusOutD->addInsertCell(VPipeOutD->getCells("Void"));
+  FocusOutD->createAll(System,*VPipeOutD,0,*VPipeOutD,0);
+
+  VPipeOutE->addInsertCell(ShieldB->getCell("Void"));
+  VPipeOutE->createAll(System,*VPipeOutD,2);
+
+  FocusOutE->addInsertCell(VPipeOutE->getCells("Void"));
+  FocusOutE->createAll(System,*VPipeOutE,0,*VPipeOutE,0);
 
   CaveCut->addInsertCell(Cave->getCells("FeNose"));
   CaveCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
