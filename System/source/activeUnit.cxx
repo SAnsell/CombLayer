@@ -137,6 +137,7 @@ activeUnit::normalize(const double fracValue,
 	  FV=prevSum/normFlux;
 	}
     }
+  ELog::EM<<"Vlud == "<<V<<" "<<fracValue<<ELog::endDiag;
   integralFlux*=fracValue;
   volume=V;
   return;
@@ -221,11 +222,11 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
   const double E=XInverse(R);
 
   //  OX<<(FMT % Pt.X() % Pt.Y() % Pt.Z())<<std::endl;
-  if (E>1e-3)  // below threshold
+  if (E>1e-3)  // above threshold
     {
       OX<<"2 "<<(FMT % Pt.X() % Pt.Y() % Pt.Z());
       OX<<"  "<<(FMT % uvw.X() % uvw.Y() % uvw.Z());
-      OX<<"  "<<(FMTB % E % (weight*getScaleFlux()))<<std::endl;
+      OX<<"  "<<(FMTB % E % (weight*getScaleFlux()*integralFlux))<<std::endl;
     }
   return;
 }

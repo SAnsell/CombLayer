@@ -240,8 +240,9 @@ ActivationSource::createFluxVolumes(const Simulation& System)
     {
       std::map<int,double>::const_iterator mc=
 	volCorrection.find(CA.first);
-      CA.second.normalize(static_cast<double>(nPoints)/mc->second,
-			  boxVol*mc->second);
+      if (mc->second>Geometry::zeroTol)
+	CA.second.normalize(static_cast<double>(nPoints)/mc->second,
+			    boxVol*mc->second);
     }
 
   for(std::map<int,double>::value_type& MItem : volCorrection)
