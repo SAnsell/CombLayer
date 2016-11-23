@@ -215,11 +215,11 @@ Chicane::createSurfaces()
       ModelSupport::buildPlane(SMap,CIndex+1,blockOrg,Y);
       ModelSupport::buildPlane(SMap,CIndex+2,blockOrg+Y*CU.length,Y);
       
-      ModelSupport::buildPlane(SMap,CIndex+3,blockOrg-X*CU.width/2.0,X);
-      ModelSupport::buildPlane(SMap,CIndex+4,blockOrg+X*CU.width/2.0,X);
+      ModelSupport::buildPlane(SMap,CIndex+3,blockOrg-X*(CU.width/2.0),X);
+      ModelSupport::buildPlane(SMap,CIndex+4,blockOrg+X*(CU.width/2.0),X);
   
-      ModelSupport::buildPlane(SMap,CIndex+5,blockOrg-Z*CU.height/2.0,Z);
-      ModelSupport::buildPlane(SMap,CIndex+6,blockOrg+Z*CU.height/2.0,Z);
+      ModelSupport::buildPlane(SMap,CIndex+5,blockOrg-Z*(CU.height/2.0),Z);
+      ModelSupport::buildPlane(SMap,CIndex+6,blockOrg+Z*(CU.height/2.0),Z);
 
       blockOrg+=Y*CU.length;
       CIndex+=100;
@@ -273,7 +273,6 @@ Chicane::createLinks()
             -Z*(CU.height/2.0),Z*(CU.height/2.0)
             }
         );
-      
       FixedComp::setConnect(linkOffset+0,blockOrg,-Y);
       FixedComp::setLinkSurf(linkOffset+0,-SMap.realSurf(CIndex+1));
 
@@ -283,7 +282,7 @@ Chicane::createLinks()
       for(size_t i=0;i<4;i++)
         {
           FixedComp::setConnect(linkOffset+6+i,
-                                blockOrg+Delta[i % 2]+Delta[i / 2],-Y);
+                                blockOrg+Delta[i % 2]+Delta[2+i/2],-Y);
           FixedComp::setLinkSurf(linkOffset+6+i,-SMap.realSurf(CIndex+1));
         }          
       // Go to mid point
@@ -300,20 +299,19 @@ Chicane::createLinks()
       FixedComp::setConnect(linkOffset+5,blockOrg+Delta[3],Z);
       FixedComp::setLinkSurf(linkOffset+5,SMap.realSurf(CIndex+6));
 
-      linkOffset+=14;
+      linkOffset+=10;
       blockOrg+=Y*(CU.length/2.0);      
       CIndex+=100;
     }
   // Put in last points
-  if (CUnits.empty())
+  if (!CUnits.empty())
     {
-      linkOffset-=14;
       CIndex-=100;
       for(size_t i=0;i<4;i++)
         {
-          FixedComp::setConnect(linkOffset+6+i,
-                                blockOrg+Delta[i % 2]+Delta[i / 2],Y);
-          FixedComp::setLinkSurf(linkOffset+6+i,-SMap.realSurf(CIndex+1));
+          FixedComp::setConnect(linkOffset+i,
+                                blockOrg+Delta[i % 2]+Delta[2+i/2],Y);
+          FixedComp::setLinkSurf(linkOffset+i,-SMap.realSurf(CIndex+1));
         }
     }
   return;
