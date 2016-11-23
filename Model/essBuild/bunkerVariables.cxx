@@ -161,7 +161,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   // PILLARS:
   
-  Control.addVariable(AKey+"BunkerPillarsRadius",6.0);
+  Control.addVariable(AKey+"BunkerPillarsWidth",18.0);
+  Control.addVariable(AKey+"BunkerPillarsDepth",18.0);
+  Control.addVariable(AKey+"BunkerPillarsThick",1.0);
   Control.addVariable(AKey+"BunkerPillarsMat","Stainless304");
   Control.addVariable(AKey+"BunkerPillarsNRadius",5);
   Control.addVariable(AKey+"BunkerPillarsNSector",11); // default

@@ -135,6 +135,17 @@ WWG::resetMesh(const std::vector<double>& W)
   
   return;
 }
+
+void
+WWG::setRefPoint(const Geometry::Vec3D& RP)
+  /*!
+    Set the reference point
+    \param RP :: reference point
+   */
+{
+  Grid.setRefPt(RP);
+  return;
+}
   
 void
 WWG::setEnergyBin(const std::vector<double>& EB,

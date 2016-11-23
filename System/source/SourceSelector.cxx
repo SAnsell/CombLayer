@@ -211,7 +211,8 @@ sourceSelection(Simulation& System,
   if (!StrFunc::convert(Dist,DOffsetStep) && 
       !StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
-  
+
+  ELog::EM<<"Search == "<<DObj<<ELog::endDiag;
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
 
@@ -271,6 +272,7 @@ sourceSelection(Simulation& System,
         }
       else
 	{
+          ELog::EM<<"Free Point Source "<<ELog::endDiag;
 	  SDef::createPointSource(Control,"pointSource",DObj,sourceCard);
 	}
     }

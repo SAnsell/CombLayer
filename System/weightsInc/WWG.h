@@ -61,7 +61,7 @@ class WWG
   Geometry::Mesh3D Grid;         ///< Mesh Grid
 
   std::vector<std::vector<double>> WMesh;     ///< linearized weight mesh
-
+  
   void writeHead(std::ostream&) const;
   
  public:
@@ -82,6 +82,7 @@ class WWG
   void resetMesh(const std::vector<double>&);
 
 
+  void setRefPoint(const Geometry::Vec3D&);
   void scaleMeshItem(const long int,const std::vector<double>&);
   
   void write(std::ostream&) const;

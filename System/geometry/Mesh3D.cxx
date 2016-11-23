@@ -300,7 +300,7 @@ Mesh3D::write(std::ostream& OX) const
 
   std::ostringstream cx;
   cx<<"mesh  geom="<<getType()<<" origin="<<Origin;
-  if (writeFlag & 1) cx<<" ref="<<RefPoint;
+  cx<<" ref="<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
   // imesh :

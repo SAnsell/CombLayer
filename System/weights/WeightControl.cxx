@@ -1007,7 +1007,9 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
   const std::string XYZ[3]={"X","Y","Z"};
   std::vector<std::vector<double>> boundaryVal(3);
   std::vector<std::vector<size_t>> bCnt(3);
-      
+
+  
+  
   for(size_t index=0;index<3;index++)
     {
       const std::string itemName("wwg"+XYZ[index]+"Mesh");
@@ -1028,10 +1030,13 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
 	      (IParam.getValue<double>(itemName,i));
 	}
     }
+  const Geometry::Vec3D RefPt=
+    IParam.getDefValue(Geometry::Vec3D(0.1,0.1,0.1),"wwgRPtMesh",0);
 
   wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
 			boundaryVal[1],bCnt[1],
 			boundaryVal[2],bCnt[2]);
+  wwg.setRefPoint(RefPt);
   return;
 }
 

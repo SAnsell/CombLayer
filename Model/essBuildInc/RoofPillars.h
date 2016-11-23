@@ -37,21 +37,24 @@ namespace essSystem
 */
 
 class RoofPillars : public attachSystem::FixedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::FrontBackCut
 {
  private:
    
   const int rodIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  HeadRule TopSurf;             ///< Top surface  [roof]
-  HeadRule BaseSurf;            ///< Base surface [floor]
   /// Name for each centre
   std::vector<std::string> CentName;
   /// Relative point for each centre
   std::vector<Geometry::Vec3D> CentPoint;
+  /// Axis direciton
+  std::vector<Geometry::Vec3D> AxisY;
   
-  double radius;                ///< Radius for each support
+  double width;                ///< X-beam length
+  double depth;                ///< Along beam length
+  double thick;                ///< metal thickness
   int mat;                      ///< Matieral
     
   void populate(const FuncDataBase&);
@@ -70,9 +73,9 @@ class RoofPillars : public attachSystem::FixedComp,
   RoofPillars& operator=(const RoofPillars&);
   virtual ~RoofPillars();
   
-  void setSimpleSurf(const int,const int);
-  void setTopSurf(const attachSystem::FixedComp&,const long int);
-  void setBaseSurf(const attachSystem::FixedComp&,const long int);
+  //  void setSimpleSurf(const int,const int);
+  //  void setTopSurf(const attachSystem::FixedComp&,const long int);
+  //  void setBaseSurf(const attachSystem::FixedComp&,const long int);
 
   void createAll(Simulation&,const Bunker&);
 

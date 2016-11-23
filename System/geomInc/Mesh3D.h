@@ -42,7 +42,7 @@ class Mesh3D
   
   GeomENUM type;               ///< Type of mesh
 
-  size_t writeFlag;            ///< 
+  size_t writeFlag;            ///< write out header info 
   Geometry::Vec3D RefPoint;    ///< Reference point
   Geometry::Vec3D Origin;      ///< Origin
   Geometry::Vec3D Axis;        ///< Axis
@@ -68,7 +68,6 @@ class Mesh3D
   
  public:
 
-  
   Mesh3D();
   Mesh3D(const Mesh3D&);
   Mesh3D& operator=(const Mesh3D&);
@@ -86,10 +85,8 @@ class Mesh3D
 	       const std::vector<double>&,const std::vector<size_t>&,
 	       const std::vector<double>&,const std::vector<size_t>&);
 	       
-  /// Set reference point [
-  void setRefPt(const Geometry::Vec3D&);
-
-  
+  /// Set reference point 
+  void setRefPt(const Geometry::Vec3D&);  
   
   void write(std::ostream&) const;
   void writeWWINP(std::ostream&,const int,const size_t) const;
