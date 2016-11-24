@@ -146,6 +146,7 @@ WWGWeight::updateWM(WWG& wwg,
                 }
               wwg.scaleMeshItem(cN-1,DVec);              
             }
+          cN++; 
         }
   
   return;

@@ -1076,7 +1076,7 @@ WeightControl::wwgCreate(Simulation& System,
 	  if (activePtIndex>=sourcePt.size())
             throw ColErr::IndexError<size_t>(activePtIndex,sourcePt.size(),
                                              "sourcePt.size() < activePtIndex");
-
+          ELog::EM<<"Calling Source Point"<<ELog::endDiag;
           calcWWGTrack(System,sourcePt[activePtIndex],WTrack);
         }
       else 

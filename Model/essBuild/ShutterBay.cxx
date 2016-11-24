@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/ShutterBay.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,8 @@ ShutterBay::ShutterBay(const ShutterBay& A) :
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   radius(A.radius),height(A.height),depth(A.depth),
-  skin(A.skin),mat(A.mat),skinMat(A.skinMat)
+  skin(A.skin),topSkin(A.topSkin),
+  mat(A.mat),skinMat(A.skinMat)
   /*!
     Copy constructor
     \param A :: ShutterBay to copy
@@ -118,6 +119,7 @@ ShutterBay::operator=(const ShutterBay& A)
       height=A.height;
       depth=A.depth;
       skin=A.skin;
+      topSkin=A.topSkin;
       mat=A.mat;
       skinMat=A.skinMat;
     }
@@ -144,6 +146,7 @@ ShutterBay::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   skin=Control.EvalVar<double>(keyName+"Skin");
+  topSkin=Control.EvalVar<double>(keyName+"TopSkin");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
 
@@ -182,6 +185,8 @@ ShutterBay::createSurfaces()
 
   ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,bulkIndex+16,Origin+Z*(topSkin+height),Z);
+  
   ModelSupport::buildCylinder(SMap,bulkIndex+7,Origin,Z,radius);
   ModelSupport::buildCylinder(SMap,bulkIndex+17,Origin,Z,radius+skin);
   
@@ -208,8 +213,13 @@ ShutterBay::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 7 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"6 -16 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  addCell("Skin",cellIndex-1);
+
   
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -17 ");
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -16 -17 ");
   addOuterSurf(Out);
 
   return;
@@ -228,7 +238,7 @@ ShutterBay::createLinks()
   FixedComp::setConnect(2,Origin-X*(radius+skin),-X);   // outer point
   FixedComp::setConnect(3,Origin+X*(radius+skin),X);   // outer point
   FixedComp::setConnect(4,Origin-Z*depth,-Z);  // base
-  FixedComp::setConnect(5,Origin+Z*height,Z);  // 
+  FixedComp::setConnect(5,Origin+Z*(height+topSkin),Z);  // 
 
   FixedComp::setLinkSurf(0,SMap.realSurf(bulkIndex+17));
   FixedComp::setLinkSurf(1,SMap.realSurf(bulkIndex+17));
@@ -240,7 +250,7 @@ ShutterBay::createLinks()
   FixedComp::addBridgeSurf(2,-SMap.realSurf(bulkIndex+2));
   FixedComp::addBridgeSurf(3,SMap.realSurf(bulkIndex+2));
   FixedComp::setLinkSurf(4,-SMap.realSurf(bulkIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+16));
 
   FixedComp::setLinkSurf(6,SMap.realSurf(bulkIndex+7));
   FixedComp::setLinkSurf(7,SMap.realSurf(bulkIndex+7));

@@ -44,11 +44,11 @@ class ShutterBay : public attachSystem::ContainedComp,
   const int bulkIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-
   double radius;        ///< radius of outer
   double height;        ///< height
   double depth;         ///< Depth
-  double skin    ;      ///< radius of void surround
+  double skin;          ///< radius of void surround
+  double topSkin;        ///< top gap thickness (Required?)
 
   int mat;              ///< Material
   int skinMat;          ///< Skin Material

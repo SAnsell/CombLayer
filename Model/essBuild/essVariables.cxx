@@ -480,6 +480,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("ShutterBayHeight",400.0);
   Control.addVariable("ShutterBayDepth",400.0);
   Control.addVariable("ShutterBaySkin",6.0);
+  Control.addVariable("ShutterBayTopSkin",6.0);
   Control.addVariable("ShutterBayMat","CastIron");
   Control.addVariable("ShutterBaySkinMat","Void");
 

@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -89,7 +90,7 @@ namespace essSystem
 
 Curtain::Curtain(const std::string& Key)  :
   attachSystem::ContainedGroup("Top","Mid","Lower"),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",14),
   attachSystem::CellMap(),
   curIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(curIndex+1)
@@ -100,7 +101,7 @@ Curtain::Curtain(const std::string& Key)  :
 {}
 
 Curtain::Curtain(const Curtain& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
   attachSystem::CellMap(A),
   curIndex(A.curIndex),cellIndex(A.cellIndex),wallRadius(A.wallRadius),
   leftPhase(A.leftPhase),rightPhase(A.rightPhase),
@@ -126,7 +127,7 @@ Curtain::operator=(const Curtain& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       wallRadius=A.wallRadius;
@@ -210,14 +211,26 @@ Curtain::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("Curtain","createUnitVector");
 
-  FixedComp::createUnitVector(dirFC,dirIndex);
-  Origin=FC.getSignedLinkPt(topIndex);
+  attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
+  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
+  attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
+
+  topFC.createUnitVector(dirFC,dirIndex);
+  topFC.setCentre(FC.getSignedLinkPt(topIndex));
+  midFC.createUnitVector(dirFC,dirIndex);
+  midFC.setCentre(FC.getSignedLinkPt(topIndex));
+  baseFC.createUnitVector(dirFC,dirIndex);
+  baseFC.setCentre(FC.getSignedLinkPt(topIndex));
+  
+  //  Origin=FC.getSignedLinkPt(topIndex);
+
   wallRadius=FC.getCentre().Distance(FC.getSignedLinkPt(sideIndex));
-  if (reverseZ)
-    {
-      Z*=-1;
-      X*=-1;
-    }
+  setDefault("Lower");
+  // if (reverseZ)
+  //   {
+  //     Z*=-1;
+  //     X*=-1;
+  //   }
   return;
 }
   
@@ -245,7 +258,6 @@ Curtain::createSurfaces()
   AWall+=Origin;
   BWall+=Origin;
   // Divider
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   ModelSupport::buildCylinder(SMap,curIndex+7,
 			      Origin,Z,wallRadius-innerStep);
   ModelSupport::buildCylinder(SMap,curIndex+17,
@@ -435,7 +447,9 @@ Curtain::createAll(Simulation& System,
   ELog::RegMethod RegA("Curtain","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,topIndex,sideIndex,dirFC,dirIndex,reverseZ);
+  createUnitVector(FC,topIndex,sideIndex,dirFC,
+                   dirIndex,reverseZ);
+
   createSurfaces();
   createLinks();
   createObjects(System,FC,topIndex,sideIndex);
