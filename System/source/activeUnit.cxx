@@ -137,7 +137,6 @@ activeUnit::normalize(const double fracValue,
 	  FV=prevSum/normFlux;
 	}
     }
-  ELog::EM<<"Vlud == "<<V<<" "<<fracValue<<ELog::endDiag;
   integralFlux*=fracValue;
   volume=V;
   return;

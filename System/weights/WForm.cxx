@@ -55,7 +55,7 @@ WForm::WForm()  :  ptype('n'),
   /*!
     Constructor
   */
-{}
+{} 
 
 WForm::WForm(const char c)  :  ptype(c),
   wupn(2.0),wsurv(0.7*wupn),maxsp(5),

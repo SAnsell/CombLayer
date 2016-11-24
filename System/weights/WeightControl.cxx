@@ -959,6 +959,9 @@ WeightControl::processWeights(Simulation& System,
       wwgMesh(IParam);      // create mesh [wwgXMesh etc]
       wwgEnergy();          // set default energy grid
       wwgCreate(System,IParam);
+      WeightSystem::weightManager& WM=
+	WeightSystem::weightManager::Instance();  
+      WM.getParticle('n')->setActiveWWP(0);
             
     }
   if (IParam.flag("weightTemp"))
