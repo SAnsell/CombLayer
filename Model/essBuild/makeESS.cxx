@@ -242,10 +242,10 @@ makeESS::createGuides(Simulation& System)
     {
       std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
       OR.addObject(GB);
-      GB->addInsertCell("Inner",ShutterBayObj->getMainCell());
-      GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
+      GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
+      GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
       GB->setCylBoundary(Bulk->getLinkSurf(2),
-			 ShutterBayObj->getLinkSurf(2));
+			 ShutterBayObj->getSignedLinkSurf(7));
       
       if (i<2)
 	GB->createAll(System,*LowMod,0);  
@@ -678,11 +678,13 @@ makeESS::makeBunker(Simulation& System,
     IParam.getValue<std::string>("bunkerType");
   
   ABunker->addInsertCell(voidCell);
-  ABunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
+  ABunker->setRotationCentre(ShutterBayObj->getCentre());
+  ABunker->createAll(System,*ShutterBayObj,4,false);
 
   BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
-  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
+  BBunker->createAll(System,*ShutterBayObj,4,false);
+  //  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
   ABunker->insertComponent(System,"rightWall",*BBunker);
   ABunker->insertComponent(System,"roofFarEdge",*BBunker);
@@ -691,11 +693,12 @@ makeESS::makeBunker(Simulation& System,
   // Other side if needed :
   
   CBunker->addInsertCell(voidCell);
-  CBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
+  CBunker->createAll(System,*ShutterBayObj,3,true);
+
 
   DBunker->addInsertCell(voidCell);
   DBunker->setCutWall(0,1);
-  DBunker->createAll(System,*LowMod,*GBArray[1],2,false,true);
+  DBunker->createAll(System,*ShutterBayObj,3,true);
 
   CBunker->insertComponent(System,"rightWall",*DBunker);
   CBunker->insertComponent(System,"roofFarEdge",*DBunker);

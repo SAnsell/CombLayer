@@ -245,7 +245,7 @@ Curtain::createSurfaces()
   AWall+=Origin;
   BWall+=Origin;
   // Divider
-
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   ModelSupport::buildCylinder(SMap,curIndex+7,
 			      Origin,Z,wallRadius-innerStep);
   ModelSupport::buildCylinder(SMap,curIndex+17,

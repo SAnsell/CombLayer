@@ -36,24 +36,22 @@ namespace essSystem
 */
 
 class ShutterBay : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
   
   const int bulkIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle of master XY rotation
-  double zAngle;                ///< Angle of master Z rotation
 
   double radius;        ///< radius of outer
   double height;        ///< height
-  double depth;         ///< Depth 
+  double depth;         ///< Depth
+  double skin    ;      ///< radius of void surround
+
   int mat;              ///< Material
+  int skinMat;          ///< Skin Material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -68,9 +66,6 @@ class ShutterBay : public attachSystem::ContainedComp,
   ShutterBay(const ShutterBay&);
   ShutterBay& operator=(const ShutterBay&);
   virtual ~ShutterBay();
-
-  /// Access to main cell
-  int getMainCell() const { return cellIndex-1; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::ContainedComp&);
