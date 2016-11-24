@@ -509,6 +509,7 @@ makeESS::buildBunkerChicane(Simulation& System,
           CF->createAll(System,*BPtr,segNumber);
 	}
 
+      attachSystem::addToInsertLineCtrl(System,*BPtr,"MainVoid",*CF,*CF);
       attachSystem::addToInsertLineCtrl(System,*BPtr,"roof",*CF,*CF);
       attachSystem::addToInsertLineCtrl(System,*BPtr,"frontWall",*CF,*CF);
     }
