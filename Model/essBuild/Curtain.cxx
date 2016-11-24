@@ -90,7 +90,7 @@ namespace essSystem
 
 Curtain::Curtain(const std::string& Key)  :
   attachSystem::ContainedGroup("Top","Mid","Lower"),
-  attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",14),
+  attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
   attachSystem::CellMap(),
   curIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(curIndex+1)
@@ -194,19 +194,13 @@ Curtain::populate(const FuncDataBase& Control)
 void
 Curtain::createUnitVector(const attachSystem::FixedComp& FC,
 			  const long int topIndex,
-			  const long int sideIndex,
-			  const attachSystem::FixedComp& dirFC,
-			  const long int dirIndex,
-			  const bool reverseZ)
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     \param MainCentre :: Main rotation centre
     \param FC :: object for origin/radius
-    \param dirFC :: object for Y-X-Z direction
-    \param dirIndex :: direction of XYZ
     \param topIndex :: top of monolith
     \param sideIndex :: Side for monolith
-    \param reverseZ :: rotate the Z direction
   */
 {
   ELog::RegMethod RegA("Curtain","createUnitVector");
@@ -215,22 +209,19 @@ Curtain::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
-  topFC.createUnitVector(dirFC,dirIndex);
+  topFC.createUnitVector(FC,sideIndex);
   topFC.setCentre(FC.getSignedLinkPt(topIndex));
-  midFC.createUnitVector(dirFC,dirIndex);
+  midFC.createUnitVector(FC,sideIndex);
   midFC.setCentre(FC.getSignedLinkPt(topIndex));
-  baseFC.createUnitVector(dirFC,dirIndex);
+  baseFC.createUnitVector(FC,sideIndex);
   baseFC.setCentre(FC.getSignedLinkPt(topIndex));
   
   //  Origin=FC.getSignedLinkPt(topIndex);
 
   wallRadius=FC.getCentre().Distance(FC.getSignedLinkPt(sideIndex));
   setDefault("Lower");
-  // if (reverseZ)
-  //   {
-  //     Z*=-1;
-  //     X*=-1;
-  //   }
+
+
   return;
 }
   
@@ -264,7 +255,9 @@ Curtain::createSurfaces()
 			      Origin,Z,wallRadius-innerStep+wallThick);
   ModelSupport::buildCylinder(SMap,curIndex+27,
 			      Origin,Z,wallRadius+wallThick);
-  
+
+  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
+  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
   ModelSupport::buildPlane(SMap,curIndex+15,Origin+Z*topRaise,Z);
@@ -419,6 +412,29 @@ Curtain::createLinks()
 {
   ELog::RegMethod RegA("Curtain","createLinks");
 
+  attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
+  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
+  attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
+
+  // Lower first:
+  const double angleStep((M_PI/180.0)*(rightPhase-leftPhase)/3.0);
+  double angle(M_PI*leftPhase/180.0);
+  for(size_t i=0;i<4;i++)
+    {
+      const Geometry::Vec3D Axis(Y*cos(angle)+X*sin(angle));
+      const Geometry::Vec3D OutPt=Origin+Axis*(wallRadius+wallThick);
+      const Geometry::Vec3D InPt=Origin+Axis*wallRadius;
+      baseFC.setConnect(i,OutPt-Z*depth,Axis);
+      baseFC.setConnect(i+4,InPt-Z*depth,-Axis);
+
+      baseFC.setConnect(i+8,OutPt+Z*height,Axis);
+      baseFC.setConnect(i+12,InPt+Z*height,-Axis);
+
+      baseFC.setConnect(i,OutPt,Axis);
+      baseFC.setConnect(i+4,InPt,-Axis);
+      baseFC.setLinkSurf(i,SMap.realSurf(curIndex+27));
+      baseFC.setLinkSurf(i+8,SMap.realSurf(curIndex+27));   
+    }
 
   return;
 }
@@ -430,26 +446,19 @@ void
 Curtain::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int topIndex,
-		   const long int sideIndex,
-		   const attachSystem::FixedComp& dirFC,
-		   const long int dirIndex,const bool reverseZ)
+		   const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param topIndex :: Top of monolith
     \param sideIndex :: Side of monolith
-    \param dirFC :: direction for Y,Z/X comp
-    \param dirIndex :: direction for Y,Z/X
-    \param reverseZ :: rotate the Z direction
   */
 {
   ELog::RegMethod RegA("Curtain","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,topIndex,sideIndex,dirFC,
-                   dirIndex,reverseZ);
-
+  createUnitVector(FC,topIndex,sideIndex);
   createSurfaces();
   createLinks();
   createObjects(System,FC,topIndex,sideIndex);
