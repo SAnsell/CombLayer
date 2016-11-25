@@ -185,7 +185,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyZStep",0.0);
   Control.addVariable("TopFlyXYangle",90.0);
   Control.addVariable("TopFlyZangle",0.0);
-  Control.addVariable("TopFlyTotalHeight",5.2); // 5.2 makes 3 cm of Hydrogen
+  Control.addVariable("TopFlyTotalHeight",4.9);
   Control.addVariable("TopFlyWallMat","Aluminium");
   Control.addVariable("TopFlyWallDepth",0.0);
   Control.addVariable("TopFlyWallHeight",0.3);
@@ -221,7 +221,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeThick3",0.3);
   Control.addVariable("TopFlyLeftLobeMat3","Aluminium");
 
-  Control.addVariable("TopFlyLeftLobeHeight3",0.30);
+  Control.addVariable("TopFlyLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopFlyLeftLobeDepth3",0.0);
 
   Control.addVariable("TopFlyFlowGuideBaseThick",0.2);
@@ -265,7 +265,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeThick3",0.3);
   Control.addVariable("TopFlyRightLobeMat3","Aluminium");
 
-  Control.addVariable("TopFlyRightLobeHeight3",0.3);
+  Control.addVariable("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopFlyRightLobeDepth3",0.0);
 
   Control.addVariable("TopFlyMidWaterCutLayer",3);
@@ -274,11 +274,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyMidWaterLength",11.4);
   Control.addVariable("TopFlyMidWaterEdgeRadius",0.5);
 
-  Control.addVariable("TopFlyMidWaterCutLayer",3);
-  Control.addVariable("TopFlyMidWaterMidYStep",4.635);
-  Control.addVariable("TopFlyMidWaterMidAngle",90);
-  Control.addVariable("TopFlyMidWaterLength",10.98);
- 
   Control.addVariable("TopFlyMidWaterWallThick",0.2);
   Control.addVariable("TopFlyMidWaterModMat","H2O");
   Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
