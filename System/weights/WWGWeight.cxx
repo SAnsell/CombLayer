@@ -49,7 +49,7 @@
 #include "Mesh3D.h"
 #include "weightManager.h"
 #include "WWG.h"
-#include "ItemWeight.h"
+#include "WWGItem.h"
 #include "WWGWeight.h"
 
 namespace WeightSystem
@@ -57,14 +57,14 @@ namespace WeightSystem
 
 
 WWGWeight::WWGWeight()  :
-  ItemWeight()
+  sigmaScale(0.06914)
   /*! 
     Constructor 
   */
 {}
 
 WWGWeight::WWGWeight(const WWGWeight& A)  :
-  ItemWeight(A)
+  sigmaScale(A.sigmaScale),GCells(A.GCells)
   /*! 
     Copy Constructor 
     \param A :: WWGWeight to copy
@@ -81,10 +81,36 @@ WWGWeight::operator=(const WWGWeight& A)
 {
   if (this!=&A)
     {
-      ItemWeight::operator=(A);
+      GCells=A.GCells;
     }
   return *this;
 }
+
+double
+WWGWeight::calcMinWeight(const double scaleFactor,
+                          const double weightPower) const
+  /*!
+    Calculate the adjustment factor to get to the correct
+    minimum weight.
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param weightPower :: power for final factor W**power
+    \return factor for exponent
+   */
+{
+  double minW(1e38);
+  for(const WWGItem& wI : GCells)
+    {
+      double W=exp(-wI.weight*sigmaScale*scaleFactor);
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          if (W<minW) minW=W;
+        }
+    }
+  return minW;
+}
+
+  
   
 void
 WWGWeight::updateWM(WWG& wwg,
@@ -122,17 +148,15 @@ WWGWeight::updateWM(WWG& wwg,
   const size_t NX=WGrid.getXSize();
   const size_t NY=WGrid.getYSize();
   const size_t NZ=WGrid.getZSize();
-  long int cN(1);
+  size_t cN(0);
 
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       for(size_t k=0;k<NZ;k++)
 	{
-          CMapTYPE::const_iterator cv=Cells.find(cN);
-          if (cv==Cells.end())
-            throw ColErr::InContainerError<long int>(cN,"Cells");
-
-          double W=(exp(-cv->second.weight*sigmaScale*scaleFactor*factor));
+          const WWGItem& Cell(GCells[cN]);
+          
+          double W=(exp(-Cell.weight*sigmaScale*scaleFactor*factor));
           if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
           W=std::pow(W,weightPower);
           if (W>=minWeight)
@@ -144,7 +168,7 @@ WWGWeight::updateWM(WWG& wwg,
                   else if (EBin[i]>=eCut)
                     DVec[i]=W;
                 }
-              wwg.scaleMeshItem(cN-1,DVec);              
+              wwg.scaleMeshItem(cN,DVec);              
             }
           cN++; 
         }
@@ -190,17 +214,16 @@ WWGWeight::invertWM(WWG& wwg,
   const size_t NX=WGrid.getXSize();
   const size_t NY=WGrid.getYSize();
   const size_t NZ=WGrid.getZSize();
-  long int cN(1);
+  size_t cN(0);
 
   for(size_t i=0;i<NX;i++)
     for(size_t j=0;j<NY;j++)
       for(size_t k=0;k<NZ;k++)
 	{
-          CMapTYPE::const_iterator cv=Cells.find(cN);
-          if (cv==Cells.end())
-            throw ColErr::InContainerError<long int>(cN,"Cells");
+          const WWGItem& Cell(GCells[cN]);
+          
+          double W=(exp(-Cell.weight*sigmaScale*scaleFactor*factor));
 
-          double W=(exp(-cv->second.weight*sigmaScale*scaleFactor*factor));
           if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
           W=std::pow(W,weightPower);
           if (W>=minWeight)
@@ -212,12 +235,41 @@ WWGWeight::invertWM(WWG& wwg,
                   else if (EBin[i]>=eCut)
                     DVec[i]=W;
                 }
-              wwg.scaleMeshItem(cN-1,DVec);              
+              wwg.scaleMeshItem(cN,DVec);              
             }
         }
   
   return;
 }
 
+void
+WWGWeight::setPoints()
+  /*!
+    Set all the points in the grid
+  */
+{
+  ELog::RegMethod Rega("WWGWeight","calcPoints");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+  const Geometry::Mesh3D& WGrid=wwg.getGrid();  
+
+  const size_t NX=WGrid.getXSize();
+  const size_t NY=WGrid.getYSize();
+  const size_t NZ=WGrid.getZSize();
+
+  GCells.clear();
+  for(size_t i=0;i<NX;i++)
+    for(size_t j=0;j<NY;j++)
+      for(size_t k=0;k<NZ;k++)
+	{
+	  GCells.push_back(WWGItem(WGrid.point(i,j,k)));
+	}
+  
+  return;
+}
+  
+  
   
 } // Namespace WeightSystem

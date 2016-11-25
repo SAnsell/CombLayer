@@ -51,25 +51,33 @@
 #include "WCells.h"
 #include "Mesh3D.h"
 #include "weightManager.h"
-
-#include "ItemWeight.h"
 #include "CellWeight.h"
-
-#include "debugMethod.h"
 
 namespace WeightSystem
 {
 
-
-CellWeight::CellWeight()  :
-  ItemWeight()
+std::ostream&
+operator<<(std::ostream& OX,const CellWeight& A)
+  /*!
+    Write out to a stream
+    \param OX :: Output stream
+    \param A :: ItemWeight to write
+    \return Stream
+  */
+{
+  A.write(OX);
+  return OX;
+}
+  
+CellWeight::CellWeight() :
+  sigmaScale(0.06914)
   /*! 
     Constructor 
   */
 {}
 
 CellWeight::CellWeight(const CellWeight& A)  :
-  ItemWeight(A)
+  sigmaScale(A.sigmaScale),Cells(A.Cells)
   /*! 
     Copy Constructor 
     \param A :: CellWeight to copy
@@ -86,10 +94,66 @@ CellWeight::operator=(const CellWeight& A)
 {
   if (this!=&A)
     {
-      ItemWeight::operator=(A);
+      Cells=A.Cells;
     }
   return *this;
 }
+
+void
+CellWeight::addTracks(const long int cN,const double value)
+  /*!
+    Adds an average track contribution
+    \param cN :: cell number
+    \param value :: vlaue of weight
+  */
+{
+  ELog::RegMethod RegA("ItemWeight","addTracks");
+  
+  std::map<long int,CellItem>::iterator mc=Cells.find(cN);
+  if (mc==Cells.end())
+    Cells.emplace(cN,CellItem(value));
+  else
+    {
+      mc->second.weight+=value;
+      mc->second.number+=1.0;
+    }
+  return;
+}
+
+double
+CellWeight::calcMinWeight(const double scaleFactor,
+                          const double weightPower) const
+  /*!
+    Calculate the adjustment factor to get to the correct
+    minimum weight.
+    \param scaleFactor :: Scalefactor for density equivilent
+    \param weightPower :: power for final factor W**power
+    \return factor for exponent
+   */
+{
+  double minW(1e38);
+  for(const CMapTYPE::value_type& cv : Cells)
+    {
+      double W=exp(-cv.second.weight*sigmaScale*scaleFactor);
+      if (W>1e-20)
+        {
+          W=std::pow(W,weightPower);
+          if (W<minW) minW=W;
+        }
+    }
+  return minW;
+}
+  
+void
+CellWeight::clear()
+  /*!
+    Remove everything from the weight
+   */
+{
+  Cells.erase(Cells.begin(),Cells.end());
+  return;
+}
+  
   
 void
 CellWeight::updateWM(const double eCut,
@@ -204,6 +268,19 @@ CellWeight::invertWM(const double eCut,
     }
   return;
 }
-  
+
+void
+CellWeight::write(std::ostream& OX) const
+  /*!
+    Write out the track
+    \param OX :: Output stream
+  */
+{
+  for(const std::map<long int,CellItem>::value_type& cv : Cells)
+    OX<<cv.first<<" "<<cv.second.weight<<" "<<cv.second.number<<std::endl;
+  return;
+} 
+
+    
   
 } // namespace WeightSystem

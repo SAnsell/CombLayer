@@ -113,15 +113,16 @@ class WeightControl
   void cTrack(const Simulation&,const Geometry::Vec3D&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,
-	      ItemWeight&);
+	      CellWeight&);
   void cTrack(const Simulation&,const Geometry::Plane&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,
-	      ItemWeight&);
+	      CellWeight&);
 
-
-  void calcPoints(std::vector<Geometry::Vec3D>&,
-		  std::vector<long int>&) const;
+  void wTrack(const Simulation&,const Geometry::Vec3D&,
+	      WWGWeight&) const;
+  void wTrack(const Simulation&,const Geometry::Plane&,
+	      WWGWeight&) const;
 		  
   // WWG stuff
   void wwgGetFactors(const mainSystem::inputParam&,

@@ -24,8 +24,7 @@
 
 namespace WeightSystem
 {
-  class WWG;
-  
+
 /*!
   \class WWGWeight
   \version 1.0
@@ -34,9 +33,16 @@ namespace WeightSystem
   \brief Tracks cell weight in WWG mesh
 */
   
-class WWGWeight : public ItemWeight
+class WWGWeight 
 {
+ private:
+    /// storage for cells
 
+  const double sigmaScale;             ///< Scale for sigma 
+  std::vector<WWGItem> GCells;         ///< Cells and track info
+  
+  double calcMinWeight(const double,const double) const;
+  
  public:
 
   WWGWeight();
@@ -44,6 +50,7 @@ class WWGWeight : public ItemWeight
   WWGWeight& operator=(const WWGWeight&);    
   virtual ~WWGWeight() {}          ///< Destructor
 
+  void setPoints();
   void updateWM(WWG&,const double,const double,
 		const double,const double) const;
   void invertWM(WWG&,const double,const double,

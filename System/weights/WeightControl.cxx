@@ -62,7 +62,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"
 #include "objectRegister.h"
@@ -78,6 +77,7 @@
 #include "ObjectTrackPlane.h"
 #include "Mesh3D.h"
 #include "WWG.h"
+#include "WWGItem.h"
 #include "WWGWeight.h"
 #include "WeightControl.h"
 
@@ -422,43 +422,13 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
   return;
 }
 
-void
-WeightControl::calcPoints(std::vector<Geometry::Vec3D>& Pts,
-                          std::vector<long int>& index) const
-/*!
-    Calculate the points in the mesh [move to wwg??]
-    \param Pts :: Geometric points
-    \param index :: index cnt [needed??]
-  */
-{
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-
-  WWG& wwg=WM.getWWG();
-  const Geometry::Mesh3D& WGrid=wwg.getGrid();  
-
-  const size_t NX=WGrid.getXSize();
-  const size_t NY=WGrid.getYSize();
-  const size_t NZ=WGrid.getZSize();
-
-  long int cN(1);         // Index to reference point
-
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-	  Pts.push_back(WGrid.point(i,j,k));
-	  index.push_back(cN++);
-	}
-  return;
-}
   
 void
 WeightControl::cTrack(const Simulation& System,
                       const Geometry::Vec3D& initPt,
                       const std::vector<Geometry::Vec3D>& Pts,
                       const std::vector<long int>& index,
-                      ItemWeight& CTrack)
+                      CellWeight& CTrack)
   /*!
     Calculate a specific track from sourcePoint to  postion
     \param System :: Simulation to use    
@@ -489,7 +459,7 @@ WeightControl::cTrack(const Simulation& System,
                       const Geometry::Plane& initPlane,
                       const std::vector<Geometry::Vec3D>& Pts,
                       const std::vector<long int>& index,
-                      ItemWeight& CTrack)
+                      CellWeight& CTrack)
   /*!
     Calculate a specific trac from sourcePoint to  postion
     \param System :: Simulation to use    
@@ -514,6 +484,58 @@ WeightControl::cTrack(const Simulation& System,
     } 
   return;
 }
+
+void
+WeightControl::wTrack(const Simulation& System,
+                      const Geometry::Vec3D& initPt,
+                      WWGWeight& WTrack) const
+  /*!
+    Calculate a specific trac from sourcePoint to  postion
+    \param System :: Simulation to use    
+    \param initPt :: Point for outgoing track
+    \param WTrack :: Item Weight to add tracks to
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wTrack(Vec3D)");
+
+  ModelSupport::ObjectTrackPoint OTrack(initPt);
+  /*  std::vector<double> WVec;
+
+  for(size_t i=0;i<Pts.size();i++)
+    {
+      const long int unit(i>=index.size() ? cN++ : index[i]);
+      OTrack.addUnit(System,unit,Pts[i]);
+      CTrack.addTracks(unit,OTrack.getAttnSum(unit));
+    } 
+  */
+  return;
+}
+
+void
+WeightControl::wTrack(const Simulation& System,
+                      const Geometry::Plane& initPlane,
+                      WWGWeight& WTrack) const
+  /*!
+    Calculate a specific trac from sourcePoint to  postion
+    \param System :: Simulation to use    
+    \param initPlane :: Plane for outgoing track
+    \param WTrack :: Item Weight to add tracks to
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wTrack(Plane)");
+
+  ModelSupport::ObjectTrackPlane OTrack(initPlane);
+  /*  std::vector<double> WVec;
+
+  for(size_t i=0;i<Pts.size();i++)
+    {
+      const long int unit(i>=index.size() ? cN++ : index[i]);
+      OTrack.addUnit(System,unit,Pts[i]);
+      CTrack.addTracks(unit,OTrack.getAttnSum(unit));
+    } 
+  */
+  return;
+}
   
 void
 WeightControl::calcWWGTrack(const Simulation& System,
@@ -528,11 +550,9 @@ WeightControl::calcWWGTrack(const Simulation& System,
 {
   ELog::RegMethod RegA("WeightControl","calcWWGTrack(Vec3D)");
 
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<long int> index;
-  calcPoints(Pts,index);
-  
-  cTrack(System,initPt,Pts,index,wSet);
+
+  wSet.setPoints();  
+  wTrack(System,initPt,wSet);
   return;
 }
   
@@ -549,10 +569,8 @@ WeightControl::calcWWGTrack(const Simulation& System,
 {
   ELog::RegMethod RegA("WeightControl","calcWWGTrack(Plane)");
 
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<long int> index;
-  calcPoints(Pts,index);
-  cTrack(System,curPlane,Pts,index,wSet);
+  wSet.setPoints();  
+  wTrack(System,curPlane,wSet);
   
   return;
 }
@@ -590,7 +608,7 @@ WeightControl::calcCellTrack(const Simulation& System,
   return;
 }
 
-  void
+void
 WeightControl::calcCellTrack(const Simulation& System,
                              const Geometry::Plane& curPlane,
                              const std::vector<int>& cellVec,
@@ -1087,7 +1105,6 @@ WeightControl::wwgCreate(Simulation& System,
 	WTrack.updateWM(wwg,energyCut,scaleFactor,minWeight,weightPower);
       else
 	WTrack.invertWM(wwg,energyCut,scaleFactor,minWeight,weightPower);
-
       
     }   
   return;
