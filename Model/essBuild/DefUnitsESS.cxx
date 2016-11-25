@@ -346,6 +346,9 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
     {
       bfType = 2;
       // variables are set in moderatorVariables
+      // build pipes
+      A.setOption("topPipe", "supply,return");
+      A.setOption("lowPipe", "supply,return");
     } else
     throw ColErr::InvalidLine(modtype, "Either BF1 or BF2 are supported in defaultConfig");
 
