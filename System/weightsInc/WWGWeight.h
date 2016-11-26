@@ -56,6 +56,8 @@ class WWGWeight
   void invertWM(WWG&,const double,const double,
 		const double,const double) const;
 
+  // accessor
+  std::vector<WWGItem>& getGCells() { return GCells; }
 };
 
 }

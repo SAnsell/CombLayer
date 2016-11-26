@@ -499,15 +499,16 @@ WeightControl::wTrack(const Simulation& System,
   ELog::RegMethod RegA("WeightControl","wTrack(Vec3D)");
 
   ModelSupport::ObjectTrackPoint OTrack(initPt);
-  /*  std::vector<double> WVec;
 
-  for(size_t i=0;i<Pts.size();i++)
+  long int cN(1);
+  std::vector<WWGItem>& WIVec=WTrack.getGCells();
+  for(WWGItem& Unit : WIVec)
     {
-      const long int unit(i>=index.size() ? cN++ : index[i]);
-      OTrack.addUnit(System,unit,Pts[i]);
-      CTrack.addTracks(unit,OTrack.getAttnSum(unit));
-    } 
-  */
+      OTrack.addUnit(System,cN,Unit.Pt);
+      Unit.weight+=OTrack.getAttnSum(cN);
+      Unit.weight+=1.0;
+      cN++;
+    }
   return;
 }
 

@@ -55,7 +55,6 @@
 namespace WeightSystem
 {
 
-
 WWGWeight::WWGWeight()  :
   sigmaScale(0.06914)
   /*! 
