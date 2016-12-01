@@ -71,11 +71,11 @@ cloneBasicMaterial()
   DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("Aluminium","Aluminium20K");
   DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
-  DB.cloneMaterial("Iron_10H2O","Iron10H2O");
+  DB.cloneMaterial("Iron_10H2O","Iron_10H2O");
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
-  DB.cloneMaterial("Stainless304","SS316L785");
+  DB.cloneMaterial("Stainless304","SS316L_7.85g");
 
   // Al.20t -- actually available from Los Alamos-t2
   DB.removeThermal("Aluminium");
@@ -118,12 +118,10 @@ cloneESSMaterial()
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
   
-  DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
-  DB.cloneMaterial("Iron_10H2O","Iron10H2O");
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
-  DB.cloneMaterial("Stainless304","SS316L785");
+  DB.cloneMaterial("Stainless304","SS316L_7.85g");
 
   DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("ParaH2","HPARA");
@@ -225,7 +223,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // Homogeneous mixture of Iron and 10% volume H2O
-  MObj.setMaterial(imat++/*2610*/, "Iron10H2O",
+  MObj.setMaterial(imat++/*2610*/, "Iron_10H2O",
                    " 01001.70c 0.077534884 "
                    " 08016.70c 0.038767442 "
                    " 26054.70c 0.051652129 "
@@ -312,7 +310,7 @@ addESSMaterial()
   MDB.resetMaterial(MObj);
 
   // Same ase 2636 but with a2t density of 7.85 g/cm3 and fe56.12t instead of fe56.14t (material 2636 in a2t200)
-  MObj.setMaterial(imat++/*2638*/, "SS316L785",
+  MObj.setMaterial(imat++/*2638*/, "SS316L_7.85g",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "
 		   " 14029.71c  0.000372017 "
@@ -561,7 +559,7 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   // Natural Tungsten density is 19.298 \approx 19.3 g/cm3 [Material book] at 300 K,
   // therefore the density of homogenised material is 15.0766 \approx 15.1 g/cm3 
 
-  MObj.setMaterial(imat++/*7451*/, "Tungsten151",
+  MObj.setMaterial(imat++/*7451*/, "Tungsten_15.1g",
 		   "74180.50c  0.001200000 "
 		   "74182.71c  0.265000000 "
 		   "74183.71c  0.143100000 "

@@ -328,7 +328,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefTopRefMat","Be5H2O");
   Control.addVariable("BeRefTopWallMat","SS316L");
   Control.addVariable("BeRefLowWallMat","SS316L");
-  Control.addVariable("BeRefTargSepMat","Iron10H2O");
+  Control.addVariable("BeRefTargSepMat","Iron_10H2O");
   Control.addVariable("BeRefInnerStructureBeRadius", 12.5);
   Control.addVariable("BeRefInnerStructureBeMat", "Be10H2O");
   Control.addVariable("BeRefInnerStructureBeWallThick", 0.3);
@@ -372,13 +372,13 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkRadius2",65.0);
   Control.addVariable("BulkHeight2",75.0);
   Control.addVariable("BulkDepth2",75.0);
-  Control.addVariable("BulkMat2","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
+  Control.addVariable("BulkMat2","Iron_10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
   // Bulk steel layer [No individual guides]
   Control.addVariable("BulkRadius3",200.0);
   Control.addVariable("BulkHeight3",200.0);
   Control.addVariable("BulkDepth3",200.0);
-  Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
+  Control.addVariable("BulkMat3","Iron_10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
   // BULK FLIGHT VOID
   Control.addVariable("BulkLAFlightSideIndex",-2);   // Index
@@ -434,9 +434,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
-  Control.addVariable("TwisterShaftMat","Iron10H2O");
+  Control.addVariable("TwisterShaftMat","Iron_10H2O");
   Control.addVariable("TwisterShaftWallThick",3.0);
-  Control.addVariable("TwisterShaftWallMat","Iron10H2O"); 
+  Control.addVariable("TwisterShaftWallMat","Iron_10H2O"); 
   Control.addVariable("TwisterShaftBearingRadius",4);
   Control.addVariable("TwisterShaftBearingHeight",54.4);
   Control.addVariable("TwisterShaftBearingWallThick",12.2);
@@ -445,9 +445,9 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterPlugFrameHeight",57.6);
   Control.addVariable("TwisterPlugFrameDepth",60.6);
   Control.addVariable("TwisterPlugFrameAngle",38.0);
-  Control.addVariable("TwisterPlugFrameMat","Iron10H2O");
+  Control.addVariable("TwisterPlugFrameMat","Iron_10H2O");
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
-  Control.addVariable("TwisterPlugFrameWallMat","Iron10H2O");
+  Control.addVariable("TwisterPlugFrameWallMat","Iron_10H2O");
 
   // Target Station main building
   Control.addVariable("TSMainBuildingXStep", 0.0);
