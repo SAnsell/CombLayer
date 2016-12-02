@@ -229,12 +229,12 @@ Mesh3D::midPoints() const
       for(size_t j=1;j<=NY;j++)
         {
           yA=yB;
-          yB=getYCoordinate(i);
+          yB=getYCoordinate(j);
           zB=getZCoordinate(0);
           for(size_t k=1;k<=NZ;k++)
             {
               zA=zB;
-              zB=getYCoordinate(i);
+              zB=getYCoordinate(k);
               midPt.push_back(Geometry::Vec3D
                               ((xB+xA)/2.0,(yB+yA)/2.0,(zB+zA)/2.0));
             }

@@ -333,6 +333,7 @@ WWG::writeWWINP(const std::string& FName) const
   const long int YSize(static_cast<long int>(WMesh.shape()[1]));
   const long int ZSize(static_cast<long int>(WMesh.shape()[2]));
   const long int ESize(static_cast<long int>(WMesh.shape()[3]));
+
   ELog::EM<<"X == "<<XSize<<" "<<YSize<<" "<<ZSize<<ELog::endDiag;
   for(long int EI=0;EI<ESize;EI++)
     {
@@ -341,6 +342,7 @@ WWG::writeWWINP(const std::string& FName) const
           for(long int K=0;K<ZSize;K++)
             StrFunc::writeLine(OX,WMesh[I][J][K][EI],itemCnt,6);
     }
+  OX<<std::endl;
   OX.close();
 		       
   return;
