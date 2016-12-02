@@ -103,6 +103,20 @@ weightManager::getWWG()
   return *WWGPtr;
 }
 
+const WWG&
+weightManager::getWWG() const
+  /*!
+    Create/access mesh
+    \return Mesh
+  */
+{
+  ELog::RegMethod RegA("weightManager","getWWG(const)");
+  if (!WWGPtr)
+    throw ColErr::EmptyValue<void>("WWGPtr not valid");
+  
+  return *WWGPtr;
+}
+
   
 WForm*
 weightManager::getParticle(const char c)

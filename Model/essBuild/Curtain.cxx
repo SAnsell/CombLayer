@@ -256,8 +256,6 @@ Curtain::createSurfaces()
   ModelSupport::buildCylinder(SMap,curIndex+27,
 			      Origin,Z,wallRadius+wallThick);
 
-  ELog::EM<<"Z == "<<Z<<ELog::endDiag;
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
   ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
   ModelSupport::buildPlane(SMap,curIndex+15,Origin+Z*topRaise,Z);

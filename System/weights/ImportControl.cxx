@@ -83,6 +83,32 @@ namespace WeightSystem
 {
 
 void
+setWWGImp(Simulation& System)
+  /*!
+    control neutron importance for WWG cards
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
+
+  System.getPC().setNImpFlag(2);
+  return;
+}
+
+void
+setWCellImp(Simulation& System)
+  /*!
+    control neutron importance for wwn/cell cards
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
+
+  System.getPC().setNImpFlag(1);
+  return;
+}
+
+void
 removePhysImp(Simulation& System,const std::string& pType)
   /*!
     Removes neutron importance

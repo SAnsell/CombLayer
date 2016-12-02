@@ -555,6 +555,85 @@ OrderError<T>::setOutLine()
 }
 
 //-------------------------
+// DimensionError
+//-------------------------
+
+template<unsigned int ndim,typename T>
+DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
+				       const std::string& Place) :
+  ExBase(0,Place)
+  /*!
+    Set a DimensionError
+    \param A :: Array size
+    \param R :: Required size
+    \param Place :: String describing the place
+  */
+{
+  for(unsigned int i=0;i<ndim;i++)
+    {
+      indexSize[i]=A[i];
+      reqSize[i]=R[i];
+    }  
+  setOutLine();
+}
+
+template<unsigned int ndim,typename T>
+DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
+  ExBase(A)
+  /*!
+    Copy constructor 
+    \param A :: Object to copy
+  */
+{
+  for(unsigned int i=0;i<ndim;i++)
+    {
+      indexSize[i]=A.indexSize[i];
+      reqSize[i]=A.reqSize[i];
+    }  
+}
+
+template<unsigned int ndim,typename T>
+DimensionError<ndim,T>&
+DimensionError<ndim,T>::operator=(const DimensionError<ndim,T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+      for(unsigned int i=0;i<ndim;i++)
+        {
+	  indexSize[i]=A.indexSize[i];
+	  reqSize[i]=A.reqSize[i];
+	}
+    }
+  return *this;
+}
+
+template<unsigned int ndim,typename T>
+void
+DimensionError<ndim,T>::setOutLine()
+  /*!
+    Writes out the range and aim point
+    to \OutLine
+  */
+{
+  std::stringstream cx;
+  cx<<"DimensionError<"<<ndim<<">"<<std::endl;
+  cx<<getErr()<<":";
+
+  for(unsigned int i=0;i<ndim;i++)
+    {
+      cx<<indexSize[i]<<" ("<<reqSize[i]<<") ";
+    }
+  OutLine=cx.str();
+  return;
+}
+
+//-------------------------
 // ArrayError
 //-------------------------
 
@@ -1393,6 +1472,7 @@ template class ColErr::MisMatch<unsigned int>;
 template class ColErr::MisMatch<long int>;
 template class ColErr::MisMatch<unsigned long int>;
 template class ColErr::ArrayError<2>;
+template class ColErr::DimensionError<4,long int>;
 template class ColErr::CastError<mainSystem::IItemBase>;
 template class ColErr::CastError<TimeData::WorkSpace>;
 template class ColErr::CastError<SDef::SrcBase>;

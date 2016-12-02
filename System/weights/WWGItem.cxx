@@ -52,7 +52,7 @@ namespace WeightSystem
 {
 
 WWGItem::WWGItem(const Geometry::Vec3D& CPt) :
-  Pt(CPt),weight(1.0),number(0.0)
+  Pt(CPt)
   /*!
     Constructor
     \param CPt :: Centre point
@@ -61,7 +61,7 @@ WWGItem::WWGItem(const Geometry::Vec3D& CPt) :
 
 
 WWGItem::WWGItem(const WWGItem& A) : 
-  Pt(A.Pt),weight(A.weight),number(A.number)
+  Pt(A.Pt),weight(A.weight)
   /*!
     Copy constructor
     \param A :: WWGItem to copy
@@ -79,9 +79,24 @@ WWGItem::operator=(const WWGItem& A)
   if (this!=&A)
     {
       weight=A.weight;
-      number=A.number;
     }
   return *this;
 }
 
+void
+WWGItem::write(std::ostream& OX) const
+  /*!
+    Debug write output 
+    \param OX :: Output stream
+   */
+{
+  
+  OX<<Pt<<" :: ";
+  for(const double& W : weight)
+    OX<<W<<" "<<std::endl;
+  return;
+}
+
+
+  
 }  // NAMESPACE WeightSystem

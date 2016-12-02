@@ -36,28 +36,51 @@ namespace WeightSystem
 class WWGWeight 
 {
  private:
-    /// storage for cells
 
-  const double sigmaScale;             ///< Scale for sigma 
-  std::vector<WWGItem> GCells;         ///< Cells and track info
+  const long int WX;             ///< Weight XIndex size
+  const long int WY;             ///< Weight YIndex size
+  const long int WZ;             ///< Weight ZIndex size
+  const long int WE;             ///< Energy size
   
-  double calcMinWeight(const double,const double) const;
+  /// local storage for data [i,j,j,Energy]
+  boost::multi_array<double,4> WGrid; 
   
  public:
 
-  WWGWeight();
+  WWGWeight(const size_t,const Geometry::Mesh3D&);
   WWGWeight(const WWGWeight&);
   WWGWeight& operator=(const WWGWeight&);    
-  virtual ~WWGWeight() {}          ///< Destructor
+  ~WWGWeight() {}          ///< Destructor
 
-  void setPoints();
-  void updateWM(WWG&,const double,const double,
-		const double,const double) const;
-  void invertWM(WWG&,const double,const double,
-		const double,const double) const;
+  long int getXSize() const { return WX; }
+  long int getYSize() const { return WY; }
+  long int getZSize() const { return WZ; }
+  long int getESize() const { return WE; }
 
-  // accessor
-  std::vector<WWGItem>& getGCells() { return GCells; }
+  void zeroWGrid();
+  double calcMaxAttn(const long int) const;
+  double calcMaxAttn() const;
+
+  void makeSource(const double);
+  void makeAdjoint(const double);
+  
+  //  void updateWM(WWG&,const double,const double,
+  //		const double,const double) const;
+
+  /// accessor to Cells
+  const boost::multi_array<double,4>& getGrid() const
+    { return WGrid; }
+  void setPoint(const long int,const long int,const double);
+
+  void wTrack(const Simulation&,const Geometry::Vec3D&,
+	      const std::vector<double>&,
+	      const std::vector<Geometry::Vec3D>&);
+  
+  void wTrack(const Simulation&,const Geometry::Plane&,
+	      const std::vector<double>&,
+	      const std::vector<Geometry::Vec3D>&);
+
+  void write(std::ostream&) const;
 };
 
 }

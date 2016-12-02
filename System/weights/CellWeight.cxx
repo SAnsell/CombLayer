@@ -190,7 +190,7 @@ CellWeight::updateWM(const double eCut,
 
   for(const CMapTYPE::value_type& cv : Cells)
     {
-      double W=(exp(-cv.second.weight*sigmaScale*scaleFactor*factor));
+      double W=exp(-cv.second.weight*sigmaScale*scaleFactor*factor);
       if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
       W=std::pow(W,weightPower);
 
@@ -242,8 +242,8 @@ CellWeight::invertWM(const double eCut,
 
   if (minW<minWeight)
     {
-      factor= log(minWeight)/log(minW);
-      minW=minWeight;
+      factor = log(minWeight)/log(minW);
+      minW = minWeight;
     }
   
 

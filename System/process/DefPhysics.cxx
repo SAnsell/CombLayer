@@ -361,6 +361,7 @@ setDefaultPhysics(Simulation& System,
       setReactorPhysics(System,IParam);
       return;
     }
+  
   if (IParam.hasKey("neutronOnly"))
     {
       setNeutronPhysics(System);

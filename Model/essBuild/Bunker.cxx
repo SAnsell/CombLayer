@@ -152,7 +152,6 @@ Bunker::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   
-
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
   			      wallRadius,wallRadius+wallThick,wallFrac);

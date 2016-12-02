@@ -38,15 +38,15 @@ class WWGItem
  public:
 
   const Geometry::Vec3D Pt;     ///< Centre point
-  double weight;          ///< weight for the cell
-  double number;          ///< number of tracks
+  std::vector<double> weight;          ///< weight for the cell[eneryg]
 
   explicit WWGItem(const Geometry::Vec3D&);
 
   WWGItem(const WWGItem&);
   WWGItem& operator=(const WWGItem&);
   ~WWGItem() {}  ///< Destructor
-    
+
+  void write(std::ostream&) const;
 };
 
 }

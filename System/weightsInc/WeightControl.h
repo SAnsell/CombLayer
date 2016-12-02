@@ -60,7 +60,7 @@ class WeightControl
   double scaleFactor;            ///< Scale factor
   double minWeight;              ///< Min weight
   double weightPower;            ///< makes weight W^power
-  std::vector<double> EBand;     ///< Energy bandk
+  std::vector<double> EBand;     ///< Energy band
   std::vector<double> WT;        ///< Weight scalar
   
   std::set<std::string> objectList;  ///< Object list to this cut [local]
@@ -99,14 +99,18 @@ class WeightControl
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
   void procTrack(const Simulation&,
-		  const mainSystem::inputParam&);
+		 const mainSystem::inputParam&);
+  void procWWGWeights(Simulation&,
+		      const mainSystem::inputParam&);
 
+  
   void processPtString(std::string);
 
   void procCalcHelp() const;
   void procRebaseHelp() const;
   void procObjectHelp() const;
   void procConeHelp() const;
+
   
   
   void setWeights(Simulation&);
@@ -129,8 +133,8 @@ class WeightControl
 		     double&,double&) const;
 
   void wwgMesh(const mainSystem::inputParam&);
-  void wwgEnergy();
-  void wwgCreate(Simulation&,const mainSystem::inputParam&);
+  void wwgEnergy(const mainSystem::inputParam&);
+  void wwgCreate(const Simulation&,const mainSystem::inputParam&);
 
   void calcWWGTrack(const Simulation&,const Geometry::Plane&,
 		    WWGWeight&);

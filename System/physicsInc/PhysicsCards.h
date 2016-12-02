@@ -60,7 +60,7 @@ class PhysicsCards
 
   ModeCard mode;                          ///< Mode card
   bool voidCard;                          ///< Void card
-  bool nImpOut;                           ///< are neutron imp needed
+  int nImpOut;                            ///< nImp flag [wwg | wcell]
   std::list<int> printNum;                ///< print numbers
   std::string prdmp;                      ///< prdmp string
   std::vector<PhysImp> ImpCards;          ///< Importance cards
@@ -109,6 +109,8 @@ class PhysicsCards
 
   PhysImp& addPhysImp(const std::string&,const std::string&);
   void removePhysImp(const std::string&,const std::string&);
+  /// allows setting of flag
+  void setNImpFlag(const int I) { nImpOut |= I; }
   
   template<typename T>
   T* addPhysCard(const std::string&,const std::string&);

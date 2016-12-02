@@ -60,6 +60,7 @@ class weightManager
   
   WForm* getParticle(const char);
   WWG& getWWG();
+  const WWG& getWWG() const;
   template<typename T> void addParticle(const char);
   
   void renumberCell(const int,const int);  

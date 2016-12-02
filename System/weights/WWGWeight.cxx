@@ -31,6 +31,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,6 +48,30 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Mesh3D.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cone.h"
+#include "support.h"
+#include "Rules.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "Object.h"
+#include "Qhull.h"
+#include "weightManager.h"
+#include "WForm.h"
+#include "WItem.h"
+#include "WCells.h"
+#include "CellWeight.h"
+#include "Simulation.h"
+#include "LineTrack.h"
+#include "ObjectTrackAct.h"
+#include "ObjectTrackPoint.h"
+#include "ObjectTrackPlane.h"
 #include "weightManager.h"
 #include "WWG.h"
 #include "WWGItem.h"
@@ -55,15 +80,26 @@
 namespace WeightSystem
 {
 
-WWGWeight::WWGWeight()  :
-  sigmaScale(0.06914)
+WWGWeight::WWGWeight(const size_t EB,
+		     const Geometry::Mesh3D& Grid)  :
+  WX(static_cast<long int>(Grid.getXSize())),
+  WY(static_cast<long int>(Grid.getYSize())),
+  WZ(static_cast<long int>(Grid.getZSize())),
+  WE(static_cast<long int>(EB)),
+  WGrid(boost::extents[WX][WY][WZ][WE])
   /*! 
     Constructor 
+    \param EB :: Size of energy bin
+    \param Grid :: 3D Mesh to build points on [boundary]
   */
-{}
+{
+  ELog::EM<<"WX == "<<WX<<ELog::endDiag;
+  zeroWGrid();
+}
 
 WWGWeight::WWGWeight(const WWGWeight& A)  :
-  sigmaScale(A.sigmaScale),GCells(A.GCells)
+  WX(A.WX),WY(A.WY),WZ(A.WZ),WE(A.WE),
+  WGrid(A.WGrid)
   /*! 
     Copy Constructor 
     \param A :: WWGWeight to copy
@@ -80,195 +116,234 @@ WWGWeight::operator=(const WWGWeight& A)
 {
   if (this!=&A)
     {
-      GCells=A.GCells;
+      WGrid=A.WGrid;
     }
   return *this;
 }
 
-double
-WWGWeight::calcMinWeight(const double scaleFactor,
-                          const double weightPower) const
-  /*!
-    Calculate the adjustment factor to get to the correct
-    minimum weight.
-    \param scaleFactor :: Scalefactor for density equivilent
-    \param weightPower :: power for final factor W**power
-    \return factor for exponent
-   */
-{
-  double minW(1e38);
-  for(const WWGItem& wI : GCells)
-    {
-      double W=exp(-wI.weight*sigmaScale*scaleFactor);
-      if (W>1e-20)
-        {
-          W=std::pow(W,weightPower);
-          if (W<minW) minW=W;
-        }
-    }
-  return minW;
-}
-
-  
-  
+	
 void
-WWGWeight::updateWM(WWG& wwg,
-                    const double eCut,
-                    const double scaleFactor,
-                    const double minWeight,
-                    const double weightPower) const
+WWGWeight::zeroWGrid()
   /*!
-    Mulitiply the wwg:master mesh by factors in WWGWeight
-    It assumes that the mesh size and WWGWeight are compatable.
-    \param wwg :: Weight window generator
-    \param eCut :: Cut energy [MeV] (uses fractional if on boundary)
-    \param scaleFactor :: Scale factor for weight track
-    \param minWeight :: min weight scale factor
-    \param weightPower :: power for final factor W**power
-   */
-{
-  ELog::RegMethod RegA("WWGWeight","updateWM");
-
-  // quick way to get length of array
-  // note that zero value is assumed but not infinity
-  std::vector<double> EBin=wwg.getEBin();    
-  std::vector<double> DVec=EBin;
-  std::fill(DVec.begin(),DVec.end(),1.0);
-
-    // Work on minW first:
-  const double minW=calcMinWeight(scaleFactor,weightPower);
-  const double factor=(minW<minWeight) ?
-    log(minWeight)/log(minW) : 1.0;
-
-  ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
-  
-  const Geometry::Mesh3D& WGrid=wwg.getGrid();
-
-  const size_t NX=WGrid.getXSize();
-  const size_t NY=WGrid.getYSize();
-  const size_t NZ=WGrid.getZSize();
-  size_t cN(0);
-
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-          const WWGItem& Cell(GCells[cN]);
-          
-          double W=(exp(-Cell.weight*sigmaScale*scaleFactor*factor));
-          if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
-          W=std::pow(W,weightPower);
-          if (W>=minWeight)
-            {
-              for(size_t i=0;i<EBin.size();i++)
-                {
-                  if (eCut<-1e-10 && EBin[i] <= -eCut)
-                    DVec[i]=W;
-                  else if (EBin[i]>=eCut)
-                    DVec[i]=W;
-                }
-              wwg.scaleMeshItem(cN,DVec);              
-            }
-          cN++; 
-        }
-  
-  return;
-}
-
-
-void
-WWGWeight::invertWM(WWG& wwg,
-                    const double eCut,
-                    const double scaleFactor,
-                    const double minWeight,
-                    const double weightPower) const
-  /*!
-    Mulitiply the wwg:master mesh by factors in WWGWeight
-    Invertion [adjoint] system
-    It assumes that the mesh size and WWGWeight are compatable.
-    \param wwg :: Weight window generator
-    \param eCut :: Cut energy [MeV] (uses fractional if on boundary)
-    \param scaleFactor :: Scale factor for weight track
-    \param minWeight :: min weight scale factor
-    \param weightPower :: power for final factor W**power
-   */
-{
-  ELog::RegMethod RegA("WWGWeight","invertWM");
-
-  // quick way to get length of array
-  // note that zero value is assumed but not infinity
-  std::vector<double> EBin=wwg.getEBin();    
-  std::vector<double> DVec=EBin;
-  std::fill(DVec.begin(),DVec.end(),1.0);
-
-    // Work on minW first:
-  const double minW=calcMinWeight(scaleFactor,weightPower);
-  const double factor=(minW<minWeight) ?
-    log(minWeight)/log(minW) : 1.0;
-
-  ELog::EM<<"Min W = "<<minW<<" "<<factor<<ELog::endDiag;
-  
-  const Geometry::Mesh3D& WGrid=wwg.getGrid();
-
-  const size_t NX=WGrid.getXSize();
-  const size_t NY=WGrid.getYSize();
-  const size_t NZ=WGrid.getZSize();
-  size_t cN(0);
-
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-          const WWGItem& Cell(GCells[cN]);
-          
-          double W=(exp(-Cell.weight*sigmaScale*scaleFactor*factor));
-
-          if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
-          W=std::pow(W,weightPower);
-          if (W>=minWeight)
-            {
-              for(size_t i=0;i<EBin.size();i++)
-                {
-                  if (eCut<-1e-10 && EBin[i] <= -eCut)
-                    DVec[i]=W;
-                  else if (EBin[i]>=eCut)
-                    DVec[i]=W;
-                }
-              wwg.scaleMeshItem(cN,DVec);              
-            }
-        }
-  
-  return;
-}
-
-void
-WWGWeight::setPoints()
-  /*!
-    Set all the points in the grid
+    Zero WGrid
   */
 {
-  ELog::RegMethod Rega("WWGWeight","calcPoints");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-  const Geometry::Mesh3D& WGrid=wwg.getGrid();  
-
-  const size_t NX=WGrid.getXSize();
-  const size_t NY=WGrid.getYSize();
-  const size_t NZ=WGrid.getZSize();
-
-  GCells.clear();
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-	  GCells.push_back(WWGItem(WGrid.point(i,j,k)));
-	}
+  ELog::EM<<"WXZERI == "<<WX<<ELog::endDiag;
+  for(long int i=0;i<WX;i++)
+    for(long int  j=0;j<WY;j++)
+      for(long int k=0;k<WZ;k++)
+        for(long int e=0;e<WE;e++)
+          {
+            WGrid[i][j][k][e]=0.0;
+          }
   
   return;
 }
+
+void
+WWGWeight::setPoint(const long int index,
+                    const long int IE,
+                    const double V)
+   /*!
+     Set a point assuming x,y,z indexing and z fastest point
+     \param index :: index for linearization
+     \param eIndex :: Energy bin
+     \param V :: value to set
+   */
+{
+  const long int IX=index/(WY*WZ);
+  const long int IY=(index/WZ) % WY;
+  const long int IZ=index % WZ;
+
+  if (IX>=WX)
+    throw ColErr::IndexError<long int>
+      (index,WX,"setPoint::Index out of range");
+
+  if (IE>=WE)
+    throw ColErr::IndexError<long int>
+      (IE,WE,"setPoint::eIndex out of range");
   
+  WGrid[IX][IY][IZ][IE]=V;
+  return;
+}
+
+double
+WWGWeight::calcMaxAttn(const long int eIndex) const
+  /*!
+    Calculate the adjustment factor to get to the 
+    max weight correction
+    \param eIndex :: Index
+    \return factor for exponent (not yet taken exp)
+  */
+{
+  double maxW(-1e38);
+  if (WE>eIndex)
+    {
+      for(long int i=0;i<WX;i++)
+        for(long int  j=0;j<WY;j++)
+          for(long int k=0;k<WZ;k++)
+            {
+              if (WGrid[i][j][k][eIndex]>maxW)
+                maxW=WGrid[i][j][k][eIndex];
+            }
+    }
+  return maxW;
+}
+
+
   
+double
+WWGWeight::calcMaxAttn() const
+  /*!
+    Calculate the adjustment factor to get to the 
+    max weight correction
+    \param eIndex :: Index
+    \return factor for exponent (not yet taken exp)
+  */
+{
+  double maxW(-1e38);
+  for(long int eIndex=0;eIndex<WE;eIndex++)
+    {
+      const double W=calcMaxAttn(eIndex);
+      if (W>maxW) maxW=W;
+    }
+  return maxW;
+}
+
+void
+WWGWeight::makeSource(const double MValue)
+  /*!
+    Convert a set of value [EXP not taken]
+    into  a source. 
+    - 0 is full beam 
+    - MValue is lowest attentuation factor
+    \param MValue :: Lowest acceptable attenuation fraction [+ve only]
+  */
+
+{
+  double* TData=WGrid.data();
+  const size_t NData=WGrid.num_elements();
+  for(size_t i=0;i<NData;i++)
+    {
+       if (TData[i] < -MValue)
+	 TData[i]= -MValue;
+       else if (TData[i]>0.0)
+	 TData[i]=0.0;
+    }
+  return;
+}
+
+void
+WWGWeight::makeAdjoint(const double MValue)
+  /*!
+    Remormalize the grid to MValue minimum
+    \param MValue :: LOWEST value [-ve]
+   */
+{
+  double* TData=WGrid.data();
+  const size_t NData=WGrid.num_elements();
+  for(size_t i=0;i<NData;i++)
+    {
+      TData[i]= -MValue-TData[i];
+      if (TData[i]> -MValue)
+        TData[i]= -MValue;
+      else if (TData[i]>0.0)
+	TData[i]=0.0;
+    }
+  return;
+}
+
+
+void
+WWGWeight::wTrack(const Simulation& System,
+		  const Geometry::Vec3D& initPt,
+		  const std::vector<double>& EBin,
+		  const std::vector<Geometry::Vec3D>& MidPt)
+  /*!
+    Calculate a specific trac from sourcePoint to position
+    \param System :: Simulation to use    
+    \param initPt :: Point for outgoing track
+    \param EBin :: Energy points
+    \param MidPt :: Grid points
+  */
+{
+  ELog::RegMethod RegA("WWGWeight","wTrack(Vec3D)");
+
+  ModelSupport::ObjectTrackPoint OTrack(initPt);
+
+  long int cN(1);
+  for(const Geometry::Vec3D& Pt : MidPt)
+    {
+      OTrack.addUnit(System,cN,Pt);
+      double DistT=OTrack.getDistance(cN);
+      if (DistT<1.0) DistT=1.0;
+      const double AT=OTrack.getAttnSum(cN);    // this can take an
+                                                // energy
+      for(long int index=0;index<WE;index++)
+        {
+          // exp(-Sigma)/r^2  in log form
+          setPoint(cN-1,index,-AT-2*log(DistT));
+        }
+      cN++;
+    }
+  return;
+}
+
+
+void
+WWGWeight::wTrack(const Simulation& System,
+		  const Geometry::Plane& initPlane,
+		  const std::vector<double>& EBin,
+		  const std::vector<Geometry::Vec3D>& MidPt)
+  /*!
+    Calculate a specific trac from sourcePoint to  postion
+    \param System :: Simulation to use    
+    \param initPlane :: Plane for outgoing track
+    \param EBin :: Energy points
+    \param MidPt :: Grid points
+  */
+{
+  ELog::RegMethod RegA("WWGWeight","wTrack(Plane)");
+
+  ModelSupport::ObjectTrackPlane OTrack(initPlane);
+  long int cN(1);
+  for(const Geometry::Vec3D& Pt : MidPt)
+    {
+      OTrack.addUnit(System,cN,Pt);
+      double DistT=OTrack.getDistance(cN);
+      if (DistT<1.0) DistT=1.0;
+      const double AT=OTrack.getAttnSum(cN);    // this can take an energy
+      for(long int index=0;index<WE;index++)
+        {
+          // exp(-Sigma)/r^2  in log form
+          setPoint(cN-1,index,-AT-2*log(DistT));
+        }
+      cN++;
+    }
+  return;
+}
+
+void
+WWGWeight::write(std::ostream& OX) const
+  /*!
+    Debug output
+    \param OX :: Output stream
+   */
+{
+  OX<<"# NPts == "<<WGrid.size()<<std::endl;
+  for(long int i=0;i<WX;i++)
+    for(long int  j=0;j<WY;j++)
+      for(long int k=0;k<WZ;k++)
+        {
+          OX<<i<<" "<<j<<" "<<k;
+          for(long int e=0;e<WE;e++)
+            {
+              OX<<" "<<WGrid[i][j][k][e];
+            }
+          OX<<std::endl;
+        }
+
+  return;
+}
   
 } // Namespace WeightSystem
