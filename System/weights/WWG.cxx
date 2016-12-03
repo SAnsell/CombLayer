@@ -226,7 +226,7 @@ WWG::updateWM(const WWGWeight& UMesh,
 	    if (W>-20)
 	      {
 		W=exp(W);
-		WMesh[i][j][k][e]+=W;  
+		WMesh[i][j][k][e]+=W;
 	      }
 	  }
   
@@ -265,6 +265,30 @@ WWG::writeHead(std::ostream& OX) const
   return;
 }
 
+void
+WWG::normalize()
+  /*!
+    Normalize the mesh to have a max at 1.0
+  */
+{
+  ELog::RegMethod RegA("WWG","normalize");
+
+  double* TData=WMesh.data();
+
+  const size_t NData=WMesh.num_elements();
+  if (NData)
+    {
+      const double maxValue = *std::max_element(TData,TData+NData);
+      if (std::abs(maxValue)>1e-38)
+	{
+	  const double SFactor(1.0/maxValue);
+	  for(size_t i=0;i<NData;i++)
+	    TData[i]*=SFactor;
+	}
+    }
+  return;
+}
+  
 void
 WWG::scaleMeshItem(const size_t I,const size_t J,const size_t K,
                    const size_t EI,const double W)

@@ -88,11 +88,14 @@ class WWG
   void scaleMeshItem(const size_t,const size_t,const size_t,
 		     const size_t,const double);
   void calcGridMidPoints();
-  
+  void updateWM(const WWGWeight&,const double);
+  void normalize();
+  void scaleRange(const double,const double);
+
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
 
-  void updateWM(const WWGWeight&,const double);
+
   
 };
  

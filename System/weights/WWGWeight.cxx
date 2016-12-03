@@ -93,7 +93,6 @@ WWGWeight::WWGWeight(const size_t EB,
     \param Grid :: 3D Mesh to build points on [boundary]
   */
 {
-  ELog::EM<<"WX == "<<WX<<ELog::endDiag;
   zeroWGrid();
 }
 
@@ -128,7 +127,6 @@ WWGWeight::zeroWGrid()
     Zero WGrid
   */
 {
-  ELog::EM<<"WXZERI == "<<WX<<ELog::endDiag;
   for(long int i=0;i<WX;i++)
     for(long int  j=0;j<WY;j++)
       for(long int k=0;k<WZ;k++)
@@ -229,6 +227,7 @@ WWGWeight::makeSource(const double MValue)
 	 TData[i]= -MValue;
        else if (TData[i]>0.0)
 	 TData[i]=0.0;
+       ELog::EM<<"TDATA "<<TData[i]<<" "<<MValue<<ELog::endDiag;
     }
   return;
 }
@@ -245,26 +244,29 @@ WWGWeight::makeAdjoint(const double MValue)
   for(size_t i=0;i<NData;i++)
     {
       TData[i]= -MValue-TData[i];
-      if (TData[i]> -MValue)
+      if (TData[i] < -MValue)
         TData[i]= -MValue;
       else if (TData[i]>0.0)
 	TData[i]=0.0;
     }
   return;
 }
-
-
+  
 void
 WWGWeight::wTrack(const Simulation& System,
 		  const Geometry::Vec3D& initPt,
 		  const std::vector<double>& EBin,
-		  const std::vector<Geometry::Vec3D>& MidPt)
+		  const std::vector<Geometry::Vec3D>& MidPt,
+		  const double densityFactor,
+		  const double r2Power)
   /*!
     Calculate a specific trac from sourcePoint to position
     \param System :: Simulation to use    
     \param initPt :: Point for outgoing track
     \param EBin :: Energy points
     \param MidPt :: Grid points
+    \param densityFactor :: Scaling factor for density
+    \param r2Power :: power of 1/r^2 factor
   */
 {
   ELog::RegMethod RegA("WWGWeight","wTrack(Vec3D)");
@@ -281,8 +283,8 @@ WWGWeight::wTrack(const Simulation& System,
                                                 // energy
       for(long int index=0;index<WE;index++)
         {
-          // exp(-Sigma)/r^2  in log form
-          setPoint(cN-1,index,-AT-2*log(DistT));
+	  // exp(-Sigma)/r^2  in log form
+          setPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
         }
       cN++;
     }
@@ -294,13 +296,16 @@ void
 WWGWeight::wTrack(const Simulation& System,
 		  const Geometry::Plane& initPlane,
 		  const std::vector<double>& EBin,
-		  const std::vector<Geometry::Vec3D>& MidPt)
+		  const std::vector<Geometry::Vec3D>& MidPt,
+		  const double densityFactor,const double r2Power)
   /*!
     Calculate a specific trac from sourcePoint to  postion
     \param System :: Simulation to use    
     \param initPlane :: Plane for outgoing track
     \param EBin :: Energy points
     \param MidPt :: Grid points
+    \param densityFactor :: Scaling factor for density
+    \param r2Power :: power of 1/r^2 factor
   */
 {
   ELog::RegMethod RegA("WWGWeight","wTrack(Plane)");
@@ -316,7 +321,7 @@ WWGWeight::wTrack(const Simulation& System,
       for(long int index=0;index<WE;index++)
         {
           // exp(-Sigma)/r^2  in log form
-          setPoint(cN-1,index,-AT-2*log(DistT));
+          setPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
         }
       cN++;
     }

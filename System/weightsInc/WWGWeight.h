@@ -74,11 +74,13 @@ class WWGWeight
 
   void wTrack(const Simulation&,const Geometry::Vec3D&,
 	      const std::vector<double>&,
-	      const std::vector<Geometry::Vec3D>&);
+	      const std::vector<Geometry::Vec3D>&,
+	      const double,const double);
   
   void wTrack(const Simulation&,const Geometry::Plane&,
 	      const std::vector<double>&,
-	      const std::vector<Geometry::Vec3D>&);
+	      const std::vector<Geometry::Vec3D>&,
+	      const double,const double);
 
   void write(std::ostream&) const;
 };

@@ -133,13 +133,14 @@ WeightControl::wwgCreate(const Simulation& System,
       // local mesh - zeroed
       WWGWeight wSet(EBin.size(),wwg.getGrid());   
       procParam(IParam,"wwgCalc",index,0);
-      
+
       if (activePtType=="Plane")   //
 	{
           if (activePtIndex>=planePt.size())
             throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
                                              "planePt.size() < activePtIndex");
-	  wSet.wTrack(System,planePt[activePtIndex],EBin,GridMidPt);
+	  wSet.wTrack(System,planePt[activePtIndex],EBin,GridMidPt,
+		      density,r2Power);
 	}
       else if (activePtType=="Source")
         {
@@ -147,17 +148,24 @@ WeightControl::wwgCreate(const Simulation& System,
             throw ColErr::IndexError<size_t>(activePtIndex,sourcePt.size(),
                                              "sourcePt.size() < activePtIndex");
           ELog::EM<<"Calling Source Point"<<ELog::endDiag;
-          wSet.wTrack(System,sourcePt[activePtIndex],EBin,GridMidPt);
+          wSet.wTrack(System,sourcePt[activePtIndex],EBin,GridMidPt,
+		      density,r2Power);
         }
       else 
 	throw ColErr::InContainerError<std::string>
 	  (activePtType,"SourceType no known");
 
+      ELog::EM<<"ACTIVE TYEP == "
+	      <<activeAdjointFlag<<":"<<minWeight<<" "<<scaleFactor<<ELog::endDiag;
+      if (minWeight<0) minWeight*-1;
+      if (minWeight<1e-30) minWeight=30;
+      if (minWeight<1.0) minWeight= -log(minWeight);
+      
       if (!activeAdjointFlag)
 	wSet.makeSource(minWeight);
       else
 	wSet.makeAdjoint(minWeight);
-      
+
       wwg.updateWM(wSet,scaleFactor);
     }   
   return;
