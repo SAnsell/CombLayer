@@ -267,6 +267,27 @@ WWG::writeHead(std::ostream& OX) const
 }
 
 void
+WWG::powerRange(const double pR)
+  /*!
+    After normalization calculate W^p
+    \param pR :: power value
+   */
+{
+  ELog::RegMethod RegA("WWG","powerRange");
+
+  double* TData=WMesh.data();
+
+  const size_t NData=WMesh.num_elements();
+  if (NData)
+    {
+      ELog::EM<<"power range == "<<pR<<ELog::endDiag;
+      for(size_t i=0;i<NData;i++)
+        TData[i]=std::pow(TData[i],pR);
+    }
+  return;
+}
+  
+void
 WWG::scaleRange(const double minR,const double maxR)
   /*!
     Normalize the mesh to have a max at 1.0
@@ -274,7 +295,7 @@ WWG::scaleRange(const double minR,const double maxR)
     \param maxR :: Max value
   */
 {
-  ELog::RegMethod RegA("WWG","normalize");
+  ELog::RegMethod RegA("WWG","scaleRange");
 
   double* TData=WMesh.data();
 
@@ -282,13 +303,11 @@ WWG::scaleRange(const double minR,const double maxR)
   const double RScale=maxR-minR;
   if (NData)
     {
-      const double maxValue = *std::max_element(TData,TData+NData);
-      const double minValue = *std::min_element(TData,TData+NData);
+      const double maxValue = *std::max_element(TData,TData+NData-1);
+      const double minValue = *std::min_element(TData,TData+NData-1);
       const double TScale=maxValue-minValue;
       if (TScale>1e-38)
 	{
-	  ELog::EM<<"Norm factor == "<<maxValue<<ELog::endDiag;
-	  ELog::EM<<"Range factor == "<<minValue<<ELog::endDiag;
 	  for(size_t i=0;i<NData;i++)
 	    TData[i]=(TData[i]-minValue)*(RScale/TScale)+minR;
 	}
@@ -299,27 +318,11 @@ WWG::scaleRange(const double minR,const double maxR)
 void
 WWG::normalize()
   /*!
-    Normalize the mesh to have a max at 1.0
+    Normalize the mesh to have a max at 1.0 to 0.0
   */
 {
   ELog::RegMethod RegA("WWG","normalize");
-
-  double* TData=WMesh.data();
-
-  const size_t NData=WMesh.num_elements();
-  if (NData)
-    {
-      const double maxValue = *std::max_element(TData,TData+NData);
-      const double minValue = *std::min_element(TData,TData+NData);
-      if (std::abs(maxValue)>1e-38)
-	{
-	  const double SFactor(1.0/maxValue);
-	  ELog::EM<<"Norm factor == "<<maxValue<<ELog::endDiag;
-	  ELog::EM<<"Range factor == "<<minValue<<ELog::endDiag;
-	  for(size_t i=0;i<NData;i++)
-	    TData[i]*=SFactor;
-	}
-    }
+  scaleRange(0,1.0);
   return;
 }
   

@@ -91,6 +91,7 @@ class WWG
   void updateWM(const WWGWeight&,const double);
   void normalize();
   void scaleRange(const double,const double);
+  void powerRange(const double);
 
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;

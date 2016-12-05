@@ -104,6 +104,7 @@ WeightControl::procWWGWeights(Simulation& System,
   wwgEnergy(IParam);             // set default energy grid
 
   wwgCreate(System,IParam);
+  wwgNormalize(IParam); 
   wwgVTK(IParam);
   WM.getParticle('n')->setActiveWWP(0);
   setWWGImp(System);
@@ -156,7 +157,7 @@ WeightControl::wwgCreate(const Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (activePtType,"SourceType no known");
 
-      if (minWeight<0) minWeight*-1;
+      if (minWeight<0) minWeight*=-1;
       if (minWeight<1e-30) minWeight=30;
       if (minWeight<1.0) minWeight= -log(minWeight);
       
@@ -167,7 +168,32 @@ WeightControl::wwgCreate(const Simulation& System,
 
       wwg.updateWM(wSet,scaleFactor);
     }
-  wwg.scaleRange(exp(-minWeight),1.0);
+  return;
+}
+  
+void
+WeightControl::wwgNormalize(const mainSystem::inputParam& IParam)
+  /*!
+    Normalize the main weight system
+    \param IParam :: Input parameter
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wwgNormalize");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+
+  if (IParam.flag("wwgNorm"))
+    {
+      const double minWeight=
+        IParam.getDefValue<double>(10.0,"wwgNorm",0,0);
+      const double powerWeight=
+        IParam.getDefValue<double>(1.0,"wwgNorm",0,1);
+      ELog::EM<<"Scale Range == "<<std::pow(10.0,-minWeight)<<ELog::endDiag;
+      wwg.scaleRange(std::pow(10.0,-minWeight),1.0);
+      wwg.powerRange(powerWeight);
+    }
   return;
 }
   

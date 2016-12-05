@@ -138,7 +138,8 @@ class WeightControl
   void wwgEnergy(const mainSystem::inputParam&);
   void wwgVTK(const mainSystem::inputParam&);
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
-
+  void wwgNormalize(const mainSystem::inputParam&);
+  
   void calcWWGTrack(const Simulation&,const Geometry::Plane&,
 		    WWGWeight&);
   void calcWWGTrack(const Simulation&,const Geometry::Vec3D&,
