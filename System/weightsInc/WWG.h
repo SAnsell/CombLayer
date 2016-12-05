@@ -94,6 +94,7 @@ class WWG
 
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
+  void writeVTK(const std::string&) const;
 
 
   

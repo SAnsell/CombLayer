@@ -227,7 +227,6 @@ WWGWeight::makeSource(const double MValue)
 	 TData[i]= -MValue;
        else if (TData[i]>0.0)
 	 TData[i]=0.0;
-       ELog::EM<<"TDATA "<<TData[i]<<" "<<MValue<<ELog::endDiag;
     }
   return;
 }
@@ -241,6 +240,7 @@ WWGWeight::makeAdjoint(const double MValue)
 {
   double* TData=WGrid.data();
   const size_t NData=WGrid.num_elements();
+  ELog::EM<<"Min Adjoing == "<<MValue<<ELog::endDiag;
   for(size_t i=0;i<NData;i++)
     {
       TData[i]= -MValue-TData[i];

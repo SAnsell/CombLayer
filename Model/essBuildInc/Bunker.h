@@ -64,7 +64,6 @@ class Bunker : public attachSystem::ContainedComp,
 
 
   // MAIN WALL
-  size_t activeSegment;          ///< Active segment
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
 

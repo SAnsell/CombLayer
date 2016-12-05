@@ -67,7 +67,7 @@ namespace WeightSystem
 
 WWG::WWG() :
   ptype('n'),wupn(8.0),wsurv(1.4),maxsp(5),
-  mwhere(-1),mtime(0),switchn(-1),
+  mwhere(-1),mtime(0),switchn(-2),
   EBin({1e8})
   /*!
     Constructor : 
@@ -157,9 +157,9 @@ WWG::resetMesh(const std::vector<double>& W)
 	for(long int e=0;e<EBSize;e++)
 	  {
 	    if (WSize>e)
-	      WMesh[i][j][k][e]=W[static_cast<size_t>(e)];
+	      WMesh[i][j][k][e]=0.0;   // W[static_cast<size_t>(e)];
 	    else
-	      WMesh[i][j][k][e]=1.0;
+	      WMesh[i][j][k][e]=0.0;
 	  }
 
   
@@ -188,7 +188,7 @@ WWG::setEnergyBin(const std::vector<double>& EB,
 {
   ELog::RegMethod RegA("WWG","setEnergyBine");
   EBin=EB;
-  if (EBin.empty() || EBin.back()<1e5)
+  if (EBin.empty())
     EBin.push_back(1e5);
   resetMesh(DefWeight);
   return;
@@ -227,6 +227,7 @@ WWG::updateWM(const WWGWeight& UMesh,
 	      {
 		W=exp(W);
 		WMesh[i][j][k][e]+=W;
+
 	      }
 	  }
   
@@ -266,6 +267,36 @@ WWG::writeHead(std::ostream& OX) const
 }
 
 void
+WWG::scaleRange(const double minR,const double maxR)
+  /*!
+    Normalize the mesh to have a max at 1.0
+    \param minR :: Min value
+    \param maxR :: Max value
+  */
+{
+  ELog::RegMethod RegA("WWG","normalize");
+
+  double* TData=WMesh.data();
+
+  const size_t NData=WMesh.num_elements();
+  const double RScale=maxR-minR;
+  if (NData)
+    {
+      const double maxValue = *std::max_element(TData,TData+NData);
+      const double minValue = *std::min_element(TData,TData+NData);
+      const double TScale=maxValue-minValue;
+      if (TScale>1e-38)
+	{
+	  ELog::EM<<"Norm factor == "<<maxValue<<ELog::endDiag;
+	  ELog::EM<<"Range factor == "<<minValue<<ELog::endDiag;
+	  for(size_t i=0;i<NData;i++)
+	    TData[i]=(TData[i]-minValue)*(RScale/TScale)+minR;
+	}
+    }
+  return;
+}
+  
+void
 WWG::normalize()
   /*!
     Normalize the mesh to have a max at 1.0
@@ -279,9 +310,12 @@ WWG::normalize()
   if (NData)
     {
       const double maxValue = *std::max_element(TData,TData+NData);
+      const double minValue = *std::min_element(TData,TData+NData);
       if (std::abs(maxValue)>1e-38)
 	{
 	  const double SFactor(1.0/maxValue);
+	  ELog::EM<<"Norm factor == "<<maxValue<<ELog::endDiag;
+	  ELog::EM<<"Range factor == "<<minValue<<ELog::endDiag;
 	  for(size_t i=0;i<NData;i++)
 	    TData[i]*=SFactor;
 	}
@@ -358,18 +392,76 @@ WWG::writeWWINP(const std::string& FName) const
   const long int ZSize(static_cast<long int>(WMesh.shape()[2]));
   const long int ESize(static_cast<long int>(WMesh.shape()[3]));
 
-  ELog::EM<<"X == "<<XSize<<" "<<YSize<<" "<<ZSize<<ELog::endDiag;
   for(long int EI=0;EI<ESize;EI++)
     {
-      for(long int I=0;I<XSize;I++)
-        for(long int J=0;J<YSize;J++)
-          for(long int K=0;K<ZSize;K++)
-            StrFunc::writeLine(OX,WMesh[I][J][K][EI],itemCnt,6);
+      for(long int K=0;K<ZSize;K++)
+	for(long int J=0;J<YSize;J++)
+	  for(long int I=0;I<XSize;I++)
+	    StrFunc::writeLine(OX,WMesh[I][J][K][EI],itemCnt,6);
     }
   OX<<std::endl;
   OX.close();
 		       
   return;
 }  
+
+
+void
+WWG::writeVTK(const std::string& FName) const
+  /*!
+    Write out a VTK file
+    \param FName :: filename 
+  */
+{
+  ELog::RegMethod RegA("WWG","writeVTK");
+  
+  if (FName.empty()) return;
+  std::ofstream OX(FName.c_str());
+  std::ostringstream cx;
+  boost::format fFMT("%1$11.6g%|14t|");
+
+  const long int XSize(static_cast<long int>(WMesh.shape()[0]));
+  const long int YSize(static_cast<long int>(WMesh.shape()[1]));
+  const long int ZSize(static_cast<long int>(WMesh.shape()[2]));
+  //  const long int ESize(static_cast<long int>(WMesh.shape()[3]));
+  
+  OX<<"# vtk DataFile Version 2.0"<<std::endl;
+  OX<<"WWG-MESH Data"<<std::endl;
+  OX<<"ASCII"<<std::endl;
+  OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
+  OX<<"DIMENSIONS "<<XSize<<" "<<YSize<<" "<<ZSize<<std::endl;
+  OX<<"X_COORDINATES "<<XSize<<" float"<<std::endl;
+  for(long int i=0;i<XSize;i++)
+    OX<<(fFMT % Grid.getXCoordinate(static_cast<size_t>(i)));
+  OX<<std::endl;
+  
+  OX<<"Y_COORDINATES "<<YSize<<" float"<<std::endl;
+  for(long int i=0;i<YSize;i++)
+    OX<<(fFMT % Grid.getYCoordinate(static_cast<size_t>(i)));
+  OX<<std::endl;
+
+  OX<<"Z_COORDINATES "<<ZSize<<" float"<<std::endl;
+  for(long int i=0;i<ZSize;i++)
+    OX<<(fFMT % Grid.getZCoordinate(static_cast<size_t>(i)));
+  OX<<std::endl;
+  
+
+  OX<<"POINT_DATA "<<XSize*YSize*ZSize<<std::endl;
+  OX<<"SCALARS cellID float 1.0"<<std::endl;
+  OX<<"LOOKUP_TABLE default"<<std::endl;
+
+  for(long int K=0;K<ZSize;K++)
+    for(long int J=0;J<YSize;J++)
+      {
+	for(long int I=0;I<XSize;I++)
+	  OX<<(fFMT % WMesh[I][J][K][0]);
+	OX<<std::endl;
+      }
+  
+  OX.close();
+
+  return;
+}
+
   
 }  // NAMESPACE WeightSystem

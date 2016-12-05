@@ -104,6 +104,7 @@ WeightControl::procWWGWeights(Simulation& System,
   wwgEnergy(IParam);             // set default energy grid
 
   wwgCreate(System,IParam);
+  wwgVTK(IParam);
   WM.getParticle('n')->setActiveWWP(0);
   setWWGImp(System);
   return;
@@ -155,8 +156,6 @@ WeightControl::wwgCreate(const Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (activePtType,"SourceType no known");
 
-      ELog::EM<<"ACTIVE TYEP == "
-	      <<activeAdjointFlag<<":"<<minWeight<<" "<<scaleFactor<<ELog::endDiag;
       if (minWeight<0) minWeight*-1;
       if (minWeight<1e-30) minWeight=30;
       if (minWeight<1.0) minWeight= -log(minWeight);
@@ -167,7 +166,8 @@ WeightControl::wwgCreate(const Simulation& System,
 	wSet.makeAdjoint(minWeight);
 
       wwg.updateWM(wSet,scaleFactor);
-    }   
+    }
+  wwg.scaleRange(exp(-minWeight),1.0);
   return;
 }
   
@@ -258,6 +258,28 @@ WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
   return;
 }
 
+void
+WeightControl::wwgVTK(const mainSystem::inputParam& IParam)
+  /*!
+    Write out an vkt file
+    \param IParam :: Data for point
+  */
+{
+  ELog::RegMethod RegA("WeightControl","wwgvTK");
+  
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+
+  if (IParam.flag("wwgVTK"))
+    {
+      WWG& wwg=WM.getWWG();
+      const std::string FName=
+	IParam.getValue<std::string>("wwgVTK",0);
+
+      wwg.writeVTK(FName);
+    }
+  return;
+}
 		       
 }  // NAMESPACE weightSystem
 

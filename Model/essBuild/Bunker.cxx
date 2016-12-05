@@ -167,7 +167,6 @@ Bunker::populate(const FuncDataBase& Control)
 			      0,1.0,segDivide);
 
   // BOOLEAN NUMBER!!!!!!!
-  activeSegment=Control.EvalDefVar<size_t>(keyName+"ActiveSegment",0);
   nVert=Control.EvalVar<size_t>(keyName+"NVert");
   midZ=Control.EvalDefVar<double>(keyName+"MidZ",0.0);
   ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",

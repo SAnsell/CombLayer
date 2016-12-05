@@ -136,6 +136,7 @@ class WeightControl
 
   void wwgMesh(const mainSystem::inputParam&);
   void wwgEnergy(const mainSystem::inputParam&);
+  void wwgVTK(const mainSystem::inputParam&);
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
 
   void calcWWGTrack(const Simulation&,const Geometry::Plane&,

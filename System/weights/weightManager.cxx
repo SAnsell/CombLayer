@@ -215,7 +215,6 @@ weightManager::write(std::ostream& OX) const
 
   if (WWGPtr)
     {
-      ELog::EM<<"FOUND WWGPtr "<<ELog::endDiag;
       WWGPtr->writeWWINP("wwinp");
       WWGPtr->write(OX);
     }

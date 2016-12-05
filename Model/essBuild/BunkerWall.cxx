@@ -133,6 +133,7 @@ BunkerWall::populate(const FuncDataBase& Control)
   // Need two sets active and passive :
   // ACTIVE:
   // BOOLEAN NUMBER!!!!!!!
+  ELog::EM<<"key == "<<keyName+"Active"<<ELog::endDiag;
   activeWall=Control.EvalDefVar<size_t>(keyName+"Active",0);
   if (activeWall)
     {
@@ -141,7 +142,6 @@ BunkerWall::populate(const FuncDataBase& Control)
       nMedial=Control.EvalDefVar<size_t>(keyName+"NMedial",0);
       ModelSupport::populateDivideLen(Control,nVert,keyName+"Vert",
 				      1.0,vert);
-      ELog::EM<<"NRADIAL == "<<nRadial<<ELog::endDiag;
       if (!nRadial)
 	radial=basic;
       else

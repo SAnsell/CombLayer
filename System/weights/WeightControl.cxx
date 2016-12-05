@@ -202,11 +202,14 @@ WeightControl::processPtString(std::string ptStr)
       if (SP!='T' && SP!='S')  // fail
 	throw ColErr::InvalidLine(Input,"PtStr[0] expected:: [ST] [SPC] number");
 
+
       std::map<char,std::string>::const_iterator mc=TypeMap.find(TP);
       if (mc==TypeMap.end())
         throw ColErr::InvalidLine
           (Input,"PtStr[1] expected:: [ST] [SPC] number");
 
+      activeAdjointFlag= (SP=='T') ? 1 : 0;
+	      
       activePtType=mc->second;
 
       ptStr[0]=' ';
@@ -963,6 +966,7 @@ WeightControl::help() const
   procRebaseHelp();
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
   ELog::EM<<"-- wwgCalc --::"<<ELog::endDiag;
+  ELog::EM<<"-- wwgVTK --::"<<ELog::endDiag;
   procCalcHelp();
 
   ELog::EM<<"-- wFCL --:: Set forced collision"<<ELog::endDiag;

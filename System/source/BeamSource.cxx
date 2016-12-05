@@ -198,6 +198,13 @@ BeamSource::populateEnergy(std::string EPts,std::string EProb)
 	    <<"Energy : "<<EPts<<"\n"
   	    <<"Energy : "<<EProb<<ELog::endErr;
 
+    // single entry:
+  if (Energy.empty() && eB>0.0)
+    {
+      Energy.push_back(eB);
+      return 1;
+    }
+
   // // Normalize 
   // for(double& prob : EWeight)
   //   prob/=sum;
@@ -228,8 +235,8 @@ BeamSource::populate(const FuncDataBase& Control)
   const std::string EFile=
     Control.EvalDefVar<std::string>(keyName+"EFile","");
 
-  if (!populateEnergy(EList,EPList) &&
-      !populateEFile(EFile,1,11))
+  if (!populateEFile(EFile,1,11) &&
+      !populateEnergy(EList,EPList))
     {
       double defEnergy(1.0);
       StrFunc::convert(EList,defEnergy);
@@ -245,6 +252,8 @@ BeamSource::populate(const FuncDataBase& Control)
 	  EWeight.push_back(1.0);
 	  E+=EStep;
 	}
+      if (Energy.empty())
+	Energy.push_back(E);
     }
   return;
 }
