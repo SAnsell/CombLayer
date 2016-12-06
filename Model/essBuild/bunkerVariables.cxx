@@ -117,7 +117,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
 
       // WALL LAYERED
-      Control.addVariable(KItem+"BunkerWallNBasic",10);      
+      Control.addVariable(KItem+"BunkerWallNBasic",12);      
 
       // ROOF LAYERED
       Control.addVariable(KItem+"BunkerNBasicVert",5);
@@ -140,20 +140,24 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerWallMat4","CastIron");
       Control.addVariable(KItem+"BunkerWallMat5","CarstonConc");
       Control.addVariable(KItem+"BunkerWallMat6","CastIron");
-      Control.addVariable(KItem+"BunkerWallMat7","CarstonConc");
-      Control.addVariable(KItem+"BunkerWallMat8","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat7","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat8","CarstonConc");
       Control.addVariable(KItem+"BunkerWallMat9","CarstonConc");
+      Control.addVariable(KItem+"BunkerWallMat10","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat11","CarstonConc");
       
       Control.addVariable(KItem+"BunkerWallLen1",10.0);
       Control.addVariable(KItem+"BunkerWallLen2",15.5);
       Control.addVariable(KItem+"BunkerWallLen3",15.5);
       Control.addVariable(KItem+"BunkerWallLen4",15.5);
       Control.addVariable(KItem+"BunkerWallLen5",15.5);
-      Control.addVariable(KItem+"BunkerWallLen6",93.0);
-      Control.addVariable(KItem+"BunkerWallLen7",93.0);
+      Control.addVariable(KItem+"BunkerWallLen6",46.5);
+      Control.addVariable(KItem+"BunkerWallLen7",46.5);
       Control.addVariable(KItem+"BunkerWallLen8",46.5);
-      Control.addVariable(KItem+"BunkerWallLen9",31.0);
-      Control.addVariable(KItem+"BunkerWallLen10",15.5);
+      Control.addVariable(KItem+"BunkerWallLen9",46.5);
+      Control.addVariable(KItem+"BunkerWallLen10",46.5);
+      Control.addVariable(KItem+"BunkerWallLen11",31.0);
+      Control.addVariable(KItem+"BunkerWallLen12",15.5);
     }
   
   Control.addVariable(AKey+"BunkerLoadFile","ABunkerDef.xml");
