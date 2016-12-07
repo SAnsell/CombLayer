@@ -80,7 +80,7 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
                              "beer","bifrost","cspec","dream","estia",
 			     "freia","loki","magic","miracles","nmx",
                              "odin","trex","vor","vespa","shortDream",
-                             "shortOdin","longLoki",
+                             "shortNmx","shortOdin","longLoki",
 			     "commonVar","simpleItem"
     	 	             ]);
 

@@ -89,7 +89,7 @@ NMXvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.1);
-  FGen.generateTaper(Control,"nmxGA",350.0,3.0,3.0,3.0,4.5);
+  FGen.generateTaper(Control,"nmxFA",350.0,3.0,3.0,3.0,4.5);
   Control.addVariable("nmxGABeamZAngle",0.0);         // -1.0 [BEND]
 
   FGen.setGuideMat("Aluminium");

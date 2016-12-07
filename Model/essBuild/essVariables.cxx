@@ -529,6 +529,7 @@ EssVariables(FuncDataBase& Control)
 
   shortDREAMvariables(Control);
   shortDREAM2variables(Control);
+  shortNMXvariables(Control);
   shortODINvariables(Control);
   
   EssButterflyModerator(Control);

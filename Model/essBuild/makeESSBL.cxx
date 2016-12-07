@@ -93,6 +93,7 @@
 #include "VOR.h"
 
 #include "shortDREAM.h"
+#include "shortNMX.h"
 #include "shortODIN.h"
 #include "simpleITEM.h"
 
@@ -274,24 +275,30 @@ makeESSBL::build(Simulation& System,
   else if (beamName=="SHORTODIN")
     {
       // Odin beamline
-      ODIN OdinBL("shortOdin");
+      shortODIN OdinBL("Odin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM")
     {
       // short sector dream
-      DREAM dreamBL("shortDream");
+      shortDREAM dreamBL("shortDream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SHORTDREAM2")
     {
       // short sector dream
-      DREAM dreamBL("shortDream2");
+      shortDREAM dreamBL("shortDream2");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="SHORTNMX")
+    {
+      // short sector dream
+      shortNMX nmxBL("shortNMX");
+      nmxBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="SIMPLE")
     {
-      // LOKI beamline
+      // Simple beamline
       simpleITEM simpleBL("simple");
       simpleBL.build(System,*mainGIPtr,bunkerObj,voidCell);      
     }

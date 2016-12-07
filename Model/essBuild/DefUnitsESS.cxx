@@ -132,7 +132,8 @@ setESSFull(defaultConfig& A)
     };
   
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2","LOKI",
+    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2",
+     "SHORTNMX","LOKI",
      "MAGIC","VESPA","VOR"};
 
   size_t index(0);
@@ -228,6 +229,7 @@ setESSSingle(defaultConfig& A,
      {"BIFROST","G4BLine4"},    // W4
      {"MIRACLES","G4BLine5"},   // W5
      {"SHORTDREAM","G4BLine17"},
+     {"SHORTNMX","G4BLine13"},
      {"SHORTODIN","G1BLine4"},
      {"TREX","G4BLine7"},       // W7
      {"MAGIC","G4BLine6"},      // W6
@@ -245,7 +247,7 @@ setESSSingle(defaultConfig& A,
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
      "MAGIC","MIRACLES","NMX","TREX","VESPA",
-     "VOR","SHORTDREAM"};
+     "VOR","SHORTNMX","SHORTDREAM"};
 
   size_t beamLineIndex(0);
   while(!LItems.empty())
