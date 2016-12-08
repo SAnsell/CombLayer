@@ -704,7 +704,7 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 
   // SS316L and 40% vol water
   // Reference: mixtures.py 1 Dec 2016; git hash: 14b5a90
-  MObj.setMaterial(2646, "SS316L_40H2O",
+  MObj.setMaterial(imat++, "SS316L_40H2O",
 		   " 01001.70c 0.295812213697 "
 		   " 06000.71c 0.000774679535654 "
 		   " 08016.70c 0.147906106848 "
