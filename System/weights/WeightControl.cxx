@@ -371,6 +371,7 @@ void
 WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
   /*!
     Determine inf the next component cat be a plane
+    Given as two Vec3D from inputParam
     \param IParam :: Input parameters
   */
 {

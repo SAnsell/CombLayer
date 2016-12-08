@@ -219,7 +219,7 @@ BunkerRoof::createSector(Simulation& System,
 
   std::vector<double> empty;
   
-  ModelSupport::LayerDivide3D LD3(keyName+"mainRoof"+
+  ModelSupport::LayerDivide3D LD3(keyName+"Main"+
 				  StrFunc::makeString(sectNum));
 
   // Front/back??

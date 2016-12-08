@@ -138,6 +138,7 @@ WeightControl::wwgCreate(const Simulation& System,
 
       if (activePtType=="Plane")   //
 	{
+	  ELog::EM<<"Active type == Plane"<<ELog::endDiag;
           if (activePtIndex>=planePt.size())
             throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
                                              "planePt.size() < activePtIndex");
