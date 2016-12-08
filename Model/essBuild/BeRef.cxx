@@ -95,7 +95,8 @@ BeRef::BeRef(const BeRef& A) :
   refIndex(A.refIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),InnerComp(A.InnerComp->clone()),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),height(A.height),
+  zAngle(A.zAngle),radius(A.radius),
+  height(A.height),depth(A.depth),
   wallThick(A.wallThick),wallThickLow(A.wallThickLow),
   lowVoidThick(A.lowVoidThick),
   topVoidThick(A.topVoidThick),targSepThick(A.targSepThick),
@@ -132,6 +133,7 @@ BeRef::operator=(const BeRef& A)
       zAngle=A.zAngle;
       radius=A.radius;
       height=A.height;
+      depth=A.depth;
       wallThick=A.wallThick;
       wallThickLow=A.wallThickLow;
       lowVoidThick=A.lowVoidThick;
@@ -177,8 +179,9 @@ BeRef::populate(const FuncDataBase& Control,
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
   
-  radius=Control.EvalVar<double>(keyName+"Radius");   
-  height=Control.EvalVar<double>(keyName+"Height");   
+  radius=Control.EvalVar<double>(keyName+"Radius");
+  height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");
 
@@ -213,7 +216,8 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeRef","globalPopulate");
 
   radius=Control.EvalVar<double>(keyName+"Radius");   
-  height=Control.EvalVar<double>(keyName+"Height");   
+  height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
   wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");   
 
@@ -252,12 +256,12 @@ BeRef::createSurfaces()
   ModelSupport::buildCylinder(SMap,refIndex+7,Origin,Z,radius);  
   ModelSupport::buildCylinder(SMap,refIndex+17,Origin,Z,radius+wallThick);  
 
-  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*(height/2.0),Z);  
-  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*(height/2.0),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*(depth),Z);  
+  ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*(height),Z);  
   ModelSupport::buildPlane(SMap,refIndex+15,
-			   Origin-Z*(height/2.0+wallThick),Z);  
+			   Origin-Z*(depth+wallThick),Z);  
   ModelSupport::buildPlane(SMap,refIndex+16,
-			   Origin+Z*(height/2.0+wallThick),Z);  
+			   Origin+Z*(height+wallThick),Z);  
 
   //define planes where the Be is substituted by Fe
 
@@ -369,16 +373,16 @@ BeRef::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(refIndex+17));
   FixedComp::addLinkSurf(3,SMap.realSurf(refIndex+2));
   
-  FixedComp::setConnect(4,Origin-Z*(height/2.0+wallThick),-Z);
+  FixedComp::setConnect(4,Origin-Z*(depth+wallThick),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(refIndex+15));
 
-  FixedComp::setConnect(5,Origin+Z*(height/2.0+wallThick),Z);
+  FixedComp::setConnect(5,Origin+Z*(height+wallThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(refIndex+16));
 
-  FixedComp::setConnect(6,Origin-Z*(height/2.0),-Z);
+  FixedComp::setConnect(6,Origin-Z*(depth),-Z);
   FixedComp::setLinkSurf(6,-SMap.realSurf(refIndex+5));
 
-  FixedComp::setConnect(7,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(7,Origin+Z*(height),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(refIndex+6));
 
   FixedComp::setConnect(8,Origin+Y*(radius),-Y);

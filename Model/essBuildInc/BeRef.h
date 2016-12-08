@@ -56,7 +56,8 @@ class BeRef : public attachSystem::ContainedComp,
   double zAngle;                  ///< Z Angle
 
   double radius;                  ///< Radius
-  double height;                  ///< Height
+  double height;                  ///< Height of the top part
+  double depth;                   ///< Height of the bottom part
   double wallThick;               ///< Wall thickness
   double wallThickLow;            ///< Wall thickness of the side near the target wheel. Separated from wallThick in order to optimise wrapping with CapMod
 

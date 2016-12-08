@@ -318,7 +318,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefXYangle",0.0); 
   Control.addVariable("BeRefZangle",0.0);
   Control.addVariable("BeRefRadius",35);
-  Control.addVariable("BeRefHeight",74.6);
+  Control.addVariable("BeRefHeight",37.3); // 74.6/2.0
+  Control.addVariable("BeRefDepth",37.3); // 74.6/2.0
   Control.addVariable("BeRefWallThick",3);
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
