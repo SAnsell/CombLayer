@@ -47,7 +47,8 @@ class BeRef : public attachSystem::ContainedComp,
 
   int engActive;                  ///< Engineering active flag
   /// Inner components inside Reflector (eng detail)
-  std::shared_ptr<BeRefInnerStructure> InnerComp;   
+  std::shared_ptr<BeRefInnerStructure> InnerCompTop;
+  std::shared_ptr<BeRefInnerStructure> InnerCompLow;
 
   double xStep;                   ///< X step
   double yStep;                   ///< Y step

@@ -330,23 +330,32 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefTopWallMat","SS316L");
   Control.addVariable("BeRefLowWallMat","SS316L");
   Control.addVariable("BeRefTargSepMat","Iron_10H2O");
-  Control.addVariable("BeRefInnerStructureBeRadius", 12.5);
-  Control.addVariable("BeRefInnerStructureBeMat", "Be10H2O");
-  Control.addVariable("BeRefInnerStructureBeWallThick", 0.3);
-  Control.addVariable("BeRefInnerStructureBeWallMat", "Aluminium");
 
-  Control.addVariable("BeRefInnerStructureNLayers", 6);
-  Control.addVariable("BeRefInnerStructureBaseLen1", 0.258);
-  Control.addVariable("BeRefInnerStructureBaseLen2", 0.075);
-  Control.addVariable("BeRefInnerStructureBaseLen3", 0.258);
-  Control.addVariable("BeRefInnerStructureBaseLen4", 0.075);
-  Control.addVariable("BeRefInnerStructureBaseLen5", 0.258);
-  Control.addVariable("BeRefInnerStructureMat0", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat1", "Be30H2O");
-  Control.addVariable("BeRefInnerStructureMat2", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat3", "Be30H2O");
-  Control.addVariable("BeRefInnerStructureMat4", "Beryllium");
-  Control.addVariable("BeRefInnerStructureMat5", "Be30H2O");
+  Control.addVariable("BeRefTopInnerStructureNLayers", 6);
+  Control.addVariable("BeRefTopInnerStructureBaseLen1", 0.258);
+  Control.addVariable("BeRefTopInnerStructureBaseLen2", 0.075);
+  Control.addVariable("BeRefTopInnerStructureBaseLen3", 0.258);
+  Control.addVariable("BeRefTopInnerStructureBaseLen4", 0.075);
+  Control.addVariable("BeRefTopInnerStructureBaseLen5", 0.258);
+  Control.addVariable("BeRefTopInnerStructureMat0", "Beryllium");
+  Control.addVariable("BeRefTopInnerStructureMat1", "Be30H2O");
+  Control.addVariable("BeRefTopInnerStructureMat2", "Beryllium");
+  Control.addVariable("BeRefTopInnerStructureMat3", "Be30H2O");
+  Control.addVariable("BeRefTopInnerStructureMat4", "Beryllium");
+  Control.addVariable("BeRefTopInnerStructureMat5", "Be30H2O");
+
+  Control.addVariable("BeRefLowInnerStructureNLayers", 6);
+  Control.addVariable("BeRefLowInnerStructureBaseLen1", 0.258);
+  Control.addVariable("BeRefLowInnerStructureBaseLen2", 0.075);
+  Control.addVariable("BeRefLowInnerStructureBaseLen3", 0.258);
+  Control.addVariable("BeRefLowInnerStructureBaseLen4", 0.075);
+  Control.addVariable("BeRefLowInnerStructureBaseLen5", 0.258);
+  Control.addVariable("BeRefLowInnerStructureMat0", "Beryllium");
+  Control.addVariable("BeRefLowInnerStructureMat1", "Be30H2O");
+  Control.addVariable("BeRefLowInnerStructureMat2", "Beryllium");
+  Control.addVariable("BeRefLowInnerStructureMat3", "Be30H2O");
+  Control.addVariable("BeRefLowInnerStructureMat4", "Beryllium");
+  Control.addVariable("BeRefLowInnerStructureMat5", "Be30H2O");
 
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);

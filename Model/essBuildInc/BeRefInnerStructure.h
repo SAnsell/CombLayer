@@ -45,13 +45,14 @@ class BeRefInnerStructure : public attachSystem::ContainedComp,
   size_t nLayers;
   std::vector<double> baseFrac;   ///< Fractions
   std::vector<int> mat;           ///< Materials
-  int topActive;                  ///< Activate inner structure for the upper BeRef tier
-  int lowActive;                  ///< Activate inner structure for the lower BeRef tier
+  int active;                     ///< Activate inner structure
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createObjects(Simulation&, const attachSystem::FixedComp&);
+  void createObjects(Simulation&, const attachSystem::FixedComp&,
+		     const std::string&,
+		     const size_t&,const size_t&);
   void createLinks();
   void layerProcess(Simulation&, const attachSystem::FixedComp&, const std::string&, const size_t&, const size_t&);
 
@@ -63,7 +64,9 @@ class BeRefInnerStructure : public attachSystem::ContainedComp,
   virtual BeRefInnerStructure* clone() const;
   virtual ~BeRefInnerStructure();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const std::string&,
+		 const size_t&,const size_t&);
 
 };
 

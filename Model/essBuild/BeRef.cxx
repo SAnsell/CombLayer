@@ -79,21 +79,25 @@ BeRef::BeRef(const std::string& Key) :
   attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1),
-  InnerComp(new BeRefInnerStructure(Key + "InnerStructure"))
+  InnerCompTop(new BeRefInnerStructure(Key + "TopInnerStructure")),
+  InnerCompLow(new BeRefInnerStructure(Key + "LowInnerStructure"))
   /*!
     Constructor
     \param Key :: Name of construction key
   */
 {
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-  OR.addObject(InnerComp);
+  OR.addObject(InnerCompTop);
+  OR.addObject(InnerCompLow);
 }
 
 BeRef::BeRef(const BeRef& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   attachSystem::CellMap(A),
   refIndex(A.refIndex),cellIndex(A.cellIndex),
-  engActive(A.engActive),InnerComp(A.InnerComp->clone()),
+  engActive(A.engActive),
+  InnerCompTop(A.InnerCompTop->clone()),
+  InnerCompLow(A.InnerCompLow->clone()),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),radius(A.radius),
   height(A.height),depth(A.depth),
@@ -125,7 +129,8 @@ BeRef::operator=(const BeRef& A)
       CellMap::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      *InnerComp = *A.InnerComp;
+      *InnerCompTop = *A.InnerCompTop;
+      *InnerCompLow = *A.InnerCompLow;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -423,7 +428,8 @@ BeRef::createAll(Simulation& System,
   insertObjects(System);       
 
   if (engActive) {
-    InnerComp->createAll(System, *this);
+    InnerCompTop->createAll(System, *this, "topBe", 10, 7);
+    InnerCompLow->createAll(System, *this, "lowBe",  9, 6);
   }
 
   return;

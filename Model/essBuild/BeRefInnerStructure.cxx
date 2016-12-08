@@ -99,8 +99,7 @@ namespace essSystem
     nLayers(A.nLayers),
     baseFrac(A.baseFrac),
     mat(A.mat),
-    topActive(A.topActive),
-    lowActive(A.lowActive)
+    active(A.active)
     /*!
       Copy constructor
       \param A :: BeRefInnerStructure to copy
@@ -123,8 +122,7 @@ namespace essSystem
 	nLayers=A.nLayers;
 	baseFrac=A.baseFrac;
 	mat=A.mat;
-	topActive=A.topActive;
-	lowActive=A.lowActive;
+	active=A.active;
       }
     return *this;
   }
@@ -159,8 +157,7 @@ namespace essSystem
     ModelSupport::populateDivideLen(Control,nLayers,keyName+"BaseLen", 1.0, baseFrac);
     ModelSupport::populateDivide(Control,nLayers,keyName+"Mat", 0, mat);
 
-    topActive=Control.EvalDefVar<int>(keyName+"TopActive", 1);
-    lowActive=Control.EvalDefVar<int>(keyName+"LowActive", 1);
+    active=Control.EvalDefVar<int>(keyName+"Active", 1);
 
     return;
   }
@@ -180,7 +177,9 @@ namespace essSystem
 
 
   void
-  BeRefInnerStructure::createObjects(Simulation& System, const attachSystem::FixedComp& Reflector)
+  BeRefInnerStructure::createObjects(Simulation& System, const attachSystem::FixedComp& Reflector,
+				     const std::string& BeCell,
+				     const size_t& topLP, const size_t& lowLP)
   /*!
     Create the objects
     \param System :: Simulation to add results
@@ -189,10 +188,8 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BeRefInnerStructure","createObjects");
 
-    if (topActive)
-      layerProcess(System, Reflector, "topBe", 10, 7);
-    if (lowActive)
-      layerProcess(System, Reflector, "lowBe", 9, 6);
+    if (active)
+      layerProcess(System, Reflector, BeCell, topLP, lowLP);
 
     return;
   }
@@ -271,7 +268,10 @@ namespace essSystem
 
   void
   BeRefInnerStructure::createAll(Simulation& System,
-				 const attachSystem::FixedComp& FC)
+				 const attachSystem::FixedComp& FC,
+				 const std::string& BeCell,
+				 const size_t& topLP,
+				 const size_t& lowLP)
   /*!
     Extrenal build everything
     \param System :: Simulation
@@ -283,7 +283,7 @@ namespace essSystem
     populate(System.getDataBase());
     createUnitVector(FC);
 
-    createObjects(System, FC);
+    createObjects(System, FC, BeCell, topLP, lowLP);
     createLinks();
 
     insertObjects(System);       
