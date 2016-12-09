@@ -1202,6 +1202,7 @@ DBMaterial::createMaterial(const std::string& MName)
   std::string::size_type pos=MName.find('%');
   if (pos!=std::string::npos)
     {
+	
       double PFrac;
       const std::string AKey=MName.substr(0,pos);
       const std::string BKey=MName.substr(pos+1);
@@ -1226,6 +1227,7 @@ DBMaterial::createMaterial(const std::string& MName)
       // SECOND %
       // Example : D2O%H2O%80.0   D2O at 80% atomic fraction
       pos=BKey.find('%');
+	      
       if (pos!=std::string::npos)
 	{
 	  const std::string XKey=BKey.substr(0,pos);
@@ -1237,6 +1239,7 @@ DBMaterial::createMaterial(const std::string& MName)
 	    }
 	}
     }
+	
   return 0;
 }
 
@@ -1300,10 +1303,9 @@ DBMaterial::createMix(const std::string& Name,
   MonteCarlo::Material MB=getMaterial(MatB);
   if (PFrac<-1e-5 || PFrac>1.00001)
     throw ColErr::RangeError<double>(PFrac,0.0,1.0,"Mix fraction [PFrac]");
-  
+
   MA*=PFrac;
   MB*=(1.0-PFrac);
-  
   MA+=MB;
   MA.setNumber(matNum);
   MA.setName(Name);
