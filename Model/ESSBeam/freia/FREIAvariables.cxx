@@ -103,9 +103,9 @@ FREIAvariables(FuncDataBase& Control)
 
   // Pipe in gamma shield
   FGen.setGuideMat("Aluminium");
-  PipeGen.generatePipe(Control,"freiaPipeB",2.0,46.0);
+  PipeGen.generatePipe(Control,"freiaPipeB",8.0,40.0);
   FGen.clearYOffset();
-  FGen.generateBender(Control,"freiaBB",44.0,4.0,4.0,17.566,18.347,
+  FGen.generateBender(Control,"freiaBB",36.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
 
   // Pipe in to first ch
