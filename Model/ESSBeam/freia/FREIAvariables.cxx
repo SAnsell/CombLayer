@@ -109,7 +109,7 @@ FREIAvariables(FuncDataBase& Control)
                       7000.0,0.0);
 
   // Pipe in to first ch
-  PipeGen.generatePipe(Control,"freiaPipeC",2.0,46.0);
+  PipeGen.generatePipe(Control,"freiaPipeC",4.0,46.0);
   Control.addVariable("freiaYStep",6.0);   // step + flange  
   FGen.generateBender(Control,"freiaBC",44.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
