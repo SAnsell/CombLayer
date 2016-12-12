@@ -84,6 +84,7 @@ class Cone : public Quadratic
 
   double distance(const Geometry::Vec3D&) const;   
   void rotate(const Geometry::Matrix<double>&);
+  void rotate(const Geometry::Quaternion&);
   void displace(const Geometry::Vec3D&);
 
   int setSurface(const std::string&);

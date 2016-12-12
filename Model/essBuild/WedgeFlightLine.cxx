@@ -57,7 +57,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Cone.h"
 #include "Line.h"
 #include "Rules.h"
 #include "varList.h"

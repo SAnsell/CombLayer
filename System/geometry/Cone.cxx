@@ -43,6 +43,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Line.h"
@@ -246,6 +247,20 @@ Cone::rotate(const Geometry::Matrix<double>& R)
 {
   Centre.rotate(R);
   Normal.rotate(R);
+  setBaseEqn();
+  return;
+}
+
+void
+Cone::rotate(const Geometry::Quaternion& QA) 
+  /*!
+    Rotate both the centre and the normal direction 
+    \param QA :: rotate usig Quaterion
+  */
+{
+  QA.rotate(Centre);
+  QA.rotate(Normal);
+  Normal.makeUnit();
   setBaseEqn();
   return;
 }
