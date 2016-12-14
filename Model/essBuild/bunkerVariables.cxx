@@ -123,7 +123,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerNBasicVert",5);
       Control.addVariable(KItem+"BunkerRoofVert1",30.0);
       Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",60.0);
+      Control.addVariable(KItem+"BunkerRoofVert3",55.0);
       Control.addVariable(KItem+"BunkerRoofVert4",30.0);
   
       

@@ -258,6 +258,7 @@ WWGWeight::wTrack(const Simulation& System,
 		  const std::vector<double>& EBin,
 		  const std::vector<Geometry::Vec3D>& MidPt,
 		  const double densityFactor,
+		  const double r2Length,
 		  const double r2Power)
   /*!
     Calculate a specific trac from sourcePoint to position
@@ -266,6 +267,7 @@ WWGWeight::wTrack(const Simulation& System,
     \param EBin :: Energy points
     \param MidPt :: Grid points
     \param densityFactor :: Scaling factor for density
+    \param r2Length :: scale factor for length
     \param r2Power :: power of 1/r^2 factor
   */
 {
@@ -277,12 +279,14 @@ WWGWeight::wTrack(const Simulation& System,
   for(const Geometry::Vec3D& Pt : MidPt)
     {
       OTrack.addUnit(System,cN,Pt);
-      double DistT=OTrack.getDistance(cN);
+      double DistT=OTrack.getDistance(cN)/r2Length;
       if (DistT<1.0) DistT=1.0;
       const double AT=OTrack.getAttnSum(cN);    // this can take an
                                                 // energy
       for(long int index=0;index<WE;index++)
         {
+	  //	  ELog::EM<<"Pt["<<Pt<<"] == "<<densityFactor*AT
+	  //		  <<" "<<r2Power*log(DistT)<<ELog::endDiag;
 	  // exp(-Sigma)/r^2  in log form
           setPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
         }
@@ -297,7 +301,9 @@ WWGWeight::wTrack(const Simulation& System,
 		  const Geometry::Plane& initPlane,
 		  const std::vector<double>& EBin,
 		  const std::vector<Geometry::Vec3D>& MidPt,
-		  const double densityFactor,const double r2Power)
+		  const double densityFactor,
+		  const double r2Length,
+		  const double r2Power)
   /*!
     Calculate a specific trac from sourcePoint to  postion
     \param System :: Simulation to use    
@@ -305,6 +311,7 @@ WWGWeight::wTrack(const Simulation& System,
     \param EBin :: Energy points
     \param MidPt :: Grid points
     \param densityFactor :: Scaling factor for density
+    \param r2Length :: scale factor for length
     \param r2Power :: power of 1/r^2 factor
   */
 {
@@ -315,7 +322,7 @@ WWGWeight::wTrack(const Simulation& System,
   for(const Geometry::Vec3D& Pt : MidPt)
     {
       OTrack.addUnit(System,cN,Pt);
-      double DistT=OTrack.getDistance(cN);
+      double DistT=OTrack.getDistance(cN)/r2Length;
       if (DistT<1.0) DistT=1.0;
       const double AT=OTrack.getAttnSum(cN);    // this can take an energy
       for(long int index=0;index<WE;index++)

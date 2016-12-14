@@ -61,6 +61,7 @@ class WeightControl
   double minWeight;              ///< Min weight
   double weightPower;            ///< makes weight W^power
   double density;                ///< scales the material density
+  double r2Length;               ///< scale factor of r2 Length 
   double r2Power;                ///< makes weight 1/r^power
   std::vector<double> EBand;     ///< Energy band
   std::vector<double> WT;        ///< Weight scalar

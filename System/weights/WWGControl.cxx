@@ -143,7 +143,7 @@ WeightControl::wwgCreate(const Simulation& System,
             throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
                                              "planePt.size() < activePtIndex");
 	  wSet.wTrack(System,planePt[activePtIndex],EBin,GridMidPt,
-		      density,r2Power);
+		      density,r2Length,r2Power);
 	}
       else if (activePtType=="Source")
         {
@@ -152,7 +152,7 @@ WeightControl::wwgCreate(const Simulation& System,
                                              "sourcePt.size() < activePtIndex");
           ELog::EM<<"Calling Source Point"<<ELog::endDiag;
           wSet.wTrack(System,sourcePt[activePtIndex],EBin,GridMidPt,
-		      density,r2Power);
+		      density,r2Length,r2Power);
         }
       else 
 	throw ColErr::InContainerError<std::string>

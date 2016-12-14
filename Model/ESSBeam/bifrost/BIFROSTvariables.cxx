@@ -131,7 +131,7 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"bifrostDBlade",0.0,25.0,35.0);
 
   // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.setPipe(20.0,0.5);
+  PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeC",2.0,400.0);
@@ -151,7 +151,7 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"bifrostFOC1Blade",0.0,25.0,35.0);
 
   // VACUUM PIPE: from ChoperB to 6m holding point
-  PipeGen.setPipe(20.0,0.5);
+  PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeD",2.0,500.0);
@@ -160,7 +160,7 @@ BIFROSTvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"bifrostFD",496.0, 13.0,13.0);   
 
   // VACUUM PIPE: from ChoperB to 6m holding point
-  PipeGen.setPipe(20.0,0.5);
+  PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeE",2.0,400.0);
@@ -178,7 +178,7 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"bifrostFOC2Blade",0.0,25.0,35.0);
 
   // VACUUM PIPE: from ChoperC with 4m
-  PipeGen.setPipe(20.0,0.5);
+  PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
   PipeGen.generatePipe(Control,"bifrostPipeF",2.0,481.5);

@@ -84,7 +84,7 @@ namespace WeightSystem
   
 WeightControl::WeightControl() :
   scaleFactor(1.0),minWeight(1e-20),weightPower(0.5),
-  density(1.0),r2Power(2.0),
+  density(1.0),r2Length(1.0),r2Power(2.0),
   activeAdjointFlag(0),activePtType("Void"),activePtIndex(0)
   /*
     Constructor
@@ -120,6 +120,7 @@ WeightControl::operator=(const WeightControl& A)
       minWeight=A.minWeight;
       weightPower=A.weightPower;
       density=A.density;
+      r2Length=A.r2Length;
       r2Power=A.r2Power;
 
       EBand=A.EBand;
@@ -310,12 +311,15 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   scaleFactor=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   minWeight=IParam.getDefValue<double>(1e-20,unitName,iSet,index++);
   density=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
+
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
     	  <<" minW:"<<minWeight
     	  <<" rho:"<<density
-    	  <<" r2:"<<r2Power<<ELog::endDiag;
+    	  <<" r2Len:"<<r2Length
+	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
   return;
 }
 
