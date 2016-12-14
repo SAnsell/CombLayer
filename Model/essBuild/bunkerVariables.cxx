@@ -122,9 +122,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       // ROOF LAYERED
       Control.addVariable(KItem+"BunkerNBasicVert",5);
       Control.addVariable(KItem+"BunkerRoofVert1",30.0);
-      Control.addVariable(KItem+"BunkerRoofVert2",45.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",45.0);
-      Control.addVariable(KItem+"BunkerRoofVert4",35.0);
+      Control.addVariable(KItem+"BunkerRoofVert2",40.0);
+      Control.addVariable(KItem+"BunkerRoofVert3",60.0);
+      Control.addVariable(KItem+"BunkerRoofVert4",30.0);
   
       
       Control.addVariable(KItem+"BunkerRoofMat0","CarstonConc");
