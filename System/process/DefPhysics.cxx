@@ -281,10 +281,21 @@ setDefRotation(const mainSystem::inputParam& IParam)
 	  MR.addRotation(Geometry::Vec3D(0,0,1),Geometry::Vec3D(0,0,0),
 			 -rotAngle);		  
 	}
+      else if (AItem=="freeAxis" || AItem=="FREEAXIS")
+	{
+          size_t itemIndex(1);
+          const Geometry::Vec3D rotAxis=
+            IParam.getCntVec3D("angle",0,itemIndex,"Axis need [Vec3D]");
+	  const double rotAngle=
+	    IParam.getValue<double>("angle",itemIndex);
+	  MR.addRotation(rotAxis,Geometry::Vec3D(0,0,0),
+			 -rotAngle);		  
+	}
       else if (AItem=="help" || AItem=="Help")
         {
           ELog::EM<<"Angle help ::\n"
                   <<"  free rotAngle :: Rotate about Z axis \n"
+                  <<"  freeAxis Vec3D rotAngle :: Rotate about Axis \n"
                   <<"  objPoint  FC link :: Rotate linkPt to (X,0,0) \n"
                   <<"  objAxis  FC link :: Rotate link-axit to X \n"
                   <<"  object  FC link :: Rotate Axis about Z to "
