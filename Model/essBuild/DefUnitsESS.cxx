@@ -363,7 +363,7 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowVoidThick", 0);
       A.setVar("BeRefLowRefMat", "Iron_10H2O");
       A.setVar("BeRefLowWallMat", "Iron_10H2O");
-      A.setVar("BeRefInnerStructureLowActive", 0);
+      A.setVar("BeRefLowInnerStructureActive", 0);
       // Since there is no bunkers, we have to 
       // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
       A.setVar("F5DefaultLength", 500.0);
