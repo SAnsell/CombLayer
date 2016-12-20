@@ -102,7 +102,8 @@ namespace essSystem
     nSectors(A.nSectors),
     secSepThick(A.secSepThick),
     secSepMat(A.secSepMat),
-    nBrickSectors(A.nBrickSectors),
+    bricksActive(A.bricksActive),
+    vBricksActive(A.vBricksActive),
     nBrickLayers(A.nBrickLayers),
     nBricks(A.nBricks)
     /*!
@@ -134,7 +135,8 @@ namespace essSystem
 	nSectors=A.nSectors;
 	secSepThick=A.secSepThick;
 	secSepMat=A.secSepMat;
-	nBrickSectors=A.nBrickSectors;
+	bricksActive=A.bricksActive;
+	vBricksActive=A.vBricksActive;
 	nBrickLayers=A.nBrickLayers;
 	nBricks=A.nBricks;
       }
@@ -179,11 +181,14 @@ namespace essSystem
     if (nSectors<1)
       ELog::EM << "NSectors must be >= 1" << ELog::endErr;
     secSepThick=Control.EvalVar<double>(keyName+"SectorSepThick");
-    secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");  
+    secSepMat=ModelSupport::EvalMat<int>(Control,keyName+"SectorSepMat");
 
-    nBrickSectors=Control.EvalVar<size_t>(keyName+"NBrickSectors");
-    if (nBrickSectors>nSectors)
-      throw ColErr::RangeError<double>(nBrickSectors, 0, nSectors, "nBrickSectors can not exceed nSectors:");
+    bricksActive=Control.EvalDefVar<int>(keyName+"BricksActive", 0);
+    for (size_t i=0; i<nSectors; i++)
+      {
+	bool b = Control.EvalDefVar<int>(keyName+"Sec" + std::to_string(i) + "BrickActive", bricksActive);
+	vBricksActive.push_back(b);
+      }
 
     nSteelLayers=Control.EvalVar<size_t>(keyName+"NSteelLayers");
     brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
@@ -225,10 +230,8 @@ namespace essSystem
   int i=0; // plane counter
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta;
+      theta = j*dTheta - dTheta/2.0;
       // -dTheta is needed to shoot a proton in the center of a sector, but not between them
-      // *3/2 is needed when 3 sectors with bricks are made, so we need to put the 2nd one in the centre
-      theta -= dTheta*3.0/2.0;
       thetarad = theta*M_PI/180.0;
       ModelSupport::buildPlaneRotAxis(SMap, SIsec+1, Origin, X, Z, theta+90); // invisible divider
       p[i++] = ModelSupport::buildPlaneRotAxis(SMap, SIsec+3, Origin-X*(secSepThick/2.0*cos(thetarad))-Y*(secSepThick/2.0*sin(thetarad)), X, Z, theta);
@@ -247,7 +250,7 @@ namespace essSystem
       if (j==nSectors-1)
 	pmin=p[1];
 
-      if (j<nBrickSectors)
+      if (vBricksActive[j])
 	createBrickSurfaces(Wheel, pmin, pmax, j);
       //	createBrickSurfaces(Wheel, p[i], p[nSectors-2]);
       i+=2;
@@ -293,13 +296,13 @@ namespace essSystem
 	    // Tungsten
 	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
 	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
-	    if (j>=nBrickSectors)
-		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
-						 Out+vertStr+cylStr));
-	    else
+	    if (vBricksActive[j])
 	      createBricks(System, Wheel, 
 			   ModelSupport::getComposite(SMap, SIsec," 4 "), // side plane
 			   ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
+	    else
+		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
+						 Out+vertStr+cylStr));
 	    
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
