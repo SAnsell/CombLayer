@@ -311,7 +311,7 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
                      if not specified then both moderators are built.
    */
 {
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESSNeutronics");
 
   size_t bfType=0;
   
