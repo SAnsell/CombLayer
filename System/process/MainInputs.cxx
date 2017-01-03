@@ -64,7 +64,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("activation","activation",10000,1);
 
   IParam.regFlag("a","axis");
-  IParam.regItem("angle","angle",1,4);
+  IParam.regMulti("angle","angle",10000,1,8);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
@@ -98,7 +98,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fluka","FLUKA");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
-  IParam.regItem("offset","offset",1,4);
+  IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regItem("PTRAC","ptrac");

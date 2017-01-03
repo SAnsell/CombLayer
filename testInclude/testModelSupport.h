@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/DefPhysics.h
+ * File:   testInclude/testModelSupport.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,34 +19,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef ModelSupport_DefPhysics_h
-#define ModelSupport_DefPhysics_h
+#ifndef testModelSupport_h
+#define testModelSupport_h 
 
-class Simulation;
-namespace mainSystem
-{
-  class inputParam;
-}
+/*!
+  \class testModelSupport
+  \brief Tests the class Object
+  \author S. Ansell
+  \date December 2006
+  \version 1.0
 
-namespace physicsSystem
-{
-  class LSwitchCard;
-}
+  Test the processing of object component
+*/
 
-namespace ModelSupport
+class testModelSupport
 {
-  void procOffset(const mainSystem::inputParam&,const size_t);
-  void procAngle(const mainSystem::inputParam&,const size_t);
+private:
+
+  void createSurfaces();
+
+  //Tests 
+  int testRemoveOpenPair();
+
+public:
   
-  void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
-  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
-  void setNeutronPhysics(Simulation&); 
-  void setReactorPhysics(Simulation&,const mainSystem::inputParam&); 
-  void setUFissionPhysics(Simulation&,const mainSystem::inputParam&); 
-  void setDefRotation(const mainSystem::inputParam&);
-  void setItemRotate(const attachSystem::FixedComp&,const std::string&);
-}
+  testModelSupport();
+  ~testModelSupport();
+  
+  int applyTest(const int);       
 
+};
 
 #endif
- 

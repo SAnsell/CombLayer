@@ -106,8 +106,14 @@ class FixedComp
   void setLinkSurf(const size_t,const HeadRule&);
   void setLinkSurf(const size_t,const HeadRule&,const bool,
 		   const HeadRule&,const bool);
+
   void addLinkSurf(const size_t,const int);
   void addLinkSurf(const size_t,const std::string&);
+  void addLinkSurf(const size_t,const HeadRule&);
+
+  void addLinkComp(const size_t,const int);
+  void addLinkComp(const size_t,const std::string&);
+  void addLinkComp(const size_t,const HeadRule&);
 
   void setBridgeSurf(const size_t,const FixedComp&,const size_t);
   void setBridgeSurf(const size_t,const int);

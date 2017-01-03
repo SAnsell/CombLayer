@@ -45,7 +45,7 @@ class Cone : public Quadratic
   Geometry::Vec3D Normal;        ///< Normal
   double alpha;                  ///< Angle (degrees)
   double cangle;                 ///< Cos(angle)
-  int cutFlag;                       ///< Cut flag [+/-1 or zero]
+  int cutFlag;                   ///< Cut flag [+/-1 or zero]
   
  public:
 

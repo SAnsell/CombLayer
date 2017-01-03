@@ -262,9 +262,8 @@ WedgeItem::createObjects(Simulation& System,
     FC.getSignedLinkString(baseLinkPt)+
     FL.getSignedLinkString(topLinkPt)+
     FL.getSignedLinkString(bottomLinkPt);
-  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-
+  
   addOuterSurf(Out);
   return;
 }

@@ -94,8 +94,7 @@ PreModWing::PreModWing(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{
-}
+{}
 
 PreModWing::PreModWing(const PreModWing& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
@@ -233,7 +232,6 @@ PreModWing::createSurfaces()
                            Origin+Z*(thick+wallThick*tiltSign),Z*tiltSign);  
   if (tiltAngle>Geometry::zeroTol)
     {
-      
       ModelSupport::buildPlane(SMap,modIndex+9,Origin,Z);
       ModelSupport::buildCone(SMap,modIndex+8,
                               Origin+Z*(thick+coneShift*tiltSign),
