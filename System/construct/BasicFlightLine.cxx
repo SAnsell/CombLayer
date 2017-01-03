@@ -244,7 +244,6 @@ BasicFlightLine::createSurfaces()
   ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
 
-  const int zFlag(-1);
   //  const int zFlag(1);
   if (tapFlag & 1)
     {
@@ -259,7 +258,6 @@ BasicFlightLine::createSurfaces()
     {
       ModelSupport::buildCone(SMap,flightIndex+6,
                               Origin+Z*(height/2.0),Z,90-anglesZ[1]);
-                              //                              -zFlag);
       ModelSupport::buildPlane(SMap,flightIndex+506,Origin+Z*(height/2.0),Z);
     }
   else
@@ -280,8 +278,7 @@ BasicFlightLine::createSurfaces()
       if (tapFlag & 1)
 	{
 	  ModelSupport::buildCone(SMap,flightIndex+II*10+15,
-				  Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0],
-				  zFlag);
+				  Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0]);
           ModelSupport::buildPlane(SMap,flightIndex+II*10+515,Origin-Z*(height/2.0+layT),Z);
          }
       else
@@ -291,8 +288,7 @@ BasicFlightLine::createSurfaces()
       if (tapFlag & 2)
         {
           ModelSupport::buildCone(SMap,flightIndex+II*10+16,
-                                  Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1],
-                                  -zFlag);
+                                  Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1]);
           ModelSupport::buildPlane(SMap,flightIndex+II*10+516,Origin+Z*(height/2.0+layT),Z);
         }
       else
@@ -366,11 +362,11 @@ BasicFlightLine::createObjects(Simulation& System,
   
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
-  Out=ModelSupport::getSetComposite(SMap,layerIndex," 3 -4 (5:505) (6:-506)   ");
+  Out=ModelSupport::getSetComposite(SMap,layerIndex," 3 -4 (5:505) (6:-506) ");
   addOuterSurf("outer",Out);
 
   // Inner Void :
-  Out=ModelSupport::getSetComposite(SMap,flightIndex," 3 -4 (5:505) (6:-506) ");  // 505 good
+  Out=ModelSupport::getSetComposite(SMap,flightIndex," 3 -4 (5:505) (6:-506) ");  
   addOuterSurf("inner",Out);
   Out+=innerCut+outerCut; 
 
