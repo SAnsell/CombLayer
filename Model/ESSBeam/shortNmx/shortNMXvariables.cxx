@@ -65,7 +65,6 @@ shortNMXvariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("shortNMXvariables[F]","shortNMXvariables");
 
-  ELog::EM<<"CALL SHOIRT"<<ELog::endDiag;
   setVariable::FocusGenerator FGen;
   setVariable::PipeGenerator PipeGen;
 

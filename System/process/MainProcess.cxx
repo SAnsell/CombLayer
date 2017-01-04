@@ -403,9 +403,7 @@ createSimulation(inputParam& IParam,
   else 
     SimPtr=new Simulation;
 
-  // has default value
-  SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
-  
+  // has default value  
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 
   return SimPtr;
@@ -422,7 +420,7 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
    */
 {
   ELog::RegMethod RegA("MainProcess","InputModifications");
-
+  SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
   mainSystem::setVariables(*SimPtr,IParam,Names);
   if (!Names.empty()) 
     ELog::EM<<"Unable to understand values "<<Names[0]<<ELog::endErr;
