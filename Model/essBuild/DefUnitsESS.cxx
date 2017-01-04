@@ -376,8 +376,6 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
   A.setOption("matDB", "neutronics");
   A.setOption("physModel", "BD");
 
-  A.setOption("mcnp", "10");
-
   // simplify the bunkers
   A.setOption("bunker", "noPillar");
   A.setVar("ABunkerNRoofRadial", 1);
