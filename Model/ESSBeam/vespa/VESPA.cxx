@@ -327,7 +327,7 @@ VESPA::build(Simulation& System,
                                                  // edge
     
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,GItem.getKey("Beam"),2);
+  VPipeA->createAll(System,FocusA->getKey("Guide0"),2);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
   FocusB->createAll(System,*VPipeA,0,*VPipeA,0);

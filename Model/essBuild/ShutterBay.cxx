@@ -150,7 +150,6 @@ ShutterBay::populate(const FuncDataBase& Control)
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
 
-
   return;
 }
   

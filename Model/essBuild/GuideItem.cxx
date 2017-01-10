@@ -73,7 +73,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -86,10 +88,9 @@ namespace essSystem
 
 GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedGroup("Inner","Outer"),
-  attachSystem::FixedGroup(Key+StrFunc::makeString(Index),
-			   "Main",6,"Beam",6),
-  attachSystem::CellMap(),
-  baseName(Key),
+  attachSystem::FixedOffsetGroup(Key+StrFunc::makeString(Index),
+                                 "Main",6,"Beam",6),
+  attachSystem::CellMap(),baseName(Key),
   guideIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(guideIndex+1),active(1),innerCyl(0),outerCyl(0)
   /*!
@@ -100,12 +101,11 @@ GuideItem::GuideItem(const std::string& Key,const size_t Index)  :
 {}
 
 GuideItem::GuideItem(const GuideItem& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FixedOffsetGroup(A),
   attachSystem::CellMap(A),
   baseName(A.baseName),guideIndex(A.guideIndex),
-  cellIndex(A.cellIndex),active(A.active),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),beamXStep(A.beamXStep),
+  cellIndex(A.cellIndex),active(A.active),beamXStep(A.beamXStep),
   beamZStep(A.beamZStep),beamXYAngle(A.beamXYAngle),
   beamZAngle(A.beamZAngle),beamWidth(A.beamWidth),
   beamHeight(A.beamHeight),nSegment(A.nSegment),
@@ -129,15 +129,10 @@ GuideItem::operator=(const GuideItem& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedGroup::operator=(A);
+      attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       active=A.active;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       beamXStep=A.beamXStep;
       beamZStep=A.beamZStep;
       beamXYAngle=A.beamXYAngle;
@@ -175,6 +170,7 @@ GuideItem::setCylBoundary(const int dPlane,const int A,const int B)
    */
 {
   ELog::RegMethod RegA("GuideItem","setCylBoundary");
+
   dividePlane=dPlane;
   innerCyl=abs(A);
   outerCyl=abs(B);
@@ -197,12 +193,8 @@ GuideItem::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GuideItem","populate");
 
+  FixedOffsetGroup::populate(Control);
   active=Control.EvalPair<int>(keyName,baseName,"Active");
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYangle");
-  zAngle=Control.EvalPair<double>(keyName,baseName,"Zangle");
 
   beamXYAngle=Control.EvalPair<double>(keyName,baseName,"BeamXYAngle");
   beamZAngle=Control.EvalPair<double>(keyName,baseName,"BeamZAngle");
@@ -259,25 +251,20 @@ GuideItem::createUnitVector(const attachSystem::FixedComp& FC,
   
   mainFC.createUnitVector(FC,0);
   //  mainFC.createUnitVector(FC.getCentre(),-LU.getAxis(),FC.getZ());
-  mainFC.applyShift(xStep,yStep,zStep);
-  mainFC.applyAngleRotate(xyAngle,zAngle);
 
   //   beamFC=mainFC;
 
   
   beamFC.createUnitVector(FC,sideIndex);
-  beamFC.applyShift(xStep,yStep,zStep);
-  beamFC.applyAngleRotate(xyAngle,zAngle);
 
 
+  applyOffset();
   // Need to calculate impact point of beamline:
   const double yShift=sqrt(RInner*RInner-beamXStep*beamXStep)-RInner;
-
   beamFC.applyShift(beamXStep,yShift,beamZStep);
   beamFC.applyAngleRotate(beamXYAngle,beamZAngle);
-  setDefault("Main");
-
-
+  setDefault("Beam");
+  
   return;
 }
 
@@ -290,7 +277,12 @@ GuideItem::createSurfaces()
   ELog::RegMethod RegA("GuideItem","createSurface");
 
   if (dividePlane)
-    SMap.addMatch(guideIndex+1,dividePlane);
+    {
+      const Geometry::Plane* PPtr=SMap.realPtr<Geometry::Plane>(dividePlane);
+      if (dividePlane * PPtr->getNormal().dotProd(Y)<0.0)
+	dividePlane*=-1;
+      SMap.addMatch(guideIndex+1,dividePlane);
+    }
   else
     ModelSupport::buildPlane(SMap,guideIndex+1,Origin,Y);    // Divider plane
 
@@ -356,7 +348,6 @@ GuideItem::getPlane(const int SN) const
   */
 {
   ELog::RegMethod RegA("GuideItem","getPlane");
-
   return SMap.realPtr<Geometry::Plane>(guideIndex+SN);
 }
 
@@ -530,7 +521,7 @@ GuideItem::createLinks()
       beamFC.setLinkSurf(5,SMap.realSurf(guideIndex+1106));
     }
 
-  /// TARET CENTRE TRACKING:
+  /// TARGET CENTRE TRACKING:
   mainFC.setConnect(0,beamEnter-Geometry::Vec3D(0,0,beamEnter[2]),-bY);
   mainFC.setLinkSurf(0,-SMap.realSurf(guideIndex+7));
   mainFC.addBridgeSurf(0,SMap.realSurf(guideIndex+1));

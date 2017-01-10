@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "SurInter.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -351,25 +352,28 @@ GuideBay::outerMerge(Simulation& System,
   
 void
 GuideBay::createGuideItems(Simulation& System,
-                           const attachSystem::FixedComp& ModFC,
-                           const long int lFocusIndex,
-                           const long int rFocusIndex)
+                           const std::string& modName)
   /*!
     Create the guide items
     \param System :: Simulation to link
-    \param ModFC :: Moderator point
-    \param lfocusPoint :: left point on moderator for focus
-    \param rfocusPoint :: left point on moderator for focus
+    \param modName :: Moderator name (top/low)
   */
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
-  const std::string BL=StrFunc::makeString("G",bayNumber)+"BLine";
 
+  const attachSystem::FixedComp* ModFC=
+    OR.getObjectThrow<attachSystem::FixedComp>(modName+"Focus",
+                                               "Focus unit not found");
+  const std::string BL=StrFunc::makeString("G",bayNumber)+"BLine"+modName;
+  
+  const long int lFocusIndex=(bayNumber==1) ? 2 : 3;
+  const long int rFocusIndex=(bayNumber==1) ? 1 : 4;
+  
   const int dPlane=SMap.realSurf(bayIndex+1);
+  
   for(size_t i=0;i<nItems;i++)
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
@@ -378,14 +382,12 @@ GuideBay::createGuideItems(Simulation& System,
 
       GA->addInsertCell("Inner",getCell("Inner"));
       GA->addInsertCell("Outer",getCell("Outer"));
-      if (i)
-	GA->createAll(System,ModFC,FI,GUnit[i-1].get());
-      else
-	GA->createAll(System,ModFC,FI,0);
 
+      GA->createAll(System,*ModFC,FI,0);
       GUnit.push_back(GA);
       OR.addObject(GUnit.back());      
     }
+  
   return;
 }
   

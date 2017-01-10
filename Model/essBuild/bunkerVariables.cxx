@@ -128,7 +128,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   
       
       Control.addVariable(KItem+"BunkerRoofMat0","CarstonConc");
-      Control.addVariable(KItem+"BunkerRoofMat1","CastIron");
+      Control.addVariable(KItem+"BunkerRoofMat1","ChipIRSteel");
       Control.addVariable(KItem+"BunkerRoofMat2","CarstonConc");
       Control.addVariable(KItem+"BunkerRoofMat3","CastIron");
       Control.addVariable(KItem+"BunkerRoofMat4","CarstonConc");

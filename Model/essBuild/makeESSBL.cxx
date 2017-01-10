@@ -70,6 +70,7 @@
 #include "SurfMap.h"
 #include "FixedOffset.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ShapeUnit.h"
 #include "Bunker.h"
 #include "GuideLine.h"
@@ -154,12 +155,12 @@ makeESSBL::getBeamNum(const std::string& Name)
 {
   ELog::RegMethod RegA("makeESSBL","getBeamNum");
   
-  if (Name.length()<8)
-    throw ColErr::InvalidLine(Name,"Name not in from : GxBLineyy");
+  if (Name.length()<11)
+    throw ColErr::InvalidLine(Name,"Name not in form : GxBLineTopjj/GxBLineLowjj");
   std::pair<int,int> Out(0,0);
   std::string BN(Name);
   BN[0]=' ';
-  BN.replace(2,5,"     ");
+  BN.replace(2,8,"     ");
   if (!StrFunc::section(BN,Out.first) ||
       !StrFunc::section(BN,Out.second))
     {
@@ -187,16 +188,14 @@ makeESSBL::build(Simulation& System,
 
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObject<attachSystem::FixedComp>(shutterName);
-  const GuideItem* mainGIPtr=
-    dynamic_cast<const GuideItem*>(mainFCPtr);
+  const GuideItem* mainGIPtr=dynamic_cast<const GuideItem*>(mainFCPtr);
   if (!mainGIPtr)
     throw ColErr::InContainerError<std::string>(shutterName,"GuideItem");
 	
   if (beamName=="BEER")
     {
       BEER beerBL("beer");
-      beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);
-      
+      beerBL.build(System,*mainGIPtr,bunkerObj,voidCell);      
     }  
   else if (beamName=="BIFROST")
     {

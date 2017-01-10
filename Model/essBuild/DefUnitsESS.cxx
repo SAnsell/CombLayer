@@ -119,16 +119,16 @@ setESSFull(defaultConfig& A)
 
   const std::map<std::string,std::string> beamDef=
     {
-      {"MAGIC","G4BLine6"},          // W6
-      {"BIFROST","G4BLine4"},    // W4
-      {"NMX","G4BLine1"},        // W1
-      {"VOR","G3BLine10"},   // also 17
-      {"LOKI","G4BLine17"},
-      {"DREAM","G4BLine19"},
+      {"MAGIC","G1BLineTop6"},      // W6
+      {"BIFROST","G1BLineTop4"},    // W4
+      {"NMX","G1BLineTop1"},        // W1
+      {"VOR","G2BLineTop10"},   // also 17
+      {"LOKI","G1BLineTop17"},
+      {"DREAM","G1BLineTop19"},
       // {"CSPEC","G4BLine3"},
-       {"VESPA","G3BLine7"},
-      {"FREIA","G4BLine15"},     // N5
-      {"ODIN","G2BLine2"}
+       {"VESPA","G2BLineTop7"},
+      {"FREIA","G1BLineTop15"},     // N5
+      {"ODIN","G1BLineLow2"}
     };
   
   const std::set<std::string> beamFilled=
@@ -163,10 +163,10 @@ setESSPortsOnly(defaultConfig& A,const std::string& lvl,
 
   static const std::map<std::string,std::string>
     nameBay({
-        {"lower","G1BLine"},
-        {"upper","G4BLine"},
-        {"farUpper","G3BLine"},
-        {"farLower","G2BLine"}
+        {"lower","G1BLineLow"},
+        {"upper","G1BLineTop"},
+        {"farUpper","G2BLineTop"},
+        {"farLower","G2BLineLow"}
       });
   
   A.setOption("lowMod","Butterfly");
@@ -193,9 +193,9 @@ setESSPortsOnly(defaultConfig& A,const std::string& lvl,
     }
   if (!defaultFlag)
     {
-      GNum="G4BLine";
       for(size_t i=0;i<21;i++)
-        A.setVar("G4BLine"+StrFunc::makeString(i+1)+"Active",1);
+        A.setVar("G1BLineTop"+StrFunc::makeString(i+1)+"Active",1);
+      GNum="G1BLineTop";
     }
       
   ELog::EM<<"Port Only on sectors:"<<GNum<<ELog::endDiag;
@@ -218,31 +218,31 @@ setESSSingle(defaultConfig& A,
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
-     {"HEIMDAL","G4BLine8"},
-     {"SLEIPNIR","G4BLine13"},   // N9
-     {"ANNI","G3BLine3"},        // E3
-     {"SURFSCATTER","G3BLine8"},        // E8
-     {"SKADI","G3BLine5"}         // E5
+     {"HEIMDAL","G1BLineLow8"},
+     {"SLEIPNIR","G1BLineLow13"},   // N9
+     {"ANNI","G2BLineTop3"},        // E3
+     {"SURFSCATTER","G2BLineTop8"},        // E8
+     {"SKADI","G2BLineTop5"}         // E5
     };     
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G4BLine1"},        // W1
-     {"BIFROST","G4BLine4"},    // W4
-     {"MIRACLES","G4BLine5"},   // W5
-     {"SHORTDREAM","G4BLine17"},
-     {"SHORTNMX","G4BLine13"},
-     {"SHORTODIN","G1BLine4"},
-     {"TREX","G4BLine7"},       // W7
-     {"MAGIC","G4BLine6"},      // W6
-     {"DREAM","G3BLine19"},     // S3
-     {"CSPEC","G4BLine3"},      // W3
-     {"VESPA","G3BLine7"},      // E7
-     {"VOR","G3BLine10"},       // E11  [CHANGED TO FIT]
-     {"SIMPLE","G4BLine17"},
-     {"LOKI","G4BLine17"},      // N7
-     {"ODIN","G2BLine2"},       // Lower S2
-     {"ESTIA","G3BLine2"},      // E2
-     {"FREIA","G4BLine15"},     // N5
-     {"BEER","G4BLine2"}        // W2
+    {{"NMX","G1BLineTop1"},        // W1
+     {"BIFROST","G1BLineTop4"},    // W4
+     {"MIRACLES","G1BLineTop5"},   // W5
+     {"SHORTDREAM","G1BLineTop17"},
+     {"SHORTNMX","G1BLineTop13"},
+     {"SHORTODIN","G1BLineLow4"},
+     {"TREX","G1BLineTop7"},       // W7
+     {"MAGIC","G1BLineTop6"},      // W6
+     {"DREAM","G2BLineTop19"},     // S3
+     {"CSPEC","G1BLineTop3"},      // W3
+     {"VESPA","G2BLineTop7"},      // E7
+     {"VOR","G2BLineTop10"},       // E11  [CHANGED TO FIT]
+     {"SIMPLE","G1BLineTop17"},
+     {"LOKI","G1BLineTop17"},      // N7
+     {"ODIN","G2BLineLow2"},       // Lower S2
+     {"ESTIA","G2BLineTop2"},      // E2
+     {"FREIA","G1BLineTop15"},     // N5
+     {"BEER","G1BLineTop2"}        // W2
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
@@ -311,12 +311,12 @@ setESS(defaultConfig& A)
 
   const std::map<std::string,std::string> beamDef=
     {
-      {"NMX","G4BLine17"},
-      {"DREAM","G4BLine14"},
-      {"CSPEC","G4BLine13"},
-      {"VOR","G4BLine7"},   // also 17  
-      {"LOKI","G4BLine4"},
-      {"ODIN","G4BLine19"}
+      {"NMX","G1BLineTop1"},
+      {"DREAM","G1BLineTop19"},
+      {"CSPEC","G1BLineTop3"},
+      {"VOR","G1BLinetop7"},   // also 17  
+      {"LOKI","G1BLineTop17"},
+      {"ODIN","G2BLineLow2"}
     };     
   const std::set<std::string> beamFilled=
     {"NMX","CSPEC","DREAM","VOR","LOKI"};
