@@ -380,14 +380,18 @@ ZoomShutter::getExitTrack() const
 
   const int b4cMat(47);
   std::vector<collInsertBlock>::const_iterator ac=
-    find_if(iBlock.begin(),iBlock.end(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBlock::getMat,_1),b4cMat));
+        find_if(iBlock.begin(),iBlock.end(),
+	    [b4cMat](const collInsertBlock& cb)
+	    {
+	      return (cb.getMat()==b4cMat);
+	    });
 
   std::vector<collInsertBlock>::const_reverse_iterator bc=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBlock::getMat,_1),b4cMat));
+	    [b4cMat](const collInsertBlock& cb)
+	    {
+	      return (cb.getMat()==b4cMat);
+	    });
 
   if (ac==iBlock.end() || bc==iBlock.rend())
     {
@@ -419,8 +423,11 @@ ZoomShutter::getExitPoint() const
 
   std::vector<collInsertBlock>::const_reverse_iterator bc=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBlock::getMat,_1),b4cMat));
+	    [b4cMat](const collInsertBlock& cb)
+	    {
+	      return (cb.getMat()==b4cMat);
+	    });
+
   if (bc==iBlock.rend())
     {
       ELog::EM<<"Problem finding B4C blocks"<<ELog::endCrit;
@@ -459,14 +466,18 @@ ZoomShutter::setTwinComp()
     
   const int b4cMat(47);
   std::vector<collInsertBlock>::const_iterator ac=
-    find_if(iBlock.begin(),iBlock.end(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBlock::getMat,_1),b4cMat));
+        find_if(iBlock.begin(),iBlock.end(),
+	    [b4cMat](const collInsertBlock& cb)
+	    {
+	      return (cb.getMat()==b4cMat);
+	    });
 
   std::vector<collInsertBlock>::const_reverse_iterator bc=
     find_if(iBlock.rbegin(),iBlock.rend(),
-	    boost::bind(std::equal_to<int>(),
-			boost::bind<int>(&collInsertBlock::getMat,_1),b4cMat));
+	    [b4cMat](const collInsertBlock& cb)
+	    {
+	      return (cb.getMat()==b4cMat);
+	    });
 
   if (ac==iBlock.end() || bc==iBlock.rend())
     {
