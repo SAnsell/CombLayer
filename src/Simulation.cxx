@@ -669,11 +669,10 @@ Simulation::removeDeadSurfaces(const int placeFlag)
 	Dead.push_back(sc->first);
     }
   // Dead:
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();  
-  for_each(Dead.begin(),Dead.end(),
-  	   boost::bind<void>(&ModelSupport::surfIndex::deleteSurface,
-  			     boost::ref(SurI),_1));
-  
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+    for(const int DSurf : Dead)
+    SurI.deleteSurface(DSurf);
+
   return 0;
 }
 
@@ -1026,9 +1025,9 @@ Simulation::removeNullSurfaces()
 	  dead.push_back(keyN);
 	}
     }
-  for_each(dead.begin(),dead.end(),
-	   boost::bind<void>(&ModelSupport::surfIndex::deleteSurface,
-			     boost::ref(SI),_1));
+  for(const int DSurf : dead)
+    SI.deleteSurface(DSurf);
+
   return 0;
 }
 
@@ -1506,8 +1505,9 @@ Simulation::writeTally(std::ostream& OX) const
   // uses the mathSupport:::PSecond
   // _1 refers back to the TItem pair<int,tally*>
   for_each(TItem.begin(),TItem.end(),
-	   boost::bind(&tallySystem::Tally::write,
-	  boost::bind(MapSupport::PSecond<TallyTYPE>(),_1),
+	   std::bind(&tallySystem::Tally::write,
+	  std::bind(MapSupport::PSecond<TallyTYPE>(),
+		    std::placeholders::_1),
 		       boost::ref(OX)));
   return;
 }
@@ -1993,8 +1993,9 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	{
 	  PhysPtr->substituteCell(cNum,nNum);
 	  for_each(TItem.begin(),TItem.end(),
-		   boost::bind(&tallySystem::Tally::renumberCell,
-			       boost::bind(&TallyTYPE::value_type::second,_1),
+		   std::bind(&tallySystem::Tally::renumberCell,
+			       std::bind(&TallyTYPE::value_type::second,
+					 std::placeholders::_1),
 			       cNum,nNum));
 	}
       ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum<<ELog::endBasic;

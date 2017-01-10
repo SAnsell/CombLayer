@@ -146,8 +146,9 @@ PhysicsCards::addHistpCells(const std::vector<int>& AL)
   void (tallySystem::NList<int>::*fn)(const int&) = 
     &tallySystem::NList<int>::addComp;
 
-  for_each(AL.begin(),AL.end(),
-	   boost::bind<void>(fn,boost::ref(histpCells),_1));
+  for(const int CellN : AL)
+    histpCells.addComp(CellN);
+
   return;
 }
 
@@ -273,15 +274,16 @@ PhysicsCards::processCard(const std::string& Line)
         {
 	  std::vector<std::string> part;
 	  boost::split(part,Item,boost::is_any_of(","));
-	  for_each(part.begin(),part.end(),
-		   boost::bind(&boost::trim<std::string>,_1,std::locale()));
+	  for(std::string& PStr : part)
+	    boost::trim(PStr,std::locale());
 	  // ensure no empty particles
 	  part.erase(remove_if(part.begin(),part.end(),
-			       boost::bind<bool>(&std::string::empty,_1)),
+			       std::bind<bool>(&std::string::empty,
+					       std::placeholders::_1)),
 		     part.end());
 	  PhysCard& PC(PhysCards.back());
-	  for_each(part.begin(),part.end(), 
-		   boost::bind(&PhysCard::addElm,boost::ref(PC),_1));
+	  for(const std::string& PStr : part)
+	    PC.addElm(PStr);
 	  // Strip and process numbers / j
 	  for(size_t i=0;i<5 && !Comd.empty();i++)
 	    {
@@ -310,7 +312,8 @@ PhysicsCards::setEnergyCut(const double E)
   */
 {
   for_each(PhysCards.begin(),PhysCards.end(),
-	   boost::bind(&PhysCard::setEnergyCut,_1,E));
+	   std::bind(&PhysCard::setEnergyCut,
+		     std::placeholders::_1,E));
   sdefCard.cutEnergy(E);
   return;
 }
@@ -367,7 +370,8 @@ PhysicsCards::addPhysCard(const std::string& Key,
       {
 
 	ac=find_if(PList.begin(),PList.end(),
-		  boost::bind(&PhysCard::hasElm,*vc,_1));
+		  std::bind(&PhysCard::hasElm,*vc,
+			    std::placeholders::_1));
 	// If item , add all additional items to the card
 	if (ac!=PList.end())
 	  {
@@ -402,9 +406,8 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
 				   impValue.size(),
 				   "PhysicsCards.setCellNumbers");
 
-  for_each(ImpCards.begin(),ImpCards.end(),
-	   boost::bind<void>(&PhysImp::setAllCells,_1,boost::cref(cellInfo),
-			     boost::cref(impValue)));
+  for(PhysImp& PI : ImpCards)
+    PI.setAllCells(cellInfo,impValue);
 
   Volume.setCells(cellInfo,1.0);
   return;
@@ -426,13 +429,15 @@ PhysicsCards::setCells(const std::string& Type,
 {
   std::vector<PhysImp>::iterator vc;
   vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,Type));
+	     std::bind(&PhysImp::isType,
+		       std::placeholders::_1,Type));
   while(vc!=ImpCards.end())
     {
       vc->setCells(cellInfo,defValue);
       vc++;
       vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,Type));
+		 std::bind(&PhysImp::isType,
+			   std::placeholders::_1,Type));
     }
   return;
 }
@@ -452,13 +457,15 @@ PhysicsCards::setCells(const std::string& Type,
 {
   std::vector<PhysImp>::iterator vc;
   vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,Type));
+	     std::bind(&PhysImp::isType,
+		       std::placeholders::_1,Type));
   while(vc!=ImpCards.end())
     {
       vc->setValue(cellID,defValue);
       vc++;
       vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,Type));
+		 std::bind(&PhysImp::isType,
+			   std::placeholders::_1,Type));
     }
   return;
 }
@@ -480,7 +487,8 @@ PhysicsCards::setCells(const std::string& Type,
 {
   std::vector<PhysImp>::iterator vc;
   vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,Type));
+	     std::bind(&PhysImp::isType,
+		       std::placeholders::_1,Type));
   while(vc!=ImpCards.end())
     {
       if (vc->hasElm(Particle))
@@ -490,7 +498,8 @@ PhysicsCards::setCells(const std::string& Type,
 	}
       vc++;
       vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,Type));
+		 std::bind(&PhysImp::isType,
+			   std::placeholders::_1,Type));
     }
   throw ColErr::InContainerError<std::string>(Type+"::"+Particle,
 				 "PhysicsCars::setCells:");
@@ -505,7 +514,8 @@ PhysicsCards::removeCell(const int Index)
   */
 {
   for_each(ImpCards.begin(),ImpCards.end(),
-	   boost::bind(&PhysImp::removeCell,_1,Index));
+	   std::bind(&PhysImp::removeCell,
+		     std::placeholders::_1,Index));
   return;
 }
 
@@ -539,14 +549,16 @@ PhysicsCards::getPhysImp(const std::string& type,const std::string& particle)
 
   std::vector<PhysImp>::iterator vc;
   vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,type));
+	     std::bind(&PhysImp::isType,
+		       std::placeholders::_1,type));
   while(vc!=ImpCards.end())
     {
       if (vc->hasElm(particle))
 	return *vc;
       vc++;
       vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,type));
+		 std::bind(&PhysImp::isType,
+			   std::placeholders::_1,type));
     }
   throw ColErr::InContainerError<std::string>(particle,RegA.getFull());
 }
@@ -564,14 +576,16 @@ PhysicsCards::getPhysImp(const std::string& type,const std::string& particle) co
 {
   std::vector<PhysImp>::const_iterator vc;
   vc=find_if(ImpCards.begin(),ImpCards.end(),
-	     boost::bind(&PhysImp::isType,_1,type));
+	     std::bind(&PhysImp::isType,
+		       std::placeholders::_1,type));
   while(vc!=ImpCards.end())
     {
       if (vc->hasElm(particle))
 	return *vc;
       vc++;
       vc=find_if(vc,ImpCards.end(),
-		 boost::bind(&PhysImp::isType,_1,type));
+		 std::bind(&PhysImp::isType,
+			   std::placeholders::_1,type));
     }
   throw ColErr::InContainerError<std::string>(type+particle,"PhysicsCards::getImp const");
 }
@@ -612,7 +626,8 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
   sdefCard.substituteCell(oldCell,newCell);
   histpCells.changeItem(oldCell,newCell);
   for_each(ImpCards.begin(),ImpCards.end(),
-	  boost::bind(&PhysImp::renumberCell,_1,oldCell,newCell));
+	  std::bind(&PhysImp::renumberCell,
+		    std::placeholders::_1,oldCell,newCell));
   Volume.renumberCell(oldCell,newCell);
   return;
 }
@@ -696,14 +711,16 @@ PhysicsCards::write(std::ostream& OX,
   Volume.write(OX,cellOutOrder);
   
   for_each(ImpCards.begin(),ImpCards.end(),
-	   boost::bind<void>(&PhysImp::write,_1,boost::ref(OX),
+	   std::bind<void>(&PhysImp::write,
+			   std::placeholders::_1,boost::ref(OX),
 			     boost::ref(cellOutOrder)));
 
   for_each(PhysCards.begin(),PhysCards.end(),
-	   boost::bind<void>(&PhysCard::write,_1,boost::ref(OX)));
+	   std::bind<void>(&PhysCard::write,
+			   std::placeholders::_1,boost::ref(OX)));
   
-  for_each(Basic.begin(),Basic.end(),
-	   boost::bind2nd(&StrFunc::writeMCNPX,OX));
+  for(const std::string& PC : Basic)
+    StrFunc::writeMCNPX(PC,OX);
 
   LEA.write(OX);
 
