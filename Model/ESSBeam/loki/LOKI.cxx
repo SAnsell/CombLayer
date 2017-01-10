@@ -484,7 +484,7 @@ LOKI::build(Simulation& System,
   attachSystem::addToInsertLineCtrl(System,*ShieldG,*AppA,*AppA);
   attachSystem::addToInsertForced(System,*AppA,*VPipeG);
 
-  return;
+  //return;
 
 
 //Cut throught chopper pit for guide and pipe that are following it 
@@ -501,7 +501,7 @@ LOKI::build(Simulation& System,
   CollG->setOuter(ShieldG->getXSectionIn());
   CollG->addInsertCell(ShieldG->getCell("Void"));
   CollG->createAll(System,*VPipeG,-1);
- return; 
+ 
 
 //Beamline shielding
   ShieldH->addInsertCell(voidCell);
@@ -525,16 +525,14 @@ LOKI::build(Simulation& System,
   CollH->setOuter(ShieldH->getXSectionIn());
   CollH->addInsertCell(ShieldH->getCell("Void"));
   CollH->createAll(System,*VPipeH,-1);
-
-//Aperture after second collimator drum
+ //Aperture after second collimator drum
   AppB->addInsertCell(ShieldH->getCell("Void"));
   AppB->createAll(System,FocusH->getKey("Guide0"),2);
-
-
 
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,FocusH->getKey("Guide0"),2);
 
+return;
   //ShieldH->addInsertCell(Cave->getCells("frontWall"));
   //ShieldG->addInsertCell(Cave->getCell("Outer"));
   //ShieldH->setBack(Cave->getKey("Mid"),2);
@@ -545,15 +543,13 @@ LOKI::build(Simulation& System,
         FocusH->getKey("Guide0"),2);
 
   Cave->insertComponent(System,"Void",*FocusK);
-  //Cave->insertComponent(System,"Steel",*FocusK);
-  //Cave->insertComponent(System,"Concrete",*FocusK);
-
-  return;
+  Cave->insertComponent(System,"Steel",*FocusK);
+  Cave->insertComponent(System,"Concrete",*FocusK);
 
   Tank->addInsertCell(Cave->getCell("Void"));
   Tank->createAll(System,FocusK->getKey("Guide0"),2);
 
-
+return;
 
   // GridA->addInsertCell(bunkerObj.getCell("MainVoid"));
   // GridA->createAll(System,FocusF->getKey("Guide0"),2);

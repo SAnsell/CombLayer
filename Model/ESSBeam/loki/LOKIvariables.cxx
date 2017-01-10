@@ -313,7 +313,9 @@ LOKIvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"lokiShieldG",270.0,100.0,100.0,150.0,8,8);
 
  // straight after fifth chopper inside the collimator drum
-
+  PipeGen.setPipe(2.5,2.5);     //  (12.0,0.5); // 12.0 changed to 1.45 -- flanges?
+  PipeGen.setWindow(-2.0,0.3);
+  PipeGen.setFlange(-4.0,1.0); 
   PipeGen.generatePipe(Control,"lokiPipeG",0.5,270.0); ///TEMP random numbers
   Control.addVariable("lokiPipeGRadius",5.0);
   Control.addVariable("lokiPipeGFeThick",0.8);
@@ -344,14 +346,15 @@ LOKIvariables(FuncDataBase& Control)
  // straight after fifth chopper inside the collimator drum
   PipeGen.generatePipe(Control,"lokiPipeH",1.0,270.0); ///TEMP random numbers
   FGen.setYOffset(-134.0);
-  FGen.generateRectangle(Control,"lokiFH",268.0,3.0,3.0); // TEMP random numbers
+  FGen.setThickness(0.5,0.5);
+  FGen.generateRectangle(Control,"lokiFH",268.0,2.5,3.0); // TEMP random numbers
 
   Control.addVariable("lokiCollHYStep",134.0);
   Control.addVariable("lokiCollHLength",270.0);
   Control.addVariable("lokiCollHMat","Copper"); 
 
   Control.addVariable("lokiAppBInnerWidth",4.0);
-  Control.addVariable("lokiAppBInnerHeight",50.0);
+  Control.addVariable("lokiAppBInnerHeight",9.0);
   Control.addVariable("lokiAppBWidth",60.0);
   Control.addVariable("lokiAppBHeight",5.0);
   Control.addVariable("lokiAppBDepth",5.0);
