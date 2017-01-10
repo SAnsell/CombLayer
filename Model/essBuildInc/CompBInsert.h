@@ -37,7 +37,8 @@ namespace essSystem
 
 class CompBInsert : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::FrontBackCut
 {
  private:
   

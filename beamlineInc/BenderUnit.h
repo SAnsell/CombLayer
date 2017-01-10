@@ -80,7 +80,7 @@ class BenderUnit : public ShapeUnit
 		     const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   // Accessor to beg axis
-  Geometry::Vec3D getBegAxis() const { return AYVec; }
+  Geometry::Vec3D getBegAxis() const { return -AYVec; }
   // Accessor to end axis
   Geometry::Vec3D getEndAxis() const { return BYVec; }
   
