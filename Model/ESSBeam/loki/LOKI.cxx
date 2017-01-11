@@ -86,7 +86,9 @@
 #include "Bunker.h"
 #include "ChopperUnit.h"
 
+#include "FrontBackCut.h"
 #include "BunkerInsert.h"
+#include "CompBInsert.h"
 #include "Hut.h"
 #include "HoleShape.h"
 #include "RotaryCollimator.h"
@@ -104,9 +106,13 @@ LOKI::LOKI(const std::string& keyN) :
   attachSystem::CopiedComp("loki",keyN),stopPoint(0),
   lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
-  
+
+  ShutterA(new constructSystem::insertPlate(newName+"BlockShutter")),  
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
+
+  VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
+  BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
 
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
@@ -114,20 +120,26 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
+  BInsert(new CompBInsert(newName+"CInsert")),
+  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
   ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
-  SDiskB(new constructSystem::DiskChopper(newName+"SBladeB")),
+  DDiskB(new constructSystem::DiskChopper(newName+"DBladeB")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
   ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
-  SDiskC(new constructSystem::DiskChopper(newName+"SBladeC")),
+  DDiskC(new constructSystem::DiskChopper(newName+"DBladeC")),
   
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+
+  VPipeFExtra(new constructSystem::VacuumPipe(newName+"PipeFExtra")),
+  FocusFExtra(new beamlineSystem::GuideLine(newName+"FExtra")),
 
   GridA(new constructSystem::RotaryCollimator(newName+"GridA")),
   CollA(new constructSystem::RotaryCollimator(newName+"CollA")),
@@ -177,11 +189,11 @@ LOKI::LOKI(const LOKI& A) :
   VPipeD(new constructSystem::VacuumPipe(*A.VPipeD)),
   BendD(new beamlineSystem::GuideLine(*A.BendD)),
   ChopperB(new constructSystem::ChopperUnit(*A.ChopperB)),
-  SDiskB(new constructSystem::DiskChopper(*A.SDiskB)),
+  DDiskB(new constructSystem::DiskChopper(*A.DDiskB)),
   VPipeE(new constructSystem::VacuumPipe(*A.VPipeE)),
   FocusE(new beamlineSystem::GuideLine(*A.FocusE)),
   ChopperC(new constructSystem::ChopperUnit(*A.ChopperC)),
-  SDiskC(new constructSystem::DiskChopper(*A.SDiskC)),
+  DDiskC(new constructSystem::DiskChopper(*A.DDiskC)),
   
   VPipeF(new constructSystem::VacuumPipe(*A.VPipeF)),
   FocusF(new beamlineSystem::GuideLine(*A.FocusF)),
@@ -198,7 +210,7 @@ LOKI::LOKI(const LOKI& A) :
   FocusCollB(new beamlineSystem::GuideLine(*A.FocusCollB)),
   FocusCollC(new beamlineSystem::GuideLine(*A.FocusCollC)),
 
-  CBoxB(new constructSystem::insertPlate(*CBoxB)),
+  //  CBoxB(new constructSystem::insertPlate(*CBoxB)),
   GridB(new constructSystem::RotaryCollimator(*A.GridB)),
   CollB(new constructSystem::RotaryCollimator(*A.CollB)),
 
@@ -241,11 +253,11 @@ LOKI::operator=(const LOKI& A)
       VPipeD=A.VPipeD;
       BendD=A.BendD;
       ChopperB=A.ChopperB;
-      SDiskB=A.SDiskB;
+      DDiskB=A.DDiskB;
       VPipeE=A.VPipeE;
       FocusE=A.FocusE;
       ChopperC=A.ChopperC;
-      SDiskC=A.SDiskC;
+      DDiskC=A.DDiskC;
       VPipeF=A.VPipeF;
       FocusF=A.FocusF;
       GridA=A.GridA;
@@ -276,26 +288,34 @@ LOKI::registerObjects()
 
   OR.addObject(BendA);
 
+  OR.addObject(ShutterA);
+  OR.addObject(VPipeB);
+  OR.addObject(BendB);
+  OR.addObject(VPipeBLink);
+  OR.addObject(BendBLink);
+
+  
   OR.addObject(ChopperA);
   OR.addObject(DDiskA);
 
-  OR.addObject(VPipeB);
-  OR.addObject(BendB);
-
   OR.addObject(VPipeC);
   OR.addObject(FocusC);
+  
+  OR.addObject(BInsert);
 
+
+  // NOT USED:
   OR.addObject(VPipeD);
   OR.addObject(BendD);
 
   OR.addObject(ChopperB);
-  OR.addObject(SDiskB);
+  OR.addObject(DDiskB);
   
   OR.addObject(VPipeE);
   OR.addObject(FocusE);
 
   OR.addObject(ChopperC);
-  OR.addObject(SDiskC);
+  OR.addObject(DDiskC);
   
   OR.addObject(VPipeF);
   OR.addObject(FocusF);
@@ -381,11 +401,9 @@ LOKI::build(Simulation& System,
 
   setBeamAxis(System.getDataBase(),GItem,0);
 
-
   BendA->addInsertCell(GItem.getCells("Void"));
-
-  BendA->addFrontCut(GItem.getKey("Beam"),-1);
-  BendA->addEndCut(GItem.getKey("Beam"),-2);
+  BendA->setFront(GItem.getKey("Beam"),-1);
+  BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
 
 
@@ -393,15 +411,28 @@ LOKI::build(Simulation& System,
 
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
-
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
-  
+
+  // Shield around gamma shield
+  ShutterA->setNoInsert();
+  ShutterA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ShutterA->setAxisControl(3,ZVert);
+  ShutterA->createAll(System,BendB->getKey("Guide0"),-1);
+  ShutterA->insertComponent(System,"Main",*VPipeB);
+
+  // Link as gamma shield must move up and down
+  VPipeBLink->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeBLink->createAll(System,BendB->getKey("Guide0"),2);
+
+  BendBLink->addInsertCell(VPipeBLink->getCells("Void"));
+  BendBLink->createAll(System,*VPipeBLink,0,*VPipeBLink,0);
+
   // First [6m]
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);  
-  ChopperA->createAll(System,BendB->getKey("Guide0"),2);
+  ChopperA->createAll(System,BendBLink->getKey("Guide0"),2);
 
   // Double disk chopper
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
@@ -409,12 +440,31 @@ LOKI::build(Simulation& System,
   DDiskA->setOffsetFlag(1);  // X direction
   DDiskA->createAll(System,ChopperA->getKey("Beam"),0);
 
+
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
 
+  // WALL
+  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BInsert->setFront(bunkerObj,-1);
+  BInsert->setBack(bunkerObj,-2);
+  BInsert->createAll(System,FocusC->getKey("Guide0"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+  ELog::EM<<"BInsert == "<<bunkerObj.getSignedLinkString(-1)<<ELog::endDiag;
+  ELog::EM<<"BInsert == "<<BInsert->getSignedLinkString(-1)<<ELog::endDiag;
+  ELog::EM<<"BInsert == "<<BInsert->getSignedLinkString(-2)<<ELog::endDiag;
+
+
+  FocusWall->addInsertCell(BInsert->getCells("Item"));
+  FocusWall->setFront(*BInsert,-1);
+  FocusWall->setBack(*BInsert,-2);
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7); 
+
+  return;
+  
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->setFront(*VPipeC,2,true);
   VPipeD->createAll(System,FocusC->getKey("Guide0"),2);
@@ -427,19 +477,19 @@ LOKI::build(Simulation& System,
   ChopperB->createAll(System,BendD->getKey("Guide0"),2);
 
   // Double disk chopper
-  SDiskB->addInsertCell(ChopperB->getCell("Void"));
-  SDiskB->setCentreFlag(3);  // Z direction
-  SDiskB->setOffsetFlag(1);  // Z direction
-  SDiskB->createAll(System,ChopperB->getKey("Beam"),0);
+  DDiskB->addInsertCell(ChopperB->getCell("Void"));
+  DDiskB->setCentreFlag(3);  // Z direction
+  DDiskB->setOffsetFlag(1);  // Z direction
+  DDiskB->createAll(System,ChopperB->getKey("Beam"),0);
 
   
   VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeE->createAll(System,SDiskB->getKey("Beam"),2);
+  VPipeE->createAll(System,DDiskB->getKey("Beam"),2);
 
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
-  //  FocusE->createAll(System,SDiskB->getKey("Beam"),2,
-  //                    SDiskB->getKey("Beam"),2);
+  //  FocusE->createAll(System,DDiskB->getKey("Beam"),2,
+  //                    DDiskB->getKey("Beam"),2);
 
 
   // Third [11.0m]
@@ -447,14 +497,14 @@ LOKI::build(Simulation& System,
   ChopperC->createAll(System,FocusE->getKey("Guide0"),2);
 
   // Single disk chopper
-  SDiskC->addInsertCell(ChopperC->getCell("Void"));
-  SDiskC->setCentreFlag(3);  // Z direction
-  SDiskC->setOffsetFlag(1);  // Z direction
-  SDiskC->createAll(System,ChopperC->getKey("Beam"),0);
+  DDiskC->addInsertCell(ChopperC->getCell("Void"));
+  DDiskC->setCentreFlag(3);  // Z direction
+  DDiskC->setOffsetFlag(1);  // Z direction
+  DDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
     
   VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeF->createAll(System,SDiskC->getKey("Beam"),2);
+  VPipeF->createAll(System,DDiskC->getKey("Beam"),2);
 
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);

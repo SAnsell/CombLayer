@@ -270,7 +270,7 @@ BEER::build(Simulation& System,
   setBeamAxis(Control,GItem,0);
   
   BendA->addInsertCell(GItem.getCells("Void"));
-  BendA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*beerAxis,-3,*beerAxis,-3);
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge

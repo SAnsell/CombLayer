@@ -68,13 +68,17 @@ class LOKI : public attachSystem::CopiedComp
 
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
-
   /// Shutter around pipe in gamma block
   std::shared_ptr<constructSystem::insertPlate> ShutterA;
   /// Vacuum pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in gamma shield
   std::shared_ptr<beamlineSystem::GuideLine> BendB;
+
+  /// Vacuum pipe in gamma shield
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeBLink;
+  /// Bender in gamma shield
+  std::shared_ptr<beamlineSystem::GuideLine> BendBLink;
 
 
   /// Vac box for first chopper
@@ -87,6 +91,9 @@ class LOKI : public attachSystem::CopiedComp
   /// Guide to first chopper
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
+  std::shared_ptr<essSystem::CompBInsert> BInsert;  
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
+  
   /// Vacuum pipe from first chopper to second
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// Guide from first to second chopper
@@ -95,7 +102,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Vac box for second chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
   /// Single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> SDiskB;
+  std::shared_ptr<constructSystem::DiskChopper> DDiskB;
 
   /// Vacuum pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
@@ -105,19 +112,23 @@ class LOKI : public attachSystem::CopiedComp
   /// Vac box for third chopper
   std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
   /// Single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> SDiskC;
+  std::shared_ptr<constructSystem::DiskChopper> DDiskC;
 
   /// Vacuum pipe to bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Guide to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
+  /// Vacuum ouside of the bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeFExtra;
+  /// Guide outside bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusFExtra;
+
+  
   /// Cutting grid at bunker wall
   std::shared_ptr<constructSystem::RotaryCollimator> GridA;
   /// Rotary collimator [first to wall]
   std::shared_ptr<constructSystem::RotaryCollimator> CollA;
-
-
   /// Vacuum pipe in CoolA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCollA;
   /// Vacuum pipe in CoolA (second position)

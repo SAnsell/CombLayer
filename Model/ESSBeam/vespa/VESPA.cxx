@@ -146,16 +146,17 @@ VESPA::VESPA(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
   ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
 
+  OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
+  PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
+  PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
+  
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOCBladeB")),
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
-
-  OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
+  
   ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
   FOCDiskOutB(new constructSystem::DiskChopper(newName+"FOCBladeOutB")),
-  PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
-  PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
   
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
@@ -319,8 +320,8 @@ VESPA::build(Simulation& System,
   setBeamAxis(GItem,1);
   
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
-  FocusA->addEndCut(GItem.getKey("Beam"),-2);
+  FocusA->setFront(GItem.getKey("Beam"),-1);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*vespaAxis,-3,*vespaAxis,-3);
 
   if (stopPoint==1) return;                      // STOP At monolith

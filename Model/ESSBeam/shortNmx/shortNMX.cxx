@@ -192,7 +192,7 @@ shortNMX::build(Simulation& System,
 
   ELog::EM<<"Beam axis == "<<nmxAxis->getSignedLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addEndCut(GItem.getKey("Beam"),-2);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); 
 
 
