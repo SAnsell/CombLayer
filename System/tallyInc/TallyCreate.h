@@ -27,6 +27,8 @@ class Simulation;
 
 namespace tallySystem
 {
+  class sswTally;
+  
   void setComment(Simulation&,const int,const std::string&);
   void cutTallyEnergy(Simulation&,const double);
   void setTallyTime(Simulation&,const int,const std::string&);
@@ -36,6 +38,8 @@ namespace tallySystem
 
   int getLastTallyNumber(const Simulation&,const int);
 
+  sswTally* addSSWTally(Simulation&);
+  
   void addF1Tally(Simulation&,const int,const int);  // Add basic F1 tally
   void addF1Tally(Simulation&,const int,
 		  const int,const std::vector<int>&);  

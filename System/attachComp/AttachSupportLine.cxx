@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachComp/AttachSupport.cxx
+ * File:   attachComp/AttachSupportLine.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -98,7 +98,7 @@ checkLineIntersect(const FixedComp& InsertFC,
     {
       const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
       if (CellObj.isValid(IP))
-        return 1;
+	return 1;
     }
 
 
@@ -162,8 +162,8 @@ addToInsertLineCtrl(Simulation& System,
     dynamics cast
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
-
+  ELog::RegMethod RegA("AttachSupport[F]","addToInsertLineCtrl(FC,FC)");
+  
   const attachSystem::ContainedComp* CCPtr=
     dynamic_cast<const attachSystem::ContainedComp*>(&InsertFC);
   if (!CCPtr)
@@ -233,8 +233,10 @@ addToInsertLineCtrl(Simulation& System,
   const int cellN=OR.getCell(OuterFC.getKeyName());
   const int cellL=OR.getLast(OuterFC.getKeyName());
 
-  for(int i=cellN+1;i<=cellL;i++)
-    addToInsertLineCtrl(System,InsertFC,CC,i);
+  const std::vector<int> CNum=
+    OR.getObjectRange(OuterFC.getKeyName());
+  for(const int CN : CNum)
+    addToInsertLineCtrl(System,InsertFC,CC,CN);
 
   return;
 }
@@ -260,7 +262,14 @@ addToInsertLineCtrl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  const std::vector<int>& cellVec=
+    OR.getObjectRange(InsertFC.getKeyName());
+  System.populateCells(cellVec);
   MonteCarlo::Qhull* CRPtr=System.findQhull(cellN);
+
+
   if (CRPtr && checkLineIntersect(InsertFC,*CRPtr))
     {
       const std::string excludeStr=CC.getExclude();

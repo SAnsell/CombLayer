@@ -79,6 +79,7 @@
 #include "ChipIRSource.h"
 #include "WorkData.h"
 #include "activeUnit.h"
+#include "activeFluxPt.h"
 #include "ActiveWeight.h"
 #include "ActivationSource.h"
 #include "SourceSelector.h"
@@ -210,7 +211,8 @@ sourceSelection(Simulation& System,
   if (!StrFunc::convert(Dist,DOffsetStep) && 
       !StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
-  
+
+  ELog::EM<<"Search == "<<DObj<<ELog::endDiag;
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
 
@@ -261,7 +263,6 @@ sourceSelection(Simulation& System,
     activationSelection(System,IParam);
   else if (sdefType=="ActiveWeight" || sdefType=="activeWeight")
     activeWeight(System,IParam);
-  //    SDef::activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
       if (FCPtr)
@@ -271,6 +272,7 @@ sourceSelection(Simulation& System,
         }
       else
 	{
+          ELog::EM<<"Free Point Source "<<ELog::endDiag;
 	  SDef::createPointSource(Control,"pointSource",DObj,sourceCard);
 	}
     }
@@ -360,6 +362,9 @@ activationSelection(Simulation& System,
   std::string cellDir="Cell";
   size_t timeSeg(1);
   size_t nVol=System.getPC().getNPS();
+  Geometry::Vec3D weightPt;
+  double weightDist(-1.0);
+  double scale(1.0);
   
   for(size_t index=0;index<nP;index++)
     {
@@ -376,6 +381,7 @@ activationSelection(Simulation& System,
                   <<"-- out string :: output file [def:Data.ssw]\n"
                   <<"-- cell string :: cell header name [def: Cell]\n"
                   <<"-- nVol size :: number of point for vol sample [def: npts]"
+		  <<"-- weightPoint :: Point dist :: Scale to distance "
                   <<ELog::endBasic;
         }
       else if (key=="box")
@@ -390,13 +396,24 @@ activationSelection(Simulation& System,
         {
           OName=IParam.getValueError<std::string>("activation",index,1,eMess);
         }
-      else if (key=="cell")
+      else if (key=="cell" || key=="cellDir")
         {
           cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
         }
       else if (key=="timeStep")
         {
           timeSeg=IParam.getValueError<size_t>("activation",index,1,eMess);
+        }
+      else if (key=="weightPoint")
+        {
+	  size_t itemIndex(1);
+          weightPt=IParam.getCntVec3D("activation",index,itemIndex,eMess);
+	  weightDist=IParam.getValueError<double>
+	    ("activation",index,itemIndex,eMess);
+        }
+      else if (key=="scale")
+        {
+          scale=IParam.getValueError<double>("activation",index,1,eMess);
         }
       else if (key=="nVol")
         {
@@ -413,6 +430,8 @@ activationSelection(Simulation& System,
   AS.setBox(APt,BPt);
   AS.setTimeSegment(timeSeg);
   AS.setNPoints(nVol);
+  AS.setWeightPoint(weightPt,weightDist);
+  AS.setScale(scale);
   AS.createSource(System,cellDir,OName);
 
   return;
@@ -420,7 +439,7 @@ activationSelection(Simulation& System,
   
 void
 activeWeight(Simulation& System,
-		    const mainSystem::inputParam& IParam)
+             const mainSystem::inputParam& IParam)
   /*!
     Select all the info for activation output
     \param System :: Simuation to use
@@ -430,8 +449,8 @@ activeWeight(Simulation& System,
   ELog::RegMethod RegA("SourceSelector","activationSelection");
 
   //File for input/
-  const std::string OName=
-    IParam.getDefValue<std::string>("test.source","actFile",0,1);
+  const std::string OName="test.source";
+  //    IParam.getDefValue<std::string>("test.source","actFile",0,1);
 
   size_t index(0);
   const Geometry::Vec3D APt=

@@ -92,7 +92,7 @@ FREIAvariables(FuncDataBase& Control)
   // extent of beamline
   Control.addVariable("freiaStopPoint",0);
   Control.addVariable("freiaAxisXYAngle",0.0);   // rotation
-  Control.addVariable("freiaAxisZAngle",0.0);   // rotation 
+  Control.addVariable("freiaAxisZAngle",0.0);   // down slope
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(0.0);
@@ -103,13 +103,13 @@ FREIAvariables(FuncDataBase& Control)
 
   // Pipe in gamma shield
   FGen.setGuideMat("Aluminium");
-  PipeGen.generatePipe(Control,"freiaPipeB",2.0,46.0);
+  PipeGen.generatePipe(Control,"freiaPipeB",8.0,40.0);
   FGen.clearYOffset();
-  FGen.generateBender(Control,"freiaBB",44.0,4.0,4.0,17.566,18.347,
+  FGen.generateBender(Control,"freiaBB",36.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
 
   // Pipe in to first ch
-  PipeGen.generatePipe(Control,"freiaPipeC",2.0,46.0);
+  PipeGen.generatePipe(Control,"freiaPipeC",4.0,46.0);
   Control.addVariable("freiaYStep",6.0);   // step + flange  
   FGen.generateBender(Control,"freiaBC",44.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);

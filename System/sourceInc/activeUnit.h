@@ -44,6 +44,8 @@ class activeUnit
   
   double volume;            ///< Volume by MC calc
   double integralFlux;      ///< Total flux
+  long int scaleCnt;        ///< Number of particles contribution to scaleI
+  double scaleIntegral;     ///< Scale integral
 
   std::vector<double> energy;      ///< Integrated energy
   std::vector<double> cellFlux;    ///< Integrated flux [normalized to 1.0]
@@ -56,9 +58,14 @@ class activeUnit
   activeUnit& operator=(const activeUnit&);
   ~activeUnit();
 
+  void zeroScale();
+  void addScaleSum(const double);
+  double getScaleFlux() const;
+  
   double XInverse(const double) const;
   void normalize(const double,const double);
-  void writePhoton(std::ostream&,const Geometry::Vec3D&) const;
+  void writePhoton(std::ostream&,const Geometry::Vec3D&,
+		   const double) const;
 
 };
 

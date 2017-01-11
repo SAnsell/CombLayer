@@ -117,9 +117,19 @@ BunkerWall::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BunkerWall","populate");
 
+  
   wallThick=Control.EvalVar<double>(keyName+"Thick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  
+
+  // PASSIVE
+  nBasic=Control.EvalVar<size_t>(keyName+"NBasic");
+
+  ModelSupport::populateDivideLen(Control,nBasic,keyName+"Len",
+				  wallThick,basic);
+  ModelSupport::populateDivide(Control,nBasic,keyName+"Mat",
+			       ModelSupport::EvalMatString(wallMat),
+			       basicMatVec);	  
+
   // Need two sets active and passive :
   // ACTIVE:
   // BOOLEAN NUMBER!!!!!!!
@@ -131,9 +141,11 @@ BunkerWall::populate(const FuncDataBase& Control)
       nMedial=Control.EvalDefVar<size_t>(keyName+"NMedial",0);
       ModelSupport::populateDivideLen(Control,nVert,keyName+"Vert",
 				      1.0,vert);
-      
-      ModelSupport::populateDivideLen(Control,nRadial,keyName+"Radial",
-				      1.0,radial);
+      if (!nRadial)
+	radial=basic;
+      else
+	ModelSupport::populateDivideLen(Control,nRadial,keyName+"Radial",
+					1.0,radial);
       
       ModelSupport::populateDivideLen(Control,nMedial,keyName+"Medial",
 				      1.0,medial);
@@ -142,14 +154,6 @@ BunkerWall::populate(const FuncDataBase& Control)
       outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
     }
 
-  // PASSIVE
-  nBasic=Control.EvalVar<size_t>(keyName+"NBasic");
-
-  ModelSupport::populateDivideLen(Control,nBasic,keyName+"Len",
-				  wallThick,basic);
-  ModelSupport::populateDivide(Control,nBasic,keyName+"Mat",
-			       ModelSupport::EvalMatString(wallMat),
-			       basicMatVec);	  
 
   
   return;
@@ -239,8 +243,13 @@ BunkerWall::createSector(Simulation& System,
       LD3.setFractions(1,medial);	    
       LD3.setFractions(2,vert);
       LD3.setIndexNames("Radial","Medial","Vert");
-      LD3.setMaterialXML(keyName+"Def.xml","WallMat",keyName+".xml",
-			 ModelSupport::EvalMatString(wallMat));	  
+      if (!LD3.setMaterialXML(keyName+"Def.xml","WallMat",keyName+".xml",
+			      ModelSupport::EvalMatString(wallMat)))
+	{
+	  ELog::EM<<"Using Basic Material Layers: [size="
+		  <<basicMatVec.size()<<"]"<<ELog::endDiag;
+	  LD3.setMaterials(0,basicMatVec);
+	}
     }
   else
     {

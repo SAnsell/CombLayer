@@ -88,9 +88,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
     {
       Control.addVariable(KItem+"BunkerWallActive",0);
 
-      Control.addVariable(KItem+"BunkerWallNVert",20);
-      Control.addVariable(KItem+"BunkerWallNMedial",2);
-      Control.addVariable(KItem+"BunkerWallNRadial",12);
+      Control.addVariable(KItem+"BunkerWallNVert",8);
+      Control.addVariable(KItem+"BunkerWallNMedial",8);
+      Control.addVariable(KItem+"BunkerWallNRadial",0);
 
       Control.addVariable(KItem+"BunkerRoofNVert",20);
       Control.addVariable(KItem+"BunkerRoofNMedial",1);
@@ -104,11 +104,11 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       
 
       Control.addVariable(KItem+"BunkerFloorDepth",120.0);
-      Control.addVariable(KItem+"BunkerRoofHeight",190.0);
+      Control.addVariable(KItem+"BunkerRoofHeight",170.0); 
       
       Control.addVariable(KItem+"BunkerWallThick",350.0);
       Control.addVariable(KItem+"BunkerSideThick",80.0);
-      Control.addVariable(KItem+"BunkerRoofThick",195.0);
+      Control.addVariable(KItem+"BunkerRoofThick",175.0);
       Control.addVariable(KItem+"BunkerFloorThick",100.0);
       
       Control.addVariable(KItem+"BunkerVoidMat","Void");
@@ -117,12 +117,13 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
 
       // WALL LAYERED
-      Control.addVariable(KItem+"BunkerWallNBasic",10);      
+      Control.addVariable(KItem+"BunkerWallNBasic",12);      
 
+      // ROOF LAYERED
       Control.addVariable(KItem+"BunkerNBasicVert",5);
-      Control.addVariable(KItem+"BunkerRoofVert1",20.0);
+      Control.addVariable(KItem+"BunkerRoofVert1",30.0);
       Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",70.0);
+      Control.addVariable(KItem+"BunkerRoofVert3",55.0);
       Control.addVariable(KItem+"BunkerRoofVert4",30.0);
   
       
@@ -139,20 +140,24 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerWallMat4","CastIron");
       Control.addVariable(KItem+"BunkerWallMat5","CarstonConc");
       Control.addVariable(KItem+"BunkerWallMat6","CastIron");
-      Control.addVariable(KItem+"BunkerWallMat7","CarstonConc");
-      Control.addVariable(KItem+"BunkerWallMat8","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat7","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat8","CarstonConc");
       Control.addVariable(KItem+"BunkerWallMat9","CarstonConc");
+      Control.addVariable(KItem+"BunkerWallMat10","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat11","CarstonConc");
       
       Control.addVariable(KItem+"BunkerWallLen1",10.0);
       Control.addVariable(KItem+"BunkerWallLen2",15.5);
       Control.addVariable(KItem+"BunkerWallLen3",15.5);
       Control.addVariable(KItem+"BunkerWallLen4",15.5);
       Control.addVariable(KItem+"BunkerWallLen5",15.5);
-      Control.addVariable(KItem+"BunkerWallLen6",93.0);
-      Control.addVariable(KItem+"BunkerWallLen7",93.0);
+      Control.addVariable(KItem+"BunkerWallLen6",46.5);
+      Control.addVariable(KItem+"BunkerWallLen7",46.5);
       Control.addVariable(KItem+"BunkerWallLen8",46.5);
-      Control.addVariable(KItem+"BunkerWallLen9",31.0);
-      Control.addVariable(KItem+"BunkerWallLen10",15.5);
+      Control.addVariable(KItem+"BunkerWallLen9",46.5);
+      Control.addVariable(KItem+"BunkerWallLen10",46.5);
+      Control.addVariable(KItem+"BunkerWallLen11",31.0);
+      Control.addVariable(KItem+"BunkerWallLen12",15.5);
     }
   
   Control.addVariable(AKey+"BunkerLoadFile","ABunkerDef.xml");
@@ -160,7 +165,9 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   // PILLARS:
   
-  Control.addVariable(AKey+"BunkerPillarsRadius",6.0);
+  Control.addVariable(AKey+"BunkerPillarsWidth",18.0);
+  Control.addVariable(AKey+"BunkerPillarsDepth",18.0);
+  Control.addVariable(AKey+"BunkerPillarsThick",1.0);
   Control.addVariable(AKey+"BunkerPillarsMat","Stainless304");
   Control.addVariable(AKey+"BunkerPillarsNRadius",5);
   Control.addVariable(AKey+"BunkerPillarsNSector",11); // default
@@ -230,19 +237,17 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(750,0,0));
   Control.addVariable("ABunkerQuakePtB0",Geometry::Vec3D(980,0,0));
 
-  
-  
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);
-  Control.addVariable("CurtainWallThick",80.0);
-  Control.addVariable("CurtainInnerStep",0.0);
+  Control.addVariable("CurtainWallThick",30.0);
+  Control.addVariable("CurtainInnerStep",30.0);
   Control.addVariable("CurtainTopRaise",60.0);
   Control.addVariable("CurtainHeight",250.0);
   Control.addVariable("CurtainDepth",129.0);     // fixed by Ben.
   Control.addVariable("CurtainWallMat","Concrete");
-  Control.addVariable("CurtainNTopLayers",7);
-  Control.addVariable("CurtainNMidLayers",2);
-  Control.addVariable("CurtainNBaseLayers",7);
+  Control.addVariable("CurtainNTopLayers",1);   // 7 
+  Control.addVariable("CurtainNMidLayers",1);   // 2 
+  Control.addVariable("CurtainNBaseLayers",1);  // 7
 
 
   Control.addVariable("BunkerFeedOffset",Geometry::Vec3D(0,0,0));
@@ -252,6 +257,15 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BunkerFeedTrack1",Geometry::Vec3D(0,0,-10));
   Control.addVariable("BunkerFeedTrack2",Geometry::Vec3D(0,100,-10));
 
+
+  Control.addVariable("BunkerChicane0NBlocks", 1);
+  Control.addVariable("BunkerChicane0ZStep",200.0);
+  Control.addVariable("BunkerChicane0Length", 200.0);
+  Control.addVariable("BunkerChicane0Width",  20.0);
+  Control.addVariable("BunkerChicane0Height", 30.0);
+  Control.addVariable("BunkerChicane0Mat", "Void");
+
+  
   return;
 }
   

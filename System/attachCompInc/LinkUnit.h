@@ -89,10 +89,15 @@ class LinkUnit
   void setLinkSurf(const int);
   void setLinkSurf(const std::string&);
   void setLinkSurf(const HeadRule&);
+
   void addLinkSurf(const int);
   void addLinkSurf(const std::string&);
   void addLinkSurf(const HeadRule&);
   
+  void addLinkComp(const int);
+  void addLinkComp(const std::string&);
+  void addLinkComp(const HeadRule&);
+
   void setBridgeSurf(const int);
   void setBridgeSurf(const std::string&);
   void setBridgeSurf(const HeadRule&);

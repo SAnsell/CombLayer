@@ -49,7 +49,6 @@ class FrontBackCut
   HeadRule backCut;            ///< Back cut
   HeadRule backDivider;        ///< Back divider
 
-
  public:
 
   FrontBackCut();
@@ -57,6 +56,10 @@ class FrontBackCut
   FrontBackCut& operator=(const FrontBackCut&);
   virtual ~FrontBackCut();
 
+  void setFront(const int);
+  void setBack(const int);
+  void setFront(const std::string&);
+  void setBack(const std::string&);
   void setFront(const attachSystem::FixedComp&,const long int);
   void setBack(const attachSystem::FixedComp&,const long int);
 
@@ -72,7 +75,15 @@ class FrontBackCut
   bool backActive() const { return activeBack; }
   std::string frontRule() const;
   std::string backRule() const;
-  
+
+  /// accessor
+  const HeadRule& getFrontRule() const { return frontCut; }
+  /// accessor
+  const HeadRule& getBackRule() const { return backCut; }
+  /// accessor
+  const HeadRule& getFrontBridgeRule() const { return frontDivider; }
+  /// accessor
+  const HeadRule& getBackBridgeRule() const { return backDivider; }
 };
 
 }

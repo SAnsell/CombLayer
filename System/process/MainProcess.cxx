@@ -74,6 +74,12 @@
 
 #include "MainProcess.h"
 
+
+#include "surfRegister.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+
 namespace mainSystem
 {
 
@@ -397,9 +403,7 @@ createSimulation(inputParam& IParam,
   else 
     SimPtr=new Simulation;
 
-  // has default value
-  SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
-  
+  // has default value  
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 
   return SimPtr;
@@ -416,7 +420,7 @@ InputModifications(Simulation* SimPtr,inputParam& IParam,
    */
 {
   ELog::RegMethod RegA("MainProcess","InputModifications");
-
+  SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
   mainSystem::setVariables(*SimPtr,IParam,Names);
   if (!Names.empty()) 
     ELog::EM<<"Unable to understand values "<<Names[0]<<ELog::endErr;
@@ -492,7 +496,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);         
   ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-  
+
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 

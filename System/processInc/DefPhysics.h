@@ -35,12 +35,15 @@ namespace physicsSystem
 
 namespace ModelSupport
 {
+  void procOffset(const mainSystem::inputParam&,const size_t);
+  void procAngle(const mainSystem::inputParam&,const size_t);
+  
   void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
   void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
   void setNeutronPhysics(Simulation&); 
   void setReactorPhysics(Simulation&,const mainSystem::inputParam&); 
   void setUFissionPhysics(Simulation&,const mainSystem::inputParam&); 
-  std::string setDefRotation(const mainSystem::inputParam&);
+  void setDefRotation(const mainSystem::inputParam&);
   void setItemRotate(const attachSystem::FixedComp&,const std::string&);
 }
 

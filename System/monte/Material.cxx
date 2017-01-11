@@ -120,7 +120,7 @@ Material::operator*=(const double V)
     \return this * V
    */
 {
-  ELog::RegMethod RegA("Material","operator*");
+  ELog::RegMethod RegA("Material","operator*=");
   
   std::vector<Zaid>::iterator vc;
   for(vc=zaidVec.begin();vc!=zaidVec.end();vc++)
@@ -137,38 +137,39 @@ Material::operator+=(const Material& A)
     \return this + A
    */
 {
-  ELog::RegMethod RegA("Material","operator*");
+  ELog::RegMethod RegA("Material","operator+=");
   
   // Need to match off Zaids:
-  std::vector<Zaid>::const_iterator vc;
-  std::vector<Zaid>::iterator lc;
-  for(vc=A.zaidVec.begin();vc!=A.zaidVec.end();vc++)
+  for(const Zaid& ZItem : A.zaidVec)
     {
-      lc=std::find(zaidVec.begin(),zaidVec.end(),*vc);
+      std::vector<Zaid>::iterator lc=
+        std::find(zaidVec.begin(),zaidVec.end(),ZItem);
       if (lc!=zaidVec.end())
-	lc->setDensity(vc->getDensity()+lc->getDensity());
+	lc->setDensity(ZItem.getDensity()+lc->getDensity());
       else
-	zaidVec.push_back(*vc);
+	zaidVec.push_back(ZItem);
     }
 
   // SQW:
-  std::vector<std::string>::const_iterator sqc;
   std::set<std::string> sqSet;
-  for(sqc=SQW.begin();sqc!=SQW.end();sqc++)
-    sqSet.insert(*sqc);
-  
-  for(sqc=A.SQW.begin();sqc!=A.SQW.end();sqc++)
-    if (sqSet.find(*sqc)==sqSet.end())
-      SQW.push_back(*sqc);
+  for(const std::string& SQItem : SQW)
+    sqSet.insert(SQItem);
+
+  for(const std::string& SQItem : A.SQW)
+    {
+      if (sqSet.find(SQItem)==sqSet.end())
+        SQW.push_back(SQItem);
+    }
 
   // LIBS:
   sqSet.clear();
-  for(sqc=Libs.begin();sqc!=Libs.end();sqc++)
-    sqSet.insert(*sqc);
-  
-  for(sqc=A.Libs.begin();sqc!=A.Libs.end();sqc++)
-    if (sqSet.find(*sqc)==sqSet.end())
-      Libs.push_back(*sqc);
+  for(const std::string& LItem : Libs)
+    sqSet.insert(LItem);
+  for(const std::string& LItem : A.Libs)
+    {
+      if (sqSet.find(LItem)==sqSet.end())
+        Libs.push_back(LItem);
+    }
 
   return *this;
 }
@@ -246,6 +247,41 @@ Material::setMXitem(const int ZNum,const int TNum,const char C,
   return;
 }
 
+void
+Material::removeMX(const std::string& P)
+  /*!
+    Remove a given MX card by particle type
+    \param P :: particle type
+   */
+{
+  typedef std::map<std::string,MXcards> MXTYPE;
+
+  MXTYPE::iterator mc=mxCards.find(P);
+  if (mc!=mxCards.end())
+    mxCards.erase(mc);
+  
+  return;
+}
+
+void
+Material::removeLib(const std::string& lHead)
+  /*!
+    Remove a given lib component card 
+    \param lHead :: header for removal
+   */
+{
+  const std::string::size_type len=lHead.size();
+
+  std::vector<std::string>::iterator vc =
+    std::remove_if(Libs.begin(),Libs.end(),
+                   [&len,&lHead](const std::string& Item)
+                   { return (Item.substr(0,len)==lHead); });
+
+  Libs.erase(vc,Libs.end());
+  return;
+}
+
+  
 int
 Material::lineType(std::string& Line)
   /*!

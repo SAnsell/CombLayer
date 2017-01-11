@@ -496,6 +496,144 @@ RangeError<T>::setOutLine()
 }
 
 //-------------------------
+// OrderError
+//-------------------------
+template<typename T>
+OrderError<T>::OrderError(const T& aV,const T& bV,
+			  const std::string& Place) :
+  ExBase(0,Place),lowValue(aV),highValue(bV)
+  /*!
+    Set a RangeError
+    \param aV :: low value 
+    \param bV :: high value 
+    \param Place :: String describing the place
+  */
+{
+  setOutLine();
+}
+
+template<typename T>
+OrderError<T>::OrderError(const OrderError<T>& A) :
+  ExBase(A),lowValue(A.lowValue),highValue(A.highValue)
+  /*!
+    Copy constructor
+    \param A :: OrderError to copy
+  */
+{}
+
+
+template<typename T>
+OrderError<T>&
+OrderError<T>::operator=(const OrderError<T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+    }
+  return *this;
+}
+
+template<typename T>
+void
+OrderError<T>::setOutLine()
+  /*!
+    Writes out the range and aim point
+    to Outline
+  */
+{
+  std::stringstream cx;
+  cx<<"OrderError<>"<<std::endl;
+  cx<<getErr()<<" value == "<<lowValue<<
+    " = NOT LESS THAN = "<<highValue;
+  OutLine=cx.str();
+  return;
+}
+
+//-------------------------
+// DimensionError
+//-------------------------
+
+template<unsigned int ndim,typename T>
+DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
+				       const std::string& Place) :
+  ExBase(0,Place)
+  /*!
+    Set a DimensionError
+    \param A :: Array size
+    \param R :: Required size
+    \param Place :: String describing the place
+  */
+{
+  for(unsigned int i=0;i<ndim;i++)
+    {
+      indexSize[i]=A[i];
+      reqSize[i]=R[i];
+    }  
+  setOutLine();
+}
+
+template<unsigned int ndim,typename T>
+DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
+  ExBase(A)
+  /*!
+    Copy constructor 
+    \param A :: Object to copy
+  */
+{
+  for(unsigned int i=0;i<ndim;i++)
+    {
+      indexSize[i]=A.indexSize[i];
+      reqSize[i]=A.reqSize[i];
+    }  
+}
+
+template<unsigned int ndim,typename T>
+DimensionError<ndim,T>&
+DimensionError<ndim,T>::operator=(const DimensionError<ndim,T>& A) 
+  /*!
+    Assignment operator
+    \param A :: Object to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ExBase::operator=(A);
+      for(unsigned int i=0;i<ndim;i++)
+        {
+	  indexSize[i]=A.indexSize[i];
+	  reqSize[i]=A.reqSize[i];
+	}
+    }
+  return *this;
+}
+
+template<unsigned int ndim,typename T>
+void
+DimensionError<ndim,T>::setOutLine()
+  /*!
+    Writes out the range and aim point
+    to \OutLine
+  */
+{
+  std::stringstream cx;
+  cx<<"DimensionError<"<<ndim<<">"<<std::endl;
+  cx<<getErr()<<":";
+
+  for(unsigned int i=0;i<ndim;i++)
+    {
+      cx<<indexSize[i]<<" ("<<reqSize[i]<<") ";
+    }
+  OutLine=cx.str();
+  return;
+}
+
+//-------------------------
 // ArrayError
 //-------------------------
 
@@ -1334,11 +1472,13 @@ template class ColErr::MisMatch<unsigned int>;
 template class ColErr::MisMatch<long int>;
 template class ColErr::MisMatch<unsigned long int>;
 template class ColErr::ArrayError<2>;
+template class ColErr::DimensionError<4,long int>;
 template class ColErr::CastError<mainSystem::IItemBase>;
 template class ColErr::CastError<TimeData::WorkSpace>;
 template class ColErr::CastError<SDef::SrcBase>;
 template class ColErr::CastError<Geometry::Surface>;
 template class ColErr::CastError<void>;
+template class ColErr::OrderError<double>;
 template class ColErr::RangeError<double>;
 template class ColErr::RangeError<int>;
 template class ColErr::RangeError<long int>;
@@ -1347,3 +1487,4 @@ template class ColErr::TypeConvError<Geometry::Vec3D,double>;
 template class ColErr::TypeConvError<double,Geometry::Vec3D>;
 
 ///\endcond TEMPLATE
+ 

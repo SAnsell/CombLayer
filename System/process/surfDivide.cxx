@@ -386,12 +386,41 @@ surfDivide::activeDivideTemplate(Simulation& System)
       NewObj.setMaterial(material[i]);
       NewObj.procString(cell.display());
       System.addCell(NewObj);
+      cellBuilt.push_back(NewObj.getName());
     }
   // Remove Original Cell
   System.removeCell(cellNumber);
   return;  
 }
 
+
+void
+surfDivide::setBasicSplit(const size_t NDiv,const int matN)
+  /*!
+    Divide the system by a regular fraction and set one material
+    \param NDiv :: number of division
+    \param matN :: Material number
+   */
+{
+  ELog::RegMethod RegA("surfDivide","setBasicSplit");
+
+  if (NDiv<2)
+    throw ColErr::SizeError<size_t>(NDiv,0,"NDiv zero");
+  frac.clear();
+  material.clear();
+  const double step(1.0/static_cast<double>(NDiv));
+  double p(step);
+  for(size_t i=1;i<NDiv;i++)   // avoid 0.0 and 1.0
+    {
+      frac.push_back(p);
+      material.push_back(matN);
+      p+=step;
+    }
+  material.push_back(matN);
+  return;
+}
+
+  
 void
 surfDivide::addFrac(const double F)
   /*!

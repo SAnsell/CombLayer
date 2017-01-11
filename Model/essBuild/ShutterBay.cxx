@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuild/ShutterBay.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,14 +70,18 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ShutterBay.h"
 
 namespace essSystem
 {
 
 ShutterBay::ShutterBay(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,8),
+  attachSystem::CellMap(),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -87,11 +91,11 @@ ShutterBay::ShutterBay(const std::string& Key)  :
 {}
 
 ShutterBay::ShutterBay(const ShutterBay& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),radius(A.radius),
-  height(A.height),depth(A.depth),mat(A.mat)
+  radius(A.radius),height(A.height),depth(A.depth),
+  skin(A.skin),topSkin(A.topSkin),
+  mat(A.mat),skinMat(A.skinMat)
   /*!
     Copy constructor
     \param A :: ShutterBay to copy
@@ -109,17 +113,15 @@ ShutterBay::operator=(const ShutterBay& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       radius=A.radius;
       height=A.height;
       depth=A.depth;
+      skin=A.skin;
+      topSkin=A.topSkin;
       mat=A.mat;
+      skinMat=A.skinMat;
     }
   return *this;
 }
@@ -139,16 +141,15 @@ ShutterBay::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ShutterBay","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-  
+  FixedOffset::populate(Control);
   radius=Control.EvalVar<double>(keyName+"Radius");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
+  skin=Control.EvalVar<double>(keyName+"Skin");
+  topSkin=Control.EvalVar<double>(keyName+"TopSkin");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
+
 
   return;
 }
@@ -163,8 +164,7 @@ ShutterBay::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("ShutterBay","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }
@@ -185,7 +185,10 @@ ShutterBay::createSurfaces()
 
   ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,bulkIndex+16,Origin+Z*(topSkin+height),Z);
+  
   ModelSupport::buildCylinder(SMap,bulkIndex+7,Origin,Z,radius);
+  ModelSupport::buildCylinder(SMap,bulkIndex+17,Origin,Z,radius+skin);
   
   return;
 }
@@ -203,10 +206,21 @@ ShutterBay::createObjects(Simulation& System,
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -7 ");
-  addOuterSurf(Out);
-  Out+=CC.getExclude();
+  Out+=CC.getExclude();  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  addCell("MainCell",cellIndex-1);
   
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 7 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  addCell("Skin",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"6 -16 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  addCell("Skin",cellIndex-1);
+
+  
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -16 -17 ");
+  addOuterSurf(Out);
 
   return;
 }
@@ -219,24 +233,30 @@ ShutterBay::createLinks()
 {
   ELog::RegMethod RegA("ShutterBay","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*radius,-Y);   // outer point
-  FixedComp::setConnect(1,Origin+Y*radius,Y);   // outer point
-  FixedComp::setConnect(2,Origin-X*radius,-X);   // outer point
-  FixedComp::setConnect(3,Origin+X*radius,X);   // outer point
+  FixedComp::setConnect(0,Origin-Y*(radius+skin),-Y);   // outer point
+  FixedComp::setConnect(1,Origin+Y*(radius+skin),Y);   // outer point
+  FixedComp::setConnect(2,Origin-X*(radius+skin),-X);   // outer point
+  FixedComp::setConnect(3,Origin+X*(radius+skin),X);   // outer point
   FixedComp::setConnect(4,Origin-Z*depth,-Z);  // base
-  FixedComp::setConnect(5,Origin+Z*height,Z);  // 
+  FixedComp::setConnect(5,Origin+Z*(height+topSkin),Z);  // 
 
-  FixedComp::setLinkSurf(0,SMap.realSurf(bulkIndex+7));
-  FixedComp::setLinkSurf(1,SMap.realSurf(bulkIndex+7));
-  FixedComp::setLinkSurf(2,SMap.realSurf(bulkIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(bulkIndex+7));
+  FixedComp::setLinkSurf(0,SMap.realSurf(bulkIndex+17));
+  FixedComp::setLinkSurf(1,SMap.realSurf(bulkIndex+17));
+  FixedComp::setLinkSurf(2,SMap.realSurf(bulkIndex+17));
+  FixedComp::setLinkSurf(3,SMap.realSurf(bulkIndex+17));
 
   FixedComp::addBridgeSurf(0,-SMap.realSurf(bulkIndex+1));
   FixedComp::addBridgeSurf(1,SMap.realSurf(bulkIndex+1));
   FixedComp::addBridgeSurf(2,-SMap.realSurf(bulkIndex+2));
   FixedComp::addBridgeSurf(3,SMap.realSurf(bulkIndex+2));
   FixedComp::setLinkSurf(4,-SMap.realSurf(bulkIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(bulkIndex+16));
+
+  FixedComp::setLinkSurf(6,SMap.realSurf(bulkIndex+7));
+  FixedComp::setLinkSurf(7,SMap.realSurf(bulkIndex+7));
+
+  FixedComp::setConnect(6,Origin-Y*radius,-Y);   // materila point
+  FixedComp::setConnect(7,Origin+Y*radius,Y);    // material point
 
 
   return;

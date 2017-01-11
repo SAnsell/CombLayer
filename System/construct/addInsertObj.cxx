@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertPlate.cxx
+ * File:   construct/addInsertObj.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -79,9 +79,15 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "SurInter.h"
+#include "insertObject.h"
 #include "insertPlate.h"
+#include "insertSphere.h"
 #include "addInsertObj.h"
+
+
+///\file addInsertObj.cxx
 
 namespace constructSystem
 {
@@ -110,13 +116,14 @@ addInsertPlateCell(Simulation& System,
     \param mat :: Material 
   */
 {
-  ELog::RegMethod RegA("addInsertObj","addTallyCell");
+  ELog::RegMethod RegA("addInsertObj","addInsertPlateCell(FC)");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
+  const long int linkIndex=attachSystem::getLinkIndex(linkName);
   
   System.populateCells();
   System.validateObjSurfMap();
@@ -124,7 +131,6 @@ addInsertPlateCell(Simulation& System,
   std::shared_ptr<constructSystem::insertPlate>
     TPlate(new constructSystem::insertPlate(objName));
 
-  const long int linkIndex=attachSystem::getLinkIndex(linkName);
   OR.addObject(TPlate);
   TPlate->setStep(XYZStep);
   TPlate->setValues(xSize,ySize,zSize,mat);
@@ -159,7 +165,7 @@ addInsertPlateCell(Simulation& System,
     \param mat :: material
   */
 {
-  ELog::RegMethod RegA("addInsertObj","addTallyCell");
+  ELog::RegMethod RegA("addInsertObj[F]","addInsertPlateCell");
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -177,5 +183,89 @@ addInsertPlateCell(Simulation& System,
 
   return;
 }
+
+void
+addInsertSphereCell(Simulation& System,
+		    const std::string& objName,
+		    const Geometry::Vec3D& CentPos,
+		    const double radius,
+		    const std::string& mat)
+  /*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: new plate name
+    \param CentPos :: Central Position
+    \param raduis :: radius of phere
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("addInsertObj[F]","addInsertSphereCell");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertSphere>
+    TSphere(new constructSystem::insertSphere(objName));
+
+  OR.addObject(TSphere);
+  TSphere->setValues(radius,mat);
+  TSphere->createAll(System,CentPos);
+
+  return;
+}
+
+
+void
+addInsertSphereCell(Simulation& System,
+		    const std::string& objName,
+		    const std::string& FCname,
+		    const std::string& linkName,
+		    const Geometry::Vec3D& XYZStep,
+		    const double radius,
+		    const std::string& mat)
+  /*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: new plate name
+    const std::string& FCname,
+    const std::string& linkName,
+    \param XYZStep :: Central Offset
+    \param raduis :: radius of phere
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("addInsertObj[F]","addInsertSphereCell(FC)");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* mainFCPtr=
+    OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
+  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertSphere>
+    TSphere(new constructSystem::insertSphere(objName));
+
+  OR.addObject(TSphere);
+  TSphere->setStep(XYZStep);
+  TSphere->setValues(radius,mat);
+  TSphere->createAll(System,*mainFCPtr,linkIndex);
+
+  return;
+}
+
+
   
 }  // NAMESPACE constructSystem

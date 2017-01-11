@@ -194,8 +194,9 @@ BasicFlightLine::populate(const FuncDataBase& Control)
   if (tapSurf!="plane" && tapSurf!="cone")
     throw ColErr::InvalidLine
       (tapSurf,keyName+":TapSurf is not 'plane' or 'cone'");
-  
-  tapFlag=(tapSurf=="cone") ? 1 : 0;
+
+  tapFlag=(tapSurf=="cone" && anglesZ[0]>Geometry::zeroTol) ? 1 : 0;
+  tapFlag|=(tapSurf=="cone" && anglesZ[1]>Geometry::zeroTol) ? 2 : 0;
 
   return;
 }
@@ -243,22 +244,21 @@ BasicFlightLine::createSurfaces()
   ModelSupport::buildPlane(SMap,flightIndex+3,Origin-X*(width/2.0),xDircA);
   ModelSupport::buildPlane(SMap,flightIndex+4,Origin+X*(width/2.0),xDircB);
 
-  const int zFlag(-1);
   //  const int zFlag(1);
-  if (anglesZ[0]>Geometry::zeroTol && tapFlag)
+  if (tapFlag & 1)
     {
       ModelSupport::buildCone(SMap,flightIndex+5,
-                              Origin-Z*(height/2.0),Z,90.0-anglesZ[0],
-                              zFlag);
+                              Origin-Z*(height/2.0),Z,90.0-anglesZ[0]);
+      ModelSupport::buildPlane(SMap,flightIndex+505,Origin-Z*(height/2.0),Z);
     }
   else
     ModelSupport::buildPlane(SMap,flightIndex+5,Origin-Z*(height/2.0),zDircA);
 
-  if (anglesZ[1]>Geometry::zeroTol && tapFlag)
+  if (tapFlag & 2 )
     {
       ModelSupport::buildCone(SMap,flightIndex+6,
-                              Origin+Z*(height/2.0),Z,90-anglesZ[1],
-                              -zFlag);
+                              Origin+Z*(height/2.0),Z,90-anglesZ[1]);
+      ModelSupport::buildPlane(SMap,flightIndex+506,Origin+Z*(height/2.0),Z);
     }
   else
     ModelSupport::buildPlane(SMap,flightIndex+6,Origin+Z*(height/2.0),-zDircB);
@@ -275,21 +275,21 @@ BasicFlightLine::createSurfaces()
       ModelSupport::buildPlane(SMap,flightIndex+II*10+14,
 			       Origin+X*(width/2.0)+xDircB*layT,xDircB);
 
-      if (anglesZ[0]>Geometry::zeroTol && tapFlag)
-         {
-           ModelSupport::buildCone(SMap,flightIndex+II*10+15,
-                                   Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0],
-                                   zFlag);
+      if (tapFlag & 1)
+	{
+	  ModelSupport::buildCone(SMap,flightIndex+II*10+15,
+				  Origin-Z*(height/2.0+layT),Z,90.0-anglesZ[0]);
+          ModelSupport::buildPlane(SMap,flightIndex+II*10+515,Origin-Z*(height/2.0+layT),Z);
          }
       else
         ModelSupport::buildPlane(SMap,flightIndex+II*10+15,
                                  Origin-Z*(height/2.0)-zDircA*layT,zDircA);
 
-      if ((anglesZ[1]>Geometry::zeroTol) && tapFlag)
+      if (tapFlag & 2)
         {
           ModelSupport::buildCone(SMap,flightIndex+II*10+16,
-                                  Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1],
-                                  -zFlag);
+                                  Origin+Z*(height/2.0+layT),Z,90.0-anglesZ[1]);
+          ModelSupport::buildPlane(SMap,flightIndex+II*10+516,Origin+Z*(height/2.0+layT),Z);
         }
       else
         ModelSupport::buildPlane(SMap,flightIndex+II*10+16,
@@ -322,7 +322,16 @@ BasicFlightLine::createSurfaces()
   FixedComp::setLinkSurf(9,SMap.realSurf(flightIndex+4));
   FixedComp::setLinkSurf(10,-SMap.realSurf(flightIndex+5));
   FixedComp::setLinkSurf(11,-SMap.realSurf(flightIndex+6));
-
+  if (tapFlag & 1)
+    {
+      FixedComp::addLinkSurf(4,-SMap.realSurf(flightIndex+505));
+      FixedComp::addLinkSurf(10,-SMap.realSurf(flightIndex+505));
+    }
+  if (tapFlag & 2)
+    {
+      FixedComp::addLinkSurf(5,SMap.realSurf(flightIndex+506));
+      FixedComp::addLinkSurf(11,SMap.realSurf(flightIndex+506));
+    }
   
   return;
 }
@@ -343,7 +352,8 @@ BasicFlightLine::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BasicFlightLine","createObjects");
-  
+
+    
   const std::string innerCut=innerFC.getSignedLinkString(innerIndex);
   const std::string outerCut=outerFC.getSignedLinkString(outerIndex);
   
@@ -352,25 +362,26 @@ BasicFlightLine::createObjects(Simulation& System,
   
   const int layerIndex=flightIndex+static_cast<int>(nLayer)*10;  
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,layerIndex," 3 -4 5 6 ");
+  Out=ModelSupport::getSetComposite(SMap,layerIndex," 3 -4 (5:505) (6:-506) ");
   addOuterSurf("outer",Out);
 
-  // Inner Void
-  Out=ModelSupport::getComposite(SMap,flightIndex," 3 -4 5 6 ");
+  // Inner Void :
+  Out=ModelSupport::getSetComposite(SMap,flightIndex," 3 -4 (5:505) (6:-506) ");  
   addOuterSurf("inner",Out);
+  Out+=innerCut+outerCut; 
 
-
-  // Make inner object
-  Out+=innerCut+outerCut;
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
   CellMap::addCell("innerVoid",cellIndex-1);
+
   //Flight layers:
+
   for(size_t i=0;i<nLayer;i++)
     {
       const int II(static_cast<int>(i));
-      Out=ModelSupport::getComposite(SMap,flightIndex+10*II,
-				     "13 -14 15 16 (-3:4:-5:-6) ");
-      Out+=innerCut+outerCut;
+      HeadRule Exclude(ModelSupport::getSetComposite(SMap,flightIndex+10*II," 3 -4 (5:505) (6:-506) "));
+      Exclude.makeComplement();
+      Out=ModelSupport::getSetComposite(SMap,flightIndex+10*II," 13 -14 (15:505) (16:-506) ");
+      Out+=innerCut+outerCut+Exclude.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,lMat[i],0.0,Out));
       CellMap::addCell("Layer"+StrFunc::makeString(i+1),cellIndex-1);
     }      

@@ -411,7 +411,10 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("ShutterBayRadius",550.0);
   Control.addVariable("ShutterBayHeight",400.0);
   Control.addVariable("ShutterBayDepth",400.0);
+  Control.addVariable("ShutterBaySkin",6.0);
+  Control.addVariable("ShutterBayTopSkin",6.0);
   Control.addVariable("ShutterBayMat","CastIron");
+  Control.addVariable("ShutterBaySkinMat","Void");
 
   // Guide BAY [ All 4 same ]
   Control.addVariable("GuideBayXStep",0.0);  
@@ -488,12 +491,14 @@ EssVariables(FuncDataBase& Control)
   MIRACLESvariables(Control);
   NMXvariables(Control);
   ODINvariables(Control);
+  TREXvariables(Control);
   VESPAvariables(Control);
   VORvariables(Control);
   simpleITEMvariables(Control);
 
   shortDREAMvariables(Control);
   shortDREAM2variables(Control);
+  shortNMXvariables(Control);
   shortODINvariables(Control);
   
   EssButterflyModerator(Control);
@@ -715,7 +720,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  const int TopBFlightNWedges = 12;
+  // CHANGED FROM 12
+  const int TopBFlightNWedges = 2;
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
 

@@ -87,6 +87,7 @@
 #include "LineShield.h"
 #include "PipeCollimator.h"
 #include "AttachSupport.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 
 #include "NMX.h"
@@ -94,25 +95,25 @@
 namespace essSystem
 {
 
-  NMX::NMX(const std::string& keyName) :
+NMX::NMX(const std::string& keyName) :
   attachSystem::CopiedComp("nmx",keyName),
   stopPoint(0),
-  nmxAxis(new attachSystem::FixedOffset(keyName+"Axis",4)),
-  GuideA(new beamlineSystem::GuideLine(keyName+"GA")),
-  VPipeA(new constructSystem::VacuumPipe(keyName+"PipeA")),
-  BendA(new beamlineSystem::GuideLine(keyName+"BA")),
-  VPipeB(new constructSystem::VacuumPipe(keyName+"PipeB")),
-  BendB(new beamlineSystem::GuideLine(keyName+"BB")),
-  VPipeC(new constructSystem::VacuumPipe(keyName+"PipeC")),
-  BendC(new beamlineSystem::GuideLine(keyName+"BC")),
-  VPipeD(new constructSystem::VacuumPipe(keyName+"PipeD")),
-  BendD(new beamlineSystem::GuideLine(keyName+"BD")),
-  VPipeE(new constructSystem::VacuumPipe(keyName+"PipeE")),
-  BendE(new beamlineSystem::GuideLine(keyName+"BE")),
-  CollA(new constructSystem::PipeCollimator(keyName+"CollA")),
-  BInsert(new BunkerInsert(keyName+"BInsert")),
-  FocusWall(new beamlineSystem::GuideLine(keyName+"FWall")),
-  ShieldA(new constructSystem::LineShield(keyName+"ShieldA"))
+  nmxAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  BendA(new beamlineSystem::GuideLine(newName+"BA")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  BendB(new beamlineSystem::GuideLine(newName+"BB")),
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  BendC(new beamlineSystem::GuideLine(newName+"BC")),
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  BendD(new beamlineSystem::GuideLine(newName+"BD")),
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  BendE(new beamlineSystem::GuideLine(newName+"BE")),
+  CollA(new constructSystem::PipeCollimator(newName+"CollA")),
+  BInsert(new BunkerInsert(newName+"BInsert")),
+  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  ShieldA(new constructSystem::LineShield(newName+"ShieldA"))
   /*!
     Constructor
  */
@@ -126,7 +127,7 @@ namespace essSystem
   OR.cell(newName+"Axis");
   OR.addObject(nmxAxis);
 
-  OR.addObject(GuideA);
+  OR.addObject(FocusA);
   OR.addObject(VPipeA);
   OR.addObject(BendA);
   OR.addObject(VPipeB);
@@ -203,12 +204,11 @@ NMX::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(System.getDataBase(),GItem,1);
-
-  GuideA->addInsertCell(GItem.getCells("Void"));
-  GuideA->addFrontCut(GItem.getKey("Beam"),-1);
-  GuideA->addEndCut(GItem.getKey("Beam"),-2);
-  GuideA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
+  setBeamAxis(System.getDataBase(),GItem,0);
+  FocusA->addInsertCell(GItem.getCells("Void"));
+  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
+  FocusA->addEndCut(GItem.getKey("Beam"),-2);
+  FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
   //  ELog::EM<<"Front == "<<GuideA.getKey("Beam").getSignedLinkString(-1)
   //          <<ELog::endDiag;
@@ -216,7 +216,7 @@ NMX::build(Simulation& System,
 
   // PIPE after gamma shield
   VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,GuideA->getKey("Guide0"),2);
+  VPipeA->createAll(System,FocusA->getKey("Guide0"),2);
 
   BendA->addInsertCell(VPipeA->getCells("Void"));
   BendA->createAll(System,*VPipeA,0,*VPipeA,0);

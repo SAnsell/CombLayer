@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/ObjSurfMap.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,15 +48,21 @@ class ObjSurfMap
 
  public:
 
-  /// Surface store
+  /// Object set
   typedef std::vector<MonteCarlo::Object*> STYPE;
+  typedef std::set<int> surfTYPE;
   typedef std::map<int,STYPE> OMTYPE;      ///< +/-SurfN : ObjecPtr
+  typedef std::map<int,surfTYPE> OSTYPE;   ///< objName : surfSet
    
  private:
 
   OMTYPE SMap;                    ///< SurfNumber : Object map
+  OSTYPE OSurfMap;                ///< ObjectName : SurfNumbers
+  
   void addSurface(const int,MonteCarlo::Object*);
-
+  void addObjectSurf(const MonteCarlo::Object*,const int);
+  void removeObjectSurface(const int);
+  
  public:
 
   ObjSurfMap();
@@ -73,8 +79,9 @@ class ObjSurfMap
   MonteCarlo::Object* findNextObject(const int,
 				     const Geometry::Vec3D&,const int) const;
 
+  const std::set<int>& connectedObjects(const int) const;
+  
   void removeReverseSurf(const int,const int);
-
 
   void write(const std::string&) const;
   void write(std::ostream&) const;

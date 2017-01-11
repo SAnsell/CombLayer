@@ -269,6 +269,64 @@ class RangeError : public ExBase
 };
 
 /*!
+  \class OrderError
+  \brief Error in order of number
+  \author Stuart Ansell
+  \date November 2016
+  \version 1.0
+
+  Records the two items A should be <= B
+*/
+ 
+template<typename T>
+class OrderError : public ExBase
+{
+ private:
+
+  const T lowValue;         ///< Current value
+  const T highValue;          ///< Min Value
+
+  void setOutLine();
+
+ public:
+
+  OrderError(const T&,const T&,const std::string&);
+  OrderError(const OrderError<T>& A);
+  OrderError<T>& operator=(const OrderError<T>&);
+  virtual ~OrderError() throw() {}   ///< Destructor 
+ 
+};
+
+/*!
+  \class ArrayError
+  \brief Error Range in an array/list etc
+  \author Stuart Ansell
+  \date October 2005
+  \version 1.0
+
+  Records the object being looked for
+  and the range required.
+*/
+template<unsigned int ndim,typename T>
+class DimensionError : public ExBase
+{
+ private:
+
+  T indexSize[ndim];         ///< Index search components
+  T reqSize[ndim];           ///< required size
+
+  void setOutLine();
+
+ public:
+
+  DimensionError(const T*,const T*,const std::string&);
+  DimensionError(const DimensionError<ndim,T>&);
+  DimensionError<ndim,T>& operator=(const DimensionError<ndim,T>&);
+  virtual ~DimensionError() throw() {}  ///< Destructor
+
+};
+
+/*!
   \class ArrayError
   \brief Error Range in an array/list etc
   \author Stuart Ansell

@@ -76,12 +76,14 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "MXcards.h"
 #include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "surfDIter.h"
 #include "LayerDivide3D.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 #include "addInsertObj.h"
 #include "BunkerQuake.h"
@@ -95,7 +97,6 @@ BunkerQuake::BunkerQuake(const std::string& bunkerName) :
   attachSystem::FixedComp(bunkerName+"Quake",6),
   cutIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
   cellIndex(cutIndex+1)
-
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
@@ -197,8 +198,6 @@ BunkerQuake::createObjects(Simulation& System)
     }      
 
   return;
-
-    
 }
  
 void

@@ -281,14 +281,13 @@ FREIA::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   setBeamAxis(Control,GItem,0);
-  
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addFrontCut(GItem.getKey("Beam"),-1);
   BendA->addEndCut(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
-
+  
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,BendA->getKey("Guide0"),2);
 

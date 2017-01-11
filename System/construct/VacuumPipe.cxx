@@ -72,7 +72,9 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "SurInter.h"
+#include "surfDivide.h"
 
 #include "VacuumPipe.h"
 
@@ -172,6 +174,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
+  nDivision=Control.EvalDefVar<size_t>(keyName+"NDivision",0);
   return;
 }
 
@@ -327,6 +330,7 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
       ModelSupport::buildPlane(SMap,vacIndex+102,
 			       Origin+Y*(length/2.0-flangeLength),Y);
+	    
       if (activeWindow & 2)
 	{
 
@@ -403,6 +407,7 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -17 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
+  addCell("MainSteel",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
@@ -423,12 +428,39 @@ VacuumPipe::createObjects(Simulation& System)
   // Outer
   Out=ModelSupport::getComposite(SMap,vacIndex,"-107 ");
   addOuterSurf(Out+frontStr+backStr);
-
-  
   
   return;
 }
 
+
+void
+VacuumPipe::createDivision(Simulation& System)
+  /*!
+    Divide the vacuum pipe into sections if needed
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("VacuumPipe","createDivision");
+  if (nDivision>1)
+    {
+      ModelSupport::surfDivide DA;
+      DA.setBasicSplit(nDivision,feMat);
+      
+      DA.init();
+      DA.setCellN(getCell("MainSteel"));
+      DA.setOutNum(cellIndex,vacIndex+1000);
+      DA.makePair<Geometry::Plane>(SMap.realSurf(vacIndex+101),
+				   SMap.realSurf(vacIndex+102));
+
+      DA.activeDivide(System);
+      cellIndex=DA.getCellNum();
+      removeCell("MainSteel");
+      addCells("MainSteel",DA.getCells());
+    }
+   
+  return;
+}
+  
 void
 VacuumPipe::createLinks()
   /*!
@@ -577,8 +609,9 @@ VacuumPipe::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   createSurfaces();    
-  createObjects(System);  
+  createObjects(System);
   createLinks();
+  createDivision(System);
   insertObjects(System);   
   
   return;

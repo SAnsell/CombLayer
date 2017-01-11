@@ -140,9 +140,23 @@ Mesh3D::setMesh(const std::vector<double>& XV,
   NX=std::accumulate(XFine.begin(),XFine.end(),0UL);
   NY=std::accumulate(YFine.begin(),YFine.end(),0UL);
   NZ=std::accumulate(ZFine.begin(),ZFine.end(),0UL);
+  
   Origin=Geometry::Vec3D(X.front(),Y.front(),Z.front());
   return;
 }
+
+void
+Mesh3D::setRefPt(const Geometry::Vec3D& Pt)
+  /*!
+    Sets the reference point
+    \param Pt :: Point to reference             
+    \todo Handle master rotation
+  */
+{
+  writeFlag ^= 1;
+  RefPoint=Pt;
+  return;
+} 
 
 std::string
 Mesh3D::getType() const
@@ -165,8 +179,8 @@ Mesh3D::getType() const
 
 double
 Mesh3D::getCoordinate(const std::vector<double>& Vec,
-			  const std::vector<size_t>& NF,
-			  const size_t Index)
+		      const std::vector<size_t>& NF,
+		      const size_t Index)
   /*!
     Get coordinate from the vector set 
     Outer Boundary test of Index MUST have been done
@@ -190,8 +204,93 @@ Mesh3D::getCoordinate(const std::vector<double>& Vec,
   return Vec[I]+static_cast<double>(Index-offset)*
     (Vec[I+1]-Vec[I])/NF[I];
 }
+
+std::vector<Geometry::Vec3D>
+Mesh3D::midPoints() const
+  /*!
+    Calculate a linearized mid point list
+    Retruns (NX-1*NY-1*NZ-1) points indexing
+    on X [highest] Y[mid] Z [lowest] index
+    \return vector of point
+   */
+{
+  ELog::RegMethod RegA("Mesh3D","midPoints");
+
+  std::vector<Geometry::Vec3D> midPt;
+  if (!NX*NY*NZ) return midPt;           // origin on failure
+
+  double xA,xB,yA,yB,zA,zB;
+  xB=getXCoordinate(0);
+  for(size_t i=1;i<=NX;i++)
+    {
+      xA=xB;
+      xB=getXCoordinate(i);
+      yB=getYCoordinate(0);
+      for(size_t j=1;j<=NY;j++)
+        {
+          yA=yB;
+          yB=getYCoordinate(j);
+          zB=getZCoordinate(0);
+          for(size_t k=1;k<=NZ;k++)
+            {
+              zA=zB;
+              zB=getZCoordinate(k);
+              midPt.push_back(Geometry::Vec3D
+                              ((xB+xA)/2.0,(yB+yA)/2.0,(zB+zA)/2.0));
+            }
+        }
+    }
+  return midPt;
+}
   
+double
+Mesh3D::getXCoordinate(const size_t I) const
+  /*!
+    Determine the x coordinate of the boundary
+    \param I :: x index
+    \return value of coordinate
+  */
+{
+  ELog::RegMethod RegA ("Mesh3D","getXCoordinate");
+
+  if (I > NX)
+    throw ColErr::IndexError<size_t>(I,NX,"X-coordinate");
+
+  return getCoordinate(X,XFine,I);
+}
   
+double
+Mesh3D::getYCoordinate(const size_t I) const
+  /*!
+    Determine the x valud 
+    \param a :: y index
+    \return value
+  */
+{
+  ELog::RegMethod RegA ("Mesh3D","getYCoordinate");
+
+  if (I > NY)
+    throw ColErr::IndexError<size_t>(I,NY,"Y-coordinate");
+
+  return getCoordinate(Y,YFine,I);
+}
+
+double
+Mesh3D::getZCoordinate(const size_t I) const
+  /*!
+    Determine the z coordinate
+    \param I :: Z index
+    \return value
+  */
+{
+  ELog::RegMethod RegA ("Mesh3D","getZCoordinate");
+
+  if (I > NZ)
+    throw ColErr::IndexError<size_t>(I,NZ,"Z-coordinate");
+
+  return getCoordinate(Z,ZFine,I);
+}
+
 Geometry::Vec3D
 Mesh3D::point(const size_t a,const size_t b,const size_t c) const
   /*!
@@ -274,6 +373,7 @@ Mesh3D::writeWWINP(std::ostream& OX,const int tallyN,
   return;
 }
 
+
   
 void
 Mesh3D::write(std::ostream& OX) const
@@ -286,7 +386,7 @@ Mesh3D::write(std::ostream& OX) const
 
   std::ostringstream cx;
   cx<<"mesh  geom="<<getType()<<" origin="<<Origin;
-  if (writeFlag & 1) cx<<" ref="<<RefPoint;
+  cx<<" ref="<<RefPoint;
   StrFunc::writeMCNPX(cx.str(),OX);
 
   // imesh :

@@ -39,7 +39,7 @@ class WCells : public WForm
  private:
 
   typedef std::map<int,WItem> ItemTYPE;  ///< cellNumber : Weight
- 
+
   ItemTYPE WVal;       ///< Weight values         
 
   void writeHead(std::ostream&) const;

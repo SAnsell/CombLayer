@@ -134,7 +134,10 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
           ELog::EM<<MW.padNum(TPoint,12)<<" :: "
                   <<MW.padNum(TAxis,12)<<ELog::endDiag;
 	}
-      
+      else
+        {
+          ELog::EM<<"Report token: "<<key<<ELog::endWarn;
+        }
     }
   return;
 }

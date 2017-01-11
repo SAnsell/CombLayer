@@ -31,7 +31,7 @@ class Simulation;
 
 namespace WeightSystem
 {
-
+  class WWGWeight;
   /*!
     \class WWG 
     \author S. Ansell
@@ -42,11 +42,6 @@ namespace WeightSystem
   
 class WWG 
 {
- public:
-
-  static void writeLine(std::ostream&,const double,size_t&);
-  static void writeLine(std::ostream&,const int,size_t&);
-
  private:
 
   char ptype;          ///< Particle type
@@ -60,8 +55,11 @@ class WWG
   std::vector<double> EBin;      ///< Energy bins
   Geometry::Mesh3D Grid;         ///< Mesh Grid
 
-  std::vector<std::vector<double>> WMesh;     ///< linearized weight mesh
-
+  /// linearized centre point [x,y,z order]
+  std::vector<Geometry::Vec3D> GridMidPt;
+  /// weight mesh
+  boost::multi_array<double,4> WMesh;
+    
   void writeHead(std::ostream&) const;
   
  public:
@@ -70,11 +68,15 @@ class WWG
   WWG();
   WWG(const WWG&);
   WWG& operator=(const WWG&);
-
+  ~WWG() {}
+  
   /// access to grid
   Geometry::Mesh3D& getGrid() { return Grid; }
   /// access to grid
   const Geometry::Mesh3D& getGrid() const { return Grid; }
+  /// get grid mid point
+  const std::vector<Geometry::Vec3D>& getMidPoints() const
+    {return GridMidPt; }
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&,
@@ -82,10 +84,20 @@ class WWG
   void resetMesh(const std::vector<double>&);
 
 
-  void scaleMeshItem(const long int,const std::vector<double>&);
-  
+  void setRefPoint(const Geometry::Vec3D&);
+  void scaleMeshItem(const size_t,const size_t,const size_t,
+		     const size_t,const double);
+  void calcGridMidPoints();
+  void updateWM(const WWGWeight&,const double);
+  void normalize();
+  void scaleRange(const double,const double);
+  void powerRange(const double);
+
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
+  void writeVTK(const std::string&) const;
+
+
   
 };
  

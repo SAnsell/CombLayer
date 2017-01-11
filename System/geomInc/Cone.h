@@ -45,7 +45,7 @@ class Cone : public Quadratic
   Geometry::Vec3D Normal;        ///< Normal
   double alpha;                  ///< Angle (degrees)
   double cangle;                 ///< Cos(angle)
-  int cutFlag;                       ///< Cut flag [+/-1 or zero]
+  int cutFlag;                   ///< Cut flag [+/-1 or zero]
   
  public:
 
@@ -84,6 +84,7 @@ class Cone : public Quadratic
 
   double distance(const Geometry::Vec3D&) const;   
   void rotate(const Geometry::Matrix<double>&);
+  void rotate(const Geometry::Quaternion&);
   void displace(const Geometry::Vec3D&);
 
   int setSurface(const std::string&);

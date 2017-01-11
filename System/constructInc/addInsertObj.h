@@ -37,6 +37,15 @@ addInsertPlateCell(Simulation&,const std::string&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&,
 		   const Geometry::Vec3D&,const double,
 		   const double,const double,const std::string&);
+void
+addInsertSphereCell(Simulation&,const std::string&,
+		    const std::string&,const std::string&,
+		    const Geometry::Vec3D&,const double,
+		    const std::string&);
+void
+addInsertSphereCell(Simulation&,const std::string&,
+		   const Geometry::Vec3D&,const double,
+		   const std::string&);
   
 }
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   include/WeightModification.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   weightInc/WWGItem.h
+ *
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightModification_h
-#define WeightModification_h
-
-class Simulation;
-
+#ifndef WeightSystem_WWGItem_h
+#define WeightSystem_WWGItem_h
 
 namespace WeightSystem
 {
-  void vecModReduction(Simulation&,const int,const int);
-  void addForcedCollision(Simulation&,const double);
-  void setNuclearZero(Simulation&,const int,const int);
+
+/*!
+  \class WWGItem 
+  \version 1.0
+  \author S. Ansell
+  \date November 2016
+  \brief Point weights in WWG mesh
+*/
+
+class WWGItem
+{
+ public:
+
+  const Geometry::Vec3D Pt;     ///< Centre point
+  std::vector<double> weight;          ///< weight for the cell[eneryg]
+
+  explicit WWGItem(const Geometry::Vec3D&);
+
+  WWGItem(const WWGItem&);
+  WWGItem& operator=(const WWGItem&);
+  ~WWGItem() {}  ///< Destructor
+
+  void write(std::ostream&) const;
+};
+
 }
 
 #endif

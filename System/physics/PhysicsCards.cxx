@@ -607,11 +607,11 @@ PhysicsCards::setCells(const std::string& Type,
 
 {
   ELog::RegMethod RegA("PhysicsCards","setCells");
-  
+
   for(PhysImp& PI : ImpCards)
       {
 	if (PI.getType()==Type)
-	  PI.setCells(cellInfo,defValue);
+          PI.setCells(cellInfo,defValue);
       }    
   return;
 }
@@ -634,7 +634,9 @@ PhysicsCards::setCells(const std::string& Type,
   for(PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type)
-	PI.setValue(cellID,defValue);
+        {
+          PI.setValue(cellID,defValue);
+        }
     }    
   return;
 }
@@ -915,7 +917,7 @@ PhysicsCards::substituteSurface(const int oldSurf,const int newSurf)
   sdefCard.substituteSurface(oldSurf,newSurf);
   return;
 }
-
+  
 void
 PhysicsCards::setMode(std::string Particles) 
   /*!
@@ -1018,10 +1020,13 @@ PhysicsCards::write(std::ostream& OX,
   
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
-   for(const PhysImp& PI : ImpCards)
-    PI.write(OX,cellOutOrder);  
-
-   PWTCard->write(OX,cellOutOrder,voidCells);
+  for(const PhysImp& PI : ImpCards)
+    {
+      if (nImpOut!=1 || !PI.hasElm("n"))
+	PI.write(OX,cellOutOrder);
+    }
+  
+  PWTCard->write(OX,cellOutOrder,voidCells);
 
   for(const PhysCard* PC : PCards)
     PC->write(OX);

@@ -26,6 +26,7 @@
 #include <cmath>
 #include <vector>
 #include <string>
+#include <array>
 #include <algorithm>
 
 #include "Exception.h"

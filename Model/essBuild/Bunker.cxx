@@ -93,6 +93,7 @@
 #include "BunkerRoof.h"
 #include "BunkerWall.h"
 #include "LayerDivide3D.h"
+#include "Chicane.h"
 #include "Bunker.h"
 
 
@@ -151,7 +152,6 @@ Bunker::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
   
-
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   ModelSupport::populateAddRange(Control,nLayers,keyName+"WallLen",
   			      wallRadius,wallRadius+wallThick,wallFrac);
@@ -167,7 +167,6 @@ Bunker::populate(const FuncDataBase& Control)
 			      0,1.0,segDivide);
 
   // BOOLEAN NUMBER!!!!!!!
-  activeSegment=Control.EvalDefVar<size_t>(keyName+"ActiveSegment",0);
   nVert=Control.EvalVar<size_t>(keyName+"NVert");
   midZ=Control.EvalDefVar<double>(keyName+"MidZ",0.0);
   ModelSupport::populateQuadRange(Control,nVert,keyName+"VertLen",
@@ -192,26 +191,21 @@ Bunker::populate(const FuncDataBase& Control)
 }
   
 void
-Bunker::createUnitVector(const attachSystem::FixedComp& MainCentre,
-			 const attachSystem::FixedComp& FC,
+Bunker::createUnitVector(const attachSystem::FixedComp& FC,
 			 const long int sideIndex,
-			 const bool reverseX,
-                         const bool reverseZ)
+			 const bool reverseX)
   /*!
     Create the unit vectors
     \param MainCentre :: Main rotation centre
     \param FC :: Linked object
     \param sideIndex :: Side for linkage centre
     \param reverseX :: reverse X direction
-    \param reverseZ :: reverse Z direction
   */
 {
   ELog::RegMethod RegA("Bunker","createUnitVector");
 
-  rotCentre=MainCentre.getCentre();
   FixedComp::createUnitVector(FC,sideIndex);
   if (reverseX) X*=-1;
-  if (reverseZ) Z*=-1;
   return;
 }
 
@@ -272,11 +266,12 @@ void
 Bunker::createSurfaces(const bool revX)
   /*!
     Create All the surfaces
+    \param revX :: reverse rotation axis sign
   */
 {
   ELog::RegMethod RegA("Bunker","createSurface");
 
-  const Geometry::Vec3D ZRotAxis((revX) ? Z : -Z);
+  const Geometry::Vec3D ZRotAxis((revX) ? -Z : Z);
   innerRadius=rotCentre.Distance(Origin);
 
   Geometry::Vec3D CentAxis(Y);
@@ -657,25 +652,26 @@ Bunker::setCutWall(const bool lFlag,const bool rFlag)
 }
 
   
+
 void
 Bunker::createAll(Simulation& System,
-		  const attachSystem::FixedComp& MainCentre,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex,
-		  const bool reverseX,const bool reverseZ)
+                  const bool reverseX)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param MainCentre :: Rotatioin Centre
     \param FC :: Central origin
     \param linkIndex :: linkIndex number
-    \param reverseZ :: Reverse Z direction
+    \param reverseX :: Reverse X direction
   */
 {
   ELog::RegMethod RegA("Bunker","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(MainCentre,FC,linkIndex,reverseX,reverseZ);
+  createUnitVector(FC,linkIndex,reverseX);
+    
   createSurfaces(reverseX);
   createLinks();
   createObjects(System,FC,linkIndex);

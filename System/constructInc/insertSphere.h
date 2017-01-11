@@ -37,36 +37,23 @@ namespace constructSystem
   for fluxes/tallies etc
 */
 
-class insertSphere : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class insertSphere : public insertObject
 {
  private:
   
-  const int ptIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-  int populated;                 ///< externally set values
 
   double radius;             ///< Full Width
 
-  int defMat;               ///< Material
-
-  void populate(const FuncDataBase&);
-  void createUnitVector(const Geometry::Vec3D&,
-			const attachSystem::FixedComp&);
+  virtual void populate(const FuncDataBase&);
 
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  void createUnitVector(const Geometry::Vec3D&,
-			const Geometry::Vec3D&,
-			const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
 
 
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void findObjects(Simulation&);
+  virtual void findObjects(Simulation&);
 
   void mainAll(Simulation&);
 
@@ -75,14 +62,18 @@ class insertSphere : public attachSystem::ContainedComp,
   insertSphere(const std::string&);
   insertSphere(const insertSphere&);
   insertSphere& operator=(const insertSphere&);
-  ~insertSphere();
+  virtual ~insertSphere();
 
   void setValues(const double,const int);
+  void setValues(const double,const std::string&);
+
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+  void createAll(Simulation&,const Geometry::Vec3D&);
+
   
 };
 

@@ -65,6 +65,7 @@
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
+#include "sswTally.h"
 #include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
@@ -415,6 +416,21 @@ Simulation::getTally(const int Index) const
   return 0;
 }
 
+tallySystem::sswTally*
+Simulation::getSSWTally() const
+  /*!
+    Gets the sswTally 
+    \return Tally pointer ( or 0 on null)
+   */
+{
+  std::map<int,tallySystem::Tally*>::const_iterator vc; 
+  vc=TItem.find(0);
+  if (vc!=TItem.end())
+    return dynamic_cast<tallySystem::sswTally*>(vc->second);
+
+  return 0;
+}
+
 int
 Simulation::nextTallyNum(int tNum) const
   /*!
@@ -691,6 +707,8 @@ Simulation::removeCells(const int startN,const int endN)
 {
   ELog::RegMethod RegItem("Simulation","removeCells");
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
   // It seems quicker to create a new map and copy
   OTYPE newOList;
@@ -702,44 +720,46 @@ Simulation::removeCells(const int startN,const int endN)
 	  (vc->first>=startN && (endN<0 || vc->first<=endN)))
 	{
 	  ST.checkDelete(this,vc->second);
+          PhysPtr->removeCell(vc->first);
+          OR.removeActiveCell(vc->first);
 	  delete vc->second;
 	}
       else
 	newOList.insert(OTYPE::value_type(vc->first,vc->second));
     }
   OList=newOList;
+
 // Now process Physics so importance/volume cards can be set
 //  processCellsImp();
 //  ELog::CellM.processReport(std::cout);
   return 1;
 }
 
-int
-Simulation::removeCell(const int Index)
+void
+Simulation::removeCell(const int cellNumber)
   /*!
-    Removes the cell
-    \param Index :: cell to remove
-    \return 1 on success  0 on failure
-  */
+    Removes the cell [Must exist]
+    \param cellNumber :: cell to remove
+   */
 {
   ELog::RegMethod RegItem("Simulation","removeCell");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  OTYPE::iterator vc=OList.find(Index);
+  OTYPE::iterator vc=OList.find(cellNumber);
   if (vc==OList.end())
-    {
-      ELog::EM<<"Cell Not found:"<<Index<<ELog::endErr;
-      return 0;
-    }
+    throw ColErr::InContainerError<int>(cellNumber,"cellNumber in OList");
   
   ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
   ST.checkDelete(this,vc->second);
   delete vc->second;
   OList.erase(vc);
-  
-// Now process Physics so importance/volume cards can be set
-//  processCellsImp();
 
-  return 1;
+  // Add Volume unit [default]:
+  PhysPtr->removeCell(cellNumber);
+  OR.removeActiveCell(cellNumber);
+
+  return;
 }
 
 int 
@@ -788,9 +808,8 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
 
   TallyTYPE::iterator tc;
   for(tc=TItem.begin();tc!=TItem.end();tc++)
-    {
-      tc->second->renumberSurf(KeyN,NsurfN);
-    }
+    tc->second->renumberSurf(KeyN,NsurfN);
+
   PhysPtr->substituteSurface(KeyN,NsurfN);
   
   return 0;
@@ -1069,6 +1088,40 @@ Simulation::populateCells()
 	}
     }
   return -retVal;
+}
+
+int 
+Simulation::populateCells(const std::vector<int>& cellVec)
+  /*!
+    Place a surface* with each keyN in the cell list 
+    Generate the Qhull map.
+    \param cellVec :: Cells to consider
+    \retval 0 on success, 
+    \retval -1 failed to find surface key
+  */
+{
+  ELog::RegMethod RegA("Simulation","populateCells");
+  
+  OTYPE::iterator oc;
+
+  for(const int CN : cellVec)
+    {
+      oc=OList.find(CN);
+      if (oc==OList.end()) return -1;
+      MonteCarlo::Qhull& workObj= *(oc->second);
+      try
+        {
+	  workObj.populate();
+	  workObj.createSurfaceList();
+	}
+      catch (ColErr::InContainerError<int>& A)
+        {
+	  ELog::EM<<"Cell "<<workObj.getName()<<" failed on surface :"
+		  <<A.getItem()<<ELog::endCrit;
+	  throw;
+	}
+    }
+  return 0;
 }
 
 void
@@ -1585,9 +1638,16 @@ Simulation::writeMaterial(std::ostream& OX) const
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
 
+
+
+  if (!PhysPtr->getMode().hasElm("h"))
+    DB.deactivateParticle("h");
+  
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
+    {
+      DB.setActive(mp->second->getMat());
+    }
 
   DB.writeMCNPX(OX);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
@@ -2060,8 +2120,6 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
       newMap.insert(OTYPE::value_type(nNum,vc->second));
       WM.renumberCell(cNum,nNum);
 
-      OR.renumberActiveCell(cNum,nNum);
-      
       if (!vc->second->isPlaceHold())
 	{
 	  PhysPtr->substituteCell(cNum,nNum);

@@ -208,7 +208,7 @@ SimValid::run(const Simulation& System,const size_t N) const
           ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
           ELog::EM<<"--------------"<<ELog::endDiag;
           
-          int SNX= OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
+          OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
 	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
 	  return 0;
 	}

@@ -78,6 +78,7 @@
 #include "World.h"
 #include "makeESS.h"
 
+
 MTRand RNG(12345UL);
 
 ///\cond STATIC
@@ -120,12 +121,12 @@ main(int argc,char* argv[])
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);
-
+      
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      
-      
+
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);
+      
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
   catch (ColErr::ExitAbort& EA)

@@ -79,6 +79,7 @@
 #include "GuideItem.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 
 #include "simpleITEM.h"

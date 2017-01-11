@@ -81,7 +81,8 @@
 #include "fissionConstruct.h" 
 #include "heatConstruct.h" 
 #include "itemConstruct.h" 
-#include "surfaceConstruct.h" 
+#include "surfaceConstruct.h"
+#include "sswConstruct.h" 
 #include "tallyConstructFactory.h" 
 #include "tallyConstruct.h" 
 
@@ -113,7 +114,8 @@ tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) :
   basicConstruct(),pointPtr(FC.makePoint()),gridPtr(FC.makeGrid()),
   meshPtr(FC.makeMesh()),fluxPtr(FC.makeFlux()),
   heatPtr(FC.makeHeat()),itemPtr(FC.makeItem()),
-  surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission())
+  surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission()),
+  sswPtr(FC.makeSSW())
   /*!
     Constructor
     \param FC :: Factory object to specialize constructors
@@ -131,7 +133,8 @@ tallyConstruct::tallyConstruct(const tallyConstruct& A) :
   heatPtr(new heatConstruct(*A.heatPtr)),
   itemPtr(new itemConstruct(*A.itemPtr)),
   surfPtr(new surfaceConstruct(*A.surfPtr)),
-  fissionPtr(new fissionConstruct(*A.fissionPtr))
+  fissionPtr(new fissionConstruct(*A.fissionPtr)),
+  sswPtr(new sswConstruct(*A.sswPtr))
   /*!
     Copy constructor
     \param A :: tallyConstruct to copy
@@ -158,6 +161,7 @@ tallyConstruct::operator=(const tallyConstruct& A)
       *itemPtr=*A.itemPtr;
       *surfPtr=*A.surfPtr;
       *fissionPtr=*A.fissionPtr;
+      *sswPtr=*A.sswPtr;
     }
   return *this;
 }
@@ -176,6 +180,7 @@ tallyConstruct::~tallyConstruct()
   delete itemPtr;
   delete surfPtr;
   delete fissionPtr;
+  delete sswPtr;
 }
   
 void
@@ -254,6 +259,8 @@ tallyConstruct::tallySelection(Simulation& System,
 	workFlag+=surfPtr->processSurfaceCurrent(System,IParam,i);
       else if (TType=="surfFlux" || TType=="surfaceFlux")
 	workFlag+=surfPtr->processSurfaceFlux(System,IParam,i);
+      else if (TType=="SSW" || TType=="ssw")
+	workFlag+=sswPtr->processSSW(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }
@@ -271,21 +278,22 @@ tallyConstruct::tallyRenumber(Simulation& System,
     in the system.
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
-    \return flag to indicate that more work is required after renumbering
+    \return flag to indicate that more work is required after
+    renumbering
+    \todo this is is a nop BUT left for legacy reasons... can it be removed?
   */
 {
-  ELog::RegMethod RegA("tallyConstruct","tallySelection");
+  ELog::RegMethod RegA("tallyConstruct","tallyRenumber");
 
   int workFlag(0);  
   for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
       const std::string TType=
 	IParam.getValue<std::string>("tally",i,0);
-
-      if (TType=="flux")
-	fluxPtr->processFlux(System,IParam,i);
-      else if (TType=="heat")
-	heatPtr->processHeat(System,IParam,i);
+      // if (TType=="flux")
+      //   fluxPtr->processFlux(System,IParam,i);
+      // else if (TType=="heat")
+      //   heatPtr->processHeat(System,IParam,i);
     }
 
   // if (IParam.flag("Txml"))

@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "support.h"
 #include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
@@ -62,8 +63,10 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "FrontBackCut.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -74,6 +77,7 @@
 #include "FlightLine.h"
 #include "WedgeFlightLine.h"
 #include "AttachSupport.h"
+#include "LinkSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
@@ -113,10 +117,9 @@
 #include "F5Collimator.h"
 #include "TSMainBuilding.h"
 #include "MatMesh.h"
-
 #include "localRotate.h"
 #include "masterRotate.h"
-
+#include "Chicane.h"
 #include "makeESS.h"
 
 namespace essSystem
@@ -248,10 +251,10 @@ makeESS::createGuides(Simulation& System)
     {
       std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
       OR.addObject(GB);
-      GB->addInsertCell("Inner",ShutterBayObj->getMainCell());
-      GB->addInsertCell("Outer",ShutterBayObj->getMainCell());
+      GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
+      GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
       GB->setCylBoundary(Bulk->getLinkSurf(2),
-			 ShutterBayObj->getLinkSurf(2));
+			 ShutterBayObj->getSignedLinkSurf(7));
       
       if (i<2)
 	GB->createAll(System,*LowMod,0);  
@@ -512,7 +515,7 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
 
   const size_t NSet=IParam.setCnt("bunkerFeed");
 
-  ELog::EM<<"CAlling bunker Feed"<<ELog::endDiag;
+  ELog::EM<<"Calling bunker Feed"<<ELog::endDiag;
   for(size_t j=0;j<NSet;j++)
     {
       const size_t NItems=IParam.itemCnt("bunkerFeed",j);
@@ -548,6 +551,79 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
           
         }
+    }
+  return;
+}
+
+
+void
+makeESS::buildBunkerChicane(Simulation& System,
+                            const mainSystem::inputParam& IParam)
+  /*!
+    Build the chicane
+    \param System :: Simulation
+    \param IParam :: Input data
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildBunkerChicane");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const size_t NSet=IParam.setCnt("bunkerChicane");
+
+  ELog::EM<<"Calling bunker Chicane"<<ELog::endDiag;
+  for(size_t j=0;j<NSet;j++)
+    {
+      const std::string errMess="bunkerChicane "+StrFunc::makeString(j);
+      const std::string bunkerName=
+        IParam.getValueError<std::string>
+        ("bunkerChicane",j,0,"BunkerName "+errMess);
+
+      // bunkerA/etc should be a map
+      std::shared_ptr<Bunker> BPtr;
+      if (bunkerName=="BunkerA" || bunkerName=="ABunker")
+        BPtr=ABunker;
+      else if (bunkerName=="BunkerB" || bunkerName=="BBunker")
+        BPtr=BBunker;
+      else if (bunkerName=="BunkerC" || bunkerName=="CBunker")
+        BPtr=CBunker;
+      else if (bunkerName=="BunkerD" || bunkerName=="DBunker")
+        BPtr=DBunker;
+      else
+        throw ColErr::InContainerError<std::string>
+          (bunkerName,"bunkerName not know");
+
+      std::shared_ptr<Chicane> CF
+        (new Chicane("BunkerChicane"+StrFunc::makeString(j)));
+      OR.addObject(CF);
+      CF->addInsertCell(74123);
+
+      // Positioned relative to segment:
+      size_t segNumber(0);
+      const std::string segObj=
+        IParam.getValueError<std::string>
+        ("bunkerChicane",j,1,"SegmentNumber "+errMess);
+      
+      if (!StrFunc::convert(segObj,segNumber))
+	{ 
+	  const std::string linkName=
+	    IParam.getValueError<std::string>
+	    ("bunkerChicane",j,2,"SegmentNumber "+errMess);
+	  const attachSystem::FixedComp* FCPtr=
+	    OR.getObjectThrow<attachSystem::FixedComp>(segObj,"Chicane Object");
+
+	  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+          CF->createAll(System,*FCPtr,linkIndex);
+	}
+      else
+	{
+          CF->createAll(System,*BPtr,segNumber);
+	}
+
+      attachSystem::addToInsertLineCtrl(System,*BPtr,"MainVoid",*CF,*CF);
+      attachSystem::addToInsertLineCtrl(System,*BPtr,"roof",*CF,*CF);
+      attachSystem::addToInsertLineCtrl(System,*BPtr,"frontWall",*CF,*CF);
     }
   return;
 }
@@ -599,6 +675,7 @@ makeESS::buildBunkerQuake(Simulation& System,
 
   return;
 }
+
   
 void
 makeESS::buildPillars(Simulation& System)
@@ -714,11 +791,13 @@ makeESS::makeBunker(Simulation& System,
     IParam.getValue<std::string>("bunkerType");
   
   ABunker->addInsertCell(voidCell);
-  ABunker->createAll(System,*TopMod,*GBArray[0],2,true,true);
+  ABunker->setRotationCentre(ShutterBayObj->getCentre());
+  ABunker->createAll(System,*ShutterBayObj,4,false);
 
   BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
-  BBunker->createAll(System,*TopMod,*GBArray[0],2,true,true);
+  BBunker->createAll(System,*ShutterBayObj,4,false);
+  //  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
   ABunker->insertComponent(System,"rightWall",*BBunker);
   ABunker->insertComponent(System,"roofFarEdge",*BBunker);
@@ -727,11 +806,12 @@ makeESS::makeBunker(Simulation& System,
   // Other side if needed :
   
   CBunker->addInsertCell(voidCell);
-  CBunker->createAll(System,*TopMod,*GBArray[1],2,false,true);
+  CBunker->createAll(System,*ShutterBayObj,3,true);
+
 
   DBunker->addInsertCell(voidCell);
   DBunker->setCutWall(0,1);
-  DBunker->createAll(System,*TopMod,*GBArray[1],2,false,true);
+  DBunker->createAll(System,*ShutterBayObj,3,true);
 
   CBunker->insertComponent(System,"rightWall",*DBunker);
   CBunker->insertComponent(System,"roofFarEdge",*DBunker);
@@ -740,10 +820,6 @@ makeESS::makeBunker(Simulation& System,
   if (bunkerType.find("noPillar")==std::string::npos)
     buildPillars(System);
 
-  if (IParam.flag("bunkerFeed"))
-    buildBunkerFeedThrough(System,IParam);
-  if (IParam.flag("bunkerQuake"))
-    buildBunkerQuake(System,IParam);
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
@@ -756,10 +832,7 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
       
-      TopCurtain->addInsertCell("Lower",ABunker->getCells("MainVoid"));
-      TopCurtain->addInsertCell("Lower",BBunker->getCells("MainVoid"));
-      //  TopCurtain->createAll(System,*GBArray[0],2,1,true);
-      TopCurtain->createAll(System,*ShutterBayObj,6,4,*GBArray[0],2,true);
+      TopCurtain->createAll(System,*ShutterBayObj,6,4);
       
       //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
       //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
@@ -1011,6 +1084,17 @@ makeESS::build(Simulation& System,
   if (lowModType != "None")
     ModPipes->buildLowPipes(System,lowPipeType);
   ModPipes->buildTopPipes(System,topPipeType);
+
+   // Add feedthoughs/chicanes 
+
+  if (IParam.flag("bunkerFeed"))
+    buildBunkerFeedThrough(System,IParam);
+  if (IParam.flag("bunkerQuake"))
+    buildBunkerQuake(System,IParam);
+  if (IParam.flag("bunkerChicane"))
+    buildBunkerChicane(System,IParam);
+
+  buildF5Collimator(System, nF5);
 
   if (IParam.flag("rotate")) // rotate to the Alan's coordinate system
     // SA says I need to use master rotation here - see his t2 model

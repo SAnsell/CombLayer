@@ -267,6 +267,22 @@ PhysImp::hasElm(const std::string& E) const
   return (vc==particles.end()) ? 0 : 1;
 }
 
+std::string
+PhysImp::getParticles() const
+  /*!
+    Convert the particle list to a string
+    \return particle list as a comma separated list
+  */
+{  
+  if (particles.empty()) return "";
+  std::ostringstream cx;
+  std::copy(particles.begin(),particles.end(),
+            std::ostream_iterator<std::string>(cx,","));
+  std::string Out(cx.str());
+  Out.pop_back();
+  return Out;
+}
+
 double
 PhysImp::getValue(const int cellN) const
   /*!

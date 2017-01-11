@@ -77,6 +77,7 @@
 #include "World.h"
 #include "AttachSupport.h"
 #include "GuideItem.h"
+#include "insertObject.h"
 #include "insertPlate.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -494,8 +495,8 @@ LOKI::build(Simulation& System,
   CollC->createAll(System,CollB->getKey("Beam"),2);
 
 
-  CBoxB->setFrontSurf(CollA->getKey("Main"),2);
-  CBoxB->setBackSurf(CollB->getKey("Main"),1);
+  CBoxB->setFront(CollA->getKey("Main"),2);
+  CBoxB->setBack(CollB->getKey("Main"),1);
   CBoxB->createAll(System,CollA->getKey("Main"),2);
   attachSystem::addToInsertControl(System,bunkerObj,"frontWall",
 				   *CBoxB,*CBoxB);  

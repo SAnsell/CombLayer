@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/ModelSupport.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,53 @@ getExclude(const int Offset)
   return cx.str();
 }
 
+std::string
+removeOpenPair(const std::string& CStr)
+  /*!
+    Remove double : : / : ) etc
+    \param CStr :: Input string
+  */
+{
+  // Remove all == (:
+  //            == :)
+  //            ==
+
+  // pre-pass to add spaces after each
+  std::stringstream cx;
+  for(size_t i=0;i<CStr.length();i++)
+    {
+      if (CStr[i]=='(' || CStr[i]==')')
+        cx<<' ';
+      cx<<CStr[i];
+      if (CStr[i]=='(' || CStr[i]==')')
+        cx<<' ';
+    }
+
+  std::string Out(cx.str());
+  cx.str("");
+
+  std::string prevItem;
+  std::string item;
+  while(StrFunc::section(Out,item))
+    {
+      if (prevItem=="(" && item==":")
+        {}
+      else if (prevItem==":" && item==")")
+        prevItem=item;
+      else if (prevItem=="(" && item==")")
+        prevItem="";
+      else if (prevItem==":" && item==":")
+        {}
+      else
+        {
+          cx<<prevItem<<" ";
+          prevItem=item;
+        }
+    }
+  cx<<" "<<prevItem;
+  return cx.str();
+}
+  
 
 std::string
 getComposite(const int SOffset,const std::string& BaseString)
@@ -389,7 +436,8 @@ getSetComposite(const surfRegister& SMap,
 	    cx<<OutUnit<<" ";
 	}
     }
-  return cx.str();
+  return removeOpenPair(cx.str());
+
 }
 
 std::string

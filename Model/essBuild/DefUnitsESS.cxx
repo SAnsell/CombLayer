@@ -71,9 +71,9 @@ setDefUnits(FuncDataBase& Control,
       
       std::vector<std::string> LItems=
 	IParam.getObjectItems("defaultConfig",0);
-
       const std::string sndItem=(LItems.size()>1) ? LItems[1] : "";
       const std::string extraItem=(LItems.size()>2) ? LItems[2] : "";
+
 
       if (Key=="Main")
 	setESS(A);
@@ -130,12 +130,13 @@ setESSFull(defaultConfig& A)
       {"DREAM","G4BLine19"},
       // {"CSPEC","G4BLine3"},
        {"VESPA","G3BLine7"},
-      {"FREIA","G4BLine15"}     // N5
-      // {"ODIN","G2BLine2"}
+      {"FREIA","G4BLine15"},     // N5
+      {"ODIN","G2BLine2"}
     };
   
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2","LOKI",
+    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2",
+     "SHORTNMX","LOKI",
      "MAGIC","VESPA","VOR"};
 
   size_t index(0);
@@ -217,7 +218,6 @@ setESSSingle(defaultConfig& A,
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
-  
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
@@ -232,6 +232,7 @@ setESSSingle(defaultConfig& A,
      {"BIFROST","G4BLine4"},    // W4
      {"MIRACLES","G4BLine5"},   // W5
      {"SHORTDREAM","G4BLine17"},
+     {"SHORTNMX","G4BLine13"},
      {"SHORTODIN","G1BLine4"},
      {"TREX","G4BLine7"},       // W7
      {"MAGIC","G4BLine6"},      // W6
@@ -248,7 +249,8 @@ setESSSingle(defaultConfig& A,
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "MAGIC","MIRACLES","NMX","VESPA","VOR","SHORTDREAM"};
+     "MAGIC","MIRACLES","NMX","TREX","VESPA",
+     "VOR","SHORTNMX","SHORTDREAM"};
 
   size_t beamLineIndex(0);
   while(!LItems.empty())
@@ -260,17 +262,15 @@ setESSSingle(defaultConfig& A,
           const std::string portItem=(LItems.size()>1) ? LItems[1] : "";
       
           std::map<std::string,std::string>::const_iterator mc=
-            beamDef.find(beamItem);
-	
-          portFlag=beamDef.find(portItem)==beamDef.end();
-      
+            beamDef.find(beamItem);	  
+          portFlag=
+	    (portItem.find("BLine")!=std::string::npos);
           const int filled =
             (beamFilled.find(beamItem)==beamFilled.end()) ? 0 : 1;
           
           if (mc!=beamDef.end())
             {
-	      ELog::EM<<"Beam Def  == "<<mc->first<<ELog::endDiag;
-              if (!portFlag || portItem.empty())
+              if (!portFlag)
                 {
                   A.setMultiOption("beamlines",beamLineIndex,
 				   mc->second+" "+beamItem);
@@ -292,9 +292,9 @@ setESSSingle(defaultConfig& A,
             throw ColErr::InContainerError<std::string>(beamItem,"BeamItem");
         }
       if (portFlag)
-        LItems.erase(LItems.begin(),LItems.begin()+1);
-      else
         LItems.erase(LItems.begin());
+      
+      LItems.erase(LItems.begin());
     }
   return;
 }

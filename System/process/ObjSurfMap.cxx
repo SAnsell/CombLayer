@@ -3,7 +3,7 @@
  
  * File:   process/ObjSurfMap.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,13 +91,12 @@ ObjSurfMap::ObjSurfMap()
 {}
 
 ObjSurfMap::ObjSurfMap(const ObjSurfMap& A) :
-  SMap(A.SMap)
+  SMap(A.SMap),OSurfMap(A.OSurfMap)
   /*! 
     Copy Constructor 
     \param A :: ObjSurfMap to copy
   */
 {}
-
 
 ObjSurfMap&
 ObjSurfMap::operator=(const ObjSurfMap& A) 
@@ -110,6 +109,7 @@ ObjSurfMap::operator=(const ObjSurfMap& A)
   if (this!=&A)
     {
       SMap=A.SMap;
+      OSurfMap=A.OSurfMap;
     }
   return *this;
 }
@@ -120,7 +120,8 @@ ObjSurfMap::clearAll()
     Clears all the data
   */
 {
-  SMap.erase(SMap.begin(),SMap.end());
+  SMap.clear();
+  OSurfMap.clear();
   return;
 }
 
@@ -182,6 +183,43 @@ ObjSurfMap::addSurfaces(MonteCarlo::Object* OPtr)
 }
 
 void
+ObjSurfMap::addObjectSurf(const MonteCarlo::Object* OPtr,
+                          const int SurfN)
+  /*!
+    Adds a object to the object set and a considered surface 
+    number.
+    \param OPtr :: Object Ptr
+    \param SurfN :: Surface number
+  */
+{
+  ELog::RegMethod RegA("ObjSurfMap","addObjectSurf");
+
+  const int ON=OPtr->getName();
+  OSTYPE::iterator mc=OSurfMap.find(ON);
+  if (mc!=OSurfMap.end())
+    mc->second.insert(SurfN);
+  else
+    OSurfMap.emplace(OSTYPE::value_type(ON,surfTYPE({SurfN})));
+
+  return;
+}
+
+void
+ObjSurfMap::removeObjectSurface(const int SurfN)
+  /*!
+    Remove the surface from all objects
+    \param SurfN :: Surface number to remove
+  */
+{
+  ELog::RegMethod RegA("ObjSurfMap","removeObjectSurface");
+
+  for(OSTYPE::value_type& mc : OSurfMap)
+    mc.second.erase(SurfN);
+  
+  return;
+}
+  
+void
 ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
   /*!
     Adds all the surface from an specific surface on an object
@@ -190,7 +228,8 @@ ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
    */
 {
   ELog::RegMethod RegA("ObjSurfMap","addSurface");
-  // Find is this surface esists
+
+  // Find is this surface exists
   OMTYPE::iterator mc=SMap.find(SurfN);
   if (mc!=SMap.end())         // surface exists add object
     {
@@ -203,12 +242,13 @@ ObjSurfMap::addSurface(const int SurfN,MonteCarlo::Object* OPtr)
       if (vc==VItem.end())
 	mc->second.push_back(OPtr);
     }
-  else   // 
+  else   
     {
       std::pair<OMTYPE::iterator,bool> PIter=
 	SMap.insert(OMTYPE::value_type(SurfN,STYPE()));
       PIter.first->second.push_back(OPtr);
     }
+  addObjectSurf(OPtr,SurfN);
   return;
 }
 
@@ -261,12 +301,12 @@ ObjSurfMap::findNextObject(const int SN,
 
 void
 ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
-/*!
-  Find those surfaces which are listed as rev and exchange them
-  for those that are listed as seconadary
-  \param primSurf :: Kept surface [added in case of reverse surf]
-  \param revSurf :: Surf that is removed
-*/
+  /*!
+    Find those surfaces which are listed as rev and exchange them
+    for those that are listed as seconadary
+    \param primSurf :: Kept surface [added in case of reverse surf]
+    \param revSurf :: Surf that is removed
+  */
 {
   ELog::RegMethod RegA("ObjSurfMap","removeReverseSurf");
   
@@ -284,11 +324,32 @@ ObjSurfMap::removeReverseSurf(const int primSurf,const int revSurf)
 	    addSurface(-sign_index*primSurf,*oc);
 	  // Now remove item list
 	  SMap.erase(ac);
+          removeObjectSurface(sign_index*revSurf);
 	}
     }
   return;
 }
   
+const std::set<int>&
+ObjSurfMap::connectedObjects(const int cellNumber) const
+  /*!
+    Given an object, find all the objects that can connect
+    to it. 
+    \param cellNumber :: Cell number
+    \return set of object names
+  */
+{
+  ELog::RegMethod RegA("ObjSurfMap","connectedObject");
+  static std::set<int> Empty;  // Empty set to return
+  
+
+  OSTYPE::const_iterator mc=OSurfMap.find(cellNumber);
+  return (mc!=OSurfMap.end()) ? mc->second : Empty;
+
+}
+
+
+
 void
 ObjSurfMap::write(const std::string& FName) const
   /*!

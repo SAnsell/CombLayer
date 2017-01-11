@@ -96,8 +96,8 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   WeightSystem::simulationImp(System,IParam);
 
   WeightSystem::ExtField(System,IParam);
-
-        
+  WeightSystem::FCL(System,IParam);
+  WeightSystem::IMP(System,IParam);
   WeightSystem::DXT(System,IParam);
   WeightSystem::PWT(System,IParam);
   WeightSystem::EnergyCellCut(System,IParam);

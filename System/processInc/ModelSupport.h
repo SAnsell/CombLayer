@@ -3,7 +3,7 @@
  
  * File:   processInc/ModelSupport.h
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 namespace ModelSupport
 {
   std::string getExclude(const int);
+  std::string removeOpenPair(const std::string&);
 
   std::string getComposite(const int,const std::string&);
   std::string getComposite(const surfRegister&,const int,const std::string&);

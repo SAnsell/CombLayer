@@ -64,7 +64,7 @@ ChopperGenerator::ChopperGenerator() :
   motorOuter(15.20),portRadius(10.0),
   portOuter(12.65),portWidth(11.6),
   portHeight(11.6),portBoltStep(1.0),
-  wallMat("Aluminium"),
+  wallMat("Aluminium"),portMat("Aluminium"),
   sealMat("Poly"),windowMat("Aluminium")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -86,7 +86,7 @@ ChopperGenerator::ChopperGenerator(const ChopperGenerator& A) :
   motorOuter(A.motorOuter),portRadius(A.portRadius),
   portOuter(A.portOuter),portWidth(A.portWidth),
   portHeight(A.portHeight),portBoltStep(A.portBoltStep),
-  wallMat(A.wallMat),sealMat(A.sealMat),
+  wallMat(A.wallMat),portMat(A.portMat),sealMat(A.sealMat),
   windowMat(A.windowMat)
   /*!
     Copy constructor
@@ -120,6 +120,7 @@ ChopperGenerator::operator=(const ChopperGenerator& A)
       portHeight=A.portHeight;
       portBoltStep=A.portBoltStep;
       wallMat=A.wallMat;
+      portMat=A.portMat;
       sealMat=A.sealMat;
       windowMat=A.windowMat;
     }
@@ -162,6 +163,20 @@ ChopperGenerator::setFrame(const double H,const double W)
   return;
 }
 
+void
+ChopperGenerator::setMaterial(const std::string& wMat,
+                              const std::string& pMat)
+  /*!
+    Set material/port material
+    \param wMat :: Main wall material
+    \param pMat :: Port material
+   */
+{
+  wallMat=wMat;
+  portMat=pMat;
+  return;
+}
+  
 void
 ChopperGenerator::generateChopper(FuncDataBase& Control,
                                   const std::string& keyName,
@@ -220,7 +235,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortAWidth",portWidth);  
   Control.addVariable(keyName+"IPortAHeight",portHeight);
   Control.addVariable(keyName+"IPortALength",1.0);
-  Control.addVariable(keyName+"IPortAMat","Aluminium");
+  Control.addVariable(keyName+"IPortAMat",portMat);
   Control.addVariable(keyName+"IPortASealStep",0.5);
   Control.addVariable(keyName+"IPortASealThick",0.3); 
   Control.addVariable(keyName+"IPortASealMat",sealMat);
@@ -230,7 +245,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortANBolt",8);
   Control.addVariable(keyName+"IPortABoltStep",portBoltStep);
   Control.addVariable(keyName+"IPortABoltRadius",0.3);
-  Control.addVariable(keyName+"IPortABoltMat","Stainless304");
+  Control.addVariable(keyName+"IPortABoltMat","ChipIRSteel");
   
   // PORT B
   Control.addParse<double>(keyName+"IPortBYStep",
@@ -238,7 +253,7 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBWidth",portWidth);  
   Control.addVariable(keyName+"IPortBHeight",portHeight);
   Control.addVariable(keyName+"IPortBLength",1.0);
-  Control.addVariable(keyName+"IPortBMat","Aluminium");
+  Control.addVariable(keyName+"IPortBMat",portMat);
   Control.addVariable(keyName+"IPortBSealStep",0.5);
   Control.addVariable(keyName+"IPortBSealThick",0.3); 
   Control.addVariable(keyName+"IPortBSealMat","Poly");
@@ -248,9 +263,9 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"IPortBNBolt",8);
   Control.addVariable(keyName+"IPortBBoltStep",portBoltStep);
   Control.addVariable(keyName+"IPortBBoltRadius",0.3);
-  Control.addVariable(keyName+"IPortBBoltMat","Stainless304");
+  Control.addVariable(keyName+"IPortBBoltMat","ChipIRSteel");
     
-  Control.addVariable(keyName+"BoltMat","Stainless304");
+  Control.addVariable(keyName+"BoltMat","ChipIRSteel");
   Control.addVariable(keyName+"WallMat",wallMat);
   Control.addVariable(keyName+"VoidMat","Void");
   return;

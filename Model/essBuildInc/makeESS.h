@@ -79,6 +79,7 @@ namespace essSystem
   class BunkerFeed;
   class WedgeFlightLine;
   class TSMainBuilding;
+  class Chicane;
       
   /*!
     \class makeESS
@@ -166,6 +167,8 @@ class makeESS
   void buildPillars(Simulation&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
+  void buildBunkerChicane(Simulation&,
+			  const mainSystem::inputParam&);
   void buildBunkerQuake(Simulation&,
 			const mainSystem::inputParam&);
   void buildPreWings(Simulation&,const std::string&);

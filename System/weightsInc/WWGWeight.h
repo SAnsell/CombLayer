@@ -24,8 +24,7 @@
 
 namespace WeightSystem
 {
-  class WWG;
-  
+
 /*!
   \class WWGWeight
   \version 1.0
@@ -34,21 +33,56 @@ namespace WeightSystem
   \brief Tracks cell weight in WWG mesh
 */
   
-class WWGWeight : public ItemWeight
+class WWGWeight 
 {
+ private:
 
+  const long int WX;             ///< Weight XIndex size
+  const long int WY;             ///< Weight YIndex size
+  const long int WZ;             ///< Weight ZIndex size
+  const long int WE;             ///< Energy size
+  
+  /// local storage for data [i,j,j,Energy]
+  boost::multi_array<double,4> WGrid; 
+  
  public:
 
-  WWGWeight();
+  WWGWeight(const size_t,const Geometry::Mesh3D&);
   WWGWeight(const WWGWeight&);
   WWGWeight& operator=(const WWGWeight&);    
-  virtual ~WWGWeight() {}          ///< Destructor
+  ~WWGWeight() {}          ///< Destructor
 
-  void updateWM(WWG&,const double,const double,
-		const double,const double) const;
-  void invertWM(WWG&,const double,const double,
-		const double,const double) const;
+  long int getXSize() const { return WX; }
+  long int getYSize() const { return WY; }
+  long int getZSize() const { return WZ; }
+  long int getESize() const { return WE; }
 
+  void zeroWGrid();
+  double calcMaxAttn(const long int) const;
+  double calcMaxAttn() const;
+
+  void makeSource(const double);
+  void makeAdjoint(const double);
+  
+  //  void updateWM(WWG&,const double,const double,
+  //		const double,const double) const;
+
+  /// accessor to Cells
+  const boost::multi_array<double,4>& getGrid() const
+    { return WGrid; }
+  void setPoint(const long int,const long int,const double);
+
+  void wTrack(const Simulation&,const Geometry::Vec3D&,
+	      const std::vector<double>&,
+	      const std::vector<Geometry::Vec3D>&,
+	      const double,const double,const double);
+  
+  void wTrack(const Simulation&,const Geometry::Plane&,
+	      const std::vector<double>&,
+	      const std::vector<Geometry::Vec3D>&,
+	      const double,const double,const double);
+
+  void write(std::ostream&) const;
 };
 
 }

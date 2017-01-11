@@ -162,20 +162,20 @@ DXTConstructor::processUnit(Simulation& System,
              (place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>
 	  (place,"Fixed Object not found");
-      ELog::EM<<"DXT Point = "<<linkPt<<ELog::endDiag;
+
       size_t itemCnt(3);
       if (dxtName=="objOffset")
         {
           const Geometry::Vec3D DVec=
             IParam.getCntVec3D("wDXT",Index,itemCnt,"Offset");
-		    
           PPoint+=XAxis*DVec[0]+YAxis*DVec[1]+ZAxis*DVec[2];
-	  ELog::EM<<"DXT Centre Point == "<<PPoint<<ELog::endDiag;
+
         }
       
       RI=IParam.outputItem<double>("wDXT",Index,itemCnt,"radius not given");
       if (!IParam.checkItem("wDXT",Index,itemCnt+1,RO))
 	RO=RI;
+      ELog::EM<<"DXT Centre Point == "<<PPoint<<ELog::endDiag;
       DXT.setUnit(PPoint,RI,RO,0);
     }
   else if (dxtName=="free")

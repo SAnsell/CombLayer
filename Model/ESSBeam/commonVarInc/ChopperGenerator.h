@@ -58,8 +58,9 @@ class ChopperGenerator
   double portBoltStep;     ///< Port outer
   
   std::string wallMat;     ///< Main body material
+  std::string portMat;     ///< Port material
   std::string sealMat;     ///< seal material
-  std::string windowMat;     ///< seal material
+  std::string windowMat;    ///< seal material
   
  public:
 
@@ -69,6 +70,7 @@ class ChopperGenerator
   ~ChopperGenerator();
 
 
+  void setMaterial(const std::string&,const std::string&);
   void setFrame(const double,const double);  
   void setMainRadius(const double);
 

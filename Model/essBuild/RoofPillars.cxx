@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FrontBackCut.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -87,6 +88,7 @@ namespace essSystem
 RoofPillars::RoofPillars(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
   attachSystem::CellMap(),
+  attachSystem::FrontBackCut(),
   rodIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(rodIndex+1)
   /*!
@@ -97,10 +99,10 @@ RoofPillars::RoofPillars(const std::string& Key)  :
 
 RoofPillars::RoofPillars(const RoofPillars& A) : 
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::FrontBackCut(A),
   rodIndex(A.rodIndex),cellIndex(A.cellIndex),
-  TopSurf(A.TopSurf),BaseSurf(A.BaseSurf),
   CentName(A.CentName),CentPoint(A.CentPoint),
-  radius(A.radius),mat(A.mat)
+  width(A.width),depth(A.depth),thick(A.thick),mat(A.mat)
   /*!
     Copy constructor
     \param A :: RoofPillars to copy
@@ -119,12 +121,13 @@ RoofPillars::operator=(const RoofPillars& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
-      TopSurf=A.TopSurf;
-      BaseSurf=A.BaseSurf;
       CentName=A.CentName;
       CentPoint=A.CentPoint;
-      radius=A.radius;
+      width=A.width;
+      depth=A.depth;
+      thick=A.thick;
       mat=A.mat;
     }
   return *this;
@@ -145,7 +148,9 @@ RoofPillars::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("RoofPillars","populate");
 
-  radius=Control.EvalVar<double>(keyName+"Radius");
+  width=Control.EvalVar<double>(keyName+"Width");
+  depth=Control.EvalVar<double>(keyName+"Depth");
+  thick=Control.EvalVar<double>(keyName+"Thick");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   const size_t nRadius=Control.EvalVar<size_t>(keyName+"NRadius");
@@ -173,6 +178,8 @@ RoofPillars::populate(const FuncDataBase& Control)
               CentPoint.push_back
                 (Geometry::Vec3D(rotRadius*sin(angle),
                                  rotRadius*cos(angle),0.0));
+              AxisY.push_back
+                (Geometry::Vec3D(sin(angle),cos(angle),0.0));
             }
         }          
     }
@@ -197,53 +204,6 @@ RoofPillars::createUnitVector(const attachSystem::FixedComp& MainCentre,
 
   return;
 }
-
-void
-RoofPillars::setSimpleSurf(const int FS,const int RS)
-  /*!
-    Set the roof/base surfaces [simple system]
-    \param FS :: Floor surface
-    \param RS :: Roof surface
-  */
-{
-  ELog::RegMethod RegA("RoofPillars","setSimpleSurf");
-  
-  TopSurf.procString(StrFunc::makeString(FS));
-  BaseSurf.procString(StrFunc::makeString(RS));
-  return;
-}
-
-void
-RoofPillars::setTopSurf(const attachSystem::FixedComp& FC,
-                        const long int sideIndex)
-  /*!
-    Set the roof surfaces [simple system]
-    \param FC :: FixedComp for side
-    \param sideIndex :: side
-  */
-{
-  ELog::RegMethod RegA("RoofPillars","setTopSurf");
-  
-  TopSurf=FC.getSignedFullRule(sideIndex);
-
-  return;
-}
-
-void
-RoofPillars::setBaseSurf(const attachSystem::FixedComp& FC,
-                        const long int sideIndex)
-  /*!
-    Set the base surfaces [simple system]
-    \param FC :: FixedComp for side
-    \param sideIndex :: side
-  */
-{
-  ELog::RegMethod RegA("RoofPillars","setBaseSurf");
-  
-  BaseSurf=FC.getSignedFullRule(sideIndex);
-
-  return;
-}
   
 void
 RoofPillars::createSurfaces()
@@ -253,11 +213,24 @@ RoofPillars::createSurfaces()
 {
   ELog::RegMethod RegA("RoofPillars","createSurface");
 
+  
   int RI(rodIndex);
-  for(const Geometry::Vec3D& Pt : CentPoint)
+  for(size_t index=0;index<CentPoint.size();index++)
     {
-      ModelSupport::buildCylinder(SMap,RI+7,Origin+Pt,Z,radius);
-      RI+=10;
+      
+      const Geometry::Vec3D CP(Origin+CentPoint[index]);
+      const Geometry::Vec3D YAxis=AxisY[index];
+      const Geometry::Vec3D XAxis=Z*YAxis;
+      ModelSupport::buildPlane(SMap,RI+1,CP-XAxis*(width/2.0),XAxis);
+      ModelSupport::buildPlane(SMap,RI+2,CP+XAxis*(width/2.0),XAxis);
+      ModelSupport::buildPlane(SMap,RI+3,CP-YAxis*(depth/2.0),YAxis);
+      ModelSupport::buildPlane(SMap,RI+4,CP+YAxis*(depth/2.0),YAxis);
+
+      ModelSupport::buildPlane(SMap,RI+11,CP-XAxis*(thick+width/2.0),XAxis);
+      ModelSupport::buildPlane(SMap,RI+12,CP+XAxis*(thick+width/2.0),XAxis);
+      ModelSupport::buildPlane(SMap,RI+13,CP-YAxis*(thick+depth/2.0),YAxis);
+      ModelSupport::buildPlane(SMap,RI+14,CP+YAxis*(thick+depth/2.0),YAxis);
+      RI+=20;
     }
       
   return;
@@ -274,16 +247,18 @@ RoofPillars::createObjects(Simulation& System)
 
   std::string Out;
 
-  const std::string Base=
-    TopSurf.display()+BaseSurf.display();
+  const std::string Base=frontRule()+backRule();
   int RI(rodIndex);
   for(size_t i=0;i<CentPoint.size();i++)
     {
-      Out=ModelSupport::getComposite(SMap,RI," -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
-                                       Out+Base));
+      Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Base));
       addCell("Pillar"+CentName[i],cellIndex-1);
-      RI+=10;
+      Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Base));
+      addCell("Pillar"+CentName[i],cellIndex-1);
+
+      RI+=20;
     }
         
   return;
@@ -300,19 +275,16 @@ RoofPillars::insertPillars(Simulation& System,
 {
   ELog::RegMethod RegA("RoofPillars","insertPillars");
 
-  const std::string Base=
-    TopSurf.display()+BaseSurf.display();
-    
+  const std::string Base=frontRule()+backRule();    
   std::string Out;
   int RI(rodIndex);
   for(size_t i=0;i<CentPoint.size();i++)
     {
-      Out=ModelSupport::getComposite(SMap,RI," -7 ")+
-        Base;
+      Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 ");
       HeadRule HR(Out);
       HR.makeComplement();
       bObj.insertComponent(System,"MainVoid",HR);
-      RI+=10;
+      RI+=20;
     }
   return;
 }
@@ -342,8 +314,10 @@ RoofPillars::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(bunkerObj,7);
-  setBaseSurf(bunkerObj,11);
-  setTopSurf(bunkerObj,12);
+
+  setFront(bunkerObj,11);
+  setBack(bunkerObj,12);
+
   createSurfaces();
   createObjects(System);
   insertPillars(System,bunkerObj);
