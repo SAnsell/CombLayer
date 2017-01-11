@@ -297,7 +297,7 @@ LOKI::build(Simulation& System,
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
   DDiskA->setCentreFlag(3);  // Z direction
   DDiskA->setOffsetFlag(1);  // X direction
-  DDiskA->createAll(System,ChopperA->getKey("Beam"),0);
+  DDiskA->createAll(System,ChopperA->getKey("BuildBeam"),0);
 
 
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
