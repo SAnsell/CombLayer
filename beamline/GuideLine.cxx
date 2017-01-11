@@ -565,7 +565,6 @@ GuideLine::shapeFrontSurf(const bool beamFlag,
     return ModelSupport::getComposite(SMap,guideIndex," 1001 ");
 
 
-  ELog::EM<<"Front cut:"<<keyName<<" "<<getFrontRule().display()<<ELog::endDiag;
   return getFrontRule().display()+getFrontBridgeRule().display();
 }
 
@@ -589,7 +588,6 @@ GuideLine::shapeBackSurf(const bool beamFlag,
   if (beamEndCut & beamFlag)
     return ModelSupport::getComposite(SMap,guideIndex," -1002 ");
 
-  ELog::EM<<"Back cut:"<<keyName<<" "<<getBackRule().display()<<ELog::endDiag;
   return getBackRule().display()+getBackBridgeRule().display();
 }
   
