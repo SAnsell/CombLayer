@@ -70,14 +70,15 @@
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
+#include "PreModWing.h"
 #include "Cone.h"
 #include "Plane.h"
 #include "Cylinder.h"
+// for Butterfly
 #include "LayerComp.h"
 #include "ModBase.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
-#include "PreModWing.h"
 
 namespace essSystem
 {
@@ -92,7 +93,8 @@ PreModWing::PreModWing(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{}
+{
+}
 
 PreModWing::PreModWing(const PreModWing& A) : 
   attachSystem::ContainedComp(A),
@@ -215,8 +217,6 @@ PreModWing::createSurfaces()
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
   const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
-  // cone must be shifted for the tilting to start at Y=tiltRadius
-  const double coneShift = tiltRadius * tan(tiltAngle*M_PI/180.0); 
 
   // Divide plane
   ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
@@ -230,13 +230,8 @@ PreModWing::createSurfaces()
   ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick)*tiltSign,Z*tiltSign);  
   if (tiltAngle>Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,modIndex+9,Origin,Z);
-      ModelSupport::buildCone(SMap,modIndex+8,
-                              Origin+Z*(thick+coneShift*tiltSign),
-                              Z,90.0-tiltAngle);
-      ModelSupport::buildCone(SMap,modIndex+18,
-                              Origin+Z*(thick+wallThick+coneShift)*tiltSign,
-                              Z, 90-tiltAngle);
+      ModelSupport::buildCone(SMap, modIndex+8, Origin+Z*(thick+h)*tiltSign, Z, 90-tiltAngle, -tiltSign);
+      ModelSupport::buildCone(SMap, modIndex+9, Origin+Z*(thick+wallThick+h)*tiltSign, Z, 90-tiltAngle, -tiltSign);
     }
   else
     {
