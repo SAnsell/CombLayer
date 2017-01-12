@@ -325,8 +325,8 @@ BIFROST::build(Simulation& System,
   setBeamAxis(Control,GItem,1);
   ELog::EM<<"Beam axis == "<<bifrostAxis->getSignedLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
-  FocusA->addEndCut(GItem.getKey("Beam"),-2);
+  FocusA->setFront(GItem.getKey("Beam"),-1);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*bifrostAxis,-3,*bifrostAxis,-3); 
 
 

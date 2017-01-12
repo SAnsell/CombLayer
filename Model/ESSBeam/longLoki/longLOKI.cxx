@@ -411,19 +411,19 @@ longLOKI::build(Simulation& System,
 
   // GUIDE for Collimator blocks:
   GuideCollA->addInsertCell(CollA->getCell("Main"));
-  GuideCollA->addEndCut(CollA->getKey("Beam").getSignedLinkString(-2));
+  GuideCollA->setBack(CollA->getKey("Beam"),-2);
   GuideCollA->createAll(System,CollA->getKey("Beam"),-1,
 			CollA->getKey("Beam"),-1);
 
   // GUIDE for Collimator blocks [B]:
   GuideCollB->addInsertCell(CollB->getCell("Main"));
-  GuideCollB->addEndCut(CollB->getKey("Beam").getSignedLinkString(-2));
+  GuideCollB->setBack(CollB->getKey("Beam"),-2);
   GuideCollB->createAll(System,CollB->getKey("Beam"),-1,
 			CollB->getKey("Beam"),-1);
 
   // GUIDE for Collimator blocks [C]:
   GuideCollC->addInsertCell(CollC->getCell("Main"));
-  GuideCollC->addEndCut(CollC->getKey("Beam").getSignedLinkString(-2));
+  GuideCollC->setBack(CollC->getKey("Beam"),-2);
   GuideCollC->createAll(System,CollC->getKey("Beam"),-1,
 			CollC->getKey("Beam"),-1);
 

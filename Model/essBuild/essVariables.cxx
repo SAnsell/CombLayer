@@ -73,6 +73,16 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("EngineeringActive",0);      // NO engineering
 
+  Control.addVariable("TopFocusDistance",8.60);
+  Control.addVariable("TopFocusWidth",7.20);
+  Control.addVariable("TopFocusXYAngle",90.0);
+  Control.addVariable("TopFocusZStep",13.70);
+
+  Control.addVariable("LowFocusXYAngle",90.0);
+  Control.addVariable("LowFocusWidth",7.20);
+  Control.addVariable("LowFocusDistance",8.6);
+  Control.addVariable("LowFocusZStep",-15.20);
+  
   Control.addVariable("LowModXStep",0.0);  
   Control.addVariable("LowModYStep",0.0);  
   Control.addVariable("LowModZStep",-18.0);
@@ -422,22 +432,16 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayZStep",0.0);
   Control.addVariable("GuideBayZAngle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
-  Control.addVariable("GuideBayInnerHeight",20.0);
-  Control.addVariable("GuideBayInnerDepth",10.3);
+  Control.addVariable("GuideBayInnerHeight",30.0);
+  Control.addVariable("GuideBayInnerDepth",30.0);
   Control.addVariable("GuideBayMidRadius",170.0);
-  Control.addVariable("GuideBayHeight",32.0);
-  Control.addVariable("GuideBayDepth",40.0);
+  Control.addVariable("GuideBayHeight",50.0);
+  Control.addVariable("GuideBayDepth",50.0);
   Control.addVariable("GuideBayMat","CastIron");
-  Control.addVariable("GuideBay1XYAngle",0.0); 
-  Control.addVariable("GuideBay2XYAngle",180.0); 
-  Control.addVariable("GuideBay3XYAngle",0.0); 
-  Control.addVariable("GuideBay4XYAngle",180.0); 
+  Control.addVariable("GuideBay1XYAngle",270.0); 
+  Control.addVariable("GuideBay2XYAngle",90.0); 
   Control.addVariable("GuideBay1NItems",21);  
   Control.addVariable("GuideBay2NItems",21);  
-  Control.addVariable("GuideBay3NItems",21);  
-  Control.addVariable("GuideBay4NItems",21);
-
-  Control.addVariable("GuideBay4InnerDepth",5.8);
 
   // Twister
   Control.addVariable("TwisterXStep",11.0);
@@ -475,7 +479,6 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TSMainBuildingMainMat",  "Concrete");
   Control.addVariable("TSMainBuildingRoomMat",  "Void");
 
-  
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);
   EssPipeVariables(Control);
@@ -535,15 +538,17 @@ EssBeamLinesVariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("essVariables[F]","EssBeamLinesVariables");
+  const std::string TB[2]={"Top","Low"};
   for(size_t i=0;i<4;i++)
     {
       const std::string baseKey=
-	StrFunc::makeString("G",i+1)+"BLine";
+        StrFunc::makeString("G",i/2+1)+"BLine"+TB[i%2];
+      
       // BeamLine in guide bay
       Control.addVariable(baseKey+"XStep",0.0);  
       Control.addVariable(baseKey+"YStep",0.0);  
       Control.addVariable(baseKey+"ZStep",0.0);
-      Control.addVariable(baseKey+"Zangle",0.0);
+      Control.addVariable(baseKey+"ZAngle",0.0);
       Control.addVariable(baseKey+"Mat","Stainless304");
       Control.addVariable(baseKey+"BeamXYAngle",0.0); 
       Control.addVariable(baseKey+"BeamZAngle",0.0);
@@ -566,28 +571,28 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Height2",22.0);
       Control.addVariable(baseKey+"Depth2",22.0);
       Control.addVariable(baseKey+"Length1",170.0);
-      Control.addVariable(baseKey+"1XYangle",90.0-30.0);   // N1
-      Control.addVariable(baseKey+"2XYangle",90.0-35.3); 
-      Control.addVariable(baseKey+"3XYangle",90.0-42.0); 
-      Control.addVariable(baseKey+"4XYangle",90.0-47.3); 
-      Control.addVariable(baseKey+"5XYangle",90.0-54.0); 
-      Control.addVariable(baseKey+"6XYangle",90.0-59.3); 
-      Control.addVariable(baseKey+"7XYangle",90.0-66.0); 
-      Control.addVariable(baseKey+"8XYangle",90.0-71.3); 
-      Control.addVariable(baseKey+"9XYangle",90.0-78.0);
-      Control.addVariable(baseKey+"10XYangle",90.0-83.3); 
-      Control.addVariable(baseKey+"11XYangle",90.0-90.0);
+      Control.addVariable(baseKey+"1XYAngle",90.0-30.0);   // N1
+      Control.addVariable(baseKey+"2XYAngle",90.0-35.3); 
+      Control.addVariable(baseKey+"3XYAngle",90.0-42.0); 
+      Control.addVariable(baseKey+"4XYAngle",90.0-47.3); 
+      Control.addVariable(baseKey+"5XYAngle",90.0-54.0); 
+      Control.addVariable(baseKey+"6XYAngle",90.0-59.3); 
+      Control.addVariable(baseKey+"7XYAngle",90.0-66.0); 
+      Control.addVariable(baseKey+"8XYAngle",90.0-71.3); 
+      Control.addVariable(baseKey+"9XYAngle",90.0-78.0);
+      Control.addVariable(baseKey+"10XYAngle",90.0-83.3); 
+      Control.addVariable(baseKey+"11XYAngle",90.0-90.0);
 
-      Control.addVariable(baseKey+"12XYangle",-90.0+84.0);
-      Control.addVariable(baseKey+"13XYangle",-90.0+78.0);
-      Control.addVariable(baseKey+"14XYangle",-90.0+72.0);
-      Control.addVariable(baseKey+"15XYangle",-90.0+66.0);
-      Control.addVariable(baseKey+"16XYangle",-90.0+60.0);
-      Control.addVariable(baseKey+"17XYangle",-90.0+54.0);
-      Control.addVariable(baseKey+"18XYangle",-90.0+48.0);
-      Control.addVariable(baseKey+"19XYangle",-90.0+42.0);
-      Control.addVariable(baseKey+"20XYangle",-90.0+36.0);
-      Control.addVariable(baseKey+"21XYangle",-90.0+30.0);  // W1
+      Control.addVariable(baseKey+"12XYAngle",-90.0+84.0);
+      Control.addVariable(baseKey+"13XYAngle",-90.0+78.0);
+      Control.addVariable(baseKey+"14XYAngle",-90.0+72.0);
+      Control.addVariable(baseKey+"15XYAngle",-90.0+66.0);
+      Control.addVariable(baseKey+"16XYAngle",-90.0+60.0);
+      Control.addVariable(baseKey+"17XYAngle",-90.0+54.0);
+      Control.addVariable(baseKey+"18XYAngle",-90.0+48.0);
+      Control.addVariable(baseKey+"19XYAngle",-90.0+42.0);
+      Control.addVariable(baseKey+"20XYAngle",-90.0+36.0);
+      Control.addVariable(baseKey+"21XYAngle",-90.0+30.0);  // W1
       Control.addVariable(baseKey+"Filled",0);
       Control.addVariable(baseKey+"Active",0);
 
@@ -630,7 +635,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   // the neutron beam channels towards the moderator
   const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
   const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
-  
+
   const int TopAFlightNWedges = 14;
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
@@ -720,8 +725,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  // CHANGED FROM 12
-  const int TopBFlightNWedges = 2;
+  const int TopBFlightNWedges = 12;
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
 

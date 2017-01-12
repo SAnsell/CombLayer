@@ -92,7 +92,7 @@ VORvariables(FuncDataBase& Control)
     
   Control.addVariable("vorStopPoint",0);
   Control.addVariable("vorAxisXYAngle",0.0);   // rotation
-  Control.addVariable("vorAxisZAngle",2.0);   // rotation 
+  Control.addVariable("vorAxisZAngle",0.0);   // rotation 
   
   //  Control.addVariable("vorGABeamXYAngle",1.0);
   FGen.setGuideMat("Copper");
@@ -100,12 +100,10 @@ VORvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);
 
   // VACUUM PIPE in Gamma shield
-  PipeGen.generatePipe(Control,"vorPipeB",2.0,46.0);
-
+  PipeGen.generatePipe(Control,"vorPipeB",8.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vorFB",44.0,3.30,3.4028,4.0,4.2);
-
 
   // VACUUM PIPE in Gamma shield
   PipeGen.generatePipe(Control,"vorPipeC",2.0,326.0);
@@ -124,10 +122,10 @@ VORvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vorDBlade",0.0,10.0,22.50);
 
   // VACUUM PIPE in Gamma shield
-  PipeGen.generatePipe(Control,"vorPipeD",2.0,208.0);
-  FGen.generateTaper(Control,"vorFD",204.0,3.4028,3.87,4.2,5.906);
+  PipeGen.generatePipe(Control,"vorPipeD",2.0,204.0);
+  FGen.generateTaper(Control,"vorFD",200.0,3.4028,3.87,4.2,5.906);
 
-
+  
   // BEAM INSERT:
   Control.addVariable("vorBInsertHeight",20.0);
   Control.addVariable("vorBInsertWidth",28.0);
@@ -157,7 +155,6 @@ VORvariables(FuncDataBase& Control)
 
   Control.addVariable("vorFOCExitPortShape","Circle");
   Control.addVariable("vorFOCExitPortRadius",5.0);
-
 
   // FOC DISK A
   BGen.setThick({0.2});

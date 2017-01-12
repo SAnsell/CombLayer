@@ -81,6 +81,7 @@
 #include "pipeUnit.h"
 #include "PipeLine.h"
 
+#include "FocusPoints.h"
 #include "beamlineConstructor.h"
 #include "WheelBase.h"
 #include "Wheel.h"
@@ -112,7 +113,6 @@
 #include "ConicModerator.h"
 #include "makeESSBL.h"
 #include "ESSPipes.h"
-// F5 collimators:
 #include "F5Calc.h"
 #include "F5Collimator.h"
 #include "TSMainBuilding.h"
@@ -130,6 +130,8 @@ makeESS::makeESS() :
   PBeam(new ProtonTube("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
 
+  topFocus(new FocusPoints("TopFocus")),
+  lowFocus(new FocusPoints("LowFocus")),
   LowPreMod(new TaperedDiskPreMod("LowPreMod")),
   LowCapMod(new TaperedDiskPreMod("LowCapMod")),
   
@@ -165,6 +167,9 @@ makeESS::makeESS() :
   OR.addObject(Reflector);
   OR.addObject(PBeam);
   OR.addObject(BMon);
+  OR.addObject(topFocus);
+  OR.addObject(lowFocus);
+  
   OR.addObject(LowPreMod);
   OR.addObject(LowCapMod);
   
@@ -247,7 +252,7 @@ makeESS::createGuides(Simulation& System)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  for(size_t i=0;i<4;i++)
+  for(size_t i=0;i<2;i++)
     {
       std::shared_ptr<GuideBay> GB(new GuideBay("GuideBay",i+1));
       OR.addObject(GB);
@@ -255,22 +260,17 @@ makeESS::createGuides(Simulation& System)
       GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getSignedLinkSurf(7));
-      
-      if (i<2)
-	GB->createAll(System,*LowMod,0);  
-      else
-	GB->createAll(System,*TopMod,0);
+
+      GB->createAll(System,*ShutterBayObj,0);  
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
-  GBArray[1]->outerMerge(System,*GBArray[2]);
-  GBArray[0]->outerMerge(System,*GBArray[3]);
   
-  GBArray[0]->createGuideItems(System,LowMod->getComponent("MidWater"),6,5);
-  GBArray[1]->createGuideItems(System,LowMod->getComponent("MidWater"),7,8);
-  GBArray[2]->createGuideItems(System,TopMod->getComponent("MidWater"),6,5);
-  GBArray[3]->createGuideItems(System,TopMod->getComponent("MidWater"),7,8);
+  GBArray[0]->createGuideItems(System,"Top");
+  GBArray[0]->createGuideItems(System,"Low");
+  GBArray[1]->createGuideItems(System,"Top");
+  GBArray[1]->createGuideItems(System,"Low");
 
   return;
 }
@@ -326,6 +326,22 @@ makeESS::buildIradComponent(Simulation& System,
     }
   return;
 }
+
+
+void
+makeESS::buildFocusPoints(Simulation& System)
+  /*!
+    Construct the focus points [moderators change -- 
+    focus points don't]
+    \param System :: Simulation system
+   */
+{
+  ELog::RegMethod RegA("makeESS","buildFocusPoints");
+
+  topFocus->createAll(System,World::masterOrigin(),0);
+  lowFocus->createAll(System,World::masterOrigin(),0);
+  return;
+}
   
 void
 makeESS::buildLowButterfly(Simulation& System)
@@ -371,10 +387,12 @@ makeESS::buildTopButterfly(Simulation& System)
 }
       
 
-void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
-/*!
-  Build F5 collimators
-  \param System :: Stardard simulation
+void
+makeESS::buildF5Collimator(Simulation& System,const size_t nF5)
+ /*!
+   Build F5 collimators
+   \param System :: Stardard simulation
+   \param nF5 :: number of collimators to build
  */
 {
   ELog::RegMethod RegA("makeESS", "buildF5Collimator(System, nF5)");
@@ -382,12 +400,11 @@ void makeESS::buildF5Collimator(Simulation& System, size_t nF5)
 
   for (size_t i=0; i<nF5; i++)
     {
-      std::shared_ptr<F5Collimator> F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-      
+      std::shared_ptr<F5Collimator>
+        F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
       OR.addObject(F5);
       F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
       F5->createAll(System,World::masterOrigin());
-      
       attachSystem::addToInsertSurfCtrl(System,*ABunker,*F5);
       F5array.push_back(F5);
     }
@@ -554,7 +571,6 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
     }
   return;
 }
-
 
 void
 makeESS::buildBunkerChicane(Simulation& System,
@@ -754,21 +770,14 @@ makeESS::makeBeamLine(Simulation& System,
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
-
-	  if ((BLNum.first==1 && BLNum.second>10) ||
-	      (BLNum.first==4 && BLNum.second<=10) )
+	  
+	  if (BLNum.first==1 && BLNum.second<=10)
 	    BLfactory.build(System,*ABunker);
-
-	  else if ((BLNum.first==1 && BLNum.second<=10) ||
-	      (BLNum.first==4 && BLNum.second>9) )
+	  else if (BLNum.first==1 && BLNum.second>10)
 	    BLfactory.build(System,*BBunker);
-
-	  else if ((BLNum.first==2 && BLNum.second>10) ||
-	      (BLNum.first==3 && BLNum.second<=10) )
+	  else if (BLNum.first==2 && BLNum.second<=10)
 	    BLfactory.build(System,*DBunker);
-
-	  else if ((BLNum.first==2 && BLNum.second<=10) ||
-	      (BLNum.first==3 && BLNum.second>10) )
+	  else if (BLNum.first==2 && BLNum.second>10)
 	    BLfactory.build(System,*CBunker);
 	}
     }
@@ -889,6 +898,10 @@ makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
 
 void
 makeESS::buildTwister(Simulation& System)
+  /*!
+    Adds a twister to the main system
+    \param System :: Simulation 
+   */
 {
   ELog::RegMethod RegA("makeESS","buildTwister");
 
@@ -961,7 +974,8 @@ makeESS::build(Simulation& System,
       optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
-  
+
+  buildFocusPoints(System);
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);
 

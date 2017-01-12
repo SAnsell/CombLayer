@@ -117,7 +117,9 @@ main(int argc,char* argv[])
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-            
+
+      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
       ESSObj.build(*SimPtr,IParam);

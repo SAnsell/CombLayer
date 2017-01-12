@@ -282,8 +282,8 @@ FREIA::build(Simulation& System,
 	  <<ELog::endDiag;
   setBeamAxis(Control,GItem,0);
   BendA->addInsertCell(GItem.getCells("Void"));
-  BendA->addFrontCut(GItem.getKey("Beam"),-1);
-  BendA->addEndCut(GItem.getKey("Beam"),-2);
+  BendA->setFront(GItem.getKey("Beam"),-1);
+  BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge

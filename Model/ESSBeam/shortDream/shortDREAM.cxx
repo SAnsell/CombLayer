@@ -316,7 +316,7 @@ shortDREAM::build(Simulation& System,
   
   setBeamAxis(GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addEndCut(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,GItem.getKey("Beam"),-1,
 		    GItem.getKey("Beam"),-1);
 
@@ -416,7 +416,7 @@ shortDREAM::build(Simulation& System,
 
   FocusFinal->addInsertCell(VPipeFinal->getCell("Void"));
   FocusFinal->addInsertCell(VacBoxF->getCells("Void"));
-  FocusFinal->addEndCut(bunkerObj.getSignedLinkString(1));
+  FocusFinal->setBack(bunkerObj,1);
   FocusFinal->createAll(System,T0DiskD->getKey("Beam"),2,
 			T0DiskD->getKey("Beam"),2);
 

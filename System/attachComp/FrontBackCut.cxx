@@ -67,6 +67,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
+#include "SurInter.h"
 #include "FrontBackCut.h"
 
 namespace attachSystem
@@ -157,7 +158,7 @@ FrontBackCut::setFront(const std::string& FRule)
 {
   ELog::RegMethod RegA("FrontBackCut","setFront(string)");
 
-    // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
+
   if (!frontCut.procString(FRule))
     throw ColErr::InvalidLine(FRule,"FRule failed");
   frontCut.populateSurf();
@@ -195,7 +196,7 @@ FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
   ELog::RegMethod RegA("FrontBackCut","setFront");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  frontCut=WFC.getSignedFullRule(sideIndex);
+  frontCut=WFC.getSignedMainRule(sideIndex);
   frontDivider=WFC.getSignedCommonRule(sideIndex);
   frontCut.populateSurf();
   frontDivider.populateSurf();
@@ -268,6 +269,70 @@ FrontBackCut::backRule() const
     backCut.display()+backDivider.display() : "";    
 }
 
+void
+FrontBackCut::createLinks(attachSystem::FixedComp& FC,
+			  const Geometry::Vec3D& Org,
+			  const Geometry::Vec3D& YAxis)
+  /*!
+    Generate the front/back links if active
+    \param FC :: Fixed component [most likely this]
+    \param Org :: Origin
+    \param YAxis :: YAxis
+   */
+{
+  ELog::RegMethod RegA("FrontBackCut","createLinks");
+  createFrontLinks(FC,Org,YAxis);
+  createBackLinks(FC,Org,YAxis);
+  return;
+}
   
+void
+FrontBackCut::createFrontLinks(attachSystem::FixedComp& FC,
+                               const Geometry::Vec3D& Org,
+                               const Geometry::Vec3D& YAxis)
+  /*!
+    Generate the front links if active
+    \param FC :: Fixed component [most likely this]
+    \param Org :: Origin
+    \param YAxis :: YAxis
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","createFrontLinks");
+
+  if (activeFront)
+    {
+      FC.setLinkSurf(0,frontCut.complement());
+      FC.setBridgeSurf(0,frontDivider);
+      FC.setConnect
+	(0,SurInter::getLinePoint(Org,YAxis,frontCut,frontDivider),
+	 -YAxis);
+    }
+  return;
+}
+
+void
+FrontBackCut::createBackLinks(attachSystem::FixedComp& FC,
+                              const Geometry::Vec3D& Org,
+                              const Geometry::Vec3D& YAxis)
+  /*!
+    Generate the back links if active
+    \param FC :: Fixed component [most likely this]
+    \param Org :: Origin
+    \param YAxis :: YAxis
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","createBackLinks");
+  
+  if (activeBack)
+    {
+      FC.setLinkSurf(1,backCut.complement());
+      FC.setBridgeSurf(1,backDivider);
+      FC.setConnect
+        (1,SurInter::getLinePoint(Org,YAxis,backCut,backDivider),
+	 YAxis);
+    }
+  return;
+}
+
   
 }  // NAMESPACE attachSystem

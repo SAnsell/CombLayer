@@ -155,7 +155,7 @@ PipeCollimator::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  
+
   return;
 }
 

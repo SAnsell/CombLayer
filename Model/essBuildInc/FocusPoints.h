@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/CompBInsert.h
+ * File:   essBuildInc/FocusPoints.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,63 +19,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_CompBInsert_h
-#define essSystem_CompBInsert_h
+#ifndef essSystem_FocusPoints_h
+#define essSystem_FocusPoints_h
 
 class Simulation;
 
 namespace essSystem
 {
+  class MidWaterDivider;
+  class EdgeWater;
 
 /*!
-  \class CompBInsert
+  \class FocusPoints
+  \author Stuart Ansell 
   \version 1.0
-  \author S. Ansell
-  \date June 2015
-  \brief Multi-layer Beam insert
+  \date January 2017
+  \brief Focus point system for moderator views  
 */
 
-class CompBInsert : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+class FocusPoints :
+  public attachSystem::FixedOffset
 {
  private:
+
+  double forwardDist;         ///< Forward displacement
+  double backDist;            ///< back displacement
+  double leftWidth;           ///< left displacement
+  double rightWidth;          ///< right displacement
   
-  const int insIndex;            ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-
-  size_t NBox;                   ///< number of boxes
-  std::vector<double> width;     ///< inner width of each box
-  std::vector<double> height;    ///< inner height of each box
-  std::vector<double> length;    ///< extent of each box
-  std::vector<int> mat;          ///< inner material 
-
-  size_t NWall;                   ///< Number of walls
-  std::vector<double> wallThick;  ///< wall thickness
-  std::vector<int> wallMat;       ///< Wall materials.
-    
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&);
-
+  
  public:
-
-  CompBInsert(const std::string&);
-  CompBInsert(const CompBInsert&);
-  CompBInsert& operator=(const CompBInsert&);
-  virtual ~CompBInsert();
-
+  
+  FocusPoints(const std::string&);
+  FocusPoints(const FocusPoints&);
+  FocusPoints& operator=(const FocusPoints&);
+  virtual FocusPoints* clone() const;
+  virtual ~FocusPoints();
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const attachSystem::FixedComp&);
-
+		 const long int);
 };
 
 }
 
 #endif
  
-

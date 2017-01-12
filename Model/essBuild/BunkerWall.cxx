@@ -133,6 +133,7 @@ BunkerWall::populate(const FuncDataBase& Control)
   // Need two sets active and passive :
   // ACTIVE:
   // BOOLEAN NUMBER!!!!!!!
+  ELog::EM<<"key == "<<keyName+"Active"<<ELog::endDiag;
   activeWall=Control.EvalDefVar<size_t>(keyName+"Active",0);
   if (activeWall)
     {

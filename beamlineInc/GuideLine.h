@@ -40,7 +40,8 @@ class ShapeUnit;
 
 class GuideLine : public attachSystem::ContainedComp,
   public attachSystem::FixedGroup,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::FrontBackCut
 {
  private:
 
@@ -74,15 +75,9 @@ class GuideLine : public attachSystem::ContainedComp,
   std::vector<double> layerThick;   ///< Thickness [inner->outer]
   std::vector<int> layerMat;        ///< Mat 
 
-  bool activeFront;               ///< Active front cut
-  bool beamFrontCut;             ///< Construct+Use beam cut as well
-  HeadRule frontCut;           ///< Extra front rule cut [if required]
-  HeadRule frontCutBridge;     ///< Extra front rule cut [if required]
 
-  bool activeEnd;              ///< Active end cut
+  bool beamFrontCut;           ///< Construct+Use beam cut as well
   bool beamEndCut;             ///< Construct+Use beam cut as well
-  HeadRule endCut;             ///< Extra end rule cut [if required]
-  HeadRule endCutBridge;       ///< Extra end rule cut [if required]
 
   
   size_t nShapes;              ///< Number of shape segments
@@ -119,11 +114,6 @@ class GuideLine : public attachSystem::ContainedComp,
   GuideLine(const GuideLine&);
   GuideLine& operator=(const GuideLine&);
   virtual ~GuideLine();
-
-  void addFrontCut(const std::string&);
-  void addFrontCut(const attachSystem::FixedComp&,const long int);
-  void addEndCut(const std::string&);
-  void addEndCut(const attachSystem::FixedComp&,const long int);
 
   HeadRule getXSection(const size_t =0,const size_t= 0) const;
   HeadRule getXSectionOut(const size_t =0,const size_t= 0) const;

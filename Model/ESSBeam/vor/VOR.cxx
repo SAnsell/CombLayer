@@ -248,13 +248,12 @@ VOR::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"Stop point == "<<stopPoint<<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,1);
+  setBeamAxis(Control,GItem,0);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
-  FocusA->addEndCut(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,GItem.getKey("Beam"),-1,
-		    GItem.getKey("Beam"),-1);
+  FocusA->setFront(GItem.getKey("Beam"),-1);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
+  FocusA->createAll(System,*vorAxis,-3,*vorAxis,-3);
   if (stopPoint==1) return;
 
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
@@ -287,7 +286,7 @@ VOR::build(Simulation& System,
   FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
 
   if (stopPoint==2) return;
-    
+
   // Make bunker insert
   BInsert->createAll(System,FocusD->getKey("Guide0"),-1,bunkerObj);
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
@@ -338,6 +337,7 @@ VOR::build(Simulation& System,
   FOCExitPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
                        OutPitB->getKey("Mid").getSignedFullRule(-2));
   FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
+
   // shielding between PitA and P it B
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(OutPitA->getCells("Outer"));
@@ -357,10 +357,10 @@ VOR::build(Simulation& System,
     // First Chopper
   ChopperOutB->addInsertCell(OutPitB->getCells("Void"));
   ChopperOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
-
   
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,OutPitB->getKey("Inner"),0);
+
 
 
   ShieldB->addInsertCell(voidCell);

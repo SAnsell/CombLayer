@@ -281,8 +281,8 @@ MAGIC::build(Simulation& System,
   setBeamAxis(Control,GItem,0);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->addFrontCut(GItem.getKey("Beam"),-1);
-  FocusA->addEndCut(GItem.getKey("Beam"),-2);
+  FocusA->setFront(GItem.getKey("Beam"),-1);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*magicAxis,-3,*magicAxis,-3);
   
   if (stopPoint==1) return;                      // STOP At monolith
