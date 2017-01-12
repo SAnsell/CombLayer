@@ -385,7 +385,7 @@ LOKI::build(Simulation& System,
   CollB->setInnerExclude(VPipeOutB->getSignedFullRule(9));
   CollB->setOuter(ShieldB->getXSectionIn());
   CollB->addInsertCell(ShieldB->getCell("Void"));
-  CollB->addInsertCell(VPipeOutA->getCell("OutVoid"));
+  CollB->addInsertCell(VPipeOutB->getCell("OutVoid"));
   CollB->createAll(System,*VPipeOutB,-1);
   // Aperture after second collimator drum
   AppB->addInsertCell(ShieldB->getCell("Void"));
