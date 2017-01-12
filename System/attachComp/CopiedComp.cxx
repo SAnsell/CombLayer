@@ -105,7 +105,7 @@ CopiedComp::process(FuncDataBase& Control) const
   */
 {
   ELog::RegMethod regA("CopiedComp","process");
-  
+
   const std::vector<std::string> keyVec=Control.getKeys();
 
   std::vector<std::string>::const_iterator mc=

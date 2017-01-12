@@ -62,7 +62,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"
 #include "objectRegister.h"
@@ -77,8 +76,6 @@
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
 #include "Mesh3D.h"
-#include "WWG.h"
-#include "WWGWeight.h"
 #include "WeightControl.h"
 
 namespace WeightSystem

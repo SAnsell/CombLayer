@@ -51,6 +51,7 @@ namespace moderatorSystem
 
 namespace essSystem
 {
+  class FocusPoints;
   class WheelBase;
   class Wheel;
   class BilbaoWheel;
@@ -75,6 +76,8 @@ namespace essSystem
   class F5Collimator;
   class BunkerFeed;
   class WedgeFlightLine;
+  class Chicane;
+
       
   /*!
     \class makeESS
@@ -93,7 +96,11 @@ class makeESS
   std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
   std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
-  // Butterly
+  // main moderator focus points
+  std::shared_ptr<FocusPoints> topFocus;   ///< Top focus
+  std::shared_ptr<FocusPoints> lowFocus;   ///< Lower focus
+
+  // Butterfly
   /// Primary Lower Mod 
   std::shared_ptr<constructSystem::ModBase> LowMod;
   std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod 
@@ -143,6 +150,8 @@ class makeESS
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 
 
+  void buildFocusPoints(Simulation&);
+  
   void createGuides(Simulation&);
 
   void buildLowButterfly(Simulation&);
@@ -163,12 +172,14 @@ class makeESS
   void buildPillars(Simulation&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
+  void buildBunkerChicane(Simulation&,
+			  const mainSystem::inputParam&);
   void buildBunkerQuake(Simulation&,
 			const mainSystem::inputParam&);
   void buildPreWings(Simulation&,const std::string&);
   void buildTwister(Simulation&);
 
-  void buildF5Collimator(Simulation&,size_t);
+  void buildF5Collimator(Simulation&,const size_t);
 
   void optionSummary(Simulation&);
 

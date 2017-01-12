@@ -42,7 +42,7 @@ class Mesh3D
   
   GeomENUM type;               ///< Type of mesh
 
-  size_t writeFlag;            ///< 
+  size_t writeFlag;            ///< write out header info 
   Geometry::Vec3D RefPoint;    ///< Reference point
   Geometry::Vec3D Origin;      ///< Origin
   Geometry::Vec3D Axis;        ///< Axis
@@ -56,9 +56,9 @@ class Mesh3D
   std::vector<size_t> YFine;    ///< Number of fine Y bins 
   std::vector<size_t> ZFine;    ///< Number of fine z bins 
 
-  size_t NX;                    ///< Total number of X
-  size_t NY;                    ///< Total number of Y
-  size_t NZ;                    ///< Total number of Z
+  size_t NX;                    ///< Total number of X BINS
+  size_t NY;                    ///< Total number of Y BINS
+  size_t NZ;                    ///< Total number of Z BINS
   
   std::string getType() const;
   
@@ -68,7 +68,6 @@ class Mesh3D
   
  public:
 
-  
   Mesh3D();
   Mesh3D(const Mesh3D&);
   Mesh3D& operator=(const Mesh3D&);
@@ -80,16 +79,18 @@ class Mesh3D
   size_t getYSize() const { return NY; }    ///< number of Y-cells
   size_t getZSize() const { return NZ; }    ///< number of Z-cells
   Geometry::Vec3D point(const size_t,const size_t,const size_t) const;
+  double getXCoordinate(const size_t) const;
+  double getYCoordinate(const size_t) const;
+  double getZCoordinate(const size_t) const;
 
+  
   void setMeshType(const GeomENUM&);
   void setMesh(const std::vector<double>&,const std::vector<size_t>&,
 	       const std::vector<double>&,const std::vector<size_t>&,
 	       const std::vector<double>&,const std::vector<size_t>&);
-	       
-  /// Set reference point [
-  void setRefPt(const Geometry::Vec3D&);
-
-  
+  std::vector<Geometry::Vec3D> midPoints() const;
+  /// Set reference point 
+  void setRefPt(const Geometry::Vec3D&);  
   
   void write(std::ostream&) const;
   void writeWWINP(std::ostream&,const int,const size_t) const;

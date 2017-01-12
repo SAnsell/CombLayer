@@ -441,7 +441,7 @@ VacuumPipe::createDivision(Simulation& System)
   */
 {
   ELog::RegMethod RegA("VacuumPipe","createDivision");
-  if (nDivision)
+  if (nDivision>1)
     {
       ModelSupport::surfDivide DA;
       DA.setBasicSplit(nDivision,feMat);

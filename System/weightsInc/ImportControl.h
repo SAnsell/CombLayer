@@ -43,6 +43,9 @@ namespace WeightSystem
   void PWT(Simulation&,const mainSystem::inputParam&);
   void SBias(Simulation&,const mainSystem::inputParam&);
   void removePhysImp(Simulation&,const std::string&);
+  void setWWGImp(Simulation&);
+  void setWCellImp(Simulation&);
+
 }
 
 

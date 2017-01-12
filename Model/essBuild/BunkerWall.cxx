@@ -117,30 +117,9 @@ BunkerWall::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BunkerWall","populate");
 
+  
   wallThick=Control.EvalVar<double>(keyName+"Thick");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  
-  // Need two sets active and passive :
-  // ACTIVE:
-  // BOOLEAN NUMBER!!!!!!!
-  activeWall=Control.EvalDefVar<size_t>(keyName+"Active",0);
-  if (activeWall)
-    {
-      nVert=Control.EvalVar<size_t>(keyName+"NVert");
-      nRadial=Control.EvalDefVar<size_t>(keyName+"NRadial",0);
-      nMedial=Control.EvalDefVar<size_t>(keyName+"NMedial",0);
-      ModelSupport::populateDivideLen(Control,nVert,keyName+"Vert",
-				      1.0,vert);
-      
-      ModelSupport::populateDivideLen(Control,nRadial,keyName+"Radial",
-				      1.0,radial);
-      
-      ModelSupport::populateDivideLen(Control,nMedial,keyName+"Medial",
-				      1.0,medial);
-
-      loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
-      outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
-    }
 
   // PASSIVE
   nBasic=Control.EvalVar<size_t>(keyName+"NBasic");
@@ -150,6 +129,32 @@ BunkerWall::populate(const FuncDataBase& Control)
   ModelSupport::populateDivide(Control,nBasic,keyName+"Mat",
 			       ModelSupport::EvalMatString(wallMat),
 			       basicMatVec);	  
+
+  // Need two sets active and passive :
+  // ACTIVE:
+  // BOOLEAN NUMBER!!!!!!!
+  ELog::EM<<"key == "<<keyName+"Active"<<ELog::endDiag;
+  activeWall=Control.EvalDefVar<size_t>(keyName+"Active",0);
+  if (activeWall)
+    {
+      nVert=Control.EvalVar<size_t>(keyName+"NVert");
+      nRadial=Control.EvalDefVar<size_t>(keyName+"NRadial",0);
+      nMedial=Control.EvalDefVar<size_t>(keyName+"NMedial",0);
+      ModelSupport::populateDivideLen(Control,nVert,keyName+"Vert",
+				      1.0,vert);
+      if (!nRadial)
+	radial=basic;
+      else
+	ModelSupport::populateDivideLen(Control,nRadial,keyName+"Radial",
+					1.0,radial);
+      
+      ModelSupport::populateDivideLen(Control,nMedial,keyName+"Medial",
+				      1.0,medial);
+
+      loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
+      outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
+    }
+
 
   
   return;
@@ -239,8 +244,13 @@ BunkerWall::createSector(Simulation& System,
       LD3.setFractions(1,medial);	    
       LD3.setFractions(2,vert);
       LD3.setIndexNames("Radial","Medial","Vert");
-      LD3.setMaterialXML(keyName+"Def.xml","WallMat",keyName+".xml",
-			 ModelSupport::EvalMatString(wallMat));	  
+      if (!LD3.setMaterialXML(keyName+"Def.xml","WallMat",keyName+".xml",
+			      ModelSupport::EvalMatString(wallMat)))
+	{
+	  ELog::EM<<"Using Basic Material Layers: [size="
+		  <<basicMatVec.size()<<"]"<<ELog::endDiag;
+	  LD3.setMaterials(0,basicMatVec);
+	}
     }
   else
     {

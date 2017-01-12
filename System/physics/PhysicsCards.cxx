@@ -1020,10 +1020,13 @@ PhysicsCards::write(std::ostream& OX,
   
   mode.write(OX);
   Volume.write(OX,cellOutOrder);
-   for(const PhysImp& PI : ImpCards)
-    PI.write(OX,cellOutOrder);  
-
-   PWTCard->write(OX,cellOutOrder,voidCells);
+  for(const PhysImp& PI : ImpCards)
+    {
+      if (nImpOut!=1 || !PI.hasElm("n"))
+	PI.write(OX,cellOutOrder);
+    }
+  
+  PWTCard->write(OX,cellOutOrder,voidCells);
 
   for(const PhysCard* PC : PCards)
     PC->write(OX);

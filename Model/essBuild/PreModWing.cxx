@@ -74,7 +74,6 @@
 #include "Cone.h"
 #include "Plane.h"
 #include "Cylinder.h"
-// for Butterfly
 #include "LayerComp.h"
 #include "ModBase.h"
 #include "H2Wing.h"
@@ -95,8 +94,7 @@ PreModWing::PreModWing(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{
-}
+{}
 
 PreModWing::PreModWing(const PreModWing& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
@@ -234,12 +232,13 @@ PreModWing::createSurfaces()
                            Origin+Z*(thick+wallThick*tiltSign),Z*tiltSign);  
   if (tiltAngle>Geometry::zeroTol)
     {
+      ModelSupport::buildPlane(SMap,modIndex+9,Origin,Z);
       ModelSupport::buildCone(SMap,modIndex+8,
                               Origin+Z*(thick+coneShift*tiltSign),
-                              Z,90.0-tiltAngle,-tiltSign);
+                              Z,90.0-tiltAngle);
       ModelSupport::buildCone(SMap,modIndex+18,
                               Origin+Z*(thick+wallThick+coneShift)*tiltSign,
-                              Z, 90-tiltAngle, -tiltSign);
+                              Z, 90-tiltAngle);
     }
   else  
     {

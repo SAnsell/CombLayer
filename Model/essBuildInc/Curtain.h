@@ -36,7 +36,7 @@ namespace essSystem
 */
 
 class Curtain : public attachSystem::ContainedGroup,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedGroup,
   public attachSystem::CellMap
 {
  private:
@@ -68,9 +68,8 @@ class Curtain : public attachSystem::ContainedGroup,
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int,const long int,
-			const attachSystem::FixedComp&,
-			const long int,const bool);
+			const long int,const long int);
+
 
   void createSurfaces();
   void createLinks();
@@ -90,9 +89,8 @@ class Curtain : public attachSystem::ContainedGroup,
 
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const long int,
-		 const attachSystem::FixedComp&,
-		 const long int,const bool);
+		 const long int,const long int);
+
 
 };
 

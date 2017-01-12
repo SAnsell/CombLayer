@@ -177,7 +177,7 @@ PointSource::populateEnergy(std::string EPts,std::string EProb)
   Energy.clear();
   EWeight.clear();
 
-  double eB,eP;
+  double eB(-1.0),eP;
   
   // if (!StrFunc::section(EPts,eA) || eA<0.0)
   //   return 0;
@@ -192,11 +192,17 @@ PointSource::populateEnergy(std::string EPts,std::string EProb)
       Energy.push_back(eB);
       EWeight.push_back(eP);
     }
+  
   if (!StrFunc::isEmpty(EPts) || !StrFunc::isEmpty(EProb))
     ELog::EM<<"Trailing line info \n"
 	    <<"Energy : "<<EPts<<"\n"
   	    <<"Energy : "<<EProb<<ELog::endErr;
-
+  // single entry:
+  if (Energy.empty() && eB>0.0)
+    {
+      Energy.push_back(eB);
+      return 1;
+    }
   // // Normalize 
   // for(double& prob : EWeight)
   //   prob/=sum;
@@ -225,8 +231,8 @@ PointSource::populate(const FuncDataBase& Control)
   const std::string EFile=
     Control.EvalDefVar<std::string>(keyName+"EFile","");
 
-  if (!populateEnergy(EList,EPList) &&
-      !populateEFile(EFile,1,11))
+  if (!populateEFile(EFile,1,11) &&
+      !populateEnergy(EList,EPList) )
     {
       double E=Control.EvalDefVar<double>(keyName+"EStart",1.0); 
       const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",0); 

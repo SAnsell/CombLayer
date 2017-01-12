@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   process/MainProcess.cxx
+ * File:   process/MainInputs.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -33,7 +33,6 @@
 #include <iterator>
 #include <memory>
 
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,25 +43,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Vec3D.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "InputControl.h"
 #include "inputParam.h"
-#include "support.h"
-#include "masterWrite.h"
-#include "objectRegister.h"
-#include "surfIndex.h"
-#include "Simulation.h"
-#include "SimPHITS.h"
-#include "SimFLUKA.h"
-#include "neutron.h"
-#include "Detector.h"
-#include "DetGroup.h"
-#include "SimMonte.h"
-#include "variableSetup.h"
-#include "defaultConfig.h"
-
 #include "MainInputs.h"
 
 namespace mainSystem
@@ -82,7 +64,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("activation","activation",10000,1);
 
   IParam.regFlag("a","axis");
-  IParam.regItem("angle","angle",1,4);
+  IParam.regMulti("angle","angle",10000,1,8);
   IParam.regDefItem<int>("c","cellRange",2,0,0);
   IParam.regItem("C","ECut");
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
@@ -116,7 +98,7 @@ createInputs(inputParam& IParam)
   IParam.regFlag("fluka","FLUKA");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
-  IParam.regItem("offset","offset",1,4);
+  IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
   IParam.regItem("PTRAC","ptrac");
@@ -184,7 +166,10 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wIMP","wIMP",25,0);
     
   IParam.regMulti("wwgE","wwgE",25,0);
+  IParam.regItem("wwgVTK","wwgVTK",1,10);
+  IParam.regItem("wwgNorm","wwgNorm",0,30);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
+  IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
   IParam.regItem("wwgZMesh","wwgZMesh",3,125);  
@@ -586,6 +571,7 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   
+  IParam.regMulti("bunkerChicane","bunkerChicane",1000,1);
   IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
   IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);

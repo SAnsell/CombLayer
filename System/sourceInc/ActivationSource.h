@@ -45,16 +45,18 @@ class ActivationSource
   size_t timeStep;                ///< Time step from cinder
   size_t nPoints;                 ///< Number of points
   size_t nTotal;                  ///< Total points
-   
+  
   Geometry::Vec3D ABoxPt;         ///< Bounding box corner
   Geometry::Vec3D BBoxPt;         ///< Bounding box corner
 
   std::map<int,double> volCorrection;   ///< cell / volume
   std::map<int,activeUnit> cellFlux;    ///< cell[active] : flux data
-  std::vector<Geometry::Vec3D> fluxPt;  ///< Flux emmision points
-  std::vector<int> cellID;              ///< cell ID for points
+  std::vector<activeFluxPt> fluxPt;     ///< Flux emmision points [nps values]
 
-  
+
+  Geometry::Vec3D weightPt;       ///< Centre weight intensity
+  double weightDist;              ///< Centre weight scalar
+  double externalScale;           ///< intensity scale [external]
 
   void createVolumeCount();
   void createFluxVolumes(const Simulation&);
@@ -62,7 +64,8 @@ class ActivationSource
   void processFluxFiles(const std::vector<std::string>&,
 			const std::vector<int>&);
 
-
+  double calcWeight(const Geometry::Vec3D&) const;
+  void normalizeScale();
   void writePoints(const std::string&) const;
   
  public:
@@ -77,6 +80,9 @@ class ActivationSource
   /// set time segment number 
   void setTimeSegment(const size_t T) { timeStep=T+1; }
   void setBox(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  /// set scalar
+  void setScale(const double S) { externalScale=S; }  
+  void setWeightPoint(const Geometry::Vec3D&,const double);
   
 
   void createOutput(const std::string&);

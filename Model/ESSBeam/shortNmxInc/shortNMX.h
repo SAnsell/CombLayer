@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/shortNMX/shortNMX.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,22 +50,30 @@ namespace essSystem
     \brief shortNMX beamline constructor for the ESS
   */
   
-class shortNMX
+class shortNMX : public attachSystem::CopiedComp
 {
  private:
+
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint;  
 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
 
   /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
-    
-  /// Pipe between bunker and the wall
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
-  /// Pipe between bunker and the wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+
+  /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Elliptic guide from 5.5 to 6 metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusB;
+  
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Bender in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> BendA;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+
+
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
 
@@ -80,7 +88,7 @@ class shortNMX
   
  public:
   
-  shortNMX();
+  shortNMX(const std::string&);
   shortNMX(const shortNMX&);
   shortNMX& operator=(const shortNMX&);
   ~shortNMX();

@@ -97,7 +97,6 @@ BunkerQuake::BunkerQuake(const std::string& bunkerName) :
   attachSystem::FixedComp(bunkerName+"Quake",6),
   cutIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
   cellIndex(cutIndex+1)
-
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
@@ -199,8 +198,6 @@ BunkerQuake::createObjects(Simulation& System)
     }      
 
   return;
-
-    
 }
  
 void

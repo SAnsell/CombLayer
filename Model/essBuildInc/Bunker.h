@@ -26,11 +26,12 @@ class Simulation;
 
 namespace essSystem
 {
+
   class BunkerMainWall;
   class BunkerRoof;
   class BunkerWall;
   class BunkerInsert;
-  
+  class Chicane;  
 /*!
   \class Bunker
   \version 1.0
@@ -63,7 +64,6 @@ class Bunker : public attachSystem::ContainedComp,
 
 
   // MAIN WALL
-  size_t activeSegment;          ///< Active segment
   size_t nSectors;               ///< Number of sector divisions
   std::vector<double> sectPhase; ///< sector angles
 
@@ -117,8 +117,7 @@ class Bunker : public attachSystem::ContainedComp,
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp&,
-			const long int,const bool,const bool);
+			const long int,const bool);
 
   void createSurfaces(const bool);
   void createLinks();
@@ -146,13 +145,15 @@ class Bunker : public attachSystem::ContainedComp,
 		       Geometry::Vec3D&) const;
   std::string calcSegment(const Simulation&,const Geometry::Vec3D&,
 			  const Geometry::Vec3D&) const;
-  
+
+  /// set centre rotation
+  void setRotationCentre(const Geometry::Vec3D& RC)
+    { rotCentre=RC; }
   void setCutWall(const bool,const bool);
 
   void cutInsert(Simulation&,const BunkerInsert&) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp&,
-		 const long int,const bool,const bool);
+		 const long int,const bool);
 
 };
 

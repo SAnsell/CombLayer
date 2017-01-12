@@ -98,7 +98,6 @@ tallyAddition(Simulation& System,
 {
   ELog::RegMethod RegA("TallySelector[F]","Addition");
   const size_t nP=IParam.setCnt("TAdd");
-
   for(size_t index=0;index<nP;index++)
     {
       const std::string eMess
@@ -166,8 +165,6 @@ tallyAddition(Simulation& System,
 	    constructSystem::addInsertPlateCell
 	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
 	  
-	    
-	  return;
 	}
       else if (key=="Sphere" || key=="sphere")
 	{

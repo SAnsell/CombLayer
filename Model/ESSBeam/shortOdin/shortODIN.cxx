@@ -318,7 +318,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   FocusFinal->addInsertCell(VPipeFinal->getCell("Void"));
   FocusFinal->addInsertCell(VacBoxB->getCells("Void"));
-  FocusFinal->addEndCut(bunkerObj.getSignedLinkString(1));
+  FocusFinal->setBack(bunkerObj.getSignedLinkString(1));
   FocusFinal->createAll(System,T0Chopper->getKey("Beam"),2,
 			T0Chopper->getKey("Beam"),2);
 
@@ -330,7 +330,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 
   // Guide in the bunker insert
   GuideC->addInsertCell(BInsert->getCell("Void"));
-  GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
+  GuideC->setBack(bunkerObj.getSignedLinkString(-2));
   GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
   
   GuideD->addInsertCell(voidCell);
@@ -348,7 +348,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 	  <<" :: "<<PitA->getCentre().abs()<<ELog::endDebug;
   
   GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
-  GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
+  GuidePitAFront->setBack(PitA->getKey("Inner").getSignedLinkString(1));
   GuidePitAFront->createAll(System,GuideD->getKey("Guide0"),2,
 			    GuideD->getKey("Guide0"),2);
 
@@ -364,7 +364,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // runs backwards from guide to chopper
   GuidePitABack->addInsertCell(PitA->getCells("MidLayer"));
   GuidePitABack->addInsertCell(PitA->getCells("Collet"));
-  GuidePitABack->addEndCut(PitA->getKey("Inner").getSignedLinkString(2));
+  GuidePitABack->setBack(PitA->getKey("Inner").getSignedLinkString(2));
   GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
 			    GuideE->getKey("Guide0"),-1);
 
@@ -386,7 +386,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDebug;
 
   GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
-  GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));
+  GuidePitBFront->setBack(PitB->getKey("Inner").getSignedLinkString(1));
   GuidePitBFront->createAll(System,GuideE->getKey("Guide0"),2,
 			    GuideE->getKey("Guide0"),2);
 
@@ -398,7 +398,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // runs backwards from guide to chopper
   GuidePitBBack->addInsertCell(PitB->getCells("MidLayer"));
   GuidePitBBack->addInsertCell(PitB->getCells("Collet"));
-  GuidePitBBack->addEndCut(PitB->getKey("Inner").getSignedLinkString(2));
+  GuidePitBBack->setBack(PitB->getKey("Inner").getSignedLinkString(2));
   GuidePitBBack->createAll(System,GuideF->getKey("Guide0"),-1,
 			    GuideF->getKey("Guide0"),-1);
 
@@ -416,7 +416,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
 	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;
 
   GuidePitCFront->addInsertCell(PitC->getCell("MidLayer"));
-  GuidePitCFront->addEndCut(PitC->getKey("Inner").getSignedLinkString(1));
+  GuidePitCFront->setBack(PitC->getKey("Inner").getSignedLinkString(1));
   GuidePitCFront->createAll(System,GuideF->getKey("Guide0"),2,
 			    GuideF->getKey("Guide0"),2);
 
@@ -429,7 +429,7 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   // runs backwards from guide to chopper
   GuidePitCBack->addInsertCell(PitC->getCell("MidLayer"));
   GuidePitCBack->addInsertCell(PitC->getCells("Collet"));
-  GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
+  GuidePitCBack->setBack(PitC->getKey("Inner"),2);
   GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
 			    GuideG->getKey("Guide0"),-1);
   

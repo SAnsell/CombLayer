@@ -177,7 +177,7 @@ LinkUnit::setLinkSurf(const int SN)
     \param SN :: Surface number [inward looking]
   */
 {
-  ELog::RegMethod RegA("LinkUnit","setLinkSurf");
+  ELog::RegMethod RegA("LinkUnit","setLinkSurf(int)");
   mainSurf.reset();
   linkSurf=SN;
   mainSurf.addIntersection(SN);
@@ -221,7 +221,7 @@ LinkUnit::addLinkSurf(const int SN)
     \param SN :: Surface number [inward looking]
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addLinkSurf");
+  ELog::RegMethod RegA("LinkUnit","addLinkSurf(int)");
   if (!linkSurf) 
     linkSurf=SN;
 
@@ -236,7 +236,7 @@ LinkUnit::addLinkSurf(const std::string& SList)
     \param SList ::  Surface string [fully decomposed]
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addInterSurf(std::string)");
+  ELog::RegMethod RegA("LinkUnit","addLinkSurf(std::string)");
   if (!mainSurf.hasRule()) 
     StrFunc::convert(SList,linkSurf); 
 
@@ -251,7 +251,7 @@ LinkUnit::addLinkSurf(const HeadRule& HR)
     \param HR ::  Link Rule
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");
+  ELog::RegMethod RegA("LinkUnit","addLinkSurf(HeadRule)");
   
   if (!mainSurf.hasRule())
     {
@@ -260,6 +260,55 @@ LinkUnit::addLinkSurf(const HeadRule& HR)
     }
   
   mainSurf.addIntersection(HR);
+  return;
+}
+  
+void
+LinkUnit::addLinkComp(const int SN) 
+  /*!
+    Add a surface to the output
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addLinkComp(int)");
+  if (!linkSurf) 
+    linkSurf=SN;
+
+  mainSurf.addUnion(SN);
+  return;
+}
+
+void
+LinkUnit::addLinkComp(const std::string& SList) 
+  /*!
+    Add a set of surfaces to the output
+    \param SList ::  Surface string [fully decomposed]
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addLinkComp(std::string)");
+  if (!mainSurf.hasRule()) 
+    StrFunc::convert(SList,linkSurf); 
+
+  mainSurf.addUnion(SList);
+  return;
+}
+
+void
+LinkUnit::addLinkComp(const HeadRule& HR) 
+  /*!
+    Add a set of surfaces to the output
+    \param HR ::  Link Rule
+  */
+{
+  ELog::RegMethod RegA("LinkUnit","addLinkComp(HeadRule)");
+  
+  if (!mainSurf.hasRule())
+    {
+      const std::string SList=HR.display();
+      StrFunc::convert(SList,linkSurf);
+    }
+  
+  mainSurf.addUnion(HR);
   return;
 }
 

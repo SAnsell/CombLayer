@@ -13,7 +13,7 @@ sub new
     bcomp => "clang",
     ccomp => "clang",
     cflag => "-fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11",
-    boostLib => "-L/opt/local/lib -lboost_regex",
+    boostLib => "-L/opt/local/lib -lboost_regex ",
     
     masterProg => undef,
     definitions => undef,
@@ -304,9 +304,10 @@ sub writeExcutables
           print $DX "target_link_libraries(",$item," boost_regex)\n";
           print $DX "target_link_libraries(",$item," boost_filesystem)\n";
 	}
-      print $DX "target_link_libraries(",$item," stdc++)\n ";
+      print $DX "target_link_libraries(",$item," stdc++)\n";
       print $DX "target_link_libraries(",$item," gsl)\n";
       print $DX "target_link_libraries(",$item," gslcblas)\n";
+      print $DX "target_link_libraries(",$item," m)\n";
     }
   
   

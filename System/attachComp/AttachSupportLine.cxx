@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachComp/AttachSupport.cxx
+ * File:   attachComp/AttachSupportLine.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -162,7 +162,7 @@ addToInsertLineCtrl(Simulation& System,
     dynamics cast
   */
 {
-  ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
+  ELog::RegMethod RegA("AttachSupport[F]","addToInsertLineCtrl(FC,FC)");
   
   const attachSystem::ContainedComp* CCPtr=
     dynamic_cast<const attachSystem::ContainedComp*>(&InsertFC);

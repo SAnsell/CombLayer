@@ -60,7 +60,10 @@ class WeightControl
   double scaleFactor;            ///< Scale factor
   double minWeight;              ///< Min weight
   double weightPower;            ///< makes weight W^power
-  std::vector<double> EBand;     ///< Energy bandk
+  double density;                ///< scales the material density
+  double r2Length;               ///< scale factor of r2 Length 
+  double r2Power;                ///< makes weight 1/r^power
+  std::vector<double> EBand;     ///< Energy band
   std::vector<double> WT;        ///< Weight scalar
   
   std::set<std::string> objectList;  ///< Object list to this cut [local]
@@ -99,38 +102,45 @@ class WeightControl
   void procRebase(const Simulation&,
 		  const mainSystem::inputParam&);
   void procTrack(const Simulation&,
-		  const mainSystem::inputParam&);
+		 const mainSystem::inputParam&);
+  void procWWGWeights(Simulation&,
+		      const mainSystem::inputParam&);
 
+  
   void processPtString(std::string);
 
   void procCalcHelp() const;
   void procRebaseHelp() const;
   void procObjectHelp() const;
   void procConeHelp() const;
+
   
   
   void setWeights(Simulation&);
   void cTrack(const Simulation&,const Geometry::Vec3D&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,
-	      ItemWeight&);
+	      CellWeight&);
   void cTrack(const Simulation&,const Geometry::Plane&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,
-	      ItemWeight&);
+	      CellWeight&);
 
-
-  void calcPoints(std::vector<Geometry::Vec3D>&,
-		  std::vector<long int>&) const;
+  void wTrack(const Simulation&,const Geometry::Vec3D&,
+	      WWGWeight&) const;
+  void wTrack(const Simulation&,const Geometry::Plane&,
+	      WWGWeight&) const;
 		  
   // WWG stuff
   void wwgGetFactors(const mainSystem::inputParam&,
 		     double&,double&) const;
 
   void wwgMesh(const mainSystem::inputParam&);
-  void wwgEnergy();
-  void wwgCreate(Simulation&,const mainSystem::inputParam&);
-
+  void wwgEnergy(const mainSystem::inputParam&);
+  void wwgVTK(const mainSystem::inputParam&);
+  void wwgCreate(const Simulation&,const mainSystem::inputParam&);
+  void wwgNormalize(const mainSystem::inputParam&);
+  
   void calcWWGTrack(const Simulation&,const Geometry::Plane&,
 		    WWGWeight&);
   void calcWWGTrack(const Simulation&,const Geometry::Vec3D&,

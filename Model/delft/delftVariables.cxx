@@ -3,7 +3,7 @@
  
  * File:   delft/delftVariables.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2016 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -568,9 +568,9 @@ DelftModel(FuncDataBase& Control)
 
   Control.addVariable("flatModTemp",20.0);         // Temperature of H2 
   Control.addVariable("flatGasTemp",25.0);         // Temperature of H2 
-  Control.addVariable("flatModMat","ParaOrtho");            // Liquid H2
-  Control.addVariable("flatGasMat","ParaOrtho%65");            // Liquid H2
-  Control.addVariable("flatAlMat","Aluminium");              // Aluminium
+  Control.addVariable("flatModMat","ParaOrtho%35");  // Liq-H2 (65% ortho)
+  Control.addVariable("flatGasMat","ParaOrtho%35");  //Gas H2 (65% ortho)
+  Control.addVariable("flatAlMat","Aluminium");             // Aluminium
 
   // CONTAINER
 

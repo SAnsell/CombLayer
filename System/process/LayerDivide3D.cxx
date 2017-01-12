@@ -449,7 +449,7 @@ LayerDivide3D::setMaterials(const size_t index,
   return;
 }
 
-void
+int
 LayerDivide3D::setMaterialXML(const std::string& LFile,
 			      const std::string& ObjName,
 			      const std::string& OutName,
@@ -457,6 +457,10 @@ LayerDivide3D::setMaterialXML(const std::string& LFile,
   /*!
     Processes the material setting 
     \param LFile :: Load file name
+    \param ObjName :: XML component name
+    \param OutName :: Output name
+    \param DefMat :: Default material if no file
+    \return 0 on no file and  1 on success
   */
 {
   ELog::RegMethod Rega("LayerDivide3D","setMaterials(XML)");
@@ -467,8 +471,7 @@ LayerDivide3D::setMaterialXML(const std::string& LFile,
   
   if (!DGPtr)
     DGPtr=new DivideGrid(DefMat);
-  DGPtr->loadXML(loadFile,objName);
-  return;
+  return DGPtr->loadXML(loadFile,objName);
 }
 
   

@@ -90,7 +90,7 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
   keyName(KN),X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
   Origin(O),primeAxis(0),LU(NL)
   /*!
-    Constructor 
+    Constructor with defined axis / origin
     \param KN :: KeyName
     \param NL :: Number of links
     \param O :: Origin Point
@@ -606,7 +606,7 @@ FixedComp::addLinkSurf(const size_t Index,const int SN)
     \param SN :: Surface number [inward looking]
   */
 {
-  ELog::RegMethod RegA("FixedComp","addLinkSurf");
+  ELog::RegMethod RegA("FixedComp","addLinkSurf(int)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
   
@@ -623,7 +623,7 @@ FixedComp::addLinkSurf(const size_t Index,
     \param SList :: String to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","addLinkSurf");
+  ELog::RegMethod RegA("FixedComp","addLinkSurf(std::string)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
@@ -631,6 +631,71 @@ FixedComp::addLinkSurf(const size_t Index,
   return;
 }
 
+void
+FixedComp::addLinkSurf(const size_t Index,const HeadRule& HR) 
+  /*!
+    Add a surface to output
+    \param Index :: Link number
+    \param HR :: Surface rule to add
+  */
+{
+  ELog::RegMethod RegA("FixedComp","addLinkSurf(HeadRule)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+  
+  LU[Index].addLinkSurf(HR);
+  return;
+}
+
+void
+FixedComp::addLinkComp(const size_t Index,const int SN) 
+  /*!
+    Add a surface to output
+    \param Index :: Link number
+    \param SN :: Surface number [inward looking]
+  */
+{
+  ELog::RegMethod RegA("FixedComp","addLinkComp(int)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+  
+  LU[Index].addLinkComp(SN);
+  return;
+}
+
+void
+FixedComp::addLinkComp(const size_t Index,
+		       const std::string& SList) 
+  /*!
+    Add a surface to output
+    \param Index :: Link number
+    \param SList :: String to process
+  */
+{
+  ELog::RegMethod RegA("FixedComp","addLinkComp(std::string)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+
+  LU[Index].addLinkComp(SList);
+  return;
+}
+
+void
+FixedComp::addLinkComp(const size_t Index,const HeadRule& HR) 
+  /*!
+    Add a surface to output
+    \param Index :: Link number
+    \param HR :: Surface rule to add
+  */
+{
+  ELog::RegMethod RegA("FixedComp","addLinkComp(HeadRule)");
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
+  
+  LU[Index].addLinkComp(HR);
+  return;
+}
+  
 void
 FixedComp::setLinkSurf(const size_t Index,
 		       const std::string& SList) 

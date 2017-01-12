@@ -21,7 +21,7 @@
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
-#include <iostream> 
+#include <iostream>
 #include <sstream>
 #include <cmath>
 #include <complex>
@@ -86,248 +86,113 @@ LOKIvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  PipeGen.setPipe(2.5,2.5);     //  (12.0,0.5); // 12.0 changed to 1.45 -- flanges?
+  PipeGen.setPipe(4.5,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
-
-  Control.addVariable("lokiAxisXStep",0.0); //TEMP ask Clara
-  Control.addVariable("lokiAxisXYAngle",0.0); // not with the bender! starting angle 1 degree from the port in the horizontal rotation
+  
+  Control.addVariable("lokiAxisXStep",0.0);   // TEMP : ask Clara
+  Control.addVariable("lokiAxisXYAngle",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisZAngle",0.0);
 
-  FGen.setGuideMat("Aluminium"); //all guides are aluminum according
-                                 //to Damian //used to be copper
-                                 //before
+  FGen.setGuideMat("Aluminium");
+
   FGen.setThickness(0.5,0.5);
   FGen.setYOffset(0.0);
-  FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0); //2nd, 3rd param = width of the guide//last parameter - angle for the horizontal (0 degrees) or vertical (90 degrees bender)
-  //up or down bending -- -90 or +90, 0.0 = horizontal bending? //6125.0
+  FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0);
+
 
   Control.addVariable("lokiBlockShutterHeight",66.3);
   Control.addVariable("lokiBlockShutterWidth",38.8);
-  Control.addVariable("lokiBlockShutterDepth",49.3);
+  Control.addVariable("lokiBlockShutterDepth",40.3);  // cant extend out of shutter region
   Control.addParse<double>("lokiBlockShutterYStep","lokiBlockShutterDepth/2.0");
   Control.addVariable("lokiBlockShutterDefMat","Stainless304");
+
+  // Pipe in gamma shield
+  PipeGen.generatePipe(Control,"lokiPipeB",6.0,44.0);
+  FGen.setGuideMat("Aluminium");
+  FGen.clearYOffset();
+  FGen.generateBender(Control,"lokiBB",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+
+  // Pipe in gamma shield
+  PipeGen.generatePipe(Control,"lokiPipeBLink",2.0,44.0);
+  FGen.clearYOffset();
+  FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
   
-  
-  
-  // Pipe
-   PipeGen.generatePipe(Control,"lokiPipeB",0.5,92.0); //92 = 2 cm bigger than the guide // first parameter is the YOffset
-   Control.addVariable("lokiPipeBRadius",5.0);
-   Control.addVariable("lokiPipeBFeThick",0.8);
-   Control.addVariable("lokiPipeBMat","Stainless316");
-   // Control.addVariable("lokiPipeBVoidMat","Void");
-
-
-
-  FGen.setGuideMat("Aluminium");  //the material of LokiBB and all the guides below
-  //FGen.clearYOffset();
-  FGen.setYOffset(-45.0);
-  //straight guide
-  FGen.generateTaper(Control,"lokiBB",90.0,2.5,3.0,2.5,3.0);
-  //FGen.generateBender(Control,"lokiBB",44.0, 3.0,3.0,3.0,3.0,0.0,0.0);
-  Control.addVariable("lokiFMonoNShapes",1);       
-  Control.addVariable("lokiFMonoNShapeLayers",1);
-  Control.addVariable("lokiFMonoActiveShield",0);
-  Control.addVariable("lokiFMonoLayerThick1",1.0);  //material thick
-
-
-  // //first chopper //chopper = box for chopper, actual chopper is Double Blade, DDisk, etc 
-  // CGen.setMainRadius(62.5); // size of housing //was 25.0 //62.5
-  // CGen.setFrame(60.0,60.0); //from clara //was 60, 60 80,80 
-  // CGen.generateChopper(Control,"lokiChopperA",1.0,15.7,4.55); // 1st = step between chopper and optics, 
-  // //2nd = thickness of the chopper unit  // 3rd = thickness of the void  //dimensions from clara, //was (10, , 4.55) 1.0,15.7,5.3); 
-
-  // CGen.setMainRadius(62.5);
-  // CGen.setFrame(120.0,120.0); //will leave for now
-  // CGen.generateChopper(Control,"lokiChopperA",9.0,15.7,6.0); //3rd was 5.3
-
-  // // Double Blade chopper
-  // BGen.setThick({1.5,1.5}); //roughly, from Erik = 2
-  // BGen.setGap(0.9); // gap between the blades //from clara 
-  // BGen.addPhase({95.0},{120.0});
-  // BGen.addPhase({95.0},{120.0});
-  // // BGen.addPhase({95},{120.0}); //chopper closed, if -5 or -10 = chopper closed //was ({95,275},{30.0,30.0}); 
-  // // BGen.addPhase({95},{120.0}); //was ({95,275},{30.0,30.0}); 
-  // BGen.setMaterials("Aluminium", "Aluminium"); //material of inner blade, and outer blade
-  // BGen.generateBlades(Control,"lokiDBladeA", 0.0,10.0,22.50); // 0.0,10.0,70.0); //
-
-
-
-//parameters adjusted
-
   CGen.setMainRadius(65.5);   // diameter 70.0 emali
   CGen.setFrame(160.0,160.0);
-  CGen.generateChopper(Control,"lokiChopperA",9.0,15.7,5.3);  
-  Control.addVariable("lokiChopperAYStep",9.3);    
+  CGen.generateChopper(Control,"lokiChopperA",9.5,15.7,5.3);  
 
+  
   // Double Blade chopper
   BGen.setMaterials("Aluminium","Aluminium");
   BGen.setThick({2.0,2.0});
-  BGen.addPhase({120.0},{120.0});
-  BGen.addPhase({120.0},{120.0});
+  BGen.setGap(1.0);
+  BGen.addPhase({120},{120.0});
+  BGen.addPhase({120},{120.0});
   BGen.generateBlades(Control,"lokiDBladeA",0.95,10.0,35.0);
 
 
-  // straight guide between first and second chopper
-  PipeGen.setPipe(2.5,2.5);     //  (12.0,0.5); // 12.0 changed to 1.45 -- flanges?
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0); 
-  PipeGen.generatePipe(Control,"lokiPipeC",0.5,491.0); //first paarameter = Yoffset
-  Control.addVariable("lokiPipeCRadius",5);
-  Control.addVariable("lokiPipeCFeThick",0.8);
-  Control.addVariable("lokiPipeCMat","Stainless316");
-
-
-
-
-  //   // Pipe
-  //  PipeGen.generatePipe(Control,"lokiPipeB",0.1,92.15); //52 = 2 cm bigger than the guide
-  //  Control.addVariable("lokiPipeBRadius",3.7);
-  //  Control.addVariable("lokiPipeBFeThick",8);
-  //  // Control.addVariable("lokiPipeBFlangeRadius",4.0);
-  // //  Control.addVariable("lokiPipeBFlangeLength",1.0);
-  //  Control.addVariable("lokiPipeBMat","Stainless316");
-  //  // Control.addVariable("lokiPipeBVoidMat","Void");
-
-
-  FGen.setYOffset(-244.75);
-  FGen.generateRectangle(Control,"lokiFC",489.5,2.5,3.0);
-  Control.addVariable("lokiFCMonoNShapes",1);       
-  Control.addVariable("lokiFCMonoNShapeLayers",1);
-  Control.addVariable("lokiFCMonoActiveShield",0);
-  Control.addVariable("lokiFCMonoLayerThick1",1.0);  //material thick
-
-
-  //second chopper
-  CGen.setMainRadius(25.0);
-  CGen.setFrame(60.0,60.0);
-  CGen.generateChopper(Control,"lokiChopperAExtra",10.0,10.0,4.55);
-
-  // Two single blades (disks)
-  BGen.setThick({0.5});
-  BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"lokiSBladeAEFirst",0.0,10.0,22.50);
-
-  BGen.setThick({0.5});
-  BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"lokiSBladeAESecond",0.0,10.0,22.50);
-
-  // Bender D (straight guide between second and third chopper)
-  PipeGen.generatePipe(Control,"lokiPipeD",2.0,282.0); //282 = 2 cm longer than the guide
-  FGen.generateRectangle(Control,"lokiBD",280.0,2.5,3.0);
-
-
+  // Guide from First chopper to Wall
+  PipeGen.setPipe(5.0,0.8);  // Rad / thick
+  PipeGen.setWindow(-2.0,0.8);  // window offset/ thick
+  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.generatePipe(Control,"lokiPipeC",1.0,488.0);
+  FGen.generateRectangle(Control,"lokiFC",485.0,2.5,3.0);
 
 
 // NEW BEAM INSERT:
   Control.addVariable("lokiCInsertYStep",0.8);
-  Control.addVariable("lokiCInsertNBox", 2); //3);
+  Control.addVariable("lokiCInsertNBox", 2); 
   Control.addVariable("lokiCInsertHeight0",17.8);
   Control.addVariable("lokiCInsertWidth0", 23.8);
   Control.addVariable("lokiCInsertHeight1",33.2);
   Control.addVariable("lokiCInsertWidth1",49.2);
-  // Control.addVariable("lokiCInsertHeight2",28.0);
-  // Control.addVariable("lokiCInsertWidth2",27.3);
   Control.addVariable("lokiCInsertLength0",175); // + 1.5 cm to compensate for mising parts
   Control.addVariable("lokiCInsertLength1",177.6); // + 1.5 cm to compensate for mising parts
-  // Control.addVariable("lokiCInsertLength2",125.0);
   Control.addVariable("lokiCInsertMat0","Stainless304");
   Control.addVariable("lokiCInsertMat1","Stainless304");
-  //Control.addVariable("lokiCInsertMat2","Stainless304");
 
   Control.addVariable("lokiCInsertNWall",3);
   Control.addVariable("lokiCInsertWallThick0",0.6);
-  Control.addVariable("lokiCInsertWallMat0","Void"); //Nickel
+  Control.addVariable("lokiCInsertWallMat0","Void"); 
   Control.addVariable("lokiCInsertWallThick1",3.0);
-  Control.addVariable("lokiCInsertWallMat1","Stainless304"); //Nickel
+  Control.addVariable("lokiCInsertWallMat1","Stainless304"); 
   Control.addVariable("lokiCInsertWallThick2",1.4);
-  Control.addVariable("lokiCInsertWallMat2","Void"); //Nickel
-  // Control.addVariable("lokiCInsertWallThick1",5.0);
-  // Control.addVariable("lokiCInsertWallMat1","Void");
+  Control.addVariable("lokiCInsertWallMat2","Void"); 
 
+
+  FGen.generateBender(Control,"lokiFWall",355.0,2.5,2.5,2.5,2.5,6125.0,-90.0); 
+
+  PGen.setFeLayer(20.0);
+  PGen.setConcLayer(30.0);
+  PGen.generatePit(Control,"lokiOutPitA",0.0, 22.0, 166.0, 167.0,36.0);
+
+  
   //hole in chopper pit D to accomodate the insert
-  Control.addVariable("lokiCutDShape","Square");
-  Control.addVariable("lokiCutDRadius",36.0); //should not be radius
+  Control.addVariable("lokiPitACutShape","Square");
+  Control.addVariable("lokiPitACutRadius",36.0); //should not be radius
 
-// Guide inside the bunker wall
-  FGen.setYOffset(-176.3); //to make it fit the bunker insert. number guessed, how it can be estimated/calculated
-  FGen.generateBender(Control,"lokiFFBunker",352.6,2.5,2.5,2.5,2.5,6125.0,-90.0); 
-
-  // Pipe around the guide ouside of the bunker and first part of the guide ouside of the bunker
-  PipeGen.generatePipe(Control,"lokiPipeFExtra",0.5,19.0); //TEMP!!! Random numbers
-  Control.addVariable("lokiPipeFExtraRadius",5.0);
-  Control.addVariable("lokiPipeFExtraFeThick",0.8);
-  Control.addVariable("lokiPipeFExtraMat","Stainless316");
-
-  FGen.clearYOffset(); 
-  FGen.generateRectangle(Control,"lokiFExtra",18.0,2.5,3.0); //TEMP!!! Random numbers
-
- //fifth chopper //SECOND chopper in the model where there is only one chopper inside the bunker space //TEMP PArameters are random, make real!
-  CGen.setMainRadius(65.5);
+  CGen.setMainRadius(65.5);   // diameter 70.0 emali
   CGen.setFrame(160.0,160.0);
-  CGen.generateChopper(Control,"lokiChopperD",9.0,15.7,5.3);
-  Control.addVariable("lokiChopperDYStep",9.3);  
+  CGen.generateChopper(Control,"lokiChopperOutA",9.3,15.7,5.3);  
 
   // Double Blade chopper
   BGen.setMaterials("Aluminium","Aluminium");
   BGen.setThick({2.0,2.0});
   BGen.addPhase({120.0},{120.0});
   BGen.addPhase({120.0},{120.0});
-  BGen.generateBlades(Control,"lokiDBladeD",0.95,10.0,35.0);
-
-
-  //hole in chopper pit D to accomodate the guide
-  Control.addVariable("lokiCutGShape","Circle");
-  Control.addVariable("lokiCutGRadius",18.0);
-
-     // Chopper pit D, outside of bunker wall
-
-  Control.addVariable("lokiPitDVoidHeight",167.0);
-  Control.addVariable("lokiPitDVoidDepth",36.0);
-  Control.addVariable("lokiPitDVoidWidth",166.0);
-  Control.addVariable("lokiPitDVoidLength",22.0);
-  
-  Control.addVariable("lokiPitDFeHeight",20.0);
-  Control.addVariable("lokiPitDFeDepth",20.0);
-  Control.addVariable("lokiPitDFeWidth",15.0);
-  Control.addVariable("lokiPitDFeFront",25.0);
-  Control.addVariable("lokiPitDFeBack",20.0);
-  Control.addVariable("lokiPitDFeMat","Stainless304");
-
-  Control.addVariable("lokiPitDConcHeight",30.0);
-  Control.addVariable("lokiPitDConcDepth",30.0);
-  Control.addVariable("lokiPitDConcWidth",30.0);
-  Control.addVariable("lokiPitDConcFront",30.0);
-  Control.addVariable("lokiPitDConcBack",30.0);
-  Control.addVariable("lokiPitDConcMat","Concrete");
-
-  Control.addVariable("lokiPitDColletHeight",15.0);
-  Control.addVariable("lokiPitDColletDepth",15.0);
-  Control.addVariable("lokiPitDColletWidth",40.0);
-  Control.addVariable("lokiPitDColletLength",5.0);
-  Control.addVariable("lokiPitDColletMat","Tungsten");
-
+  BGen.generateBlades(Control,"lokiDBladeOutA",0.95,10.0,35.0);
 
  //Shielding around collimator drum
   SGen.setRFLayers(1,8);
-  SGen.generateShield(Control,"lokiShieldG",270.0,100.0,100.0,150.0,8,8);
+  SGen.generateShield(Control,"lokiShieldA",270.0,100.0,100.0,150.0,8,8);
 
  // straight after fifth chopper inside the collimator drum
-  PipeGen.setPipe(2.5,2.5);     //  (12.0,0.5); // 12.0 changed to 1.45 -- flanges?
-  PipeGen.setWindow(-2.0,0.3);
-  PipeGen.setFlange(-4.0,1.0); 
-  PipeGen.generatePipe(Control,"lokiPipeG",0.5,270.0); ///TEMP random numbers
-  Control.addVariable("lokiPipeGRadius",5.0);
-  Control.addVariable("lokiPipeGFeThick",0.8);
-  Control.addVariable("lokiPipeGMat","Stainless316");
-
-  FGen.setYOffset(-134.0);
-  FGen.generateRectangle(Control,"lokiFG",268.0,2.5,3.0); // TEMP random numbers
-
-  Control.addVariable("lokiCollGYStep",165.35);
-  Control.addVariable("lokiCollGLength",270.0);
-  Control.addVariable("lokiCollGInnerRadius",270.0);
-  Control.addVariable("lokiCollGMat","Copper"); 
+  PipeGen.generatePipe(Control,"lokiPipeOutA",0.5,270.0);
+  
+  //  FGen.setYOffset(-134.0);
+  FGen.clearYOffset();
+  FGen.generateRectangle(Control,"lokiFOutA",268.0,2.5,3.0); 
 
   Control.addVariable("lokiAppAInnerWidth",5.0);
   Control.addVariable("lokiAppAInnerHeight",5.0);
@@ -337,21 +202,22 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiAppAYStep",5.0); 
   Control.addVariable("lokiAppADefMat","Tungsten");
 
+  Control.addVariable("lokiCollAYStep",165.35);
+  Control.addVariable("lokiCollALength",7.0);
+  Control.addVariable("lokiCollAMat","Copper"); 
 
-
-//Shielding around second collimator drum
+  //Shielding around second collimator drum
   SGen.setRFLayers(1,8);
-  SGen.generateShield(Control,"lokiShieldH",280.0,100.0,100.0,200.0,8,8);
+  SGen.generateShield(Control,"lokiShieldB",280.0,100.0,100.0,200.0,8,8);
 
- // straight after fifth chopper inside the collimator drum
-  PipeGen.generatePipe(Control,"lokiPipeH",1.0,270.0); ///TEMP random numbers
-  FGen.setYOffset(-134.0);
-  FGen.setThickness(0.5,0.5);
-  FGen.generateRectangle(Control,"lokiFH",268.0,2.5,3.0); // TEMP random numbers
 
-  Control.addVariable("lokiCollHYStep",134.0);
-  Control.addVariable("lokiCollHLength",270.0);
-  Control.addVariable("lokiCollHMat","Copper"); 
+  PipeGen.generatePipe(Control,"lokiPipeOutB",1.0,270.0); 
+  FGen.generateRectangle(Control,"lokiFOutB",268.0,2.5,3.0); 
+  
+
+  Control.addVariable("lokiCollBYStep",134.0);
+  Control.addVariable("lokiCollBLength",7.0);
+  Control.addVariable("lokiCollBMat","Copper"); 
 
   Control.addVariable("lokiAppBInnerWidth",4.0);
   Control.addVariable("lokiAppBInnerHeight",9.0);
@@ -361,14 +227,8 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiAppBYStep",5.0); 
   Control.addVariable("lokiAppBDefMat","Tungsten");
 
-
-  //guide inside the cave
-  FGen.setYOffset(0.0);
-  FGen.generateRectangle(Control,"lokiFK",150.0,3.0,3.0); //TEMP!!! Random numbers
-
-
   // HUT:
-  Control.addVariable("lokiCaveYStep",75.0);
+  Control.addVariable("lokiCaveYStep",25.0);
   Control.addVariable("lokiCaveVoidFront",60.0);
   Control.addVariable("lokiCaveVoidHeight",300.0);
   Control.addVariable("lokiCaveVoidDepth",183.0);
@@ -393,64 +253,30 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCaveFeMat","Stainless304");
   Control.addVariable("lokiCaveConcMat","Concrete");
 
-
-
-  //// DetectorTank
-  Control.addVariable("lokiTankXStep",0.0);
-  Control.addVariable("lokiTankYStep",35.0);
-  Control.addVariable("lokiTankZStep",0.0);
-  Control.addVariable("lokiTankXYAngle",0.0);
-  Control.addVariable("lokiTankZAngle",0.0);
-
-  Control.addVariable("lokiTankNLayers",2.0);
-  Control.addVariable("lokiTankInnerRadius",10.0);
-  Control.addVariable("lokiTankOuterRadius",300.0);
-  Control.addVariable("lokiTankHeight",100.0);
-  Control.addVariable("lokiTankMidAngle",-40.0);
-  Control.addVariable("lokiTankFrontThick",2.0);
-  Control.addVariable("lokiTankInnerThick",2.0);
-  Control.addVariable("lokiTankRoofThick",1.0);
-  Control.addVariable("lokiTankBackThick",3.0);
-  Control.addVariable("lokiTankWallMat","Stainless304");
-  //random numbers for the cave below
-  Control.addVariable("lokiTankRadius",300.0);
-  Control.addVariable("lokiTankLength",200.0);
-  Control.addVariable("lokiTankSideThick",3.0);
-  Control.addVariable("lokiTankWindowThick",3.0);
-  Control.addVariable("lokiTankWindowRadius",300.0);
-  Control.addVariable("lokiTankWindowInsetLen",300.0);
-  Control.addVariable("lokiTankWindowMat","Stainless304");
-
-  // // Small :: Grid Collimator A:
-  // RotGen.setMain(25.0,1.0);
-  // RotGen.setWall(1.0,"Aluminium");
-  // RotGen.addHole("Circle",   3.0,0.0,    0.0, 15.0);
-  // RotGen.addHole("Rectangle",5.0,5.0,  120.0, 15.0);
-  // RotGen.addHole("Circle",   4.0,0.0,  240.0, 15.0);
-  // RotGen.generatePinHole(Control,"lokiGridA",5.0,-15.0,180.0);
-  // RotGen.generatePinHole(Control,"lokiGridB",2.0,-15.0,180.0);
-  // RotGen.generatePinHole(Control,"lokiGridC",2.0,-15.0,180.0);
-  // RotGen.generatePinHole(Control,"lokiGridD",2.0,-15.0,180.0);
-
-  // RotGen.setMain(30.0,300.0);
-  // RotGen.resetHoles();
-  // RotGen.addHole("Rectangle",   4.0,4.0,    0.0, 17.50);
-  // RotGen.addHole("Rectangle",   6.0,6.0,  120.0, 17.50);
-  // RotGen.addHole("Rectangle",   5.0,5.0,  240.0, 17.50);
-  // RotGen.generatePinHole(Control,"lokiCollA",1.0,-17.5,180.0);
-  // RotGen.generatePinHole(Control,"lokiCollB",5.0,-17.5,180.0);
-  // RotGen.generatePinHole(Control,"lokiCollC",5.0,-17.5,180.0);
-
-  // Control.addVariable("lokiCBoxBYStep",2.0);
-  // Control.addVariable("lokiCBoxBHeight",80.0);
-  // Control.addVariable("lokiCBoxBWidth",80.0);
-  // Control.addVariable("lokiCBoxBDepth",12.0);   // THIS is half BYStep 
-  // Control.addVariable("lokiCBoxBDefMat","Void");
-
-  // // first guide in loki collimator
-  // FGen.generateRectangle(Control,"lokiFCA0",296.0,3.0,3.0);
+  PipeGen.generatePipe(Control,"lokiPipeOutC",1.0,150.0);
+  FGen.generateRectangle(Control,"lokiFOutC",146.0,2.5,3.0);
   
+    // Vacumm tank
+  Control.addVariable("lokiVTankXStep",0.0);       
+  Control.addVariable("lokiVTankYStep",25.0);
+  Control.addVariable("lokiVTankZStep",0.0);       
+  Control.addVariable("lokiVTankXYAngle",0.0);       
+  Control.addVariable("lokiVTankZAngle",0.0);
+  
+  Control.addVariable("lokiVTankRadius",144.0);
+  Control.addVariable("lokiVTankLength",1048.0);
+  Control.addVariable("lokiVTankSideThick",5.0);   // NOT CORRECT
+  Control.addVariable("lokiVTankBackThick",5.0);   // NOT CORRECT
+  Control.addVariable("lokiVTankFrontThick",1.0);  // NOT CORRECT
+
+  Control.addVariable("lokiVTankWindowInsetLen",106.0);  // NOT CORRECT
+  Control.addVariable("lokiVTankWindowThick",1.0);  // NOT CORRECT
+  Control.addVariable("lokiVTankWindowRadius",8.0);  // NOT CORRECT
+
+  Control.addVariable("lokiVTankWindowMat","SiCrystal");  // NOT CORRECT
+  Control.addVariable("lokiVTankWallMat","Stainless304");
+
   return;
 }
 
-} // NAMESPACE setVariable
+}  // NAMESPACE setVariable

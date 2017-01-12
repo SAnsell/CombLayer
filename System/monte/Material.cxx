@@ -140,16 +140,14 @@ Material::operator+=(const Material& A)
   ELog::RegMethod RegA("Material","operator+=");
   
   // Need to match off Zaids:
-  std::vector<Zaid>::const_iterator vc;
-
   for(const Zaid& ZItem : A.zaidVec)
     {
       std::vector<Zaid>::iterator lc=
         std::find(zaidVec.begin(),zaidVec.end(),ZItem);
       if (lc!=zaidVec.end())
-	lc->setDensity(vc->getDensity()+lc->getDensity());
+	lc->setDensity(ZItem.getDensity()+lc->getDensity());
       else
-	zaidVec.push_back(*vc);
+	zaidVec.push_back(ZItem);
     }
 
   // SQW:

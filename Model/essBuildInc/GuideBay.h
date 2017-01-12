@@ -80,11 +80,10 @@ class GuideBay : public attachSystem::ContainedGroup,
 
   /// access to cylinder
   void setCylBoundary(const int A,const int B) 
-      { innerCyl=abs(A); outerCyl=abs(B); } 
+    { innerCyl=abs(A); outerCyl=abs(B); } 
 
   void outerMerge(Simulation&,GuideBay&);
-  void createGuideItems(Simulation&,const attachSystem::FixedComp&,
-			const long int,const long int);
+  void createGuideItems(Simulation&,const std::string&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

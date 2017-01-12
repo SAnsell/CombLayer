@@ -24,6 +24,26 @@
 
 namespace WeightSystem
 {
+
+/*!
+  \struct CellItem
+  \brief Singel cell item
+  \author S. Ansell
+  \date February 2012
+*/
+  
+struct CellItem
+{
+  long int vCell;         ///< Void cell
+  double weight;          ///< weight for the cell
+  double number;          ///< number of tracks
+
+  /// Constructor
+  CellItem(const double W) : vCell(0),weight(W), number(1.0) {}
+  /// Copy construct
+  CellItem(const CellItem& A) :
+    vCell(A.vCell),weight(A.weight),number(A.number) {}
+};
   
 /*!
   \class CellWeight
@@ -33,9 +53,18 @@ namespace WeightSystem
   \brief Tracks cell weight in cells
 */
   
-class CellWeight : public ItemWeight
+class CellWeight 
 {
+ private:
 
+  /// storage for cells
+  typedef std::map<long int,CellItem> CMapTYPE;
+
+  const double sigmaScale;             ///< Scale for sigma 
+  CMapTYPE Cells;                      ///< Cells and track info
+
+  double calcMinWeight(const double,const double) const;
+  
  public:
 
   CellWeight();
@@ -43,12 +72,20 @@ class CellWeight : public ItemWeight
   CellWeight& operator=(const CellWeight&);    
   virtual ~CellWeight() {}          ///< Destructor
 
+  void clear();
+  void addTracks(const long int,const double);
+
+  
   void updateWM(const double,const double,
 		const double,const double) const;
   void invertWM(const double,const double,
 		const double,const double) const;
+  void write(std::ostream&) const;
+  
 };
 
+std::ostream& operator<<(std::ostream&,const CellWeight&);
+ 
 }
 
 #endif

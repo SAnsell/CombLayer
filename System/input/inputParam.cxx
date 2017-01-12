@@ -869,7 +869,7 @@ inputParam::regMulti(const std::string& K,const std::string& LK,
     \param LK :: Long keyname
     \param maxSets :: Max number of sets
     \param reqData :: Required data per set
-    \param maxData :: Max number of dat per set
+    \param maxData :: Max number of data per set
   */
 {
   ELog::RegMethod RegA("inputParam","regMulti");

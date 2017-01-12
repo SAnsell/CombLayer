@@ -88,7 +88,9 @@ class PlateUnit : public ShapeUnit
   void addPrimaryPoint(const Geometry::Vec3D&);
   void addPairPoint(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+  /// Direction axis at start
   Geometry::Vec3D getBegAxis() const { return -YVec; }
+  /// Direction axis at end
   Geometry::Vec3D getEndAxis() const { return YVec; }
 
   virtual std::string getString(const ModelSupport::surfRegister&,

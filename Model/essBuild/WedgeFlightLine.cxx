@@ -57,7 +57,6 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
-#include "Cone.h"
 #include "Line.h"
 #include "Rules.h"
 #include "varList.h"
@@ -185,7 +184,8 @@ WedgeFlightLine::buildWedges(Simulation& System,
   const std::string baseOut=
     innerFC.getSignedLinkString(innerIndex)+
     outerFC.getSignedLinkString(outerIndex)+
-    ModelSupport::getComposite(SMap,flightIndex," 5 6 ") ;
+    this->getLinkComplement(10)+
+    this->getLinkComplement(11);
   
   // Create the radial surfaces that divide the wedges 
   int index(flightIndex+1001);

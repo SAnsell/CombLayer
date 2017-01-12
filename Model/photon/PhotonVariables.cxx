@@ -110,6 +110,7 @@ PhotonVariables(FuncDataBase& Control)
 
   Control.addVariable("LeftCollYStep",-50.0);
   //  Control.addVariable("LeftCollLayoutType","square");
+  Control.addVariable("LeftCollGridExclude",1);
   Control.addVariable("LeftCollLayoutType","hexagon");
   Control.addVariable("LeftCollBoundaryType","rectangle");
   Control.addVariable("LeftCollBoundaryWidth",10.0);

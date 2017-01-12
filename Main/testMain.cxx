@@ -140,6 +140,7 @@
 #include "testMD5.h"
 #include "testMersenne.h"
 #include "testMesh3D.h"
+#include "testModelSupport.h"
 #include "testNeutron.h"
 #include "testNList.h"
 #include "testNRange.h"
@@ -1155,8 +1156,9 @@ supportTest(const int type,const int extra)
       std::cout<<"testFortranWrite        (2)"<<std::endl;
       std::cout<<"testMathSupport         (3)"<<std::endl;
       std::cout<<"testMatrix              (4)"<<std::endl;
-      std::cout<<"testSimpson             (5)"<<std::endl;
-      std::cout<<"testSupport             (6)"<<std::endl;
+      std::cout<<"testModelSupport        (5)"<<std::endl;
+      std::cout<<"testSimpson             (6)"<<std::endl;
+      std::cout<<"testSupport             (7)"<<std::endl;
       return 0;
     }
 
@@ -1189,11 +1191,17 @@ supportTest(const int type,const int extra)
     }
   if(type==5 || type<0)
     {
-      testSimpson A;
+      testModelSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }
   if(type==6 || type<0)
+    {
+      testSimpson A;
+      int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==7 || type<0)
     {
       testSupport A;
       int X=A.applyTest(extra);

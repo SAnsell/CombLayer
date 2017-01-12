@@ -68,6 +68,12 @@ class FrontBackCut
   void setFrontDivider(const HeadRule&);
   void setBackDivider(const HeadRule&);
 
+  void createLinks(attachSystem::FixedComp&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void createFrontLinks(attachSystem::FixedComp&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void createBackLinks(attachSystem::FixedComp&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   /// Flag accessor
   bool frontActive() const { return activeFront; }

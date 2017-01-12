@@ -60,8 +60,7 @@ shortDREAMvariables(FuncDataBase& Control)
     \param Control :: DataBase
   */
 {
-  ELog::RegMethod RegA("SHORTDREAMvariables[F]","SHORTDREAMvariables");
-
+  ELog::RegMethod RegA("shortDREAMvariables[F]","shortDREAMvariables");
 
   Control.addVariable("shortDreamFDLength",150.0);       
   Control.addVariable("shortDreamPipeDLength",40.0);

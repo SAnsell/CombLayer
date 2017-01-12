@@ -613,8 +613,6 @@ WorkData::XInverse(const double YValue) const
   const double yA=Yvec[IX].getVal();
   const double yB=Yvec[IX+1].getVal();
   const double frac=(YValue-yA)/(yB-yA);
-  ELog::EM<<"IX == "<<IX<<" ::"<<
-    Yvec[IX]<<" ++ "<<YValue<<" ++ "<<Yvec[IX+1]<<ELog::endDiag;
 
   return XCoord[IX]+frac*(XCoord[IX+1]-XCoord[IX]);
 }
@@ -982,7 +980,7 @@ WorkData::integrate(const double xMin,const double xMax) const
       for(i++;i<Yvec.size() && XCoord[i+1]<xMax;i++)
 	sum+=Yvec[i];  
 
-      if (xMax<XCoord[i+1])
+      if (i<Yvec.size() && xMax<XCoord[i+1])
 	{
 	  frac=(xMax-XCoord[i])/(XCoord[i+1]-XCoord[i]);
 	  sum+=Yvec[i]*frac;
@@ -1019,7 +1017,7 @@ WorkData::integrateX(const double xMin,const double xMax) const
       for(i++;i<Yvec.size() && XCoord[i+1]<xMax;i++)
 	sum+=Yvec[i]*(XCoord[i+1]-XCoord[i]);  
 
-      if (xMax<XCoord[i+1])
+      if (i<Yvec.size() && xMax<XCoord[i+1])
 	sum+=Yvec[i]*(xMax-XCoord[i]);
     }
   return sum;

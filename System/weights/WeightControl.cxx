@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -62,7 +63,6 @@
 #include "WForm.h"
 #include "WItem.h"
 #include "WCells.h"
-#include "ItemWeight.h"
 #include "CellWeight.h"
 #include "Simulation.h"
 #include "objectRegister.h"
@@ -77,15 +77,14 @@
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
 #include "Mesh3D.h"
-#include "WWG.h"
-#include "WWGWeight.h"
 #include "WeightControl.h"
 
 namespace WeightSystem
 {
   
 WeightControl::WeightControl() :
-  scaleFactor(1.0),minWeight(0.0),weightPower(0.5),
+  scaleFactor(1.0),minWeight(1e-20),weightPower(0.5),
+  density(1.0),r2Length(1.0),r2Power(2.0),
   activeAdjointFlag(0),activePtType("Void"),activePtIndex(0)
   /*
     Constructor
@@ -120,6 +119,10 @@ WeightControl::operator=(const WeightControl& A)
       scaleFactor=A.scaleFactor;
       minWeight=A.minWeight;
       weightPower=A.weightPower;
+      density=A.density;
+      r2Length=A.r2Length;
+      r2Power=A.r2Power;
+
       EBand=A.EBand;
       WT=A.WT;
       objectList=A.objectList;
@@ -182,6 +185,8 @@ WeightControl::processPtString(std::string ptStr)
     - P [optional] indicates that a plane is used not a point
     - [index] : number of source/plane/tally point
     - {P}power : P + power of weight [optional]
+
+    Example TS2P0.8  --> Tally type : Source 2 Power 0.8
     \param ptStr :: String to process
   */
 {
@@ -196,13 +201,16 @@ WeightControl::processPtString(std::string ptStr)
       const char SP=static_cast<char>(std::toupper(ptStr[0]));
       const char TP=static_cast<char>(std::toupper(ptStr[1]));
       if (SP!='T' && SP!='S')  // fail
-	throw ColErr::InvalidLine(Input,"PtStr");
+	throw ColErr::InvalidLine(Input,"PtStr[0] expected:: [ST] [SPC] number");
+
 
       std::map<char,std::string>::const_iterator mc=TypeMap.find(TP);
       if (mc==TypeMap.end())
-	
-        throw ColErr::InvalidLine(Input,"PtStr expected:: [ST] [SPC] number");
+        throw ColErr::InvalidLine
+          (Input,"PtStr[1] expected:: [ST] [SPC] number");
 
+      activeAdjointFlag= (SP=='T') ? 1 : 0;
+	      
       activePtType=mc->second;
 
       ptStr[0]=' ';
@@ -299,13 +307,19 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
       processPtString(PIndex);
     }      
   
-  if (index<nItem)
-    energyCut=IParam.getValue<double>(unitName,iSet,index++);
-  if (index<nItem)
-    scaleFactor=IParam.getValue<double>(unitName,iSet,index++);
-  if (index<nItem)
-    minWeight=IParam.getValue<double>(unitName,iSet,index++);
+  energyCut=IParam.getDefValue<double>(0.0,unitName,iSet,index++);
+  scaleFactor=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  minWeight=IParam.getDefValue<double>(1e-20,unitName,iSet,index++);
+  density=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
+  ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
+	  <<" sF:"<<scaleFactor
+    	  <<" minW:"<<minWeight
+    	  <<" rho:"<<density
+    	  <<" r2Len:"<<r2Length
+	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
   return;
 }
 
@@ -361,6 +375,7 @@ void
 WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
   /*!
     Determine inf the next component cat be a plane
+    Given as two Vec3D from inputParam
     \param IParam :: Input parameters
   */
 {
@@ -422,43 +437,13 @@ WeightControl::procSourcePoint(const mainSystem::inputParam& IParam)
   return;
 }
 
-void
-WeightControl::calcPoints(std::vector<Geometry::Vec3D>& Pts,
-                          std::vector<long int>& index) const
-/*!
-    Calculate the points in the mesh [move to wwg??]
-    \param Pts :: Geometric points
-    \param index :: index cnt [needed??]
-  */
-{
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-
-  WWG& wwg=WM.getWWG();
-  const Geometry::Mesh3D& WGrid=wwg.getGrid();  
-
-  const size_t NX=WGrid.getXSize();
-  const size_t NY=WGrid.getYSize();
-  const size_t NZ=WGrid.getZSize();
-
-  long int cN(1);         // Index to reference point
-
-  for(size_t i=0;i<NX;i++)
-    for(size_t j=0;j<NY;j++)
-      for(size_t k=0;k<NZ;k++)
-	{
-	  Pts.push_back(WGrid.point(i,j,k));
-	  index.push_back(cN++);
-	}
-  return;
-}
   
 void
 WeightControl::cTrack(const Simulation& System,
                       const Geometry::Vec3D& initPt,
                       const std::vector<Geometry::Vec3D>& Pts,
                       const std::vector<long int>& index,
-                      ItemWeight& CTrack)
+                      CellWeight& CTrack)
   /*!
     Calculate a specific track from sourcePoint to  postion
     \param System :: Simulation to use    
@@ -489,7 +474,7 @@ WeightControl::cTrack(const Simulation& System,
                       const Geometry::Plane& initPlane,
                       const std::vector<Geometry::Vec3D>& Pts,
                       const std::vector<long int>& index,
-                      ItemWeight& CTrack)
+                      CellWeight& CTrack)
   /*!
     Calculate a specific trac from sourcePoint to  postion
     \param System :: Simulation to use    
@@ -514,61 +499,21 @@ WeightControl::cTrack(const Simulation& System,
     } 
   return;
 }
-  
-void
-WeightControl::calcWWGTrack(const Simulation& System,
-			    const Geometry::Vec3D& initPt,
-                            WWGWeight& wSet)
-  /*!
-    Calculate a given track from source point outward
-    \param System :: Simulation to use
-    \param initPt :: initial point for track
-    \param wSet :: Item weight object
-   */
-{
-  ELog::RegMethod RegA("WeightControl","calcWWGTrack(Vec3D)");
 
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<long int> index;
-  calcPoints(Pts,index);
   
-  cTrack(System,initPt,Pts,index,wSet);
-  return;
-}
   
-void
-WeightControl::calcWWGTrack(const Simulation& System,
-			    const Geometry::Plane& curPlane,
-                            WWGWeight& wSet)
-  /*!
-    Calculate a given track from source point outward
-    \param System :: Simulation to use
-    \param curPlane :: Plane for track calc
-    \param wSet :: Item weight object
-   */
-{
-  ELog::RegMethod RegA("WeightControl","calcWWGTrack(Plane)");
-
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<long int> index;
-  calcPoints(Pts,index);
-  cTrack(System,curPlane,Pts,index,wSet);
-  
-  return;
-}
-   
 void
 WeightControl::calcCellTrack(const Simulation& System,
                              const Geometry::Cone& curCone,
                              CellWeight& CTrack)
-  /*!
-    Calculate a given cone : calculate those cells
-    that the cone intersects
-    \param System :: Simulation to use
-    \param curPlane :: current plane
-    \param cellVec :: Cells to track
-    \param CTrack :: Cell Weights for output 
-   */
+/*!
+  Calculate a given cone : calculate those cells
+  that the cone intersects
+  \param System :: Simulation to use
+  \param curPlane :: current plane
+  \param cellVec :: Cells to track
+  \param CTrack :: Cell Weights for output 
+*/
 {
   ELog::RegMethod RegA("WeightControl","calcCellTrack<Cone>");
 
@@ -576,49 +521,49 @@ WeightControl::calcCellTrack(const Simulation& System,
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
   /*
-  for(const int cellN : cellVec)
+    for(const int cellN : cellVec)
     {
-      const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
-      if (CellPtr && CellPtr->getMat())
-	{
-	  index.push_back(CellPtr->getName());  // this should be cellN ??
-	  Pts.push_back(CellPtr->getCofM());
-	}
+    const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
+    if (CellPtr && CellPtr->getMat())
+    {
+    index.push_back(CellPtr->getName());  // this should be cellN ??
+    Pts.push_back(CellPtr->getCofM());
     }
-  cTrack(System,curPlane,Pts,index,CTrack);
+    }
+    cTrack(System,curPlane,Pts,index,CTrack);
   */
   return;
 }
 
-  void
+void
 WeightControl::calcCellTrack(const Simulation& System,
                              const Geometry::Plane& curPlane,
                              const std::vector<int>& cellVec,
                              CellWeight& CTrack)
-  /*!
-    Calculate a given track 
-    \param System :: Simulation to use
-    \param curPlane :: current plane
-    \param cellVec :: Cells to track
-    \param CTrack :: Cell Weights for output 
-   */
+/*!
+  Calculate a given track 
+  \param System :: Simulation to use
+  \param curPlane :: current plane
+  \param cellVec :: Cells to track
+  \param CTrack :: Cell Weights for output 
+*/
 {
   ELog::RegMethod RegA("WeightControl","calcCellTrack<Plane>");
 
   CTrack.clear();
   std::vector<Geometry::Vec3D> Pts;
   std::vector<long int> index;
-  
+
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())
-	{
-	  index.push_back(CellPtr->getName());  // this should be cellN ??
-	  Pts.push_back(CellPtr->getCofM());
-	}
+        {
+          index.push_back(CellPtr->getName());  // this should be cellN ??
+          Pts.push_back(CellPtr->getCofM());
+        }
     }
-  
+
   cTrack(System,curPlane,Pts,index,CTrack);
   return;
 }
@@ -628,13 +573,13 @@ WeightControl::calcCellTrack(const Simulation& System,
                              const Geometry::Vec3D& initPt,
                              const std::vector<int>& cellVec,
                              CellWeight& CTrack)
-  /*!
-    Calculate a given track for a point
-    \param System :: Simulation to use
-    \param initPt :: point for outgoing track
-    \param cellVec :: Cells to track
-    \param CTrack :: Cell Weights for output 
-   */
+/*!
+  Calculate a given track for a point
+  \param System :: Simulation to use
+  \param initPt :: point for outgoing track
+  \param cellVec :: Cells to track
+  \param CTrack :: Cell Weights for output 
+*/
 {
   ELog::RegMethod RegA("WeightControl","calcCellTrack(Vec3D)");
   CTrack.clear();
@@ -645,31 +590,31 @@ WeightControl::calcCellTrack(const Simulation& System,
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())
-	{
-	  index.push_back(CellPtr->getName());  // this should be cellN ??
-	  Pts.push_back(CellPtr->getCofM());
+        {
+          index.push_back(CellPtr->getName());  // this should be cellN ??
+          Pts.push_back(CellPtr->getCofM());
           ELog::EM<<"Cell Track = "<<initPt<<" : "<<index.back()
                   <<" : [COM] "<<Pts.back()<<ELog::endDiag;
-	}
+        }
     }
 
   cTrack(System,initPt,Pts,index,CTrack);
   return;
 }
 
-  
+
 void
 WeightControl::procObject(const Simulation& System,
-			  const mainSystem::inputParam& IParam)
+                          const mainSystem::inputParam& IParam)
 
-  /*!
-    Function to set up the weights system.
-    This is for the object tracked from a point
+/*!
+  Function to set up the weights system.
+  This is for the object tracked from a point
 
-    weightObject lists : object / cell / 
-    \param System :: Simulation component
-    \param IParam :: input stream
-  */
+  weightObject lists : object / cell / 
+  \param System :: Simulation component
+  \param IParam :: input stream
+*/
 {
   ELog::RegMethod RegA("WeightControl","procObject");
   const ModelSupport::objectRegister& OR=
@@ -682,67 +627,67 @@ WeightControl::procObject(const Simulation& System,
   for(size_t iSet=0;iSet<nSet;iSet++)
     {
       const std::string Key=
-	IParam.getValue<std::string>("weightObject",iSet,0);
+        IParam.getValue<std::string>("weightObject",iSet,0);
       if (Key=="help")
-	{
-	  procObjectHelp();
-	  return;
-	}
+        {
+          procObjectHelp();
+          return;
+        }
       // local values:
       procParam(IParam,"weightObject",iSet,1);
 
       ELog::EM<<"ObjCell== "<<Key<<ELog::endDiag;
       objectList.insert(Key);      
       const std::vector<int> objCells=OR.getObjectRange(Key);
-      
+    
       if (objCells.empty())
         ELog::EM<<"Cell["<<Key<<"] empty on renumber"<<ELog::endWarn;
 
-      
+    
       if (activePtType=="Plane")   
-	{
+        {
           if (activePtIndex>=planePt.size())
             throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
                                              "planePt.size() < activePtIndex");
           CellWeight CW;
           calcCellTrack(System,planePt[activePtIndex],objCells,CW);
-	  if (!activeAdjointFlag)
-	    CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
-	  else
-	    CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
-	}
+          if (!activeAdjointFlag)
+            CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
+          else
+            CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
+        }
       else if (activePtType=="Source")
         {
-	  if (activePtIndex>=sourcePt.size())
+          if (activePtIndex>=sourcePt.size())
             throw ColErr::IndexError<size_t>
               (activePtIndex,sourcePt.size(),"sourcePt.size() < activePtIndex");
-	  
+        
           CellWeight CW;
           calcCellTrack(System,sourcePt[activePtIndex],objCells,CW);
-	  if (!activeAdjointFlag)
-	    CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
-	  else
-	    CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
-	}
+          if (!activeAdjointFlag)
+            CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
+          else
+            CW.invertWM(energyCut,scaleFactor,minWeight,weightPower);
+        }
       else if (activePtType=="Cone")
-	{
-	  CellWeight CW;
+        {
+          CellWeight CW;
           calcCellTrack(System,sourcePt[activePtIndex],objCells,CW);
-	}
+        }
       else
-	throw ColErr::InContainerError<std::string>
-	  (activePtType,"SourceType no known");
+        throw ColErr::InContainerError<std::string>
+          (activePtType,"SourceType no known");
     }
   return;
 }
 
 
-  
+
 void
 WeightControl::scaleObject(const Simulation& System,
-			   const std::string& objKey,
-			   const double SW,
-			   const double eCut)
+                           const std::string& objKey,
+                           const double SW,
+                           const double eCut)
   /*!
     Scale all individual object by the scale weight.
     \param System :: Simulation model
@@ -755,7 +700,7 @@ WeightControl::scaleObject(const Simulation& System,
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
@@ -771,23 +716,23 @@ WeightControl::scaleObject(const Simulation& System,
   for(double& EW : WEng)
     {
       if (eCut>0.0)
-	EW= (EW>eCut) ? 1.0/SW : 1.0;
+        EW= (EW>eCut) ? 1.0/SW : 1.0;
       else
-	EW= (EW<-eCut) ? 1.0/SW : 1.0;
+        EW= (EW<-eCut) ? 1.0/SW : 1.0;
     }
   std::vector<int> cellVec=OR.getObjectRange(objKey);
   for(const int cellN : cellVec)
     {
       const MonteCarlo::Qhull* CellPtr=System.findQhull(cellN);
       if (CellPtr && CellPtr->getMat())
-	WF->scaleWeights(cellN,WEng);
+        WF->scaleWeights(cellN,WEng);
     }
   return;
 }
   
 void
 WeightControl::scaleAllObjects(const Simulation& System,
-			       const double SW,const double eCut) 
+                                 const double SW,const double eCut) 
   /*!
     Scale all individual object by the scale weight.
     \param System :: Simulation model
@@ -796,8 +741,8 @@ WeightControl::scaleAllObjects(const Simulation& System,
   */
 {
   ELog::RegMethod RegA("WeightControl","scaleAllObjects");
-
-
+  
+  
   for(const std::string& objName : objectList)
     scaleObject(System,objName,SW,eCut);
   return;
@@ -805,9 +750,9 @@ WeightControl::scaleAllObjects(const Simulation& System,
 
 double
 WeightControl::findMax(const Simulation& System,
-		       const std::string& objKey,
-		       const size_t index,
-		       const double eCut) const
+                       const std::string& objKey,
+                       const size_t index,
+                       const double eCut) const
   /*!
     Find the maximum value in a cell
     \param System :: Simulation for cell materials
@@ -954,13 +899,9 @@ WeightControl::processWeights(Simulation& System,
     procObject(System,IParam);
         
   if (IParam.flag("wWWG"))
-    {
-      procParam(IParam,"wWWG",0,0);
-      wwgMesh(IParam);      // create mesh [wwgXMesh etc]
-      wwgEnergy();          // set default energy grid
-      wwgCreate(System,IParam);
-            
-    }
+    procWWGWeights(System,IParam);
+
+  
   if (IParam.flag("weightTemp"))
     scaleTempWeights(System,10.0);
   if (IParam.flag("tallyWeight"))
@@ -970,121 +911,6 @@ WeightControl::processWeights(Simulation& System,
 
   return;
 }
-
-void
-WeightControl::wwgEnergy()
-  /*!
-    Modify the energy grid if explicitly given as an wwgE card.
-    If not an a weightType has been set then use that -- else
-    just one energy grid.
-    \param IParam :: Input parameters    
-  */
-{
-  ELog::RegMethod RegA("WeightControl","wwgEnergy");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-  wwg.setEnergyBin(EBand,WT);
-  
-
-  return;
-}
-  
-void
-WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
-  /*!
-    Process wwg Mesh
-    \param IParam :: Input parameters
-  */
-{
-  ELog::RegMethod RegA("WeightControl","wwgMesh");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-
-  const std::string XYZ[3]={"X","Y","Z"};
-  std::vector<std::vector<double>> boundaryVal(3);
-  std::vector<std::vector<size_t>> bCnt(3);
-      
-  for(size_t index=0;index<3;index++)
-    {
-      const std::string itemName("wwg"+XYZ[index]+"Mesh");
-      const size_t NXM=IParam.itemCnt(itemName,0);
-
-      if (NXM<3 || !(NXM % 2) )
-	throw ColErr::IndexError<size_t>
-	  (NXM,3,"Insufficient items for "+itemName+
-	   ": X_0 : N_0 : X1 : N1 ...");
-
-      for(size_t i=0;i<NXM;i++)
-	{
-	  if (i % 2)   // Odd : Integer
-	    bCnt[index].push_back
-	      (IParam.getValue<size_t>(itemName,i));
-	  else
-            boundaryVal[index].push_back
-	      (IParam.getValue<double>(itemName,i));
-	}
-    }
-
-  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
-			boundaryVal[1],bCnt[1],
-			boundaryVal[2],bCnt[2]);
-  return;
-}
-
-void
-WeightControl::wwgCreate(Simulation& System,
-                         const mainSystem::inputParam& IParam)
-  /*!
-    Calculate a WWG weights based 
-    \param System :: Simulation
-    \param IParam :: Input deck
-   */
-{
-  ELog::RegMethod RegA("WeightControl","wwgCreate");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-  WWGWeight WTrack;
-  
-  const size_t NSetCnt=IParam.setCnt("wwgCalc");
-  for(size_t index=0;index<NSetCnt;index++)
-    {
-      procParam(IParam,"wwgCalc",index,0);
-
-      if (activePtType=="Plane")   //
-	{
-          if (activePtIndex>=planePt.size())
-            throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
-                                             "planePt.size() < activePtIndex");
-          calcWWGTrack(System,planePt[activePtIndex],WTrack);
-	}
-      else if (activePtType=="Source")
-        {
-	  if (activePtIndex>=sourcePt.size())
-            throw ColErr::IndexError<size_t>(activePtIndex,sourcePt.size(),
-                                             "sourcePt.size() < activePtIndex");
-
-          calcWWGTrack(System,sourcePt[activePtIndex],WTrack);
-        }
-      else 
-	throw ColErr::InContainerError<std::string>
-	  (activePtType,"SourceType no known");
-
-      if (!activeAdjointFlag)
-	WTrack.updateWM(wwg,energyCut,scaleFactor,minWeight,weightPower);
-      else
-	WTrack.invertWM(wwg,energyCut,scaleFactor,minWeight,weightPower);
-
-      
-    }   
-  return;
-}
-
   
 void
 WeightControl::setWeights(Simulation& System)
@@ -1119,8 +945,8 @@ WeightControl::setWeights(Simulation& System)
   WF->maskCell(1);
 
   // remove neutron imp:
-
-  removePhysImp(System,"n");
+  setWCellImp(System);
+  //  removePhysImp(System,"n");
   return;
 }
 
@@ -1145,6 +971,7 @@ WeightControl::help() const
   procRebaseHelp();
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
   ELog::EM<<"-- wwgCalc --::"<<ELog::endDiag;
+  ELog::EM<<"-- wwgVTK --::"<<ELog::endDiag;
   procCalcHelp();
 
   ELog::EM<<"-- wFCL --:: Set forced collision"<<ELog::endDiag;

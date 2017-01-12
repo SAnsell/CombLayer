@@ -126,7 +126,7 @@ BunkerRoof::populate(const FuncDataBase& Control)
   activeRoof=Control.EvalDefVar<size_t>(keyName+"Active",0);
   if (activeRoof)
     {
-      nVert=Control.EvalVar<size_t>(keyName+"NRoofVert");
+      nVert=Control.EvalVar<size_t>(keyName+"NVert");
       nRadial=Control.EvalDefVar<size_t>(keyName+"NRadial",0);
       nMedial=Control.EvalDefVar<size_t>(keyName+"NMedial",0);
       ModelSupport::populateDivideLen(Control,nVert,keyName+"Vert",
@@ -217,10 +217,9 @@ BunkerRoof::createSector(Simulation& System,
 {
   ELog::RegMethod RegA("BunkerRoof","createSector");
 
-
   std::vector<double> empty;
   
-  ModelSupport::LayerDivide3D LD3(keyName+"mainRoof"+
+  ModelSupport::LayerDivide3D LD3(keyName+"Main"+
 				  StrFunc::makeString(sectNum));
 
   // Front/back??

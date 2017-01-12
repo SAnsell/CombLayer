@@ -62,7 +62,7 @@ class NMX : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedOffset> nmxAxis;
 
   /// tapper in insert bay
-  std::shared_ptr<beamlineSystem::GuideLine> GuideA;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
     
   /// Pipe between gamma shield / 10m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;

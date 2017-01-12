@@ -307,6 +307,35 @@ class OrderError : public ExBase
   Records the object being looked for
   and the range required.
 */
+template<unsigned int ndim,typename T>
+class DimensionError : public ExBase
+{
+ private:
+
+  T indexSize[ndim];         ///< Index search components
+  T reqSize[ndim];           ///< required size
+
+  void setOutLine();
+
+ public:
+
+  DimensionError(const T*,const T*,const std::string&);
+  DimensionError(const DimensionError<ndim,T>&);
+  DimensionError<ndim,T>& operator=(const DimensionError<ndim,T>&);
+  virtual ~DimensionError() throw() {}  ///< Destructor
+
+};
+
+/*!
+  \class ArrayError
+  \brief Error Range in an array/list etc
+  \author Stuart Ansell
+  \date October 2005
+  \version 1.0
+
+  Records the object being looked for
+  and the range required.
+*/
 template<int ndim>
 class ArrayError : public ExBase
 {

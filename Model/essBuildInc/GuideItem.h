@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class GuideItem : public attachSystem::ContainedGroup,
-  public attachSystem::FixedGroup,public attachSystem::CellMap
+  public attachSystem::FixedOffsetGroup,
+  public attachSystem::CellMap
 {
  private:
   
@@ -45,15 +46,9 @@ class GuideItem : public attachSystem::ContainedGroup,
   int cellIndex;                ///< Cell index
   int active;                   ///< Build/don't build flag
   
-  double xStep;                 ///< orthogonal offset (on circle)
-  double yStep;                 ///< Forward offset [not current used]
-  double zStep;                 ///< Height offset
-  double xyAngle;               ///< Angle of master XY rotation
-  double zAngle;                ///< Angle of master Z rotation
-
   double beamXStep;             ///< Beam port X-offset
   double beamZStep;             ///< Beam port Z-offset
-  double beamXYAngle;           ///< Beam port Z-offse
+  double beamXYAngle;           ///< Beam port Z-offset
   double beamZAngle;            ///< Beam angle 
   double beamWidth;             ///< Beam width 
   double beamHeight;            ///< Beam depth

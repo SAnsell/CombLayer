@@ -255,9 +255,12 @@ CompBInsert::createLinks()
 
   setNConnect(NBox*6+1);
 
-  
-  FixedComp::setConnect(0,Origin,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(insIndex+1));
+  FrontBackCut::createLinks(*this,Origin,Y);
+  if (!frontActive())
+    {
+      FixedComp::setConnect(0,Origin,-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(insIndex+1));
+    }
   
   size_t LOffset(0);
   double L(0.0);
@@ -282,9 +285,12 @@ CompBInsert::createLinks()
       LOffset+=6;
       SI+=100;
     }
-  FixedComp::setConnect(1,Origin+Y*L,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(SI+1));
   
+  if (!backActive())
+    {
+      FixedComp::setConnect(1,Origin+Y*L,Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(SI+1));
+    }
   // Mid point [useful for guides etc]
   FixedComp::setConnect(6,Origin+Y*(L/2.0),Y);
   

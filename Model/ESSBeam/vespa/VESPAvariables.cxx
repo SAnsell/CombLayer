@@ -94,7 +94,7 @@ VESPAvariables(FuncDataBase& Control)
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"vespaFA",350.0,7.6,4.02,5.0,7.6250);
 
-  PipeGen.generatePipe(Control,"vespaPipeA",2.0,46.0);
+  PipeGen.generatePipe(Control,"vespaPipeA",6.0,46.0);
 
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();

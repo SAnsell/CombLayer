@@ -484,11 +484,14 @@ WCells::writeHead(std::ostream& OX) const
   cx<<"wwe:"<<ptype<<" ";
   copy(Energy.begin(),Energy.end(),std::ostream_iterator<double>(cx," "));
   StrFunc::writeMCNPX(cx.str(),OX);
-  
-  cx.str("");  
-  cx<<"wwp:"<<ptype<<" ";
-  cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere<<" 0 "<<mtime;
-  StrFunc::writeMCNPX(cx.str(),OX);
+
+  if (activeWWP)
+    {
+      cx.str("");  
+      cx<<"wwp:"<<ptype<<" ";
+      cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere<<" 0 "<<mtime;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
   return;
 }
 

@@ -48,7 +48,8 @@ namespace WeightSystem
 class WForm
 {
  protected:
-  
+
+  int activeWWP;       ///< Controls wwp being active 
   char ptype;          ///< Particle type
   std::vector<double> Energy;  ///< Energy windows.
   double wupn;         ///< Max weight before upsplitting
@@ -79,10 +80,12 @@ class WForm
     { return Energy; }
   /// Get particle
   char getParticle() const { return ptype; }
+  /// accessor to flag
+  void setActiveWWP(const int F) { activeWWP=F; }
 
   ///\cond ABSTRACT
   virtual const std::vector<double>& getWeights(const int) const =0;
-  
+
   virtual void setWeights(const int,const size_t,const double) =0;
   virtual void setWeights(const int,const std::vector<double>&) =0;
 
@@ -94,9 +97,8 @@ class WForm
   virtual void balanceScale(const std::vector<double>&) =0;
   virtual void write(std::ostream&) const =0;
 
-
-
   ///\endcond ABSTRACT
+  
 
 };
 
