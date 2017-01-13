@@ -145,9 +145,12 @@ addESSMaterial()
 
   MonteCarlo::Material MObj;
   // ESS materials
-
-  int imat=1;
   
+  // offset 1000 to avoid overlapping with the Stuart's numbering
+  // (this makes problems - my materials are used instead of Stuarts
+  // in case they have the same number)
+  int imat=1000;
+
   // According to Fig. 7 in 10.1103/PhysRevB.91.180301, this cross section actually had 0.5% ortho-H,
   // therefore using this material is the same as adding 0.5 ortho-H
   MObj.setMaterial(imat++/*101*/,"HPARA"," 1001.70c 1.0 ","hpara.10t", MLib);
