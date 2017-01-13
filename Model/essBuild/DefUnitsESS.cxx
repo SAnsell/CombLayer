@@ -218,7 +218,7 @@ setESSSingle(defaultConfig& A,
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
-     {"HEIMDAL","G1BLineLow8"},
+     {"HEIMDAL","G1BLineLow8"},     // W8
      {"SLEIPNIR","G1BLineLow13"},   // N9
      {"ANNI","G2BLineTop3"},        // E3
      {"SURFSCATTER","G2BLineTop8"},        // E8
@@ -226,23 +226,32 @@ setESSSingle(defaultConfig& A,
     };     
   const std::map<std::string,std::string> beamDef=
     {{"NMX","G1BLineTop1"},        // W1
+     {"BEER","G1BLineTop2"},       // W2
+     {"CSPEC","G1BLineTop3"},      // W3
      {"BIFROST","G1BLineTop4"},    // W4
      {"MIRACLES","G1BLineTop5"},   // W5
+     {"MAGIC","G1BLineTop6"},      // W6     
+     {"TREX","G1BLineTop7"},       // W7
+
+     {"LOKI","G1BLineTop15"},      // N7
+     {"FREIA","G1BLineTop17"},     // N5
+
+
+     {"ODIN","G2BLineLow20"},      // Lower S2
+     {"DREAM","G2BLineTop19"},     // S3
+
+     {"VOR","G2BLineTop10"},       // S10/S11  [CHANGED TO FIT]
+     {"VESPA","G2BLineTop15"},     // E7
+
+     {"ESTIA","G2BLineTop20"},     // E2
+     
+     {"SIMPLE","G1BLineTop17"},
+
      {"SHORTDREAM","G1BLineTop17"},
      {"SHORTNMX","G1BLineTop13"},
-     {"SHORTODIN","G1BLineLow4"},
-     {"TREX","G1BLineTop7"},       // W7
-     {"MAGIC","G1BLineTop6"},      // W6
-     {"DREAM","G2BLineTop19"},     // S3
-     {"CSPEC","G1BLineTop3"},      // W3
-     {"VESPA","G2BLineTop7"},      // E7
-     {"VOR","G2BLineTop10"},       // E11  [CHANGED TO FIT]
-     {"SIMPLE","G1BLineTop17"},
-     {"LOKI","G1BLineTop17"},      // N7
-     {"ODIN","G2BLineLow2"},       // Lower S2
-     {"ESTIA","G2BLineTop2"},      // E2
-     {"FREIA","G1BLineTop15"},     // N5
-     {"BEER","G1BLineTop2"}        // W2
+     {"SHORTODIN","G1BLineLow4"}
+     
+
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",

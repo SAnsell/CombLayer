@@ -373,7 +373,8 @@ GuideBay::createGuideItems(Simulation& System,
   const long int rFocusIndex=(bayNumber==1) ? 1 : 4;
   
   const int dPlane=SMap.realSurf(bayIndex+1);
-  
+
+  const GuideItem* GB(0);
   for(size_t i=0;i<nItems;i++)
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
@@ -383,9 +384,10 @@ GuideBay::createGuideItems(Simulation& System,
       GA->addInsertCell("Inner",getCell("Inner"));
       GA->addInsertCell("Outer",getCell("Outer"));
 
-      GA->createAll(System,*ModFC,FI,0);
+      GA->createAll(System,*ModFC,FI,GB);
       GUnit.push_back(GA);
-      OR.addObject(GUnit.back());      
+      OR.addObject(GUnit.back());
+      GB=GA.get();
     }
   
   return;

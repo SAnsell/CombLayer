@@ -619,12 +619,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"SideGap",0.6);
       Control.addVariable(baseKey+"BaseGap",0.1);
       Control.addVariable(baseKey+"TopGap",0.8); 
-      Control.addVariable(baseKey+"Width1",16.0);
-      if (i==3)
-	Control.addVariable(baseKey+"Depth1",5.5);
-      else 
-	Control.addVariable(baseKey+"Depth1",5.0);
-
+      Control.addVariable(baseKey+"Width1",20.0);
+      Control.addVariable(baseKey+"Depth1",5.0);
       Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",22.0);
