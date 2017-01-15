@@ -91,27 +91,27 @@ MAGICvariables(FuncDataBase& Control)
   // extent of beamline
   Control.addVariable("magicStopPoint",0);
   Control.addVariable("magicAxisXYAngle",0.3);   // rotation
-  Control.addVariable("magicAxisZAngle",0.5);   // rotation
+  Control.addVariable("magicAxisZAngle",0.46);   // rotation
   Control.addVariable("magicAxisZStep",0.0);   // rotation
 
   FGen.setGuideMat("Copper");
   FGen.setThickness(0.5,0.4);
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"magicFA",350.0,11.0,3.0 ,4.0,3.0);
+  FGen.generateTaper(Control,"magicFA",350.0,12.4,3.0 ,4.0,3.0);
 
-  PipeGen.generatePipe(Control,"magicPipeB",2.0,46.0);
+  PipeGen.generatePipe(Control,"magicPipeB",8.0,44.0);
 
   // out to 6.18m
-  PipeGen.generatePipe(Control,"magicPipeC",5.0,10.0);
+  PipeGen.generatePipe(Control,"magicPipeC",10.0,75.0);
 
   FGen.setGuideMat("SiCrystal");
   FGen.clearYOffset();
-  FGen.generateBender(Control,"magicBC",5.0,3.0,3.0,3.0,3.0,
-                      298.43,0.0);
+  FGen.generateBender(Control,"magicBC",15.0, 3.0,3.0,3.0,3.0,
+                      6500,0.0);
 
-  CGen.setMainRadius(30.0);
+  CGen.setMainRadius(25.0);
   CGen.setFrame(80.0,80.0);
-  CGen.generateChopper(Control,"magicChopperA",22.0,10.0,4.55);
+  CGen.generateChopper(Control,"magicChopperA",42.0,10.0,4.55);
 
   // Double Blade chopper
   BGen.setThick({0.2,0.2});
