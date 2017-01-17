@@ -94,6 +94,8 @@ setDefUnits(FuncDataBase& Control,
 		  <<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
+      else if (Key=="linac")
+	setESSLinac(A);
       else 
 	{
 	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
@@ -344,4 +346,16 @@ setESS(defaultConfig& A)
   return;
 }
 
+void
+setESSLinac(defaultConfig& A)
+  /*!
+    Default configuration for ESS Linac
+    \param A :: Paramter for default config
+   */
+{
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESSLinac");
+
+  A.setVar("LinacActive", 1);
+}
+  
 } // NAMESPACE mainSystem

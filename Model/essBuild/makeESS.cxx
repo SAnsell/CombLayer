@@ -196,6 +196,17 @@ makeESS::~makeESS()
 {}
 
 void
+makeESS::makeLinac(Simulation& System)
+  /*!
+    Build LINAC
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","makeLinac");
+  ELog::EM << "makeLinac" << ELog::endDiag;
+}
+
+void
 makeESS::makeTarget(Simulation& System,
 		    const std::string& targetType)
   /*!
@@ -865,6 +876,11 @@ makeESS::build(Simulation& System,
     }
 
   buildFocusPoints(System);
+  if (Control.EvalVar<int>("LinacActive"))
+    {
+      makeLinac(System);
+      return;
+    }
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);
 

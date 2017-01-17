@@ -39,7 +39,7 @@ namespace mainSystem
   void setESSSingle(defaultConfig&,const std::string&,
 		    const std::string&,int);
   void setESSSingle(defaultConfig&,std::vector<std::string>&);
-
+  void setESSLinac(defaultConfig&);
 
 }
 
