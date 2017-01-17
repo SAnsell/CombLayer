@@ -107,6 +107,12 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
   frontWallMat(A.frontWallMat),
+  frontInnerWallDepth(A.frontInnerWallDepth),
+  floorLength(A.floorLength),
+  floorHeight(A.floorHeight),
+  floorDepth(A.floorDepth),
+  floorWidth(A.floorWidth),
+  floorMat(A.floorMat),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -134,6 +140,15 @@ BeamDump::operator=(const BeamDump& A)
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
       frontWallMat=A.frontWallMat;
+      
+      frontInnerWallDepth=A.frontInnerWallDepth;
+
+      floorLength=A.floorLength;
+      floorHeight=A.floorHeight;
+      floorDepth=A.floorDepth;
+      floorWidth=A.floorWidth;
+      floorMat=A.floorMat;
+
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -175,6 +190,14 @@ BeamDump::populate(const FuncDataBase& Control)
   frontWallWidth=Control.EvalVar<double>(keyName+"FrontWallWidth");
   frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
 
+  frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
+
+  floorLength=Control.EvalVar<double>(keyName+"FloorLength");
+  floorHeight=Control.EvalVar<double>(keyName+"FloorHeight");
+  floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
+  floorWidth=Control.EvalVar<double>(keyName+"FloorWidth");
+  floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
+
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -207,14 +230,26 @@ BeamDump::createSurfaces()
 {
   ELog::RegMethod RegA("BeamDump","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(frontWallLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(frontWallLength/2.0),Y);
+  // Front wall
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(frontWallLength),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(frontWallWidth/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(frontWallWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(frontWallDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight),Z);
+
+  // Floor
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(frontWallLength),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(frontWallLength+floorLength),Y);
+
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(floorWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(floorWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(frontInnerWallDepth+
+						       floorHeight+floorDepth),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin-Z*(frontInnerWallDepth),Z);
 
   return;
 }
@@ -228,11 +263,15 @@ BeamDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamDump","createObjects");
 
-  std::string Out;
+  std::string Out, Out1;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,frontWallMat,0.0,Out));
 
+  Out1=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out1));
+
   addOuterSurf(Out);
+  addOuterUnionSurf(Out1);
 
   return;
 }

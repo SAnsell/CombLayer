@@ -51,6 +51,14 @@ class BeamDump : public attachSystem::ContainedComp,
   double frontWallWidth;        ///< Front wall width (+-x)
   int    frontWallMat;          ///< Front wall material
 
+  double frontInnerWallDepth;   ///< pl29
+
+  double floorLength;       ///< Floor length (+y, vol 6 in SPLTDISH0001)
+  double floorHeight;       ///< Floor height (+z)
+  double floorDepth;        ///< Floor depth (-z)
+  double floorWidth;        ///< Floor width (+-x)
+  int    floorMat;          ///< Floor material
+
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
