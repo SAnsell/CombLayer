@@ -77,6 +77,7 @@ namespace essSystem
   class BunkerFeed;
   class WedgeFlightLine;
   class Chicane;
+  class Linac;
 
       
   /*!
@@ -128,6 +129,8 @@ class makeESS
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
+
+  std::shared_ptr<Linac> LinacTunnel; ///< Linac tunnel
   
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  

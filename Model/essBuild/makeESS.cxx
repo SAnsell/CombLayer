@@ -99,6 +99,7 @@
 #include "IradCylinder.h"
 #include "BulkModule.h"
 #include "TwisterModule.h"
+#include "Linac.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "DiskPreMod.h"
@@ -203,7 +204,17 @@ makeESS::makeLinac(Simulation& System)
   */
 {
   ELog::RegMethod RegA("makeESS","makeLinac");
-  ELog::EM << "makeLinac" << ELog::endDiag;
+  const int voidCell(74123);
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  LinacTunnel = std::shared_ptr<Linac>(new Linac("Linac"));
+  OR.addObject(LinacTunnel);
+
+  LinacTunnel->addInsertCell(voidCell);
+  LinacTunnel->createAll(System,World::masterOrigin(),0);
+  return;
 }
 
 void
