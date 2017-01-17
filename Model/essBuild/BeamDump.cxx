@@ -107,10 +107,18 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
   frontWallMat(A.frontWallMat),
+
+  backWallLength(A.backWallLength),
+  backWallHeight(A.backWallHeight),
+  backWallDepth(A.backWallDepth),
+  backWallWidth(A.backWallWidth),
+  backWallMat(A.backWallMat),
+  
   frontInnerWallDepth(A.frontInnerWallDepth),
+
   floorLength(A.floorLength),
-  floorHeight(A.floorHeight),
   floorDepth(A.floorDepth),
+  floorAlDepth(A.floorAlDepth),
   floorWidth(A.floorWidth),
   floorMat(A.floorMat),
   wallThick(A.wallThick),
@@ -135,17 +143,24 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
+      
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
       frontWallMat=A.frontWallMat;
       
+      backWallLength=A.backWallLength;
+      backWallHeight=A.backWallHeight;
+      backWallDepth=A.backWallDepth;
+      backWallWidth=A.backWallWidth;
+      backWallMat=A.backWallMat;
+      
       frontInnerWallDepth=A.frontInnerWallDepth;
 
       floorLength=A.floorLength;
-      floorHeight=A.floorHeight;
       floorDepth=A.floorDepth;
+      floorAlDepth=A.floorAlDepth;
       floorWidth=A.floorWidth;
       floorMat=A.floorMat;
 
@@ -190,11 +205,17 @@ BeamDump::populate(const FuncDataBase& Control)
   frontWallWidth=Control.EvalVar<double>(keyName+"FrontWallWidth");
   frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
 
+  backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
+  backWallHeight=Control.EvalVar<double>(keyName+"BackWallHeight");
+  backWallDepth=Control.EvalVar<double>(keyName+"BackWallDepth");
+  backWallWidth=Control.EvalVar<double>(keyName+"BackWallWidth");
+  backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
+
   frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
-  floorHeight=Control.EvalVar<double>(keyName+"FloorHeight");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
+  floorAlDepth=Control.EvalVar<double>(keyName+"FloorAlDepth");
   floorWidth=Control.EvalVar<double>(keyName+"FloorWidth");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
@@ -248,9 +269,22 @@ BeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(floorWidth/2.0),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(frontInnerWallDepth+
-						       floorHeight+floorDepth),Z);
+						       floorDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin-Z*(frontInnerWallDepth),Z);
 
+  // back wall
+  double y1(0.0);
+  y1=frontWallLength+floorLength;
+  ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*(y1),Y);
+  y1 += backWallLength;
+  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(y1),Y);
+
+  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(backWallWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(backWallWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+25,Origin-Z*(backWallDepth),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+26,Origin+Z*(backWallHeight),Z);
+  
   return;
 }
   
@@ -263,15 +297,22 @@ BeamDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamDump","createObjects");
 
-  std::string Out, Out1;
+  std::string Out, Out1, Out2;
+  // front wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,frontWallMat,0.0,Out));
 
+  // floor
   Out1=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out1));
 
+  // back wall
+  Out2=ModelSupport::getComposite(SMap,surfIndex," 21 -22 23 -24 25 -26 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out2));
+
   addOuterSurf(Out);
   addOuterUnionSurf(Out1);
+  addOuterUnionSurf(Out2);
 
   return;
 }
