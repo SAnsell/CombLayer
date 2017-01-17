@@ -45,9 +45,11 @@ class BeamDump : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< height
+  double frontWallLength;       ///< Front wall length (+y, vol 6 in SPLTDISH0001)
+  double frontWallHeight;       ///< Front wall height (+z)
+  double frontWallDepth;        ///< Front wall depth (-z)
+  double frontWallWidth;        ///< Front wall width (+-x)
+  int    frontWallMat;          ///< Front wall material
 
   double wallThick;             ///< Thickness of wall
 

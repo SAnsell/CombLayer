@@ -102,7 +102,11 @@ BeamDump::BeamDump(const BeamDump& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),width(A.width),height(A.height),
+  frontWallLength(A.frontWallLength),
+  frontWallHeight(A.frontWallHeight),
+  frontWallDepth(A.frontWallDepth),
+  frontWallWidth(A.frontWallWidth),
+  frontWallMat(A.frontWallMat),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -125,9 +129,11 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      length=A.length;
-      width=A.width;
-      height=A.height;
+      frontWallLength=A.frontWallLength;
+      frontWallHeight=A.frontWallHeight;
+      frontWallDepth=A.frontWallDepth;
+      frontWallWidth=A.frontWallWidth;
+      frontWallMat=A.frontWallMat;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -163,9 +169,12 @@ BeamDump::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
-  height=Control.EvalVar<double>(keyName+"Height");
+  frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
+  frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
+  frontWallDepth=Control.EvalVar<double>(keyName+"FrontWallDepth");
+  frontWallWidth=Control.EvalVar<double>(keyName+"FrontWallWidth");
+  frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
+
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -198,14 +207,14 @@ BeamDump::createSurfaces()
 {
   ELog::RegMethod RegA("BeamDump","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(frontWallLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(frontWallLength/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(frontWallWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(frontWallWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(frontWallDepth),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight),Z);
 
   return;
 }
@@ -221,7 +230,7 @@ BeamDump::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,frontWallMat,0.0,Out));
 
   addOuterSurf(Out);
 
