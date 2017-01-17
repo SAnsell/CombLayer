@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/Linac.cxx
+ * File:   essBuild/BeamDump.cxx
  *
  * Copyright (c) 2004-2016 by Konstantin Batkov
  *
@@ -82,47 +82,40 @@
 #include "mergeTemplate.h"
 
 #include "BeamDump.h"
-#include "Linac.h"
 
 namespace essSystem
 {
 
-Linac::Linac(const std::string& Key)  :
+BeamDump::BeamDump(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1),
-  bd(new BeamDump(Key+"BeamDump"))
+  cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{
-  ELog::RegMethod RegA("Linac","Linac(const std::string&)");
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-  OR.addObject(bd);
-}
+{}
 
-Linac::Linac(const Linac& A) : 
+BeamDump::BeamDump(const BeamDump& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat),
-  bd(A.bd->clone())
+  mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: Linac to copy
+    \param A :: BeamDump to copy
   */
 {}
 
-Linac&
-Linac::operator=(const Linac& A)
+BeamDump&
+BeamDump::operator=(const BeamDump& A)
   /*!
     Assignment operator
-    \param A :: Linac to copy
+    \param A :: BeamDump to copy
     \return *this
   */
 {
@@ -138,25 +131,34 @@ Linac::operator=(const Linac& A)
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
-      *bd=*A.bd;
     }
   return *this;
 }
 
-Linac::~Linac() 
+BeamDump*
+BeamDump::clone() const
+/*!
+  Clone self
+  \return new (this)
+ */
+{
+    return new BeamDump(*this);
+}
+  
+BeamDump::~BeamDump() 
   /*!
     Destructor
   */
 {}
 
 void
-Linac::populate(const FuncDataBase& Control)
+BeamDump::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable data base
   */
 {
-  ELog::RegMethod RegA("Linac","populate");
+  ELog::RegMethod RegA("BeamDump","populate");
 
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
@@ -173,13 +175,13 @@ Linac::populate(const FuncDataBase& Control)
 }
   
 void
-Linac::createUnitVector(const attachSystem::FixedComp& FC)
+BeamDump::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
     \param FC :: object for origin
   */
 {
-  ELog::RegMethod RegA("Linac","createUnitVector");
+  ELog::RegMethod RegA("BeamDump","createUnitVector");
 
   FixedComp::createUnitVector(FC);
   applyShift(xStep,yStep,zStep);
@@ -189,12 +191,12 @@ Linac::createUnitVector(const attachSystem::FixedComp& FC)
 }
   
 void
-Linac::createSurfaces()
+BeamDump::createSurfaces()
   /*!
     Create All the surfaces
   */
 {
-  ELog::RegMethod RegA("Linac","createSurfaces");
+  ELog::RegMethod RegA("BeamDump","createSurfaces");
 
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
@@ -209,13 +211,13 @@ Linac::createSurfaces()
 }
   
 void
-Linac::createObjects(Simulation& System)
+BeamDump::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("Linac","createObjects");
+  ELog::RegMethod RegA("BeamDump","createObjects");
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
@@ -228,12 +230,12 @@ Linac::createObjects(Simulation& System)
 
   
 void
-Linac::createLinks()
+BeamDump::createLinks()
   /*!
     Create all the linkes
   */
 {
-  ELog::RegMethod RegA("Linac","createLinks");
+  ELog::RegMethod RegA("BeamDump","createLinks");
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
@@ -245,7 +247,7 @@ Linac::createLinks()
 
   
 void
-Linac::createAll(Simulation& System,
+BeamDump::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,const long int& lp)
   /*!
     Generic function to create everything
@@ -254,7 +256,7 @@ Linac::createAll(Simulation& System,
     \param lp :: link point
   */
 {
-  ELog::RegMethod RegA("Linac","createAll");
+  ELog::RegMethod RegA("BeamDump","createAll");
 
   populate(System.getDataBase());
   createUnitVector(FC);
@@ -263,9 +265,6 @@ Linac::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);              
 
-  bd->addInsertCell(surfIndex+1); // main cell
-  bd->createAll(System,*this,0);
-  
   return;
 }
 
