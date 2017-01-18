@@ -261,14 +261,7 @@ BeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight),Z);
 
   // Floor
-  //  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(frontWallLength),Y);
-  SMap.addMatch(surfIndex+11,SMap.realSurf(surfIndex+2));
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(frontWallLength+floorLength),Y);
-
-  //  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(floorWidth/2.0),X);
-  SMap.addMatch(surfIndex+13,SMap.realSurf(surfIndex+3));
-  //  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(floorWidth/2.0),X);
-  SMap.addMatch(surfIndex+14,SMap.realSurf(surfIndex+4));
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(frontInnerWallDepth+
 						       floorDepth),Z);
@@ -284,15 +277,10 @@ BeamDump::createSurfaces()
   
 
   // back wall
-  SMap.addMatch(surfIndex+41,SMap.realSurf(surfIndex+12));
   double y1=frontWallLength+floorLength+backWallLength;
   ModelSupport::buildPlane(SMap,surfIndex+42,Origin+Y*(y1),Y);
 
-  SMap.addMatch(surfIndex+43,SMap.realSurf(surfIndex+3));
-  SMap.addMatch(surfIndex+44,SMap.realSurf(surfIndex+4));
-
   ModelSupport::buildPlane(SMap,surfIndex+45,Origin-Z*(backWallDepth),Z);
-  SMap.addMatch(surfIndex+46,SMap.realSurf(surfIndex+6));
   
   return;
 }
@@ -312,20 +300,20 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   // floor
-  Out1=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
+  Out1=ModelSupport::getComposite(SMap,surfIndex," 2 -12 3 -4 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out1));
 
-  Out3=ModelSupport::getComposite(SMap,surfIndex," 2 -21 13 -14 45 -15 ");
+  Out3=ModelSupport::getComposite(SMap,surfIndex," 2 -21 3 -4 45 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out3));
   
-  Out4=ModelSupport::getComposite(SMap,surfIndex," 21 -22 13 -14 45 -15 ");
+  Out4=ModelSupport::getComposite(SMap,surfIndex," 21 -22 3 -4 45 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out4));
 
-  Out5=ModelSupport::getComposite(SMap,surfIndex," 22 -41 13 -14 45 -15 ");
+  Out5=ModelSupport::getComposite(SMap,surfIndex," 22 -12 3 -4 45 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out5));
 
   // back wall
-  Out2=ModelSupport::getComposite(SMap,surfIndex," 41 -42 43 -44 45 -46 ");
+  Out2=ModelSupport::getComposite(SMap,surfIndex," 12 -42 3 -4 45 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out2));
 
   addOuterSurf(Out);
