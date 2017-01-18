@@ -116,6 +116,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   backWallDepth(A.backWallDepth),
   
   frontInnerWallDepth(A.frontInnerWallDepth),
+  frontInnerWallLength(A.frontInnerWallLength),
   sideWallThick(A.sideWallThick),
 
   floorLength(A.floorLength),
@@ -165,6 +166,7 @@ BeamDump::operator=(const BeamDump& A)
       backWallDepth=A.backWallDepth;
       
       frontInnerWallDepth=A.frontInnerWallDepth;
+      frontInnerWallLength=A.frontInnerWallLength;
       sideWallThick=A.sideWallThick;
 
       floorLength=A.floorLength;
@@ -225,6 +227,7 @@ BeamDump::populate(const FuncDataBase& Control)
   backWallDepth=Control.EvalVar<double>(keyName+"BackWallDepth");
 
   frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
+  frontInnerWallLength=Control.EvalVar<double>(keyName+"FrontInnerWallLength");
   sideWallThick=Control.EvalVar<double>(keyName+"SideWallThick");
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
@@ -320,6 +323,11 @@ BeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, surfIndex+76,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+6),
 				  -innerRoofThick);
+
+  // front inner wall
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+82,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+2),
+				  frontInnerWallLength);
   
   return;
 }
@@ -334,7 +342,7 @@ BeamDump::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeamDump","createObjects");
 
   std::string Out, Out1, Out2, Out3, Out4, Out5, Out6, Out7, Out8, Out9, Out10,
-    Out11, Out12, Out13;
+    Out11, Out12, Out13, Out14, Out15;
   // front wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
@@ -384,6 +392,10 @@ BeamDump::createObjects(Simulation& System)
   Out12=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 64 -4 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out12));
 
+  // front inner wall
+  Out14=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 63 -64 16 -76 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out14));
+
   //  void cell inside shielding (vac pipe goes there)
   //Out10=ModelSupport::getComposite(SMap,surfIndex," 2 -12 3 -4 16 -6 ");
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out10));
@@ -404,6 +416,7 @@ BeamDump::createObjects(Simulation& System)
   addOuterUnionSurf(Out11);
   addOuterUnionSurf(Out12);
   addOuterUnionSurf(Out13);
+  addOuterUnionSurf(Out14);
 
   return;
 }
