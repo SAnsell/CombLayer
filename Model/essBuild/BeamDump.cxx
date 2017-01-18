@@ -109,9 +109,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontWallMat(A.frontWallMat),
 
   backWallLength(A.backWallLength),
-  backWallHeight(A.backWallHeight),
   backWallDepth(A.backWallDepth),
-  backWallWidth(A.backWallWidth),
   backWallMat(A.backWallMat),
   
   frontInnerWallDepth(A.frontInnerWallDepth),
@@ -119,7 +117,6 @@ BeamDump::BeamDump(const BeamDump& A) :
   floorLength(A.floorLength),
   floorDepth(A.floorDepth),
   floorAlDepth(A.floorAlDepth),
-  floorWidth(A.floorWidth),
   floorMat(A.floorMat),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -151,9 +148,7 @@ BeamDump::operator=(const BeamDump& A)
       frontWallMat=A.frontWallMat;
       
       backWallLength=A.backWallLength;
-      backWallHeight=A.backWallHeight;
       backWallDepth=A.backWallDepth;
-      backWallWidth=A.backWallWidth;
       backWallMat=A.backWallMat;
       
       frontInnerWallDepth=A.frontInnerWallDepth;
@@ -161,7 +156,6 @@ BeamDump::operator=(const BeamDump& A)
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
       floorAlDepth=A.floorAlDepth;
-      floorWidth=A.floorWidth;
       floorMat=A.floorMat;
 
       wallThick=A.wallThick;
@@ -206,9 +200,7 @@ BeamDump::populate(const FuncDataBase& Control)
   frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
 
   backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
-  backWallHeight=Control.EvalVar<double>(keyName+"BackWallHeight");
   backWallDepth=Control.EvalVar<double>(keyName+"BackWallDepth");
-  backWallWidth=Control.EvalVar<double>(keyName+"BackWallWidth");
   backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
 
   frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
@@ -216,7 +208,6 @@ BeamDump::populate(const FuncDataBase& Control)
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
   floorAlDepth=Control.EvalVar<double>(keyName+"FloorAlDepth");
-  floorWidth=Control.EvalVar<double>(keyName+"FloorWidth");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -262,28 +253,32 @@ BeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight),Z);
 
   // Floor
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(frontWallLength),Y);
+  //  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(frontWallLength),Y);
+  SMap.addMatch(surfIndex+11,SMap.realSurf(surfIndex+2));
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(frontWallLength+floorLength),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(floorWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(floorWidth/2.0),X);
+  //  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(floorWidth/2.0),X);
+  SMap.addMatch(surfIndex+13,SMap.realSurf(surfIndex+3));
+  //  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(floorWidth/2.0),X);
+  SMap.addMatch(surfIndex+14,SMap.realSurf(surfIndex+4));
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(frontInnerWallDepth+
 						       floorDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin-Z*(frontInnerWallDepth),Z);
 
   // back wall
-  double y1(0.0);
-  y1=frontWallLength+floorLength;
-  ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*(y1),Y);
-  y1 += backWallLength;
+  SMap.addMatch(surfIndex+21,SMap.realSurf(surfIndex+12));
+  double y1=frontWallLength+floorLength+backWallLength;
   ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(y1),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(backWallWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(backWallWidth/2.0),X);
+  //  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(backWallWidth/2.0),X);
+  SMap.addMatch(surfIndex+23,SMap.realSurf(surfIndex+3));
+  //  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(backWallWidth/2.0),X);
+  SMap.addMatch(surfIndex+24,SMap.realSurf(surfIndex+4));
 
   ModelSupport::buildPlane(SMap,surfIndex+25,Origin-Z*(backWallDepth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+26,Origin+Z*(backWallHeight),Z);
+  //  ModelSupport::buildPlane(SMap,surfIndex+26,Origin+Z*(backWallHeight),Z);
+  SMap.addMatch(surfIndex+26,SMap.realSurf(surfIndex+6));
   
   return;
 }
