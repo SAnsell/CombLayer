@@ -61,6 +61,7 @@ class BeamDump : public attachSystem::ContainedComp,
   double floorLength;       ///< Floor length (+y, vol 6 in SPLTDISH0001)
   double floorDepth;       ///< Floor thickness (+z)
 
+  double plate25Length;         ///< Length of plate 25 (small plate under the floor)
   double plate25Depth;       ///< Thickness of small plate below the floor (+z)
 
   double wallThick;             ///< Thickness of wall

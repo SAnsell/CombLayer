@@ -119,6 +119,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   floorLength(A.floorLength),
   floorDepth(A.floorDepth),
 
+  plate25Length(A.plate25Length),
   plate25Depth(A.plate25Depth),
 
   wallThick(A.wallThick),
@@ -160,6 +161,7 @@ BeamDump::operator=(const BeamDump& A)
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
 
+      plate25Length=A.plate25Length;
       plate25Depth=A.plate25Depth;
 
       wallThick=A.wallThick;
@@ -212,6 +214,8 @@ BeamDump::populate(const FuncDataBase& Control)
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
+
+  plate25Length=Control.EvalVar<double>(keyName+"Plate25Length");
   plate25Depth=Control.EvalVar<double>(keyName+"Plate25Depth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -270,19 +274,25 @@ BeamDump::createSurfaces()
 						       floorDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin-Z*(frontInnerWallDepth),Z);
 
+  // Floor - small plates (25 and 26) under the floor
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+21,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+2),
+				  plate25Length);
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+22,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
+				  -plate25Length);
+  
+
   // back wall
-  SMap.addMatch(surfIndex+21,SMap.realSurf(surfIndex+12));
+  SMap.addMatch(surfIndex+41,SMap.realSurf(surfIndex+12));
   double y1=frontWallLength+floorLength+backWallLength;
-  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(y1),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+42,Origin+Y*(y1),Y);
 
-  //  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(backWallWidth/2.0),X);
-  SMap.addMatch(surfIndex+23,SMap.realSurf(surfIndex+3));
-  //  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(backWallWidth/2.0),X);
-  SMap.addMatch(surfIndex+24,SMap.realSurf(surfIndex+4));
+  SMap.addMatch(surfIndex+43,SMap.realSurf(surfIndex+3));
+  SMap.addMatch(surfIndex+44,SMap.realSurf(surfIndex+4));
 
-  ModelSupport::buildPlane(SMap,surfIndex+25,Origin-Z*(backWallDepth),Z);
-  //  ModelSupport::buildPlane(SMap,surfIndex+26,Origin+Z*(backWallHeight),Z);
-  SMap.addMatch(surfIndex+26,SMap.realSurf(surfIndex+6));
+  ModelSupport::buildPlane(SMap,surfIndex+45,Origin-Z*(backWallDepth),Z);
+  SMap.addMatch(surfIndex+46,SMap.realSurf(surfIndex+6));
   
   return;
 }
@@ -296,7 +306,7 @@ BeamDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamDump","createObjects");
 
-  std::string Out, Out1, Out2;
+  std::string Out, Out1, Out2, Out3, Out4, Out5;
   // front wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
@@ -305,13 +315,25 @@ BeamDump::createObjects(Simulation& System)
   Out1=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out1));
 
+  Out3=ModelSupport::getComposite(SMap,surfIndex," 2 -21 13 -14 45 -15 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out3));
+  
+  Out4=ModelSupport::getComposite(SMap,surfIndex," 21 -22 13 -14 45 -15 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out4));
+
+  Out5=ModelSupport::getComposite(SMap,surfIndex," 22 -41 13 -14 45 -15 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out5));
+
   // back wall
-  Out2=ModelSupport::getComposite(SMap,surfIndex," 21 -22 23 -24 25 -26 ");
+  Out2=ModelSupport::getComposite(SMap,surfIndex," 41 -42 43 -44 45 -46 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out2));
 
   addOuterSurf(Out);
   addOuterUnionSurf(Out1);
   addOuterUnionSurf(Out2);
+  addOuterUnionSurf(Out3);
+  addOuterUnionSurf(Out4);
+  addOuterUnionSurf(Out5);
 
   return;
 }
