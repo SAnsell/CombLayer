@@ -119,6 +119,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontInnerWallHeight(A.frontInnerWallHeight),
   frontInnerWallDepth(A.frontInnerWallDepth),
   frontInnerWallLength(A.frontInnerWallLength),
+  frontInnerWallHoleRad(A.frontInnerWallHoleRad),
   backInnerWallLength(A.backInnerWallLength),
   backInnerWallGapLength(A.backInnerWallGapLength),
   sideWallThick(A.sideWallThick),
@@ -178,6 +179,7 @@ BeamDump::operator=(const BeamDump& A)
       frontInnerWallHeight=A.frontInnerWallHeight;
       frontInnerWallDepth=A.frontInnerWallDepth;
       frontInnerWallLength=A.frontInnerWallLength;
+      frontInnerWallHoleRad=A.frontInnerWallHoleRad;
       backInnerWallLength=A.backInnerWallLength;
       backInnerWallGapLength=A.backInnerWallGapLength;
       sideWallThick=A.sideWallThick;
@@ -249,6 +251,8 @@ BeamDump::populate(const FuncDataBase& Control)
   frontInnerWallHeight=Control.EvalVar<double>(keyName+"FrontInnerWallHeight");
   frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
   frontInnerWallLength=Control.EvalVar<double>(keyName+"FrontInnerWallLength");
+  frontInnerWallHoleRad=Control.EvalVar<double>(keyName+"FrontInnerWallHoleRad");
+
   backInnerWallLength=Control.EvalVar<double>(keyName+"BackInnerWallLength");
   backInnerWallGapLength=Control.EvalVar<double>(keyName+"BackInnerWallGapLength");
   sideWallThick=Control.EvalVar<double>(keyName+"SideWallThick");
@@ -357,6 +361,8 @@ BeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, surfIndex+82,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+2),
 				  frontInnerWallLength);
+  ModelSupport::buildCylinder(SMap,surfIndex+87,Origin,Y,frontInnerWallHoleRad);
+
   // back inner wall
   ModelSupport::buildShiftedPlane(SMap, surfIndex+91,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
@@ -443,8 +449,11 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   // front inner wall
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 63 -64 16 -76 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 63 -64 16 -76 87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 -87 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // back inner wall and gap
   Out=ModelSupport::getComposite(SMap,surfIndex, " 91 -92 63 -64 16 -76 ");

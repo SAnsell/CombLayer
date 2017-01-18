@@ -96,6 +96,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpFrontInnerWallHeight",15.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontInnerWallDepth",15.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontInnerWallLength",2*5.0); // doc SPLTDISH0001
+  Control.addVariable("LinacBeamDumpFrontInnerWallHoleRad",10.4/2.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpBackInnerWallLength",2*5.0+3.0); // doc SPLTDISH0001
   ELog::EM << "measure LinacBeamDumpBackInnerWallGapLength" << ELog::endCrit;
   Control.addVariable("LinacBeamDumpBackInnerWallGapLength",1.0); // measure!
