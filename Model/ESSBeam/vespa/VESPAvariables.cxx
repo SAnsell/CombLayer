@@ -308,6 +308,21 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaSampleHeight2",6.0);
   Control.addVariable("vespaSampleMaterial1","H2O");
   Control.addVariable("vespaSampleMaterial2","Aluminium");
+
+  // VESPA DETECTORS
+  Control.addVariable("vespaNDet",1);
+  
+  Control.addVariable("vespaXStalWidth",10.0);
+  Control.addVariable("vespaXStalThick",2.0);
+  Control.addVariable("vespaXStalLength",20.0);
+  Control.addVariable("vespaXStalGap",3.0);
+  Control.addVariable("vespaXStalWallThick",4.0);
+  Control.addVariable("vespaXStalBaseThick",4.0);
+                                         
+  Control.addVariable("vespaXStalXtalMat","Silicon300K");
+  Control.addVariable("vespaXStalWallMat","Aluminium");
+
+  Control.addVariable("vespaXStal0YStep",100.0);
   
   
   return;

@@ -571,9 +571,16 @@ VESPA::buildHut(Simulation& System,
 
 void
 VESPA::buildDetectorArray(Simulation& System,
-                          const attachSystem::FixedComp& connectFC,
-                          const long int connectIndex,
+                          const attachSystem::FixedComp& sampleFC,
+                          const long int sampleIndex,
                           const int voidCell)
+  /*!
+    Builds the detector array in the cave (relative to the sample)
+    \param System :: Simulation to build with
+    \param sampleFC :: Sample (centre) fixed object
+    \param sampleIndex :: Index for the sample
+    \param voidCell :: Cell everything is in
+  */
 {
   ELog::RegMethod RegA("VESPA","buildDetectorArray");
 
@@ -589,12 +596,14 @@ VESPA::buildDetectorArray(Simulation& System,
       typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
       
       XStalArray.push_back
-        (XTYPE(new constructSystem::CrystalMount
-               (newName+"XStal"+StrFunc::makeString(i))));
-
+        (XTYPE(new constructSystem::CrystalMount(newName+"XStal",i)));
       OR.addObject(XStalArray.back());
-    }
+      
 
+      XStalArray.back()->addInsertCell(voidCell);
+      XStalArray.back()->createAll(System,sampleFC,sampleIndex);
+    }
+  return;
 
 }
   
@@ -654,6 +663,7 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
   if (startPoint<4)
     {
       buildHut(System,*FStart,startIndex,voidCell);
+      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
     }
   
   return;
