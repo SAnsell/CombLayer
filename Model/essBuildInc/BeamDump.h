@@ -40,26 +40,26 @@ class BeamDump : public attachSystem::ContainedComp,
 {
  private:
 
-  const int surfIndex;             ///< Index of surface offset
+  const int surfIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
+
+  int    steelMat;              ///< Steel material
+  int    concMat;               ///< Concrete material
 
   double frontWallLength;       ///< Front wall length (+y, vol 6 in SPLTDISH0001)
   double frontWallHeight;       ///< Front wall height (+z)
   double frontWallDepth;        ///< Front wall depth (-z)
   double frontWallWidth;        ///< Front wall width (+-x)
-  int    frontWallMat;          ///< Front wall material
 
-  double backWallLength;       ///< Back wall length (+y, vol 6 in SPLTDISH0001)
-  double backWallDepth;        ///< Back wall depth (-z)
-  int    backWallMat;          ///< Back wall material
+  double backWallLength;        ///< Back wall length (+y, vol 6 in SPLTDISH0001)
+  double backWallDepth;         ///< Back wall depth (-z)
 
   double frontInnerWallDepth;   ///< pl29
 
   double floorLength;       ///< Floor length (+y, vol 6 in SPLTDISH0001)
   double floorDepth;       ///< Floor thickness (+z)
-  int    floorMat;          ///< Floor material
 
   double plate25Depth;       ///< Thickness of small plate below the floor (+z)
 

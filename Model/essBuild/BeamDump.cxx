@@ -102,21 +102,22 @@ BeamDump::BeamDump(const BeamDump& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
+  
+  steelMat(A.steelMat),
+  concMat(A.concMat),
+  
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
-  frontWallMat(A.frontWallMat),
 
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
-  backWallMat(A.backWallMat),
   
   frontInnerWallDepth(A.frontInnerWallDepth),
 
   floorLength(A.floorLength),
   floorDepth(A.floorDepth),
-  floorMat(A.floorMat),
 
   plate25Depth(A.plate25Depth),
 
@@ -143,21 +144,21 @@ BeamDump::operator=(const BeamDump& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       
+      steelMat=A.steelMat;
+      concMat=A.concMat;
+
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
-      frontWallMat=A.frontWallMat;
       
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
-      backWallMat=A.backWallMat;
       
       frontInnerWallDepth=A.frontInnerWallDepth;
 
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
-      floorMat=A.floorMat;
 
       plate25Depth=A.plate25Depth;
 
@@ -196,21 +197,21 @@ BeamDump::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
+
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
   frontWallDepth=Control.EvalVar<double>(keyName+"FrontWallDepth");
   frontWallWidth=Control.EvalVar<double>(keyName+"FrontWallWidth");
-  frontWallMat=ModelSupport::EvalMat<int>(Control,keyName+"FrontWallMat");
 
   backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
   backWallDepth=Control.EvalVar<double>(keyName+"BackWallDepth");
-  backWallMat=ModelSupport::EvalMat<int>(Control,keyName+"BackWallMat");
 
   frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
-  floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
   plate25Depth=Control.EvalVar<double>(keyName+"Plate25Depth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -298,15 +299,15 @@ BeamDump::createObjects(Simulation& System)
   std::string Out, Out1, Out2;
   // front wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,frontWallMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   // floor
   Out1=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out1));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out1));
 
   // back wall
   Out2=ModelSupport::getComposite(SMap,surfIndex," 21 -22 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,floorMat,0.0,Out2));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out2));
 
   addOuterSurf(Out);
   addOuterUnionSurf(Out1);

@@ -64,30 +64,30 @@ EssLinacVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
-  Control.addVariable("LinacLength",30000);
-  Control.addVariable("LinacWidth",1000);
-  Control.addVariable("LinacHeight",500);
+  Control.addVariable("LinacLength",300);
+  Control.addVariable("LinacWidth",300);
+  Control.addVariable("LinacHeight",300);
   Control.addVariable("LinacWallThick",1);
   Control.addVariable("LinacMainMat","Void");
   Control.addVariable("LinacWallMat","SS316L");
+
+  Control.addVariable("LinacBeamDumpSteelMat","SS316L"); // check it !!!
+  Control.addVariable("LinacBeamDumpConcreteMat","Concrete"); // check it !!!
 
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallDepth",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallWidth",40.0); // doc SPLTDISH0001
-  Control.addVariable("LinacBeamDumpFrontWallMat","SS316L"); // check it !!!
 
   Control.addVariable("LinacBeamDumpFrontInnerWallDepth",15.0); // doc SPLTDISH0001
 
   Control.addVariable("LinacBeamDumpFloorLength",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFloorDepth",5*5.0); // doc SPLTDISH0001
-  Control.addVariable("LinacBeamDumpFloorMat","SS316L"); // check it !!!
   Control.addVariable("LinacBeamDumpPlate25Depth",3.0); // doc SPLTDISH0001
 
   Control.addVariable("LinacBeamDumpBackWallLength",20.0);  // email Lali 3 Nov 2016
   Control.Parse("LinacBeamDumpFrontInnerWallDepth+LinacBeamDumpFloorDepth+LinacBeamDumpPlate25Depth");
   Control.addVariable("LinacBeamDumpBackWallDepth");
-  Control.addVariable("LinacBeamDumpBackWallMat","SS316L"); // check it !!!
 
   Control.addVariable("LinacBeamDumpWidth",100);
   Control.addVariable("LinacBeamDumpHeight",50);
