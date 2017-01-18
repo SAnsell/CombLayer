@@ -116,8 +116,10 @@ BeamDump::BeamDump(const BeamDump& A) :
 
   floorLength(A.floorLength),
   floorDepth(A.floorDepth),
-  floorAlDepth(A.floorAlDepth),
   floorMat(A.floorMat),
+
+  plate25Depth(A.plate25Depth),
+
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -155,8 +157,9 @@ BeamDump::operator=(const BeamDump& A)
 
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
-      floorAlDepth=A.floorAlDepth;
       floorMat=A.floorMat;
+
+      plate25Depth=A.plate25Depth;
 
       wallThick=A.wallThick;
       mainMat=A.mainMat;
@@ -207,8 +210,8 @@ BeamDump::populate(const FuncDataBase& Control)
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
-  floorAlDepth=Control.EvalVar<double>(keyName+"FloorAlDepth");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
+  plate25Depth=Control.EvalVar<double>(keyName+"Plate25Depth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
