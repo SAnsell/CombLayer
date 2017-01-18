@@ -67,8 +67,8 @@ class BeamDump : public attachSystem::ContainedComp,
  
   double plate38Depth;          ///< Thickness of Al plate 38
 
-  double topWallThick;           ///< Thickness (height) of top wall
-  double topWallOverhangLength;  ///< Length of overhang of top wall
+  double roofThick;           ///< Thickness (height) of roof
+  double roofOverhangLength;  ///< Length of overhang of roof
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material  

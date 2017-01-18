@@ -94,8 +94,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.Parse("LinacBeamDumpFrontInnerWallDepth+LinacBeamDumpFloorDepth+LinacBeamDumpPlate25Depth");
   Control.addVariable("LinacBeamDumpBackWallDepth");
 
-  Control.addVariable("LinacBeamDumpTopWallThick",20); // email from Lali 3 Nov 2016
-  Control.addVariable("LinacBeamDumpTopWallOverhangLength", 20); // guess based on SPLTDISH0001
+  Control.addVariable("LinacBeamDumpRoofThick",20); // email from Lali 3 Nov 2016
+  Control.addVariable("LinacBeamDumpRoofOverhangLength", 20); // guess based on SPLTDISH0001
 
   Control.addVariable("LinacBeamDumpWidth",100);
   Control.addVariable("LinacBeamDumpHeight",50);
