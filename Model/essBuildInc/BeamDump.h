@@ -59,6 +59,8 @@ class BeamDump : public attachSystem::ContainedComp,
 
   double frontInnerWallDepth;   ///< pl29
   double frontInnerWallLength;  ///< pl29
+  double backInnerWallLength;   ///< thickness of back inner wal (plate 24+30+31)
+  double backInnerWallGapLength; ///< thickness of gap b/w back inner and outer walls
   double sideWallThick;         ///< thickness of each of the side walls (plates 21+27)
 
   double floorLength;           ///< Floor length (+y, vol 6 in SPLTDISH0001)
