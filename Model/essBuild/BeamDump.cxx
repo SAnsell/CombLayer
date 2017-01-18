@@ -115,6 +115,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
   
+  frontInnerWallHeight(A.frontInnerWallHeight),
   frontInnerWallDepth(A.frontInnerWallDepth),
   frontInnerWallLength(A.frontInnerWallLength),
   backInnerWallLength(A.backInnerWallLength),
@@ -172,6 +173,7 @@ BeamDump::operator=(const BeamDump& A)
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
       
+      frontInnerWallHeight=A.frontInnerWallHeight;
       frontInnerWallDepth=A.frontInnerWallDepth;
       frontInnerWallLength=A.frontInnerWallLength;
       backInnerWallLength=A.backInnerWallLength;
@@ -241,6 +243,7 @@ BeamDump::populate(const FuncDataBase& Control)
   backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
   backWallDepth=Control.EvalVar<double>(keyName+"BackWallDepth");
 
+  frontInnerWallHeight=Control.EvalVar<double>(keyName+"FrontInnerWallHeight");
   frontInnerWallDepth=Control.EvalVar<double>(keyName+"FrontInnerWallDepth");
   frontInnerWallLength=Control.EvalVar<double>(keyName+"FrontInnerWallLength");
   backInnerWallLength=Control.EvalVar<double>(keyName+"BackInnerWallLength");
@@ -301,8 +304,8 @@ BeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(frontWallWidth/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(frontWallWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(frontWallDepth),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(frontWallDepth+frontInnerWallHeight+innerRoofThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight-frontInnerWallHeight-innerRoofThick),Z);
 
   // Floor
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(frontWallLength+floorLength),Y);
