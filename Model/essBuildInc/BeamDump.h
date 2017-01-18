@@ -47,6 +47,7 @@ class BeamDump : public attachSystem::ContainedComp,
 
   int    steelMat;              ///< Steel material
   int    concMat;               ///< Concrete material
+  int    alMat;                 ///< Aluminium material
 
   double frontWallLength;       ///< Front wall length (+y, vol 6 in SPLTDISH0001)
   double frontWallHeight;       ///< Front wall height (+z)
@@ -63,6 +64,8 @@ class BeamDump : public attachSystem::ContainedComp,
 
   double plate25Length;         ///< Length of plate 25 (small plate under the floor)
   double plate25Depth;       ///< Thickness of small plate below the floor (+z)
+
+  double plate38Depth;          ///< Thickness of Al plate 38
 
   double wallThick;             ///< Thickness of wall
 

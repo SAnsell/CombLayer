@@ -105,6 +105,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   
   steelMat(A.steelMat),
   concMat(A.concMat),
+  alMat(A.alMat),
   
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
@@ -121,6 +122,8 @@ BeamDump::BeamDump(const BeamDump& A) :
 
   plate25Length(A.plate25Length),
   plate25Depth(A.plate25Depth),
+
+  plate38Depth(A.plate38Depth),
 
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -147,6 +150,7 @@ BeamDump::operator=(const BeamDump& A)
       
       steelMat=A.steelMat;
       concMat=A.concMat;
+      alMat=A.alMat;
 
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
@@ -163,6 +167,8 @@ BeamDump::operator=(const BeamDump& A)
 
       plate25Length=A.plate25Length;
       plate25Depth=A.plate25Depth;
+
+      plate38Depth=A.plate38Depth;
 
       wallThick=A.wallThick;
       mainMat=A.mainMat;
@@ -201,6 +207,7 @@ BeamDump::populate(const FuncDataBase& Control)
 
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
+  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
 
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
@@ -217,6 +224,8 @@ BeamDump::populate(const FuncDataBase& Control)
 
   plate25Length=Control.EvalVar<double>(keyName+"Plate25Length");
   plate25Depth=Control.EvalVar<double>(keyName+"Plate25Depth");
+
+  plate38Depth=Control.EvalVar<double>(keyName+"Plate38Depth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -274,14 +283,17 @@ BeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, surfIndex+22,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
 				  -plate25Length);
-  
+  ModelSupport::buildPlane(SMap,surfIndex+25,Origin-Z*(backWallDepth),Z);
+
+  // Al plate zmin
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+35,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+25),
+				  -plate38Depth);
 
   // back wall
   double y1=frontWallLength+floorLength+backWallLength;
   ModelSupport::buildPlane(SMap,surfIndex+42,Origin+Y*(y1),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+45,Origin-Z*(backWallDepth),Z);
-  
   return;
 }
   
@@ -294,7 +306,7 @@ BeamDump::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BeamDump","createObjects");
 
-  std::string Out, Out1, Out2, Out3, Out4, Out5;
+  std::string Out, Out1, Out2, Out3, Out4, Out5, Out6, Out7;
   // front wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
@@ -303,17 +315,26 @@ BeamDump::createObjects(Simulation& System)
   Out1=ModelSupport::getComposite(SMap,surfIndex," 2 -12 3 -4 15 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out1));
 
-  Out3=ModelSupport::getComposite(SMap,surfIndex," 2 -21 3 -4 45 -15 ");
+  Out3=ModelSupport::getComposite(SMap,surfIndex," 2 -21 3 -4 25 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out3));
-  
-  Out4=ModelSupport::getComposite(SMap,surfIndex," 21 -22 3 -4 45 -15 ");
+
+  // Floor - small steel plates
+  Out4=ModelSupport::getComposite(SMap,surfIndex," 21 -22 3 -4 25 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out4));
 
-  Out5=ModelSupport::getComposite(SMap,surfIndex," 22 -12 3 -4 45 -15 ");
+  Out5=ModelSupport::getComposite(SMap,surfIndex," 22 -12 3 -4 25 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out5));
 
+  //  Floor - Al plate
+  Out6=ModelSupport::getComposite(SMap,surfIndex," 2 -42 3 -4 35 -25 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out6));
+
+  // Floor - void cell below Al plate
+  Out7=ModelSupport::getComposite(SMap,surfIndex," 2 -42 3 -4 5 -35 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out7));
+
   // back wall
-  Out2=ModelSupport::getComposite(SMap,surfIndex," 12 -42 3 -4 45 -6 ");
+  Out2=ModelSupport::getComposite(SMap,surfIndex," 12 -42 3 -4 25 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out2));
 
   addOuterSurf(Out);
@@ -322,6 +343,8 @@ BeamDump::createObjects(Simulation& System)
   addOuterUnionSurf(Out3);
   addOuterUnionSurf(Out4);
   addOuterUnionSurf(Out5);
+  addOuterUnionSurf(Out6);
+  addOuterUnionSurf(Out7);
 
   return;
 }

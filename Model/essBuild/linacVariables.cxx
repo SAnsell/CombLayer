@@ -73,6 +73,7 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacBeamDumpSteelMat","SS316L"); // check it !!!
   Control.addVariable("LinacBeamDumpConcreteMat","Concrete"); // check it !!!
+  Control.addVariable("LinacBeamDumpAlMat","Aluminium"); // check it !!!
 
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001
@@ -86,6 +87,8 @@ EssLinacVariables(FuncDataBase& Control)
   
   Control.addVariable("LinacBeamDumpPlate25Length",35.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpPlate25Depth",3.0); // doc SPLTDISH0001
+
+  Control.addVariable("LinacBeamDumpPlate38Depth",3.0); // guess based on SPLTDISH0001: from the drawing, it should be the same as height of plate 15, but it looks like plate 15 height (5cm) is wrong if I compare it with e.g. plate 16 height
 
   Control.addVariable("LinacBeamDumpBackWallLength",20.0);  // email Lali 3 Nov 2016
   Control.Parse("LinacBeamDumpFrontInnerWallDepth+LinacBeamDumpFloorDepth+LinacBeamDumpPlate25Depth");
