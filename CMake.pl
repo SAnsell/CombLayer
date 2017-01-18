@@ -7,7 +7,7 @@ use strict;
 
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod3","t1Real",
-		"sns","reactor","t1MarkII","t1Eng","t3Expt",
+		"sns","reactor","t1MarkII","t1Eng","essBeamline",
 		"filter","singleItem","testMain"); 
 
 
@@ -70,6 +70,22 @@ $gM->findSubSrcDir("");
 
 
 $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
+			     "beamline","physics","support",
+			     "input","instrument","source","monte",
+			     "funcBase","log","tally","construct",
+			     "crystal","transport","scatMat","md5",
+			     "endf","process","world","work",
+			     "monte","geometry","mersenne","src","xml","poly",
+			     "weights","global","attachComp","visit",
+                             "beer","bifrost","cspec","dream","estia",
+			     "freia","loki","magic","miracles","nmx",
+                             "odin","trex","vor","vespa","shortDream",
+                             "shortNmx","shortOdin","longLoki",
+			     "commonVar","simpleItem"
+    	 	             ]);
+
+$gM->addDepUnit("essBeamline",
+		             ["essBuild","visit","src","simMC",
 			     "beamline","physics","support",
 			     "input","instrument","source","monte",
 			     "funcBase","log","tally","construct",

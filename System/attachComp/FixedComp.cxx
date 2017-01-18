@@ -314,6 +314,9 @@ void
 FixedComp::reOrientate()
   /*!
     Calling function to reOrientate
+    This allows a primary axis to be-reorientated to 
+    a previously given direction. Typically used to 
+    set an object to the vertical etc, after moving the object
   */
 {
   ELog::RegMethod RegA("FixedComp","reOrientate");

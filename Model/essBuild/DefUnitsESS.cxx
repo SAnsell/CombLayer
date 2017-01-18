@@ -3,7 +3,7 @@
  
  * File:   essBuild/DefUnitsESS.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -240,10 +240,10 @@ setESSSingle(defaultConfig& A,
      {"ODIN","G2BLineLow20"},      // Lower S2
      {"DREAM","G2BLineTop19"},     // S3
 
-     {"VOR","G2BLineTop10"},       // S10/S11  [CHANGED TO FIT]
-     {"VESPA","G2BLineTop15"},     // E7
+     {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
+     {"VESPA","G2BLineTop7"},     // E7
 
-     {"ESTIA","G2BLineTop20"},     // E2
+     {"ESTIA","G2BLineTop2"},     // E2
      
      {"SIMPLE","G1BLineTop17"},
 
