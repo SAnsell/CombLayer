@@ -91,6 +91,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallDepth",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallWidth",40.0); // doc SPLTDISH0001
+  Control.addVariable("LinacBeamDumpFrontWallHoleRad",16.5/2.0); // doc SPLTDISH0001
 
   Control.addVariable("LinacBeamDumpFrontInnerWallHeight",15.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontInnerWallDepth",15.0); // doc SPLTDISH0001

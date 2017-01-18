@@ -53,6 +53,7 @@ class BeamDump : public attachSystem::ContainedComp,
   double frontWallHeight;       ///< Front wall height (+z)
   double frontWallDepth;        ///< Front wall depth (-z)
   double frontWallWidth;        ///< Front wall width (+-x)
+  double frontWallHoleRad;      ///< Front wall hole  radius
 
   double backWallLength;        ///< Back wall length (+y, vol 6 in SPLTDISH0001)
   double backWallDepth;         ///< Back wall depth (-z)

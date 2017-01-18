@@ -111,6 +111,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontWallHeight(A.frontWallHeight),
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
+  frontWallHoleRad(A.frontWallHoleRad),
 
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
@@ -169,6 +170,7 @@ BeamDump::operator=(const BeamDump& A)
       frontWallHeight=A.frontWallHeight;
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
+      frontWallHoleRad=A.frontWallHoleRad;
       
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
@@ -239,6 +241,7 @@ BeamDump::populate(const FuncDataBase& Control)
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
   frontWallDepth=Control.EvalVar<double>(keyName+"FrontWallDepth");
   frontWallWidth=Control.EvalVar<double>(keyName+"FrontWallWidth");
+  frontWallHoleRad=Control.EvalVar<double>(keyName+"FrontWallHoleRad");
 
   backWallLength=Control.EvalVar<double>(keyName+"BackWallLength");
   backWallDepth=Control.EvalVar<double>(keyName+"BackWallDepth");
@@ -306,6 +309,7 @@ BeamDump::createSurfaces()
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(frontWallDepth+frontInnerWallHeight+innerRoofThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(frontWallHeight-frontInnerWallHeight-innerRoofThick),Z);
+  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,frontWallHoleRad);
 
   // Floor
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(frontWallLength+floorLength),Y);
@@ -387,8 +391,11 @@ BeamDump::createObjects(Simulation& System)
 
   std::string Out;
   // front wall
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 7");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // floor
   Out=ModelSupport::getComposite(SMap,surfIndex," 2 -12 3 -4 15 -16 ");
