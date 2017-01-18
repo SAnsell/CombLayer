@@ -92,6 +92,7 @@ setDefUnits(FuncDataBase& Control,
 		  <<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
+	  ELog::EM<<"  linac : Build only Linac"<<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else if (Key=="linac")
@@ -356,6 +357,8 @@ setESSLinac(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSLinac");
 
   A.setVar("LinacActive", 1);
+  A.setOption("matDB", "neutronics");
+
 }
   
 } // NAMESPACE mainSystem
