@@ -51,6 +51,18 @@
 #include "variableSetup.h"
 #include "essVariables.h"
 
+
+// Scales are used to calculate non-marked dimensions:
+// Scale of the plots in SPLTDISH0001:  1024.0/70
+#define SCALE1 14.6286
+// Scale of the plots in SPLTDISH0052 (top-left corner):  620.0/106
+#define SCALE52tl 5.84906
+// Scale of the plots in SPLTDISH0052 (top-right corner):  267.52/92
+#define SCALE52tr 2.90783
+// Scale of the plots in SPLTDISH0052 (bottom-left corner):  14.5/10
+#define SCALE52bl 1.45
+
+
 namespace setVariable
 {
 
@@ -108,6 +120,12 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpHeight",50.0);
   Control.addVariable("LinacBeamDumpMainMat","Void");
   Control.addVariable("LinacBeamDumpWallMat","SS316L");
+
+  ELog::EM << "measure LinacBeamDumpVacPipeFrontInnerWallDist" << ELog::endCrit;
+    Control.addVariable("LinacBeamDumpVacPipeFrontInnerWallDist",5.0); // measure !!!
+  Control.addVariable("LinacBeamDumpVacPipeLength",63.97); // SPLTDISH0052
+  Control.addVariable("LinacBeamDumpVacPipeRad",6.85*SCALE52bl/2.0); // measured on SPLTDISH0052
+  Control.addVariable("LinacBeamDumpVacPipeSideWallThick",(7.55-6.85)*SCALE52bl/2.0);  // measured on SPLTDISH0052
 
   return;
 }

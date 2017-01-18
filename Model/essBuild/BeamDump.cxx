@@ -133,6 +133,11 @@ BeamDump::BeamDump(const BeamDump& A) :
   roofOverhangLength(A.roofOverhangLength),
   innerRoofThick(A.innerRoofThick),
   
+  vacPipeFrontInnerWallDist(A.vacPipeFrontInnerWallDist),
+  vacPipeLength(A.vacPipeLength),
+  vacPipeRad(A.vacPipeRad),
+  vacPipeSideWallThick(A.vacPipeSideWallThick),
+
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -184,6 +189,12 @@ BeamDump::operator=(const BeamDump& A)
       roofThick=A.roofThick;
       roofOverhangLength=A.roofOverhangLength;
       innerRoofThick=A.innerRoofThick;
+
+      vacPipeFrontInnerWallDist=A.vacPipeFrontInnerWallDist;
+      vacPipeLength=A.vacPipeLength;
+      vacPipeRad=A.vacPipeRad;
+      vacPipeSideWallThick=A.vacPipeSideWallThick;
+	
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -247,6 +258,11 @@ BeamDump::populate(const FuncDataBase& Control)
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   roofOverhangLength=Control.EvalVar<double>(keyName+"RoofOverhangLength");
   innerRoofThick=Control.EvalVar<double>(keyName+"InnerRoofThick");
+
+  vacPipeFrontInnerWallDist=Control.EvalVar<double>(keyName+"VacPipeFrontInnerWallDist");
+  vacPipeLength=Control.EvalVar<double>(keyName+"VacPipeLength");
+  vacPipeRad=Control.EvalVar<double>(keyName+"VacPipeRad");
+  vacPipeSideWallThick=Control.EvalVar<double>(keyName+"VacPipeSideWallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -341,6 +357,18 @@ BeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, surfIndex+92,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
 				  -backInnerWallGapLength);
+
+  // Vacuum pipe
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+101,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+82),
+				  vacPipeFrontInnerWallDist);
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+102,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
+				  vacPipeLength);
+  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,vacPipeRad);
+  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,
+			      vacPipeRad+vacPipeSideWallThick);
+  
   
   return;
 }
@@ -415,8 +443,16 @@ BeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " 92 -12 63 -64 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
+  // vac pipe
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -117 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  
   //  void cell inside shielding (vac pipe goes there)
-  Out=ModelSupport::getComposite(SMap,surfIndex," 82 -91 63 -64 16 -76 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 51 -42 3 -4 5 -56 ");

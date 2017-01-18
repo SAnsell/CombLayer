@@ -75,6 +75,11 @@ class BeamDump : public attachSystem::ContainedComp,
   double roofOverhangLength;  ///< Length of overhang of roof
   double innerRoofThick;        ///< Thickness (height) of inner roof (plates 19 and 20)
 
+  double vacPipeFrontInnerWallDist;   ///< distance b/w front inner wall and vacuum pipe
+  double vacPipeLength;          ///< vacuum pipe length
+  double vacPipeRad;             ///< vacuum pipe radius
+  double vacPipeSideWallThick;   ///< vacuum pipe side wall thickness
+
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material  
   
