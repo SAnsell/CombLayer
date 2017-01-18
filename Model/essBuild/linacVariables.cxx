@@ -64,10 +64,10 @@ EssLinacVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
-  Control.addVariable("LinacLength",300);
-  Control.addVariable("LinacWidth",300);
-  Control.addVariable("LinacHeight",300);
-  Control.addVariable("LinacWallThick",1);
+  Control.addVariable("LinacLength",300.);
+  Control.addVariable("LinacWidth",300.);
+  Control.addVariable("LinacHeight",300.);
+  Control.addVariable("LinacWallThick",1.);
   Control.addVariable("LinacMainMat","Void");
   Control.addVariable("LinacWallMat","SS316L");
 
@@ -95,11 +95,12 @@ EssLinacVariables(FuncDataBase& Control)
   Control.Parse("LinacBeamDumpFrontInnerWallDepth+LinacBeamDumpFloorDepth+LinacBeamDumpPlate25Depth");
   Control.addVariable("LinacBeamDumpBackWallDepth");
 
-  Control.addVariable("LinacBeamDumpRoofThick",20); // email from Lali 3 Nov 2016
-  Control.addVariable("LinacBeamDumpRoofOverhangLength", 20); // guess based on SPLTDISH0001
-
-  Control.addVariable("LinacBeamDumpWidth",100);
-  Control.addVariable("LinacBeamDumpHeight",50);
+  Control.addVariable("LinacBeamDumpRoofThick",20.0); // email from Lali 3 Nov 2016
+  Control.addVariable("LinacBeamDumpRoofOverhangLength", 20.0); // guess based on SPLTDISH0001
+  Control.addVariable("LinacBeamDumpInnerRoofThick",2*5.0); // doc SPLTDISH0001
+  
+  Control.addVariable("LinacBeamDumpWidth",100.0);
+  Control.addVariable("LinacBeamDumpHeight",50.0);
   Control.addVariable("LinacBeamDumpMainMat","Void");
   Control.addVariable("LinacBeamDumpWallMat","SS316L");
 

@@ -70,6 +70,7 @@ class BeamDump : public attachSystem::ContainedComp,
 
   double roofThick;           ///< Thickness (height) of roof
   double roofOverhangLength;  ///< Length of overhang of roof
+  double innerRoofThick;        ///< Thickness (height) of inner roof (plates 19 and 20)
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material  

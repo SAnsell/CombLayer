@@ -128,6 +128,8 @@ BeamDump::BeamDump(const BeamDump& A) :
 
   roofThick(A.roofThick),
   roofOverhangLength(A.roofOverhangLength),
+  innerRoofThick(A.innerRoofThick),
+  
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -175,6 +177,7 @@ BeamDump::operator=(const BeamDump& A)
 
       roofThick=A.roofThick;
       roofOverhangLength=A.roofOverhangLength;
+      innerRoofThick=A.innerRoofThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -234,6 +237,7 @@ BeamDump::populate(const FuncDataBase& Control)
 
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   roofOverhangLength=Control.EvalVar<double>(keyName+"RoofOverhangLength");
+  innerRoofThick=Control.EvalVar<double>(keyName+"InnerRoofThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -267,7 +271,7 @@ BeamDump::createSurfaces()
 
   // Front wall
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(frontWallLength),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*frontWallLength,Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(frontWallWidth/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(frontWallWidth/2.0),X);
@@ -312,7 +316,11 @@ BeamDump::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+63,Origin-X*sideWallThick,X);
   ModelSupport::buildPlane(SMap,surfIndex+64,Origin+X*sideWallThick,X);
   
-
+  // inner roof
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+76,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+6),
+				  -innerRoofThick);
+  
   return;
 }
   
@@ -326,7 +334,7 @@ BeamDump::createObjects(Simulation& System)
   ELog::RegMethod RegA("BeamDump","createObjects");
 
   std::string Out, Out1, Out2, Out3, Out4, Out5, Out6, Out7, Out8, Out9, Out10,
-    Out11, Out12;
+    Out11, Out12, Out13;
   // front wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
@@ -361,15 +369,19 @@ BeamDump::createObjects(Simulation& System)
   Out8=ModelSupport::getComposite(SMap,surfIndex," 51 -42 3 -4 6 -56 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out8));
 
+  // Inner roof
+  Out13=ModelSupport::getComposite(SMap,surfIndex," 2 -12 3 -4 76 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out13));
+
   // void cell under overhead
   Out9=ModelSupport::getComposite(SMap,surfIndex," 51 -1 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out9));
 
   // side walls
-  Out11=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 3 -63 16 -6 ");
+  Out11=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 3 -63 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out11));
 
-  Out12=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 64 -4 16 -6 ");
+  Out12=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 64 -4 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out12));
 
   //  void cell inside shielding (vac pipe goes there)
@@ -391,6 +403,7 @@ BeamDump::createObjects(Simulation& System)
   //  addOuterUnionSurf(Out10);
   addOuterUnionSurf(Out11);
   addOuterUnionSurf(Out12);
+  addOuterUnionSurf(Out13);
 
   return;
 }
