@@ -375,51 +375,44 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
 
   A.setOption("matDB", "neutronics");
   A.setOption("physModel", "BD");
-
+  
   // simplify the bunkers
   A.setOption("bunker", "noPillar");
-  A.setVar("ABunkerNRoofRadial", 1);
-  A.setVar("ABunkerNRoofVert", 1);
+  A.setVar("ABunkerWallNBasic", 1);
+  A.setVar("ABunkerRoofNBasicVert", 1);
   A.setVar("ABunkerNSectors", 1);
-  A.setVar("ABunkerNSegment", 1);
-  A.setVar("ABunkerNSideThick", 1);
-  A.setVar("ABunkerNSideVert", 1);
-  A.setVar("ABunkerRoofMat", "Void");
+  A.setVar("ABunkerRoofMat0", "Void");
+  A.setVar("ABunkerWallMat0", "Void");
   A.setVar("ABunkerWallMat", "Void");
 
-  A.setVar("BBunkerNRoofRadial", 1);
-  A.setVar("BBunkerNRoofVert", 1);
+  A.setVar("BBunkerWallNBasic", 1);
+  A.setVar("BBunkerRoofNBasicVert", 1);
   A.setVar("BBunkerNSectors", 1);
-  A.setVar("BBunkerNSegment", 1);
-  A.setVar("BBunkerNSideThick", 1);
-  A.setVar("BBunkerNSideVert", 1);
-  A.setVar("BBunkerRoofMat", "Void");
+  A.setVar("BBunkerRoofMat0", "Void");
+  A.setVar("BBunkerWallMat0", "Void");
   A.setVar("BBunkerWallMat", "Void");
 
-  A.setVar("CBunkerNRoofRadial", 1);
-  A.setVar("CBunkerNRoofVert", 1);
+  A.setVar("CBunkerWallNBasic", 1);
+  A.setVar("CBunkerRoofNBasicVert", 1);
   A.setVar("CBunkerNSectors", 1);
-  A.setVar("CBunkerNSegment", 1);
-  A.setVar("CBunkerNSideThick", 1);
-  A.setVar("CBunkerNSideVert", 1);
-  A.setVar("CBunkerRoofMat", "Void");
+  A.setVar("CBunkerRoofMat0", "Void");
+  A.setVar("CBunkerWallMat0", "Void");
   A.setVar("CBunkerWallMat", "Void");
 
-  A.setVar("DBunkerNRoofRadial", 1);
-  A.setVar("DBunkerNRoofVert", 1);
+  A.setVar("DBunkerWallNBasic", 1);
+  A.setVar("DBunkerRoofNBasicVert", 1);
   A.setVar("DBunkerNSectors", 1);
-  A.setVar("DBunkerNSegment", 1);
-  A.setVar("DBunkerNSideThick", 1);
-  A.setVar("DBunkerNSideVert", 1);
-  A.setVar("DBunkerRoofMat", "Void");
+  A.setVar("DBunkerRoofMat0", "Void");
+  A.setVar("DBunkerWallMat0", "Void");
   A.setVar("DBunkerWallMat", "Void");
+
 
   // simplify the curtain
   A.setVar("CurtainNBaseLayers", 1);
   A.setVar("CurtainNMidLayers", 1);
   A.setVar("CurtainNTopLayers", 1);
   A.setVar("CurtainWallMat", "Void");
-
+  
   // sdef
   A.setVar("sdefEnergy", 2000.0);
   A.setVar("sdefWidth", 7.0);
