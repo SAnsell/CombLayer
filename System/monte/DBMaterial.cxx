@@ -1166,6 +1166,13 @@ DBMaterial::initMaterial()
                    "lwtr.01t",MLib);
   setMaterial(MObj);
 
+  // He3 for detectors [1bar]
+  MObj.setMaterial(132,"He3_1Bar","2003.70c 2.45e-5","",MLib);
+  setMaterial(MObj);
+
+  // He3 for detectors [10bar]
+  MObj.setMaterial(133,"He3_10Bar","2003.70c 2.45e-4","",MLib);
+  setMaterial(MObj);
   
   return;
 }

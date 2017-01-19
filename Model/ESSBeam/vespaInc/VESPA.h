@@ -48,7 +48,8 @@ namespace constructSystem
   class ChopperHousing;
   class ChopperUnit;
   class HoleShape;
-  class CrystalMount;  
+  class CrystalMount;
+  class TubeDetBox;  
 }
 
 namespace essSystem
@@ -203,6 +204,7 @@ class VESPA : public attachSystem::CopiedComp
 
   /// Array of crystals and detectors
   std::vector<std::shared_ptr<constructSystem::CrystalMount>> XStalArray;
+  std::vector<std::shared_ptr<constructSystem::TubeDetBox>> ADetArray;
 
   void setBeamAxis(const GuideItem&,const bool);
 

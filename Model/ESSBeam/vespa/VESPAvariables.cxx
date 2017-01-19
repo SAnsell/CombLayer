@@ -79,6 +79,9 @@ VESPAvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JawGen;
 
+  Control.addVariable("vespaStartPoint",0);
+  Control.addVariable("vespaStopPoint",0);
+  
   PipeGen.setPipe(8.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
@@ -310,7 +313,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaSampleMaterial2","Aluminium");
 
   // VESPA DETECTORS
-  Control.addVariable("vespaNDet",1);
+  Control.addVariable("vespaNDet",8);
   
   Control.addVariable("vespaXStalWidth",10.0);
   Control.addVariable("vespaXStalThick",2.0);
@@ -323,7 +326,53 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaXStalWallMat","Aluminium");
 
   Control.addVariable("vespaXStal0YStep",100.0);
+  Control.addVariable("vespaXStal0PreXYAngle",120.0);
+  Control.addVariable("vespaXStal0XYAngle",60.0);
   
+  Control.addVariable("vespaXStal1YStep",180.0);
+  Control.addVariable("vespaXStal1PreXYAngle",150.0);
+  Control.addVariable("vespaXStal1XYAngle",30.0);
+
+  Control.addVariable("vespaXStal2YStep",100.0);
+  Control.addVariable("vespaXStal2PreXYAngle",-120.0);
+  Control.addVariable("vespaXStal2XYAngle",-60.0);
+  
+  Control.addVariable("vespaXStal3YStep",180.0);
+  Control.addVariable("vespaXStal3PreXYAngle",-150.0);
+  Control.addVariable("vespaXStal3XYAngle",-30.0);
+
+  Control.addVariable("vespaXStal4YStep",100.0);
+  Control.addVariable("vespaXStal4PreXYAngle",60.0);
+  Control.addVariable("vespaXStal4XYAngle",-60.0);
+  
+  Control.addVariable("vespaXStal5YStep",180.0);
+  Control.addVariable("vespaXStal5PreXYAngle",30.0);
+  Control.addVariable("vespaXStal5XYAngle",-30.0);
+
+  Control.addVariable("vespaXStal6YStep",100.0);
+  Control.addVariable("vespaXStal6PreXYAngle",-60.0);
+  Control.addVariable("vespaXStal6XYAngle",60.0);
+  
+  Control.addVariable("vespaXStal7YStep",180.0);
+  Control.addVariable("vespaXStal7PreXYAngle",-30.0);
+  Control.addVariable("vespaXStal7XYAngle",30.0);
+
+  Control.addVariable("vespaDBoxNDetectors",8);
+  Control.addVariable("vespaDBoxCentRadius",4.1);
+  Control.addVariable("vespaDBoxTubeRadius",3.0);
+  Control.addVariable("vespaDBoxWallThick",1.0);
+  Control.addVariable("vespaDBoxHeight",20.0);
+  Control.addVariable("vespaDBoxWallMat","Aluminium");
+  Control.addVariable("vespaDBoxDetMat","He3_10Bar");
+
+  Control.addVariable("vespaDBox0YStep",30.0);
+  Control.addVariable("vespaDBox1YStep",30.0);
+  Control.addVariable("vespaDBox2YStep",30.0);
+  Control.addVariable("vespaDBox3YStep",30.0);
+  Control.addVariable("vespaDBox4YStep",30.0);
+  Control.addVariable("vespaDBox5YStep",30.0);
+  Control.addVariable("vespaDBox6YStep",30.0);
+  Control.addVariable("vespaDBox7YStep",30.0);
   
   return;
 }

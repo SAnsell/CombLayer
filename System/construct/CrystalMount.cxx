@@ -244,7 +244,8 @@ CrystalMount::createLinks()
   FixedComp::setConnect(6,viewPoint,-incomingAxis);
   FixedComp::setLinkSurf(6,SMap.realSurf(xtalIndex+1));
 
-  const Geometry::Vec3D outgoingAxis=Y*(2.0*incomingAxis.dotProd(Y))+incomingAxis;
+  const Geometry::Vec3D outgoingAxis=
+    -Y*(2.0*incomingAxis.dotProd(Y))+incomingAxis;
   FixedComp::setConnect(7,Origin,outgoingAxis);
   FixedComp::setLinkSurf(7,-SMap.realSurf(xtalIndex+1));
 
@@ -264,7 +265,7 @@ CrystalMount::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("CrystalMount","createAll");
   populate(System.getDataBase());
-  ELog::EM<<"ASDFASF SA"<<ELog::endDiag;
+
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
@@ -274,4 +275,4 @@ CrystalMount::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE constructSystem

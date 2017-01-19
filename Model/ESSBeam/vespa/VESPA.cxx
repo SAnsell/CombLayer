@@ -94,7 +94,6 @@
 #include "CylSample.h"
 #include "CrystalMount.h"
 #include "TubeDetBox.h"
-#include "TubeDetBox.h"
 
 #include "VESPA.h"
 
@@ -592,16 +591,29 @@ VESPA::buildDetectorArray(Simulation& System,
   
   for(size_t i=0;i<nDet;i++)
     {
-      
       typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
-      
-      XStalArray.push_back
-        (XTYPE(new constructSystem::CrystalMount(newName+"XStal",i)));
-      OR.addObject(XStalArray.back());
-      
+      typedef std::shared_ptr<constructSystem::TubeDetBox> DTYPE;
 
-      XStalArray.back()->addInsertCell(voidCell);
-      XStalArray.back()->createAll(System,sampleFC,sampleIndex);
+      XTYPE xsPtr(new constructSystem::CrystalMount(newName+"XStal",i));
+      DTYPE dsPtr(new constructSystem::TubeDetBox(newName+"DBox",i));
+      OR.addObject(xsPtr);
+      OR.addObject(dsPtr);
+
+      
+      // ADetArray.push_back
+      //   (DTYPE(new constructSystem::TubeDetBox(newName+"DBox",i)));
+      // OR.addObject(ADetArray.back());
+
+      xsPtr->addInsertCell(voidCell);
+      xsPtr->createAll(System,sampleFC,sampleIndex);
+
+      dsPtr->addInsertCell(voidCell);
+      dsPtr->createAll(System,*xsPtr,8);
+      //      ADetArray.back()->addInsertCell(voidCell);
+      //      ADetArray.back()->createAll(System,XS,sampleIndex);
+
+      XStalArray.push_back(xsPtr);
+      ADetArray.push_back(dsPtr);      
     }
   return;
 

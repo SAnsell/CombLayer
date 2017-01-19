@@ -77,16 +77,60 @@
 namespace constructSystem
 {
 
-TubeDetBox::TubeDetBox(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
+TubeDetBox::TubeDetBox(const std::string& Key,const size_t index) :
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(index),6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
-  detIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  baseName(Key),ID(index),
+  detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(detIndex+1),nDet(0)
   /*!
     Constructor
     \param Key :: Name of construction key
+    \param index :: ID nubmer
   */
 {}
+
+TubeDetBox::TubeDetBox(const TubeDetBox& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  baseName(A.baseName),ID(A.ID),detIndex(A.detIndex),
+  cellIndex(A.cellIndex),centRadius(A.centRadius),
+  tubeRadius(A.tubeRadius),wallThick(A.wallThick),
+  height(A.height),wallMat(A.wallMat),detMat(A.detMat),
+  nDet(A.nDet),DPoints(A.DPoints)
+  /*!
+    Copy constructor
+    \param A :: TubeDetBox to copy
+  */
+{}
+
+TubeDetBox&
+TubeDetBox::operator=(const TubeDetBox& A)
+  /*!
+    Assignment operator
+    \param A :: TubeDetBox to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      centRadius=A.centRadius;
+      tubeRadius=A.tubeRadius;
+      wallThick=A.wallThick;
+      height=A.height;
+      wallMat=A.wallMat;
+      detMat=A.detMat;
+      nDet=A.nDet;
+      DPoints=A.DPoints;
+    }
+  return *this;
+}
 
 
 TubeDetBox::~TubeDetBox()
@@ -106,20 +150,22 @@ TubeDetBox::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  tubeRadius=Control.EvalVar<double>(keyName+"TubeRadius");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  centRadius=Control.EvalDefVar<double>(keyName+"CentRadius",0.0);
+  tubeRadius=Control.EvalPair<double>(keyName,baseName,"TubeRadius");
+  wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
+  centRadius=Control.EvalDefPair<double>(keyName,baseName,"CentRadius",0.0);
 
   // make a gap between tubes
   if (centRadius<tubeRadius+wallThick)
     centRadius=tubeRadius+wallThick*1.5;
   
-  height=Control.EvalVar<double>(keyName+"Height");
+  height=Control.EvalPair<double>(keyName,baseName,"Height");
 
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  detMat=ModelSupport::EvalMat<int>(Control,keyName+"DetMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
+                                     baseName+"WallMat");
+  detMat=ModelSupport::EvalMat<int>(Control,keyName+"DetMat",
+                                     baseName+"DetMat");
 
-  nDet=Control.EvalVar<size_t>(keyName+"NDetector");
+  nDet=Control.EvalPair<size_t>(keyName,baseName,"NDetectors");
   
   return;
 }
@@ -201,19 +247,21 @@ TubeDetBox::createObjects(Simulation& System)
   int DI(detIndex);
   for(size_t i=0;i<nDet;i++)
     {
-      Out=ModelSupport::getComposite(SMap,detIndex," 5 -6 -7 ");
+      Out=ModelSupport::getComposite(SMap,detIndex,DI," 5 -6 -7M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
       addCell("Tubes",cellIndex-1);
       addCell("Tube"+StrFunc::makeString(i),cellIndex-1);
 
-      Out=ModelSupport::getComposite(SMap,detIndex," 15 -16 (-5:6:7) -17 ");
+      Out=ModelSupport::getComposite(SMap,detIndex,DI,
+                                     " 15 -16 (-5:6:7M) -17M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-      mainBody+=ModelSupport::getComposite(SMap,detIndex," 17 ");
+      mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
       DI+=100;
     }      
   // Main body:
-  Out= ModelSupport::getComposite(SMap,detIndex," 1001 -1002 15 -16  1003 -1004 ");
+  Out= ModelSupport::getComposite(SMap,detIndex,
+                                  " 1001 -1002 15 -16  1003 -1004 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+mainBody));
 
   addOuterSurf(Out);
@@ -252,4 +300,4 @@ TubeDetBox::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   return;
 }
 
-}  // NAMESPACE instrumentSystem
+}  // NAMESPACE constructSystem

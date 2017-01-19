@@ -41,7 +41,10 @@ class TubeDetBox : public attachSystem::ContainedComp,
   public attachSystem::SurfMap
 {
  private:
-  
+
+  const std::string baseName;  ///< Base name
+  const size_t ID;             ///< ID Number
+
   const int detIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -67,7 +70,7 @@ class TubeDetBox : public attachSystem::ContainedComp,
 
  public:
 
-  TubeDetBox(const std::string&);
+  TubeDetBox(const std::string&,const size_t);
   TubeDetBox(const TubeDetBox&);
   TubeDetBox& operator=(const TubeDetBox&);
   virtual ~TubeDetBox();
