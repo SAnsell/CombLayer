@@ -304,7 +304,9 @@ VESPA::buildBunkerUnits(Simulation& System,
   /*!
     Build all the components in the bunker space
     \param System :: simulation
-    \param bunkerVoid cell
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
    */
 {
   ELog::RegMethod RegA("VESPA","buildBunkerUnits");

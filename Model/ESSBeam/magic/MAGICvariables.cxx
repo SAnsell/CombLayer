@@ -143,6 +143,9 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicBInsertLeftWall",1.0);
   Control.addVariable("magicBInsertRightWall",1.0);
   Control.addVariable("magicBInsertWallMat","Stainless304");       
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"magicPipeWall",4.0,348.0);
+  // Guide in wall
   FGen.generateTaper(Control,"magicFWall",346.0 ,5.60,5.89, 5.50,5.80 );
   
   // 28m to 38m

@@ -69,6 +69,8 @@ class MAGIC : public attachSystem::CopiedComp
 {
  private:
   
+  /// Start at [0: Complete / 1:Bunker / 2:BunkerWall / 3:Cave ]
+  int startPoint;
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -104,6 +106,8 @@ class MAGIC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Bunker insert pipe
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
@@ -167,15 +171,19 @@ class MAGIC : public attachSystem::CopiedComp
   /// Tapered guide out of PitA
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutG;
 
-
-
-
-
-
-  
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;
 
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildPolarizer(Simulation&,const attachSystem::FixedComp&,
+		      const long int,const attachSystem::FixedComp&,
+		      const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
   
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
@@ -187,6 +195,7 @@ class MAGIC : public attachSystem::CopiedComp
   MAGIC& operator=(const MAGIC&);
   ~MAGIC();
   
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,const Bunker&,const int);
 
 };

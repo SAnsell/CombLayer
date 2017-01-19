@@ -209,7 +209,7 @@ class VESPA : public attachSystem::CopiedComp
   void setBeamAxis(const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
-		const long int,const int);
+			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const int);
   void buildHut(Simulation&,const attachSystem::FixedComp&,
