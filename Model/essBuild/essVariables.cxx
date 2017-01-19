@@ -330,15 +330,15 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BeRefRadius",35);
   Control.addVariable("BeRefHeight",37.3); // 74.6/2.0
   Control.addVariable("BeRefDepth",37.3); // 74.6/2.0
-  Control.addVariable("BeRefWallThick",3);
+  Control.addVariable("BeRefWallThick",0.3); // Mark said
   Control.addVariable("BeRefWallThickLow",0.0);
   Control.addVariable("BeRefTargetSepThick",13.0);
   Control.addVariable("BeRefLowVoidThick",2.3);
   Control.addVariable("BeRefTopVoidThick",2.3);
   Control.addVariable("BeRefLowRefMat","Be5H2O");
   Control.addVariable("BeRefTopRefMat","Be5H2O");
-  Control.addVariable("BeRefTopWallMat","SS316L");
-  Control.addVariable("BeRefLowWallMat","SS316L");
+  Control.addVariable("BeRefTopWallMat","Aluminium"); // Mark said
+  Control.addVariable("BeRefLowWallMat","Aluminium"); // Mark said
   Control.addVariable("BeRefTargSepMat","Iron_10H2O");
 
   Control.addVariable("BeRefTopInnerStructureNLayers", 6);
