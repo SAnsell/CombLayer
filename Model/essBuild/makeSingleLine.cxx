@@ -163,7 +163,13 @@ makeSingleLine::build(Simulation& System,
   
 
 
-  if (beamName=="VESPA")
+  if (beamName=="MAGIC")
+    {
+      MAGIC magicBL("magic");
+      magicBL.buildIsolated(System,voidCell);
+      
+    }
+  else if (beamName=="VESPA")
     {
       VESPA vespaBL("vespa");
       vespaBL.buildIsolated(System,voidCell);
