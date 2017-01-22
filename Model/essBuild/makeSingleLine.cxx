@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/makeESSBL.cxx
+ * File:   essBuild/makeSingleLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,9 +90,11 @@
 #include "MIRACLES.h"
 #include "NMX.h"
 #include "ODIN.h"
+#include "TESTBEAM.h"
 #include "TREX.h"
 #include "VESPA.h"
 #include "VOR.h"
+
 
 #include "shortDREAM.h"
 #include "shortNMX.h"
@@ -163,10 +165,21 @@ makeSingleLine::build(Simulation& System,
   
 
 
-  if (beamName=="VESPA")
+  if (beamName=="MAGIC")
+    {
+      MAGIC magicBL("magic");
+      magicBL.buildIsolated(System,voidCell);
+      
+    }
+  else if (beamName=="VESPA")
     {
       VESPA vespaBL("vespa");
       vespaBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="TEST")
+    {
+      TESTBEAM testBL("test");
+      testBL.buildIsolated(System,voidCell);
       
     }
   else

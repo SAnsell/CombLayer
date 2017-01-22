@@ -316,25 +316,24 @@ MAGIC::buildBunkerUnits(Simulation& System,
 
 void
 MAGIC::buildOutGuide(Simulation& System,
-                     const attachSystem::FixedComp& FWshield,
-                     const long int startShield,
                      const attachSystem::FixedComp& FWguide,
                      const long int startGuide,
+                     const attachSystem::FixedComp& FWshield,
+                     const long int startShield,
                      const int voidCell)
   /*!
     Build all the components that are outside of the wall
     \param System :: Simulation 
-    \param FWshield :: Focus unit of the shield
-    \param startShield :: link point for shield
     \param FWguide :: Focus unit of the guide
     \param startGuide :: link point for shield
+    \param FWshield :: Focus unit of the shield
+    \param startShield :: link point for shield
     \param voidCell :: void cell nubmer
    */
 {
   ELog::RegMethod RegA("MAGIC","buildOutGuide");
 
   ShieldA->addInsertCell(voidCell);
-  ShieldA->setFront(*BInsert,2);
   ShieldA->createAll(System,FWshield,startShield);
   
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
@@ -430,7 +429,9 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
   ELog::EM<<"BUILD ISOLATED Start/Stop:"
           <<startPoint<<" "<<stopPoint<<ELog::endDiag;
   const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
+  const attachSystem::FixedComp* FExtra(&(World::masterOrigin()));
   long int startIndex(0);
+  long int extraIndex(0);
 
   if (startPoint<1)
     {
@@ -448,11 +449,31 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
       
       FocusWall->addInsertCell(VPipeWall->getCell("Void"));
       FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+
       FStart= &(FocusWall->getKey("Guide0"));
+      FExtra= &(FocusWall->getKey("Shield"));
       startIndex=2;
+      extraIndex=2;
+      ShieldA->setFront(*VPipeWall,2);
     }
   if (stopPoint==3) return;
-  
+  if (startPoint<3)
+    {
+
+      buildOutGuide(System,
+		    *FStart,startIndex,
+		    *FExtra,extraIndex,voidCell);
+      FStart= ShieldE.get();
+      FExtra= ShieldE.get();
+      startIndex=2;
+      extraIndex=2;
+      
+    }
+
+  if (startPoint<4)
+    {
+      buildPolarizer(System,*FStart,startIndex,*FExtra,extraIndex,voidCell);
+    }
   return;
 }
 
@@ -503,11 +524,16 @@ MAGIC::build(Simulation& System,
   FocusWall->createAll(System,*BInsert,7,*BInsert,7);
 
   if (stopPoint==3) return;
-  
-  buildOutGuide(System,FocusWall->getKey("Shield"),2,
+
+  ShieldA->setFront(*BInsert,2);    
+  buildOutGuide(System,FocusWall->getKey("Guide0"),2,
                 FocusWall->getKey("Shield"),2,voidCell);
 
+  if (stopPoint==4) return;
+  
   buildPolarizer(System,*ShieldE,2,*ShieldE,2,voidCell);
+
+  if (stopPoint==5) return;
   
   ShieldF->addInsertCell(voidCell);
   ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
