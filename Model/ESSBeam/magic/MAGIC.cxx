@@ -271,6 +271,11 @@ MAGIC::buildBunkerUnits(Simulation& System,
   ELog::RegMethod RegA("MAGIC","buildBunkerUnits");
 
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+
+  ELog::EM<<"Bunker Unit start == "
+          <<FA.getSignedLinkPt(startIndex)<<" == "
+          <<FA.getSignedLinkPt(startIndex).abs()
+          <<ELog::endDiag;
     
   VPipeB->addInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
@@ -333,20 +338,31 @@ MAGIC::buildOutGuide(Simulation& System,
 {
   ELog::RegMethod RegA("MAGIC","buildOutGuide");
 
+  ELog::EM<<"Outer start == "
+          <<FWshield.getSignedLinkPt(startShield)<<" == "
+          <<FWshield.getSignedLinkPt(startShield).abs()<<" "
+          <<ELog::endDiag;
+  ELog::EM<<"Outer start[G] == "
+          <<FWguide.getSignedLinkPt(startGuide)<<" == "
+          <<FWguide.getSignedLinkPt(startGuide).abs()<<ELog::endDiag;
+  
+
   ShieldA->addInsertCell(voidCell);
   ShieldA->createAll(System,FWshield,startShield);
   
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->createAll(System,FWguide,startGuide);
+
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
-  FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+  FocusOutA->createAll(System,FWshield,startShield,*VPipeOutA,0);
 
   ShieldB->addInsertCell(voidCell);
   ShieldB->createAll(System,*ShieldA,2);
+
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
-  FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+  FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
 
   
   ShieldC->addInsertCell(voidCell);
@@ -354,7 +370,7 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
   VPipeOutC->createAll(System,FocusOutB->getKey("Guide0"),2);
   FocusOutC->addInsertCell(VPipeOutC->getCells("Void"));
-  FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
+  FocusOutC->createAll(System,*ShieldB,2,*VPipeOutC,0);
 
     
   ShieldD->addInsertCell(voidCell);
@@ -362,7 +378,7 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutD->addInsertCell(ShieldD->getCell("Void"));
   VPipeOutD->createAll(System,FocusOutC->getKey("Guide0"),2);
   FocusOutD->addInsertCell(VPipeOutD->getCells("Void"));
-  FocusOutD->createAll(System,*VPipeOutD,0,*VPipeOutD,0);
+  FocusOutD->createAll(System,*ShieldC,2,*VPipeOutD,0);
 
       
   ShieldE->addInsertCell(voidCell);
@@ -370,7 +386,8 @@ MAGIC::buildOutGuide(Simulation& System,
   VPipeOutE->addInsertCell(ShieldE->getCell("Void"));
   VPipeOutE->createAll(System,FocusOutD->getKey("Guide0"),2);
   FocusOutE->addInsertCell(VPipeOutE->getCells("Void"));
-  FocusOutE->createAll(System,*VPipeOutE,0,*VPipeOutE,0);
+  FocusOutE->createAll(System,*ShieldD,2,*VPipeOutE,0);
+
 
   return;
 }
@@ -394,10 +411,20 @@ MAGIC::buildPolarizer(Simulation& System,
    */
 {
   ELog::RegMethod RegA("MAGIC","buildPolarizer");
-  
-  PolarizerPit->addInsertCell(voidCell);
-  PolarizerPit->createAll(System,FWshield,startShield);
 
+  ShieldF->addInsertCell(voidCell);
+  ShieldF->createAll(System,FWshield,startShield);
+  ELog::EM<<"START POL"<<ShieldF->getSignedLinkPt(2)<<ELog::endDiag;
+  PolarizerPit->addInsertCell(voidCell);
+  PolarizerPit->createAll(System,*ShieldF,2);
+
+
+  ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
+  ShieldF->addInsertCell(PolarizerPit->getCells("MidLayerFront"));
+  ShieldF->insertObjects(System);
+  
+  ELog::EM<<"FINISHED POL"<<ELog::endDiag;
+  return;
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
@@ -467,7 +494,6 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
       FExtra= ShieldE.get();
       startIndex=2;
       extraIndex=2;
-      
     }
 
   if (startPoint<4)
@@ -477,7 +503,6 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
   return;
 }
 
-  
 void 
 MAGIC::build(Simulation& System,
                const GuideItem& GItem,
@@ -534,12 +559,8 @@ MAGIC::build(Simulation& System,
   buildPolarizer(System,*ShieldE,2,*ShieldE,2,voidCell);
 
   if (stopPoint==5) return;
-  
-  ShieldF->addInsertCell(voidCell);
-  ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
-  ShieldF->addInsertCell(PolarizerPit->getCells("MidLayer"));
-  ShieldF->setBack(PolarizerPit->getKey("Mid"),1);
-  ShieldF->createAll(System,*ShieldE,2);
+
+  return;
 
   VPipeOutF->addInsertCell(ShieldE->getCell("Void"));
   VPipeOutF->addInsertCell(ShieldF->getCell("Void"));
