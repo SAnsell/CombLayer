@@ -399,6 +399,18 @@ BeamDump::createSurfaces()
 				  -vacPipeLid2Length);
   ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,vacPipeLidRmax);
 
+  // vac pipe internal structure
+  const double coneOpenAngle = 5.0;
+  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+112)->getDistance();
+  ModelSupport::buildPlane(SMap,surfIndex+121,Origin+Y*coneYpos,Y);
+  ModelSupport::buildCone(SMap,surfIndex+127,
+  			  Origin+Y*(coneYpos),Y,coneOpenAngle);
+
+
+
+
+
+
   return;
 }
 
@@ -479,7 +491,9 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // vac pipe
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 -127 -121 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 127 : (121 -102 -107)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -108 ");
@@ -494,14 +508,6 @@ BeamDump::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 112 -102 108 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
-
-  //  // vac pipe internal structure
-  //  ModelSupport::buildCone(SMap,surfIndex+8,
-  //			  Origin+Z*(thick+coneShift*tiltSign),
-  //			  Z,90.0-tiltAngle);
-
-
-
 
   //  void cell inside shielding (vac pipe goes there)
   Out=ModelSupport::getComposite(SMap,surfIndex,
