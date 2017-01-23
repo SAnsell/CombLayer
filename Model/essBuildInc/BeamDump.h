@@ -87,6 +87,8 @@ class BeamDump : public attachSystem::ContainedComp,
   double vacPipeLid2Length; ///< Length of the 2nd vacuum pipe lid
   double vacPipeBaseLength; ///< Length of the vacuum pipe base
   double vacPipeOuterConeOffset; ///< Offset of outer cone with respect to plane 102
+  double vacPipeInnerConeTop; ///< Distance b/w top of the inner cone with respect to plane 102
+  double wallThick; ///< Beam dump wall thick (between two cones)
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

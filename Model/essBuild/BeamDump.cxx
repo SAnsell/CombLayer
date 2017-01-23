@@ -144,7 +144,9 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeLid1Length(A.vacPipeLid1Length),
   vacPipeLid2Length(A.vacPipeLid2Length),
   vacPipeBaseLength(A.vacPipeBaseLength),
-  vacPipeOuterConeOffset(A.vacPipeOuterConeOffset)
+  vacPipeOuterConeOffset(A.vacPipeOuterConeOffset),
+  vacPipeInnerConeTop(A.vacPipeInnerConeTop),
+  wallThick(A.wallThick)
 
   /*!
     Copy constructor
@@ -209,7 +211,9 @@ BeamDump::operator=(const BeamDump& A)
       vacPipeLid2Length=A.vacPipeLid2Length;
       vacPipeBaseLength=A.vacPipeBaseLength;
       vacPipeOuterConeOffset=A.vacPipeOuterConeOffset;
-      
+      vacPipeInnerConeTop=A.vacPipeInnerConeTop;
+      wallThick=A.wallThick;
+
     }
   return *this;
 }
@@ -285,6 +289,8 @@ BeamDump::populate(const FuncDataBase& Control)
   vacPipeLid2Length=Control.EvalVar<double>(keyName+"VacPipeLid2Length");
   vacPipeBaseLength=Control.EvalVar<double>(keyName+"VacPipeBaseLength");
   vacPipeOuterConeOffset=Control.EvalVar<double>(keyName+"VacPipeOuterConeOffset");
+  vacPipeInnerConeTop=Control.EvalVar<double>(keyName+"VacPipeInnerConeTop");
+  wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   return;
 }
@@ -400,21 +406,32 @@ BeamDump::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,vacPipeLidRmax);
 
   // vac pipe internal structure
-  const double coneOpenAngle = 3.5;
-  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()+vacPipeOuterConeOffset;
-
+  const double coneOpenAngle = 3.2;
   Geometry::Vec3D coneYdir(Y);
   Geometry::Quaternion::calcQRotDeg(coneOpenAngle,X).rotate(coneYdir);
 
+  double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()+
+    vacPipeOuterConeOffset;
+
   ModelSupport::buildPlane(SMap,surfIndex+121,Origin+Y*coneYpos,Y);
   ModelSupport::buildCone(SMap,surfIndex+127,
-  			  Origin+Y*(coneYpos)+Z*vacPipeRad,coneYdir,coneOpenAngle);
+  			  Origin+Y*(coneYpos)+Z*vacPipeRad,
+			  coneYdir,
+			  coneOpenAngle);
 
   // vac pipe internal structure: base
-  ModelSupport::buildShiftedPlane(SMap, surfIndex+131,
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+122,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+102),
 				  -vacPipeBaseLength);
 
+  coneYpos -= wallThick / tan(coneOpenAngle*M_PI/180);
+  const double coneTop = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()-
+    vacPipeInnerConeTop;
+  ModelSupport::buildPlane(SMap,surfIndex+131,Origin+Y*coneTop,Y);
+  ModelSupport::buildCone(SMap,surfIndex+137,
+  			  Origin+Y*(coneYpos)+Z*(vacPipeRad-wallThick),
+			  coneYdir,
+			  coneOpenAngle);
 
 
 
@@ -498,17 +515,21 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // vac pipe
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -112 -107 -127 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -131 -107 -137 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 131 -112 -137 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -112 -107 -127 137 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
   // steel inside vac pipe cone and lid 2
   Out=ModelSupport::getComposite(SMap,surfIndex," 112 -102 -107 -127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 101 -102 -107 127  131");
+				 " 101 -102 -107 127  122");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 101 -102 -107 127 -131 ");
+				 " 101 -102 -107 127 -122 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -108 ");
