@@ -119,11 +119,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpRoofOverhangLength", 20.0); // guess based on SPLTDISH0001
   Control.addVariable("LinacBeamDumpInnerRoofThick",2*5.0); // doc SPLTDISH0001
   
-  Control.addVariable("LinacBeamDumpWidth",100.0);
-  Control.addVariable("LinacBeamDumpHeight",50.0);
-  Control.addVariable("LinacBeamDumpMainMat","Void");
-  Control.addVariable("LinacBeamDumpWallMat","SS316L");
-
   ELog::EM << "measure LinacBeamDumpVacPipeFrontInnerWallDist" << ELog::endCrit;
     Control.addVariable("LinacBeamDumpVacPipeFrontInnerWallDist",5.0); // measure !!!
   Control.addVariable("LinacBeamDumpVacPipeLength",63.97); // SPLTDISH0052

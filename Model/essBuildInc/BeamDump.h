@@ -88,9 +88,6 @@ class BeamDump : public attachSystem::ContainedComp,
   double vacPipeBaseLength; ///< Length of the vacuum pipe base
   double vacPipeOuterConeOffset; ///< Offset of outer cone with respect to plane 102
 
-  int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 

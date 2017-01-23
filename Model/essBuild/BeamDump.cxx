@@ -144,9 +144,8 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeLid1Length(A.vacPipeLid1Length),
   vacPipeLid2Length(A.vacPipeLid2Length),
   vacPipeBaseLength(A.vacPipeBaseLength),
-  vacPipeOuterConeOffset(A.vacPipeOuterConeOffset),
+  vacPipeOuterConeOffset(A.vacPipeOuterConeOffset)
 
-  mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: BeamDump to copy
@@ -210,9 +209,7 @@ BeamDump::operator=(const BeamDump& A)
       vacPipeLid2Length=A.vacPipeLid2Length;
       vacPipeBaseLength=A.vacPipeBaseLength;
       vacPipeOuterConeOffset=A.vacPipeOuterConeOffset;
-
-      mainMat=A.mainMat;
-      wallMat=A.wallMat;
+      
     }
   return *this;
 }
@@ -288,9 +285,6 @@ BeamDump::populate(const FuncDataBase& Control)
   vacPipeLid2Length=Control.EvalVar<double>(keyName+"VacPipeLid2Length");
   vacPipeBaseLength=Control.EvalVar<double>(keyName+"VacPipeBaseLength");
   vacPipeOuterConeOffset=Control.EvalVar<double>(keyName+"VacPipeOuterConeOffset");
-
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
