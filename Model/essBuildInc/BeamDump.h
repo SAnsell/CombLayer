@@ -86,6 +86,7 @@ class BeamDump : public attachSystem::ContainedComp,
   double vacPipeLid1Length; ///< Length of the 1st vacuum pipe lid
   double vacPipeLid2Length; ///< Length of the 2nd vacuum pipe lid
   double vacPipeBaseLength; ///< Length of the vacuum pipe base
+  double vacPipeOuterConeOffset; ///< Offset of outer cone with respect to plane 102
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material

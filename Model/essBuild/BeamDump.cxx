@@ -144,6 +144,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeLid1Length(A.vacPipeLid1Length),
   vacPipeLid2Length(A.vacPipeLid2Length),
   vacPipeBaseLength(A.vacPipeBaseLength),
+  vacPipeOuterConeOffset(A.vacPipeOuterConeOffset),
 
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -208,6 +209,7 @@ BeamDump::operator=(const BeamDump& A)
       vacPipeLid1Length=A.vacPipeLid1Length;
       vacPipeLid2Length=A.vacPipeLid2Length;
       vacPipeBaseLength=A.vacPipeBaseLength;
+      vacPipeOuterConeOffset=A.vacPipeOuterConeOffset;
 
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -285,6 +287,7 @@ BeamDump::populate(const FuncDataBase& Control)
   vacPipeLid1Length=Control.EvalVar<double>(keyName+"VacPipeLid1Length");
   vacPipeLid2Length=Control.EvalVar<double>(keyName+"VacPipeLid2Length");
   vacPipeBaseLength=Control.EvalVar<double>(keyName+"VacPipeBaseLength");
+  vacPipeOuterConeOffset=Control.EvalVar<double>(keyName+"VacPipeOuterConeOffset");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -404,7 +407,7 @@ BeamDump::createSurfaces()
 
   // vac pipe internal structure
   const double coneOpenAngle = 3.5;
-  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()+10.8;
+  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()+vacPipeOuterConeOffset;
 
   Geometry::Vec3D coneYdir(Y);
   Geometry::Quaternion::calcQRotDeg(coneOpenAngle,X).rotate(coneYdir);
@@ -509,7 +512,7 @@ BeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 101 -102 -107 127  131");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 101 -102 -107 127 -131 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
