@@ -134,6 +134,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpVacPipeOuterConeOffset", 10.8*SCALE52tr); // masured on SPLTDISH0052, see pencil note in the top-rigth part
   Control.addVariable("LinacBeamDumpVacPipeInnerConeTop", 2.0*SCALE52tr); // masured on SPLTDISH0052, see pencil note in the top-rigth part
   Control.addVariable("LinacBeamDumpWallThick", 0.9*SCALE52bl);   // measured on SPLTDISH0052
+  Control.addVariable("LinacBeamDumpWaterPipeRadius", 1.0); // measure !!!
+  Control.addVariable("LinacBeamDumpWaterPipeLength", 30.0); // measure !!!
 
   return;
 }
