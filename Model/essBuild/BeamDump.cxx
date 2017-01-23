@@ -106,6 +106,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   steelMat(A.steelMat),
   concMat(A.concMat),
   alMat(A.alMat),
+  waterMat(A.waterMat),
 
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
@@ -172,6 +173,7 @@ BeamDump::operator=(const BeamDump& A)
       steelMat=A.steelMat;
       concMat=A.concMat;
       alMat=A.alMat;
+      waterMat=A.waterMat;
 
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
@@ -249,6 +251,7 @@ BeamDump::populate(const FuncDataBase& Control)
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
 
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
@@ -432,6 +435,10 @@ BeamDump::createSurfaces()
   			  Origin+Y*(coneYpos)+Z*(vacPipeRad-wallThick),
 			  coneYdir,
 			  coneOpenAngle);
+
+  // water cooling pipe
+  //  ModelSupport::buildCylinder(SMap,surfIndex+147,Origin,coneYdir,10);
+  
 
 
 
