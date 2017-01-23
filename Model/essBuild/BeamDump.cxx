@@ -403,8 +403,8 @@ BeamDump::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,vacPipeLidRmax);
 
   // vac pipe internal structure
-  const double coneOpenAngle = 5.0;
-  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+112)->getDistance()-2;
+  const double coneOpenAngle = 3.5;
+  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()+10.8;
 
   Geometry::Vec3D coneYdir(Y);
   Geometry::Quaternion::calcQRotDeg(coneOpenAngle,X).rotate(coneYdir);
@@ -501,11 +501,15 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // vac pipe
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 -127 -121 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -112 -107 -127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 101 -102 -107 127  131 : (121 -102 -107)");
+  // steel inside vac pipe cone and lid 2
+  Out=ModelSupport::getComposite(SMap,surfIndex," 112 -102 -107 -127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " 101 -102 -107 127  131");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 101 -102 -107 127 -131 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
