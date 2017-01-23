@@ -143,6 +143,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeLidRmax(A.vacPipeLidRmax),
   vacPipeLid1Length(A.vacPipeLid1Length),
   vacPipeLid2Length(A.vacPipeLid2Length),
+  vacPipeBaseLength(A.vacPipeBaseLength),
 
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -206,6 +207,7 @@ BeamDump::operator=(const BeamDump& A)
       vacPipeLidRmax=A.vacPipeLidRmax;
       vacPipeLid1Length=A.vacPipeLid1Length;
       vacPipeLid2Length=A.vacPipeLid2Length;
+      vacPipeBaseLength=A.vacPipeBaseLength;
 
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -282,6 +284,7 @@ BeamDump::populate(const FuncDataBase& Control)
   vacPipeLidRmax=Control.EvalVar<double>(keyName+"VacPipeLidRmax");
   vacPipeLid1Length=Control.EvalVar<double>(keyName+"VacPipeLid1Length");
   vacPipeLid2Length=Control.EvalVar<double>(keyName+"VacPipeLid2Length");
+  vacPipeBaseLength=Control.EvalVar<double>(keyName+"VacPipeBaseLength");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -405,12 +408,15 @@ BeamDump::createSurfaces()
 
   Geometry::Vec3D coneYdir(Y);
   Geometry::Quaternion::calcQRotDeg(coneOpenAngle,X).rotate(coneYdir);
-  
+
   ModelSupport::buildPlane(SMap,surfIndex+121,Origin+Y*coneYpos,Y);
   ModelSupport::buildCone(SMap,surfIndex+127,
   			  Origin+Y*(coneYpos)+Z*vacPipeRad,coneYdir,coneOpenAngle);
 
-
+  // vac pipe internal structure: base
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+131,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+102),
+				  -vacPipeBaseLength);
 
 
 
@@ -497,7 +503,11 @@ BeamDump::createObjects(Simulation& System)
   // vac pipe
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 -127 -121 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 127 : (121 -102 -107)");
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " 101 -102 -107 127  131 : (121 -102 -107)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " 101 -102 -107 127 -131 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -108 ");

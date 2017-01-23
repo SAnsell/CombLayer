@@ -133,6 +133,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpVacPipeLidRmax",10.4*SCALE52bl/2.0);    // measured on SPLTDISH0052
   Control.addVariable("LinacBeamDumpVacPipeLid1Length",1.7*SCALE52bl); // measured on SPLTDISH0052
   Control.addVariable("LinacBeamDumpVacPipeLid2Length",0.65*SCALE52tl);  // measured on SPLTDISH0052
+  Control.Parse("LinacBeamDumpVacPipeLength-LinacBeamDumpVacPipeLid1Length-5.95");
+  Control.addVariable("LinacBeamDumpVacPipeBaseLength"); // top-left drawing in SPLTDISH0052
 
   return;
 }

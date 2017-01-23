@@ -85,6 +85,7 @@ class BeamDump : public attachSystem::ContainedComp,
   double vacPipeLidRmax; ///< Outer radius of vacuum pipe lid
   double vacPipeLid1Length; ///< Length of the 1st vacuum pipe lid
   double vacPipeLid2Length; ///< Length of the 2nd vacuum pipe lid
+  double vacPipeBaseLength; ///< Length of the vacuum pipe base
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
