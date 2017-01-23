@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/BeamDump.cxx
  *
  * Copyright (c) 2004-2016 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -97,16 +97,16 @@ BeamDump::BeamDump(const std::string& Key)  :
   */
 {}
 
-BeamDump::BeamDump(const BeamDump& A) : 
+BeamDump::BeamDump(const BeamDump& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  
+
   steelMat(A.steelMat),
   concMat(A.concMat),
   alMat(A.alMat),
-  
+
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
   frontWallDepth(A.frontWallDepth),
@@ -115,7 +115,7 @@ BeamDump::BeamDump(const BeamDump& A) :
 
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
-  
+
   frontInnerWallHeight(A.frontInnerWallHeight),
   frontInnerWallDepth(A.frontInnerWallDepth),
   frontInnerWallLength(A.frontInnerWallLength),
@@ -135,11 +135,14 @@ BeamDump::BeamDump(const BeamDump& A) :
   roofThick(A.roofThick),
   roofOverhangLength(A.roofOverhangLength),
   innerRoofThick(A.innerRoofThick),
-  
+
   vacPipeFrontInnerWallDist(A.vacPipeFrontInnerWallDist),
   vacPipeLength(A.vacPipeLength),
   vacPipeRad(A.vacPipeRad),
   vacPipeSideWallThick(A.vacPipeSideWallThick),
+  vacPipeLidRmax(A.vacPipeLidRmax),
+  vacPipeLid1Length(A.vacPipeLid1Length),
+  vacPipeLid2Length(A.vacPipeLid2Length),
 
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -162,7 +165,7 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      
+
       steelMat=A.steelMat;
       concMat=A.concMat;
       alMat=A.alMat;
@@ -172,10 +175,10 @@ BeamDump::operator=(const BeamDump& A)
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
       frontWallHoleRad=A.frontWallHoleRad;
-      
+
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
-      
+
       frontInnerWallHeight=A.frontInnerWallHeight;
       frontInnerWallDepth=A.frontInnerWallDepth;
       frontInnerWallLength=A.frontInnerWallLength;
@@ -200,7 +203,10 @@ BeamDump::operator=(const BeamDump& A)
       vacPipeLength=A.vacPipeLength;
       vacPipeRad=A.vacPipeRad;
       vacPipeSideWallThick=A.vacPipeSideWallThick;
-	
+      vacPipeLidRmax=A.vacPipeLidRmax;
+      vacPipeLid1Length=A.vacPipeLid1Length;
+      vacPipeLid2Length=A.vacPipeLid2Length;
+
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -216,8 +222,8 @@ BeamDump::clone() const
 {
     return new BeamDump(*this);
 }
-  
-BeamDump::~BeamDump() 
+
+BeamDump::~BeamDump()
   /*!
     Destructor
   */
@@ -273,13 +279,16 @@ BeamDump::populate(const FuncDataBase& Control)
   vacPipeLength=Control.EvalVar<double>(keyName+"VacPipeLength");
   vacPipeRad=Control.EvalVar<double>(keyName+"VacPipeRad");
   vacPipeSideWallThick=Control.EvalVar<double>(keyName+"VacPipeSideWallThick");
+  vacPipeLidRmax=Control.EvalVar<double>(keyName+"VacPipeLidRmax");
+  vacPipeLid1Length=Control.EvalVar<double>(keyName+"VacPipeLid1Length");
+  vacPipeLid2Length=Control.EvalVar<double>(keyName+"VacPipeLid2Length");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
-  
+
 void
 BeamDump::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
@@ -295,7 +304,7 @@ BeamDump::createUnitVector(const attachSystem::FixedComp& FC)
 
   return;
 }
-  
+
 void
 BeamDump::createSurfaces()
   /*!
@@ -351,7 +360,7 @@ BeamDump::createSurfaces()
   // side walls - inner surfaces
   ModelSupport::buildPlane(SMap,surfIndex+63,Origin-X*sideWallThick,X);
   ModelSupport::buildPlane(SMap,surfIndex+64,Origin+X*sideWallThick,X);
-  
+
   // inner roof
   ModelSupport::buildShiftedPlane(SMap, surfIndex+76,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+6),
@@ -381,11 +390,18 @@ BeamDump::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,vacPipeRad);
   ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,
 			      vacPipeRad+vacPipeSideWallThick);
-  
-  
+  // Vacuum pipe lids
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+201,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
+				  vacPipeLid1Length);
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+202,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+102),
+				  -vacPipeLid2Length);
+  ModelSupport::buildCylinder(SMap,surfIndex+207,Origin,Y,vacPipeLidRmax);
+
   return;
 }
-  
+
 void
 BeamDump::createObjects(Simulation& System)
   /*!
@@ -468,10 +484,24 @@ BeamDump::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
-  
+
+  // vac pipe lids
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -201 117 -207 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 201 -202 117 -207 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 202 -102 117 -207 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+
+
+
+
+
   //  void cell inside shielding (vac pipe goes there)
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
+				 " 82 -91 63 -64 16 -76 (-101:102:207) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 51 -42 3 -4 5 -56 ");
@@ -480,7 +510,7 @@ BeamDump::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 BeamDump::createLinks()
   /*!
@@ -491,13 +521,13 @@ BeamDump::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 BeamDump::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,const long int& lp)
@@ -515,7 +545,7 @@ BeamDump::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System);
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

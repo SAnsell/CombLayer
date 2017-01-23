@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/BeamDump.h
  *
  * Copyright (c) 2016 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_BeamDump_h
@@ -71,7 +71,7 @@ class BeamDump : public attachSystem::ContainedComp,
 
   double plate25Length;         ///< Length of plate 25 (small plate under the floor)
   double plate25Depth;          ///< Thickness of small plate below the floor (+z)
- 
+
   double plate38Depth;          ///< Thickness of Al plate 38
 
   double roofThick;           ///< Thickness (height) of roof
@@ -82,18 +82,21 @@ class BeamDump : public attachSystem::ContainedComp,
   double vacPipeLength;          ///< vacuum pipe length
   double vacPipeRad;             ///< vacuum pipe radius
   double vacPipeSideWallThick;   ///< vacuum pipe side wall thickness
+  double vacPipeLidRmax; ///< Outer radius of vacuum pipe lid
+  double vacPipeLid1Length; ///< Length of the 1st vacuum pipe lid
+  double vacPipeLid2Length; ///< Length of the 2nd vacuum pipe lid
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-  
+
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
 
-  
+
  public:
 
   BeamDump(const std::string&);
@@ -101,7 +104,7 @@ class BeamDump : public attachSystem::ContainedComp,
   BeamDump& operator=(const BeamDump&);
   virtual BeamDump* clone() const;
   virtual ~BeamDump();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int&);
 
 };
@@ -109,5 +112,5 @@ class BeamDump : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 
