@@ -401,10 +401,14 @@ BeamDump::createSurfaces()
 
   // vac pipe internal structure
   const double coneOpenAngle = 5.0;
-  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+112)->getDistance();
+  const double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+112)->getDistance()-2;
+
+  Geometry::Vec3D coneYdir(Y);
+  Geometry::Quaternion::calcQRotDeg(coneOpenAngle,X).rotate(coneYdir);
+  
   ModelSupport::buildPlane(SMap,surfIndex+121,Origin+Y*coneYpos,Y);
   ModelSupport::buildCone(SMap,surfIndex+127,
-  			  Origin+Y*(coneYpos),Y,coneOpenAngle);
+  			  Origin+Y*(coneYpos)+Z*vacPipeRad,coneYdir,coneOpenAngle);
 
 
 
