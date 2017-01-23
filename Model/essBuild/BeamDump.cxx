@@ -388,16 +388,16 @@ BeamDump::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
 				  vacPipeLength);
   ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,vacPipeRad);
-  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,
+  ModelSupport::buildCylinder(SMap,surfIndex+108,Origin,Y,
 			      vacPipeRad+vacPipeSideWallThick);
   // Vacuum pipe lids
-  ModelSupport::buildShiftedPlane(SMap, surfIndex+201,
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+111,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
 				  vacPipeLid1Length);
-  ModelSupport::buildShiftedPlane(SMap, surfIndex+202,
+  ModelSupport::buildShiftedPlane(SMap, surfIndex+112,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+102),
 				  -vacPipeLid2Length);
-  ModelSupport::buildCylinder(SMap,surfIndex+207,Origin,Y,vacPipeLidRmax);
+  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,vacPipeLidRmax);
 
   return;
 }
@@ -482,26 +482,30 @@ BeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 -107 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 107 -108 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   // vac pipe lids
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -201 117 -207 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -111 108 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 201 -202 117 -207 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 111 -112 108 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 202 -102 117 -207 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 112 -102 108 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
+  //  // vac pipe internal structure
+  //  ModelSupport::buildCone(SMap,surfIndex+8,
+  //			  Origin+Z*(thick+coneShift*tiltSign),
+  //			  Z,90.0-tiltAngle);
 
 
 
 
   //  void cell inside shielding (vac pipe goes there)
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 82 -91 63 -64 16 -76 (-101:102:207) ");
+				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 51 -42 3 -4 5 -56 ");
