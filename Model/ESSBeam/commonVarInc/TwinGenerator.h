@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVarInc/ChopperGenerator.h
+ * File:   commonVarInc/TwinGenerator.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_ChopperGenerator_h
-#define essSystem_ChopperGenerator_h
+#ifndef essSystem_TwinGenerator_h
+#define essSystem_TwinGenerator_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class ChopperGenerator
+  \class TwinGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief ChopperGenerator for variables
+  \brief TwinGenerator for variables
 */
 
-class ChopperGenerator
+class TwinGenerator
 {
  private:
 
@@ -64,10 +64,10 @@ class ChopperGenerator
   
  public:
 
-  ChopperGenerator();
-  ChopperGenerator(const ChopperGenerator&);
-  ChopperGenerator& operator=(const ChopperGenerator&);
-  ~ChopperGenerator();
+  TwinGenerator();
+  TwinGenerator(const TwinGenerator&);
+  TwinGenerator& operator=(const TwinGenerator&);
+  ~TwinGenerator();
 
 
   void setMaterial(const std::string&,const std::string&);
