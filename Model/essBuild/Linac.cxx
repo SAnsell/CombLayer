@@ -283,9 +283,6 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 -24 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
-  addOuterSurf(Out);
-
   // temporary shielding walls
   // 1st wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 3 -103 5 -6 ");
@@ -299,6 +296,8 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 104 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
+  addOuterSurf(Out);
 
   return;
 }
