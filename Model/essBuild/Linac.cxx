@@ -111,6 +111,7 @@ Linac::Linac(const Linac& A) :
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
+  floorThick(A.floorThick),
   airMat(A.airMat),wallMat(A.wallMat),
   bd(A.bd->clone()),
   tswLength(A.tswLength),
@@ -142,6 +143,7 @@ Linac::operator=(const Linac& A)
       height=A.height;
       wallThick=A.wallThick;
       roofThick=A.roofThick;
+      floorThick=A.floorThick;
       airMat=A.airMat;
       wallMat=A.wallMat;
       *bd=*A.bd;
@@ -176,6 +178,7 @@ Linac::populate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

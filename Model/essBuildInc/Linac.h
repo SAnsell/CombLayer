@@ -51,8 +51,9 @@ class Linac : public attachSystem::ContainedComp,
   double width;                 ///< Width
   double height;                ///< height
 
-  double wallThick;             ///< Thickness of wall
+  double wallThick;             ///< Thickness of side walls
   double roofThick; ///< Roof thickness
+  double floorThick; ///< Thickness of floor
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
