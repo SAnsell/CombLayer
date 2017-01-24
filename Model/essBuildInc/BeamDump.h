@@ -98,6 +98,7 @@ class BeamDump : public attachSystem::ContainedComp,
   double waterPipeLength; ///< Water pipe length
   double waterPipeOffsetX; ///< Water pipe offset along the x-axis
   double waterPipeOffsetZ; ///< Water pipe offset along the z-axis
+  double waterPipeDist; ///< Vertical distance between water pipes
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
