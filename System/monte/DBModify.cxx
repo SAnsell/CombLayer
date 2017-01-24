@@ -785,6 +785,11 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-5.056);
   MDB.resetMaterial(MObj);
 
+  MObj.setMaterial(imat++,"Silver","47107.70c 0.51839 "
+                   "47109.70c 0.48161 ","",MLib); // IAEA table of nuclides
+  MObj.setDensity(-10.49); // wiki
+  MDB.resetMaterial(MObj);
+
   return;
 }
 
