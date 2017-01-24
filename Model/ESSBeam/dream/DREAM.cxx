@@ -288,6 +288,7 @@ DREAM::build(Simulation& System,
   if (stopPoint==1) return;                      // STOP At monolith edge
 
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
 
   FocusB->addInsertCell(VPipeB->getCells("Void"));

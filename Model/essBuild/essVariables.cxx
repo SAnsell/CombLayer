@@ -527,6 +527,7 @@ EssVariables(FuncDataBase& Control)
   NMXvariables(Control);
   ODINvariables(Control);
   TREXvariables(Control);
+  TESTBEAMvariables(Control);
   VESPAvariables(Control);
   VORvariables(Control);
   simpleITEMvariables(Control);

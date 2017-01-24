@@ -50,21 +50,17 @@ class TwinChopper :
   const int houseIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  Geometry::Vec3D BY;       ///< Old reorientation
+  Geometry::Vec3D lowCentre;      ///< Low centre
+  Geometry::Vec3D topCentre;      ///< Top centre 
   
-  double height;            ///< height from chopper rotor centre
-  double width;             ///< width [across]
-  double depth;             ///< depth 
-  double length;            ///< length [total]
-  double shortHeight;       ///< half corner (for diamond)
-  double shortWidth;        ///< half corner (for diamond)
-  
-  double mainRadius;        ///< main innner radius
-  double mainThick;         ///< main inner thickness
+  double stepHeight;            ///< height from chopper rotor centre
+  double length;                ///< total thickness
+  double mainRadius;            ///< main innner radius
+  double innerRadius;           ///< inner radius 
+  double innerTopStep;          ///< Step of the top disk
+  double innerLowStep;          ///< Step of the lower disk 
+  double innerVoid;             ///< main inner thickness
 
-  double motorRadius;           ///< motor port radius
-  double motorOuter;           ///< Extrernal radius of motor port
-  double motorStep;             ///< motor flange step
   
   double portRadius;           ///< Port radius
   double portOuter;            ///< Port flange [outer radius
@@ -78,13 +74,26 @@ class TwinChopper :
   int portSealMat;             ///< Port Seal material
   int portWindowMat;           ///< Window material
   
-  size_t motorNBolt;            ///< number of motor bolts  
-  double motorBoltRad;          ///< Bolt radius
-  double motorBoltAngOff;       ///< angle relative to 12:00
-  double motorSeal;             ///< Motor seal
-  int motorSealMat;             ///< Motor Seal material
+  double motorARadius;           ///< motor port radius
+  double motorAOuter;            ///< Extrernal radius of motor port
+  double motorAStep;             ///< motor flange step
+  size_t motorANBolt;            ///< number of motor bolts  
+  double motorABoltRad;          ///< Bolt radius
+  double motorABoltAngOff;       ///< angle relative to 12:00
+  double motorASeal;             ///< Motor seal Thinkness
+  int motorASealMat;             ///< Motor Seal material
+  int motorAMat;                 ///< Motor material
   
-  int motorMat;                 ///< Motor material
+  double motorBRadius;           ///< motor port radius
+  double motorBOuter;            ///< Extrernal radius of motor port
+  double motorBStep;             ///< motor flange step
+  size_t motorBNBolt;            ///< number of motor bolts  
+  double motorBBoltRad;          ///< Bolt radius
+  double motorBBoltAngOff;       ///< angle relative to 12:00
+  double motorBSeal;             ///< Motor seal Thinkness
+  int motorBSealMat;             ///< Motor Seal material
+  int motorBMat;                 ///< Motor material  
+
   int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
 

@@ -164,9 +164,9 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
    */
 {
   ELog::RegMethod RegA("TESTBEAM","buildBunkerUnits");
-  
 
-  
+  TwinA->addInsertCell(bunkerVoid);
+  TwinA->createAll(System,FA,startIndex);
   
   return;
 }

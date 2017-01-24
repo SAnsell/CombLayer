@@ -57,8 +57,7 @@ namespace setVariable
 {
 
 TwinGenerator::TwinGenerator() :
-  mainZStep(28.0),height(86.5),width(86.5),
-  shortWidth(50.5),shortHeight(50.5),
+  height(86.5),
   mainRadius(38.122),windowThick(0.3),
   ringRadius(40.0),motorRadius(12.0),
   motorOuter(15.20),portRadius(10.0),
@@ -78,55 +77,6 @@ TwinGenerator::~TwinGenerator()
  */
 {}
 
-TwinGenerator::TwinGenerator(const TwinGenerator& A) : 
-  mainZStep(A.mainZStep),height(A.height),width(A.width),
-  shortWidth(A.shortWidth),shortHeight(A.shortHeight),
-  mainRadius(A.mainRadius),windowThick(A.windowThick),
-  ringRadius(A.ringRadius),motorRadius(A.motorRadius),
-  motorOuter(A.motorOuter),portRadius(A.portRadius),
-  portOuter(A.portOuter),portWidth(A.portWidth),
-  portHeight(A.portHeight),portBoltStep(A.portBoltStep),
-  wallMat(A.wallMat),portMat(A.portMat),sealMat(A.sealMat),
-  windowMat(A.windowMat)
-  /*!
-    Copy constructor
-    \param A :: TwinGenerator to copy
-  */
-{}
-
-TwinGenerator&
-TwinGenerator::operator=(const TwinGenerator& A)
-  /*!
-    Assignment operator
-    \param A :: TwinGenerator to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      mainZStep=A.mainZStep;
-      height=A.height;
-      width=A.width;
-      shortWidth=A.shortWidth;
-      shortHeight=A.shortHeight;
-      mainRadius=A.mainRadius;
-      windowThick=A.windowThick;
-      ringRadius=A.ringRadius;
-      motorRadius=A.motorRadius;
-      motorOuter=A.motorOuter;
-      portRadius=A.portRadius;
-      portOuter=A.portOuter;
-      portWidth=A.portWidth;
-      portHeight=A.portHeight;
-      portBoltStep=A.portBoltStep;
-      wallMat=A.wallMat;
-      portMat=A.portMat;
-      sealMat=A.sealMat;
-      windowMat=A.windowMat;
-    }
-  return *this;
-}
-
 void
 TwinGenerator::setMainRadius(const double R)
   /*!
@@ -134,8 +84,8 @@ TwinGenerator::setMainRadius(const double R)
     \param R :: Radius
   */
 {
+  height*=R/mainRadius;
   ringRadius*=R/mainRadius;
-  mainZStep*=R/mainRadius;
   motorRadius*=R/mainRadius;
   motorOuter*=R/mainRadius;
   portRadius*=R/mainRadius;
@@ -144,22 +94,6 @@ TwinGenerator::setMainRadius(const double R)
   portHeight*=R/mainRadius;
   portBoltStep*=R/mainRadius;
   mainRadius=R;
-  return;
-}
-
-void
-TwinGenerator::setFrame(const double H,const double W)
-  /*!
-    Set the main width/height
-    \param H :: height [largest vertical]
-    \param W :: width [largest horizontal]
-   */
-{
-  shortHeight*=H/height;
-  shortWidth*=W/width;
-  height=H;
-  width=W;
-
   return;
 }
 
@@ -179,10 +113,10 @@ TwinGenerator::setMaterial(const std::string& wMat,
   
 void
 TwinGenerator::generateChopper(FuncDataBase& Control,
-                                  const std::string& keyName,
-                                  const double yStep,
-                                  const double length,
-                                  const double voidLength)
+                               const std::string& keyName,
+                               const double yStep,
+                               const double length,
+                               const double voidLength)
   /*!
     Generate the chopper variables
     \param Control :: Functional data base
@@ -195,14 +129,10 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   ELog::RegMethod RegA("TwinGenerator","generateChopper");
 
   Control.addVariable(keyName+"YStep",yStep);
-  Control.addVariable(keyName+"MainZStep",mainZStep);   // drawing [5962.2]
-  Control.addVariable(keyName+"Height",height);
-  Control.addVariable(keyName+"Width",width);
+  Control.addVariable(keyName+"InnerHeight",height);
   Control.addVariable(keyName+"Length",length);  // drawing [5960.2]
-  Control.addVariable(keyName+"ShortHeight",shortHeight);
-  Control.addVariable(keyName+"ShortWidth",shortWidth);
   Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
-  Control.addVariable(keyName+"MainThick",voidLength);  // estimate
+  Control.addVariable(keyName+"InnerVoid",voidLength);  // estimate
   
   Control.addVariable(keyName+"MotorRadius",motorRadius); // [5691.2]
   Control.addVariable(keyName+"MotorOuter",motorOuter); // [5691.2]

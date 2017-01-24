@@ -3,7 +3,7 @@
  
  * File:   construct/ChopperUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   IPB(new constructSystem::InnerPort(Key+"IPortB"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: KeyName
+   \param Key :: KeyName
   */
 {
   ModelSupport::objectRegister& OR=
@@ -205,8 +205,6 @@ ChopperUnit::populate(const FuncDataBase& Control)
   mainRadius=Control.EvalVar<double>(keyName+"MainRadius");
   mainThick=Control.EvalVar<double>(keyName+"MainThick");
 
-  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-
   motorRadius=Control.EvalVar<double>(keyName+"MotorRadius");
   motorOuter=Control.EvalVar<double>(keyName+"MotorOuter");
   motorStep=Control.EvalVar<double>(keyName+"MotorStep");
@@ -308,7 +306,7 @@ ChopperUnit::createSurfaces()
   ModelSupport::buildPlane(SMap,houseIndex+12,Origin+Y*(mainThick/2.0),Y);
   ModelSupport::buildCylinder(SMap,houseIndex+17,Origin,Y,mainRadius);
 
-  // MOTOR [100]
+  // MOTOR [1000]
   ModelSupport::buildCylinder(SMap,houseIndex+1007,Origin,Y,motorRadius);
   ModelSupport::buildCylinder(SMap,houseIndex+1017,Origin,Y,motorOuter);
 
