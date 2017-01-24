@@ -92,7 +92,7 @@ Linac::Linac(const std::string& Key)  :
   attachSystem::FixedOffset(Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
-  bd(new BeamDump(Key+"BeamDump"))
+  bd(new BeamDump(Key,"BeamDump"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

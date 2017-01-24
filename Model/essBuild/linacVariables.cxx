@@ -84,10 +84,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacMainMat","Void");
   Control.addVariable("LinacWallMat","Concrete");
 
-  Control.addVariable("LinacBeamDumpSteelMat","SS316L"); // check it !!!
-  Control.addVariable("LinacBeamDumpConcreteMat","Concrete"); // check it !!!
-  Control.addVariable("LinacBeamDumpAlMat","Aluminium"); // check it !!!
-  Control.addVariable("LinacBeamDumpWaterMat","H2O");
+  Control.addVariable("LinacSteelMat","SS316L"); // check it !!!
+  Control.addVariable("LinacConcreteMat","Concrete"); // check it !!!
+  Control.addVariable("LinacAlMat","Aluminium"); // check it !!!
+  Control.addVariable("LinacWaterMat","H2O");
 
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001

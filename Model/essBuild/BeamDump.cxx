@@ -86,21 +86,24 @@
 namespace essSystem
 {
 
-BeamDump::BeamDump(const std::string& Key)  :
+BeamDump::BeamDump(const std::string& Base, const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  attachSystem::FixedOffset(Base+Key,6),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(Base+Key)),
+  cellIndex(surfIndex+1),
+  baseName(Base)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+}
 
 BeamDump::BeamDump(const BeamDump& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
+  baseName(A.baseName),
   engActive(A.engActive),
 
   steelMat(A.steelMat),
@@ -170,6 +173,7 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
+      baseName=A.baseName;
       engActive=A.engActive;
 
       steelMat=A.steelMat;
@@ -252,10 +256,10 @@ BeamDump::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
-  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
-  alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
-  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
+  concMat=ModelSupport::EvalMat<int>(Control,baseName+"ConcreteMat");
+  alMat=ModelSupport::EvalMat<int>(Control,baseName+"AlMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,baseName+"WaterMat");
 
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");

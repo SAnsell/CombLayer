@@ -42,6 +42,7 @@ class BeamDump : public attachSystem::ContainedComp,
 
   const int surfIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
+  std::string baseName;         ///< Base name
 
   int engActive;                ///< Engineering active flag
 
@@ -103,7 +104,7 @@ class BeamDump : public attachSystem::ContainedComp,
 
  public:
 
-  BeamDump(const std::string&);
+  BeamDump(const std::string&, const std::string&);
   BeamDump(const BeamDump&);
   BeamDump& operator=(const BeamDump&);
   virtual BeamDump* clone() const;
