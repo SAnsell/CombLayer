@@ -91,7 +91,7 @@ TESTBEAMvariables(FuncDataBase& Control)
   SGen.addRoof(1,20.0,"CastIron");
   SGen.addFloor(1,20.0,"CastIron");
   SGen.addFloorMat(5,"Concrete");
-  SGen.addRoofMat(5,"Concrete");
+  SGen.addRoofMat(5,"Concrete"); 
   SGen.addWallMat(5,"Concrete");
 
   FGen.setGuideMat("Copper");
@@ -157,7 +157,8 @@ TESTBEAMvariables(FuncDataBase& Control)
   Control.addVariable("testTwinAIPortBBoltStep",1.0);
   Control.addVariable("testTwinAIPortBBoltRadius",0.3);
   Control.addVariable("testTwinAIPortBBoltMat","ChipIRSteel");
-  
+
+  Control.addVariable("testTwinAMotorAFlag",2);
   Control.addVariable("testTwinAMotorARadius",8.0); 
   Control.addVariable("testTwinAMotorAOuter",10.20); 
   Control.addVariable("testTwinAMotorAStep",0.0); // estimate
@@ -166,6 +167,7 @@ TESTBEAMvariables(FuncDataBase& Control)
   Control.addVariable("testTwinAMotorASealThick",0.2);  
   Control.addVariable("testTwinAMotorASealMat","Poly");
 
+  Control.addVariable("testTwinAMotorBFlag",2);
   Control.addVariable("testTwinAMotorBRadius",8.0); 
   Control.addVariable("testTwinAMotorBOuter",10.20); 
   Control.addVariable("testTwinAMotorBStep",0.0); // estimate

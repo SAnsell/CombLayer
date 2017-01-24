@@ -50,6 +50,7 @@ class TwinChopper :
   const int houseIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
+
   Geometry::Vec3D lowCentre;      ///< Low centre
   Geometry::Vec3D topCentre;      ///< Top centre 
   
@@ -73,7 +74,8 @@ class TwinChopper :
   double portSeal;             ///< Port seal
   int portSealMat;             ///< Port Seal material
   int portWindowMat;           ///< Window material
-  
+
+  int motorAFlag;                ///< Lower Motor at front (true/false)
   double motorARadius;           ///< motor port radius
   double motorAOuter;            ///< Extrernal radius of motor port
   double motorAStep;             ///< motor flange step
@@ -83,7 +85,8 @@ class TwinChopper :
   double motorASeal;             ///< Motor seal Thinkness
   int motorASealMat;             ///< Motor Seal material
   int motorAMat;                 ///< Motor material
-  
+
+  int motorBFlag;                ///< Top Motor at front (true/false)
   double motorBRadius;           ///< motor port radius
   double motorBOuter;            ///< Extrernal radius of motor port
   double motorBStep;             ///< motor flange step
@@ -107,6 +110,9 @@ class TwinChopper :
   void createObjects(Simulation&);
   void createLinks();
 
+  std::string motorFrontExclude() const;
+  std::string motorBackExclude() const;
+  
   void createRing(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::string&,const std::string&,
 		  const double,const size_t,const double,

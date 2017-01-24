@@ -130,8 +130,6 @@ TwinChopper::populate(const FuncDataBase& Control)
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
-  
-
   portRadius=Control.EvalVar<double>(keyName+"PortRadius");
   portOuter=Control.EvalVar<double>(keyName+"PortOuter");
   portStep=Control.EvalVar<double>(keyName+"PortStep");
@@ -141,7 +139,7 @@ TwinChopper::populate(const FuncDataBase& Control)
   portSeal=Control.EvalDefVar<double>(keyName+"PortSealThick",0.0);
   portSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
 
-
+  motorAFlag=Control.EvalVar<int>(keyName+"MotorAFlag");
   motorARadius=Control.EvalVar<double>(keyName+"MotorARadius");
   motorAOuter=Control.EvalVar<double>(keyName+"MotorAOuter");
   motorAStep=Control.EvalVar<double>(keyName+"MotorAStep");
@@ -152,6 +150,7 @@ TwinChopper::populate(const FuncDataBase& Control)
   motorASealMat=ModelSupport::EvalMat<int>(Control,keyName+"MotorASealMat");
   motorAMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorAMat",0);
 
+  motorBFlag=Control.EvalVar<int>(keyName+"MotorBFlag");  
   motorBRadius=Control.EvalVar<double>(keyName+"MotorBRadius");
   motorBOuter=Control.EvalVar<double>(keyName+"MotorBOuter");
   motorBStep=Control.EvalVar<double>(keyName+"MotorBStep");
@@ -361,6 +360,33 @@ TwinChopper::createRing(Simulation& System,const int surfOffset,
     }
   return;
 }
+
+std::string
+TwinChopper::motorFrontExclude() const
+  /*!
+    Simple function to get motor cut flag if motor is front/back
+    \return exlude string [not corrected]
+  */
+{
+  std::string Out;
+  if (motorAFlag & 1) Out+=" 3017 ";
+  if (motorBFlag & 1) Out+=" 4017 ";
+  return Out;
+}
+
+std::string
+TwinChopper::motorBackExclude() const
+  /*!
+    Simple function to get motor cut flag if motor is back
+    \return exlude string [not corrected]
+  */
+{
+  std::string Out;
+  if (motorAFlag & 1) Out+=" 3017 ";
+  if (motorBFlag & 1) Out+=" 4017 ";
+  return Out;
+}
+
   
 void
 TwinChopper::createObjects(Simulation& System)
@@ -376,7 +402,6 @@ TwinChopper::createObjects(Simulation& System)
   const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
   
   std::string Out,FBStr,EdgeStr,SealStr;
-
 
   // Main void
   Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 (-17:-18)");
@@ -395,12 +420,14 @@ TwinChopper::createObjects(Simulation& System)
   
   // Main casing
   Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "1 -11 3 -4 (5:-7) (-6:-8) 2017 3017 4017 ");
+                                 "1 -11 3 -4 (5:-7) (-6:-8) 2017 "+
+				 motorFrontExclude());
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "12 -2 3 -4 (5:-7) (-6:-8) 2017 3017 4017 ");
+                                 "12 -2 3 -4 (5:-7) (-6:-8) 2017 "+
+				 motorBackExclude());
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Case",cellIndex-1);
 
@@ -409,9 +436,6 @@ TwinChopper::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Case",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("PortVoid",cellIndex-1);
 
     // Add inner system
 
@@ -424,15 +448,6 @@ TwinChopper::createObjects(Simulation& System)
   IPB->createAll(System,Beam,0,Out);
 
 
-
-
-
-  // Outer
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
-  addOuterSurf(Out);  
-
-
-
   // Front ring seal
   
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
@@ -441,7 +456,7 @@ TwinChopper::createObjects(Simulation& System)
   createRing(System,houseIndex+2000,Beam.getCentre(),FBStr,EdgeStr,
              (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
              portBoltAngOff,SealStr,portSealMat);
-  return;
+
   // back ring seal
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
   SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 11 -12 ");
@@ -457,54 +472,61 @@ TwinChopper::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
       addCell("Wall",cellIndex-1);
     }
-
-
   
   // MOTOR:
   // [front/back] of LOWER
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -3007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,motorAMat,0.0,Out));
-  addCell("MotorVoid",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -3007"); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,motorAMat,0.0,Out));
-  addCell("MotorVoid",cellIndex-1);
-
-  // Divide surfaces and bolts
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex+3000," 7 -17 ");
-  createRing(System,houseIndex+3000,Main.getCentre(),FBStr,EdgeStr,
-             (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
-             motorABoltAngOff,"",0);
+  if (motorAFlag & 1)
+    {
+      Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -3007");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,motorAMat,0.0,Out));
+      addCell("MotorVoid",cellIndex-1);
+      // Divide surfaces and bolts
+      FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+      createRing(System,houseIndex+3000,lowCentre,FBStr,EdgeStr,
+		 (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
+		 motorABoltAngOff,"",0);
+    }
   
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
-  createRing(System,houseIndex+3500,Main.getCentre(),FBStr,EdgeStr,
-             (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
-             motorABoltAngOff,"",0);
-
+  if (motorAFlag & 2)
+    {
+      Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -3007"); 
+      System.addCell(MonteCarlo::Qhull(cellIndex++,motorAMat,0.0,Out));
+      addCell("MotorVoid",cellIndex-1);
+      FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
+      createRing(System,houseIndex+3500,lowCentre,FBStr,EdgeStr,
+		 (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
+		 motorABoltAngOff,"",0);
+    }
   
   // MOTOR:
   // [front/back] of TOP
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -4007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,motorBMat,0.0,Out));
-  addCell("MotorVoid",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -4007"); 
-  System.addCell(MonteCarlo::Qhull(cellIndex++,motorBMat,0.0,Out));
-  addCell("MotorVoid",cellIndex-1);
-
-  // Divide surfaces and bolts
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex+4000," 7 -17 ");
-  createRing(System,houseIndex+4000,Main.getCentre(),FBStr,EdgeStr,
-             (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
-             motorBBoltAngOff,"",0);
-  
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
-  createRing(System,houseIndex+4500,Main.getCentre(),FBStr,EdgeStr,
-             (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
-             motorBBoltAngOff,"",0);
+  if (motorBFlag & 1)
+    {
+      Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -4007");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,motorBMat,0.0,Out));
+      addCell("MotorVoid",cellIndex-1);
+      // Divide surfaces and bolts
+      FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+      
+      createRing(System,houseIndex+4000,topCentre,FBStr,EdgeStr,
+		 (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
+		 motorBBoltAngOff,"",0);
+    }
+  if (motorBFlag & 2)
+    {
+      Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -4007"); 
+      System.addCell(MonteCarlo::Qhull(cellIndex++,motorBMat,0.0,Out));
+      addCell("MotorVoid",cellIndex-1);
 
+  
+      FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
+      createRing(System,houseIndex+4500,topCentre,FBStr,EdgeStr,
+		 (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
+             motorBBoltAngOff,"",0);
+    }
+  
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
   addOuterSurf(Out);  
