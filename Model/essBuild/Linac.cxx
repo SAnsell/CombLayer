@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/Linac.cxx
  *
  * Copyright (c) 2016 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -103,13 +103,14 @@ Linac::Linac(const std::string& Key)  :
   OR.addObject(bd);
 }
 
-Linac::Linac(const Linac& A) : 
+Linac::Linac(const Linac& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
+  roofThick(A.roofThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
   bd(A.bd->clone())
   /*!
@@ -136,6 +137,7 @@ Linac::operator=(const Linac& A)
       width=A.width;
       height=A.height;
       wallThick=A.wallThick;
+      roofThick=A.roofThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       *bd=*A.bd;
@@ -143,7 +145,7 @@ Linac::operator=(const Linac& A)
   return *this;
 }
 
-Linac::~Linac() 
+Linac::~Linac()
   /*!
     Destructor
   */
@@ -165,13 +167,14 @@ Linac::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
-  
+
 void
 Linac::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
@@ -187,7 +190,7 @@ Linac::createUnitVector(const attachSystem::FixedComp& FC)
 
   return;
 }
-  
+
 void
 Linac::createSurfaces()
   /*!
@@ -212,11 +215,11 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0+wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+roofThick),Z);
 
   return;
 }
-  
+
 void
 Linac::createObjects(Simulation& System)
   /*!
@@ -240,7 +243,7 @@ Linac::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 Linac::createLinks()
   /*!
@@ -251,13 +254,13 @@ Linac::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 Linac::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,const long int& lp)
@@ -275,11 +278,11 @@ Linac::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System);
-  insertObjects(System);              
+  insertObjects(System);
 
   bd->addInsertCell(surfIndex+1); // main cell
   bd->createAll(System,*this,0);
-  
+
   return;
 }
 

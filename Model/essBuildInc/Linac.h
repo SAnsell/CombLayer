@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/Linac.h
  *
  * Copyright (c) 2016 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_Linac_h
@@ -52,27 +52,28 @@ class Linac : public attachSystem::ContainedComp,
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall
+  double roofThick; ///< Roof thickness
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
+  int wallMat;                   ///< wall material
 
   std::shared_ptr<BeamDump> bd; // linac 4 commissionning dump
-  
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-  
+
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
 
-  
+
  public:
 
   Linac(const std::string&);
   Linac(const Linac&);
   Linac& operator=(const Linac&);
   virtual ~Linac();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int&);
 
 };
@@ -80,5 +81,5 @@ class Linac : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 

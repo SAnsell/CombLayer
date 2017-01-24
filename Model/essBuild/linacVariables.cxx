@@ -76,12 +76,13 @@ EssLinacVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
-  Control.addVariable("LinacLength",300.);
-  Control.addVariable("LinacWidth",300.);
-  Control.addVariable("LinacHeight",300.);
+  Control.addVariable("LinacLength",2000.);
+  Control.addVariable("LinacWidth",600.);
+  Control.addVariable("LinacHeight",350.);
   Control.addVariable("LinacWallThick",50.0);
+  Control.addVariable("LinacRoofThick",80.0);
   Control.addVariable("LinacMainMat","Void");
-  Control.addVariable("LinacWallMat","SS316L");
+  Control.addVariable("LinacWallMat","Concrete");
 
   Control.addVariable("LinacBeamDumpSteelMat","SS316L"); // check it !!!
   Control.addVariable("LinacBeamDumpConcreteMat","Concrete"); // check it !!!
