@@ -91,6 +91,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacAlMat","Aluminium"); // check it !!!
   Control.addVariable("LinacWaterMat","H2O");
   Control.addVariable("LinacCopperMat","Silver%Copper%0.015"); // Copper + 0.015% weight Ag since Ag is a gamma source (YJL said)
+  Control.addVariable("LinacGraphiteMat","Graphite");
 
   Control.Parse("LinacWidth-120.0");
   Control.addVariable("LinacTSWLength"); // Lali said
