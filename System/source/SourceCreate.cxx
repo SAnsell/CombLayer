@@ -243,6 +243,33 @@ createESSPortSource(const FuncDataBase& Control,
   return;
 }
 
+void
+createESSLinacSource(const FuncDataBase& Control,Source& sourceCard)
+  /*!
+    Creates a ESS Linac source
+    \param Control :: Control system
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",    75.0);
+  const double xStart=Control.EvalDefVar<double>("sdefXPos",-15.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",  0.0);
+  const double zStart=Control.EvalDefVar<double>("sdefZPos",  0.0);
+
+  sourceCard.setActive();
+  sourceCard.setComp("dir",1.0);
+  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
+  sourceCard.setComp("par",9);
+  sourceCard.setComp("erg",E);
+  sourceCard.setComp("x",xStart);
+  sourceCard.setComp("y",yStart);
+  sourceCard.setComp("z",zStart);
+
+  return;
+}
+
 
 void
 createD4CSource(const FuncDataBase& Control,Source& sourceCard)

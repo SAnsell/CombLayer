@@ -251,6 +251,8 @@ sourceSelection(Simulation& System,
   else if (sdefType=="essPort")
     SDef::createESSPortSource(Control,FCPtr,linkIndex,
 			      sourceCard);
+  else if (sdefType=="essLinac")
+    SDef::createESSLinacSource(Control,sourceCard);
   else if (sdefType=="D4C")
     SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")

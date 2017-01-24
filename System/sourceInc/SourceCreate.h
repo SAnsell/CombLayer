@@ -38,6 +38,7 @@ namespace SDef
   void createESSPortSource(const FuncDataBase&,
 			   const attachSystem::FixedComp*,const long int,
 			   Source&);
+  void createESSLinacSource(const FuncDataBase&,Source&);
   void createBeamSource(const FuncDataBase&,const std::string&,Source&);
   void createBeamSource(const FuncDataBase&,const std::string&,
 			 const attachSystem::FixedComp&,const long int,
