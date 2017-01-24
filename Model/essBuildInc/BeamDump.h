@@ -51,6 +51,7 @@ class BeamDump : public attachSystem::ContainedComp,
   int    alMat;                 ///< Aluminium material
   int waterMat; ///< Water Material
   int airMat; ///< Air material
+  int cuMat; ///< Cu material
 
   double frontWallLength;       ///< Front wall length (+y, vol 6 in SPLTDISH0001)
   double frontWallHeight;       ///< Front wall height (+z)

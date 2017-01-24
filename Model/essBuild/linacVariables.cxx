@@ -83,13 +83,14 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacRoofThick",80.0); // K01-20---6-G01---011
   Control.addVariable("LinacFloorThick",75.0); // K01-20---6-G01---011
   Control.addVariable("LinacFloorWidth",760.0); // K01-20---6-G01---011
-  Control.addVariable("LinacAirMat","Air");
   Control.addVariable("LinacWallMat","Concrete");
-
+ 
+  Control.addVariable("LinacAirMat","Air");
   Control.addVariable("LinacSteelMat","SS316L"); // check it !!!
   Control.addVariable("LinacConcreteMat","Concrete"); // check it !!!
   Control.addVariable("LinacAlMat","Aluminium"); // check it !!!
   Control.addVariable("LinacWaterMat","H2O");
+  Control.addVariable("LinacCopperMat","Silver%Copper%0.015"); // Copper + 0.015% weight Ag since Ag is a gamma source (YJL said)
 
   Control.Parse("LinacWidth-120.0");
   Control.addVariable("LinacTSWLength"); // Lali said

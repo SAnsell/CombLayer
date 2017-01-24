@@ -111,6 +111,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   alMat(A.alMat),
   waterMat(A.waterMat),
   airMat(A.airMat),
+  cuMat(A.cuMat),
 
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
@@ -182,6 +183,7 @@ BeamDump::operator=(const BeamDump& A)
       alMat=A.alMat;
       waterMat=A.waterMat;
       airMat=A.airMat;
+      cuMat=A.cuMat;
 
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
@@ -263,6 +265,7 @@ BeamDump::populate(const FuncDataBase& Control)
   alMat=ModelSupport::EvalMat<int>(Control,baseName+"AlMat");
   waterMat=ModelSupport::EvalMat<int>(Control,baseName+"WaterMat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
+  cuMat=ModelSupport::EvalMat<int>(Control,baseName+"CopperMat");
 
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
@@ -541,9 +544,9 @@ BeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -131 -107 -137 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " 131 -112 -137 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -112 -107 -127 137 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
   // steel inside vac pipe cone and lid 2
   Out=ModelSupport::getComposite(SMap,surfIndex," 112 -102 -107 -127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
