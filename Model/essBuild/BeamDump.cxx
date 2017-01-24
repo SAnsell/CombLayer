@@ -451,6 +451,11 @@ BeamDump::createSurfaces()
   			  Origin+Y*(coneYpos)+Z*(vacPipeRad-wallThick),
 			  coneYdir,
 			  coneOpenAngle);
+  const double coneTopOpenAngle = 11;
+  ModelSupport::buildCone(SMap,surfIndex+138,
+  			  Origin+Y*(coneTop)+Z*(vacPipeRad-wallThick*1.6),
+			  coneYdir,
+			  coneTopOpenAngle);
 
   // water cooling pipe
   Geometry::Vec3D pipeYdir(Y);
@@ -544,10 +549,14 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // vac pipe
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -131 -107 -137 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -131 -107 -137 -138 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 131 -112 -137 ");
+  // cone top
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -131 -137 138 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 131 -112 -137 ");// : -131 -137 138");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
+
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -112 -107 -127 137 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
   // steel inside vac pipe cone and lid 2
