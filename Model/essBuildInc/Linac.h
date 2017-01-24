@@ -54,7 +54,7 @@ class Linac : public attachSystem::ContainedComp,
   double wallThick;             ///< Thickness of wall
   double roofThick; ///< Roof thickness
 
-  int mainMat;                   ///< main material
+  int airMat;                    ///< air material
   int wallMat;                   ///< wall material
 
   std::shared_ptr<BeamDump> bd; // linac 4 commissionning dump

@@ -111,7 +111,7 @@ Linac::Linac(const Linac& A) :
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
-  mainMat(A.mainMat),wallMat(A.wallMat),
+  airMat(A.airMat),wallMat(A.wallMat),
   bd(A.bd->clone())
   /*!
     Copy constructor
@@ -138,7 +138,7 @@ Linac::operator=(const Linac& A)
       height=A.height;
       wallThick=A.wallThick;
       roofThick=A.roofThick;
-      mainMat=A.mainMat;
+      airMat=A.airMat;
       wallMat=A.wallMat;
       *bd=*A.bd;
     }
@@ -169,7 +169,7 @@ Linac::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -231,7 +231,7 @@ Linac::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");

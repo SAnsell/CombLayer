@@ -81,7 +81,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacHeight",350.);
   Control.addVariable("LinacWallThick",50.0);
   Control.addVariable("LinacRoofThick",80.0);
-  Control.addVariable("LinacMainMat","Void");
+  Control.addVariable("LinacAirMat","Air");
   Control.addVariable("LinacWallMat","Concrete");
 
   Control.addVariable("LinacSteelMat","SS316L"); // check it !!!

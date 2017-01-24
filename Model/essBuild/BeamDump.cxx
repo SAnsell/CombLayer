@@ -110,6 +110,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   concMat(A.concMat),
   alMat(A.alMat),
   waterMat(A.waterMat),
+  airMat(A.airMat),
 
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
@@ -180,6 +181,7 @@ BeamDump::operator=(const BeamDump& A)
       concMat=A.concMat;
       alMat=A.alMat;
       waterMat=A.waterMat;
+      airMat=A.airMat;
 
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
@@ -260,6 +262,7 @@ BeamDump::populate(const FuncDataBase& Control)
   concMat=ModelSupport::EvalMat<int>(Control,baseName+"ConcreteMat");
   alMat=ModelSupport::EvalMat<int>(Control,baseName+"AlMat");
   waterMat=ModelSupport::EvalMat<int>(Control,baseName+"WaterMat");
+  airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
 
   frontWallLength=Control.EvalVar<double>(keyName+"FrontWallLength");
   frontWallHeight=Control.EvalVar<double>(keyName+"FrontWallHeight");
@@ -475,7 +478,7 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // floor
   Out=ModelSupport::getComposite(SMap,surfIndex," 2 -12 3 -4 15 -16 ");
@@ -486,7 +489,7 @@ BeamDump::createObjects(Simulation& System)
 
   // Floor - small steel plates
   Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 3 -4 25 -15 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 3 -4 25 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
@@ -497,7 +500,7 @@ BeamDump::createObjects(Simulation& System)
 
   // Floor - void cell below Al plate
   Out=ModelSupport::getComposite(SMap,surfIndex," 2 -42 3 -4 5 -35 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // back wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 12 -42 3 -4 25 -6 ");
@@ -513,7 +516,7 @@ BeamDump::createObjects(Simulation& System)
 
   // void cell under overhead
   Out=ModelSupport::getComposite(SMap,surfIndex," 51 -1 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // side walls
   Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 3 -63 16 -76 ");
@@ -526,15 +529,16 @@ BeamDump::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 63 -64 16 -76 87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
+  // proton hole in plates 22,28,29
   Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 -87 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // back inner wall and gap
   Out=ModelSupport::getComposite(SMap,surfIndex, " 91 -92 63 -64 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 92 -12 63 -64 16 -76 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // vac pipe
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -131 -107 -137 ");
@@ -555,7 +559,7 @@ BeamDump::createObjects(Simulation& System)
 				 " 141 -102 -147");
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
 
-  //
+  // tiny cell
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 101 -102 -107 127 -122 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
@@ -568,7 +572,7 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 111 -112 108 -117 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 112 -102 108 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
@@ -576,7 +580,7 @@ BeamDump::createObjects(Simulation& System)
   //  void cell inside shielding (vac pipe goes there)
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 51 -42 3 -4 5 -56 ");
   addOuterSurf(Out);
