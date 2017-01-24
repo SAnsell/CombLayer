@@ -96,6 +96,9 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSWOffsetY", 300.0); // some location (must be 20 cm off the beam dump)
 
   
+  Control.addVariable("LinacBeamDumpYStep",140);
+  Control.addVariable("LinacBeamDumpXStep",-15.0); // Lali said
+
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallDepth",50.0); // doc SPLTDISH0001

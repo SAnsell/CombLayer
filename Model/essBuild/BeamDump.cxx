@@ -406,9 +406,8 @@ BeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, surfIndex+101,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+82),
 				  vacPipeFrontInnerWallDist);
-  ModelSupport::buildShiftedPlane(SMap, surfIndex+102,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
-				  vacPipeLength);
+  const double pl102Y = frontWallLength + frontInnerWallLength + vacPipeFrontInnerWallDist + vacPipeLength;
+  ModelSupport::buildPlane(SMap, surfIndex+102, Origin+Y*pl102Y, Y);
   ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,vacPipeRad);
   ModelSupport::buildCylinder(SMap,surfIndex+108,Origin,Y,
 			      vacPipeRad+vacPipeSideWallThick);
@@ -426,8 +425,7 @@ BeamDump::createSurfaces()
   Geometry::Vec3D coneYdir(Y);
   Geometry::Quaternion::calcQRotDeg(coneOpenAngle,X).rotate(coneYdir);
 
-  double coneYpos = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()+
-    vacPipeOuterConeOffset;
+  double coneYpos = pl102Y+vacPipeOuterConeOffset;
 
   ModelSupport::buildPlane(SMap,surfIndex+121,Origin+Y*coneYpos,Y);
   ModelSupport::buildCone(SMap,surfIndex+127,
@@ -441,8 +439,7 @@ BeamDump::createSurfaces()
 				  -vacPipeBaseLength);
 
   coneYpos -= wallThick / tan(coneOpenAngle*M_PI/180);
-  const double coneTop = SMap.realPtr<Geometry::Plane>(surfIndex+102)->getDistance()-
-    vacPipeInnerConeTop;
+  const double coneTop = pl102Y-vacPipeInnerConeTop;
   ModelSupport::buildPlane(SMap,surfIndex+131,Origin+Y*coneTop,Y);
   ModelSupport::buildCone(SMap,surfIndex+137,
   			  Origin+Y*(coneYpos)+Z*(vacPipeRad-wallThick),
