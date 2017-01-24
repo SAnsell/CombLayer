@@ -155,7 +155,8 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeInnerConeTop(A.vacPipeInnerConeTop),
   wallThick(A.wallThick),
   waterPipeRad(A.waterPipeRad),
-  waterPipeLength(A.waterPipeLength)
+  waterPipeLength(A.waterPipeLength),
+  waterPipeOffsetX(A.waterPipeOffsetX)
 
   /*!
     Copy constructor
@@ -229,6 +230,7 @@ BeamDump::operator=(const BeamDump& A)
       wallThick=A.wallThick;
       waterPipeRad=A.waterPipeRad;
       waterPipeLength=A.waterPipeLength;
+      waterPipeOffsetX=A.waterPipeOffsetX;
 
     }
   return *this;
@@ -313,6 +315,7 @@ BeamDump::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   waterPipeRad=Control.EvalVar<double>(keyName+"WaterPipeRadius");
   waterPipeLength=Control.EvalVar<double>(keyName+"WaterPipeLength");
+  waterPipeOffsetX=Control.EvalVar<double>(keyName+"WaterPipeOffsetX");
 
   return;
 }
@@ -463,7 +466,8 @@ BeamDump::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap, surfIndex+141,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+102),
 				  -waterPipeLength);
-  ModelSupport::buildCylinder(SMap,surfIndex+147,Origin+Z*(-11)+X*2,pipeYdir,waterPipeRad);
+  ModelSupport::buildCylinder(SMap,surfIndex+147,Origin+Z*(-11) +
+			      X*waterPipeOffsetX,pipeYdir,waterPipeRad);
 
 
 

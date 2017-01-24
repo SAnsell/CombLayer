@@ -55,7 +55,7 @@
 // Scales are used to calculate non-marked dimensions:
 // Scale of the plots in SPLTDISH0001:  1024.0/70
 #define SCALE1 14.6286
-// Scale of the plots in SPLTDISH0052 (top-left corner):  620.0/106
+// Scale of the plots in SPLTDISH0052 (top-left corner and central part):  620.0/106
 #define SCALE52tl 5.84906
 // Scale of the plots in SPLTDISH0052 (top-right corner):  267.52/92
 #define SCALE52tr 2.90783
@@ -151,6 +151,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpWallThick", 0.9*SCALE52bl);   // measured on SPLTDISH0052
   Control.addVariable("LinacBeamDumpWaterPipeRadius", 1.0); // measure !!!
   Control.addVariable("LinacBeamDumpWaterPipeLength", 30.0); // measure !!!
+  Control.addVariable("LinacBeamDumpWaterPipeOffsetX", 0.22*SCALE52tl); // measeured on SPLTDISH0052
 
   return;
 }
