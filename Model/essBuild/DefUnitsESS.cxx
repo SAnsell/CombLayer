@@ -358,6 +358,9 @@ setESSLinac(defaultConfig& A)
 
   A.setVar("LinacActive", 1);
   A.setOption("matDB", "neutronics");
+  A.setOption("sdefType", "essLinac");
+  A.setVar("sdefEnergy", 75);
+  A.setOption("mcnp", "10");
 
 }
   
