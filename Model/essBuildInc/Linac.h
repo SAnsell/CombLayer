@@ -48,12 +48,13 @@ class Linac : public attachSystem::ContainedComp,
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< height
+  double width;                 ///< Inner width
+  double height;                ///< Inner height
 
   double wallThick;             ///< Thickness of side walls
   double roofThick; ///< Roof thickness
   double floorThick; ///< Thickness of floor
+  double floorWidth; ///< Width of floor
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
