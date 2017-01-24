@@ -58,6 +58,10 @@ class Linac : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
 
   std::shared_ptr<BeamDump> bd; // linac 4 commissionning dump
+  double tswLength; ///< Temporary shielding wall length
+  double tswWidth; ///< Temporary shielding wall width
+  double tswGap; ///< Distance between Temporary shielding walls
+  double tswOffsetY; ///< TSW location on the Y-axis
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

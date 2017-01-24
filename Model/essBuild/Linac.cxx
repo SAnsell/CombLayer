@@ -112,7 +112,11 @@ Linac::Linac(const Linac& A) :
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   airMat(A.airMat),wallMat(A.wallMat),
-  bd(A.bd->clone())
+  bd(A.bd->clone()),
+  tswLength(A.tswLength),
+  tswWidth(A.tswWidth),
+  tswGap(A.tswGap),
+  tswOffsetY(A.tswOffsetY)
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -141,6 +145,10 @@ Linac::operator=(const Linac& A)
       airMat=A.airMat;
       wallMat=A.wallMat;
       *bd=*A.bd;
+      tswLength=A.tswLength;
+      tswWidth=A.tswWidth;
+      tswGap=A.tswGap;
+      tswOffsetY=A.tswOffsetY;
     }
   return *this;
 }
@@ -171,6 +179,11 @@ Linac::populate(const FuncDataBase& Control)
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+
+  tswLength=Control.EvalVar<double>(keyName+"TSWLength");
+  tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
+  tswGap=Control.EvalVar<double>(keyName+"TSWGap");
+  tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
 
   return;
 }
@@ -217,6 +230,18 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+roofThick),Z);
 
+  // Temporary shielding walls
+  double tswY(tswOffsetY);
+  ModelSupport::buildPlane(SMap,surfIndex+101,Origin+Y*(tswY),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(width/2.0-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(width/2.0-tswLength),X);
+  tswY += tswWidth;
+  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(tswY),Y);
+  tswY += tswGap;
+  ModelSupport::buildPlane(SMap,surfIndex+111,Origin+Y*(tswY),Y);
+  tswY += tswWidth;
+  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(tswY),Y);
+
   return;
 }
 
@@ -230,7 +255,9 @@ Linac::createObjects(Simulation& System)
   ELog::RegMethod RegA("Linac","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -101 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
@@ -239,6 +266,13 @@ Linac::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
+
+  // temporary shielding walls
+  Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 3 -103 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 103 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  
 
   return;
 }

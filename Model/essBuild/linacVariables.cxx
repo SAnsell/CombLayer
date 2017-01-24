@@ -89,6 +89,13 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacAlMat","Aluminium"); // check it !!!
   Control.addVariable("LinacWaterMat","H2O");
 
+  Control.Parse("LinacWidth-120.0");
+  Control.addVariable("LinacTSWLength"); // Lali said
+  Control.addVariable("LinacTSWWidth", 100.0); // Lali said
+  Control.addVariable("LinacTSWGap", 120.0); // Lali said
+  Control.addVariable("LinacTSWOffsetY", 300.0); // some location (must be 20 cm off the beam dump)
+
+  
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallDepth",50.0); // doc SPLTDISH0001
