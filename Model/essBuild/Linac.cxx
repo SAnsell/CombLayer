@@ -257,7 +257,9 @@ Linac::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -101 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -111 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 112 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
@@ -268,11 +270,18 @@ Linac::createObjects(Simulation& System)
   addOuterSurf(Out);
 
   // temporary shielding walls
+  // 1st wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 3 -103 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 103 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-  
+
+  // 2nd wall
+  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 3 -104 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 104 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
 
   return;
 }
