@@ -57,16 +57,28 @@ namespace setVariable
 {
 
 TwinGenerator::TwinGenerator() :
-  height(86.5),
-  mainRadius(38.122),windowThick(0.3),
-  ringRadius(40.0),motorRadius(12.0),
-  motorOuter(15.20),portRadius(10.0),
-  portOuter(12.65),portWidth(11.6),
-  portHeight(11.6),portBoltStep(1.0),
-  wallMat("Aluminium"),portMat("Aluminium"),
-  sealMat("Poly"),windowMat("Aluminium")
+  stepHeight(87.4),mainRadius(38.122),
+  innerRadius(36.0),innerTopStep(25.0),
+  innerLowStep(25.0),
+  
+  portRadius(10.0),portOuter(12.65),
+  portNBolt(24),portBoltRadius(0.4),
+
+  viewWidth(11.6),viewHeight(11.6),
+  viewLength(1.0),viewWindowThick(0.3),
+  viewBoltStep(1.0),viewNBolt(8),
+  viewBoltRadius(0.3),
+  viewWindowMat("SiCrystal"),viewMat("Aluminium"),
+  viewBoltMat("ChipIRSteel"),
+  
+  motorRadius(8.0),motorOuter(10.20),
+  motorNBolt(24),motorBoltRadius(0.5),
+  motorSealThick(0.2),motorSealMat("Poly"),
+  wallMat("Aluminium")
   /*!
-    Constructor BUT ALL variable are left unpopulated.
+    Constructor : All variables are set for 35cm radius disks
+    with an overlap of 5cm. Values are scaled appropiately for
+    most changes
   */
 {}
 
@@ -84,22 +96,21 @@ TwinGenerator::setMainRadius(const double R)
     \param R :: Radius
   */
 {
-  height*=R/mainRadius;
-  ringRadius*=R/mainRadius;
+  stepHeight*=R/mainRadius;
   motorRadius*=R/mainRadius;
   motorOuter*=R/mainRadius;
   portRadius*=R/mainRadius;
   portOuter*=R/mainRadius;
-  portWidth*=R/mainRadius;
-  portHeight*=R/mainRadius;
-  portBoltStep*=R/mainRadius;
+  viewWidth*=R/mainRadius;
+  viewHeight*=R/mainRadius;
+  viewBoltStep*=R/mainRadius;
   mainRadius=R;
   return;
 }
 
 void
 TwinGenerator::setMaterial(const std::string& wMat,
-                              const std::string& pMat)
+			   const std::string& pMat)
   /*!
     Set material/port material
     \param wMat :: Main wall material
@@ -107,7 +118,7 @@ TwinGenerator::setMaterial(const std::string& wMat,
    */
 {
   wallMat=wMat;
-  portMat=pMat;
+  viewWindowMat=pMat;
   return;
 }
   
@@ -129,75 +140,87 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   ELog::RegMethod RegA("TwinGenerator","generateChopper");
 
   Control.addVariable(keyName+"YStep",yStep);
-  Control.addVariable(keyName+"InnerHeight",height);
-  Control.addVariable(keyName+"Length",length);  // drawing [5960.2]
-  Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
-  Control.addVariable(keyName+"InnerVoid",voidLength);  // estimate
-  
-  Control.addVariable(keyName+"MotorRadius",motorRadius); // [5691.2]
-  Control.addVariable(keyName+"MotorOuter",motorOuter); // [5691.2]
-  Control.addVariable(keyName+"MotorStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorNBolt",24); 
-  Control.addVariable(keyName+"MotorBoltRadius",0.50); //M10 inc thread
-  Control.addVariable(keyName+"MotorSealThick",0.2);  
-  Control.addVariable(keyName+"MortorSealMat","Poly");
-  
-  Control.addVariable(keyName+"PortRadius",portRadius); // [5691.2]
-  Control.addVariable(keyName+"PortOuter",portOuter); // [5691.2]
-  Control.addVariable(keyName+"PortStep",0.0); // estimate
-  Control.addVariable(keyName+"PortNBolt",24); 
-  Control.addVariable(keyName+"PortBoltRadius",0.40); //M8 inc
-  Control.addVariable(keyName+"PortBoltAngOff",180.0/24.0);
-  Control.addVariable(keyName+"PortSealThick",0.2);
-  Control.addVariable(keyName+"PortSealMat","Poly");
 
-  Control.addVariable(keyName+"RingNSection",12);
-  Control.addVariable(keyName+"RingNTrack",12);
-  Control.addVariable(keyName+"RingThick",0.4);
-  Control.addVariable(keyName+"RingRadius",ringRadius);  
-  Control.addVariable(keyName+"RingMat",sealMat); 
+  Control.addVariable("testTwinAStepHeight",stepHeight); 
+  Control.addVariable("testTwinALength",length);       
+  Control.addVariable("testTwinAMainRadius",mainRadius);
+  Control.addVariable("testTwinAInnerRadius",innerRadius);
+  Control.addVariable("testTwinAInnerTopStep",innerTopStep);
+  Control.addVariable("testTwinAInnerLowStep",innerLowStep);
+  Control.addVariable("testTwinAInnerVoid",voidLength);    
 
-  // strange /4 because it is average of 1/2 lengths
+  Control.addVariable("testTwinAPortRadius",portRadius); 
+  Control.addVariable("testTwinAPortOuter",portOuter); // [5691.2]
+  Control.addVariable("testTwinAPortStep",0.0); // estimate
+  Control.addVariable("testTwinAPortNBolt",portNBolt); 
+  Control.addVariable("testTwinAPortBoltRadius",portBoltRadius); //M8 inc
+  Control.addVariable("testTwinAPortBoltAngOff",180.0/portNBolt);
+  Control.addVariable("testTwinAPortSealThick",0.2);
+  Control.addVariable("testTwinAPortSealMat","Poly");
+
+  Control.addVariable("testTwinABoltMat","ChipIRSteel");
+
   const std::string kItem=
     "-("+keyName+"Length+"+keyName+"MainThick)/4.0";
   Control.addParse<double>(keyName+"IPortAYStep",kItem);
- 
-  Control.addVariable(keyName+"IPortAWidth",portWidth);  
-  Control.addVariable(keyName+"IPortAHeight",portHeight);
-  Control.addVariable(keyName+"IPortALength",1.0);
-  Control.addVariable(keyName+"IPortAMat",portMat);
-  Control.addVariable(keyName+"IPortASealStep",0.5);
-  Control.addVariable(keyName+"IPortASealThick",0.3); 
-  Control.addVariable(keyName+"IPortASealMat",sealMat);
-  Control.addVariable(keyName+"IPortAWindow",windowThick);
-  Control.addVariable(keyName+"IPortAWindowMat",windowMat);
-
-  Control.addVariable(keyName+"IPortANBolt",8);
-  Control.addVariable(keyName+"IPortABoltStep",portBoltStep);
-  Control.addVariable(keyName+"IPortABoltRadius",0.3);
-  Control.addVariable(keyName+"IPortABoltMat","ChipIRSteel");
   
-  // PORT B
-  Control.addParse<double>(keyName+"IPortBYStep",
-        "("+keyName+"Length+"+keyName+"MainThick)/4.0");
-  Control.addVariable(keyName+"IPortBWidth",portWidth);  
-  Control.addVariable(keyName+"IPortBHeight",portHeight);
-  Control.addVariable(keyName+"IPortBLength",1.0);
-  Control.addVariable(keyName+"IPortBMat",portMat);
-  Control.addVariable(keyName+"IPortBSealStep",0.5);
-  Control.addVariable(keyName+"IPortBSealThick",0.3); 
-  Control.addVariable(keyName+"IPortBSealMat","Poly");
-  Control.addVariable(keyName+"IPortBWindow",windowThick);
-  Control.addVariable(keyName+"IPortBWindowMat",windowMat);
+  Control.addVariable("testTwinAIPortAWidth",viewWidth);  
+  Control.addVariable("testTwinAIPortAHeight",viewHeight);
+  Control.addVariable("testTwinAIPortALength",viewLength);
+  Control.addVariable("testTwinAIPortAMat",viewMat);
+  Control.addVariable("testTwinAIPortASealStep",0.5);
+  Control.addVariable("testTwinAIPortASealThick",0.3); 
+  Control.addVariable("testTwinAIPortASealMat","Poly");
+  Control.addVariable("testTwinAIPortAWindow",viewWindowThick);
+  Control.addVariable("testTwinAIPortAWindowMat",viewWindowMat);
 
-  Control.addVariable(keyName+"IPortBNBolt",8);
-  Control.addVariable(keyName+"IPortBBoltStep",portBoltStep);
-  Control.addVariable(keyName+"IPortBBoltRadius",0.3);
-  Control.addVariable(keyName+"IPortBBoltMat","ChipIRSteel");
-    
-  Control.addVariable(keyName+"BoltMat","ChipIRSteel");
-  Control.addVariable(keyName+"WallMat",wallMat);
-  Control.addVariable(keyName+"VoidMat","Void");
+  Control.addVariable("testTwinAIPortANBolt",viewNBolt);
+  Control.addVariable("testTwinAIPortABoltStep",viewBoltStep);
+  Control.addVariable("testTwinAIPortABoltRadius",viewBoltRadius);
+  Control.addVariable("testTwinAIPortABoltMat",viewBoltMat);
+  
+  const std::string lItem=
+    "("+keyName+"Length+"+keyName+"MainThick)/4.0";
+  Control.addParse<double>(keyName+"IPortBYStep",kItem);
+
+  Control.addVariable("testTwinAIPortBWidth",viewWidth);  
+  Control.addVariable("testTwinAIPortBHeight",viewHeight);
+  Control.addVariable("testTwinAIPortBLength",viewLength);
+  Control.addVariable("testTwinAIPortBMat",viewMat);
+  Control.addVariable("testTwinAIPortBSealStep",0.5);
+  Control.addVariable("testTwinAIPortBSealThick",0.3); 
+  Control.addVariable("testTwinAIPortBSealMat","Poly");
+  Control.addVariable("testTwinAIPortBWindow",viewWindowThick);
+  Control.addVariable("testTwinAIPortBWindowMat",viewWindowMat);
+
+  Control.addVariable("testTwinAIPortBNBolt",viewNBolt);
+  Control.addVariable("testTwinAIPortBBoltStep",viewBoltStep);
+  Control.addVariable("testTwinAIPortBBoltRadius",viewBoltRadius);
+  Control.addVariable("testTwinAIPortBBoltMat",viewBoltMat);
+
+
+  // MOTOR
+  
+  Control.addVariable("testTwinAMotorAFlag",2);
+  Control.addVariable("testTwinAMotorARadius",motorRadius); 
+  Control.addVariable("testTwinAMotorAOuter",motorOuter); 
+  Control.addVariable("testTwinAMotorAStep",0.0); // estimate
+  Control.addVariable("testTwinAMotorANBolt",motorNBolt); 
+  Control.addVariable("testTwinAMotorABoltRadius",motorBoltRadius); //M10 inc thread
+  Control.addVariable("testTwinAMotorASealThick",motorSealThick);  
+  Control.addVariable("testTwinAMotorASealMat",motorSealMat);
+
+  Control.addVariable("testTwinAMotorBFlag",2);
+  Control.addVariable("testTwinAMotorBRadius",motorRadius); 
+  Control.addVariable("testTwinAMotorBOuter",motorOuter); 
+  Control.addVariable("testTwinAMotorBStep",0.0); // estimate
+  Control.addVariable("testTwinAMotorBNBolt",motorNBolt); 
+  Control.addVariable("testTwinAMotorBBoltRadius",motorBoltRadius); //M10 inc thread
+  Control.addVariable("testTwinAMotorBSealThick",motorSealThick);  
+  Control.addVariable("testTwinAMotorBSealMat",motorSealMat);
+
+  Control.addVariable("testTwinAWallMat","Aluminium");
+
   return;
 }
 

@@ -39,25 +39,37 @@ class TwinGenerator
 {
  private:
 
-  double height;           ///< Full height
-  double width;            ///< Full width
-  double mainRadius;       ///< full chopper void radius
-  double windowThick;      ///< window material thickness
-  double ringRadius;       ///< Radius of the rinng 
+  double stepHeight;       ///< Height to move main cylinder apart
+  double mainRadius;       ///< outer radius of disks
+  double innerRadius;      ///< radius of disk voids
+  double innerTopStep;     ///< Step above centre for top disk
+  double innerLowStep;     ///< Step below centre for lower disk
 
+  double portRadius;       ///< Main Port radius
+  double portOuter;        ///< Port outer boundary
+  size_t portNBolt;        ///< Number of bolts
+  double portBoltRadius;   ///< Port bolt size [M8 currently]
+
+  double viewWidth;         ///< View square width
+  double viewHeight;        ///< View square height
+  double viewLength;        ///< View thickness
+  double viewWindowThick;   ///< View thickness
+  double viewBoltStep;      ///< View port bolt step
+  size_t viewNBolt;         ///< Number of bolts in view port
+  double viewBoltRadius;    ///< View bolt radius
+  std::string viewWindowMat;  ///< Neutron beam window
+  std::string viewMat;       ///< Main port window
+  std::string viewBoltMat;    ///< viewi bolt mater
+
+  
   double motorRadius;      ///< Motor radius
   double motorOuter;       ///< Motor outer
-  double portRadius;       ///< Port radius
-  double portOuter;        ///< Port outer
+  size_t motorNBolt;       ///< Number of bolts
+  double motorBoltRadius;  ///< Number of bolts
+  double motorSealThick;   ///< Seal thickness
+  std::string motorSealMat;     ///< Seal material
 
-  double portWidth;        ///< Port width
-  double portHeight;       ///< Port height
-  double portBoltStep;     ///< Port outer
-  
-  std::string wallMat;     ///< Main body material
-  std::string portMat;     ///< Port material
-  std::string sealMat;     ///< seal material
-  std::string windowMat;    ///< seal material
+  std::string wallMat;     ///< Main wall material
   
  public:
 
