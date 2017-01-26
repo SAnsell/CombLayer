@@ -382,8 +382,8 @@ TwinChopper::motorBackExclude() const
   */
 {
   std::string Out;
-  if (motorAFlag & 1) Out+=" 3017 ";
-  if (motorBFlag & 1) Out+=" 4017 ";
+  if (motorAFlag & 2) Out+=" 3017 ";
+  if (motorBFlag & 2) Out+=" 4017 ";
   return Out;
 }
 
@@ -437,26 +437,30 @@ TwinChopper::createObjects(Simulation& System)
   addCell("Case",cellIndex-1);
 
 
-    // Add inner system
 
+  
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
   IPA->addInnerCell(getCell("PortVoid",0));
+  ELog::EM<<"Inner Cell = "<<getCell("PortVoid",0)<<ELog::endDiag;
   IPA->createAll(System,Beam,0,Out);
+
+
+
+    // Add inner system
 
   Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
   IPB->addInnerCell(getCell("PortVoid",1));
+  ELog::EM<<"Inner Cell = "<<getCell("PortVoid",1)<<ELog::endDiag;
   IPB->createAll(System,Beam,0,Out);
 
-
   // Front ring seal
-  
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex+2000," 7 -17 ");
   SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 1 -2 ");
   createRing(System,houseIndex+2000,Beam.getCentre(),FBStr,EdgeStr,
              (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
              portBoltAngOff,SealStr,portSealMat);
-
+  
   // back ring seal
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
   SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 11 -12 ");
@@ -498,7 +502,7 @@ TwinChopper::createObjects(Simulation& System)
 		 (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
 		 motorABoltAngOff,"",0);
     }
-  
+
   // MOTOR:
   // [front/back] of TOP
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex+4000," 7 -17 ");
@@ -527,10 +531,10 @@ TwinChopper::createObjects(Simulation& System)
              motorBBoltAngOff,"",0);
     }
   
+
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
   addOuterSurf(Out);  
-
    
   return;
 }

@@ -161,7 +161,7 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable("testTwinABoltMat","ChipIRSteel");
 
   const std::string kItem=
-    "-("+keyName+"Length+"+keyName+"MainThick)/4.0";
+    "-("+keyName+"Length+"+keyName+"InnerVoid)/4.0";
   Control.addParse<double>(keyName+"IPortAYStep",kItem);
   
   Control.addVariable("testTwinAIPortAWidth",viewWidth);  
@@ -180,8 +180,8 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable("testTwinAIPortABoltMat",viewBoltMat);
   
   const std::string lItem=
-    "("+keyName+"Length+"+keyName+"MainThick)/4.0";
-  Control.addParse<double>(keyName+"IPortBYStep",kItem);
+    "("+keyName+"Length+"+keyName+"InnerVoid)/4.0";
+  Control.addParse<double>(keyName+"IPortBYStep",lItem);
 
   Control.addVariable("testTwinAIPortBWidth",viewWidth);  
   Control.addVariable("testTwinAIPortBHeight",viewHeight);

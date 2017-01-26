@@ -96,6 +96,12 @@ class TwinChopper :
   int motorBSealMat;             ///< Motor Seal material
   int motorBMat;                 ///< Motor material  
 
+  size_t outerRingNBolt;         ///< Outer bolts;
+  size_t outerLineNBolt;         ///< Outer bolts;
+  double outerBoltStep;          ///< Bolt step
+  double outerBoltRadius;        ///< Bolt radius
+  int outerBoltMat;              ///< Outer Bolt material
+  
   int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
 

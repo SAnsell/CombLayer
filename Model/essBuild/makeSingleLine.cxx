@@ -163,8 +163,6 @@ makeSingleLine::build(Simulation& System,
   beamName=IParam.getValueError<std::string>
     ("beamlines",0,0,"Single beamline not defined");
   
-
-
   if (beamName=="MAGIC")
     {
       MAGIC magicBL("magic");
