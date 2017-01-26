@@ -103,6 +103,7 @@ PBW::PBW(const PBW& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   plugNSegments(A.plugNSegments),
+  plugSegmentLength(A.plugSegmentLength),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -127,6 +128,7 @@ PBW::operator=(const PBW& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       plugNSegments=A.plugNSegments;
+      plugSegmentLength=A.plugSegmentLength;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -166,7 +168,7 @@ PBW::populate(const FuncDataBase& Control)
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   plugNSegments=Control.EvalVar<int>(keyName+"PlugNSegments");
-  
+
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
