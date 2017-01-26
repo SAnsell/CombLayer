@@ -566,18 +566,18 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   // cone top
   Out=ModelSupport::getComposite(SMap,surfIndex, " -131 -137 138 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,graphiteMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " 131 -112 -137 ");// : -131 -137 138");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,graphiteMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -112 -107 -127 137 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,graphiteMat,0.0,Out));
   // steel inside vac pipe cone and lid 2
   Out=ModelSupport::getComposite(SMap,surfIndex," 112 -102 -107 -127 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,graphiteMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 101 -102 -107 127  122 (147:-141) (148:-141)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,graphiteMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cuMat,0.0,Out));
 
   //water pipes
   Out=ModelSupport::getComposite(SMap,surfIndex," 141 -102 -147");
