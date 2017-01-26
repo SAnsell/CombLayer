@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/PBW.cxx
  *
  * Copyright (c) 2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -97,11 +97,12 @@ PBW::PBW(const std::string& Key)  :
   */
 {}
 
-PBW::PBW(const PBW& A) : 
+PBW::PBW(const PBW& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
+  plugNSegments(A.plugNSegments),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -125,6 +126,7 @@ PBW::operator=(const PBW& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
+      plugNSegments=A.plugNSegments;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -144,8 +146,8 @@ PBW::clone() const
 {
     return new PBW(*this);
 }
-  
-PBW::~PBW() 
+
+PBW::~PBW()
   /*!
     Destructor
   */
@@ -163,6 +165,8 @@ PBW::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
+  plugNSegments=Control.EvalVar<int>(keyName+"PlugNSegments");
+  
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -173,7 +177,7 @@ PBW::populate(const FuncDataBase& Control)
 
   return;
 }
-  
+
 void
 PBW::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
@@ -189,7 +193,7 @@ PBW::createUnitVector(const attachSystem::FixedComp& FC)
 
   return;
 }
-  
+
 void
 PBW::createSurfaces()
   /*!
@@ -209,7 +213,7 @@ PBW::createSurfaces()
 
   return;
 }
-  
+
 void
 PBW::createObjects(Simulation& System)
   /*!
@@ -228,7 +232,7 @@ PBW::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 PBW::createLinks()
   /*!
@@ -239,13 +243,13 @@ PBW::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 PBW::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,const long int& lp)
@@ -263,7 +267,7 @@ PBW::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System);
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

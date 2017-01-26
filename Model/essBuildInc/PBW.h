@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/PBW.h
  *
  * Copyright (c) 2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_PBW_h
@@ -45,6 +45,8 @@ class PBW : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
+  int plugNSegments; ///< Number of segments in the vessel
+
   double length;                ///< Total length including void
   double width;                 ///< Width
   double height;                ///< height
@@ -52,16 +54,16 @@ class PBW : public attachSystem::ContainedComp,
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-  
+
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
 
-  
+
  public:
 
   PBW(const std::string&);
@@ -69,7 +71,7 @@ class PBW : public attachSystem::ContainedComp,
   PBW& operator=(const PBW&);
   virtual PBW* clone() const;
   virtual ~PBW();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int&);
 
 };
@@ -77,5 +79,5 @@ class PBW : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 

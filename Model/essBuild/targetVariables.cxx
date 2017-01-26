@@ -384,6 +384,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWMainMat",0);
   Control.addVariable("ProtonTubePBWWallMat",0);
   Control.addVariable("ProtonTubePBWYStep",375+67.2); // Y=-375
+  Control.addVariable("ProtonTubePBWPlugNSegments",5);
   
   return;
 }
