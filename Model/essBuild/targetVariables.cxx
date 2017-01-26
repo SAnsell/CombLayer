@@ -384,17 +384,18 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWMainMat",0);
   Control.addVariable("ProtonTubePBWWallMat",0);
   Control.addVariable("ProtonTubePBWYStep",375+67.2); // Y=-375
-  Control.addVariable("ProtonTubePBWPlugNSegments",5);
-  Control.addVariable("ProtonTubePBWPlugSegmentLength1",21.5); // void
-  Control.addVariable("ProtonTubePBWPlugSegmentLength2",40.0); // m650
-  Control.addVariable("ProtonTubePBWPlugSegmentLength3",152.5); // m2634, cell 10008
-  Control.addVariable("ProtonTubePBWPlugSegmentLength4",98.5); // m2634, c10007
-  Control.addVariable("ProtonTubePBWPlugSegmentLength5",50.0); // m2634, c10006
-  Control.addVariable("ProtonTubePBWPlugSegmentRadius1",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWPlugSegmentRadius2",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWPlugSegmentRadius3",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWPlugSegmentRadius4",73.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWPlugSegmentRadius5",63.0/2.0); // ESS-0066872.1 page 7
+  
+  Control.addVariable("ProtonTubePBWShieldNSegments",5);
+  Control.addVariable("ProtonTubePBWShieldSegmentLength1",21.5); // void
+  Control.addVariable("ProtonTubePBWShieldSegmentLength2",40.0); // m650
+  Control.addVariable("ProtonTubePBWShieldSegmentLength3",152.5); // m2634, cell 10008
+  Control.addVariable("ProtonTubePBWShieldSegmentLength4",98.5); // m2634, c10007
+  Control.addVariable("ProtonTubePBWShieldSegmentLength5",50.0); // m2634, c10006
+  Control.addVariable("ProtonTubePBWShieldSegmentRadius1",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldSegmentRadius2",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldSegmentRadius3",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldSegmentRadius4",73.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldSegmentRadius5",63.0/2.0); // ESS-0066872.1 page 7
   
   return;
 }

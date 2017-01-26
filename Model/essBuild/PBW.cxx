@@ -102,9 +102,9 @@ PBW::PBW(const PBW& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  plugNSegments(A.plugNSegments),
-  plugSegmentLength(A.plugSegmentLength),
-  plugSegmentRad(A.plugSegmentRad),
+  shieldNSegments(A.shieldNSegments),
+  shieldSegmentLength(A.shieldSegmentLength),
+  shieldSegmentRad(A.shieldSegmentRad),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -128,9 +128,9 @@ PBW::operator=(const PBW& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      plugNSegments=A.plugNSegments;
-      plugSegmentLength=A.plugSegmentLength;
-      plugSegmentRad=A.plugSegmentRad;
+      shieldNSegments=A.shieldNSegments;
+      shieldSegmentLength=A.shieldSegmentLength;
+      shieldSegmentRad=A.shieldSegmentRad;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -169,7 +169,7 @@ PBW::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  plugNSegments=Control.EvalVar<int>(keyName+"PlugNSegments");
+  shieldNSegments=Control.EvalVar<size_t>(keyName+"ShieldNSegments");
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -180,12 +180,12 @@ PBW::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   double l,r;
-  for (size_t i=0; i<plugNSegments; i++)
+  for (size_t i=0; i<shieldNSegments; i++)
     {
-      l = Control.EvalVar<double>(keyName+"PlugSegmentLength"+std::to_string(i+1));
-      plugSegmentLength.push_back(l);
-      r = Control.EvalVar<double>(keyName+"PlugSegmentRadius"+std::to_string(i+1));
-      plugSegmentLength.push_back(r);
+      l = Control.EvalVar<double>(keyName+"ShieldSegmentLength"+std::to_string(i+1));
+      shieldSegmentLength.push_back(l);
+      r = Control.EvalVar<double>(keyName+"ShieldSegmentRadius"+std::to_string(i+1));
+      shieldSegmentLength.push_back(r);
     }
 
   return;
