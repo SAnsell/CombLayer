@@ -50,7 +50,8 @@ class PBW : public attachSystem::ContainedComp,
   std::vector<double> shieldSegmentRad; ///< shield segment radii
 
   double plugLength;                ///< plug Length (+- y)
-  double plugWidth;                 ///< Width (+- x)
+  double plugWidth1;                 ///< Width1 (+- x at ymin)
+  double plugWidth2; ///< plug width2 (+-x at ymax)
   double plugHeight;                ///< height
   double plugDepth; ///< plug depth (-z)
 

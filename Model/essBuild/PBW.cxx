@@ -105,7 +105,9 @@ PBW::PBW(const PBW& A) :
   shieldNSegments(A.shieldNSegments),
   shieldSegmentLength(A.shieldSegmentLength),
   shieldSegmentRad(A.shieldSegmentRad),
-  plugLength(A.plugLength),plugWidth(A.plugWidth),plugHeight(A.plugHeight),
+  plugLength(A.plugLength),plugWidth1(A.plugWidth1),
+  plugWidth2(A.plugWidth2),
+  plugHeight(A.plugHeight),
   plugDepth(A.plugDepth),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -133,7 +135,8 @@ PBW::operator=(const PBW& A)
       shieldSegmentLength=A.shieldSegmentLength;
       shieldSegmentRad=A.shieldSegmentRad;
       plugLength=A.plugLength;
-      plugWidth=A.plugWidth;
+      plugWidth1=A.plugWidth1;
+      plugWidth2=A.plugWidth2;
       plugHeight=A.plugHeight;
       plugDepth=A.plugDepth;
       wallThick=A.wallThick;
@@ -174,7 +177,8 @@ PBW::populate(const FuncDataBase& Control)
   shieldNSegments=Control.EvalVar<size_t>(keyName+"ShieldNSegments");
 
   plugLength=Control.EvalVar<double>(keyName+"PlugLength");
-  plugWidth=Control.EvalVar<double>(keyName+"PlugWidth");
+  plugWidth1=Control.EvalVar<double>(keyName+"PlugWidth1");
+  plugWidth2=Control.EvalVar<double>(keyName+"PlugWidth2");
   plugHeight=Control.EvalVar<double>(keyName+"PlugHeight");
   plugDepth=Control.EvalVar<double>(keyName+"PlugDepth");
   wallThick=1;//Control.EvalVar<double>(keyName+"WallThick");
@@ -221,9 +225,15 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(plugLength/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(plugLength/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(plugWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(plugWidth/2.0),X);
+  const double alpha = atan((plugWidth1-plugWidth2)/2.0/plugLength)*180/M_PI;
 
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,
+				  Origin-X*(plugWidth1/2.0)+Y*(plugLength/2.0),
+				  X,Z,alpha);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,
+				  Origin+X*(plugWidth1/2.0)+Y*(plugLength/2.0),
+				  X,Z,-alpha);
+  
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
 
