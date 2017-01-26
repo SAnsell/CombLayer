@@ -104,6 +104,7 @@ PBW::PBW(const PBW& A) :
   engActive(A.engActive),
   plugNSegments(A.plugNSegments),
   plugSegmentLength(A.plugSegmentLength),
+  plugSegmentRad(A.plugSegmentRad),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -129,6 +130,7 @@ PBW::operator=(const PBW& A)
       engActive=A.engActive;
       plugNSegments=A.plugNSegments;
       plugSegmentLength=A.plugSegmentLength;
+      plugSegmentRad=A.plugSegmentRad;
       length=A.length;
       width=A.width;
       height=A.height;

@@ -390,6 +390,11 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWPlugSegmentLength3",152.5); // m2634, cell 10008
   Control.addVariable("ProtonTubePBWPlugSegmentLength4",98.5); // m2634, c10007
   Control.addVariable("ProtonTubePBWPlugSegmentLength5",50.0); // m2634, c10006
+  Control.addVariable("ProtonTubePBWPlugSegmentRad1",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWPlugSegmentRad2",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWPlugSegmentRad3",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWPlugSegmentRad4",73.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWPlugSegmentRad5",63.0/2.0); // ESS-0066872.1 page 7
   
   return;
 }

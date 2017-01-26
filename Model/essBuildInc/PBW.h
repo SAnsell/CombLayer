@@ -47,6 +47,7 @@ class PBW : public attachSystem::ContainedComp,
 
   int plugNSegments; ///< Number of segments in the vessel
   std::vector<double> plugSegmentLength; ///< plug segment lengths
+  std::vector<double> plugSegmentRad; ///< plug segment radii
 
   double length;                ///< Total length including void
   double width;                 ///< Width
