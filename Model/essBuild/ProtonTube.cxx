@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/ProtonTube.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -24,7 +24,7 @@
 #include <iostream>
 #include <sstream>
 #include <cmath>
-#include <complex> 
+#include <complex>
 #include <list>
 #include <vector>
 #include <set>
@@ -74,6 +74,7 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
+//#include "PBW.h"
 #include "ProtonTube.h"
 
 namespace essSystem
@@ -88,10 +89,11 @@ ProtonTube::ProtonTube(const std::string& Key) :
   */
 {}
 
-ProtonTube::ProtonTube(const ProtonTube& A) : 
+ProtonTube::ProtonTube(const ProtonTube& A) :
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  ptIndex(A.ptIndex),cellIndex(A.cellIndex),
+  engActive(A.engActive),
+  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),nSec(A.nSec),radius(A.radius),
   length(A.length),zCut(A.zCut),thick(A.thick),
   inMat(A.inMat),wallMat(A.wallMat)
@@ -114,6 +116,7 @@ ProtonTube::operator=(const ProtonTube& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
+      engActive=A.engActive;
       xStep=A.xStep;
       yStep=A.yStep;
       zStep=A.zStep;
@@ -146,32 +149,33 @@ ProtonTube::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("ProtonTube","populate");
 
     // Master values
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
   zStep=Control.EvalVar<double>(keyName+"ZStep");
   xyAngle=Control.EvalVar<double>(keyName+"XYangle");
   zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
-  
-  nSec=Control.EvalVar<size_t>(keyName+"NSection");   
+
+  nSec=Control.EvalVar<size_t>(keyName+"NSection");
   double R,L(0.0),C,T;
   int Imat,Wmat;
 
   for(size_t i=0;i<nSec;i++)
     {
      R=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Radius",i+1));   
+	(StrFunc::makeString(keyName+"Radius",i+1));
      L+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Length",i+1));   
+	(StrFunc::makeString(keyName+"Length",i+1));
      C=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Zcut",i+1));   
+	(StrFunc::makeString(keyName+"Zcut",i+1));
      T=Control.EvalVar<double>
-       (StrFunc::makeString(keyName+"WallThick",i+1));     
+       (StrFunc::makeString(keyName+"WallThick",i+1));
      Imat=ModelSupport::EvalMat<int>
-       (Control,StrFunc::makeString(keyName+"InnerMat",i+1));   
+       (Control,StrFunc::makeString(keyName+"InnerMat",i+1));
      Wmat=ModelSupport::EvalMat<int>
-       (Control,StrFunc::makeString(keyName+"WallMat",i+1));   
-     
+       (Control,StrFunc::makeString(keyName+"WallMat",i+1));
+
       radius.push_back(R);
       length.push_back(L);
       zCut.push_back(C);
@@ -209,27 +213,27 @@ ProtonTube::createSurfaces()
   */
 {
   ELog::RegMethod RegA("ProtonTube","createSurfaces");
- 
+
 
   int PT(ptIndex);
   for(size_t i=0;i<nSec;i++)
     {
-     ModelSupport::buildCylinder(SMap,PT+7,Origin,Y,radius[i]);  
-     ModelSupport::buildCylinder(SMap,PT+17,Origin,Y,radius[i]+thick[i]); 
+     ModelSupport::buildCylinder(SMap,PT+7,Origin,Y,radius[i]);
+     ModelSupport::buildCylinder(SMap,PT+17,Origin,Y,radius[i]+thick[i]);
 
-     ModelSupport::buildPlane(SMap,PT+2,Origin+Y*length[i],Y);  
+     ModelSupport::buildPlane(SMap,PT+2,Origin+Y*length[i],Y);
      if (zCut[i]>0.0)
        {
 	 ModelSupport::buildPlane(SMap,PT+5,Origin-Z*(radius[i]-zCut[i]),Z);
-	 ModelSupport::buildPlane(SMap,PT+6,Origin+Z*(radius[i]-zCut[i]),Z);  
+	 ModelSupport::buildPlane(SMap,PT+6,Origin+Z*(radius[i]-zCut[i]),Z);
        }
      PT+=100;
     }
-  return; 
+  return;
 }
 
 void
-ProtonTube::createObjects(Simulation& System, 
+ProtonTube::createObjects(Simulation& System,
 			  const std::string& TargetSurfBoundary,
 			  const std::string& outerSurfBoundary)
   /*!
@@ -251,7 +255,7 @@ ProtonTube::createObjects(Simulation& System,
 	ModelSupport::getComposite(SMap,PT-100, " 2 ");
       EndCap=(i+1 == nSec) ? outerSurfBoundary :
 	ModelSupport::getComposite(SMap,PT, " -2 ");
-      
+
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,
 				       Out+FrontCap+EndCap));
@@ -278,9 +282,9 @@ ProtonTube::createLinks()
   /*!
     Creates a full attachment set
   */
-{ 
+{
   ELog::RegMethod RegA("ProtonTube","createLinks");
-  
+
   FixedComp::setNConnect(nSec+2);
   int PT(ptIndex);
   for(size_t i=0;i<nSec;i++)
@@ -288,7 +292,7 @@ ProtonTube::createLinks()
       FixedComp::setConnect(i+2,Origin+Y*length[i]/2.0,-X);
       FixedComp::setLinkSurf(i+2,-SMap.realSurf(PT+7));
       PT+=100;
-    } 
+    }
   return;
 }
 
@@ -314,17 +318,17 @@ ProtonTube::createAll(Simulation& System,
   createUnitVector(TargetFC,tIndex);
   createSurfaces();
   std::string TSurf,BSurf;
-  
+
   if (tIndex)
     {
-      TSurf=(tIndex>0) ? 
-	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) : 
+      TSurf=(tIndex>0) ?
+	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) :
 	TargetFC.getBridgeComplement(static_cast<size_t>(-(tIndex+1)));
       if (tIndex<0)
 	FixedComp::setLinkComponent(0,TargetFC,
 				    static_cast<size_t>(-(tIndex-1)));
       else
-	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));	
+	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));
     }
   if (bIndex)
     {
@@ -340,7 +344,7 @@ ProtonTube::createAll(Simulation& System,
     }
   createObjects(System,TSurf,BSurf);
   createLinks();
-  insertObjects(System); 
+  insertObjects(System);
   return;
 }
 
