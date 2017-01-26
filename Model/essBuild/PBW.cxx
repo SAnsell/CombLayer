@@ -110,6 +110,10 @@ PBW::PBW(const PBW& A) :
   plugHeight(A.plugHeight),
   plugDepth(A.plugDepth),
   plugMat(A.plugMat),
+  plugVoidLength(A.plugVoidLength),
+  plugVoidWidth(A.plugVoidWidth),
+  plugVoidDepth(A.plugVoidDepth),
+  plugVoidHeight(A.plugVoidHeight),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -141,6 +145,10 @@ PBW::operator=(const PBW& A)
       plugHeight=A.plugHeight;
       plugDepth=A.plugDepth;
       plugMat=A.plugMat;
+      plugVoidLength=A.plugVoidLength;
+      plugVoidWidth=A.plugVoidWidth;
+      plugVoidDepth=A.plugVoidDepth;
+      plugVoidHeight=A.plugVoidHeight;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -184,6 +192,10 @@ PBW::populate(const FuncDataBase& Control)
   plugHeight=Control.EvalVar<double>(keyName+"PlugHeight");
   plugDepth=Control.EvalVar<double>(keyName+"PlugDepth");
   plugMat=ModelSupport::EvalMat<int>(Control,keyName+"PlugMat");
+  plugVoidLength=Control.EvalVar<double>(keyName+"PlugVoidLength");
+  plugVoidWidth=Control.EvalVar<double>(keyName+"PlugVoidWidth");
+  plugVoidDepth=Control.EvalVar<double>(keyName+"PlugVoidDepth");
+  plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
   wallThick=1;//Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
