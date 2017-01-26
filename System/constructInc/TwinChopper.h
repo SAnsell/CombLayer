@@ -61,7 +61,6 @@ class TwinChopper :
   double innerTopStep;          ///< Step of the top disk
   double innerLowStep;          ///< Step of the lower disk 
   double innerVoid;             ///< main inner thickness
-
   
   double portRadius;           ///< Port radius
   double portOuter;            ///< Port flange [outer radius

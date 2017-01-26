@@ -99,12 +99,12 @@ TESTBEAMvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"testBeamFA",350.0,7.6,4.02,5.0,7.6250);
 
   Control.addVariable("testTwinAStepHeight",87.4); 
-  Control.addVariable("testTwinALength",30.0);
+  Control.addVariable("testTwinALength",30.0);       //k
   Control.addVariable("testTwinAMainRadius",41.0);
   Control.addVariable("testTwinAInnerRadius",36.0);
   Control.addVariable("testTwinAInnerTopStep",25.0);
   Control.addVariable("testTwinAInnerLowStep",25.0);
-  Control.addVariable("testTwinAInnerVoid",18.0);
+  Control.addVariable("testTwinAInnerVoid",18.0);    //k
 
   Control.addVariable("testTwinAPortRadius",10.0); // [5691.2]
   Control.addVariable("testTwinAPortOuter",12.65); // [5691.2]
