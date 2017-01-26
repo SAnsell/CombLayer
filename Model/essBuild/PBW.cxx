@@ -179,6 +179,15 @@ PBW::populate(const FuncDataBase& Control)
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
+  double l,r;
+  for (size_t i=0; i<plugNSegments; i++)
+    {
+      l = Control.EvalVar<double>(keyName+"PlugSegmentLength"+std::to_string(i+1));
+      plugSegmentLength.push_back(l);
+      r = Control.EvalVar<double>(keyName+"PlugSegmentRadius"+std::to_string(i+1));
+      plugSegmentLength.push_back(r);
+    }
+
   return;
 }
 
