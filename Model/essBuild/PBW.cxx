@@ -237,6 +237,7 @@ PBW::createSurfaces()
 {
   ELog::RegMethod RegA("PBW","createSurfaces");
 
+  // plug
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(plugLength/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(plugLength/2.0),Y);
 
@@ -252,6 +253,14 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
 
+  // plug void
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(plugVoidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(plugVoidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(plugVoidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(plugVoidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(plugVoidDepth),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(plugVoidHeight),Z);
+
   return;
 }
 
@@ -265,9 +274,14 @@ PBW::createObjects(Simulation& System)
   ELog::RegMethod RegA("PBW","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;
