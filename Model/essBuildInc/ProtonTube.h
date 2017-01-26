@@ -56,8 +56,10 @@ class ProtonTube : public attachSystem::ContainedGroup,
   ProtonTube& operator=(const ProtonTube&);
   virtual ~ProtonTube();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&);
 
 };
 

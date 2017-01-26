@@ -74,6 +74,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "AttachSupport.h"
 
 #include "PBW.h"
 #include "ProtonTube.h"
@@ -309,10 +310,9 @@ ProtonTube::createLinks()
 
 void
 ProtonTube::createAll(Simulation& System,
-		      const attachSystem::FixedComp& TargetFC,
-		      const long int tIndex,
-		      const attachSystem::FixedComp& BulkFC,
-		      const long int bIndex)
+		      const attachSystem::FixedComp& TargetFC,const long int tIndex,
+		      const attachSystem::FixedComp& BulkFC,const long int bIndex,
+		      const attachSystem::FixedComp& SB)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -320,6 +320,7 @@ ProtonTube::createAll(Simulation& System,
     \param tIndex :: Target plate surface [signed]
     \param BulkFC :: FixedComp for origin and target outer surf
     \param bIndex :: Target plate surface [signed]
+    \param SB :: FixedComp for Monolith Shielding (shutter bay object)
   */
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
@@ -358,7 +359,13 @@ ProtonTube::createAll(Simulation& System,
   insertObjects(System);
 
   if (engActive)
+    {
     pbw->createAll(System, *this, 0);
+    //    attachSystem::addToInsertForced(System,SB,*pbw); // works
+    attachSystem::addToInsertSurfCtrl(System,SB,*pbw); // works
+    attachSystem::addToInsertSurfCtrl(System,*pbw, this->getCC("Full"));
+
+    }
   
   return;
 }
