@@ -52,6 +52,7 @@ class PBW : public attachSystem::ContainedComp,
   double plugLength;                ///< plug Length (+- y)
   double plugWidth;                 ///< Width (+- x)
   double plugHeight;                ///< height
+  double plugDepth; ///< plug depth (-z)
 
   double wallThick;             ///< Thickness of wall
 

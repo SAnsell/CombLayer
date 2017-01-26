@@ -106,6 +106,7 @@ PBW::PBW(const PBW& A) :
   shieldSegmentLength(A.shieldSegmentLength),
   shieldSegmentRad(A.shieldSegmentRad),
   plugLength(A.plugLength),plugWidth(A.plugWidth),plugHeight(A.plugHeight),
+  plugDepth(A.plugDepth),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -134,6 +135,7 @@ PBW::operator=(const PBW& A)
       plugLength=A.plugLength;
       plugWidth=A.plugWidth;
       plugHeight=A.plugHeight;
+      plugDepth=A.plugDepth;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -174,6 +176,7 @@ PBW::populate(const FuncDataBase& Control)
   plugLength=Control.EvalVar<double>(keyName+"PlugLength");
   plugWidth=Control.EvalVar<double>(keyName+"PlugWidth");
   plugHeight=Control.EvalVar<double>(keyName+"PlugHeight");
+  plugDepth=Control.EvalVar<double>(keyName+"PlugDepth");
   wallThick=1;//Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -221,8 +224,8 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(plugWidth/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(plugWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
 
   return;
 }
