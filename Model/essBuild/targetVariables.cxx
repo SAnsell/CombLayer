@@ -375,8 +375,16 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("BeamMonitorBoxTubeAlMat","Aluminium");
   Control.addVariable("BeamMonitorBoxExtHeMat","helium");
 
-
   Control.addVariable("ProtonBeamViewRadius",4.0);
+
+  // Proton beam window
+  Control.addVariable("ProtonTubePBWLength",10.0);
+  Control.addVariable("ProtonTubePBWWidth",10.0);
+  Control.addVariable("ProtonTubePBWHeight",10.0);
+  Control.addVariable("ProtonTubePBWMainMat",0);
+  Control.addVariable("ProtonTubePBWWallMat",0);
+  Control.addVariable("ProtonTubePBWYStep",375+67.2); // Y=-375
+  
   return;
 }
   

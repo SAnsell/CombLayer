@@ -71,10 +71,11 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
-//#include "PBW.h"
+#include "PBW.h"
 #include "ProtonTube.h"
 
 namespace essSystem
@@ -83,11 +84,19 @@ namespace essSystem
 ProtonTube::ProtonTube(const std::string& Key) :
   attachSystem::ContainedGroup(),attachSystem::FixedComp(Key,3),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1)
+  cellIndex(ptIndex+1),
+  pbw(new PBW(Key+"PBW"))
   /*!
     Constructor
   */
-{}
+{
+  ELog::RegMethod RegA("ProtonTube","ProtonTube(const std::string&)");
+  
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  OR.addObject(pbw);
+  
+  return;
+}
 
 ProtonTube::ProtonTube(const ProtonTube& A) :
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
@@ -96,7 +105,8 @@ ProtonTube::ProtonTube(const ProtonTube& A) :
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
   zAngle(A.zAngle),nSec(A.nSec),radius(A.radius),
   length(A.length),zCut(A.zCut),thick(A.thick),
-  inMat(A.inMat),wallMat(A.wallMat)
+  inMat(A.inMat),wallMat(A.wallMat),
+  pbw(A.pbw->clone())
   /*!
     Copy constructor
     \param A :: ProtonTube to copy
@@ -129,6 +139,7 @@ ProtonTube::operator=(const ProtonTube& A)
       thick=A.thick;
       inMat=A.inMat;
       wallMat=A.wallMat;
+      *pbw=*A.pbw;
     }
   return *this;
 }
@@ -345,6 +356,10 @@ ProtonTube::createAll(Simulation& System,
   createObjects(System,TSurf,BSurf);
   createLinks();
   insertObjects(System);
+
+  if (engActive)
+    pbw->createAll(System, *this, 0);
+  
   return;
 }
 

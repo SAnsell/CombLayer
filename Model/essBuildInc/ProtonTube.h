@@ -13,6 +13,7 @@ namespace essSystem
   \date February 2013
   \brief Reflector object
 */
+  class PBW;
 
 class ProtonTube : public attachSystem::ContainedGroup,
     public attachSystem::FixedComp
@@ -36,6 +37,8 @@ class ProtonTube : public attachSystem::ContainedGroup,
   std::vector<double> thick;      ///< Wall thickness
   std::vector<int> inMat;         ///< Inner material
   std::vector<int> wallMat;       ///< wall material
+  
+  std::shared_ptr<PBW> pbw; ///< Proton beam window
 
   // Functions:
 
