@@ -49,9 +49,9 @@ class PBW : public attachSystem::ContainedComp,
   std::vector<double> shieldSegmentLength; ///< shield segment lengths
   std::vector<double> shieldSegmentRad; ///< shield segment radii
 
-  double length;                ///< Total length including void
-  double width;                 ///< Width
-  double height;                ///< height
+  double plugLength;                ///< plug Length (+- y)
+  double plugWidth;                 ///< Width (+- x)
+  double plugHeight;                ///< height
 
   double wallThick;             ///< Thickness of wall
 
