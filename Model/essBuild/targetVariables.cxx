@@ -378,6 +378,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonBeamViewRadius",4.0);
 
   // Proton beam window
+  Control.addVariable("ProtonTubePBWPlugMat","SS316L");
   Control.addVariable("ProtonTubePBWPlugLength",88.0);
   Control.addVariable("ProtonTubePBWPlugWidth1",93.0);
   Control.addVariable("ProtonTubePBWPlugWidth2",76.3);

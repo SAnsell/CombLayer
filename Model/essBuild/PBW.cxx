@@ -109,6 +109,7 @@ PBW::PBW(const PBW& A) :
   plugWidth2(A.plugWidth2),
   plugHeight(A.plugHeight),
   plugDepth(A.plugDepth),
+  plugMat(A.plugMat),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -139,6 +140,7 @@ PBW::operator=(const PBW& A)
       plugWidth2=A.plugWidth2;
       plugHeight=A.plugHeight;
       plugDepth=A.plugDepth;
+      plugMat=A.plugMat;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -181,6 +183,7 @@ PBW::populate(const FuncDataBase& Control)
   plugWidth2=Control.EvalVar<double>(keyName+"PlugWidth2");
   plugHeight=Control.EvalVar<double>(keyName+"PlugHeight");
   plugDepth=Control.EvalVar<double>(keyName+"PlugDepth");
+  plugMat=ModelSupport::EvalMat<int>(Control,keyName+"PlugMat");
   wallThick=1;//Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -233,7 +236,7 @@ PBW::createSurfaces()
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,
 				  Origin+X*(plugWidth1/2.0)+Y*(plugLength/2.0),
 				  X,Z,-alpha);
-  
+
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
 
@@ -251,7 +254,7 @@ PBW::createObjects(Simulation& System)
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   addOuterSurf(Out);
 
