@@ -116,7 +116,7 @@ PBW::PBW(const PBW& A) :
   plugVoidHeight(A.plugVoidHeight),
   flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),
-  wallThick(A.wallThick),
+  protonTubeRad(A.protonTubeRad),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -153,7 +153,7 @@ PBW::operator=(const PBW& A)
       plugVoidHeight=A.plugVoidHeight;
       flangeRadius=A.flangeRadius;
       flangeThick=A.flangeThick;
-      wallThick=A.wallThick;
+      protonTubeRad=A.protonTubeRad;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -202,7 +202,7 @@ PBW::populate(const FuncDataBase& Control)
   plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
-  wallThick=1;//Control.EvalVar<double>(keyName+"WallThick");
+  protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -259,6 +259,9 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
 
+  // proton tube rad
+  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,protonTubeRad);
+
   // plug void
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(plugVoidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(plugVoidLength/2.0),Y);
@@ -290,8 +293,14 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
-				 " 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16)");
+				 " 1 -2 3 -4 5 -6 7 (-11:12:-13:14:-15:16) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+
+  // proton tube void
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -7 12 -2");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -7 1 -11");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   // flange
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 27 -28 ");

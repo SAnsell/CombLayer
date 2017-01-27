@@ -63,7 +63,7 @@ class PBW : public attachSystem::ContainedGroup,
   double flangeRadius; ///< inner flange radius
   double flangeThick; ///< flange thickness
 
-  double wallThick;             ///< Thickness of wall
+  double protonTubeRad;             ///< inner radius of proton tube containing the PBW
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
