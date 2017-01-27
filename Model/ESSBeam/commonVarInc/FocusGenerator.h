@@ -46,8 +46,8 @@ class FocusGenerator
   double substrateThick;   ///< substrate thickness
   double supportThick;     ///< substrate support thickness
   double voidThick;        ///< clearance thickness
-  bool yStepActive;        ///< Y step active
-  bool yBeamActive;        ///< Y beam step active
+  int yStepActive;         ///< Y step active
+  int yBeamActive;         ///< Y beam step active
   double yStep;            ///< Y step
   double yBeam;            ///< Y Beam step
   double zStep;            ///< Z step
@@ -76,6 +76,10 @@ class FocusGenerator
   /// set thickness with support
   void setThickness(const double S,const double Extra,const double V)
   { substrateThick=S;supportThick=Extra,voidThick=V; }
+
+  /// set the y step / beam step relative to the centre of the guide
+  void setYCentreOffset(const double D)
+  { yStep=D; yStepActive=2; yBeam=D; yBeamActive=2; }
 
   /// set the y step / beam step
   void setYOffset(const double D)

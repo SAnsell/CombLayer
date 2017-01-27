@@ -129,13 +129,17 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   Control.addVariable(keyName+"XStep",0.0);       
   if (!yStepActive)
     Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
-  else
+  else if (yStepActive==1)
     Control.addVariable<double>(keyName+"YStep",yStep);
+  else
+    Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
 
   if (!yBeamActive)
     Control.addParse<double>(keyName+"BeamYStep","-"+keyName+"Length/2.0");
-  else
+  else if (yBeamActive==1)
     Control.addVariable<double>(keyName+"BeamYStep",yBeam);
+  else
+    Control.addVariable<double>(keyName+"BeamYStep",yStep-length/2.0);
 
   Control.addVariable(keyName+"ZStep",zStep);       
   Control.addVariable(keyName+"XYAngle",0.0);       

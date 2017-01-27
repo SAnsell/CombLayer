@@ -77,9 +77,9 @@ MIRACLESvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
-  PipeGen.setPipe(12.0,0.5);
+  PipeGen.setPipe(8.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setFlange(-2.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
@@ -95,18 +95,20 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAxisZStep",0.0);   // offset
 
   FGen.setGuideMat("Copper");
+  FGen.setThickness(0.5,0.3);
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"miraclesFA",350.0, 10.0,4.5 ,10.0,11.5);
   
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"miraclesPipeB",2.0,46.0);
+  PipeGen.generatePipe(Control,"miraclesPipeB",8.0,44.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"miraclesFB",44.0, 4.5,4.0, 11.5,12.0);
+  FGen.generateTaper(Control,"miraclesFB",42.0, 4.5,4.0, 11.5,12.0);
 
   // Pipe to collimator:
-  PipeGen.generatePipe(Control,"miraclesPipeC",2.0,46.0);
-  FGen.generateTaper(Control,"miraclesFC",34.0, 4.5,4.0, 11.5,12.0);
+  PipeGen.generatePipe(Control,"miraclesPipeC",2.0,96.0);
+  FGen.setYCentreOffset(-5.0);
+  FGen.generateTaper(Control,"miraclesFC",84.0, 4.5,4.0, 11.5,12.0);
 
   Control.addVariable("miraclesAppAInnerWidth",4.0);
   Control.addVariable("miraclesAppAInnerHeight",4.0);

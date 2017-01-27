@@ -345,7 +345,7 @@ MIRACLES::build(Simulation& System,
 
   AppA->addInsertCell(VPipeC->getCells("Void"));
   AppA->createAll(System,FocusC->getKey("Guide0"),2);
-
+  return;
   // Fist chopper
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,*AppA,2);
