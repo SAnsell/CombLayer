@@ -393,6 +393,7 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.Parse("ProtonTubeRadius4");
   Control.addVariable("ProtonTubePBWProtonTubeRadius");
+  Control.addVariable("ProtonTubePBWProtonTubeMat", "Helium");
 
   Control.addVariable("ProtonTubePBWFlangeRadius",14.5); // TSV30
   Control.addVariable("ProtonTubePBWFlangeThick",20-14.5); // TSV30
