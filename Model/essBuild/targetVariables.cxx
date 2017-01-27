@@ -391,6 +391,9 @@ EssProtonBeam(FuncDataBase& Control)
   Control.Parse("ProtonTubePBWPlugHeight");
   Control.addVariable("ProtonTubePBWPlugVoidHeight");
 
+  Control.addVariable("ProtonTubePBWFlangeRadius",14.5); // TSV30
+  Control.addVariable("ProtonTubePBWFlangeThick",20-14.5); // TSV30
+
   
   Control.addVariable("ProtonTubePBWMainMat",0);
   Control.addVariable("ProtonTubePBWWallMat",0);

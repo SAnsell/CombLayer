@@ -60,6 +60,9 @@ class PBW : public attachSystem::ContainedGroup,
   double plugVoidDepth; ///< plug void depth
   double plugVoidHeight; ///< plug void height
 
+  double flangeRadius; ///< inner flange radius
+  double flangeThick; ///< flange thickness
+
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material

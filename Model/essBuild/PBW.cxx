@@ -114,6 +114,8 @@ PBW::PBW(const PBW& A) :
   plugVoidWidth(A.plugVoidWidth),
   plugVoidDepth(A.plugVoidDepth),
   plugVoidHeight(A.plugVoidHeight),
+  flangeRadius(A.flangeRadius),
+  flangeThick(A.flangeThick),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -149,6 +151,8 @@ PBW::operator=(const PBW& A)
       plugVoidWidth=A.plugVoidWidth;
       plugVoidDepth=A.plugVoidDepth;
       plugVoidHeight=A.plugVoidHeight;
+      flangeRadius=A.flangeRadius;
+      flangeThick=A.flangeThick;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
@@ -196,6 +200,8 @@ PBW::populate(const FuncDataBase& Control)
   plugVoidWidth=Control.EvalVar<double>(keyName+"PlugVoidWidth");
   plugVoidDepth=Control.EvalVar<double>(keyName+"PlugVoidDepth");
   plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
+  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
   wallThick=1;//Control.EvalVar<double>(keyName+"WallThick");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
@@ -261,6 +267,10 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(plugVoidDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(plugVoidHeight),Z);
 
+  // flange
+  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
+  ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,flangeRadius+flangeThick);
+  
   return;
 }
 
@@ -274,12 +284,22 @@ PBW::createObjects(Simulation& System)
   ELog::RegMethod RegA("PBW","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16");
+
+  // plug
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 1 -2 3 -4 5 -6 (-11:12:-13:14:-15:16)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+
+  // flange
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 27 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -27 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf("Plug", Out);
