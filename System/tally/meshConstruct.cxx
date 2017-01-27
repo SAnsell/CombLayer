@@ -376,8 +376,8 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour)\n"
+	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
 	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
