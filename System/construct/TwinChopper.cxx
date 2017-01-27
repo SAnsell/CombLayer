@@ -161,6 +161,13 @@ TwinChopper::populate(const FuncDataBase& Control)
   motorBSealMat=ModelSupport::EvalMat<int>(Control,keyName+"MotorBSealMat");
   motorBMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorBMat",0);
 
+  
+  outerRingNBolt=Control.EvalVar<size_t>(keyName+"OuterRingNBolt");
+  outerLineNBolt=Control.EvalVar<size_t>(keyName+"OuterLineNBolt");  
+  outerBoltStep=Control.EvalVar<double>(keyName+"OuterBoltStep");
+  outerBoltRadius=Control.EvalVar<double>(keyName+"OuterBoltRadius");
+  outerBoltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorBMat",0);
+  
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
 
   return;
