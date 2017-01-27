@@ -71,8 +71,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "FixedOffset.h"
 #include "surfDBase.h"
@@ -87,7 +87,7 @@ namespace essSystem
 {
 
 PBW::PBW(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("Plug","Shield"),
   attachSystem::FixedOffset(Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
@@ -98,7 +98,7 @@ PBW::PBW(const std::string& Key)  :
 {}
 
 PBW::PBW(const PBW& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
@@ -132,7 +132,7 @@ PBW::operator=(const PBW& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
@@ -282,7 +282,7 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  addOuterSurf(Out);
+  addOuterSurf("Plug", Out);
 
   return;
 }

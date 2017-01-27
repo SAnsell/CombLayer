@@ -35,7 +35,7 @@ namespace essSystem
   \brief Proton beam window
 */
 
-class PBW : public attachSystem::ContainedComp,
+class PBW : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset
 {
  private:

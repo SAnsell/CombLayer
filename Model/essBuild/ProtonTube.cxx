@@ -362,9 +362,10 @@ ProtonTube::createAll(Simulation& System,
     {
     pbw->createAll(System, *this, 0);
     //    attachSystem::addToInsertForced(System,SB,*pbw); // works but slow
-    attachSystem::addToInsertSurfCtrl(System,SB,*pbw); // works
+    attachSystem::addToInsertSurfCtrl(System,SB,pbw->getCC("Plug")); // works
     //    attachSystem::addToInsertSurfCtrl(System,*pbw, this->getCC("Full")); // works but inside out
-    attachSystem::addToInsertForced(System,*this, *pbw); // works but slow
+    //    attachSystem::addToInsertSurfCtrl(System,*this,pbw->getCC("Plug")); // does not work
+    attachSystem::addToInsertForced(System,*this, pbw->getCC("Plug")); // works but slow
     //    attachSystem::addToInsertLineCtrl(System,*this, *pbw); // works but link points needed
 
     }
