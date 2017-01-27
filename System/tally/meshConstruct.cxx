@@ -304,7 +304,8 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: SNS Flux to Dose conversion (mrem/hour)\n"
+	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
 	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
@@ -375,8 +376,8 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: SNS Flux to Dose conversion (uSv/hour)\n"
-              <<"  DOSEPHOTON :: SNS Flux-Dose conversion [photon] (uSv/hour)\n"
+	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
 	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
@@ -398,7 +399,8 @@ meshConstruct::getDoseConversion()
   /*!
     Return the dose string  for a mshtr
     Uses the FTD files values [Flux to Dose conversion].
-    - These values are in uSv/hour from particles/sec
+    - These values are ICRP-116 conversion factors for neutrons
+    in uSv/hour from neutrons/cm2/sec
     \return FTD string
   */
 {
@@ -429,7 +431,8 @@ meshConstruct::getPhotonDoseConversion()
     Return the dose string  for a mshtr
     Uses the FtD files values. This is the H*(10) values which are higher
     than the FtD values!
-    These are in uSv/hour
+    - These values are ICRP-116 conversion factors for photons
+    in uSv/hour from photon/cm2/sec
     \return FCD string
   */
 {
