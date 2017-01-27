@@ -109,6 +109,7 @@ Linac::Linac(const Linac& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
+  depth(A.depth),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   floorThick(A.floorThick),
@@ -142,6 +143,7 @@ Linac::operator=(const Linac& A)
       length=A.length;
       width=A.width;
       height=A.height;
+      depth=A.depth;
       wallThick=A.wallThick;
       roofThick=A.roofThick;
       floorThick=A.floorThick;
@@ -178,6 +180,7 @@ Linac::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
+  depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
@@ -224,8 +227,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
 
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(length/2.0+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length/2.0+wallThick),Y);
@@ -236,8 +239,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidth/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidth/2.0),X);
 
-  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+floorThick),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+roofThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
 
   // Temporary shielding walls
   double tswY(tswOffsetY);

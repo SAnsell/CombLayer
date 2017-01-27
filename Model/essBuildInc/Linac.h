@@ -50,6 +50,7 @@ class Linac : public attachSystem::ContainedComp,
   double length;                ///< Total length including void
   double width;                 ///< Inner width
   double height;                ///< Inner height
+  double depth;                 ///< Inner depth
 
   double wallThick;             ///< Thickness of side walls
   double roofThick; ///< Roof thickness

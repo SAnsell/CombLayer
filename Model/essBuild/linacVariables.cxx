@@ -78,7 +78,8 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacLength",10000.0); // Lali
   Control.addVariable("LinacWidth",600.); // K01-20---6-G01---011
-  Control.addVariable("LinacHeight",350.); // K01-20---6-G01---011
+  Control.addVariable("LinacHeight",200.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
+  Control.addVariable("LinacDepth",150.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacWallThick",50.0); // K01-20---6-G01---011
   Control.addVariable("LinacRoofThick",80.0); // K01-20---6-G01---011
   Control.addVariable("LinacFloorThick",75.0); // K01-20---6-G01---011
