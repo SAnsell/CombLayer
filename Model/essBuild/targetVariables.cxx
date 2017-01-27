@@ -304,27 +304,27 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubeInnerMat1","Helium");  // mat : 2000
   Control.addVariable("ProtonTubeWallMat1","CastIron"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius2",15.0);  // as in TSM141108V2003
+  Control.addVariable("ProtonTubeRadius2",16.0);
   Control.addVariable("ProtonTubeLength2",200.0);
   Control.addVariable("ProtonTubeZcut2",0.0); 
-  Control.addVariable("ProtonTubeWallThick2",1.0);
+  Control.addVariable("ProtonTubeWallThick2",4.0);
   Control.addVariable("ProtonTubeInnerMat2","Helium");  // mat : 2000
-  Control.addVariable("ProtonTubeWallMat2","CastIron"); // mat : 26316
+  Control.addVariable("ProtonTubeWallMat2","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius3",15.0);  // as in TSM141108V2003
+  Control.addVariable("ProtonTubeRadius3",16.0);  // same as in TSV30
   Control.addVariable("ProtonTubeLength3",127.5);
   Control.addVariable("ProtonTubeZcut3",0.0);
-  Control.addVariable("ProtonTubeWallThick3",1.0);
+  Control.addVariable("ProtonTubeWallThick3",4.0);
   Control.addVariable("ProtonTubeInnerMat3","Helium");   // mat : 2000
-  Control.addVariable("ProtonTubeWallMat3","CastIron");  // mat : 26316
+  Control.addVariable("ProtonTubeWallMat3","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius4",15.0); // as in TSM141108V2003
+  Control.addVariable("ProtonTubeRadius4",10.5);  // same as in TSV30
   // Control.addVariable("ProtonTubeLength4",147.5);
   Control.addVariable("ProtonTubeLength4",152.5);
   Control.addVariable("ProtonTubeZcut4",0.0);
-  Control.addVariable("ProtonTubeWallThick4",1.0);
-  Control.addVariable("ProtonTubeInnerMat4","Void");
-  Control.addVariable("ProtonTubeWallMat4","CastIron");  // mat: 26316
+  Control.addVariable("ProtonTubeWallThick4",4.0);
+  Control.addVariable("ProtonTubeInnerMat4","Helium");
+  Control.addVariable("ProtonTubeWallMat4","SS316L");  // differs from TSV30: M2636
 
 
   Control.addVariable("BeamMonitorXStep",0.0);
