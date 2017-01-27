@@ -86,7 +86,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacWallMat","Concrete");
  
   Control.addVariable("LinacAirMat","Air");
-  Control.addVariable("LinacSteelMat","SS316L"); // check it !!!
+  Control.addVariable("LinacSteelMat","Stainless304"); // Lali says, but promised to check
   Control.addVariable("LinacConcreteMat","Concrete"); // check it !!!
   Control.addVariable("LinacAlMat","Aluminium"); // check it !!!
   Control.addVariable("LinacWaterMat","H2O");
