@@ -88,7 +88,7 @@ namespace essSystem
 
 PBW::PBW(const std::string& Key)  :
   attachSystem::ContainedGroup("Plug","Shield"),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,7),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -296,8 +296,23 @@ PBW::createLinks()
 {
   ELog::RegMethod RegA("PBW","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin-Y*(plugLength/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(plugLength/2.0),Y);
+  FixedComp::setLinkSurf(1,-SMap.realSurf(surfIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
+
+  FixedComp::setConnect(3,Origin+X*(plugWidth1/2.0),X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+4));
+
+  FixedComp::setConnect(4,Origin-Z*(plugDepth),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(5,Origin+Z*(plugHeight),Z);
+  FixedComp::setLinkSurf(5,-SMap.realSurf(surfIndex+6));
 
   return;
 }
