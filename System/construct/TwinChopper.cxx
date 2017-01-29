@@ -199,6 +199,9 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   lowCentre=Origin-Z*innerLowStep;
   topCentre=Origin+Z*innerTopStep;
+
+  lowOutCent=Origin-Z*(stepHeight/2.0);
+  topOutCent=Origin+Z*(stepHeight/2.0);
   return;
 }
 
@@ -218,10 +221,14 @@ TwinChopper::createSurfaces()
   ModelSupport::buildPlane(SMap,houseIndex+5,Origin-Z*(stepHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,houseIndex+6,Origin+Z*(stepHeight/2.0),Z);
 
-  ModelSupport::buildCylinder(SMap,houseIndex+7,Origin-Z*(stepHeight/2.0),
-                              Y,mainRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+8,Origin+Z*(stepHeight/2.0),
-                              Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+7,lowOutCent,Y,mainRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+8,topOutCent,Y,mainRadius);
+
+  // Bolt layer
+  ModelSupport::buildCylinder(SMap,houseIndex+27,lowOutCent,Y,
+			      mainRadius-(2.0*outerBoltStep+2*outerBoltRadius));
+  ModelSupport::buildCylinder(SMap,houseIndex+28,topOutCent,Y,
+			      mainRadius-(2.0*outerBoltStep+2*outerBoltRadius));
 
   // Inner space
   ModelSupport::buildPlane(SMap,houseIndex+11,Origin-Y*(innerVoid/2.0),Y);
@@ -230,6 +237,8 @@ TwinChopper::createSurfaces()
   ModelSupport::buildCylinder(SMap,houseIndex+17,lowCentre,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,houseIndex+18,topCentre,Y,innerRadius);
 
+
+  
   // MOTORS [3000/4000]
   ModelSupport::buildCylinder(SMap,houseIndex+3007,lowCentre,Y,motorARadius);
   ModelSupport::buildCylinder(SMap,houseIndex+3017,lowCentre,Y,motorAOuter);
@@ -262,7 +271,35 @@ TwinChopper::createSurfaces()
       ModelSupport::buildPlane(SMap,houseIndex+2012,
                                Origin+Y*(sealYDist+portSeal/2.0),Y);
     }
+  return;
+  // MAIN OUTER BOLTS AT [5000]
+  int BI(houseIndex+5000);
 
+  double angle(0.0);
+  const double angStep(M_PI/(outerRingNBolt+1));
+  const Geometry::Vec3D RX(X*(mainRadius-outerBoltStep));
+  const Geometry::Vec3D RZ(Z*(mainRadius-outerBoltStep));
+  for(size_t i=0;i<outerRingNBolt;i++)
+    {
+      angle+=angStep;
+      ModelSupport::buildCylinder
+	(SMap,BI+7,lowOutCent-RX*cos(angle)-RZ*sin(angle),Y,outerBoltRadius);
+      ModelSupport::buildCylinder
+	(SMap,BI+8,topOutCent-RX*cos(angle)+RZ*sin(angle),Y,outerBoltRadius);
+      BI+=10;
+    }
+  // MAIN Line bolts
+  BI=houseIndex+6000;
+  Geometry::Vec3D zPos(lowOutCent);
+  const Geometry::Vec3D ZStep((topOutCent-lowOutCent)/(outerLineNBolt+1.0));
+  
+  for(size_t i=0;i<outerLineNBolt;i++)
+    {
+      zPos+=ZStep;
+      ModelSupport::buildCylinder(SMap,BI+7,zPos-RX,Y,outerBoltRadius);
+      ModelSupport::buildCylinder(SMap,BI+8,zPos+RX,Y,outerBoltRadius);
+      BI+=10;      
+    }
   return;
 }
 
@@ -281,10 +318,10 @@ TwinChopper::createRing(Simulation& System,const int surfOffset,
     
     \param System :: Simulation
     \param surfOffset :: Start of surface offset
-    \param centre :: Centre of dist
+    \param Centre :: Centre of dist
     \param EdgeStr :: Edges of ring/area
     \param FBStr :: Front/Back plates
-    \param BRad :: Bolt Rad
+    \param BRad :: Radius of bolt from Centre
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
     \param angOff :: angle offset
@@ -394,6 +431,87 @@ TwinChopper::motorBackExclude() const
   return Out;
 }
 
+
+void
+TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
+			      const Geometry::Vec3D& Centre,
+			      const std::string& FBStr,
+			      const std::string& EdgeStr,
+			      const double BRadius,const size_t NBolts,
+			      const double radius,const double angOff,
+			      const double arcAngle)
+			      
+  /*!
+    Create the outer bolts
+    \param System :: Simualation to use
+    \param Centre :: Centre of dist
+    \param EdgeStr :: Edges of ring/area
+    \param FBStr :: Front/Back plates
+    \param BRadius :: Radius of bolt from Centre
+    \param NBolts :: Number of bolts
+    \param radius :: radius of bolt
+    \param angOff :: angle offset
+   */
+{
+  ELog::RegMethod RegA("TwinChopper","createOuterBolts");
+
+  ELog::EM<<"Bolt Centre == "<<Centre<<ELog::endDiag;
+  std::string Out;
+  if (outerRingNBolt>1)
+    {
+      const double angleR=arcAngle/static_cast<double>(NBolts);
+      Geometry::Vec3D DPAxis(X);
+      Geometry::Vec3D BAxis(Z*BRadius);
+      const Geometry::Quaternion QStartSeg=
+        Geometry::Quaternion::calcQRotDeg(angOff,Y);
+      const Geometry::Quaternion QHalfSeg=
+        Geometry::Quaternion::calcQRotDeg(angleR/2.0,Y);
+      const Geometry::Quaternion QSeg=
+        Geometry::Quaternion::calcQRotDeg(angleR,Y);
+      
+      // half a segment rotation to start:
+      QStartSeg.rotate(DPAxis);
+      QStartSeg.rotate(BAxis);
+      QHalfSeg.rotate(DPAxis);
+      
+      int boltIndex(surfOffset);
+      for(size_t i=0;i<NBolts;i++)
+        {
+          const Geometry::Vec3D boltC(Centre+BAxis);
+          
+          ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,radius);
+          ModelSupport::buildPlane(SMap,boltIndex+3,Centre,DPAxis);
+          QSeg.rotate(DPAxis);
+          QSeg.rotate(BAxis);
+          boltIndex+=10;
+        }
+      // final axis unit:
+      ModelSupport::buildPlane(SMap,boltIndex+3,Centre,DPAxis);
+      
+      // reset
+      boltIndex=surfOffset;
+      for(size_t i=0;i<NBolts;i++)
+        {
+          Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
+          addCell("OuterBolts",cellIndex-1);
+          
+          Out=ModelSupport::getComposite(SMap,boltIndex," 3 -13 7 ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr+EdgeStr));
+	  addCell("OuterWall",cellIndex-1);
+          boltIndex+=10;
+       }
+    }
+  else
+    {
+      // If here need fron / back angles
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
+      addCell("OuterWall",cellIndex-1);
+    }
+
+  return;
+}
+  
   
 void
 TwinChopper::createObjects(Simulation& System)
@@ -425,33 +543,29 @@ TwinChopper::createObjects(Simulation& System)
   addCell("PortVoid",cellIndex-1);
 
   
-  // Main casing
+  // Main casing [inside bolt layer]
   Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "1 -11 3 -4 (5:-7) (-6:-8) 2017 "+
+                                 "1 -11 3 -4 (5:-27) (-6:-28) 2017 "+
 				 motorFrontExclude());
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "12 -2 3 -4 (5:-7) (-6:-8) 2017 "+
+                                 "12 -2 3 -4 (5:-27) (-6:-28) 2017 "+
 				 motorBackExclude());
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "11 -12 3 -4 (5:-7) (-6:-8) 17 18 ");
+                                 "11 -12 3 -4 (5:-27) (-6:-28) 17 18 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("Case",cellIndex-1);
-
-
 
   
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
   IPA->addInnerCell(getCell("PortVoid",0));
   ELog::EM<<"Inner Cell = "<<getCell("PortVoid",0)<<ELog::endDiag;
   IPA->createAll(System,Beam,0,Out);
-
-
 
     // Add inner system
 
@@ -537,6 +651,14 @@ TwinChopper::createObjects(Simulation& System)
 		 (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
              motorBBoltAngOff,"",0);
     }
+
+  // OUTER RING :
+  // NECESSARY because segment cut
+  EdgeStr=ModelSupport::getComposite(SMap,houseIndex," -7 27 ");  
+  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -2 ");
+  createOuterBolts(System,houseIndex+5000,lowOutCent,FBStr,EdgeStr,
+             mainRadius-outerBoltStep,outerRingNBolt,outerBoltRadius,
+             90.0,180.0);
   
 
   // Outer

@@ -95,13 +95,11 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofNVert",20);
       Control.addVariable(KItem+"BunkerRoofNMedial",1);
       Control.addVariable(KItem+"BunkerRoofNRadial",12);
-      Control.addVariable(KItem+"BunkerRoofNBasicVert",5);
-      
+      Control.addVariable(KItem+"BunkerRoofNBasicVert",5);      
       
       Control.addVariable(KItem+"BunkerNSide",5);
       Control.addVariable(KItem+"BunkerNSideVert",5);
       Control.addVariable(KItem+"BunkerNSideThick",5);
-      
 
       Control.addVariable(KItem+"BunkerFloorDepth",120.0);
       Control.addVariable(KItem+"BunkerRoofHeight",170.0); 
@@ -130,20 +128,20 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofMat0","CarstonConc");
       Control.addVariable(KItem+"BunkerRoofMat1","ChipIRSteel");
       Control.addVariable(KItem+"BunkerRoofMat2","CarstonConc");
-      Control.addVariable(KItem+"BunkerRoofMat3","CastIron");
+      Control.addVariable(KItem+"BunkerRoofMat3","ChipIRSteel");
       Control.addVariable(KItem+"BunkerRoofMat4","CarstonConc");
 
       Control.addVariable(KItem+"BunkerWallMat0","Lead");
       Control.addVariable(KItem+"BunkerWallMat1","CarstonConc");
-      Control.addVariable(KItem+"BunkerWallMat2","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat2","ChipIRSteel");
       Control.addVariable(KItem+"BunkerWallMat3","CarstonConc");
-      Control.addVariable(KItem+"BunkerWallMat4","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat4","ChipIRSteel");
       Control.addVariable(KItem+"BunkerWallMat5","CarstonConc");
-      Control.addVariable(KItem+"BunkerWallMat6","CastIron");
-      Control.addVariable(KItem+"BunkerWallMat7","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat6","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerWallMat7","ChipIRSteel");
       Control.addVariable(KItem+"BunkerWallMat8","CarstonConc");
       Control.addVariable(KItem+"BunkerWallMat9","CarstonConc");
-      Control.addVariable(KItem+"BunkerWallMat10","CastIron");
+      Control.addVariable(KItem+"BunkerWallMat10","ChipIRSteel");
       Control.addVariable(KItem+"BunkerWallMat11","CarstonConc");
       
       Control.addVariable(KItem+"BunkerWallLen1",10.0);

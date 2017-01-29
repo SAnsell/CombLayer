@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,8 @@ createInputs(inputParam& IParam)
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
+  IParam.regDefItem<std::string>("print","printTable",1,
+				 "10 20 40 50 110 120");  
   IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regMulti("R","report",1000,0);

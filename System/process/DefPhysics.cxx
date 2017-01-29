@@ -3,7 +3,7 @@
  
  * File:   process/DefPhysics.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -406,6 +406,8 @@ setDefaultPhysics(Simulation& System,
   PC.setNPS(IParam.getValue<size_t>("nps"));
   PC.setRND(IParam.getValue<long int>("random"));	
   PC.setVoidCard(IParam.flag("void"));
+  // Default:   10 20 40 50 110 120"
+  PC.setPrintNum(IParam.getValue<std::string>("printTable"));
 
   // If Reactor stuff set and void
   if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
@@ -443,7 +445,6 @@ setDefaultPhysics(Simulation& System,
        "<="+StrFunc::makeString(cutMin));
   
   PC.setMode("n p "+PList+elcAdd);
-  PC.setPrintNum("10 20 50 110 120");
   System.processCellsImp();
 
   PC.setCells("imp",1,0);            // Set a zero cell	  

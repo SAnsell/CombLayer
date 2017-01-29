@@ -51,8 +51,11 @@ class TwinChopper :
   int cellIndex;                ///< Cell index  
 
 
-  Geometry::Vec3D lowCentre;      ///< Low centre
-  Geometry::Vec3D topCentre;      ///< Top centre 
+  Geometry::Vec3D lowCentre;      ///< Low centre of disks
+  Geometry::Vec3D topCentre;      ///< Top centre of disks
+
+  Geometry::Vec3D lowOutCent;      ///< Low centre of outer
+  Geometry::Vec3D topOutCent;      ///< Top centre of outer
   
   double stepHeight;            ///< height from chopper rotor centre
   double length;                ///< total thickness
@@ -117,7 +120,14 @@ class TwinChopper :
 
   std::string motorFrontExclude() const;
   std::string motorBackExclude() const;
-  
+
+
+  void createOuterBolts(Simulation&,const int,const Geometry::Vec3D&,
+			const std::string&,const std::string&,
+			const double,const size_t,
+			const double,const double,
+			const double);
+
   void createRing(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::string&,const std::string&,
 		  const double,const size_t,const double,

@@ -3,7 +3,7 @@
  
  * File:   commonVar/TwinGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -221,11 +221,11 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MotorBSealThick",motorSealThick);  
   Control.addVariable(keyName+"MotorBSealMat",motorSealMat);
 
-
+  ELog::EM<<"Ring bolt"<<ELog::endDiag;
   Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);
   Control.addVariable(keyName+"OuterLineNBolt",lineNBolt);
   Control.addVariable(keyName+"OuterBoltStep",outerStep);
-  Control.addVariable(keyName+"OuterBoltStep",outerRadius); 
+  Control.addVariable(keyName+"OuterBoltRadius",outerRadius); 
   Control.addVariable(keyName+"OuterBoltMat",outerBoltMat);
 
   Control.addVariable(keyName+"WallMat","Aluminium");
