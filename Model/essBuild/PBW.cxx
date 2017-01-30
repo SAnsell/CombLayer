@@ -299,6 +299,14 @@ PBW::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+29,Origin,Y,flangeWaterRadiusIn);
   ModelSupport::buildCylinder(SMap,surfIndex+30,Origin,Y,flangeWaterRadiusOut);
 
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+31,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
+				  -flangeWaterOffset);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+32,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+31),
+				  -flangeWaterThick);
+
+
   return;
 }
 
@@ -327,29 +335,26 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " -7 1 -11");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
-  // flange
+  // flange cylinder
   // inner steel
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 27 -29 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 27 -29 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 27 -29 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 27 -29 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
-  // flange - water layer
+  // flange cylinder - inner layer
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 29 -30 ");
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -32 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 32 -31 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 31 -12 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // flange - outer steel
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 30 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 30 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 30 -28 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -27 ");
