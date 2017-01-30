@@ -129,7 +129,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   frontInnerWallHoleRad(A.frontInnerWallHoleRad),
   backInnerWallLength(A.backInnerWallLength),
   backInnerWallGapLength(A.backInnerWallGapLength),
-  sideWallThick(A.sideWallThick),
+  sideInnerWallThick(A.sideInnerWallThick),
 
   floorLength(A.floorLength),
   floorDepth(A.floorDepth),
@@ -205,7 +205,7 @@ BeamDump::operator=(const BeamDump& A)
       frontInnerWallHoleRad=A.frontInnerWallHoleRad;
       backInnerWallLength=A.backInnerWallLength;
       backInnerWallGapLength=A.backInnerWallGapLength;
-      sideWallThick=A.sideWallThick;
+      sideInnerWallThick=A.sideInnerWallThick;
 
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
@@ -292,7 +292,7 @@ BeamDump::populate(const FuncDataBase& Control)
 
   backInnerWallLength=Control.EvalVar<double>(keyName+"BackInnerWallLength");
   backInnerWallGapLength=Control.EvalVar<double>(keyName+"BackInnerWallGapLength");
-  sideWallThick=Control.EvalVar<double>(keyName+"SideWallThick");
+  sideInnerWallThick=Control.EvalVar<double>(keyName+"SideInnerWallThick");
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
@@ -395,8 +395,8 @@ BeamDump::createSurfaces()
 				  roofThick);
 
   // side walls - inner surfaces
-  ModelSupport::buildPlane(SMap,surfIndex+63,Origin-X*sideWallThick,X);
-  ModelSupport::buildPlane(SMap,surfIndex+64,Origin+X*sideWallThick,X);
+  ModelSupport::buildPlane(SMap,surfIndex+63,Origin-X*sideInnerWallThick,X);
+  ModelSupport::buildPlane(SMap,surfIndex+64,Origin+X*sideInnerWallThick,X);
 
   // inner roof
   ModelSupport::buildShiftedPlane(SMap, surfIndex+76,
