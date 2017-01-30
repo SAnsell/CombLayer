@@ -809,6 +809,15 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-2.35);
   MDB.resetMaterial(MObj);
 
+
+  // Copper - natural composition from IAEA table of nuclides
+  MObj.setMaterial(imat++,"Copper",
+		   " 29063.70c 0.6915 "
+		   " 29065.70c 0.3085 ","",MLib);
+  MObj.setDensity(-8.94); // as in the outp file produced by MARS
+  MDB.resetMaterial(MObj);
+
+
   return;
 }
 
