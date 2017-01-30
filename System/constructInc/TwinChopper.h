@@ -126,7 +126,7 @@ class TwinChopper :
 			const std::string&,const std::string&,
 			const double,const size_t,
 			const double,const double,
-			const double);
+			const double,const int,const int);
 
   void createRing(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::string&,const std::string&,

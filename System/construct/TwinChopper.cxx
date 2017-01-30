@@ -226,9 +226,9 @@ TwinChopper::createSurfaces()
 
   // Bolt layer
   ModelSupport::buildCylinder(SMap,houseIndex+27,lowOutCent,Y,
-			      mainRadius-(2.0*outerBoltStep+2*outerBoltRadius));
+			mainRadius-(2.0*outerBoltStep+2.0*outerBoltRadius));
   ModelSupport::buildCylinder(SMap,houseIndex+28,topOutCent,Y,
-			      mainRadius-(2.0*outerBoltStep+2*outerBoltRadius));
+			mainRadius-(2.0*outerBoltStep+2.0*outerBoltRadius));
 
   // Inner space
   ModelSupport::buildPlane(SMap,houseIndex+11,Origin-Y*(innerVoid/2.0),Y);
@@ -236,8 +236,6 @@ TwinChopper::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,houseIndex+17,lowCentre,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,houseIndex+18,topCentre,Y,innerRadius);
-
-
   
   // MOTORS [3000/4000]
   ModelSupport::buildCylinder(SMap,houseIndex+3007,lowCentre,Y,motorARadius);
@@ -439,7 +437,8 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
 			      const std::string& EdgeStr,
 			      const double BRadius,const size_t NBolts,
 			      const double radius,const double angOff,
-			      const double arcAngle)
+			      const double arcAngle,const int startSurf,
+                              const int endSurf)
 			      
   /*!
     Create the outer bolts
@@ -451,11 +450,13 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
     \param angOff :: angle offset
+    \param startSurf :: Start surface [signed]
+    \param endSurf :: end surface [signed]
    */
 {
   ELog::RegMethod RegA("TwinChopper","createOuterBolts");
 
-  ELog::EM<<"Bolt Centre == "<<Centre<<ELog::endDiag;
+
   std::string Out;
   if (outerRingNBolt>1)
     {
@@ -472,22 +473,27 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
       // half a segment rotation to start:
       QStartSeg.rotate(DPAxis);
       QStartSeg.rotate(BAxis);
-      QHalfSeg.rotate(DPAxis);
+      QHalfSeg.rotate(BAxis);
+
       
       int boltIndex(surfOffset);
-      for(size_t i=0;i<NBolts;i++)
+      SMap.addMatch(boltIndex+3,-startSurf);
+      Geometry::Vec3D boltC=Centre+BAxis;
+            
+      ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,radius);
+      boltIndex+=10;
+      for(size_t i=1;i<NBolts;i++)
         {
-          const Geometry::Vec3D boltC(Centre+BAxis);
+          QSeg.rotate(DPAxis);
+          QSeg.rotate(BAxis);
+          boltC=Centre+BAxis;
           
           ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,radius);
           ModelSupport::buildPlane(SMap,boltIndex+3,Centre,DPAxis);
-          QSeg.rotate(DPAxis);
-          QSeg.rotate(BAxis);
           boltIndex+=10;
         }
-      // final axis unit:
-      ModelSupport::buildPlane(SMap,boltIndex+3,Centre,DPAxis);
-      
+      SMap.addMatch(boltIndex+3,endSurf);
+           
       // reset
       boltIndex=surfOffset;
       for(size_t i=0;i<NBolts;i++)
@@ -497,7 +503,8 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
           addCell("OuterBolts",cellIndex-1);
           
           Out=ModelSupport::getComposite(SMap,boltIndex," 3 -13 7 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+FBStr+EdgeStr));
+          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
+                                           Out+FBStr+EdgeStr));
 	  addCell("OuterWall",cellIndex-1);
           boltIndex+=10;
        }
@@ -656,10 +663,19 @@ TwinChopper::createObjects(Simulation& System)
   // NECESSARY because segment cut
   EdgeStr=ModelSupport::getComposite(SMap,houseIndex," -7 27 ");  
   FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -2 ");
+  int divideSurf(SMap.realSurf(houseIndex+5));
   createOuterBolts(System,houseIndex+5000,lowOutCent,FBStr,EdgeStr,
-             mainRadius-outerBoltStep,outerRingNBolt,outerBoltRadius,
-             90.0,180.0);
-  
+                   mainRadius-(outerBoltStep+outerBoltRadius),
+                   outerRingNBolt,outerBoltRadius,
+                   90.0,180.0,divideSurf,divideSurf);
+
+  EdgeStr=ModelSupport::getComposite(SMap,houseIndex," -8 28 ");
+  divideSurf=SMap.realSurf(houseIndex+6);
+  createOuterBolts(System,houseIndex+5500,topOutCent,FBStr,EdgeStr,
+                   mainRadius-(outerBoltStep+outerBoltRadius),
+                   outerRingNBolt,outerBoltRadius,
+                   -90.0,180.0,-divideSurf,-divideSurf);
+
 
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
