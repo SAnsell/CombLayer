@@ -119,7 +119,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpBackInnerWallGapLength",1.0); // measure!
 
   Control.addVariable("LinacBeamDumpSideInnerWallThick", 2*5.0); // doc SPLTDISH0001
-  Control.addVariable("LinacBeamDumpSideWallThick", 0.7*SCALE1); // measured in SPLTDISH0001
+  Control.addVariable("LinacBeamDumpSideWallThick", 10.0); // Measure SPLTDISH0001 is 0.7*SCALE1=10.24 cm, but Lali & I decided to round it to 10 cm.
 
   Control.addVariable("LinacBeamDumpFloorLength",100.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFloorDepth",5*5.0); // doc SPLTDISH0001
