@@ -118,6 +118,8 @@ PBW::PBW(const PBW& A) :
   flangeThick(A.flangeThick),
   flangeWaterRadiusIn(A.flangeWaterRadiusIn),
   flangeWaterRadiusOut(A.flangeWaterRadiusOut),
+  flangeWaterThick(A.flangeWaterThick),
+  flangeWaterOffset(A.flangeWaterOffset),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -158,6 +160,8 @@ PBW::operator=(const PBW& A)
       flangeThick=A.flangeThick;
       flangeWaterRadiusIn=A.flangeWaterRadiusIn;
       flangeWaterRadiusOut=A.flangeWaterRadiusOut;
+      flangeWaterThick=A.flangeWaterThick;
+      flangeWaterOffset=A.flangeWaterOffset;
       protonTubeRad=A.protonTubeRad;
       protonTubeMat=A.protonTubeMat;
       mainMat=A.mainMat;
@@ -210,6 +214,8 @@ PBW::populate(const FuncDataBase& Control)
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
   flangeWaterRadiusIn=Control.EvalVar<double>(keyName+"FlangeWaterRadiusIn");
   flangeWaterRadiusOut=Control.EvalVar<double>(keyName+"FlangeWaterRadiusOut");
+  flangeWaterThick=Control.EvalVar<double>(keyName+"FlangeWaterThick");
+  flangeWaterOffset=Control.EvalVar<double>(keyName+"FlangeWaterOffset");
   protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
   protonTubeMat=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMat");
 
@@ -280,6 +286,13 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(plugVoidHeight),Z);
 
   // flanges
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+21,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
+				  flangeWaterOffset);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+22,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+21),
+				  flangeWaterThick);
+
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,flangeRadius+flangeThick);
 

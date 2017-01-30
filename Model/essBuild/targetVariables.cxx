@@ -399,6 +399,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
   Control.addVariable("ProtonTubePBWFlangeWaterRadiusIn",31.0/2.0); // ESS-0066872.1 page 5
   Control.addVariable("ProtonTubePBWFlangeWaterRadiusOut",42.0/2.0); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterThick",5.4); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterOffset",4.5); // TSV30
 
   
   Control.addVariable("ProtonTubePBWMainMat",0);
