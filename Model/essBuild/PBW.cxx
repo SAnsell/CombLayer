@@ -116,13 +116,13 @@ PBW::PBW(const PBW& A) :
   plugVoidHeight(A.plugVoidHeight),
   flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),
-  flangeWaterRadiusIn(A.flangeWaterRadiusIn),
-  flangeWaterRadiusOut(A.flangeWaterRadiusOut),
-  flangeWaterThick(A.flangeWaterThick),
-  flangeWaterOffset(A.flangeWaterOffset),
+  flangeWaterRingRadiusIn(A.flangeWaterRingRadiusIn),
+  flangeWaterRingRadiusOut(A.flangeWaterRingRadiusOut),
+  flangeWaterRingThick(A.flangeWaterRingThick),
+  flangeWaterRingOffset(A.flangeWaterRingOffset),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  coolingMat(A.coolingMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: PBW to copy
@@ -158,13 +158,13 @@ PBW::operator=(const PBW& A)
       plugVoidHeight=A.plugVoidHeight;
       flangeRadius=A.flangeRadius;
       flangeThick=A.flangeThick;
-      flangeWaterRadiusIn=A.flangeWaterRadiusIn;
-      flangeWaterRadiusOut=A.flangeWaterRadiusOut;
-      flangeWaterThick=A.flangeWaterThick;
-      flangeWaterOffset=A.flangeWaterOffset;
+      flangeWaterRingRadiusIn=A.flangeWaterRingRadiusIn;
+      flangeWaterRingRadiusOut=A.flangeWaterRingRadiusOut;
+      flangeWaterRingThick=A.flangeWaterRingThick;
+      flangeWaterRingOffset=A.flangeWaterRingOffset;
       protonTubeRad=A.protonTubeRad;
       protonTubeMat=A.protonTubeMat;
-      mainMat=A.mainMat;
+      coolingMat=A.coolingMat;
       wallMat=A.wallMat;
     }
   return *this;
@@ -212,14 +212,14 @@ PBW::populate(const FuncDataBase& Control)
   plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
-  flangeWaterRadiusIn=Control.EvalVar<double>(keyName+"FlangeWaterRadiusIn");
-  flangeWaterRadiusOut=Control.EvalVar<double>(keyName+"FlangeWaterRadiusOut");
-  flangeWaterThick=Control.EvalVar<double>(keyName+"FlangeWaterThick");
-  flangeWaterOffset=Control.EvalVar<double>(keyName+"FlangeWaterOffset");
+  flangeWaterRingRadiusIn=Control.EvalVar<double>(keyName+"FlangeWaterRingRadiusIn");
+  flangeWaterRingRadiusOut=Control.EvalVar<double>(keyName+"FlangeWaterRingRadiusOut");
+  flangeWaterRingThick=Control.EvalVar<double>(keyName+"FlangeWaterRingThick");
+  flangeWaterRingOffset=Control.EvalVar<double>(keyName+"FlangeWaterRingOffset");
   protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
   protonTubeMat=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMat");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  coolingMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolingMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   double l,r;
@@ -288,23 +288,23 @@ PBW::createSurfaces()
   // flanges
   ModelSupport::buildShiftedPlane(SMap,surfIndex+21,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
-				  flangeWaterOffset);
+				  flangeWaterRingOffset);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+22,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+21),
-				  flangeWaterThick);
+				  flangeWaterRingThick);
 
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,flangeRadius+flangeThick);
 
-  ModelSupport::buildCylinder(SMap,surfIndex+29,Origin,Y,flangeWaterRadiusIn);
-  ModelSupport::buildCylinder(SMap,surfIndex+30,Origin,Y,flangeWaterRadiusOut);
+  ModelSupport::buildCylinder(SMap,surfIndex+29,Origin,Y,flangeWaterRingRadiusIn);
+  ModelSupport::buildCylinder(SMap,surfIndex+30,Origin,Y,flangeWaterRingRadiusOut);
 
   ModelSupport::buildShiftedPlane(SMap,surfIndex+31,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
-				  -flangeWaterOffset);
+				  -flangeWaterRingOffset);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+32,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+31),
-				  -flangeWaterThick);
+				  -flangeWaterRingThick);
 
 
   return;
@@ -344,12 +344,12 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
   
   Out=ModelSupport::getComposite(SMap,surfIndex," 22 -32 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 32 -31 29 -30 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 31 -12 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 

@@ -62,15 +62,15 @@ class PBW : public attachSystem::ContainedGroup,
 
   double flangeRadius; ///< inner flange radius
   double flangeThick; ///< flange thickness
-  double flangeWaterRadiusIn; ///< inner radius of water cooling if PBW flange
-  double flangeWaterRadiusOut; ///< outer radius of water cooling if PBW flange
-  double flangeWaterThick; ///< thickness of each of the PBW flange water rings
-  double flangeWaterOffset; ///< offset of PBW flange water rings from the side planes
+  double flangeWaterRingRadiusIn; ///< inner radius of water cooling if PBW flange
+  double flangeWaterRingRadiusOut; ///< outer radius of water cooling if PBW flange
+  double flangeWaterRingThick; ///< thickness of each of the PBW flange water rings
+  double flangeWaterRingOffset; ///< offset of PBW flange water rings from the side planes
 
   double protonTubeRad;             ///< inner radius of proton tube containing the PBW
   int protonTubeMat; ///< material inside the proton tube
 
-  int mainMat;                   ///< main material
+  int coolingMat;                   ///< cooling material
   int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);

@@ -397,13 +397,13 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.addVariable("ProtonTubePBWFlangeRadius",29.0/2); // ESS-0066872.1 page 5
   Control.addVariable("ProtonTubePBWFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubePBWFlangeWaterRadiusIn",31.0/2.0); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubePBWFlangeWaterRadiusOut",42.0/2.0); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubePBWFlangeWaterThick",5.4); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubePBWFlangeWaterOffset",4.5); // TSV30
+  Control.addVariable("ProtonTubePBWFlangeWaterRingRadiusIn",31.0/2.0); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingRadiusOut",42.0/2.0); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingThick",5.4); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingOffset",4.5); // TSV30
 
   
-  Control.addVariable("ProtonTubePBWMainMat",0);
+  Control.addVariable("ProtonTubePBWCoolingMat","H2O");
   Control.addVariable("ProtonTubePBWWallMat",0);
   Control.addVariable("ProtonTubePBWYStep",375+67.2-1); // Y=-375
   
