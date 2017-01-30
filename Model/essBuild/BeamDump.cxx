@@ -271,7 +271,7 @@ BeamDump::populate(const FuncDataBase& Control)
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
-  concMat=ModelSupport::EvalMat<int>(Control,baseName+"ConcreteMat");
+  concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
   alMat=ModelSupport::EvalMat<int>(Control,baseName+"AlMat");
   waterMat=ModelSupport::EvalMat<int>(Control,baseName+"WaterMat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
