@@ -116,6 +116,8 @@ PBW::PBW(const PBW& A) :
   plugVoidHeight(A.plugVoidHeight),
   flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),
+  flangeWaterRadiusIn(A.flangeWaterRadiusIn),
+  flangeWaterRadiusOut(A.flangeWaterRadiusOut),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -154,6 +156,8 @@ PBW::operator=(const PBW& A)
       plugVoidHeight=A.plugVoidHeight;
       flangeRadius=A.flangeRadius;
       flangeThick=A.flangeThick;
+      flangeWaterRadiusIn=A.flangeWaterRadiusIn;
+      flangeWaterRadiusOut=A.flangeWaterRadiusOut;
       protonTubeRad=A.protonTubeRad;
       protonTubeMat=A.protonTubeMat;
       mainMat=A.mainMat;
@@ -204,6 +208,8 @@ PBW::populate(const FuncDataBase& Control)
   plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
+  flangeWaterRadiusIn=Control.EvalVar<double>(keyName+"FlangeWaterRadiusIn");
+  flangeWaterRadiusOut=Control.EvalVar<double>(keyName+"FlangeWaterRadiusOut");
   protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
   protonTubeMat=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMat");
 
@@ -277,6 +283,9 @@ PBW::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,flangeRadius+flangeThick);
 
+  ModelSupport::buildCylinder(SMap,surfIndex+29,Origin,Y,flangeWaterRadiusIn);
+  ModelSupport::buildCylinder(SMap,surfIndex+30,Origin,Y,flangeWaterRadiusOut);
+
   return;
 }
 
@@ -306,7 +315,13 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
   // flange
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 27 -28 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 27 -29 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -27 ");
