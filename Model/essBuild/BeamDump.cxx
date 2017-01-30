@@ -130,6 +130,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   backInnerWallLength(A.backInnerWallLength),
   backInnerWallGapLength(A.backInnerWallGapLength),
   sideInnerWallThick(A.sideInnerWallThick),
+  sideWallThick(A.sideWallThick),
 
   floorLength(A.floorLength),
   floorDepth(A.floorDepth),
@@ -206,6 +207,7 @@ BeamDump::operator=(const BeamDump& A)
       backInnerWallLength=A.backInnerWallLength;
       backInnerWallGapLength=A.backInnerWallGapLength;
       sideInnerWallThick=A.sideInnerWallThick;
+      sideWallThick=A.sideWallThick;
 
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
@@ -293,6 +295,7 @@ BeamDump::populate(const FuncDataBase& Control)
   backInnerWallLength=Control.EvalVar<double>(keyName+"BackInnerWallLength");
   backInnerWallGapLength=Control.EvalVar<double>(keyName+"BackInnerWallGapLength");
   sideInnerWallThick=Control.EvalVar<double>(keyName+"SideInnerWallThick");
+  sideWallThick=Control.EvalVar<double>(keyName+"SideWallThick");
 
   floorLength=Control.EvalVar<double>(keyName+"FloorLength");
   floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
@@ -397,6 +400,11 @@ BeamDump::createSurfaces()
   // side walls - inner surfaces
   ModelSupport::buildPlane(SMap,surfIndex+63,Origin-X*sideInnerWallThick,X);
   ModelSupport::buildPlane(SMap,surfIndex+64,Origin+X*sideInnerWallThick,X);
+  // side walls - outer surfaces
+  ModelSupport::buildPlane(SMap,surfIndex+73,
+			   Origin-X*(frontWallWidth/2.0+sideWallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+74,
+			   Origin+X*(frontWallWidth/2.0+sideWallThick),X);
 
   // inner roof
   ModelSupport::buildShiftedPlane(SMap, surfIndex+76,
@@ -540,11 +548,19 @@ BeamDump::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   // side walls
+  //            inner
   Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 3 -63 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -12 64 -4 16 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0.0,Out));
+
+  //            outer
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 51 -42 73 -3 5 -56 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 51 -42 4 -74 5 -56 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
 
   // front inner wall
   Out=ModelSupport::getComposite(SMap,surfIndex, " 2 -82 63 -64 16 -76 87 ");
@@ -608,7 +624,7 @@ BeamDump::createObjects(Simulation& System)
 				 " 82 -91 63 -64 16 -76 (-101:102:117) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 51 -42 3 -4 5 -56 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 51 -42 73 -74 5 -56 ");
   addOuterSurf(Out);
 
   return;
