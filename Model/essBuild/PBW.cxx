@@ -328,13 +328,28 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
   // flange
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 27 -29 ");
+  // inner steel
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 27 -29 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 27 -29 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 27 -29 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 29 -30 ");
+  // flange - water layer
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 30 -28 ");
+  // flange - outer steel
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 30 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 30 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -27 ");
