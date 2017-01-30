@@ -120,6 +120,9 @@ PBW::PBW(const PBW& A) :
   flangeWaterRingRadiusOut(A.flangeWaterRingRadiusOut),
   flangeWaterRingThick(A.flangeWaterRingThick),
   flangeWaterRingOffset(A.flangeWaterRingOffset),
+  flangeNotchDepth(A.flangeNotchDepth),
+  flangeNotchThick(A.flangeNotchThick),
+  flangeNotchOffset(A.flangeNotchOffset),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
   coolingMat(A.coolingMat),wallMat(A.wallMat)
@@ -162,6 +165,9 @@ PBW::operator=(const PBW& A)
       flangeWaterRingRadiusOut=A.flangeWaterRingRadiusOut;
       flangeWaterRingThick=A.flangeWaterRingThick;
       flangeWaterRingOffset=A.flangeWaterRingOffset;
+      flangeNotchDepth=A.flangeNotchDepth;
+      flangeNotchThick=A.flangeNotchThick;
+      flangeNotchOffset=A.flangeNotchOffset;
       protonTubeRad=A.protonTubeRad;
       protonTubeMat=A.protonTubeMat;
       coolingMat=A.coolingMat;
@@ -216,6 +222,9 @@ PBW::populate(const FuncDataBase& Control)
   flangeWaterRingRadiusOut=Control.EvalVar<double>(keyName+"FlangeWaterRingRadiusOut");
   flangeWaterRingThick=Control.EvalVar<double>(keyName+"FlangeWaterRingThick");
   flangeWaterRingOffset=Control.EvalVar<double>(keyName+"FlangeWaterRingOffset");
+  flangeNotchDepth=Control.EvalVar<double>(keyName+"FlangeNotchDepth");
+  flangeNotchThick=Control.EvalVar<double>(keyName+"FlangeNotchThick");
+  flangeNotchOffset=Control.EvalVar<double>(keyName+"FlangeNotchOffset");
   protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
   protonTubeMat=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMat");
 
@@ -286,6 +295,7 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(plugVoidHeight),Z);
 
   // flanges
+  //         water rings
   ModelSupport::buildShiftedPlane(SMap,surfIndex+21,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
 				  flangeWaterRingOffset);
@@ -305,6 +315,16 @@ PBW::createSurfaces()
   ModelSupport::buildShiftedPlane(SMap,surfIndex+32,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+31),
 				  -flangeWaterRingThick);
+
+  //         flange notch
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+41,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
+				  flangeNotchOffset);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+42,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+41),
+				  flangeNotchThick);
+  ModelSupport::buildCylinder(SMap,surfIndex+47,Origin,Y,
+			      flangeRadius+flangeThick-flangeNotchDepth);
 
 
   return;
@@ -345,16 +365,26 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
-  
-  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -32 29 -30 ");
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -41 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 29 -47 ");//
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -32 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+
+  
   Out=ModelSupport::getComposite(SMap,surfIndex," 32 -31 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 31 -12 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // flange - outer steel
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 30 -28 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -41 30 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");//
+  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -27 ");

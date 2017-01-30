@@ -66,6 +66,9 @@ class PBW : public attachSystem::ContainedGroup,
   double flangeWaterRingRadiusOut; ///< outer radius of water cooling if PBW flange
   double flangeWaterRingThick; ///< thickness of each of the PBW flange water rings
   double flangeWaterRingOffset; ///< offset of PBW flange water rings from the side planes
+  double flangeNotchDepth; ///< depth of cuts in the flange cylinder
+  double flangeNotchThick; ///< length of cut in the flange cylinder
+  double flangeNotchOffset; ///< offset of cuts in the flange cylinder from the side planes
 
   double protonTubeRad;             ///< inner radius of proton tube containing the PBW
   int protonTubeMat; ///< material inside the proton tube
