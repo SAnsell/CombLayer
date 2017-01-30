@@ -316,7 +316,7 @@ PBW::createSurfaces()
 				  SMap.realPtr<Geometry::Plane>(surfIndex+31),
 				  -flangeWaterRingThick);
 
-  //         flange notch
+  //         1st flange notch
   ModelSupport::buildShiftedPlane(SMap,surfIndex+41,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+11),
 				  flangeNotchOffset);
@@ -325,6 +325,13 @@ PBW::createSurfaces()
 				  flangeNotchThick);
   ModelSupport::buildCylinder(SMap,surfIndex+47,Origin,Y,
 			      flangeRadius+flangeThick-flangeNotchDepth);
+  //          2nd flange notch
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+61,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+12),
+				  -flangeNotchOffset);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+62,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+61),
+				  -flangeNotchThick);
 
 
   return;
@@ -368,9 +375,14 @@ PBW::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 22 -41 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 29 -47 ");//
+  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 29 -47 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -32 29 -30 ");
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -62 29 -30 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 29 -47 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 61 -32 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   
@@ -382,9 +394,14 @@ PBW::createObjects(Simulation& System)
   // flange - outer steel
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -41 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");//
+  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -12 30 -28 ");
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -62 30 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 47 -28 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 61 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -27 ");
