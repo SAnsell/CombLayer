@@ -395,8 +395,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWProtonTubeRadius");
   Control.addVariable("ProtonTubePBWProtonTubeMat", "Helium");
 
-  Control.addVariable("ProtonTubePBWFlangeRadius",14.5); // TSV30
-  Control.addVariable("ProtonTubePBWFlangeThick",20-14.5); // TSV30
+  Control.addVariable("ProtonTubePBWFlangeRadius",29.0/2); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
 
   
   Control.addVariable("ProtonTubePBWMainMat",0);

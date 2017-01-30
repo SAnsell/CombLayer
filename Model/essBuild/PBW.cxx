@@ -273,7 +273,7 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(plugVoidDepth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(plugVoidHeight),Z);
 
-  // flange
+  // flanges
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,flangeRadius+flangeThick);
 
