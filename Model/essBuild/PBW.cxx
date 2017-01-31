@@ -128,6 +128,11 @@ PBW::PBW(const PBW& A) :
   flangeNotchDepth(A.flangeNotchDepth),
   flangeNotchThick(A.flangeNotchThick),
   flangeNotchOffset(A.flangeNotchOffset),
+  foilThick(A.foilThick),
+  foilRadius(A.foilRadius),
+  foilOffset(A.foilOffset),
+  foilWaterThick(A.foilWaterThick),
+  foilWaterLength(A.foilWaterLength),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
   coolingMat(A.coolingMat),mat(A.mat)
@@ -178,6 +183,11 @@ PBW::operator=(const PBW& A)
       flangeNotchDepth=A.flangeNotchDepth;
       flangeNotchThick=A.flangeNotchThick;
       flangeNotchOffset=A.flangeNotchOffset;
+      foilThick=A.foilThick;
+      foilRadius=A.foilRadius;
+      foilOffset=A.foilOffset;
+      foilWaterThick=A.foilWaterThick;
+      foilWaterLength=A.foilWaterLength;
       protonTubeRad=A.protonTubeRad;
       protonTubeMat=A.protonTubeMat;
       coolingMat=A.coolingMat;
@@ -240,6 +250,11 @@ PBW::populate(const FuncDataBase& Control)
   flangeNotchDepth=Control.EvalVar<double>(keyName+"FlangeNotchDepth");
   flangeNotchThick=Control.EvalVar<double>(keyName+"FlangeNotchThick");
   flangeNotchOffset=Control.EvalVar<double>(keyName+"FlangeNotchOffset");
+  foilThick=Control.EvalVar<double>(keyName+"FoilThick");
+  foilRadius=Control.EvalVar<double>(keyName+"FoilRadius");
+  foilOffset=Control.EvalVar<double>(keyName+"FoilOffset");
+  foilWaterThick=Control.EvalVar<double>(keyName+"FoilWaterThick");
+  foilWaterLength=Control.EvalVar<double>(keyName+"FoilWaterLength");
   protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
   protonTubeMat=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMat");
 

@@ -75,6 +75,12 @@ class PBW : public attachSystem::ContainedGroup,
   double flangeNotchThick; ///< length of cut in the flange cylinder
   double flangeNotchOffset; ///< offset of cuts in the flange cylinder from the side planes
 
+  double foilThick; ///< thickness of PBW foil
+  double foilRadius; ///< smaller radius of PBW foil
+  double foilOffset; ///< distance from the Al side plane and nearest foil plane along the y-axis
+  double foilWaterThick; ///< thickness of water layer inside foil
+  double foilWaterLength; ///< length (along z-axis chorda) of water layer inside foil
+
   double protonTubeRad;             ///< inner radius of proton tube containing the PBW
   int protonTubeMat; ///< material inside the proton tube
 

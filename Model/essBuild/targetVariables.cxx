@@ -417,6 +417,12 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWYStep",375+67.2-1); // Y=-375
   Control.addVariable("ProtonTubePBWXYAngle",180.0);
   
+  Control.addVariable("ProtonTubePBWFoilThick",0.4); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilRadius",8.9); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilOffset",1.0); // ESS-0066872.1 page 3
+  Control.addVariable("ProtonTubePBWFoilWaterThick",2.0); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilWaterLength",9.2); // ESS-0058437.3
+  
   Control.addVariable("ProtonTubePBWShieldNSegments",5);
   Control.addVariable("ProtonTubePBWShieldSegmentLength1",21.5); // void
   Control.addVariable("ProtonTubePBWShieldSegmentLength2",40.0); // m650
