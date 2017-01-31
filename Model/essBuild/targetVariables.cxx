@@ -425,18 +425,34 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWFoilWaterThick",0.2); // ESS-0058437.3
   Control.addVariable("ProtonTubePBWFoilWaterLength",9.2); // ESS-0058437.3
   
-  Control.addVariable("ProtonTubePBWShieldNSegments",5);
-  Control.addVariable("ProtonTubePBWShieldSegmentLength1",21.5); // void
-  Control.addVariable("ProtonTubePBWShieldSegmentLength2",40.0); // m650
-  Control.addVariable("ProtonTubePBWShieldSegmentLength3",152.5); // m2634, cell 10008
-  Control.addVariable("ProtonTubePBWShieldSegmentLength4",98.5); // m2634, c10007
-  Control.addVariable("ProtonTubePBWShieldSegmentLength5",50.0); // m2634, c10006
-  Control.addVariable("ProtonTubePBWShieldSegmentRadius1",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWShieldSegmentRadius2",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWShieldSegmentRadius3",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWShieldSegmentRadius4",73.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubePBWShieldSegmentRadius5",63.0/2.0); // ESS-0066872.1 page 7
-  
+  Control.addVariable("ProtonTubePBWShieldXStep",0);
+  Control.addVariable("ProtonTubePBWShieldYStep",0);
+  Control.addVariable("ProtonTubePBWShieldZStep",0);
+  Control.addVariable("ProtonTubePBWShieldXYangle",0);
+  Control.addVariable("ProtonTubePBWShieldZangle",0);
+
+  Control.addVariable("ProtonTubePBWShieldNSection",5);
+  Control.addVariable("ProtonTubePBWShieldLength1",21.5); // void
+  Control.addVariable("ProtonTubePBWShieldLength2",40.0); // m650
+  Control.addVariable("ProtonTubePBWShieldLength3",152.5); // m2634, cell 10008
+  Control.addVariable("ProtonTubePBWShieldLength4",98.5); // m2634, c10007
+  Control.addVariable("ProtonTubePBWShieldLength5",50.0); // m2634, c10006
+  Control.addVariable("ProtonTubePBWShieldLength6",50.0); // !!! remove me
+  Control.addVariable("ProtonTubePBWShieldRadius1",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius2",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius3",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius4",73.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius5",63.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius6",63.0/2.0); // !! remove me
+
+  for (int i=1; i<=6; i++)
+    {
+      Control.addVariable("ProtonTubePBWShieldZcut" + std::to_string(i),0);
+      Control.addVariable("ProtonTubePBWShieldWallThick" + std::to_string(i),1);
+      Control.addVariable("ProtonTubePBWShieldInnerMat" + std::to_string(i),"Void");
+      Control.addVariable("ProtonTubePBWShieldWallMat" + std::to_string(i),"Void");
+    }
+
   return;
 }
   

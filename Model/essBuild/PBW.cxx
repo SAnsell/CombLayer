@@ -80,7 +80,9 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
+#include "AttachSupport.h"
 
+#include "TelescopicPipe.h"
 #include "PBW.h"
 
 namespace essSystem
@@ -90,21 +92,26 @@ PBW::PBW(const std::string& Key)  :
   attachSystem::ContainedGroup("Plug","Shield"),
   attachSystem::FixedOffset(Key,7),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(surfIndex+1)
+  cellIndex(surfIndex+1),
+  shield(new TelescopicPipe(Key+"Shield"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
-{}
+{
+  ELog::RegMethod RegA("PBW","PBW(const std::string&)");
+  
+  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  OR.addObject(shield);
+  
+  return;
+}
 
 PBW::PBW(const PBW& A) :
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  shieldNSegments(A.shieldNSegments),
-  shieldSegmentLength(A.shieldSegmentLength),
-  shieldSegmentRad(A.shieldSegmentRad),
   plugLength1(A.plugLength1),plugWidth1(A.plugWidth1),
   plugLength2(A.plugLength2),
   plugWidth2(A.plugWidth2),
@@ -137,7 +144,8 @@ PBW::PBW(const PBW& A) :
   foilWaterLength(A.foilWaterLength),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
-  coolingMat(A.coolingMat),mat(A.mat)
+  coolingMat(A.coolingMat),mat(A.mat),
+  shield(A.shield->clone())
   /*!
     Copy constructor
     \param A :: PBW to copy
@@ -158,9 +166,6 @@ PBW::operator=(const PBW& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      shieldNSegments=A.shieldNSegments;
-      shieldSegmentLength=A.shieldSegmentLength;
-      shieldSegmentRad=A.shieldSegmentRad;
       plugLength1=A.plugLength1;
       plugLength2=A.plugLength2;
       plugWidth1=A.plugWidth1;
@@ -196,6 +201,7 @@ PBW::operator=(const PBW& A)
       protonTubeMat=A.protonTubeMat;
       coolingMat=A.coolingMat;
       mat=A.mat;
+      *shield=*A.shield;
     }
   return *this;
 }
@@ -227,8 +233,6 @@ PBW::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-
-  shieldNSegments=Control.EvalVar<size_t>(keyName+"ShieldNSegments");
 
   plugLength1=Control.EvalVar<double>(keyName+"PlugLength1");
   plugLength2=Control.EvalVar<double>(keyName+"PlugLength2");
@@ -266,15 +270,6 @@ PBW::populate(const FuncDataBase& Control)
 
   coolingMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolingMat");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-
-  double l,r;
-  for (size_t i=0; i<shieldNSegments; i++)
-    {
-      l = Control.EvalVar<double>(keyName+"ShieldSegmentLength"+std::to_string(i+1));
-      shieldSegmentLength.push_back(l);
-      r = Control.EvalVar<double>(keyName+"ShieldSegmentRadius"+std::to_string(i+1));
-      shieldSegmentLength.push_back(r);
-    }
 
   return;
 }
@@ -554,20 +549,22 @@ PBW::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(plugLength1),Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
 
   FixedComp::setConnect(3,Origin+X*(plugWidth1/2.0),X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+4));
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
 
   FixedComp::setConnect(4,Origin-Z*(plugDepth),-Z);
   FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
 
   FixedComp::setConnect(5,Origin+Z*(plugHeight),Z);
-  FixedComp::setLinkSurf(5,-SMap.realSurf(surfIndex+6));
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
 
+  ELog::EM << FixedComp::getLinkPt(5) << ELog::endDiag;
+  
   return;
 }
 
@@ -576,12 +573,15 @@ PBW::createLinks()
 
 void
 PBW::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,const long int& lp)
+	       const attachSystem::FixedComp& FC,const long int& lp,
+	       const attachSystem::FixedComp& SB,const long int& sblp)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
-    \param lp :: link point
+    \param lp :: FC link point
+    \param SB :: shield end link point				
+    \param sblp :: SB link point
   */
 {
   ELog::RegMethod RegA("PBW","createAll");
@@ -593,6 +593,11 @@ PBW::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);
 
+  shield->createAll(System,*this,6,SB,sblp,SB);
+  attachSystem::addToInsertSurfCtrl(System,SB,
+				    shield->getCC("Full"));
+
+  
   return;
 }
 

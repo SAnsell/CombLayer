@@ -35,6 +35,8 @@ namespace essSystem
   \brief Proton beam window
 */
 
+  class TelescopicPipe;
+  
 class PBW : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset
 {
@@ -44,10 +46,6 @@ class PBW : public attachSystem::ContainedGroup,
   int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
-
-  size_t shieldNSegments; ///< Number of segments in the vessel
-  std::vector<double> shieldSegmentLength; ///< shield segment lengths
-  std::vector<double> shieldSegmentRad; ///< shield segment radii
 
   double plugLength1;                ///< phalf-length of PBW lug Length (+- ymax)
   double plugLength2; ///< half-length of PBW plug in the ymin direction
@@ -88,6 +86,7 @@ class PBW : public attachSystem::ContainedGroup,
 
   int coolingMat;                   ///< cooling material
   int mat;                   ///< PBW material
+  std::shared_ptr<TelescopicPipe> shield; ///< Shielding
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -105,7 +104,9 @@ class PBW : public attachSystem::ContainedGroup,
   virtual PBW* clone() const;
   virtual ~PBW();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int&);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const long int&,
+		 const attachSystem::FixedComp&,const long int&);
 
 };
 
