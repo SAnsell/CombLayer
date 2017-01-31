@@ -401,6 +401,14 @@ PBW::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+107,Origin+Y*(foilCylOffset),X,foilRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+108,Origin+Y*(foilCylOffset),X,foilRadius+foilThick);
 
+  // PBW foil - water
+  ModelSupport::buildPlane(SMap,surfIndex+115,Origin-Z*(foilWaterLength/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+116,Origin+Z*(foilWaterLength/2.0),Z);
+  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin+Y*(foilCylOffset),X,
+			      (foilRadius+foilRadius+foilThick-foilWaterThick)/2.0);
+  ModelSupport::buildCylinder(SMap,surfIndex+118,Origin+Y*(foilCylOffset),X,
+			      (foilRadius+foilRadius+foilThick+foilWaterThick)/2.0);
+
   return;
 }
 
@@ -500,8 +508,7 @@ PBW::createObjects(Simulation& System)
   // PBW foil
   Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -101 108 93 -94 95 -96 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " -108 107 -101 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  
   Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -102 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
@@ -510,6 +517,13 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " 102 -82 93 -94 95 -96 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
+  // cylindrical segment:
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 116 93 -94 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 115 -116 93 -94 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 -115 93 -94 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
