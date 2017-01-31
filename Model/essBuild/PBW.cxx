@@ -388,6 +388,16 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+95,Origin-Z*(plugAlGapHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+96,Origin+Z*(plugAlGapHeight/2.0),Z);
 
+  // PBW foil
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+101,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+72),
+				  -foilOffset-foilThick);
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+102,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
+				  foilThick);
+  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin+Y*(7),X,foilRadius);
+  ModelSupport::buildCylinder(SMap,surfIndex+108,Origin+Y*(7),X,foilRadius+foilThick);
+
   return;
 }
 
@@ -483,14 +493,26 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 81 -82 73 -74 75 -76 (-93:94:-95:96)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -82 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 27 -87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 87 73 -74 75 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
+  // PBW foil
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -101 108 93 -94 95 -96 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -108 107 -101 93 -94 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -101 93 -94 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 93 -94 95 -96 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 102 -82 93 -94 95 -96 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
+
+  
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf("Plug", Out);
