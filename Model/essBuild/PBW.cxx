@@ -128,7 +128,7 @@ PBW::PBW(const PBW& A) :
   flangeNotchOffset(A.flangeNotchOffset),
   protonTubeRad(A.protonTubeRad),
   protonTubeMat(A.protonTubeMat),
-  coolingMat(A.coolingMat),wallMat(A.wallMat)
+  coolingMat(A.coolingMat),mat(A.mat)
   /*!
     Copy constructor
     \param A :: PBW to copy
@@ -177,7 +177,7 @@ PBW::operator=(const PBW& A)
       protonTubeRad=A.protonTubeRad;
       protonTubeMat=A.protonTubeMat;
       coolingMat=A.coolingMat;
-      wallMat=A.wallMat;
+      mat=A.mat;
     }
   return *this;
 }
@@ -238,7 +238,7 @@ PBW::populate(const FuncDataBase& Control)
   protonTubeMat=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMat");
 
   coolingMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolingMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   double l,r;
   for (size_t i=0; i<shieldNSegments; i++)
@@ -419,7 +419,7 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 42 -71 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 71 -72 27 -28 "); //
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 72 -62 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 

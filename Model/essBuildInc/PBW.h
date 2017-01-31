@@ -77,7 +77,7 @@ class PBW : public attachSystem::ContainedGroup,
   int protonTubeMat; ///< material inside the proton tube
 
   int coolingMat;                   ///< cooling material
-  int wallMat;                   ///< wall material
+  int mat;                   ///< PBW material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
