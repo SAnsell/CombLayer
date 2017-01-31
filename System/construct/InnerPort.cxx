@@ -191,7 +191,8 @@ InnerPort::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  ELog::EM<<"keyname "<<keyName<<" "<<Origin<<" "<<yStep<<ELog::endDiag;
+
+
   return;
 }
 

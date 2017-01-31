@@ -82,7 +82,7 @@ namespace constructSystem
 {
 
 TwinChopper::TwinChopper(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"BuildBeam",2),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"BuildBeam",2,"Motor",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
@@ -188,9 +188,11 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp& Main=getKey("Main");
   attachSystem::FixedComp& Beam=getKey("BuildBeam");
+  attachSystem::FixedComp& Motor=getKey("Motor");
 
   Beam.createUnitVector(FC,sideIndex);
   Main.createUnitVector(FC,sideIndex);
+  Motor.createUnitVector(FC,sideIndex);
 
   //  Main.applyShift(0.0,0,0,beamZStep);
 
@@ -202,6 +204,7 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   lowOutCent=Origin-Z*(stepHeight/2.0);
   topOutCent=Origin+Z*(stepHeight/2.0);
+
   return;
 }
 
@@ -800,6 +803,7 @@ TwinChopper::createLinks()
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("BuildBeam");
+  attachSystem::FixedComp& motorFC=FixedGroup::getKey("Motor");
 
   mainFC.setConnect(0,Origin-Y*(length/2.0),-Y);
   mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
@@ -824,6 +828,21 @@ TwinChopper::createLinks()
 
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+
+  motorFC.setConnect(0,lowCentre-Y*(length/2.0),-Y);
+  motorFC.setConnect(1,lowCentre+Y*(length/2.0),Y);
+  motorFC.setConnect(2,lowCentre,Y);
+  motorFC.setConnect(3,topCentre+Y*(length/2.0),Y);
+  motorFC.setConnect(4,topCentre-Y*(length/2.0),-Y);
+  motorFC.setConnect(5,topCentre,Y);
+  
+  motorFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
+  motorFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  motorFC.setLinkSurf(3,-SMap.realSurf(houseIndex+1));
+  motorFC.setLinkSurf(4,SMap.realSurf(houseIndex+2));
+
+
+
   return;
 }
 

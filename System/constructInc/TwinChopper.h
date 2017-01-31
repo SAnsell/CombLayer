@@ -50,7 +50,6 @@ class TwinChopper :
   const int houseIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-
   Geometry::Vec3D lowCentre;      ///< Low centre of disks
   Geometry::Vec3D topCentre;      ///< Top centre of disks
 

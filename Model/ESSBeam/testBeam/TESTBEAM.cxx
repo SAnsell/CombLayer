@@ -175,8 +175,9 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
   TwinA->addInsertCell(bunkerVoid);
   TwinA->createAll(System,FA,startIndex);
 
-  DiskA->addInsertCell(TwinA->getCells("Void"));
-  DiskA-setCentreFlag(3);
+  ADisk->addInsertCell(TwinA->getCell("Void"));
+  ADisk->createAll(System,TwinA->getKey("Motor"),3,
+                   TwinA->getKey("BuildBeam"),-1);
   //  DiskA->createAll(System,
   return;
 }

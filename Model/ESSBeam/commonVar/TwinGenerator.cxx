@@ -221,7 +221,7 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MotorBSealThick",motorSealThick);  
   Control.addVariable(keyName+"MotorBSealMat",motorSealMat);
 
-  ELog::EM<<"Ring bolt"<<ELog::endDiag;
+
   Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);
   Control.addVariable(keyName+"OuterLineNBolt",lineNBolt);
   Control.addVariable(keyName+"OuterBoltStep",outerStep);
