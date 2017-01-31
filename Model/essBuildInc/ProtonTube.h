@@ -8,46 +8,20 @@ namespace essSystem
 
 /*!
   \class ProtonTube
-  \author A. Milocco
+  \author Konstantin Batkov
   \version 1.0
-  \date February 2013
-  \brief Reflector object
+  \date Jan 2017
+  \brief proton beam tube
 */
   class PBW;
 
-class ProtonTube : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+class ProtonTube :  public TelescopicPipe
 {
  private:
-
-  const int ptIndex;              ///< Index of surface offset
-  int cellIndex;                  ///< Cell index
-  int engActive; ///< True if engineering details should be built
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
-
-  size_t nSec;                    ///< Number of tube sections
-  std::vector<double> radius;     ///< Radius of inner void
-  std::vector<double> length;     ///< cummulative length
-  std::vector<double> zCut;       ///< Z cut for section
-  std::vector<double> thick;      ///< Wall thickness
-  std::vector<int> inMat;         ///< Inner material
-  std::vector<int> wallMat;       ///< wall material
-  
+  int engActive; ///< True if engineering details (like PBW) should be built
   std::shared_ptr<PBW> pbw; ///< Proton beam window
 
-  // Functions:
-
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-
-  void createSurfaces();
-  void createObjects(Simulation&,const std::string&,const std::string&);
-  void createLinks();
 
  public:
 

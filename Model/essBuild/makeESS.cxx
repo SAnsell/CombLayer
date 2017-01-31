@@ -87,6 +87,7 @@
 #include "Wheel.h"
 #include "BilbaoWheel.h"
 #include "BeRef.h"
+#include "TelescopicPipe.h"
 #include "ProtonTube.h"
 #include "BeamMonitor.h"
 #include "ModBase.h"
