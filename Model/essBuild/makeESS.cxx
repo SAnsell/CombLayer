@@ -1073,7 +1073,7 @@ makeESS::build(Simulation& System,
 
   // PROTON BEAMLINE
 
-  PBeam->createAll(System,*Target,1,*TSMainBuildingObj,-1,*ShutterBayObj);
+  PBeam->createAll(System,*Target,1,*TSMainBuildingObj,-1,*ShutterBayObj,-6);
   Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
   
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
