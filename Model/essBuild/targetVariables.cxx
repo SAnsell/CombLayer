@@ -421,7 +421,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWFoilRadius",8.9); // ESS-0058437.3
   Control.addVariable("ProtonTubePBWFoilOffset",1.0); // ESS-0066872.1 page 3
   Control.addVariable("ProtonTubePBWFoilCylOffset",7.0); // to make 2.0 cm top/bottom distance as in ESS-0058437.3
-  Control.addVariable("ProtonTubePBWFoilWaterThick",2.0); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilWaterThick",0.2); // ESS-0058437.3
   Control.addVariable("ProtonTubePBWFoilWaterLength",9.2); // ESS-0058437.3
   
   Control.addVariable("ProtonTubePBWShieldNSegments",5);
