@@ -60,7 +60,6 @@ class PBW : public attachSystem::ContainedGroup,
   double plugVoidDepth; ///< plug void depth
   double plugVoidHeight; ///< plug void height
   double plugAlLength; ///< length of Al plate in the plug
-  double plugAlWidth; ///< full width of Al plate in the plug
 
   double flangeRadius; ///< inner flange radius
   double flangeThick; ///< flange thickness
