@@ -409,6 +409,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWCoolingMat","H2O");
   Control.addVariable("ProtonTubePBWWallMat",0);
   Control.addVariable("ProtonTubePBWYStep",375+67.2-1); // Y=-375
+  Control.addVariable("ProtonTubePBWXYAngle",180.0);
   
   Control.addVariable("ProtonTubePBWShieldNSegments",5);
   Control.addVariable("ProtonTubePBWShieldSegmentLength1",21.5); // void
