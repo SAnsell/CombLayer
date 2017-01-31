@@ -131,6 +131,7 @@ PBW::PBW(const PBW& A) :
   foilThick(A.foilThick),
   foilRadius(A.foilRadius),
   foilOffset(A.foilOffset),
+  foilCylOffset(A.foilCylOffset),
   foilWaterThick(A.foilWaterThick),
   foilWaterLength(A.foilWaterLength),
   protonTubeRad(A.protonTubeRad),
@@ -186,6 +187,7 @@ PBW::operator=(const PBW& A)
       foilThick=A.foilThick;
       foilRadius=A.foilRadius;
       foilOffset=A.foilOffset;
+      foilCylOffset=A.foilCylOffset;
       foilWaterThick=A.foilWaterThick;
       foilWaterLength=A.foilWaterLength;
       protonTubeRad=A.protonTubeRad;
@@ -253,6 +255,7 @@ PBW::populate(const FuncDataBase& Control)
   foilThick=Control.EvalVar<double>(keyName+"FoilThick");
   foilRadius=Control.EvalVar<double>(keyName+"FoilRadius");
   foilOffset=Control.EvalVar<double>(keyName+"FoilOffset");
+  foilCylOffset=Control.EvalVar<double>(keyName+"FoilCylOffset");
   foilWaterThick=Control.EvalVar<double>(keyName+"FoilWaterThick");
   foilWaterLength=Control.EvalVar<double>(keyName+"FoilWaterLength");
   protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
@@ -390,13 +393,13 @@ PBW::createSurfaces()
 
   // PBW foil
   ModelSupport::buildShiftedPlane(SMap,surfIndex+101,
-				  SMap.realPtr<Geometry::Plane>(surfIndex+72),
+				  SMap.realPtr<Geometry::Plane>(surfIndex+82),
 				  -foilOffset-foilThick);
   ModelSupport::buildShiftedPlane(SMap,surfIndex+102,
 				  SMap.realPtr<Geometry::Plane>(surfIndex+101),
 				  foilThick);
-  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin+Y*(7),X,foilRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+108,Origin+Y*(7),X,foilRadius+foilThick);
+  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin+Y*(foilCylOffset),X,foilRadius);
+  ModelSupport::buildCylinder(SMap,surfIndex+108,Origin+Y*(foilCylOffset),X,foilRadius+foilThick);
 
   return;
 }
@@ -504,15 +507,15 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " -108 107 -101 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -101 93 -94 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -102 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 93 -94 95 -96 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 93 -94 95 -96 107");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " 102 -82 93 -94 95 -96 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
-  
+
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf("Plug", Out);

@@ -78,6 +78,7 @@ class PBW : public attachSystem::ContainedGroup,
   double foilThick; ///< thickness of PBW foil
   double foilRadius; ///< smaller radius of PBW foil
   double foilOffset; ///< distance from the Al side plane and nearest foil plane along the y-axis
+  double foilCylOffset; ///< y-axis offset of foil cylinder centre
   double foilWaterThick; ///< thickness of water layer inside foil
   double foilWaterLength; ///< length (along z-axis chorda) of water layer inside foil
 
