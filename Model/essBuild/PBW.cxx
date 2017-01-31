@@ -117,6 +117,8 @@ PBW::PBW(const PBW& A) :
   plugAlLength(A.plugAlLength),
   plugAlGrooveRadius(A.plugAlGrooveRadius),
   plugAlGrooveDepth(A.plugAlGrooveDepth),
+  plugAlGapHeight(A.plugAlGapHeight),
+  plugAlGapWidth(A.plugAlGapWidth),
   flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),
   flangeWaterRingRadiusIn(A.flangeWaterRingRadiusIn),
@@ -165,6 +167,8 @@ PBW::operator=(const PBW& A)
       plugAlLength=A.plugAlLength;
       plugAlGrooveRadius=A.plugAlGrooveRadius;
       plugAlGrooveDepth=A.plugAlGrooveDepth;
+      plugAlGapHeight=A.plugAlGapHeight;
+      plugAlGapWidth=A.plugAlGapWidth;
       flangeRadius=A.flangeRadius;
       flangeThick=A.flangeThick;
       flangeWaterRingRadiusIn=A.flangeWaterRingRadiusIn;
@@ -225,6 +229,8 @@ PBW::populate(const FuncDataBase& Control)
   plugAlLength=Control.EvalVar<double>(keyName+"PlugAlLength");
   plugAlGrooveRadius=Control.EvalVar<double>(keyName+"PlugAlGrooveRadius");
   plugAlGrooveDepth=Control.EvalVar<double>(keyName+"PlugAlGrooveDepth");
+  plugAlGapHeight=Control.EvalVar<double>(keyName+"PlugAlGapHeight");
+  plugAlGapWidth=Control.EvalVar<double>(keyName+"PlugAlGapWidth");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
   flangeWaterRingRadiusIn=Control.EvalVar<double>(keyName+"FlangeWaterRingRadiusIn");
@@ -360,6 +366,13 @@ PBW::createSurfaces()
 			   Origin+Y*(plugAlLength/2.0-plugAlGrooveDepth),Y);
   ModelSupport::buildCylinder(SMap,surfIndex+87,Origin,Y,plugAlGrooveRadius);
 
+  // Plug Al plate - gap
+  ModelSupport::buildPlane(SMap,surfIndex+93,Origin-X*(plugAlGapWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+94,Origin+X*(plugAlGapWidth/2.0),X);
+
+  ModelSupport::buildPlane(SMap,surfIndex+95,Origin-Z*(plugAlGapHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+96,Origin+Z*(plugAlGapHeight/2.0),Z);
+
   return;
 }
 
@@ -453,10 +466,13 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 87 73 -74 75 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  
-  Out=ModelSupport::getComposite(SMap,surfIndex," 81 -82 73 -74 75 -76 ");
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+				 " 81 -82 73 -74 75 -76 (-93:94:-95:96)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  
+  Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -82 93 -94 95 -96 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 27 -87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 -27 ");

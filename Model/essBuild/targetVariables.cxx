@@ -394,6 +394,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWPlugAlLength", 9.695); // ESS-0066872.1 page 4
   Control.addVariable("ProtonTubePBWPlugAlGrooveRadius", 16.0); // ESS-0066872.1 page 4
   Control.addVariable("ProtonTubePBWPlugAlGrooveDepth", 0.5); // ESS-0066872.1 page 4
+  Control.addVariable("ProtonTubePBWPlugAlGapHeight", 20.75); // ESS-0066872.1 page 3 and 4
+  Control.addVariable("ProtonTubePBWPlugAlGapWidth", 19.8); // ESS-0058437.3 and ESS-0066872.1 page 3 (there is a frame which is inserted into gap, but in this (and Alan's) geometries it is not modelled, just gap width reduced)
 
   Control.Parse("ProtonTubeRadius4");
   Control.addVariable("ProtonTubePBWProtonTubeRadius");
