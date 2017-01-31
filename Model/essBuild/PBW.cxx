@@ -454,16 +454,14 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // void inside PBW main cell
-  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -71 -27 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -81 -27 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 72 -12 -27 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 82 -12 -27 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
   // PBW Al plate
   Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 27 -87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 87 73 -74 75 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
@@ -475,8 +473,6 @@ PBW::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 27 -87 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -72 87 73 -74 75 -76 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
