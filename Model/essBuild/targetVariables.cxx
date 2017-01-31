@@ -380,8 +380,8 @@ EssProtonBeam(FuncDataBase& Control)
   // Proton beam window
   Control.addVariable("ProtonTubePBWPlugMat","SS316L");
   Control.addVariable("ProtonTubePBWPlugLength",88.0);
-  Control.addVariable("ProtonTubePBWPlugWidth1",93.0);
-  Control.addVariable("ProtonTubePBWPlugWidth2",76.3);
+  Control.addVariable("ProtonTubePBWPlugWidth1",76.3);
+  Control.addVariable("ProtonTubePBWPlugWidth2",93.0);
   Control.addVariable("ProtonTubePBWPlugHeight",42.5);
   Control.addVariable("ProtonTubePBWPlugDepth",54.5);
 
@@ -390,6 +390,10 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWPlugVoidDepth",25.0);
   Control.Parse("ProtonTubePBWPlugHeight");
   Control.addVariable("ProtonTubePBWPlugVoidHeight");
+
+  Control.addVariable("ProtonTubePBWPlugAlLength", 9.695); // ESS-0066872.1 page 4
+  Control.addVariable("ProtonTubePBWPlugAlHeight", 45.0); // ESS-0066872.1 page 4
+  Control.addVariable("ProtonTubePBWPlugAlWidth", 45.0); // ESS-0066872.1 page 4
 
   Control.Parse("ProtonTubeRadius4");
   Control.addVariable("ProtonTubePBWProtonTubeRadius");

@@ -114,6 +114,9 @@ PBW::PBW(const PBW& A) :
   plugVoidWidth(A.plugVoidWidth),
   plugVoidDepth(A.plugVoidDepth),
   plugVoidHeight(A.plugVoidHeight),
+  plugAlLength(A.plugAlLength),
+  plugAlHeight(A.plugAlHeight),
+  plugAlWidth(A.plugAlWidth),
   flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),
   flangeWaterRingRadiusIn(A.flangeWaterRingRadiusIn),
@@ -159,6 +162,9 @@ PBW::operator=(const PBW& A)
       plugVoidWidth=A.plugVoidWidth;
       plugVoidDepth=A.plugVoidDepth;
       plugVoidHeight=A.plugVoidHeight;
+      plugAlLength=A.plugAlLength;
+      plugAlHeight=A.plugAlHeight;
+      plugAlWidth=A.plugAlWidth;
       flangeRadius=A.flangeRadius;
       flangeThick=A.flangeThick;
       flangeWaterRingRadiusIn=A.flangeWaterRingRadiusIn;
@@ -216,6 +222,9 @@ PBW::populate(const FuncDataBase& Control)
   plugVoidWidth=Control.EvalVar<double>(keyName+"PlugVoidWidth");
   plugVoidDepth=Control.EvalVar<double>(keyName+"PlugVoidDepth");
   plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
+  plugAlLength=Control.EvalVar<double>(keyName+"PlugAlLength");
+  plugAlHeight=Control.EvalVar<double>(keyName+"PlugAlHeight");
+  plugAlWidth=Control.EvalVar<double>(keyName+"PlugAlWidth");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
   flangeWaterRingRadiusIn=Control.EvalVar<double>(keyName+"FlangeWaterRingRadiusIn");
@@ -377,7 +386,7 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 29 -47 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 42 -62 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 29 -47 ");
@@ -385,7 +394,7 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 61 -32 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 32 -31 29 -30 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 31 -12 29 -30 ");
@@ -396,7 +405,7 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 42 -62 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 47 -28 ");
