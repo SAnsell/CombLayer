@@ -448,9 +448,9 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 29 -47 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -71 29 -30 ");//
+  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -71 29 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 72 -62 29 -30 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 72 -62 29 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
 
@@ -470,11 +470,6 @@ PBW::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 42 -71 30 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 72 -62 30 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 47 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
