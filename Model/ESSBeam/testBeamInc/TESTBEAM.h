@@ -84,6 +84,11 @@ class TESTBEAM : public attachSystem::CopiedComp
   /// Test item [Twin chopper]
   std::shared_ptr<constructSystem::TwinChopper> TwinA;
 
+  /// Blade for Twin - chopper
+  std::shared_ptr<constructSystem::DiskChopper> ADisk;
+  /// Blade for Twin - chopper
+  std::shared_ptr<constructSystem::DiskChopper> BDisk;
+
   void setBeamAxis(const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,

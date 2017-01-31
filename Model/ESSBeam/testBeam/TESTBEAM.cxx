@@ -95,7 +95,11 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   testAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
-  TwinA(new constructSystem::TwinChopper(newName+"TwinA"))
+  TwinA(new constructSystem::TwinChopper(newName+"TwinA")),
+
+  ADisk(new constructSystem::DiskChopper(newName+"BladeA")),
+  BDisk(new constructSystem::DiskChopper(newName+"BladeB"))
+
   /*!
     Constructor
     \param keyName :: keyname to process
@@ -112,6 +116,9 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
 
   OR.addObject(FocusA);
   OR.addObject(TwinA);
+  
+  OR.addObject(ADisk);
+  OR.addObject(BDisk);
 
 }
 
@@ -167,7 +174,10 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
 
   TwinA->addInsertCell(bunkerVoid);
   TwinA->createAll(System,FA,startIndex);
-  
+
+  DiskA->addInsertCell(TwinA->getCells("Void"));
+  DiskA-setCentreFlag(3);
+  //  DiskA->createAll(System,
   return;
 }
   

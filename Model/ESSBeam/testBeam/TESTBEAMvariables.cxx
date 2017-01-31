@@ -98,9 +98,18 @@ TESTBEAMvariables(FuncDataBase& Control)
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"testBeamFA",350.0,7.6,4.02,5.0,7.6250);
 
-  TGen.generateChopper(Control,"testTwinA",0.0,30.0,18.0);
-  
-  
+  TGen.generateChopper(Control,"testTwinA",0.0,30.0,18.0);  
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"testBladeA",-2.0,22.5,33.5);
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"testBladeB",2.0,22.5,33.5);
+
   return;
 }
  
