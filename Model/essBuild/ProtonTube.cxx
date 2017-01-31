@@ -149,7 +149,7 @@ void
 ProtonTube::createAll(Simulation& System,
 		      const attachSystem::FixedComp& TargetFC,const long int tIndex,
 		      const attachSystem::FixedComp& BulkFC,const long int bIndex,
-		      const attachSystem::FixedComp& SB)
+		      const attachSystem::FixedComp& SB,const long int sbIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -158,6 +158,7 @@ ProtonTube::createAll(Simulation& System,
     \param BulkFC :: FixedComp for origin and target outer surf
     \param bIndex :: Target plate surface [signed]
     \param SB :: FixedComp for Monolith Shielding (shutter bay object)
+    \param sbIndex :: ShutterBay roof link point
   */
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
@@ -166,7 +167,7 @@ ProtonTube::createAll(Simulation& System,
   
   if (engActive)
     {
-    pbw->createAll(System, *this, 0);
+      pbw->createAll(System, *this, 0, SB,sbIndex);
     //    attachSystem::addToInsertForced(System,SB,*pbw); // works but slow
     attachSystem::addToInsertSurfCtrl(System,SB,pbw->getCC("Plug")); // works
     //    attachSystem::addToInsertSurfCtrl(System,*pbw, this->getCC("Full")); // works but inside out
