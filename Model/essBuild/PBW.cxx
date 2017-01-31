@@ -115,7 +115,6 @@ PBW::PBW(const PBW& A) :
   plugVoidDepth(A.plugVoidDepth),
   plugVoidHeight(A.plugVoidHeight),
   plugAlLength(A.plugAlLength),
-  plugAlHeight(A.plugAlHeight),
   plugAlWidth(A.plugAlWidth),
   flangeRadius(A.flangeRadius),
   flangeThick(A.flangeThick),
@@ -163,7 +162,6 @@ PBW::operator=(const PBW& A)
       plugVoidDepth=A.plugVoidDepth;
       plugVoidHeight=A.plugVoidHeight;
       plugAlLength=A.plugAlLength;
-      plugAlHeight=A.plugAlHeight;
       plugAlWidth=A.plugAlWidth;
       flangeRadius=A.flangeRadius;
       flangeThick=A.flangeThick;
@@ -223,7 +221,6 @@ PBW::populate(const FuncDataBase& Control)
   plugVoidDepth=Control.EvalVar<double>(keyName+"PlugVoidDepth");
   plugVoidHeight=Control.EvalVar<double>(keyName+"PlugVoidHeight");
   plugAlLength=Control.EvalVar<double>(keyName+"PlugAlLength");
-  plugAlHeight=Control.EvalVar<double>(keyName+"PlugAlHeight");
   plugAlWidth=Control.EvalVar<double>(keyName+"PlugAlWidth");
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeThick=Control.EvalVar<double>(keyName+"FlangeThick");
@@ -313,7 +310,8 @@ PBW::createSurfaces()
 				  flangeWaterRingThick);
 
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,flangeRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,flangeRadius+flangeThick);
+  const double cyl28rad = flangeRadius+flangeThick; // used as half height of plug Al plate
+  ModelSupport::buildCylinder(SMap,surfIndex+28,Origin,Y,cyl28rad);
 
   ModelSupport::buildCylinder(SMap,surfIndex+29,Origin,Y,flangeWaterRingRadiusIn);
   ModelSupport::buildCylinder(SMap,surfIndex+30,Origin,Y,flangeWaterRingRadiusOut);

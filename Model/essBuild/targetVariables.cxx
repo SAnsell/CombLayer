@@ -392,7 +392,6 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWPlugVoidHeight");
 
   Control.addVariable("ProtonTubePBWPlugAlLength", 9.695); // ESS-0066872.1 page 4
-  Control.addVariable("ProtonTubePBWPlugAlHeight", 45.0); // ESS-0066872.1 page 4
   Control.addVariable("ProtonTubePBWPlugAlWidth", 45.0); // ESS-0066872.1 page 4
 
   Control.Parse("ProtonTubeRadius4");
