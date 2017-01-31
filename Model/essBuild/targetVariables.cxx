@@ -379,7 +379,8 @@ EssProtonBeam(FuncDataBase& Control)
 
   // Proton beam window
   Control.addVariable("ProtonTubePBWPlugMat","SS316L");
-  Control.addVariable("ProtonTubePBWPlugLength",88.0);
+  Control.addVariable("ProtonTubePBWPlugLength1",45.0); // Drawing received from AT (PBW.djvu)
+  Control.addVariable("ProtonTubePBWPlugLength2",43.0);
   Control.addVariable("ProtonTubePBWPlugWidth1",76.3);
   Control.addVariable("ProtonTubePBWPlugWidth2",93.0);
   Control.addVariable("ProtonTubePBWPlugHeight",42.5);

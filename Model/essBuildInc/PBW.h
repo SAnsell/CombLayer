@@ -49,9 +49,10 @@ class PBW : public attachSystem::ContainedGroup,
   std::vector<double> shieldSegmentLength; ///< shield segment lengths
   std::vector<double> shieldSegmentRad; ///< shield segment radii
 
-  double plugLength;                ///< plug Length (+- y)
-  double plugWidth1;                 ///< Width1 (+- x at ymin)
-  double plugWidth2; ///< plug width2 (+-x at ymax)
+  double plugLength1;                ///< phalf-length of PBW lug Length (+- ymax)
+  double plugLength2; ///< half-length of PBW plug in the ymin direction
+  double plugWidth1;                 ///< Width1 (+- x at ymax)
+  double plugWidth2; ///< plug width2 (+-x at ymin)
   double plugHeight;                ///< height
   double plugDepth; ///< plug depth (-z)
   int plugMat; ///< plug material

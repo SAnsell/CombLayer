@@ -105,7 +105,8 @@ PBW::PBW(const PBW& A) :
   shieldNSegments(A.shieldNSegments),
   shieldSegmentLength(A.shieldSegmentLength),
   shieldSegmentRad(A.shieldSegmentRad),
-  plugLength(A.plugLength),plugWidth1(A.plugWidth1),
+  plugLength1(A.plugLength1),plugWidth1(A.plugWidth1),
+  plugLength2(A.plugLength2),
   plugWidth2(A.plugWidth2),
   plugHeight(A.plugHeight),
   plugDepth(A.plugDepth),
@@ -160,7 +161,8 @@ PBW::operator=(const PBW& A)
       shieldNSegments=A.shieldNSegments;
       shieldSegmentLength=A.shieldSegmentLength;
       shieldSegmentRad=A.shieldSegmentRad;
-      plugLength=A.plugLength;
+      plugLength1=A.plugLength1;
+      plugLength2=A.plugLength2;
       plugWidth1=A.plugWidth1;
       plugWidth2=A.plugWidth2;
       plugHeight=A.plugHeight;
@@ -228,7 +230,8 @@ PBW::populate(const FuncDataBase& Control)
 
   shieldNSegments=Control.EvalVar<size_t>(keyName+"ShieldNSegments");
 
-  plugLength=Control.EvalVar<double>(keyName+"PlugLength");
+  plugLength1=Control.EvalVar<double>(keyName+"PlugLength1");
+  plugLength2=Control.EvalVar<double>(keyName+"PlugLength2");
   plugWidth1=Control.EvalVar<double>(keyName+"PlugWidth1");
   plugWidth2=Control.EvalVar<double>(keyName+"PlugWidth2");
   plugHeight=Control.EvalVar<double>(keyName+"PlugHeight");
@@ -301,16 +304,16 @@ PBW::createSurfaces()
   ELog::RegMethod RegA("PBW","createSurfaces");
 
   // plug
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(plugLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(plugLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(plugLength2),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(plugLength1),Y);
 
-  const double alpha = atan((plugWidth1-plugWidth2)/2.0/plugLength)*180/M_PI;
+  const double alpha = atan((plugWidth1-plugWidth2)/2.0/(plugLength1+plugLength2))*180/M_PI;
 
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,
-				  Origin-X*(plugWidth1/2.0)+Y*(plugLength/2.0),
+				  Origin-X*(plugWidth1/2.0)+Y*(plugLength1),
 				  X,Z,alpha);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,
-				  Origin+X*(plugWidth1/2.0)+Y*(plugLength/2.0),
+				  Origin+X*(plugWidth1/2.0)+Y*(plugLength1),
 				  X,Z,-alpha);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(plugDepth),Z);
@@ -508,7 +511,7 @@ PBW::createObjects(Simulation& System)
   // PBW foil
   Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -101 108 93 -94 95 -96 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -102 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMat,0.0,Out));
 
@@ -547,10 +550,10 @@ PBW::createLinks()
 {
   ELog::RegMethod RegA("PBW","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(plugLength/2.0),-Y);
+  FixedComp::setConnect(0,Origin-Y*(plugLength2),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(plugLength/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*(plugLength1),Y);
   FixedComp::setLinkSurf(1,-SMap.realSurf(surfIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0),-X);
