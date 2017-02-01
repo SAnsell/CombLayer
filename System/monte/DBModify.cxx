@@ -785,11 +785,7 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-5.056);
   MDB.resetMaterial(MObj);
 
-  // Tungsten at 300 K - 0.4% density for Beam Monitor
-  // Actually in BeamMonitor the W density is of 4% of its nominal value,
-  // and the foil thick is 0.05 cm.
-  // However, MCNP crashes with such a thin foil, so I increase thickness by
-  // x10 and decrease density by the same factor.
+  // Tungsten at 300 K - 4% density for Beam Monitor
   MObj.setMaterial(imat++, "Tungsten_BeamMonitor",
 		   "74180.50c  0.001200000 "
 		   "74182.70c  0.265000000 "
@@ -797,7 +793,7 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   "74184.70c  0.306400000 "
 		   "74186.70c  0.284300000 ",
 		   "",MLib);
-  MObj.setDensity(-19.298*0.4/100.0); // 0.4% density for Beam Monitor
+  MObj.setDensity(-19.298 * 0.04);
   MDB.resetMaterial(MObj);  
   return;
 }

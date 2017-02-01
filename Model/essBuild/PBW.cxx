@@ -522,12 +522,20 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 -115 93 -94 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   // central cylindrical segment with water:
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -117 -101 115 -116 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 117 -118 -101 115 -116 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex, " 118 -108 -101 115 -116 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  if (std::abs(foilThick-foilWaterThick)>Geometry::zeroTol)
+    {
+    Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -117 -101 115 -116 93 -94 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+    Out=ModelSupport::getComposite(SMap,surfIndex, " 117 -118 -101 115 -116 93 -94 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
+    Out=ModelSupport::getComposite(SMap,surfIndex, " 118 -108 -101 115 -116 93 -94 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+    }
+  else // no side Al layers
+    {
+    Out=ModelSupport::getComposite(SMap,surfIndex, " 107 -108 -101 115 -116 93 -94 ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
+    }
 
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");

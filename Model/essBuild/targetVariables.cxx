@@ -498,12 +498,13 @@ EssProtonBeam(FuncDataBase& Control)
   // Actually in BeamMonitor the foil thick is 0.05 cm.
   // However, MCNP crashes with such a thin foil, so I increase thickness by
   // x10 and decrease density of Tungsten_BeamMonitor by the same factor.
-  Control.addVariable("ProtonTubeBeamMonitorFoilThick",0.05*10); // W density decreased by x10
+  Control.addVariable("ProtonTubeBeamMonitorFoilThick",0.05);
   Control.addVariable("ProtonTubeBeamMonitorFoilOffset",1.0);
   Control.addVariable("ProtonTubeBeamMonitorFoilRadius",34); // dummy
   Control.addVariable("ProtonTubeBeamMonitorFoilCylOffset",33); // dummy
   
-  Control.addVariable("ProtonTubeBeamMonitorFoilWaterThick",0.05); // 
+  Control.Parse("ProtonTubeBeamMonitorFoilThick");
+  Control.addVariable("ProtonTubeBeamMonitorFoilWaterThick");
   Control.addVariable("ProtonTubeBeamMonitorFoilWaterLength",30); // dummy
   
   Control.addVariable("ProtonTubeBeamMonitorShieldXStep",0);
