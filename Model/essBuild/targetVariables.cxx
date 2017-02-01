@@ -456,8 +456,8 @@ EssProtonBeam(FuncDataBase& Control)
   // Beam monitor (dummy variables)
   // Proton beam window
   Control.addVariable("ProtonTubeBeamMonitorPlugMat","SS316L");
-  Control.addVariable("ProtonTubeBeamMonitorPlugLength1",10.0); // Drawing received from AT (https://plone.esss.lu.se/docs/neutronics/engineering/drawings/monolith/pbw-drawings/view)
-  Control.addVariable("ProtonTubeBeamMonitorPlugLength2",10.0);
+  Control.addVariable("ProtonTubeBeamMonitorPlugLength1",9.0); // Drawing received from AT (https://plone.esss.lu.se/docs/neutronics/engineering/drawings/monolith/pbw-drawings/view)
+  Control.addVariable("ProtonTubeBeamMonitorPlugLength2",9.0);
   Control.addVariable("ProtonTubeBeamMonitorPlugWidth1",76.3);
   Control.addVariable("ProtonTubeBeamMonitorPlugWidth2",93.0);
   Control.addVariable("ProtonTubeBeamMonitorPlugHeight",42.5);
