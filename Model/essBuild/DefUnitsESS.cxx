@@ -361,8 +361,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setOption("lowMod", "None");
       A.setOption("topMod", "Butterfly");
       A.setVar("BeRefLowVoidThick", 0);
-      A.setVar("BeRefLowRefMat", "Iron_10H2O");
-      A.setVar("BeRefLowWallMat", "Iron_10H2O");
+      A.setVar("BeRefLowRefMat", "SS316L");
+      A.setVar("BeRefLowWallMat", "Aluminium");
       A.setVar("BeRefLowInnerStructureActive", 1);
       // The following numbers are from Yannick's email 31 Jan 2017:
       A.setVar("BeRefDepth", 50.3); // (157.5+17.5 + 120 + 30 + 50 +30 +20)/10.0+7.8
