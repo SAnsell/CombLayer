@@ -395,16 +395,16 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModHeight1",0.0);
   Control.addVariable("TopCapModDepth1",0.0);
   Control.addVariable("TopCapModThick1",0.3);
-  Control.addVariable("TopCapModMat1","Aluminium");
+  Control.addVariable("TopCapModMat1","AluminiumBe");
   Control.addVariable("TopCapModRadius1",6-3+0.3);
   Control.addVariable("TopCapModHeight2",0.0);
   Control.addVariable("TopCapModDepth2",0.3);
   Control.addVariable("TopCapModRadius2",0.0);
-  Control.addVariable("TopCapModMat2","Aluminium");
+  Control.addVariable("TopCapModMat2","AluminiumBe");
   Control.addVariable("TopCapModHeight3",0);
   Control.addVariable("TopCapModDepth3", 0.3);
   Control.addVariable("TopCapModRadius3",0.0);
-  Control.addVariable("TopCapModMat3", "Aluminium");
+  Control.addVariable("TopCapModMat3", "AluminiumBe");
 
   Control.addVariable("TopCapModTiltAngle", 0.0);
   Control.addVariable("TopCapModTiltRadius", 32.17);

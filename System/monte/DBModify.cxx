@@ -211,6 +211,12 @@ addESSMaterial()
   MObj.setDensity(-2.7);
   MDB.resetMaterial(MObj); 
 
+  // Same as Aluminium but used in Be container - needed by engineers for Ed mesh
+  MObj.setMaterial(imat++, "AluminiumBe", " 13027.70c 1.0 ", "al27.12t", MLib);
+  MObj.setDensity(-2.7);
+  MDB.resetMaterial(MObj); 
+
+  
   MObj.setMaterial(imat++/*1301*/, "Aluminium20K", " 13027.70c 1.0 ", "al27.10t", MLib);
   MObj.setDensity(-2.73);
   MDB.resetMaterial(MObj); 
