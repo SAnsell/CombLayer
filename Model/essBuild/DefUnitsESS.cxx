@@ -370,8 +370,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
     } else
     throw ColErr::InvalidLine(single,"Either 'single' or nothing are supported in defaultConfig");
 
-  //  A.setVar("LowFlyType", bfType);
-  //  A.setVar("TopFlyType", bfType);
+  A.setVar("LowFlyType", bfType);
+  A.setVar("TopFlyType", bfType);
 
   A.setOption("matDB", "neutronics");
   A.setOption("physModel", "BD");
