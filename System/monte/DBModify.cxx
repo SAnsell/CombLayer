@@ -785,6 +785,16 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-5.056);
   MDB.resetMaterial(MObj);
 
+  // Tungsten at 300 K - 0.4% density for Beam Monitor
+  MObj.setMaterial(imat++, "Tungsten_BeamMonitor",
+		   "74180.50c  0.001200000 "
+		   "74182.70c  0.265000000 "
+		   "74183.70c  0.143100000 "
+		   "74184.70c  0.306400000 "
+		   "74186.70c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-19.298*0.4/100.); // 0.4% density for Beam Monitor
+  MDB.resetMaterial(MObj);  
   return;
 }
 
