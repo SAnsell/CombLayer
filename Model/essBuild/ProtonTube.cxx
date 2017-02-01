@@ -185,11 +185,11 @@ ProtonTube::createAll(Simulation& System,
     //    attachSystem::addToInsertControl(System,*this, pbw->getCC("Plug")); // does not work
 
     // beam monitor
-      // bm->createAll(System, *this, 0, SB,sbIndex);
-      // attachSystem::addToInsertSurfCtrl(System,SB,bm->getCC("Plug"));
-      // attachSystem::addToInsertSurfCtrl(System,Bulk,bm->getCC("Plug"));
-      // ELog::EM << "addToInsertForced" << ELog::endCrit;
-      // attachSystem::addToInsertForced(System,*this, bm->getCC("Plug"));
+      bm->createAll(System, *this, 0, SB,sbIndex);
+      //attachSystem::addToInsertSurfCtrl(System,SB,bm->getCC("Plug"));
+      attachSystem::addToInsertSurfCtrl(System,Bulk,bm->getCC("Plug"));
+      ELog::EM << "addToInsertForced" << ELog::endCrit;
+      attachSystem::addToInsertForced(System,*this, bm->getCC("Plug"));
     }
 
 
