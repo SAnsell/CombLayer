@@ -85,7 +85,8 @@ namespace essSystem
 
 ProtonTube::ProtonTube(const std::string& Key) :
   TelescopicPipe(Key),
-  pbw(new PBW(Key+"PBW"))
+  pbw(new PBW(Key+"PBW")),
+  bm(new PBW(Key+"BeamMonitor"))
   /*!
     Constructor
   */
@@ -94,6 +95,7 @@ ProtonTube::ProtonTube(const std::string& Key) :
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
   OR.addObject(pbw);
+  OR.addObject(bm);
   
   return;
 }
@@ -101,7 +103,8 @@ ProtonTube::ProtonTube(const std::string& Key) :
 ProtonTube::ProtonTube(const ProtonTube& A) :
   TelescopicPipe(A),
   engActive(A.engActive),
-  pbw(A.pbw->clone())
+  pbw(A.pbw->clone()),
+  bm(A.bm->clone())
   /*!
     Copy constructor
     \param A :: ProtonTube to copy
@@ -121,6 +124,7 @@ ProtonTube::operator=(const ProtonTube& A)
       TelescopicPipe::operator=(A);
       engActive=A.engActive;
       *pbw=*A.pbw;
+      *bm=*A.bm;
     }
   return *this;
 }
@@ -149,7 +153,8 @@ void
 ProtonTube::createAll(Simulation& System,
 		      const attachSystem::FixedComp& TargetFC,const long int tIndex,
 		      const attachSystem::FixedComp& BulkFC,const long int bIndex,
-		      const attachSystem::FixedComp& SB,const long int sbIndex)
+		      const attachSystem::FixedComp& SB,const long int sbIndex,
+		      const attachSystem::FixedComp& Bulk)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
@@ -159,26 +164,35 @@ ProtonTube::createAll(Simulation& System,
     \param bIndex :: Target plate surface [signed]
     \param SB :: FixedComp for Monolith Shielding (shutter bay object)
     \param sbIndex :: ShutterBay roof link point
+    \param Bulk :: Bulk object (to remove BeamMonitor from)						
   */
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
 
   TelescopicPipe::createAll(System,TargetFC,tIndex,BulkFC,bIndex,SB);
   
-  if (engActive)
+  //if (engActive)
     {
       pbw->createAll(System, *this, 0, SB,sbIndex);
     //    attachSystem::addToInsertForced(System,SB,*pbw); // works but slow
     attachSystem::addToInsertSurfCtrl(System,SB,pbw->getCC("Plug")); // works
     //    attachSystem::addToInsertSurfCtrl(System,*pbw, this->getCC("Full")); // works but inside out
     //    attachSystem::addToInsertSurfCtrl(System,*this,pbw->getCC("Plug")); // does not work
-    attachSystem::addToInsertForced(System,*this, pbw->getCC("Plug")); // works but slow
+      ELog::EM << "addToInsertForced" << ELog::endCrit;
+      attachSystem::addToInsertForced(System,*this, pbw->getCC("Plug")); // works but slow
     //attachSystem::addToInsertLineCtrl(System,*this, *pbw); 
 
     //    attachSystem::addToInsertControl(System,*this, pbw->getCC("Plug")); // does not work
 
+    // beam monitor
+      bm->createAll(System, *this, 0, SB,sbIndex);
+      attachSystem::addToInsertSurfCtrl(System,SB,bm->getCC("Plug"));
+      attachSystem::addToInsertSurfCtrl(System,Bulk,bm->getCC("Plug"));
+      ELog::EM << "addToInsertForced" << ELog::endCrit;
+      attachSystem::addToInsertForced(System,*this, bm->getCC("Plug"));
     }
-  
+
+
   return;
 }
 

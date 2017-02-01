@@ -20,6 +20,7 @@ class ProtonTube :  public TelescopicPipe
  private:
   int engActive; ///< True if engineering details (like PBW) should be built
   std::shared_ptr<PBW> pbw; ///< Proton beam window
+  std::shared_ptr<PBW>  bm; ///< Beam monitor
 
   void populate(const FuncDataBase&);
 
@@ -33,10 +34,11 @@ class ProtonTube :  public TelescopicPipe
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int);
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&);
 
 };
-
+ 
 }
 
 #endif

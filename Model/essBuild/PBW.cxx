@@ -100,10 +100,10 @@ PBW::PBW(const std::string& Key)  :
   */
 {
   ELog::RegMethod RegA("PBW","PBW(const std::string&)");
-  
+
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
   OR.addObject(shield);
-  
+
   return;
 }
 
@@ -564,7 +564,7 @@ PBW::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
 
   ELog::EM << FixedComp::getLinkPt(5) << ELog::endDiag;
-  
+
   return;
 }
 
@@ -580,7 +580,7 @@ PBW::createAll(Simulation& System,
     \param System :: Simulation item
     \param FC :: Central origin
     \param lp :: FC link point
-    \param SB :: shield end link point				
+    \param SB :: shield end link point
     \param sblp :: SB link point
   */
 {
@@ -598,7 +598,7 @@ PBW::createAll(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,SB,
 				    shield->getCC("Full"));
   */
-  
+
   return;
 }
 
