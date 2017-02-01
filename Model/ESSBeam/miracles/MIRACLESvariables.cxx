@@ -133,11 +133,37 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"miraclesBBladeLow",2.0,22.5,35.0);
 
   // Pipe after first chopper unit
-  PipeGen.generatePipe(Control,"miraclesPipeD",8.0,44.0);
+  PipeGen.generatePipe(Control,"miraclesPipeD",2.0,34.0);
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"miraclesFD",42.0, 5.0,4.857,  9.5,9.85714);
+  FGen.generateTaper(Control,"miraclesFD",32.0, 5.0,4.857,  9.5,9.85714);
 
-  
+  TGen.generateChopper(Control,"miraclesTwinC",14.0,16.0,10.0);  
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"miraclesCBladeTop",-2.0,22.5,35.0);
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"miraclesCBladeLow",2.0,22.5,35.0);
+
+  // Pipe after second chopper unit [to 11.5m]
+  PipeGen.generatePipe(Control,"miraclesPipeE",2.0,359.0);
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"miraclesFE",355.0, 5.0,4.857,  9.5,9.85714);
+
+
+  CGen.setMainRadius(38.122);
+  CGen.setFrame(86.5,86.5);
+  CGen.generateChopper(Control,"miraclesChopE",14.0,12.0,6.55);
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"miraclesEBlade",0.0,22.5,35.0);
+
   return;
 }
  

@@ -265,7 +265,7 @@ DiskChopper::createSurfaces()
   ModelSupport::buildCylinder(SMap,chpIndex+17,Origin,Y,outerRadius);
   int CI(chpIndex);
   Geometry::Vec3D DCent(Origin);
-  ELog::EM<<"CENTER == "<<Origin<<ELog::endDiag;
+
   for(const DiskBlades& DRef : DInfo)
     {
       ModelSupport::buildPlane(SMap,CI+1,DCent-Y*(DRef.thick/2.0),Y);
