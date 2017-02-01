@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/MIRACLES.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,11 +83,11 @@ class MIRACLES : public attachSystem::CopiedComp
 
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Elliptic guide from 5.5 to 6 metre
+  /// Guide from 5.5 to 6 metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
-  /// Elliptic guide from 5.5 to 6 metre
+  /// Guide from 6m to 7m
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;
@@ -99,6 +99,10 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Lower twin disk
   std::shared_ptr<constructSystem::DiskChopper> BDiskLow;
 
+  /// Pipe from Chopper A  to B
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// Elliptic guide from 5.5 to 6 metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
   
   /// Bunker insert

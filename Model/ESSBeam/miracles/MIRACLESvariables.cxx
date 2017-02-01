@@ -92,25 +92,25 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // extent of beamline
   Control.addVariable("miraclesStopPoint",0);
-  Control.addVariable("miraclesAxisXYAngle",0.0);   // rotation
-  Control.addVariable("miraclesAxisZAngle",0.0);   // rotation
+  Control.addVariable("miraclesAxisXYAngle",0.9); // rotation
+  Control.addVariable("miraclesAxisZAngle",0.0);  // rotation
   Control.addVariable("miraclesAxisZStep",0.0);   // offset
 
   FGen.setGuideMat("Copper");
-  FGen.setThickness(0.5,0.3);
+  FGen.setThickness(0.8,0.3);
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"miraclesFA",350.0, 10.0,4.5 ,10.0,11.5);
+  FGen.generateTaper(Control,"miraclesFA",350.0, 6.0,5.0 ,5.0,9.5);
   
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"miraclesPipeB",8.0,44.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"miraclesFB",42.0, 4.5,4.0, 11.5,12.0);
+  FGen.generateTaper(Control,"miraclesFB",42.0, 5.0,4.857,  9.5,9.85714);
 
   // Pipe to collimator:
   PipeGen.generatePipe(Control,"miraclesPipeC",2.0,96.0);
   FGen.setYCentreOffset(-5.0);
-  FGen.generateTaper(Control,"miraclesFC",84.0, 4.5,4.0, 11.5,12.0);
+  FGen.generateTaper(Control,"miraclesFC",84.0, 4.857,4.0, 9.857,12.0);
 
   Control.addVariable("miraclesAppAInnerWidth",4.0);
   Control.addVariable("miraclesAppAInnerHeight",4.0);
@@ -120,7 +120,7 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAppAYStep",7.0);
   Control.addVariable("miraclesAppADefMat","Tungsten");
 
-  TGen.generateChopper(Control,"miraclesTwinB",10.0,22.0,10.0);  
+  TGen.generateChopper(Control,"miraclesTwinB",14.0,16.0,10.0);  
 
   // Single Blade chopper
   BGen.setThick({0.2});
@@ -132,6 +132,12 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"miraclesBBladeLow",2.0,22.5,35.0);
 
+  // Pipe after first chopper unit
+  PipeGen.generatePipe(Control,"miraclesPipeD",8.0,44.0);
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"miraclesFD",42.0, 5.0,4.857,  9.5,9.85714);
+
+  
   return;
 }
  

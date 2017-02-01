@@ -73,7 +73,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
 
   Control.addVariable(AKey+"BunkerLeftPhase",-65.0);
-  Control.addVariable(AKey+"BunkerRightPhase",0.0);
+  Control.addVariable(AKey+"BunkerRightPhase",-12.0);
   Control.addVariable(AKey+"BunkerLeftAngle",0.0);
   Control.addVariable(AKey+"BunkerRightAngle",0.0);
   Control.addVariable(AKey+"BunkerNSectors",10);
@@ -168,7 +168,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsThick",1.0);
   Control.addVariable(AKey+"BunkerPillarsMat","Stainless304");
   Control.addVariable(AKey+"BunkerPillarsNRadius",5);
-  Control.addVariable(AKey+"BunkerPillarsNSector",11); // default
+  Control.addVariable(AKey+"BunkerPillarsNSector",9); // default
   
   Control.addVariable(AKey+"BunkerPillarsR0",600.0);
   Control.addVariable(AKey+"BunkerPillarsR1",900.0);
@@ -177,28 +177,26 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsR4",1800.0);
   Control.addVariable(AKey+"BunkerPillarsR5",2100.0);
   
-  Control.addVariable(AKey+"BunkerPillarsRS_0",-3.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_1",-9.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_2",-15.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_3",-21.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_4",-27.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_5",-34.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_6",-39.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_7",-46.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_8",-52.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_9",-57.0);
-  Control.addVariable(AKey+"BunkerPillarsRS_10",-63.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_0",-15.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_1",-21.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_2",-27.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_3",-34.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_4",-39.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_5",-46.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_6",-52.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_7",-57.0);
+  Control.addVariable(AKey+"BunkerPillarsRS_8",-63.0);
 
-  Control.addVariable(AKey+"BunkerPillarsR_0S_1Active",0);
-  Control.addVariable(AKey+"BunkerPillarsR_0S_2Active",0);
-  Control.addVariable(AKey+"BunkerPillarsR_0S_9Active",0);
-  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_1Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_2Active",0);
+  Control.addVariable(AKey+"BunkerPillarsR_0S_7Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
 
 
   //
   // RIGHT BUNKER : B PART
   //
-  Control.addVariable(BKey+"BunkerLeftPhase",0.0);
+  Control.addVariable(BKey+"BunkerLeftPhase",-12.0);
   Control.addVariable(BKey+"BunkerRightPhase",65.0);
   Control.addVariable(BKey+"BunkerLeftAngle",0.0);
   Control.addVariable(BKey+"BunkerRightAngle",0.0);

@@ -115,6 +115,9 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   BDiskTop(new constructSystem::DiskChopper(newName+"BBladeTop")),
   BDiskLow(new constructSystem::DiskChopper(newName+"BBladeLow")),
 
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  FocusD(new beamlineSystem::GuideLine(newName+"FD")),
+
   //  BInsert(new BunkerInsert(newName+"BInsert")),
   BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
@@ -142,6 +145,9 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   OR.addObject(TwinB);
   OR.addObject(BDiskTop);
   OR.addObject(BDiskLow);
+
+  OR.addObject(VPipeD);
+  OR.addObject(FocusD);
 
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
@@ -217,8 +223,18 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinB->createAll(System,*AppA,2);
 
   BDiskLow->addInsertCell(TwinB->getCell("Void"));
-  BDiskLow->createAll(System,TwinB->getKey("Motor"),3,
+  BDiskLow->createAll(System,TwinB->getKey("Motor"),6,
                       TwinB->getKey("BuildBeam"),-1);
+
+  BDiskTop->addInsertCell(TwinB->getCell("Void"));
+  BDiskTop->createAll(System,TwinB->getKey("Motor"),3,
+                      TwinB->getKey("BuildBeam"),-1);
+
+  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->createAll(System,TwinB->getKey("BuildBeam"),2);
+
+  FocusD->addInsertCell(VPipeD->getCells("Void"));
+  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
 
   return;
 }

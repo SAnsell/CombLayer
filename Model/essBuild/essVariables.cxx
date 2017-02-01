@@ -678,10 +678,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightXYangle",180.0);
   Control.addVariable("TopAFlightZangle",0.0);
   // Step down angle !!! 1.455 is too much -
-  // fight line cuts the Bilbao target wheel ESS-0032315.3
-  Control.addVariable("TopAFlightAngleZTop",1.1);
-  // Step up angle ESS-0032315.3
-  Control.addVariable("TopAFlightAngleZBase",1.33); 
+  Control.addVariable("TopAFlightAngleZTop",1.1);       // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("TopAFlightAngleZBase",1.33);   // Step up angle ESS-0032315.3 
 
   // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightHeight", 2.9);     
@@ -690,13 +688,30 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
+  // LOWER flight lines
+  // B FLIGHT CORRECTED
+  Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
+  Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
+  Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
+  Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
+  Control.addVariable("TopBFlightXYangle", 0.0);
+  Control.addVariable("TopBFlightZangle", 0.0);
+  Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
+  Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
+  Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
+  Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
+  Control.addParse<double>("TopBFlightLinerThick1","TopAFlightLinerThick1");
+  Control.addVariable("TopBFlightNLiner",1);     
+  Control.addVariable("TopBFlightLinerMat1","Aluminium");
+
+  
   // The moderator focal points are (89,54)
   // The wedge focus at (80,48). This is a result of the line of sight from
   // the neutron beam channels towards the moderator
   const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
   const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
 
-  const int TopAFlightNWedges = 14;
+  const int TopAFlightNWedges = 0;
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
   const double t1 = 3.5+11.95*3.0; // Rickard Holmberg: slides 9-10
@@ -749,27 +764,8 @@ EssFlightLineVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Mat","SS316L");
     }
 
-  // B FLIGHT COORECTED
-  Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
-  Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
-  Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
-  Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
-  Control.addVariable("TopBFlightXYangle", 0.0);
-  Control.addVariable("TopBFlightZangle", 0.0);
-  Control.Parse("TopAFlightAngleZTop");
-  Control.addVariable("TopBFlightAngleZTop");  //   // Step down angle
-  Control.Parse("TopAFlightAngleZBase");
-  Control.addVariable("TopBFlightAngleZBase"); // Step up angle
-  Control.Parse("TopAFlightHeight");
-  Control.addVariable("TopBFlightHeight");  // Full hieght
-  Control.Parse("TopAFlightWidth");
-  Control.addVariable("TopBFlightWidth");     // Full width
-  Control.addVariable("TopBFlightNLiner", 1);     
-  Control.Parse("TopAFlightLinerThick1"); 
-  Control.addVariable("TopBFlightLinerThick1"); 
-  Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  const int TopBFlightNWedges = 12;
+  const int TopBFlightNWedges = 0;
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
 
