@@ -37,6 +37,7 @@ namespace instrumentSystem
 namespace constructSystem
 {  
   class ChopperPit;
+  class Cryostat;
   class DiskChopper;
   class Jaws;
   class JawSet;
@@ -88,6 +89,9 @@ class TESTBEAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> ADisk;
   /// Blade for Twin - chopper
   std::shared_ptr<constructSystem::DiskChopper> BDisk;
+
+  /// Test item [Crysotat]
+  std::shared_ptr<constructSystem::Cryostat> CryoA;
 
   void setBeamAxis(const GuideItem&,const bool);
 

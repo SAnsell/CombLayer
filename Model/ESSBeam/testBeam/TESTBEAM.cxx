@@ -83,6 +83,7 @@
 #include "BunkerInsert.h"
 #include "ChopperUnit.h"
 #include "TwinChopper.h"
+#include "Cryostat.h"
 
 #include "TESTBEAM.h"
 
@@ -98,8 +99,9 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   TwinA(new constructSystem::TwinChopper(newName+"TwinA")),
 
   ADisk(new constructSystem::DiskChopper(newName+"BladeA")),
-  BDisk(new constructSystem::DiskChopper(newName+"BladeB"))
+  BDisk(new constructSystem::DiskChopper(newName+"BladeB")),
 
+  CryoA(new constructSystem::Cryostat(newName+"CryoA"))
   /*!
     Constructor
     \param keyName :: keyname to process
@@ -119,6 +121,8 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   
   OR.addObject(ADisk);
   OR.addObject(BDisk);
+
+  OR.addObject(CryoA);
 
 }
 
@@ -172,6 +176,11 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
 {
   ELog::RegMethod RegA("TESTBEAM","buildBunkerUnits");
 
+  CryoA->addInsertCell(bunkerVoid);
+  CryoA->createAll(System,FA,startIndex);
+  return;
+  
+  
   TwinA->addInsertCell(bunkerVoid);
   TwinA->createAll(System,FA,startIndex);
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/generateSurf.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,11 @@ buildCylinder(surfRegister&,const int,const Geometry::Vec3D&,
 
 Geometry::Sphere* 
 buildSphere(surfRegister&,const int,const Geometry::Vec3D&,const double);
+
+Geometry::Cone* 
+buildCone(surfRegister&,const int,const Geometry::Vec3D&,
+	  const Geometry::Vec3D&,const Geometry::Vec3D&,
+	  const Geometry::Vec3D&);
 
 Geometry::Cone* 
 buildCone(surfRegister&,const int,const Geometry::Vec3D&,

@@ -59,6 +59,8 @@ class CrystalMount : public attachSystem::ContainedComp,
   int xtalMat;             ///< XStal material
   int wallMat;             ///< Wall material
 
+  double yRotation;        ///< Rotation around Y after orientation
+  double zRotation;        ///< Rotation around Y after orientation
   Geometry::Vec3D viewPoint;  // Origin point
   
   // Functions:

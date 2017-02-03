@@ -121,25 +121,31 @@ CrystalMount::populate(const FuncDataBase& Control)
                                      baseName+"XtalMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
                                      baseName+"WallMat");
+
+  yRotation=Control.EvalPair<double>(keyName,baseName,"YRotation");
+  zRotation=Control.EvalPair<double>(keyName,baseName,"ZRotation");
   return;
 }
 
 void
 CrystalMount::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex)
+                               const long int sideIndex)
   /*!
     Create the unit vectors.
     Note that it also set the view point that neutrons come from
     \param FC :: FixedComp for origin
+    \param sideIndex :: direction for link
   */
 {
   ELog::RegMethod RegA("CrystalMount","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-
   viewPoint=FC.getSignedLinkPt(sideIndex);
-  ELog::EM<<"View point == "<<viewPoint<<ELog::endDiag;
-  ELog::EM<<"Orgin point == "<<Origin<<ELog::endDiag;
+
+  applyFullRotate(0,yRotation,0,viewPoint);
+  applyFullRotate(0,zRotation,viewPoint);
+
+  
   return;
 }
 

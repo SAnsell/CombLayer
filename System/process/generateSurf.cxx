@@ -52,6 +52,7 @@
 #include "Cone.h"
 #include "EllipticCyl.h"
 #include "Sphere.h"
+#include "Line.h"
 #include "generateSurf.h"
 
 namespace ModelSupport
@@ -278,6 +279,7 @@ buildCylinder(surfRegister& SMap,const int N,
   return SMap.realPtr<Geometry::Cylinder>(NFound);
 }
 
+
 Geometry::Cone*
 buildCone(surfRegister& SMap,const int N,
 	  const Geometry::Vec3D& O,
@@ -299,6 +301,43 @@ buildCone(surfRegister& SMap,const int N,
 
   Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
   CX->setCone(O,A,angleDeg);
+  const int NFound=SMap.registerSurf(N,CX);
+
+  return SMap.realPtr<Geometry::Cone>(NFound);
+}
+
+Geometry::Cone*
+buildCone(surfRegister& SMap,const int N,
+	  const Geometry::Vec3D& CentPt,
+	  const Geometry::Vec3D& Axis,
+	  const Geometry::Vec3D& APt,
+	  const Geometry::Vec3D& BPt)
+  /*!
+    Simple constructor to build a surface [type Cone]
+    \param SMap :: Surface Map
+    \param N :: Surface number
+    \param Axis :: Axis of cone
+    \param CentPt :: Point on centre line of cone
+    \param APt :: Point on cone
+    \param BPt :: Point on cone
+    \return New cone
+   */
+{
+  ELog::RegMethod("generateSurf","buildCone");
+
+  const Geometry::Line AL(CentPt,Axis.unit());
+  const Geometry::Line BL(APt,(BPt-APt).unit());
+
+  // Taking closest on AL to be centre point
+  const std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    CPoints=AL.closestPoints(BL);
+
+  const double cosAng=std::abs(AL.getDirect().dotProd(BL.getDirect()));
+  
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+  Geometry::Cone* CX=SurI.createUniqSurf<Geometry::Cone>(N);  
+  CX->setCone(CPoints.first,Axis.unit(),180.0*acos(cosAng)/M_PI);
   const int NFound=SMap.registerSurf(N,CX);
 
   return SMap.realPtr<Geometry::Cone>(NFound);
