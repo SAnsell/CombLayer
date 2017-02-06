@@ -313,8 +313,12 @@ SimPOVRay::write(const std::string& Fname) const
   OX << "#version 3.7;" << std::endl;
   OX << "#include  \"colors.inc\"" << std::endl;
   OX << std::endl;
-
   OX << "global_settings { assumed_gamma 1.0 }" << std::endl;
+  OX << std::endl;
+  OX << "#include  \"camera.pov\"" << std::endl;
+  OX << "#include  \"light.pov\"" << std::endl;
+  OX << std::endl;
+
   OX << std::endl;
   
   //  Simulation::writeVariables(OX,"*");
