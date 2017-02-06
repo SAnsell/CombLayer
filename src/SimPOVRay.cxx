@@ -145,9 +145,6 @@ SimPOVRay::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
   // The totally insane line below does the following
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
@@ -187,15 +184,11 @@ SimPOVRay::writeCells(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SimPOVRay","writeCells");
-  OX<<"* -------------------------------------------------------"<<std::endl;
-  OX<<"* ------------------ CELL CARDS -------------------------"<<std::endl;
-  OX<<"* -------------------------------------------------------"<<std::endl;
   
   
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writePOVRay(OX);
-  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
 
@@ -207,17 +200,11 @@ SimPOVRay::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"* -------------------------------------------------------"<<std::endl;
-  OX<<"* --------------- SURFACE CARDS -------------------------"<<std::endl;
-  OX<<"* -------------------------------------------------------"<<std::endl;
-
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
 
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->writePOVRay(OX);
-  OX<<"END"<<std::endl;
-  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;
   return;
 } 
@@ -232,9 +219,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPOVRay","writeMaterial");
 
-  OX<<"* -------------------------------------------------------"<<std::endl;
-  OX<<"* --------------- MATERIAL CARDS ------------------------"<<std::endl;
-  OX<<"* -------------------------------------------------------"<<std::endl;
   // WRITE OUT ASSIGNMENT:
   for(const OTYPE::value_type& mp : OList)
     mp.second->writePOVRaymat(OX);
@@ -248,7 +232,6 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 
   DB.writePOVRay(OX);
   
-  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
   
@@ -310,7 +293,7 @@ SimPOVRay::writePhysics(std::ostream& OX) const
 
   // Remaining Physics cards
   PhysPtr->write(OX,cellOutOrder,voidCells);
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"// ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
 }
@@ -326,18 +309,17 @@ SimPOVRay::write(const std::string& Fname) const
   boost::format FmtStr("%1%%|71t|%2%\n");  
 
   std::ofstream OX(Fname.c_str()); 
-  OX<<"TITLE "<<std::endl;
-  OX<<" POV-Ray model from CombLayer"<<std::endl;
-  Simulation::writeVariables(OX,'*');
-  OX<<FmtStr % "GEOBEGIN" % "COMBNAM";
+  OX<<"//  POV-Ray model from CombLayer"<<std::endl;
+  //  Simulation::writeVariables(OX,"*");
+  //  OX<<FmtStr % "GEOBEGIN" % "COMBNAM";
   writeSurfaces(OX);
   writeCells(OX);
-  OX<<"GEOEND"<<std::endl;
-  writeMaterial(OX);
+  //  OX<<"GEOEND"<<std::endl;
+  /*writeMaterial(OX);
   writeTransform(OX);
   writeWeights(OX);
   writeTally(OX);
-  writePhysics(OX);
+  writePhysics(OX);*/
   OX.close();
   return;
 }
