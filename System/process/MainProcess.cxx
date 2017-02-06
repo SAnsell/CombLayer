@@ -399,6 +399,8 @@ createSimulation(inputParam& IParam,
     SimPtr=new SimPHITS;
   else if (IParam.flag("FLUKA"))
     SimPtr=new SimFLUKA;
+  else if (IParam.flag("PovRay"))
+    SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else 
