@@ -309,7 +309,14 @@ SimPOVRay::write(const std::string& Fname) const
   boost::format FmtStr("%1%%|71t|%2%\n");  
 
   std::ofstream OX(Fname.c_str()); 
-  OX<<"//  POV-Ray model from CombLayer"<<std::endl;
+  OX << "//  POV-Ray model from CombLayer"<<std::endl;
+  OX << "#version 3.7;" << std::endl;
+  OX << "#include  \"colors.inc\"" << std::endl;
+  OX << std::endl;
+
+  OX << "global_settings { assumed_gamma 1.0 }" << std::endl;
+  OX << std::endl;
+  
   //  Simulation::writeVariables(OX,"*");
   //  OX<<FmtStr % "GEOBEGIN" % "COMBNAM";
   writeSurfaces(OX);
