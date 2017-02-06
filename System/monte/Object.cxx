@@ -1317,13 +1317,15 @@ Object::writePOVRay(std::ostream& OX) const
     {
       std::string objName=OR.inRenumberRange(ObjName);
       if (objName.empty())
-	objName="global";
+	//	objName="global";
+	return; // do not render global objects (outer void and black hole)
       std::ostringstream cx;
       cx.precision(10);
 
-
-      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
+      cx<<"intersection{" << std::endl;
+      //      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
       cx<<HRule.displayFluka()<<std::endl;
+      cx << "}";
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   
