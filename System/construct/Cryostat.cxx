@@ -107,6 +107,7 @@ Cryostat::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   //  + Fe special:
+  sampleZOffset=Control.EvalDefVar<double>(keyName+"SampleZOffset",0.0);
   sampleRadius=Control.EvalVar<double>(keyName+"SampleRadius");
   sampleHeight=Control.EvalVar<double>(keyName+"SampleHeight");
 
@@ -127,6 +128,20 @@ Cryostat::populate(const FuncDataBase& Control)
   heatDepth=Control.EvalVar<double>(keyName+"HeatDepth");
   heatThick=Control.EvalVar<double>(keyName+"HeatThick");
 
+  heatOuterRadius=Control.EvalVar<double>(keyName+"HeatOuterRadius");
+  heatOuterLift=Control.EvalVar<double>(keyName+"HeatOuterLift");
+
+  liqN2InnerRadius=Control.EvalVar<double>(keyName+"LiqN2InnerRadius");
+  liqN2OuterRadius=Control.EvalVar<double>(keyName+"LiqN2OuterRadius");
+  liqN2WallThick=Control.EvalVar<double>(keyName+"LiqN2WallThick");
+  liqN2Height=Control.EvalVar<double>(keyName+"LiqN2Height");
+
+  liqHeInnerRadius=Control.EvalVar<double>(keyName+"LiqHeInnerRadius");
+  liqHeOuterRadius=Control.EvalVar<double>(keyName+"LiqHeOuterRadius");
+  liqHeWallThick=Control.EvalVar<double>(keyName+"LiqHeWallThick");
+  liqHeHeight=Control.EvalVar<double>(keyName+"LiqHeHeight");
+  liqHeExtra=Control.EvalVar<double>(keyName+"LiqHeExtraLift");
+
   tailRadius=Control.EvalVar<double>(keyName+"TailRadius");
   tailHeight=Control.EvalVar<double>(keyName+"TailHeight");
   tailDepth=Control.EvalVar<double>(keyName+"TailDepth");
@@ -138,6 +153,8 @@ Cryostat::populate(const FuncDataBase& Control)
 
   
   sampleMat=ModelSupport::EvalMat<int>(Control,keyName+"SampleMat");
+  liqN2Mat=ModelSupport::EvalMat<int>(Control,keyName+"LiqN2Mat");
+  liqHeMat=ModelSupport::EvalMat<int>(Control,keyName+"LiqHeMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   stickMat=ModelSupport::EvalMat<int>(Control,keyName+"StickMat");
 
@@ -171,11 +188,11 @@ Cryostat::createSurfaces()
   */
 {
   ELog::RegMethod RegA("Cryostat","createSurfaces");
-  ELog::EM<<"Sample heigh == "<<sampleHeight<<ELog::endDiag;
-  // sample
+
+  // sample holder
   ModelSupport::buildCylinder(SMap,cryIndex+7,Origin,Z,sampleRadius);
-  ModelSupport::buildPlane(SMap,cryIndex+5,Origin-Z*(sampleHeight/2.0),Z);
-  ModelSupport::buildPlane(SMap,cryIndex+6,Origin+Z*(sampleHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,cryIndex+5,Origin+Z*(sampleZOffset-sampleHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,cryIndex+6,Origin+Z*(sampleZOffset+sampleHeight/2.0),Z);
 
   // inner void
   ModelSupport::buildCylinder(SMap,cryIndex+17,Origin,Z,voidRadius);
@@ -190,7 +207,7 @@ Cryostat::createSurfaces()
   // Stick
 
   ModelSupport::buildCylinder(SMap,cryIndex+107,Origin,Z,stickRadius);
-  ModelSupport::buildPlane(SMap,cryIndex+106,Origin+Z*stickLen,Z);
+  ModelSupport::buildPlane(SMap,cryIndex+106,Origin+Z*(stickLen+sampleZOffset),Z);
 
   // stick bore
   ModelSupport::buildCylinder(SMap,cryIndex+117,Origin,Z,stickBoreRadius);
@@ -209,6 +226,17 @@ Cryostat::createSurfaces()
   ModelSupport::buildCylinder(SMap,cryIndex+217,Origin,Z,(heatRadius+heatThick));
   ModelSupport::buildPlane(SMap,cryIndex+215,Origin-Z*(heatDepth+heatThick),Z);
 
+  // build cone to connect outer tail
+  ModelSupport::buildCone(SMap,cryIndex+218,Origin,Z,
+			  Origin+Y*heatRadius+Z*heatHeight,
+			  Origin+Y*heatOuterRadius+Z*heatOuterLift);
+
+  ModelSupport::buildCone(SMap,cryIndex+228,Origin,Z,
+			  Origin+Y*(heatRadius+heatThick)+Z*heatHeight,
+			  Origin+Y*(heatOuterRadius+heatThick)+Z*heatOuterLift);
+
+  ModelSupport::buildPlane(SMap,cryIndex+226,Origin+Z*heatOuterLift,Z);
+  
   // Tail
 
   ModelSupport::buildCylinder(SMap,cryIndex+307,Origin,Z,tailRadius);
@@ -232,7 +260,45 @@ Cryostat::createSurfaces()
   ModelSupport::buildCone(SMap,cryIndex+328,Origin,Z,
 			  Origin+Y*(tailRadius+tailThick)+Z*tailHeight,
 			  Origin+Y*(tailOuterRadius+tailThick)+Z*tailOuterLift);
-    
+
+
+  // Liquid N2 [400]
+  // inner first
+  ModelSupport::buildCylinder(SMap,cryIndex+407,Origin,Z,
+                              liqN2InnerRadius-liqN2WallThick);
+  ModelSupport::buildCylinder(SMap,cryIndex+417,Origin,Z,liqN2InnerRadius);
+  ModelSupport::buildCylinder(SMap,cryIndex+427,Origin,Z,
+                              liqN2OuterRadius);
+  ModelSupport::buildCylinder(SMap,cryIndex+437,Origin,Z,
+                              liqN2OuterRadius+liqN2WallThick);
+  
+  ModelSupport::buildPlane(SMap,cryIndex+405,
+                           Origin+Z*(heatOuterLift+liqN2WallThick),Z);
+  ModelSupport::buildPlane
+    (SMap,cryIndex+406,Origin+Z*(heatOuterLift+liqN2WallThick+liqN2Height),Z);
+  ModelSupport::buildPlane
+    (SMap,cryIndex+416,Origin+Z*(heatOuterLift+2*liqN2WallThick+liqN2Height),Z);
+
+  // Liquid He [500]
+  // inner first
+  ModelSupport::buildCylinder(SMap,cryIndex+507,Origin,Z,
+                              liqHeInnerRadius-liqHeWallThick);
+  ModelSupport::buildCylinder(SMap,cryIndex+517,Origin,Z,liqHeInnerRadius);
+  ModelSupport::buildCylinder(SMap,cryIndex+527,Origin,Z,
+                              liqHeOuterRadius);
+  ModelSupport::buildCylinder(SMap,cryIndex+537,Origin,Z,
+                              liqHeOuterRadius+liqHeWallThick);
+
+  const double HE(heatOuterLift+liqHeExtra);
+  ModelSupport::buildPlane(SMap,cryIndex+505,
+                           Origin+Z*(HE+liqHeWallThick),Z);
+  ModelSupport::buildPlane
+    (SMap,cryIndex+506,Origin+Z*(HE+liqHeWallThick+liqHeHeight),Z);
+  ModelSupport::buildPlane
+    (SMap,cryIndex+515,Origin+Z*HE,Z);  
+  ModelSupport::buildPlane
+    (SMap,cryIndex+516,Origin+Z*(HE+2*liqHeWallThick+liqHeHeight),Z);
+  
   
   return;
 }
@@ -252,7 +318,7 @@ Cryostat::createObjects(Simulation& System)
   // Sample
   Out=ModelSupport::getComposite(SMap,cryIndex," -7 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,sampleMat,0.0,Out));
-  addCell("Sample",cellIndex-1);
+  addCell("SampleHolder",cellIndex-1);
 
   // stick
   Out=ModelSupport::getComposite(SMap,cryIndex," -107  6 -106 ");
@@ -261,7 +327,7 @@ Cryostat::createObjects(Simulation& System)
   // sample void
   Out=ModelSupport::getComposite(SMap,cryIndex," -17 15 -16 (-6:107) (-5:6:7) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
+  addCell("SampleVoid",cellIndex-1);
   // sample void skin
   Out=ModelSupport::getComposite(SMap,cryIndex," -27 25 -26 (17:-15:16) (-15:117) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
@@ -282,8 +348,31 @@ Cryostat::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,cryIndex," -217 215 -206 (207:-205) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
+  // Heat shield to N2 tanks (on top of heat shield)
+
+  Out=ModelSupport::getComposite(SMap,cryIndex," 405 -406 417 -427 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,liqN2Mat,0.0,Out));  
+
+  Out=ModelSupport::getComposite(SMap,cryIndex," 226 -416 407 -437 (-405:406:-417:427) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+
+  // He tanks (inside N2 tanks)
+  Out=ModelSupport::getComposite(SMap,cryIndex," 505 -506 517 -527 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,liqHeMat,0.0,Out));  
+
+  Out=ModelSupport::getComposite(SMap,cryIndex," 515 -516 507 -537 (-505:506:-517:527) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+  
+  // piece in cone
+  Out=ModelSupport::getComposite(SMap,cryIndex," 206 -226 127 -218");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+
+  Out=ModelSupport::getComposite(SMap,cryIndex," 206 -226 218 -228 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+
+  
   // tail
-  Out=ModelSupport::getComposite(SMap,cryIndex," -307 305 -306  (217:-215:206) ");
+  Out=ModelSupport::getComposite(SMap,cryIndex," -307 305 -306 (217:-215:206) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,cryIndex," -317 315 -306  (307:-305) ");
@@ -291,17 +380,18 @@ Cryostat::createObjects(Simulation& System)
 
 
   // piece in cone
-  Out=ModelSupport::getComposite(SMap,cryIndex," 306 -206 -318 217 ");
+  Out=ModelSupport::getComposite(SMap,cryIndex," 306 -226 -318 217 228 -327 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,cryIndex," 206 -318 127 -325");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,cryIndex," 306 -325 318 -328 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
 
   // Outer wall (veritcal)
-  Out=ModelSupport::getComposite(SMap,cryIndex," 325  -326 -327 127");
+  Out=ModelSupport::getComposite(SMap,cryIndex," 226 -326 -327 127 "
+                                                " (437:-407:416) (537:-507:516:-515) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
   Out=ModelSupport::getComposite(SMap,cryIndex," 325  -326 -337 327 ");
@@ -318,16 +408,9 @@ Cryostat::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,cryIndex," 325 -326 -337 ");
   addOuterUnionSurf(Out);
-  
-  Out=ModelSupport::getComposite(SMap,cryIndex," 25 -26 -27");
+
+  Out=ModelSupport::getComposite(SMap,cryIndex," -106 (-107:-126) -127 326 ");
   addOuterUnionSurf(Out);
-
-  Out=ModelSupport::getComposite(SMap,cryIndex," 26 -126 -127 ");
-  addOuterUnionSurf(Out);  
-
-  Out=ModelSupport::getComposite(SMap,cryIndex," 126 -106 -107 ");
-  addOuterUnionSurf(Out);  
-  
   return;
 }
 
@@ -340,6 +423,12 @@ Cryostat::createLinks()
 {
   ELog::RegMethod RegA("Cryostat","createLinks");
 
+  
+  FixedComp::setConnect(0,Origin-Y*(tailRadius+tailThick),-Y);
+  FixedComp::setLinkSurf(0,SMap.realSurf(cryIndex+307));
+
+  FixedComp::setConnect(1,Origin+Y*(tailRadius+tailThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(cryIndex+307));
 
   return;
 }

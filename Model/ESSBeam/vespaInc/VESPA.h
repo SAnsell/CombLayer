@@ -37,6 +37,7 @@ namespace instrumentSystem
 namespace constructSystem
 {  
   class ChopperPit;
+  class Cryostat;   
   class DiskChopper;
   class Jaws;
   class JawSet;
@@ -201,6 +202,8 @@ class VESPA : public attachSystem::CopiedComp
 
   /// Sample
   std::shared_ptr<instrumentSystem::CylSample> Sample;
+  /// Cryostat
+  std::shared_ptr<constructSystem::Cryostat> Cryo;
 
   /// Array of crystals and detectors
   std::vector<std::shared_ptr<constructSystem::CrystalMount>> XStalArray;

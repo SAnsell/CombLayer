@@ -50,7 +50,8 @@ class Cryostat :
   const int cryIndex;        ///< Index of surface offset
   int cellIndex;             ///< Cell index  
 
-  double sampleRadius;       ///< Radius of sample
+  double sampleZOffset;      ///< Z-offset from centre line
+  double sampleRadius;       ///< Radius of sample holder
   double sampleHeight;       ///< Total height of sample
   
   double voidRadius;         ///< Radius of void for sample
@@ -69,6 +70,20 @@ class Cryostat :
   double heatDepth;          ///< Depth of shield
   double heatHeight;         ///< Height above sample
   double heatThick;          ///< Wall thickness
+  
+  double heatOuterRadius;    ///< Main radius of outer shield
+  double heatOuterLift;      ///< Distance of first cone
+
+  double liqHeInnerRadius;   ///< inner radius
+  double liqHeOuterRadius;   ///< Outer radius
+  double liqHeWallThick;     ///< Thickness of walls
+  double liqHeHeight;        ///< Height
+  double liqHeExtra;         ///< lift above N2 tank
+
+  double liqN2InnerRadius;   ///< inner radius
+  double liqN2OuterRadius;   ///< Outer radius
+  double liqN2WallThick;     ///< Thickness of walls
+  double liqN2Height;        ///< Height
 
   double tailRadius;         ///< Main radius of tail (outer)
   double tailDepth;          ///< Depth of tail (outer)
@@ -80,6 +95,8 @@ class Cryostat :
   double tailOuterLift;
   
   int sampleMat;         ///< Sample Material
+  int liqN2Mat;          ///< liquid nitrogen
+  int liqHeMat;          ///< liquid He Material
   int wallMat;           ///< Wall Material
   int stickMat;          ///< stick Material
   

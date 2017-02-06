@@ -88,6 +88,7 @@ CrystalMount::CrystalMount(const std::string& Key,
   /*!
     Constructor
     \param Key :: Name of construction key
+    \param Index :: Index number
   */
 {}
 
@@ -109,6 +110,7 @@ CrystalMount::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
+  active=Control.EvalDefPair<int>(keyName,baseName,"Active",1);
   width=Control.EvalPair<double>(keyName,baseName,"Width");
   thick=Control.EvalPair<double>(keyName,baseName,"Thick");
   length=Control.EvalPair<double>(keyName,baseName,"Length");
@@ -144,7 +146,6 @@ CrystalMount::createUnitVector(const attachSystem::FixedComp& FC,
 
   applyFullRotate(0,yRotation,0,viewPoint);
   applyFullRotate(0,zRotation,viewPoint);
-
   
   return;
 }
@@ -197,22 +198,25 @@ CrystalMount::createObjects(Simulation& System)
   ELog::RegMethod RegA("CrystalMount","createObjects");
 
   std::string Out;
-  // xstal
-  Out=ModelSupport::getComposite(SMap,xtalIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,xtalMat,0.0,Out));
-  addCell("Xtal",cellIndex-1);
-  
-  
-  Out=ModelSupport::getComposite
-    (SMap,xtalIndex," 1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  
-  Out=ModelSupport::getComposite
-    (SMap,xtalIndex," 1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,xtalIndex," 1 -22 23 -24 25 -26 ");
-  addOuterSurf(Out);
+  if (active)
+    {
+      // xstal
+      Out=ModelSupport::getComposite(SMap,xtalIndex," 1 -2 3 -4 5 -6 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,xtalMat,0.0,Out));
+      addCell("Xtal",cellIndex-1);
+      
+      
+      Out=ModelSupport::getComposite
+        (SMap,xtalIndex," 1 -12 13 -14 15 -16 (2:-3:4:-5:6) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      
+      Out=ModelSupport::getComposite
+        (SMap,xtalIndex," 1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+      
+      Out=ModelSupport::getComposite(SMap,xtalIndex," 1 -22 23 -24 25 -26 ");
+      addOuterSurf(Out);
+    }
   return; 
 }
 

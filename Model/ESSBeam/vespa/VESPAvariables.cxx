@@ -56,6 +56,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "CryoGenerator.h"
 
 namespace setVariable
 {
@@ -72,6 +73,7 @@ VESPAvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("VESPAvariables[F]","VESPAvariables");
 
   setVariable::ChopperGenerator CGen;
+  setVariable::CryoGenerator CryGen;
   setVariable::FocusGenerator FGen;
   setVariable::ShieldGenerator SGen;
   setVariable::PitGenerator PGen;
@@ -278,7 +280,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaCaveYStep",25.0);
   Control.addVariable("vespaCaveXStep",0.0);
   Control.addVariable("vespaCaveVoidFront",60.0);
-  Control.addVariable("vespaCaveVoidHeight",100.0);
+  Control.addVariable("vespaCaveVoidHeight",270.0);
   Control.addVariable("vespaCaveVoidDepth",225.0);
   Control.addVariable("vespaCaveVoidWidth",480.0);  // max 5.8 full
   Control.addVariable("vespaCaveVoidLength",960.0);
@@ -306,7 +308,7 @@ VESPAvariables(FuncDataBase& Control)
 
   JawGen.generateJaws(Control,"vespaVJaws",55.0);
 
-  Control.addVariable("vespaSampleYStep",300.0);
+  Control.addVariable("vespaSampleYStep",0.0);
   Control.addVariable("vespaSampleNLayers",2);
   Control.addVariable("vespaSampleRadius1",1.0);
   Control.addVariable("vespaSampleRadius2",1.5);
@@ -336,6 +338,9 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaDBoxWallMat","Aluminium");
   Control.addVariable("vespaDBoxDetMat","He3_10Bar");
 
+  Control.addVariable("vespaXStal6Active",0);
+  Control.addVariable("vespaXStal22Active",0);
+
   
   const double braggAngle[]={-50,-30,-50,-30};
   const double braggStep[]={32.63,64.157,32.63,64.157};
@@ -362,41 +367,8 @@ VESPAvariables(FuncDataBase& Control)
           detCnt++;
         }
     }
-  /*
-  Control.addVariable("vespaXStal2YStep",100.0);
-  Control.addVariable("vespaXStal2PreXYAngle",-120.0);
-  Control.addVariable("vespaXStal2XYAngle",-60.0);
-  
-  Control.addVariable("vespaXStal3YStep",180.0);
-  Control.addVariable("vespaXStal3PreXYAngle",-150.0);
-  Control.addVariable("vespaXStal3XYAngle",-30.0);
-
-  Control.addVariable("vespaXStal4YStep",100.0);
-  Control.addVariable("vespaXStal4PreXYAngle",60.0);
-  Control.addVariable("vespaXStal4XYAngle",-60.0);
-  
-  Control.addVariable("vespaXStal5YStep",180.0);
-  Control.addVariable("vespaXStal5PreXYAngle",30.0);
-  Control.addVariable("vespaXStal5XYAngle",-30.0);
-
-  Control.addVariable("vespaXStal6YStep",100.0);
-  Control.addVariable("vespaXStal6PreXYAngle",-60.0);
-  Control.addVariable("vespaXStal6XYAngle",60.0);
-  
-  Control.addVariable("vespaXStal7YStep",180.0);
-  Control.addVariable("vespaXStal7PreXYAngle",-30.0);
-  Control.addVariable("vespaXStal7XYAngle",30.0);
-
-
-  Control.addVariable("vespaDBox0YStep",30.0);
-  Control.addVariable("vespaDBox1YStep",30.0);
-  Control.addVariable("vespaDBox2YStep",30.0);
-  Control.addVariable("vespaDBox3YStep",30.0);
-  Control.addVariable("vespaDBox4YStep",30.0);
-  Control.addVariable("vespaDBox5YStep",30.0);
-  Control.addVariable("vespaDBox6YStep",30.0);
-  Control.addVariable("vespaDBox7YStep",30.0);
-      */  
+  // CRYOSTAT
+  CryGen.generateFridge(Control,"vespaCryo",300.0,-10.0);
   return;
 }
  

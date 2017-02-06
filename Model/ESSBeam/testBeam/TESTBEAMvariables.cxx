@@ -114,36 +114,51 @@ TESTBEAMvariables(FuncDataBase& Control)
   Control.addVariable("testCryoASampleRadius",0.75);
   Control.addVariable("testCryoASampleHeight",2.0);
   
-  Control.addVariable("testCryoAVoidRadius",4.5);
-  Control.addVariable("testCryoAVoidDepth",7.0);
-  Control.addVariable("testCryoAVoidHeight",3.0);
+  Control.addVariable("testCryoAVoidRadius",5.0);
+  Control.addVariable("testCryoAVoidDepth",12.0);
+  Control.addVariable("testCryoAVoidHeight",6.0);
   Control.addVariable("testCryoAVoidWallThick",0.5);
 
-  Control.addVariable("testCryoAStickLen",190.0);
+  Control.addVariable("testCryoAStickLen",105.0);
   Control.addVariable("testCryoAStickRadius",0.6);
 
   Control.addVariable("testCryoAStickBoreRadius",1.8);
-  Control.addVariable("testCryoAStickBoreHeight",180.0);
+  Control.addVariable("testCryoAStickBoreHeight",107.0-12.0);
   Control.addVariable("testCryoAStickBoreThick",0.5);
 
-  Control.addVariable("testCryoAHeatRadius",6.0);
-  Control.addVariable("testCryoAHeatHeight",6.0);
-  Control.addVariable("testCryoAHeatDepth",11.0);
+  Control.addVariable("testCryoAHeatRadius",8.0);
+  Control.addVariable("testCryoAHeatHeight",11.0);
+  Control.addVariable("testCryoAHeatDepth",16.0);
   Control.addVariable("testCryoAHeatThick",0.5);
 
-
-  Control.addVariable("testCryoATailRadius",8.0);
-  Control.addVariable("testCryoATailHeight",5.0);
-  Control.addVariable("testCryoATailDepth",12.5);
+  Control.addVariable("testCryoATailRadius",11.0);
+  Control.addVariable("testCryoATailHeight",7.0);
+  Control.addVariable("testCryoATailDepth",18.5);
   Control.addVariable("testCryoATailThick",0.5);
 
-  Control.addVariable("testCryoATailOuterRadius",18.0);
-  Control.addVariable("testCryoATailOuterHeight",150.0);
-  Control.addVariable("testCryoATailOuterLift",9);
+  Control.addVariable("testCryoAHeatOuterRadius",13.5);
+  Control.addVariable("testCryoAHeatOuterLift",15.0);
+
+  Control.addVariable("testCryoALiqN2InnerRadius",15.6);
+  Control.addVariable("testCryoALiqN2OuterRadius",21.2);
+  Control.addVariable("testCryoALiqN2WallThick",0.5);
+  Control.addVariable("testCryoALiqN2Height",53.0);
+  
+  Control.addVariable("testCryoALiqHeInnerRadius",5.7);
+  Control.addVariable("testCryoALiqHeOuterRadius",12.85);
+  Control.addVariable("testCryoALiqHeWallThick",0.5);
+  Control.addVariable("testCryoALiqHeHeight",51.0);
+  Control.addVariable("testCryoALiqHeExtraLift",2.0);
+
+  Control.addVariable("testCryoATailOuterRadius",22.80);
+  Control.addVariable("testCryoATailOuterHeight",89.0);
+  Control.addVariable("testCryoATailOuterLift",12.0);
 
   Control.addVariable("testCryoASampleMat","H2O");
   Control.addVariable("testCryoAWallMat","Aluminium");
   Control.addVariable("testCryoAStickMat","Stainless304");
+  Control.addVariable("testCryoALiqN2Mat","LiqN2");
+  Control.addVariable("testCryoALiqHeMat","LiqHelium");
 
 
 
