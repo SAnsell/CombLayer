@@ -684,7 +684,7 @@ Plane::writePOVRay(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
 
   std::ostringstream cx;
-  Surface::writeHeader(cx);
+  cx<< "plane { ";
   const int ptype=planeType();
   if (!ptype)
     {
@@ -696,8 +696,8 @@ Plane::writePOVRay(std::ostream& OX) const
     {
       // NormV[] is -1.0 or 1.0
       const double D=NormV[ptype-1]*Dist;
-      const std::string PNMX[3]={"YZP","XZP","XYP"};
-      cx<<PNMX[ptype-1]<<" s"<<getName()<<" "<<MW.Num(D);
+      const std::string PNMX[3]={"x","y","z"};
+      cx<<PNMX[ptype-1]<< ", " << MW.Num(D) << " }";
     }
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
