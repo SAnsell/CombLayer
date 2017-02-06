@@ -202,6 +202,17 @@ NullSurface::writeFLUKA(std::ostream&) const
   ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
   return;
 }
+  
+void 
+NullSurface::writePOVRay(std::ostream&) const
+  /*! 
+    Object of write is to output a POV-Ray
+    This should not write but puts a warning to EMessage
+  */
+{
+  ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
+  return;
+}
 
 void 
 NullSurface::write(std::ostream&) const

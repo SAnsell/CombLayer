@@ -99,6 +99,7 @@ class Cone : public Quadratic
   int getCutFlag() const { return cutFlag; }
 
   void write(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;
 };
 
 }  // NAMESPACE Geometry

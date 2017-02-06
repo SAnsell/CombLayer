@@ -108,6 +108,7 @@ class EllipticCyl : public Quadratic
   void displace(const Geometry::Vec3D&);
 
   virtual void write(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;
   virtual void print() const;
 
 };

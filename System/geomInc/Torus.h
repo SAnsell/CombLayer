@@ -102,6 +102,7 @@ class Torus : public Surface
 
   void write(std::ostream&) const;
   virtual void writeFLUKA(std::ostream&) const;
+  virtual void writePOVRay(std::ostream&) const;
 
 };
 

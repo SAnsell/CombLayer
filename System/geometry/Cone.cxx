@@ -474,4 +474,14 @@ Cone::write(std::ostream& OX) const
   return;
 }
 
+void
+Cone::writePOVRay(std::ostream& OX) const
+  /*!
+    Write out the cone class in a POV-Ray file
+    format.
+    \param OX :: Output Stream (required for multiple std::endl)
+  */
+{
+  std::cerr << "Cone::writePovRay: not implemented yet" << std::endl;
+}
 }  // NAMESPACE Geometry

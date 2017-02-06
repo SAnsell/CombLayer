@@ -476,6 +476,17 @@ CylCan::writeFLUKA(std::ostream&) const
   return;
 }
 
+void
+CylCan::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"CylCan::writePOVRay Unsupported output"<<ELog::endErr;
+  return;
+}
+
 
   
   

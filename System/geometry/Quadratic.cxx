@@ -573,6 +573,27 @@ Quadratic::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
+  
+void
+Quadratic::writePOVRay(std::ostream& OX) const
+  /*!
+    Writes out  an Fluka surface description [free format]
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Quadratic","writeFLUKA");
+  masterWrite& MW=masterWrite::Instance();
+  
+  std::ostringstream cx;
+  Surface::writeHeader(cx);
+  cx.precision(Geometry::Nprecision);
+  cx<<"QUA s"<<getName();
+  // write all 10 items in order: as xy xz yz coeffients
+  for(const double& val : BaseEqn)
+    cx<<" "<<MW.Num(val);
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
 
 void
 Quadratic::write(std::ostream& OX) const

@@ -76,6 +76,7 @@ class NullSurface : public Surface
   void print() const;
   void write(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;
 
 };
 

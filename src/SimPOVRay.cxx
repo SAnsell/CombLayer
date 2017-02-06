@@ -195,7 +195,6 @@ SimPOVRay::writeCells(std::ostream& OX) const
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writePOVRay(OX);
-  OX<<"END"<<std::endl;
   OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }

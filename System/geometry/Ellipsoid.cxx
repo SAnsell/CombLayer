@@ -533,6 +533,17 @@ Ellipsoid::write(std::ostream& OX) const
 }
 
 void
+Ellipsoid::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POV-Ray
+    \param OX :: output stream
+  */
+{
+  Quadratic::write(OX);
+  return;
+}
+
+void
 Ellipsoid::print() const
  /*!
    Debug routine to print out basic information 

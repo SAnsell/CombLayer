@@ -622,5 +622,17 @@ MBrect::writeFLUKA(std::ostream&) const
   ELog::EM<<"Unsupported output"<<ELog::endErr;
   return;
 }
+  
+void
+MBrect::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"MBrect::writePOVRay: Unsupported output"<<ELog::endErr;
+  return;
+}
 
 }  // NAMESPACE Geometry

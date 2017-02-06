@@ -569,6 +569,18 @@ EllipticCyl::write(std::ostream& OX) const
 }
 
 void
+EllipticCyl::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POVRay
+    \param OX :: output stream
+  */
+{
+  Quadratic::write(OX);
+  return;
+}
+
+
+void
 EllipticCyl::print() const
  /*!
    Debug routine to print out basic information 

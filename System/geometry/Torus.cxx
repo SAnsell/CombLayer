@@ -413,5 +413,17 @@ Torus::writeFLUKA(std::ostream&) const
   ELog::EM<<"Unsupported output"<<ELog::endErr;
   return;
 }
+  
+void
+Torus::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Torus::writePOVRay: Unsupported output"<<ELog::endErr;
+  return;
+}
 
 }  // NAMESPACE Geometry

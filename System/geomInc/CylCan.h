@@ -100,6 +100,7 @@ class CylCan : public Surface
   void print() const;
   void write(std::ostream&) const;        
   virtual void writeFLUKA(std::ostream&) const;       
+  virtual void writePOVRay(std::ostream&) const;       
     
 };
 

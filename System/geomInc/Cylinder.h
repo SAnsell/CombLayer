@@ -98,6 +98,7 @@ class Cylinder : public Quadratic
 
   virtual void write(std::ostream&) const;
   virtual void writeFLUKA(std::ostream&) const;
+  virtual void writePOVRay(std::ostream&) const;
   virtual void print() const;
 
 };

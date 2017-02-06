@@ -66,6 +66,9 @@ class General : public Quadratic
 
   void setBaseEqn();
 
+  void writePOVRay(std::ostream&) const {};
+
+
 };
 
 std::ostream&
