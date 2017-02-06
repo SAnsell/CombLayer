@@ -113,6 +113,7 @@ class Plane : public Quadratic
   void print() const;
   void write(std::ostream&) const;  
   virtual void writeFLUKA(std::ostream&) const;
+  virtual void writePOVRay(std::ostream&) const;
 };
 
 std::ostream&

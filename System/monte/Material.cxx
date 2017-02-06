@@ -813,6 +813,26 @@ Material::writeFLUKA(std::ostream& OX) const
 } 
 
 void 
+Material::writePOVRay(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in the POV-Ray form
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writePOVRay");
+  
+  typedef std::map<std::string,MXcards> MXTYPE;
+  
+  std::ostringstream cx;
+  cx << "Material::writePOVRay - dummy string";
+  
+  StrFunc::writeMCNPX(cx.str(),OX);
+
+  return;
+} 
+
+void 
 Material::write(std::ostream& OX) const
   /*!
     Write out the information about the material

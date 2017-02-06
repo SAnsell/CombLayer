@@ -97,6 +97,7 @@ class Surface
   virtual void mirror(const Geometry::Plane&) =0; 
   virtual void write(std::ostream&) const =0;
   virtual void writeFLUKA(std::ostream&) const =0;
+  void writePOVRay(std::ostream&) const {};
   /// \endcond ABSTRACT
 
   virtual void rotate(const Geometry::Quaternion&);

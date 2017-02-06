@@ -1732,4 +1732,29 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void
+DBMaterial::writePOVRay(std::ostream& OX) const
+  /*!
+    Write materials out to the POV-Ray system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writePOVRay");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
+	  
+	  if (mp->first)
+	    mp->second.writePOVRay(OX);
+	}
+    }
+  return;
+}
+
 } // NAMESPACE ModelSupport

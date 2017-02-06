@@ -1302,6 +1302,68 @@ Object::writeFLUKA(std::ostream& OX) const
 }
 
 void 
+Object::writePOVRay(std::ostream& OX) const
+  /*!
+    Write the object to a standard stream
+    in POVRay output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writePOVRay");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold)
+    {
+      std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	objName="global";
+      std::ostringstream cx;
+      cx.precision(10);
+
+
+      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
+      cx<<HRule.displayFluka()<<std::endl;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  
+  return;
+}
+
+void
+Object::writePOVRaymat(std::ostream& OX) const
+  /*!
+    Write the object material assignment to a standard stream
+    in POVRay output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writePOVRaymat");
+
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold)
+    {
+      std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	objName="global";
+      std::ostringstream cx;
+      cx<<"POVRay dummy material string    ";
+      if (!MatN)
+	cx<<" VACUUM";
+      else
+	cx<<"    M"<<MatN;
+      
+      cx<<"    "<<objName<<"_"<<ObjName;
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  
+  return;
+}
+
+  
+void 
 Object::writePHITS(std::ostream& OX) const
   /*!
     Write the object to a standard stream

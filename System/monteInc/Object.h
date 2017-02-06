@@ -188,6 +188,8 @@ class Object
   void writePHITS(std::ostream&) const;    
   void writeFLUKA(std::ostream&) const;    
   void writeFLUKAmat(std::ostream&) const;    
+  void writePOVRay(std::ostream&) const;    
+  void writePOVRaymat(std::ostream&) const;    
 
   void checkPointers() const;
 

@@ -671,5 +671,16 @@ ArbPoly::writeFLUKA(std::ostream&) const
   ELog::EM<<"Unsupported output"<<ELog::endErr;
   return;
 }
+  
+void
+ArbPoly::writePOVRay(std::ostream&) const
+  /*!
+    Write out the ArbPoly class in POV-Ray format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Unsupported output ArbPOly::writePOVRay"<<ELog::endErr;
+  return;
+}
 
 }  // NAMESPACE Geometry

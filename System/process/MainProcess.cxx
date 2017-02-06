@@ -56,6 +56,7 @@
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
+#include "SimPOVRay.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
