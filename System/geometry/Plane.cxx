@@ -684,7 +684,9 @@ Plane::writePOVRay(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
 
   std::ostringstream cx;
-  cx<< "plane { ";
+  cx << "#declare s";
+  Surface::writeHeader(cx);
+  cx<< " = plane { ";
   const int ptype=planeType();
   if (!ptype)
     {
