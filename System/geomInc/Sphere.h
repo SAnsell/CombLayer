@@ -85,6 +85,7 @@ class Sphere : public Quadratic
   void setBaseEqn();
 
   void writeFLUKA(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;
   void write(std::ostream&) const; 
 
 };

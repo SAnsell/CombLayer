@@ -352,6 +352,23 @@ Sphere::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void 
+Sphere::writePOVRay(std::ostream& OX) const
+  /*! 
+    Object of write is to output a POV-Ray file
+    \param OX :: Output stream (required for multiple std::endl)  
+  */
+{
+  ELog::RegMethod RegA("Sphere","writePOVRay");
+  
+  masterWrite& MW=masterWrite::Instance();
+  std::ostringstream cx;
+  Surface::writeHeader(cx);
+  cx<<"sphere {" << MW.Num(Centre) << " " << MW.Num(Radius) << "}";
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
   
 void 
 Sphere::write(std::ostream& OX) const
