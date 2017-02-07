@@ -455,15 +455,15 @@ EssProtonBeam(FuncDataBase& Control)
     }
 
   // Beam instrumentation plug (dummy variables)
-  Control.addVariable("ProtonTubePBIPYStep",278.8-50+15); //
-  Control.addVariable("ProtonTubePBIPXYAngle",180.0);
+  Control.addVariable("PBIPYStep",-175); //
+  Control.addVariable("PBIPXYAngle",180.0);
 
-  Control.addVariable("ProtonTubePBIPLength",10.0);
-  Control.addVariable("ProtonTubePBIPWidth",10.0);
-  Control.addVariable("ProtonTubePBIPHeight",10.0);
-  Control.addVariable("ProtonTubePBIPWallThick",1.0);
-  Control.addVariable("ProtonTubePBIPMainMat","Void");
-  Control.addVariable("ProtonTubePBIPWallMat","Void");
+  Control.addVariable("PBIPLength",10.0);
+  Control.addVariable("PBIPWidth",10.0);
+  Control.addVariable("PBIPHeight",10.0);
+  Control.addVariable("PBIPWallThick",1.0);
+  Control.addVariable("PBIPMainMat","Void");
+  Control.addVariable("PBIPWallMat","Void");
   
   return;
 }

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/makeESS.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -89,7 +89,7 @@
 #include "BeRef.h"
 #include "TelescopicPipe.h"
 #include "ProtonTube.h"
-#include "BeamMonitor.h"
+#include "PBIP.h"
 #include "ModBase.h"
 #include "ConicInfo.h"
 #include "CylMod.h"
@@ -129,13 +129,13 @@ namespace essSystem
 makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
   PBeam(new ProtonTube("ProtonTube")),
-  BMon(new BeamMonitor("BeamMonitor")),
+  pbip(new PBIP("PBIP")),
 
   topFocus(new FocusPoints("TopFocus")),
   lowFocus(new FocusPoints("LowFocus")),
   LowPreMod(new TaperedDiskPreMod("LowPreMod")),
   LowCapMod(new TaperedDiskPreMod("LowCapMod")),
-  
+
   LowAFL(new essSystem::WedgeFlightLine("LowAFlight")),
   LowBFL(new essSystem::WedgeFlightLine("LowBFlight")),
 
@@ -157,7 +157,7 @@ makeESS::makeESS() :
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain"))
-  
+
  /*!
     Constructor
  */
@@ -167,13 +167,13 @@ makeESS::makeESS() :
 
   OR.addObject(Reflector);
   OR.addObject(PBeam);
-  OR.addObject(BMon);
+  OR.addObject(pbip);
   OR.addObject(topFocus);
   OR.addObject(lowFocus);
-  
+
   OR.addObject(LowPreMod);
   OR.addObject(LowCapMod);
-  
+
   OR.addObject(LowAFL);
   OR.addObject(LowBFL);
 
@@ -215,7 +215,7 @@ makeESS::makeTarget(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeTarget");
 
-  const int voidCell(74123);  
+  const int voidCell(74123);
 
   // Best place to put this to allow simple call
   if (targetType=="help")
@@ -242,7 +242,7 @@ makeESS::makeTarget(Simulation& System,
   return;
 }
 
-void 
+void
 makeESS::createGuides(Simulation& System)
   /*!
     Create all the guidebays and guides
@@ -262,12 +262,12 @@ makeESS::createGuides(Simulation& System)
       GB->setCylBoundary(Bulk->getLinkSurf(2),
 			 ShutterBayObj->getSignedLinkSurf(7));
 
-      GB->createAll(System,*ShutterBayObj,0);  
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
+      GB->createAll(System,*ShutterBayObj,0);
+      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
       GBArray.push_back(GB);
       attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
-  
+
   GBArray[0]->createGuideItems(System,"Top");
   GBArray[0]->createGuideItems(System,"Low");
   GBArray[1]->createGuideItems(System,"Top");
@@ -281,7 +281,7 @@ makeESS::buildIradComponent(Simulation& System,
                             const mainSystem::inputParam& IParam)
   /*!
     Build the Iradiation component. It is an object
-    within a moderator (typically). Currently not saves in 
+    within a moderator (typically). Currently not saves in
     the class set.
     \param System :: Simulation
     \param IParam :: Name of Irad component + location
@@ -319,7 +319,7 @@ makeESS::buildIradComponent(Simulation& System,
             throw ColErr::InContainerError<std::string>
               (compName,"Component not found");
           const long int linkPt=attachSystem::getLinkNumber(linkName);
-          
+
           OR.addObject(IRadComp);
           IRadComp->createAll(System,*FC,linkPt);
           attachSystem::addToInsertLineCtrl(System,*FC,*IRadComp);
@@ -332,7 +332,7 @@ makeESS::buildIradComponent(Simulation& System,
 void
 makeESS::buildFocusPoints(Simulation& System)
   /*!
-    Construct the focus points [moderators change -- 
+    Construct the focus points [moderators change --
     focus points don't]
     \param System :: Simulation system
    */
@@ -343,7 +343,7 @@ makeESS::buildFocusPoints(Simulation& System)
   lowFocus->createAll(System,World::masterOrigin(),0);
   return;
 }
-  
+
 void
 makeESS::buildLowButterfly(Simulation& System)
   /*!
@@ -382,11 +382,11 @@ makeESS::buildTopButterfly(Simulation& System)
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
-  
+
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
   return;
 }
-      
+
 
 void
 makeESS::buildF5Collimator(Simulation& System,const size_t nF5)
@@ -477,7 +477,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      vecFP.push_back(lobe->getLinkPt(13)); // zmax
 	      F5->setFocalPoints(vecFP);
 	      /////
-	      
+
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
 	      F5->createAll(System, World::masterOrigin());
 
@@ -505,9 +505,9 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		  if (std::abs(theta-270)<1) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
 		}
-	      
+
 	      attachSystem::addToInsertSurfCtrl(System, *ShutterBayObj, *F5); // helps with single moderator !!! \todo not needed with two moderators
-	      
+
 	      F5array.push_back(F5);
 	    }
 	}
@@ -559,15 +559,15 @@ makeESS::buildBunkerFeedThrough(Simulation& System,
           else
             throw ColErr::InContainerError<std::string>
               (bunkerName,"bunkerName not know");
-          
+
           std::shared_ptr<BunkerFeed> BF
             (new BunkerFeed("BunkerFeed",j));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,segNumber,feedName);  
-          
+          BF->createAll(System,*BPtr,segNumber,feedName);
+
           bFeedArray.push_back(BF);
           //  attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
-          
+
         }
     }
   return;
@@ -621,9 +621,9 @@ makeESS::buildBunkerChicane(Simulation& System,
       const std::string segObj=
         IParam.getValueError<std::string>
         ("bunkerChicane",j,1,"SegmentNumber "+errMess);
-      
+
       if (!StrFunc::convert(segObj,segNumber))
-	{ 
+	{
 	  const std::string linkName=
 	    IParam.getValueError<std::string>
 	    ("bunkerChicane",j,2,"SegmentNumber "+errMess);
@@ -683,17 +683,17 @@ makeESS::buildBunkerQuake(Simulation& System,
           else
             throw ColErr::InContainerError<std::string>
               (bunkerName,"bunkerName not know");
-          
+
           std::shared_ptr<BunkerQuake> BF(new BunkerQuake(BPtr->getKeyName()));
           OR.addObject(BF);
-          BF->createAll(System,*BPtr,12,0);  
+          BF->createAll(System,*BPtr,12,0);
         }
     }
 
   return;
 }
 
-  
+
 void
 makeESS::buildPillars(Simulation& System)
   /*!
@@ -705,30 +705,30 @@ makeESS::buildPillars(Simulation& System)
   ABunkerPillars->createAll(System,*ABunker);
   return;
 }
-  
+
 void
 makeESS::optionSummary(Simulation& System)
   /*!
     Write summary of options
-    \param System :: Dummy call variable 						
+    \param System :: Dummy call variable
    */
 {
   ELog::RegMethod RegA("makeESS","optionSummary");
-  
+
   makeTarget(System,"help");
-  
+
   return;
 }
 
-  
+
 void
 makeESS::makeBeamLine(Simulation& System,
 		      const mainSystem::inputParam& IParam)
   /*!
     Build a beamline based on LineType
-     -- to construct a beamline the name of the guide Item 
+     -- to construct a beamline the name of the guide Item
      and the beamline typename is required
-    \param System :: Simulation 
+    \param System :: Simulation
     \param IParam :: Input paramters
   */
 {
@@ -766,12 +766,12 @@ makeESS::makeBeamLine(Simulation& System,
 	      Control.addVariable(BL+"Filled",fillFlag);
 	      index++;
 	    }
-	  
+
 	  // FIND BUNKER HERE:::
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
-	  
+
 	  if (BLNum.first==1 && BLNum.second<=10)
 	    BLfactory.build(System,*ABunker);
 	  else if (BLNum.first==1 && BLNum.second>10)
@@ -791,7 +791,7 @@ makeESS::makeBunker(Simulation& System,
                     const mainSystem::inputParam& IParam)
   /*!
     Make the bunker system
-    \param System :: Simulation 
+    \param System :: Simulation
     \param bunkerType :: different bunker to make
   */
 {
@@ -799,7 +799,7 @@ makeESS::makeBunker(Simulation& System,
   const int voidCell(74123);
   const std::string bunkerType=
     IParam.getValue<std::string>("bunkerType");
-  
+
   ABunker->addInsertCell(voidCell);
   ABunker->setRotationCentre(ShutterBayObj->getCentre());
   ABunker->createAll(System,*ShutterBayObj,4,false);
@@ -814,7 +814,7 @@ makeESS::makeBunker(Simulation& System,
   ABunker->insertComponent(System,"floor",*BBunker);
 
   // Other side if needed :
-  
+
   CBunker->addInsertCell(voidCell);
   CBunker->createAll(System,*ShutterBayObj,3,true);
 
@@ -841,9 +841,9 @@ makeESS::makeBunker(Simulation& System,
       TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
       TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
-      
+
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
-      
+
       //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
       //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
     }
@@ -854,15 +854,15 @@ makeESS::makeBunker(Simulation& System,
               <<"  noPillar -- Disallow the pillars\n"
               <<ELog::endBasic;
     }
-        
+
   return;
 }
-  
+
 void
 makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
   /*!
     Build pre wings :: These are little layers of pre-moderator that
-    drop into the flight-line space 
+    drop into the flight-line space
     \param System :: Simulation
     \param lowModType :: key for lower moderator type
    */
@@ -871,7 +871,7 @@ makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   enum Side {bottom, top};
-  
+
   TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
   OR.addObject(TopPreWing);
   TopPreWing->createAll(System,*TopPreMod,9,false,top, *TopMod);
@@ -901,7 +901,7 @@ void
 makeESS::buildTwister(Simulation& System)
   /*!
     Adds a twister to the main system
-    \param System :: Simulation 
+    \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("makeESS","buildTwister");
@@ -917,7 +917,7 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
-  
+
   attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
   attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
   attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
@@ -926,7 +926,7 @@ makeESS::buildTwister(Simulation& System)
   // split Twister by components
   // for (const ContainedComp & CC : Twister->getCC()) ...
   // use LineControl for intersections with flight lines
-  
+
   ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
@@ -939,7 +939,7 @@ makeESS::buildTwister(Simulation& System)
   return;
 }
 
-void 
+void
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
   /*!
@@ -959,7 +959,7 @@ makeESS::build(Simulation& System,
 
   const std::string lowModType=IParam.getValue<std::string>("lowMod"); // if None then BeRefLowVoidThick must be set to 0.0
   const std::string topModType=IParam.getValue<std::string>("topMod");
-  
+
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
@@ -968,7 +968,7 @@ makeESS::build(Simulation& System,
   const size_t nF5=IParam.getValue<size_t>("nF5");
   const int engActive=Control.EvalPair<int>
     ("BulkEngineeringActive","EngineeringActive");
-  
+
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
@@ -989,13 +989,13 @@ makeESS::build(Simulation& System,
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius(),true);
-  
+
   if (lowModType != "None")
     buildLowButterfly(System);
   buildTopButterfly(System);
   const double LMHeight=(lowModType == "None") ? 0.0 : attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
-  
+
   // Cap moderator DOES not span whole unit
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius(),false);
@@ -1014,7 +1014,7 @@ makeESS::build(Simulation& System,
 			 Target->wheelHeight(),
 			 0.0,
 			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
-  
+
   buildPreWings(System,lowModType);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
@@ -1030,7 +1030,7 @@ makeESS::build(Simulation& System,
       LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
       LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
     }
-  
+
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
@@ -1042,7 +1042,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
-  
+
   buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
@@ -1058,7 +1058,7 @@ makeESS::build(Simulation& System,
       createGuides(System);
       makeBunker(System,IParam);
     }
-  
+
   TSMainBuildingObj->addInsertCell(74123);
   TSMainBuildingObj->createAll(System,World::masterOrigin());
   attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
@@ -1073,9 +1073,11 @@ makeESS::build(Simulation& System,
 
   // PROTON BEAMLINE
 
+  pbip->createAll(System,World::masterOrigin(),0);
+  
   PBeam->createAll(System,*Target,1,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
   Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
-  
+
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,
@@ -1092,7 +1094,7 @@ makeESS::build(Simulation& System,
     makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
 
-  
+
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
 
@@ -1100,7 +1102,7 @@ makeESS::build(Simulation& System,
     ModPipes->buildLowPipes(System,lowPipeType);
   ModPipes->buildTopPipes(System,topPipeType);
 
-   // Add feedthoughs/chicanes 
+   // Add feedthoughs/chicanes
 
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);

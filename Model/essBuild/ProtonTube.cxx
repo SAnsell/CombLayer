@@ -77,7 +77,6 @@
 #include "AttachSupport.h"
 
 #include "PBW.h"
-#include "PBIP.h"
 #include "TelescopicPipe.h"
 #include "ProtonTube.h"
 
@@ -86,8 +85,7 @@ namespace essSystem
 
 ProtonTube::ProtonTube(const std::string& Key) :
   TelescopicPipe(Key),
-  pbw(new PBW(Key+"PBW")),
-  bm(new PBIP(Key+"PBIP"))
+  pbw(new PBW(Key+"PBW"))
   /*!
     Constructor
   */
@@ -96,7 +94,6 @@ ProtonTube::ProtonTube(const std::string& Key) :
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
   OR.addObject(pbw);
-  OR.addObject(bm);
   
   return;
 }
@@ -104,8 +101,7 @@ ProtonTube::ProtonTube(const std::string& Key) :
 ProtonTube::ProtonTube(const ProtonTube& A) :
   TelescopicPipe(A),
   engActive(A.engActive),
-  pbw(A.pbw->clone()),
-  bm(A.bm->clone())
+  pbw(A.pbw->clone())
   /*!
     Copy constructor
     \param A :: ProtonTube to copy
@@ -125,7 +121,6 @@ ProtonTube::operator=(const ProtonTube& A)
       TelescopicPipe::operator=(A);
       engActive=A.engActive;
       *pbw=*A.pbw;
-      *bm=*A.bm;
     }
   return *this;
 }
@@ -185,12 +180,6 @@ ProtonTube::createAll(Simulation& System,
 
     //    attachSystem::addToInsertControl(System,*this, pbw->getCC("Plug")); // does not work
 
-    // beam monitor
-      bm->createAll(System, *this, 0);
-      //attachSystem::addToInsertSurfCtrl(System,SB,bm->getCC("Plug"));
-      //      attachSystem::addToInsertSurfCtrl(System,Bulk,bm);
-      ELog::EM << "addToInsertForced" << ELog::endCrit;
-      //      attachSystem::addToInsertForced(System,*this, *bm);
     }
 
 
