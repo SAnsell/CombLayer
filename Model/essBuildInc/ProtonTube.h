@@ -14,13 +14,14 @@ namespace essSystem
   \brief proton beam tube
 */
   class PBW;
+  class PBIP;
 
 class ProtonTube :  public TelescopicPipe
 {
  private:
   int engActive; ///< True if engineering details (like PBW) should be built
   std::shared_ptr<PBW> pbw; ///< Proton beam window
-  std::shared_ptr<PBW>  bm; ///< Beam monitor
+  std::shared_ptr<PBIP>  bm; ///< Beam monitor
 
   void populate(const FuncDataBase&);
 

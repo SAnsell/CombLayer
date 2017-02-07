@@ -454,89 +454,16 @@ EssProtonBeam(FuncDataBase& Control)
       Control.addVariable("ProtonTubePBWShieldWallMat" + std::to_string(i),"Void");
     }
 
-  // Beam monitor (dummy variables)
-  // Proton beam window
-  Control.addVariable("ProtonTubeBeamMonitorPlugMat","SS316L");
-  Control.addVariable("ProtonTubeBeamMonitorPlugLength1",9.0); // Drawing received from AT (https://plone.esss.lu.se/docs/neutronics/engineering/drawings/monolith/pbw-drawings/view)
-  Control.addVariable("ProtonTubeBeamMonitorPlugLength2",9.0);
-  Control.addVariable("ProtonTubeBeamMonitorPlugWidth1",76.3);
-  Control.addVariable("ProtonTubeBeamMonitorPlugWidth2",93.0);
-  Control.addVariable("ProtonTubeBeamMonitorPlugHeight",42.5);
-  Control.addVariable("ProtonTubeBeamMonitorPlugDepth",54.5);
+  // Beam instrumentation plug (dummy variables)
+  Control.addVariable("ProtonTubePBIPYStep",278.8-50+15); //
+  Control.addVariable("ProtonTubePBIPXYAngle",180.0);
 
-  Control.addVariable("ProtonTubeBeamMonitorPlugVoidLength",15.0);
-  Control.addVariable("ProtonTubeBeamMonitorPlugVoidWidth",50.0);
-  Control.addVariable("ProtonTubeBeamMonitorPlugVoidDepth",25.0);
-  Control.Parse("ProtonTubeBeamMonitorPlugHeight");
-  Control.addVariable("ProtonTubeBeamMonitorPlugVoidHeight");
-
-  Control.addVariable("ProtonTubeBeamMonitorPlugAlLength", 9.695); // ESS-0066872.1 page 4
-  Control.addVariable("ProtonTubeBeamMonitorPlugAlGrooveRadius", 16.0); // ESS-0066872.1 page 4
-  Control.addVariable("ProtonTubeBeamMonitorPlugAlGrooveDepth", 0.5); // ESS-0066872.1 page 4
-  Control.addVariable("ProtonTubeBeamMonitorPlugAlGapHeight", 35); // dummy
-  Control.addVariable("ProtonTubeBeamMonitorPlugAlGapWidth", 35); // dummy
-
-  Control.Parse("ProtonTubeRadius3");
-  Control.addVariable("ProtonTubeBeamMonitorProtonTubeRadius");
-  Control.addVariable("ProtonTubeBeamMonitorProtonTubeMatBefore", "Helium");
-  Control.addVariable("ProtonTubeBeamMonitorProtonTubeMatAfter", "Helium");
-
-  Control.addVariable("ProtonTubeBeamMonitorFlangeRadius",29.0/2); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubeBeamMonitorFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubeBeamMonitorFlangeWaterRingRadiusIn",31.0/2.0); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubeBeamMonitorFlangeWaterRingRadiusOut",42.0/2.0); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubeBeamMonitorFlangeWaterRingThick",0.5); // ESS-0066872.1 page 5
-  Control.addVariable("ProtonTubeBeamMonitorFlangeWaterRingOffset",0.5); // TSV30
-  Control.addVariable("ProtonTubeBeamMonitorFlangeNotchDepth",3.5); // TSV30
-  Control.addVariable("ProtonTubeBeamMonitorFlangeNotchThick",0.5); // TSV30
-  Control.addVariable("ProtonTubeBeamMonitorFlangeNotchOffset",2.0); // TSV30
-
-  
-  Control.addVariable("ProtonTubeBeamMonitorCoolingMat","Tungsten_BeamMonitor");
-  Control.addVariable("ProtonTubeBeamMonitorMat","Aluminium");
-  Control.addVariable("ProtonTubeBeamMonitorYStep",278.8-50+15); //
-  Control.addVariable("ProtonTubeBeamMonitorXYAngle",180.0);
-  
-  // Actually in BeamMonitor the foil thick is 0.05 cm.
-  // However, MCNP crashes with such a thin foil, so I increase thickness by
-  // x10 and decrease density of Tungsten_BeamMonitor by the same factor.
-  Control.addVariable("ProtonTubeBeamMonitorFoilThick",0.05);
-  Control.addVariable("ProtonTubeBeamMonitorFoilOffset",1.0);
-  Control.addVariable("ProtonTubeBeamMonitorFoilRadius",34); // dummy
-  Control.addVariable("ProtonTubeBeamMonitorFoilCylOffset",33); // dummy
-  
-  Control.Parse("ProtonTubeBeamMonitorFoilThick");
-  Control.addVariable("ProtonTubeBeamMonitorFoilWaterThick");
-  Control.addVariable("ProtonTubeBeamMonitorFoilWaterLength",30); // dummy
-  
-  Control.addVariable("ProtonTubeBeamMonitorShieldXStep",0);
-  Control.addVariable("ProtonTubeBeamMonitorShieldYStep",0);
-  Control.addVariable("ProtonTubeBeamMonitorShieldZStep",0);
-  Control.addVariable("ProtonTubeBeamMonitorShieldXYangle",0);
-  Control.addVariable("ProtonTubeBeamMonitorShieldZangle",0);
-
-  Control.addVariable("ProtonTubeBeamMonitorShieldNSection",5);
-  Control.addVariable("ProtonTubeBeamMonitorShieldLength1",21.5); // void
-  Control.addVariable("ProtonTubeBeamMonitorShieldLength2",40.0); // m650
-  Control.addVariable("ProtonTubeBeamMonitorShieldLength3",152.5); // m2634, cell 10008
-  Control.addVariable("ProtonTubeBeamMonitorShieldLength4",98.5); // m2634, c10007
-  Control.addVariable("ProtonTubeBeamMonitorShieldLength5",50.0); // m2634, c10006
-  Control.addVariable("ProtonTubeBeamMonitorShieldLength6",50.0); // !!! remove me
-  Control.addVariable("ProtonTubeBeamMonitorShieldRadius1",63.0/2.0); // !! remove me
-  Control.addVariable("ProtonTubeBeamMonitorShieldRadius2",63.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubeBeamMonitorShieldRadius3",73.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubeBeamMonitorShieldRadius4",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubeBeamMonitorShieldRadius5",83.0/2.0); // ESS-0066872.1 page 7
-  Control.addVariable("ProtonTubeBeamMonitorShieldRadius6",83.0/2.0); // ESS-0066872.1 page 7
-
-  for (int i=1; i<=6; i++)
-    {
-      Control.addVariable("ProtonTubeBeamMonitorShieldZcut" + std::to_string(i),0);
-      Control.addVariable("ProtonTubeBeamMonitorShieldWallThick" + std::to_string(i),1);
-      Control.addVariable("ProtonTubeBeamMonitorShieldInnerMat" + std::to_string(i),"Void");
-      Control.addVariable("ProtonTubeBeamMonitorShieldWallMat" + std::to_string(i),"Void");
-    }
-  
+  Control.addVariable("ProtonTubePBIPLength",10.0);
+  Control.addVariable("ProtonTubePBIPWidth",10.0);
+  Control.addVariable("ProtonTubePBIPHeight",10.0);
+  Control.addVariable("ProtonTubePBIPWallThick",1.0);
+  Control.addVariable("ProtonTubePBIPMainMat","Void");
+  Control.addVariable("ProtonTubePBIPWallMat","Void");
   
   return;
 }

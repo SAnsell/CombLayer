@@ -574,7 +574,7 @@ PBW::createLinks()
   FixedComp::setConnect(5,Origin+Z*(plugHeight),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
 
-  ELog::EM << FixedComp::getLinkPt(5) << ELog::endDiag;
+  ELog::EM << keyName << " link point 5: " << FixedComp::getLinkPt(5) << ELog::endDiag;
 
   return;
 }
