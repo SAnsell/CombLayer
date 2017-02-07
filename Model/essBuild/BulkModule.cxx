@@ -84,7 +84,7 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,9),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -212,6 +212,9 @@ BulkModule::createSurfaces()
   // rotation of axis:
 
   int RI(bulkIndex);
+  // divider
+  ModelSupport::buildPlane(SMap,RI+1,Origin,Y);
+  
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*depth[i],Z);
@@ -284,12 +287,18 @@ BulkModule::createLinks()
 	    (index+1,Origin+COffset[i]+Z*height[i],Z);  // top
 	  FixedComp::setConnect
 	    (index+2,Origin+COffset[i]+Y*radius[i],Y);   // outer point
+	  FixedComp::setConnect
+	    (index+3,Origin+COffset[i]-Y*radius[i],-Y);   // outer point
 	  
 	  const int RI(static_cast<int>(i)*10+bulkIndex);
 	  FixedComp::setLinkSurf(index,-SMap.realSurf(RI+5));
 	  FixedComp::setLinkSurf(index+1,SMap.realSurf(RI+6));
 	  FixedComp::setLinkSurf(index+2,SMap.realSurf(RI+7));
-	  index+=3;
+	  FixedComp::setBridgeSurf(index+2,SMap.realSurf(bulkIndex+1));
+	  FixedComp::setLinkSurf(index+3,SMap.realSurf(RI+7));
+	  FixedComp::setBridgeSurf(index+3,-SMap.realSurf(bulkIndex+1));
+
+	  index+=4;
 	}
     }
   return;
