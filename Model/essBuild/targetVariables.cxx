@@ -297,21 +297,21 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.addVariable("ProtonTubeNSection",4);
 
-  Control.addVariable("ProtonTubeRadius1",20.0); // Drawing from Mark
-  Control.addVariable("ProtonTubeLength1",37.0); // Drawing from Mark
+  Control.addVariable("ProtonTubeRadius1",20.0); // MK170207
+  Control.addVariable("ProtonTubeLength1",37.0); // MK170207
   Control.addVariable("ProtonTubeZcut1",0.0);  // to have the same height as BeRef::targetVoid
   Control.addVariable("ProtonTubeWallThick1",1.0);
   Control.addVariable("ProtonTubeInnerMat1","Helium");  // mat : 2000
   Control.addVariable("ProtonTubeWallMat1","SS316L"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius2",32.5/2.0); // Drawing from Mark
-  Control.addVariable("ProtonTubeLength2",35.0); // Drawing from Mark
+  Control.addVariable("ProtonTubeRadius2",32.5/2.0); // MK170207
+  Control.addVariable("ProtonTubeLength2",35.0); // MK170207
   Control.addVariable("ProtonTubeZcut2",0.0); 
   Control.addVariable("ProtonTubeWallThick2",1.0);
   Control.addVariable("ProtonTubeInnerMat2","Helium");  // mat : 2000
   Control.addVariable("ProtonTubeWallMat2","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius3",21.0/2.0); // Drawing from Mark
+  Control.addVariable("ProtonTubeRadius3",21.0/2.0); // MK170207
   Control.addVariable("ProtonTubeLength3",127.5);
   Control.addVariable("ProtonTubeZcut3",0.0);
   Control.addVariable("ProtonTubeWallThick3",4.0);
@@ -454,7 +454,7 @@ EssProtonBeam(FuncDataBase& Control)
     }
 
   // Beam instrumentation plug (dummy variables)
-  Control.addVariable("PBIPYStep",-175); //
+  Control.addVariable("PBIPYStep",-177.2); // MK170207
   Control.addVariable("PBIPXYAngle",180.0);
 
   Control.addVariable("PBIPLength",10.0);
@@ -463,8 +463,20 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("PBIPWallThick",1.0);
   Control.addVariable("PBIPMainMat","Void");
   Control.addVariable("PBIPWallMat","Void");
+
+  Control.addVariable("PBIPPipeBeforeLength",70.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeHeight",7.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthLeft",9.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthRight",20.0); // MK170207
   
+  Control.addVariable("PBIPPipeAfterHeight",8.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthLeft",20.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthRight",9.0); // MK170207
+
   return;
 }
   
 }  // NAMESPACE setVariable
+
+// References:
+// MK170207: https://plone.esss.lu.se/docs/neutronics/engineering/drawings/monolith/pbip-drawings/view

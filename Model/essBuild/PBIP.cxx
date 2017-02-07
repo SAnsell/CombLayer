@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/PBIP.cxx
  *
  * Copyright (c) 2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -97,14 +97,21 @@ PBIP::PBIP(const std::string& Key)  :
   */
 {}
 
-PBIP::PBIP(const PBIP& A) : 
+PBIP::PBIP(const PBIP& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  pipeBeforeLength(A.pipeBeforeLength),
+  pipeBeforeHeight(A.pipeBeforeHeight),
+  pipeBeforeWidthLeft(A.pipeBeforeWidthLeft),
+  pipeBeforeWidthRight(A.pipeBeforeWidthRight),
+  pipeAfterHeight(A.pipeAfterHeight),
+  pipeAfterWidthLeft(A.pipeAfterWidthLeft),
+  pipeAfterWidthRight(A.pipeAfterWidthRight)
   /*!
     Copy constructor
     \param A :: PBIP to copy
@@ -131,6 +138,13 @@ PBIP::operator=(const PBIP& A)
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      pipeBeforeLength=A.pipeBeforeLength;
+      pipeBeforeHeight=A.pipeBeforeHeight;
+      pipeBeforeWidthLeft=A.pipeBeforeWidthLeft;
+      pipeBeforeWidthRight=A.pipeBeforeWidthRight;
+      pipeAfterHeight=A.pipeAfterHeight;
+      pipeAfterWidthLeft=A.pipeAfterWidthLeft;
+      pipeAfterWidthRight=A.pipeAfterWidthRight;
     }
   return *this;
 }
@@ -144,8 +158,8 @@ PBIP::clone() const
 {
     return new PBIP(*this);
 }
-  
-PBIP::~PBIP() 
+
+PBIP::~PBIP()
   /*!
     Destructor
   */
@@ -170,10 +184,17 @@ PBIP::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  pipeBeforeLength=Control.EvalVar<double>(keyName+"PipeBeforeLength");
+  pipeBeforeHeight=Control.EvalVar<double>(keyName+"PipeBeforeHeight");
+  pipeBeforeWidthLeft=Control.EvalVar<double>(keyName+"PipeBeforeWidthLeft");
+  pipeBeforeWidthRight=Control.EvalVar<double>(keyName+"PipeBeforeWidthRight");
+  pipeAfterHeight=Control.EvalVar<double>(keyName+"PipeAfterHeight");
+  pipeAfterWidthLeft=Control.EvalVar<double>(keyName+"PipeAfterWidthLeft");
+  pipeAfterWidthRight=Control.EvalVar<double>(keyName+"PipeAfterWidthRight");
 
   return;
 }
-  
+
 void
 PBIP::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
@@ -189,7 +210,7 @@ PBIP::createUnitVector(const attachSystem::FixedComp& FC)
 
   return;
 }
-  
+
 void
 PBIP::createSurfaces()
   /*!
@@ -198,8 +219,8 @@ PBIP::createSurfaces()
 {
   ELog::RegMethod RegA("PBIP","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
@@ -209,7 +230,7 @@ PBIP::createSurfaces()
 
   return;
 }
-  
+
 void
 PBIP::createObjects(Simulation& System)
   /*!
@@ -228,7 +249,7 @@ PBIP::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 PBIP::createLinks()
   /*!
@@ -237,10 +258,10 @@ PBIP::createLinks()
 {
   ELog::RegMethod RegA("PBIP","createLinks");
 
-  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*(length),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
@@ -254,13 +275,13 @@ PBIP::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 PBIP::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,const long int& lp)
@@ -278,7 +299,7 @@ PBIP::createAll(Simulation& System,
   createSurfaces();
   createLinks();
   createObjects(System);
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

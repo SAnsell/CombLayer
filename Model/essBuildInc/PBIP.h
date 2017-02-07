@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/PBIP.h
  *
  * Copyright (c) 2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_PBIP_h
@@ -52,16 +52,24 @@ class PBIP : public attachSystem::ContainedComp,
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
+  double pipeBeforeLength; ///< proton beam pipe length before PBIP
+  double pipeBeforeHeight; ///< proton beam pipe height before PBIP
+  double pipeBeforeWidthLeft; ///< left width of proton pipe before BPIP
+  double pipeBeforeWidthRight; ///< right width of proton pipe before BPIP
+  double pipeAfterHeight; ///< proton beam pipe height after PBIP
+  double pipeAfterWidthLeft; ///< left width of proton pipe after BPIP
+  double pipeAfterWidthRight; ///< right width of proton pipe after BPIP
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-  
+
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
 
-  
+
  public:
 
   PBIP(const std::string&);
@@ -69,7 +77,7 @@ class PBIP : public attachSystem::ContainedComp,
   PBIP& operator=(const PBIP&);
   virtual PBIP* clone() const;
   virtual ~PBIP();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int&);
 
 };
@@ -77,5 +85,5 @@ class PBIP : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 
