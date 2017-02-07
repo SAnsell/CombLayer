@@ -147,6 +147,7 @@ class HeadRule
   void displayVec(std::vector<Token>&) const;  
 
   std::string displayFluka() const;
+  std::string displayPOVRay() const;
 };  
 
 std::ostream&

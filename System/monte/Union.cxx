@@ -450,6 +450,33 @@ Union::displayFluka() const
 }
 
 std::string
+Union::displayPOVRay() const
+  /*!
+    Display the union in the POV-Ray form
+    union{N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  std::string out;
+  if (!A || !B)
+    throw ColErr::ExBase(2,"Union::displayPOVRay incomplete type");
+  if (A->type()==1)
+    out="| "+A->displayPOVRay()+" |";
+  else
+    out=A->displayPOVRay();
+
+  out+=" | ";
+  
+  if (B->type()==1)
+    out+="| "+B->displayPOVRay()+" |";
+  else
+    out+=B->displayPOVRay();
+
+  return out;
+}
+
+
+std::string
 Union::display(const Geometry::Vec3D& Pt) const
   /*!
     Display the union in the form

@@ -1324,7 +1324,8 @@ Object::writePOVRay(std::ostream& OX) const
 
       cx<<"intersection{" << std::endl;
       //      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
-      cx<<HRule.displayFluka()<<std::endl;
+      cx<<HRule.displayPOVRay()<<std::endl;
+      cx << "pigment {color Red}" << std::endl;
       cx << "}";
       StrFunc::writeMCNPX(cx.str(),OX);
     }

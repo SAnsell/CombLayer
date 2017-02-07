@@ -348,6 +348,23 @@ SurfPoint::displayFluka() const
 }
 
 std::string
+SurfPoint::displayPOVRay() const
+  /*!
+    Returns the signed surface number as
+    a string.
+    \returns string of the value
+  */
+{
+  std::stringstream cx;
+  cx<< "object {s" << keyN;
+  if (sign>0)
+    cx << " inverse";
+  cx<<"}" << std::endl;
+
+  return cx.str();
+}
+
+std::string
 SurfPoint::display(const Geometry::Vec3D& Pt) const
   /*!
     Returns the signed surface number as

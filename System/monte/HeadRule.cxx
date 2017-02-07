@@ -1467,6 +1467,21 @@ HeadRule::displayFluka() const
     " "+HeadNode->displayFluka()+" ";
 }
 
+std::string 
+HeadRule::displayPOVRay() const
+  /*!
+    Write out rule for POV-Ray
+    \return string of Rule
+  */
+{
+  if (!HeadNode) return "";
+
+  // union test
+  return (HeadNode->type()== -1) ? 
+    "pov|"+HeadNode->displayPOVRay()+"pov|" :
+    " "+HeadNode->displayPOVRay()+" ";
+}
+
 
 std::string 
 HeadRule::display(const Geometry::Vec3D& Pt) const

@@ -132,6 +132,7 @@ class Rule
   virtual std::string displayAddress() const=0;
   virtual void displayVec(std::vector<Token>&) const =0;
   virtual std::string displayFluka() const =0;
+  virtual std::string displayPOVRay() const =0;
   ///\endcond ABSTRACT
 };
 
@@ -191,7 +192,8 @@ class Intersection : public Rule
   virtual std::string displayAddress() const;
   virtual void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
-  
+  virtual std::string displayPOVRay() const;
+
 };
 
 
@@ -249,7 +251,8 @@ class Union : public Rule
   virtual std::string displayAddress() const;
   virtual void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
-  
+  virtual std::string displayPOVRay() const;
+
   int simplify();      ///< apply general intersection simplification
 
 };
@@ -316,6 +319,7 @@ class SurfPoint : public Rule
   virtual void displayVec(std::vector<Token>&) const;
 
   virtual std::string displayFluka() const;
+  virtual std::string displayPOVRay() const;
 };
 
 /*!
@@ -378,6 +382,7 @@ class CompObj : public Rule
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
+  virtual std::string displayPOVRay() const;
 };
 
 /*!
@@ -435,6 +440,7 @@ class CompGrp : public Rule
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
+  virtual std::string displayPOVRay() const;
 };
 
 /*!
@@ -489,6 +495,7 @@ class BoolValue : public Rule
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
+  virtual std::string displayPOVRay() const;
 };
 
 /*!
@@ -543,6 +550,7 @@ class ContGrp : public Rule
   virtual std::string displayAddress() const;  
   virtual void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
+  virtual std::string displayPOVRay() const;
 };
 
 /*!
@@ -603,6 +611,7 @@ class ContObj : public Rule
   virtual std::string displayAddress() const;  
   void displayVec(std::vector<Token>&) const;
   virtual std::string displayFluka() const;
+  virtual std::string displayPOVRay() const;
 };
 
 
