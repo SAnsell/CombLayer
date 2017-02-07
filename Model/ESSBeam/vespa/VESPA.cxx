@@ -568,6 +568,7 @@ VESPA::buildHut(Simulation& System,
   VJaws->setInsertCell(Cave->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);
 
+  
   Cryo->setInsertCell(Cave->getCell("Void"));
   Cryo->createAll(System,*VJaws,2);
 

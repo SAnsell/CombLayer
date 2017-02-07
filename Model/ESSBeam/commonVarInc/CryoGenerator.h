@@ -49,7 +49,7 @@ class CryoGenerator
 
 
   void generateFridge(FuncDataBase&,
-		      const std::string&,
+		      const std::string&,const double,
 		      const double,const double);
 
 };

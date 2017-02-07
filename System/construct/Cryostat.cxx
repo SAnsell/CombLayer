@@ -82,7 +82,7 @@ Cryostat::Cryostat(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   cryIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(cryIndex+1)
+  cellIndex(cryIndex+1),active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -106,8 +106,12 @@ Cryostat::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Cryostat","populate");
 
   FixedOffset::populate(Control);
-  //  + Fe special:
+  
+  //  Activation
+  active=Control.EvalDefVar<int>(keyName+"Active",1);
+  
   sampleZOffset=Control.EvalDefVar<double>(keyName+"SampleZOffset",0.0);
+  ELog::EM<<"Sample Z Off "<<sampleZOffset<<ELog::endDiag;
   sampleRadius=Control.EvalVar<double>(keyName+"SampleRadius");
   sampleHeight=Control.EvalVar<double>(keyName+"SampleHeight");
 
@@ -146,6 +150,9 @@ Cryostat::populate(const FuncDataBase& Control)
   tailHeight=Control.EvalVar<double>(keyName+"TailHeight");
   tailDepth=Control.EvalVar<double>(keyName+"TailDepth");
   tailThick=Control.EvalVar<double>(keyName+"TailThick");
+
+  mainThick=Control.EvalVar<double>(keyName+"MainThick");
+  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
 
   tailOuterRadius=Control.EvalVar<double>(keyName+"TailOuterRadius");
   tailOuterHeight=Control.EvalVar<double>(keyName+"TailOuterHeight");
@@ -251,7 +258,12 @@ Cryostat::createSurfaces()
   ModelSupport::buildPlane(SMap,cryIndex+325,Origin+Z*tailOuterLift,Z);
   ModelSupport::buildPlane(SMap,cryIndex+326,Origin+Z*tailOuterHeight,Z);
 
-  ModelSupport::buildCylinder(SMap,cryIndex+337,Origin,Z,(tailOuterRadius+tailThick));
+  // Top plate
+  ModelSupport::buildPlane(SMap,cryIndex+336,
+			   Origin+Z*(tailOuterHeight+roofThick),Z);
+
+  ModelSupport::buildCylinder(SMap,cryIndex+337,Origin,Z,
+			      (tailOuterRadius+mainThick));
   // build cone to connect outer tail
   ModelSupport::buildCone(SMap,cryIndex+318,Origin,Z,
 			  Origin+Y*tailRadius+Z*tailHeight,
@@ -304,9 +316,23 @@ Cryostat::createSurfaces()
 }
 
 void
+Cryostat::createNullObjects()
+  /*!
+    Replaces the cell (sampleVoid) with the same cell
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("Cryostat","createNullObjects");
+  
+  addCells("SampleVoid",getInsertCells());
+
+  return;
+}
+  
+void
 Cryostat::createObjects(Simulation& System)
   /*!
-    Adds the vacuum box
+    Builds the whole crostate
     \param System :: Simulation to create objects in
   */
 {
@@ -394,7 +420,11 @@ Cryostat::createObjects(Simulation& System)
                                                 " (437:-407:416) (537:-507:516:-515) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  
 
-  Out=ModelSupport::getComposite(SMap,cryIndex," 325  -326 -337 327 ");
+  Out=ModelSupport::getComposite(SMap,cryIndex," 325 -326 -337 327 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
+
+  // roof
+  Out=ModelSupport::getComposite(SMap,cryIndex," 326 -336 -337 127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));  
 
   // Heat protection layer
@@ -406,10 +436,10 @@ Cryostat::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,cryIndex," -317 315 -206 ");
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,cryIndex," 325 -326 -337 ");
+  Out=ModelSupport::getComposite(SMap,cryIndex," 325 -336 -337 ");
   addOuterUnionSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,cryIndex," -106 (-107:-126) -127 326 ");
+  Out=ModelSupport::getComposite(SMap,cryIndex," -106 (-107:-126) -127 336 ");
   addOuterUnionSurf(Out);
   return;
 }
@@ -448,8 +478,11 @@ Cryostat::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  createSurfaces();    
-  createObjects(System);
+  createSurfaces();
+  if (active)
+    createObjects(System);
+  else
+    createNullObjects();
   
   createLinks();
   insertObjects(System);   

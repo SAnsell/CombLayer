@@ -50,6 +50,8 @@ class Cryostat :
   const int cryIndex;        ///< Index of surface offset
   int cellIndex;             ///< Cell index  
 
+  int active;                ///< Active flag
+  
   double sampleZOffset;      ///< Z-offset from centre line
   double sampleRadius;       ///< Radius of sample holder
   double sampleHeight;       ///< Total height of sample
@@ -93,6 +95,9 @@ class Cryostat :
   double tailOuterRadius;
   double tailOuterHeight;
   double tailOuterLift;
+
+  double mainThick;        ///< Main (outer body) Wall thickness
+  double roofThick;        ///< Main (outer body) Wall thickness
   
   int sampleMat;         ///< Sample Material
   int liqN2Mat;          ///< liquid nitrogen
@@ -104,6 +109,7 @@ class Cryostat :
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
+  void createNullObjects();
   void createLinks();
 
  public:

@@ -368,7 +368,7 @@ VESPAvariables(FuncDataBase& Control)
         }
     }
   // CRYOSTAT
-  CryGen.generateFridge(Control,"vespaCryo",300.0,-10.0);
+  CryGen.generateFridge(Control,"vespaCryo",300.0,-10,4.5);
   return;
 }
  

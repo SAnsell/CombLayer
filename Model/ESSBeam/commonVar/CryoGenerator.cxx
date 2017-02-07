@@ -76,19 +76,25 @@ void
 CryoGenerator::generateFridge(FuncDataBase& Control,
                               const std::string& keyName,
                               const double yStep,
-                              const double zStep)
+                              const double zStep,
+			      const double sampleZ)
   /*!
     Generate the chopper variables
     \param Control :: Functional data base
     \param keyName :: Base name for chopper variables
     \param yStep :: main y-step
-    \param zStep 
+    \param zStep :: Main +/- of z position
+    \param smapleZ :: Sample stick +/- Z positon
    */
 {
   ELog::RegMethod RegA("CryoGenerator","generateCryostate");
 
   Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"ZStep",zStep);
 
+
+  Control.addVariable(keyName+"SampleZOffset",sampleZ);
+  ELog::EM<<"Sample Z Off "<<sampleZ<<ELog::endDiag;
 
   Control.addVariable(keyName+"SampleRadius",0.75);
   Control.addVariable(keyName+"SampleHeight",2.0);
@@ -102,18 +108,20 @@ CryoGenerator::generateFridge(FuncDataBase& Control,
   Control.addVariable(keyName+"StickRadius",0.6);
 
   Control.addVariable(keyName+"StickBoreRadius",1.8);
-  Control.addVariable(keyName+"StickBoreHeight",107.0-12.0);
+  Control.addVariable(keyName+"StickBoreHeight",95.0);
   Control.addVariable(keyName+"StickBoreThick",0.5);
 
   Control.addVariable(keyName+"HeatRadius",8.0);
   Control.addVariable(keyName+"HeatHeight",13.0);
-  Control.addVariable(keyName+"HeatDepth",14.0);
+  Control.addVariable(keyName+"HeatDepth",12.0);
   Control.addVariable(keyName+"HeatThick",0.5);
 
   Control.addVariable(keyName+"TailRadius",11.0);
   Control.addVariable(keyName+"TailHeight",9.0);
-  Control.addVariable(keyName+"TailDepth",12.5);
+  Control.addVariable(keyName+"TailDepth",14.5);
   Control.addVariable(keyName+"TailThick",0.5);
+  Control.addVariable(keyName+"MainThick",1.0);
+  Control.addVariable(keyName+"RoofThick",1.5);
 
   Control.addVariable(keyName+"HeatOuterRadius",13.5);
   Control.addVariable(keyName+"HeatOuterLift",17.0);
