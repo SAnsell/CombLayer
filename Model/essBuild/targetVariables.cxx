@@ -323,7 +323,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubeLength4",152.5);
   Control.addVariable("ProtonTubeZcut4",0.0);
   Control.addVariable("ProtonTubeWallThick4",4.0);
-  Control.addVariable("ProtonTubeInnerMat4","Helium");
+  Control.addVariable("ProtonTubeInnerMat4","Void");
   Control.addVariable("ProtonTubeWallMat4","SS316L");  // differs from TSV30: M2636
 
 
