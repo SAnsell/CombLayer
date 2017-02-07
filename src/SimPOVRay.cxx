@@ -311,7 +311,7 @@ SimPOVRay::write(const std::string& Fname) const
   std::ofstream OX(Fname.c_str()); 
   OX << "// POV-Ray model from CombLayer."<<std::endl;
   OX << "// This file contains only geomety." << std::endl;
-  OX << "// It is supposed to be included from a .pov file with defined camera and light source." << std::endl;
+  OX << "// It is supposed to be included from a .pov file with defined camera, light source and material textures" << std::endl;
   OX << std::endl;
   OX << "// Surfaces" << std::endl;
   writeSurfaces(OX);
