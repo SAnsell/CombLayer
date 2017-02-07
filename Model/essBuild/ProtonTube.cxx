@@ -79,6 +79,7 @@
 #include "PBW.h"
 #include "TelescopicPipe.h"
 #include "ProtonTube.h"
+#include "World.h"
 
 namespace essSystem
 {
@@ -169,7 +170,7 @@ ProtonTube::createAll(Simulation& System,
   
   //if (engActive)
     {
-      pbw->createAll(System, *this, 0, SB,sbIndex);
+      pbw->createAll(System, World::masterOrigin(), 0, SB,sbIndex);
     //    attachSystem::addToInsertForced(System,SB,*pbw); // works but slow
     attachSystem::addToInsertSurfCtrl(System,SB,pbw->getCC("Plug")); // works
     //    attachSystem::addToInsertSurfCtrl(System,*pbw, this->getCC("Full")); // works but inside out
