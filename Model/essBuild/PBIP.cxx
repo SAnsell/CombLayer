@@ -105,7 +105,6 @@ PBIP::PBIP(const PBIP& A) :
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
-  pipeBeforeLength(A.pipeBeforeLength),
   pipeBeforeHeight(A.pipeBeforeHeight),
   pipeBeforeWidthLeft(A.pipeBeforeWidthLeft),
   pipeBeforeWidthRight(A.pipeBeforeWidthRight),
@@ -138,7 +137,6 @@ PBIP::operator=(const PBIP& A)
       wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
-      pipeBeforeLength=A.pipeBeforeLength;
       pipeBeforeHeight=A.pipeBeforeHeight;
       pipeBeforeWidthLeft=A.pipeBeforeWidthLeft;
       pipeBeforeWidthRight=A.pipeBeforeWidthRight;
@@ -184,7 +182,6 @@ PBIP::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  pipeBeforeLength=Control.EvalVar<double>(keyName+"PipeBeforeLength");
   pipeBeforeHeight=Control.EvalVar<double>(keyName+"PipeBeforeHeight");
   pipeBeforeWidthLeft=Control.EvalVar<double>(keyName+"PipeBeforeWidthLeft");
   pipeBeforeWidthRight=Control.EvalVar<double>(keyName+"PipeBeforeWidthRight");
@@ -228,14 +225,23 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
 
+  // pipe before
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(pipeBeforeWidthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(pipeBeforeWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(pipeBeforeHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(pipeBeforeHeight/2.0),Z);
+
   return;
 }
 
 void
-PBIP::createObjects(Simulation& System)
+PBIP::createObjects(Simulation& System,
+		    const attachSystem::FixedComp& Bulk,const long int& lpBulk)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
+    \param Bulk :: Bulk FC
+    \param lpBulk :: side link point of Bulk
   */
 {
   ELog::RegMethod RegA("PBIP","createObjects");
@@ -244,6 +250,10 @@ PBIP::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
+  //  Out=ModelSupport::getComposite(SMap,surfIndex," 101 -1 103 -104 105 -106 ");
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
 
   return;
@@ -284,12 +294,15 @@ PBIP::createLinks()
 
 void
 PBIP::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,const long int& lp)
+		const attachSystem::FixedComp& FC,const long int& lp,
+		const attachSystem::FixedComp& Bulk,const long int& lpBulk)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param lp :: link point
+    \param Bulk :: Bulk FC
+    \param lpBulk :: side link point of Bulk
   */
 {
   ELog::RegMethod RegA("PBIP","createAll");
@@ -298,7 +311,7 @@ PBIP::createAll(Simulation& System,
   createUnitVector(FC);
   createSurfaces();
   createLinks();
-  createObjects(System);
+  createObjects(System,Bulk,lpBulk);
   insertObjects(System);
 
   return;

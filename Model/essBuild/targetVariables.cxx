@@ -455,7 +455,6 @@ EssProtonBeam(FuncDataBase& Control)
 
   // Beam instrumentation plug (dummy variables)
   Control.addVariable("PBIPYStep",-177.2); // MK170207
-  Control.addVariable("PBIPXYAngle",180.0);
 
   Control.addVariable("PBIPLength",10.0);
   Control.addVariable("PBIPWidth",10.0);
@@ -464,7 +463,6 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("PBIPMainMat","Void");
   Control.addVariable("PBIPWallMat","Void");
 
-  Control.addVariable("PBIPPipeBeforeLength",70.0); // MK170207
   Control.addVariable("PBIPPipeBeforeHeight",7.0); // MK170207
   Control.addVariable("PBIPPipeBeforeWidthLeft",9.0); // MK170207
   Control.addVariable("PBIPPipeBeforeWidthRight",20.0); // MK170207

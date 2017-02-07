@@ -54,7 +54,6 @@ class PBIP : public attachSystem::ContainedComp,
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
 
-  double pipeBeforeLength; ///< proton beam pipe length before PBIP
   double pipeBeforeHeight; ///< proton beam pipe height before PBIP
   double pipeBeforeWidthLeft; ///< left width of proton pipe before BPIP
   double pipeBeforeWidthRight; ///< right width of proton pipe before BPIP
@@ -67,7 +66,8 @@ class PBIP : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&,
+		     const attachSystem::FixedComp&,const long int&);
 
 
  public:
@@ -78,7 +78,9 @@ class PBIP : public attachSystem::ContainedComp,
   virtual PBIP* clone() const;
   virtual ~PBIP();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int&);
+  void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const long int&,
+		 const attachSystem::FixedComp&,const long int&);
 
 };
 
