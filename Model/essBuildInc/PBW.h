@@ -82,7 +82,8 @@ class PBW : public attachSystem::ContainedGroup,
   double foilWaterLength; ///< length (along z-axis chorda) of water layer inside foil
 
   double protonTubeRad;             ///< inner radius of proton tube containing the PBW
-  int protonTubeMat; ///< material inside the proton tube
+  int protonTubeMatBefore; ///< material inside the proton tube before PBW
+  int protonTubeMatAfter; ///< proton tube material after PBW
 
   int coolingMat;                   ///< cooling material
   int mat;                   ///< PBW material

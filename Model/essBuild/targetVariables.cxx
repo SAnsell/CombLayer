@@ -400,7 +400,8 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.Parse("ProtonTubeRadius4");
   Control.addVariable("ProtonTubePBWProtonTubeRadius");
-  Control.addVariable("ProtonTubePBWProtonTubeMat", "Helium");
+  Control.addVariable("ProtonTubePBWProtonTubeMatBefore", "Void");
+  Control.addVariable("ProtonTubePBWProtonTubeMatAfter", "Helium");
 
   Control.addVariable("ProtonTubePBWFlangeRadius",29.0/2); // ESS-0066872.1 page 5
   Control.addVariable("ProtonTubePBWFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
@@ -477,7 +478,8 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.Parse("ProtonTubeRadius3");
   Control.addVariable("ProtonTubeBeamMonitorProtonTubeRadius");
-  Control.addVariable("ProtonTubeBeamMonitorProtonTubeMat", "Helium");
+  Control.addVariable("ProtonTubeBeamMonitorProtonTubeMatBefore", "Helium");
+  Control.addVariable("ProtonTubeBeamMonitorProtonTubeMatAfter", "Helium");
 
   Control.addVariable("ProtonTubeBeamMonitorFlangeRadius",29.0/2); // ESS-0066872.1 page 5
   Control.addVariable("ProtonTubeBeamMonitorFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
