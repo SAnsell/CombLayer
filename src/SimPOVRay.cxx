@@ -309,28 +309,14 @@ SimPOVRay::write(const std::string& Fname) const
   boost::format FmtStr("%1%%|71t|%2%\n");  
 
   std::ofstream OX(Fname.c_str()); 
-  OX << "//  POV-Ray model from CombLayer"<<std::endl;
-  OX << "#version 3.7;" << std::endl;
-  OX << "#include  \"colors.inc\"" << std::endl;
+  OX << "// POV-Ray model from CombLayer."<<std::endl;
+  OX << "// This file contains only geomety." << std::endl;
+  OX << "// It is supposed to be included from a .pov file with defined camera and light source." << std::endl;
   OX << std::endl;
-  OX << "global_settings { assumed_gamma 1.0 }" << std::endl;
-  OX << std::endl;
-  OX << "#include  \"camera.pov\"" << std::endl;
-  OX << "#include  \"light.pov\"" << std::endl;
-  OX << std::endl;
-
-  OX << std::endl;
-  
-  //  Simulation::writeVariables(OX,"*");
-  //  OX<<FmtStr % "GEOBEGIN" % "COMBNAM";
+  OX << "// Surfaces" << std::endl;
   writeSurfaces(OX);
+  OX << "// Cells" << std::endl;
   writeCells(OX);
-  //  OX<<"GEOEND"<<std::endl;
-  /*writeMaterial(OX);
-  writeTransform(OX);
-  writeWeights(OX);
-  writeTally(OX);
-  writePhysics(OX);*/
   OX.close();
   return;
 }
