@@ -237,8 +237,23 @@ PBIP::createLinks()
 {
   ELog::RegMethod RegA("PBIP","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+
+  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
+
+  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
+
+  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
   
   return;
 }
