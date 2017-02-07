@@ -297,21 +297,21 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.addVariable("ProtonTubeNSection",4);
 
-  Control.addVariable("ProtonTubeRadius1",11.5);
-  Control.addVariable("ProtonTubeLength1",148.25); //from mod centre leftside
-  Control.addVariable("ProtonTubeZcut1",3.7);  // to have the same height as BeRef::targetVoid
-  Control.addVariable("ProtonTubeWallThick1",0.0);
+  Control.addVariable("ProtonTubeRadius1",20.0); // Drawing from Mark
+  Control.addVariable("ProtonTubeLength1",37.0); // Drawing from Mark
+  Control.addVariable("ProtonTubeZcut1",0.0);  // to have the same height as BeRef::targetVoid
+  Control.addVariable("ProtonTubeWallThick1",1.0);
   Control.addVariable("ProtonTubeInnerMat1","Helium");  // mat : 2000
-  Control.addVariable("ProtonTubeWallMat1","CastIron"); // mat : 26316
+  Control.addVariable("ProtonTubeWallMat1","SS316L"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius2",16.0);
-  Control.addVariable("ProtonTubeLength2",200.0);
+  Control.addVariable("ProtonTubeRadius2",32.5/2.0); // Drawing from Mark
+  Control.addVariable("ProtonTubeLength2",35.0); // Drawing from Mark
   Control.addVariable("ProtonTubeZcut2",0.0); 
-  Control.addVariable("ProtonTubeWallThick2",4.0);
+  Control.addVariable("ProtonTubeWallThick2",1.0);
   Control.addVariable("ProtonTubeInnerMat2","Helium");  // mat : 2000
   Control.addVariable("ProtonTubeWallMat2","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius3",16.0);  // same as in TSV30
+  Control.addVariable("ProtonTubeRadius3",21.0/2.0); // Drawing from Mark
   Control.addVariable("ProtonTubeLength3",127.5);
   Control.addVariable("ProtonTubeZcut3",0.0);
   Control.addVariable("ProtonTubeWallThick3",4.0);
@@ -416,8 +416,7 @@ EssProtonBeam(FuncDataBase& Control)
   
   Control.addVariable("ProtonTubePBWCoolingMat","H2O");
   Control.addVariable("ProtonTubePBWMat","Aluminium");
-  Control.addVariable("ProtonTubePBWYStep",375+67.2);
-  Control.addVariable("ProtonTubePBWXYAngle",180.0);
+  Control.addVariable("ProtonTubePBWYStep",-375);
   
   Control.addVariable("ProtonTubePBWFoilThick",0.4); // ESS-0058437.3
   Control.addVariable("ProtonTubePBWFoilRadius",8.9); // ESS-0058437.3
