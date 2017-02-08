@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,10 +211,10 @@ BulkModule::createSurfaces()
 
   // rotation of axis:
 
-  int RI(bulkIndex);
   // divider
-  ModelSupport::buildPlane(SMap,RI+1,Origin,Y);
-  
+  ModelSupport::buildPlane(SMap,bulkIndex+1,Origin,Y);
+
+  int RI(bulkIndex);    
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*depth[i],Z);
@@ -317,6 +317,7 @@ BulkModule::addFlightUnit(Simulation& System,
   ELog::RegMethod RegA("BulkModule","addFlightUnit");
 
   std::string Out;
+
   std::stringstream cx;
   cx<<" (";
   for(size_t index=2;index<5;index++)
@@ -367,4 +368,4 @@ BulkModule::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE essSystem
