@@ -113,7 +113,10 @@ PBIP::PBIP(const PBIP& A) :
   pipeAfterHeight(A.pipeAfterHeight),
   pipeAfterWidthLeft(A.pipeAfterWidthLeft),
   pipeAfterWidthRight(A.pipeAfterWidthRight),
-  pipeAfterAngleRight(A.pipeAfterAngleRight)
+  pipeAfterAngleRight(A.pipeAfterAngleRight),
+  foilOffset(A.foilOffset),
+  foilThick(A.foilThick),
+  foilMat(A.foilMat)
   /*!
     Copy constructor
     \param A :: PBIP to copy
@@ -148,6 +151,9 @@ PBIP::operator=(const PBIP& A)
       pipeAfterWidthLeft=A.pipeAfterWidthLeft;
       pipeAfterWidthRight=A.pipeAfterWidthRight;
       pipeAfterAngleRight=A.pipeAfterAngleRight;
+      foilOffset=A.foilOffset;
+      foilThick=A.foilThick;
+      foilMat=A.foilMat;
     }
   return *this;
 }
@@ -195,6 +201,9 @@ PBIP::populate(const FuncDataBase& Control)
   pipeAfterWidthLeft=Control.EvalVar<double>(keyName+"PipeAfterWidthLeft");
   pipeAfterWidthRight=Control.EvalVar<double>(keyName+"PipeAfterWidthRight");
   pipeAfterAngleRight=Control.EvalVar<double>(keyName+"PipeAfterAngleRight");
+  foilOffset=Control.EvalVar<double>(keyName+"FoilOffset");
+  foilThick=Control.EvalVar<double>(keyName+"FoilThick");
+  foilMat=ModelSupport::EvalMat<int>(Control,keyName+"FoilMat");
 
   return;
 }
@@ -223,6 +232,7 @@ PBIP::createSurfaces()
 {
   ELog::RegMethod RegA("PBIP","createSurfaces");
 
+  // main
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
@@ -236,6 +246,10 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0+wallThick),X);
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+wallThick),Z);
+
+  // foil
+  ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*(foilOffset),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(foilOffset+foilThick),Y);
 
   // pipe before
   Geometry::Vec3D leftNorm(X);
@@ -301,14 +315,19 @@ PBIP::createObjects(Simulation& System,
 
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  // main
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -21 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -22 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,foilMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 22 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 13 -14 15 -16 "
 				 "(-1:2:-3:4:-5:6) (1:-103:104:-105:106) "
 				 " (-2:-203:204:-205:206) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf("main", Out);
 

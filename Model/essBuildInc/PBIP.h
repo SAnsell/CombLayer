@@ -62,6 +62,9 @@ class PBIP : public attachSystem::ContainedGroup,
   double pipeAfterWidthLeft; ///< left width of proton pipe after BPIP
   double pipeAfterWidthRight; ///< right width of proton pipe after BPIP
   double pipeAfterAngleRight; ///< tilting angle of the right plane of the proton pipe after PBIP
+  double foilOffset; ///< foil Y-offset
+  double foilThick; ///< foil thickness
+  int foilMat; ///< foil material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
