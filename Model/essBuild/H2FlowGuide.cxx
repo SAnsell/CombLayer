@@ -56,6 +56,7 @@
 #include "surfDivide.h"
 #include "surfDIter.h"
 #include "Quadratic.h"
+#include "General.h"
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Line.h"
@@ -197,6 +198,32 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
   FixedComp::createUnitVector(FC);
   return;
 }  
+
+std::string
+H2FlowGuide::getSQSurface(const double R, const double e)
+  /*
+    Return MCNP(X) surface card for SQ ellipsoids
+  */
+{
+  //  std::string surf = "sq   0   1 0 1 0   1 0 0 0 0";
+  //  std::string surf = "sq   0 0.5 0 1 0 0.5 0 0 0 0";
+  //  std::string surf = "sq   1 0 0 0 0 0 0 1 -1 0 "; // should be
+  std::string surf =     "sq   1 0 0 1 0.5 -0.5 0 1 -1 0 ";
+
+  
+  //                     A B C D   E    F G    x y z
+  //  std::string surf = "sq 1 0 0 0 0.5 -0.5 0   0 0 0";
+  // std::string surf = "sq " + StrFunc::makeString(1./std::pow(R,2)) + " " +
+  //   StrFunc::makeString(1./std::pow(R,2)) + " " +
+  //   StrFunc::makeString(e) + " 0 0 0 -1 " +
+  //   StrFunc::makeString(Origin[0]) + " " + // X
+  //   StrFunc::makeString(Origin[1]) + " " + // Y 
+  //   StrFunc::makeString(Origin[2]) +      // Z
+  //   " -1";
+
+  return surf;
+}
+
   
 void
 H2FlowGuide::createSurfaces()
@@ -205,6 +232,15 @@ H2FlowGuide::createSurfaces()
   */
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
+
+  ELog::EM << getSQSurface(1,1) << " Origin: " << Origin << ELog::endDiag;
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  Geometry::General *GA;
+
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+500);
+  GA->setSurface(getSQSurface(1.0, 1.0));
+  SMap.registerSurf(GA);
 
   // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
@@ -265,12 +301,13 @@ H2FlowGuide::createObjects(Simulation& System,
   const std::string topBottomStr=HW.getLinkString(12)+HW.getLinkString(13);
   HeadRule wallExclude;
   // base
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
+  //  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -102 -500 ");
   wallExclude.procString(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
+  /*  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
   wallExclude.addUnion(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
@@ -278,7 +315,7 @@ H2FlowGuide::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,flowIndex," 101 -102 103 -104 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
-
+  */
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
   

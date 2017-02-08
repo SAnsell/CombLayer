@@ -30,9 +30,9 @@ namespace essSystem
 
 /*!
   \class H2FlowGuide
-  \version 1.0
-  \author S. Ansell
-  \date April 2015 
+  \version 2.0
+  \author S. Ansell / Konstantin Batkov
+  \date Feb 2017
   \brief H2FlowGuide component in the butterfly moderator
 */
 
@@ -61,6 +61,8 @@ class H2FlowGuide :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
+  std::string getSQSurface(const double,const double);
+  
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&);
 
