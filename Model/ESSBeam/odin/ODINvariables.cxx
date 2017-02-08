@@ -3,7 +3,7 @@
  
  * File:   essBuild/ODINvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,6 +176,10 @@ ODINvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"odinFOC5Blade",0.0,70.0,90.0);
 
   SGen.generateShield(Control,"odinShieldA",945.0,80.0,80.0,80.0,2,8);  
+  PipeGen.setPipe(16.0,1.0);
+  PipeGen.setWindow(17.5,0.3);
+  PipeGen.setFlange(20.0,1.0);
+
   PipeGen.generatePipe(Control,"odinPipeOutA",2.0,945.0);
   FGen.generateTaper(Control,"odinOutFA",941.0,4.0,4.0,20.0,16.0);
 

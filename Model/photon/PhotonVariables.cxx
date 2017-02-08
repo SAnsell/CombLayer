@@ -3,7 +3,7 @@
  
  * File:   photon/PhotonVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,8 +211,6 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("MetalContBFlangeWindowMat","Aluminium");
   Control.addVariable("MetalContBFlangeWindowThick",0.6);  
 
-
-
   Control.addVariable("PrimModXStep",0.0);
   Control.addVariable("PrimModYStep",0.0);
   Control.addVariable("PrimModZStep",0.0);
@@ -240,11 +238,11 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("PrimMod3NUnits",1);
   Control.addVariable("PrimMod3Thick",4.0);
   Control.addVariable("PrimMod3Mat0","Poly");
-
-  
   
   // PHOTONMOD2:
  
+  Control.addVariable("PModYStep",50.0);
+  
   Control.addVariable("PModOuterHeight",7.0);
   Control.addVariable("PModOuterWidth",7.0);
   Control.addVariable("PModInnerHeight",5.0);
@@ -292,7 +290,6 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("THoldDefMat","Void");
 
   // PHOTON ONE:
-
   
   Control.addVariable("OuterXStep",0.0);
   Control.addVariable("OuterYStep",0.0);
@@ -420,6 +417,33 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("D2OMod2Height",7.03);
   Control.addVariable("D2OMod2Mat","Be300K");
 
+  // Shield 
+  Control.addVariable("CentralShieldLength",70.0);
+  Control.addVariable("CentralShieldWidth",100.0);
+  Control.addVariable("CentralShieldHeight",100.0);
+
+  Control.addVariable("CentralShieldFrontPolyThick",30.0);
+  Control.addVariable("CentralShieldCollLen",30.0);
+  Control.addVariable("CentralShieldCollWidth",16.0);
+  Control.addVariable("CentralShieldCollHeight",8.0);
+  Control.addVariable("CentralShieldCollThick",1.0);
+
+  Control.addVariable("CentralShieldPolyMat","Poly");
+  Control.addVariable("CentralShieldCdMat","Cadmium");
+  
+
+  // DETECTORS
+  Control.addVariable("CentralDBox1YStep",470.0);
+  Control.addVariable("CentralDBoxNDetectors",20);
+  Control.addVariable("CentralDBoxCentRadius",0.635);
+  Control.addVariable("CentralDBoxTubeRadius",0.425);
+  Control.addVariable("CentralDBoxWallThick",4.1);
+  Control.addVariable("CentralDBoxHeight",60.0);
+  Control.addVariable("CentralDBoxWallMat","Aluminium");
+  Control.addVariable("CentralDBoxDetMat","He3_10Bar");
+  
+  
+  
   return;
 }
 

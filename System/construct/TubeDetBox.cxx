@@ -151,6 +151,7 @@ TubeDetBox::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   active=Control.EvalDefPair<int>(keyName,baseName,"Active",1);
+  ELog::EM<<"Keyname ="<<active<<ELog::endDiag;
   tubeRadius=Control.EvalPair<double>(keyName,baseName,"TubeRadius");
   wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
   centRadius=Control.EvalDefPair<double>(keyName,baseName,"CentRadius",0.0);
@@ -240,9 +241,8 @@ TubeDetBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TubeDetBox","createObjects");
 
-  if (!active)
+  if (active)
     {
-  
       std::string Out;
       std::string mainBody;
       

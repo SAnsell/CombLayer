@@ -6,7 +6,7 @@ use CMakeList;
 use strict;
 
 ## EXECUTABLES
-my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod3","t1Real",
+my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","t1Eng","essBeamline",
 		"filter","singleItem","testMain"); 
 
