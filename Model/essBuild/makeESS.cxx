@@ -1090,6 +1090,7 @@ makeESS::build(Simulation& System,
     {
       buildTwister(System);
     }
+  attachSystem::addToInsertSurfCtrl(System,*Twister,*pbip);
 
   if (lowModType != "None")
     makeBeamLine(System,IParam);
