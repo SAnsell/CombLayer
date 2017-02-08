@@ -150,6 +150,8 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"miraclesCBladeLow",2.0,22.5,35.0);
 
   // Pipe after second chopper unit [to 11.5m]
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+
   PipeGen.generatePipe(Control,"miraclesPipeE",2.0,359.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFE",355.0, 5.0,4.857,  9.5,9.85714);
