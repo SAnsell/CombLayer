@@ -73,6 +73,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "FixedOffset.h"
 #include "surfDBase.h"
@@ -87,7 +88,7 @@ namespace essSystem
 {
 
 PBIP::PBIP(const std::string& Key)  :
-  attachSystem::ContainedComp(),
+  attachSystem::ContainedGroup("before","main","after"),
   attachSystem::FixedOffset(Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
@@ -98,7 +99,7 @@ PBIP::PBIP(const std::string& Key)  :
 {}
 
 PBIP::PBIP(const PBIP& A) :
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
@@ -129,7 +130,7 @@ PBIP::operator=(const PBIP& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
@@ -275,16 +276,16 @@ PBIP::createObjects(Simulation& System,
   std::string Out,before,after;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-  addOuterSurf(Out);
+  addOuterSurf("main", Out);
 
   before=ModelSupport::getComposite(SMap,surfIndex," -1 103 -104 105 -106 ") +
     std::to_string(-FCstart.getLinkSurf(static_cast<size_t>(lpStart)));
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,before));
-  addOuterUnionSurf(before);
+  addOuterSurf("before",before);
 
   after=ModelSupport::getComposite(SMap,surfIndex," 2 203 -204 205 -206 ") + BSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,after));
-  addOuterUnionSurf(after);
+  addOuterUnionSurf("after", after);
 
   return;
 }

@@ -35,7 +35,7 @@ namespace essSystem
   \brief Proton beam instrumentation plug
 */
 
-class PBIP : public attachSystem::ContainedComp,
+class PBIP : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset
 {
  private:

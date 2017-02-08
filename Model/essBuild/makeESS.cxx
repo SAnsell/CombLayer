@@ -1074,11 +1074,11 @@ makeESS::build(Simulation& System,
   // PROTON BEAMLINE
 
   pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,*pbip);
-  attachSystem::addToInsertSurfCtrl(System,*Reflector,*pbip); // remove after PBIP is GC
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
+  Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
   
   PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
-  //  Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
@@ -1091,7 +1091,8 @@ makeESS::build(Simulation& System,
     {
       buildTwister(System);
     }
-  attachSystem::addToInsertSurfCtrl(System,*Twister,*pbip);
+  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
 
   if (lowModType != "None")
     makeBeamLine(System,IParam);
