@@ -56,6 +56,7 @@ class PBIP : public attachSystem::ContainedComp,
 
   double pipeBeforeHeight; ///< proton beam pipe height before PBIP
   double pipeBeforeWidthLeft; ///< left width of proton pipe before BPIP
+  double pipeBeforeAngleLeft; ///< tilting angle of left plane of the proton pipe before PBIP
   double pipeBeforeWidthRight; ///< right width of proton pipe before BPIP
   double pipeAfterHeight; ///< proton beam pipe height after PBIP
   double pipeAfterWidthLeft; ///< left width of proton pipe after BPIP

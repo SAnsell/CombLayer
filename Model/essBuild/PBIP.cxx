@@ -107,6 +107,7 @@ PBIP::PBIP(const PBIP& A) :
   mainMat(A.mainMat),wallMat(A.wallMat),
   pipeBeforeHeight(A.pipeBeforeHeight),
   pipeBeforeWidthLeft(A.pipeBeforeWidthLeft),
+  pipeBeforeAngleLeft(A.pipeBeforeAngleLeft),
   pipeBeforeWidthRight(A.pipeBeforeWidthRight),
   pipeAfterHeight(A.pipeAfterHeight),
   pipeAfterWidthLeft(A.pipeAfterWidthLeft),
@@ -139,6 +140,7 @@ PBIP::operator=(const PBIP& A)
       wallMat=A.wallMat;
       pipeBeforeHeight=A.pipeBeforeHeight;
       pipeBeforeWidthLeft=A.pipeBeforeWidthLeft;
+      pipeBeforeAngleLeft=A.pipeBeforeAngleLeft;
       pipeBeforeWidthRight=A.pipeBeforeWidthRight;
       pipeAfterHeight=A.pipeAfterHeight;
       pipeAfterWidthLeft=A.pipeAfterWidthLeft;
@@ -184,6 +186,7 @@ PBIP::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   pipeBeforeHeight=Control.EvalVar<double>(keyName+"PipeBeforeHeight");
   pipeBeforeWidthLeft=Control.EvalVar<double>(keyName+"PipeBeforeWidthLeft");
+  pipeBeforeAngleLeft=Control.EvalVar<double>(keyName+"PipeBeforeAngleLeft");
   pipeBeforeWidthRight=Control.EvalVar<double>(keyName+"PipeBeforeWidthRight");
   pipeAfterHeight=Control.EvalVar<double>(keyName+"PipeAfterHeight");
   pipeAfterWidthLeft=Control.EvalVar<double>(keyName+"PipeAfterWidthLeft");
@@ -226,8 +229,11 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
 
   // pipe before
+  Geometry::Vec3D leftNorm(X);
+  Geometry::Quaternion::calcQRotDeg(-pipeBeforeAngleLeft,Z).rotate(leftNorm);  
+
   ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(pipeBeforeWidthRight),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(pipeBeforeWidthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(pipeBeforeWidthLeft),leftNorm);
   ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(pipeBeforeHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(pipeBeforeHeight/2.0),Z);
 
