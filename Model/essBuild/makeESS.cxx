@@ -1073,11 +1073,12 @@ makeESS::build(Simulation& System,
 
   // PROTON BEAMLINE
 
-  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3);
+  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,*pbip);
+  attachSystem::addToInsertSurfCtrl(System,*Reflector,*pbip); // remove after PBIP is GC
   
   PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
-  Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
+  //  Reflector->insertComponent(System, "targetVoid", PBeam->getCC("Sector0"));
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));

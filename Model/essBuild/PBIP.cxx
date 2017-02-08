@@ -237,17 +237,26 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(pipeBeforeHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(pipeBeforeHeight/2.0),Z);
 
+  // pipe after
+  ModelSupport::buildPlane(SMap,surfIndex+203,Origin-X*(pipeAfterWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+204,Origin+X*(pipeAfterWidthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+205,Origin-Z*(pipeAfterHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+206,Origin+Z*(pipeAfterHeight/2.0),Z);
+
   return;
 }
 
 void
 PBIP::createObjects(Simulation& System,
-		    const attachSystem::FixedComp& Bulk,const long int& lpBulk)
+		    const attachSystem::FixedComp& FCstart,const long int& lpStart,
+		    const attachSystem::FixedComp& FCend,const long int& lpEnd)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param Bulk :: Bulk FC
-    \param lpBulk :: side link point of Bulk
+    \param FCstart :: FC at the start (Bulk)
+    \param lpBulk :: side link point of start
+    \param FCend :: FC at the end (BeRef)
+    \param lpBulk :: side link point at FCend
   */
 {
   ELog::RegMethod RegA("PBIP","createObjects");
@@ -258,9 +267,18 @@ PBIP::createObjects(Simulation& System,
   addOuterSurf(Out);
 
   before=ModelSupport::getComposite(SMap,surfIndex," -1 103 -104 105 -106 ") +
-    std::to_string(-Bulk.getLinkSurf(static_cast<size_t>(lpBulk)));
+    std::to_string(-FCstart.getLinkSurf(static_cast<size_t>(lpStart)));
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,before));
   addOuterUnionSurf(before);
+
+  const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
+  std::string BSurf=(lpEnd>0) ?
+    FCend.getLinkString(lIndex) : FCend.getBridgeComplement(lIndex) ;
+  FixedComp::setLinkComponent(0,FCend,lIndex);
+
+  after=ModelSupport::getComposite(SMap,surfIndex," 2 203 -204 205 -206 ") + BSurf;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,after));
+  addOuterUnionSurf(after);
 
   return;
 }
@@ -301,14 +319,17 @@ PBIP::createLinks()
 void
 PBIP::createAll(Simulation& System,
 		const attachSystem::FixedComp& FC,const long int& lp,
-		const attachSystem::FixedComp& Bulk,const long int& lpBulk)
+		const attachSystem::FixedComp& FCstart,const long int& lpStart,
+		const attachSystem::FixedComp& FCend,const long int& lpEnd)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param lp :: link point
-    \param Bulk :: Bulk FC
-    \param lpBulk :: side link point of Bulk
+    \param FCstart :: FC at the start (Bulk)
+    \param lpBulk :: side link point of start
+    \param FCend :: FC at the end (BeRef)
+    \param lpBulk :: side link point at FCend
   */
 {
   ELog::RegMethod RegA("PBIP","createAll");
@@ -317,7 +338,7 @@ PBIP::createAll(Simulation& System,
   createUnitVector(FC);
   createSurfaces();
   createLinks();
-  createObjects(System,Bulk,lpBulk);
+  createObjects(System,FCstart,lpStart,FCend,lpEnd);
   insertObjects(System);
 
   return;

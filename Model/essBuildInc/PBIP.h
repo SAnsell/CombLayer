@@ -68,6 +68,7 @@ class PBIP : public attachSystem::ContainedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&,
+		     const attachSystem::FixedComp&,const long int&,
 		     const attachSystem::FixedComp&,const long int&);
 
 
@@ -80,6 +81,7 @@ class PBIP : public attachSystem::ContainedComp,
   virtual ~PBIP();
 
   void createAll(Simulation&,
+		 const attachSystem::FixedComp&,const long int&,
 		 const attachSystem::FixedComp&,const long int&,
 		 const attachSystem::FixedComp&,const long int&);
 
