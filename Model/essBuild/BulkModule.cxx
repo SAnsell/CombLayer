@@ -294,7 +294,6 @@ BulkModule::createLinks()
 	  FixedComp::setLinkSurf(index,-SMap.realSurf(RI+5));
 	  FixedComp::setLinkSurf(index+1,SMap.realSurf(RI+6));
 	  FixedComp::setLinkSurf(index+2,SMap.realSurf(RI+7));
-	  FixedComp::setBridgeSurf(index+2,SMap.realSurf(bulkIndex+1));
 	  FixedComp::setLinkSurf(index+3,SMap.realSurf(RI+7));
 	  FixedComp::setBridgeSurf(index+3,-SMap.realSurf(bulkIndex+1));
 
