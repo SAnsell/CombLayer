@@ -684,36 +684,6 @@ Plane::writePOVRay(std::ostream& OX) const
   
   masterWrite& MW=masterWrite::Instance();
 
-  OX<<"#declare s"<<getName()
-    << " = plane { ";
-  
-  const int ptype=planeType();
-  if (!ptype)
-    {
-      OX<<"<"<<MW.NumComma(NormV)<<">,"
-	<<MW.Num(Dist)<<"}";
-    }
-  else
-    {
-      // NormV[] is -1.0 or 1.0
-      const double D=NormV[ptype-1]*Dist;
-      const std::string PNMX[3]={"x","y","z"};
-      OX<<"XYZ"[ptype-1]<< ", " << MW.Num(D)<<"}";
-    }
-  return;
-}
-
-void 
-Plane::writePOVRay(std::ostream& OX) const
-  /*! 
-    Object of write is to output a POV-Ray file
-    \param OX :: Output stream (required for multiple std::endl)  
-  */
-{
-  ELog::RegMethod RegA("Plane","writePOVRay");
-  
-  masterWrite& MW=masterWrite::Instance();
-
   std::ostringstream cx;
   cx << "#declare s";
   Surface::writeHeader(cx);

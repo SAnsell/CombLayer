@@ -519,20 +519,6 @@ Ellipsoid::distance(const Geometry::Vec3D& A) const
   return firstOctant(e,y);
 }
 
-
-
-void
-Ellipsoid::writePOVRay(std::ostream& OX) const
-  /*! 
-    Write out the cylinder for POV-Ray
-    \param OX :: output stream
-  */
-{
-  Quadratic::writePOVRay(OX);
-  return;
-}
-
-  
   
 void
 Ellipsoid::write(std::ostream& OX) const

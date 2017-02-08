@@ -635,16 +635,4 @@ MBrect::writePOVRay(std::ostream&) const
   return;
 }
 
-void
-MBrect::writePOVRay(std::ostream&) const
-  /*!
-    Write out the cone class in a POV-Ray
-    format.
-    \param  :: Output Stream (required for multiple std::endl)
-  */
-{
-  ELog::EM<<"MBrect::writePOVRay: Unsupported output"<<ELog::endErr;
-  return;
-}
-
 }  // NAMESPACE Geometry

@@ -426,16 +426,5 @@ Torus::writePOVRay(std::ostream&) const
   return;
 }
 
-void
-Torus::writePOVRay(std::ostream&) const
-  /*!
-    Write out the cone class in a POV-Ray
-    format.
-    \param  :: Output Stream (required for multiple std::endl)
-  */
-{
-  ELog::EM<<"Torus::writePOVRay: Unsupported output"<<ELog::endErr;
-  return;
-}
 
 }  // NAMESPACE Geometry
