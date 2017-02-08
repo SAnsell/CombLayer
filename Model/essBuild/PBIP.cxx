@@ -246,6 +246,15 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(pipeBeforeHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(pipeBeforeHeight/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,surfIndex+113,
+			   Origin-X*(pipeBeforeWidthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+114,
+			   Origin+X*(pipeBeforeWidthLeft+wallThick),leftNorm);
+  ModelSupport::buildPlane(SMap,surfIndex+115,
+			   Origin-Z*(pipeBeforeHeight/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+116,
+			   Origin+Z*(pipeBeforeHeight/2.0+wallThick),Z);
+
   // pipe after
   Geometry::Vec3D rightNorm(X);
   Geometry::Quaternion::calcQRotDeg(-pipeAfterAngleRight,Z).rotate(rightNorm);
@@ -273,10 +282,14 @@ PBIP::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("PBIP","createObjects");
 
+  const std::string start =
+    std::to_string(-FCstart.getLinkSurf(static_cast<size_t>(lpStart)));
+
   const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
   std::string BSurf=(lpEnd>0) ?
     FCend.getLinkString(lIndex) : FCend.getBridgeComplement(lIndex) ;
   FixedComp::setLinkComponent(0,FCend,lIndex);
+
 
   std::string Out,before,after;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
@@ -288,11 +301,17 @@ PBIP::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf("main", Out);
 
-  before=ModelSupport::getComposite(SMap,surfIndex," -1 103 -104 105 -106 ") +
-    std::to_string(-FCstart.getLinkSurf(static_cast<size_t>(lpStart)));
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,before));
-  addOuterSurf("before",before);
+  // before
+  before=ModelSupport::getComposite(SMap,surfIndex," -1 103 -104 105 -106 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,start+before));
+  before=ModelSupport::getComposite(SMap,surfIndex,
+		  " -11 113 -114 115 -116 (-103:104:-105:106) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,start+before));
 
+  before=ModelSupport::getComposite(SMap,surfIndex," -1 113 -114 115 -116 ");
+  addOuterSurf("before",start+before);
+
+  // after
   after=ModelSupport::getComposite(SMap,surfIndex," 2 203 -204 205 -206 ") + BSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,after));
   addOuterUnionSurf("after", after);
