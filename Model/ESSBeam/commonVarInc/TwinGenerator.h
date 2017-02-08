@@ -72,7 +72,7 @@ class TwinGenerator
   size_t ringNBolt;         ///< Bolts in outer ring
   size_t lineNBolt;         ///< Bolts in outer line
   double outerStep;         ///< Bolts step from outer edge
-  double outerRadius;       ///< Radius of outer bolts
+  double outerBoltRadius;   ///< Radius of outer bolts
   std::string outerBoltMat;     ///< Main wall material
   
   std::string wallMat;     ///< Main wall material

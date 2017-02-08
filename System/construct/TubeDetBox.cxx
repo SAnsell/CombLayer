@@ -150,6 +150,7 @@ TubeDetBox::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
+  active=Control.EvalDefPair<int>(keyName,baseName,"Active",1);
   tubeRadius=Control.EvalPair<double>(keyName,baseName,"TubeRadius");
   wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
   centRadius=Control.EvalDefPair<double>(keyName,baseName,"CentRadius",0.0);
@@ -239,32 +240,34 @@ TubeDetBox::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TubeDetBox","createObjects");
 
-  std::string Out;
-
-
-  std::string mainBody;
-
-  int DI(detIndex);
-  for(size_t i=0;i<nDet;i++)
+  if (!active)
     {
-      Out=ModelSupport::getComposite(SMap,detIndex,DI," 5 -6 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
-      addCell("Tubes",cellIndex-1);
-      addCell("Tube"+StrFunc::makeString(i),cellIndex-1);
-
-      Out=ModelSupport::getComposite(SMap,detIndex,DI,
-                                     " 15 -16 (-5:6:7M) -17M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
-      mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
-      DI+=100;
-    }      
-  // Main body:
-  Out= ModelSupport::getComposite(SMap,detIndex,
-                                  " 1001 -1002 15 -16  1003 -1004 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+mainBody));
-
-  addOuterSurf(Out);
+  
+      std::string Out;
+      std::string mainBody;
+      
+      int DI(detIndex);
+      for(size_t i=0;i<nDet;i++)
+        {
+          Out=ModelSupport::getComposite(SMap,detIndex,DI," 5 -6 -7M ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,detMat,0.0,Out));
+          addCell("Tubes",cellIndex-1);
+          addCell("Tube"+StrFunc::makeString(i),cellIndex-1);
+          
+          Out=ModelSupport::getComposite(SMap,detIndex,DI,
+                                         " 15 -16 (-5:6:7M) -17M ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+          
+          mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
+          DI+=100;
+        }      
+      // Main body:
+      Out= ModelSupport::getComposite(SMap,detIndex,
+                                      " 1001 -1002 15 -16  1003 -1004 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+mainBody));
+      
+      addOuterSurf(Out);
+    }
   return; 
 }
 

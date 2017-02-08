@@ -3,7 +3,7 @@
  
  * File:   geometry/Cone.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -428,6 +428,18 @@ Cone::onSurface(const Geometry::Vec3D& R) const
   return (side(R)==0) ? 1 : 0;
 }
 
+
+void
+Cone::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray file format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Cone::writePovRay: not implemented yet"<< ELog::endErr;
+}
+
+  
 void
 Cone::write(std::ostream& OX) const
   /*!

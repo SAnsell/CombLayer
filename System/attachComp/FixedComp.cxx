@@ -530,6 +530,45 @@ FixedComp::linkAngleRotate(const long int sideIndex,
 }
 
 void
+FixedComp::applyFullRotate(const double xAngle,
+                           const double yAngle,
+			   const double zAngle,
+			   const Geometry::Vec3D& RotCent)
+  /*!
+    Create the unit vectors
+    \param xAngle :: X Rotation [third]
+    \param yAngle :: Y Rotation [second]
+    \param zAngle :: Z Rotation [first]
+    \param RotCent :: Displacement centre
+  */
+{
+  const Geometry::Quaternion Qz=
+    Geometry::Quaternion::calcQRotDeg(zAngle,Z);
+  const Geometry::Quaternion Qy=
+    Geometry::Quaternion::calcQRotDeg(yAngle,Y);
+  const Geometry::Quaternion Qx=
+    Geometry::Quaternion::calcQRotDeg(xAngle,X);
+
+  Qz.rotate(Y);
+  Qz.rotate(X);
+  
+  Qy.rotate(X);
+  Qy.rotate(Y);
+  Qy.rotate(Z);
+  
+  Qx.rotate(X);
+  Qx.rotate(Y);
+  Qx.rotate(Z);
+
+  Origin-=RotCent;
+  Qz.rotate(Origin);
+  Qy.rotate(Origin);
+  Qx.rotate(Origin);
+  Origin+=RotCent;
+
+  return;
+}
+void
 FixedComp::applyFullRotate(const double xyAngle,
 			   const double zAngle,
 			   const Geometry::Vec3D& RotCent)

@@ -57,7 +57,7 @@ namespace setVariable
 {
 
 TwinGenerator::TwinGenerator() :
-  stepHeight(87.4),mainRadius(38.122),
+  stepHeight(87.4),mainRadius(39.122),
   innerRadius(36.0),innerTopStep(25.0),
   innerLowStep(25.0),
   
@@ -74,8 +74,8 @@ TwinGenerator::TwinGenerator() :
   motorRadius(8.0),motorOuter(10.20),
   motorNBolt(24),motorBoltRadius(0.5),
   motorSealThick(0.2),motorSealMat("Poly"),
-  ringNBolt(12),lineNBolt(8),outerStep(1.0),
-  outerRadius(0.8),outerBoltMat("ChipIRSteel"),
+  ringNBolt(12),lineNBolt(8),outerStep(0.5),
+  outerBoltRadius(0.8),outerBoltMat("ChipIRSteel"),
   wallMat("Aluminium")
   /*!
     Constructor : All variables are set for 35cm radius disks
@@ -221,11 +221,11 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MotorBSealThick",motorSealThick);  
   Control.addVariable(keyName+"MotorBSealMat",motorSealMat);
 
-  ELog::EM<<"Ring bolt"<<ELog::endDiag;
+
   Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);
   Control.addVariable(keyName+"OuterLineNBolt",lineNBolt);
   Control.addVariable(keyName+"OuterBoltStep",outerStep);
-  Control.addVariable(keyName+"OuterBoltRadius",outerRadius); 
+  Control.addVariable(keyName+"OuterBoltRadius",outerBoltRadius); 
   Control.addVariable(keyName+"OuterBoltMat",outerBoltMat);
 
   Control.addVariable(keyName+"WallMat","Aluminium");

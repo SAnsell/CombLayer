@@ -62,6 +62,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"

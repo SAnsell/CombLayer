@@ -48,6 +48,7 @@ class CrystalMount : public attachSystem::ContainedComp,
   const int xtalIndex;     ///< Index of surface offset
   int cellIndex;           ///< Cell index
 
+  int active;              ///< Active flag (built but no object)
   double width;            ///< Radius of from centre
   double thick;            ///< Radius of detector
   double length;           ///< Outer wall thickness
@@ -59,6 +60,8 @@ class CrystalMount : public attachSystem::ContainedComp,
   int xtalMat;             ///< XStal material
   int wallMat;             ///< Wall material
 
+  double yRotation;        ///< Rotation around Y after orientation
+  double zRotation;        ///< Rotation around Y after orientation
   Geometry::Vec3D viewPoint;  // Origin point
   
   // Functions:

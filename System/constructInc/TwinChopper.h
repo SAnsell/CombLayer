@@ -50,7 +50,6 @@ class TwinChopper :
   const int houseIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-
   Geometry::Vec3D lowCentre;      ///< Low centre of disks
   Geometry::Vec3D topCentre;      ///< Top centre of disks
 
@@ -126,7 +125,13 @@ class TwinChopper :
 			const std::string&,const std::string&,
 			const double,const size_t,
 			const double,const double,
-			const double);
+			const double,const int,const int);
+
+  void createLineBolts(Simulation&,const int,
+		       const std::string&,const std::string&,
+		       const std::string&,
+		       const double,const size_t,
+		       const double,const int,const int);
 
   void createRing(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::string&,const std::string&,

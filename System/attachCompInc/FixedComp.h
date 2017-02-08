@@ -91,6 +91,8 @@ class FixedComp
   void applyAngleRotate(const double,const double,const double);
   void applyFullRotate(const double,const double,
 		       const Geometry::Vec3D&);
+  void applyFullRotate(const double,const double,const double,
+		       const Geometry::Vec3D&);
 
   void linkAngleRotate(const long int,const double,const double);
   void linkShift(const long int,const double,const double,const double);

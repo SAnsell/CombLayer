@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1315,18 +1315,16 @@ Object::writePOVRay(std::ostream& OX) const
     ModelSupport::objectRegister::Instance();
   if (!placehold)
     {
-      std::string objName=OR.inRenumberRange(ObjName);
+      const std::string objName=OR.inRenumberRange(ObjName);
+      
+      // do not render global objects (outer void and black hole)
       if (objName.empty())
-	//	objName="global";
-	return; // do not render global objects (outer void and black hole)
-      std::ostringstream cx;
-      cx.precision(10);
+	return; 
 
-      cx<<"intersection{" << std::endl;
-      cx<<HRule.displayPOVRay()<<std::endl;
-      cx << " texture {mat" << MatN <<"}" << std::endl;
-      cx << "}";
-      StrFunc::writeMCNPX(cx.str(),OX);
+      OX<<"intersection{\n"
+	<<HRule.displayPOVRay()<<"\n"
+	<< " texture {mat" << MatN <<"}\n"
+	<< "}"<<std::endl;
     }
   
   return;
@@ -1342,23 +1340,21 @@ Object::writePOVRaymat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writePOVRaymat");
 
-  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   if (!placehold)
     {
-      std::string objName=OR.inRenumberRange(ObjName);
+      const std::string objName=OR.inRenumberRange(ObjName);
       if (objName.empty())
-	objName="global";
-      std::ostringstream cx;
-      cx<<"POVRay dummy material string    ";
-      if (!MatN)
-	cx<<" VACUUM";
-      else
-	cx<<"    M"<<MatN;
+	return;
       
-      cx<<"    "<<objName<<"_"<<ObjName;
-      StrFunc::writeMCNPX(cx.str(),OX);
+      OX<<"POVRay dummy material string    ";
+      if (!MatN)   // are we really rendering vacuum ????
+	OX<<" VACUUM";
+      else
+	OX<<"    M"<<MatN;
+      
+      OX<<"    "<<objName<<"_"<<ObjName<<std::endl;
     }
   
   return;

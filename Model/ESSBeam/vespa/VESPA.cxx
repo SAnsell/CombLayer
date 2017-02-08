@@ -94,6 +94,7 @@
 #include "CylSample.h"
 #include "CrystalMount.h"
 #include "TubeDetBox.h"
+#include "Cryostat.h"
 
 #include "VESPA.h"
 
@@ -167,7 +168,8 @@ VESPA::VESPA(const std::string& keyName) :
   Cave(new VespaHut(newName+"Cave")),
 
   VJaws(new constructSystem::JawSet(newName+"VJaws")),
-  Sample(new instrumentSystem::CylSample(newName+"Sample"))
+  Sample(new instrumentSystem::CylSample(newName+"Sample")),
+  Cryo(new constructSystem::Cryostat(newName+"Cryo"))
  /*!
     Constructor
  */
@@ -259,6 +261,7 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(Cave);
   OR.addObject(VJaws);
   OR.addObject(Sample);
+  OR.addObject(Cryo);
 }
 
   
@@ -565,8 +568,12 @@ VESPA::buildHut(Simulation& System,
   VJaws->setInsertCell(Cave->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);
 
-  Sample->setInsertCell(Cave->getCell("Void"));
-  Sample->createAll(System,*VJaws,2);
+  
+  Cryo->setInsertCell(Cave->getCell("Void"));
+  Cryo->createAll(System,*VJaws,2);
+
+  Sample->setInsertCell(Cryo->getCell("SampleVoid"));
+  Sample->createAll(System,*Cryo,0);
   return;
 }
 

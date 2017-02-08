@@ -328,7 +328,7 @@ WedgeItem::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("WedgeItem","createAll");
-  
+  ELog::EM<<"Building "<<keyName<<ELog::endErr;
   populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces(FC,baseLinkPt);

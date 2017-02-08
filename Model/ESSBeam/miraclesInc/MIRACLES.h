@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/MIRACLES.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ namespace constructSystem
   class Jaws;
   class LineShield;
   class RotaryCollimator;
+  class TwinChopper;
   class VacuumPipe;
   class VacuumWindow;
 
@@ -54,7 +55,6 @@ namespace essSystem
   class CompBInsert;
   class GuideItem;
   class DetectorTank;
-  class BifrostHut;
 
   /*!
     \class MIRACLES
@@ -83,49 +83,43 @@ class MIRACLES : public attachSystem::CopiedComp
 
   /// Pipe in the gamma shield [5.5m to 6m]
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Elliptic guide from 5.5 to 6 metre
+  /// Guide from 5.5 to 6 metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
-
+  /// Pipe in the gamma shield [5.5m to 6m]
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Guide from 6m to 7m
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
   /// Tungsten apperature after gamma focus
   std::shared_ptr<constructSystem::Aperture> AppA;
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
-  /// Double disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> DDisk;
-  
-  /// Pipe from first chopper [4m]
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
-  /// Elliptic guide leaving first chopper
-  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
+  /// Twin first chopper pair
+  std::shared_ptr<constructSystem::TwinChopper> TwinB;
+  /// Top twin disk
+  std::shared_ptr<constructSystem::DiskChopper> BDiskTop;
+  /// Lower twin disk
+  std::shared_ptr<constructSystem::DiskChopper> BDiskLow;
 
-  /// 10.5m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
-  /// single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
-
-  /// Pipe from first chopper [6m]
+  /// Pipe from Chopper A  to B
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
-  /// Straight guide leaving second
+  /// Elliptic guide from 5.5 to 6 metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
-  /// Second pipe from first chopper [4m]
+  /// Twin second chopper pair
+  std::shared_ptr<constructSystem::TwinChopper> TwinC;
+  /// Top twin disk (2)
+  std::shared_ptr<constructSystem::DiskChopper> CDiskTop;
+  /// Lower twin disk (2)
+  std::shared_ptr<constructSystem::DiskChopper> CDiskLow;
+
+  /// Pipe from Chopper C to D
   std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
-  /// Straight guide in second length
+  /// Guide from 7.5 to 11.25 m
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
-  /// 20.5m FOC-2
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
-  /// single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
-
-  /// Pipe from first chopper [4m]
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
-  /// 4m elliptic leaving FOC2
-  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
-
-  /// Tungsten apperature after gamma focus
-  std::shared_ptr<constructSystem::Aperture> AppB;
+  /// Twin first chopper pair
+  std::shared_ptr<constructSystem::ChopperUnit> ChopE;
+  /// Top twin disk
+  std::shared_ptr<constructSystem::DiskChopper> EDisk;
 
   /// Bunker insert
   std::shared_ptr<essSystem::CompBInsert> BInsert;
@@ -134,69 +128,23 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
-  /// First Shield wall
-  std::shared_ptr<constructSystem::LineShield> ShieldA;  
-  /// First vacuum pipe leaving bunker
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
-  /// First guide leaving bunker
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
-
-  /// First vacuum pipe leaving bunker
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
-  /// First guide leaving bunker
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
-
-  /// Last ellispe vacuum pipe
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
-  /// Last ellipse section
-  std::shared_ptr<beamlineSystem::GuideLine> FocusOutC;
-
-  /// Vector of rectangular vac-pipe:
-  std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> RecPipe;
-  /// Vector of rectangular units:
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,8> RecFocus;
-
-  /// Chopper pit
-  std::shared_ptr<constructSystem::ChopperPit> OutPitA;
-  /// Collimator hole 
-  std::shared_ptr<constructSystem::HoleShape> OutACutFront;
-  /// Collimator hole 
-  std::shared_ptr<constructSystem::HoleShape> OutACutBack;
-  /// First out of bunker chopper 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
-  /// single disk chopper
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutA;
-  
-  /// Second shield wall : chopperOutA to Cave
-  std::shared_ptr<constructSystem::LineShield> ShieldB;  
-
-  /// Vector of rectangular vac-pipe:
-  std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> SndPipe;
-  /// Vector of rectangular units:
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,7> SndFocus;
-
-  /// Vector of rectangular vac-pipe:
-  std::array<std::shared_ptr<constructSystem::VacuumPipe>,4> EllPipe;
-  /// Vector of rectangular units:
-  std::array<std::shared_ptr<beamlineSystem::GuideLine>,4> EllFocus;
-
-  /// single disk chopper
-  std::shared_ptr<BifrostHut> Cave;
-  /// Enterance hole to cave
-  std::shared_ptr<constructSystem::HoleShape> CaveCut;
 
   /// Vacuum pipe in the front of the cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCave;
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+
  public:
   
   MIRACLES(const std::string&);
   MIRACLES(const MIRACLES&);
   MIRACLES& operator=(const MIRACLES&);
   ~MIRACLES();
-  
+
+  void buildIsolated(Simulation&,const int);
+    
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

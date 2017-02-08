@@ -3,7 +3,7 @@
  
  * File:   geometry/Torus.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -414,6 +414,18 @@ Torus::writeFLUKA(std::ostream&) const
   return;
 }
   
+void
+Torus::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Torus::writePOVRay: Unsupported output"<<ELog::endErr;
+  return;
+}
+
 void
 Torus::writePOVRay(std::ostream&) const
   /*!

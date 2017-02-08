@@ -48,6 +48,7 @@ class TubeDetBox : public attachSystem::ContainedComp,
   const int detIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
+  int active;                   ///< Build / no build flag
   double centRadius;            ///< Radius of from centre
   double tubeRadius;            ///< Radius of detector
   double wallThick;             ///< Outer wall thickness

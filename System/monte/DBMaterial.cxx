@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1173,7 +1173,12 @@ DBMaterial::initMaterial()
   // He3 for detectors [10bar]
   MObj.setMaterial(133,"He3_10Bar","2003.70c 2.45e-4","",MLib);
   setMaterial(MObj);
-  
+
+  // Material #134: liquid N2
+  // Total density 0.807g/cc 
+  MObj.setMaterial(134,"LiqN2","7014.70c 0.034718","",MLib);
+  setMaterial(MObj);
+
   return;
 }
 
