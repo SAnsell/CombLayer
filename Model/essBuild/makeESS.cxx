@@ -1073,7 +1073,7 @@ makeESS::build(Simulation& System,
 
   // PROTON BEAMLINE
 
-  pbip->createAll(System,World::masterOrigin(),0,*Bulk,-4);
+  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,*pbip);
   
   PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);

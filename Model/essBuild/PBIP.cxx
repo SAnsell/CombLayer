@@ -246,15 +246,15 @@ PBIP::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("PBIP","createObjects");
 
-  std::string Out;
+  std::string Out,before,after;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-
-  //  Out=ModelSupport::getComposite(SMap,surfIndex," 101 -1 103 -104 105 -106 ");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
+
+  before=ModelSupport::getComposite(SMap,surfIndex," -1 103 -104 105 -106 ") +
+    std::to_string(-Bulk.getLinkSurf(static_cast<size_t>(lpBulk)));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,before));
+  addOuterUnionSurf(before);
 
   return;
 }
