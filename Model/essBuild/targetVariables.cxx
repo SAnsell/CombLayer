@@ -471,6 +471,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("PBIPPipeAfterHeight",8.0); // MK170207
   Control.addVariable("PBIPPipeAfterWidthLeft",9.0); // MK170207
   Control.addVariable("PBIPPipeAfterWidthRight",20.0); // MK170207
+  Control.addVariable("PBIPPipeAfterAngleRight",4.07); // MK170207
 
   return;
 }

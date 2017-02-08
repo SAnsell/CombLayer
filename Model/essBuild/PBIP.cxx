@@ -111,7 +111,8 @@ PBIP::PBIP(const PBIP& A) :
   pipeBeforeWidthRight(A.pipeBeforeWidthRight),
   pipeAfterHeight(A.pipeAfterHeight),
   pipeAfterWidthLeft(A.pipeAfterWidthLeft),
-  pipeAfterWidthRight(A.pipeAfterWidthRight)
+  pipeAfterWidthRight(A.pipeAfterWidthRight),
+  pipeAfterAngleRight(A.pipeAfterAngleRight)
   /*!
     Copy constructor
     \param A :: PBIP to copy
@@ -145,6 +146,7 @@ PBIP::operator=(const PBIP& A)
       pipeAfterHeight=A.pipeAfterHeight;
       pipeAfterWidthLeft=A.pipeAfterWidthLeft;
       pipeAfterWidthRight=A.pipeAfterWidthRight;
+      pipeAfterAngleRight=A.pipeAfterAngleRight;
     }
   return *this;
 }
@@ -191,6 +193,7 @@ PBIP::populate(const FuncDataBase& Control)
   pipeAfterHeight=Control.EvalVar<double>(keyName+"PipeAfterHeight");
   pipeAfterWidthLeft=Control.EvalVar<double>(keyName+"PipeAfterWidthLeft");
   pipeAfterWidthRight=Control.EvalVar<double>(keyName+"PipeAfterWidthRight");
+  pipeAfterAngleRight=Control.EvalVar<double>(keyName+"PipeAfterAngleRight");
 
   return;
 }
@@ -230,7 +233,7 @@ PBIP::createSurfaces()
 
   // pipe before
   Geometry::Vec3D leftNorm(X);
-  Geometry::Quaternion::calcQRotDeg(-pipeBeforeAngleLeft,Z).rotate(leftNorm);  
+  Geometry::Quaternion::calcQRotDeg(-pipeBeforeAngleLeft,Z).rotate(leftNorm);
 
   ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(pipeBeforeWidthRight),X);
   ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(pipeBeforeWidthLeft),leftNorm);
@@ -238,7 +241,10 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(pipeBeforeHeight/2.0),Z);
 
   // pipe after
-  ModelSupport::buildPlane(SMap,surfIndex+203,Origin-X*(pipeAfterWidthRight),X);
+  Geometry::Vec3D rightNorm(X);
+  Geometry::Quaternion::calcQRotDeg(-pipeAfterAngleRight,Z).rotate(rightNorm);
+  ModelSupport::buildPlane(SMap,surfIndex+203,
+			   Origin+Y*(length)-X*(pipeAfterWidthRight),rightNorm);
   ModelSupport::buildPlane(SMap,surfIndex+204,Origin+X*(pipeAfterWidthLeft),X);
   ModelSupport::buildPlane(SMap,surfIndex+205,Origin-Z*(pipeAfterHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+206,Origin+Z*(pipeAfterHeight/2.0),Z);
@@ -261,6 +267,11 @@ PBIP::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("PBIP","createObjects");
 
+  const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
+  std::string BSurf=(lpEnd>0) ?
+    FCend.getLinkString(lIndex) : FCend.getBridgeComplement(lIndex) ;
+  FixedComp::setLinkComponent(0,FCend,lIndex);
+
   std::string Out,before,after;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
@@ -270,11 +281,6 @@ PBIP::createObjects(Simulation& System,
     std::to_string(-FCstart.getLinkSurf(static_cast<size_t>(lpStart)));
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,before));
   addOuterUnionSurf(before);
-
-  const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
-  std::string BSurf=(lpEnd>0) ?
-    FCend.getLinkString(lIndex) : FCend.getBridgeComplement(lIndex) ;
-  FixedComp::setLinkComponent(0,FCend,lIndex);
 
   after=ModelSupport::getComposite(SMap,surfIndex," 2 203 -204 205 -206 ") + BSurf;
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,after));
