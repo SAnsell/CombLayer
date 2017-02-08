@@ -3,7 +3,7 @@
  
  * File:   geometry/EllipticCyl.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -554,8 +554,19 @@ EllipticCyl::distance(const Geometry::Vec3D& A) const
     }
   return firstQuadrant(e,y);
 }
-//-
 
+void
+EllipticCyl::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POVRay
+    \param OX :: output stream
+  */
+{
+  Quadratic::writePOVRay(OX);
+  return;
+}
+
+  
 void
 EllipticCyl::write(std::ostream& OX) const
   /*! 

@@ -3,7 +3,7 @@
  
  * File:   geometry/Quadratic.cxx
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -574,6 +574,20 @@ Quadratic::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void
+Quadratic::writePOVRay(std::ostream& OX) const
+  /*!
+    Writes out  an Fluka surface description [free format]
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Quadratic","writePOVRay");
+  masterWrite& MW=masterWrite::Instance();
+  
+  ELog::EM<<"# Currenly unknow to write POV"<<ELog::endWarn;
+  return;
+}
+  
 void
 Quadratic::write(std::ostream& OX) const
   /*!

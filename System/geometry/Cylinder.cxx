@@ -3,7 +3,7 @@
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -560,6 +560,54 @@ Cylinder::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void
+Cylinder::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POV-Ray
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("Cylinder","writePOVRay");
+
+  masterWrite& MW=masterWrite::Instance();
+  const int Ndir=Normal.masterDir(Geometry::zeroTol);
+  
+  if (Ndir==0)
+    {
+      // general surface
+      Quadratic::writeFLUKA(OX);
+      return;
+    }
+
+  std::ostringstream cx;
+
+  Surface::writeHeader(cx);
+  cx.precision(Geometry::Nprecision);  
+  if (Ndir==-1 || Ndir==1)
+    {
+      cx<<"XCC s"<<getName()<<" " 
+	<<MW.Num(Centre[1])<<" "
+	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Radius);
+    }
+  else if (Ndir==-2 || Ndir==2)
+    {
+      cx<<"YCC s"<<getName()<<" "
+	<<MW.Num(Centre[0])<<" "
+	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Radius);
+    }
+  else if (Ndir==-3 || Ndir==3)
+    {
+      cx<<"ZCC s"<<getName()<<" "
+	<<MW.Num(Centre[0])<<" "
+	<<MW.Num(Centre[1])<<" "
+	<<MW.Num(Radius);
+    }
+  StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+  
 void
 Cylinder::print() const
  /*!

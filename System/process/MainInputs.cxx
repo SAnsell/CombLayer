@@ -96,6 +96,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
+  IParam.regFlag("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regMulti("offset","offset",10000,1,8);
@@ -210,6 +211,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("n","Number of starting particles");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
+  IParam.setDesc("PovRay","PovRay output");
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("offset","Displace to component [name]");

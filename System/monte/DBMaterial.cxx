@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1732,6 +1732,31 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
 	  
 	  if (mp->first)
 	    mp->second.writeFLUKA(OX);
+	}
+    }
+  return;
+}
+
+void
+DBMaterial::writePOVRay(std::ostream& OX) const
+  /*!
+    Write materials out to the POV-Ray system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writePOVRay");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
+	  
+	  if (mp->first)
+	    mp->second.writePOVRay(OX);
 	}
     }
   return;

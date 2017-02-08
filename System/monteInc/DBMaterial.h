@@ -3,7 +3,7 @@
  
  * File:   monteInc/DBMaterial.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class DBMaterial
   
   /// get data store
   const MTYPE& getStore() const { return MStore; }
-  /// Get neutron s
+  /// Get neutron material list
   const NTYPE& getNeutMat() const { return NStore; }
   const MonteCarlo::Material& getMaterial(const int) const;
   const MonteCarlo::Material& getMaterial(const std::string&) const;
@@ -108,9 +108,10 @@ class DBMaterial
   bool isActive(const int) const;
   void setENDF7();
 
-  void writeCinder(std::ostream& OX) const;
-  void writeMCNPX(std::ostream& OX) const;
-  void writeFLUKA(std::ostream& OX) const;
+  void writeCinder(std::ostream&) const;
+  void writeMCNPX(std::ostream&) const;
+  void writeFLUKA(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;
 };
 
 }

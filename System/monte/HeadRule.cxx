@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1467,6 +1467,20 @@ HeadRule::displayFluka() const
     " "+HeadNode->displayFluka()+" ";
 }
 
+std::string 
+HeadRule::displayPOVRay() const
+  /*!
+    Write out rule for POV-Ray
+    \return string of Rule
+  */
+{
+  if (!HeadNode) return "";
+
+  // union test
+  return (HeadNode->type()== -1) ? 
+    "pov|"+HeadNode->displayPOVRay()+"pov|" :
+    " "+HeadNode->displayPOVRay()+" ";
+}
 
 std::string 
 HeadRule::display(const Geometry::Vec3D& Pt) const

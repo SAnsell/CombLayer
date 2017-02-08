@@ -3,7 +3,7 @@
  
  * File:   geomInc/Sphere.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,8 +84,9 @@ class Sphere : public Quadratic
   double getRadius() const { return Radius; }          ///< Get Radius
   void setBaseEqn();
 
-  void writeFLUKA(std::ostream&) const;
-  void write(std::ostream&) const; 
+  virtual void writeFLUKA(std::ostream&) const;
+  virtual void writePOVRay(std::ostream&) const;
+  virtual void write(std::ostream&) const; 
 
 };
 

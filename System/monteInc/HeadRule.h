@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,6 +147,8 @@ class HeadRule
   void displayVec(std::vector<Token>&) const;  
 
   std::string displayFluka() const;
+  std::string displayPOVRay() const;
+  
 };  
 
 std::ostream&

@@ -3,7 +3,7 @@
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,6 +343,23 @@ SurfPoint::displayFluka() const
     cx<<"-s"<<keyN;
   else
     cx<<"+s"<<keyN;
+
+  return cx.str();
+}
+
+std::string
+SurfPoint::displayPOVRay() const
+  /*!
+    Returns the signed surface number as
+    a string.
+    \returns string of the value
+  */
+{
+  std::stringstream cx;
+  cx<< "object {s" << keyN;
+  if (sign>0)
+    cx << " inverse";
+  cx<<"}" << std::endl;
 
   return cx.str();
 }
