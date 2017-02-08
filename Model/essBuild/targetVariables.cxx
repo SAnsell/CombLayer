@@ -460,8 +460,8 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("PBIPWidth",2.6*20/0.85); // measured from MK170207
   Control.addVariable("PBIPHeight",20.0); // a dummy value
   Control.addVariable("PBIPWallThick",1.0);
-  Control.addVariable("PBIPMainMat","Void");
-  Control.addVariable("PBIPWallMat","Void");
+  Control.addVariable("PBIPMainMat","Helium");
+  Control.addVariable("PBIPWallMat","SS316L");
 
   Control.addVariable("PBIPPipeBeforeHeight",7.0); // MK170207
   Control.addVariable("PBIPPipeBeforeWidthLeft",20.0); // MK170207

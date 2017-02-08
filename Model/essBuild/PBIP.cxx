@@ -223,14 +223,19 @@ PBIP::createSurfaces()
 {
   ELog::RegMethod RegA("PBIP","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
-
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
-
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*wallThick,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+wallThick),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(height/2.0+wallThick),Z);
+  ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height/2.0+wallThick),Z);
 
   // pipe before
   Geometry::Vec3D leftNorm(X);
@@ -276,6 +281,11 @@ PBIP::createObjects(Simulation& System,
   std::string Out,before,after;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex,
+	     " 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:-103:104:-105:106)");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf("main", Out);
 
   before=ModelSupport::getComposite(SMap,surfIndex," -1 103 -104 105 -106 ") +
