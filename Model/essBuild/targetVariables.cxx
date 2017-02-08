@@ -464,12 +464,12 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("PBIPWallMat","Void");
 
   Control.addVariable("PBIPPipeBeforeHeight",7.0); // MK170207
-  Control.addVariable("PBIPPipeBeforeWidthLeft",9.0); // MK170207
-  Control.addVariable("PBIPPipeBeforeWidthRight",20.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthLeft",20.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthRight",9.0); // MK170207
   
   Control.addVariable("PBIPPipeAfterHeight",8.0); // MK170207
-  Control.addVariable("PBIPPipeAfterWidthLeft",20.0); // MK170207
-  Control.addVariable("PBIPPipeAfterWidthRight",9.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthLeft",9.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthRight",20.0); // MK170207
 
   return;
 }

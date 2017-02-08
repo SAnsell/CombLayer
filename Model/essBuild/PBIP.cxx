@@ -226,8 +226,8 @@ PBIP::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
 
   // pipe before
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(pipeBeforeWidthLeft),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(pipeBeforeWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(pipeBeforeWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(pipeBeforeWidthLeft),X);
   ModelSupport::buildPlane(SMap,surfIndex+105,Origin-Z*(pipeBeforeHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,surfIndex+106,Origin+Z*(pipeBeforeHeight/2.0),Z);
 
