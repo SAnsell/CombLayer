@@ -3,7 +3,7 @@
  
  * File:   essInc/PipeGenerator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,10 @@ class PipeGenerator
 {
  private:
 
+  int pipeType;                  ///< type [0 for round / 1 for square]
   double pipeRadius;             ///< main radius
+  double pipeHeight;             ///< main height
+  double pipeWidth;             ///< main width
   double pipeThick;             ///< main radius
   double flangeRadius;       ///< flange Radius (>radius)
   double flangeLen;          ///< flange Length
@@ -58,6 +61,7 @@ class PipeGenerator
   ~PipeGenerator();
 
   void setPipe(const double,const double);
+  void setRectPipe(const double,const double,const double);
   void setWindow(const double,const double);
   void setFlange(const double,const double);
   /// set pipe material
