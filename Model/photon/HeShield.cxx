@@ -218,6 +218,19 @@ HeShield::createSurfaces()
   ModelSupport::buildPlane(SMap,heIndex+105,Origin-Z*(collHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,heIndex+106,Origin+Z*(collHeight/2.0),Z);
 
+  ModelSupport::buildPlane(SMap,heIndex+111,Origin-Y*collThick,Y);
+  ModelSupport::buildPlane(SMap,heIndex+113,
+			   Origin-X*(collThick+collWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,heIndex+114,
+			   Origin+X*(collThick+collWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,heIndex+115,
+			   Origin-Z*(collThick+collHeight/2.0),Z);
+  ModelSupport::buildPlane(SMap,heIndex+116,
+			   Origin+Z*(collThick+collHeight/2.0),Z);
+
+  ModelSupport::buildPlane(SMap,heIndex+201,
+			   Origin-Y*(collThick+frontPolyThick),Y);
+  
   return; 
 }
 
@@ -236,8 +249,31 @@ HeShield::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
   addCell("Main",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,heIndex," 1 -2 3 -4 5 -6 ");
+  // cd void
+  Out=ModelSupport::getComposite(SMap,heIndex,heIndex,
+				 " -1 101  103 -104 105 -106 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite
+    (SMap,heIndex,heIndex," -1 101 113 -114 115 -116 (-103:104:-105:106) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cdMat,0.0,Out));
+
+  Out=ModelSupport::getComposite
+    (SMap,heIndex,heIndex," -1 111 3 -4 5 -6 (-113:114:-115:116) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,cdMat,0.0,Out));
+
+  Out=ModelSupport::getComposite
+    (SMap,heIndex,heIndex," -111 201 3 -4 5 -6 (-113:114:-115:116) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,polyMat,0.0,Out));
+
+
+  Out=ModelSupport::getComposite(SMap,heIndex," 201 -2 3 -4 5 -6 ");
   addOuterSurf(Out);
+  
+  Out=ModelSupport::getComposite(SMap,heIndex,heIndex,
+				 " -1 101 113 -114 115 -116 ");
+  addOuterUnionSurf(Out);
+  
 
   return; 
 }

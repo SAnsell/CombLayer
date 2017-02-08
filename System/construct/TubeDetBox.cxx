@@ -97,7 +97,7 @@ TubeDetBox::TubeDetBox(const TubeDetBox& A) :
   baseName(A.baseName),ID(A.ID),detIndex(A.detIndex),
   cellIndex(A.cellIndex),centRadius(A.centRadius),
   tubeRadius(A.tubeRadius),wallThick(A.wallThick),
-  height(A.height),wallMat(A.wallMat),detMat(A.detMat),
+  height(A.height),detMat(A.detMat),wallMat(A.wallMat),
   nDet(A.nDet),DPoints(A.DPoints)
   /*!
     Copy constructor
@@ -151,7 +151,7 @@ TubeDetBox::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
 
   active=Control.EvalDefPair<int>(keyName,baseName,"Active",1);
-  ELog::EM<<"Keyname ="<<active<<ELog::endDiag;
+
   tubeRadius=Control.EvalPair<double>(keyName,baseName,"TubeRadius");
   wallThick=Control.EvalPair<double>(keyName,baseName,"WallThick");
   centRadius=Control.EvalDefPair<double>(keyName,baseName,"CentRadius",0.0);
@@ -168,6 +168,13 @@ TubeDetBox::populate(const FuncDataBase& Control)
                                      baseName+"DetMat");
 
   nDet=Control.EvalPair<size_t>(keyName,baseName,"NDetectors");
+
+  gap=Control.EvalDefPair<double>(keyName,baseName,"Gap",0.5);
+  outerThick=Control.EvalDefPair<double>(keyName,baseName,"OuterThick",0.5);
+  if (Control.hasVariable(keyName+"OuterMat"))
+    outerMat=ModelSupport::EvalMat<int>(Control,keyName+"OuterMat");
+  else
+    outerMat=ModelSupport::EvalDefMat<int>(Control,baseName+"OuterMat",-1);
   
   return;
 }
@@ -229,6 +236,32 @@ TubeDetBox::createSurfaces()
   ModelSupport::buildPlane(SMap,detIndex+1004,Origin+XGap*(nDet/2.0),X);
 
 
+  if (outerMat>=0)
+    {
+      const Geometry::Vec3D XDist=XGap*(nDet/2.0);
+      const Geometry::Vec3D ZDist=Z*(height/2.0+wallThick);
+
+      ModelSupport::buildPlane(SMap,detIndex+2002,Origin+Y*(centRadius+gap),Y);
+      ModelSupport::buildPlane(SMap,detIndex+2003,Origin-XDist-X*gap,X);
+      ModelSupport::buildPlane(SMap,detIndex+2004,Origin+XDist+X*gap,X);
+
+      ModelSupport::buildPlane(SMap,detIndex+2005,Origin-ZDist-Z*gap,Z);
+      ModelSupport::buildPlane(SMap,detIndex+2006,Origin+ZDist+Z*gap,Z);
+
+      ModelSupport::buildPlane(SMap,detIndex+2012,
+			       Origin+Y*(centRadius+gap+outerThick),Y);
+      ModelSupport::buildPlane(SMap,detIndex+2013,
+			       Origin-XDist-X*(gap+outerThick),X);
+      ModelSupport::buildPlane(SMap,detIndex+2014,
+			       Origin+XDist+X*(gap+outerThick),X);
+
+      ModelSupport::buildPlane(SMap,detIndex+2015,
+			       Origin-ZDist-Z*(gap+outerThick),Z);
+      ModelSupport::buildPlane(SMap,detIndex+2016,
+			       Origin+ZDist+Z*(gap+outerThick),Z);
+    }
+
+
   return; 
 }
 
@@ -260,12 +293,25 @@ TubeDetBox::createObjects(Simulation& System)
           
           mainBody+=ModelSupport::getComposite(SMap,DI," 17 ");
           DI+=100;
-        }      
-      // Main body:
+        }
+	  // Main body:
       Out= ModelSupport::getComposite(SMap,detIndex,
-                                      " 1001 -1002 15 -16  1003 -1004 ");
+					  " 1001 -1002 15 -16  1003 -1004 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+mainBody));
-      
+      if (outerMat>=0) 
+	{
+	  Out= ModelSupport::getComposite
+	    (SMap,detIndex," 1001 -2002 2005 -2006  2003 -2004  "
+                           " (1002:-15:16:-1003:1004)");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  // outer wall
+	  Out= ModelSupport::getComposite
+	    (SMap,detIndex," 1001 -2012 2015 -2016  2013 -2014  "
+                           " (2002:-2003:2004:-2005:2006)");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,outerMat,0.0,Out));
+	  Out= ModelSupport::getComposite
+	    (SMap,detIndex," 1001 -2012 2015 -2016  2013 -2014 ");
+	}
       addOuterSurf(Out);
     }
   return; 

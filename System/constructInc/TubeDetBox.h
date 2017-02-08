@@ -53,8 +53,13 @@ class TubeDetBox : public attachSystem::ContainedComp,
   double tubeRadius;            ///< Radius of detector
   double wallThick;             ///< Outer wall thickness
   double height;                ///< Height/depth
-  int wallMat;                  ///< Wall material
+
+  double gap;              ///< Gap thickness
+  double outerThick;        ///< Wall thickness
+
   int detMat;                   ///< Detector material
+  int wallMat;                  ///< Wall material
+  int outerMat;                 ///< Outer material
 
   size_t nDet;                  ///< Number of detectors
   std::vector<Geometry::Vec3D> DPoints;  ///< Centre points

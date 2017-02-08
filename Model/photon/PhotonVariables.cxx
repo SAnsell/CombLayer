@@ -418,11 +418,12 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("D2OMod2Mat","Be300K");
 
   // Shield 
+  Control.addVariable("CentralShieldYStep",470.0);
   Control.addVariable("CentralShieldLength",70.0);
   Control.addVariable("CentralShieldWidth",100.0);
   Control.addVariable("CentralShieldHeight",100.0);
 
-  Control.addVariable("CentralShieldFrontPolyThick",30.0);
+  Control.addVariable("CentralShieldFrontPolyThick",10.0);
   Control.addVariable("CentralShieldCollLen",30.0);
   Control.addVariable("CentralShieldCollWidth",16.0);
   Control.addVariable("CentralShieldCollHeight",8.0);
@@ -433,14 +434,16 @@ PhotonVariables(FuncDataBase& Control)
   
 
   // DETECTORS
-  Control.addVariable("CentralDBox1YStep",470.0);
-  Control.addVariable("CentralDBoxNDetectors",20);
-  Control.addVariable("CentralDBoxCentRadius",0.635);
-  Control.addVariable("CentralDBoxTubeRadius",0.425);
-  Control.addVariable("CentralDBoxWallThick",4.1);
+  Control.addVariable("CentralDBox1YStep",2.85);
+  Control.addVariable("CentralDBoxNDetectors",8);
+  Control.addVariable("CentralDBoxCentRadius",2.85);
+  Control.addVariable("CentralDBoxTubeRadius",2.5);
+  Control.addVariable("CentralDBoxWallThick",0.3);
   Control.addVariable("CentralDBoxHeight",60.0);
   Control.addVariable("CentralDBoxWallMat","Aluminium");
   Control.addVariable("CentralDBoxDetMat","He3_10Bar");
+
+  Control.addVariable("CentralDBoxOuterMat","B4C");
   
   
   
