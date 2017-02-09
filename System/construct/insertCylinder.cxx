@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertPlate.cxx
+ * File:   construct/insertCylinder.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -82,12 +82,12 @@
 #include "SurInter.h"
 #include "AttachSupport.h"
 #include "insertObject.h"
-#include "insertPlate.h"
+#include "insertCylinder.h"
 
 namespace constructSystem
 {
 
-insertPlate::insertPlate(const std::string& Key)  :
+insertCylinder::insertCylinder(const std::string& Key)  :
   insertObject(Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -95,60 +95,58 @@ insertPlate::insertPlate(const std::string& Key)  :
   */
 {}
 
-insertPlate::insertPlate(const insertPlate& A) : 
+insertCylinder::insertCylinder(const insertCylinder& A) : 
   insertObject(A),
-  width(A.width),height(A.height),depth(A.depth)
+  radius(A.radius),length(A.length)
   /*!
     Copy constructor
-    \param A :: insertPlate to copy
+    \param A :: insertCylinder to copy
   */
 {}
 
-insertPlate&
-insertPlate::operator=(const insertPlate& A)
+insertCylinder&
+insertCylinder::operator=(const insertCylinder& A)
   /*!
     Assignment operator
-    \param A :: insertPlate to copy
+    \param A :: insertCylinder to copy
     \return *this
   */
 {
   if (this!=&A)
     {
       insertObject::operator=(A);
-      width=A.width;
-      height=A.height;
-      depth=A.depth;
+      radius=A.radius;
+      length=A.length;
     }
   return *this;
 }
 
-insertPlate::~insertPlate() 
+insertCylinder::~insertCylinder() 
   /*!
     Destructor
   */
 {}
 
 void
-insertPlate::populate(const FuncDataBase& Control)
+insertCylinder::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Data Base
   */
 {
-  ELog::RegMethod RegA("insertPlate","populate");
+  ELog::RegMethod RegA("insertCylinder","populate");
   
   if (!populated)
     {
       insertObject::populate(Control);
-      width=Control.EvalVar<double>(keyName+"Width");
-      height=Control.EvalVar<double>(keyName+"Height");
-      depth=Control.EvalVar<double>(keyName+"Depth");
+      radius=Control.EvalVar<double>(keyName+"Radius");
+      length=Control.EvalVar<double>(keyName+"Length");
     }
   return;
 }
 
 void
-insertPlate::createUnitVector(const attachSystem::FixedComp& FC,
+insertCylinder::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int lIndex)
   /*!
     Create the unit vectors
@@ -156,7 +154,7 @@ insertPlate::createUnitVector(const attachSystem::FixedComp& FC,
     \param lIndex :: link index
   */
 {
-  ELog::RegMethod RegA("insertPlate","createUnitVector(FC,index)");
+  ELog::RegMethod RegA("insertCylinder","createUnitVector(FC,index)");
 
 
   FixedComp::createUnitVector(FC,lIndex);
@@ -165,7 +163,7 @@ insertPlate::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-insertPlate::createUnitVector(const Geometry::Vec3D& OG,
+insertCylinder::createUnitVector(const Geometry::Vec3D& OG,
 			      const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
@@ -173,7 +171,7 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
     \param FC :: LinearComponent to attach to
   */
 {
-  ELog::RegMethod RegA("insertPlate","createUnitVector");
+  ELog::RegMethod RegA("insertCylinder","createUnitVector");
 
   FixedComp::createUnitVector(FC);
   Origin=OG;
@@ -182,25 +180,19 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
 }
 
 void
-insertPlate::createUnitVector(const Geometry::Vec3D& OG,
-			      const Geometry::Vec3D& YUnit,
-			      const Geometry::Vec3D& ZUnit)
+insertCylinder::createUnitVector(const Geometry::Vec3D& OG,
+                                 const Geometry::Vec3D& Axis)
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param YUnit :: Y-direction
-    \param ZUnit :: Z-direction
+    \param Axis :: Y-direction 
   */
 {
-  ELog::RegMethod RegA("insertPlate","createUnitVector<Vec>");
-
-
-  Geometry::Vec3D xTest(YUnit.unit()*ZUnit.unit());
-  Geometry::Vec3D yTest(YUnit.unit());
-  Geometry::Vec3D zTest(ZUnit.unit());
-  FixedComp::computeZOffPlane(xTest,yTest,zTest);
-  ELog::EM<<"KLey == "<<xTest<<":"<<yTest<<":"<<zTest<<ELog::endDiag;
-  FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
+  ELog::RegMethod RegA("insertCylinder","createUnitVector<Vec>");
+  
+  Y=Axis.unit();
+  X=Y.crossNormal();
+  Z=X*Y;
   Origin=OG;
   applyOffset();
 
@@ -208,23 +200,19 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
 }
 
 void
-insertPlate::createSurfaces()
+insertCylinder::createSurfaces()
   /*!
     Create all the surfaces
   */
 {
-  ELog::RegMethod RegA("insertPlate","createSurface");
+  ELog::RegMethod RegA("insertCylinder","createSurface");
 
   if (!frontActive())
-    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*depth/2.0,Y);
+    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*length/2.0,Y);
   if (!backActive())
-    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*depth/2.0,Y);
+    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*length/2.0,Y);
 
-
-  ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildCylinder(SMap,ptIndex+7,Origin,Y,radius);
 
 
   if (!frontActive())
@@ -237,89 +225,71 @@ insertPlate::createSurfaces()
   else
     setSurf("Back",getBackRule().getPrimarySurface());
 
-  setSurf("Left",SMap.realSurf(ptIndex+3));
-  setSurf("Right",SMap.realSurf(ptIndex+4));
-  setSurf("Base",SMap.realSurf(ptIndex+5));
-  setSurf("Top",SMap.realSurf(ptIndex+6));
+  setSurf("Radius",SMap.realSurf(ptIndex+7));
   return;
 }
 
 void
-insertPlate::createLinks()
+insertCylinder::createLinks()
   /*!
     Create link points
   */
 {
-  ELog::RegMethod RegA("insertPlate","createLinks");
+  ELog::RegMethod RegA("insertCylinder","createLinks");
 
-  if (frontActive())
+  FrontBackCut::createLinks(*this,Origin,Y);
+  if (!frontActive())
     {
-      setLinkSurf(0,getFrontRule());
-      setLinkSurf(0,getFrontBridgeRule());
-      FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,getFrontRule(),
-				  getFrontBridgeRule()),-Y);
-    }
-  else
-    {
-      FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
+      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
     }
 
-  if (backActive())
+  if (!backActive())
     {
-      FixedComp::setLinkSurf(1,getBackRule());
-      FixedComp::setBridgeSurf(1,getBackBridgeRule());
-      FixedComp::setConnect
-        (1,SurInter::getLinePoint(Origin,Y,getBackRule(),
-				  getBackBridgeRule()),Y);
-    }
-  else
-    {
-      FixedComp::setConnect(1,Origin+Y*(depth/2.0),-Y);
+      FixedComp::setConnect(1,Origin+Y*(length/2.0),-Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
     }
   
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
-  FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
-  FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+  FixedComp::setConnect(2,Origin-X*radius,-X);
+  FixedComp::setConnect(3,Origin+X*radius,X);
+  FixedComp::setConnect(4,Origin-Z*radius,-Z);
+  FixedComp::setConnect(5,Origin+Z*radius,Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
+  FixedComp::setLinkSurf(2,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+7));
 
   // corners 
-  FixedComp::setConnect(6,Origin-X*(width/2.0)-Z*(height/2.0),-X-Z);
-  FixedComp::setConnect(7,Origin+X*(width/2.0)-Z*(height/2.0),X-Z);
-  FixedComp::setConnect(8,Origin-X*(width/2.0)+Z*(height/2.0),-X+Z);
-  FixedComp::setConnect(9,Origin+X*(width/2.0)+Z*(height/2.0),X+Z);
+  FixedComp::setConnect(6,Origin-X*radius-Z*radius,-X-Z);
+  FixedComp::setConnect(7,Origin+X*radius-Z*radius,X-Z);
+  FixedComp::setConnect(8,Origin-X*radius+Z*radius,-X+Z);
+  FixedComp::setConnect(9,Origin+X*radius+Z*radius,X+Z);
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(6,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(8,SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+7));
 
-  FixedComp::addLinkSurf(6,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(7,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+6));
-  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+6));
+  FixedComp::addLinkSurf(6,SMap.realSurf(ptIndex+7));
+  FixedComp::addLinkSurf(7,SMap.realSurf(ptIndex+7));
+  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+7));
+  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+7));
 
   return;
 }
 
 void
-insertPlate::createObjects(Simulation& System)
+insertCylinder::createObjects(Simulation& System)
   /*!
     Create the main volume
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("insertPlate","createObjects");
+  ELog::RegMethod RegA("insertCylinder","createObjects");
   
   std::string Out=
-    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 3 -4 5 -6 ");
+    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 -7 ");
   Out+=frontRule();
   Out+=backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
@@ -330,43 +300,41 @@ insertPlate::createObjects(Simulation& System)
 
 
 void
-insertPlate::setValues(const double XS,const double YS,
-		       const double ZS,const int Mat)
+insertCylinder::setValues(const double R,const double L,
+                          const int Mat)
   /*!
     Set the values and populate flag
-    \param XS :: X-size [width]
-    \param YS :: Y-size [depth] 
-    \param ZS :: Z-size [height]
+    \param R :: Radius
+    \param L :: length
     \param Mat :: Material number
    */
 {
-  width=XS;
-  depth=YS;
-  height=ZS;
+  radius=R;
+  length=L;
   defMat=Mat;
   populated=1;
   return;
 }
 
 void
-insertPlate::setValues(const double XS,const double YS,
-		       const double ZS,const std::string& Mat)
+insertCylinder::setValues(const double R,const double L,
+                          const std::string& Mat)
   /*!
     Set the values and populate flag
-    \param XS :: X-size [width]
-    \param YS :: Y-size [depth] 
-    \param ZS :: Z-size [height]
-    \param Mat :: Material number
+    \param R :: Radius
+    \param L :: length
+    \param Mat :: Material name
    */
 {
-  ELog::RegMethod RegA("insertPlate","setValues");
+  ELog::RegMethod RegA("insertCylinder","setValues(string)");
+  
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
-  setValues(XS,YS,ZS,DB.processMaterial(Mat));
+  setValues(R,L,DB.processMaterial(Mat));
   return;
 }
 
 void
-insertPlate::mainAll(Simulation& System)
+insertCylinder::mainAll(Simulation& System)
   /*!
     Common part to createAll:
     Note: the strnage order -- create links and findObject
@@ -377,7 +345,7 @@ insertPlate::mainAll(Simulation& System)
     \param System :: Simulation
    */
 {
-  ELog::RegMethod RegA("insertPlate","mainAll");
+  ELog::RegMethod RegA("insertCylinder","mainAll");
   
   createSurfaces();
   createLinks();
@@ -392,16 +360,16 @@ insertPlate::mainAll(Simulation& System)
 
 
 void
-insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
-		       const attachSystem::FixedComp& FC)
-  /*!
+insertCylinder::createAll(Simulation& System,const Geometry::Vec3D& OG,
+                          const attachSystem::FixedComp& FC)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param OG :: Offset origin							
     \param FC :: Linear component to set axis etc
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll(Vec,FC)");
+  ELog::RegMethod RegA("insertCylinder","createAll(Vec,FC)");
   if (!populated) 
     populate(System.getDataBase());  
   createUnitVector(OG,FC);
@@ -410,7 +378,7 @@ insertPlate::createAll(Simulation& System,const Geometry::Vec3D& OG,
 }
 
 void
-insertPlate::createAll(Simulation& System,
+insertCylinder::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int lIndex)
   /*!
@@ -420,7 +388,7 @@ insertPlate::createAll(Simulation& System,
     \param lIndex :: link Index
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll(FC,index)");
+  ELog::RegMethod RegA("insertCylinder","createAll(FC,index)");
   
   if (!populated) 
     populate(System.getDataBase());  
@@ -431,22 +399,20 @@ insertPlate::createAll(Simulation& System,
 }
 
 void
-insertPlate::createAll(Simulation& System,
-		       const Geometry::Vec3D& Orig,
-                       const Geometry::Vec3D& YA,
-                       const Geometry::Vec3D& ZA)
+insertCylinder::createAll(Simulation& System,
+                          const Geometry::Vec3D& Orig,
+                          const Geometry::Vec3D& Axis)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param Orig :: Origin al point 
-    \param YA :: Origin al point 
-    \param ZA :: ZAxis
+    \param Orig :: Origin point 
+    \param Axis :: Main axis
   */
 {
-  ELog::RegMethod RegA("insertPlate","createAll");
+  ELog::RegMethod RegA("insertCylinder","createAll");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(Orig,YA,ZA);
+  createUnitVector(Orig,Axis);
   mainAll(System);
   
   return;

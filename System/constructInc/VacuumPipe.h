@@ -3,7 +3,7 @@
  
  * File:   constructInc/VacuumPipe.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,31 +38,26 @@ namespace constructSystem
 class VacuumPipe :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::FrontBackCut
 {
  private:
   
   const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  bool activeFront;             ///< Flag for front active
-  bool activeBack;              ///< Flag for back active
-
-  
-  HeadRule frontSurf;           ///< Front surfaces [if used]
-  HeadRule frontCut;            ///< Front divider [if used]
-  HeadRule backSurf;            ///< Back surfaces [if used]
-  HeadRule backCut;             ///< Back divider [if used]
-
   bool frontJoin;               ///< Flag for front join
   Geometry::Vec3D FPt;          ///< Front point
-  Geometry::Vec3D FAxis;          ///< Front point
+  Geometry::Vec3D FAxis;        ///< Front point
 
-  bool backJoin;               ///< Flag for front join
-  Geometry::Vec3D BPt;          ///< Front point
-  Geometry::Vec3D BAxis;          ///< Front point
+  bool backJoin;                ///< Flag for front join
+  Geometry::Vec3D BPt;          ///< Front point for join
+  Geometry::Vec3D BAxis;        ///< Front axis for join
 
-  double radius;                ///< void height [top only]
+  double radius;                ///< void radius [inner]
+  double height;                ///< void radius [inner]
+  double width;                 ///< void radius [inner]
+  
   double length;                ///< void length [total]
 
   double feThick;               ///< pipe thickness
@@ -96,7 +91,6 @@ class VacuumPipe :
   VacuumPipe(const VacuumPipe&);
   VacuumPipe& operator=(const VacuumPipe&);
   virtual ~VacuumPipe();
-
 
   void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
   void setBack(const attachSystem::FixedComp&,const long int,const bool =0);

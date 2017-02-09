@@ -94,7 +94,6 @@ CryoGenerator::generateFridge(FuncDataBase& Control,
 
 
   Control.addVariable(keyName+"SampleZOffset",sampleZ);
-  ELog::EM<<"Sample Z Off "<<sampleZ<<ELog::endDiag;
 
   Control.addVariable(keyName+"SampleRadius",0.75);
   Control.addVariable(keyName+"SampleHeight",2.0);

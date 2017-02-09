@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/photonMod2.cxx
+ * File:   Main/photonMod3.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ main(int argc,char* argv[])
 
       photonSystem::makePhoton3 LObj;
       World::createOuterObjects(*SimPtr);
-      LObj.build(SimPtr,IParam);
+      LObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       // Ensure we done loop

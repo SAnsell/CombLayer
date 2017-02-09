@@ -3,7 +3,7 @@
  
  * File:   essBuild/BulkModule.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,9),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -211,7 +211,10 @@ BulkModule::createSurfaces()
 
   // rotation of axis:
 
-  int RI(bulkIndex);
+  // divider
+  ModelSupport::buildPlane(SMap,bulkIndex+1,Origin,Y);
+
+  int RI(bulkIndex);    
   for(size_t i=0;i<nLayer;i++)
     {
       ModelSupport::buildPlane(SMap,RI+5,Origin-Z*depth[i],Z);
@@ -284,12 +287,17 @@ BulkModule::createLinks()
 	    (index+1,Origin+COffset[i]+Z*height[i],Z);  // top
 	  FixedComp::setConnect
 	    (index+2,Origin+COffset[i]+Y*radius[i],Y);   // outer point
+	  FixedComp::setConnect
+	    (index+3,Origin+COffset[i]-Y*radius[i],-Y);   // outer point
 	  
 	  const int RI(static_cast<int>(i)*10+bulkIndex);
 	  FixedComp::setLinkSurf(index,-SMap.realSurf(RI+5));
 	  FixedComp::setLinkSurf(index+1,SMap.realSurf(RI+6));
 	  FixedComp::setLinkSurf(index+2,SMap.realSurf(RI+7));
-	  index+=3;
+	  FixedComp::setLinkSurf(index+3,SMap.realSurf(RI+7));
+	  FixedComp::setBridgeSurf(index+3,-SMap.realSurf(bulkIndex+1));
+
+	  index+=4;
 	}
     }
   return;
@@ -309,6 +317,7 @@ BulkModule::addFlightUnit(Simulation& System,
   ELog::RegMethod RegA("BulkModule","addFlightUnit");
 
   std::string Out;
+
   std::stringstream cx;
   cx<<" (";
   for(size_t index=2;index<5;index++)
@@ -359,4 +368,4 @@ BulkModule::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE ts1System
+}  // NAMESPACE essSystem

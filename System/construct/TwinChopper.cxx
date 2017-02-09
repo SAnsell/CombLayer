@@ -667,7 +667,6 @@ TwinChopper::createObjects(Simulation& System)
   
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
   IPA->addInnerCell(getCell("PortVoid",0));
-  ELog::EM<<"Inner Cell = "<<getCell("PortVoid",0)<<ELog::endDiag;
   IPA->createAll(System,Beam,0,Out);
 
     // Add inner system

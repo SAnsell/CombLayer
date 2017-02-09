@@ -571,43 +571,13 @@ Cylinder::writePOVRay(std::ostream& OX) const
 
   masterWrite& MW=masterWrite::Instance();
   const int Ndir=Normal.masterDir(Geometry::zeroTol);
+
   
-  if (Ndir==0)
-    {
-      // general surface
-      Quadratic::writeFLUKA(OX);
-      return;
-    }
-
-  std::ostringstream cx;
-  const float max = 1E+10; //std::numeric_limits<float>::max();
-
-  //  Surface::writeHeader(cx);
-  cx.precision(Geometry::Nprecision);  
-  if (Ndir==-1 || Ndir==1)
-    {
-      cx<<"XCC s"<<getName()<<" " 
-	<<MW.Num(Centre[1])<<" "
-	<<MW.Num(Centre[2])<<" "
-	<<MW.Num(Radius);
-    }
-  else if (Ndir==-2 || Ndir==2)
-    {
-      cx<<"YCC s"<<getName()<<" "
-	<<MW.Num(Centre[0])<<" "
-	<<MW.Num(Centre[2])<<" "
-	<<MW.Num(Radius);
-    }
-  else if (Ndir==-3 || Ndir==3)
-    {
-      cx<<"#declare s"<<getName()<<
-	" = cylinder {" <<
-	"< 0 0 " << -max << ">," <<
-	" <0 0 " << max << ">, "
-	<< MW.Num(Radius);
-    }
-  cx << " open }"; // remove end caps
-  StrFunc::writeMCNPX(cx.str(),OX);
+  OX<<"#declare s"<<getName()<<" = cylinder{ ";
+  OX<<"<"<<MW.NumComma(Centre)<<">,<"
+    <<MW.NumComma(Centre+Normal)<<">, "
+    <<MW.Num(Radius)<<" open }"<<std::endl;
+  
   return;
 }
   

@@ -460,15 +460,16 @@ Union::displayPOVRay() const
   std::string out;
   if (!A || !B)
     throw ColErr::ExBase(2,"Union::displayPOVRay incomplete type");
+  
   if (A->type()==1)
-    out="| "+A->displayPOVRay()+" |";
+    out="intersection{ "+A->displayPOVRay()+" }";
   else
     out=A->displayPOVRay();
 
-  out+="  ";
+  out+=" ";
   
   if (B->type()==1)
-    out+="| "+B->displayPOVRay()+" |";
+    out+="intersection{ "+B->displayPOVRay()+" }";
   else
     out+=B->displayPOVRay();
 

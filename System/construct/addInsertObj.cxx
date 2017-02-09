@@ -3,7 +3,7 @@
  
  * File:   construct/addInsertObj.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,7 @@
 #include "insertObject.h"
 #include "insertPlate.h"
 #include "insertSphere.h"
+#include "insertCylinder.h"
 #include "addInsertObj.h"
 
 
@@ -92,6 +93,92 @@
 namespace constructSystem
 {
 
+void
+addInsertCylinderCell(Simulation& System,
+                      const std::string& objName,
+                      const std::string& FCname,
+                      const std::string& linkName,
+                      const Geometry::Vec3D& XYZStep,
+                      const double radius,const double length,
+                      const std::string& mat)
+/*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: object name
+    \param FCname :: FixedComp reference name
+    \param linkName :: link direction
+    \param XYZStep :: Step in xyz direction
+    \param length :: full length
+    \param radius :: radial size
+    \param mat :: Material 
+  */
+{
+  ELog::RegMethod RegA("addInsertObj","addInsertCylinderCell(FC)");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* mainFCPtr=
+    OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
+  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertCylinder>
+    TCyl(new constructSystem::insertCylinder(objName));
+
+  OR.addObject(TCyl);
+  TCyl->setStep(XYZStep);
+  TCyl->setValues(radius,length,mat);
+  TCyl->createAll(System,*mainFCPtr,linkIndex);
+
+  return;
+}
+
+void
+addInsertCylinderCell(Simulation& System,
+                      const std::string& objName,
+                      const Geometry::Vec3D& CentPos,
+                      const Geometry::Vec3D& YAxis,
+                      const double radius,
+                      const double length,
+                      const std::string& mat)
+  /*!
+    Adds a cell for tallying in 
+    
+    \param System :: Simulation to used
+    \param objName :: new plate name
+    \param CentPos :: Central positoin
+    \param YAxis :: Direction along Y
+    \param radius :: radius
+    \param length :: length of object
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("addInsertObj[F]","addInsertCylinderCell");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertCylinder>
+    TCyl(new constructSystem::insertCylinder(objName));
+
+  OR.addObject(TCyl);
+  TCyl->setValues(radius,length,mat);
+
+  TCyl->createAll(System,CentPos,YAxis);
+
+  return;
+}
+
+  
 void
 addInsertPlateCell(Simulation& System,
 		   const std::string& objName,

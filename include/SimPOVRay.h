@@ -37,18 +37,13 @@ class SimPOVRay : public Simulation
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
-  void writeWeights(std::ostream&) const;
-  void writeTransform(std::ostream&) const;
-  void writeTally(std::ostream&) const;
-  void writePhysics(std::ostream&) const;
-  void writeVariables(std::ostream&) const;
   
  public:
   
   SimPOVRay();
   SimPOVRay(const SimPOVRay&);
   SimPOVRay& operator=(const SimPOVRay&);
-  ~SimPOVRay() {}           ///< Destructor
+  virtual ~SimPOVRay() {}           ///< Destructor
 
   virtual void write(const std::string&) const;
 
