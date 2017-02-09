@@ -183,7 +183,7 @@ H2FlowGuide::populate(const FuncDataBase& Control)
 
   wallThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
   baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
-  baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
+  baseOffset=Control.EvalPair<double>(keyName,baseName+endName,"BaseOffset");
   angle=Control.EvalPair<double>(keyName,baseName+endName,"Angle");
   sqOffsetY=Control.EvalPair<double>(keyName,baseName+endName,"SQOffsetY");
   sqSideA=Control.EvalPair<double>(keyName,baseName+endName,"SQSideA");
@@ -291,11 +291,11 @@ H2FlowGuide::createSurfaces()
 
   // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
-			   Origin+Y*(baseOffset.Y()),Y);
+			   Origin+Y*(baseOffset),Y);
   ModelSupport::buildPlane(SMap,flowIndex+2,
-			   Origin+Y*(baseOffset.Y()+baseLen),Y);
+			   Origin+Y*(baseOffset+baseLen),Y);
   ModelSupport::buildPlane(SMap,flowIndex+10,
-			   Origin+Y*(baseOffset.Y()-1),Y);
+			   Origin+Y*(baseOffset-1),Y);
 
   return;
 }

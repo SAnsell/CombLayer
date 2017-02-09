@@ -49,7 +49,7 @@ class H2FlowGuide :
 
   double wallThick;            ///< Wal thickness
   double baseLen;              ///< Base length
-  Geometry::Vec3D baseOffset;  ///< Base offset
+  double baseOffset;  ///< Base offset
   double angle; ///< sq xy angle
   double sqOffsetY; ///< sq offset along the y-axis
   double sqSideA; ///< parameter A of the side SQ surfaces
