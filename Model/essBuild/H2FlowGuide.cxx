@@ -256,7 +256,7 @@ H2FlowGuide::createSurfaces()
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+502);
-  GA->setSurface(getSQSurface(offsetY+baseThick, 1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY+baseThick, 1.1, -0.5*2, -0.5/100));
   GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
 
@@ -267,16 +267,16 @@ H2FlowGuide::createSurfaces()
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+504);
-  GA->setSurface(getSQSurface(offsetY+baseThick, 1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY+baseThick, 1.1, -0.5*2, -0.5/100));
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
   // central part
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+505);
-  GA->setSurface(getSQSurface(offsetY, 1, -0.5, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY, 1, -0.6, -0.5/100));
   SMap.registerSurf(GA);
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
-  GA->setSurface(getSQSurface(offsetY+baseThick, 1, -0.5, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY+baseThick, 1.2, -0.6, -0.5/100));
   SMap.registerSurf(GA);
 
 
@@ -287,6 +287,8 @@ H2FlowGuide::createSurfaces()
 			   Origin+Y*(baseOffset.Y()),Y);
   ModelSupport::buildPlane(SMap,flowIndex+2,
 			   Origin+Y*(baseOffset.Y()+baseLen),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+10,
+			   Origin+Y*(baseOffset.Y()-1),Y);
 
   return;
 }
@@ -328,7 +330,7 @@ H2FlowGuide::createObjects(Simulation& System,
   wallExclude.addUnion(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -505 506 -2 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 10 -505 506 -2 ");
   wallExclude.addUnion(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
