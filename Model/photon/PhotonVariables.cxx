@@ -240,7 +240,19 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("PrimMod3Mat0","Poly");
   
   // PHOTONMOD2:
- 
+  Control.addVariable("CatcherYStep",2.0);
+  Control.addVariable("CatcherLength",0.5);
+  Control.addVariable("CatcherRadius",0.3);
+  Control.addVariable("CatcherDefMat","Copper");
+  
+  Control.addVariable("PModYStep",50.0);
+  
+  Control.addVariable("PModOuterHeight",7.0);
+  Control.addVariable("PModOuterWidth",7.0);
+  Control.addVariable("PModInnerHeight",5.0);
+  Control.addVariable("PModInnerWidth",5.0);
+  Control.addVariable("PModOuterMat","Aluminium");
+  
   Control.addVariable("PModYStep",50.0);
   
   Control.addVariable("PModOuterHeight",7.0);

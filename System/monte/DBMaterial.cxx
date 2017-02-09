@@ -531,8 +531,8 @@ DBMaterial::initMaterial()
 		   "94239.70c 2.874713E-05 94240.70c 2.248326E-06 "
 		   "94241.70c 3.508395E-07 94242.70c 1.371115E-08 ","",MLib);
   setMaterial(MObj);
-    // #69 Hafnium
 
+  // #69 Hafnium
   MObj.setMaterial(69,"Hafnium",
 		   "72174.70c 7.18534e-05 72176.70c 0.00236218 "
 		   "72177.70c 0.00835296 72178.70c 0.012251 "

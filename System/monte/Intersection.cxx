@@ -342,7 +342,7 @@ Intersection::display() const
 std::string
 Intersection::displayFluka() const
   /*!
-    Displaces a bracket wrapped object
+    Displays a bracket wrapped object
     \return Bracketed string
   */
 {

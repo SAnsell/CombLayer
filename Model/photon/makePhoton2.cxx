@@ -85,6 +85,7 @@
 #include "TubeDetBox.h"
 #include "HeShield.h"
 #include "TubeCollimator.h"
+#include "insertCylinder.h"
 
 #include "makePhoton2.h"
 
@@ -93,6 +94,7 @@ namespace photonSystem
 
 makePhoton2::makePhoton2() :
   PModObj(new photonSystem::PlateMod("PMod")),
+  Catcher(new constructSystem::insertCylinder("Catcher")),
   Chamber(new photonSystem::VacuumVessel("Chamber")),
   BaseSupport(new photonSystem::TableSupport("BaseSupport")),
   centralSupport(new photonSystem::HeShield("CentralShield")),
@@ -107,6 +109,7 @@ makePhoton2::makePhoton2() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(PModObj);
+  OR.addObject(Catcher);
   OR.addObject(Chamber);
   OR.addObject(BaseSupport);
   OR.addObject(centralSupport);
@@ -115,8 +118,6 @@ makePhoton2::makePhoton2() :
   OR.addObject(leftColl);
   
 }
-
-
 
 makePhoton2::~makePhoton2()
   /*!
@@ -182,16 +183,20 @@ makePhoton2::build(Simulation& System,
   // For output stream
   ELog::RegMethod RControl("makePhoton2","build");
 
-
   int voidCell(74123);
 
   Chamber->addInsertCell(voidCell);
   Chamber->createAll(System,World::masterOrigin(),0);
+
   
   PModObj->addInsertCell(Chamber->getCell("Void",0));
-  PModObj->createAll(System,World::masterOrigin(),0);
+  PModObj->createAll(System,*Chamber,0);
   buildWings(System);
-  
+
+  Catcher->setNoInsert();  
+  Catcher->addInsertCell(Chamber->getCell("Void",0));
+  Catcher->createAll(System,*PModObj,1);
+
   BaseSupport->addInsertCell(Chamber->getCell("Void"));
   BaseSupport->createAll(System,*Chamber,0);
 

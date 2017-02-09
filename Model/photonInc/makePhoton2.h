@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/makePhoton2.h
+ * File:  photonInc/makePhoton2.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -27,9 +27,11 @@ namespace constructSystem
   class SupplyPipe;
   class insertPlate;
   class insertSphere;
+  class insertCylinder;
   class RingFlange;
   class RingSeal;
   class TubeDetBox;
+  
 }
 
 /*!
@@ -68,7 +70,10 @@ class makePhoton2
 {
  private:
 
+
   std::shared_ptr<PlateMod> PModObj;        ///< Initial moderator
+  /// catcher 
+  std::shared_ptr<constructSystem::insertCylinder> Catcher; 
   std::shared_ptr<PlateMod> PModObj2;        ///< Initial moderator
   /// external wing plates
   std::vector<std::shared_ptr<constructSystem::insertPlate>> SPlate;
