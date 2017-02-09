@@ -200,9 +200,10 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
 }  
 
 std::string
-H2FlowGuide::getSQSurface(const double R, const double e)
+H2FlowGuide::getSQSurface(const double offsetY, const double e)
   /*
-    Return MCNP(X) surface card for SQ ellipsoids
+    Return MCNP(X) surface card for flow guide
+    \param offsetY :: y offset
   */
 {
   //  std::string surf = "sq   0   1 0 1 0   1 0 0 0 0";
@@ -216,11 +217,13 @@ H2FlowGuide::getSQSurface(const double R, const double e)
   // x^2 + y = 0 is  "sq   1 0 0 0 0.5 -0.5 0 0 -20 0 "
   const double A = 1;
   double E = -0.5;
-  if (Origin[1]<0)
+  if (Origin[1]<0.0)
     E *= - 1.0;
   const double F = -0.5/100; // affects inclination of vertical walls
 
-  const double dy = Origin[1]<0 ? 5 : -5;
+  double dy = offsetY;
+  if (Origin[1]>0.0)
+    dy *= -1.0;
   
   std::string surf = "sq " +
     std::to_string(A) + " 0 0 0 " +
@@ -248,7 +251,7 @@ H2FlowGuide::createSurfaces()
   Geometry::General *GA;
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+500);
-  GA->setSurface(getSQSurface(1.0, 1.0));
+  GA->setSurface(getSQSurface(5.0, 1.0));
 
   const Geometry::Quaternion QrotXY=
     Geometry::Quaternion::calcQRotDeg(10,Z);
