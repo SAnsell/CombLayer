@@ -206,15 +206,6 @@ H2FlowGuide::getSQSurface(const double offsetY, const double e)
     \param offsetY :: y offset
   */
 {
-  //  std::string surf = "sq   0   1 0 1 0   1 0 0 0 0";
-  //  std::string surf = "sq   0 0.5 0 1 0 0.5 0 0 0 0";
-  //  std::string surf = "sq   1 0 0 0 0 0 0 1 -1 0 "; // should be
-  //  std::string surf = "sq   1 0 0 1 0.5 -0.5 0 1 -1 0 "; // works Hoor
-  //  std::string surf = "sq   1 0 0 0 0.5 -0.5 0 0 0 0 "; // works
-  
-  //  std::string surf = "sq   1 0 0 0 0.5 -0.5 0 0 -20 0 "; // works
-  
-  // x^2 + y = 0 is  "sq   1 0 0 0 0.5 -0.5 0 0 -20 0 "
   const double A = 1;
   double E = -0.5;
   if (Origin[1]<0.0)
@@ -247,17 +238,41 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
+  const double theta = 10;
+  const double offsetY = 5.0;
+  
+  const Geometry::Quaternion QrotLeft =
+    Geometry::Quaternion::calcQRotDeg(theta,Z);
+  const Geometry::Quaternion QrotRight =
+    Geometry::Quaternion::calcQRotDeg(-theta,Z);
+
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
 
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+500);
-  GA->setSurface(getSQSurface(5.0, 1.0));
-
-  const Geometry::Quaternion QrotXY=
-    Geometry::Quaternion::calcQRotDeg(10,Z);
-  GA->rotate(QrotXY);
-
+  // left part
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+501);
+  GA->setSurface(getSQSurface(offsetY, 1.0));
+  GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
+
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+502);
+  GA->setSurface(getSQSurface(offsetY+baseThick, 1.0));
+  GA->rotate(QrotLeft);
+  SMap.registerSurf(GA);
+
+  // right part
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+503);
+  GA->setSurface(getSQSurface(offsetY, 1.0));
+  GA->rotate(QrotRight);
+  SMap.registerSurf(GA);
+
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+504);
+  GA->setSurface(getSQSurface(offsetY+baseThick, 1.0));
+  GA->rotate(QrotRight);
+  SMap.registerSurf(GA);
+
+
+  
 
   // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
@@ -319,8 +334,12 @@ H2FlowGuide::createObjects(Simulation& System,
   HeadRule wallExclude;
   // base
   //  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -500 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -501 502 503 ");
   wallExclude.procString(Out); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -503 504 ");
+  wallExclude.addUnion(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
 
