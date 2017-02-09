@@ -234,6 +234,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideSQSideA",1.0);
   Control.addVariable("TopFlyFlowGuideSQSideE",-1.0);
   Control.addVariable("TopFlyFlowGuideSQSideF",-0.005);
+  Control.addVariable("TopFlyFlowGuideSQCenterA",1.0);
+  Control.addVariable("TopFlyFlowGuideSQCenterE",-0.6);
+  Control.addVariable("TopFlyFlowGuideSQCenterF",-0.005);
   
   Control.addVariable("TopFlyRightLobeXStep",-1.0);  
   Control.addVariable("TopFlyRightLobeYStep",0.0);  

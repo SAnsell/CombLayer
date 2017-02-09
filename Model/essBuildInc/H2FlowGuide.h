@@ -55,6 +55,9 @@ class H2FlowGuide :
   double sqSideA; ///< parameter A of the side SQ surfaces
   double sqSideE; ///< parameter E of the side SQ surfaces
   double sqSideF; ///< parameter F of the side SQ surfaces
+  double sqCenterA; ///< parameter A of the central SQ surfaces
+  double sqCenterE; ///< parameter E of the central SQ surfaces
+  double sqCenterF; ///< parameter F of the central SQ surfaces
 
   int wallMat;                   ///< inner material
   double wallTemp;               ///< LH2 temperature [K]

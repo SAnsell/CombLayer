@@ -115,6 +115,9 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   sqSideA(A.sqSideA),
   sqSideE(A.sqSideE),
   sqSideF(A.sqSideF),
+  sqCenterA(A.sqCenterA),
+  sqCenterE(A.sqCenterE),
+  sqCenterF(A.sqCenterF),
   wallMat(A.wallMat),
   wallTemp(A.wallTemp)
   /*!
@@ -143,6 +146,9 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       sqSideA=A.sqSideA;
       sqSideE=A.sqSideE;
       sqSideF=A.sqSideF;
+      sqCenterA=A.sqCenterA;
+      sqCenterE=A.sqCenterE;
+      sqCenterF=A.sqCenterF;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
     }
@@ -183,6 +189,9 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   sqSideA=Control.EvalPair<double>(keyName,baseName+endName,"SQSideA");
   sqSideE=Control.EvalPair<double>(keyName,baseName+endName,"SQSideE");
   sqSideF=Control.EvalPair<double>(keyName,baseName+endName,"SQSideF");
+  sqCenterA=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterA");
+  sqCenterE=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterE");
+  sqCenterF=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterF");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+endName+"WallMat");
@@ -274,10 +283,10 @@ H2FlowGuide::createSurfaces()
 
   // central part
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+505);
-  GA->setSurface(getSQSurface(sqOffsetY, 1, -0.6, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY, sqCenterA, sqCenterE, sqCenterF));
   SMap.registerSurf(GA);
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
-  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.2, -0.6, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.2*sqCenterA, sqCenterE, sqCenterF));
   SMap.registerSurf(GA);
 
   // base
