@@ -207,7 +207,7 @@ H2FlowGuide::getSQSurface(const double offsetY, const double e)
   */
 {
   const double A = 1;
-  double E = -0.5;
+  double E = -0.5*2;
   if (Origin[1]<0.0)
     E *= - 1.0;
   const double F = -0.5/100; // affects inclination of vertical walls
@@ -238,8 +238,8 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
-  const double theta = 10;
-  const double offsetY = 5.0;
+  const double theta = 17;
+  const double offsetY = 4.0;
   
   const Geometry::Quaternion QrotLeft =
     Geometry::Quaternion::calcQRotDeg(theta,Z);
@@ -271,36 +271,22 @@ H2FlowGuide::createSurfaces()
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
+  // central part
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+505);
+  GA->setSurface(getSQSurface(offsetY, 1.0));
+  SMap.registerSurf(GA);
+  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
+  GA->setSurface(getSQSurface(offsetY+baseThick, 1.0));
+  SMap.registerSurf(GA);
+
 
   
 
   // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
-			   Origin+Y*(baseOffset.Y()-baseThick/2.0),Y);
+			   Origin+Y*(baseOffset.Y()),Y);
   ModelSupport::buildPlane(SMap,flowIndex+2,
-			   Origin+Y*(baseOffset.Y()+baseThick/2.0),Y);
-
-  ModelSupport::buildPlane(SMap,flowIndex+3,
-			   Origin+X*(baseOffset.X()+armThick/2.0+baseArmSep),X);
-  ModelSupport::buildPlane(SMap,flowIndex+4,
-			   Origin+X*(baseOffset.X()+armThick/2.0+baseArmSep+baseLen),X);
-
-  ModelSupport::buildPlane(SMap,flowIndex+13,
-			   Origin-X*(baseOffset.X()+armThick/2.0+baseArmSep),X);
-  ModelSupport::buildPlane(SMap,flowIndex+14,
-			   Origin-X*(baseOffset.X()+armThick/2.0+baseArmSep+baseLen),X);
-
-  // arm
-  ModelSupport::buildPlane(SMap,flowIndex+101,
-			   Origin+Y*(armOffset.Y()-armLen/2.0),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+102,
-			   Origin+Y*(armOffset.Y()+armLen/2.0),Y);
-
-  ModelSupport::buildPlane(SMap,flowIndex+103,
-			   Origin+X*(armOffset.X()-armThick/2.0),X);
-  ModelSupport::buildPlane(SMap,flowIndex+104,
-			   Origin+X*(armOffset.X()+armThick/2.0),X);
-  
+			   Origin+Y*(baseOffset.Y()+baseLen),Y);
 
   return;
 }
@@ -339,6 +325,10 @@ H2FlowGuide::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -503 504 ");
+  wallExclude.addUnion(Out); 
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -505 506 -2 ");
   wallExclude.addUnion(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
