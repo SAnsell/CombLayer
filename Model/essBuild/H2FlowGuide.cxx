@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   essBuild/H2FlowGuide.cxx 
+
+ * File:   essBuild/H2FlowGuide.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -103,13 +103,14 @@ H2FlowGuide::H2FlowGuide(const std::string& baseKey,
   */
 {}
 
-H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) : 
+H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   attachSystem::FixedComp(A),
   baseName(A.baseName),midName(A.midName),endName(A.endName),
   flowIndex(A.flowIndex),
   cellIndex(A.cellIndex),
   wallThick(A.wallThick),baseLen(A.baseLen),
   baseOffset(A.baseOffset),
+  angle(A.angle),
   wallMat(A.wallMat),
   wallTemp(A.wallTemp)
   /*!
@@ -133,6 +134,7 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       wallThick=A.wallThick;
       baseLen=A.baseLen;
       baseOffset=A.baseOffset;
+      angle=A.angle;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
     }
@@ -148,8 +150,8 @@ H2FlowGuide::clone() const
 {
   return new H2FlowGuide(*this);
 }
- 
-H2FlowGuide::~H2FlowGuide() 
+
+H2FlowGuide::~H2FlowGuide()
   /*!
     Destructor
   */
@@ -168,14 +170,15 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   wallThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
   baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
   baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
+  angle=Control.EvalPair<double>(keyName,baseName+endName,"Angle");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+endName+"WallMat");
   wallTemp=Control.EvalPair<double>(keyName,baseName+endName,"WallTemp");
-  
+
   return;
 }
-  
+
 void
 H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
@@ -186,7 +189,7 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("H2FlowGuide","createUnitVector");
   FixedComp::createUnitVector(FC);
   return;
-}  
+}
 
 std::string
 H2FlowGuide::getSQSurface(const double& offsetY,
@@ -218,7 +221,7 @@ H2FlowGuide::getSQSurface(const double& offsetY,
   return surf;
 }
 
-  
+
 void
 H2FlowGuide::createSurfaces()
   /*!
@@ -227,13 +230,12 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
-  const double theta = 17;
   const double offsetY = 4.0;
-  
+
   const Geometry::Quaternion QrotLeft =
-    Geometry::Quaternion::calcQRotDeg(theta,Z);
+    Geometry::Quaternion::calcQRotDeg(angle,Z);
   const Geometry::Quaternion QrotRight =
-    Geometry::Quaternion::calcQRotDeg(-theta,Z);
+    Geometry::Quaternion::calcQRotDeg(-angle,Z);
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
@@ -269,7 +271,7 @@ H2FlowGuide::createSurfaces()
   SMap.registerSurf(GA);
 
 
-  
+
 
   // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
@@ -281,7 +283,7 @@ H2FlowGuide::createSurfaces()
 
   return;
 }
- 
+
 void
 H2FlowGuide::createObjects(Simulation& System,
 			   const attachSystem::FixedComp& HW)
@@ -305,27 +307,27 @@ H2FlowGuide::createObjects(Simulation& System,
   if (!InnerObj)
     throw ColErr::InContainerError<int>
       (innerCell,"H2Wing inner Cell not found");
-  
+
   std::string Out;
   const std::string topBottomStr=HW.getLinkString(12)+HW.getLinkString(13);
   HeadRule wallExclude;
   // base
   //  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -501 502 503 ");
-  wallExclude.procString(Out); 
+  wallExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -503 504 ");
-  wallExclude.addUnion(Out); 
+  wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   Out=ModelSupport::getComposite(SMap,flowIndex," 10 -505 506 -2 ");
-  wallExclude.addUnion(Out); 
+  wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
 
   /*  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
-  wallExclude.addUnion(Out); 
+  wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
   // arm
@@ -335,10 +337,10 @@ H2FlowGuide::createObjects(Simulation& System,
   */
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
-  
+
   return;
 }
-  
+
 
 void
 H2FlowGuide::createAll(Simulation& System,
@@ -355,8 +357,8 @@ H2FlowGuide::createAll(Simulation& System,
   createUnitVector(FC);
   createSurfaces();
   createObjects(System,FC);
-  
+
   return;
 }
-  
+
 }  // NAMESPACE essSystem

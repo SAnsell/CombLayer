@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/H2FlowGuide.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_H2FlowGuide_h
@@ -36,11 +36,11 @@ namespace essSystem
   \brief H2FlowGuide component in the butterfly moderator
 */
 
-class H2FlowGuide : 
+class H2FlowGuide :
   public attachSystem::FixedComp
 {
  private:
-  
+
   const std::string baseName; ///< Base name
   const std::string midName; ///< Mid Name
   const std::string endName; ///< End Name
@@ -50,15 +50,16 @@ class H2FlowGuide :
   double wallThick;            ///< Wal thickness
   double baseLen;              ///< Base length
   Geometry::Vec3D baseOffset;  ///< Base offset
-   
-  int wallMat;                   ///< inner material 
+  double angle; ///< sq xy angle
+
+  int wallMat;                   ///< inner material
   double wallTemp;               ///< LH2 temperature [K]
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   std::string getSQSurface(const double&,const double&,const double&,const double&);
-  
+
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&);
 
@@ -76,4 +77,4 @@ class H2FlowGuide :
 }
 
 #endif
- 
+
