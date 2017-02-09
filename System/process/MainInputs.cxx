@@ -96,7 +96,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
-  IParam.regFlag("povray","PovRay");
+  IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
   IParam.regMulti("offset","offset",10000,1,8);

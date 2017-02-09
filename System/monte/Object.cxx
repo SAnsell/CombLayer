@@ -1318,9 +1318,9 @@ Object::writePOVRay(std::ostream& OX) const
       const std::string objName=OR.inRenumberRange(ObjName);
       
       // do not render global objects (outer void and black hole)
-      if (objName.empty())
-	return; 
-
+      //      if (objName.empty())
+        //	return; 
+      OX<<"// Cell "<<objName<<" "<<ObjName<<"\n";
       OX<<"intersection{\n"
 	<<HRule.displayPOVRay()<<"\n"
 	<< " texture {mat" << MatN <<"}\n"

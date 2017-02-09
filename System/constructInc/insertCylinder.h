@@ -30,8 +30,8 @@ namespace constructSystem
   \class insertCylinder
   \version 1.0
   \author S. Ansell
-  \date November 2011
-  \brief Plate inserted in object 
+  \date February 2017
+  \brief Cylinder inserted in object 
   
   Designed to be a quick plate to put an object into a model
   for fluxes/tallies etc

@@ -686,7 +686,6 @@ Plane::writePOVRay(std::ostream& OX) const
 
   OX<<"#declare s"<<getName()
     << " = plane { ";
-  
   const int ptype=planeType();
   if (!ptype)
     {
