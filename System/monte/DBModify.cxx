@@ -276,9 +276,9 @@ addESSMaterial()
 		   " 42096.71c  0.002423388 "
 		   " 42097.71c  0.001388944 "
 		   " 42098.71c  0.003514494 "
-		   " 42100.71c  0.001404926 ", "fe56.14t", MLib);
+		   " 42100.71c  0.001404926 ", "fe56.12t", MLib);
   MObj.setMXitem(6000, 71, 'c', "h", "06012");
-  MObj.setDensity(-7.76);
+  MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
   // Same ase 2636 but with Bilbao density of 7.93 g/cm3
