@@ -289,13 +289,12 @@ H2FlowGuide::createSurfaces()
   GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.2*sqCenterA, sqCenterE, sqCenterF));
   SMap.registerSurf(GA);
 
-  // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
 			   Origin+Y*(baseOffset),Y);
   ModelSupport::buildPlane(SMap,flowIndex+2,
 			   Origin+Y*(baseOffset+baseLen),Y);
   ModelSupport::buildPlane(SMap,flowIndex+10,
-			   Origin+Y*(baseOffset-1),Y);
+			   Origin+Y*(baseOffset-1.0),Y);
 
   return;
 }
@@ -327,8 +326,7 @@ H2FlowGuide::createObjects(Simulation& System,
   std::string Out;
   const std::string topBottomStr=HW.getLinkString(12)+HW.getLinkString(13);
   HeadRule wallExclude;
-  // base
-  //  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
+
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -501 502 503 ");
   wallExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
@@ -341,16 +339,6 @@ H2FlowGuide::createObjects(Simulation& System,
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
-
-  /*  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 -13 14 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
-
-  // arm
-  Out=ModelSupport::getComposite(SMap,flowIndex," 101 -102 103 -104 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
-  */
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
 
