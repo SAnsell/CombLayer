@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1039,7 +1039,7 @@ DBMaterial::initMaterial()
                    "14029.70c 0.000562111 14030.70c 0.000370548 "
                    "16032.70c 9.59317e-05 16033.70c 7.6802e-07 "
                    "16034.70c 4.33527e-06 16036.70c 2.0211e-08 "
-                   "17037.70c 8.95621e-07 17037.70c 2.86249e-07 "
+                   "17035.70c 8.95621e-07 17037.70c 2.86249e-07 "
                    "19039.70c 0.00037788 19040.70c 4.74082e-08 "
                    "19041.70c 2.72698e-06 20040.70c 0.00231121 "
                    "20042.70c 1.54254e-05 20043.70c 3.21859e-06 "
@@ -1166,7 +1166,19 @@ DBMaterial::initMaterial()
                    "lwtr.01t",MLib);
   setMaterial(MObj);
 
-  
+  // He3 for detectors [1bar]
+  MObj.setMaterial(132,"He3_1Bar","2003.70c 2.45e-5","",MLib);
+  setMaterial(MObj);
+
+  // He3 for detectors [10bar]
+  MObj.setMaterial(133,"He3_10Bar","2003.70c 2.45e-4","",MLib);
+  setMaterial(MObj);
+
+  // Material #134: liquid N2
+  // Total density 0.807g/cc 
+  MObj.setMaterial(134,"LiqN2","7014.70c 0.034718","",MLib);
+  setMaterial(MObj);
+
   return;
 }
 
@@ -1720,6 +1732,31 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
 	  
 	  if (mp->first)
 	    mp->second.writeFLUKA(OX);
+	}
+    }
+  return;
+}
+
+void
+DBMaterial::writePOVRay(std::ostream& OX) const
+  /*!
+    Write materials out to the POV-Ray system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writePOVRay");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
+	  
+	  if (mp->first)
+	    mp->second.writePOVRay(OX);
 	}
     }
   return;

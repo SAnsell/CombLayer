@@ -3,7 +3,7 @@
  
  * File:   geometry/Ellipsoid.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -518,8 +518,8 @@ Ellipsoid::distance(const Geometry::Vec3D& A) const
 //----------------------------------------------------------------------------
   return firstOctant(e,y);
 }
-//-
 
+  
 void
 Ellipsoid::write(std::ostream& OX) const
   /*! 
@@ -528,6 +528,19 @@ Ellipsoid::write(std::ostream& OX) const
   */
 {
   //               -3 -2 -1 0 1 2 3        
+  Quadratic::write(OX);
+  return;
+}
+
+
+  
+void
+Ellipsoid::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POV-Ray
+    \param OX :: output stream
+  */
+{
   Quadratic::write(OX);
   return;
 }

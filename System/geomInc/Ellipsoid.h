@@ -3,7 +3,7 @@
  
  * File:   geomInc/Ellipsoid.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,8 +112,11 @@ class Ellipsoid : public Quadratic
   void rotate(const Geometry::Quaternion&);
   void displace(const Geometry::Vec3D&);
 
-  virtual void write(std::ostream&) const;
   virtual void print() const;
+
+  virtual void writePOVRay(std::ostream&) const;
+  virtual void write(std::ostream&) const;
+
 
 };
 

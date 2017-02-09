@@ -98,10 +98,9 @@ DREAMvariables(FuncDataBase& Control)
   FGen.setYOffset(0.0);
   FGen.generateTaper(Control,"dreamFA",350.0,8.0,2.0,2.5,4.5);
   
-
-  PipeGen.generatePipe(Control,"dreamPipeB",2.0,46.0);
+  PipeGen.generatePipe(Control,"dreamPipeB",8.0,40.0);
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"dreamFB",44.0,2.5,2.5,4.5,4.5);   
+  FGen.generateTaper(Control,"dreamFB",38.0,2.5,2.5,4.5,4.5);   
   //  Control.addVariable("dreamFBBeamYStep",4.0);
  
   // VACBOX A : 6.10m target centre

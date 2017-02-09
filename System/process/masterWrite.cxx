@@ -3,7 +3,7 @@
  
  * File:   process/masterWrite.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,6 +121,24 @@ masterWrite::Num(const Geometry::Vec3D& V)
       Out +=(fabs(V[i])<zeroTol) ? "0.0" :
 	(FMTdouble % V[i]).str();
       if (i!=2) Out+=" ";
+    }
+  return Out;
+}
+
+std::string
+masterWrite::NumComma(const Geometry::Vec3D& V)
+  /*!
+    Write out a specific double
+    \param V :: Vector to write
+    \return formated number
+  */
+{
+  std::string Out;
+  for(int i=0;i<3;i++)
+    {
+      Out +=(fabs(V[i])<zeroTol) ? "0.0" :
+	(FMTdouble % V[i]).str();
+      if (i!=2) Out+=",";
     }
   return Out;
 }

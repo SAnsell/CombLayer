@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/BaseMap.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,9 @@ class BaseMap
   BaseMap(const BaseMap&);
   BaseMap& operator=(const BaseMap&);
   virtual ~BaseMap() {}     ///< Destructor
+
+  bool hasItem(const std::string&) const;
+  bool hasItem(const std::string&,const size_t) const;
   
   void setItem(const std::string&,const int);
   void setItem(const std::string&,const size_t,const int);

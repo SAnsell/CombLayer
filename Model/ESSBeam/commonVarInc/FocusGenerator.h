@@ -46,8 +46,10 @@ class FocusGenerator
   double substrateThick;   ///< substrate thickness
   double supportThick;     ///< substrate support thickness
   double voidThick;        ///< clearance thickness
-  bool yStepActive;        ///< Y step active
+  int yStepActive;         ///< Y step active
+  int yBeamActive;         ///< Y beam step active
   double yStep;            ///< Y step
+  double yBeam;            ///< Y Beam step
   double zStep;            ///< Z step
   
   std::string guideMat;    ///< Main guide material
@@ -75,15 +77,32 @@ class FocusGenerator
   void setThickness(const double S,const double Extra,const double V)
   { substrateThick=S;supportThick=Extra,voidThick=V; }
 
-  /// set the y step
+  /// set the y step / beam step relative to the centre of the guide
+  void setYCentreOffset(const double D)
+  { yStep=D; yStepActive=2; yBeam=D; yBeamActive=2; }
+
+  /// set the y step / beam step
   void setYOffset(const double D)
+  { yStep=D; yStepActive=1; yBeam=D; yBeamActive=1; }
+
+  /// set the main y step 
+  void setYMainOffset(const double D)
   { yStep=D; yStepActive=1; }
+
+  /// set the beam step
+  void setYBeamOffset(const double D)
+  { yBeam=D; yBeamActive=1; }
+
   void setZOffset(const double D)
   { zStep=D; }
   /// clear the y step
   void clearYOffset()
-  { yStepActive=0; }
-  
+  { yStepActive=0; yBeamActive=0; }
+  /// clear the beam y-step
+  void clearYBeam() { yBeamActive=0; }
+  /// clear the main y step
+  void clearYMain() { yStepActive=0; }
+
   void generateRectangle(FuncDataBase&,
 			 const std::string&,const double,
 			 const double,const double) const;

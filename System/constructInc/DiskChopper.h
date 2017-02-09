@@ -40,7 +40,7 @@ namespace constructSystem
   \brief DiskChopper unit  
 */
 
-class DiskChopper : public attachSystem::FixedGroup,
+class DiskChopper : public attachSystem::FixedOffsetGroup,
     public attachSystem::ContainedComp
 {
  private:
@@ -49,13 +49,7 @@ class DiskChopper : public attachSystem::FixedGroup,
   int cellIndex;                ///< Cell index
   int centreFlag;               ///< Centre origin / edge origin
   int offsetFlag;               ///< Centre origin / edge origin
-  
-  double xStep;                 ///< Origin step
-  double yStep;                 ///< Origin step
-  double zStep;                 ///< Origin step
-  double xyAngle;               ///< Axis rotation
-  double zAngle;                ///< Axis rotation
-  
+    
   double innerRadius;           ///< Inner Non-Viewed radius 
   double outerRadius;           ///< Outer Viewed radius
   double diskGap;               ///< Gap betwen disks
@@ -66,7 +60,8 @@ class DiskChopper : public attachSystem::FixedGroup,
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createUnitVector(const attachSystem::TwinComp&,const long int);  
+  void createUnitVector(const attachSystem::FixedComp&,const long int,
+			const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -85,8 +80,9 @@ class DiskChopper : public attachSystem::FixedGroup,
   void setOffsetFlag(const int O) { offsetFlag=O; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAllBeam(Simulation&,const attachSystem::TwinComp&,
-		     const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   monteInc/Object.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -187,7 +187,10 @@ class Object
   void write(std::ostream&) const;         
   void writePHITS(std::ostream&) const;    
   void writeFLUKA(std::ostream&) const;    
-  void writeFLUKAmat(std::ostream&) const;    
+  void writeFLUKAmat(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;    
+  void writePOVRaymat(std::ostream&) const;
+
 
   void checkPointers() const;
 

@@ -3,7 +3,7 @@
  
  * File:   geometry/CylCan.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -449,6 +449,30 @@ CylCan::print() const
   return;
 }
 
+void
+CylCan::writeFLUKA(std::ostream&) const
+  /*!
+    Write out the cone class in an mcnpx
+    format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Unsupported output"<<ELog::endErr;
+  return;
+}
+
+void
+CylCan::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"CylCan::writePOVRay Unsupported output"<<ELog::endErr;
+  return;
+}
+
+
 void 
 CylCan::write(std::ostream& OX) const
   /*! 
@@ -463,19 +487,6 @@ CylCan::write(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
-
-void
-CylCan::writeFLUKA(std::ostream&) const
-  /*!
-    Write out the cone class in an mcnpx
-    format.
-    \param  :: Output Stream (required for multiple std::endl)
-  */
-{
-  ELog::EM<<"Unsupported output"<<ELog::endErr;
-  return;
-}
-
 
   
   

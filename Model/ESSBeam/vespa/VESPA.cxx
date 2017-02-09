@@ -3,7 +3,7 @@
  
  * File:   essBuild/VESPA.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,9 @@
 #include "JawSet.h"
 #include "VespaHut.h"
 #include "CylSample.h"
+#include "CrystalMount.h"
+#include "TubeDetBox.h"
+#include "Cryostat.h"
 
 #include "VESPA.h"
 
@@ -100,7 +103,7 @@ namespace essSystem
 
 VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
-  stopPoint(0),
+  startPoint(0),stopPoint(0),
   vespaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
@@ -133,6 +136,7 @@ VESPA::VESPA(const std::string& keyName) :
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
+  VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitT0(new constructSystem::ChopperPit(newName+"OutPitT0")),
@@ -164,7 +168,8 @@ VESPA::VESPA(const std::string& keyName) :
   Cave(new VespaHut(newName+"Cave")),
 
   VJaws(new constructSystem::JawSet(newName+"VJaws")),
-  Sample(new instrumentSystem::CylSample(newName+"Sample"))
+  Sample(new instrumentSystem::CylSample(newName+"Sample")),
+  Cryo(new constructSystem::Cryostat(newName+"Cryo"))
  /*!
     Constructor
  */
@@ -256,6 +261,7 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(Cave);
   OR.addObject(VJaws);
   OR.addObject(Sample);
+  OR.addObject(Cryo);
 }
 
   
@@ -293,48 +299,29 @@ VESPA::setBeamAxis(const GuideItem& GItem,
   return;
 }
 
-  
-void 
-VESPA::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
+void
+VESPA::buildBunkerUnits(Simulation& System,
+                        const attachSystem::FixedComp& FA,
+                        const long int startIndex,
+                        const int bunkerVoid)
   /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
-    \param voidCell :: Void cell
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
    */
 {
-  ELog::RegMethod RegA("VESPA","build");
-
-  ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()<<ELog::endDiag;
-
-  const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
-	  <<ELog::endDiag;
-
-  setBeamAxis(GItem,0);
+  ELog::RegMethod RegA("VESPA","buildBunkerUnits");
   
-  FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->setFront(GItem.getKey("Beam"),-1);
-  FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*vespaAxis,-3,*vespaAxis,-3);
-
-  if (stopPoint==1) return;                      // STOP At monolith
-                                                 // edge
-    
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,FocusA->getKey("Guide0"),2);
+  VPipeA->addInsertCell(bunkerVoid);
+  VPipeA->createAll(System,FA,startIndex);
 
   FocusB->addInsertCell(VPipeA->getCells("Void"));
   FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
 
   // First Chopper
-  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->addInsertCell(bunkerVoid);
   ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -343,7 +330,7 @@ VESPA::build(Simulation& System,
   WFMDiskA->setOffsetFlag(1);  // Z direction
   WFMDiskA->createAll(System,ChopperA->getKey("Beam"),0);
 
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
 
   FocusC->addInsertCell(VPipeC->getCells("Void"));
@@ -351,7 +338,7 @@ VESPA::build(Simulation& System,
 
 
   // First Chopper
-  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->addInsertCell(bunkerVoid);
   ChopperB->createAll(System,FocusC->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -360,14 +347,14 @@ VESPA::build(Simulation& System,
   WFMDiskB->setOffsetFlag(1);  // Z direction
   WFMDiskB->createAll(System,ChopperB->getKey("Beam"),0);
 
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   FocusD->addInsertCell(VPipeD->getCells("Void"));
   FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
 
   // First Chopper
-  ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperC->addInsertCell(bunkerVoid);
   ChopperC->createAll(System,FocusD->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -376,14 +363,14 @@ VESPA::build(Simulation& System,
   WFMDiskC->setOffsetFlag(1);  // Z direction
   WFMDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
-  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
   // 10m Chopper
-  ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperD->addInsertCell(bunkerVoid);
   ChopperD->createAll(System,FocusE->getKey("Guide0"),2);
 
   // Double disk chopper
@@ -392,36 +379,40 @@ VESPA::build(Simulation& System,
   FOCDiskA->setOffsetFlag(1);  // Z direction
   FOCDiskA->createAll(System,ChopperD->getKey("Beam"),0);
   
-  VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeF->addInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
 
   FocusF->addInsertCell(VPipeF->getCells("Void"));
   FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
 
-  if (stopPoint==2) return;                      // STOP At bunker edge
+  return;
+}
 
-  // IN WALL
-  // Make bunker insert
-  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
-
-  // using 7 : mid point
-  FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
-
-  if (stopPoint==3) return;                      // STOP At bunker exit
-
+void
+VESPA::buildOutGuide(Simulation& System,
+                     const attachSystem::FixedComp& FW,
+                     const long int startIndex,
+                     const int voidCell)
+  /*!
+    Build all the components that are outside of the wall
+    \param System :: Simulation 
+    \param FW :: Focus wall fixed axis
+    \param startPoint :: link point 
+    \param voidCell :: void cell nubmer
+   */
+{
+  ELog::RegMethod RegA("VESPA","buildOutGuide");
   //
   // OUTSIDE:
+  //  added before:
+  //    OutPitT0->addFrontWall(bunkerObj,2);
   //
-
   OutPitT0->addInsertCell(voidCell);
-  OutPitT0->addFrontWall(bunkerObj,2);
-  OutPitT0->createAll(System,FocusWall->getKey("Guide0"),2);
+  OutPitT0->createAll(System,FW,startIndex);
 
   // First Chopper
   ChopperT0->addInsertCell(OutPitT0->getCells("Void"));
-  ChopperT0->createAll(System,FocusWall->getKey("Guide0"),2);
+  ChopperT0->createAll(System,FW,startIndex);
 
   // Double disk chopper
   T0Disk->addInsertCell(ChopperT0->getCell("Void"));
@@ -532,10 +523,32 @@ VESPA::build(Simulation& System,
   FOCDiskOutB->setOffsetFlag(1);  // Z direction
   FOCDiskOutB->createAll(System,ChopperOutB->getKey("Beam"),0);
 
-  ShieldC->addInsertCell(OutPitB->getCells("Outer"));
+  return;
+}
+
+void
+VESPA::buildHut(Simulation& System,
+		const attachSystem::FixedComp& connectFC,
+		const long int connectIndex,
+                const int voidCell)
+  /*!
+    Builds the hut connected to the FixedPoint given
+    \param System :: Simulation to build with
+    \param connectFC :: Connection point
+    \param connectIndex :: Connection index
+    \param voidCell :: Main void cell for this model
+   */
+{
+  ELog::RegMethod RegA("VESPA","buildHut");
+
+  // check if Previously built :
+  if (OutPitB->hasItem("Outer"))
+    {
+      ShieldC->addInsertCell(OutPitB->getCells("Outer"));
+      ShieldC->setFront(OutPitB->getKey("Mid"),2);
+    }
   ShieldC->addInsertCell(voidCell);
-  ShieldC->setFront(OutPitB->getKey("Mid"),2);
-  ShieldC->createAll(System,ChopperOutB->getKey("Beam"),2);
+  ShieldC->createAll(System,connectFC,connectIndex);
 
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldC,2);
@@ -543,10 +556,11 @@ VESPA::build(Simulation& System,
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));
   ShieldC->insertObjects(System);
 
-  VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
+
   VPipeOutC->addInsertCell(Cave->getCells("FrontWall"));
   VPipeOutC->addInsertCell(Cave->getCells("Void"));
-  VPipeOutC->createAll(System,ChopperOutB->getKey("Beam"),2);
+  VPipeOutC->addInsertCell(ShieldC->getCells("Void"));
+  VPipeOutC->createAll(System,connectFC,connectIndex);
 
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
   FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
@@ -554,8 +568,181 @@ VESPA::build(Simulation& System,
   VJaws->setInsertCell(Cave->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);
 
-  Sample->setInsertCell(Cave->getCell("Void"));
-  Sample->createAll(System,*VJaws,2);
+  
+  Cryo->setInsertCell(Cave->getCell("Void"));
+  Cryo->createAll(System,*VJaws,2);
+
+  Sample->setInsertCell(Cryo->getCell("SampleVoid"));
+  Sample->createAll(System,*Cryo,0);
+  return;
+}
+
+void
+VESPA::buildDetectorArray(Simulation& System,
+                          const attachSystem::FixedComp& sampleFC,
+                          const long int sampleIndex,
+                          const int voidCell)
+  /*!
+    Builds the detector array in the cave (relative to the sample)
+    \param System :: Simulation to build with
+    \param sampleFC :: Sample (centre) fixed object
+    \param sampleIndex :: Index for the sample
+    \param voidCell :: Cell everything is in
+  */
+{
+  ELog::RegMethod RegA("VESPA","buildDetectorArray");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+    
+  const FuncDataBase& Control=System.getDataBase();
+  const size_t nDet=Control.EvalVar<size_t>(newName+"NDet");
+  
+  for(size_t i=0;i<nDet;i++)
+    {
+      typedef std::shared_ptr<constructSystem::CrystalMount> XTYPE;
+      typedef std::shared_ptr<constructSystem::TubeDetBox> DTYPE;
+
+      XTYPE xsPtr(new constructSystem::CrystalMount(newName+"XStal",i));
+      DTYPE dsPtr(new constructSystem::TubeDetBox(newName+"DBox",i));
+      OR.addObject(xsPtr);
+      OR.addObject(dsPtr);
+
+      
+      // ADetArray.push_back
+      //   (DTYPE(new constructSystem::TubeDetBox(newName+"DBox",i)));
+      // OR.addObject(ADetArray.back());
+
+      xsPtr->addInsertCell(voidCell);
+      xsPtr->createAll(System,sampleFC,sampleIndex);
+
+      dsPtr->addInsertCell(voidCell);
+      dsPtr->createAll(System,*xsPtr,8);
+      //      ADetArray.back()->addInsertCell(voidCell);
+      //      ADetArray.back()->createAll(System,XS,sampleIndex);
+
+      XStalArray.push_back(xsPtr);
+      ADetArray.push_back(dsPtr);      
+    }
+  return;
+
+}
+  
+
+  
+void
+VESPA::buildIsolated(Simulation& System,const int voidCell)
+  /*!
+    Carry out the build in isolation
+    \param System :: Simulation system
+    \param voidCell :: void cell
+   */
+{
+  ELog::RegMethod RegA("VESPA","buildIsolated");
+
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"BUILD ISOLATED Start/Stop:"
+          <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
+  long int startIndex(0);
+  
+  if (startPoint<1)
+    {
+      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      // Set the start point fo rb
+      FStart= &(FocusF->getKey("Guide0"));
+      startIndex= 2;
+    }
+  if (stopPoint==2 || stopPoint==1) return;
+
+  if (startPoint<2)
+    {
+      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      startIndex=2;
+      OutPitT0->addFrontWall(*VPipeWall,2);
+    }
+  if (stopPoint==3) return;
+
+  if (startPoint<3)
+    {
+      buildOutGuide(System,*FStart,startIndex,voidCell);      
+      FStart=&(ChopperOutB->getKey("Beam"));
+      startIndex=2;
+    }
+
+  if (stopPoint==4) return;      
+
+  if (startPoint<4)
+    {
+      buildHut(System,*FStart,startIndex,voidCell);
+      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
+    }
+  
+  return;
+}
+
+  
+void 
+VESPA::build(Simulation& System,
+	    const GuideItem& GItem,
+	    const Bunker& bunkerObj,
+	    const int voidCell)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param GItem :: Guide Item 
+    \param BunkerObj :: Bunker component [for inserts]
+    \param voidCell :: Void cell
+   */
+{
+  ELog::RegMethod RegA("VESPA","build");
+
+  ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()<<ELog::endDiag;
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+	  <<ELog::endDiag;
+
+  setBeamAxis(GItem,0);
+    
+  FocusA->addInsertCell(GItem.getCells("Void"));
+  FocusA->setFront(GItem.getKey("Beam"),-1);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
+  FocusA->createAll(System,*vespaAxis,-3,*vespaAxis,-3);
+
+  if (stopPoint==1) return;                      // STOP At monolith
+                                                 // edge  
+  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
+
+  if (stopPoint==2) return;                      // STOP At bunker edge
+
+  // IN WALL
+  // Make bunker insert
+  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+  // using 7 : mid point
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  OutPitT0->addFrontWall(bunkerObj,2);
+  
+  if (stopPoint==3) return;                      // STOP At bunker exit
+  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
+
+  if (stopPoint==4) return;                      // STOP At hutch
+  buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);
   
   return;
 }

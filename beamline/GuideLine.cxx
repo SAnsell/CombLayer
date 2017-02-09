@@ -255,6 +255,7 @@ GuideLine::populate(const FuncDataBase& Control)
 
   // set frontcut based on offset:
   beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
+
   return;
 }
 

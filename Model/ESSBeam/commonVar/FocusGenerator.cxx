@@ -59,7 +59,7 @@ namespace setVariable
 FocusGenerator::FocusGenerator() :
   substrateThick(0.5),supportThick(0.0),
   voidThick(1.5),yStepActive(0),
-  yStep(0.0),zStep(0.0),
+  yBeamActive(0),yStep(0.0),yBeam(0.0),zStep(0.0),
   guideMat("Aluminium"),supportMat("Void")
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -70,7 +70,8 @@ FocusGenerator::FocusGenerator() :
 FocusGenerator::FocusGenerator(const FocusGenerator& A) : 
   substrateThick(A.substrateThick),
   supportThick(A.supportThick),voidThick(A.voidThick),
-  yStepActive(A.yStepActive),yStep(A.yStep),zStep(A.zStep),
+  yStepActive(A.yStepActive),yBeamActive(A.yBeamActive),
+  yStep(A.yStep),yBeam(A.yBeam),zStep(A.zStep),
   guideMat(A.guideMat),supportMat(A.supportMat)
   /*!
     Copy constructor
@@ -93,6 +94,8 @@ FocusGenerator::operator=(const FocusGenerator& A)
       voidThick=A.voidThick;
       yStepActive=A.yStepActive;
       yStep=A.yStep;
+      yBeamActive=A.yBeamActive;
+      yBeam=A.yBeam;
       zStep=A.zStep;
       guideMat=A.guideMat;
       supportMat=A.supportMat;
@@ -126,9 +129,18 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   Control.addVariable(keyName+"XStep",0.0);       
   if (!yStepActive)
     Control.addParse<double>(keyName+"YStep","-"+keyName+"Length/2.0");
-  else
+  else if (yStepActive==1)
     Control.addVariable<double>(keyName+"YStep",yStep);
-  Control.copyVar(keyName+"BeamY",keyName+"YStep"); 
+  else
+    Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
+
+  if (!yBeamActive)
+    Control.addParse<double>(keyName+"BeamYStep","-"+keyName+"Length/2.0");
+  else if (yBeamActive==1)
+    Control.addVariable<double>(keyName+"BeamYStep",yBeam);
+  else
+    Control.addVariable<double>(keyName+"BeamYStep",yStep-length/2.0);
+
   Control.addVariable(keyName+"ZStep",zStep);       
   Control.addVariable(keyName+"XYAngle",0.0);       
   Control.addVariable(keyName+"ZAngle",0.0);

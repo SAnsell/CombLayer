@@ -3,7 +3,7 @@
  
  * File:   construct/DiskChopper.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
-#include "FixedGroup.h" 
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h" 
 #include "ContainedComp.h"
 
 #include "DiskBlades.h"
@@ -79,7 +78,7 @@ namespace constructSystem
 {
 
 DiskChopper::DiskChopper(const std::string& Key) : 
-  attachSystem::FixedGroup(Key,"Main",6,"Beam",2),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2),
   attachSystem::ContainedComp(),
   chpIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(chpIndex+1),centreFlag(0),nDisk(0)
@@ -90,10 +89,10 @@ DiskChopper::DiskChopper(const std::string& Key) :
 {}
 
 DiskChopper::DiskChopper(const DiskChopper& A) : 
-  attachSystem::FixedGroup(A),
+  attachSystem::FixedOffsetGroup(A),
+  attachSystem::ContainedComp(A),
   chpIndex(A.chpIndex),cellIndex(A.cellIndex),
-  centreFlag(A.centreFlag),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),xyAngle(A.xyAngle),zAngle(A.zAngle),
+  centreFlag(A.centreFlag),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   diskGap(A.diskGap),nDisk(A.nDisk),DInfo(A.DInfo)
   /*!
@@ -112,14 +111,10 @@ DiskChopper::operator=(const DiskChopper& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedGroup::operator=(A);
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
       centreFlag=A.centreFlag;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
       diskGap=A.diskGap;
@@ -145,12 +140,8 @@ DiskChopper::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("DiskChopper","populate");
-  
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xyAngle=Control.EvalDefVar<double>(keyName+"XYangle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"Zangle",0.0);
+
+  FixedOffsetGroup::populate(Control);
 
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -203,12 +194,12 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
   mainFC.createUnitVector(FC,sideIndex);
-  mainFC.applyShift(xStep,yStep,zStep);
-  beamFC=mainFC;          // rotation not applied to beamFC
-  mainFC.applyAngleRotate(xyAngle,zAngle);
+  beamFC.createUnitVector(FC,sideIndex);
+  applyOffset();
 
   beamOrigin=beamFC.getCentre();
   beamAxis=beamFC.getY();
+
   if (centreFlag && centreFlag<4 && centreFlag>-4)
     {
       double XYZ[3]={0,0,0};
@@ -232,29 +223,33 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-DiskChopper::createUnitVector(const attachSystem::TwinComp& TC,
-			      const long int sideIndex)
+DiskChopper::createUnitVector(const attachSystem::FixedComp& RFC,
+			      const long int rotorIndex,
+                              const attachSystem::FixedComp& BFC,
+                              const long int beamIndex)
   /*!
     Create the unit vectors
-    \param TC :: TwinComponent to link to 
-    \param sideIndex :: 0 / 1 for bEnter/bExit
+    \param RFC :: Fixed component to link to
+    \param rotorIndex :: Link point and direction [0 for origin]
+    \param BFC :: Fixed component to link to
+    \param beamIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("DiskChopper","createUnitVector(TwinComp)");
+  ELog::RegMethod RegA("DiskChopper","createUnitVector");
 
-  if (sideIndex>1)
-    throw ColErr::IndexError<long int>(sideIndex,1,"sideIndex");
+  attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
-  Origin=(!sideIndex) ? TC.getBeamStart() : TC.getBeamExit();
-  X=TC.getBX();
-  Y=TC.getBY();
-  Z=TC.getBZ();
+  mainFC.createUnitVector(RFC,rotorIndex);
+  beamFC.createUnitVector(BFC,beamIndex);
 
-  beamOrigin=Origin;
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-  if (!centreFlag)
-    Origin-=Z*outerRadius;
+  applyOffset();
+
+  beamOrigin=beamFC.getCentre();
+  beamAxis=beamFC.getY();
+
+  setDefault("Main");
+
   return;
 }
 
@@ -269,7 +264,8 @@ DiskChopper::createSurfaces()
   ModelSupport::buildCylinder(SMap,chpIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,chpIndex+17,Origin,Y,outerRadius);
   int CI(chpIndex);
-  Geometry::Vec3D DCent(Origin);  
+  Geometry::Vec3D DCent(Origin);
+
   for(const DiskBlades& DRef : DInfo)
     {
       ModelSupport::buildPlane(SMap,CI+1,DCent-Y*(DRef.thick/2.0),Y);
@@ -443,20 +439,25 @@ DiskChopper::createAll(Simulation& System,
 }
 
 void
-DiskChopper::createAllBeam(Simulation& System,
-			   const attachSystem::TwinComp& TC,
-			   const long int FIndex)
+DiskChopper::createAll(Simulation& System,
+		       const attachSystem::FixedComp& rotFC,
+		       const long int rotIndex,
+		       const attachSystem::FixedComp& bFC,
+		       const long int beamIndex)
+                       
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param TC :: Twincomp if using beam direction
-    \param FIndex :: Side Index [0 entry/1 exit]
+    \param rotFC :: FixedComp for main rotor
+    \param rotIndex :: Fixed Index for rotor
+    \param bFC :: FixedComp for beam 
+    \param beamIndex :: Fixed Index for beam
   */
 {
-  ELog::RegMethod RegA("DiskChopper","createAllBeam(TW)");
+  ELog::RegMethod RegA("DiskChopper","createAll(FC,FC)");
   
   populate(System.getDataBase());
-  createUnitVector(TC,FIndex);
+  createUnitVector(rotFC,rotIndex,bFC,beamIndex);
   createSurfaces();    
   createObjects(System);
   
@@ -465,6 +466,5 @@ DiskChopper::createAllBeam(Simulation& System,
   
   return;
 }
-
   
 }  // NAMESPACE constructSystem

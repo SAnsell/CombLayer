@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -809,6 +809,26 @@ Material::writeFLUKA(std::ostream& OX) const
 	rx<<*vc<<" ";
       StrFunc::writeMCNPX(rx.str(),OX);
     }
+  return;
+} 
+
+void 
+Material::writePOVRay(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in the POV-Ray form
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writePOVRay");
+  
+  typedef std::map<std::string,MXcards> MXTYPE;
+  
+  std::ostringstream cx;
+  cx << "Material::writePOVRay - dummy string";
+  
+  StrFunc::writeMCNPX(cx.str(),OX);
+
   return;
 } 
 

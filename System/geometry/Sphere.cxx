@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Sphere.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -352,6 +352,22 @@ Sphere::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void 
+Sphere::writePOVRay(std::ostream& OX) const
+  /*! 
+    Object of write is to output a POV-Ray file
+    \param OX :: Output stream (required for multiple std::endl)  
+  */
+{
+  ELog::RegMethod RegA("Sphere","writePOVRay");
+  
+  masterWrite& MW=masterWrite::Instance();
+  
+  OX << "#declare s"<<getName()
+     <<" = sphere { <"<<MW.NumComma(Centre)<< ">, "
+     << MW.Num(Radius)<<"}"<<std::endl;
+  return;
+}
   
 void 
 Sphere::write(std::ostream& OX) const

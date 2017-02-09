@@ -885,7 +885,7 @@ makeESS::build(Simulation& System,
       optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
-
+  
   buildFocusPoints(System);
   if (Control.EvalVar<int>("LinacActive"))
     {
