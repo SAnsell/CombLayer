@@ -61,7 +61,7 @@ class H2FlowGuide :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  std::string getSQSurface(const double,const double);
+  std::string getSQSurface(const double&,const double&,const double&,const double&);
   
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&);
