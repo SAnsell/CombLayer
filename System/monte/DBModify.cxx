@@ -75,7 +75,6 @@ cloneBasicMaterial()
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
-  DB.cloneMaterial("Stainless304","SS316L_7.85g");
 
   // Al.20t -- actually available from Los Alamos-t2
   DB.removeThermal("Aluminium");
@@ -121,7 +120,6 @@ cloneESSMaterial()
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
-  DB.cloneMaterial("Stainless304","SS316L_7.85g");
 
   DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("ParaH2","HPARA");
@@ -316,43 +314,6 @@ addESSMaterial()
 		   " 42100.71c  0.001404926 ", "fe56.14t", MLib);
   MObj.setMXitem(6000, 71, 'c', "h", "06012");
   MObj.setDensity(-7.93);
-  MDB.resetMaterial(MObj);
-
-  // Same ase 2636 but with a2t density of 7.85 g/cm3 and fe56.12t instead of fe56.14t (material 2636 in a2t200)
-  MObj.setMaterial(imat++/*2638*/, "SS316L_7.85g",
-		   " 06000.71c  0.001392603 "
-		   " 14028.71c  0.007323064 "
-		   " 14029.71c  0.000372017 "
-		   " 14030.71c  0.000245523 "
-		   " 15031.71c  0.000360008 "
-		   " 16032.71c  0.000165168 "
-		   " 16033.71c  0.000001304 "
-		   " 16034.71c  0.000007390 "
-		   " 16036.71c  0.000000017 "
-		   " 24050.71c  0.007920331 "
-		   " 24052.71c  0.152735704 "
-		   " 24053.71c  0.017319003 "
-		   " 24054.71c  0.004311066 "
-		   " 25055.71c  0.018267327 "
-		   " 26054.71c  0.038344779 "
-		   " 26056.71c  0.601931034 "
-		   " 26057.71c  0.013901213 "
-		   " 26058.71c  0.001849996 "
-		   " 27059.71c  0.000283816 "
-		   " 28058.71c  0.080834464 "
-		   " 28060.71c  0.031137291 "
-		   " 28061.71c  0.001353516 "
-		   " 28062.71c  0.004315603 "
-		   " 28064.71c  0.001099057 "
-		   " 42092.71c  0.002145890 "
-		   " 42094.71c  0.001341000 "
-		   " 42095.71c  0.002310064 "
-		   " 42096.71c  0.002423388 "
-		   " 42097.71c  0.001388944 "
-		   " 42098.71c  0.003514494 "
-		   " 42100.71c  0.001404926 ", "fe56.12t", MLib);
-  MObj.setMXitem(6000, 71, 'c', "h", "06012");
-  MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
   // ESS  20% vol SS316L 80% vol void

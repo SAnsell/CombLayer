@@ -65,15 +65,15 @@ EssWheel(FuncDataBase& Control)
   
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
-  Control.addVariable("BilbaoWheelShaftMat1","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelShaftMat1","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius2",13.5);
   Control.addVariable("BilbaoWheelShaftMat2","SS316L3925");
   Control.addVariable("BilbaoWheelShaftRadius3",14.0);
-  Control.addVariable("BilbaoWheelShaftMat3","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelShaftMat3","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius4",20.0);
   Control.addVariable("BilbaoWheelShaftMat4","SS316L3925");
   Control.addVariable("BilbaoWheelShaftRadius5",23.0);
-  Control.addVariable("BilbaoWheelShaftMat5","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelShaftMat5","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius6",25.0);
   Control.addVariable("BilbaoWheelShaftMat6","Void");
 
@@ -138,7 +138,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelTemperature", 600);
 
   Control.addVariable("BilbaoWheelWMat","Tungsten_15.1g");
-  Control.addVariable("BilbaoWheelSteelMat","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L");
   Control.addVariable("BilbaoWheelHeMat","Void"); // TSM141108V3000
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
   Control.addVariable("BilbaoWheelInnerMat","Void");
