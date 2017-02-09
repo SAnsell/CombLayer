@@ -699,7 +699,6 @@ Plane::writePOVRay(std::ostream& OX) const
       const std::string PNMX[3]={"x","y","z"};
       OX<<"xyz"[ptype-1]<< ", " << MW.Num(D)<<"}"<<std::endl;
     }
-  StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
 
