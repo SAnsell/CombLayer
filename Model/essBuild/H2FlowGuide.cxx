@@ -208,18 +208,29 @@ H2FlowGuide::getSQSurface(const double R, const double e)
   //  std::string surf = "sq   0   1 0 1 0   1 0 0 0 0";
   //  std::string surf = "sq   0 0.5 0 1 0 0.5 0 0 0 0";
   //  std::string surf = "sq   1 0 0 0 0 0 0 1 -1 0 "; // should be
-  std::string surf =     "sq   1 0 0 1 0.5 -0.5 0 1 -1 0 ";
-
+  //  std::string surf = "sq   1 0 0 1 0.5 -0.5 0 1 -1 0 "; // works Hoor
+  //  std::string surf = "sq   1 0 0 0 0.5 -0.5 0 0 0 0 "; // works
   
-  //                     A B C D   E    F G    x y z
-  //  std::string surf = "sq 1 0 0 0 0.5 -0.5 0   0 0 0";
-  // std::string surf = "sq " + StrFunc::makeString(1./std::pow(R,2)) + " " +
-  //   StrFunc::makeString(1./std::pow(R,2)) + " " +
-  //   StrFunc::makeString(e) + " 0 0 0 -1 " +
-  //   StrFunc::makeString(Origin[0]) + " " + // X
-  //   StrFunc::makeString(Origin[1]) + " " + // Y 
-  //   StrFunc::makeString(Origin[2]) +      // Z
-  //   " -1";
+  //  std::string surf = "sq   1 0 0 0 0.5 -0.5 0 0 -20 0 "; // works
+  
+  // x^2 + y = 0 is  "sq   1 0 0 0 0.5 -0.5 0 0 -20 0 "
+  const double A = 1;
+  double E = -0.5;
+  if (Origin[1]<0)
+    E *= - 1.0;
+  const double F = -0.5;
+
+  const double dy = Origin[1]<0 ? 5 : -5;
+  
+  std::string surf = "sq " +
+    std::to_string(A) + " 0 0 0 " +
+    std::to_string(E) + " " + std::to_string(F) + " 0 " +
+    std::to_string(Origin[0]) + " " +
+    std::to_string(Origin[1]-dy) + " " +
+    std::to_string(Origin[2]) + " ";
+
+  ELog::EM << Origin[1] << " " << E << ELog::endDiag;
+  ELog::EM << keyName << " " << Origin << ": " << surf << ELog::endDiag;
 
   return surf;
 }
@@ -232,8 +243,6 @@ H2FlowGuide::createSurfaces()
   */
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
-
-  ELog::EM << getSQSurface(1,1) << " Origin: " << Origin << ELog::endDiag;
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
