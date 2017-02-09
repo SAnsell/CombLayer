@@ -106,16 +106,20 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeHeight3",0.0);
   Control.addVariable("LowFlyLeftLobeDepth3",0.0);
 
-  Control.addVariable("LowFlyFlowGuideBaseThick",0.2);
-  Control.addVariable("LowFlyFlowGuideBaseLen",8.5);
-  Control.addVariable("LowFlyFlowGuideArmThick",0.2);
-  Control.addVariable("LowFlyFlowGuideArmLen",8.0);
-  Control.addVariable("LowFlyFlowGuideBaseArmSep",0.1);
-  Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
-  Control.addVariable("LowFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
   Control.addVariable("LowFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("LowFlyFlowGuideWallTemp",20.0);
-  
+  Control.addVariable("LowFlyFlowGuideBaseThick",0.4);
+  Control.addVariable("LowFlyFlowGuideBaseLen",6.5);
+  Control.addVariable("LowFlyFlowGuideBaseOffset",-12);
+  Control.addVariable("LowFlyFlowGuideAngle",17);
+  Control.addVariable("LowFlyFlowGuideSQOffsetY",4.0);
+  Control.addVariable("LowFlyFlowGuideSQSideA",1.0);
+  Control.addVariable("LowFlyFlowGuideSQSideE",-1.0);
+  Control.addVariable("LowFlyFlowGuideSQSideF",-0.005);
+  Control.addVariable("LowFlyFlowGuideSQCenterA",1.0);
+  Control.addVariable("LowFlyFlowGuideSQCenterE",-0.6);
+  Control.addVariable("LowFlyFlowGuideSQCenterF",-0.005);
+ 
   Control.addVariable("LowFlyRightLobeXStep",-1.0);  
   Control.addVariable("LowFlyRightLobeYStep",0.0);  
 
