@@ -51,6 +51,7 @@ class H2FlowGuide :
   double baseLen;              ///< Base length
   Geometry::Vec3D baseOffset;  ///< Base offset
   double angle; ///< sq xy angle
+  double sqOffsetY; ///< sq offset along the y-axis
 
   int wallMat;                   ///< inner material
   double wallTemp;               ///< LH2 temperature [K]

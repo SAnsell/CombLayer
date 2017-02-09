@@ -111,6 +111,7 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   wallThick(A.wallThick),baseLen(A.baseLen),
   baseOffset(A.baseOffset),
   angle(A.angle),
+  sqOffsetY(A.sqOffsetY),
   wallMat(A.wallMat),
   wallTemp(A.wallTemp)
   /*!
@@ -135,6 +136,7 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       baseLen=A.baseLen;
       baseOffset=A.baseOffset;
       angle=A.angle;
+      sqOffsetY=A.sqOffsetY;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
     }
@@ -171,6 +173,7 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
   baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
   angle=Control.EvalPair<double>(keyName,baseName+endName,"Angle");
+  sqOffsetY=Control.EvalPair<double>(keyName,baseName+endName,"SQOffsetY");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+endName+"WallMat");
@@ -230,8 +233,6 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
-  const double offsetY = 4.0;
-
   const Geometry::Quaternion QrotLeft =
     Geometry::Quaternion::calcQRotDeg(angle,Z);
   const Geometry::Quaternion QrotRight =
@@ -242,36 +243,33 @@ H2FlowGuide::createSurfaces()
 
   // left part
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+501);
-  GA->setSurface(getSQSurface(offsetY, 1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY, 1, -0.5*2, -0.5/100));
   GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+502);
-  GA->setSurface(getSQSurface(offsetY+wallThick, 1.1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.1, -0.5*2, -0.5/100));
   GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
 
   // right part
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+503);
-  GA->setSurface(getSQSurface(offsetY, 1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY, 1, -0.5*2, -0.5/100));
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+504);
-  GA->setSurface(getSQSurface(offsetY+wallThick, 1.1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.1, -0.5*2, -0.5/100));
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
   // central part
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+505);
-  GA->setSurface(getSQSurface(offsetY, 1, -0.6, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY, 1, -0.6, -0.5/100));
   SMap.registerSurf(GA);
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
-  GA->setSurface(getSQSurface(offsetY+wallThick, 1.2, -0.6, -0.5/100));
+  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.2, -0.6, -0.5/100));
   SMap.registerSurf(GA);
-
-
-
 
   // base
   ModelSupport::buildPlane(SMap,flowIndex+1,
