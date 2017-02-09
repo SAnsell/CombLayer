@@ -3,7 +3,7 @@
  
  * File:   photon/PhotonVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,8 +211,6 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("MetalContBFlangeWindowMat","Aluminium");
   Control.addVariable("MetalContBFlangeWindowThick",0.6);  
 
-
-
   Control.addVariable("PrimModXStep",0.0);
   Control.addVariable("PrimModYStep",0.0);
   Control.addVariable("PrimModZStep",0.0);
@@ -240,11 +238,23 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("PrimMod3NUnits",1);
   Control.addVariable("PrimMod3Thick",4.0);
   Control.addVariable("PrimMod3Mat0","Poly");
-
-  
   
   // PHOTONMOD2:
- 
+  Control.addVariable("CatcherYStep",2.0);
+  Control.addVariable("CatcherLength",0.5);
+  Control.addVariable("CatcherRadius",0.3);
+  Control.addVariable("CatcherDefMat","Copper");
+  
+  Control.addVariable("PModYStep",50.0);
+  
+  Control.addVariable("PModOuterHeight",7.0);
+  Control.addVariable("PModOuterWidth",7.0);
+  Control.addVariable("PModInnerHeight",5.0);
+  Control.addVariable("PModInnerWidth",5.0);
+  Control.addVariable("PModOuterMat","Aluminium");
+  
+  Control.addVariable("PModYStep",50.0);
+  
   Control.addVariable("PModOuterHeight",7.0);
   Control.addVariable("PModOuterWidth",7.0);
   Control.addVariable("PModInnerHeight",5.0);
@@ -292,7 +302,6 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("THoldDefMat","Void");
 
   // PHOTON ONE:
-
   
   Control.addVariable("OuterXStep",0.0);
   Control.addVariable("OuterYStep",0.0);
@@ -420,6 +429,36 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("D2OMod2Height",7.03);
   Control.addVariable("D2OMod2Mat","Be300K");
 
+  // Shield 
+  Control.addVariable("CentralShieldYStep",470.0);
+  Control.addVariable("CentralShieldLength",70.0);
+  Control.addVariable("CentralShieldWidth",100.0);
+  Control.addVariable("CentralShieldHeight",100.0);
+
+  Control.addVariable("CentralShieldFrontPolyThick",10.0);
+  Control.addVariable("CentralShieldCollLen",30.0);
+  Control.addVariable("CentralShieldCollWidth",16.0);
+  Control.addVariable("CentralShieldCollHeight",8.0);
+  Control.addVariable("CentralShieldCollThick",1.0);
+
+  Control.addVariable("CentralShieldPolyMat","Poly");
+  Control.addVariable("CentralShieldCdMat","Cadmium");
+  
+
+  // DETECTORS
+  Control.addVariable("CentralDBox1YStep",2.85);
+  Control.addVariable("CentralDBoxNDetectors",8);
+  Control.addVariable("CentralDBoxCentRadius",2.85);
+  Control.addVariable("CentralDBoxTubeRadius",2.5);
+  Control.addVariable("CentralDBoxWallThick",0.3);
+  Control.addVariable("CentralDBoxHeight",60.0);
+  Control.addVariable("CentralDBoxWallMat","Aluminium");
+  Control.addVariable("CentralDBoxDetMat","He3_10Bar");
+
+  Control.addVariable("CentralDBoxOuterMat","B4C");
+  
+  
+  
   return;
 }
 

@@ -3,7 +3,7 @@
  
  * File:   commonVar/PipeGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,8 @@ namespace setVariable
 {
 
 PipeGenerator::PipeGenerator() :
-  pipeRadius(8.0),pipeThick(0.5),
+  pipeType(0),pipeRadius(8.0),
+  pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
   flangeRadius(12.0),flangeLen(1.0),
   windowRadius(10.0),windowThick(0.5),
   pipeMat("Aluminium"),windowMat("Silicon300K"),
@@ -108,7 +109,25 @@ PipeGenerator::setPipe(const double R,const double T)
     \param T :: Thickness
    */
 {
+  pipeType=0;
   pipeRadius=R;
+  pipeThick=T;
+  return;
+}
+
+void
+PipeGenerator::setRectPipe(const double W,const double H,
+                           const double T)
+  /*!
+    Set all the pipe values
+    \param W :: full width of main pipe
+    \param H :: full height of main pipe
+    \param T :: Thickness
+   */
+{
+  pipeType=1;
+  pipeWidth=W;
+  pipeHeight=H;
   pipeThick=T;
   return;
 }
@@ -153,14 +172,23 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("PipeGenerator","generatorPipe");
 
+  const double minRadius(pipeType ?
+                         std::min(pipeWidth,pipeHeight) :
+                         pipeRadius);
   const double realWindowRadius=(windowRadius<0.0) ?
-    pipeRadius-windowRadius : windowRadius;
+    minRadius-windowRadius : windowRadius;
   const double realFlangeRadius=(flangeRadius<0.0) ?
-    pipeRadius-flangeRadius : flangeRadius;
+    minRadius-flangeRadius : flangeRadius;
   
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
-  Control.addVariable(keyName+"Radius",pipeRadius);
+  if (!pipeType)
+    Control.addVariable(keyName+"Radius",pipeRadius);
+  else
+    {
+      Control.addVariable(keyName+"Width",pipeWidth);
+      Control.addVariable(keyName+"Height",pipeHeight);
+    }
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FeThick",pipeThick);
   Control.addVariable(keyName+"FlangeRadius",realFlangeRadius);

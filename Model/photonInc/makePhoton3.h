@@ -3,7 +3,7 @@
  
  * File:   photonInc/makePhoton3.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ class makePhoton3
   std::shared_ptr<VacuumVessel> Chamber;        ///< Vacuum vesse
   std::shared_ptr<ModContainer> ModContObj;     ///< Container
   std::shared_ptr<CylLayer> ModObj;             ///< Moderator
-  std::shared_ptr<TableSupport> BaseSupport;          ///< Moderator
+  std::shared_ptr<TableSupport> BaseSupport;    ///< Support
   std::shared_ptr<He3Tubes> leftTubes;          ///< Detectors
   std::shared_ptr<He3Tubes> rightTubes;         ///< Detectors
   std::shared_ptr<TubeCollimator> leftColl;     ///< collimator
@@ -82,7 +82,7 @@ class makePhoton3
   makePhoton3& operator=(const makePhoton3&);
   ~makePhoton3();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/makePhoton2.h
+ * File:  photonInc/makePhoton2.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,11 @@ namespace constructSystem
   class SupplyPipe;
   class insertPlate;
   class insertSphere;
+  class insertCylinder;
+  class RingFlange;
+  class RingSeal;
+  class TubeDetBox;
+  
 }
 
 /*!
@@ -45,7 +50,14 @@ namespace photonSystem
   class B4CCollimator;
   class PlateMod;
   class EQDetector;
-   
+  class He3Tubes;
+  class HeShield;
+  class TableSupport;
+  class EQDetector;
+  class ModContainer;
+  class VacuumVessel;
+  class TubeCollimator;
+ 
   /*!
     \class makePhoton2
     \version 1.0
@@ -58,11 +70,24 @@ class makePhoton2
 {
  private:
 
+
   std::shared_ptr<PlateMod> PModObj;        ///< Initial moderator
+  /// catcher 
+  std::shared_ptr<constructSystem::insertCylinder> Catcher; 
   std::shared_ptr<PlateMod> PModObj2;        ///< Initial moderator
+  /// external wing plates
   std::vector<std::shared_ptr<constructSystem::insertPlate>> SPlate;
-  std::shared_ptr<constructSystem::insertPlate> DetPlate;
-  std::shared_ptr<constructSystem::insertSphere> DetHold;
+
+  std::shared_ptr<VacuumVessel> Chamber;        ///< Vacuum vesse
+  std::shared_ptr<ModContainer> ModContObj;     ///< Container
+  std::shared_ptr<TableSupport> BaseSupport;    ///< support
+
+  std::shared_ptr<HeShield> centralSupport;        ///< shieldin
+  /// Detectors
+  std::shared_ptr<constructSystem::TubeDetBox> centralTubes;  
+  
+  std::shared_ptr<He3Tubes> rightTubes;         ///< Detectors
+  std::shared_ptr<TubeCollimator> leftColl;     ///< collimator
 
   void buildWings(Simulation&);
   
@@ -73,7 +98,7 @@ class makePhoton2
   makePhoton2& operator=(const makePhoton2&);
   ~makePhoton2();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
 
 };
 

@@ -3,7 +3,7 @@
  
  * File:   photon/makePhoton2.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,15 @@
 #include "plateInfo.h"
 #include "PlateMod.h"
 #include "EQDetector.h"
+#include "ModContainer.h"
+#include "VacuumVessel.h"
+#include "CylLayer.h"
+#include "TableSupport.h"
+#include "He3Tubes.h"
+#include "TubeDetBox.h"
+#include "HeShield.h"
+#include "TubeCollimator.h"
+#include "insertCylinder.h"
 
 #include "makePhoton2.h"
 
@@ -85,9 +94,14 @@ namespace photonSystem
 
 makePhoton2::makePhoton2() :
   PModObj(new photonSystem::PlateMod("PMod")),
-  DetPlate(new constructSystem::insertPlate("TPlate")),
-  DetHold(new constructSystem::insertSphere("THold"))
-  /*!
+  Catcher(new constructSystem::insertCylinder("Catcher")),
+  Chamber(new photonSystem::VacuumVessel("Chamber")),
+  BaseSupport(new photonSystem::TableSupport("BaseSupport")),
+  centralSupport(new photonSystem::HeShield("CentralShield")),
+  centralTubes(new constructSystem::TubeDetBox("CentralDBox",1)),
+  rightTubes(new photonSystem::He3Tubes("RightTubes")),
+  leftColl(new photonSystem::TubeCollimator("LeftColl"))
+  /*! 
     Constructor
   */
 {
@@ -95,11 +109,15 @@ makePhoton2::makePhoton2() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(PModObj);
-  OR.addObject(DetPlate);
-  OR.addObject(DetHold);
+  OR.addObject(Catcher);
+  OR.addObject(Chamber);
+  OR.addObject(BaseSupport);
+  OR.addObject(centralSupport);
+  OR.addObject(centralTubes);
+  OR.addObject(rightTubes);
+  OR.addObject(leftColl);
+  
 }
-
-
 
 makePhoton2::~makePhoton2()
   /*!
@@ -110,7 +128,8 @@ makePhoton2::~makePhoton2()
 void
 makePhoton2::buildWings(Simulation& System)
   /*!
-    make the wings
+    Make the wings
+    \param System :: Simulation to add wings to
    */
 {
   ELog::RegMethod RegA("makePhoton2","buildWings");
@@ -153,29 +172,41 @@ makePhoton2::buildWings(Simulation& System)
   return;
 }
 void 
-makePhoton2::build(Simulation* SimPtr,
+makePhoton2::build(Simulation& System,
 		  const mainSystem::inputParam& IParam)
 /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
   // For output stream
   ELog::RegMethod RControl("makePhoton2","build");
 
-
   int voidCell(74123);
+
+  Chamber->addInsertCell(voidCell);
+  Chamber->createAll(System,World::masterOrigin(),0);
+
   
-  PModObj->addInsertCell(voidCell);
-  PModObj->createAll(*SimPtr,World::masterOrigin(),0);
-  buildWings(*SimPtr);
-  DetHold->addInsertCell(voidCell);
-  DetHold->createAll(*SimPtr,World::masterOrigin(),0);
+  PModObj->addInsertCell(Chamber->getCell("Void",0));
+  PModObj->createAll(System,*Chamber,0);
+  buildWings(System);
 
-  DetPlate->addInsertCell(DetHold->getCell("Main"));
-  DetPlate->createAll(*SimPtr,World::masterOrigin(),0);
+  Catcher->setNoInsert();  
+  Catcher->addInsertCell(Chamber->getCell("Void",0));
+  Catcher->createAll(System,*PModObj,1);
 
+  BaseSupport->addInsertCell(Chamber->getCell("Void"));
+  BaseSupport->createAll(System,*Chamber,0);
+
+  centralSupport->addInsertCell(voidCell);
+  centralSupport->createAll(System,*PModObj,-1);
+
+  centralTubes->addInsertCell(voidCell);
+  centralTubes->addInsertCell(centralSupport->getCell("Main"));
+  centralTubes->createAll(System,*centralSupport,0);
+  
 
   return;
 }

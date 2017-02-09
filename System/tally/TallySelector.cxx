@@ -3,7 +3,7 @@
  
  * File:   tally/TallySelector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,10 @@ tallyAddition(Simulation& System,
 	{
 	  ELog::EM<<"TAdd Help "<<ELog::endBasic;
 	  ELog::EM<<
+	    " -- cylinder object FixedComp linkPt +Vec3D(x,y,z) radius \n";
+	  ELog::EM<<
+	    " -- cylinder free Vec3D(x,y,z) Vec3D(nx,ny,nz) radius \n";
+	  ELog::EM<<
 	    " -- plate object fixedComp linkPt +Vec3D(x,y,z) "
 	    "xSize zSize {ySize=0.1} {mat=Void}\n";
 	  ELog::EM<<
@@ -156,7 +160,7 @@ tallyAddition(Simulation& System,
 	  const double YT=
 	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
 	  const std::string mat=
-		IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
+            IParam.getDefValue<std::string>("Void","TAdd",index,ptI+3);
 	  
 	  if (PType=="object")
 	    constructSystem::addInsertPlateCell
@@ -194,6 +198,45 @@ tallyAddition(Simulation& System,
 	    {
 	      constructSystem::addInsertSphereCell
 		(System,PName,VPos,radius,mat);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"sphere type");
+	}
+
+      else if (key=="Cylinder" || key=="cylinder")
+	{
+	  const std::string PName="insertCylinder"+StrFunc::makeString(index);
+
+          size_t ptI;
+	  if (PType=="object")
+	    {
+	      ptI=4;
+	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
+	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
+	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else if (PType=="free")
+	    {
+	      ptI=2;
+              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"cylinder type");
+	  const double radius=
+	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
+	  const double length=
+	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	  const std::string mat=
+	    IParam.getDefValue<std::string>("Void","TAdd",index,ptI+2);
+          
+	  if (PType=="object")
+	    constructSystem::addInsertCylinderCell
+	      (System,PName,FName,LName,VPos,radius,length,mat);
+	  else if (PType=="free")
+	    {
+	      constructSystem::addInsertCylinderCell
+		(System,PName,VPos,YAxis,radius,length,mat);
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"sphere type");

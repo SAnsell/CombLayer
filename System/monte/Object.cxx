@@ -1313,14 +1313,14 @@ Object::writePOVRay(std::ostream& OX) const
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  if (!placehold)
+  if (!placehold && MatN>0)
     {
       const std::string objName=OR.inRenumberRange(ObjName);
       
       // do not render global objects (outer void and black hole)
-      if (objName.empty())
-	return; 
-
+      //      if (objName.empty())
+        //	return; 
+      OX<<"// Cell "<<objName<<" "<<ObjName<<"\n";
       OX<<"intersection{\n"
 	<<HRule.displayPOVRay()<<"\n"
 	<< " texture {mat" << MatN <<"}\n"
@@ -1339,7 +1339,7 @@ Object::writePOVRaymat(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Object","writePOVRaymat");
-
+  return;
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   if (!placehold)
