@@ -580,8 +580,9 @@ Cylinder::writePOVRay(std::ostream& OX) const
     }
 
   std::ostringstream cx;
+  const float max = 1E+10; //std::numeric_limits<float>::max();
 
-  Surface::writeHeader(cx);
+  //  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);  
   if (Ndir==-1 || Ndir==1)
     {
@@ -599,11 +600,13 @@ Cylinder::writePOVRay(std::ostream& OX) const
     }
   else if (Ndir==-3 || Ndir==3)
     {
-      cx<<"ZCC s"<<getName()<<" "
-	<<MW.Num(Centre[0])<<" "
-	<<MW.Num(Centre[1])<<" "
-	<<MW.Num(Radius);
+      cx<<"#declare s"<<getName()<<
+	" = cylinder {" <<
+	"< 0 0 " << -max << ">," <<
+	" <0 0 " << max << ">, "
+	<< MW.Num(Radius);
     }
+  cx << " open }"; // remove end caps
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
