@@ -52,6 +52,9 @@ class H2FlowGuide :
   Geometry::Vec3D baseOffset;  ///< Base offset
   double angle; ///< sq xy angle
   double sqOffsetY; ///< sq offset along the y-axis
+  double sqSideA; ///< parameter A of the side SQ surfaces
+  double sqSideE; ///< parameter E of the side SQ surfaces
+  double sqSideF; ///< parameter F of the side SQ surfaces
 
   int wallMat;                   ///< inner material
   double wallTemp;               ///< LH2 temperature [K]

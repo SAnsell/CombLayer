@@ -231,6 +231,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-12,0));
   Control.addVariable("TopFlyFlowGuideAngle",17);
   Control.addVariable("TopFlyFlowGuideSQOffsetY",4.0);
+  Control.addVariable("TopFlyFlowGuideSQSideA",1.0);
+  Control.addVariable("TopFlyFlowGuideSQSideE",-1.0);
+  Control.addVariable("TopFlyFlowGuideSQSideF",-0.005);
   
   Control.addVariable("TopFlyRightLobeXStep",-1.0);  
   Control.addVariable("TopFlyRightLobeYStep",0.0);  
