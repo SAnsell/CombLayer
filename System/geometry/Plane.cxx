@@ -691,9 +691,7 @@ Plane::writePOVRay(std::ostream& OX) const
   const int ptype=planeType();
   if (!ptype)
     {
-      cx<<"povray PLA s"<<getName()<<" "
-	<<MW.Num(NormV)<<" "
-	<<MW.Num(NormV*Dist);
+      cx<<"<"<<MW.Num(NormV)<<">, " << Dist << " }";
     }
   else
     {
