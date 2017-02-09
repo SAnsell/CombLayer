@@ -249,6 +249,11 @@ H2FlowGuide::createSurfaces()
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+500);
   GA->setSurface(getSQSurface(1.0, 1.0));
+
+  const Geometry::Quaternion QrotXY=
+    Geometry::Quaternion::calcQRotDeg(10,Z);
+  GA->rotate(QrotXY);
+
   SMap.registerSurf(GA);
 
   // base
