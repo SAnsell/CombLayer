@@ -1313,7 +1313,7 @@ Object::writePOVRay(std::ostream& OX) const
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  if (!placehold)
+  if (!placehold && MatN>0)
     {
       const std::string objName=OR.inRenumberRange(ObjName);
       
@@ -1339,7 +1339,7 @@ Object::writePOVRaymat(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Object","writePOVRaymat");
-
+  return;
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   if (!placehold)

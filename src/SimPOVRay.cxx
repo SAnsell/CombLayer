@@ -176,6 +176,8 @@ SimPOVRay::write(const std::string& Fname) const
   OX << "// This file contains only geomety." << std::endl;
   OX << "// It is supposed to be included from a .pov file with defined camera, light source and material textures" << std::endl;
   OX << std::endl;
+  OX << "// Material" << std::endl;
+  writeMaterial(OX);
   OX << "// Surfaces" << std::endl;
   writeSurfaces(OX);
   OX << "// Cells" << std::endl;

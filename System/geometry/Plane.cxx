@@ -691,14 +691,14 @@ Plane::writePOVRay(std::ostream& OX) const
   if (!ptype)
     {
       OX<<"<"<<MW.NumComma(NormV)<<">,"
-	<<MW.Num(Dist)<<"}";
+	<<MW.Num(Dist)<<"}"<<std::endl;
     }
   else
     {
       // NormV[] is -1.0 or 1.0
       const double D=NormV[ptype-1]*Dist;
       const std::string PNMX[3]={"x","y","z"};
-      OX<<"XYZ"[ptype-1]<< ", " << MW.Num(D)<<"}";
+      OX<<"xyz"[ptype-1]<< ", " << MW.Num(D)<<"}"<<std::endl;
     }
   return;
 }

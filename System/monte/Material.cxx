@@ -47,6 +47,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "RefCon.h"
+#include "Vec3D.h"
+#include "masterWrite.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -821,14 +823,17 @@ Material::writePOVRay(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Material","writePOVRay");
-  
-  typedef std::map<std::string,MXcards> MXTYPE;
-  
-  std::ostringstream cx;
-  cx << "Material::writePOVRay - dummy string";
-  
-  StrFunc::writeMCNPX(cx.str(),OX);
 
+  masterWrite& MW=masterWrite::Instance();
+  const int rgbScale(0xFFFFF);
+  // RGB : 150 max
+  const int rgb(Mnum*rgbScale/150);
+  Geometry::Vec3D rgbCol(rgb/0xFFFF,(rgb % 0xFFFF)/0xFF,rgb % 0xFF);
+  rgbCol.makeUnit();
+  OX<<"#declare mat"<<Mnum<<" = texture {"
+    << " pigment{color rgb<"
+    <<   MW.NumComma(rgbCol)
+    <<"> } };"<<std::endl;
   return;
 } 
 
