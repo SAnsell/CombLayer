@@ -108,10 +108,8 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   baseName(A.baseName),midName(A.midName),endName(A.endName),
   flowIndex(A.flowIndex),
   cellIndex(A.cellIndex),
-  baseThick(A.baseThick),baseLen(A.baseLen),
-  armThick(A.armThick), armLen(A.armLen),
-  baseArmSep(A.baseArmSep),
-  baseOffset(A.baseOffset),armOffset(A.armOffset),
+  wallThick(A.wallThick),baseLen(A.baseLen),
+  baseOffset(A.baseOffset),
   wallMat(A.wallMat),
   wallTemp(A.wallTemp)
   /*!
@@ -132,13 +130,9 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
     {
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      baseThick=A.baseThick;
+      wallThick=A.wallThick;
       baseLen=A.baseLen;
-      armThick=A.armThick;
-      armLen=A.armLen;
-      baseArmSep=A.baseArmSep;
       baseOffset=A.baseOffset;
-      armOffset=A.armOffset;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
     }
@@ -171,14 +165,9 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("H2FlowGuide","populate");
 
 
-  baseThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
+  wallThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
   baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
-  baseArmSep=Control.EvalPair<double>(keyName,baseName+endName,"BaseArmSep");
   baseOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"BaseOffset");
-
-  armThick=Control.EvalPair<double>(keyName,baseName+endName,"ArmThick");
-  armLen=Control.EvalPair<double>(keyName,baseName+endName,"ArmLen");
-  armOffset=Control.EvalPair<Geometry::Vec3D>(keyName,baseName+endName,"ArmOffset");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+endName+"WallMat");
@@ -256,7 +245,7 @@ H2FlowGuide::createSurfaces()
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+502);
-  GA->setSurface(getSQSurface(offsetY+baseThick, 1.1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY+wallThick, 1.1, -0.5*2, -0.5/100));
   GA->rotate(QrotLeft);
   SMap.registerSurf(GA);
 
@@ -267,7 +256,7 @@ H2FlowGuide::createSurfaces()
   SMap.registerSurf(GA);
 
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+504);
-  GA->setSurface(getSQSurface(offsetY+baseThick, 1.1, -0.5*2, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY+wallThick, 1.1, -0.5*2, -0.5/100));
   GA->rotate(QrotRight);
   SMap.registerSurf(GA);
 
@@ -276,7 +265,7 @@ H2FlowGuide::createSurfaces()
   GA->setSurface(getSQSurface(offsetY, 1, -0.6, -0.5/100));
   SMap.registerSurf(GA);
   GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
-  GA->setSurface(getSQSurface(offsetY+baseThick, 1.2, -0.6, -0.5/100));
+  GA->setSurface(getSQSurface(offsetY+wallThick, 1.2, -0.6, -0.5/100));
   SMap.registerSurf(GA);
 
 

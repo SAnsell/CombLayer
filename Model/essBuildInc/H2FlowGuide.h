@@ -47,13 +47,9 @@ class H2FlowGuide :
   const int flowIndex;       ///< Index of surface offset
   int cellIndex;             ///< Cell index
 
-  double baseThick;            ///< Base thickness
+  double wallThick;            ///< Wal thickness
   double baseLen;              ///< Base length
-  double armThick;             ///< Arm thickness
-  double armLen;               ///< Arm length
-  double baseArmSep;           ///< Base arm seperation
   Geometry::Vec3D baseOffset;  ///< Base offset
-  Geometry::Vec3D armOffset;   ///< Arm offset
    
   int wallMat;                   ///< inner material 
   double wallTemp;               ///< LH2 temperature [K]
