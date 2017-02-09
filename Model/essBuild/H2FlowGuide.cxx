@@ -218,7 +218,7 @@ H2FlowGuide::getSQSurface(const double R, const double e)
   double E = -0.5;
   if (Origin[1]<0)
     E *= - 1.0;
-  const double F = -0.5;
+  const double F = -0.5/100; // affects inclination of vertical walls
 
   const double dy = Origin[1]<0 ? 5 : -5;
   
@@ -316,7 +316,7 @@ H2FlowGuide::createObjects(Simulation& System,
   HeadRule wallExclude;
   // base
   //  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -102 -500 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -500 ");
   wallExclude.procString(Out); 
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
 
