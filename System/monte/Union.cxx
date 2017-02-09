@@ -465,7 +465,7 @@ Union::displayPOVRay() const
   else
     out=A->displayPOVRay();
 
-  out+=" | ";
+  out+="  ";
   
   if (B->type()==1)
     out+="| "+B->displayPOVRay()+" |";

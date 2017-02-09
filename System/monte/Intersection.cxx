@@ -374,14 +374,14 @@ Intersection::displayPOVRay() const
   if (!A || !B)
     throw ColErr::ExBase(2,"Intersection::displayPOVRay incomplete type");
   if (A->type()==-1)
-    out="intersection{ "+A->displayPOVRay()+" }";
+    out="intersection{\n  "+A->displayPOVRay()+" }";
   else
     out=A->displayPOVRay();
 
   out+=" ";
   
   if (B->type()==-1)
-    out+="intersection{ "+B->displayPOVRay()+" }";
+    out+="union{\n  "+B->displayPOVRay()+" }";
   else
     out+=B->displayPOVRay();
   return out;
