@@ -108,12 +108,12 @@ Linac::Linac(const Linac& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),widthLeft(A.widthLeft),height(A.height),
   depth(A.depth),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   floorThick(A.floorThick),
-  floorWidth(A.floorWidth),
+  floorWidthLeft(A.floorWidthLeft),
   airMat(A.airMat),wallMat(A.wallMat),
   bd(A.bd->clone()),
   tswLength(A.tswLength),
@@ -141,13 +141,13 @@ Linac::operator=(const Linac& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
-      width=A.width;
+      widthLeft=A.widthLeft;
       height=A.height;
       depth=A.depth;
       wallThick=A.wallThick;
       roofThick=A.roofThick;
       floorThick=A.floorThick;
-      floorWidth=A.floorWidth;
+      floorWidthLeft=A.floorWidthLeft;
       airMat=A.airMat;
       wallMat=A.wallMat;
       *bd=*A.bd;
@@ -178,13 +178,13 @@ Linac::populate(const FuncDataBase& Control)
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
-  floorWidth=Control.EvalVar<double>(keyName+"FloorWidth");
+  floorWidthLeft=Control.EvalVar<double>(keyName+"FloorWidthLeft");
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -224,8 +224,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft/2.0),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
@@ -233,11 +233,11 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(length/2.0+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length/2.0+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft/2.0+wallThick),X);
   // floor
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthLeft/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthLeft/2.0),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
@@ -245,8 +245,8 @@ Linac::createSurfaces()
   // Temporary shielding walls
   double tswY(tswOffsetY);
   ModelSupport::buildPlane(SMap,surfIndex+101,Origin+Y*(tswY),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(width/2.0-tswLength),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(width/2.0-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthLeft/2.0-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthLeft/2.0-tswLength),X);
   tswY += tswWidth;
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(tswY),Y);
   tswY += tswGap;

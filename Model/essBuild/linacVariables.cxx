@@ -77,13 +77,13 @@ EssLinacVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
   Control.addVariable("LinacLength",10000.0); // Lali
-  Control.addVariable("LinacWidth",600.); // K01-20---6-G01---011
+  Control.addVariable("LinacWidthLeft",600.); // K01-20---6-G01---011
   Control.addVariable("LinacHeight",200.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacDepth",150.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacWallThick",50.0); // K01-20---6-G01---011
   Control.addVariable("LinacRoofThick",80.0); // K01-20---6-G01---011
   Control.addVariable("LinacFloorThick",75.0); // K01-20---6-G01---011
-  Control.addVariable("LinacFloorWidth",760.0); // K01-20---6-G01---011
+  Control.addVariable("LinacFloorWidthLeft",760.0); // K01-20---6-G01---011
   Control.addVariable("LinacWallMat","SkanskaConcrete");
  
   Control.addVariable("LinacAirMat","Air");
@@ -95,7 +95,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacCopperMat","Copper");
   Control.addVariable("LinacGraphiteMat","Graphite");
 
-  Control.Parse("LinacWidth-120.0");
+  Control.Parse("LinacWidthLeft-120.0");
   Control.addVariable("LinacTSWLength"); // Lali said
   Control.addVariable("LinacTSWWidth", 100.0); // Lali said
   Control.addVariable("LinacTSWGap", 120.0); // Lali said
