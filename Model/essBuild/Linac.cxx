@@ -230,8 +230,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
@@ -239,11 +239,11 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(length/2.0+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length/2.0+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
   // floor
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthLeft),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
@@ -251,8 +251,8 @@ Linac::createSurfaces()
   // Temporary shielding walls
   double tswY(tswOffsetY);
   ModelSupport::buildPlane(SMap,surfIndex+101,Origin+Y*(tswY),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthLeft-tswLength),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthRight-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthRight-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthLeft-tswLength),X);
   tswY += tswWidth;
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(tswY),Y);
   tswY += tswGap;

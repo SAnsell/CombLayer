@@ -77,15 +77,15 @@ EssLinacVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("essVariables[F]","EssLinacVariables");
 
   Control.addVariable("LinacLength",10000.0); // Lali
-  Control.addVariable("LinacWidthLeft",600./2.0); // K01-20---6-G01---011
-  Control.addVariable("LinacWidthRight",600./2.0); // K01-20---6-G01---011
+  Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011
+  Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011
   Control.addVariable("LinacHeight",200.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacDepth",150.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
   Control.addVariable("LinacWallThick",50.0); // K01-20---6-G01---011
   Control.addVariable("LinacRoofThick",80.0); // K01-20---6-G01---011
   Control.addVariable("LinacFloorThick",75.0); // K01-20---6-G01---011
-  Control.addVariable("LinacFloorWidthLeft",760.0/2.0); // K01-20---6-G01---011
-  Control.addVariable("LinacFloorWidthRight",760.0/2.0); // K01-20---6-G01---011
+  Control.addVariable("LinacFloorWidthLeft",760.0/2.0+15.0); // K01-20---6-G01---011
+  Control.addVariable("LinacFloorWidthRight",760.0/2.0-15.0); // K01-20---6-G01---011
   Control.addVariable("LinacWallMat","SkanskaConcrete");
  
   Control.addVariable("LinacAirMat","Air");
@@ -105,7 +105,6 @@ EssLinacVariables(FuncDataBase& Control)
 
   
   Control.addVariable("LinacBeamDumpYStep",-10); // just to have Origin in the middle of its front wall
-  Control.addVariable("LinacBeamDumpXStep",-15.0); // Lali said
 
   ELog::EM << "Must be BoratedConcrete" << ELog::endCrit;
   Control.addVariable("LinacBeamDumpConcreteMat", "Concrete");
