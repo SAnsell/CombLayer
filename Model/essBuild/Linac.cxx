@@ -109,11 +109,13 @@ Linac::Linac(const Linac& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),widthLeft(A.widthLeft),height(A.height),
+  widthRight(A.widthRight),
   depth(A.depth),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   floorThick(A.floorThick),
   floorWidthLeft(A.floorWidthLeft),
+  floorWidthRight(A.floorWidthRight),
   airMat(A.airMat),wallMat(A.wallMat),
   bd(A.bd->clone()),
   tswLength(A.tswLength),
@@ -142,12 +144,14 @@ Linac::operator=(const Linac& A)
       engActive=A.engActive;
       length=A.length;
       widthLeft=A.widthLeft;
+      widthRight=A.widthRight;
       height=A.height;
       depth=A.depth;
       wallThick=A.wallThick;
       roofThick=A.roofThick;
       floorThick=A.floorThick;
       floorWidthLeft=A.floorWidthLeft;
+      floorWidthRight=A.floorWidthRight;
       airMat=A.airMat;
       wallMat=A.wallMat;
       *bd=*A.bd;
@@ -179,12 +183,14 @@ Linac::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
+  widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   floorWidthLeft=Control.EvalVar<double>(keyName+"FloorWidthLeft");
+  floorWidthRight=Control.EvalVar<double>(keyName+"FloorWidthRight");
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -224,8 +230,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthRight),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
@@ -233,11 +239,11 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(length/2.0+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length/2.0+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthLeft+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthRight+wallThick),X);
   // floor
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthLeft/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthLeft/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthLeft),X);
+  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthRight),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
@@ -245,8 +251,8 @@ Linac::createSurfaces()
   // Temporary shielding walls
   double tswY(tswOffsetY);
   ModelSupport::buildPlane(SMap,surfIndex+101,Origin+Y*(tswY),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthLeft/2.0-tswLength),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthLeft/2.0-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthLeft-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthRight-tswLength),X);
   tswY += tswWidth;
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(tswY),Y);
   tswY += tswGap;
