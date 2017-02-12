@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceCreate.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,10 +34,11 @@ namespace SDef
   void createBeamSource(const FuncDataBase&,const std::string&,Source&);
   void createBilbaoSource(const FuncDataBase&,Source&);
   void createD4CSource(const FuncDataBase&,Source&);
+
+  void createESSLinacSource(const FuncDataBase&,Source&);
   void createESSSource(const FuncDataBase&,Source&);
-  void createESSPortSource(const FuncDataBase&,
-			   const attachSystem::FixedComp*,const long int,
-			   Source&);
+  void createESSPortSource(const FuncDataBase&,const attachSystem::FixedComp*,
+			   const long int,Source&);
   void createBeamSource(const FuncDataBase&,const std::string&,Source&);
   void createBeamSource(const FuncDataBase&,const std::string&,
 			 const attachSystem::FixedComp&,const long int,

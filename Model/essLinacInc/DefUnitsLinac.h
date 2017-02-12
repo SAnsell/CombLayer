@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/DefUnitsESS.h
+ * File:   essBuildInc/DefUnitsLinac.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef mainSystem_DefUnitsESS_h
-#define mainSystem_DefUnitsESS_h
+#ifndef mainSystem_DefUnitsLinac_h
+#define mainSystem_DefUnitsLinac_h
 
 class Simulation;
 class FuncDataBase;
@@ -32,14 +32,6 @@ namespace mainSystem
 
   void setDefUnits(FuncDataBase&,inputParam&);
 
-  void setESS(defaultConfig&);
-  void setESSPortsOnly(defaultConfig&,const std::string&,
-		       const std::string&);
-  void setESSFull(defaultConfig&); 
-  void setESSSingle(defaultConfig&,const std::string&,
-		    const std::string&,int);
-  void setESSSingle(defaultConfig&,std::vector<std::string>&);
-  void setESSLinac(defaultConfig&);
 
 }
 

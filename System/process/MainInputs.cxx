@@ -555,6 +555,21 @@ createPipeInputs(inputParam& IParam)
 }
 
 void
+createLinacInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for the ESS-Linac
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createLinacInputs");
+  createInputs(IParam);
+
+  IParam.setValue("sdefType",std::string("essLinac"));
+  
+  return;
+}
+  
+void
 createESSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for the ESS

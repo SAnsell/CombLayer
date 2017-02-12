@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -248,9 +248,12 @@ sourceSelection(Simulation& System,
     SDef::createBilbaoSource(Control,sourceCard);
   else if (sdefType=="ess")
     SDef::createESSSource(Control,sourceCard);
+  else if (sdefType=="essLinac")
+    SDef::createESSLinacSource(Control,sourceCard);
   else if (sdefType=="essPort")
     SDef::createESSPortSource(Control,FCPtr,linkIndex,
 			      sourceCard);
+  
   else if (sdefType=="D4C")
     SDef::createD4CSource(Control,sourceCard);
   else if (sdefType=="Sinbad" || sdefType=="sinbad")

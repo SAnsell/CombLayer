@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ class makeESS
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
-  
+
   /// Shutterbay objects
   std::shared_ptr<ShutterBay> ShutterBayObj;  
   /// Array of Guidies
