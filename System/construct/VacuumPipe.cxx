@@ -513,10 +513,10 @@ VacuumPipe::createLinks()
   FixedComp::setConnect(5,Origin+Z*radius,Z);
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
-  if (!backActive())
+  if (!frontActive())
     {
       FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+1));
-      FixedComp::setConnect(0,Origin-Y*(length/2.0),Y);
+      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
     }
 
   if (!backActive())
