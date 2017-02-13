@@ -673,7 +673,6 @@ TwinChopper::createObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
   IPB->addInnerCell(getCell("PortVoid",1));
-  ELog::EM<<"Inner Cell = "<<getCell("PortVoid",1)<<ELog::endDiag;
   IPB->createAll(System,Beam,0,Out);
 
   // Front ring seal

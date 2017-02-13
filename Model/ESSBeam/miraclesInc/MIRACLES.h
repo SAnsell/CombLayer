@@ -116,10 +116,15 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Guide from 7.5 to 11.25 m
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
-  /// Twin first chopper pair
+  /// First single chopper pair
   std::shared_ptr<constructSystem::ChopperUnit> ChopE;
   /// Top twin disk
   std::shared_ptr<constructSystem::DiskChopper> EDisk;
+
+  /// Pipe from second single chopper 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  /// Guide between single choppers
+  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
   /// Bunker insert
   std::shared_ptr<essSystem::CompBInsert> BInsert;

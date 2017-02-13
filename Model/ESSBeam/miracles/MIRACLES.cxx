@@ -163,6 +163,9 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   OR.addObject(CDiskTop);
   OR.addObject(CDiskLow);
 
+  OR.addObject(ChopE);
+  OR.addObject(EDisk);
+
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
   OR.addObject(FocusWall);  
@@ -217,6 +220,8 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MIRACLES","buildBunkerUnits");
+
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
   
   VPipeB->addInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
@@ -267,6 +272,16 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
+  ChopE->addInsertCell(bunkerVoid);
+  ChopE->getKey("Main").setAxisControl(3,ZVert);
+  
+  ChopE->createAll(System,FocusE->getKey("Guide0"),2);
+
+  EDisk->addInsertCell(ChopE->getCell("Void"));
+  EDisk->createAll(System,ChopE->getKey("Main"),0,
+		   ChopE->getKey("Beam"),2);
+
+  
   return;
 }
 
@@ -328,8 +343,9 @@ MIRACLES::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,1);
-  ELog::EM<<"Beam axis == "<<miraclesAxis->getSignedLinkPt(3)<<ELog::endDiag;
+  setBeamAxis(Control,GItem,0);
+  ELog::EM<<"Beam Pt == "<<miraclesAxis->getSignedLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Beam axis == "<<miraclesAxis->getZ()<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);

@@ -149,8 +149,7 @@ FixedComp::setAxisControl(const long int axisIndex,
     throw ColErr::NumericalAbort("NAxis is zero");
   if (axisIndex>3 || axisIndex<-3)
     throw ColErr::IndexError<long int>(axisIndex,2,"axisIndex");
-  
-  
+    
   orientateAxis=NAxis.unit(); ///< Axis for reorientation
   primeAxis=axisIndex;
   return;
@@ -231,6 +230,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const double signV((sideIndex>0) ? 1.0 : -1.0);
 
   const Geometry::Vec3D yTest=LU.getAxis()*signV;
+      
   Geometry::Vec3D zTest=FC.getZ();
   Geometry::Vec3D xTest=FC.getX();
   if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
@@ -241,6 +241,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   computeZOffPlane(xTest,yTest,zTest);
 
   createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
+  
   return;
 }
 
@@ -321,6 +322,7 @@ FixedComp::reOrientate()
 {
   ELog::RegMethod RegA("FixedComp","reOrientate");
 
+  
   if (primeAxis>0)
     reOrientate(static_cast<size_t>(primeAxis)-1,orientateAxis);
   else if (primeAxis<0)
@@ -343,7 +345,6 @@ FixedComp::reOrientate(const size_t index,
    */
 {
   ELog::RegMethod RegA("FixedComp","reorientate");
-
   
   if (index>3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
@@ -352,7 +353,7 @@ FixedComp::reOrientate(const size_t index,
 
   std::vector<Geometry::Vec3D*> AVec({&X,&Y,&Z});
 
-  const double cosTheta=axisDir.dotProd( *AVec[index]);
+  const double cosTheta=axisDir.dotProd( *AVec[index] );
   // Both checks with tolerance:
   if (cosTheta-Geometry::zeroTol>1.0) return;
   if (cosTheta+1.0<Geometry::zeroTol)

@@ -210,6 +210,7 @@ ChopperUnit::populate(const FuncDataBase& Control)
   motorStep=Control.EvalVar<double>(keyName+"MotorStep");
   motorNBolt=Control.EvalVar<size_t>(keyName+"MotorNBolt");
   motorBoltRad=Control.EvalVar<double>(keyName+"MotorBoltRadius");
+  
   motorBoltAngOff=Control.EvalDefVar<double>(keyName+"MotorBoltAngOff",0.0);
   motorSeal=Control.EvalDefVar<double>(keyName+"MotorSealThick",0.0);
   motorSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
@@ -249,9 +250,7 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
   BuildBeam.createUnitVector(FC,sideIndex);
   Main.createUnitVector(FC,sideIndex);
 
-  //  Main.applyShift(0.0,0,0,beamZStep);
-
-  applyOffset();  
+  applyOffset();
   setDefault("Main");
   return;
 }
@@ -553,8 +552,8 @@ ChopperUnit::createLinks()
   mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
   mainFC.setConnect(2,Origin-X*(width/2.0),-X);
   mainFC.setConnect(3,Origin+X*(width/2.0),X);
-  mainFC.setConnect(4,Origin-Y*(height/2.0),-Z);
-  mainFC.setConnect(5,Origin-Y*(height/2.0),Z);
+  mainFC.setConnect(4,Origin-Z*(height/2.0),-Z);
+  mainFC.setConnect(5,Origin-Z*(height/2.0),Z);
 
   mainFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   mainFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
