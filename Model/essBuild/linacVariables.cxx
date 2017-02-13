@@ -102,6 +102,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSWWidth", 100.0); // Lali said
   Control.addVariable("LinacTSWGap", 120.0); // Lali said
   Control.addVariable("LinacTSWOffsetY", 300.0-150); // some location (must be 20 cm off the beam dump)
+  Control.addVariable("LinacTSWNLayers", 5); // for biasing
 
   
   Control.addVariable("LinacBeamDumpYStep",-10); // just to have Origin in the middle of its front wall

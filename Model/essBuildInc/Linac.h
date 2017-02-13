@@ -38,7 +38,7 @@ namespace essSystem
   class BeamDump;
 
 class Linac : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset, public attachSystem::CellMap
 {
  private:
 
@@ -68,6 +68,9 @@ class Linac : public attachSystem::ContainedComp,
   double tswGap; ///< Distance between Temporary shielding walls
   double tswOffsetY; ///< TSW location on the Y-axis
   int tswNLayers; ///< number of layers in a TSW wall
+
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
