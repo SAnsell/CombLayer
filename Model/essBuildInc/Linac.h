@@ -67,6 +67,7 @@ class Linac : public attachSystem::ContainedComp,
   double tswWidth; ///< Temporary shielding wall width
   double tswGap; ///< Distance between Temporary shielding walls
   double tswOffsetY; ///< TSW location on the Y-axis
+  int tswNLayers; ///< number of layers in a TSW wall
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -74,7 +75,6 @@ class Linac : public attachSystem::ContainedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
-
 
  public:
 

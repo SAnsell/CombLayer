@@ -121,7 +121,8 @@ Linac::Linac(const Linac& A) :
   tswLength(A.tswLength),
   tswWidth(A.tswWidth),
   tswGap(A.tswGap),
-  tswOffsetY(A.tswOffsetY)
+  tswOffsetY(A.tswOffsetY),
+  tswNLayers(A.tswNLayers)
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -159,6 +160,7 @@ Linac::operator=(const Linac& A)
       tswWidth=A.tswWidth;
       tswGap=A.tswGap;
       tswOffsetY=A.tswOffsetY;
+      tswNLayers=A.tswNLayers;
     }
   return *this;
 }
@@ -199,6 +201,7 @@ Linac::populate(const FuncDataBase& Control)
   tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
   tswGap=Control.EvalVar<double>(keyName+"TSWGap");
   tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
+  tswNLayers=Control.EvalDefVar<int>(keyName+"TSWNLayers", 1);
 
   return;
 }
