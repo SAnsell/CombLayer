@@ -229,7 +229,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
-    \param cellName :: top or bottom Be cell
+    \param cellName :: TSW wall cell name
     \param lpS :: link pont of primary surface
     \param lsS :: link point of secondary surface
   */
@@ -241,17 +241,18 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 	const int sS = getLinkSurf(lsS);
 
 	const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
-	MonteCarlo::Object* beObj(0);
-	int beCell(0);
+	MonteCarlo::Object* wallObj(0);
+	int wallCell(0);
 
 	if (CM)
 	  {
-	    beCell=CM->getCell(cellName);
-	    beObj=System.findQhull(beCell);
+	    wallCell=CM->getCell(cellName);
+	    wallObj=System.findQhull(wallCell);
 	  }
 
-	if (!beObj)
-	  throw ColErr::InContainerError<int>(beCell,"TSW wall cell not found");
+	if (!wallObj)
+	  throw ColErr::InContainerError<int>(wallCell,
+					      "TSW wall cell " + cellName + " not found");
 
 	double baseFrac = 1.0/tswNLayers;
 	ModelSupport::surfDivide DA;
@@ -263,7 +264,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 	  }
 	DA.addMaterial(wallMat);
 
-	DA.setCellN(beCell);
+	DA.setCellN(wallCell);
 	DA.setOutNum(cellIndex, surfIndex+10000);
 
 	ModelSupport::mergeTemplate<Geometry::Plane,
