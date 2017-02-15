@@ -91,6 +91,7 @@
 #include "CylSample.h"
 #include "LineShield.h"
 #include "HoleShape.h"
+#include "BeamShutter.h"
 
 #include "MIRACLES.h"
 
@@ -128,6 +129,11 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   ChopE(new constructSystem::ChopperUnit(newName+"ChopE")),
   EDisk(new constructSystem::DiskChopper(newName+"EBlade")),
 
+  ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),
+
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+
   //  BInsert(new BunkerInsert(newName+"BInsert")),
   BInsert(new CompBInsert(newName+"CInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
@@ -163,8 +169,16 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   OR.addObject(CDiskTop);
   OR.addObject(CDiskLow);
 
+  OR.addObject(VPipeE);
+  OR.addObject(FocusE); 
+ 
   OR.addObject(ChopE);
   OR.addObject(EDisk);
+
+  OR.addObject(ShutterA);
+
+  OR.addObject(VPipeF);
+  OR.addObject(FocusF);
 
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
@@ -281,7 +295,15 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   EDisk->createAll(System,ChopE->getKey("Main"),0,
 		   ChopE->getKey("Beam"),2);
 
-  
+  ShutterA->addInsertCell(bunkerVoid);
+  ShutterA->createAll(System,ChopE->getKey("Beam"),2);
+
+  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->createAll(System,ShutterA->getKey("Beam"),2);
+
+  FocusF->addInsertCell(VPipeF->getCells("Void"));
+  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+
   return;
 }
 

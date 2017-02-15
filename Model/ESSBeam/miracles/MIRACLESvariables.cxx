@@ -151,7 +151,6 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // Pipe after second chopper unit [to 11.5m]
   PipeGen.setRectPipe(16.0,16.0,0.5);
-
   PipeGen.generatePipe(Control,"miraclesPipeE",2.0,359.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFE",355.0, 5.0,4.857,  9.5,9.85714);
@@ -166,6 +165,32 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"miraclesEBlade",0.0,22.5,35.0);
 
+
+  Control.addVariable("miraclesShutterAYStep",3.0);
+  Control.addVariable("miraclesShutterALiftZStep",-10.0);
+  Control.addVariable("miraclesShutterALength",30.0);
+  Control.addVariable("miraclesShutterAWidth",10.1);
+  Control.addVariable("miraclesShutterAHeight",11.1);
+  Control.addVariable("miraclesShutterANLayers",1);
+  Control.addVariable("miraclesShutterAMat0","Aluminium");
+  
+  Control.addVariable("miraclesShutterASurroundThick",3.0);
+  Control.addVariable("miraclesShutterASurroundMat","Stainless304");
+  Control.addVariable("miraclesShutterATopVoid",8.1);
+
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeF",2.0,470.0);
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"miraclesFF",466.0, 5.0,4.857,  9.5,9.85714);
+
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeG",2.0,470.0);
+  FGen.clearYOffset();
+  FGen.generateBender(Control,"miraclesBG",466.0, 12.0,12.0,12.0,12.0,
+		    500000.0,0.0 );
+
+  
+  
   return;
 }
  

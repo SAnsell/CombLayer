@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CSPEC.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,14 +76,14 @@ class CSPEC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
   // Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
   // Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Elliptic guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> BendB;
+  std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   void setBeamAxis(const FuncDataBase&,
 		   const GuideItem&,const bool);

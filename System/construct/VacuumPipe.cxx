@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumPipe.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,7 +172,8 @@ VacuumPipe::populate(const FuncDataBase& Control)
   width=Control.EvalDefVar<double>(keyName+"Width",-1.0);
 
   if (radius<0.0 && (width<0.0 || height<0.0))
-    throw ColErr::EmptyContainer("Pipe has neither Radius or Height/Width");
+    throw ColErr::EmptyContainer
+      ("Pipe:["+keyName+"] has neither Radius or Height/Width");
   
   length=Control.EvalVar<double>(keyName+"Length");
 

@@ -37,6 +37,7 @@ namespace instrumentSystem
 namespace constructSystem
 {  
   class Aperture;
+  class BeamShutter;
   class ChopperUnit;
   class ChopperPit;
   class DiskChopper;
@@ -120,12 +121,16 @@ class MIRACLES : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperUnit> ChopE;
   /// Top twin disk
   std::shared_ptr<constructSystem::DiskChopper> EDisk;
+  
+  /// Shutter
+  std::shared_ptr<constructSystem::BeamShutter> ShutterA;
 
   /// Pipe from second single chopper 
   std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
   /// Guide between single choppers
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
+  
   /// Bunker insert
   std::shared_ptr<essSystem::CompBInsert> BInsert;
   /// Pipe in bunker wall

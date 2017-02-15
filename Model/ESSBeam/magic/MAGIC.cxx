@@ -3,7 +3,7 @@
  
  * File:   essBuild/MAGIC.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -389,18 +389,19 @@ MAGIC::buildOutGuide(Simulation& System,
   FocusOutE->createAll(System,*ShieldD,2,*VPipeOutE,0);
 
 
+
   return;
 }
 
 
 void
 MAGIC::buildPolarizer(Simulation& System,
-                     const attachSystem::FixedComp& FWshield,
-                     const long int startShield,
-                     const attachSystem::FixedComp& FWguide,
-                     const long int startGuide,
-                     const int voidCell)
-  /*!
+		      const attachSystem::FixedComp& FWshield,
+		      const long int startShield,
+		      const attachSystem::FixedComp& FWguide,
+		      const long int startGuide,
+		      const int voidCell)
+/*!
     Build all the components that are outside of the wall
     \param System :: Simulation 
     \param FWshield :: Focus unit of the shield
@@ -412,19 +413,25 @@ MAGIC::buildPolarizer(Simulation& System,
 {
   ELog::RegMethod RegA("MAGIC","buildPolarizer");
 
+  // Guide to be connected
   ShieldF->addInsertCell(voidCell);
   ShieldF->createAll(System,FWshield,startShield);
-  ELog::EM<<"START POL"<<ShieldF->getSignedLinkPt(2)<<ELog::endDiag;
-  PolarizerPit->addInsertCell(voidCell);
-  PolarizerPit->createAll(System,*ShieldF,2);
 
+  VPipeOutF->addInsertCell(ShieldF->getCell("Void"));
+  VPipeOutF->createAll(System,FWguide,startGuide);
+
+  FocusOutF->addInsertCell(VPipeOutF->getCells("Void"));
+  FocusOutF->createAll(System,*ShieldF,2,*VPipeOutF,0);
+
+  PolarizerPit->addInsertCell(voidCell);
+  PolarizerPit->createAll(System,FWshield,startShield);
 
   ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
   ShieldF->addInsertCell(PolarizerPit->getCells("MidLayerFront"));
   ShieldF->insertObjects(System);
   
   ELog::EM<<"FINISHED POL"<<ELog::endDiag;
-  return;
+
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
@@ -491,13 +498,14 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
 		    *FStart,startIndex,
 		    *FExtra,extraIndex,voidCell);
       FStart= ShieldE.get();
-      FExtra= ShieldE.get();
+      FExtra= &FocusOutE->getKey("Guide0");
       startIndex=2;
       extraIndex=2;
     }
 
   if (startPoint<4)
     {
+      // lead-in piece of shielding and guide is built here
       buildPolarizer(System,*FStart,startIndex,*FExtra,extraIndex,voidCell);
     }
   return;
@@ -556,17 +564,10 @@ MAGIC::build(Simulation& System,
 
   if (stopPoint==4) return;
   
-  buildPolarizer(System,*ShieldE,2,*ShieldE,2,voidCell);
-
+  buildPolarizer(System,*ShieldE,2,FocusOutE->getKey("Guide0"),2,voidCell);
+  return;
   if (stopPoint==5) return;
 
-  return;
-
-  VPipeOutF->addInsertCell(ShieldE->getCell("Void"));
-  VPipeOutF->addInsertCell(ShieldF->getCell("Void"));
-  VPipeOutF->createAll(System,FocusOutE->getKey("Guide0"),2);
-  FocusOutF->addInsertCell(VPipeOutF->getCells("Void"));
-  FocusOutF->createAll(System,*VPipeOutF,0,*VPipeOutF,0);
 
 
   ShieldG->addInsertCell(voidCell);
