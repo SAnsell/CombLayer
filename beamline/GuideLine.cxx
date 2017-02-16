@@ -487,6 +487,7 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
   setDefault("GuideOrigin");
+
   return;
 }
 

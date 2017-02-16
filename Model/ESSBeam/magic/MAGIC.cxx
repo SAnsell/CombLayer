@@ -211,6 +211,9 @@ MAGIC::MAGIC(const std::string& keyName) :
   OR.addObject(MCGuideA);  
   OR.addObject(MCInsertA);
 
+  OR.addObject(MCGuideB);  
+  OR.addObject(MCInsertB);
+
   OR.addObject(ShieldG);
   OR.addObject(VPipeOutG);  
   OR.addObject(FocusOutG);
@@ -421,28 +424,35 @@ MAGIC::buildPolarizer(Simulation& System,
   VPipeOutF->createAll(System,FWguide,startGuide);
 
   FocusOutF->addInsertCell(VPipeOutF->getCells("Void"));
-  FocusOutF->createAll(System,*ShieldF,2,*VPipeOutF,0);
+  FocusOutF->createAll(System,*ShieldE,2,*VPipeOutF,0);
 
   PolarizerPit->addInsertCell(voidCell);
-  PolarizerPit->createAll(System,FWshield,startShield);
+  PolarizerPit->createAll(System,*ShieldF,2);
 
+  
   ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
   ShieldF->addInsertCell(PolarizerPit->getCells("MidLayerFront"));
   ShieldF->insertObjects(System);
-  
-  ELog::EM<<"FINISHED POL"<<ELog::endDiag;
 
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
-  // NOTE: Guide numbers links point round guide not +/- x, z
+  MCGuideB->addInsertCell(PolarizerPit->getCells("Void"));
+  MCGuideB->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
+  
   MCInsertA->addInsertCell(MCGuideA->getCells("Guide0Void"));
-  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),4,
-                          MCGuideA->getKey("Guide0"),6);
-  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),3,5);
+  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),4,6);
+  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),3,
+			  MCGuideA->getKey("Guide0"),5);
   MCInsertA->createAll(System,MCGuideA->getKey("Guide0"),0);
-  ELog::EM<<"Origin == "<<MCGuideA->getKey("Guide0").getSignedLinkPt(0)
-	  <<ELog::endDiag;
+
+  MCInsertB->addInsertCell(MCGuideB->getCells("Guide0Void"));
+  MCInsertB->setFaces(MCGuideB->getKey("Guide0"),4,6);
+  MCInsertB->setLeftRight(MCGuideB->getKey("Guide0"),3,
+			  MCGuideB->getKey("Guide0"),5);
+  MCInsertB->createAll(System,MCGuideB->getKey("Guide0"),0);
+
+  
   return;
 }
   
@@ -565,10 +575,9 @@ MAGIC::build(Simulation& System,
   if (stopPoint==4) return;
   
   buildPolarizer(System,*ShieldE,2,FocusOutE->getKey("Guide0"),2,voidCell);
+
   return;
   if (stopPoint==5) return;
-
-
 
   ShieldG->addInsertCell(voidCell);
   ShieldG->addInsertCell(PolarizerPit->getCells("Outer"));
