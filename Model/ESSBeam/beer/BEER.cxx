@@ -3,7 +3,7 @@
  
  * File:   essBuild/BEER.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -411,6 +411,7 @@ BEER::build(Simulation& System,
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
+  return;
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
   

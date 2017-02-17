@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/beer/BEERvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,45 +48,18 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "essVariables.h"
+
 #include "FocusGenerator.h"
 #include "ShieldGenerator.h"
 #include "ChopperGenerator.h"
+#include "PipeGenerator.h"
+#include "JawGenerator.h"
+#include "BladeGenerator.h"
 #include "PitGenerator.h"
+#include "essVariables.h"
 
 namespace setVariable
 {
-
- 
-void
-generatePipe(FuncDataBase& Control,
-	     const std::string& keyName,
-	     const double length,
-             const double radius)
-  /*!
-    Create general pipe
-    \param Control :: Data Base for variables
-    \param keyName :: main name
-    \param length :: length of pipe
-   */
-{
-  ELog::RegMethod RegA("BEERvariables[F]","generatePipe");
-    // VACUUM PIPES:
-  Control.addVariable(keyName+"YStep",2.0);   // step + flange
-  Control.addVariable(keyName+"Radius",radius);
-  Control.addVariable(keyName+"Length",length);
-  Control.addVariable(keyName+"FeThick",1.0);
-  Control.addVariable(keyName+"FlangeRadius",radius+4.0);
-  Control.addVariable(keyName+"FlangeLength",1.0);
-  Control.addVariable(keyName+"FeMat","Stainless304");
-  Control.addVariable(keyName+"WindowActive",3);
-  Control.addVariable(keyName+"WindowRadius",radius+2.0);
-  Control.addVariable(keyName+"WindowThick",0.5);
-  Control.addVariable(keyName+"WindowMat","Silicon300K");
-
-  return;
-}
-
 
 void
 generatePinHole(FuncDataBase& Control)
@@ -176,12 +149,19 @@ BEERvariables(FuncDataBase& Control)
   setVariable::FocusGenerator FGen;
   setVariable::ShieldGenerator SGen;
   setVariable::PitGenerator PGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::BladeGenerator BGen;
+  
   SGen.addWall(1,30.0,"CastIron");
   SGen.addRoof(1,30.0,"CastIron");
   SGen.addFloor(1,30.0,"CastIron");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
+
+  PipeGen.setPipe(8.0,0.5);
+  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.setFlange(-4.0,1.0);
   
   //  setVariable::ShieldGenerator SGen;
   // extent of beamline
@@ -194,81 +174,43 @@ BEERvariables(FuncDataBase& Control)
   FGen.generateBender(Control,"beerBA",350.0,4.0,4.0,10.593,17.566,
                       7000.0,0.0);
   
-  generatePipe(Control,"beerPipeB",46.0,12.0);
+  PipeGen.generatePipe(Control,"beerPipeB",8.0,44.0);
   FGen.clearYOffset();
-  FGen.generateBender(Control,"beerBB",44.0,4.0,4.0,17.566,18.347,
+  FGen.generateBender(Control,"beerBB",42.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
 
-  generatePipe(Control,"beerPipeC",46.0,12.0);
-  Control.addVariable("beerYStep",6.0);   // step + flange  
+  PipeGen.generatePipe(Control,"beerPipeC",6.0,46.0);
   FGen.generateBender(Control,"beerBC",44.0,4.0,4.0,17.566,18.347,
                       7000.0,0.0);
 
   CGen.setMainRadius(56.0);
   CGen.setFrame(120.0,120.0);
   CGen.generateChopper(Control,"beerChopperA",12.0,10.0,4.55);
-
-  // Double Blade chopper
-  Control.addVariable("beerDBladeXStep",0.0);
-  Control.addVariable("beerDBladeYStep",0.0);
-  Control.addVariable("beerDBladeZStep",0.0);
-  Control.addVariable("beerDBladeXYangle",0.0);
-  Control.addVariable("beerDBladeZangle",0.0);
-
-  Control.addVariable("beerDBladeGap",1.0);
-  Control.addVariable("beerDBladeInnerRadius",25.0);
-  Control.addVariable("beerDBladeOuterRadius",50.0);
-  Control.addVariable("beerDBladeNDisk",2);
-
-  Control.addVariable("beerDBlade0Thick",0.2);
-  Control.addVariable("beerDBlade1Thick",0.2);
-  Control.addVariable("beerDBladeInnerMat","Inconnel");
-  Control.addVariable("beerDBladeOuterMat","B4C");
   
-  Control.addVariable("beerDBladeNBlades",2);
-  Control.addVariable("beerDBlade0PhaseAngle0",95.0);
-  Control.addVariable("beerDBlade0OpenAngle0",30.0);
-  Control.addVariable("beerDBlade1PhaseAngle0",95.0);
-  Control.addVariable("beerDBlade1OpenAngle0",30.0);
-
-  Control.addVariable("beerDBlade0PhaseAngle1",275.0);
-  Control.addVariable("beerDBlade0OpenAngle1",30.0);
-  Control.addVariable("beerDBlade1PhaseAngle1",275.0);
-  Control.addVariable("beerDBlade1OpenAngle1",30.0);
-
+  // Double Blade chopper
+  BGen.setThick({0.2,0.2});
+  BGen.setGap(1.0);
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"magicPSCBlade",0.0,25.0,50.0);
+  
   CGen.setMainRadius(81.0);
   CGen.setFrame(175.0,175.0);
   CGen.generateChopper(Control,"beerChopperB",30.0,46.0,40.0);
-  
+
   // Double Blade chopper
-  Control.addVariable("beerWFMBladeXStep",0.0);
-  Control.addVariable("beerWFMBladeYStep",0.0);
-  Control.addVariable("beerWFMBladeZStep",0.0);
-  Control.addVariable("beerWFMBladeXYangle",0.0);
-  Control.addVariable("beerWFMBladeZangle",0.0);
-
-  Control.addVariable("beerWFMBladeGap",36.1);  // 36
-  Control.addVariable("beerWFMBladeInnerRadius",40.0);
-  Control.addVariable("beerWFMBladeOuterRadius",75.0);
-  Control.addVariable("beerWFMBladeNDisk",2);
-
-  Control.addVariable("beerWFMBlade0Thick",0.2);
-  Control.addVariable("beerWFMBlade1Thick",0.2);
-  Control.addVariable("beerWFMBladeInnerMat","Inconnel");
-  Control.addVariable("beerWFMBladeOuterMat","B4C");
-  
-  Control.addVariable("beerWFMBladeNBlades",2);
-  Control.addVariable("beerWFMBlade0PhaseAngle0",95.0);
-  Control.addVariable("beerWFMBlade0OpenAngle0",30.0);
-  Control.addVariable("beerWFMBlade1PhaseAngle0",95.0);
-  Control.addVariable("beerWFMBlade1OpenAngle0",30.0);
+  BGen.setThick({0.2,0.2});
+  BGen.setGap(36.1);
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"beerWFMBlade",0.0,40.0,75.0);
 
   Control.addVariable("beerWFMBlade0PhaseAngle1",275.0);
   Control.addVariable("beerWFMBlade0OpenAngle1",30.0);
   Control.addVariable("beerWFMBlade1PhaseAngle1",275.0);
   Control.addVariable("beerWFMBlade1OpenAngle1",30.0);
 
-  generatePipe(Control,"beerPipeD",125.0,12.0);
+  PipeGen.generatePipe(Control,"beerPipeD",4.0,125.0);
   FGen.generateBender(Control,"beerBD",121.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
@@ -299,7 +241,7 @@ BEERvariables(FuncDataBase& Control)
   Control.addVariable("beerFOC1Blade0PhaseAngle1",275.0);
   Control.addVariable("beerFOC1Blade0OpenAngle1",30.0);
 
-  generatePipe(Control,"beerPipeE",132.0,12.0);
+  PipeGen.generatePipe(Control,"beerPipeE",4.0,132.0);
   FGen.generateBender(Control,"beerBE",128.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
@@ -335,7 +277,7 @@ BEERvariables(FuncDataBase& Control)
   Control.addVariable("beerWBC2Blade1PhaseAngle1",275.0);
   Control.addVariable("beerWBC2Blade1OpenAngle1",30.0);
 
-  generatePipe(Control,"beerPipeF",102.0,12.0);
+  PipeGen.generatePipe(Control,"beerPipeF",4.0,102.0);
   FGen.generateBender(Control,"beerBF",98.0,4.0,4.0,20.0,16.0,
                       7000.0,180.0);
 
@@ -438,7 +380,7 @@ BEERvariables(FuncDataBase& Control)
   Control.addVariable("beerFOC3Blade0PhaseAngle1",275.0);
   Control.addVariable("beerFOC3Blade0OpenAngle1",30.0);
 
-  generatePipe(Control,"beerPipeOutA",450.0,12.0);
+  PipeGen.generatePipe(Control,"beerPipeOutA",4.0,450.0);
   FGen.generateTaper(Control,"beerOutFA",442.0,4.0,4.0,20.0,16.0);
 
   PGen.setFeLayer(6.0);
