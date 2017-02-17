@@ -53,7 +53,7 @@ namespace constructSystem
 
 namespace essSystem
 {
-  class CompBInsert;
+  class BInsert;
   class GuideItem;
   class DetectorTank;
 
@@ -130,21 +130,39 @@ class MIRACLES : public attachSystem::CopiedComp
   /// Guide between single choppers
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
+  /// Pipe around bender [rectangular?]
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
+  /// Bender in bunker
+  std::shared_ptr<beamlineSystem::GuideLine> BendG;
+
   
   /// Bunker insert
-  std::shared_ptr<essSystem::CompBInsert> BInsert;
+  std::shared_ptr<essSystem::BunkerInsert> BInsert;
   /// Pipe in bunker wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
-
-
-  /// Vacuum pipe in the front of the cave
+  /// Vacuum pipe in the bunker wall if not provided by BInsert
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCave;
-  
+
+  /// Outer Shielding
+  std::shared_ptr<constructSystem::LineShield> ShieldA;
+  /// Pipe around bender [rectangular?]
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
+  /// Bender in first shielding
+  std::shared_ptr<beamlineSystem::GuideLine> BendOutA;
+
+  /// Pipe around bender [rectangular?]
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
+  /// Bender in first shielding
+  std::shared_ptr<beamlineSystem::GuideLine> BendOutB;
+
+
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
 
  public:
   
