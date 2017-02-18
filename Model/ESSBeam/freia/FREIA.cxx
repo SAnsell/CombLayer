@@ -251,7 +251,7 @@ FREIA::setBeamAxis(const FuncDataBase& Control,
   freiaAxis->linkShift(4);
   freiaAxis->linkAngleRotate(3);
   freiaAxis->linkAngleRotate(4);
-  
+
   if (reverseZ)
     freiaAxis->reverseZ();
   return;

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREX.cxx
  *
- * Copyright (c) 2004-2016 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,6 +152,8 @@ TREX::setBeamAxis(const FuncDataBase& Control,
 
   if (reverseZ)
     trexAxis->reverseZ();
+
+  return;
 }
 
 

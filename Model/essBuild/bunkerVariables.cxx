@@ -3,7 +3,7 @@
  
  * File:   essBuild/bunkerVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,7 +189,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   //  Control.addVariable(AKey+"BunkerPillarsR_0S_1Active",0);
   //  Control.addVariable(AKey+"BunkerPillarsR_0S_2Active",0);
-  Control.addVariable(AKey+"BunkerPillarsR_0S_7Active",0);
+  Control.addVariable(AKey+"BunkerPillarsR_0S_6Active",0);
   //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
 
 

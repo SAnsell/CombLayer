@@ -173,7 +173,7 @@ FixedComp::createUnitVector(const FixedComp& FC)
   beamAxis=FC.beamAxis;
 
   if (primeAxis>0)
-      reOrientate();
+    reOrientate();
 
   return;
 }

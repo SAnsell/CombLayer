@@ -239,6 +239,12 @@ BEER::setBeamAxis(const FuncDataBase& Control,
   beerAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
   beerAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
 
+  // BEAM needs to be shifted/rotated:
+  beerAxis->linkShift(3);
+  beerAxis->linkShift(4);
+  beerAxis->linkAngleRotate(3);
+  beerAxis->linkAngleRotate(4);
+
   if (reverseZ)
     beerAxis->reverseZ();
   return;
@@ -272,6 +278,7 @@ BEER::build(Simulation& System,
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*beerAxis,-3,*beerAxis,-3);
+  ELog::EM<<"BeerAxis == "<<beerAxis->getSignedLinkAxis(-3)<<ELog::endDiag;
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
 
