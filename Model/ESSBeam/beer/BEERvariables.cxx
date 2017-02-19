@@ -159,8 +159,8 @@ BEERvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.setPipe(12.0,0.8);
+  PipeGen.setWindow(-2.0,0.8);
   PipeGen.setFlange(-4.0,1.0);
   
   //  setVariable::ShieldGenerator SGen;
