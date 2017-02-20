@@ -88,7 +88,7 @@ CSPECvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setThickness(0.8,0.3);
   FGen.setYOffset(4.0);
-  FGen.generateTaper(Control,"cspecFA",350.0, 6.0,2.0 ,4.0,3.5);
+  FGen.generateTaper(Control,"cspecFA",350.0, 6.0,2.0, 4.0,3.5);
 
 
   PipeGen.generatePipe(Control,"cspecPipeB",8.0,44.0);

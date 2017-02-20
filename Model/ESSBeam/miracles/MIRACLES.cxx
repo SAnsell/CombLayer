@@ -440,8 +440,6 @@ MIRACLES::build(Simulation& System,
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
   setBeamAxis(Control,GItem,0);
-  ELog::EM<<"Beam Pt == "<<miraclesAxis->getSignedLinkPt(3)<<ELog::endDiag;
-  ELog::EM<<"Beam axis == "<<miraclesAxis->getZ()<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);

@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/bifrost/BIFROSTvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -277,7 +277,7 @@ BIFROSTvariables(FuncDataBase& Control)
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"bifrostOutPitA",6505.0,25.0,220.0,210.0,40.0);
+  PGen.generatePit(Control,"bifrostOutPitA",6505.0,25.0,160.0,210.0,40.0);
 
   Control.addVariable("bifrostOutACutFrontShape","Square");
   Control.addVariable("bifrostOutACutFrontRadius",5.0);

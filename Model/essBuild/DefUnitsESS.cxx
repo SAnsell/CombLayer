@@ -112,7 +112,7 @@ setESSFull(defaultConfig& A)
     \param A :: Paramter for default config
    */
 {
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESSFull");
 
   A.setOption("lowMod","Butterfly");
   A.setOption("topMod","Butterfly");
@@ -128,7 +128,7 @@ setESSFull(defaultConfig& A)
       // {"CSPEC","G4BLine3"},
        {"VESPA","G2BLineTop7"},
       {"FREIA","G1BLineTop15"},     // N5
-      {"ODIN","G1BLineLow2"}
+      {"ODIN","G1BLineTop20"}        // was low / now high
     };
   
   const std::set<std::string> beamFilled=
@@ -237,7 +237,7 @@ setESSSingle(defaultConfig& A,
      {"FREIA","G1BLineTop17"},     // N5
 
 
-     {"ODIN","G2BLineLow20"},      // Lower S2
+     {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
      {"DREAM","G2BLineTop19"},     // S3
 
      {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
@@ -325,7 +325,7 @@ setESS(defaultConfig& A)
       {"CSPEC","G1BLineTop3"},
       {"VOR","G1BLinetop7"},   // also 17  
       {"LOKI","G1BLineTop17"},
-      {"ODIN","G2BLineLow2"}
+      {"ODIN","G2BLineTop20"}
     };     
   const std::set<std::string> beamFilled=
     {"NMX","CSPEC","DREAM","VOR","LOKI"};
