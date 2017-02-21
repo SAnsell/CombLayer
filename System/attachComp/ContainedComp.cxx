@@ -549,7 +549,7 @@ void
 ContainedComp::addInsertCell(const std::vector<int>& CVec)
   /*!
     Adds a cell to the insert list
-    \param CN :: Cell number
+    \param CVec :: Set of cell numbers
   */
 {
   ELog::RegMethod RegA("ContainedComp","addInsertCell<vector>");

@@ -228,9 +228,18 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BladeGenerator","generatorBlade");
 
+  double realYStep=yStep;
+  if (std::abs(yStep)<Geometry::zeroTol && !thick.empty())
+    {
+      realYStep= -std::accumulate(thick.begin(),thick.end(),0.0);
+      realYStep+=thick.front();  // front allowed for
+      realYStep-=(thick.size()-1.0)*gap;
+      realYStep/=2.0;
+    }
+  
   // Double Blade chopper
   Control.addVariable(keyName+"XStep",0.0);
-  Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"YStep",realYStep);
   Control.addVariable(keyName+"ZStep",0.0);
   Control.addVariable(keyName+"XYangle",0.0);
   Control.addVariable(keyName+"Zangle",0.0);

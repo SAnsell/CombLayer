@@ -54,6 +54,7 @@
 #include "ChopperGenerator.h"
 #include "PipeGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinGenerator.h"
 #include "JawGenerator.h"
 #include "RotaryHoleGenerator.h"
 #include "variableSetup.h"
@@ -76,6 +77,7 @@ ODINvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::PitGenerator PGen;
   setVariable::BladeGenerator BGen;
+  setVariable::TwinGenerator TGen;
   setVariable::JawGenerator JGen;
   setVariable::RotaryHoleGenerator RotGen;
   
@@ -92,58 +94,105 @@ ODINvariables(FuncDataBase& Control)
 
   // VACUUM PIPE in Gamma shield
   Control.addVariable("odinStopPoint",0);
-  
-  PipeGen.generatePipe(Control,"odinPipeB",2.0,46.0);
+
+  // Control.addVariable("odinGA0HeightStart",3.0);
+  // Control.addVariable("odinGA0HeightEnd",3.0);
+  // Control.addVariable("odinGA0WidthStart",7.0);
+  // Control.addVariable("odinGA0WidthEnd",10.0);
+
+  FGen.setGuideMat("Copper");
+  FGen.setThickness(0.8,0.3);
+  FGen.setYOffset(8.0);
+  FGen.generateTaper(Control,"odinFA",350.0, 10.0,7.0, 3.0,3.0);
+
+  PipeGen.generatePipe(Control,"odinPipeB",8.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"odinFB",44.0, 3.50,3.5, 4.0,4.0);
+  FGen.generateTaper(Control,"odinFB",44.0, 7.50,5.5, 4.0,4.0);
 
-  CGen.setMainRadius(26.0);
-  CGen.setFrame(60.0,60.0);
-  CGen.generateChopper(Control,"odinChopperA",15.0,21.0,15.55);
+  // Gamma shutter to first Chopper
+  PipeGen.generatePipe(Control,"odinPipeC",8.0,40.0);
+  FGen.generateTaper(Control,"odinFC",37.0, 5.50,3.5, 4.0,4.0);
 
-  // Quad Blade chopper
-  BGen.setThick({0.5,0.5,0.5,0.5});
-  BGen.setMaterials("Inconnel","B4C");
-  BGen.setGap(3.0);
-  BGen.addPhase({0,180},{30.0,30.0});
+  //CGen.setMainRadius(26.0);
+  //  CGen.setFrame(60.0,60.0);
+
+  CGen.setMainRadius(37.0);
+  CGen.setFrame(80.0,80.0);
+  CGen.generateChopper(Control,"odinChopperAA",10.0,8.0,6.0);
+  CGen.generateChopper(Control,"odinChopperAB",40.0,8.0,6.0);
+
+  // Single Blade chopper x4
+  BGen.setThick({0.2});
   BGen.addPhase({95,275},{30.0,30.0});
-  BGen.addPhase({95,275},{30.0,30.0});
-  BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"odinQBlade",0.0,10.0,22.50);
+  BGen.generateBlades(Control,"odinDiskAA",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"odinDiskAB",0.0,25.0,35.0);
 
-  Control.addVariable("odinGA0HeightStart",3.0);
-  Control.addVariable("odinGA0HeightEnd",3.0);
-  Control.addVariable("odinGA0WidthStart",7.0);
-  Control.addVariable("odinGA0WidthEnd",10.0);
-
-  PipeGen.generatePipe(Control,"odinPipeC",2.0,220.0);
-  FGen.generateTaper(Control,"odinFC",216.0,7.0,10.0,3.0,3.0);
+  // First Chopper pair to T0
+  PipeGen.generatePipe(Control,"odinPipeD",2.0,110.0);
+  FGen.generateTaper(Control,"odinFD",107.0, 5.50,3.5, 4.0,4.0);
 
   CGen.setMainRadius(33.0);
   CGen.setFrame(80.0,80.0);
-  CGen.generateChopper(Control,"odinChopperB",10.0,15.0,9.55);
+  CGen.generateChopper(Control,"odinChopperB",18.0,30.0,26.0);
 
   // T0 Chopper disk B
-  BGen.setThick({3.4});
-  BGen.setInnerThick({5.4});
+  BGen.setThick({5.0,5.0});
+  BGen.setGap(15.0);
+  BGen.setInnerThick({5.0});
   BGen.setMaterials("Inconnel","Tungsten");
   BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"odinT0Disk",2.0,20.0,30.0);
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"odinT0Disk",0.0,20.0,30.0);
 
+  CGen.setMainRadius(45.0);
+  CGen.setFrame(100.0,100.0);
+  CGen.generateChopper(Control,"odinChopperFOC1",10.0,10.0,6);
 
-  PipeGen.generatePipe(Control,"odinPipeD",2.0,400.0);
-  FGen.generateTaper(Control,"odinFD",396.0,7.0,10.0,3.0,3.0);
-
-  PipeGen.generatePipe(Control,"odinPipeE",2.0,400.0);
-  FGen.generateTaper(Control,"odinFE",396.0,7.0,10.0,3.0,3.0);
+  // FOC5 single disk chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"odinFOC1Blade",0.0,30.0,40.0);
   
-  PipeGen.generatePipe(Control,"odinPipeF",2.0,400.0);
-  FGen.generateTaper(Control,"odinFF",396.0,7.0,10.0,3.0,3.0);
+  PipeGen.generatePipe(Control,"odinPipeE",2.0,310.0);
+  FGen.generateTaper(Control,"odinFE",306.0,7.0,10.0,3.0,3.0);
+  
+  CGen.setMainRadius(55.0);
+  CGen.setFrame(125.0,125.0);
+  CGen.generateChopper(Control,"odinChopperFOC2",10.0,10.0,6);
 
-  PipeGen.generatePipe(Control,"odinPipeG",2.0,380.0);
-  FGen.generateTaper(Control,"odinFG",376.0,7.0,10.0,3.0,3.0);
+  // FOC2 single disk chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"odinFOC2Blade",0.0,40.0,50.0);
 
+  
+  PipeGen.generatePipe(Control,"odinPipeF",2.0,449.0);
+  FGen.generateTaper(Control,"odinFF",445.0,7.0,10.0,3.0,3.0);
+
+  // FOC3 single disk chopper
+  CGen.setMainRadius(65.0);
+  CGen.setFrame(165.0,165.0);
+  CGen.generateChopper(Control,"odinChopperFOC3",9.0,10.0,6);
+
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"odinFOC3Blade",0.0,50.0,60.0);
+
+  PipeGen.generatePipe(Control,"odinPipeG",2.0,634.0);
+  FGen.generateTaper(Control,"odinFG",630.0,7.0,10.0,3.0,3.0);
+
+  // FOC4 single disk chopper
+  CGen.setMainRadius(65.0);
+  CGen.setFrame(165.0,165.0);
+  CGen.generateChopper(Control,"odinChopperFOC4",9.0,10.0,6);
+
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"odinFOC4Blade",0.0,50.0,60.0);
+
+  PipeGen.generatePipe(Control,"odinPipeH",2.0,140.0);
+  FGen.generateTaper(Control,"odinFH",136.0,7.0,10.0,3.0,3.0);
 
     // BEAM INSERT:
   Control.addVariable("odinBInsertHeight",20.0);
@@ -159,42 +208,32 @@ ODINvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"odinFWall",346.0,4.5,4.5);
 
   // Pit on exit:
-  PGen.setFeLayer(6.0);
-  PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"odinOutPitA",0.0,40.0,220.0,210.0,40.0);
+  PGen.setFeLayer(30.0);
+  PGen.setConcLayer(60.0);
+  PGen.generatePit(Control,"odinOutPitA",0.0,150.0,480.0,210.0,40.0);
 
   Control.addVariable("odinOutACutShape","Circle");
   Control.addVariable("odinOutACutRadius",5.0);
+  Control.addVariable("odinOutBCutShape","Circle");
+  Control.addVariable("odinOutBCutRadius",5.0);
 
-  CGen.setMainRadius(100.0);
-  CGen.setFrame(215.0,215.0);
-  CGen.generateChopper(Control,"odinChopperOutA",18.0,20.0,14.55);
+  SGen.generateShield(Control,"odinShieldA",200.0,80.0,80.0,80.0,1,8);
 
   // FOC5 single disk chopper
+  CGen.setMainRadius(100.0);
+  CGen.setFrame(215.0,215.0);
+  CGen.generateChopper(Control,"odinChopOutFOC5",46.0,10.0,6.55);
+
   BGen.setThick({0.2});
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"odinFOC5Blade",0.0,70.0,90.0);
 
-  SGen.generateShield(Control,"odinShieldA",945.0,80.0,80.0,80.0,2,8);  
+  
   PipeGen.setPipe(16.0,1.0);
   PipeGen.setWindow(17.5,0.3);
   PipeGen.setFlange(20.0,1.0);
-
-  PipeGen.generatePipe(Control,"odinPipeOutA",2.0,945.0);
-  FGen.generateTaper(Control,"odinOutFA",941.0,4.0,4.0,20.0,16.0);
-
-  PGen.setFeLayer(6.0);
-  PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"odinOutPitB",975.0,40.0,220.0,210.0,40.0);
-  
-  CGen.setMainRadius(100.0);
-  CGen.setFrame(215.0,215.0);
-  CGen.generateChopper(Control,"odinChopperOutB",30.0,20.0,14.55);
-
-  // FOC6 single disk chopper
-  BGen.setThick({0.2});
-  BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"odinFOC6Blade",0.0,70.0,90.0);
+  PipeGen.generatePipe(Control,"odinPipeOutA",2.0,198.0);
+  FGen.generateTaper(Control,"odinOutFA",194.0,4.0,4.0,20.0,16.0);
 
   Control.addVariable("odinOutBCutFrontShape","Circle");
   Control.addVariable("odinOutBCutFrontRadius",5.0);
@@ -202,19 +241,13 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinOutBCutBackShape","Circle");
   Control.addVariable("odinOutBCutBackRadius",5.0);
 
-  SGen.generateShield(Control,"odinShieldB",2700.0,80.0,80.0,80.0,4,8);  
-  PipeGen.generatePipe(Control,"odinPipeOutB",2.0,855.0);
-  FGen.generateTaper(Control,"odinOutFB",847.0,4.0,4.0,20.0,16.0);
+  SGen.generateShield(Control,"odinShieldB",2000.0,80.0,80.0,80.0,4,8);  
+  PipeGen.generatePipe(Control,"odinPipeOutB",144.0,1990.0);
+  FGen.generateTaper(Control,"odinOutFB",1986.0,4.0,4.0,20.0,16.0);
 
-  PipeGen.generatePipe(Control,"odinPipeOutC",2.0,905.0);
-  FGen.generateTaper(Control,"odinOutFC",897.0,4.0,4.0,20.0,16.0);
 
-  PipeGen.generatePipe(Control,"odinPipeOutD",2.0,905.0);
-  FGen.generateTaper(Control,"odinOutFD",897.0,4.0,4.0,20.0,16.0);
 
-  PipeGen.generatePipe(Control,"odinPipeOutE",2.0,190.0);
-  FGen.generateTaper(Control,"odinOutFE",185.0,4.0,4.0,20.0,16.0);
-
+  
   // HUT:
   Control.addVariable("odinCaveYStep",2900.0);
   Control.addVariable("odinCaveVoidHeight",300.0);
