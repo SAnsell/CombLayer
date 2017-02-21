@@ -225,19 +225,21 @@ H2FlowGuide::getSQSurface(const double& offsetY,
   */
 {
   double dy = offsetY;
-  if (Origin[1]>0.0)
+  //  if (Origin.Y()>0.0) - does not work for BF1
+  if (keyName.find("Left") != std::string::npos)
     dy *= -1.0;
 
   double e = E;
-  if (Origin[1]<0.0)
+  //  if (Origin.Y()<0.0) - does not work for BF1
+  if (keyName.find("Right") != std::string::npos)
     e *= - 1.0;
 
   std::string surf = "sq " +
     std::to_string(A) + " 0 0 0 " +
     std::to_string(e) + " " + std::to_string(F) + " 0 " +
-    std::to_string(Origin[0]) + " " +
-    std::to_string(Origin[1]-dy) + " " +
-    std::to_string(Origin[2]);
+    std::to_string(Origin.X()) + " " +
+    std::to_string(Origin.Y()-dy) + " " +
+    std::to_string(Origin.Z());
 
   return surf;
 }

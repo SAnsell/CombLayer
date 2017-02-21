@@ -342,6 +342,12 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("LSupplyLeftAlNSegIn", 1);
       A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
       A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+
+      A.setVar("TopFlyFlowGuideAngle",23);
+      A.setVar("TopFlyFlowGuideSQOffsetY",3.0);
+      A.setVar("LowFlyFlowGuideAngle",23);
+      A.setVar("LowFlyFlowGuideSQOffsetY",3.0);
+
     } else if (modtype=="BF2")
     {
       bfType = 2;
