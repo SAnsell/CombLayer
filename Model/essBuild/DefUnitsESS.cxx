@@ -335,6 +335,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("TSupplyLeftAlNSegIn", 1);
       A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
       A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+      A.setVar("TSupplyLeftInvarPPt1", Geometry::Vec3D(0,9,0)); // should be inside twister
+      A.setVar("TSupplyLeftInvarPPt2", Geometry::Vec3D(0,9,30));
 
       A.setVar("LSupplyRightAlNSegIn", 1);
       A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
@@ -342,6 +344,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("LSupplyLeftAlNSegIn", 1);
       A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
       A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+      A.setVar("LSupplyLeftInvarPPt1", Geometry::Vec3D(0,9,0)); // should be inside twister
+      A.setVar("LSupplyLeftInvarPPt2", Geometry::Vec3D(0,9,30));
 
       A.setVar("TopFlyFlowGuideAngle",23);
       A.setVar("TopFlyFlowGuideSQOffsetY",3.0);
