@@ -81,6 +81,8 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
+#include "AttachSupport.h"
+
 #include "CellMap.h"
 #include "BeamDump.h"
 #include "Linac.h"
@@ -90,7 +92,7 @@ namespace essSystem
 
 Linac::Linac(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,10), attachSystem::CellMap(),
+  attachSystem::FixedOffset(Key,12), attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump"))
@@ -260,7 +262,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 
 	if (!wallObj)
 	  throw ColErr::InContainerError<int>(wallCell,
-					      "TSW wall cell " + cellName + " not found");
+					      "Cell '" + cellName + "' not found");
 
 	double baseFrac = 1.0/nLayers;
 	ModelSupport::surfDivide DA;
@@ -351,10 +353,12 @@ Linac::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -101 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  setCell("airBefore", cellIndex-1);
   Out=ModelSupport::getComposite(SMap,surfIndex," 102 -111 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 112 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  setCell("airAfter", cellIndex-1);
 
   // side walls and roof
   Out=ModelSupport::getComposite(SMap,surfIndex,
@@ -386,6 +390,10 @@ Linac::createObjects(Simulation& System)
   // divide TSW walls
   layerProcess(System, "tsw1", 6, 7, tswNLayers, wallMat);
   layerProcess(System, "tsw2", 8, 9, tswNLayers, wallMat);
+
+  // divide air before TSW
+  layerProcess(System, "airBefore", 10, 6, nAirLayers, airMat);
+  layerProcess(System, "airAfter", 9, 11, nAirLayers, airMat);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
@@ -435,6 +443,13 @@ Linac::createLinks()
   FixedComp::setConnect(9,Origin+Y*(tswY),Y);
   FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+112));
 
+  // walls
+  FixedComp::setConnect(10,Origin-Y*(length/2.0),Y);
+  FixedComp::setLinkSurf(10,SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(11,Origin+Y*(length/2.0),Y); // should be negative, but layerProcess needs positive
+  FixedComp::setLinkSurf(11,SMap.realSurf(surfIndex+2));
+
   return;
 }
 
@@ -461,8 +476,8 @@ Linac::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);
 
-  beamDump->addInsertCell(surfIndex+1); // main cell
   beamDump->createAll(System,*this,0);
+  attachSystem::addToInsertLineCtrl(System,*this,*beamDump);
 
   return;
 }
