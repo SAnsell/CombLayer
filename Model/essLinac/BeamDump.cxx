@@ -86,7 +86,7 @@ namespace essSystem
 {
 
 BeamDump::BeamDump(const std::string& Base,
-                   const std::string& Key)  :
+		   const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Base+Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Base+Key)),
@@ -104,6 +104,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   baseName(A.baseName),
+  engActive(A.engActive),
 
   steelMat(A.steelMat),
   concMat(A.concMat),
@@ -180,6 +181,7 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       baseName=A.baseName;
+      engActive=A.engActive;
 
       steelMat=A.steelMat;
       concMat=A.concMat;
@@ -266,6 +268,7 @@ BeamDump::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeamDump","populate");
 
   FixedOffset::populate(Control);
+  engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
@@ -328,11 +331,11 @@ BeamDump::populate(const FuncDataBase& Control)
 
 void
 BeamDump::createUnitVector(const attachSystem::FixedComp& FC,
-                           const long int sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
-    \param sideIndex :: link point
+    \param sideIndex :: link point for origin
   */
 {
   ELog::RegMethod RegA("BeamDump","createUnitVector");
@@ -483,6 +486,8 @@ BeamDump::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+148,Origin-
 			      Z*(waterPipeOffsetZ+waterPipeRad*2+waterPipeDist) +
 			      X*waterPipeOffsetX,pipeYdir,waterPipeRad);
+
+
 
 
   return;
@@ -646,8 +651,8 @@ BeamDump::createLinks()
 
 void
 BeamDump::createAll(Simulation& System,
-                    const attachSystem::FixedComp& FC,
-                    const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -661,7 +666,7 @@ BeamDump::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks();    
+  createLinks();
   insertObjects(System);
 
   return;

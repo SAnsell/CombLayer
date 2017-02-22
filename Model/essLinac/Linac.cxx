@@ -81,6 +81,7 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
+#include "CellMap.h"
 #include "BeamDump.h"
 #include "Linac.h"
 
@@ -89,7 +90,7 @@ namespace essSystem
 
 Linac::Linac(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,10), attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump"))
@@ -107,18 +108,22 @@ Linac::Linac(const Linac& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  length(A.length),width(A.width),height(A.height),
+  engActive(A.engActive),
+  length(A.length),widthLeft(A.widthLeft),height(A.height),
+  widthRight(A.widthRight),
   depth(A.depth),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   floorThick(A.floorThick),
-  floorWidth(A.floorWidth),
+  floorWidthLeft(A.floorWidthLeft),
+  floorWidthRight(A.floorWidthRight),
   airMat(A.airMat),wallMat(A.wallMat),
   beamDump(A.beamDump->clone()),
   tswLength(A.tswLength),
   tswWidth(A.tswWidth),
   tswGap(A.tswGap),
-  tswOffsetY(A.tswOffsetY)
+  tswOffsetY(A.tswOffsetY),
+  tswNLayers(A.tswNLayers)
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -138,14 +143,17 @@ Linac::operator=(const Linac& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
+      engActive=A.engActive;
       length=A.length;
-      width=A.width;
+      widthLeft=A.widthLeft;
+      widthRight=A.widthRight;
       height=A.height;
       depth=A.depth;
       wallThick=A.wallThick;
       roofThick=A.roofThick;
       floorThick=A.floorThick;
-      floorWidth=A.floorWidth;
+      floorWidthLeft=A.floorWidthLeft;
+      floorWidthRight=A.floorWidthRight;
       airMat=A.airMat;
       wallMat=A.wallMat;
       *beamDump=*A.beamDump;
@@ -153,6 +161,7 @@ Linac::operator=(const Linac& A)
       tswWidth=A.tswWidth;
       tswGap=A.tswGap;
       tswOffsetY=A.tswOffsetY;
+      tswNLayers=A.tswNLayers;
     }
   return *this;
 }
@@ -173,15 +182,18 @@ Linac::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Linac","populate");
 
   FixedOffset::populate(Control);
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
+  widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   roofThick=Control.EvalVar<double>(keyName+"RoofThick");
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
-  floorWidth=Control.EvalVar<double>(keyName+"FloorWidth");
+  floorWidthLeft=Control.EvalVar<double>(keyName+"FloorWidthLeft");
+  floorWidthRight=Control.EvalVar<double>(keyName+"FloorWidthRight");
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -190,13 +202,14 @@ Linac::populate(const FuncDataBase& Control)
   tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
   tswGap=Control.EvalVar<double>(keyName+"TSWGap");
   tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
+  tswNLayers=Control.EvalDefVar<int>(keyName+"TSWNLayers", 1);
 
   return;
 }
 
 void
 Linac::createUnitVector(const attachSystem::FixedComp& FC,
-                        const long int sideIndex)
+			const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
@@ -212,6 +225,70 @@ Linac::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
+Linac::layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: TSW wall cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+  */
+  {
+    ELog::RegMethod RegA("Linac","layerProcess");
+    if (tswNLayers>1)
+      {
+	const int pS = getLinkSurf(lpS);
+	const int sS = getLinkSurf(lsS);
+
+	const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+	MonteCarlo::Object* wallObj(0);
+	int wallCell(0);
+
+	if (CM)
+	  {
+	    wallCell=CM->getCell(cellName);
+	    wallObj=System.findQhull(wallCell);
+	  }
+
+	if (!wallObj)
+	  throw ColErr::InContainerError<int>(wallCell,
+					      "TSW wall cell " + cellName + " not found");
+
+	double baseFrac = 1.0/tswNLayers;
+	ModelSupport::surfDivide DA;
+	for(size_t i=1;i<tswNLayers;i++)
+	  {
+	    DA.addFrac(baseFrac);
+	    DA.addMaterial(wallMat);
+	    baseFrac += 1.0/tswNLayers;
+	  }
+	DA.addMaterial(wallMat);
+
+	DA.setCellN(wallCell);
+	DA.setOutNum(cellIndex, surfIndex+10000);
+
+	ModelSupport::mergeTemplate<Geometry::Plane,
+				    Geometry::Plane> surroundRule;
+
+	surroundRule.setSurfPair(SMap.realSurf(pS),
+				 SMap.realSurf(sS));
+
+	std::string OutA = getLinkString(lpS);
+	std::string OutB = getLinkComplement(lsS);
+
+	surroundRule.setInnerRule(OutA);
+	surroundRule.setOuterRule(OutB);
+
+	DA.addRule(&surroundRule);
+	DA.activeDivideTemplate(System);
+
+	cellIndex=DA.getCellNum();
+      }
+  }
+
+  
+void
 Linac::createSurfaces()
   /*!
     Create All the surfaces
@@ -222,8 +299,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
@@ -231,11 +308,11 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(length/2.0+wallThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length/2.0+wallThick),Y);
 
-  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(width/2.0+wallThick),X);
-  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(width/2.0+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
+  ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
   // floor
-  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,surfIndex+23,Origin-X*(floorWidthRight),X);
+  ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(floorWidthLeft),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
@@ -243,8 +320,8 @@ Linac::createSurfaces()
   // Temporary shielding walls
   double tswY(tswOffsetY);
   ModelSupport::buildPlane(SMap,surfIndex+101,Origin+Y*(tswY),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(width/2.0-tswLength),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(width/2.0-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthRight-tswLength),X);
+  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthLeft-tswLength),X);
   tswY += tswWidth;
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(tswY),Y);
   tswY += tswGap;
@@ -288,6 +365,7 @@ Linac::createObjects(Simulation& System)
   // 1st wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 3 -103 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  setCell("tsw1", cellIndex-1);
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 103 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
@@ -296,7 +374,12 @@ Linac::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 104 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  setCell("tsw2", cellIndex-1);
 
+  // divide TSW walls
+  layerProcess(System, "tsw1", 6, 7);
+  layerProcess(System, "tsw2", 8, 9);
+  
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
 
@@ -312,8 +395,38 @@ Linac::createLinks()
 {
   ELog::RegMethod RegA("Linac","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  // outer links
+  FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+11));
+
+  FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
+
+  FixedComp::setConnect(2,Origin-X*(widthRight+wallThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+13));
+
+  FixedComp::setConnect(3,Origin+X*(widthLeft+wallThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+14));
+
+  FixedComp::setConnect(4,Origin-Z*(depth+floorThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+15));
+
+  FixedComp::setConnect(5,Origin+Z*(height+roofThick),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
+
+  // TSW
+  double tswY(tswOffsetY);
+  FixedComp::setConnect(6,Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
+  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+101));
+  tswY += tswWidth;
+  FixedComp::setConnect(7,Origin+Y*(tswY),Y);
+  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+102));
+  tswY += tswGap;
+  FixedComp::setConnect(8,Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
+  FixedComp::setLinkSurf(8,SMap.realSurf(surfIndex+111));
+  tswY += tswWidth;
+  FixedComp::setConnect(9,Origin+Y*(tswY),Y);
+  FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+112));
 
   return;
 }
@@ -323,8 +436,8 @@ Linac::createLinks()
 
 void
 Linac::createAll(Simulation& System,
-                 const attachSystem::FixedComp& FC,
-                 const long int sideIndex)
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item

@@ -27,56 +27,60 @@ class Simulation;
 namespace essSystem
 {
 
-class BeamDump;
+  class BeamDump;
 
-/*!
-  \class Linac
-  \version 1.0
-  \author Konstantin Batkov
-  \date January 2017
-  \brief Linac building and container for the linac-related components
-*/
-
-
+  /*!
+    \class Linac
+    \version 1.0
+    \author Konstantin Batkov
+    \date January 2017
+    \brief Linac building and container for the linac-related components
+  */
 
 class Linac : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
-  const int surfIndex;          ///< Index of surface offset
+  const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
+
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
-  double width;                 ///< Inner width
+  double widthLeft;             ///< Inner width towards x+
+  double widthRight;            ///< inner width towards x-
   double height;                ///< Inner height
   double depth;                 ///< Inner depth
 
   double wallThick;             ///< Thickness of side walls
-  double roofThick;             ///< Roof thickness
-  double floorThick;            ///< Thickness of floor
-  double floorWidth;            ///< Width of floor
-  
-  double tswLength;             ///< Temporary shielding wall length
-  double tswWidth;              ///< Temporary shielding wall width
-  double tswGap;                ///< Distance between Temporary shielding walls
-  double tswOffsetY;            ///< TSW location on the Y-axis
+  double roofThick; ///< Roof thickness
+  double floorThick; ///< Thickness of floor
+  double floorWidthLeft; ///< floor width towards x+
+  double floorWidthRight; ///< floor width towards x-
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
 
-  std::shared_ptr<BeamDump> beamDump;    ///< linac 4 commissionning dump
-    
+  double tswLength; ///< Temporary shielding wall length
+  double tswWidth; ///< Temporary shielding wall width
+  double tswGap; ///< Distance between Temporary shielding walls
+  double tswOffsetY; ///< TSW location on the Y-axis
+  int tswNLayers; ///< number of layers in a TSW wall
+
+  std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS);
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces();
-  void createLinks();
   void createObjects(Simulation&);
-
+  
+  void createLinks();
 
  public:
 
