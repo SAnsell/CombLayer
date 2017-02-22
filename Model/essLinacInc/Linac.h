@@ -72,7 +72,7 @@ class Linac : public attachSystem::ContainedComp,
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
   void layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS);
+		    const size_t& lpS, const size_t& lsS, const int&, const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

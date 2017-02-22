@@ -230,17 +230,20 @@ Linac::createUnitVector(const attachSystem::FixedComp& FC,
 
 void
 Linac::layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS)
+		    const size_t& lpS, const size_t& lsS,
+		    const int& nLayers, const int& mat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
     \param cellName :: TSW wall cell name
     \param lpS :: link pont of primary surface
     \param lsS :: link point of secondary surface
+    \param nLayers :: number of layers to divide to
+    \param mat :: material
   */
   {
     ELog::RegMethod RegA("Linac","layerProcess");
-    if (tswNLayers>1)
+    if (nLayers>1)
       {
 	const int pS = getLinkSurf(lpS);
 	const int sS = getLinkSurf(lsS);
@@ -259,15 +262,15 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 	  throw ColErr::InContainerError<int>(wallCell,
 					      "TSW wall cell " + cellName + " not found");
 
-	double baseFrac = 1.0/tswNLayers;
+	double baseFrac = 1.0/nLayers;
 	ModelSupport::surfDivide DA;
-	for(int i=1;i<tswNLayers;i++)
+	for(int i=1;i<nLayers;i++)
 	  {
 	    DA.addFrac(baseFrac);
-	    DA.addMaterial(wallMat);
-	    baseFrac += 1.0/tswNLayers;
+	    DA.addMaterial(mat);
+	    baseFrac += 1.0/nLayers;
 	  }
-	DA.addMaterial(wallMat);
+	DA.addMaterial(mat);
 
 	DA.setCellN(wallCell);
 	DA.setOutNum(cellIndex, surfIndex+10000);
@@ -381,8 +384,8 @@ Linac::createObjects(Simulation& System)
   setCell("tsw2", cellIndex-1);
 
   // divide TSW walls
-  layerProcess(System, "tsw1", 6, 7);
-  layerProcess(System, "tsw2", 8, 9);
+  layerProcess(System, "tsw1", 6, 7, tswNLayers, wallMat);
+  layerProcess(System, "tsw2", 8, 9, tswNLayers, wallMat);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
