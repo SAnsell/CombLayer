@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/Hut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 
 #include "Hut.h"
 
@@ -82,6 +83,7 @@ namespace essSystem
 Hut::Hut(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutIndex+1)
   /*!
@@ -340,7 +342,10 @@ Hut::createSurfaces()
   ModelSupport::buildPlane(SMap,hutIndex+1001,
 			   Origin+Y*(wallYStep-voidLength/2.0),Y);  
   ModelSupport::buildPlane(SMap,hutIndex+1002,
-			   Origin+Y*(wallYStep+wallThick-voidLength/2.0),Y);  
+			   Origin+Y*(wallYStep+wallThick-voidLength/2.0),Y);
+  SurfMap::addSurf("InnerWallFront",hutIndex+1001);
+  SurfMap::addSurf("InnerWallBack",hutIndex+1002);
+  
   ModelSupport::buildPlane(SMap,hutIndex+1003,Origin-X*(wallXGap/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+1004,Origin+X*(wallXGap/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+1005,Origin-Z*(wallZGap/2.0),Z);

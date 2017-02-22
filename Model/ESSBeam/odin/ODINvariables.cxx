@@ -227,7 +227,6 @@ ODINvariables(FuncDataBase& Control)
   BGen.setThick({0.2});
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"odinFOC5Blade",0.0,70.0,90.0);
-
   
   PipeGen.setPipe(16.0,1.0);
   PipeGen.setWindow(17.5,0.3);
@@ -242,14 +241,11 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinOutBCutBackRadius",5.0);
 
   SGen.generateShield(Control,"odinShieldB",2000.0,80.0,80.0,80.0,4,8);  
-  PipeGen.generatePipe(Control,"odinPipeOutB",144.0,1990.0);
-  FGen.generateTaper(Control,"odinOutFB",1986.0,4.0,4.0,20.0,16.0);
+  PipeGen.generatePipe(Control,"odinPipeOutB",164.0,1800.0);
+  FGen.generateTaper(Control,"odinOutFB",1796.0,4.0,4.0,20.0,16.0);
 
-
-
-  
   // HUT:
-  Control.addVariable("odinCaveYStep",2900.0);
+  Control.addVariable("odinCaveYStep",0.0);
   Control.addVariable("odinCaveVoidHeight",300.0);
   Control.addVariable("odinCaveVoidDepth",183.0);
   Control.addVariable("odinCaveVoidWidth",600.0);
@@ -286,6 +282,9 @@ ODINvariables(FuncDataBase& Control)
   // Beam port through front of cave
   Control.addVariable("odinCaveCutShape","Circle");
   Control.addVariable("odinCaveCutRadius",5.0);
+  // Beam port through midlayer of cave
+  Control.addVariable("odinCaveMidCutShape","Circle");
+  Control.addVariable("odinCaveMidCutRadius",8.0);
 
   
   PipeGen.generatePipe(Control,"odinPipeCaveA",8.0,46.0);

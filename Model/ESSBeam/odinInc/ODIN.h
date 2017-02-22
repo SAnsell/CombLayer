@@ -185,12 +185,13 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutE;
   /// Beamline from bunker to hutch
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutE;
-
   
   /// Main cave
   std::shared_ptr<essSystem::Hut> Cave;
   /// Enterance hole
   std::shared_ptr<constructSystem::HoleShape> CaveCut;
+  /// Enterance hole
+  std::shared_ptr<constructSystem::HoleShape> CaveMidCut;
 
   /// Beamguide in cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCaveA;
@@ -210,7 +211,9 @@ class ODIN : public attachSystem::CopiedComp
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
-
+  void buildCave(Simulation&,const attachSystem::FixedComp&,
+		 const long int,const int);
+  
  public:
   
   ODIN(const std::string&);
