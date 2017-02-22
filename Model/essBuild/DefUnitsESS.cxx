@@ -92,11 +92,8 @@ setDefUnits(FuncDataBase& Control,
 		  <<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
-	  ELog::EM<<"  linac : Build only Linac"<<ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
-      else if (Key=="linac")
-	setESSLinac(A);
       else 
 	{
 	  ELog::EM<<"Unknown Default Key ::"<<Key<<ELog::endDiag;
@@ -347,21 +344,4 @@ setESS(defaultConfig& A)
   return;
 }
 
-void
-setESSLinac(defaultConfig& A)
-  /*!
-    Default configuration for ESS Linac
-    \param A :: Paramter for default config
-   */
-{
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESSLinac");
-
-  A.setVar("LinacActive", 1);
-  A.setOption("matDB", "neutronics");
-  A.setOption("sdefType", "essLinac");
-  A.setVar("sdefEnergy", 75);
-  A.setOption("mcnp", "10");
-
-}
-  
 } // NAMESPACE mainSystem

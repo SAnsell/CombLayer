@@ -427,6 +427,18 @@ Cone::onSurface(const Geometry::Vec3D& R) const
 {
   return (side(R)==0) ? 1 : 0;
 }
+
+
+void
+Cone::writePOVRay(std::ostream&) const
+  /*!
+    Write out the cone class in a POV-Ray file format.
+    \param  :: Output Stream (required for multiple std::endl)
+  */
+{
+  ELog::EM<<"Cone::writePovRay: not implemented yet"<< ELog::endErr;
+}
+
   
 void
 Cone::write(std::ostream& OX) const
@@ -474,14 +486,4 @@ Cone::write(std::ostream& OX) const
   return;
 }
 
-void
-Cone::writePOVRay(std::ostream& OX) const
-  /*!
-    Write out the cone class in a POV-Ray file
-    format.
-    \param OX :: Output Stream (required for multiple std::endl)
-  */
-{
-  std::cerr << "Cone::writePovRay: not implemented yet" << std::endl;
-}
 }  // NAMESPACE Geometry

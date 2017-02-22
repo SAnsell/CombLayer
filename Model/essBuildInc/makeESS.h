@@ -77,7 +77,6 @@ namespace essSystem
   class BunkerFeed;
   class WedgeFlightLine;
   class Chicane;
-  class Linac;
 
       
   /*!
@@ -164,7 +163,6 @@ class makeESS
   void buildTopButterfly(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
 
-  void makeLinac(Simulation&);
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const mainSystem::inputParam&);
   

@@ -543,8 +543,6 @@ EssVariables(FuncDataBase& Control)
   EssIradVariables(Control);
   EssFlightLineVariables(Control);
   
-  EssLinacVariables(Control);
-
   F5Variables(Control);
 
   Control.addVariable("sdefEnergy",2000.0);

@@ -99,7 +99,6 @@
 #include "IradCylinder.h"
 #include "BulkModule.h"
 #include "TwisterModule.h"
-#include "Linac.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
 #include "DiskPreMod.h"
@@ -196,27 +195,6 @@ makeESS::~makeESS()
   */
 {}
 
-
-void
-makeESS::makeLinac(Simulation& System)
-  /*!
-    Build LINAC
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","makeLinac");
-  const int voidCell(74123);
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  LinacTunnel = std::shared_ptr<Linac>(new Linac("Linac"));
-  OR.addObject(LinacTunnel);
-
-  LinacTunnel->addInsertCell(voidCell);
-  LinacTunnel->createAll(System,World::masterOrigin(),0);
-  return;
-}
 
 void
 makeESS::makeTarget(Simulation& System,
@@ -888,11 +866,6 @@ makeESS::build(Simulation& System,
     }
   
   buildFocusPoints(System);
-  if (Control.EvalVar<int>("LinacActive"))
-    {
-      makeLinac(System);
-      return;
-    }
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);
 

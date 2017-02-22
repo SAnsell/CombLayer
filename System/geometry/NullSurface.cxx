@@ -202,7 +202,7 @@ NullSurface::writeFLUKA(std::ostream&) const
   ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
   return;
 }
-  
+
 void 
 NullSurface::writePOVRay(std::ostream&) const
   /*! 
