@@ -117,10 +117,7 @@ makeLinac::build(Simulation& System,
   LinacTunnel->createAll(System,World::masterOrigin(),0);
 
   return;
-
-  return;
 }
 
 
 }   // NAMESPACE essSystem
-
