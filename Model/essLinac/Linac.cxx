@@ -109,21 +109,23 @@ Linac::Linac(const Linac& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),widthLeft(A.widthLeft),height(A.height),
+  length(A.length),widthLeft(A.widthLeft),
   widthRight(A.widthRight),
+  height(A.height),
   depth(A.depth),
   wallThick(A.wallThick),
   roofThick(A.roofThick),
   floorThick(A.floorThick),
   floorWidthLeft(A.floorWidthLeft),
   floorWidthRight(A.floorWidthRight),
+  nAirLayers(A.nAirLayers),
   airMat(A.airMat),wallMat(A.wallMat),
-  beamDump(A.beamDump->clone()),
   tswLength(A.tswLength),
   tswWidth(A.tswWidth),
   tswGap(A.tswGap),
   tswOffsetY(A.tswOffsetY),
-  tswNLayers(A.tswNLayers)
+  tswNLayers(A.tswNLayers),
+  beamDump(A.beamDump->clone())
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -154,14 +156,15 @@ Linac::operator=(const Linac& A)
       floorThick=A.floorThick;
       floorWidthLeft=A.floorWidthLeft;
       floorWidthRight=A.floorWidthRight;
+      nAirLayers=A.nAirLayers;
       airMat=A.airMat;
       wallMat=A.wallMat;
-      *beamDump=*A.beamDump;
       tswLength=A.tswLength;
       tswWidth=A.tswWidth;
       tswGap=A.tswGap;
       tswOffsetY=A.tswOffsetY;
       tswNLayers=A.tswNLayers;
+      *beamDump=*A.beamDump;
     }
   return *this;
 }
@@ -194,6 +197,7 @@ Linac::populate(const FuncDataBase& Control)
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   floorWidthLeft=Control.EvalVar<double>(keyName+"FloorWidthLeft");
   floorWidthRight=Control.EvalVar<double>(keyName+"FloorWidthRight");
+  nAirLayers=Control.EvalDefVar<int>(keyName+"NAirLayers", 1);
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -257,7 +261,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 
 	double baseFrac = 1.0/tswNLayers;
 	ModelSupport::surfDivide DA;
-	for(size_t i=1;i<tswNLayers;i++)
+	for(int i=1;i<tswNLayers;i++)
 	  {
 	    DA.addFrac(baseFrac);
 	    DA.addMaterial(wallMat);
@@ -287,7 +291,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
       }
   }
 
-  
+
 void
 Linac::createSurfaces()
   /*!
@@ -379,7 +383,7 @@ Linac::createObjects(Simulation& System)
   // divide TSW walls
   layerProcess(System, "tsw1", 6, 7);
   layerProcess(System, "tsw2", 8, 9);
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
 

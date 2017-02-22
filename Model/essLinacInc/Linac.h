@@ -59,6 +59,7 @@ class Linac : public attachSystem::ContainedComp,
   double floorThick; ///< Thickness of floor
   double floorWidthLeft; ///< floor width towards x+
   double floorWidthRight; ///< floor width towards x-
+  int nAirLayers; ///< number of layers in the air of the tunnel (along the proton beam)
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
@@ -79,7 +80,7 @@ class Linac : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createObjects(Simulation&);
-  
+
   void createLinks();
 
  public:
