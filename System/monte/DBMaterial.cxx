@@ -576,8 +576,8 @@ DBMaterial::initMaterial()
   // Material #73 : Copper
   // Density : 8.91g/cc rho=0.084438
   
-  MObj.setMaterial(73,"Copper","29063.70c 0.02604927 "
-		   "29065.70c 0.058389212","",MLib);
+  MObj.setMaterial(73,"Copper","29063.70c 0.058389212 "
+		   "29065.70c 0.02604927","",MLib);
   setMaterial(MObj);
 
    //Material #74: ChipIR Guide Steel (K Jones spec)
@@ -1005,7 +1005,7 @@ DBMaterial::initMaterial()
 		   "be.60t lwtr.01t", MLib);
   setMaterial(MObj);
 
-  // Material #120: helium liquid
+  // Material #120: 
   // Low density tungsten
   MObj.setMaterial(120, "Tungsten_15.1g",
 		   "74182.70c  0.265000000 "
@@ -1016,6 +1016,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-15.1);
   setMaterial(MObj);
 
+  // Material #120: 
   // Homogeneous mixture of Iron and 10% volume H2O
   MObj.setMaterial(121, "Iron_10H2O",
                    " 1001.70c 0.077534884 "
@@ -1177,6 +1178,32 @@ DBMaterial::initMaterial()
   // Material #134: liquid N2
   // Total density 0.807g/cc 
   MObj.setMaterial(134,"LiqN2","7014.70c 0.034718","",MLib);
+  setMaterial(MObj);
+
+  // Skanska concrete
+  // Composition received from Skanska
+  // Source: MATER.INP from MARS. Material "ESSConc"
+  MObj.setMaterial(135,"SkanskaConcrete",
+		   " 1001.70c -3.35720233139058521e-03 "
+		   " 8016.70c -3.82342797668609513e-01 "
+		   " 12024.70c -0.0019 "
+		   " 13027.70c -0.0192 "
+		   " 14028.70c -0.1251 "
+		   " 16032.70c -0.0081 "
+		   " 19039.70c -0.0158 "
+		   " 20040.70c -0.3927 "
+		   " 22048.70c -0.0038 "
+		   " 25055.70c -0.0021 "
+		   " 26056.70c -0.0444 "
+		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+  MObj.setDensity(-2.35);
+  setMaterial(MObj);
+
+  // Silver
+  // Density 10.49g/cc atomic rho=0.058573
+  MObj.setMaterial(136,"Silver","47107.70c 0.043778 "
+                   "47109.70c 0.040672 ","",MLib); 
+  MObj.setDensity(-10.49); // wikipedia
   setMaterial(MObj);
 
   return;

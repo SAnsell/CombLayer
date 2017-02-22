@@ -3,7 +3,7 @@
  
  * File:   essBuild/CSPEC.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,14 +102,15 @@ CSPEC::CSPEC(const std::string& keyName) :
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
-  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  BendB(new beamlineSystem::GuideLine(newName+"BB"))
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  BendC(new beamlineSystem::GuideLine(newName+"BC"))
 
  /*!
     Constructor
+    \param keyName :: keyname of beamline 
  */
 {
   ELog::RegMethod RegA("CSPEC","CSPEC");
@@ -122,11 +123,12 @@ CSPEC::CSPEC(const std::string& keyName) :
   OR.addObject(cspecAxis);
 
   OR.addObject(FocusA);
-  OR.addObject(VPipeA);
-  OR.addObject(FocusB);
 
   OR.addObject(VPipeB);
-  OR.addObject(BendB);
+  OR.addObject(FocusB);
+
+  OR.addObject(VPipeC);
+  OR.addObject(BendC);
 
 }
   
@@ -202,17 +204,17 @@ CSPEC::build(Simulation& System,
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
   
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,GItem.getKey("Beam"),2);
-
-  FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
-
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,*VPipeA,2);
+  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
 
-  BendB->addInsertCell(VPipeA->getCells("Void"));
-  BendB->createAll(System,*VPipeA,2,*VPipeA,2);
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
+  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
+
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
+
+  BendC->addInsertCell(VPipeC->getCells("Void"));
+  BendC->createAll(System,*VPipeC,2,*VPipeC,2);
 
 
   return;

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   Main/ess.cxx
+ * File:   Main/linac.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +76,8 @@
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
 #include "World.h"
-#include "makeESS.h"
+
+#include "makeLinac.h"
 
 
 MTRand RNG(12345UL);
@@ -107,22 +108,22 @@ main(int argc,char* argv[])
       // PROCESS INPUT:
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
-      createESSInputs(IParam);
+      createLinacInputs(IParam);
       
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
       
       // The big variable setting
-      setVariable::EssVariables(SimPtr->getDataBase());
+      setVariable::EssLinacVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
       SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
 
-      essSystem::makeESS ESSObj;
+      essSystem::makeLinac linacObj;
       World::createOuterObjects(*SimPtr);
-      ESSObj.build(*SimPtr,IParam);
+      linacObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 

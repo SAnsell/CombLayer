@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKI.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -187,10 +187,10 @@ LOKI::registerObjects()
   OR.addObject(ShutterA);
   OR.addObject(VPipeB);
   OR.addObject(BendB);
+  
   OR.addObject(VPipeBLink);
   OR.addObject(BendBLink);
 
-  
   OR.addObject(ChopperA);
   OR.addObject(DDiskA);
 
@@ -198,8 +198,27 @@ LOKI::registerObjects()
   OR.addObject(FocusC);
   
   OR.addObject(BInsert);
+  OR.addObject(FocusWall);
 
+  OR.addObject(OutPitA);
+  OR.addObject(PitACut);
+  OR.addObject(ChopperOutA);
+  OR.addObject(DDiskOutA);
+
+  OR.addObject(VPipeOutA);
+  OR.addObject(FocusOutA);
+  OR.addObject(AppA);
+  OR.addObject(CollA);
+
+  OR.addObject(ShieldB);
+  OR.addObject(VPipeOutB);
+  OR.addObject(FocusOutB);
+  OR.addObject(CollB);	
+  OR.addObject(AppB);
+       
   OR.addObject(Cave);
+  OR.addObject(VPipeOutC);
+  OR.addObject(FocusOutC);
   OR.addObject(VTank);
 
   return;
@@ -363,12 +382,12 @@ LOKI::build(Simulation& System,
   attachSystem::addToInsertLineCtrl(System,*ShieldA,*AppA,*AppA);
   attachSystem::addToInsertForced(System,*AppA,*VPipeOutA);
 
-  //Collimator block in first shieldind
+  //Collimator block in first shielding
   CollA->setInnerExclude(VPipeOutA->getSignedFullRule(9));
   CollA->setOuter(ShieldA->getXSectionIn());
   CollA->addInsertCell(ShieldA->getCell("Void"));
   CollA->addInsertCell(VPipeOutA->getCell("OutVoid"));
-  CollA->createAll(System,*VPipeOutA,-1);
+  //  CollA->createAll(System,*VPipeOutA,-1);
 
 
 //Beamline shielding
@@ -385,8 +404,9 @@ LOKI::build(Simulation& System,
   CollB->setInnerExclude(VPipeOutB->getSignedFullRule(9));
   CollB->setOuter(ShieldB->getXSectionIn());
   CollB->addInsertCell(ShieldB->getCell("Void"));
-  CollB->addInsertCell(VPipeOutA->getCell("OutVoid"));
+  CollB->addInsertCell(VPipeOutB->getCell("OutVoid"));
   CollB->createAll(System,*VPipeOutB,-1);
+  
   // Aperture after second collimator drum
   AppB->addInsertCell(ShieldB->getCell("Void"));
   AppB->createAll(System,FocusOutB->getKey("Guide0"),2);
@@ -406,19 +426,6 @@ LOKI::build(Simulation& System,
 
   VTank->addInsertCell(Cave->getCell("Void"));
   VTank->createAll(System,FocusOutC->getKey("Guide0"),2);
-
-
-
-
-
-
-
-
-
-
-  
-
-
   
   return;
   

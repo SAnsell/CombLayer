@@ -80,8 +80,8 @@ MIRACLESvariables(FuncDataBase& Control)
   setVariable::TwinGenerator TGen;
 
   PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-2.0,1.0);
+  PipeGen.setWindow(-0.5,0.5);
+  PipeGen.setFlange(-1.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
@@ -151,7 +151,6 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // Pipe after second chopper unit [to 11.5m]
   PipeGen.setRectPipe(16.0,16.0,0.5);
-
   PipeGen.generatePipe(Control,"miraclesPipeE",2.0,359.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFE",355.0, 5.0,4.857,  9.5,9.85714);
@@ -165,6 +164,60 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.setThick({0.2});
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"miraclesEBlade",0.0,22.5,35.0);
+
+
+  Control.addVariable("miraclesShutterAYStep",3.0);
+  Control.addVariable("miraclesShutterALiftZStep",-10.0);
+  Control.addVariable("miraclesShutterALength",30.0);
+  Control.addVariable("miraclesShutterAWidth",10.1);
+  Control.addVariable("miraclesShutterAHeight",11.1);
+  Control.addVariable("miraclesShutterANLayers",1);
+  Control.addVariable("miraclesShutterAMat0","Aluminium");
+  
+  Control.addVariable("miraclesShutterASurroundThick",3.0);
+  Control.addVariable("miraclesShutterASurroundMat","Stainless304");
+  Control.addVariable("miraclesShutterATopVoid",8.1);
+
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeF",2.0,520.0);
+  FGen.generateTaper(Control,"miraclesFF",516.0, 5.0,4.857,  9.5,9.85714);
+
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeG",2.0,730.0);
+  FGen.generateBender(Control,"miraclesBG",724.0, 12.0,12.0,12.0,12.0,
+		    500000.0,0.0 );
+
+  
+  // BEAM INSERT:
+  Control.addVariable("miraclesBInsertHeight",20.0);
+  Control.addVariable("miraclesBInsertWidth",28.0);
+  Control.addVariable("miraclesBInsertTopWall",1.0);
+  Control.addVariable("miraclesBInsertLowWall",1.0);
+  Control.addVariable("miraclesBInsertLeftWall",1.0);
+  Control.addVariable("miraclesBInsertRightWall",1.0);
+  Control.addVariable("miraclesBInsertWallMat","Stainless304");       
+  
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"miraclesPipeWall",4.0,348.0);
+
+  FGen.generateBender(Control,"miraclesFWall",344.0, 12.0,12.0,12.0,12.0,
+		      500000.0,0.0);
+
+  // OUTER shielding
+  SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
+
+  PipeGen.setPipe(10.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeOutA",2.0,1497.0);  
+  FGen.generateBender(Control,"miraclesBOutA",1496.0,
+		      12.0,12.0,12.0,12.0,
+		      500000.0,0.0);
+
+  PipeGen.generatePipe(Control,"miraclesPipeOutB",1.0,1498.0);  
+  FGen.generateBender(Control,"miraclesBOutB",1496.0,
+		      12.0,12.0,12.0,12.0,
+		      500000.0,0.0);
+
+  
 
   return;
 }

@@ -168,7 +168,7 @@ makeSingleLine::build(Simulation& System,
       MAGIC magicBL("magic");
       magicBL.buildIsolated(System,voidCell);      
     }
-  if (beamName=="MIRACLES")
+  else if (beamName=="MIRACLES")
     {
       MIRACLES miraclesBL("miracles");
       miraclesBL.buildIsolated(System,voidCell);      

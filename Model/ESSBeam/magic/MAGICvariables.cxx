@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/magic/MAGICvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,13 +176,13 @@ MAGICvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"magicOutFE",992.0, 7.20,7.60, 7.18,7.58 );
   
   // 78 to 83m
-  SGen.generateShield(Control,"magicShieldF",560.0,40.0,40.0,60.0,2,8);
-  PipeGen.generatePipe(Control,"magicPipeOutF",6.0,556.0);
-  FGen.generateTaper(Control,"magicOutFF",552.0, 7.20,7.60, 7.18,7.58 );
+  SGen.generateShield(Control,"magicShieldF",590.0,40.0,40.0,60.0,2,8);
+  PipeGen.generatePipe(Control,"magicPipeOutF",6.0,586.0);
+  FGen.generateTaper(Control,"magicOutFF",582.0, 7.20,7.60, 7.18,7.58 );
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"magicPolarizerPit",0.0,300.0,150.0,120.0,30.0);
+  PGen.generatePit(Control,"magicPolarizerPit",0.0,340.0,150.0,120.0,30.0);
 
   // 78 to 83m
   SGen.generateShield(Control,"magicShieldG",1000.0,40.0,40.0,60.0,4,8);
@@ -190,11 +190,14 @@ MAGICvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"magicPipeOutG",5.0,994.0);
   FGen.generateTaper(Control,"magicOutFG",990.0, 7.20,7.60, 7.18,7.58 );
 
+
+  FGen.setYOffset(-160.0);
   FGen.generateRectangle(Control,"magicMCGuideA",150.0, 7.20,7.60);
   Control.addVariable("magicMCGuideAZAngle",-0.25);
 
+  FGen.setYOffset(10.0);
   FGen.generateRectangle(Control,"magicMCGuideB",150.0, 7.20,7.60);
-  Control.addVariable("magicMCGuideBZAngle",-0.25);
+  Control.addVariable("magicMCGuideBZAngle",-0.125);
    
   Control.addVariable("magicMCANBlades",6);
   Control.addVariable("magicMCABladeThick",0.2);

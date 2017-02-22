@@ -3,7 +3,7 @@
  
  * File:   monte/DBModify.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -275,7 +275,7 @@ addESSMaterial()
   MObj.setDensity(-7.76);
   MDB.resetMaterial(MObj);
 
-  // Same ase 2636 but with Bilbao density of 7.93 g/cm3
+  // Same as 2636 but with Bilbao density of 7.93 g/cm3
   MObj.setMaterial(imat++/*2637*/, "SS316L793",
 		   " 06000.71c  0.001392603 "
 		   " 14028.71c  0.007323064 "

@@ -38,6 +38,7 @@ namespace setVariable
   void D4CModel(FuncDataBase&);
   void DelftModel(FuncDataBase&);
   void EssVariables(FuncDataBase&);
+  void EssLinacVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
   void FilterVariables(FuncDataBase&);

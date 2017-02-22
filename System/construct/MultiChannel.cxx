@@ -219,6 +219,9 @@ MultiChannel::createSurfaces()
 {
   ELog::RegMethod RegA("MultiChannel","createSurface");
 
+  ELog::EM<<"Surface == "<<Origin<<ELog::endDiag;
+  ELog::EM<<"Surface == "<<length<<ELog::endDiag;
+  
   ModelSupport::buildPlane(SMap,chnIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,chnIndex+2,Origin+Y*(length/2.0),Y);
   
@@ -320,7 +323,7 @@ MultiChannel::setFaces(const int BS,const int TS)
   // NOTE: Top rule is complement originally
   if (TS<0) topRule.makeComplement();
   if (BS<0) baseRule.makeComplement();
-  setFlag ^= 1;
+  setFlag |= 1;
   return;
 }
 
@@ -339,6 +342,7 @@ MultiChannel::setFaces(const attachSystem::FixedComp& FC,
   const int baseSurfN=FC.getSignedLinkSurf(BS);
   const int topSurfN=FC.getSignedLinkSurf(TS);
   setFaces(baseSurfN,topSurfN);
+
   return;
 }
   
@@ -352,7 +356,7 @@ MultiChannel::setDivider(const HeadRule& HR)
   ELog::RegMethod RegA("MultiChannel","setInner");
 
   divider=HR;
-  setFlag ^= 4;
+  setFlag |= 4;
   return;
 }
 
@@ -368,7 +372,7 @@ MultiChannel::setLeftRight(const HeadRule& LR,const HeadRule& RR)
 
   leftStruct=LR;
   rightStruct=RR;
-  setFlag ^= 2;
+  setFlag |= 2;
   return;
 }
 
@@ -388,7 +392,7 @@ MultiChannel::setLeftRight(const FixedComp& FCA,const long int lIndex,
 
   leftStruct=FCA.getSignedFullRule(lIndex);
   rightStruct=FCB.getSignedFullRule(rIndex);
-  setFlag ^= 2;
+  setFlag |= 2;
   return;
 }
 
@@ -409,8 +413,8 @@ MultiChannel::createAll(Simulation& System,
   ELog::RegMethod RegA("MultiChannel","createAll");
 
 
-
-  if (setFlag & 3)
+  ELog::EM<<"SET FLAG ="<<setFlag<<ELog::endDiag;
+  if ((setFlag & 3) == 3)
     {
       populate(System.getDataBase());
       createUnitVector(FC,sideIndex);
@@ -419,6 +423,8 @@ MultiChannel::createAll(Simulation& System,
       createLinks();
       insertObjects(System);
     }
+  else
+    ELog::EM<<"MC channel["<<keyName<<"] no configured"<<ELog::endWarn;
   return;
 }
 

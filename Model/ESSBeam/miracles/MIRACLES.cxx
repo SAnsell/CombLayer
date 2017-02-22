@@ -84,13 +84,13 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
-#include "CompBInsert.h"
 #include "ChopperUnit.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
 #include "HoleShape.h"
+#include "BeamShutter.h"
 
 #include "MIRACLES.h"
 
@@ -128,11 +128,25 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   ChopE(new constructSystem::ChopperUnit(newName+"ChopE")),
   EDisk(new constructSystem::DiskChopper(newName+"EBlade")),
 
-  //  BInsert(new BunkerInsert(newName+"BInsert")),
-  BInsert(new CompBInsert(newName+"CInsert")),
+  ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),
+
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
+
+  VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
+  BendG(new beamlineSystem::GuideLine(newName+"BG")),
+
+  BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),
-  FocusWall(new beamlineSystem::GuideLine(newName+"FWall"))
- /*!
+  FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+
+  ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
+  VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
+  BendOutA(new beamlineSystem::GuideLine(newName+"BOutA")),
+
+  VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
+  BendOutB(new beamlineSystem::GuideLine(newName+"BOutB"))
+/*!
     Constructor
  */
 {
@@ -163,9 +177,31 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   OR.addObject(CDiskTop);
   OR.addObject(CDiskLow);
 
+  OR.addObject(VPipeE);
+  OR.addObject(FocusE); 
+ 
+  OR.addObject(ChopE);
+  OR.addObject(EDisk);
+
+  OR.addObject(ShutterA);
+
+  OR.addObject(VPipeF);
+  OR.addObject(FocusF);
+
+  OR.addObject(VPipeG);
+  OR.addObject(BendG);
+
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
-  OR.addObject(FocusWall);  
+  OR.addObject(FocusWall);
+
+  OR.addObject(ShieldA);
+  OR.addObject(VPipeOutA);
+  OR.addObject(BendOutA);
+
+  OR.addObject(VPipeOutB);
+  OR.addObject(BendOutB);
+
 }
 
 MIRACLES::~MIRACLES()
@@ -176,10 +212,11 @@ MIRACLES::~MIRACLES()
 
 void
 MIRACLES::setBeamAxis(const FuncDataBase& Control,
-                     const GuideItem& GItem,
-                     const bool reverseZ)
+		      const GuideItem& GItem,
+		      const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Database of variables
     \param GItem :: Guide Item to 
     \param reverseZ :: Reverse axis
    */
@@ -217,6 +254,8 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MIRACLES","buildBunkerUnits");
+
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
   
   VPipeB->addInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
@@ -267,9 +306,70 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   FocusE->addInsertCell(VPipeE->getCells("Void"));
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
+  ChopE->addInsertCell(bunkerVoid);
+  ChopE->getKey("Main").setAxisControl(3,ZVert);
+  
+  ChopE->createAll(System,FocusE->getKey("Guide0"),2);
+
+  EDisk->addInsertCell(ChopE->getCell("Void"));
+  EDisk->createAll(System,ChopE->getKey("Main"),0,
+		   ChopE->getKey("Beam"),2);
+
+  ShutterA->addInsertCell(bunkerVoid);
+  ShutterA->createAll(System,ChopE->getKey("Beam"),2);
+
+  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->createAll(System,ShutterA->getKey("Beam"),2);
+
+  FocusF->addInsertCell(VPipeF->getCells("Void"));
+  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+
+  VPipeG->addInsertCell(bunkerVoid);
+  VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
+
+  BendG->addInsertCell(VPipeG->getCells("Void"));
+  BendG->createAll(System,*VPipeG,0,*VPipeG,0);
+  
   return;
 }
 
+void
+MIRACLES::buildOutGuide(Simulation& System,
+			const attachSystem::FixedComp& FA,
+			const long int startIndex,
+			const int voidCell)
+  /*!
+    Build the section out of the bunker wall
+    \param System :: Simulation ot use
+    \param FA :: Fixed point for guide
+    \param startIndex :: Fixed point link point 
+    \param voidCell :: void cell for constuction 
+   */
+{
+  ELog::RegMethod RegA("MIRACLES","buildOutGuide");
+
+  ShieldA->addInsertCell(voidCell);
+  ShieldA->createAll(System,FA,startIndex);
+
+  // Bender 10m
+  VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutA->createAll(System,FA,startIndex);
+
+  BendOutA->addInsertCell(VPipeOutA->getCells("Void"));
+  BendOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+
+  // Bender 10m
+  VPipeOutB->addInsertCell(ShieldA->getCell("Void"));
+  VPipeOutB->createAll(System,BendOutA->getKey("Guide0"),2);
+
+  BendOutB->addInsertCell(VPipeOutB->getCells("Void"));
+  BendOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
+  
+  
+  
+  return;
+}
+  
 void
 MIRACLES::buildIsolated(Simulation& System,const int voidCell)
   /*!
@@ -299,10 +399,22 @@ MIRACLES::buildIsolated(Simulation& System,const int voidCell)
     }
   if (stopPoint==2 || stopPoint==1) return;
 
+  if (startPoint<2)
+    {
+      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      startIndex=2;
+    }
 
 
   return;
 }
+
+
   
 void 
 MIRACLES::build(Simulation& System,
@@ -328,8 +440,7 @@ MIRACLES::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,1);
-  ELog::EM<<"Beam axis == "<<miraclesAxis->getSignedLinkPt(3)<<ELog::endDiag;
+  setBeamAxis(Control,GItem,0);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
@@ -342,6 +453,19 @@ MIRACLES::build(Simulation& System,
   buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
                    bunkerObj.getCell("MainVoid"));
 
+  if (stopPoint==2) return;                      // STOP At bunker edge
+
+  // IN WALL
+  // Make bunker insert
+  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+  // using 7 : mid point
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+
+  ShieldA->setFront(bunkerObj,2);
+  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
 
   return;
 

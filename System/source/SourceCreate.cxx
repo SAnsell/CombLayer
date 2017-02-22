@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   source/SourceCreate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -253,10 +253,10 @@ createESSLinacSource(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
 
-  const double E=Control.EvalDefVar<double>("sdefEnergy",      75.0);
-  const double xStart=Control.EvalDefVar<double>("sdefXPos",    0.0);
+  const double E=Control.EvalDefVar<double>("sdefEnergy",       75.0);
+  const double xStart=Control.EvalDefVar<double>("sdefXPos",     0.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos", -4900.0);
-  const double zStart=Control.EvalDefVar<double>("sdefZPos",    0.0);
+  const double zStart=Control.EvalDefVar<double>("sdefZPos",     0.0);
 
   sourceCard.setActive();
   sourceCard.setComp("dir",1.0);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerWall.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,61 @@ BunkerWall::BunkerWall(const std::string& bunkerName) :
   */
 {}
 
+BunkerWall::BunkerWall(const BunkerWall& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  baseName(A.baseName),wallIndex(A.wallIndex),
+  cellIndex(A.cellIndex),wallThick(A.wallThick),
+  wallMat(A.wallMat),activeWall(A.activeWall),nVert(A.nVert),
+  nRadial(A.nRadial),nMedial(A.nMedial),vert(A.vert),
+  radial(A.radial),medial(A.medial),nBasic(A.nBasic),
+  basic(A.basic),basicMatVec(A.basicMatVec),
+  loadFile(A.loadFile),outFile(A.outFile),divider(A.divider),
+  frontSurf(A.frontSurf),backSurf(A.backSurf),
+  topSurf(A.topSurf),baseSurf(A.baseSurf)
+  /*!
+    Copy constructor
+    \param A :: BunkerWall to copy
+  */
+{}
+
+BunkerWall&
+BunkerWall::operator=(const BunkerWall& A)
+  /*!
+    Assignment operator
+    \param A :: BunkerWall to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+      activeWall=A.activeWall;
+      nVert=A.nVert;
+      nRadial=A.nRadial;
+      nMedial=A.nMedial;
+      vert=A.vert;
+      radial=A.radial;
+      medial=A.medial;
+      nBasic=A.nBasic;
+      basic=A.basic;
+      basicMatVec=A.basicMatVec;
+      loadFile=A.loadFile;
+      outFile=A.outFile;
+      divider=A.divider;
+      frontSurf=A.frontSurf;
+      backSurf=A.backSurf;
+      topSurf=A.topSurf;
+      baseSurf=A.baseSurf;
+    }
+  return *this;
+}
 
 BunkerWall::~BunkerWall() 
   /*!
@@ -133,8 +188,8 @@ BunkerWall::populate(const FuncDataBase& Control)
   // Need two sets active and passive :
   // ACTIVE:
   // BOOLEAN NUMBER!!!!!!!
-  ELog::EM<<"key == "<<keyName+"Active"<<ELog::endDiag;
   activeWall=Control.EvalDefVar<size_t>(keyName+"Active",0);
+  
   if (activeWall)
     {
       nVert=Control.EvalVar<size_t>(keyName+"NVert");
@@ -154,8 +209,6 @@ BunkerWall::populate(const FuncDataBase& Control)
       loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
       outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
     }
-
-
   
   return;
 }
