@@ -80,10 +80,10 @@ ODINvariables(FuncDataBase& Control)
   setVariable::TwinGenerator TGen;
   setVariable::JawGenerator JGen;
   setVariable::RotaryHoleGenerator RotGen;
-  
-  SGen.addWall(1,30.0,"CastIron");
-  SGen.addRoof(1,30.0,"CastIron");
-  SGen.addFloor(1,30.0,"CastIron");
+
+  SGen.addWall(1,35.0,"CastIron");
+  SGen.addRoof(1,35.0,"CastIron");
+  SGen.addFloor(1,35.0,"CastIron");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
@@ -95,24 +95,19 @@ ODINvariables(FuncDataBase& Control)
   // VACUUM PIPE in Gamma shield
   Control.addVariable("odinStopPoint",0);
 
-  // Control.addVariable("odinGA0HeightStart",3.0);
-  // Control.addVariable("odinGA0HeightEnd",3.0);
-  // Control.addVariable("odinGA0WidthStart",7.0);
-  // Control.addVariable("odinGA0WidthEnd",10.0);
-
   FGen.setGuideMat("Copper");
   FGen.setThickness(0.8,0.3);
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"odinFA",350.0, 10.0,7.0, 3.0,3.0);
+  FGen.generateTaper(Control,"odinFA",350.0, 4.423,1.806,  3.5,5.24 );
 
   PipeGen.generatePipe(Control,"odinPipeB",8.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"odinFB",44.0, 7.50,5.5, 4.0,4.0);
+  FGen.generateTaper(Control,"odinFB",44.0, 1.806,1.60, 5.24,6.78);
 
   // Gamma shutter to first Chopper
-  PipeGen.generatePipe(Control,"odinPipeC",8.0,40.0);
-  FGen.generateTaper(Control,"odinFC",37.0, 5.50,3.5, 4.0,4.0);
+  PipeGen.generatePipe(Control,"odinPipeC",2.0,40.0);
+  FGen.generateTaper(Control,"odinFC",37.0, 1.606,1.5, 6.78,6.91);
 
   //CGen.setMainRadius(26.0);
   //  CGen.setFrame(60.0,60.0);
@@ -137,9 +132,9 @@ ODINvariables(FuncDataBase& Control)
   CGen.generateChopper(Control,"odinChopperB",18.0,30.0,26.0);
 
   // T0 Chopper disk B
-  BGen.setThick({5.0,5.0});
-  BGen.setGap(15.0);
-  BGen.setInnerThick({5.0});
+  BGen.setThick({10.0,10.0});
+  BGen.setGap(5.0);
+  BGen.setInnerThick({10.0,10.0});
   BGen.setMaterials("Inconnel","Tungsten");
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.addPhase({95,275},{30.0,30.0});

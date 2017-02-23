@@ -3,7 +3,7 @@
  
  * File:   essInc/ShieldGenerator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,8 +42,13 @@ class ShieldGenerator
   typedef std::map<size_t,double> MLTYPE;
   typedef std::map<size_t,std::string> MSTYPE;
 
+  size_t nWall;                 ///< number of wall layers
   size_t nRoof;                 ///< number of roof layers
-  size_t nFloor;                ///< number of floor layers
+  size_t nFloor;                ///< number of floor layers  
+
+  double wallThick;             ///< wall thickness [if set]
+  double roofThick;             ///< roof thickness [if set]
+  double floorThick;            ///< floor thickness [if set]
   
   std::string defMat;                         ///< Primary default mat
 
@@ -64,6 +69,11 @@ class ShieldGenerator
   ShieldGenerator& operator=(const ShieldGenerator&);
   ~ShieldGenerator();
 
+  void setWall(const size_t,const double,
+	       const std::vector<double>&,
+	       const std::vector<std::string>&);
+
+
   void addFloor(const size_t,const double,const std::string&);
   void addRoof(const size_t,const double,const std::string&);
   void addWall(const size_t,const double,const std::string&);
@@ -77,7 +87,9 @@ class ShieldGenerator
   void addFloorMat(const size_t,const std::string&);
 
   void setRFLayers(const size_t,const size_t);
-    
+
+	       
+	       
   void generateShield(FuncDataBase&,const std::string&,
 		      const double,const double,const double,const double,
 		      const size_t,const size_t)  const;

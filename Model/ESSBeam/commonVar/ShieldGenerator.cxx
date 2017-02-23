@@ -3,7 +3,7 @@
  
  * File:   commonVar/ShieldGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,8 @@ namespace setVariable
 {
 
 ShieldGenerator::ShieldGenerator() :
-  nRoof(0),nFloor(0),defMat("Stainless304")
+  nRoof(0),nFloor(0),
+  defMat("Stainless304")
   /*!
     Constructor and defaults
   */
@@ -130,6 +131,60 @@ ShieldGenerator::~ShieldGenerator()
 {}
 
 void
+ShieldGenerator::setWall(const size_t NL,
+			 const double voidThick,
+			 const std::vector<double>& thick,
+			 const std::vector<std::string>& matName)
+ /*!
+   Given a set of values set the wall
+   \param NL :: Number of layers 
+   \param voidThick :: Thickness of inner void [total]
+   \param thick :: Layer thickness
+   \param matName :: layer materials
+ */
+{
+  ELog::RegMethod RegA("ShieldGenerator","setWall");
+
+  if (thick.size()!=matName.size())
+    throw ColErr::MisMatch<size_t>(thick.size(),matName.size(),"thick/matName");
+  
+  wallThick=std::accumulate(thick.begin(),thick.end(),0.0);
+  
+  wallLen.erase(wallLen.begin(),wallLen.end());
+  wallMat.erase(wallMat.begin(),wallMat.end());
+
+
+  wallLen.emplace(1,voidThick/2.0);
+  wallMat.emplace(1,"Void");
+
+  // set each layer to be approximately equal.
+  const double meanDist(wallThick/static_cast<double>(thick.size()));
+
+  size_t index(0);
+  double TNext(thick[index]);
+  double wallDist(meanDist);
+  for(size_t i=0;i<NL;i++)
+    {
+      if (TNext>=meanDist)
+	{
+	  wallLen.emplace(i+2,wallDist);
+	  wallMat.emplace(i+2,matName[index]);
+	}
+      else
+	{
+	  wallLen.emplace(i+2,TNext);
+	  wallMat.emplace(i+2,matName[index]);
+	  if (index<thick.size()) index++;
+	  TNext+=thick[index];
+	}
+      wallDist+=meanDist;
+    }
+  wallThick+=voidThick;
+  nRoof=NL+1;
+  return;
+}
+  
+void
 ShieldGenerator::addWall(const size_t index,const double Len,
                          const std::string& matName)
   /*!
@@ -163,7 +218,7 @@ ShieldGenerator::addRoof(const size_t index,const double Len,
 
 void
 ShieldGenerator::addFloor(const size_t index,const double Len,
-                         const std::string& matName)
+			  const std::string& matName)
   /*!
     Add a layer to the floor
     \param index :: index values
@@ -339,6 +394,7 @@ ShieldGenerator::generateShield
 {
   ELog::RegMethod RegA("ShieldGenerator","generatorShield");
 
+  const size_t NWall(nWall ? nWall : NLayer);
   const size_t NRoof(nRoof ? nRoof : NLayer);
   const size_t NFloor(nFloor ? nFloor : NLayer);
   
@@ -349,7 +405,7 @@ ShieldGenerator::generateShield
   Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"DefMat",defMat);
   Control.addVariable(keyName+"NSeg",NSeg);
-  Control.addVariable(keyName+"NWallLayers",NLayer);
+  Control.addVariable(keyName+"NWallLayers",NWall);
   Control.addVariable(keyName+"NFloorLayers",NFloor);
   Control.addVariable(keyName+"NRoofLayers",NRoof);
   
