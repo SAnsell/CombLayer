@@ -318,17 +318,143 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
   if (modtype=="BF1")
     {
       bfType = 1;
-      A.setVar("TopFlyLeftLobeXStep", -2.0);
-      A.setVar("TopFlyRightLobeXStep", 2.0);
-      A.setVar("TopFlyMidWaterMidYStep", 7.0);
+
+      // These variables are as in the model received from Luca 22 Feb 2017
+      // there is no engieering drawings for BF1 yet, so this email is
+      // the only reference
+      A.setVar("TopFlyLeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
+      A.setVar("TopFlyLeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+      A.setVar("TopFlyLeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+
+      A.setVar("TopFlyRightLobeCorner1",Geometry::Vec3D(0,0.6,0));
+      A.setVar("TopFlyRightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+      A.setVar("TopFlyRightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+
+      A.setVar("TopFlyLeftLobeRadius1",1.0);
+      A.setVar("TopFlyRightLobeRadius1",1.0);
+
+      A.setVar("TopFlyLeftLobeXStep",-0.85);
+      A.setVar("TopFlyRightLobeXStep",0.85);
+
+      A.setVar("TopFlyLeftWaterCutWidth",9.6);
+      A.setVar("TopFlyRightWaterCutWidth",9.6);
+
+      A.setVar("TopFlyMidWaterLength",9.9);
+      A.setVar("TopFlyMidWaterMidYStep",6.3);
+
+      // flow guides
+      A.setVar("TopFlyFlowGuideWallMat","Aluminium20K");
+      A.setVar("TopFlyFlowGuideWallTemp",20.0);
+      A.setVar("TopFlyFlowGuideBaseThick",0.3);
+      A.setVar("TopFlyFlowGuideBaseLen",6.5);
+      A.setVar("TopFlyFlowGuideBaseOffset",-11);
+      A.setVar("TopFlyFlowGuideAngle",17);
+      A.setVar("TopFlyFlowGuideSQOffsetY",4.0);
+      A.setVar("TopFlyFlowGuideSQSideA",1.0);
+      A.setVar("TopFlyFlowGuideSQSideE",-1.0);
+      A.setVar("TopFlyFlowGuideSQSideF",-0.005);
+      A.setVar("TopFlyFlowGuideSQCenterA",1.0);
+      A.setVar("TopFlyFlowGuideSQCenterE",-0.6);
+      A.setVar("TopFlyFlowGuideSQCenterF",-0.005);
+
+      // These variables (until "moderator end") are copied from the BF2
+      // section of moderatorVarialbes to be sure that the BF1 geometry
+      // does not change if we change the BF2 variables:
+
+      A.setVar("TopFlyXStep",0.0);
+      A.setVar("TopFlyYStep",0.0);
+      A.setVar("TopFlyZStep",0.0);
+      A.setVar("TopFlyXYangle",90.0);
+      A.setVar("TopFlyZangle",0.0);
+      A.setVar("TopFlyTotalHeight",4.9);
+      A.setVar("TopFlyWallMat","Aluminium");
+      A.setVar("TopFlyWallDepth",0.0);
+      A.setVar("TopFlyWallHeight",0.3);
+  
+      A.setVar("TopFlyLeftLobeYStep",0.0);
+  
+      A.setVar("TopFlyLeftLobeRadius2",2.506);
+      A.setVar("TopFlyLeftLobeRadius3",2.506);
+
+      A.setVar("TopFlyLeftLobeModMat","HPARA");
+      A.setVar("TopFlyLeftLobeModTemp",20.0);
+
+      A.setVar("TopFlyLeftLobeNLayers",4);
+      A.setVar("TopFlyLeftLobeThick1",0.3);
+      A.setVar("TopFlyLeftLobeMat1","Aluminium20K");
+
+      A.setVar("TopFlyLeftLobeHeight1",0.3);
+      A.setVar("TopFlyLeftLobeDepth1",0.3);
+      A.setVar("TopFlyLeftLobeTemp1",20.0);
+  
+      A.setVar("TopFlyLeftLobeThick2",0.5);
+      A.setVar("TopFlyLeftLobeMat2","Void");
+
+      A.setVar("TopFlyLeftLobeHeight2",0.5);
+      A.setVar("TopFlyLeftLobeDepth2",0.5);
+
+      A.setVar("TopFlyLeftLobeThick3",0.3);
+      A.setVar("TopFlyLeftLobeMat3","Aluminium");
+
+      A.setVar("TopFlyLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
+      A.setVar("TopFlyLeftLobeDepth3",0.0);
+  
+      A.setVar("TopFlyRightLobeYStep",0.0);
+
+      A.setVar("TopFlyRightLobeRadius2",2.506);
+      A.setVar("TopFlyRightLobeRadius3",2.506);
+
+      A.setVar("TopFlyRightLobeModMat","HPARA");
+      A.setVar("TopFlyRightLobeModTemp",20.0);
+
+      A.setVar("TopFlyRightLobeNLayers",4);
+      A.setVar("TopFlyRightLobeThick1",0.3);
+      A.setVar("TopFlyRightLobeMat1","Aluminium20K");
+
+      A.setVar("TopFlyRightLobeHeight1",0.3);
+      A.setVar("TopFlyRightLobeDepth1",0.3);
+      A.setVar("TopFlyRightLobeTemp1",20.0);
+  
+      A.setVar("TopFlyRightLobeThick2",0.5);
+      A.setVar("TopFlyRightLobeMat2","Void");
+
+      A.setVar("TopFlyRightLobeHeight2",0.5);
+      A.setVar("TopFlyRightLobeDepth2",0.5);
+
+      A.setVar("TopFlyRightLobeThick3",0.3);
+      A.setVar("TopFlyRightLobeMat3","Aluminium");
+
+      A.setVar("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
+      A.setVar("TopFlyRightLobeDepth3",0.0);
+
+      A.setVar("TopFlyMidWaterCutLayer",3);
+      A.setVar("TopFlyMidWaterMidAngle",90);
+      A.setVar("TopFlyMidWaterEdgeRadius",0.5);
+
+      A.setVar("TopFlyMidWaterWallThick",0.2);
+      A.setVar("TopFlyMidWaterModMat","H2O");
+      A.setVar("TopFlyMidWaterWallMat","Aluminium");
+      A.setVar("TopFlyMidWaterModTemp",300.0);
+
+      A.setVar("TopFlyLeftWaterWidth",15.76);  
+      A.setVar("TopFlyLeftWaterWallThick",0.347);
+      A.setVar("TopFlyLeftWaterCutAngle",30.0);
+      A.setVar("TopFlyLeftWaterModMat","H2O");
+      A.setVar("TopFlyLeftWaterWallMat","Aluminium");
+      A.setVar("TopFlyLeftWaterModTemp",300.0);
+
+      A.setVar("TopFlyRightWaterWidth",15.76);
+      A.setVar("TopFlyRightWaterWallThick",0.347);
+      A.setVar("TopFlyRightWaterCutAngle",30.0);
+      A.setVar("TopFlyRightWaterModMat","H2O");
+      A.setVar("TopFlyRightWaterWallMat","Aluminium");
+      A.setVar("TopFlyRightWaterModTemp",300.0);
+      // moderator end
+
+      // pipes
       A.setOption("topPipe", "supply");
-
-      A.setVar("LowFlyLeftLobeXStep", -2.0);
-      A.setVar("LowFlyRightLobeXStep", 2.0);
-      A.setVar("LowFlyMidWaterMidYStep", 7.0);
       A.setOption("lowPipe", "supply");
-
-      // straighten the pipes
+      
       A.setVar("TSupplyRightAlNSegIn", 1);
       A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
       A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
