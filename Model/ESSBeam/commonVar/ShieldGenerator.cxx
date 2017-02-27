@@ -82,7 +82,7 @@ namespace setVariable
 {
 
 ShieldGenerator::ShieldGenerator() :
-  nRoof(0),nFloor(0),
+  nWall(0),nRoof(0),nFloor(0),
   defMat("Stainless304")
   /*!
     Constructor and defaults
@@ -90,7 +90,7 @@ ShieldGenerator::ShieldGenerator() :
 {}
 
 ShieldGenerator::ShieldGenerator(const ShieldGenerator& A) :
-  nRoof(A.nRoof),nFloor(A.nFloor),
+  nWall(A.nWall),nRoof(A.nRoof),nFloor(A.nFloor),
   defMat(A.defMat),wallLen(A.wallLen),roofLen(A.roofLen),
   floorLen(A.floorLen),wallMat(A.wallMat),roofMat(A.roofMat),
   floorMat(A.floorMat)
@@ -110,6 +110,7 @@ ShieldGenerator::operator=(const ShieldGenerator& A)
 {
   if (this!=&A)
     {
+      nWall=A.nWall;
       nRoof=A.nRoof;
       nFloor=A.nFloor;
       defMat=A.defMat;
@@ -131,58 +132,61 @@ ShieldGenerator::~ShieldGenerator()
 {}
 
 void
-ShieldGenerator::setWall(const size_t NL,
-			 const double voidThick,
-			 const std::vector<double>& thick,
-			 const std::vector<std::string>& matName)
+ShieldGenerator::setLayers(MLTYPE& lenMap,MSTYPE& matMap,
+                           double& primThick,size_t& nLayer,
+                           const size_t NL,
+                           const double voidThick,
+                           const std::vector<double>& thick,
+                           const std::vector<std::string>& matName)
  /*!
    Given a set of values set the wall
    \param NL :: Number of layers 
-   \param voidThick :: Thickness of inner void [total]
+   \param voidThick :: Thickness of inner void [half]
    \param thick :: Layer thickness
    \param matName :: layer materials
  */
 {
-  ELog::RegMethod RegA("ShieldGenerator","setWall");
+  ELog::RegMethod RegA("ShieldGenerator","setLayers");
 
   if (thick.size()!=matName.size())
     throw ColErr::MisMatch<size_t>(thick.size(),matName.size(),"thick/matName");
   
-  wallThick=std::accumulate(thick.begin(),thick.end(),0.0);
+  primThick=std::accumulate(thick.begin(),thick.end(),0.0);
   
-  wallLen.erase(wallLen.begin(),wallLen.end());
-  wallMat.erase(wallMat.begin(),wallMat.end());
+  lenMap.erase(lenMap.begin(),lenMap.end());
+  matMap.erase(matMap.begin(),matMap.end());
 
-
-  wallLen.emplace(1,voidThick/2.0);
-  wallMat.emplace(1,"Void");
+  lenMap.emplace(1,voidThick);
+  matMap.emplace(1,"Void");
 
   // set each layer to be approximately equal.
-  const double meanDist(wallThick/static_cast<double>(thick.size()));
+  const double meanDist(primThick/static_cast<double>(NL));
 
   size_t index(0);
   double TNext(thick[index]);
-  double wallDist(meanDist);
-  for(size_t i=0;i<NL;i++)
+  double primDist(meanDist);
+  for(size_t i=0;i <NL;i++)
     {
-      if (TNext>=meanDist)
+      if (TNext>=primDist)
 	{
-	  wallLen.emplace(i+2,wallDist);
-	  wallMat.emplace(i+2,matName[index]);
+	  lenMap.emplace(i+2,primDist+voidThick);
+	  matMap.emplace(i+2,matName[index]);
 	}
       else
 	{
-	  wallLen.emplace(i+2,TNext);
-	  wallMat.emplace(i+2,matName[index]);
+	  lenMap.emplace(i+2,TNext);
+          matMap.emplace(i+2,matName[index]);
 	  if (index<thick.size()) index++;
 	  TNext+=thick[index];
 	}
-      wallDist+=meanDist;
+      primDist+=meanDist;
     }
-  wallThick+=voidThick;
-  nRoof=NL+1;
+  primThick+=voidThick;
+  nLayer=NL+1;
   return;
 }
+
+
   
 void
 ShieldGenerator::addWall(const size_t index,const double Len,
@@ -373,7 +377,6 @@ ShieldGenerator::setRFLayers(const size_t nF,const size_t nR)
   nFloor=nF;
   return;
 }
-
   
 void
 ShieldGenerator::generateShield

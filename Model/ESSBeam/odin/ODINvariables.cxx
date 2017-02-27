@@ -49,6 +49,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "ShieldGenerator.h"
+#include "LayerGenerator.h"
 #include "PitGenerator.h"
 #include "FocusGenerator.h"
 #include "ChopperGenerator.h"
@@ -73,7 +74,7 @@ ODINvariables(FuncDataBase& Control)
 
   setVariable::ChopperGenerator CGen;
   setVariable::FocusGenerator FGen;
-  setVariable::ShieldGenerator SGen;
+  setVariable::LayerGenerator LGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::PitGenerator PGen;
   setVariable::BladeGenerator BGen;
@@ -81,13 +82,10 @@ ODINvariables(FuncDataBase& Control)
   setVariable::JawGenerator JGen;
   setVariable::RotaryHoleGenerator RotGen;
 
-  SGen.addWall(1,35.0,"CastIron");
-  SGen.addRoof(1,35.0,"CastIron");
-  SGen.addFloor(1,35.0,"CastIron");
-  SGen.addFloorMat(5,"Concrete");
-  SGen.addRoofMat(5,"Concrete");
-  SGen.addWallMat(5,"Concrete");
-
+  LGen.setWall(30.0,{40.0,50.0}, {2,2}, {"CastIron","Concrete"});
+  LGen.setRoof(30.0,{40.0,50.0}, {2,2}, {"CastIron","Concrete"});
+  LGen.setFloor(30.0,{40.0,50.0}, {2,2}, {"CastIron","Concrete"});
+ 
   PipeGen.setPipe(12.0,1.0);
   PipeGen.setWindow(13.0,0.3);
   PipeGen.setFlange(16.0,1.0);
@@ -212,7 +210,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinOutBCutShape","Circle");
   Control.addVariable("odinOutBCutRadius",5.0);
 
-  SGen.generateShield(Control,"odinShieldA",200.0,80.0,80.0,80.0,1,8);
+  LGen.generateLayer(Control,"odinShieldA",200.0,1);
 
   // FOC5 single disk chopper
   CGen.setMainRadius(100.0);
@@ -235,7 +233,7 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinOutBCutBackShape","Circle");
   Control.addVariable("odinOutBCutBackRadius",5.0);
 
-  SGen.generateShield(Control,"odinShieldB",2000.0,80.0,80.0,80.0,4,8);  
+  LGen.generateLayer(Control,"odinShieldB",2000.0,4);  
   PipeGen.generatePipe(Control,"odinPipeOutB",164.0,1800.0);
   FGen.generateTaper(Control,"odinOutFB",1796.0,4.0,4.0,20.0,16.0);
 

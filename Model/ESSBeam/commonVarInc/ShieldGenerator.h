@@ -60,6 +60,11 @@ class ShieldGenerator
   std::map<size_t,std::string> roofMat;       ///< roof mat changes
   std::map<size_t,std::string> floorMat;      ///< floor mat changes
 
+  void setLayers(MLTYPE&,MSTYPE&,double&,size_t&,
+		 const size_t,const double,
+		 const std::vector<double>&,
+		 const std::vector<std::string>&);
+  
   void processLayers(FuncDataBase&,const std::string&) const;
   
  public:
@@ -67,12 +72,7 @@ class ShieldGenerator
   ShieldGenerator();
   ShieldGenerator(const ShieldGenerator&);
   ShieldGenerator& operator=(const ShieldGenerator&);
-  ~ShieldGenerator();
-
-  void setWall(const size_t,const double,
-	       const std::vector<double>&,
-	       const std::vector<std::string>&);
-
+  ~ShieldGenerator();  
 
   void addFloor(const size_t,const double,const std::string&);
   void addRoof(const size_t,const double,const std::string&);

@@ -3,7 +3,7 @@
  
  * File:   process/surfDIter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,9 +86,11 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	    {
 	      curLen+=std::fabs(fA);    // NOTE: vec.back is negative
 	      if (curLen>TLen)
-		ELog::EM<<"Warning: over length in fractions"<<ELog::endErr;
+		ELog::EM<<"Warning: over length in fractions [unit("
+                        <<i<<")]"<<curLen<<" "<<TLen<<ELog::endErr;
 	      Vec.back()=curLen/TLen;
 	    }
+	  //	  ELog::EM<<Name+NName<<"["<<i<<"] "<<Vec.back()<<ELog::endDiag;
 	  curLen=Vec.back()*TLen;
 	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
        }
