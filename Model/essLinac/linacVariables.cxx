@@ -91,7 +91,6 @@ EssLinacVariables(FuncDataBase& Control)
  
   Control.addVariable("LinacAirMat","Air");
   Control.addVariable("LinacSteelMat","Stainless304"); // Lali says, but promised to check
-  Control.addVariable("LinacConcreteMat","Concrete"); // check it !!!
   Control.addVariable("LinacAlMat","Aluminium"); // check it !!!
   Control.addVariable("LinacWaterMat","H2O");
   Control.addVariable("LinacCopperMat","Silver%Copper%0.015"); // Copper + 0.015% weight Ag since Ag is a gamma source (YJL said)
@@ -107,8 +106,8 @@ EssLinacVariables(FuncDataBase& Control)
   
   Control.addVariable("LinacBeamDumpYStep",-10); // just to have Origin in the middle of its front wall
 
-  ELog::EM << "Must be BoratedConcrete" << ELog::endCrit;
-  Control.addVariable("LinacBeamDumpConcreteMat", "Concrete");
+  ELog::EM << "LinacBeamDumpConcreteMat: need exact definition of borated concrete [email 3 Nov 2016]" << ELog::endCrit;
+  Control.addVariable("LinacBeamDumpConcreteMat", "SkanskaConcrete%Boron%99");
 
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontWallHeight",50.0); // doc SPLTDISH0001
