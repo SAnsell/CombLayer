@@ -48,7 +48,6 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "ShieldGenerator.h"
 #include "LayerGenerator.h"
 #include "PitGenerator.h"
 #include "FocusGenerator.h"
@@ -82,9 +81,9 @@ ODINvariables(FuncDataBase& Control)
   setVariable::JawGenerator JGen;
   setVariable::RotaryHoleGenerator RotGen;
 
-  LGen.setWall(30.0,{40.0,50.0}, {2,2}, {"CastIron","Concrete"});
-  LGen.setRoof(30.0,{40.0,50.0}, {2,2}, {"CastIron","Concrete"});
-  LGen.setFloor(30.0,{40.0,50.0}, {2,2}, {"CastIron","Concrete"});
+  LGen.setWall(30.0,{25.0,35.0}, {4,4}, {"CastIron","Concrete"});
+  LGen.setRoof(30.0,{25.0,35.0}, {4,4}, {"CastIron","Concrete"});
+  LGen.setFloor(30.0,{25.0,35.0}, {4,4}, {"CastIron","Concrete"});
  
   PipeGen.setPipe(12.0,1.0);
   PipeGen.setWindow(13.0,0.3);
@@ -224,7 +223,7 @@ ODINvariables(FuncDataBase& Control)
   PipeGen.setPipe(16.0,1.0);
   PipeGen.setWindow(17.5,0.3);
   PipeGen.setFlange(20.0,1.0);
-  PipeGen.generatePipe(Control,"odinPipeOutA",2.0,198.0);
+  PipeGen.generatePipe(Control,"odinPipeOutA",2.2,197.0);
   FGen.generateTaper(Control,"odinOutFA",194.0,4.0,4.0,20.0,16.0);
 
   Control.addVariable("odinOutBCutFrontShape","Circle");
@@ -234,8 +233,8 @@ ODINvariables(FuncDataBase& Control)
   Control.addVariable("odinOutBCutBackRadius",5.0);
 
   LGen.generateLayer(Control,"odinShieldB",2000.0,4);  
-  PipeGen.generatePipe(Control,"odinPipeOutB",164.0,1800.0);
-  FGen.generateTaper(Control,"odinOutFB",1796.0,4.0,4.0,20.0,16.0);
+  PipeGen.generatePipe(Control,"odinPipeOutB",164.0,1880.0);
+  FGen.generateTaper(Control,"odinOutFB",1876.0,4.0,4.0,20.0,16.0);
 
   // HUT:
   Control.addVariable("odinCaveYStep",0.0);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/Bunker.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -610,6 +610,7 @@ Bunker::calcSegment(const Simulation& System,
 		    const Geometry::Vec3D& Axis) const
   /*!
     Determine the segment that a point falls in
+    \param System :: Simulation System
     \param TPoint :: Point to check
     \param Axis :: Direction 
     \return Segment string

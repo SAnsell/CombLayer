@@ -107,8 +107,7 @@ Hut::Hut(const Hut& A) :
   concFloor(A.concFloor),concNoseFront(A.concNoseFront),
   concNoseSide(A.concNoseSide),concBack(A.concBack),
   wallYStep(A.wallYStep),wallThick(A.wallThick),
-  wallXGap(A.wallXGap),wallZGap(A.wallZGap),feMat(A.feMat),
-  concMat(A.concMat),wallMat(A.wallMat)
+  feMat(A.feMat),concMat(A.concMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: Hut to copy
@@ -151,8 +150,6 @@ Hut::operator=(const Hut& A)
       concBack=A.concBack;
       wallYStep=A.wallYStep;
       wallThick=A.wallThick;
-      wallXGap=A.wallXGap;
-      wallZGap=A.wallZGap;
       feMat=A.feMat;
       concMat=A.concMat;
       wallMat=A.wallMat;
@@ -203,8 +200,6 @@ Hut::populate(const FuncDataBase& Control)
 
   wallYStep=Control.EvalVar<double>(keyName+"WallYStep");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  wallXGap=Control.EvalVar<double>(keyName+"WallXGap");
-  wallZGap=Control.EvalVar<double>(keyName+"WallZGap");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
@@ -346,10 +341,6 @@ Hut::createSurfaces()
   SurfMap::addSurf("InnerWallFront",hutIndex+1001);
   SurfMap::addSurf("InnerWallBack",hutIndex+1002);
   
-  ModelSupport::buildPlane(SMap,hutIndex+1003,Origin-X*(wallXGap/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+1004,Origin+X*(wallXGap/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+1005,Origin-Z*(wallZGap/2.0),Z);
-  ModelSupport::buildPlane(SMap,hutIndex+1006,Origin+Z*(wallZGap/2.0),Z);
   return;
 }
 
@@ -404,10 +395,6 @@ Hut::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("InnerWall",cellIndex-1);
 
-  Out=ModelSupport::getComposite
-    (SMap,hutIndex,"1001 -1002 1003 -1004 1005 -1006");
-
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   
   // Fe [main]

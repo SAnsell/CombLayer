@@ -72,8 +72,6 @@ class Hut :
 
   double wallYStep;               ///< Step from flat cut point
   double wallThick;               ///< Thickness 
-  double wallXGap;                ///< Hole for beam [X size]
-  double wallZGap;                ///< Hole for beam [Z size]
   
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material

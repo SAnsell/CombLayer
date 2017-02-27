@@ -581,7 +581,6 @@ makeESS::buildBunkerQuake(Simulation& System,
 
   return;
 }
-
   
 void
 makeESS::buildPillars(Simulation& System)

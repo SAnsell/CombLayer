@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerQuake.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,6 +103,41 @@ BunkerQuake::BunkerQuake(const std::string& bunkerName) :
   */
 {}
 
+BunkerQuake::BunkerQuake(const BunkerQuake& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  baseName(A.baseName),cutIndex(A.cutIndex),
+  cellIndex(A.cellIndex),xGap(A.xGap),zGap(A.zGap),
+  PFlag(A.PFlag),cPts(A.cPts)
+  /*!
+    Copy constructor
+    \param A :: BunkerQuake to copy
+  */
+{}
+
+BunkerQuake&
+BunkerQuake::operator=(const BunkerQuake& A)
+  /*!
+    Assignment operator
+    \param A :: BunkerQuake to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      xGap=A.xGap;
+      zGap=A.zGap;
+      PFlag=A.PFlag;
+      cPts=A.cPts;
+    }
+  return *this;
+}
+
 
 BunkerQuake::~BunkerQuake() 
   /*!
@@ -130,9 +165,7 @@ BunkerQuake::populate(const FuncDataBase& Control)
       const std::string IStr=StrFunc::makeString(index);
       flag=Control.EvalDefVar<int>(keyName+"PtFlag"+IStr,flag);
       APt=Control.EvalVar<Geometry::Vec3D>(keyName+"PtA"+IStr);
-      BPt=Control.EvalVar<Geometry::Vec3D>(keyName+"PtB"+IStr);
-      APoint.push_back(APt);
-      BPoint.push_back(BPt);
+      cPts.push_back(APt);
       PFlag.push_back(flag);
     }
   return;
@@ -142,7 +175,7 @@ void
 BunkerQuake::createUnitVector(const attachSystem::FixedComp& FC,
                               const long int orgIndex,
                               const long int axisIndex)
-/*!
+  /*!
     Create the unit vectors
     \param FC :: Linked object (bunker )
     \param orgIndex :: origin point [lower part of roof]
@@ -158,20 +191,20 @@ BunkerQuake::createUnitVector(const attachSystem::FixedComp& FC,
 
 void
 BunkerQuake::modifyPoints()
+  /*!
+    Modify the points to use the origin (or just the z origin)
+   */
 {
-  for(size_t index=0;index<APoint.size();index++)
+  for(size_t index=0;index<cPts.size();index++)
     {
       if (PFlag[index]==1)
         {
-          APoint[index]+=Z*Origin.Z();
-          BPoint[index]+=Z*Origin.Z();
+          cPts[index]+=Z*Origin.Z();
         }
       else if (PFlag[index]==2)
         {
-          APoint[index]=Origin+
-            X*APoint[index].X()+Y*APoint[index].Y()+Z*APoint[index].Z();
-          BPoint[index]=Origin+
-            X*BPoint[index].X()+Y*BPoint[index].Y()+Z*BPoint[index].Z();
+          cPts[index]=Origin+
+            X*cPts[index].X()+Y*cPts[index].Y()+Z*cPts[index].Z();
         }
     }        
   return;
@@ -186,15 +219,16 @@ BunkerQuake::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("BunkerQuake","createObjects");
-
-  for(size_t index=0;index<APoint.size();index++)
+  
+  for(size_t index=1;index<cPts.size();index++)
     {
       const std::string ItemName(keyName+"Cut"+StrFunc::makeString(index));
-      const Geometry::Vec3D YDir((BPoint[index]-APoint[index]).unit());
-      const double yGap=BPoint[index].Distance(APoint[index]);
+      const Geometry::Vec3D YDir((cPts[index]-cPts[index-1]).unit());
+      const double yGap=cPts[index].Distance(cPts[index-1]);
+
       constructSystem::addInsertPlateCell
-        (System,ItemName,APoint[index]+Z*(zGap/2.0),YDir,Z,
-         xGap,yGap,zGap,"Void");
+        (System,ItemName,(cPts[index-1]+cPts[index])/2.0+Z*(zGap/2.0),
+         YDir,Z,xGap,yGap,zGap,"Void");
     }      
 
   return;

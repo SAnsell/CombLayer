@@ -226,12 +226,13 @@ EssBunkerVariables(FuncDataBase& Control)
   setBunkerVar(Control,"C","D");
 
   // BUNKER QUAKE:
-  Control.addVariable("ABunkerQuakeXGap",13.0);
+  Control.addVariable("ABunkerQuakeXGap",13.5);
   Control.addVariable("ABunkerQuakeZGap",100.0);
   
-  Control.addVariable("ABunkerQuakeNPoint",1);
+  Control.addVariable("ABunkerQuakeNPoint",3);
   Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(750,0,0));
-  Control.addVariable("ABunkerQuakePtB0",Geometry::Vec3D(980,0,0));
+  Control.addVariable("ABunkerQuakePtA1",Geometry::Vec3D(980,0,0));
+  Control.addVariable("ABunkerQuakePtA2",Geometry::Vec3D(980,100,0));
 
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);
@@ -244,7 +245,6 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainNTopLayers",1);   // 7 
   Control.addVariable("CurtainNMidLayers",1);   // 2 
   Control.addVariable("CurtainNBaseLayers",1);  // 7
-
 
   Control.addVariable("BunkerFeedOffset",Geometry::Vec3D(0,0,0));
   Control.addVariable("BunkerFeedHeight",6.0);

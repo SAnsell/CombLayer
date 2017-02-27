@@ -51,9 +51,10 @@ class BunkerQuake : public attachSystem::ContainedComp,
   
   double xGap;                          ///< x stuff
   double zGap;                          ///< Needs to be surface
-  std::vector<int> PFlag;               ///< absolute/ZRelative/XYZ
-  std::vector<Geometry::Vec3D> APoint;  ///< Centre points of cut
-  std::vector<Geometry::Vec3D> BPoint;  ///< Centre points of cut
+
+  std::vector<int> PFlag;              ///< absolute/ZRelative/XYZ
+  std::vector<Geometry::Vec3D> cPts;  ///< Centre points of cut
+  
 
   
 
