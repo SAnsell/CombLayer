@@ -229,11 +229,21 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuakeXGap",13.5);
   Control.addVariable("ABunkerQuakeZGap",100.0);
   
-  Control.addVariable("ABunkerQuakeNPoint",3);
-  Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(750,0,0));
-  Control.addVariable("ABunkerQuakePtA1",Geometry::Vec3D(980,0,0));
-  Control.addVariable("ABunkerQuakePtA2",Geometry::Vec3D(980,100,0));
+  Control.addVariable("ABunkerQuakeNPoint",12);
+  Control.addVariable("ABunkerQuakePtA0",Geometry::Vec3D(1196.3,191.2,0));
+  Control.addVariable("ABunkerQuakePtA1",Geometry::Vec3D(1126.5,447.5,0));
+  Control.addVariable("ABunkerQuakePtA2",Geometry::Vec3D(1358.8,536.9,0));
+  Control.addVariable("ABunkerQuakePtA3",Geometry::Vec3D(1125.2,930.2,0));
+  Control.addVariable("ABunkerQuakePtA4",Geometry::Vec3D(1281.6,1056.0,0));
+  Control.addVariable("ABunkerQuakePtA5",Geometry::Vec3D(1166.2,1184.6,0));
+  Control.addVariable("ABunkerQuakePtA6",Geometry::Vec3D(1306.0,1325.7,0));
+  Control.addVariable("ABunkerQuakePtA7",Geometry::Vec3D(1162.0,1455.4,0));
+  Control.addVariable("ABunkerQuakePtA8",Geometry::Vec3D(1286.4,1610.4,0));
+  Control.addVariable("ABunkerQuakePtA9",Geometry::Vec3D(1125.1,1728.4,0));
+  Control.addVariable("ABunkerQuakePtA10",Geometry::Vec3D(1171.5,1804.0,0));
+  Control.addVariable("ABunkerQuakePtA11",Geometry::Vec3D(1007.5,1899.2,0));
 
+  
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);
   Control.addVariable("CurtainWallThick",30.0);
