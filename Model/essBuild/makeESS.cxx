@@ -507,6 +507,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		}
 
 	      attachSystem::addToInsertSurfCtrl(System, *ShutterBayObj, *F5); // helps with single moderator !!! \todo not needed with two moderators
+	      attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj,*F5);
 
 	      F5array.push_back(F5);
 	    }
