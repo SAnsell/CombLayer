@@ -322,40 +322,47 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       // These variables are as in the model received from Luca 22 Feb 2017
       // there is no engieering drawings for BF1 yet, so this email is
       // the only reference
-      A.setVar("TopFlyLeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
-      A.setVar("TopFlyLeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
-      A.setVar("TopFlyLeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
-
-      A.setVar("TopFlyRightLobeCorner1",Geometry::Vec3D(0,0.6,0));
-      A.setVar("TopFlyRightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
-      A.setVar("TopFlyRightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
-
-      A.setVar("TopFlyLeftLobeRadius1",1.0);
-      A.setVar("TopFlyRightLobeRadius1",1.0);
-
-      A.setVar("TopFlyLeftLobeXStep",-0.85);
-      A.setVar("TopFlyRightLobeXStep",0.85);
-
-      A.setVar("TopFlyLeftWaterCutWidth",9.6);
-      A.setVar("TopFlyRightWaterCutWidth",9.6);
-
-      A.setVar("TopFlyMidWaterLength",9.9);
-      A.setVar("TopFlyMidWaterMidYStep",6.3);
+      const std::vector<std::string> TLfly = {"TopFly", "LowFly"};
+      std::string s;
+      for (std::string s : TLfly) {
+	A.setVar(s+"LeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	A.setVar(s+"LeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	A.setVar(s+"LeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+	
+	A.setVar(s+"RightLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	A.setVar(s+"RightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	A.setVar(s+"RightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+	
+	A.setVar(s+"LeftLobeRadius1",1.0);
+	A.setVar(s+"RightLobeRadius1",1.0);
+	
+	A.setVar(s+"LeftLobeXStep",-0.85);
+	A.setVar(s+"RightLobeXStep",0.85);
+	
+	A.setVar(s+"LeftWaterCutWidth",9.6);
+	A.setVar(s+"RightWaterCutWidth",9.6);
+	
+	A.setVar(s+"MidWaterLength",9.9);
+	A.setVar(s+"MidWaterMidYStep",6.3);
+      }
 
       // flow guides
-      A.setVar("TopFlyFlowGuideWallMat","Aluminium20K");
-      A.setVar("TopFlyFlowGuideWallTemp",20.0);
-      A.setVar("TopFlyFlowGuideBaseThick",0.3);
-      A.setVar("TopFlyFlowGuideBaseLen",6.5);
-      A.setVar("TopFlyFlowGuideBaseOffset",-11);
-      A.setVar("TopFlyFlowGuideAngle",17);
-      A.setVar("TopFlyFlowGuideSQOffsetY",4.0);
-      A.setVar("TopFlyFlowGuideSQSideA",1.0);
-      A.setVar("TopFlyFlowGuideSQSideE",-1.0);
-      A.setVar("TopFlyFlowGuideSQSideF",-0.005);
-      A.setVar("TopFlyFlowGuideSQCenterA",1.0);
-      A.setVar("TopFlyFlowGuideSQCenterE",-0.6);
-      A.setVar("TopFlyFlowGuideSQCenterF",-0.005);
+      for (std::string strmod : TLfly) {
+	s = strmod + "FlowGuide";
+	A.setVar(s+"WallMat","Aluminium20K");
+	A.setVar(s+"WallTemp",20.0);
+	A.setVar(s+"BaseThick",0.3);
+	A.setVar(s+"BaseLen",6.5);
+	A.setVar(s+"BaseOffset",-11);
+	A.setVar(s+"Angle",23);
+	A.setVar(s+"SQOffsetY",3.0);
+	A.setVar(s+"SQSideA",1.0);
+	A.setVar(s+"SQSideE",-1.0);
+	A.setVar(s+"SQSideF",-0.005);
+	A.setVar(s+"SQCenterA",1.0);
+	A.setVar(s+"SQCenterE",-0.6);
+	A.setVar(s+"SQCenterF",-0.005);
+      }
 
       // These variables (until "moderator end") are copied from the BF2
       // section of moderatorVarialbes to be sure that the BF1 geometry
@@ -454,30 +461,21 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       // pipes
       A.setOption("topPipe", "supply");
       A.setOption("lowPipe", "supply");
-      
-      A.setVar("TSupplyRightAlNSegIn", 1);
-      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
-      A.setVar("TSupplyLeftAlNSegIn", 1);
-      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
-      A.setVar("TSupplyLeftInvarPPt1", Geometry::Vec3D(0,9,0)); // should be inside twister
-      A.setVar("TSupplyLeftInvarPPt2", Geometry::Vec3D(0,9,30));
 
-      A.setVar("LSupplyRightAlNSegIn", 1);
-      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
-      A.setVar("LSupplyLeftAlNSegIn", 1);
-      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
-      A.setVar("LSupplyLeftInvarPPt1", Geometry::Vec3D(0,9,0)); // should be inside twister
-      A.setVar("LSupplyLeftInvarPPt2", Geometry::Vec3D(0,9,30));
-
-      A.setVar("TopFlyFlowGuideAngle",23);
-      A.setVar("TopFlyFlowGuideSQOffsetY",3.0);
-      A.setVar("LowFlyFlowGuideAngle",23);
-      A.setVar("LowFlyFlowGuideSQOffsetY",3.0);
-
+      const std::vector<std::string> TLpipe = {"T", "L"};
+      for (std::string strpipe : TLpipe) {
+	s = strpipe + "Supply";
+	A.setVar(s+"RightAlNSegIn", 1);
+	A.setVar(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,15,0));
+	A.setVar(s+"RightInvarPPt1", Geometry::Vec3D(0,8.3,0)); // should be inside twister
+	A.setVar(s+"RightInvarPPt2", Geometry::Vec3D(0,8.3,30));
+	A.setVar(s+"LeftAlNSegIn", 1);
+	A.setVar(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,15,0));
+	A.setVar(s+"LeftInvarPPt1", Geometry::Vec3D(0,8.3,0)); // should be inside twister
+	A.setVar(s+"LeftInvarPPt2", Geometry::Vec3D(0,8.3,30));
+      }
     } else if (modtype=="BF2")
     {
       bfType = 2;
