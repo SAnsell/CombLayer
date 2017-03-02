@@ -49,7 +49,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "FocusGenerator.h"
-#include "ShieldGenerator.h"
+#include "LayerGenerator.h"
 #include "ChopperGenerator.h"
 #include "PitGenerator.h"
 #include "PipeGenerator.h"
@@ -72,7 +72,7 @@ CSPECvariables(FuncDataBase& Control)
 
   setVariable::ChopperGenerator CGen;
   setVariable::FocusGenerator FGen;
-  setVariable::ShieldGenerator SGen;
+  setVariable::LayerGenerator SGen;
   setVariable::PitGenerator PGen;
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
@@ -88,7 +88,7 @@ CSPECvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setThickness(0.8,0.3);
   FGen.setYOffset(4.0);
-  FGen.generateTaper(Control,"cspecFA",350.0, 6.0,2.0, 4.0,3.5);
+  FGen.generateTaper(Control,"cspecFA",350.0, 9.1,10.6, 10.0,14.8);
 
 
   PipeGen.generatePipe(Control,"cspecPipeB",8.0,44.0);
@@ -96,24 +96,20 @@ CSPECvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"cspecFB",42.0, 1.88,2.06,4.6,4.5);   
 
+  PipeGen.generatePipe(Control,"cspecPipeC",4.0,1260.0);
+  FGen.generateBender(Control,"cspecBC",1256.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
 
-  PipeGen.generatePipe(Control,"cspecPipeC",8.0,44.0);
-  FGen.setThickness(0.8,0.3);
-  FGen.clearYOffset();
-  FGen.generateBender(Control,"cspecBC",400.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
-
-  CGen.setMainRadius(38.122);   // diameter 70.0 emali
+  CGen.setMainRadius(38.122);   // diameter 70.0 internal
   CGen.setFrame(86.5,86.5);
   CGen.generateChopper(Control,"cspecChopperA",55.0,9.0,3.55);  
 
     // Double Blade chopper
-  BGen.setMaterials("Aluminium","Aluminium");
+  BGen.setMaterials("Aluminium","B4C");
   BGen.setThick({2.0,2.0});
   BGen.setGap(1.0);
   BGen.addPhase({120},{120.0});
   BGen.addPhase({120},{120.0});
-  BGen.generateBlades(Control,"cspecDBlade",0.95,22.5,33.5);
-
+  BGen.generateBlades(Control,"cspecDBlade",0.0,25.0,35.0);
   
   return;
 }
