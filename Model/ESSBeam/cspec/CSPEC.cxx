@@ -106,7 +106,14 @@ CSPEC::CSPEC(const std::string& keyName) :
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
-  BendC(new beamlineSystem::GuideLine(newName+"BC"))
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+
+  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  BWDiskA(new constructSystem::DiskChopper(newName+"BWDiskA")),
+
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  BendD(new beamlineSystem::GuideLine(newName+"BD"))
+
 
  /*!
     Constructor
@@ -128,7 +135,13 @@ CSPEC::CSPEC(const std::string& keyName) :
   OR.addObject(FocusB);
 
   OR.addObject(VPipeC);
-  OR.addObject(BendC);
+  OR.addObject(FocusC);
+
+  OR.addObject(ChopperA);
+  OR.addObject(BWDiskA);
+
+  OR.addObject(VPipeD);
+  OR.addObject(BendD);
 
 }
   
@@ -186,6 +199,8 @@ CSPEC::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("CSPEC","build");
 
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+  
   ELog::EM<<"\nBuilding CSPEC on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
@@ -194,7 +209,7 @@ CSPEC::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,1);
+  setBeamAxis(Control,GItem,0);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -203,7 +218,6 @@ CSPEC::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
-  
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
 
@@ -213,10 +227,25 @@ CSPEC::build(Simulation& System,
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
-  BendC->addInsertCell(VPipeC->getCells("Void"));
-  BendC->createAll(System,*VPipeC,2,*VPipeC,2);
+  
+  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  ELog::EM<<"CC == "<<FocusC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
+  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+  ELog::EM<<"CC == "<<FocusC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+  BWDiskA->addInsertCell(ChopperA->getCell("Void"));
+  BWDiskA->createAll(System,ChopperA->getKey("Main"),0,
+                     ChopperA->getKey("Beam"),2);
+  
+  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
 
-
+  BendD->addInsertCell(VPipeD->getCells("Void"));
+  BendD->createAll(System,*VPipeD,0,*VPipeD,0);
+  
   return;
 }
 

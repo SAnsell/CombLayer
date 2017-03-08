@@ -217,7 +217,6 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
     \param length :: total length
     \param H :: Horrizontal 
     \param V :: Vertical 
-
    */
 {
   ELog::RegMethod RegA("FocusGenerator","generateTaper");

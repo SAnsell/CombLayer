@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/H2Section.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -164,12 +165,6 @@ H2Section::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("H2Section","populate");
   
   ModBase::populate(Control);
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   if (nLayers==0) nLayers=1;  // Layers include middle

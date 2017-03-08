@@ -3,7 +3,7 @@
  
  * File:   essBuild/EdgeWater.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -197,15 +198,27 @@ EdgeWater::createUnitVector(const attachSystem::FixedComp& FC,
 void
 EdgeWater::createLinks()
   /*!
-    Construct links for the triangle moderator
-    The normal 1-3 and 5-6 are plane,
-    7,8,9 are 
+    Construct links for edge water unit
+    First 6 are the normal x,y,z 
   */
 {
   ELog::RegMethod RegA("EdgeWater","createLinks");
 
-  // Loop over corners that are bound by convex
+  std::string Out;
+  HeadRule HR;
 
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 203 ");
+  HR.procString(Out);
+  HR.makeComplement();
+  FixedComp::setLinkSurf(2,HR);
+  FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
+                        
+  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 -204 ");
+  HR.procString(Out);
+  HR.makeComplement();
+  FixedComp::setConnect(3,Origin+X*(wallThick+cutWidth/2.0),X);
+  FixedComp::setLinkSurf(3,HR);
+  
   return;
 }
   
@@ -264,10 +277,12 @@ EdgeWater::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
 				   modTemp,Out+container+divider));
   CellMap::setCell("Water",  cellIndex-1);
+  
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
   CellMap::addCell("Wall",  cellIndex-1);
+
   Out=ModelSupport::getComposite(SMap,edgeIndex," 2 -12 -104 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
   CellMap::addCell("Wall",  cellIndex-1);
@@ -276,8 +291,9 @@ EdgeWater::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -103 203 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
-    CellMap::addCell("Wall",  cellIndex-1);
-    CellMap::setCell("InnerAlSupply",  cellIndex-1);
+  CellMap::addCell("Wall",  cellIndex-1);
+  CellMap::setCell("InnerAlSupply",  cellIndex-1);
+    
   Out=ModelSupport::getComposite(SMap,edgeIndex," -12 104 -204");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));

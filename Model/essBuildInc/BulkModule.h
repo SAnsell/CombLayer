@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/BulkModule.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,20 +36,14 @@ namespace essSystem
 */
 
 class BulkModule : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int bulkIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle of master XY rotation
-  double zAngle;                ///< Angle of master Z rotation
-
+ 
   size_t nLayer;                 ///< Number of layers
   std::vector<double> radius;        ///< radius of outer
   std::vector<double> height;        ///< Heights
@@ -58,8 +52,8 @@ class BulkModule : public attachSystem::ContainedComp,
   std::vector<Geometry::Vec3D> COffset;   ///< Centre offset
   std::vector<int> Mat;             ///< Default materials
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createLinks();

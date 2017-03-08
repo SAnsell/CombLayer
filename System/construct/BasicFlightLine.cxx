@@ -3,7 +3,7 @@
  
  * File:   construct/BasicFlightLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -83,7 +84,7 @@ namespace moderatorSystem
 
 BasicFlightLine::BasicFlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedComp(Key,12),
+  attachSystem::FixedOffset(Key,12),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flightIndex+1),nLayer(0),tapFlag(0)
   /*!
@@ -93,11 +94,10 @@ BasicFlightLine::BasicFlightLine(const std::string& Key)  :
 {}
 
 BasicFlightLine::BasicFlightLine(const BasicFlightLine& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),
   flightIndex(A.flightIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),height(A.height),width(A.width),
+  height(A.height),width(A.width),
   innerMat(A.innerMat),nLayer(A.nLayer),lThick(A.lThick),
   lMat(A.lMat),tapFlag(A.tapFlag),attachRule(A.attachRule)
   /*!
@@ -123,13 +123,9 @@ BasicFlightLine::operator=(const BasicFlightLine& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
       anglesZ[0]=A.anglesZ[0];
@@ -160,12 +156,8 @@ BasicFlightLine::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("BasicFlightLine","populate");
-  
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  FixedOffset::populate(Control);
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");
@@ -215,9 +207,10 @@ BasicFlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BasicFlightLine","createUnitVector");
   FixedComp::createUnitVector(FC,sideIndex);
+  // maybe zero yStep?
+  yStep=0.0;
+  applyOffset();
 
-  applyShift(xStep,0,zStep);
-  applyAngleRotate(xyAngle,zAngle);
   return;
 }
 
@@ -410,7 +403,8 @@ BasicFlightLine::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BasicFlightLine","createAll");
-  populate(System.getDataBase());
+  BasicFlightLine::populate(System.getDataBase());
+
   createUnitVector(originFC,originIndex);
   createSurfaces();
 

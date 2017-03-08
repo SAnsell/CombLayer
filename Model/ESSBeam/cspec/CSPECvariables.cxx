@@ -91,26 +91,27 @@ CSPECvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"cspecFA",350.0, 9.1,10.6, 10.0,14.8);
 
 
-  PipeGen.generatePipe(Control,"cspecPipeB",8.0,44.0);
+  PipeGen.generatePipe(Control,"cspecPipeB",8.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"cspecFB",42.0, 1.88,2.06,4.6,4.5);   
+  FGen.generateRectangle(Control,"cspecFB",44.0, 10.6,14.8);   
 
   PipeGen.generatePipe(Control,"cspecPipeC",4.0,1260.0);
-  FGen.generateBender(Control,"cspecBC",1256.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
+  FGen.generateRectangle(Control,"cspecFC",1256.0, 10.6,14.8);   
 
   CGen.setMainRadius(38.122);   // diameter 70.0 internal
   CGen.setFrame(86.5,86.5);
-  CGen.generateChopper(Control,"cspecChopperA",55.0,9.0,3.55);  
+  CGen.generateChopper(Control,"cspecChopperA",8.0,10.0,6.5);  
 
-    // Double Blade chopper
+  // BW1 Blade
   BGen.setMaterials("Aluminium","B4C");
-  BGen.setThick({2.0,2.0});
-  BGen.setGap(1.0);
-  BGen.addPhase({120},{120.0});
-  BGen.addPhase({120},{120.0});
-  BGen.generateBlades(Control,"cspecDBlade",0.0,25.0,35.0);
-  
+  BGen.setThick({0.5});
+  BGen.addPhase({120},{35.74});
+  BGen.generateBlades(Control,"cspecBWDiskA",0.0,20.0,35.0);
+
+  PipeGen.generatePipe(Control,"cspecPipeD",4.0,510.0);
+  FGen.generateBender(Control,"cspecBD",506.0, 3.0,3.0,3.0,3.0,20000.0,0.0);
+    
   return;
 }
  

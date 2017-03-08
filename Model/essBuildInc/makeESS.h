@@ -115,10 +115,10 @@ class makeESS
   std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod 
   std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod
 
-  std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
-  std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
-  std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
-  std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
+  std::shared_ptr<PreModWing> LowPreWingA; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> LowPreWingB; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWingA; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWingB; ///< Top premoderator wing
 
   std::shared_ptr<essSystem::WedgeFlightLine> TopAFL;  ///< Top Mod FL
   std::shared_ptr<essSystem::WedgeFlightLine> TopBFL;  ///< Top Mod FL
@@ -176,7 +176,7 @@ class makeESS
 			  const mainSystem::inputParam&);
   void buildBunkerQuake(Simulation&,
 			const mainSystem::inputParam&);
-  void buildPreWings(Simulation&,const std::string&);
+  void buildPreWings(Simulation&);
   void buildTwister(Simulation&);
 
   void buildF5Collimator(Simulation&,const size_t);

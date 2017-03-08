@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2015-2016 by Konstantin Batkov
+ * Copyright (c) 2015-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -86,7 +87,7 @@ namespace essSystem
 
 PreModWing::PreModWing(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,3),
+  attachSystem::FixedOffset(Key,3),
   attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
@@ -97,14 +98,15 @@ PreModWing::PreModWing(const std::string& Key) :
 {}
 
 PreModWing::PreModWing(const PreModWing& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),attachSystem::CellMap(A),
+  
   modIndex(A.modIndex),cellIndex(A.cellIndex),
-  engActive(A.engActive),tiltSign(A.tiltSign),thick(A.thick),
+  innerHeight(A.innerHeight),outerHeight(A.outerHeight),
+  innerDepth(A.innerDepth),outerDepth(A.outerDepth),
   wallThick(A.wallThick),innerRadius(A.innerRadius),
-  innerYCut(A.innerYCut),tiltAngle(A.tiltAngle),
-  tiltRadius(A.tiltRadius),mat(A.mat),wallMat(A.wallMat),
-  baseSurf(A.baseSurf)
+  outerRadius(A.outerRadius),innerYCut(A.innerYCut),
+  mat(A.mat),wallMat(A.wallMat),topSurf(A.topSurf),
+  baseSurf(A.baseSurf),innerSurf(A.innerSurf)
   /*!
     Copy constructor
     \param A :: PreModWing to copy
@@ -122,20 +124,22 @@ PreModWing::operator=(const PreModWing& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      engActive=A.engActive;
-      tiltSign=A.tiltSign;
-      thick=A.thick;
+      innerHeight=A.innerHeight;
+      outerHeight=A.outerHeight;
+      innerDepth=A.innerDepth;
+      outerDepth=A.outerDepth;
       wallThick=A.wallThick;
       innerRadius=A.innerRadius;
+      outerRadius=A.outerRadius;
       innerYCut=A.innerYCut;
-      tiltAngle=A.tiltAngle;
-      tiltRadius=A.tiltRadius;
       mat=A.mat;
       wallMat=A.wallMat;
+      topSurf=A.topSurf;
       baseSurf=A.baseSurf;
+      innerSurf=A.innerSurf;
     }
   return *this;
 }
@@ -149,6 +153,7 @@ PreModWing::clone() const
 {
   return new PreModWing(*this);
 }
+
 
 PreModWing::~PreModWing()
   /*!
@@ -166,15 +171,17 @@ PreModWing::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PreModWing","populate");
 
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-
-  thick=Control.EvalVar<double>(keyName+"Thick");
-  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
-  innerYCut=Control.EvalVar<double>(keyName+"InnerYCut");
+  FixedOffset::populate(Control);
+  
+  innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
+  outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
+  innerDepth=Control.EvalVar<double>(keyName+"InnerDepth");
+  outerDepth=Control.EvalVar<double>(keyName+"OuterDepth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  tiltAngle=Control.EvalVar<double>(keyName+"TiltAngle");
-  tiltRadius=Control.EvalVar<double>(keyName+"TiltRadius");
+  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  innerYCut=Control.EvalVar<double>(keyName+"InnerYCut");
 
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -185,23 +192,16 @@ PreModWing::populate(const FuncDataBase& Control)
 
 void
 PreModWing::createUnitVector(const attachSystem::FixedComp& FC,
-                             const long int sideIndex,
-			     const bool zRotate)
+                             const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Centre for object
     \param sideIndex :: index for link
-    \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("PreModWing","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getSignedLinkPt(sideIndex);
-  if (zRotate)
-    {
-      X*=-1;
-      Z*=-1;
-    }
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -214,38 +214,51 @@ PreModWing::createSurfaces()
 {
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
-  // cone must be shifted for the tilting to start at Y=tiltRadius
-  const double coneShift=
-    tiltRadius * tan(tiltAngle*M_PI/180.0); 
 
-  // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin+Y*innerYCut,Y);
-  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Y,innerRadius+wallThick);  
+  // First define the inner/outer radiii
+  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,innerRadius);
+  ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
 
-
-  // dividing surface
-  ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,tiltRadius);
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick*tiltSign),
-                           Z*tiltSign);  
-  ModelSupport::buildPlane(SMap,modIndex+15,
-                           Origin+Z*(thick+wallThick*tiltSign),Z*tiltSign);  
-  if (tiltAngle>Geometry::zeroTol)
+  // make height cone if given:
+  const double IR(innerRadius>Geometry::zeroTol  ? innerRadius : 0.0);
+  if (outerHeight>innerHeight+Geometry::zeroTol)
     {
-      ModelSupport::buildPlane(SMap,modIndex+9,Origin,Z);
-      ModelSupport::buildCone(SMap,modIndex+8,
-                              Origin+Z*(thick+coneShift*tiltSign),
-                              Z,90.0-tiltAngle);
-      ModelSupport::buildCone(SMap,modIndex+18,
-                              Origin+Z*(thick+wallThick+coneShift)*tiltSign,
-                              Z, 90-tiltAngle);
+      const double effHeight=
+	  outerHeight-(outerHeight-innerHeight)*outerRadius/(outerRadius-IR);
+      const double tanHTheta=(outerRadius-IR)/(outerHeight-innerHeight);
+      const double thetaH=atan(tanHTheta)*180.0/M_PI;
+
+      ModelSupport::buildCone(SMap,modIndex+9,Origin+Z*effHeight,-Z,thetaH);
+      ModelSupport::buildCone(SMap,modIndex+19,
+                              Origin+Z*(effHeight-wallThick),-Z,thetaH);
+      ModelSupport::buildPlane(SMap,modIndex+1006,Origin+Z*effHeight,Z);
+      ModelSupport::buildPlane(SMap,modIndex+1016,Origin+Z*(effHeight-wallThick),Z);
+
     }
-  else  
+        
+  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*innerHeight,Z);
+  ModelSupport::buildPlane(SMap,modIndex+16,Origin+Z*(innerHeight-wallThick),Z);
+
+  // make height cone if given:
+  // calculate relative to outer zero [and correct to centre]
+  if (outerDepth>innerDepth+Geometry::zeroTol)
     {
-      ELog::EM<<"THIS DOESNT WORK"<<ELog::endErr;
-      // ModelSupport::buildPlane(SMap,modIndex+8,Origin+Z*(thick+coneShift)*tiltSign, Z*tiltSign);
-      // ModelSupport::buildPlane(SMap,modIndex+18,Origin+Z*(thick+wallThick+coneShift)*tiltSign, Z*tiltSign);
+      const double effDepth=
+	  outerDepth-(outerDepth-innerDepth)*outerRadius/(outerRadius-IR);
+
+      const double tanDTheta=(outerRadius-IR)/(outerDepth-innerDepth);
+      const double thetaD=atan(tanDTheta)*180.0/M_PI;
+
+      ModelSupport::buildCone(SMap,modIndex+8,Origin-Z*effDepth,Z,thetaD);
+      ModelSupport::buildCone(SMap,modIndex+18,Origin-Z*(effDepth-wallThick),Z,thetaD);
+      // cutters for cone
+      // not at lifted positoin
+      ModelSupport::buildPlane(SMap,modIndex+1005,Origin-Z*effDepth,Z);
+      ModelSupport::buildPlane(SMap,modIndex+1015,Origin-Z*(effDepth-wallThick),Z);
     }
+  // flat section
+  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*innerDepth,Z);
+  ModelSupport::buildPlane(SMap,modIndex+15,Origin-Z*(innerDepth-wallThick),Z);
 
   return; 
 }
@@ -261,30 +274,58 @@ PreModWing::createObjects(Simulation& System)
   ELog::RegMethod RegA("PreModWing","createObjects");
 
   std::string Out;
+
   
-  // Inner water:
-  Out=ModelSupport::getComposite(SMap,modIndex," 1  ");
+  // BASE
+  // inner first
+  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7");
+  Out+=innerSurf.display();
+  Out+=baseSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
+  Out=ModelSupport::getComposite(SMap,modIndex," -15 5  -7 ");
+  Out+=innerSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  /*  
-  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ");
+  // cone section
+  Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 7 -17 ");
+  Out+=innerSurf.display();
+  Out+=baseSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ");// + PreString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+excludeBM));
-  
-  Out=ModelSupport::getComposite(SMap,modIndex," 7 -8 ") + PreString;
-  // Originally I excluded all moderator by +excludeBM string, but actually this particular cell
-  // only crosses its left+right water cells, so I use +BM->getLeftRightWaterSideRule()
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
-				   Out+excludeBMLeftRightWater+BMouterCyl));
+  Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 7 -17 (8:1005) ");
+  Out+=innerSurf.display();
+  Out+=baseSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 7 8 -9 ") + PreString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
-				   Out + excludeBMLeftRightWater + BMouterCyl)); // same trick with excludeBMLeftRightWater as in the previous cell
-  */
+
+  // TOP
+  // inner first
+  Out=ModelSupport::getComposite(SMap,modIndex," 6 -7 ");
+  Out+=innerSurf.display();
+  Out+=topSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6  -7 ");
+  Out+=innerSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  // cone section
+  Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 7 -17 ");
+  Out+=innerSurf.display();
+  Out+=topSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 7 -17 (9:-1006) ");
+  Out+=innerSurf.display();
+  Out+=topSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+
+  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) -17 ");
+  Out+=mainDivider.display();
   addOuterSurf(Out);
+
   return; 
 }
 
@@ -302,25 +343,20 @@ PreModWing::createLinks()
 
 void
 PreModWing::createAll(Simulation& System,
-		      const attachSystem::FixedComp& Pre,
-                      const long int preLinkIndex,
-		      const bool zRotate,
-		      const int tiltSideDirection)
+		      const attachSystem::FixedComp& ModFC,
+                      const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param Pre :: Attachment point
-    \param preLinkIndex :: z-surface of Pre-Mod 
-    \param zRotate :: true if must be flipped
-    \param tiltSideDirection :: tilt side
+    \param ModFC :: Attachment point
+    \param sideIndex :: link point
    */
 {
   ELog::RegMethod RegA("PreModWing","createAll");
 
-  tiltSign = (tiltSideDirection>0) ? 1 : -1;
 
   populate(System.getDataBase());
-  createUnitVector(Pre,preLinkIndex,zRotate);
+  createUnitVector(ModFC,sideIndex);
 
   createSurfaces();
   createObjects(System);

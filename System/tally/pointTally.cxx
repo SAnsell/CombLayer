@@ -152,7 +152,7 @@ pointTally::setSecondDist(const double D)
     \param D :: Second back track distance
   */
 {
-  ELog::EM<<"SECOND ++ "<<D<<ELog::endDebug;
+  ELog::EM<<"SECOND Distance:: "<<D<<ELog::endDiag;
   secondDist=D;
   secondDFlag=1;
   return;

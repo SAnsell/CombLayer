@@ -82,10 +82,7 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "surfDIter.h"
-#include "LayerDivide3D.h"
-#include "insertObject.h"
-#include "insertPlate.h"
-#include "addInsertObj.h"
+#include "BunkerQUnit.h"
 #include "BunkerQuake.h"
 
 
@@ -93,50 +90,13 @@ namespace essSystem
 {
 
 BunkerQuake::BunkerQuake(const std::string& bunkerName) :
-  attachSystem::ContainedComp(),
-  attachSystem::FixedComp(bunkerName+"Quake",6),
-  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
-  cellIndex(cutIndex+1)
+  attachSystem::FixedComp(bunkerName+"Quake",0),
+  cutIndex(ModelSupport::objectRegister::Instance().cell(keyName))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param bunkerName :: Name of the bunker object that is building this roof
   */
 {}
-
-BunkerQuake::BunkerQuake(const BunkerQuake& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  baseName(A.baseName),cutIndex(A.cutIndex),
-  cellIndex(A.cellIndex),xGap(A.xGap),zGap(A.zGap),
-  PFlag(A.PFlag),cPts(A.cPts)
-  /*!
-    Copy constructor
-    \param A :: BunkerQuake to copy
-  */
-{}
-
-BunkerQuake&
-BunkerQuake::operator=(const BunkerQuake& A)
-  /*!
-    Assignment operator
-    \param A :: BunkerQuake to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
-      xGap=A.xGap;
-      zGap=A.zGap;
-      PFlag=A.PFlag;
-      cPts=A.cPts;
-    }
-  return *this;
-}
 
 
 BunkerQuake::~BunkerQuake() 
@@ -145,94 +105,6 @@ BunkerQuake::~BunkerQuake()
   */
 {}
 
-void
-BunkerQuake::populate(const FuncDataBase& Control)
-  /*!
-    Populate all the variables
-    \param Control :: Variable data base
-  */
-{
-  ELog::RegMethod RegA("BunkerQuake","populate");
-  xGap=Control.EvalVar<double>(keyName+"XGap");
-  zGap=Control.EvalVar<double>(keyName+"ZGap");
-
-  Geometry::Vec3D APt,BPt;
-  const size_t NPt=Control.EvalVar<size_t>(keyName+"NPoint");
-
-  int flag(1);
-  for(size_t index=0;index<NPt;index++)
-    {
-      const std::string IStr=StrFunc::makeString(index);
-      flag=Control.EvalDefVar<int>(keyName+"PtFlag"+IStr,flag);
-      APt=Control.EvalVar<Geometry::Vec3D>(keyName+"PtA"+IStr);
-      cPts.push_back(APt);
-      PFlag.push_back(flag);
-    }
-  return;
-}
-  
-void
-BunkerQuake::createUnitVector(const attachSystem::FixedComp& FC,
-                              const long int orgIndex,
-                              const long int axisIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Linked object (bunker )
-    \param orgIndex :: origin point [lower part of roof]
-    \param axisIndex :: axis index direction
-  */
-{
-  ELog::RegMethod RegA("BunkerQuake","createUnitVector");
-
-  FixedComp::createUnitVector(FC,axisIndex);
-  Origin=FC.getSignedLinkPt(orgIndex);
-  return;
-}
-
-void
-BunkerQuake::modifyPoints()
-  /*!
-    Modify the points to use the origin (or just the z origin)
-   */
-{
-  for(size_t index=0;index<cPts.size();index++)
-    {
-      if (PFlag[index]==1)
-        {
-          cPts[index]+=Z*Origin.Z();
-        }
-      else if (PFlag[index]==2)
-        {
-          cPts[index]=Origin+
-            X*cPts[index].X()+Y*cPts[index].Y()+Z*cPts[index].Z();
-        }
-    }        
-  return;
-}
-
-
-void
-BunkerQuake::createObjects(Simulation& System)
-  /*!
-    Create all the objects
-    \param System :: Simulation to use
-   */
-{
-  ELog::RegMethod RegA("BunkerQuake","createObjects");
-  
-  for(size_t index=1;index<cPts.size();index++)
-    {
-      const std::string ItemName(keyName+"Cut"+StrFunc::makeString(index));
-      const Geometry::Vec3D YDir((cPts[index]-cPts[index-1]).unit());
-      const double yGap=cPts[index].Distance(cPts[index-1]);
-
-      constructSystem::addInsertPlateCell
-        (System,ItemName,(cPts[index-1]+cPts[index])/2.0+Z*(zGap/2.0),
-         YDir,Z,xGap,yGap,zGap,"Void");
-    }      
-
-  return;
-}
  
 void
 BunkerQuake::createAll(Simulation& System,
@@ -249,12 +121,21 @@ BunkerQuake::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BunkerQuake","createAll");
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-  populate(System.getDataBase());  
-  createUnitVector(FC,orgIndex,axisIndex);
-  ELog::EM<<"Origin == "<<Origin<<ELog::endDiag;
-  modifyPoints();
-  createObjects(System);
+
+
+  const FuncDataBase& Control=System.getDataBase();
+
+  const size_t NPath=Control.EvalVar<size_t>(keyName+"NPath");
+  for(size_t i=0;i<NPath;i++)
+    {
+      QUnit.push_back(std::shared_ptr<BunkerQUnit>
+		      (new BunkerQUnit(keyName+StrFunc::makeString(i))));
+      OR.addObject(QUnit.back());
+      QUnit.back()->createAll(System,FC,orgIndex,axisIndex);
+    }
   return;
 }
 

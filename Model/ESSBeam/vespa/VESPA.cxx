@@ -85,6 +85,7 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "ChopperUnit.h"
+#include "TwinChopper.h"
 #include "DetectorTank.h"
 #include "LineShield.h"
 #include "Jaws.h"

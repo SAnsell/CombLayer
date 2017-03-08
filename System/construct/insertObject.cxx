@@ -87,7 +87,7 @@ namespace constructSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,14),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),

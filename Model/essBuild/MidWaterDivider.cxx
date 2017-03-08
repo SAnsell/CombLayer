@@ -3,7 +3,7 @@
  
  * File:   essBuild/MidWaterDivider.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -93,7 +94,7 @@ MidWaterDivider::MidWaterDivider(const std::string& baseKey,
 				 const std::string& extraKey) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(baseKey+extraKey,10),
+  attachSystem::FixedComp(baseKey+extraKey,14),
   baseName(baseKey),
   divIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(divIndex+1)
@@ -261,6 +262,27 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
       	(index,SurInter::getPoint(PA,PB,midPlane),Axis[index]);
     }
 
+  // full cut out
+  std::string Out;
+  HeadRule HR;
+
+  Out=ModelSupport::getComposite(SMap,divIndex,"(-123 : 124) -131 -132 ");
+  HR.procString(Out);
+  HR.makeComplement();
+  FixedComp::setLinkSurf(10,HR);
+  FixedComp::setBridgeSurf(10,-SMap.realSurf(divIndex+100));
+
+  // +ve Y
+  Out=ModelSupport::getComposite(SMap,divIndex,"(-103 : 104)  -111 -112 ");
+  HR.procString(Out);
+  HR.makeComplement();  
+  FixedComp::setLinkSurf(11,HR);
+  FixedComp::setBridgeSurf(11,SMap.realSurf(divIndex+100));
+
+
+  FixedComp::setLinkSurf(12,SMap.realSurf(divIndex+100));
+  FixedComp::setConnect(12,Origin,Y);
+  
   return;
 }
   
@@ -406,10 +428,6 @@ MidWaterDivider::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,divIndex,
 				 "100 (-103 : 104)  -111 -112 ");
   addOuterSurf(Out);
-
-
-
-
 
   
   Out=ModelSupport::getComposite(SMap,divIndex,

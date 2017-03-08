@@ -399,7 +399,6 @@ DBMaterial::initMaterial()
 
   // Material #52: 5% borated poly  
   // Total atom density 0.1154 atom/barn-cm
-
   MObj.setMaterial(52,"B-Poly","1001.70c  0.0752 6000.70c "
 		   "0.0376 5010.70c  0.00051 5011.70c  0.002053",
 		   "poly.01t",MLib);
@@ -1199,13 +1198,21 @@ DBMaterial::initMaterial()
   MObj.setDensity(-2.35);
   setMaterial(MObj);
 
-  // Silver
+  // Material #136 Silver
   // Density 10.49g/cc atomic rho=0.058573
   MObj.setMaterial(136,"Silver","47107.70c 0.043778 "
                    "47109.70c 0.040672 ","",MLib); 
   MObj.setDensity(-10.49); // wikipedia
   setMaterial(MObj);
 
+  // 
+  // Material #137 Hi-DensityPoly:
+  MObj.setMaterial(137,"HighDensPoly","6000.70c 0.0333333 "
+		   "1001.70c 0.0666666666","poly.01t",MLib);
+  MObj.setDensity(-1.05);
+  setMaterial(MObj);
+
+  
   return;
 }
 

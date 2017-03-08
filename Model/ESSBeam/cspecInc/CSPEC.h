@@ -75,16 +75,25 @@ class CSPEC : public attachSystem::CopiedComp
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
-  // Vac pipe in 
+  // Vac pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
-  // Vac pipe in 
+  /// Vac pipe to 18m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
-  /// Elliptic guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> BendC;
+  /// Direct beamguide to 18m
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
+  /// First Chopper unit [BW1]
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  /// First BW blade
+  std::shared_ptr<constructSystem::DiskChopper> BWDiskA;
+
+  /// Vac pipe to bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// S-Bender first section [in bunker]
+  std::shared_ptr<beamlineSystem::GuideLine> BendD;
   void setBeamAxis(const FuncDataBase&,
 		   const GuideItem&,const bool);
   

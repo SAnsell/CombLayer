@@ -199,7 +199,7 @@ insertPlate::createUnitVector(const Geometry::Vec3D& OG,
   Geometry::Vec3D yTest(YUnit.unit());
   Geometry::Vec3D zTest(ZUnit.unit());
   FixedComp::computeZOffPlane(xTest,yTest,zTest);
-  ELog::EM<<"KLey == "<<xTest<<":"<<yTest<<":"<<zTest<<ELog::endDiag;
+
   FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
   Origin=OG;
   applyOffset();
@@ -272,11 +272,11 @@ insertPlate::createLinks()
       FixedComp::setBridgeSurf(1,getBackBridgeRule());
       FixedComp::setConnect
         (1,SurInter::getLinePoint(Origin,Y,getBackRule(),
-				  getBackBridgeRule()),Y);
+				  getBackBridgeRule()),Y);  
     }
   else
     {
-      FixedComp::setConnect(1,Origin+Y*(depth/2.0),-Y);
+      FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
     }
   
@@ -290,11 +290,19 @@ insertPlate::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
 
-  // corners 
-  FixedComp::setConnect(6,Origin-X*(width/2.0)-Z*(height/2.0),-X-Z);
-  FixedComp::setConnect(7,Origin+X*(width/2.0)-Z*(height/2.0),X-Z);
-  FixedComp::setConnect(8,Origin-X*(width/2.0)+Z*(height/2.0),-X+Z);
-  FixedComp::setConnect(9,Origin+X*(width/2.0)+Z*(height/2.0),X+Z);
+  // corners
+  const Geometry::Vec3D frontPt=getSignedLinkPt(1);
+  FixedComp::setConnect(6,frontPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
+  FixedComp::setConnect(7,frontPt+X*(width/2.0)-Z*(height/2.0),X-Z);
+  FixedComp::setConnect(8,frontPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
+  FixedComp::setConnect(9,frontPt+X*(width/2.0)+Z*(height/2.0),X+Z);
+
+  // Back corner:
+  const Geometry::Vec3D backPt=getSignedLinkPt(2);
+  FixedComp::setConnect(10,backPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
+  FixedComp::setConnect(11,backPt+X*(width/2.0)-Z*(height/2.0),X-Z);
+  FixedComp::setConnect(12,backPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
+  FixedComp::setConnect(13,backPt+X*(width/2.0)+Z*(height/2.0),X+Z);
 
   FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+3));
   FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+4));
@@ -305,6 +313,16 @@ insertPlate::createLinks()
   FixedComp::addLinkSurf(7,-SMap.realSurf(ptIndex+5));
   FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+6));
   FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+6));
+
+  FixedComp::setLinkSurf(10,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(11,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(12,-SMap.realSurf(ptIndex+3));
+  FixedComp::setLinkSurf(13,SMap.realSurf(ptIndex+4));
+
+  FixedComp::addLinkSurf(10,-SMap.realSurf(ptIndex+5));
+  FixedComp::addLinkSurf(11,-SMap.realSurf(ptIndex+5));
+  FixedComp::addLinkSurf(12,SMap.realSurf(ptIndex+6));
+  FixedComp::addLinkSurf(13,SMap.realSurf(ptIndex+6));
 
   return;
 }

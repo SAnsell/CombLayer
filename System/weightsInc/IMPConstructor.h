@@ -3,7 +3,7 @@
  
  * File:   weightsInc/IMPConstructor.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,6 @@ namespace Geometry
   class Plane;
 }
 
-/*!
-  \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
-  \author S. Ansell
-  \version 1.0
-  \date April 2009
-*/
 
 class Simluation;
 
@@ -47,7 +40,15 @@ namespace mainSystem
 
 namespace physicsSystem
 {
-  
+
+/*!
+  \class IMPConstructor
+  \brief Controls importance of cells
+  \author S. Ansell
+  \version 1.0
+  \date April 2016
+*/
+
 class IMPConstructor 
 {
  private:
