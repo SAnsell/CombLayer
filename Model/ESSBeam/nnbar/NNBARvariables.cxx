@@ -118,18 +118,14 @@ NNBARvariables(FuncDataBase& Control)
   FGen.generateRectangle(Control,"nnbarFD",1992.0,57.5,27.5);
 
   // BEAM INSERT:
-  Control.addVariable("nnbarBInsertHeight",80.0);
-  Control.addVariable("nnbarBInsertWidth",80.0);
+  Control.addVariable("nnbarBInsertHeight",90.0);
+  Control.addVariable("nnbarBInsertWidth",90.0);
   Control.addVariable("nnbarBInsertTopWall",1.0);
   Control.addVariable("nnbarBInsertLowWall",1.0);
   Control.addVariable("nnbarBInsertLeftWall",1.0);
   Control.addVariable("nnbarBInsertRightWall",1.0);
   Control.addVariable("nnbarBInsertWallMat","Stainless304");       
 
-  Control.addVariable("G1BLineTop11Width1",50.0);
-  Control.addVariable("G1BLineTop11Width2",65.0);
-  Control.addVariable("G1BLineTop11Depth1",15.0);
-  Control.addVariable("GuideBayInnerHeight",60.0);
 
   LGen.generateLayer(Control,"nnbarShieldA",3500.0,1);
   // Section from 30m to 50m
@@ -175,6 +171,10 @@ NNBARvariables(FuncDataBase& Control)
   Control.addVariable("nnbarCaveCutShape","Circle");
   Control.addVariable("nnbarCaveCutRadius",100.0);
 
+  Control.addVariable("G1BLineTop11Width1",50.0);
+  Control.addVariable("G1BLineTop11Width2",65.0);
+  Control.addVariable("G1BLineTop11Depth1",15.0);
+  Control.addVariable("GuideBayInnerHeight",60.0);
 
   return;
 }

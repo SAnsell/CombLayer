@@ -342,6 +342,36 @@ inputParam::flag(const std::string& K) const
 }
 
 template<typename T>
+std::set<T>
+inputParam::getComponents(const std::string& K,
+                          const size_t index) const
+  /*!
+    Find all the values for a given key
+    \param K :: Key name
+    \param index :: index item
+    \return set of items [as string]
+  */
+{
+  ELog::RegMethod RegA("inputParam","getComponents");
+
+  std::set<T> Out;
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+
+  const size_t N=IPtr->getNSets();
+  
+  for(size_t i=0;i<N;i++)
+    {
+      const size_t NI=IPtr->getNItems(i);
+      if (NI>=index)
+        Out.insert(IPtr->getObj<T>(i,index));
+    }
+      
+  return Out;
+}
+  
+template<typename T>
 T
 inputParam::getFlagDef(const std::string& InpKey,
 		       const FuncDataBase& Control,
@@ -1294,6 +1324,9 @@ inputParam::regDefItemList(const std::string&,
 			   const std::string&,const size_t,
 			   const std::vector<std::string>&);
 
+template std::set<std::string>
+inputParam::getComponents(const std::string&,const size_t) const;
+                           
 ///\endcond TEMPLATE
  
 }  // NAMESPACE mainSystem

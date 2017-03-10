@@ -30,6 +30,7 @@ namespace mainSystem
 
 namespace setVariable
 {
+
   // Structure
   void EssBeamLinesVariables(FuncDataBase&);
   void EssBunkerVariables(FuncDataBase&);
@@ -41,6 +42,9 @@ namespace setVariable
   void EssLinacVariables(FuncDataBase&);
   void F5Variables(FuncDataBase&);
 
+  void EssInstrumentVariables
+    (const std::set<std::string>&,FuncDataBase&);
+    
   // ESS Beamlines
   void BEERvariables(FuncDataBase&);
   void BIFROSTvariables(FuncDataBase&);

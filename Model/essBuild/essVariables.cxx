@@ -55,11 +55,13 @@ namespace setVariable
 {
 
 void
-EssVariables(FuncDataBase& Control)
+EssVariables(FuncDataBase& Control,
+             const std::set<std::string>& beamNames)
   /*!
     Function to set the control variables and constants
     -- This version is for ESS ()
     \param Control :: Function data base to add constants too
+    \param beamName :: Set of beamline names
   */
 {
 // -----------
@@ -276,37 +278,15 @@ EssVariables(FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   EssPipeVariables(Control);
   
-  BEERvariables(Control);
-  BIFROSTvariables(Control);
-  CSPECvariables(Control);
-  DREAMvariables(Control);
-  ESTIAvariables(Control);
-  FREIAvariables(Control);
-  LOKIvariables(Control);
-  MAGICvariables(Control);
-  MIRACLESvariables(Control);
-  NMXvariables(Control);
-  NNBARvariables(Control);
-  ODINvariables(Control);
-  TREXvariables(Control);
-  TESTBEAMvariables(Control);
-  VESPAvariables(Control);
-  VORvariables(Control);
-  simpleITEMvariables(Control);
-
-  shortDREAMvariables(Control);
-  shortDREAM2variables(Control);
-  shortNMXvariables(Control);
-  shortODINvariables(Control);
-  
   EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);
   EssIradVariables(Control);
   EssFlightLineVariables(Control);
-  
   F5Variables(Control);
 
+  EssInstrumentVariables(beamNames,Control);
+  
   Control.addVariable("sdefEnergy",2000.0);
   // port version:
   Control.addVariable("portSourceASpread",0.0);
@@ -609,4 +589,59 @@ EssFlightLineVariables(FuncDataBase& Control)
   return;
 }
 
+
+void
+EssInstrumentVariables(const std::set<std::string>& BL,
+                       FuncDataBase& Control)
+  /*!
+    Construct the variables for the beamlines if required
+    \param BL :: Set for the beamlines
+    \param Control :: Database for variables
+   */
+{
+  ELog::RegMethod RegA("essVariables[F]",
+                       "EssInstrumentVariables");
+
+  typedef void (*VariableFunction)(FuncDataBase&);
+  typedef std::map<std::string,VariableFunction> VMap;
+  
+  const VMap VarInit({
+     {"BEER",        &BEERvariables},
+     {"BIFROST",     &BIFROSTvariables},
+     {"CSPEC",       &CSPECvariables},
+     {"DREAM",       &DREAMvariables},     
+     {"ESTIA",       &ESTIAvariables},   
+     {"FREIA",       &FREIAvariables}, 
+     {"LOKI",        &LOKIvariables},
+     {"MAGIC",       &MAGICvariables},
+     {"MIRACLES",    &MIRACLESvariables},
+     {"NMX",         &NMXvariables},
+     {"NNBAR",       &NNBARvariables},
+     {"ODIN",        &ODINvariables},
+     {"TREX",        &TREXvariables},
+     {"TESTBEAM",    &TESTBEAMvariables},
+     {"VESPA",       &VESPAvariables},
+     {"VOR",         &VORvariables}
+   });
+
+  for(const std::string& beam : BL)
+    {
+
+      VMap::const_iterator mc=VarInit.find(beam);
+      if (mc!=VarInit.end())
+        {
+          mc->second(Control);
+        }
+    }
+
+  simpleITEMvariables(Control);
+
+  shortDREAMvariables(Control);
+  shortDREAM2variables(Control);
+  shortNMXvariables(Control);
+  shortODINvariables(Control);
+
+  return;
+}  
+  
 }  // NAMESPACE setVariable
