@@ -149,7 +149,6 @@ makePipe::build(Simulation* SimPtr,
   ATube->createAll(*SimPtr,World::masterOrigin(),0);
 
   BTube->addInsertCell(voidCell);
-  
   BTube->createAll(*SimPtr,*ATube,2);
 
   CTube->addInsertCell(voidCell);

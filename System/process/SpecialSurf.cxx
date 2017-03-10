@@ -176,7 +176,7 @@ addPlane(const int ID,const Geometry::Vec3D& Norm,
 
 size_t
 calcVertex(const int SA,const int SB,const int SC,
-	   std::vector<Geometry::Vec3D>& Out,
+	   Geometry::Vec3D& Out,
 	   const Geometry::Vec3D& nearPoint) 
   /*!
     Calculates the intercept of three surfaces
@@ -192,7 +192,7 @@ calcVertex(const int SA,const int SB,const int SC,
   
   ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
 
-  Out.clear();
+
   std::vector<const Geometry::Surface*> SVec;
   const int SNum[3]={SA,SB,SC};
 
@@ -207,13 +207,11 @@ calcVertex(const int SA,const int SB,const int SC,
       SVec.push_back(SPtr);
     }
 
-  Out=SurInter::processPoint(SVec[0],SVec[1],SVec[2]);
-  if (Out.size()>1)
-    {
-      Out[0]=SurInter::nearPoint(Out,nearPoint);
-      Out.resize(1);
-    }
-  return Out.size();
+  const std::vector<Geometry::Vec3D> OutPts=
+    SurInter::processPoint(SVec[0],SVec[1],SVec[2]);
+  if (OutPts.empty()) return 0;
+  Out=SurInter::nearPoint(OutPts,nearPoint);
+  return 1;
 }
 
 size_t

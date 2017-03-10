@@ -260,7 +260,7 @@ pointConstruct::processPointWindow(Simulation& System,
       masterPlane=TPtr->getExitWindow(iLP,Planes);
       orgPoint= TPtr->getLinkPt(iLP); 
       BAxis= TPtr->getLinkAxis(iLP)*negAxis;
-      TPoint=orgPoint-BAxis*(beamDist+timeStep);
+      TPoint=orgPoint+BAxis*(beamDist-timeStep);
       
       ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;
       ELog::EM<<"Link Axis    == "<<BAxis<<ELog::endDiag;
@@ -355,8 +355,8 @@ pointConstruct::processPointFree(Simulation& System,
 
 void
 pointConstruct::processPointFree(Simulation& System,
-		    	 const Geometry::Vec3D& Point,
-		    const std::vector<Geometry::Vec3D>& VList) const
+				 const Geometry::Vec3D& Point,
+				 const std::vector<Geometry::Vec3D>& VList) const
   /*!
     Processes a grid tally : Requires variables and informaton 
     \param System :: Simulation to add tallies
@@ -390,23 +390,19 @@ pointConstruct::calcWindowIntercept(const int bPlane,
   ELog::RegMethod RegA("pointConstruct","calcWindowIntercept");
 
   std::vector<Geometry::Vec3D> VList;
-  std::vector<Geometry::Vec3D> Out;
+  Geometry::Vec3D Out;
 
-  for(size_t i=0;i<4;i++)
+  for(size_t i=0;i<3;i++)
     {
-      const size_t j((i%3) ? 3 : 2);
-      ModelSupport::calcVertex(bPlane,EdgeSurf[i % 2],
-			       EdgeSurf[j],Out,viewPoint);
-      if (Out.empty())
-        {
-	  ELog::EM<<"Unable to calculate intercept \n";
-	  ELog::EM<<"Planes == "<<bPlane<<" "<<EdgeSurf[i%2]
-		  <<" "<<EdgeSurf[j]
-		  <<" ("<<viewPoint<<")"<<ELog::endErr;
-	  return VList;
+      for(size_t j=i+1;j<4;j++)
+	{
+	  if (ModelSupport::calcVertex
+	      (bPlane,EdgeSurf[i],EdgeSurf[j],Out,viewPoint))
+	    VList.push_back(Out);
 	}
-      VList.push_back(Out[0]);
     }
+  ELog::EM<<"Check for only 4 points here"<<ELog::endCrit;
+  
   return VList;
 }
 

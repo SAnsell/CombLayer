@@ -130,6 +130,17 @@ pointTally::~pointTally()
 
 
 void
+pointTally::setFUflag(const int flag)
+  /*!
+    Sets the fu (special treatment) flag
+    \param flag :: flag value
+  */
+{
+  fuFlag=flag;
+  return;
+}
+
+void
 pointTally::setDDFlag(const double D,const int outFlag) 
   /*!
     Sets the weighting system:
@@ -482,7 +493,7 @@ pointTally::widenWindow(const int index,const double scale)
 void
 pointTally::divideWindow(const int xPts,const int yPts)
   /*!
-    Adjusts the tally to ad a modification to the fu
+    Adjusts the tally to add a modification to the fu
     card which has xpts / ypts : NBins [numbered 1 to N ]
     \param xPts :: Xpoints in grid
     \param yPts :: Ypoints in grid

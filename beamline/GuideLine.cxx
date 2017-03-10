@@ -255,10 +255,7 @@ GuideLine::populate(const FuncDataBase& Control)
 
   // set frontcut based on offset:
   if (!frontActive())
-    {
-      ELog::EM<<"Front NOT Active "<<keyName<<ELog::endDiag;
-      beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
-    }
+    beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
 
   return;
 }

@@ -50,22 +50,9 @@ namespace tallySystem
 			const std::string&,const std::string&,const std::string&); 
   void addF7Tally(Simulation&,const int,const std::vector<int>&);    
 
-  std::vector<Geometry::Vec3D> 
-    calcWindowIntercept(const int,const int,const int,
-			const int,const int,const int);
-  std::vector<Geometry::Vec3D> 
-    calcWindowIntercept(const int,const int,const int,
-			const int,const int,const Geometry::Vec3D&);
-
   void addF5Tally(Simulation&,const int);
   void addF5Tally(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::vector<Geometry::Vec3D>&,const double= 0.0);
-  void addF5Tally(Simulation&,const int,const int,   
-		  const int,const int,const int,const int,
-		  const double=1000.0,const int =0);
-  void addF5Tally(Simulation&,const int,const Geometry::Vec3D&,
-		  const int,const int,const int,
-		  const int,const int,const int =0);
   void setF5Position(Simulation&,const int,const Geometry::Vec3D&,
 		     const Geometry::Vec3D&,const double,const double);
   void setF5Position(Simulation&,const int,const Geometry::Vec3D&);

@@ -636,19 +636,22 @@ nearPoint(const std::vector<Geometry::Vec3D>& Pts,
   
   if (Pts.empty())
     throw ColErr::EmptyValue<void>("Points vector");
-  
-  std::vector<Geometry::Vec3D>::const_iterator vc,mVal;
+  if (Pts.size()==1)
+    return Pts.front();
+
   double Dist(1e38);
-  for(vc=Pts.begin();vc!=Pts.end();vc++)
+  std::vector<Geometry::Vec3D>::const_iterator vc,mVal;
+  Geometry::Vec3D Out;
+  for(const Geometry::Vec3D& Pt : Pts)
     {
-      const double D=vc->Distance(Target);
+      const double D=Pt.Distance(Target);
       if (D<Dist)
 	{
 	  Dist=D;
-	  mVal=vc;
+	  Out=Pt;
 	}
     }
-  return *mVal;
+  return Out;
 }
 
 size_t
