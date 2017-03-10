@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/VespaHut.h
+ * File:   constructInc/DetectorChamber.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_VespaHut_h
-#define essSystem_VespaHut_h
+#ifndef essSystem_DetectorChamber_h
+#define essSystem_DetectorChamber_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace essSystem
 {
   
 /*!
-  \class VespaHut
+  \class DetectorChamber
   \version 1.0
   \author S. Ansell
   \date July 2016
-  \brief VespaHut unit  
+  \brief DetectorChamber unit  
 */
 
-class VespaHut :
+class DetectorChamber :
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
@@ -76,10 +76,10 @@ class VespaHut :
 
  public:
 
-  VespaHut(const std::string&);
-  VespaHut(const VespaHut&);
-  VespaHut& operator=(const VespaHut&);
-  virtual ~VespaHut();
+  DetectorChamber(const std::string&);
+  DetectorChamber(const DetectorChamber&);
+  DetectorChamber& operator=(const DetectorChamber&);
+  virtual ~DetectorChamber();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

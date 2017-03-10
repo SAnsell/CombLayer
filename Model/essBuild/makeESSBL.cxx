@@ -89,6 +89,7 @@
 #include "MAGIC.h"
 #include "MIRACLES.h"
 #include "NMX.h"
+#include "NNBAR.h"
 #include "ODIN.h"
 #include "TREX.h"
 #include "VESPA.h"
@@ -242,6 +243,12 @@ makeESSBL::build(Simulation& System,
       // NMX beamline
       MIRACLES miraclesBL("miracles");
       miraclesBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+  else if (beamName=="NNBAR")
+    {
+      // DREAM beamline
+      NNBAR nnbarBL("nnbar");
+      nnbarBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="NMX")
     {

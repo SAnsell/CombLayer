@@ -52,6 +52,7 @@ namespace setVariable
   void MAGICvariables(FuncDataBase&);
   void MIRACLESvariables(FuncDataBase&);
   void NMXvariables(FuncDataBase&);
+  void NNBARvariables(FuncDataBase&);
   void ODINvariables(FuncDataBase&);
   void TESTBEAMvariables(FuncDataBase&);
   void TREXvariables(FuncDataBase&);

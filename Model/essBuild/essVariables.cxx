@@ -286,6 +286,7 @@ EssVariables(FuncDataBase& Control)
   MAGICvariables(Control);
   MIRACLESvariables(Control);
   NMXvariables(Control);
+  NNBARvariables(Control);
   ODINvariables(Control);
   TREXvariables(Control);
   TESTBEAMvariables(Control);

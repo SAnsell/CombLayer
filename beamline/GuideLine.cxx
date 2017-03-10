@@ -699,7 +699,7 @@ GuideLine::createGuideLinks()
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("GuideLine","createMainLinks");
+  ELog::RegMethod RegA("GuideLine","createGuideLinks");
 
 
   int GI(guideIndex+2000);
@@ -711,7 +711,6 @@ GuideLine::createGuideLinks()
       // [FRONT]
       if (!i)
         {
-	  ELog::EM<<"Guide "<<keyName<<" "<<beamFrontCut<<ELog::endDiag;
           if (!beamFrontCut)
             createFrontLinks(guideFC,shapeUnits[i]->getBegin(),
                              shapeUnits[i]->getBegAxis());
