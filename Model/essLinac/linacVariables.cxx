@@ -60,7 +60,8 @@ const double SCALE52tl(5.84906);
 const double SCALE52tr(2.90783);
 // Scale of the plots in SPLTDISH0052 (bottom-left corner):  14.5/10
 const double SCALE52bl(1.45);
-
+// Scale of the plots in Fc_design.pdf received from LT 13 March 2017
+const double SCALE3(32.0/34.0);
 
 namespace setVariable
 {
@@ -173,7 +174,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupLength", 3.2);
   Control.addVariable("LinacFaradayCupOuterRadius", 3.0); // email from LT 13 Mar 2017
   Control.addVariable("LinacFaradayCupInnerRadius", 2.0); // email from LT 13 Mar 2017
-  Control.addVariable("LinacFaradayCupWallThick", 1.0);
+  Control.addVariable("LinacFaradayCupCollimatorLength", 0.1*SCALE3); // calculated from Fc_design.pdf
+  Control.addVariable("LinacFaradayCupCollimatorRadius", 2.45*SCALE3); // calculated from Fc_design.pdf
   Control.addVariable("LinacFaradayCupMainMat", "Graphite");
   Control.addVariable("LinacFaradayCupWallMat", "Copper");
   return;

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/FaradayCup.cxx
  *
  * Copyright (c) 2004-2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -97,13 +97,14 @@ FaradayCup::FaradayCup(const std::string& Key)  :
   */
 {}
 
-FaradayCup::FaradayCup(const FaradayCup& A) : 
+FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
   colLength(A.colLength),
+  colRadius(A.colRadius),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -129,6 +130,7 @@ FaradayCup::operator=(const FaradayCup& A)
       outerRadius=A.outerRadius;
       innerRadius=A.innerRadius;
       colLength=A.colLength;
+      colRadius=A.colRadius;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -144,8 +146,8 @@ FaradayCup::clone() const
 {
     return new FaradayCup(*this);
 }
-  
-FaradayCup::~FaradayCup() 
+
+FaradayCup::~FaradayCup()
   /*!
     Destructor
   */
@@ -167,13 +169,14 @@ FaradayCup::populate(const FuncDataBase& Control)
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   colLength=Control.EvalVar<double>(keyName+"CollimatorLength");
+  colRadius=Control.EvalVar<double>(keyName+"CollimatorRadius");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
-  
+
 void
 FaradayCup::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -190,7 +193,7 @@ FaradayCup::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 FaradayCup::createSurfaces()
   /*!
@@ -199,15 +202,16 @@ FaradayCup::createSurfaces()
 {
   ELog::RegMethod RegA("FaradayCup","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(colLength),Y);
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
+  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,colRadius);
 
   return;
 }
-  
+
 void
 FaradayCup::createObjects(Simulation& System)
   /*!
@@ -230,7 +234,7 @@ FaradayCup::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 FaradayCup::createLinks()
   /*!
@@ -241,13 +245,13 @@ FaradayCup::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 FaradayCup::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -266,7 +270,7 @@ FaradayCup::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/FaradayCup.h
  *
  * Copyright (c) 2004-2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_FaradayCup_h
@@ -50,18 +50,19 @@ class FaradayCup : public attachSystem::ContainedComp,
   double innerRadius;           ///< Inner radius
 
   double colLength;             ///< Collimator length (face plate)
+  double colRadius; ///< Collimator inner radius 
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   FaradayCup(const std::string&);
@@ -69,7 +70,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   FaradayCup& operator=(const FaradayCup&);
   virtual FaradayCup* clone() const;
   virtual ~FaradayCup();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -77,5 +78,5 @@ class FaradayCup : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 
