@@ -103,10 +103,12 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSWOffsetY", 300.0-150); // some location (must be 20 cm off the beam dump)
   Control.addVariable("LinacTSWNLayers", 5); // for biasing
 
+  // Beam dump
+  Control.addVariable("LinacBeamDumpActive", 0);
   
   Control.addVariable("LinacBeamDumpYStep",-10); // just to have Origin in the middle of its front wall
 
-  ELog::EM << "LinacBeamDumpConcreteMat: need exact definition of borated concrete [email 3 Nov 2016]" << ELog::endCrit;
+  // Exact definition of borated concrete needed [email 3 Nov 2016]
   Control.addVariable("LinacBeamDumpConcreteMat", "SkanskaConcrete%Boron%99");
 
   Control.addVariable("LinacBeamDumpFrontWallLength",4*5.0); // doc SPLTDISH0001
@@ -165,6 +167,15 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpWaterPipeOffsetX", 0.22*SCALE52tl); // measured on SPLTDISH0052
   Control.addVariable("LinacBeamDumpWaterPipeOffsetZ", 10.4); // measured on SPLTDISH005
   Control.addVariable("LinacBeamDumpWaterPipeDist", 0.05*SCALE52tr); // measured on SPLTDISH005
+
+  // Faraday cup
+  Control.addVariable("LinacFaradayCupEngineeringActive", 1);
+  Control.addVariable("LinacFaradayCupLength", 3.2);
+  Control.addVariable("LinacFaradayCupOuterRadius", 3.0); // email from LT 13 Mar 2017
+  Control.addVariable("LinacFaradayCupInnerRadius", 2.0); // email from LT 13 Mar 2017
+  Control.addVariable("LinacFaradayCupWallThick", 1.0);
+  Control.addVariable("LinacFaradayCupMainMat", "Graphite");
+  Control.addVariable("LinacFaradayCupWallMat", "Copper");
   return;
 }
 

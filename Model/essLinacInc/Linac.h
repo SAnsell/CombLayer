@@ -28,6 +28,7 @@ namespace essSystem
 {
 
   class BeamDump;
+  class FaradayCup;
 
   /*!
     \class Linac
@@ -71,6 +72,7 @@ class Linac : public attachSystem::ContainedComp,
   int tswNLayers; ///< number of layers in a TSW wall
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
+  std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const size_t& lpS, const size_t& lsS, const int&, const int&);
 

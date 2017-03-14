@@ -85,6 +85,7 @@
 
 #include "CellMap.h"
 #include "BeamDump.h"
+#include "FaradayCup.h"
 #include "Linac.h"
 
 namespace essSystem
@@ -95,7 +96,8 @@ Linac::Linac(const std::string& Key)  :
   attachSystem::FixedOffset(Key,12), attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
-  beamDump(new BeamDump(Key,"BeamDump"))
+  beamDump(new BeamDump(Key,"BeamDump")),
+  faradayCup(new FaradayCup(Key+"FaradayCup"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -104,6 +106,7 @@ Linac::Linac(const std::string& Key)  :
   ELog::RegMethod RegA("Linac","Linac(const std::string&)");
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
   OR.addObject(beamDump);
+  OR.addObject(faradayCup);
 }
 
 Linac::Linac(const Linac& A) :
@@ -127,7 +130,8 @@ Linac::Linac(const Linac& A) :
   tswGap(A.tswGap),
   tswOffsetY(A.tswOffsetY),
   tswNLayers(A.tswNLayers),
-  beamDump(A.beamDump->clone())
+  beamDump(A.beamDump->clone()),
+  faradayCup(A.faradayCup->clone())
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -167,6 +171,7 @@ Linac::operator=(const Linac& A)
       tswOffsetY=A.tswOffsetY;
       tswNLayers=A.tswNLayers;
       *beamDump=*A.beamDump;
+      *faradayCup=*A.faradayCup;
     }
   return *this;
 }
@@ -478,6 +483,10 @@ Linac::createAll(Simulation& System,
 
   beamDump->createAll(System,*this,0);
   attachSystem::addToInsertLineCtrl(System,*this,*beamDump);
+
+  faradayCup->createAll(System,*this,0);
+  //  attachSystem::addToInsertLineCtrl(System,*this,*faradayCup);
+  attachSystem::addToInsertForced(System,*this,*faradayCup);
 
   return;
 }
