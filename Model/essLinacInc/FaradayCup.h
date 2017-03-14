@@ -63,7 +63,9 @@ class FaradayCup : public attachSystem::ContainedComp,
   int airMat; ///< air material
 
   double shieldRadius; ///< shield radius
+  double shieldInnerRadius; ///< shielding inner radius
   double shieldLength; ///< shield length
+  double shieldInnerLength; ///< shielding inner length
   double shieldMat; ///< shielding material
 
   void populate(const FuncDataBase&);
