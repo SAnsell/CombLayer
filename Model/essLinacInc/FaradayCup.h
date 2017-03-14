@@ -62,6 +62,10 @@ class FaradayCup : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
   int airMat; ///< air material
 
+  double shieldRadius; ///< shield radius
+  double shieldLength; ///< shield length
+  double shieldMat; ///< shielding material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

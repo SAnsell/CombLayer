@@ -110,7 +110,10 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   baseLength(A.baseLength),
   colLength(A.colLength),
   colMat(A.colMat),wallMat(A.wallMat),
-  airMat(A.airMat)
+  airMat(A.airMat),
+  shieldRadius(A.shieldRadius),
+  shieldLength(A.shieldLength),
+  shieldMat(A.shieldMat)
   /*!
     Copy constructor
     \param A :: FaradayCup to copy
@@ -143,6 +146,9 @@ FaradayCup::operator=(const FaradayCup& A)
       colMat=A.colMat;
       wallMat=A.wallMat;
       airMat=A.airMat;
+      shieldRadius=A.shieldRadius;
+      shieldLength=A.shieldLength;
+      shieldMat=A.shieldMat;
     }
   return *this;
 }
@@ -189,6 +195,10 @@ FaradayCup::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
 
+  shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
+  shieldLength=Control.EvalVar<double>(keyName+"ShieldLength");
+  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
+
   return;
 }
 
@@ -229,10 +239,13 @@ FaradayCup::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+41,Origin+Y*dy,Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(shieldLength),Y);
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
+  
+  ModelSupport::buildCylinder(SMap,surfIndex+37,Origin,Y,shieldRadius);
 
   return;
 }
@@ -273,7 +286,11 @@ FaradayCup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -17 ");
+  // shielding
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 -37 (-1:2:17) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -12 -37 ");
   addOuterSurf(Out);
 
   return;
