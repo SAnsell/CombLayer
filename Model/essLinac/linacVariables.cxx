@@ -175,8 +175,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupLength", 3.2);
   Control.addVariable("LinacFaradayCupOuterRadius", 3.0); // d2/2
   Control.addVariable("LinacFaradayCupInnerRadius", 2.0); // d1/2
-  Control.addVariable("LinacFaradayCupCollimatorLength", 0.1*SCALE3);
-  Control.addVariable("LinacFaradayCupCollimatorRadius", 2.0*SCALE3); // approx
+  Control.addVariable("LinacFaradayCupFaceLength", 0.1*SCALE3);
+  Control.addVariable("LinacFaradayCupFaceRadius", 2.0*SCALE3); // approx
   Control.addVariable("LinacFaradayCupAbsorberLength", 0.7);
   Control.addVariable("LinacFaradayCupAbsorberMat", "Graphite");
   Control.addVariable("LinacFaradayCupBaseLength", 1.5); // e1

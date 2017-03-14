@@ -103,8 +103,8 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
-  colLength(A.colLength),
-  colRadius(A.colRadius),
+  faceLength(A.faceLength),
+  faceRadius(A.faceRadius),
   absLength(A.absLength),
   absMat(A.absMat),
   baseLength(A.baseLength),
@@ -132,8 +132,8 @@ FaradayCup::operator=(const FaradayCup& A)
       length=A.length;
       outerRadius=A.outerRadius;
       innerRadius=A.innerRadius;
-      colLength=A.colLength;
-      colRadius=A.colRadius;
+      faceLength=A.faceLength;
+      faceRadius=A.faceRadius;
       absLength=A.absLength;
       absMat=A.absMat;
       baseLength=A.baseLength;
@@ -174,8 +174,8 @@ FaradayCup::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
-  colLength=Control.EvalVar<double>(keyName+"CollimatorLength");
-  colRadius=Control.EvalVar<double>(keyName+"CollimatorRadius");
+  faceLength=Control.EvalVar<double>(keyName+"FaceLength");
+  faceRadius=Control.EvalVar<double>(keyName+"FaceRadius");
   absLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absMat=ModelSupport::EvalMat<int>(Control,keyName+"AbsorberMat");
   baseLength=Control.EvalVar<double>(keyName+"BaseLength");
@@ -213,7 +213,7 @@ FaradayCup::createSurfaces()
 
   double dy(0.0);
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin+Y*dy,Y);
-  dy += colLength;
+  dy += faceLength;
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*dy,Y);
   dy += absLength;
   ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*dy,Y);
@@ -222,7 +222,7 @@ FaradayCup::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,colRadius);
+  ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
 
   return;
 }

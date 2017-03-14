@@ -49,8 +49,8 @@ class FaradayCup : public attachSystem::ContainedComp,
   double outerRadius;           ///< Outer radius (d2/2)
   double innerRadius;           ///< Inner radius (d1/2)
 
-  double colLength;             ///< Collimator length (face plate)
-  double colRadius; ///< Collimator inner radius
+  double faceLength;             ///< Collimator length (face plate)
+  double faceRadius; ///< Collimator inner radius
 
   double absLength; ///< Absorber length
   int absMat; ///< Absorber material
