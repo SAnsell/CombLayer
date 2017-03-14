@@ -103,7 +103,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
-  wallThick(A.wallThick),
+  colLength(A.colLength),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -128,7 +128,7 @@ FaradayCup::operator=(const FaradayCup& A)
       length=A.length;
       outerRadius=A.outerRadius;
       innerRadius=A.innerRadius;
-      wallThick=A.wallThick;
+      colLength=A.colLength;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -166,7 +166,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  colLength=Control.EvalVar<double>(keyName+"CollimatorLength");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

@@ -49,7 +49,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   double outerRadius;           ///< Outer radius
   double innerRadius;           ///< Inner radius
 
-  double wallThick;             ///< Thickness of wall
+  double colLength;             ///< Collimator length (face plate)
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material  
