@@ -3,7 +3,7 @@
  
  * File:   source/ActiveWeight.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,7 +167,8 @@ ActiveWeight::addMaterial(const std::string& matName,
 			      const std::string& matFile)
   /*!
     Add a material to the system
-    \parma matName :: material name 
+    \param matName :: material name 
+    \param matFile :: File to contain flux data
    */
 {
   ELog::RegMethod RegA("ActiveWeight","addMaterial");
@@ -187,7 +188,7 @@ ActiveWeight::addMaterial(const std::string& matName,
 
 void
 ActiveWeight::createSource(Simulation& System,
-                               const std::string& outputName)
+                           const std::string& outputName)
   /*!
     Create all the source
     \param Simuation :: 

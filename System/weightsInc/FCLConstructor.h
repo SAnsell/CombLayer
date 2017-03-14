@@ -3,7 +3,7 @@
  
  * File:   weightsInc/FCLConstructor.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,13 @@
 #ifndef WeightSystem_FCLConstructor_h
 #define WeightSystem_FCLConstructor_h
 
-///\file 
+
 
 class Simulation;
 namespace Geometry
 {
   class Plane;
 }
-
-/*!
-  \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
-  \author S. Ansell
-  \version 1.0
-  \date April 2009
-*/
-
 class Simluation;
 
 namespace mainSystem
@@ -47,7 +38,14 @@ namespace mainSystem
 
 namespace physicsSystem
 {
-  
+  /*!
+    \class FCLConstructor
+    \version 1.0
+    \author S. Ansell
+    \date January 2017
+    \brief Builds the Forced Collision physics card
+  */
+
 class FCLConstructor 
 {
  private:

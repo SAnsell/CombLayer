@@ -129,23 +129,17 @@ class FixedComp
 
 
   /// Get keyname
-  const std::string& getKeyName() const 
-    { return keyName; }
+  const std::string& getKeyName() const { return keyName; }
   /// Access X
-  const Geometry::Vec3D& getX() const 
-    { return X; }  
+  const Geometry::Vec3D& getX() const { return X; }  
   /// Access Y direction
-  const Geometry::Vec3D& getY() const 
-    { return Y; }  
+  const Geometry::Vec3D& getY() const { return Y; }  
   /// Access Z direction
-  const Geometry::Vec3D& getZ() const 
-    { return Z; }
+  const Geometry::Vec3D& getZ() const { return Z; }
   /// Access centre
-  virtual const Geometry::Vec3D& getCentre() const 
-    { return Origin; }  
+  virtual const Geometry::Vec3D& getCentre() const  { return Origin; }  
   /// Access beamOrigin
-  virtual const Geometry::Vec3D& getBeamOrigin() const 
-    { return beamOrigin; }  
+  virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
 
   virtual int getExitWindow(const size_t,std::vector<int>&) const;
   virtual int getMasterSurf(const size_t) const;

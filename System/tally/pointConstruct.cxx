@@ -442,9 +442,9 @@ pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
 				  Geometry::Vec3D& BAxis)
   /*!
     Calculate the beam direction and origin given a shutter component
-    \parma FC :: Component that might be TwinComp
-    \parma BOrigin :: Output for Origin
-    \parma BAxis :: Output for Axis
+    \param FC :: Component that might be TwinComp
+    \param BOrigin :: Output for Origin
+    \param BAxis :: Output for Axis
    */
 {
   ELog::RegMethod RegA("pointConstruct","calcBeamDirection");

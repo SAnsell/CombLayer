@@ -377,9 +377,10 @@ MultiChannel::setLeftRight(const HeadRule& LR,const HeadRule& RR)
 }
 
 void
-MultiChannel::setLeftRight(const FixedComp& FCA,const long int lIndex,
-			   const FixedComp& FCB,const long int rIndex)
-
+MultiChannel::setLeftRight(const attachSystem::FixedComp& FCA,
+                           const long int lIndex,
+			   const attachSystem::FixedComp& FCB,
+                           const long int rIndex)
   /*!
     Set the left/right sides
     \param FCA :: Left fixed comp
