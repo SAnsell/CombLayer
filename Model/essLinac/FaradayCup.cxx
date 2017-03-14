@@ -224,6 +224,8 @@ FaradayCup::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+31,Origin+Y*dy,Y);
   dy += colLength;
   ModelSupport::buildPlane(SMap,surfIndex+41,Origin+Y*dy,Y);
+  
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
@@ -264,7 +266,11 @@ FaradayCup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 31 -41 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -41 -17 ");
+  // back plane
+  Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -17 ");
   addOuterSurf(Out);
 
   return;
