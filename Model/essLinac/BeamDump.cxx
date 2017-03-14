@@ -91,7 +91,7 @@ BeamDump::BeamDump(const std::string& Base,
   attachSystem::FixedOffset(Base+Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Base+Key)),
   cellIndex(surfIndex+1),
-  baseName(Base)
+  baseName(Base),active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -104,6 +104,7 @@ BeamDump::BeamDump(const BeamDump& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   baseName(A.baseName),
+  active(A.active),
   engActive(A.engActive),
 
   steelMat(A.steelMat),
@@ -181,6 +182,7 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       baseName=A.baseName;
+      active=A.active;
       engActive=A.engActive;
 
       steelMat=A.steelMat;
@@ -268,6 +270,8 @@ BeamDump::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeamDump","populate");
 
   FixedOffset::populate(Control);
+
+  active=Control.EvalPair<int>(keyName,baseName,"Active");
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
@@ -501,6 +505,8 @@ BeamDump::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BeamDump","createObjects");
+  
+  if (!active) return;
 
   std::string Out;
   // front wall

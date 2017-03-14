@@ -44,6 +44,7 @@ class BeamDump : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
   std::string baseName;         ///< Base name
 
+  int active;                   ///< Build/don't build flag
   int engActive;                ///< Engineering active flag
 
   int    steelMat;              ///< Steel material
