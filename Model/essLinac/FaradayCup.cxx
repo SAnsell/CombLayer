@@ -108,7 +108,8 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   absLength(A.absLength),
   absMat(A.absMat),
   baseLength(A.baseLength),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  colLength(A.colLength),
+  colMat(A.colMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: FaradayCup to copy
@@ -137,7 +138,8 @@ FaradayCup::operator=(const FaradayCup& A)
       absLength=A.absLength;
       absMat=A.absMat;
       baseLength=A.baseLength;
-      mainMat=A.mainMat;
+      colLength=A.colLength;
+      colMat=A.colMat;
       wallMat=A.wallMat;
     }
   return *this;
@@ -179,8 +181,9 @@ FaradayCup::populate(const FuncDataBase& Control)
   absLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absMat=ModelSupport::EvalMat<int>(Control,keyName+"AbsorberMat");
   baseLength=Control.EvalVar<double>(keyName+"BaseLength");
-
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  colLength=Control.EvalVar<double>(keyName+"CollectorLength");
+  colMat=ModelSupport::EvalMat<int>(Control,keyName+"CollectorMat");
+  
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -219,6 +222,8 @@ FaradayCup::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*dy,Y);
   dy += baseLength;
   ModelSupport::buildPlane(SMap,surfIndex+31,Origin+Y*dy,Y);
+  dy += colLength;
+  ModelSupport::buildPlane(SMap,surfIndex+41,Origin+Y*dy,Y);
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
@@ -242,20 +247,24 @@ FaradayCup::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 27 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
 
   // absorber
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
-  
+
   // base
   Out=ModelSupport::getComposite(SMap,surfIndex," 21 -31 -7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  
-  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -31 7 -17 ");
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -41 7 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -31 -17 ");
+  // collector
+  Out=ModelSupport::getComposite(SMap,surfIndex," 31 -41 -7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -41 -17 ");
   addOuterSurf(Out);
 
   return;

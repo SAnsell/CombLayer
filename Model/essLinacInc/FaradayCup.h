@@ -55,8 +55,10 @@ class FaradayCup : public attachSystem::ContainedComp,
   double absLength; ///< Absorber length
   int absMat; ///< Absorber material
   double baseLength; ///< Base length (e1)
-
-  int mainMat;                   ///< main material
+  
+  double colLength; ///< Collector length
+  int colMat;                   ///< collector material
+  
   int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);
