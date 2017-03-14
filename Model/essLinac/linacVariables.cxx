@@ -170,6 +170,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpWaterPipeDist", 0.05*SCALE52tr); // measured on SPLTDISH005
 
   // Faraday cup
+  Control.addVariable("LinacFaradayCupYStep", -50.0); // don't start it in the origin
   // Dimensions are based on email from LT 13 Mar 2017 (Fc_design.pdf)
   Control.addVariable("LinacFaradayCupEngineeringActive", 1);
   Control.addVariable("LinacFaradayCupLength", 3.2);
