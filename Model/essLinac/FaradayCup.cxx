@@ -107,6 +107,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   colRadius(A.colRadius),
   absLength(A.absLength),
   absMat(A.absMat),
+  baseLength(A.baseLength),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -135,6 +136,7 @@ FaradayCup::operator=(const FaradayCup& A)
       colRadius=A.colRadius;
       absLength=A.absLength;
       absMat=A.absMat;
+      baseLength=A.baseLength;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -176,6 +178,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   colRadius=Control.EvalVar<double>(keyName+"CollimatorRadius");
   absLength=Control.EvalVar<double>(keyName+"AbsorberLength");
   absMat=ModelSupport::EvalMat<int>(Control,keyName+"AbsorberMat");
+  baseLength=Control.EvalVar<double>(keyName+"BaseLength");
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -211,9 +214,11 @@ FaradayCup::createSurfaces()
   double dy(0.0);
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin+Y*dy,Y);
   dy += colLength;
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*dy,Y);
-  dy += absLength;
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*dy,Y);
+  dy += absLength;
+  ModelSupport::buildPlane(SMap,surfIndex+21,Origin+Y*dy,Y);
+  dy += baseLength;
+  ModelSupport::buildPlane(SMap,surfIndex+31,Origin+Y*dy,Y);
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
@@ -232,16 +237,25 @@ FaradayCup::createObjects(Simulation& System)
   ELog::RegMethod RegA("FaradayCup","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7 ");
+  // collimator
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 -27 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 7 -17 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 27 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 2 -11 -17 ");
+  // absorber
+  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,absMat,0.0,Out));
+  
+  // base
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -31 -7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex," 21 -31 7 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 -17 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -31 -17 ");
   addOuterSurf(Out);
 
   return;

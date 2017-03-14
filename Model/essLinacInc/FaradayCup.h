@@ -46,14 +46,15 @@ class FaradayCup : public attachSystem::ContainedComp,
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
-  double outerRadius;           ///< Outer radius
-  double innerRadius;           ///< Inner radius
+  double outerRadius;           ///< Outer radius (d2/2)
+  double innerRadius;           ///< Inner radius (d1/2)
 
   double colLength;             ///< Collimator length (face plate)
   double colRadius; ///< Collimator inner radius
-  
+
   double absLength; ///< Absorber length
   int absMat; ///< Absorber material
+  double baseLength; ///< Base length (e1)
 
   int mainMat;                   ///< main material
   int wallMat;                   ///< wall material
