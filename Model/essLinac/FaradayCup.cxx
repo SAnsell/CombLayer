@@ -109,7 +109,8 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   absMat(A.absMat),
   baseLength(A.baseLength),
   colLength(A.colLength),
-  colMat(A.colMat),wallMat(A.wallMat)
+  colMat(A.colMat),wallMat(A.wallMat),
+  airMat(A.airMat)
   /*!
     Copy constructor
     \param A :: FaradayCup to copy
@@ -141,6 +142,7 @@ FaradayCup::operator=(const FaradayCup& A)
       colLength=A.colLength;
       colMat=A.colMat;
       wallMat=A.wallMat;
+      airMat=A.airMat;
     }
   return *this;
 }
@@ -183,8 +185,9 @@ FaradayCup::populate(const FuncDataBase& Control)
   baseLength=Control.EvalVar<double>(keyName+"BaseLength");
   colLength=Control.EvalVar<double>(keyName+"CollectorLength");
   colMat=ModelSupport::EvalMat<int>(Control,keyName+"CollectorMat");
-  
+
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
 
   return;
 }
@@ -224,7 +227,7 @@ FaradayCup::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+31,Origin+Y*dy,Y);
   dy += colLength;
   ModelSupport::buildPlane(SMap,surfIndex+41,Origin+Y*dy,Y);
-  
+
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
   ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,innerRadius);
@@ -246,10 +249,10 @@ FaradayCup::createObjects(Simulation& System)
   std::string Out;
   // collimator
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -11 27 -17 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,colMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // absorber
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -21 -17 ");

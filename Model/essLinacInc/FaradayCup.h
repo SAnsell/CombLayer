@@ -55,11 +55,12 @@ class FaradayCup : public attachSystem::ContainedComp,
   double absLength; ///< Absorber length
   int absMat; ///< Absorber material
   double baseLength; ///< Base length (e1)
-  
+
   double colLength; ///< Collector length
   int colMat;                   ///< collector material
-  
+
   int wallMat;                   ///< wall material
+  int airMat; ///< air material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
