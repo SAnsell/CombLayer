@@ -573,10 +573,10 @@ Cylinder::writePOVRay(std::ostream& OX) const
   const int Ndir=Normal.masterDir(Geometry::zeroTol);
 
   
-  OX<<"#declare s"<<getName()<<" = cylinder{ ";
+  OX<<"#declare s"<<getName()<<" = InfiniteCylinder( ";
   OX<<"<"<<MW.NumComma(Centre)<<">,<"
     <<MW.NumComma(Centre+Normal)<<">, "
-    <<MW.Num(Radius)<<" open }"<<std::endl;
+    <<MW.Num(Radius)<<" )"<<std::endl;
   
   return;
 }
