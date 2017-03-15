@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/PreModWing.h
  *
- * Copyright (c) 2015 by Konstantin Batkov
+ * Copyright (c) 2015-2017 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,34 +36,36 @@ namespace essSystem
 */
 
 class PreModWing : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp,
-    public attachSystem::CellMap
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
   
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  int engActive;                  ///< engineering active flag
-  int tiltSign;                   ///< Z-sign of tilt
-  
-  double thick;                   ///< (water) thickness
+  double innerHeight;             ///< Mid step [up]
+  double outerHeight;             ///< outer step [up]
+  double innerDepth;              ///< Mid set [down]
+  double outerDepth;              ///< Outer step [down]
   double wallThick;               ///< wall thickness
 
-  double innerRadius;            ///< Start from inner shape
-  double innerYCut;              ///< Start from inner shape
-
-  double tiltAngle;               ///< tilt angle
-  double tiltRadius;              ///< radius where tilting starts
+  double innerRadius;            ///< Start of down curve [-ve if not used]
+  double outerRadius;            ///< End of down curve [-ve if not used]
+  double innerYCut;              ///< Start from inner shape [makeing overstep]
+  
 
   int mat;                        ///< (water) material
   int wallMat;                    ///< wall material
 
-  HeadRule baseSurf;              ///< Top cut surface
+  HeadRule topSurf;              ///< Top cut surface
+  HeadRule baseSurf;             ///< Base cut surface
+  HeadRule innerSurf;            ///< Inner surface(s)
+  HeadRule mainDivider;          ///< Seperatue unit for divider [to simpify boundary]
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const long int,const bool);
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -77,8 +79,18 @@ class PreModWing : public attachSystem::ContainedComp,
   virtual PreModWing* clone() const;
   virtual ~PreModWing();
 
+  /// assignement of main string
+  void setInnerExclude(const std::string& HRStr)
+  { innerSurf.procString(HRStr); }
+  /// assignement of base rule
+  void setBaseCut(const HeadRule& HR) { baseSurf=HR; }
+  /// assignement of top rule
+  void setTopCut(const HeadRule& HR) { topSurf=HR; }
+  /// assignement of divider rule
+  void setDivider(const HeadRule& HR) { mainDivider=HR; }
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const int);
+		 const long int);
 
 };
 

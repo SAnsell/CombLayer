@@ -1708,12 +1708,11 @@ int
 HeadRule::procSurface(const Geometry::Surface* SPtr) 
   /*!
     Process a rule as a HeadRule
-    \param SPTr :: Surface rule
+    \param SPtr :: Surface rule
     \returns 1 on success
   */
 {
   ELog::RegMethod RegA("HeadRule","procSurface");
-
 
   delete HeadNode;
   HeadNode=0;
@@ -1730,7 +1729,7 @@ int
 HeadRule::procRule(const Rule* RPtr) 
   /*!
     Process a rule as a HeadRule
-    \para RPTr :: Rule to add
+    \param RPtr :: Rule to add
     \returns 1 on success
   */
 {
@@ -1948,7 +1947,10 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 size_t
 HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
   /*!
-    Calculate the surf-surf-surf intersecitons
+    Calculate the surf-surf-surf intersecitons for the whole headrule
+    Assuming triplet binding.
+    \param Pts :: points found
+    \return Number of points found 
    */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfSurfIntersection");
@@ -1992,7 +1994,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
     \param Unit :: Direction of line
     \param Pts :: Points
     \param SNum :: Surface number 
-    \return Number found
+    \return Number of points found
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");

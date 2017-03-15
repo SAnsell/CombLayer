@@ -341,7 +341,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
   if (IParam.flag("angle"))
     {
       const size_t nP=IParam.setCnt("angle");
-      ELog::EM<<"NP == "<<nP<<ELog::endDiag;
       for(size_t i=0;i<nP;i++)
         procAngle(IParam,i);
     }

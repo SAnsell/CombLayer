@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,8 +343,8 @@ LinkUnit::setBridgeSurf(const std::string& SList)
 void
 LinkUnit::setBridgeSurf(const HeadRule& HR) 
   /*!
-    Add a surface to the output
-    \param SList :: String set to add
+    Set a surface to the output
+    \param HR :: Rule for bridge surface
   */
 {
   ELog::RegMethod RegA("LinkUnit","setBridgeSurf(HeadRule)");
@@ -382,7 +382,7 @@ void
 LinkUnit::addBridgeSurf(const HeadRule& HR) 
   /*!
     Add a set of surfaces to the output
-    \param SList ::  Surface string [fully decomposed]
+    \param HR ::  Rule for bridge surface
   */
 {
   ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");

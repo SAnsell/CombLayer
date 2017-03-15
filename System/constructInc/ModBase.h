@@ -37,19 +37,13 @@ namespace constructSystem
 
 class ModBase : public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  protected:
   
   const int modIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy rotation angle
-  double zAngle;                  ///< z rotation angle
   
   std::vector<long int> flightSides;  ///< Sides for flight inde
 

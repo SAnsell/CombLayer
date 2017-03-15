@@ -236,7 +236,8 @@ setESSSingle(defaultConfig& A,
      {"LOKI","G1BLineTop15"},      // N7
      {"FREIA","G1BLineTop17"},     // N5
 
-
+     {"NNBAR","G1BLineTop11"},      // TEST PORT
+     
      {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
      {"DREAM","G2BLineTop19"},     // S3
 
@@ -255,7 +256,7 @@ setESSSingle(defaultConfig& A,
     };     
   const std::set<std::string> beamFilled=
     {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "MAGIC","MIRACLES","NMX","ODIN","TREX","VESPA",
+     "MAGIC","MIRACLES","NMX","NNBAR","ODIN","TREX","VESPA",
      "VOR","SHORTNMX","SHORTDREAM"};
 
   size_t beamLineIndex(0);

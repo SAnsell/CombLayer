@@ -161,14 +161,14 @@ ODIN::ODIN(const std::string& keyName) :
 
   Cave(new essSystem::Hut(newName+"Cave")),
   CaveCut(new constructSystem::HoleShape(newName+"CaveCut")),
+  CaveMidCut(new constructSystem::HoleShape(newName+"CaveMidCut")),
 
   VPipeCaveA(new constructSystem::VacuumPipe(newName+"PipeCaveA")),
   FocusCaveA(new beamlineSystem::GuideLine(newName+"CaveFA")),
 
-  
-  PinA(new constructSystem::PinHole(newName+"Pin"))
+  PinA(new constructSystem::PinHole(newName+"Pin")),
 
-  //  BeamStop(new RentrantBS(newName+"BeamStop"))
+  BeamStop(new RentrantBS(newName+"BeamStop"))
  /*!
     Constructor
  */
@@ -231,21 +231,19 @@ ODIN::ODIN(const std::string& keyName) :
   OR.addObject(ChopOutFOC5);
   OR.addObject(FOC5Disk);
 
-
-
   OR.addObject(ShieldB);
   OR.addObject(VPipeOutB);
   OR.addObject(FocusOutB);
 
-
-
   OR.addObject(Cave);
   OR.addObject(CaveCut);
+  OR.addObject(CaveMidCut);
 
   OR.addObject(VPipeCaveA);
   OR.addObject(FocusCaveA);
 
   OR.addObject(PinA);
+  OR.addObject(BeamStop);
 }
 
 ODIN::~ODIN()
@@ -448,17 +446,55 @@ ODIN::buildOutGuide(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
   
-  
-  return;
-
-  
-  Cave->addInsertCell(voidCell);
-  //  Cave->createAll(System,OutPitB->getKey("Inner"),0);
-
-  
   return;
 }
 
+void
+ODIN::buildCave(Simulation& System,
+                const attachSystem::FixedComp& FA,
+                const long int startIndex,
+                const int voidCell)
+  /*!
+    Build the cave system
+    \param System :: Simulation ot use
+    \param FA :: Fixed point for guide
+    \param startIndex :: Fixed point link point 
+    \param voidCell :: void cell for constuction 
+  */
+{
+  ELog::RegMethod RegA("ODIN","buildCave");
+
+    
+  Cave->addInsertCell(voidCell);
+  Cave->createAll(System,FA,startIndex);
+
+  ShieldB->addInsertCell(Cave->getCells("ConcNoseFront"));
+  ShieldB->insertObjects(System);
+
+  CaveCut->addInsertCell(Cave->getCells("FeNose"));
+  CaveCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
+                    Cave->getKey("Inner").getSignedFullRule(1));
+  CaveCut->createAll(System,Cave->getKey("Inner"),-1);
+
+  VPipeCaveA->addInsertCell(Cave->getCells("VoidNose"));
+  VPipeCaveA->createAll(System,Cave->getKey("Inner"),-1);
+
+  FocusCaveA->addInsertCell(VPipeCaveA->getCells("Void"));
+  FocusCaveA->createAll(System,*VPipeCaveA,0,*VPipeCaveA,0);
+
+  CaveMidCut->addInsertCell(Cave->getCells("InnerWall"));
+  CaveMidCut->setFaces(Cave->getSurf("InnerWallFront"),
+                       -Cave->getSurf("InnerWallBack"));
+  CaveMidCut->createAll(System,Cave->getKey("Inner"),-1);
+
+  PinA->addInsertCell(Cave->getCell("VoidNose"));
+  PinA->createAll(System,FocusCaveA->getKey("Guide0"),2);
+
+  BeamStop->addInsertCell(Cave->getCell("VoidMain"));
+  BeamStop->createAll(System,FocusCaveA->getKey("Guide0"),2);
+
+  return;
+}
   
 
 void 
@@ -511,155 +547,14 @@ ODIN::build(Simulation& System,
   ShieldA->setFront(bunkerObj,2);
   buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
 
-  return;
-  
-  VPipeOutE->addInsertCell(ShieldB->getCell("Void"));
-  VPipeOutE->createAll(System,*VPipeOutD,2);
-
-  FocusOutE->addInsertCell(VPipeOutE->getCells("Void"));
-  FocusOutE->createAll(System,*VPipeOutE,0,*VPipeOutE,0);
-
-  CaveCut->addInsertCell(Cave->getCells("FeNose"));
-  CaveCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
-                    Cave->getKey("Inner").getSignedFullRule(1));
-  CaveCut->createAll(System,Cave->getKey("Inner"),-1);
-
-  VPipeCaveA->addInsertCell(Cave->getCells("VoidNose"));
-  VPipeCaveA->createAll(System,Cave->getKey("Inner"),-1);
-
-  FocusCaveA->addInsertCell(VPipeCaveA->getCells("Void"));
-  FocusCaveA->createAll(System,*VPipeCaveA,0,*VPipeCaveA,0);
-
-  PinA->addInsertCell(Cave->getCell("VoidNose"));
-  PinA->createAll(System,FocusCaveA->getKey("Guide0"),2);
+  buildCave(System,*ShieldB,2,voidCell);
 
   return;
 
-  /*  
-  // Guide in the bunker insert
-  GuideC->addInsertCell(BInsert->getCell("Void"));
-  GuideC->addEndCut(bunkerObj.getSignedLinkString(-2));
-  GuideC->createAll(System,*BInsert,-1,*BInsert,-1);
-  return;
-  if (stopPoint==3) return;
 
-  GuideD->addInsertCell(voidCell);
-  GuideD->createAll(System,*BInsert,2,GuideC->getKey("Guide0"),2);
-  return;
-  //
-  // First chopper pit out of bunker
-  // Guide guide String
-  HeadRule GuideCut=
-    attachSystem::unionLink(GuideD->getKey("Shield"),{2,3,4,5,6});
-  PitA->addInsertCell(voidCell);
-  PitA->createAll(System,GuideD->getKey("Guide0"),2);
-  PitA->insertComponent(System,"Outer",GuideCut);
-
-  GuidePitAFront->addInsertCell(PitA->getCells("MidLayer"));
-  GuidePitAFront->addEndCut(PitA->getKey("Inner").getSignedLinkString(1));
-  GuidePitAFront->createAll(System,GuideD->getKey("Guide0"),2,
-			    GuideD->getKey("Guide0"),2);
-
-  // ChopperA->addInsertCell(PitA->getCell("Void"));
-  // ChopperA->setCentreFlag(3);  // -Z direction
-  // ChopperA->createAll(System,*PitA,0);
-  
-  GuideE->addInsertCell(voidCell);
-  GuideE->addInsertCell(PitA->getCells("MidLayer"));
-  GuideE->addInsertCell(PitA->getCell("Outer"));
-  GuideE->createAll(System,PitA->getKey("Mid"),2,PitA->getKey("Mid"),2);
-
-  // runs backwards from guide to chopper
-  GuidePitABack->addInsertCell(PitA->getCells("MidLayer"));
-  GuidePitABack->addInsertCell(PitA->getCells("Collet"));
-  GuidePitABack->addEndCut(PitA->getKey("Inner").getSignedLinkString(2));
-  GuidePitABack->createAll(System,GuideE->getKey("Guide0"),-1,
-			    GuideE->getKey("Guide0"),-1);
-
-  ELog::EM<<"GuideE exit point == "<<
-    GuideE->getKey("Guide0").getSignedLinkPt(2).abs()<<ELog::endDebug;
-
-  // SECOND CHOPPER PIT:
-  // First chopper pit out of bunker
-  // Guide guide String
-  GuideCut=attachSystem::unionLink(GuideE->getKey("Shield"),{2,3,4,5,6});
-  PitB->addInsertCell(voidCell);
-  PitB->createAll(System,GuideE->getKey("Guide0"),2);
-  PitB->insertComponent(System,"Outer",GuideCut);
-  
-  // ChopperB->addInsertCell(PitB->getCell("Void"));
-  // ChopperB->setCentreFlag(3);  // -Z direction
-  // ChopperB->createAll(System,*PitB,0);
-
-  ELog::EM<<"PitB == "<<PitB->getCentre()
-	  <<" :: "<<PitB->getCentre().abs()<<ELog::endDebug;
-
-  GuidePitBFront->addInsertCell(PitB->getCells("MidLayer"));
-  GuidePitBFront->addEndCut(PitB->getKey("Inner").getSignedLinkString(1));
-  GuidePitBFront->createAll(System,GuideE->getKey("Guide0"),2,
-			    GuideE->getKey("Guide0"),2);
-
-  GuideF->addInsertCell(voidCell);
-  GuideF->addInsertCell(PitB->getCells("MidLayer"));
-  GuideF->addInsertCell(PitB->getCell("Outer"));
-  GuideF->createAll(System,PitB->getKey("Mid"),2,PitB->getKey("Mid"),2);
-
-  // runs backwards from guide to chopper
-  GuidePitBBack->addInsertCell(PitB->getCells("MidLayer"));
-  GuidePitBBack->addInsertCell(PitB->getCells("Collet"));
-  GuidePitBBack->addEndCut(PitB->getKey("Inner").getSignedLinkString(2));
-  GuidePitBBack->createAll(System,GuideF->getKey("Guide0"),-1,
-			    GuideF->getKey("Guide0"),-1);
-
-  //
-  // THIRD CHOPPER PIT:
-  //
-  const attachSystem::FixedComp& GOuterC=GuideF->getKey("Shield");
-  GuideCut=
-    attachSystem::unionLink(GOuterC,{2,3,4,5,6});
-  PitC->addInsertCell(voidCell);
-  PitC->createAll(System,GuideF->getKey("Guide0"),2);
-  PitC->insertComponent(System,"Outer",GuideCut);
-  
-  ELog::EM<<"PitC == "<<PitC->getCentre()
-	  <<" :: "<<PitC->getCentre().abs()<<ELog::endDebug;
-
-  GuidePitCFront->addInsertCell(PitC->getCell("MidLayer"));
-  GuidePitCFront->addEndCut(PitC->getKey("Inner").getSignedLinkString(1));
-  GuidePitCFront->createAll(System,GuideF->getKey("Guide0"),2,
-			    GuideF->getKey("Guide0"),2);
-
-
-  GuideG->addInsertCell(voidCell);
-  GuideG->addInsertCell(PitC->getCell("MidLayer"));
-  GuideG->addInsertCell(PitC->getCell("Outer"));
-  GuideG->createAll(System,PitC->getKey("Mid"),2,PitC->getKey("Mid"),2);
-
-  // runs backwards from guide to chopper
-  GuidePitCBack->addInsertCell(PitC->getCell("MidLayer"));
-  GuidePitCBack->addInsertCell(PitC->getCells("Collet"));
-  GuidePitCBack->addEndCut(PitC->getKey("Inner").getSignedLinkString(2));
-  GuidePitCBack->createAll(System,GuideG->getKey("Guide0"),-1,
-			    GuideG->getKey("Guide0"),-1);
   
 
-  GuideCut=attachSystem::unionLink(GuideG->getKey("Shield"),{3,4,5,6});
-  Cave->addInsertCell(voidCell);  
-  Cave->createAll(System,GuideG->getKey("Guide0"),2,GuideCut.display());
-
-  // runs through wall and into void 
-  GuideH->addInsertCell(Cave->getCell("VoidNose"));
-  GuideH->addInsertCell(Cave->getCell("FeNose"));
-  GuideH->createAll(System,GuideG->getKey("Guide0"),2,
-		    GuideG->getKey("Guide0"),2);
-
-
-  PinA->addInsertCell(Cave->getCell("VoidNose"));
-  PinA->createAll(System,GuideH->getKey("Guide0"),2);
-
-  BeamStop->addInsertCell(Cave->getCell("VoidMain"));
-  BeamStop->createAll(System,GuideH->getKey("Guide0"),2);
-  */
+ 
   return;
 }
 

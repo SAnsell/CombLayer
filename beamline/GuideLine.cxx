@@ -3,7 +3,7 @@
  
  * File:   beamline/GuideLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,7 +254,8 @@ GuideLine::populate(const FuncDataBase& Control)
     }
 
   // set frontcut based on offset:
-  beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
+  if (!frontActive())
+    beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
 
   return;
 }
@@ -511,8 +512,10 @@ GuideLine::createSurfaces()
     }
   
   if (beamFrontCut)
-    ModelSupport::buildPlane(SMap,guideIndex+1001,
-                             beamFC.getCentre(),beamFC.getY());
+    {
+      ModelSupport::buildPlane(SMap,guideIndex+1001,
+			       beamFC.getCentre(),beamFC.getY());
+    }
 
   if (!backActive())
     {
@@ -696,7 +699,7 @@ GuideLine::createGuideLinks()
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("GuideLine","createMainLinks");
+  ELog::RegMethod RegA("GuideLine","createGuideLinks");
 
 
   int GI(guideIndex+2000);

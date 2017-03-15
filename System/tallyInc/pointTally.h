@@ -64,6 +64,7 @@ class pointTally : public Tally
   void setMCNP6(const bool B) { mcnp6Out=B; }
 
   void setWindow(const std::vector<Geometry::Vec3D>&);
+  void setFUflag(const int);
   void setDDFlag(const double,const int);
   void setSecondDist(const double);
   void setCentre(const Geometry::Vec3D&);

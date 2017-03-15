@@ -180,7 +180,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   const double realFlangeRadius=(flangeRadius<0.0) ?
     minRadius-flangeRadius : flangeRadius;
   realWindowRadius=std::min(realWindowRadius,realFlangeRadius);
-  
+
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
   if (!pipeType)

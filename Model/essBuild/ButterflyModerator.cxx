@@ -3,7 +3,7 @@
  
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -223,7 +224,8 @@ ButterflyModerator::createObjects(Simulation& System)
   std::string Out;
   Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
-
+  addCell("MainVoid",cellIndex-1);
+  
   clearRules();
   addOuterSurf(Out);
   
@@ -301,7 +303,7 @@ ButterflyModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy surface top/bottom from H2Wing and Orign from center
+  // copy surface top/bottom from H2Wing and Origin from center
   
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
@@ -312,6 +314,8 @@ ButterflyModerator::createLinks()
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
+  FixedComp::setLinkCopy(6,*MidWater,12);  
+  
   return;
 }
 
@@ -392,9 +396,53 @@ ButterflyModerator::createAll(Simulation& System,
 
   createObjects(System);
   createLinks();
-  
   return;
 }
 
+
+std::string
+ButterflyModerator::getLeftExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points)
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
+  std::string Out;
+
+  Out+=LeftUnit->getSignedLinkString(8);
+  Out+=RightUnit->getSignedLinkString(9);
+  Out+=MidWater->getSignedLinkString(11);
+  
+  Out+=LeftWater->getSignedLinkString(4);   
+  Out+=RightWater->getSignedLinkString(3);
+  
+  return Out;
+  
+}
+
+std::string
+ButterflyModerator::getRightExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points) [+ve Y]
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
+  std::string Out;
+
+  Out+=LeftUnit->getSignedLinkString(9);
+  Out+=RightUnit->getSignedLinkString(8);
+  Out+=MidWater->getSignedLinkString(12);
+  
+  Out+=LeftWater->getSignedLinkString(3);
+  Out+=RightWater->getSignedLinkString(4);
+  
+  return Out;
+  
+}
+  
 
 }  // NAMESPACE essSystem

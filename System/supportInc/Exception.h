@@ -298,14 +298,13 @@ class OrderError : public ExBase
 };
 
 /*!
-  \class ArrayError
-  \brief Error Range in an array/list etc
+  \class DimensionError
+  \brief Error in the sized for a multi-dimension array
   \author Stuart Ansell
-  \date October 2005
+  \date October 2015
   \version 1.0
 
-  Records the object being looked for
-  and the range required.
+  Records the sizes and accessed values for the array 
 */
 template<unsigned int ndim,typename T>
 class DimensionError : public ExBase
@@ -490,7 +489,7 @@ class TypeConvError : public ExBase
 {
  private:
 
-  T ABase;
+  T ABase;                 ///< Base Item or Ptr
   void setOutLine();
 
  public:

@@ -3,7 +3,7 @@
  
  * File:   weight/IMPConstructor.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,11 +90,20 @@ IMPConstructor::processUnit(Simulation& System,
     ModelSupport::objectRegister::Instance();
 
   physicsSystem::PhysicsCards& PC=System.getPC();
+
+  
   
   int value;
   std::string particle=IParam.getValueError<std::string>
     ("wIMP",setIndex,0,"No particle for wIMP ");
 
+  if (particle=="help" || particle=="Help")
+    {
+      writeHelp(ELog::EM.Estream());
+      ELog::EM<<ELog::endBasic;
+      return;
+    }
+  
   size_t index(1);
   if (StrFunc::convert(particle,value))
     {
@@ -137,4 +146,24 @@ IMPConstructor::processUnit(Simulation& System,
   return;
 }
 
+void
+IMPConstructor::writeHelp(std::ostream& OX) const
+  /*!
+    Write out the help
+  */
+{
+  OX<<"wIMP help :: \n";
+
+  OX<<"-wIMP particle value[integer] object/range/cell  -- ::\n\n";
+  
+  OX<<"  particle : optional [default all]\n";
+  OX<<"  value : value for importance \n";
+  OX<<"  object : object name  \n";
+  OX<<"         : object name:cellname\n";
+  OX<<"         : cell number range\n";
+  OX<<"         : cell number\n";
+  return;
+}
+
+  
 } // Namespace physicsSystem

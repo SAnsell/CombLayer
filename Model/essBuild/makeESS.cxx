@@ -149,7 +149,6 @@ makeESS::makeESS() :
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain"))
-  
  /*!
     Constructor
  */
@@ -581,7 +580,6 @@ makeESS::buildBunkerQuake(Simulation& System,
 
   return;
 }
-
   
 void
 makeESS::buildPillars(Simulation& System)
@@ -696,7 +694,6 @@ makeESS::makeBunker(Simulation& System,
   BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
   BBunker->createAll(System,*ShutterBayObj,4,false);
-  //  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
   ABunker->insertComponent(System,"rightWall",*BBunker);
   ABunker->insertComponent(System,"roofFarEdge",*BBunker);
@@ -718,7 +715,6 @@ makeESS::makeBunker(Simulation& System,
 
   if (bunkerType.find("noPillar")==std::string::npos)
     buildPillars(System);
-
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
@@ -749,41 +745,49 @@ makeESS::makeBunker(Simulation& System,
 
   
 void
-makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
+makeESS::buildPreWings(Simulation& System)
   /*!
     Build pre wings :: These are little layers of pre-moderator that
     drop into the flight-line space 
     \param System :: Simulation
-    \param lowModType :: key for lower moderator type
    */
 {
   ELog::RegMethod RegA("makeESS","buildPreWings");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   enum Side {bottom, top};
-  
-  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
-  OR.addObject(TopPreWing);
-  TopPreWing->createAll(System,*TopPreMod,9,false,top);
-  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
 
-  TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
-  OR.addObject(TopCapWing);
-  TopCapWing->createAll(System,*TopCapMod,10,false,bottom);
-  attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
-
-  if (lowModType != "None")
+  const ButterflyModerator* TMod=
+    dynamic_cast<const ButterflyModerator*>(TopMod.get());
+  if (TMod)
     {
-      LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
-      OR.addObject(LowPreWing);
-      LowPreWing->createAll(System,*LowPreMod,9,true,bottom);
-      attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+      TopPreWingA = std::shared_ptr<PreModWing>(new PreModWing("TopLeftPreWing"));
+      OR.addObject(TopPreWingA);
+      TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
+      TopPreWingA->setInnerExclude(TMod->getLeftExclude());
+      TopPreWingA->setBaseCut(TopPreMod->getSignedFullRule(6));
+      TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
+      
+      TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
+      TopPreWingA->createAll(System,*TMod,0);
 
-      LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
-      OR.addObject(LowCapWing);
-      LowCapWing->createAll(System,*LowCapMod,10,true,top);
-      attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
-    }
+      TopPreWingB = std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
+      OR.addObject(TopPreWingB);
+      TopPreWingB->setDivider(TMod->getSignedMainRule(7));
+      TopPreWingB->setInnerExclude(TMod->getRightExclude());
+      TopPreWingB->setBaseCut(TopPreMod->getSignedFullRule(6));
+      TopPreWingB->setTopCut(TopCapMod->getSignedFullRule(5));
+      
+      TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));
+      TopPreWingB->createAll(System,*TMod,0);
+}
+  //  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
+
+      //      LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
+      //      OR.addObject(LowPreWing);
+      //      LowPreWing->createAll(System,*LowPreMod,9);
+      // attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+
   return;
 }
 
@@ -890,6 +894,8 @@ makeESS::build(Simulation& System,
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius());
 
+  buildPreWings(System);
+  
   Reflector->createAll(System,World::masterOrigin(),0,
 		       Target->wheelHeight(),
 		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),

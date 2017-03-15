@@ -3,7 +3,7 @@
  
  * File:   construct/ModBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "ModelSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -78,7 +79,7 @@ namespace constructSystem
 
 ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(0,0),
-  attachSystem::FixedComp(Key,nLinks),attachSystem::CellMap(),
+  attachSystem::FixedOffset(Key,nLinks),attachSystem::CellMap(),
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
   /*!
@@ -90,10 +91,8 @@ ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
 
 ModBase::ModBase(const ModBase& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
-  modIndex(A.modIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle)
+  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
+  modIndex(A.modIndex),cellIndex(A.cellIndex)
   /*!
     Copy constructor
     \param A :: ModBase to copy
@@ -112,13 +111,8 @@ ModBase::operator=(const ModBase& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
     }
   return *this;
 }
@@ -140,12 +134,7 @@ ModBase::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ModBase","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
   
   const size_t NFlight=Control.EvalDefVar<size_t>(keyName+"NFlight",0);  
   flightSides.clear();
@@ -176,8 +165,7 @@ ModBase::createUnitVector(const attachSystem::FixedComp& axisFC,
   attachSystem::FixedComp::createUnitVector(axisFC);
   if (orgFC)
     Origin= orgFC->getSignedLinkPt(sideIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  FixedOffset::applyOffset();
   return; 
 }
 

@@ -1710,6 +1710,14 @@ FixedComp::getExitWindow(const size_t outIndex,
   window.clear();
   for(size_t i=0;i<4;i++)
     window.push_back(std::abs(getLinkSurf(oA[i])));
+  // check two pairs of order:
+  const Geometry::Vec3D aX=getLinkAxis(0);
+  const Geometry::Vec3D bX=getLinkAxis(1);
+  const Geometry::Vec3D cX=getLinkAxis(2);
+  if (std::abs<double>(aX.dotProd(bX))>0.99)
+    std::swap(window[1],window[2]);
+  else if (std::abs<double>(bX.dotProd(cX))>0.99)
+    std::swap(window[2],window[3]);
 
   //
   // Extremely ugly code to extract the dividing surface [if it exists]

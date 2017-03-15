@@ -224,7 +224,20 @@ FrontBackCut::setBack(const attachSystem::FixedComp& WFC,
   return;
 }
 
+void
+FrontBackCut::setFrontDivider(const std::string& FDRule)
+  /*!
+    Set the front divider
+    \param FDRule :: Front divider rule
+  */
+{
+  if (!frontDivider.procString(FDRule))
+    throw ColErr::InvalidLine(FDRule,"FDRule failed");
+  frontDivider.populateSurf();
+  return;
+}
 
+  
 void
 FrontBackCut::setFrontDivider(const HeadRule& HR)
   /*!
@@ -233,6 +246,19 @@ FrontBackCut::setFrontDivider(const HeadRule& HR)
    */
 {
   frontDivider=HR;
+  return;
+}
+
+void
+FrontBackCut::setBackDivider(const std::string& BDRule)
+  /*!
+    Set the back divider
+    \param BDRule :: Back divider rule
+  */
+{
+  if (!backDivider.procString(BDRule))
+    throw ColErr::InvalidLine(BDRule,"BDRule failed");
+  backDivider.populateSurf();
   return;
 }
 

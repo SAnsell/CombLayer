@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \parma SN :: slot number  (id number)
+    \param SN :: slot number  (id number)
   */
 {}
 

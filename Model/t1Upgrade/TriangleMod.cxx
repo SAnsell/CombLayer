@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/TriangleMod.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -169,7 +170,7 @@ TriangleMod::populate(const FuncDataBase& Control)
   absYStep=Control.EvalDefVar<double>(keyName+"AbsYStep",0.0);
   absZStep=Control.EvalDefVar<double>(keyName+"AbsZStep",0.0);
   absXYAngle=Control.EvalDefVar<double>(keyName+"AbsXYangle",0.0);
-  absZAngle=Control.EvalDefVar<double>(keyName+"BasZangle",0.0);
+  absZAngle=Control.EvalDefVar<double>(keyName+"AbsZangle",0.0);
 
 
   Outer.clear();
@@ -239,8 +240,6 @@ TriangleMod::populate(const FuncDataBase& Control)
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
-
 
   return;
 }

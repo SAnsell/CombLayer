@@ -212,7 +212,6 @@ sourceSelection(Simulation& System,
       !StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
 
-  ELog::EM<<"Search == "<<DObj<<ELog::endDiag;
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
 

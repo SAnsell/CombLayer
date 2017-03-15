@@ -113,9 +113,11 @@ main(int argc,char* argv[])
       if (!SimPtr) return -1;
       
       // The big variable setting
-      setVariable::EssVariables(SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
-      InputModifications(SimPtr,IParam,Names);
+      const std::set<std::string> beamlines=
+        IParam.getComponents<std::string>("beamlines",1);            
+      setVariable::EssVariables(SimPtr->getDataBase(),beamlines);
+      InputModifications(SimPtr,IParam,Names);            
       mainSystem::setMaterialsDataBase(IParam);
 
       SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));

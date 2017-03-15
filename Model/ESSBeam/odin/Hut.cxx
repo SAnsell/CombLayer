@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/odin/Hut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 
 #include "Hut.h"
 
@@ -82,6 +83,7 @@ namespace essSystem
 Hut::Hut(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Outer",6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutIndex+1)
   /*!
@@ -105,8 +107,7 @@ Hut::Hut(const Hut& A) :
   concFloor(A.concFloor),concNoseFront(A.concNoseFront),
   concNoseSide(A.concNoseSide),concBack(A.concBack),
   wallYStep(A.wallYStep),wallThick(A.wallThick),
-  wallXGap(A.wallXGap),wallZGap(A.wallZGap),feMat(A.feMat),
-  concMat(A.concMat),wallMat(A.wallMat)
+  feMat(A.feMat),concMat(A.concMat),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: Hut to copy
@@ -149,8 +150,6 @@ Hut::operator=(const Hut& A)
       concBack=A.concBack;
       wallYStep=A.wallYStep;
       wallThick=A.wallThick;
-      wallXGap=A.wallXGap;
-      wallZGap=A.wallZGap;
       feMat=A.feMat;
       concMat=A.concMat;
       wallMat=A.wallMat;
@@ -201,8 +200,6 @@ Hut::populate(const FuncDataBase& Control)
 
   wallYStep=Control.EvalVar<double>(keyName+"WallYStep");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  wallXGap=Control.EvalVar<double>(keyName+"WallXGap");
-  wallZGap=Control.EvalVar<double>(keyName+"WallZGap");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
@@ -340,11 +337,10 @@ Hut::createSurfaces()
   ModelSupport::buildPlane(SMap,hutIndex+1001,
 			   Origin+Y*(wallYStep-voidLength/2.0),Y);  
   ModelSupport::buildPlane(SMap,hutIndex+1002,
-			   Origin+Y*(wallYStep+wallThick-voidLength/2.0),Y);  
-  ModelSupport::buildPlane(SMap,hutIndex+1003,Origin-X*(wallXGap/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+1004,Origin+X*(wallXGap/2.0),X);
-  ModelSupport::buildPlane(SMap,hutIndex+1005,Origin-Z*(wallZGap/2.0),Z);
-  ModelSupport::buildPlane(SMap,hutIndex+1006,Origin+Z*(wallZGap/2.0),Z);
+			   Origin+Y*(wallYStep+wallThick-voidLength/2.0),Y);
+  SurfMap::addSurf("InnerWallFront",hutIndex+1001);
+  SurfMap::addSurf("InnerWallBack",hutIndex+1002);
+  
   return;
 }
 
@@ -399,10 +395,6 @@ Hut::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   setCell("InnerWall",cellIndex-1);
 
-  Out=ModelSupport::getComposite
-    (SMap,hutIndex,"1001 -1002 1003 -1004 1005 -1006");
-
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
   
   // Fe [main]

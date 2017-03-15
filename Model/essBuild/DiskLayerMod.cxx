@@ -3,7 +3,7 @@
  
  * File:   essBuild/DiskLayerMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -313,43 +313,13 @@ DiskLayerMod::createLinks()
 {  
   ELog::RegMethod RegA("DiskLayerMod","createLinks");
 
+  const int SI(modIndex+static_cast<int>(thick.size())*200);
 
-  const int SI(modIndex+static_cast<int>(nLayers)*200);
-
-  /*
-  FixedComp::setConnect(0,Origin-Y*radius[nLayers-1],-Y);
-  FixedComp::setLinkSurf(0,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(0,-SMap.realSurf(modIndex+2));
-
-  FixedComp::setConnect(1,Origin+Y*radius[nLayers-1],Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
-  FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
-  
-  
-  FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
-  FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
-  
-  FixedComp::setConnect(3,Origin+X*radius[nLayers-1],X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(3,SMap.realSurf(modIndex+1));
-  */  
   FixedComp::setConnect(4,Origin,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
-
+  FixedComp::setLinkSurf(4,-SMap.realSurf(modIndex+5));
   FixedComp::setConnect(5,Origin+Z*thick[nLayers-1],Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+5));
 
-  /*  // inner links point inwards
-  FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
-  FixedComp::setLinkSurf(6,-SMap.realSurf(modIndex+7));
-
-  FixedComp::setConnect(7,Origin-Z*depth[0],Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(modIndex+5));
-
-  FixedComp::setConnect(8,Origin+Z*height[0],-Z);
-  FixedComp::setLinkSurf(8,-SMap.realSurf(modIndex+6));
-  */
   return;
 }
 

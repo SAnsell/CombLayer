@@ -96,7 +96,7 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addWallMat(5,"Concrete");
 
   FGen.setGuideMat("Copper");
-  FGen.setYOffset(8.0);
+  FGen.setYOffset(2.0);
   FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"vespaFA",350.0,7.6,4.02,5.0,7.6250);
 

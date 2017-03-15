@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WeightControl.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,10 +32,10 @@ namespace Geometry
 
 /*!
   \namespace WeightSystem
-  \brief Adds a layer of shutters to the Target/Reflect/Moderatr
+  \brief Main variance reduction ssytem
   \author S. Ansell
   \version 1.0
-  \date April 2009
+  \date April 2015
 */
 
 namespace WeightSystem
@@ -49,7 +49,7 @@ namespace WeightSystem
     \version 1.0
     \author S. Ansell
     \date October 2015
-    \brief Input to Weights controller
+    \brief Input to Weigths controller
   */
   
 class WeightControl

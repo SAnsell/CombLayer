@@ -3,7 +3,7 @@
  
  * File:   essBuild/H2Wing.cxx 
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,6 +76,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -303,6 +304,11 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
+  // OuterCorners and linkage
+  FixedComp::setLinkSurf(6,getLayerString(nLayers-1,-7));
+  FixedComp::setLinkSurf(7,getLayerString(nLayers-1,-8));
+  FixedComp::setLinkSurf(8,getLayerString(nLayers-1,-9));
+  
   // INNER LINKS
   
   cornerSet(0.0,CPts,NPts);
@@ -311,14 +317,16 @@ H2Wing::createLinks()
   for(size_t i=0;i<3;i++)
     {
       ii++;
-      FixedComp::setConnect(i+8,(CPts[i]+CPts[(i+1)%3])/2.0,-NPts[i]);
-      FixedComp::setLinkSurf(i+8,-SMap.realSurf(ii));
+      FixedComp::setConnect(i+9,(CPts[i]+CPts[(i+1)%3])/2.0,-NPts[i]);
+      FixedComp::setLinkSurf(i+9,-SMap.realSurf(ii));
     }
   FixedComp::setConnect(12,Origin-Z*(height/2.0),Z);
   FixedComp::setConnect(13,Origin+Z*(height/2.0),-Z);
   FixedComp::setLinkSurf(12,SMap.realSurf(wingIndex+105));
   FixedComp::setLinkSurf(13,-SMap.realSurf(wingIndex+106));
 
+
+  
   return;
 }
   
@@ -537,10 +545,6 @@ H2Wing::createObjects(Simulation& System)
   OutA=ModelSupport::getComposite(SMap,triOffset,
 				     "-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
   addOuterSurf(OutA);
-
-  //  sideRule=ModelSupport::getComposite(SMap,triOffset,
-  //				     "-1 -2 -3 (21:-7) (22:-8) (23:-9)");
-
   return;
 }
 
@@ -636,7 +640,7 @@ std::string
 H2Wing::getLayerString(const size_t layerIndex,
 		       const long int sideIndex) const
   /*!
-    Given a side and a layer calculate the link point
+    Given a side and a layer calculate the surface bounding
     \param layerIndex :: layer, 0 is inner moderator [0-6]
     \param sideIndex :: Side [0-3]+mid sides   
     \return Surface point

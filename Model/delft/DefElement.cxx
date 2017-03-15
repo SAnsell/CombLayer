@@ -3,7 +3,7 @@
  
  * File:   delft/DefElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,9 +80,9 @@ DefElement::DefElement(const size_t XI,const size_t YI,
   RElement(XI,YI,Key)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \parma XI :: Grid position
-    \parma YI :: Grid position 
-    \parma Key :: Keyname for basic cell
+    \param XI :: Grid position
+    \param YI :: Grid position 
+    \param Key :: Keyname for basic cell
   */
 {}
 

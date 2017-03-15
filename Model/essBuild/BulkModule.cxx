@@ -75,8 +75,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
 #include "World.h"
 #include "BulkModule.h"
 
@@ -84,7 +84,7 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,9),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -94,11 +94,9 @@ BulkModule::BulkModule(const std::string& Key)  :
 {}
 
 BulkModule::BulkModule(const BulkModule& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),nLayer(A.nLayer),
-  radius(A.radius),height(A.height),depth(A.depth),
+  nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
   /*!
     Copy constructor
@@ -117,13 +115,8 @@ BulkModule::operator=(const BulkModule& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       nLayer=A.nLayer;
       radius=A.radius;
       height=A.height;
@@ -141,22 +134,16 @@ BulkModule::~BulkModule()
 {}
 
 void
-BulkModule::populate(const Simulation& System)
+BulkModule::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("BulkModule","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
+  FixedOffset::populate(Control);
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
   nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
   if (!nLayer) return;
   radius.resize(nLayer);
@@ -183,17 +170,18 @@ BulkModule::populate(const Simulation& System)
 }
   
 void
-BulkModule::createUnitVector(const attachSystem::FixedComp& FC)
+BulkModule::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
+    \param sideIndex :: Link point 
   */
 {
   ELog::RegMethod RegA("BulkModule","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
     
   for(size_t i=0;i<nLayer;i++)
     COffset[i]=X*COffset[i].X()+Y*COffset[i].Y();
@@ -358,8 +346,8 @@ BulkModule::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BulkModule","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,0);
   createSurfaces();
   createLinks();
   createObjects(System,CC);

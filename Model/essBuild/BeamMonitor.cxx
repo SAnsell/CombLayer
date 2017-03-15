@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeamMonitor.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -308,7 +308,7 @@ BeamMonitor::createAll(Simulation& System,
     \param FC :: Proton beam FixedComp for origin
     \param linkIndex :: link point on FC
     \param CG :: Contained group unit
-    \parm CGName :: Contained Group sequence name
+    \param CGName :: Contained Group sequence name
   */
 {
   ELog::RegMethod RegA("BeamMonitor","createAll");

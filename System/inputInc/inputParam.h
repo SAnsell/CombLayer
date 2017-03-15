@@ -134,6 +134,9 @@ class inputParam
   template<typename T>
   T getFlagDef(const std::string&,const FuncDataBase&,
 		      const std::string&,const size_t =0) const;
+
+  template<typename T>
+  std::set<T> getComponents(const std::string&,const size_t) const;
   
   void setDesc(const std::string&,const std::string&);
   void setFlag(const std::string&);

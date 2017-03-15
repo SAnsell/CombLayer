@@ -350,7 +350,6 @@ DiskPreMod::createLinks()
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+7));
   FixedComp::setBridgeSurf(1,SMap.realSurf(modIndex+2));
   
-  
   FixedComp::setConnect(2,Origin-X*radius[nLayers-1],-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(2,-SMap.realSurf(modIndex+1));
@@ -364,7 +363,7 @@ DiskPreMod::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*height[nLayers-1],Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
-
+  
   // inner links point inwards
   FixedComp::setConnect(6,Origin+Y*radius[0],-Y);
   FixedComp::setLinkSurf(6,-SMap.realSurf(modIndex+7));

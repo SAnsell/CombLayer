@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -281,19 +281,6 @@ addSSWTally(Simulation& System)
   return System.getSSWTally();
 }
 
-void
-addF5Tally(Simulation& System,const int tNumber)
-  /*!
-    Adds a point tally 
-    \param System :: Simulation item
-    \param tNumber :: Tally Number
-  */
-{
-  ELog::RegMethod RegA("tallySystem","addF5Tally(int)");
-  std::vector<Geometry::Vec3D> EmptyVec;
-  addF5Tally(System,tNumber,Geometry::Vec3D(0,0,0),EmptyVec);
-  return;
-}
 
 void
 addF5Tally(Simulation& System,const int tNumber,
@@ -312,8 +299,11 @@ addF5Tally(Simulation& System,const int tNumber,
   ELog::RegMethod RegA("tallySystem","addF5Tally(4)");
 
   tallySystem::pointTally TX(tNumber);
-  if (VList.size()>=4) 
-    TX.setWindow(VList);
+  if (VList.size()>=4)
+    {
+      TX.setWindow(VList);
+      TX.setFUflag(1);
+    }
   TX.setCentre(Point);
   TX.setActive(1);
   TX.setParticles("n");                    /// F5 :: tally on neutrons
@@ -331,272 +321,20 @@ addF5Tally(Simulation& System,const int tNumber,
 
   return;
 }
-
-
-std::vector<Geometry::Vec3D>
-calcWindowIntercept(const int bPlane,const int A,
-		    const int B,const int C,
-		    const int D,const int extraPlane)
-  /*!
-    Calculate the window for the point tally
-    \param System :: Simulation item
-    \param bPlane :: back plane/ cylinder /sphere etc.
-    \param A :: First part of pair [parallel to B]
-    \param B :: Second part of opposite pair
-    \param C :: First part of second opposite pair [parallel to D]
-    \param D :: Second part of second opposite pair 
-    \param extraPlane :: Extra test value
-    \return Vector of Points
-  */
-{
-  ELog::RegMethod RegA("tallySystem","calcWindowIntercept");
-
-  std::vector<Geometry::Vec3D> VList;
-  std::vector<Geometry::Vec3D> Out;
-  // Get Methane plane intercepts:
-  const int S[4]={A,B,C,D};
-
-  ELog::EM<<"Extra == "<<extraPlane<<ELog::endDebug;
-  for(int i=0;i<4;i++)
-    {
-      const int j((i%3) ? 3 : 2);
-      ModelSupport::calcVertex(bPlane,S[i % 2],S[j],Out,extraPlane);
-      if (Out.empty())
-        {
-	  ELog::EM<<"Unable to calculate intercept \n";
-	  ELog::EM<<"Planes == "<<bPlane<<" "<<S[i%2]<<" "<<S[j]
-		  <<" ("<<extraPlane<<")"<<ELog::endErr;
-	  return VList;
-	}
-      VList.push_back(Out[0]);
-    }
-  return VList;
-}
-
-std::vector<Geometry::Vec3D>
-calcWindowIntercept(const int bPlane,const int A,
-		    const int B,const int C,
-		    const int D,const Geometry::Vec3D& closePt)
-  /*!
-    Calculate the window for the point tally
-    \param System :: Simulation item
-    \param bPlane :: back plane/ cylinder /sphere etc.
-    \param A :: First part of pair [parallel to B]
-    \param B :: Second part of opposite pair
-    \param C :: First part of second opposite pair [parallel to D]
-    \param D :: Second part of second opposite pair 
-    \param closePt :: Closest point to test
-    \return Vector of Points
-  */
-{
-  ELog::RegMethod RegA("tallySystem","calcWindowIntercept");
-
-  std::vector<Geometry::Vec3D> VList;
-  std::vector<Geometry::Vec3D> Out;
-  // Get Methane plane intercepts:
-  const int S[4]={A,B,C,D};
-
-  for(int i=0;i<4;i++)
-    {
-      const int j((i%3) ? 3 : 2);
-      ModelSupport::calcVertex(bPlane,S[i % 2],S[j],Out,closePt);
-      if (Out.empty())
-        {
-	  ELog::EM<<"Unable to calculate intercept \n";
-	  ELog::EM<<"Planes == "<<bPlane<<" "<<S[i%2]<<" "<<S[j]
-		  <<" ("<<closePt<<")"<<ELog::endErr;
-	  return VList;
-	}
-      VList.push_back(Out[0]);
-    }
-  return VList;
-}
-
-void
-addF5Tally(Simulation& System,const int tNumber,
-	   const Geometry::Vec3D& TP,const int bPlane,
-	   const int A,const int B,const int C,
-	   const int D,const int extraPlane)
-  /*!
-    Adds a point tally . Forms agroup of pairs (A-B) and (C-D)
-    \param System :: Simulation item
-    \param tNumber :: Tally Number
-    \param TP :: Tally Point
-    \param A :: First part of pair [parallel to B]
-    \param B :: Second part of opposite pair
-    \param C :: First part of second opposite pair [parallel to D]
-    \param D :: Second part of second opposite pair 
-  */
-{
-  ELog::RegMethod RegA("tallySystem","addF5Tally(int[8])");
-
-  tallySystem::pointTally TX(tNumber);
-  std::vector<Geometry::Vec3D> VList;
-  if (extraPlane)
-    VList=calcWindowIntercept(bPlane,A,B,C,D,extraPlane);
-  else
-    VList=calcWindowIntercept(bPlane,A,B,C,D,TP);
-  TX.setWindow(VList);
-  TX.setCentre(TP);
-  if (extraPlane && ModelSupport::checkSurface(extraPlane,TX.getCentre())<0)
-    {
-      ELog::EM<<"Centre on wrong side of extraPlane for tally "
-	      <<tNumber<<ELog::endWarn;
-      ELog::EM<<"Point == "<<TX.getCentre()<<ELog::endWarn; 
-    }
-
-  TX.setActive(1);
-  TX.setParticles("n");                    /// F5 :: tally on neutrons
-  TX.setEnergy("1.0e-11 251log 1e3");
-  TX.setTime("1.0 179log 1e8");
-  if (System.isMCNP6())
-    TX.setMCNP6(1);
-
-  System.addTally(TX);
-  return;
-}
-
-void
-addF5Tally(Simulation& System,const int tNumber,
-	   const int bPlane,const int A,const int B,
-	   const int C, const int D,const double Distance,
-	   const int extraPlane)
-  /*!
-    Adds a point tally . Forms agroup of pairs (A-B) and (C-D)
-    \param System :: Simulation item
-    \param tNumber :: Tally Number
-    \param bPlane :: back plane/ cylinder /sphere etc.
-    \param A :: First part of pair [parallel to B]
-    \param B :: Second part of opposite pair
-    \param C :: First part of second opposite pair [parallel to D]
-    \param D :: Second part of second opposite pair 
-    \param Distance :: distance from the surface to the tally point
-    \param extraPlane :: Extra test value
-  */
-{
-  ELog::RegMethod RegA("tallySystem","addF5Tally(int[8])");
-
-  tallySystem::pointTally TX(tNumber);
-  std::vector<Geometry::Vec3D> VList;
-  std::vector<Geometry::Vec3D> Out;
-  // Get Methane plane intercepts:
-  const int S[4]={A,B,C,D};
-
-  for(int i=0;i<4;i++)
-    {
-      const int j((i%3) ? 3 : 2);
-      ModelSupport::calcVertex(bPlane,S[i % 2],S[j],Out,extraPlane);
-      if (Out.empty())
-        {
-	  ELog::EM<<"Unable to calculate intercept with Tally:"
-		  <<tNumber<<"\n";
-	  ELog::EM<<"Planes == "<<bPlane<<" "<<S[i%2]<<" "<<S[j]
-		  <<" ("<<extraPlane<<")"<<ELog::endErr;
-	  return;
-	}
-      VList.push_back(Out[0]);
-    }
-
-  TX.setWindow(VList);
-  TX.setCentre(Distance);
-  if (extraPlane && ModelSupport::checkSurface(extraPlane,TX.getCentre())<0)
-    {
-      ELog::EM<<"Centre on wrong side of extraPlane for tally "
-	      <<tNumber<<ELog::endWarn;
-      ELog::EM<<"Point == "<<TX.getCentre()<<ELog::endWarn; 
-    }
-
-  TX.setActive(1);
-  TX.setParticles("n");                    /// F5 :: tally on neutrons
-  TX.setEnergy("1.0e-11 251log 1e3");
-  TX.setTime("1.0 179log 1e8");
-  if (System.isMCNP6())
-    TX.setMCNP6(1);
-
-  System.addTally(TX);
-  return;
-}
-
-void
-addF5Tally(Simulation& System,const int tNumber,
-	   const int bPlane,const int A,const int B,
-	   const int C, const int D,const double Distance,
-	   const Geometry::Vec3D& nearPoint)
-  /*!
-    Adds a point tally . Forms agroup of pairs (A-B) and (C-D)
-    \param System :: Simulation item
-    \param tNumber :: Tally Number
-    \param bPlane :: back plane/ cylinder /sphere etc.
-    \param A :: First part of pair [parallel to B]
-    \param B :: Second part of opposite pair
-    \param C :: First part of second opposite pair [parallel to D]
-    \param D :: Second part of second opposite pair 
-    \param Distance :: distance from the surface to the tally point
-    \param nearPtoin :: Closest extra point
-  */
-{
-  ELog::RegMethod RegA("tallySystem","addF5Tally(int,nearPt)");
-
-  ModelSupport::surfIndex& SurI= ModelSupport::surfIndex::Instance();
-
-  tallySystem::pointTally TX(tNumber);
-  std::vector<Geometry::Vec3D> VList;
-  std::vector<Geometry::Vec3D> Out;
-  // Get Methane plane intercepts:
-  const Geometry::Surface* BSurf=SurI.getSurf(bPlane);
-  const Geometry::Surface* S[4];
-  S[0]=SurI.getSurf(A);
-  S[1]=SurI.getSurf(B);
-  S[2]=SurI.getSurf(C);
-  S[3]=SurI.getSurf(D);
   
-  for(int i=0;i<4;i++)
-    {
-      const int j((i%3) ? 3 : 2);
-      VList.push_back(SurInter::getPoint(BSurf,S[i % 2],S[j],nearPoint));
-    }
-
-  TX.setWindow(VList);
-  TX.setCentre(Distance);
-
-  TX.setActive(1);
-  TX.setParticles("n");                    /// F5 :: tally on neutrons
-  TX.setEnergy("1.0e-11 251log 1e3");
-  TX.setTime("1.0 179log 1e8");
-  if (System.isMCNP6())
-    TX.setMCNP6(1);
-
-  System.addTally(TX);
-  return;
-}
-
-void 
-addSimpleF5Tally(Simulation& System,const int TNum,
-		 const Geometry::Vec3D& Pt,const std::string& Particle,
-		 const std::string& Energy,const std::string& Time)
+void
+addF5Tally(Simulation& System,const int tNumber)
   /*!
-    Add a basic point tally at a position
-    \param System :: Simulation system
-    \param Pt :: Point for tally
-    \param TNum :: Tally number
-    \param Particle :: Particle(s) string
-    \param Energy :: Energy string
-    \param Time :: Time string
+    Adds a point tally 
+    \param System :: Simulation item
+    \param tNumber :: Tally Number
   */
 {
-  ELog::RegMethod RegA("TallyCreate[F]","addSimpleF5Tally");
-  tallySystem::pointTally TX(TNum);
-  TX.setActive(1);
-  TX.setCentre(Pt);
-  TX.setParticles(Particle);
-  TX.setEnergy(Energy);
-  TX.setTime(Time);
-  if (System.isMCNP6())
-    TX.setMCNP6(1);
-
-  System.addTally(TX);
+  ELog::RegMethod RegA("tallySystem","addF5Tally(int)");
+  std::vector<Geometry::Vec3D> EmptyVec;
+  addF5Tally(System,tNumber,Geometry::Vec3D(0,0,0),EmptyVec);
   return;
-} 
+}
 
 void
 setComment(Simulation& System,const int tNumber,const std::string& Comment)

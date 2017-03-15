@@ -101,7 +101,7 @@ addInsertCylinderCell(Simulation& System,
                       const Geometry::Vec3D& XYZStep,
                       const double radius,const double length,
                       const std::string& mat)
-/*!
+  /*!
     Adds a void cell for tallying in the guide if required
     Note his normally leave a "hole" in the guide so 
     it is ideally not used unless absolutely needed.
@@ -111,8 +111,8 @@ addInsertCylinderCell(Simulation& System,
     \param FCname :: FixedComp reference name
     \param linkName :: link direction
     \param XYZStep :: Step in xyz direction
-    \param length :: full length
     \param radius :: radial size
+    \param length :: full length
     \param mat :: Material 
   */
 {
@@ -285,7 +285,7 @@ addInsertSphereCell(Simulation& System,
     \param System :: Simulation to used
     \param objName :: new plate name
     \param CentPos :: Central Position
-    \param raduis :: radius of phere
+    \param radius :: radius of phere
     \param mat :: material
   */
 {
@@ -323,10 +323,10 @@ addInsertSphereCell(Simulation& System,
     
     \param System :: Simulation to used
     \param objName :: new plate name
-    const std::string& FCname,
-    const std::string& linkName,
+    \param FCname :: Fixedobject naem
+    \param linkName :: Link point / link name
     \param XYZStep :: Central Offset
-    \param raduis :: radius of phere
+    \param radius :: radius of phere
     \param mat :: material
   */
 {
