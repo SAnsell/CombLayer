@@ -101,6 +101,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
+  active(A.active),
   engActive(A.engActive),
   length(A.length),outerRadius(A.outerRadius),innerRadius(A.innerRadius),
   faceLength(A.faceLength),
@@ -135,6 +136,7 @@ FaradayCup::operator=(const FaradayCup& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
+      active=A.active;
       engActive=A.engActive;
       length=A.length;
       outerRadius=A.outerRadius;
@@ -183,6 +185,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("FaradayCup","populate");
 
   FixedOffset::populate(Control);
+  active=Control.EvalDefVar<int>(keyName+"Active", 1);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
@@ -266,6 +269,7 @@ FaradayCup::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("FaradayCup","createObjects");
+  if (!active) return;
 
   std::string Out;
   // collimator

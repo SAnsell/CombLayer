@@ -43,6 +43,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
+  int active; ///< On/Off switch
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
@@ -66,7 +67,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   double shieldInnerRadius; ///< shielding inner radius
   double shieldLength; ///< shield length
   double shieldInnerLength; ///< shielding inner length
-  double shieldMat; ///< shielding material
+  int shieldMat; ///< shielding material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
