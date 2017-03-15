@@ -314,7 +314,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModRadius2",-0.3);
   //  Control.Parse("BeRefRadius-LowPreModRadius0-LowPreModRadius1");
   //  Control.addVariable("LowPreModRadius2");
-  Control.addVariable("LowPreModMat2","Iron10H2O");
+  Control.addVariable("LowPreModMat2","Iron_10H2O");
 
   Control.addVariable("LowPreModHeight3",0.3);
   Control.addVariable("LowPreModDepth3",0.3);
