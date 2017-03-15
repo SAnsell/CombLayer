@@ -97,14 +97,14 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
   Control.addVariable("BilbaoWheelNSectors", 36);
   Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
-  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L785");
+  Control.addVariable("BilbaoWheelSectorSepMat", "SS316L_7.85g");
   Control.addVariable("BilbaoWheelTemperature", 600);
 
-  Control.addVariable("BilbaoWheelWMat","Tungsten151");
-  Control.addVariable("BilbaoWheelSteelMat","SS316L785");
+  Control.addVariable("BilbaoWheelWMat","Tungsten_15.1g");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L_7.85g");
   Control.addVariable("BilbaoWheelHeMat","Helium");
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
-  Control.addVariable("BilbaoWheelInnerMat","SS316L785");
+  Control.addVariable("BilbaoWheelInnerMat","SS316L_7.85g");
 
   Control.addVariable("BilbaoWheelNLayers",3);
 
@@ -130,7 +130,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelInnerStructureNSectors", 36);
   Control.addVariable("BilbaoWheelInnerStructureNBrickSectors", 0);
   Control.addVariable("BilbaoWheelInnerStructureSectorSepThick", 1.0);
-  Control.addVariable("BilbaoWheelInnerStructureSectorSepMat", "SS316L785");
+  Control.addVariable("BilbaoWheelInnerStructureSectorSepMat", "SS316L_7.85g");
 
   Control.addVariable("BilbaoWheelInnerStructureNSteelLayers", 3);
   Control.addVariable("BilbaoWheelInnerStructureBrickSteelMat", "SS316L");
