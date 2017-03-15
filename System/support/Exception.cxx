@@ -618,7 +618,7 @@ void
 DimensionError<ndim,T>::setOutLine()
   /*!
     Writes out the range and aim point
-    to \OutLine
+    to OutLine
   */
 {
   std::stringstream cx;
@@ -697,7 +697,7 @@ void
 ArrayError<ndim>::setOutLine()
   /*!
     Writes out the range and aim point
-    to \OutLine
+    to OutLine
   */
 {
   std::stringstream cx;
@@ -1180,7 +1180,7 @@ ConstructionError::ConstructionError(const std::string& N,
     \param Place :: Description string
     \param M :: Method
     \param IP1 :: Input 1
-    \param IP1 :: Input 2
+    \param IP2 :: Input 2
    */
 {
   setOutLine();
@@ -1365,6 +1365,7 @@ ExitAbort::ExitAbort(const std::string& Err,const int flag) :
   /*!
     Constructor
     \param Err :: Class:method string
+    \param flag :: Extract a full calling path info 
   */
 { }
 

@@ -87,7 +87,6 @@ SupplyBox::SupplyBox(const std::string& Key)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \param Opt :: optName
   */
 {}
 

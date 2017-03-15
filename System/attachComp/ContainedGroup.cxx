@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,7 +238,7 @@ ContainedGroup::addOuterSurf(const std::string& Key,
 			     const std::string& SList) 
 /*!
   Add a set of surfaces to the output
-  \param Key :: Key name for rule
+  \param Key :: Group name for rule
   \param SList ::  Surface string [fully decomposed]
 */
 {
@@ -267,7 +267,7 @@ ContainedGroup::addBoundarySurf(const std::string& Key,
   
   /*!
     Add a set of surfaces to the boundary object
-    \param Key :: Key name for rule
+    \param Key :: Group name for rule
     \param SN ::  Signed surface number
   */
 {
@@ -296,7 +296,7 @@ ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
   
   /*!
     Add a set of surfaces to the boundary object in union
-    \param Key :: Key name for rule
+    \param Key :: Group name for rule
     \param SN ::  Signed surface number
   */
 {
@@ -424,6 +424,7 @@ ContainedGroup::setInsertCell(const std::string& Key,
 			      const int CN)
   /*!
     Sets a cell to the insert list
+    \param Key :: Group name
     \param CN :: Cell number
   */
 {

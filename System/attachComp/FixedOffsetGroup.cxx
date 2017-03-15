@@ -96,6 +96,7 @@ FixedOffsetGroup::FixedOffsetGroup(const std::string& mainKey,
   xyAngle(0.0),zAngle(0.0)
  /*!
     Constructor 
+    \param mainKey :: BaseName 
     \param KN :: KeyName
     \param NL :: Number of links
   */

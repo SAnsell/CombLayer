@@ -343,8 +343,8 @@ LinkUnit::setBridgeSurf(const std::string& SList)
 void
 LinkUnit::setBridgeSurf(const HeadRule& HR) 
   /*!
-    Add a surface to the output
-    \param SList :: String set to add
+    Set a surface to the output
+    \param HR :: Rule for bridge surface
   */
 {
   ELog::RegMethod RegA("LinkUnit","setBridgeSurf(HeadRule)");
@@ -382,7 +382,7 @@ void
 LinkUnit::addBridgeSurf(const HeadRule& HR) 
   /*!
     Add a set of surfaces to the output
-    \param SList ::  Surface string [fully decomposed]
+    \param HR ::  Rule for bridge surface
   */
 {
   ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");

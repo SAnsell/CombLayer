@@ -3,7 +3,7 @@
  
  * File:   constructInc/LinkWrapper.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,9 +64,11 @@ class LinkWrapper : public attachSystem::ContainedComp,
   virtual void populate(const Simulation&);
   virtual void createUnitVector(const attachSystem::FixedComp&);
 
+  ///\cond ABSTRACT
   virtual void createSurfaces() =0;
   virtual void createObjects(Simulation&) =0;
-
+  ///\endcond ABSTRACT
+  
   void processMask();
   bool sectorFlag(const size_t,const size_t) const;
 

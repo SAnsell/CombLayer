@@ -489,7 +489,7 @@ class TypeConvError : public ExBase
 {
  private:
 
-  T ABase;
+  T ABase;                 ///< Base Item or Ptr
   void setOutLine();
 
  public:

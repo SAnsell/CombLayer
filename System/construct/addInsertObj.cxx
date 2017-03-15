@@ -285,7 +285,7 @@ addInsertSphereCell(Simulation& System,
     \param System :: Simulation to used
     \param objName :: new plate name
     \param CentPos :: Central Position
-    \param raduis :: radius of phere
+    \param radius :: radius of phere
     \param mat :: material
   */
 {
@@ -323,10 +323,10 @@ addInsertSphereCell(Simulation& System,
     
     \param System :: Simulation to used
     \param objName :: new plate name
-    const std::string& FCname,
-    const std::string& linkName,
+    \param FCname :: Fixedobject naem
+    \param linkName :: Link point / link name
     \param XYZStep :: Central Offset
-    \param raduis :: radius of phere
+    \param radius :: radius of phere
     \param mat :: material
   */
 {

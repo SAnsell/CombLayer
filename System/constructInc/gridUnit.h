@@ -3,7 +3,7 @@
  
  * File:   constructInc/gridUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,10 +99,11 @@ class gridUnit
   bool hasSurfLink(const size_t) const;
   size_t nLinks() const;
 
-  
+  ///\cond ABSTRACT
   virtual int gridIndex(const size_t) const =0;
   virtual bool isConnected(const gridUnit&) const =0;
-
+  ///\endcond ABSTRACT
+  
   void setCyl(const int);
   void addCyl(const int);
   /// access flag  and boundary
