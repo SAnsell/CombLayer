@@ -178,7 +178,31 @@ SimPOVRay::write(const std::string& Fname) const
   OX << std::endl;
   OX << "// Material" << std::endl;
   writeMaterial(OX);
+  OX << std::endl;
   OX << "// Surfaces" << std::endl;
+  // The 'Reorient' macro is taken from John VanSickle's Thorougly Useful Macros
+  // http://www.geocities.ws/evilsnack/macs.html
+  // It is used by the InfiniteCylinder macro from this post
+  // http://news.povray.org/povray.newusers/message/<3A0F50A5.1C648BDF%40erols.com>
+  OX << "#macro Reorient(Axis1,Axis2)" << std::endl
+     << " #local vX1=vnormalize(Axis1);" << std::endl
+     << " #local vX2=vnormalize(Axis2);" << std::endl
+     << " #local vY=vnormalize(vcross(vX1,vX2));" << std::endl
+     << "#if (vlength(vY)>0)" << std::endl
+     << " #local vZ1=vnormalize(vcross(vX1,vY));" << std::endl
+     << " #local vZ2=vnormalize(vcross(vX2,vY));" << std::endl
+     <<"  matrix < vX1.x, vY.x,vZ1.x, vX1.y,vY.y,vZ1.y, vX1.z,vY.z, vZ1.z, 0,0,0 >" << std::endl
+     <<"  matrix < vX2.x,vX2.y,vX2.z, vY.x,vY.y, vY.z, vZ2.x,vZ2.y,vZ2.z, 0,0,0 >" << std::endl
+     <<"#end" << std::endl
+     <<"#end" << std::endl
+     << std::endl;
+  OX << "#macro InfiniteCylinder(PointA,PointB,Radius)" << std::endl
+     << " quadric { <1,0,1>,<0,0,0>,<0,0,0>,-Radius*Radius" << std::endl
+     << " Reorient(y,vnormalize(PointB-PointA))" << std::endl
+     << " translate PointA" << std::endl
+     << "}" << std::endl
+     << "#end" << std::endl
+     << std::endl;
   writeSurfaces(OX);
   OX << "// Cells" << std::endl;
   writeCells(OX);
