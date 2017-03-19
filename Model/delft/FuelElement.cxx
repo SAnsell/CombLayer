@@ -3,7 +3,7 @@
  
  * File:   delft/FuelElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -250,7 +250,7 @@ FuelElement::isFuel(const size_t nE) const
 }
 
 void
-FuelElement::createUnitVector(const FixedComp& FC,
+FuelElement::createUnitVector(const attachSystem::FixedComp& FC,
 			      const Geometry::Vec3D& OG)
   /*!
     Create the unit vectors
@@ -557,7 +557,8 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
 }
 
 void
-FuelElement::createAll(Simulation& System,const FixedComp& FC,
+FuelElement::createAll(Simulation& System,
+		       const attachSystem::FixedComp& FC,
 		       const Geometry::Vec3D& OG,
 		       const FuelLoad& FuelSystem)
   /*!

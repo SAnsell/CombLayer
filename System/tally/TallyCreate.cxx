@@ -302,7 +302,6 @@ addF5Tally(Simulation& System,const int tNumber,
   if (VList.size()>=4)
     {
       TX.setWindow(VList);
-      TX.setFUflag(1);
     }
   TX.setCentre(Point);
   TX.setActive(1);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/BeRef.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,9 +198,6 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param targetThick :: thickness of the target
-    \param topVThick :: thickness of the premod-void
-    \param lowVThick :: thickness of the premod-void
   */
 {
   ELog::RegMethod RegA("BeRef","globalPopulate");
@@ -209,7 +206,6 @@ BeRef::globalPopulate(const FuncDataBase& Control)
   height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
   wallThickLow=Control.EvalVar<double>(keyName+"WallThickLow");   
-
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   delft/FuelLoad.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,7 +301,7 @@ FuelLoad::addXML(const size_t nx,const size_t ny,
     \param ny :: Index of Grid Position
     \param nElements :: Elements in this cell
     \param nCells :: Cell dividion of this cell
-    \pararm exclude :: Cells not unsed
+    \param exclude :: Cells not unsed
   */
 {
   ELog::RegMethod RegA("FuelLoad","addXML");

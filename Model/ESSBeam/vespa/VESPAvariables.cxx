@@ -83,6 +83,8 @@ VESPAvariables(FuncDataBase& Control)
 
   Control.addVariable("vespaStartPoint",0);
   Control.addVariable("vespaStopPoint",0);
+
+  Control.addVariable("vespaAxisZStep",0.0);
   
   PipeGen.setPipe(8.0,0.5);
   PipeGen.setWindow(-2.0,0.5);

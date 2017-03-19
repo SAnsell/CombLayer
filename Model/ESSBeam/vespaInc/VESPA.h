@@ -209,7 +209,7 @@ class VESPA : public attachSystem::CopiedComp
   std::vector<std::shared_ptr<constructSystem::CrystalMount>> XStalArray;
   std::vector<std::shared_ptr<constructSystem::TubeDetBox>> ADetArray;
 
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
