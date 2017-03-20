@@ -23,32 +23,6 @@
 #define essSystem_makeLinac_h
 
 
-namespace beamlineSystem
-{
-  class beamlineConstructor;
-}
-
-namespace constructSystem
-{
-  class ModBase;
-  class SupplyPipe;
-
-}
-
-namespace moderatorSystem
-{
-  class BasicFlightLine;
-  class FlightLine;
-}
-
-/*!
-  \namespace essSystem
-  \brief General ESS stuff
-  \version 1.0
-  \date January 2013
-  \author S. Ansell
-*/
-
 namespace essSystem
 {
   class Linac;
@@ -57,16 +31,16 @@ namespace essSystem
   /*!
     \class makeLinac
     \version 1.0
-    \author S. Ansell
-    \date January 2013
-    \brief Main moderator system for ESS
+    \author K.Batkov/S. Ansell
+    \date February 2017
+    \brief Builds ESS Linac
   */
   
 class makeLinac
 {
  private:
   
-  std::shared_ptr<Linac> LinacTunnel;   ///< target object
+  std::shared_ptr<Linac> LinacTunnel;   ///< Linac
 
  public:
   

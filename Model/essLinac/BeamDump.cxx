@@ -86,42 +86,33 @@ namespace essSystem
 {
 
 BeamDump::BeamDump(const std::string& Base,
-                   const std::string& Key)  :
+		   const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Base+Key,6),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Base+Key)),
   cellIndex(surfIndex+1),
-  baseName(Base)
+  baseName(Base),active(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
+    \param Base :: Base name 
     \param Key :: Name for item in search
   */
-{
-}
+{}
 
-BeamDump::BeamDump(const BeamDump& A) :
-  attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+BeamDump::BeamDump(const BeamDump& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
-  baseName(A.baseName),
-
-  steelMat(A.steelMat),
-  concMat(A.concMat),
-  alMat(A.alMat),
-  waterMat(A.waterMat),
-  airMat(A.airMat),
-  cuMat(A.cuMat),
-  graphiteMat(A.graphiteMat),
-
+  baseName(A.baseName),active(A.active),
+  engActive(A.engActive),steelMat(A.steelMat),
+  concMat(A.concMat),alMat(A.alMat),waterMat(A.waterMat),
+  airMat(A.airMat),cuMat(A.cuMat),graphiteMat(A.graphiteMat),
   frontWallLength(A.frontWallLength),
   frontWallHeight(A.frontWallHeight),
   frontWallDepth(A.frontWallDepth),
   frontWallWidth(A.frontWallWidth),
   frontWallHoleRad(A.frontWallHoleRad),
-
   backWallLength(A.backWallLength),
   backWallDepth(A.backWallDepth),
-
   frontInnerWallHeight(A.frontInnerWallHeight),
   frontInnerWallDepth(A.frontInnerWallDepth),
   frontInnerWallLength(A.frontInnerWallLength),
@@ -129,23 +120,14 @@ BeamDump::BeamDump(const BeamDump& A) :
   backInnerWallLength(A.backInnerWallLength),
   backInnerWallGapLength(A.backInnerWallGapLength),
   sideInnerWallThick(A.sideInnerWallThick),
-  sideWallThick(A.sideWallThick),
-
-  floorLength(A.floorLength),
-  floorDepth(A.floorDepth),
-
-  plate25Length(A.plate25Length),
-  plate25Depth(A.plate25Depth),
-
-  plate38Depth(A.plate38Depth),
-
+  sideWallThick(A.sideWallThick),floorLength(A.floorLength),
+  floorDepth(A.floorDepth),plate25Length(A.plate25Length),
+  plate25Depth(A.plate25Depth),plate38Depth(A.plate38Depth),
   roofThick(A.roofThick),
   roofOverhangLength(A.roofOverhangLength),
   innerRoofThick(A.innerRoofThick),
-
   vacPipeFrontInnerWallDist(A.vacPipeFrontInnerWallDist),
-  vacPipeLength(A.vacPipeLength),
-  vacPipeRad(A.vacPipeRad),
+  vacPipeLength(A.vacPipeLength),vacPipeRad(A.vacPipeRad),
   vacPipeSideWallThick(A.vacPipeSideWallThick),
   vacPipeLidRmax(A.vacPipeLidRmax),
   vacPipeLid1Length(A.vacPipeLid1Length),
@@ -153,13 +135,11 @@ BeamDump::BeamDump(const BeamDump& A) :
   vacPipeBaseLength(A.vacPipeBaseLength),
   vacPipeOuterConeOffset(A.vacPipeOuterConeOffset),
   vacPipeInnerConeTop(A.vacPipeInnerConeTop),
-  wallThick(A.wallThick),
-  waterPipeRad(A.waterPipeRad),
+  wallThick(A.wallThick),waterPipeRad(A.waterPipeRad),
   waterPipeLength(A.waterPipeLength),
   waterPipeOffsetX(A.waterPipeOffsetX),
   waterPipeOffsetZ(A.waterPipeOffsetZ),
   waterPipeDist(A.waterPipeDist)
-
   /*!
     Copy constructor
     \param A :: BeamDump to copy
@@ -180,7 +160,8 @@ BeamDump::operator=(const BeamDump& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       baseName=A.baseName;
-
+      active=A.active;
+      engActive=A.engActive;
       steelMat=A.steelMat;
       concMat=A.concMat;
       alMat=A.alMat;
@@ -188,16 +169,13 @@ BeamDump::operator=(const BeamDump& A)
       airMat=A.airMat;
       cuMat=A.cuMat;
       graphiteMat=A.graphiteMat;
-
       frontWallLength=A.frontWallLength;
       frontWallHeight=A.frontWallHeight;
       frontWallDepth=A.frontWallDepth;
       frontWallWidth=A.frontWallWidth;
       frontWallHoleRad=A.frontWallHoleRad;
-
       backWallLength=A.backWallLength;
       backWallDepth=A.backWallDepth;
-
       frontInnerWallHeight=A.frontInnerWallHeight;
       frontInnerWallDepth=A.frontInnerWallDepth;
       frontInnerWallLength=A.frontInnerWallLength;
@@ -206,19 +184,14 @@ BeamDump::operator=(const BeamDump& A)
       backInnerWallGapLength=A.backInnerWallGapLength;
       sideInnerWallThick=A.sideInnerWallThick;
       sideWallThick=A.sideWallThick;
-
       floorLength=A.floorLength;
       floorDepth=A.floorDepth;
-
       plate25Length=A.plate25Length;
       plate25Depth=A.plate25Depth;
-
       plate38Depth=A.plate38Depth;
-
       roofThick=A.roofThick;
       roofOverhangLength=A.roofOverhangLength;
       innerRoofThick=A.innerRoofThick;
-
       vacPipeFrontInnerWallDist=A.vacPipeFrontInnerWallDist;
       vacPipeLength=A.vacPipeLength;
       vacPipeRad=A.vacPipeRad;
@@ -235,19 +208,8 @@ BeamDump::operator=(const BeamDump& A)
       waterPipeOffsetX=A.waterPipeOffsetX;
       waterPipeOffsetZ=A.waterPipeOffsetZ;
       waterPipeDist=A.waterPipeDist;
-
     }
   return *this;
-}
-
-BeamDump*
-BeamDump::clone() const
-/*!
-  Clone self
-  \return new (this)
- */
-{
-    return new BeamDump(*this);
 }
 
 BeamDump::~BeamDump()
@@ -266,6 +228,9 @@ BeamDump::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BeamDump","populate");
 
   FixedOffset::populate(Control);
+
+  active=Control.EvalPair<int>(keyName,baseName,"Active");
+  engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   steelMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcreteMat");
@@ -328,11 +293,11 @@ BeamDump::populate(const FuncDataBase& Control)
 
 void
 BeamDump::createUnitVector(const attachSystem::FixedComp& FC,
-                           const long int sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
-    \param sideIndex :: link point
+    \param sideIndex :: link point for origin
   */
 {
   ELog::RegMethod RegA("BeamDump","createUnitVector");
@@ -485,6 +450,8 @@ BeamDump::createSurfaces()
 			      X*waterPipeOffsetX,pipeYdir,waterPipeRad);
 
 
+
+
   return;
 }
 
@@ -496,6 +463,8 @@ BeamDump::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("BeamDump","createObjects");
+  
+  if (!active) return;
 
   std::string Out;
   // front wall
@@ -635,8 +604,24 @@ BeamDump::createLinks()
 {
   ELog::RegMethod RegA("BeamDump","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setConnect(0,Origin-Y*(roofOverhangLength),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+51));
+
+  FixedComp::setConnect(1,Origin+Y*(frontWallLength+floorLength+backWallLength),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+42));
+
+  FixedComp::setConnect(2,Origin-X*(frontWallWidth/2.0+sideWallThick),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+73));
+
+  FixedComp::setConnect(3,Origin+X*(frontWallWidth/2.0+sideWallThick),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+74));
+  
+  FixedComp::setConnect(4,Origin-Z*(frontWallDepth+frontInnerWallHeight+innerRoofThick),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(5,Origin+
+			Z*(frontWallHeight-frontInnerWallHeight-innerRoofThick+roofThick),-Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+56));
 
   return;
 }
@@ -646,8 +631,8 @@ BeamDump::createLinks()
 
 void
 BeamDump::createAll(Simulation& System,
-                    const attachSystem::FixedComp& FC,
-                    const long int sideIndex)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -661,7 +646,7 @@ BeamDump::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks();    
+  createLinks();
   insertObjects(System);
 
   return;
