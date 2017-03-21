@@ -560,26 +560,6 @@ Cylinder::writeFLUKA(std::ostream& OX) const
   return;
 }
 
-void
-Cylinder::writePOVRay(std::ostream& OX) const
-  /*! 
-    Write out the cylinder for POV-Ray
-    \param OX :: output stream
-  */
-{
-  ELog::RegMethod RegA("Cylinder","writePOVRay");
-
-  masterWrite& MW=masterWrite::Instance();
-  const int Ndir=Normal.masterDir(Geometry::zeroTol);
-
-  
-  OX<<"#declare s"<<getName()<<" = cylinder{ ";
-  OX<<"<"<<MW.NumComma(Centre)<<">,<"
-    <<MW.NumComma(Centre+Normal)<<">, "
-    <<MW.Num(Radius)<<" open }"<<std::endl;
-  
-  return;
-}
   
 void
 Cylinder::print() const
