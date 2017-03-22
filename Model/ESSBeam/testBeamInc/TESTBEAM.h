@@ -90,6 +90,11 @@ class TESTBEAM : public attachSystem::CopiedComp
   /// Blade for Twin - chopper
   std::shared_ptr<constructSystem::DiskChopper> BDisk;
 
+  /// Test item : T0 Chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
+  /// Test item : T0 Chopper blades
+  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+
   /// Test item [Crysotat]
   std::shared_ptr<constructSystem::Cryostat> CryoA;
 

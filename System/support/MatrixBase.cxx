@@ -3,7 +3,7 @@
  
  * File:   support/MatrixBase.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -769,7 +769,7 @@ void
 MatrixBase<T>::write(std::ostream& OX,const int blockCnt) const
   /*!
     Write out function for blocks of 10 Columns 
-    \param Fh :: file stream for output
+    \param OX :: file stream for output
     \param blockCnt :: number of columns per line (0 == full)
   */
 {

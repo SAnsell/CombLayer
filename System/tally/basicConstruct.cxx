@@ -3,7 +3,7 @@
  
  * File:   tally/basicConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -234,8 +234,8 @@ basicConstruct::convertRegion(const mainSystem::inputParam& IParam,
     Convert the input parameter into either a region or a number 
     \param IParam :: Input stream
     \param keyName :: input item key
-    \param index :: Number of NameCard
-    \param offset :: Offset on card
+    \param Index :: Number of NameCard
+    \param Offset :: Offset on card
     \param RA :: Region 1
     \param RB :: Region 2
     \retval 1 :: conversion is good 
@@ -317,6 +317,7 @@ basicConstruct::getCellSelection(const Simulation& System,
 	   -2 : all non zero materials
 	   > 1000 : materials containing zaid
     \param keyName :: keyName
+    \return vector of cell indexes
    */
 {
   ELog::RegMethod RegA("basicConstruct","getCellSelection");
@@ -353,7 +354,7 @@ basicConstruct::getCellSelection(const Simulation& System,
 }
 
 
-  // TEMPLATE INSTANCES:
+///\cond TEMPLATE INSTANCES:
 template int 
 basicConstruct::inputItem(const mainSystem::inputParam&,
       const size_t,const size_t,const std::string&) const;
@@ -390,5 +391,6 @@ template int
 basicConstruct::checkItem(const mainSystem::inputParam&,
       const size_t,const size_t,size_t&) const;
 
- 
+///\endcond TEMPLATE INSTANCES
+  
 }  // NAMESPACE tallySystem

@@ -378,7 +378,6 @@ pointConstruct::calcWindowIntercept(const int bPlane,
 				    const Geometry::Vec3D& viewPoint)
   /*!
     Calculate the window for the point tally
-    \param System :: Simulation item
     \param bPlane :: back plane/ cylinder /sphere etc.
     \param EdgeSurf :: In pairs
     \param viewPoint :: Point to start view

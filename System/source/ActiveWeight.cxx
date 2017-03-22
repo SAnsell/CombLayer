@@ -141,8 +141,8 @@ ActiveWeight::setBox(const Geometry::Vec3D& APt,
 
 void
 ActiveWeight::setBiasConst(const Geometry::Vec3D& Cent,
-			       const Geometry::Vec3D& AVec,
-			       const double D,const double A)
+                           const Geometry::Vec3D& AVec,
+                           const double D,const double A)
   /*!
     Set the box coordinates
     \param Cent :: Origin Point
@@ -191,8 +191,7 @@ ActiveWeight::createSource(Simulation& System,
                            const std::string& outputName)
   /*!
     Create all the source
-    \param Simuation :: 
-    \param souceCard :: Source Term
+    \param System :: Simulation to use
     \param outputName :: Output file
    */
 {

@@ -106,7 +106,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       
       Control.addVariable(KItem+"BunkerWallThick",350.0);
       Control.addVariable(KItem+"BunkerSideThick",80.0);
-      Control.addVariable(KItem+"BunkerRoofThick",175.0);
+      Control.addVariable(KItem+"BunkerRoofThick",155.0);
       Control.addVariable(KItem+"BunkerFloorThick",100.0);
       
       Control.addVariable(KItem+"BunkerVoidMat","Void");
@@ -121,15 +121,15 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerNBasicVert",5);
       Control.addVariable(KItem+"BunkerRoofVert1",30.0);
       Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",55.0);
+      Control.addVariable(KItem+"BunkerRoofVert3",40.0);
       Control.addVariable(KItem+"BunkerRoofVert4",30.0);
   
       
-      Control.addVariable(KItem+"BunkerRoofMat0","CarstonConc");
+      Control.addVariable(KItem+"BunkerRoofMat0","Poly");
       Control.addVariable(KItem+"BunkerRoofMat1","ChipIRSteel");
-      Control.addVariable(KItem+"BunkerRoofMat2","CarstonConc");
+      Control.addVariable(KItem+"BunkerRoofMat2","Poly");
       Control.addVariable(KItem+"BunkerRoofMat3","ChipIRSteel");
-      Control.addVariable(KItem+"BunkerRoofMat4","CarstonConc");
+      Control.addVariable(KItem+"BunkerRoofMat4","Poly");
 
       Control.addVariable(KItem+"BunkerWallMat0","Lead");
       Control.addVariable(KItem+"BunkerWallMat1","CarstonConc");
@@ -272,6 +272,8 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainRightPhase",65.0);
   Control.addVariable("CurtainWallThick",30.0);
   Control.addVariable("CurtainInnerStep",30.0);
+  Control.addVariable("CurtainBaseGap",5.0);
+  Control.addVariable("CurtainOuterGap",5.0);
   Control.addVariable("CurtainTopRaise",60.0);
   Control.addVariable("CurtainHeight",250.0);
   Control.addVariable("CurtainDepth",129.0);     // fixed by Ben.

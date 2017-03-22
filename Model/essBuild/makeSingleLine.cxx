@@ -178,9 +178,9 @@ makeSingleLine::build(Simulation& System,
       VESPA vespaBL("vespa");
       vespaBL.buildIsolated(System,voidCell);
     }
-  else if (beamName=="TEST")
+  else if (beamName=="TEST" || beamName=="TESTBEAM")
     {
-      TESTBEAM testBL("test");
+      TESTBEAM testBL("testBeam");
       testBL.buildIsolated(System,voidCell);
       
     }

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerRoof.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,6 +91,7 @@ class BunkerRoof : public attachSystem::ContainedComp,
 
   void setVertSurf(const int,const int);
   void setRadialSurf(const int,const int);
+  /// Set the divider string for the inner radius
   void setDivider(const std::string& Str) { divider=Str; }
   
   void createSector(Simulation&,const size_t,const int,

@@ -3,7 +3,7 @@
  
  * File:   essBuild/Curtain.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,9 +105,9 @@ Curtain::Curtain(const Curtain& A) :
   attachSystem::CellMap(A),
   curIndex(A.curIndex),cellIndex(A.cellIndex),wallRadius(A.wallRadius),
   leftPhase(A.leftPhase),rightPhase(A.rightPhase),
-  innerStep(A.innerStep),wallThick(A.wallThick),
-  topRaise(A.topRaise),depth(A.depth),height(A.height),
-  nTopLayers(A.nTopLayers),nMidLayers(A.nMidLayers),
+  innerStep(A.innerStep),wallThick(A.wallThick),baseGap(A.baseGap),
+  outerGap(A.outerGap),topRaise(A.topRaise),depth(A.depth),
+  height(A.height),nTopLayers(A.nTopLayers),nMidLayers(A.nMidLayers),
   nBaseLayers(A.nBaseLayers),topFrac(A.topFrac),
   midFrac(A.midFrac),baseFrac(A.baseFrac),wallMat(A.wallMat)
   /*!
@@ -135,6 +135,8 @@ Curtain::operator=(const Curtain& A)
       rightPhase=A.rightPhase;
       innerStep=A.innerStep;
       wallThick=A.wallThick;
+      baseGap=A.baseGap;
+      outerGap=A.outerGap;
       topRaise=A.topRaise;
       depth=A.depth;
       height=A.height;
@@ -169,6 +171,8 @@ Curtain::populate(const FuncDataBase& Control)
 
   innerStep=Control.EvalVar<double>(keyName+"InnerStep");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  baseGap=Control.EvalDefVar<double>(keyName+"BaseGap",0.0);
+  outerGap=Control.EvalDefVar<double>(keyName+"OuterGap",0.0);
   topRaise=Control.EvalVar<double>(keyName+"TopRaise");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -255,11 +259,15 @@ Curtain::createSurfaces()
 			      Origin,Z,wallRadius-innerStep+wallThick);
   ModelSupport::buildCylinder(SMap,curIndex+27,
 			      Origin,Z,wallRadius+wallThick);
+  ModelSupport::buildCylinder(SMap,curIndex+127,
+			      Origin,Z,wallRadius+wallThick+outerGap);
 
   ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
   ModelSupport::buildPlane(SMap,curIndex+15,Origin+Z*topRaise,Z);
 
+  ModelSupport::buildPlane(SMap,curIndex+105,Origin-Z*(depth+baseGap),Z);
+  
   ModelSupport::buildPlane(SMap,curIndex+3,AWall,AWallDir);
   ModelSupport::buildPlane(SMap,curIndex+4,BWall,BWallDir);
   
@@ -308,7 +316,15 @@ Curtain::createObjects(Simulation& System,
 				   Out+topBase+sideSurf));
   setCell("baseWall",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,curIndex,"-27 3 -4 5 ");
+  Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 -5 105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideSurf));
+  setCell("BaseBap",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 105 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topBase+sideSurf));
+  setCell("BaseBap",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,curIndex,"-127 3 -4 105 ");
   addOuterSurf("Lower",Out+topBase);
 
   return;
