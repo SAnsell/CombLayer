@@ -43,6 +43,7 @@ namespace constructSystem
   class JawSet;
   class LineShield;
   class RotaryCollimator;
+  class Motor;
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
@@ -94,6 +95,8 @@ class TESTBEAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
   /// Test item : T0 Chopper blades
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+  /// Test item : T0 Chopper motor
+  std::shared_ptr<constructSystem::Motor> T0Motor;
 
   /// Test item [Crysotat]
   std::shared_ptr<constructSystem::Cryostat> CryoA;

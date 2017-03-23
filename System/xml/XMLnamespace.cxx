@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(XP Input builder
  
  * File:   xml/XMLnamespace.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -465,7 +465,6 @@ splitObjGroup(XMLobject* AR,
     From a file: read \<key attrib=.....\> Body \<key/\>
     \param AR :: Input object/group
     \param Keys :: Keys for each sub-group
-    \param Attrib :: Attributes (if any)
     \param Body :: Main component
     \retval 0 :: failure
     \retval 1 :: success

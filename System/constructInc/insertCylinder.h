@@ -42,8 +42,7 @@ class insertCylinder : public constructSystem::insertObject
  private:
     
   double radius;             ///< Main radius
-  double length;             ///< Main distance
-				    
+  double length;             ///< Main distance				    
   
   virtual void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,

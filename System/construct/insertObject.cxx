@@ -3,7 +3,7 @@
  
  * File:   construct/insertObject.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ namespace constructSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,14),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),

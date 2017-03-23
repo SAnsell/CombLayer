@@ -267,6 +267,19 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake1PtA10",Geometry::Vec3D(1171.5,1804.0,0));
   Control.addVariable("ABunkerQuake1PtA11",Geometry::Vec3D(1007.5,1899.2,0));
 
+  // BBUNKER
+  Control.addVariable("BBunkerQuakeNPath",1);
+
+  Control.addVariable("BBunkerQuake0NPoint",2);
+  Control.addVariable("BBunkerQuake0XGap",13.5);
+  Control.addVariable("BBunkerQuake0ZGap",100.0);
+  Control.addVariable("BBunkerQuake0PtA0",Geometry::Vec3D(600,0,0));
+  Control.addVariable("BBunkerQuake0PtA1",
+		      Geometry::Vec3D(600.0/sqrt(2),-600.0/sqrt(2.0),0.0));
+  Control.addVariable("BBunkerQuake0Radius0",600.0);
+  Control.addVariable("BBunkerQuake0YFlag0",1);
+
+
   
   Control.addVariable("CurtainLeftPhase",-65.0);
   Control.addVariable("CurtainRightPhase",65.0);

@@ -47,7 +47,9 @@ class BunkerQuake : public attachSystem::ContainedComp,
   const int cutIndex;             ///< Surface index
   int cellIndex;                  ///< Cell index
 
+  /// Main cuts
   std::vector<std::shared_ptr<BunkerQUnit> > QUnit;
+  
  public:
 
   BunkerQuake(const std::string&);

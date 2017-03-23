@@ -548,6 +548,8 @@ ChopperUnit::createLinks()
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
 
+  setDefault("Main");
+
   mainFC.setConnect(0,Origin-Y*(length/2.0),-Y);
   mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
   mainFC.setConnect(2,Origin-X*(width/2.0),-X);

@@ -97,7 +97,7 @@ TESTBEAMvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"testBeamFA",350.0,7.6,4.02,5.0,7.6250);
+  FGen.generateTaper(Control,"testBeamFA",350.0, 10.0,6.0, 12.0,12.0);
 
   TGen.generateChopper(Control,"testBeamTwinA",0.0,30.0,18.0);  
 
@@ -114,12 +114,16 @@ TESTBEAMvariables(FuncDataBase& Control)
   // T0 chopper:
   CGen.setMaterial("Stainless304","Aluminium");
   CGen.generateChopper(Control,"testBeamChopperT0",120.0,36.0,32.0);
-  // T0 Chopper disk A/B
+  // T0 Chopper disk 
   BGen.setMaterials("Inconnel","Tungsten");
   BGen.setThick({5.0});
   BGen.setInnerThick({5.4});
-  BGen.addPhase({0,180},{30.0,30.0});
+  BGen.addPhase({90,270},{30.0,30.0});
 
+  Control.addVariable("testBeamT0MotorLength",20.0);
+  Control.addVariable("testBeamT0MotorRadius",5.0);
+  Control.addVariable("testBeamT0MotorMat","Copper");
+  
   BGen.generateBlades(Control,"testBeamT0Disk",0.0,20.0,30.0);
 
   // CRYOSTAT

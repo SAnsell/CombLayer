@@ -143,7 +143,8 @@ Motor::createSurfaces()
 
 
   ModelSupport::buildPlane(SMap,motorIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildCylinder(SMap,motorIndex+7,Origin,Y,radius);  
+  ModelSupport::buildCylinder(SMap,motorIndex+7,Origin,Y,radius);
+    
   return;
 }
   
@@ -159,14 +160,13 @@ Motor::createObjects(Simulation& System)
   if (frontActive())
     {
       std::string Out;
-      
+	
       // Main void
       Out=ModelSupport::getComposite(SMap,motorIndex," -2 -7 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+frontRule()));
       addCell("Motor",cellIndex-1);
-
   
-      addOuterSurf(Out);  
+      addOuterSurf(Out+frontRule());  
     }
   return;
 }
@@ -198,6 +198,7 @@ Motor::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(motorFC,FIndex);
+  
   if (!frontActive())
     FrontBackCut::setFront(motorFC,FIndex);
   createSurfaces();    

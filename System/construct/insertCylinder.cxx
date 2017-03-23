@@ -237,6 +237,7 @@ insertCylinder::createLinks()
 {
   ELog::RegMethod RegA("insertCylinder","createLinks");
 
+  FixedComp::setNConnect(10);
   FrontBackCut::createLinks(*this,Origin,Y);
   if (!frontActive())
     {
@@ -260,11 +261,12 @@ insertCylinder::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(ptIndex+7));
   FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+7));
 
-  // corners 
-  FixedComp::setConnect(6,Origin-X*radius-Z*radius,-X-Z);
-  FixedComp::setConnect(7,Origin+X*radius-Z*radius,X-Z);
-  FixedComp::setConnect(8,Origin-X*radius+Z*radius,-X+Z);
-  FixedComp::setConnect(9,Origin+X*radius+Z*radius,X+Z);
+  // corners
+  const double r2=sqrt(radius);
+  FixedComp::setConnect(6,Origin-X*r2-Z*r2,-X-Z);
+  FixedComp::setConnect(7,Origin+X*r2-Z*r2,X-Z);
+  FixedComp::setConnect(8,Origin-X*r2+Z*r2,-X+Z);
+  FixedComp::setConnect(9,Origin+X*r2+Z*r2,X+Z);
 
   FixedComp::setLinkSurf(6,SMap.realSurf(ptIndex+7));
   FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+7));

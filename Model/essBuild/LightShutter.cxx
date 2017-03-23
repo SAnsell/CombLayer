@@ -3,7 +3,7 @@
  
  * File:   essBuild/LightShutter.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,42 @@ LightShutter::LightShutter(const std::string& Key)  :
     \param Key :: Name for item in search
   */
 {}
+
+LightShutter::LightShutter(const LightShutter& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  lightIndex(A.lightIndex),cellIndex(A.cellIndex),
+  length(A.length),width(A.width),height(A.height),
+  wallThick(A.wallThick),mainMat(A.mainMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: LightShutter to copy
+  */
+{}
+
+LightShutter&
+LightShutter::operator=(const LightShutter& A)
+  /*!
+    Assignment operator
+    \param A :: LightShutter to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      length=A.length;
+      width=A.width;
+      height=A.height;
+      wallThick=A.wallThick;
+      mainMat=A.mainMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 
 LightShutter::~LightShutter() 
@@ -225,10 +261,7 @@ LightShutter::createLinks()
   
   return;
 }
-  
-  
-
-  
+    
 void
 LightShutter::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,

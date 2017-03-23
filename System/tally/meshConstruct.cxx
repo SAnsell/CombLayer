@@ -85,12 +85,20 @@ meshConstruct::meshConstruct() :fmeshFlag(0)
 
 meshConstruct::meshConstruct(const meshConstruct& A) :
   fmeshFlag(A.fmeshFlag)
-  /// Copy Constructor
+  /*!
+    Copy Constructor
+    \param A :: meshConstruct
+   */
 {}
 
 meshConstruct&
 meshConstruct::operator=(const meshConstruct& A) 
-  /// Assignment operator
+  /*!
+    Copy Constructor
+    \param A :: meshConstruct
+    \return *this
+  */
+
 {
   if (this!=&A)
     {
@@ -459,7 +467,7 @@ void
 meshConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<

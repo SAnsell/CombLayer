@@ -30,43 +30,35 @@ namespace constructSystem
   \class insertCurve
   \version 1.0
   \author S. Ansell
-  \date November 2011
-  \brief  inserted in curved cutting object
+  \date February 2017
+  \brief Cylinder inserted in object 
   
-  Designed to be a quick curved arc to put an object into a model
+  Designed to be a quick plate to put an object into a model
   for fluxes/tallies etc
 */
 
-class insertCurve : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap
+class insertCurve : public constructSystem::insertObject
 {
  private:
-  
-  const int ptIndex;             ///< Index of surface offset
-  int cellIndex;                 ///< Cell index
-  int populated;                 ///< externally set values
 
-  double radius;            ///< Radius of curver
-  double width;             ///< full inner-outer radius distance
-  double height;            ///< Full Z height
+  int yFlag;                 ///< direction of centre from origin [+/-]
+  double radius;             ///< Main radius
+  double width;              ///< Full Width
+  double height;             ///< Full Height
+  double length;             ///< Radial length
 
-  int defMat;               ///< Material
-  bool delayInsert;         ///< Delay insertion         
-
-  Geometry::Vec3D Centre;   ///< Centre of rotation
-  Geometry::Vec3D APt;      ///< Start point
-  Geometry::Vec3D BPt;      ///< End Point
+  Geometry::Vec3D Centre;    ///< Rotation centre
   
-  
-  void populate(const FuncDataBase&);
+  virtual void populate(const FuncDataBase&);
   void createUnitVector(const Geometry::Vec3D&,
-			const attachSystem::FixedComp&,
-			const long int);
+			const attachSystem::FixedComp&);
 
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
+  void createUnitVector(const Geometry::Vec3D&,
+			const Geometry::Vec3D&,
+			const Geometry::Vec3D&);
+
 
 
   void createSurfaces();
@@ -75,40 +67,27 @@ class insertCurve : public attachSystem::ContainedComp,
 
   void mainAll(Simulation&);
 
-  void calcCentre();
-
  public:
 
   insertCurve(const std::string&);
   insertCurve(const insertCurve&);
   insertCurve& operator=(const insertCurve&);
-  ~insertCurve();
+  virtual ~insertCurve();
 
-  /// set delay flag
-  void setNoInsert() { delayInsert=1; }
-
-  void setFrontSurf(const attachSystem::FixedComp&,const long int);
-  void setBackSurf(const attachSystem::FixedComp&,const long int);
-  void findObjects(Simulation&);
-    
-  void setStep(const double,const double,const double);
-  void setStep(const Geometry::Vec3D&);
-  void setAngles(const double,const double);
 
   void setValues(const double,const double,const double,
-		 const int);
+		 const double,const int);
   void setValues(const double,const double,const double,
-		 const std::string&);
+		 const double,const std::string&);
+
   void createAll(Simulation&,const Geometry::Vec3D&,
-
-		 const Geometry::Vec3D&);
+		 const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&);
+		 const long int);
   
 };
 
