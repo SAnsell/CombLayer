@@ -175,12 +175,13 @@ ProtonTube::createAll(Simulation& System,
     attachSystem::addToInsertSurfCtrl(System,SB,pbw->getCC("Plug")); // works
     //    attachSystem::addToInsertSurfCtrl(System,*pbw, this->getCC("Full")); // works but inside out
     //    attachSystem::addToInsertSurfCtrl(System,*this,pbw->getCC("Plug")); // does not work
-      ELog::EM << "addToInsertForced" << ELog::endCrit;
-      attachSystem::addToInsertForced(System,*this, pbw->getCC("Plug")); // works but slow
-    //attachSystem::addToInsertLineCtrl(System,*this, *pbw); 
 
-    //    attachSystem::addToInsertControl(System,*this, pbw->getCC("Plug")); // does not work
+    //attachSystem::addToInsertSurfCtrl(System,*this, pbw->getCC("Plug")); // compiles but geometry error
+    //    attachSystem::addToInsertLineCtrl(System,*this, *pbw); // does not compile
 
+    //    SimProcess::writeIndexSim(System,"OutputFilename.txt",0);
+    ELog::EM << "addToInsertForced" << ELog::endCrit;
+    attachSystem::addToInsertForced(System,*this, pbw->getCC("Plug")); // works but slow
     }
 
 

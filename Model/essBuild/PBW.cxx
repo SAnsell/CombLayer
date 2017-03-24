@@ -89,7 +89,7 @@ namespace essSystem
 {
 
 PBW::PBW(const std::string& Key)  :
-  attachSystem::ContainedGroup("Plug","Shield"),
+  attachSystem::ContainedGroup(),
   attachSystem::FixedOffset(Key,8),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
@@ -424,6 +424,8 @@ PBW::createObjects(Simulation& System)
 
   std::string Out;
 
+  //  attachSystem::ContainedGroup::addCC("Full");
+
   // plug
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76) "); // outer void
@@ -542,6 +544,7 @@ PBW::createObjects(Simulation& System)
 
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  attachSystem::ContainedGroup::addCC("Plug");
   addOuterSurf("Plug", Out);
 
   return;
