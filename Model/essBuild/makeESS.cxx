@@ -937,6 +937,9 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
+  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
+
   return;
 }
 
@@ -1092,8 +1095,6 @@ makeESS::build(Simulation& System,
     {
       buildTwister(System);
     }
-  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
 
   if (lowModType != "None")
     makeBeamLine(System,IParam);
