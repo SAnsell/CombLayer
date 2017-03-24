@@ -90,7 +90,7 @@ namespace essSystem
 
 PBW::PBW(const std::string& Key)  :
   attachSystem::ContainedGroup("Plug","Shield"),
-  attachSystem::FixedOffset(Key,7),
+  attachSystem::FixedOffset(Key,8),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   shield(new TelescopicPipe(Key+"Shield"))
@@ -562,19 +562,23 @@ PBW::createLinks()
   FixedComp::setConnect(1,Origin+Y*(plugLength1),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
-  FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*(plugWidth1/2.0)+Y*(plugLength1),-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(surfIndex+3));
 
-  FixedComp::setConnect(3,Origin+X*(plugWidth1/2.0),X);
-  FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+4));
+  FixedComp::setConnect(3,Origin-X*(plugWidth2/2.0)-Y*(plugLength2),-X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+3));
 
-  FixedComp::setConnect(4,Origin-Z*(plugDepth),-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(surfIndex+5));
+  FixedComp::setConnect(4,Origin+X*(plugWidth1/2.0)+Y*(plugLength1),X);
+  FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+4));
 
-  FixedComp::setConnect(5,Origin+Z*(plugHeight),Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+6));
+  FixedComp::setConnect(5,Origin+X*(plugWidth2/2.0)-Y*(plugLength2),X);
+  FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+4));
 
-  ELog::EM << keyName << " link point 5: " << FixedComp::getLinkPt(5) << ELog::endDiag;
+  FixedComp::setConnect(6,Origin-Z*(plugDepth),-Z);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(7,Origin+Z*(plugHeight),Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+6));
 
   return;
 }
