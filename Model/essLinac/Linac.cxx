@@ -130,8 +130,8 @@ Linac::Linac(const Linac& A) :
   tswGap(A.tswGap),
   tswOffsetY(A.tswOffsetY),
   tswNLayers(A.tswNLayers),
-  beamDump(A.beamDump->clone()),
-  faradayCup(A.faradayCup->clone())
+  beamDump(new BeamDump(*A.beamDump)),
+  faradayCup(new FaradayCup(*A.faradayCup))
   /*!
     Copy constructor
     \param A :: Linac to copy
