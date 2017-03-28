@@ -107,6 +107,7 @@ DTL::DTL(const DTL& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),nLayers(A.nLayers),radius(A.radius),height(A.height),
+  mat(A.mat),
   wallThick(A.wallThick),
   wallMat(A.wallMat)
   /*!
@@ -132,6 +133,7 @@ DTL::operator=(const DTL& A)
       length=A.length;
       nLayers=A.nLayers;
       radius=A.radius;
+      mat=A.mat;
       height=A.height;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
@@ -170,11 +172,17 @@ DTL::populate(const FuncDataBase& Control)
   length=Control.EvalPair<double>(keyName,extraName,"Length");
   nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
   double R;
+  int m;
+  std::string strmat;
   for (size_t i=0; i<nLayers; i++)
     {
       R = Control.EvalPair<double>(keyName,extraName,
 				   "Radius"+std::to_string(i+1));
       radius.push_back(R);
+
+      strmat = "Mat"+std::to_string(i+1);
+      m = ModelSupport::EvalMat<int>(Control,keyName+strmat,extraName+strmat);
+      mat.push_back(m);
     }
 
   // height=Control.EvalVar<double>(keyName+"Height");
@@ -246,9 +254,8 @@ DTL::createObjects(Simulation& System,
 	} else
 	{
 	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " -2 -7M 7N ");
-	  ELog::EM << Out << ELog::endDiag;
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,
 				       Out+FC.getSignedLinkString(sideIndex)));
       SI += 10;
     }

@@ -196,9 +196,21 @@ EssLinacVariables(FuncDataBase& Control)
 
   // DTL
   Control.addVariable("LinacDTLLength", 100);
-  Control.addVariable("LinacDTLNLayers", 2);
-  Control.addVariable("LinacDTLRadius1", 30); 
-  Control.addVariable("LinacDTLRadius2", 35); 
+  Control.addVariable("LinacDTLNLayers", 7);
+  Control.addVariable("LinacDTLRadius1", 1.0); 
+  Control.addVariable("LinacDTLRadius2", 1.15); 
+  Control.addVariable("LinacDTLRadius3", 2.90); 
+  Control.addVariable("LinacDTLRadius4", 4.50); 
+  Control.addVariable("LinacDTLRadius5", 26.0); 
+  Control.addVariable("LinacDTLRadius6", 26.005); 
+  Control.addVariable("LinacDTLRadius7", 31.005); 
+  Control.addVariable("LinacDTLMat1", "Void"); 
+  Control.addVariable("LinacDTLMat2", "H2O"); 
+  Control.addVariable("LinacDTLMat3", "Void"); 
+  Control.addVariable("LinacDTLMat4", "Copper"); 
+  Control.addVariable("LinacDTLMat5", "Void"); 
+  Control.addVariable("LinacDTLMat6", "H2O"); 
+  Control.addVariable("LinacDTLMat7", "SS316L"); 
  
   return;
 }
