@@ -86,6 +86,7 @@
 #include "CellMap.h"
 #include "BeamDump.h"
 #include "FaradayCup.h"
+#include "DTL.h"
 #include "Linac.h"
 
 namespace essSystem
@@ -131,7 +132,8 @@ Linac::Linac(const Linac& A) :
   tswOffsetY(A.tswOffsetY),
   tswNLayers(A.tswNLayers),
   beamDump(new BeamDump(*A.beamDump)),
-  faradayCup(new FaradayCup(*A.faradayCup))
+  faradayCup(new FaradayCup(*A.faradayCup)),
+  dtl(A.dtl)
   /*!
     Copy constructor
     \param A :: Linac to copy
@@ -172,6 +174,7 @@ Linac::operator=(const Linac& A)
       tswNLayers=A.tswNLayers;
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
+      dtl=A.dtl;
     }
   return *this;
 }
@@ -303,6 +306,23 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 
 
 void
+Linac::createDTL(Simulation& System, const long int lp)
+{
+  /*!
+    Create the DTL tanks
+    \param lp :: link point for the origin of the 1st DTL tank
+   */
+  ELog::RegMethod RegA("Linac","createDTL");
+
+  std::shared_ptr<DTL> d(new DTL(keyName+"DTL"));
+  ELog::EM << "Why +1?" << ELog::endDiag;
+  d->createAll(System, *this, lp+1);
+
+  //attachSystem::addToInsertLineCtrl(System,*this,*d);
+  attachSystem::addToInsertForced(System,*this,*d);
+}
+
+void
 Linac::createSurfaces()
   /*!
     Create All the surfaces
@@ -399,7 +419,7 @@ Linac::createObjects(Simulation& System)
   // divide air before TSW
   layerProcess(System, "airBefore", 10, 6, nAirLayers, airMat);
   layerProcess(System, "airAfter", 9, 11, nAirLayers, airMat);
-
+  
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
 
@@ -486,7 +506,10 @@ Linac::createAll(Simulation& System,
 
   faradayCup->createAll(System,*this,0);
   //  attachSystem::addToInsertLineCtrl(System,*this,*faradayCup);
+  ELog::EM << "addToInsertForced" << ELog::endDiag;
   attachSystem::addToInsertForced(System,*this,*faradayCup);
+
+  createDTL(System, 10);
 
   return;
 }
