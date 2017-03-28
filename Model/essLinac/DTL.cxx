@@ -245,14 +245,14 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
 
   FixedComp::setLinkCopy(0,FC,sideIndex);
   
-  FixedComp::setConnect(1,Origin+Y*length,-Y);
-  FixedComp::setLinkSurf(1,-SMap.realSurf(surfIndex+2));
+  FixedComp::setConnect(1,Origin+Y*length,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
   FixedComp::setConnect(2,Origin+Y*(length/2.0)+Z*radius,Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+7));
 
-  //  for (int i=0; i<3; i++)
-  //    ELog::EM << keyName << " " << getLinkPt(i) << ELog::endDiag;
+  for (int i=0; i<3; i++)
+    ELog::EM << keyName << " " << getLinkPt(i) << ELog::endDiag;
 
   return;
 }
