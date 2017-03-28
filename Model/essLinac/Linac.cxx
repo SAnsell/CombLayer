@@ -314,7 +314,7 @@ Linac::createDTL(Simulation& System, const long int lp)
    */
   ELog::RegMethod RegA("Linac","createDTL");
 
-  std::shared_ptr<DTL> d(new DTL(keyName+"DTL"));
+  std::shared_ptr<DTL> d(new DTL(keyName,"DTL",1));
   ELog::EM << "Why +1?" << ELog::endDiag;
   d->createAll(System, *this, lp+1);
 

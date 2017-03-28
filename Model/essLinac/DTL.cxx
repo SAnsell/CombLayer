@@ -86,10 +86,11 @@
 namespace essSystem
 {
 
-DTL::DTL(const std::string& Key)  :
+  DTL::DTL(const std::string& Base,const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,3),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),3),
+  baseName(Base),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -100,6 +101,7 @@ DTL::DTL(const std::string& Key)  :
 DTL::DTL(const DTL& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  baseName(A.baseName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),radius(A.radius),height(A.height),
@@ -161,7 +163,7 @@ DTL::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("DTL","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");

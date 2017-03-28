@@ -40,6 +40,7 @@ class DTL : public attachSystem::ContainedComp,
 {
  private:
 
+  const std::string baseName; ///< Base name
   const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -64,7 +65,7 @@ class DTL : public attachSystem::ContainedComp,
   
  public:
 
-  DTL(const std::string&);
+  DTL(const std::string&,const std::string&,const size_t);
   DTL(const DTL&);
   DTL& operator=(const DTL&);
   virtual DTL* clone() const;
