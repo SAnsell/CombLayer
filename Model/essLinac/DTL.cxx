@@ -106,9 +106,9 @@ DTL::DTL(const DTL& A) :
   extraName(A.extraName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),radius(A.radius),height(A.height),
+  length(A.length),nLayers(A.nLayers),radius(A.radius),height(A.height),
   wallThick(A.wallThick),
-  nLayers(A.nLayers),wallMat(A.wallMat)
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: DTL to copy
@@ -130,10 +130,10 @@ DTL::operator=(const DTL& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
+      nLayers=A.nLayers;
       radius=A.radius;
       height=A.height;
       wallThick=A.wallThick;
-      nLayers=A.nLayers;
       wallMat=A.wallMat;
     }
   return *this;
@@ -168,11 +168,18 @@ DTL::populate(const FuncDataBase& Control)
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalPair<double>(keyName,extraName,"Length");
-  radius=Control.EvalPair<double>(keyName,extraName,"Radius");
+  nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
+  double R;
+  for (size_t i=0; i<nLayers; i++)
+    {
+      R = Control.EvalPair<double>(keyName,extraName,
+				   "Radius"+std::to_string(i+1));
+      radius.push_back(R);
+    }
+
   // height=Control.EvalVar<double>(keyName+"Height");
   // wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  nLayers=Control.EvalPair<int>(keyName,extraName,"NLayers");
   // wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
@@ -204,7 +211,13 @@ DTL::createSurfaces()
   ELog::RegMethod RegA("DTL","createSurfaces");
 
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
-  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,radius);
+
+  int SI(surfIndex);
+  for (size_t i=0; i<nLayers; i++)
+    {
+      ModelSupport::buildCylinder(SMap,SI+7,Origin,Y,radius[i]);
+      SI += 10;
+    }
 
   return;
 }
@@ -223,11 +236,25 @@ DTL::createObjects(Simulation& System,
   ELog::RegMethod RegA("DTL","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," -7 -2 ") +
-    FC.getSignedLinkString(sideIndex);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  addOuterSurf(Out);
+  int SI(surfIndex);
+  for (size_t i=0; i<nLayers; i++)
+    {
+      if (i==0)
+	{
+	  Out=ModelSupport::getComposite(SMap,surfIndex," -7 -2 ");
+	} else
+	{
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " -2 -7M 7N ");
+	  ELog::EM << Out << ELog::endDiag;
+	}
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				       Out+FC.getSignedLinkString(sideIndex)));
+      SI += 10;
+    }
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," -2 -7M ");
+  addOuterSurf(Out+FC.getSignedLinkString(sideIndex));
 
   return;
 }
@@ -250,7 +277,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
-  FixedComp::setConnect(2,Origin+Y*(length/2.0)+Z*radius,Z);
+  FixedComp::setConnect(2,Origin+Y*(length/2.0)+Z*radius.back(),Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+7));
 
   for (int i=0; i<3; i++)

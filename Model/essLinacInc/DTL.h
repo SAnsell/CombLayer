@@ -48,12 +48,12 @@ class DTL : public attachSystem::ContainedComp,
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
-  double radius;                 ///< Radius
+  size_t nLayers;                   ///< number of layers
+  std::vector<double> radius;   ///< Radii of each layer
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall
 
-  int nLayers;                   ///< number of layers
   int wallMat;                   ///< wall material
 
   void populate(const FuncDataBase&);
