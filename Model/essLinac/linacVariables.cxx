@@ -196,8 +196,10 @@ EssLinacVariables(FuncDataBase& Control)
 
   // DTL
   Control.addVariable("LinacDTL1Length", 100);
-  Control.addVariable("LinacDTL1Radius", 30);
-  
+  Control.addVariable("LinacDTL1Radius", 30); 
+  Control.addVariable("LinacDTL2Length", 100);
+  Control.addVariable("LinacDTL2Radius", 30);
+ 
   return;
 }
 

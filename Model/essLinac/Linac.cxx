@@ -314,12 +314,24 @@ Linac::createDTL(Simulation& System, const long int lp)
    */
   ELog::RegMethod RegA("Linac","createDTL");
 
-  std::shared_ptr<DTL> d(new DTL(keyName,"DTL",1));
-  ELog::EM << "Why +1?" << ELog::endDiag;
-  d->createAll(System, *this, lp+1);
+  for (size_t i=0; i<2; i++)
+    {
+      std::shared_ptr<DTL> d(new DTL(keyName,"DTL",i+1));
+      if (i==0)
+      	{
+      	  ELog::EM << "Why +1?" << ELog::endDiag;
+      	  d->createAll(System, *this, lp+1);
+      	} else
+      	{
+      	  ELog::EM << "Why +1?" << ELog::endDiag;
+      	  d->createAll(System, *dtl[i-1],1+1);
+      	}
 
-  //attachSystem::addToInsertLineCtrl(System,*this,*d);
-  attachSystem::addToInsertForced(System,*this,*d);
+      attachSystem::addToInsertLineCtrl(System,*this,*d); // why does not work?
+      ELog::EM << "addToInsertForced" << ELog::endDiag;
+      attachSystem::addToInsertForced(System,*this,*d);
+      dtl.push_back(d);
+    }
 }
 
 void
