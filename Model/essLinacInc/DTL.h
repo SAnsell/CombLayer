@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/DTL.h
  *
  * Copyright (c) 2004-2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_DTL_h
@@ -40,7 +40,8 @@ class DTL : public attachSystem::ContainedComp,
 {
  private:
 
-  const std::string baseName; ///< Base name
+  const std::string baseName; ///< Base name (e.g. Linac)
+  const std::string extraName; ///< extra name (e.g. DTL)
   const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -52,17 +53,17 @@ class DTL : public attachSystem::ContainedComp,
 
   double wallThick;             ///< Thickness of wall
 
-  int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int nLayers;                   ///< number of layers
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,const long int);
   void createLinks(const attachSystem::FixedComp&,const long int);
-  
+
  public:
 
   DTL(const std::string&,const std::string&,const size_t);
@@ -70,7 +71,7 @@ class DTL : public attachSystem::ContainedComp,
   DTL& operator=(const DTL&);
   virtual DTL* clone() const;
   virtual ~DTL();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -78,5 +79,5 @@ class DTL : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 

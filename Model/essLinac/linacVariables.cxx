@@ -195,10 +195,9 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
-  Control.addVariable("LinacDTL1Length", 100);
-  Control.addVariable("LinacDTL1Radius", 30); 
-  Control.addVariable("LinacDTL2Length", 100);
-  Control.addVariable("LinacDTL2Radius", 30);
+  Control.addVariable("LinacDTLNLayers", 2);
+  Control.addVariable("LinacDTLLength", 100);
+  Control.addVariable("LinacDTLRadius", 30); 
  
   return;
 }

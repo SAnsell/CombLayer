@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/DTL.cxx
  *
  * Copyright (c) 2004-2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -90,6 +90,7 @@ namespace essSystem
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),3),
   baseName(Base),
+  extraName(Base+Key),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
@@ -98,15 +99,16 @@ namespace essSystem
   */
 {}
 
-DTL::DTL(const DTL& A) : 
+DTL::DTL(const DTL& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
+  extraName(A.extraName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),radius(A.radius),height(A.height),
   wallThick(A.wallThick),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  nLayers(A.nLayers),wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: DTL to copy
@@ -131,7 +133,7 @@ DTL::operator=(const DTL& A)
       radius=A.radius;
       height=A.height;
       wallThick=A.wallThick;
-      mainMat=A.mainMat;
+      nLayers=A.nLayers;
       wallMat=A.wallMat;
     }
   return *this;
@@ -146,8 +148,8 @@ DTL::clone() const
 {
     return new DTL(*this);
 }
-  
-DTL::~DTL() 
+
+DTL::~DTL()
   /*!
     Destructor
   */
@@ -165,17 +167,17 @@ DTL::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  radius=Control.EvalVar<double>(keyName+"Radius");
+  length=Control.EvalPair<double>(keyName,extraName,"Length");
+  radius=Control.EvalPair<double>(keyName,extraName,"Radius");
   // height=Control.EvalVar<double>(keyName+"Height");
   // wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  // mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
+  nLayers=Control.EvalPair<int>(keyName,extraName,"NLayers");
   // wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }
-  
+
 void
 DTL::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -192,7 +194,7 @@ DTL::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 DTL::createSurfaces()
   /*!
@@ -206,7 +208,7 @@ DTL::createSurfaces()
 
   return;
 }
-  
+
 void
 DTL::createObjects(Simulation& System,
 		   const attachSystem::FixedComp& FC,
@@ -230,7 +232,7 @@ DTL::createObjects(Simulation& System,
   return;
 }
 
-  
+
 void
 DTL::createLinks(const attachSystem::FixedComp& FC,
 		 const long int sideIndex)
@@ -244,7 +246,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("DTL","createLinks");
 
   FixedComp::setLinkCopy(0,FC,sideIndex);
-  
+
   FixedComp::setConnect(1,Origin+Y*length,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
@@ -256,10 +258,10 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
-  
 
-  
+
+
+
 void
 DTL::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -278,7 +280,7 @@ DTL::createAll(Simulation& System,
   createSurfaces();
   createObjects(System,FC,sideIndex);
   createLinks(FC,sideIndex);
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }
