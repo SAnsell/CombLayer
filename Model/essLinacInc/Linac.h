@@ -74,8 +74,9 @@ class Linac : public attachSystem::ContainedComp,
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
   std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup
+  size_t nDTL; ///< number of DTL tanks
   std::vector<std::shared_ptr<DTL> > dtl; ///< array of DTL sections
-  
+
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const size_t& lpS, const size_t& lsS, const int&, const int&);
 

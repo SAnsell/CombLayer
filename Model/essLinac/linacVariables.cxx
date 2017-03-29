@@ -195,6 +195,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
+  Control.addVariable("LinacNDTLTanks", 5);
   Control.addVariable("LinacDTLLength", 100);
   Control.addVariable("LinacDTLNLayers", 7);
   Control.addVariable("LinacDTLRadius1", 1.0); 

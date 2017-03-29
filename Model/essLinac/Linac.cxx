@@ -133,6 +133,7 @@ Linac::Linac(const Linac& A) :
   tswNLayers(A.tswNLayers),
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
+  nDTL(A.nDTL),
   dtl(A.dtl)
   /*!
     Copy constructor
@@ -174,6 +175,7 @@ Linac::operator=(const Linac& A)
       tswNLayers=A.tswNLayers;
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
+      nDTL=A.nDTL;
       dtl=A.dtl;
     }
   return *this;
@@ -217,6 +219,8 @@ Linac::populate(const FuncDataBase& Control)
   tswGap=Control.EvalVar<double>(keyName+"TSWGap");
   tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
   tswNLayers=Control.EvalDefVar<int>(keyName+"TSWNLayers", 1);
+  
+  nDTL=Control.EvalDefVar<size_t>(keyName+"NDTLTanks", 5);
 
   return;
 }
@@ -314,7 +318,7 @@ Linac::createDTL(Simulation& System, const long int lp)
    */
   ELog::RegMethod RegA("Linac","createDTL");
 
-  for (size_t i=0; i<2; i++)
+  for (size_t i=0; i<nDTL; i++)
     {
       std::shared_ptr<DTL> d(new DTL(keyName,"DTL",i+1));
       if (i==0)
@@ -431,7 +435,7 @@ Linac::createObjects(Simulation& System)
   // divide air before TSW
   layerProcess(System, "airBefore", 10, 6, nAirLayers, airMat);
   layerProcess(System, "airAfter", 9, 11, nAirLayers, airMat);
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
 
