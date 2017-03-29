@@ -51,7 +51,7 @@ class DTL : public attachSystem::ContainedComp,
   double itLength; ///< intertank length
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
-  double height;                ///< height
+  double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
 
   double wallThick;             ///< Thickness of wall

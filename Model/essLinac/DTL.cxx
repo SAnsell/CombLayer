@@ -108,7 +108,7 @@ DTL::DTL(const DTL& A) :
   engActive(A.engActive),
   length(A.length),
   itLength(A.itLength),
-  nLayers(A.nLayers),radius(A.radius),height(A.height),
+  nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
   mat(A.mat),
   wallThick(A.wallThick),
   wallMat(A.wallMat)
@@ -137,7 +137,7 @@ DTL::operator=(const DTL& A)
       nLayers=A.nLayers;
       radius=A.radius;
       mat=A.mat;
-      height=A.height;
+      coverThick=A.coverThick;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
     }
@@ -189,7 +189,7 @@ DTL::populate(const FuncDataBase& Control)
       mat.push_back(m);
     }
 
-  // height=Control.EvalVar<double>(keyName+"Height");
+  coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
   // wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
   // wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -224,7 +224,13 @@ DTL::createSurfaces()
 
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+itLength),Y);
+
+  // cover
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(coverThick),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length-coverThick),Y);
+
+  // intertank
+  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
 
   int SI(surfIndex);
   for (size_t i=0; i<nLayers; i++)
@@ -266,11 +272,11 @@ DTL::createObjects(Simulation& System)
   // intertank
   if (itLength>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -12 -7M ");
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 -7M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -12 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -22 -7M ");
   addOuterSurf(Out);
 
   return;
@@ -292,7 +298,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkCopy(0,FC,sideIndex);
 
   FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
 
   FixedComp::setConnect(2,Origin+Y*(length/2.0)+Z*radius.back(),Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+7));
