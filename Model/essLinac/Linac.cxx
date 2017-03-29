@@ -329,6 +329,7 @@ Linac::createDTL(Simulation& System, const long int lp)
       	{
       	  ELog::EM << "Why +1?" << ELog::endDiag;
       	  d->createAll(System, *this, lp+1);
+	  ELog::EM << "DTL1 is substracted from linac wall, possibly because they have the same link point. How to avoid this?" << ELog::endDiag;
       	} else
       	{
       	  ELog::EM << "Why +1?" << ELog::endDiag;
