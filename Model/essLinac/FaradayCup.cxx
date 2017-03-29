@@ -88,7 +88,7 @@ namespace essSystem
 
 FaradayCup::FaradayCup(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,3),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -322,6 +322,16 @@ FaradayCup::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(0,Origin+Y,Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+
+  FixedComp::setConnect(1,Origin+Y*(shieldLength),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+112));
+
+  FixedComp::setConnect(2,Origin+Z*(shieldRadius),Z);
+  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+117));
+
 
   return;
 }

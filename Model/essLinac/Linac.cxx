@@ -523,9 +523,7 @@ Linac::createAll(Simulation& System,
   attachSystem::addToInsertLineCtrl(System,*this,*beamDump);
 
   faradayCup->createAll(System,*this,0);
-  //  attachSystem::addToInsertLineCtrl(System,*this,*faradayCup);
-  ELog::EM << "addToInsertForced" << ELog::endDiag;
-  attachSystem::addToInsertForced(System,*this,*faradayCup);
+  attachSystem::addToInsertControl(System,*this,*faradayCup);
 
   createDTL(System, 10);
 
