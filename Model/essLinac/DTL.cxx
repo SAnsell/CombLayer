@@ -237,9 +237,7 @@ DTL::createSurfaces()
 }
 
 void
-DTL::createObjects(Simulation& System,
-		   const attachSystem::FixedComp& FC,
-		   const long int sideIndex)
+DTL::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -324,7 +322,7 @@ DTL::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,FC,sideIndex);
+  createObjects(System);
   createLinks(FC,sideIndex);
   insertObjects(System);
 
