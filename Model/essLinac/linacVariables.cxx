@@ -200,25 +200,31 @@ EssLinacVariables(FuncDataBase& Control)
   // 02 - Mechanical development and prototype construction.pdf
   // page 21
   Control.addVariable("LinacDTL1Length", 768.76);
+  Control.addVariable("LinacDTL1IntertankLength", 10.83);
   Control.addVariable("LinacDTL2Length", 717.11);
+  Control.addVariable("LinacDTL2IntertankLength", 16.84);
   Control.addVariable("LinacDTL3Length", 765.26);
+  Control.addVariable("LinacDTL3IntertankLength", 21.85);
   Control.addVariable("LinacDTL4Length", 791.71);
+  Control.addVariable("LinacDTL4IntertankLength", 24.91);
   Control.addVariable("LinacDTL5Length", 775.79);
-  Control.addVariable("LinacDTLNLayers", 7);
-  Control.addVariable("LinacDTLRadius1", 1.0); 
-  Control.addVariable("LinacDTLRadius2", 1.15); 
-  Control.addVariable("LinacDTLRadius3", 2.90); 
-  Control.addVariable("LinacDTLRadius4", 4.50); 
-  Control.addVariable("LinacDTLRadius5", 26.0); 
-  Control.addVariable("LinacDTLRadius6", 26.005); 
-  Control.addVariable("LinacDTLRadius7", 31.005); 
+  Control.addVariable("LinacDTL5IntertankLength", 0.0);
+  
+  Control.addVariable("LinacDTLNLayers", 2);
+  // Control.addVariable("LinacDTLRadius1", 1.0); 
+  // Control.addVariable("LinacDTLRadius2", 1.15); 
+  // Control.addVariable("LinacDTLRadius3", 2.90); 
+  // Control.addVariable("LinacDTLRadius4", 4.50); 
+  // Control.addVariable("LinacDTLRadius5", 26.0); 
+  Control.addVariable("LinacDTLRadius1", 26.005); 
+  Control.addVariable("LinacDTLRadius2", 31.005); 
   Control.addVariable("LinacDTLMat1", "Void"); 
-  Control.addVariable("LinacDTLMat2", "H2O"); 
-  Control.addVariable("LinacDTLMat3", "Void"); 
-  Control.addVariable("LinacDTLMat4", "Copper"); 
-  Control.addVariable("LinacDTLMat5", "Void"); 
-  Control.addVariable("LinacDTLMat6", "H2O"); 
-  Control.addVariable("LinacDTLMat7", "SS316L"); 
+  Control.addVariable("LinacDTLMat2", "SS304L"); 
+  // Control.addVariable("LinacDTLMat3", "Void"); 
+  // Control.addVariable("LinacDTLMat4", "Copper"); 
+  // Control.addVariable("LinacDTLMat5", "Void"); 
+  // Control.addVariable("LinacDTLMat6", "H2O"); 
+  // Control.addVariable("LinacDTLMat7", "SS316L"); 
  
   return;
 }
