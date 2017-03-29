@@ -785,6 +785,68 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-5.056);
   MDB.resetMaterial(MObj);
 
+  MObj.setMaterial(imat++,"Silver","47107.70c 0.51839 "
+                   "47109.70c 0.48161 ","",MLib); // IAEA table of nuclides
+  MObj.setDensity(-10.49); // wiki
+  MDB.resetMaterial(MObj);
+
+  // Skanska concrete
+  // Composition received from Skanska
+  // Source: MATER.INP from MARS. Material "ESSConc"
+  MObj.setMaterial(imat++,"SkanskaConcrete",
+		   " 01001.70c -3.35720233139058521e-03 "
+		   " 08016.70c -3.82342797668609513e-01 "
+		   " 12024.70c -0.0019 "
+		   " 13027.70c -0.0192 "
+		   " 14028.70c -0.1251 "
+		   " 16032.70c -0.0081 "
+		   " 19039.70c -0.0158 "
+		   " 20040.70c -0.3927 "
+		   " 22048.70c -0.0038 "
+		   " 25055.70c -0.0021 "
+		   " 26056.70c -0.0444 "
+		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+  MObj.setDensity(-2.35);
+  MDB.resetMaterial(MObj);
+
+
+  // Copper - natural composition from IAEA table of nuclides
+  MObj.setMaterial(imat++,"Copper",
+		   " 29063.70c 0.6915 "
+		   " 29065.70c 0.3085 ","",MLib);
+  MObj.setDensity(-8.94); // as in the outp file produced by MARS
+  MDB.resetMaterial(MObj);
+
+  // SS304L composition from ESS Design Update WP3
+  // Reference: Material Data Compilation 29 Mar 2017
+  MObj.setMaterial(imat++, "SS304L",
+		   " 6000.70c      0.001366050 "
+		   " 14028.70c      0.017958587 "
+		   " 14029.70c      0.000912310 "
+		   " 14030.70c      0.000602105 "
+		   " 15031.70c      0.000794573 "
+		   " 16032.70c      0.000486055 "
+		   " 16033.70c      0.000003838 "
+		   " 16034.70c      0.000021747 "
+		   " 16036.70c      0.000000051 "
+		   " 24050.70c      0.008683351 "
+		   " 24052.70c      0.167449786 "
+		   " 24053.70c      0.018987462 "
+		   " 24054.70c      0.004726381 "
+		   " 25055.70c      0.019910026 "
+		   " 26054.70c      0.038864395 "
+		   " 26056.70c      0.610087892 "
+		   " 26057.70c      0.014089590 "
+		   " 26058.70c      0.001875066 "
+		   " 28058.70c      0.063434555 "
+		   " 28060.70c      0.024434877 "
+		   " 28061.70c      0.001062167 "
+		   " 28062.70c      0.003386654 "
+		   " 28064.70c      0.000862481 ", "fe56.12t", MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
+  MDB.resetMaterial(MObj);
+
   return;
 }
 
