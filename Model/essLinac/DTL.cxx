@@ -218,6 +218,10 @@ DTL::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("DTL","createSurfaces");
 
+  // dividers
+  ModelSupport::buildPlane(SMap,surfIndex+3,Origin,X);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
+
   SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(sideIndex));
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
@@ -296,7 +300,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("DTL","createLinks");
 
-  FixedComp::setLinkCopy(0,FC,sideIndex);
+  FixedComp::setLinkSignedCopy(0,FC,-sideIndex);
 
   FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
@@ -305,7 +309,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+7));
 
   for (int i=0; i<3; i++)
-    ELog::EM << keyName << " " << getLinkPt(i) << ELog::endDiag;
+    ELog::EM << keyName << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
 
   return;
 }
