@@ -62,7 +62,7 @@ class DTL : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
-  void createSurfaces();
+  void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&);
   void createLinks(const attachSystem::FixedComp&,const long int);
 
