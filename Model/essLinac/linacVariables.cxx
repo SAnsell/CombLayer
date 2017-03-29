@@ -216,8 +216,8 @@ EssLinacVariables(FuncDataBase& Control)
   // Control.addVariable("LinacDTLRadius3", 2.90); 
   // Control.addVariable("LinacDTLRadius4", 4.50); 
   // Control.addVariable("LinacDTLRadius5", 26.0); 
-  Control.addVariable("LinacDTLRadius1", 26.005); 
-  Control.addVariable("LinacDTLRadius2", 31.005); 
+  Control.addVariable("LinacDTLRadius1", 26);  // MARS
+  Control.addVariable("LinacDTLRadius2", 31);  // MARS
   Control.addVariable("LinacDTLMat1", "Void"); 
   Control.addVariable("LinacDTLMat2", "SS304L"); 
   // Control.addVariable("LinacDTLMat3", "Void"); 
