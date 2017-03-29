@@ -318,9 +318,13 @@ Linac::createDTL(Simulation& System, const long int lp)
    */
   ELog::RegMethod RegA("Linac","createDTL");
 
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   for (size_t i=0; i<nDTL; i++)
     {
       std::shared_ptr<DTL> d(new DTL(keyName,"DTL",i+1));
+      OR.addObject(d);
       if (i==0)
       	{
       	  ELog::EM << "Why +1?" << ELog::endDiag;
@@ -331,9 +335,7 @@ Linac::createDTL(Simulation& System, const long int lp)
       	  d->createAll(System, *dtl[i-1],1+1);
       	}
 
-      attachSystem::addToInsertLineCtrl(System,*this,*d); // why does not work?
-      ELog::EM << "addToInsertForced" << ELog::endDiag;
-      attachSystem::addToInsertForced(System,*this,*d);
+      attachSystem::addToInsertControl(System,*this,*d); // works
       dtl.push_back(d);
     }
 }
