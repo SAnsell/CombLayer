@@ -106,7 +106,9 @@ DTL::DTL(const DTL& A) :
   extraName(A.extraName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),nLayers(A.nLayers),radius(A.radius),height(A.height),
+  length(A.length),
+  itLength(A.itLength),
+  nLayers(A.nLayers),radius(A.radius),height(A.height),
   mat(A.mat),
   wallThick(A.wallThick),
   wallMat(A.wallMat)
@@ -131,6 +133,7 @@ DTL::operator=(const DTL& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
+      itLength=A.itLength;
       nLayers=A.nLayers;
       radius=A.radius;
       mat=A.mat;
@@ -170,6 +173,7 @@ DTL::populate(const FuncDataBase& Control)
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
+  itLength=Control.EvalVar<double>(keyName+"IntertankLength");
   nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
   double R;
   int m;
@@ -218,7 +222,9 @@ DTL::createSurfaces()
 {
   ELog::RegMethod RegA("DTL","createSurfaces");
 
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+itLength),Y);
 
   int SI(surfIndex);
   for (size_t i=0; i<nLayers; i++)
@@ -250,18 +256,24 @@ DTL::createObjects(Simulation& System,
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," -7 -2 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7 ");
 	} else
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " -2 -7M 7N ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 1 -2 -7M 7N ");
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,
-				       Out+FC.getSignedLinkString(sideIndex)));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," -2 -7M ");
-  addOuterSurf(Out+FC.getSignedLinkString(sideIndex));
+  // intertank
+  if (itLength>0.0)
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -12 -7M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+    }
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -12 -7M ");
+  addOuterSurf(Out);
 
   return;
 }
@@ -281,7 +293,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
 
   FixedComp::setLinkCopy(0,FC,sideIndex);
 
-  FixedComp::setConnect(1,Origin+Y*length,Y);
+  FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
   FixedComp::setConnect(2,Origin+Y*(length/2.0)+Z*radius.back(),Z);
