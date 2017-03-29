@@ -196,7 +196,14 @@ EssLinacVariables(FuncDataBase& Control)
 
   // DTL
   Control.addVariable("LinacNDTLTanks", 5);
-  Control.addVariable("LinacDTLLength", 100);
+  // DTL lengths are from Google drive / ESS DTL
+  // 02 - Mechanical development and prototype construction.pdf
+  // page 21
+  Control.addVariable("LinacDTL1Length", 768.76);
+  Control.addVariable("LinacDTL2Length", 717.11);
+  Control.addVariable("LinacDTL3Length", 765.26);
+  Control.addVariable("LinacDTL4Length", 791.71);
+  Control.addVariable("LinacDTL5Length", 775.79);
   Control.addVariable("LinacDTLNLayers", 7);
   Control.addVariable("LinacDTLRadius1", 1.0); 
   Control.addVariable("LinacDTLRadius2", 1.15); 

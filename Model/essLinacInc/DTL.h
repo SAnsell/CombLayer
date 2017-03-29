@@ -50,8 +50,8 @@ class DTL : public attachSystem::ContainedComp,
   double length;                ///< Total length including void
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
-  std::vector<int> mat; ///< materials
   double height;                ///< height
+  std::vector<int> mat; ///< materials
 
   double wallThick;             ///< Thickness of wall
 

@@ -169,7 +169,7 @@ DTL::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  length=Control.EvalPair<double>(keyName,extraName,"Length");
+  length=Control.EvalVar<double>(keyName+"Length");
   nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
   double R;
   int m;
