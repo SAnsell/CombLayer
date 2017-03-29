@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class DTL : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 

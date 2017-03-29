@@ -80,7 +80,7 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
-
+#include "CellMap.h"
 #include "DTL.h"
 
 namespace essSystem
@@ -88,7 +88,8 @@ namespace essSystem
 
   DTL::DTL(const std::string& Base,const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),3),
+  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),6),
+  attachSystem::CellMap(),
   baseName(Base),
   extraName(Base+Key),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -101,7 +102,7 @@ namespace essSystem
 
 DTL::DTL(const DTL& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedOffset(A),
+  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   baseName(A.baseName),
   extraName(A.extraName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
@@ -128,6 +129,7 @@ DTL::operator=(const DTL& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
@@ -305,11 +307,28 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
 
-  FixedComp::setConnect(2,Origin+Y*(length/2.0)+Z*radius.back(),Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+7));
+  const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
+  const double hl = (length+itLength)/2.0;
+  
+  FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
+  FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
+  FixedComp::addLinkSurf(2,-SMap.realSurf(surfIndex+5));
+  ELog::EM << "addLinkSurf or addBridgeSurf ?" << ELog::endDiag;
 
-  for (int i=0; i<3; i++)
-    ELog::EM << keyName << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
+  FixedComp::setConnect(3,Origin+Y*(hl)+Z*radius.back(),Z);
+  FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
+  FixedComp::addLinkSurf(3,SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(4,Origin+Y*(hl)-X*radius.back(),-X);
+  FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
+  FixedComp::addLinkSurf(4,-SMap.realSurf(surfIndex+3));
+
+  FixedComp::setConnect(5,Origin+Y*(hl)+X*radius.back(),X);
+  FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
+  FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
+
+  for (int i=0; i<6; i++)
+    ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
 
   return;
 }
