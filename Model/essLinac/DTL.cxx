@@ -109,9 +109,7 @@ DTL::DTL(const DTL& A) :
   length(A.length),
   itLength(A.itLength),
   nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
-  mat(A.mat),
-  wallThick(A.wallThick),
-  wallMat(A.wallMat)
+  mat(A.mat)
   /*!
     Copy constructor
     \param A :: DTL to copy
@@ -138,8 +136,6 @@ DTL::operator=(const DTL& A)
       radius=A.radius;
       mat=A.mat;
       coverThick=A.coverThick;
-      wallThick=A.wallThick;
-      wallMat=A.wallMat;
     }
   return *this;
 }
@@ -190,9 +186,6 @@ DTL::populate(const FuncDataBase& Control)
     }
 
   coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
-  // wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  // wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   return;
 }

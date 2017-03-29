@@ -54,10 +54,6 @@ class DTL : public attachSystem::ContainedComp,
   double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
 
-  double wallThick;             ///< Thickness of wall
-
-  int wallMat;                   ///< wall material
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
