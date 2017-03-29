@@ -260,15 +260,22 @@ DTL::createObjects(Simulation& System)
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -7 ");
 	} else
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 1 -2 -7M 7N ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 11 -12 -7M 7N ");
 	}
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
       SI += 10;
     }
 
+  // covers
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -7M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -7M ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
+  
   // intertank
   if (itLength>0.0)
     {
