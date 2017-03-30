@@ -318,6 +318,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
   if (modtype=="BF1")
     {
       bfType = 1;
+      A.setOption("lowMod", "Butterfly");
+      A.setOption("topMod", "Butterfly");
       A.setVar("TopFlyLeftLobeXStep", -2.0);
       A.setVar("TopFlyRightLobeXStep", 2.0);
       A.setVar("TopFlyMidWaterMidYStep", 7.0);
@@ -345,21 +347,26 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
     } else if (modtype=="BF2")
     {
       bfType = 2;
+      A.setOption("lowMod", "Butterfly");
+      A.setOption("topMod", "Butterfly");
       // variables are set in moderatorVariables
       // build pipes
       A.setOption("topPipe", "supply,return");
       A.setOption("lowPipe", "supply,return");
-    } else
-    throw ColErr::InvalidLine(modtype, "Either BF1 or BF2 are supported in defaultConfig");
+    } else if (modtype=="Pancake")
+    {
+      ELog::EM << "Pancake" << ELog::endDiag;
+      A.setOption("lowMod", "Pancake");
+      A.setOption("topMod", "Pancake");
+    } else throw ColErr::InvalidLine(modtype,
+				     "Either BF1, BF2 or Pancake are supported in defaultConfig");
 
   if (single=="")
     {
-      A.setOption("lowMod", "Butterfly");
-      A.setOption("topMod", "Butterfly");
+      // pass
     } else if (single=="single")
     {
       A.setOption("lowMod", "None");
-      A.setOption("topMod", "Butterfly");
       A.setVar("BeRefLowVoidThick", 0);
       A.setVar("BeRefLowRefMat", "Iron_10H2O");
       A.setVar("BeRefLowWallMat", "Iron_10H2O");
