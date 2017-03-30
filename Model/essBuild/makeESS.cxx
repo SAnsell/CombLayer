@@ -94,6 +94,7 @@
 #include "CylMod.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
+#include "PancakeModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 #include "PreModWing.h"
@@ -385,7 +386,29 @@ makeESS::buildTopButterfly(Simulation& System)
   TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
   return;
 }
-      
+
+void
+makeESS::buildTopPancake(Simulation& System)
+  /*!
+    Build the top pancake moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildTopPancake");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::shared_ptr<PancakeModerator> BM
+    (new essSystem::PancakeModerator("TopCake"));
+  BM->setRadiusX(Reflector->getRadius());
+  TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
+  OR.addObject(TopMod);
+  
+  TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
+  return;
+}
+
 
 void
 makeESS::buildF5Collimator(Simulation& System,const size_t nF5)

@@ -162,6 +162,7 @@ class makeESS
 
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
+  void buildTopPancake(Simulation&);
 
   void buildTopButterfly(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
