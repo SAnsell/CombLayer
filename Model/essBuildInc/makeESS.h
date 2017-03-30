@@ -162,6 +162,7 @@ class makeESS
 
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
+  void buildLowPancake(Simulation&);
   void buildTopPancake(Simulation&);
 
   void buildTopButterfly(Simulation&);

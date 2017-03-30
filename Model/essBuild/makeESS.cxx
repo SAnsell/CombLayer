@@ -388,6 +388,28 @@ makeESS::buildTopButterfly(Simulation& System)
 }
 
 void
+makeESS::buildLowPancake(Simulation& System)
+  /*!
+    Build the lower pancake moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::shared_ptr<PancakeModerator> BM
+    (new essSystem::PancakeModerator("LowCake"));
+  BM->setRadiusX(Reflector->getRadius());
+  LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
+  OR.addObject(LowMod);
+  LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
+  return;
+}
+
+  
+void
 makeESS::buildTopPancake(Simulation& System)
   /*!
     Build the top pancake moderator
@@ -981,7 +1003,7 @@ makeESS::build(Simulation& System,
 
   const std::string lowModType=IParam.getValue<std::string>("lowMod"); // if None then BeRefLowVoidThick must be set to 0.0
   const std::string topModType=IParam.getValue<std::string>("topMod");
-  
+
   const std::string targetType=IParam.getValue<std::string>("targetType");
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
@@ -1011,10 +1033,19 @@ makeESS::build(Simulation& System,
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius(),true);
-  
+
+
   if (lowModType != "None")
-    buildLowButterfly(System);
-  buildTopButterfly(System);
+    if (lowModType == "Butterfly")
+      buildLowButterfly(System);
+    else if (lowModType == "Pancake")
+      buildLowPancake(System);
+  
+  if (topModType == "Butterfly")
+    buildTopButterfly(System);
+  else if (topModType == "Pancake")
+    buildTopPancake(System);
+
   const double LMHeight=(lowModType == "None") ? 0.0 : attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   
@@ -1037,7 +1068,7 @@ makeESS::build(Simulation& System,
 			 0.0,
 			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
   
-  buildPreWings(System,lowModType);
+  //  buildPreWings(System,lowModType);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");

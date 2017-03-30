@@ -295,6 +295,123 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);
 
+  // Pancake
+    Control.addVariable("TopCakeXStep",0.0);  
+  Control.addVariable("TopCakeYStep",0.0);  
+  Control.addVariable("TopCakeZStep",0.0);
+  Control.addVariable("TopCakeXYangle",90.0);
+  Control.addVariable("TopCakeZangle",0.0);
+  Control.addVariable("TopCakeTotalHeight",4.9);
+  Control.addVariable("TopCakeWallMat","Aluminium");
+  Control.addVariable("TopCakeWallDepth",0.0);
+  Control.addVariable("TopCakeWallHeight",0.3);
+  
+  Control.addVariable("TopCakeLeftLobeXStep",1.0);  
+  Control.addVariable("TopCakeLeftLobeYStep",0.0);  
+
+  Control.addVariable("TopCakeLeftLobeCorner1",Geometry::Vec3D(0,0.5,0));
+  Control.addVariable("TopCakeLeftLobeCorner2",Geometry::Vec3D(-14.4,-13.2,0));
+  Control.addVariable("TopCakeLeftLobeCorner3",Geometry::Vec3D(14.4,-13.2,0));
+  
+  Control.addVariable("TopCakeLeftLobeRadius1",5.0);
+  Control.addVariable("TopCakeLeftLobeRadius2",2.506);
+  Control.addVariable("TopCakeLeftLobeRadius3",2.506);
+
+  Control.addVariable("TopCakeLeftLobeModMat","HPARA");  
+  Control.addVariable("TopCakeLeftLobeModTemp",20.0);
+
+  Control.addVariable("TopCakeLeftLobeNLayers",4);
+  Control.addVariable("TopCakeLeftLobeThick1",0.3);
+  Control.addVariable("TopCakeLeftLobeMat1","Aluminium20K");
+
+  Control.addVariable("TopCakeLeftLobeHeight1",0.3);
+  Control.addVariable("TopCakeLeftLobeDepth1",0.3);
+  Control.addVariable("TopCakeLeftLobeTemp1",20.0);
+  
+  Control.addVariable("TopCakeLeftLobeThick2",0.5);
+  Control.addVariable("TopCakeLeftLobeMat2","Void");
+
+  Control.addVariable("TopCakeLeftLobeHeight2",0.5);
+  Control.addVariable("TopCakeLeftLobeDepth2",0.5);
+
+  Control.addVariable("TopCakeLeftLobeThick3",0.3);
+  Control.addVariable("TopCakeLeftLobeMat3","Aluminium");
+
+  Control.addVariable("TopCakeLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
+  Control.addVariable("TopCakeLeftLobeDepth3",0.0);
+
+  Control.addVariable("TopCakeFlowGuideBaseThick",0.2);
+  Control.addVariable("TopCakeFlowGuideBaseLen",8.5);
+  Control.addVariable("TopCakeFlowGuideArmThick",0.2);
+  Control.addVariable("TopCakeFlowGuideArmLen",8.0);
+  Control.addVariable("TopCakeFlowGuideBaseArmSep",0.1);
+  Control.addVariable("TopCakeFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
+  Control.addVariable("TopCakeFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
+  Control.addVariable("TopCakeFlowGuideWallMat","Aluminium20K");
+  Control.addVariable("TopCakeFlowGuideWallTemp",20.0);
+  
+  Control.addVariable("TopCakeRightLobeXStep",-1.0);  
+  Control.addVariable("TopCakeRightLobeYStep",0.0);  
+
+  Control.addVariable("TopCakeRightLobeCorner1",Geometry::Vec3D(0,0.5,0));
+  Control.addVariable("TopCakeRightLobeCorner2",Geometry::Vec3D(-14.4,-13.2,0));
+  Control.addVariable("TopCakeRightLobeCorner3",Geometry::Vec3D(14.4,-13.2,0));
+
+  Control.addVariable("TopCakeRightLobeRadius1",5.0);
+  Control.addVariable("TopCakeRightLobeRadius2",2.506);
+  Control.addVariable("TopCakeRightLobeRadius3",2.506);
+
+  Control.addVariable("TopCakeRightLobeModMat","HPARA");
+  Control.addVariable("TopCakeRightLobeModTemp",20.0);
+
+  Control.addVariable("TopCakeRightLobeNLayers",4);
+  Control.addVariable("TopCakeRightLobeThick1",0.3);
+  Control.addVariable("TopCakeRightLobeMat1","Aluminium20K");
+
+  Control.addVariable("TopCakeRightLobeHeight1",0.3);
+  Control.addVariable("TopCakeRightLobeDepth1",0.3);
+  Control.addVariable("TopCakeRightLobeTemp1",20.0);
+  
+  Control.addVariable("TopCakeRightLobeThick2",0.5);
+  Control.addVariable("TopCakeRightLobeMat2","Void");
+
+  Control.addVariable("TopCakeRightLobeHeight2",0.5);
+  Control.addVariable("TopCakeRightLobeDepth2",0.5);
+
+  Control.addVariable("TopCakeRightLobeThick3",0.3);
+  Control.addVariable("TopCakeRightLobeMat3","Aluminium");
+
+  Control.addVariable("TopCakeRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
+  Control.addVariable("TopCakeRightLobeDepth3",0.0);
+
+  Control.addVariable("TopCakeMidWaterCutLayer",3);
+  Control.addVariable("TopCakeMidWaterMidYStep",4.635);
+  Control.addVariable("TopCakeMidWaterMidAngle",90);
+  Control.addVariable("TopCakeMidWaterLength",11.4);
+  Control.addVariable("TopCakeMidWaterEdgeRadius",0.5);
+
+  Control.addVariable("TopCakeMidWaterWallThick",0.2);
+  Control.addVariable("TopCakeMidWaterModMat","H2O");
+  Control.addVariable("TopCakeMidWaterWallMat","Aluminium");
+  Control.addVariable("TopCakeMidWaterModTemp",300.0);
+
+  Control.addVariable("TopCakeLeftWaterWidth",15.76);  
+  Control.addVariable("TopCakeLeftWaterWallThick",0.347);
+  Control.addVariable("TopCakeLeftWaterCutAngle",30.0);
+  Control.addVariable("TopCakeLeftWaterCutWidth",10.562);
+  Control.addVariable("TopCakeLeftWaterModMat","H2O");
+  Control.addVariable("TopCakeLeftWaterWallMat","Aluminium");
+  Control.addVariable("TopCakeLeftWaterModTemp",300.0);
+
+  Control.addVariable("TopCakeRightWaterWidth",15.76);
+  Control.addVariable("TopCakeRightWaterWallThick",0.347);
+  Control.addVariable("TopCakeRightWaterCutAngle",30.0);
+  Control.addVariable("TopCakeRightWaterCutWidth",10.56);
+  Control.addVariable("TopCakeRightWaterModMat","H2O");
+  Control.addVariable("TopCakeRightWaterWallMat","Aluminium");
+  Control.addVariable("TopCakeRightWaterModTemp",300.0);
+
+  
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
   Control.addVariable("LowPreModDepth0",1.5);
