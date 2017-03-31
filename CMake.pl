@@ -248,7 +248,8 @@ $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src","simMC",
 			       "source","monte","funcBase","log","monte",
 			       "tally","geometry","mersenne","src","world",
 			       "work","xml","poly","support","weights",
-			       "md5","global","attachComp","visit","poly"]);
+			       "md5","global","attachComp","visit","poly",
+			       "commonVar"]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",

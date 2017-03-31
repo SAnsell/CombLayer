@@ -84,7 +84,7 @@ namespace WeightSystem
   
 WeightControl::WeightControl() :
   scaleFactor(1.0),minWeight(1e-20),weightPower(0.5),
-  density(1.0),r2Length(1.0),r2Power(2.0),
+  density(1.0),r2Length(1.0),r2Power(2.0),nMarkov(0),
   activeAdjointFlag(0),activePtType("Void"),activePtIndex(0)
   /*
     Constructor
@@ -96,7 +96,8 @@ WeightControl::WeightControl() :
 WeightControl::WeightControl(const WeightControl& A) :
   scaleFactor(A.scaleFactor),minWeight(A.minWeight),
   weightPower(A.weightPower),EBand(A.EBand),WT(A.WT),
-  objectList(A.objectList),activeAdjointFlag(A.activeAdjointFlag),
+  nMarkov(A.nMarkov),objectList(A.objectList),
+  activeAdjointFlag(A.activeAdjointFlag),
   activePtType(A.activePtType),activePtIndex(A.activePtIndex),
   sourcePt(A.sourcePt)
   /*!
@@ -122,7 +123,7 @@ WeightControl::operator=(const WeightControl& A)
       density=A.density;
       r2Length=A.r2Length;
       r2Power=A.r2Power;
-
+      
       EBand=A.EBand;
       WT=A.WT;
       objectList=A.objectList;
@@ -281,11 +282,47 @@ WeightControl::procTypeHelp() const
   return;
 }
 
+void
+WeightControl::procMarkov(const mainSystem::inputParam& IParam,
+			  const std::string& unitName,
+			  const size_t iSet)
+  /*!
+    Process a wwgMarkov type card 
+    \param IParam :: Input parameters
+    \param unitName :: keyname to used 
+    \param iSet :: group number [normally 0 as only one.]
+  */
+{
+  ELog::RegMethod RegA("WeightControl","procMarkov");
 
+  // picks up markov count first then other factors:
+  size_t index(0);
+  nMarkov=IParam.getValue<size_t>(unitName,iSet,index++);
+  energyCut=IParam.getDefValue<double>(0.0,unitName,iSet,index++);
+  scaleFactor=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  minWeight=IParam.getDefValue<double>(1e-20,unitName,iSet,index++);
+  density=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
+  r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
+
+  if (scaleFactor>1.0)
+    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
   
+  ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
+	  <<" sF:"<<scaleFactor
+    	  <<" minW:"<<minWeight
+    	  <<" rho:"<<density
+    	  <<" r2Len:"<<r2Length
+	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
+  return;
+  
+  return;
+}
+    
 void
 WeightControl::procParam(const mainSystem::inputParam& IParam,
-                         const std::string& unitName,const size_t iSet,
+                         const std::string& unitName,
+			 const size_t iSet,
                          const size_t iOffset)
   /*!
     Set the global constants based on a unit and the offset numbers
@@ -314,6 +351,9 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
+  if (scaleFactor>1.0)
+    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
+  
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
     	  <<" minW:"<<minWeight
@@ -970,7 +1010,10 @@ WeightControl::help() const
   ELog::EM<<"-- weightRebase --::"<<ELog::endDiag;
   procRebaseHelp();
   ELog::EM<<"-- wWWG --::"<<ELog::endDiag;
+  ELog::EM<<"-- wwgNorm -- minWeight power :: 10^-minWeight and w=w^power "<<ELog::endDiag;
   ELog::EM<<"-- wwgCalc --::"<<ELog::endDiag;
+  ELog::EM<<"-- wwgMarkov --::"<<ELog::endDiag;
+  ELog::EM<<"-- wwgRPtMesh -- set hte reference point for the mesh ::"<<ELog::endDiag;
   ELog::EM<<"-- wwgVTK --::"<<ELog::endDiag;
   procCalcHelp();
 

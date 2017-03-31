@@ -143,9 +143,6 @@ ObjectTrackAct::getMatSum(const long int objN) const
       sum+=TVec[i];
   return sum;
 }
-
-
-
   
 double
 ObjectTrackAct::getAttnSum(const long int objN) const

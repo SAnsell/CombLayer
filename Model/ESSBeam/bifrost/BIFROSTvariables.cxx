@@ -108,7 +108,7 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostAppAInnerHeight",4.0);
   Control.addVariable("bifrostAppAWidth",12.0);
   Control.addVariable("bifrostAppAHeight",12.0);
-  Control.addVariable("bifrostAppADepth",5.0);
+  Control.addVariable("bifrostAppAThick",5.0);
   Control.addVariable("bifrostAppAYStep",7.0);
   Control.addVariable("bifrostAppADefMat","Tungsten");
 
@@ -190,7 +190,7 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostAppBInnerHeight",3.7);
   Control.addVariable("bifrostAppBWidth",12.0);
   Control.addVariable("bifrostAppBHeight",12.0);
-  Control.addVariable("bifrostAppBDepth",5.0);
+  Control.addVariable("bifrostAppBThick",5.0);
   Control.addVariable("bifrostAppBYStep",8.0);
   Control.addVariable("bifrostAppBDefMat","Tungsten");
 

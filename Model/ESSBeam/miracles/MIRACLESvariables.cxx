@@ -116,7 +116,7 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAppAInnerHeight",4.0);
   Control.addVariable("miraclesAppAWidth",12.0);
   Control.addVariable("miraclesAppAHeight",12.0);
-  Control.addVariable("miraclesAppADepth",5.0);
+  Control.addVariable("miraclesAppAThick",5.0);
   Control.addVariable("miraclesAppAYStep",7.0);
   Control.addVariable("miraclesAppADefMat","Tungsten");
 

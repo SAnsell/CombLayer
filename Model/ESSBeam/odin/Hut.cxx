@@ -387,7 +387,8 @@ Hut::createObjects(Simulation& System)
   
   // Make Wall
   Out=ModelSupport::getComposite
-    (SMap,hutIndex,"1001 -1002 5 -6 (-1003:1004:-1005:1006)");
+    (SMap,hutIndex,"1001 -1002 5 -6 ");
+
   if (frontWallCut)
     Out+=ModelSupport::getComposite(SMap,hutIndex," 13 -14 ");
   if (backWallCut)

@@ -58,7 +58,14 @@ class MarkovProcess
 
   
   size_t nIteration;       ///< number of iterations
-  
+
+  long int WX;             ///< WX size of WWG
+  long int WY;             ///< WY size of WWG 
+  long int WZ;             ///< WZ size of WWG
+
+  long int FSize;          ///< size of fluxField [square]
+  /// Array of interaction [initialCell][finalCell]
+  boost::multi_array<double,2> fluxField;
   
  public:
 
@@ -67,7 +74,10 @@ class MarkovProcess
   MarkovProcess& operator=(const MarkovProcess&);
   ~MarkovProcess();
 
-  
+
+  void initializeData(const WWG&);
+  void computeMatrix(const Simulation&,const WWG&,const double,
+		     const double,const double);
     
 };
 

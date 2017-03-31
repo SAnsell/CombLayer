@@ -3,7 +3,7 @@
  
  * File:   construct/Aperture.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ Aperture::Aperture(const Aperture& A) :
   attachSystem::FrontBackCut(A),
   appIndex(A.appIndex),cellIndex(A.cellIndex),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
-  width(A.width),height(A.height),depth(A.depth),
+  width(A.width),height(A.height),thick(A.thick),
   nLayers(A.nLayers),voidMat(A.voidMat),defMat(A.defMat)
   /*!
     Copy constructor
@@ -124,7 +124,7 @@ Aperture::operator=(const Aperture& A)
       innerHeight=A.innerHeight;
       width=A.width;
       height=A.height;
-      depth=A.depth;
+      thick=A.thick;
       nLayers=A.nLayers;
       voidMat=A.voidMat;
       defMat=A.defMat;
@@ -154,14 +154,11 @@ Aperture::populate(const FuncDataBase& Control)
   innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
-  depth=Control.EvalVar<double>(keyName+"Depth");
+  thick=Control.EvalVar<double>(keyName+"Thick");
 
-  if (height-innerHeight/2.0<Geometry::zeroTol)
+  if (height-innerHeight<Geometry::zeroTol)
     throw ColErr::OrderError<double>(innerHeight/2.0,height,
 				     "innerHeight/Height");
-  if (depth-innerHeight/2.0<Geometry::zeroTol)
-    throw ColErr::OrderError<double>(innerHeight/2.0,depth,
-				     "innerHeight/Depth");
   if (width-innerWidth<Geometry::zeroTol)
     throw ColErr::OrderError<double>(innerWidth,width,"innerWidth/Width");
   
@@ -197,8 +194,8 @@ Aperture::createSurfaces()
   ELog::RegMethod RegA("Aperture","createSurfaces");
   
 
-  ModelSupport::buildPlane(SMap,appIndex+1,Origin-Y*depth/2.0,Y);
-  ModelSupport::buildPlane(SMap,appIndex+2,Origin+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,appIndex+1,Origin-Y*thick/2.0,Y);
+  ModelSupport::buildPlane(SMap,appIndex+2,Origin+Y*thick/2.0,Y);
 
   ModelSupport::buildPlane(SMap,appIndex+3,Origin-X*width/2.0,X);
   ModelSupport::buildPlane(SMap,appIndex+4,Origin+X*width/2.0,X);
@@ -249,8 +246,8 @@ Aperture::createLinks()
   ELog::RegMethod RegA("VacuumBox","createLinks");
 
 
-  FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
-  FixedComp::setConnect(1,Origin+Y*(depth/2.0),Y);
+  FixedComp::setConnect(0,Origin-Y*(thick/2.0),-Y);
+  FixedComp::setConnect(1,Origin+Y*(thick/2.0),Y);
   FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
   FixedComp::setConnect(3,Origin+X*(width/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
@@ -269,13 +266,13 @@ Aperture::createLinks()
       FixedComp::setLinkSurf(i+6,-SMap.realSurf(appIndex+1));
       FixedComp::setLinkSurf(i+10,SMap.realSurf(appIndex+2));
     }
-  Geometry::Vec3D platePt(Origin-Y*(depth/2.0));
+  Geometry::Vec3D platePt(Origin-Y*(thick/2.0));
   FixedComp::setConnect(6,platePt-X*(width/2.0),-X);
   FixedComp::setConnect(7,platePt+X*(width/2.0),X);
   FixedComp::setConnect(8,platePt-Z*(height/2.0),-Z);
   FixedComp::setConnect(9,platePt+Z*(height/2.0),Z);
 
-  platePt=Origin+Y*(depth/2.0);
+  platePt=Origin+Y*(thick/2.0);
   FixedComp::setConnect(10,platePt-X*(width/2.0),-X);
   FixedComp::setConnect(11,platePt+X*(width/2.0),X);
   FixedComp::setConnect(12,platePt-Z*(height/2.0),-Z);

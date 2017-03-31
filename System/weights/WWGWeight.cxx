@@ -3,7 +3,7 @@
  
  * File:   weight/WWGWeight.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,8 +223,8 @@ WWGWeight::makeSource(const double MValue)
   const size_t NData=WGrid.num_elements();
   for(size_t i=0;i<NData;i++)
     {
-       if (TData[i] < -MValue)
-	 TData[i]= -MValue;
+       if (TData[i] < MValue)
+	 TData[i]= MValue;
        else if (TData[i]>0.0)
 	 TData[i]=0.0;
     }
@@ -238,14 +238,15 @@ WWGWeight::makeAdjoint(const double MValue)
     \param MValue :: LOWEST value [-ve]
    */
 {
+  ELog::EM<<"Mind == "<<MValue<<ELog::endDiag;
   double* TData=WGrid.data();
   const size_t NData=WGrid.num_elements();
-  ELog::EM<<"Min Adjoing == "<<MValue<<ELog::endDiag;
+ 
   for(size_t i=0;i<NData;i++)
     {
-      TData[i]= -MValue-TData[i];
-      if (TData[i] < -MValue)
-        TData[i]= -MValue;
+      TData[i]= MValue-TData[i];
+      if (TData[i] < MValue)
+        TData[i]= MValue;
       else if (TData[i]>0.0)
 	TData[i]=0.0;
     }
@@ -261,7 +262,7 @@ WWGWeight::wTrack(const Simulation& System,
 		  const double r2Length,
 		  const double r2Power)
   /*!
-    Calculate a specific trac from sourcePoint to position
+    Calculate a specific track from sourcePoint to position
     \param System :: Simulation to use    
     \param initPt :: Point for outgoing track
     \param EBin :: Energy points
@@ -276,8 +277,11 @@ WWGWeight::wTrack(const Simulation& System,
   ModelSupport::ObjectTrackPoint OTrack(initPt);
 
   long int cN(1);
+  ELog::EM<<"Processing  "<<MidPt.size()<<" for WWG"<<ELog::endDiag;
+  double minV(1.0);
   for(const Geometry::Vec3D& Pt : MidPt)
     {
+      ModelSupport::ObjectTrackPoint OTrack(initPt);
       OTrack.addUnit(System,cN,Pt);
       double DistT=OTrack.getDistance(cN)/r2Length;
       if (DistT<1.0) DistT=1.0;
@@ -290,6 +294,10 @@ WWGWeight::wTrack(const Simulation& System,
 	  // exp(-Sigma)/r^2  in log form
           setPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
         }
+
+      if (!(cN % 10000))
+	ELog::EM<<"Item "<<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
+		<<r2Length<<ELog::endDiag;
       cN++;
     }
   return;
@@ -319,12 +327,19 @@ WWGWeight::wTrack(const Simulation& System,
 
   ModelSupport::ObjectTrackPlane OTrack(initPlane);
   long int cN(1);
+  double minV(1.0);
   for(const Geometry::Vec3D& Pt : MidPt)
     {
       OTrack.addUnit(System,cN,Pt);
       double DistT=OTrack.getDistance(cN)/r2Length;
       if (DistT<1.0) DistT=1.0;
       const double AT=OTrack.getAttnSum(cN);    // this can take an energy
+      double V= -densityFactor*AT-r2Power*log(DistT);
+      if (V<minV)
+	{
+	  minV=V;
+	  ELog::EM<<"Min == "<<V<<ELog::endDiag;
+	}
       for(long int index=0;index<WE;index++)
         {
           // exp(-Sigma)/r^2  in log form
