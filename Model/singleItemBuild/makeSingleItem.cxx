@@ -110,7 +110,7 @@ makeSingleItem::build(Simulation& System,
 
   constructSystem::TwinChopper TwinB("singleTwinB");
   constructSystem::DiskChopper BDiskTop("singleBBladeTop");
-  constructSystem::DiskChopper BDiskLow("singleBBladeTop");
+  constructSystem::DiskChopper BDiskLow("singleBBladeLow");
 
   TwinB.addInsertCell(voidCell);
   TwinB.createAll(System,World::masterOrigin(),0);

@@ -171,7 +171,7 @@ void
 FrontBackCut::setBack(const std::string& FRule)
   /*!
     Set a back wall
-    \param BRule :: Back rule string
+    \param FRule :: Back rule string
   */
 {
   ELog::RegMethod RegA("FrontBackCut","setBack(string)");

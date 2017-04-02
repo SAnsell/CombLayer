@@ -52,6 +52,7 @@
 #include "singleItemVariables.h"
 
 #include "CryoGenerator.h"
+#include "BladeGenerator.h"
 #include "TwinGenerator.h"
 
 namespace setVariable
@@ -78,6 +79,19 @@ SingleItemVariables(FuncDataBase& Control)
 
   setVariable::TwinGenerator TGen;
   TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);  
+
+  setVariable::BladeGenerator BGen;
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"singleBBladeTop",-2.0,22.5,35.0);
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
+
+  
   return;
 }
 

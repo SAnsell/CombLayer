@@ -85,6 +85,7 @@
 #include "DREAM.h"
 #include "ESTIA.h"
 #include "FREIA.h"
+#include "HEIMDAL.h"
 #include "LOKI.h"
 #include "MAGIC.h"
 #include "MIRACLES.h"
@@ -226,6 +227,12 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
       FREIA freiaBL("freia");
       freiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }  
+  else if (beamName=="HEIMDAL")
+    {
+      // DREAM beamline
+      HEIMDAL vespaBL("heimdal");
+      heimdalBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="LOKI")
     {
       // LOKI beamline
