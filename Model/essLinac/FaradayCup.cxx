@@ -116,7 +116,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   airMat(A.airMat),
   shieldRadius(A.shieldRadius),
   shieldInnerRadius(A.shieldInnerRadius),
-  shieldLength(A.shieldLength),
+  shieldForwardLength(A.shieldForwardLength),
   shieldBackLength(A.shieldBackLength),
   shieldInnerLength(A.shieldInnerLength),
   shieldMat(A.shieldMat)
@@ -155,7 +155,7 @@ FaradayCup::operator=(const FaradayCup& A)
       airMat=A.airMat;
       shieldRadius=A.shieldRadius;
       shieldInnerRadius=A.shieldInnerRadius;
-      shieldLength=A.shieldLength;
+      shieldForwardLength=A.shieldForwardLength;
       shieldBackLength=A.shieldBackLength;
       shieldInnerLength=A.shieldInnerLength;
       shieldMat=A.shieldMat;
@@ -208,7 +208,7 @@ FaradayCup::populate(const FuncDataBase& Control)
 
   shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
   shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
-  shieldLength=Control.EvalVar<double>(keyName+"ShieldLength");
+  shieldForwardLength=Control.EvalVar<double>(keyName+"ShieldForwardLength");
   shieldBackLength=Control.EvalVar<double>(keyName+"ShieldBackLength");
   shieldInnerLength=Control.EvalVar<double>(keyName+"ShieldInnerLength");
   shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
@@ -259,7 +259,8 @@ FaradayCup::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
 
   ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldInnerLength),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(shieldLength),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+111,Origin-Y*(shieldBackLength),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(shieldForwardLength),Y);
   ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,shieldInnerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,shieldRadius);
 
@@ -331,7 +332,7 @@ FaradayCup::createLinks()
   FixedComp::setConnect(0,Origin+Y,Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(shieldLength),Y);
+  FixedComp::setConnect(1,Origin+Y*(shieldForwardLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+112));
 
   FixedComp::setConnect(2,Origin+Z*(shieldRadius),Z);
