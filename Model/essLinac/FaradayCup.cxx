@@ -117,6 +117,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   shieldRadius(A.shieldRadius),
   shieldInnerRadius(A.shieldInnerRadius),
   shieldLength(A.shieldLength),
+  shieldBackLength(A.shieldBackLength),
   shieldInnerLength(A.shieldInnerLength),
   shieldMat(A.shieldMat)
   /*!
@@ -155,6 +156,7 @@ FaradayCup::operator=(const FaradayCup& A)
       shieldRadius=A.shieldRadius;
       shieldInnerRadius=A.shieldInnerRadius;
       shieldLength=A.shieldLength;
+      shieldBackLength=A.shieldBackLength;
       shieldInnerLength=A.shieldInnerLength;
       shieldMat=A.shieldMat;
     }
@@ -207,6 +209,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
   shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
   shieldLength=Control.EvalVar<double>(keyName+"ShieldLength");
+  shieldBackLength=Control.EvalVar<double>(keyName+"ShieldBackLength");
   shieldInnerLength=Control.EvalVar<double>(keyName+"ShieldInnerLength");
   shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
 

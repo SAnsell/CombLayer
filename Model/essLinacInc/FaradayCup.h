@@ -67,6 +67,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   double shieldRadius; ///< shield radius
   double shieldInnerRadius; ///< shielding inner radius
   double shieldLength; ///< shield length
+  double shieldBackLength; ///< shield length towards the proton beam origin
   double shieldInnerLength; ///< shielding inner length
   int shieldMat; ///< shielding material
 
