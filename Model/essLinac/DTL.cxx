@@ -196,7 +196,7 @@ DTL::populate(const FuncDataBase& Control)
     }
 
   coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
-  airMat = ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
+  airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
 
   return;
 }
