@@ -6,8 +6,8 @@ assumed_gamma 1.0
 }
 
 camera {
-     location  < 250, -200, 0 >
-     look_at <0, 50, 0>
+     location  < 250, -100, 0 >
+     look_at <0, 0, 0>
      sky z
      angle 90
 }
