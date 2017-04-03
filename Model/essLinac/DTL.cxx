@@ -312,18 +312,16 @@ DTL::createObjects(Simulation& System)
 
 
 void
-DTL::createLinks(const attachSystem::FixedComp& FC,
-		 const long int sideIndex)
+DTL::createLinks()
 
   /*!
     Create all the linkes
-    \param FC :: Object to connect to
-    \param sideIndex :: side link point
   */
 {
   ELog::RegMethod RegA("DTL","createLinks");
 
-  FixedComp::setLinkSignedCopy(0,FC,-sideIndex);
+  FixedComp::setConnect(0,Origin,-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
   FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
@@ -348,8 +346,8 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
 
-  for (int i=0; i<6; i++)
-    ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
+  //  for (int i=0; i<6; i++)
+  //    ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
 
   return;
 }
@@ -374,7 +372,7 @@ DTL::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
-  createLinks(FC,sideIndex);
+  createLinks();
   insertObjects(System);
 
   return;
