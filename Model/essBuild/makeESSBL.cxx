@@ -230,7 +230,7 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   else if (beamName=="HEIMDAL")
     {
       // DREAM beamline
-      HEIMDAL vespaBL("heimdal");
+      HEIMDAL heimdalBL("heimdal");
       heimdalBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="LOKI")
