@@ -219,12 +219,9 @@ DTL::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-DTL::createSurfaces(const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
+DTL::createSurfaces()
   /*!
     Create All the surfaces
-    \param FC :: Object to connect to
-    \param sideIndex :: side link point
   */
 {
   ELog::RegMethod RegA("DTL","createSurfaces");
@@ -233,7 +230,8 @@ DTL::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin,X);
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
 
-  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(sideIndex));
+  //  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(sideIndex));
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
   // cover
@@ -374,7 +372,7 @@ DTL::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
-  createSurfaces(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
   createLinks(FC,sideIndex);
   insertObjects(System);
