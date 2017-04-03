@@ -50,10 +50,13 @@ class DTL : public attachSystem::ContainedComp,
 
   double length;                ///< Total length including void
   double itLength; ///< intertank length
+  double itRadius; ///< intertank pipe radius
+  double itWallThick; ///< intertank pipe wall thick
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
   double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
+  int airMat; ///< air material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

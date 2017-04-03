@@ -218,6 +218,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTLMat2", "Copper"); 
   Control.addVariable("LinacDTLMat3", "SS304L");
   Control.addVariable("LinacDTLCoverThick", 3.6); // MARS
+
+  Control.addVariable("LinacDTLIntertankRadius", 2.8); // MARS
+  Control.addVariable("LinacDTLIntertankWallThick", 0.2); // MARS
+
   
   // Control.addVariable("LinacDTLRadius1", 1.0); 
   // Control.addVariable("LinacDTLRadius2", 1.15); 

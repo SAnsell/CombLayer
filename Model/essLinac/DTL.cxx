@@ -109,8 +109,11 @@ DTL::DTL(const DTL& A) :
   engActive(A.engActive),
   length(A.length),
   itLength(A.itLength),
+  itRadius(A.itRadius),
+  itWallThick(A.itWallThick),
   nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
-  mat(A.mat)
+  mat(A.mat),
+  airMat(A.airMat)
   /*!
     Copy constructor
     \param A :: DTL to copy
@@ -134,9 +137,12 @@ DTL::operator=(const DTL& A)
       engActive=A.engActive;
       length=A.length;
       itLength=A.itLength;
+      itRadius=A.itRadius;
+      itWallThick=A.itWallThick;
       nLayers=A.nLayers;
       radius=A.radius;
       mat=A.mat;
+      airMat=A.airMat;
       coverThick=A.coverThick;
     }
   return *this;
@@ -172,6 +178,8 @@ DTL::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   itLength=Control.EvalVar<double>(keyName+"IntertankLength");
+  itRadius=Control.EvalPair<double>(keyName,extraName,"IntertankRadius");
+  itWallThick=Control.EvalPair<double>(keyName,extraName,"IntertankWallThick");
   nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
   double R;
   int m;
@@ -188,6 +196,7 @@ DTL::populate(const FuncDataBase& Control)
     }
 
   coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
+  airMat = ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
 
   return;
 }
@@ -233,6 +242,8 @@ DTL::createSurfaces(const attachSystem::FixedComp& FC,
 
   // intertank
   ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
+  ModelSupport::buildCylinder(SMap,surfIndex+8,Origin,Y,itRadius);
+  ModelSupport::buildCylinder(SMap,surfIndex+9,Origin,Y,itRadius+itWallThick);
 
   int SI(surfIndex);
   for (size_t i=0; i<nLayers; i++)
@@ -270,17 +281,29 @@ DTL::createObjects(Simulation& System)
     }
 
   // covers
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -8 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 8 -7M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
-  
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -7M ");
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -8 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 8 -7M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
-  
+
   // intertank
   if (itLength>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 -7M ");
+      Out=ModelSupport::getComposite(SMap,surfIndex," 2 -22 -8 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 8 -9 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 9 -7M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
     }
 
   Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -22 -7M ");
@@ -309,7 +332,7 @@ DTL::createLinks(const attachSystem::FixedComp& FC,
 
   const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
   const double hl = (length+itLength)/2.0;
-  
+
   FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(2,-SMap.realSurf(surfIndex+5));
