@@ -86,10 +86,11 @@
 namespace essSystem
 {
 
-FaradayCup::FaradayCup(const std::string& Key)  :
+FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,3),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  attachSystem::FixedOffset(Base+Key,3),
+  baseName(Base),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -100,6 +101,7 @@ FaradayCup::FaradayCup(const std::string& Key)  :
 FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  baseName(A.baseName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   active(A.active),
   engActive(A.engActive),
@@ -186,7 +188,7 @@ FaradayCup::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   active=Control.EvalDefVar<int>(keyName+"Active", 1);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -200,7 +202,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   colMat=ModelSupport::EvalMat<int>(Control,keyName+"CollectorMat");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
+  airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
 
   shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
   shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");

@@ -40,6 +40,7 @@ class FaradayCup : public attachSystem::ContainedComp,
 {
  private:
 
+  const std::string baseName; ///< base name (e.g. Linac)
   const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -79,7 +80,7 @@ class FaradayCup : public attachSystem::ContainedComp,
 
  public:
 
-  FaradayCup(const std::string&);
+  FaradayCup(const std::string&,const std::string&);
   FaradayCup(const FaradayCup&);
   FaradayCup& operator=(const FaradayCup&);
   virtual FaradayCup* clone() const;

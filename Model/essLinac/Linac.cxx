@@ -98,7 +98,7 @@ Linac::Linac(const std::string& Key)  :
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump")),
-  faradayCup(new FaradayCup(Key+"FaradayCup"))
+  faradayCup(new FaradayCup(Key,"FaradayCup"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search

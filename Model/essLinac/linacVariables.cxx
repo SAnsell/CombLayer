@@ -186,7 +186,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupCollectorMat", "Graphite");
 
   Control.addVariable("LinacFaradayCupWallMat", "Copper");
-  Control.addVariable("LinacFaradayCupAirMat","Air");
 
   Control.addVariable("LinacFaradayCupShieldMat","SkanskaConcrete");
   Control.addVariable("LinacFaradayCupShieldRadius",100.0);
