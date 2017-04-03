@@ -338,6 +338,7 @@ Linac::createDTL(Simulation& System, const long int lp)
       attachSystem::addToInsertControl(System,*this,*d); // works
       dtl.push_back(d);
     }
+  attachSystem::addToInsertLineCtrl(System,*dtl.back(),*faradayCup); 
 }
 
 void
