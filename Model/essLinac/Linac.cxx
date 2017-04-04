@@ -338,6 +338,7 @@ Linac::createDTL(Simulation& System, const long int lp)
       attachSystem::addToInsertControl(System,*this,*d); // works
       dtl.push_back(d);
     }
+  ELog::EM << "Remove substruction of last DTL from FaradayCup" << ELog::endDiag;
   attachSystem::addToInsertLineCtrl(System,*dtl.back(),*faradayCup); 
 }
 
