@@ -114,6 +114,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   colLength(A.colLength),
   colMat(A.colMat),wallMat(A.wallMat),
   airMat(A.airMat),
+  shieldActive(A.shieldActive),
   shieldRadius(A.shieldRadius),
   shieldInnerRadius(A.shieldInnerRadius),
   shieldForwardLength(A.shieldForwardLength),
@@ -153,6 +154,7 @@ FaradayCup::operator=(const FaradayCup& A)
       colMat=A.colMat;
       wallMat=A.wallMat;
       airMat=A.airMat;
+      shieldActive=A.shieldActive;
       shieldRadius=A.shieldRadius;
       shieldInnerRadius=A.shieldInnerRadius;
       shieldForwardLength=A.shieldForwardLength;
@@ -206,6 +208,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
 
+  shieldActive=Control.EvalDefVar<int>(keyName+"ShieldActive", true);
   shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
   shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
   shieldForwardLength=Control.EvalVar<double>(keyName+"ShieldForwardLength");
@@ -304,24 +307,32 @@ FaradayCup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  // shielding
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 (-1:2:17) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  ELog::EM << "shieldActive" << shieldActive << ELog::endDiag;
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -112 -117 (-1:102:107) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
-
-  // shielding backward part
-  if (shieldBackLength>0.0)
+  if (shieldActive)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -117 107 ");
+      // shielding
+      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 (-1:2:17) ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -112 -117 (-1:102:107) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -107 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-    }
+      // shielding backward part
+      if (shieldBackLength>0.0)
+	{
+	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -117 107 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 -117 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -107 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+	}
+
+      Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 -117 ");
+    } else
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -17 ");
+    }
   addOuterSurf(Out);
 
   return;
@@ -336,17 +347,27 @@ FaradayCup::createLinks()
 {
   ELog::RegMethod RegA("FaradayCup","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  if (shieldActive)
+    {
+      FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+111));
 
-  FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+111));
+      FixedComp::setConnect(1,Origin+Y*(shieldForwardLength),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+112));
 
-  FixedComp::setConnect(1,Origin+Y*(shieldForwardLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+112));
+      FixedComp::setConnect(2,Origin+Z*(shieldRadius),Z);
+      FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+117));
+    } else
+    {
+      FixedComp::setConnect(0,Origin,-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(2,Origin+Z*(shieldRadius),Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+117));
+      FixedComp::setConnect(1,Origin+Y*(length),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+
+      FixedComp::setConnect(2,Origin+Z*(outerRadius),Z);
+      FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+17));
+    }
 
   return;
 }
