@@ -115,6 +115,7 @@ DTL::DTL(const DTL& A) :
   nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
   mat(A.mat),
   airMat(A.airMat),
+  nPMQ(A.nPMQ),
   pmq(A.pmq)
   /*!
     Copy constructor
@@ -145,6 +146,7 @@ DTL::operator=(const DTL& A)
       radius=A.radius;
       mat=A.mat;
       airMat=A.airMat;
+      nPMQ=A.nPMQ;
       pmq=A.pmq;
       coverThick=A.coverThick;
     }
@@ -200,6 +202,8 @@ DTL::populate(const FuncDataBase& Control)
 
   coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
   airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
+  
+  nPMQ=Control.EvalVar<size_t>(keyName+"NPMQ");
 
   return;
 }

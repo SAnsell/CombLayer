@@ -58,6 +58,7 @@ class DTL : public attachSystem::ContainedComp,
   double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
   int airMat; ///< air material
+  size_t nPMQ; ///< number of PMQs
   std::vector<std::shared_ptr<PMQ> > pmq; ///< array of permanent quadrupole magnets
 
   void populate(const FuncDataBase&);
