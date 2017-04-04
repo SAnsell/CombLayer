@@ -80,6 +80,7 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
+#include "AttachSupport.h"
 #include "CellMap.h"
 #include "PMQ.h"
 #include "DTL.h"
@@ -169,6 +170,40 @@ DTL::~DTL()
   */
 {}
 
+void
+DTL::createPMQ(Simulation& System, const long int lp)
+{
+  /*!
+    Create the PMQ modules
+    \param lp :: link point for the origin of the 1st PMQ
+   */
+  ELog::RegMethod RegA("DTL","createPMQ");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  for (size_t i=0; i<nPMQ; i++)
+    {
+      std::shared_ptr<PMQ> p(new PMQ(keyName,"PMQ",i+1));
+      OR.addObject(p);
+      if (i==0)
+	{
+	  ELog::EM << "Why +1?" << ELog::endDiag;
+	  p->createAll(System, *this, lp+1);
+	} else
+	{
+      	  ELog::EM << "Why +1?" << ELog::endDiag;
+      	  p->createAll(System, *pmq[i-1],1+1);
+	}
+      
+      attachSystem::addToInsertControl(System,*this,*p);
+      pmq.push_back(p);
+    }
+  
+  return;
+}
+
+  
 void
 DTL::populate(const FuncDataBase& Control)
   /*!
@@ -389,6 +424,8 @@ DTL::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
+  createPMQ(System, 6);
+  
   return;
 }
 

@@ -61,6 +61,8 @@ class DTL : public attachSystem::ContainedComp,
   size_t nPMQ; ///< number of PMQs
   std::vector<std::shared_ptr<PMQ> > pmq; ///< array of permanent quadrupole magnets
 
+  void createPMQ(Simulation&, const long int);
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

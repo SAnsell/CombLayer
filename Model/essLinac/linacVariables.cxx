@@ -229,6 +229,17 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
+  
+  Control.addVariable("LinacDTL1EngineeringActive", 1);
+  Control.addVariable("LinacDTL1PMQ1Length", 10);
+  Control.addVariable("LinacDTL1PMQ1IntertankLength", 2);
+  Control.addVariable("LinacDTL1PMQ1IntertankRadius", 3);
+  Control.addVariable("LinacDTL1PMQ1IntertankWallThick", 1);
+  Control.addVariable("LinacDTL1PMQ1NLayers", 1);
+  Control.addVariable("LinacDTL1PMQ1Radius1", 5);
+  Control.addVariable("LinacDTL1PMQ1Mat1", "SS304L");
+  Control.addVariable("LinacDTL1PMQ1CoverThick", 0.2);
+  Control.addVariable("LinacDTL1AirMat", "Air");
 
   
   // Control.addVariable("LinacDTLRadius1", 1.0); 
