@@ -81,6 +81,7 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 #include "CellMap.h"
+#include "PMQ.h"
 #include "DTL.h"
 
 namespace essSystem
@@ -113,7 +114,8 @@ DTL::DTL(const DTL& A) :
   itWallThick(A.itWallThick),
   nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
   mat(A.mat),
-  airMat(A.airMat)
+  airMat(A.airMat),
+  pmq(A.pmq)
   /*!
     Copy constructor
     \param A :: DTL to copy
@@ -143,6 +145,7 @@ DTL::operator=(const DTL& A)
       radius=A.radius;
       mat=A.mat;
       airMat=A.airMat;
+      pmq=A.pmq;
       coverThick=A.coverThick;
     }
   return *this;

@@ -26,6 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
+  class PMQ;
 
 /*!
   \class DTL
@@ -57,6 +58,7 @@ class DTL : public attachSystem::ContainedComp,
   double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
   int airMat; ///< air material
+  std::vector<std::shared_ptr<PMQ> > pmq; ///< array of permanent quadrupole magnets
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
