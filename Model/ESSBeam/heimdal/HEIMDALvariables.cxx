@@ -102,11 +102,12 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"heimdalFA",350.0,7.6,4.02,5.0,7.6250);
 
-  PipeGen.generatePipe(Control,"heimdalPipeA",6.0,46.0);
-
+  
+  PipeGen.generatePipe(Control,"heimdalPipeB",6.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"heimdalFB",44.0,4.0,3.5,7.6,8.0);   
+  FGen.generateTaper(Control,"heimdalFCB",44.0,4.0,3.5,7.6,8.0);
+  FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,3.5,7.6,8.0);   
   
   return;
 }

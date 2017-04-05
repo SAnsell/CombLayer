@@ -189,8 +189,8 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   FocusTB->addInsertCell(VPipeB->getCells("Void"));
   FocusTB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  FocusCB->addInsertCell(VPipeB->getCells("Void"));
-  FocusCB->createAll(System,*VPipeB,0,*VPipeB,0);
+  //  FocusCB->addInsertCell(VPipeB->getCells("Void"));
+  //  FocusCB->createAll(System,*VPipeB,0,*VPipeB,0);
 
 
   return;

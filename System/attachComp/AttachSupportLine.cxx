@@ -192,8 +192,8 @@ addToInsertLineCtrl(Simulation& System,
     the point is tested REGARDLESS of being in the CC, to 
     being in the BaseFC. If it is an insert is made
     \param System :: Simulation to use
-    \parma BaseCell :: CellMap to extract cells for testing
-    \parma cellName :: Particular cells to use from BaseCell
+    \param BaseCell :: CellMap to extract cells for testing
+    \param cellName :: Particular cells to use from BaseCell
     \param InsertFC :: FixedComp with a ContainedComp/containedGroup
     dynamics cast
     \param CC :: Container for insersion

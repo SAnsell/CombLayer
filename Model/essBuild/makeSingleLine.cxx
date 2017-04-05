@@ -85,6 +85,7 @@
 #include "DREAM.h"
 #include "ESTIA.h"
 #include "FREIA.h"
+#include "HEIMDAL.h"
 #include "LOKI.h"
 #include "MAGIC.h"
 #include "MIRACLES.h"
@@ -163,7 +164,12 @@ makeSingleLine::build(Simulation& System,
   beamName=IParam.getValueError<std::string>
     ("beamlines",0,0,"Single beamline not defined");
   
-  if (beamName=="MAGIC")
+  if (beamName=="HEIMDAL")
+    {
+      HEIMDAL heimdalBL("heimdal");
+      heimdalBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="MAGIC")
     {
       MAGIC magicBL("magic");
       magicBL.buildIsolated(System,voidCell);      
