@@ -106,7 +106,8 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   startPoint(0),stopPoint(0),
   heimdalAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
-  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusTA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusCA(new beamlineSystem::GuideLine(newName+"FA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusTB(new beamlineSystem::GuideLine(newName+"FTB")),
@@ -134,7 +135,8 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   OR.cell(newName+"Axis");
   OR.addObject(heimdalAxis);
 
-  OR.addObject(FocusA);
+  OR.addObject(FocusTA);
+  OR.addObject(FocusCA);
   OR.addObject(VPipeB);
   OR.addObject(FocusCB);
   OR.addObject(FocusTB);
@@ -189,21 +191,25 @@ HEIMDAL::setBeamAxis(const FuncDataBase& Control,
 
 void
 HEIMDAL::buildBunkerUnits(Simulation& System,
-                        const attachSystem::FixedComp& FA,
-                        const long int startIndex,
+                        const attachSystem::FixedComp& FTA,
+                        const long int thermalIndex,
+                        const attachSystem::FixedComp& FCA,
+                        const long int coldIndex,
                         const int bunkerVoid)
   /*!
     Build all the components in the bunker space
     \param System :: simulation
-    \param FA :: Fixed component to start build from [Mono guide]
-    \param startIndex :: Fixed component link point
+    \param FTA :: FixedComp for thermal guide
+    \param thermalIndex :: FixedComp link point for thermal
+    \param FCA :: Fixed component for cold guide
+    \param coldIndex :: FixedComp link point for cold
     \param bunkerVoid :: cell to place objects in
    */
 {
   ELog::RegMethod RegA("HEIMDAL","buildBunkerUnits");
   
   VPipeB->addInsertCell(bunkerVoid);
-  VPipeB->createAll(System,FA,startIndex);
+  VPipeB->createAll(System,FTA,thermalIndex);
 
   // Offset from VPipeB center
   FocusTB->addInsertCell(VPipeB->getCells("Void"));
@@ -298,7 +304,7 @@ HEIMDAL::buildIsolated(Simulation& System,const int voidCell)
   
   if (startPoint<1)
     {
-      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      //      buildBunkerUnits(System,*FStart,startIndex,voidCell);
       // Set the start point fo rb
       //      FStart= &(FocusF->getKey("Guide0"));
       startIndex= 2;
@@ -349,14 +355,20 @@ HEIMDAL::build(Simulation& System,
 
   setBeamAxis(Control,GItem,0);
     
-  FocusA->addInsertCell(GItem.getCells("Void"));
-  FocusA->setFront(GItem.getKey("Beam"),-1);
-  FocusA->setBack(GItem.getKey("Beam"),-2);
-  FocusA->createAll(System,*heimdalAxis,-3,*heimdalAxis,-3);
+  FocusTA->addInsertCell(GItem.getCells("Void"));
+  FocusTA->setFront(GItem.getKey("Beam"),-1);
+  FocusTA->setBack(GItem.getKey("Beam"),-2);
+  FocusTA->createAll(System,*heimdalAxis,-3,*heimdalAxis,-3);
+
+  FocusCA->addInsertCell(GItem.getCells("Void"));
+  FocusCA->setFront(GItem.getKey("Beam"),-1);
+  FocusCA->setBack(GItem.getKey("Beam"),-2);
+  FocusCA->createAll(System,*heimdalAxis,-3,*heimdalAxis,-3);
 
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge  
-  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+  buildBunkerUnits(System,FocusTA->getKey("Guide0"),2,
+                   FocusTA->getKey("Guide0"),2,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;                      // STOP At bunker edge
