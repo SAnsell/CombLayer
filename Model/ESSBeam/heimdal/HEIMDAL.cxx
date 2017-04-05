@@ -106,8 +106,8 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   startPoint(0),stopPoint(0),
   heimdalAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
-  FocusTA(new beamlineSystem::GuideLine(newName+"FA")),
-  FocusCA(new beamlineSystem::GuideLine(newName+"FA")),
+  FocusTA(new beamlineSystem::GuideLine(newName+"FTA")),
+  FocusCA(new beamlineSystem::GuideLine(newName+"FCA")),
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusTB(new beamlineSystem::GuideLine(newName+"FTB")),
@@ -138,9 +138,9 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   OR.addObject(FocusTA);
   OR.addObject(FocusCA);
   OR.addObject(VPipeB);
+
   OR.addObject(FocusCB);
   OR.addObject(FocusTB);
-  OR.addObject(FocusCB);
 
   OR.addObject(VPipeC);
   OR.addObject(FocusTC);
@@ -213,13 +213,13 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 
   // Offset from VPipeB center
   FocusTB->addInsertCell(VPipeB->getCells("Void"));
-  FocusTB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusTB->createAll(System,FTA,thermalIndex,FTA,thermalIndex);
   
   VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,FocusTB->getKey("Guide0"),2);
 
   FocusTC->addInsertCell(VPipeB->getCells("Void"));
-  FocusTC->createAll(System,*VPipeC,0,*VPipeC,0);
+  FocusTC->createAll(System,FCA,coldIndex,FCA,coldIndex);
                                                         
   //  FocusCB->addInsertCell(VPipeB->getCells("Void"));
   //  FocusCB->createAll(System,*VPipeB,0,*VPipeB,0);
@@ -280,8 +280,6 @@ HEIMDAL::buildDetectorArray(Simulation& System,
   return;
 }
   
-
-  
 void
 HEIMDAL::buildIsolated(Simulation& System,const int voidCell)
   /*!
@@ -292,11 +290,11 @@ HEIMDAL::buildIsolated(Simulation& System,const int voidCell)
 {
   ELog::RegMethod RegA("HEIMDAL","buildIsolated");
 
-
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+
   ELog::EM<<"BUILD ISOLATED Start/Stop:"
           <<startPoint<<" "<<stopPoint<<ELog::endDiag;
   const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
@@ -368,7 +366,7 @@ HEIMDAL::build(Simulation& System,
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge  
   buildBunkerUnits(System,FocusTA->getKey("Guide0"),2,
-                   FocusTA->getKey("Guide0"),2,
+                   FocusCA->getKey("Guide0"),2,
                    bunkerObj.getCell("MainVoid"));
 
   if (stopPoint==2) return;                      // STOP At bunker edge

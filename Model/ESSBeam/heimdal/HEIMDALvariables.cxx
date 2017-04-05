@@ -86,7 +86,7 @@ HEIMDALvariables(FuncDataBase& Control)
 
   Control.addVariable("heimdalAxisZStep",0.0);
   
-  PipeGen.setPipe(8.0,0.5);
+  PipeGen.setPipe(14.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
 
@@ -110,15 +110,17 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalFTAXYAngle",1.0);   
   Control.addVariable("heimdalFCAXYAngle",-1.0);   
   
+  PipeGen.generatePipe(Control,"heimdalPipeB",6.5,46.0);
+  Control.addVariable("heimdalPipeBZStep",-5.0);
+
   
-  PipeGen.generatePipe(Control,"heimdalPipeB",6.0,46.0);
   FGen.setGuideMat("Aluminium");
-  FGen.clearYOffset();
+  FGen.setYOffset(7.5);
   // THERMAL ON MASTER LINE:
   // COLD offset by 
   FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,4.0,4.0,4.0);
   FGen.generateTaper(Control,"heimdalFCB",44.0,2.0,2.0,2.0,2.0);
-  Control.addVariable("lokiAxisZAngle",0.0);   //
+
 
   PipeGen.generatePipe(Control,"heimdalPipeC",6.0,46.0);
   FGen.generateTaper(Control,"heimdalFTC",44.0,4.0,4.0,4.0,4.0);
