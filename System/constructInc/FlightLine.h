@@ -24,6 +24,15 @@
 
 class Simulation;
 
+
+/*!
+  \namespace moderatorSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief Basic moderators [mainly TS2]
+*/
+
 namespace moderatorSystem
 {
 

@@ -110,9 +110,19 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
 
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusTB(new beamlineSystem::GuideLine(newName+"FTB")),
-  FocusCB(new beamlineSystem::GuideLine(newName+"FCB"))
+  FocusCB(new beamlineSystem::GuideLine(newName+"FCB")),
+
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  FocusTC(new beamlineSystem::GuideLine(newName+"FTC")),
+  FocusCC(new beamlineSystem::GuideLine(newName+"FCC")),
+
+  ChopA(new constructSystem::ChopperUnit(newName+"ChopE")),
+  ADiskOne(new constructSystem::DiskChopper(newName+"ADiskOne")),
+  ADiskTwo(new constructSystem::DiskChopper(newName+"ADiskTwo"))
+  
  /*!
     Constructor
+    \param keyName :: keyname for the beamline
  */
 {
   ELog::RegMethod RegA("HEIMDAL","HEIMDAL");
@@ -128,6 +138,15 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   OR.addObject(VPipeB);
   OR.addObject(FocusCB);
   OR.addObject(FocusTB);
+  OR.addObject(FocusCB);
+
+  OR.addObject(VPipeC);
+  OR.addObject(FocusTC);
+  OR.addObject(FocusCC);
+
+  OR.addObject(ChopA);
+  OR.addObject(ADiskOne);
+  OR.addObject(ADiskTwo);
 }
 
   
@@ -186,9 +205,16 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   VPipeB->addInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);
 
+  // Offset from VPipeB center
   FocusTB->addInsertCell(VPipeB->getCells("Void"));
   FocusTB->createAll(System,*VPipeB,0,*VPipeB,0);
+  
+  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->createAll(System,FocusTB->getKey("Guide0"),2);
 
+  FocusTC->addInsertCell(VPipeB->getCells("Void"));
+  FocusTC->createAll(System,*VPipeC,0,*VPipeC,0);
+                                                        
   //  FocusCB->addInsertCell(VPipeB->getCells("Void"));
   //  FocusCB->createAll(System,*VPipeB,0,*VPipeB,0);
 

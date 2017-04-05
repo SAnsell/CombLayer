@@ -100,15 +100,43 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setYOffset(2.0);
   FGen.setThickness(0.5,0.5);
-  FGen.generateTaper(Control,"heimdalFA",350.0,7.6,4.02,5.0,7.6250);
-
+  FGen.generateTaper(Control,"heimdalFTA",350.0, 3.0,3.0, 3.0,3.0);
+  FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
+  
+  Control.addVariable("heimdalFTAZStep",0.0);   
+  Control.addVariable("heimdalFCAZStep",-5.0);   
+  Control.addVariable("heimdalFTAZAngle",0.0);   
+  Control.addVariable("heimdalFCAZAngle",-1.3);   
+  Control.addVariable("heimdalFTAXYAngle",1.0);   
+  Control.addVariable("heimdalFCAXYAngle",-1.0);   
+  
   
   PipeGen.generatePipe(Control,"heimdalPipeB",6.0,46.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"heimdalFCB",44.0,4.0,3.5,7.6,8.0);
-  FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,3.5,7.6,8.0);   
-  
+  // THERMAL ON MASTER LINE:
+  // COLD offset by 
+  FGen.generateTaper(Control,"heimdalFTB",44.0,4.0,4.0,4.0,4.0);
+  FGen.generateTaper(Control,"heimdalFCB",44.0,2.0,2.0,2.0,2.0);
+  Control.addVariable("lokiAxisZAngle",0.0);   //
+
+  PipeGen.generatePipe(Control,"heimdalPipeC",6.0,46.0);
+  FGen.generateTaper(Control,"heimdalFTC",44.0,4.0,4.0,4.0,4.0);
+  FGen.generateTaper(Control,"heimdalFCC",44.0,4.0,4.0,4.0,4.0);   
+
+  CGen.setMainRadius(38.122);
+  CGen.setFrame(86.5,86.5);
+  CGen.generateChopper(Control,"heimdalChopA",14.0,12.0,6.55);
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"heimdalADiskOne",0.0,22.5,35.0);
+
+  // Second Blade chopper
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"heimdalADiskTwo",0.0,22.5,35.0);
+
   return;
 }
  

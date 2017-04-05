@@ -82,14 +82,28 @@ class HEIMDAL : public attachSystem::CopiedComp
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
-  /// Vac pipe  
+  /// Vac pipe in gamma shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Tapered guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusCB;
   /// Tapered guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusTB;
 
+  /// 6.0 - 6.5m Vac piper
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Cold guide from 6.0 to 6.5metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCC;
+  /// Thermal guide from 6.0 to 6metre
+  std::shared_ptr<beamlineSystem::GuideLine> FocusTC;
 
+  /// First single chopper pair
+  std::shared_ptr<constructSystem::ChopperUnit> ChopA;
+  /// Top twin disk
+  std::shared_ptr<constructSystem::DiskChopper> ADiskOne;
+  /// Lower twin disk
+  std::shared_ptr<constructSystem::DiskChopper> ADiskTwo;
+
+  
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,

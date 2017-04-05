@@ -24,6 +24,13 @@
 
 class localRotate;
 class HeadRule;
+/*!
+  \namespace attachSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief General linking/contained holders
+*/
 
 
 namespace attachSystem

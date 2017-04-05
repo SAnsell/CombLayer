@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/makeTS2.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef t1System_makeT1Real_h
-#define t1System_makeT1Real_h
+#ifndef moderatorSystem_makeT2_h
+#define moderatorSystem_makeT2_h
 
 namespace hutchSystem
 {
@@ -37,13 +37,6 @@ namespace TMRSystem
   class TS2target;
 }  
 
-
-namespace moderatorSystem
-{
-  class FlightLine;
-  class Reflector;
-}
-
 namespace shutterSystem
 {
   class t1BulkShield;
@@ -54,6 +47,8 @@ namespace shutterSystem
 
 namespace moderatorSystem
 {
+  class FlightLine;
+  class Reflector;
 
   /*!
     \class makeTS2
@@ -67,11 +62,6 @@ class makeTS2
 {
  private:
 
-//  boost::shared_ptr<t1PlateTarget> TarObj;            ///< Pressure vessel
-//  boost::shared_ptr<constructSystem::TargetBase> TarObj;  
-  
-
-//  std::string buildTarget(Simulation&,const std::string&,const int);
   
  public:
   
