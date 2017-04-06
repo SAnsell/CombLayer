@@ -78,7 +78,9 @@
 #include "LayerComp.h"
 #include "ModBase.h"
 #include "H2Wing.h"
+#include <typeinfo>
 #include "ButterflyModerator.h"
+#include "PancakeModerator.h"
 
 namespace essSystem
 {
@@ -258,6 +260,7 @@ PreModWing::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("PreModWing","createObjects");
 
+
   const attachSystem::CellMap* CM=
     dynamic_cast<const attachSystem::CellMap*>(&Mod);
 
@@ -270,15 +273,32 @@ PreModWing::createObjects(Simulation& System,
     }
   if (!AmbientVoid)
     throw ColErr::InContainerError<int>
-      (ambientCell,"ButterflyModerator ambientVoid cell not found");
-  
-  const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
-  const std::string excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
-  const std::string excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
+      (ambientCell,"PancakeModerator ambientVoid cell not found");
+
+  ELog::EM << "This is UGLY" << ELog::endDiag;
+  // Check with SA how to do it correctly.
+  // The problem is that BM can derive both from the Pancake or Butterfly classes,
+  // so I need to cast type of BM correctly.
+  std::string excludeBM, excludeBMLeftRightWater, linkStr;
+  const std::string modclass = typeid(Mod).name();
+
+  if (modclass.find("Pancake")!=std::string::npos)
+    {
+      const PancakeModerator *BM = dynamic_cast<const PancakeModerator*>(&Mod);
+      excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
+      excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
+      linkStr = BM->getLinkString(2);
+    } else if (modclass.find("Butterfly")!=std::string::npos)
+    {
+      const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
+      excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
+      excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
+      linkStr = BM->getLinkString(2);
+    }
 
   // BM outer cylinder side surface
   HeadRule HR;
-  HR.procString(BM->getLinkString(2));
+  HR.procString(linkStr);
   HR.makeComplement();
   const std::string BMouterCyl = HR.display();
 
@@ -344,7 +364,7 @@ PreModWing::createAll(Simulation& System,
     \param preLP :: z-surface of Pre
     \param zRotate :: true if must be flipped
     \param ts :: tilt side
-    \param Mod :: Butterfly moderator
+    \param Mod :: Pancake moderator
    */
 {
   ELog::RegMethod RegA("PreModWing","createAll");

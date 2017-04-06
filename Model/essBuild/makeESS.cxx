@@ -1068,7 +1068,7 @@ makeESS::build(Simulation& System,
 			 0.0,
 			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
   
-  //  buildPreWings(System,lowModType);
+  buildPreWings(System,lowModType);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
