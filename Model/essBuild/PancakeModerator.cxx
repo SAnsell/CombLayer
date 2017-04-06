@@ -355,8 +355,8 @@ PancakeModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Orign from center
   
-  FixedComp::setLinkCopy(4,*LeftUnit,4);
-  FixedComp::setLinkCopy(5,*LeftUnit,5);
+  FixedComp::setLinkCopy(4,*MidWater,4);
+  FixedComp::setLinkCopy(5,*MidWater,5);
   const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
   const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
@@ -376,8 +376,8 @@ PancakeModerator::createExternal()
 {
   ELog::RegMethod RegA("PancakeModerator","createExternal");
 
-  addOuterUnionSurf(LeftUnit->getCompExclude());
-  addOuterUnionSurf(RightUnit->getCompExclude());
+  //  addOuterUnionSurf(LeftUnit->getCompExclude());
+  //  addOuterUnionSurf(RightUnit->getCompExclude());
   addOuterUnionSurf(MidWater->getCompExclude());
   addOuterUnionSurf(LeftWater->getCompExclude());
   addOuterUnionSurf(RightWater->getCompExclude());
@@ -396,10 +396,10 @@ PancakeModerator::getComponent(const std::string& compName) const
   ELog::RegMethod RegA("PancakeModerator","getComponent");
 
   const std::string TStr=keyName+compName;
-  if (TStr==LeftUnit->getKeyName())
-    return *LeftUnit;
-  if (TStr==RightUnit->getKeyName())
-    return *RightUnit;
+  // if (TStr==LeftUnit->getKeyName())
+  //   return *LeftUnit;
+  // if (TStr==RightUnit->getKeyName())
+  //   return *RightUnit;
   if (TStr==MidWater->getKeyName())
     return *MidWater;
   if (TStr==LeftWater->getKeyName())
@@ -420,8 +420,8 @@ PancakeModerator::getSideRule() const
   ELog::RegMethod RegA("PancakeModerator","getSideRule");
 
   HeadRule HR;
-  HR.procString(LeftUnit->getSideRule());
-  HR.addUnion(RightUnit->getSideRule());
+  //  HR.procString(LeftUnit->getSideRule());
+  //  HR.addUnion(RightUnit->getSideRule());
   HR.addUnion(MidWater->getSideRule());
   HR.addUnion(LeftWater->getSideRule());
   HR.addUnion(RightWater->getSideRule());
@@ -466,15 +466,15 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   
-  LeftUnit->createAll(System,*this);
-  RightUnit->createAll(System,*this);
+  //  LeftUnit->createAll(System,*this);
+  //  RightUnit->createAll(System,*this);
   //  MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
   MidWater->createAll(System,*this,0,false, 0, 10);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
-  LeftWater->createAll(System,*LeftUnit,2,Exclude);
-  RightWater->createAll(System,*RightUnit,2,Exclude);
+  LeftWater->createAll(System,*MidWater,2,Exclude); // 3=OK
+  RightWater->createAll(System,*MidWater,1,Exclude);
 
   Origin=MidWater->getCentre();
   createExternal();  // makes intermediate 

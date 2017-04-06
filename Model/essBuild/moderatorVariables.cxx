@@ -384,6 +384,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopCakeRightLobeDepth3",0.0);
 
+  Control.addVariable("TopCakeMidWaterXYangle",10); std::cerr << "Why does not change anything?" << std::endl;
   Control.addVariable("TopCakeMidWaterNLayers",1);
   Control.addVariable("TopCakeMidWaterHeight0",1.5);
   Control.addVariable("TopCakeMidWaterDepth0",1.5);
