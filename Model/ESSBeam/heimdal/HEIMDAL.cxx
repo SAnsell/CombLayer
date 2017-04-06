@@ -127,6 +127,7 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   
   VPipeCD(new constructSystem::VacuumPipe(newName+"PipeCD")),
   FocusCD(new beamlineSystem::GuideLine(newName+"FCD")),
+  BendCD(new beamlineSystem::GuideLine(newName+"BCD")),
 
   TChopB(new constructSystem::ChopperUnit(newName+"TChopB")),
   BDisk(new constructSystem::DiskChopper(newName+"BDisk")),
@@ -136,8 +137,10 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
 
   ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")), 
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
-  T0Motor(new constructSystem::Motor(newName+"T0Motor"))
+  T0Motor(new constructSystem::Motor(newName+"T0Motor")),
 
+  VPipeTF(new constructSystem::VacuumPipe(newName+"PipeTF")),
+  FocusTF(new beamlineSystem::GuideLine(newName+"FTF"))
   
  /*!
     Constructor
@@ -177,6 +180,9 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   OR.addObject(ChopperT0);  
   OR.addObject(T0Disk);
   OR.addObject(T0Motor);
+
+  OR.addObject(VPipeTF);
+  OR.addObject(FocusTF);
 
 }
 
@@ -284,6 +290,12 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   VPipeCD->addInsertCell(bunkerVoid);
   VPipeCD->createAll(System,FocusCC->getKey("Guide0"),2);
 
+  // First part of cold guide
+  FocusCD->addInsertCell(VPipeCD->getCells("Void"));
+  FocusCD->createAll(System,FocusCC->getKey("Guide0"),2,
+                     FocusCC->getKey("Guide0"),2);
+
+  
   TChopB->addInsertCell(bunkerVoid);
   TChopB->getKey("Main").setAxisControl(3,ZVert);
   TChopB->createAll(System,FocusTD->getKey("Guide0"),2);
@@ -307,6 +319,12 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
 
   T0Motor->addInsertCell(bunkerVoid);
   T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
+
+  VPipeTF->addInsertCell(bunkerVoid);
+  VPipeTF->createAll(System,ChopperT0->getKey("Beam"),2);
+
+  FocusTF->addInsertCell(VPipeTF->getCells("Void"));
+  FocusTF->createAll(System,*VPipeTF,0,*VPipeTF,0);
 
   return;
 }

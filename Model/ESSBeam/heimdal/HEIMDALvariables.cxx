@@ -132,7 +132,7 @@ HEIMDALvariables(FuncDataBase& Control)
   
   FGen.setYOffset(5.5);
   FGen.generateTaper(Control,"heimdalFTC",44.0,4.0,4.0,4.0,4.0);
-  FGen.generateTaper(Control,"heimdalFCC",44.0,4.0,4.0,4.0,4.0);   
+  FGen.generateTaper(Control,"heimdalFCC",44.0,2.0,2.0,2.0,2.0);   
 
   CGen.setMainRadius(38.122);
   CGen.setFrame(86.5,86.5);
@@ -155,15 +155,15 @@ HEIMDALvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"heimdalFTD",126.0,4.0,4.0,4.0,4.0);
   
-  PipeGen.setPipe(4.0,0.5);
+  PipeGen.setPipe(3.0,0.5);
   PipeGen.generatePipe(Control,"heimdalPipeCD",15.0,530.0);
-  FGen.clearYOffset();
-  FGen.generateTaper(Control,"heimdalFCD",526.0,4.0,4.0,4.0,4.0);   
+  FGen.setYOffset(18.0);
+  FGen.generateTaper(Control,"heimdalFCD",126.0,2.0,2.0,2.0,2.0);   
 
   CGen.setMainRadius(38.122);
   CGen.setFrame(86.5,86.5);
   CGen.generateChopper(Control,"heimdalTChopB",8.0,6.0,3.55);
-  Control.addVariable("heimdalTChopBZStep",3.0);
+  Control.addVariable("heimdalTChopBZStep",4.0);
   
   // Single Blade chopper
   BGen.setThick({0.2});
@@ -171,14 +171,17 @@ HEIMDALvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"heimdalBDisk",0.0,22.5,35.0);
 
   PipeGen.setPipe(4.5,0.5);
-  PipeGen.generatePipe(Control,"heimdalPipeTE",2.5,1150.0);
+  PipeGen.generatePipe(Control,"heimdalPipeTE",2.5,1170.0);
+  Control.addParse<double>("heimdalPipeTEZStep","-heimdalTChopBZStep");    
+    
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"heimdalFTE",1146.0,4.0,4.0,4.0,4.0);
+  FGen.generateTaper(Control,"heimdalFTE",1166.0,4.0,4.0,4.0,4.0);
 
   // T0 chopper:
   CGen.setMaterial("Stainless304","Aluminium");
-  CGen.generateChopper(Control,"heimdalChopperT0",120.0,36.0,32.0);
-
+  CGen.generateChopper(Control,"heimdalChopperT0",12.0,16.0,12.0);
+  Control.addVariable("heimdalChopperT0ZStep",4.0);
+  
   // T0 Chopper disk 
   BGen.setMaterials("Inconnel","Tungsten");
   BGen.setThick({5.0});
@@ -190,6 +193,13 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalT0MotorMat","Copper");
   
   BGen.generateBlades(Control,"heimdalT0Disk",0.0,25.0,35.0);
+
+  PipeGen.setPipe(4.5,0.5);
+  PipeGen.generatePipe(Control,"heimdalPipeTF",2.5,444.0);
+  Control.addParse<double>("heimdalPipeTFZStep","-heimdalChopperT0ZStep");    
+    
+  FGen.clearYOffset();
+  FGen.generateTaper(Control,"heimdalFTF",440.0,4.0,4.0,4.0,4.0);
 
   return;
 }

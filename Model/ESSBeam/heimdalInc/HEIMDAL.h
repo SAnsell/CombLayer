@@ -113,9 +113,11 @@ class HEIMDAL : public attachSystem::CopiedComp
 
   /// 6.5m to 12m
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCD;
-  /// Cold guide from 6.5 to 12m
+  /// Cold guide from 6.5 to 8m
   std::shared_ptr<beamlineSystem::GuideLine> FocusCD;
-  
+  /// Cold bender from 8m to 20m [too long?]
+  std::shared_ptr<beamlineSystem::GuideLine> BendCD;
+
   /// Second thermal chopper [single]
   std::shared_ptr<constructSystem::ChopperUnit> TChopB;
   /// Second Thermal disk
@@ -132,6 +134,11 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
   /// Thermal T0 Chopper motor
   std::shared_ptr<constructSystem::Motor> T0Motor;
+
+  /// Vac pipe for Thermal to bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeTF;
+  /// Themal guide from 20m to bunker wall
+  std::shared_ptr<beamlineSystem::GuideLine> FocusTF;
 
 
   
