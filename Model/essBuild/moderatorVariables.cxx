@@ -384,16 +384,12 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopCakeRightLobeDepth3",0.0);
 
-  Control.addVariable("TopCakeMidWaterCutLayer",3);
-  Control.addVariable("TopCakeMidWaterMidYStep",4.635);
-  Control.addVariable("TopCakeMidWaterMidAngle",90);
-  Control.addVariable("TopCakeMidWaterLength",11.4);
-  Control.addVariable("TopCakeMidWaterEdgeRadius",0.5);
-
-  Control.addVariable("TopCakeMidWaterWallThick",0.2);
-  Control.addVariable("TopCakeMidWaterModMat","H2O");
-  Control.addVariable("TopCakeMidWaterWallMat","Aluminium");
-  Control.addVariable("TopCakeMidWaterModTemp",300.0);
+  Control.addVariable("TopCakeMidWaterNLayers",1);
+  Control.addVariable("TopCakeMidWaterHeight0",1.5);
+  Control.addVariable("TopCakeMidWaterDepth0",1.5);
+  Control.addVariable("TopCakeMidWaterThick0",15);
+  Control.addVariable("TopCakeMidWaterMat0","HPARA");
+  Control.addVariable("TopCakeMidWaterZStep",-1.5-0.3/2);
 
   Control.addVariable("TopCakeLeftWaterWidth",15.76);  
   Control.addVariable("TopCakeLeftWaterWallThick",0.347);

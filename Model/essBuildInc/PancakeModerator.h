@@ -26,7 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
-  class MidWaterDivider;
+  class DiskPreMod;
   class EdgeWater;
 
 /*!
@@ -49,7 +49,7 @@ class PancakeModerator :
   
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator
-  std::shared_ptr<MidWaterDivider> MidWater;    ///< Water divider
+  std::shared_ptr<DiskPreMod> MidWater;    ///< Water divider
   std::shared_ptr<EdgeWater> LeftWater;    ///< Water divider
   std::shared_ptr<EdgeWater> RightWater;    ///< Water divider
 

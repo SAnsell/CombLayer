@@ -73,7 +73,7 @@
 #include "CellMap.h"
 #include "ModBase.h"
 #include "H2Wing.h"
-#include "MidWaterDivider.h"
+#include "DiskPreMod.h"
 #include "EdgeWater.h"
 #include "PancakeModerator.h"
 
@@ -86,7 +86,7 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
   cellIndex(flyIndex+1),
   LeftUnit(new H2Wing(Key,"LeftLobe",90.0)),
   RightUnit(new H2Wing(Key,"RightLobe",270.0)),
-  MidWater(new MidWaterDivider(Key,"MidWater")),
+  MidWater(new DiskPreMod(Key+"MidWater")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
   /*!
@@ -468,7 +468,8 @@ PancakeModerator::createAll(Simulation& System,
   
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
-  MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
+  //  MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
+  MidWater->createAll(System,*this,0,false, 0, 10);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
