@@ -384,13 +384,24 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopCakeRightLobeDepth3",0.0);
 
-  Control.addVariable("TopCakeMidWaterXYangle",10); std::cerr << "Why does not change anything?" << std::endl;
-  Control.addVariable("TopCakeMidWaterNLayers",1);
+  Control.addVariable("TopCakeMidWaterZStep",-1.5-0.3/2);
+  
+  Control.addVariable("TopCakeMidWaterNLayers",3);
+  
   Control.addVariable("TopCakeMidWaterHeight0",1.5);
   Control.addVariable("TopCakeMidWaterDepth0",1.5);
   Control.addVariable("TopCakeMidWaterThick0",15);
   Control.addVariable("TopCakeMidWaterMat0","HPARA");
-  Control.addVariable("TopCakeMidWaterZStep",-1.5-0.3/2);
+
+  Control.addVariable("TopCakeMidWaterHeight1",0.3);
+  Control.addVariable("TopCakeMidWaterDepth1",0.3);
+  Control.addVariable("TopCakeMidWaterThick1",0.3);
+  Control.addVariable("TopCakeMidWaterMat1","Void");
+
+  Control.addVariable("TopCakeMidWaterHeight2",0.3);
+  Control.addVariable("TopCakeMidWaterDepth2",0.3);
+  Control.addVariable("TopCakeMidWaterThick2",0.3);
+  Control.addVariable("TopCakeMidWaterMat2","Aluminium20K");
 
   Control.addVariable("TopCakeLeftWaterWidth",15.76);  
   Control.addVariable("TopCakeLeftWaterWallThick",0.347);
