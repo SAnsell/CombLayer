@@ -89,8 +89,8 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalAxisZStep",0.0);
   
   PipeGen.setPipe(14.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-4.0,1.0);
+  PipeGen.setWindow(-1.0,0.5);
+  PipeGen.setFlange(-2.0,1.0);
 
   RPipeGen.setPipe(6.0,22.0,0.5);
   RPipeGen.setWindow(-2.0,-2.0,0.5);
@@ -137,7 +137,7 @@ HEIMDALvariables(FuncDataBase& Control)
   CGen.setMainRadius(38.122);
   CGen.setFrame(86.5,86.5);
   CGen.generateChopper(Control,"heimdalTChopA",8.0,12.0,6.55);
-  Control.addVariable("heimdalTChopAZStep",3.0);
+  Control.addVariable("heimdalTChopAZStep",4.0);  // care must be put back
   
   // Single Blade chopper
   BGen.setThick({0.2});
@@ -150,10 +150,12 @@ HEIMDALvariables(FuncDataBase& Control)
 
   PipeGen.setPipe(4.0,0.5);
   PipeGen.generatePipe(Control,"heimdalPipeTD",2.5,130.0);
+  Control.addParse<double>("heimdalPipeTDZStep","-heimdalTChopAZStep");    
+  
   FGen.clearYOffset();
   FGen.generateTaper(Control,"heimdalFTD",126.0,4.0,4.0,4.0,4.0);
   
-  PipeGen.setPipe(4.5,0.5);
+  PipeGen.setPipe(4.0,0.5);
   PipeGen.generatePipe(Control,"heimdalPipeCD",15.0,530.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"heimdalFCD",526.0,4.0,4.0,4.0,4.0);   
