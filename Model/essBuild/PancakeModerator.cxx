@@ -469,7 +469,7 @@ PancakeModerator::createAll(Simulation& System,
   //  LeftUnit->createAll(System,*this);
   //  RightUnit->createAll(System,*this);
   //  MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-  MidWater->createAll(System,*this,0,false, 0, 10);
+  MidWater->createAll(System,*this,0,false, 0.0, 10);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
