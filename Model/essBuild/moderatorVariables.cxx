@@ -325,10 +325,10 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2Thick2",0.3);
   Control.addVariable("TopCakeMidH2Mat2","Aluminium20K");
 
-  Control.addVariable("TopCakeLeftWaterWidth",15.76);  
+  Control.addVariable("TopCakeLeftWaterWidth",30);  
   Control.addVariable("TopCakeLeftWaterWallThick",0.347);
   Control.addVariable("TopCakeLeftWaterCutAngle",30.0);
-  Control.addVariable("TopCakeLeftWaterCutWidth",10.562);
+  Control.addVariable("TopCakeLeftWaterCutWidth",11);
   Control.addVariable("TopCakeLeftWaterModMat","H2O");
   Control.addVariable("TopCakeLeftWaterWallMat","Aluminium");
   Control.addVariable("TopCakeLeftWaterModTemp",300.0);
