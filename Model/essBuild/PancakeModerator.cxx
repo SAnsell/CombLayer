@@ -473,8 +473,8 @@ PancakeModerator::createAll(Simulation& System,
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
-  LeftWater->createAll(System,*MidWater,2,Exclude); // 3=OK
-  RightWater->createAll(System,*MidWater,1,Exclude);
+  LeftWater->createAll(System,*MidWater,4,Exclude); 
+  RightWater->createAll(System,*MidWater,3,Exclude);
 
   Origin=MidWater->getCentre();
   createExternal();  // makes intermediate 
