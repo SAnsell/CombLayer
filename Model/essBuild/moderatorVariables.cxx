@@ -303,10 +303,10 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeXYangle",90.0);
   Control.addVariable("TopCakeTotalHeight",4.9);
   Control.addVariable("TopCakeWallMat","Aluminium");
-  Control.addVariable("TopCakeWallDepth",0.3); // BF: 0.0
+  Control.addVariable("TopCakeWallDepth",0.0);
   Control.addVariable("TopCakeWallHeight",0.3);
   
-  Control.addVariable("TopCakeMidH2ZStep",0.0);//-1.5-0.3/2);
+  Control.addVariable("TopCakeMidH2ZStep",-1.5-0.3-0.3);// total Mid2 depth
   
   Control.addVariable("TopCakeMidH2NLayers",3);
   
