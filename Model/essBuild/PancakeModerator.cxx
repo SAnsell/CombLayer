@@ -72,7 +72,6 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ModBase.h"
-#include "H2Wing.h"
 #include "DiskPreMod.h"
 #include "EdgeWater.h"
 #include "PancakeModerator.h"
@@ -84,8 +83,6 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
   constructSystem::ModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
-  LeftUnit(new H2Wing(Key,"LeftLobe",90.0)),
-  RightUnit(new H2Wing(Key,"RightLobe",270.0)),
   MidWater(new DiskPreMod(Key+"MidWater")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
@@ -97,8 +94,6 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
    ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-   OR.addObject(LeftUnit);
-   OR.addObject(RightUnit);
    OR.addObject(MidWater);
    OR.addObject(LeftWater);
    OR.addObject(RightWater);
@@ -108,8 +103,6 @@ PancakeModerator::PancakeModerator(const PancakeModerator& A) :
   constructSystem::ModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
   bfType(A.bfType),
-  LeftUnit(A.LeftUnit->clone()),
-  RightUnit(A.RightUnit->clone()),
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
@@ -137,8 +130,6 @@ PancakeModerator::operator=(const PancakeModerator& A)
       constructSystem::ModBase::operator=(A);
       cellIndex= A.cellIndex;
       bfType=A.bfType;
-      *LeftUnit= *A.LeftUnit;
-      *RightUnit= *A.RightUnit;
       *MidWater= *A.MidWater;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
@@ -376,8 +367,6 @@ PancakeModerator::createExternal()
 {
   ELog::RegMethod RegA("PancakeModerator","createExternal");
 
-  //  addOuterUnionSurf(LeftUnit->getCompExclude());
-  //  addOuterUnionSurf(RightUnit->getCompExclude());
   addOuterUnionSurf(MidWater->getCompExclude());
   addOuterUnionSurf(LeftWater->getCompExclude());
   addOuterUnionSurf(RightWater->getCompExclude());
@@ -396,10 +385,6 @@ PancakeModerator::getComponent(const std::string& compName) const
   ELog::RegMethod RegA("PancakeModerator","getComponent");
 
   const std::string TStr=keyName+compName;
-  // if (TStr==LeftUnit->getKeyName())
-  //   return *LeftUnit;
-  // if (TStr==RightUnit->getKeyName())
-  //   return *RightUnit;
   if (TStr==MidWater->getKeyName())
     return *MidWater;
   if (TStr==LeftWater->getKeyName())
@@ -420,8 +405,6 @@ PancakeModerator::getSideRule() const
   ELog::RegMethod RegA("PancakeModerator","getSideRule");
 
   HeadRule HR;
-  //  HR.procString(LeftUnit->getSideRule());
-  //  HR.addUnion(RightUnit->getSideRule());
   HR.addUnion(MidWater->getSideRule());
   HR.addUnion(LeftWater->getSideRule());
   HR.addUnion(RightWater->getSideRule());
@@ -466,9 +449,6 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   
-  //  LeftUnit->createAll(System,*this);
-  //  RightUnit->createAll(System,*this);
-  //  MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
   MidWater->createAll(System,*this,0,false, 0.0, 10);
     
   const std::string Exclude=
