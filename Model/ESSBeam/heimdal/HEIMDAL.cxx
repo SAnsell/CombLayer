@@ -85,6 +85,7 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "ChopperUnit.h"
+#include "Motor.h"
 #include "TwinChopper.h"
 #include "DetectorTank.h"
 #include "LineShield.h"
@@ -117,9 +118,26 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusTC(new beamlineSystem::GuideLine(newName+"FTC")),
   FocusCC(new beamlineSystem::GuideLine(newName+"FCC")),
 
-  ChopA(new constructSystem::ChopperUnit(newName+"ChopE")),
+  TChopA(new constructSystem::ChopperUnit(newName+"TChopA")),
   ADiskOne(new constructSystem::DiskChopper(newName+"ADiskOne")),
-  ADiskTwo(new constructSystem::DiskChopper(newName+"ADiskTwo"))
+  ADiskTwo(new constructSystem::DiskChopper(newName+"ADiskTwo")),
+
+  VPipeTD(new constructSystem::VacuumPipe(newName+"PipeTD")),
+  FocusTD(new beamlineSystem::GuideLine(newName+"FTD")),
+  
+  VPipeCD(new constructSystem::VacuumPipe(newName+"PipeCD")),
+  FocusCD(new beamlineSystem::GuideLine(newName+"FCD")),
+
+  TChopB(new constructSystem::ChopperUnit(newName+"TChopB")),
+  BDisk(new constructSystem::DiskChopper(newName+"BDisk")),
+
+  VPipeTE(new constructSystem::VacuumPipe(newName+"PipeTE")),
+  FocusTE(new beamlineSystem::GuideLine(newName+"FTE")),
+
+  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")), 
+  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
+  T0Motor(new constructSystem::Motor(newName+"T0Motor"))
+
   
  /*!
     Constructor
@@ -146,9 +164,20 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   OR.addObject(FocusTC);
   OR.addObject(FocusCC);
 
-  OR.addObject(ChopA);
+  OR.addObject(TChopA);
   OR.addObject(ADiskOne);
   OR.addObject(ADiskTwo);
+
+  OR.addObject(VPipeTD);
+  OR.addObject(FocusTD);
+
+  OR.addObject(VPipeTE);
+  OR.addObject(FocusTE);
+
+  OR.addObject(ChopperT0);  
+  OR.addObject(T0Disk);
+  OR.addObject(T0Motor);
+
 }
 
   
@@ -207,7 +236,9 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
    */
 {
   ELog::RegMethod RegA("HEIMDAL","buildBunkerUnits");
-  
+
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+
   VPipeB->addInsertCell(bunkerVoid);
   VPipeB->createAll(System,FTA,thermalIndex);
 
@@ -215,70 +246,71 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   FocusTB->addInsertCell(VPipeB->getCells("Void"));
   FocusTB->createAll(System,FTA,thermalIndex,FTA,thermalIndex);
   
+  FocusCB->addInsertCell(VPipeB->getCells("Void"));
+  FocusCB->createAll(System,FCA,coldIndex,FCA,coldIndex);
+
+  ELog::EM<<"Cold = "<<FocusCB->getKey("Guide0").getSignedLinkAxis(2)
+	  <<ELog::endDiag;
+  ELog::EM<<"Thermal = "<<FocusTB->getKey("Guide0").getSignedLinkAxis(2)
+	  <<ELog::endDiag;
   VPipeC->addInsertCell(bunkerVoid);
-  VPipeC->createAll(System,FocusTB->getKey("Guide0"),2);
+  VPipeC->createAll(System,*VPipeB,2);
 
-  FocusTC->addInsertCell(VPipeB->getCells("Void"));
-  FocusTC->createAll(System,FCA,coldIndex,FCA,coldIndex);
-                                                        
-  //  FocusCB->addInsertCell(VPipeB->getCells("Void"));
-  //  FocusCB->createAll(System,*VPipeB,0,*VPipeB,0);
+  FocusTC->addInsertCell(VPipeC->getCells("Void"));
+  FocusTC->createAll(System,FocusTB->getKey("Guide0"),2,
+		     FocusTB->getKey("Guide0"),2);
 
+  FocusCC->addInsertCell(VPipeC->getCells("Void"));
+  FocusCC->createAll(System,FocusCB->getKey("Guide0"),2,
+		     FocusCB->getKey("Guide0"),2);
+
+  TChopA->addInsertCell(bunkerVoid);
+  TChopA->getKey("Main").setAxisControl(3,ZVert);
+  TChopA->createAll(System,FocusTC->getKey("Guide0"),2);
+  
+  // Double disk chopper
+  ADiskOne->addInsertCell(TChopA->getCell("Void"));
+  ADiskOne->createAll(System,TChopA->getKey("Main"),0);
+
+  ADiskTwo->addInsertCell(TChopA->getCell("Void"));
+  ADiskTwo->createAll(System,TChopA->getKey("Main"),0);
+
+  VPipeTD->addInsertCell(bunkerVoid);
+  VPipeTD->createAll(System,TChopA->getKey("Beam"),2);
+
+  FocusTD->addInsertCell(VPipeTD->getCells("Void"));
+  FocusTD->createAll(System,*VPipeTD,0,*VPipeTD,0);
+
+  VPipeCD->addInsertCell(bunkerVoid);
+  VPipeCD->createAll(System,FocusCC->getKey("Guide0"),2);
+
+  TChopB->addInsertCell(bunkerVoid);
+  TChopB->getKey("Main").setAxisControl(3,ZVert);
+  TChopB->createAll(System,FocusTD->getKey("Guide0"),2);
+  
+  // Double disk chopper
+  BDisk->addInsertCell(TChopB->getCell("Void"));
+  BDisk->createAll(System,TChopB->getKey("Main"),0);
+
+  VPipeTE->addInsertCell(bunkerVoid);
+  VPipeTE->createAll(System,TChopB->getKey("Beam"),2);
+
+  FocusTE->addInsertCell(VPipeTE->getCells("Void"));
+  FocusTE->createAll(System,*VPipeTE,0,*VPipeTE,0);
+
+  ChopperT0->addInsertCell(bunkerVoid);
+  ChopperT0->createAll(System,*VPipeTE,2);
+
+  T0Disk->addInsertCell(ChopperT0->getCell("Void"));
+  T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
+                    ChopperT0->getKey("BuildBeam"),0);
+
+  T0Motor->addInsertCell(bunkerVoid);
+  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
 
   return;
 }
 
-void
-HEIMDAL::buildOutGuide(Simulation& System,
-                     const attachSystem::FixedComp& FW,
-                     const long int startIndex,
-                     const int voidCell)
-  /*!
-    Build all the components that are outside of the wall
-    \param System :: Simulation 
-    \param FW :: Focus wall fixed axis
-    \param startPoint :: link point 
-    \param voidCell :: void cell nubmer
-   */
-{
-  ELog::RegMethod RegA("HEIMDAL","buildOutGuide");
-
-  return;
-}
-
-void
-HEIMDAL::buildHut(Simulation& System,
-		const attachSystem::FixedComp& connectFC,
-		const long int connectIndex,
-                const int voidCell)
-  /*!
-    Builds the hut connected to the FixedPoint given
-    \param System :: Simulation to build with
-    \param connectFC :: Connection point
-    \param connectIndex :: Connection index
-    \param voidCell :: Main void cell for this model
-   */
-{
-  ELog::RegMethod RegA("HEIMDAL","buildHut");
-  return;
-}
-
-void
-HEIMDAL::buildDetectorArray(Simulation& System,
-                          const attachSystem::FixedComp& sampleFC,
-                          const long int sampleIndex,
-                          const int voidCell)
-  /*!
-    Builds the detector array in the cave (relative to the sample)
-    \param System :: Simulation to build with
-    \param sampleFC :: Sample (centre) fixed object
-    \param sampleIndex :: Index for the sample
-    \param voidCell :: Cell everything is in
-  */
-{
-  ELog::RegMethod RegA("HEIMDAL","buildDetectorArray");
-  return;
-}
   
 void
 HEIMDAL::buildIsolated(Simulation& System,const int voidCell)

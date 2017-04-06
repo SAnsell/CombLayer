@@ -47,6 +47,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperUnit;
+  class Motor;
   class TwinChopper;
   class HoleShape;
   class CrystalMount;
@@ -99,11 +100,39 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusCC;
 
   /// First single chopper pair
-  std::shared_ptr<constructSystem::ChopperUnit> ChopA;
+  std::shared_ptr<constructSystem::ChopperUnit> TChopA;
   /// Top twin disk
   std::shared_ptr<constructSystem::DiskChopper> ADiskOne;
   /// Lower twin disk
   std::shared_ptr<constructSystem::DiskChopper> ADiskTwo;
+
+  /// 6.5m Vac pipe for Thermal
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeTD;
+  /// Themal guide from 6.5 to 8m
+  std::shared_ptr<beamlineSystem::GuideLine> FocusTD;
+
+  /// 6.5m to 12m
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeCD;
+  /// Cold guide from 6.5 to 12m
+  std::shared_ptr<beamlineSystem::GuideLine> FocusCD;
+  
+  /// Second thermal chopper [single]
+  std::shared_ptr<constructSystem::ChopperUnit> TChopB;
+  /// Second Thermal disk
+  std::shared_ptr<constructSystem::DiskChopper> BDisk;
+
+  /// 8mm Vac pipe for Thermal
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeTE;
+  /// Themal guide from 8m to 20m [too long?]
+  std::shared_ptr<beamlineSystem::GuideLine> FocusTE;
+
+  /// Thermal T0 Chopper
+  std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
+  /// Thermal T0 Chopper blades
+  std::shared_ptr<constructSystem::DiskChopper> T0Disk;
+  /// Thermal T0 Chopper motor
+  std::shared_ptr<constructSystem::Motor> T0Motor;
+
 
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);

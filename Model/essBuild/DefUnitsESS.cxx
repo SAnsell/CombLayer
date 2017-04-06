@@ -232,11 +232,12 @@ setESSSingle(defaultConfig& A,
      {"MIRACLES","G1BLineTop5"},   // W5
      {"MAGIC","G1BLineTop6"},      // W6     
      {"TREX","G1BLineTop7"},       // W7
-
+     {"HEIMDAL","G1BLineTop8"},    // W8 
+     
      {"LOKI","G1BLineTop15"},      // N7
      {"FREIA","G1BLineTop17"},     // N5
 
-     {"HEIMDAL","G2BLineTop7"},     // E7  [BUt I don't know]
+
      {"NNBAR","G1BLineTop11"},      // TEST PORT
      {"TESTBEAM","G1BLineTop11"},   // TEST PORT
      

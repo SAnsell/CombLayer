@@ -3,7 +3,7 @@
  
  * File:   commonVar/FocusGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,6 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
     Control.addVariable<double>(keyName+"YStep",yStep);
   else
     Control.addVariable<double>(keyName+"YStep",yStep-length/2.0);
-
   if (!yBeamActive)
     Control.addParse<double>(keyName+"BeamYStep","-"+keyName+"Length/2.0");
   else if (yBeamActive==1)

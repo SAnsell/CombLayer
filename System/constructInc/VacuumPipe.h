@@ -62,12 +62,16 @@ class VacuumPipe :
 
   double feThick;               ///< pipe thickness
 
-  double flangeRadius;          ///< Joining Flange thick
+  double flangeRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeHeight;          ///< Joining Flange height
+  double flangeWidth;           ///< Joining Flange width
   double flangeLength;          ///< Joining Flange length
 
   int activeWindow;             ///< Flag on window activity
   double windowThick;           ///< Joining Flange length
-  double windowRadius;          ///< Joining Flange length
+  double windowRadius;          ///< Window radius
+  double windowHeight;          ///< Window Height
+  double windowWidth;           ///< Window Width
   
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material 
