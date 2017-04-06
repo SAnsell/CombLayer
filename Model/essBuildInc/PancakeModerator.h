@@ -47,9 +47,9 @@ class PancakeModerator :
 
   int bfType;                  ///< Type (BF1 or BF2)
   
-  std::shared_ptr<DiskPreMod> MidWater;    ///< Water divider
-  std::shared_ptr<EdgeWater> LeftWater;    ///< Water divider
-  std::shared_ptr<EdgeWater> RightWater;    ///< Water divider
+  std::shared_ptr<DiskPreMod> MidH2;    ///< Water disc in the middle
+  std::shared_ptr<EdgeWater> LeftWater;    ///< Left reflector part
+  std::shared_ptr<EdgeWater> RightWater;    ///< Right reflector part
 
   double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius

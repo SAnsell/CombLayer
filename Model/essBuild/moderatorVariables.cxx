@@ -306,24 +306,24 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeWallDepth",0.3); // BF: 0.0
   Control.addVariable("TopCakeWallHeight",0.3);
   
-  Control.addVariable("TopCakeMidWaterZStep",0.0);//-1.5-0.3/2);
+  Control.addVariable("TopCakeMidH2ZStep",0.0);//-1.5-0.3/2);
   
-  Control.addVariable("TopCakeMidWaterNLayers",3);
+  Control.addVariable("TopCakeMidH2NLayers",3);
   
-  Control.addVariable("TopCakeMidWaterHeight0",1.5);
-  Control.addVariable("TopCakeMidWaterDepth0",1.5);
-  Control.addVariable("TopCakeMidWaterThick0",15);
-  Control.addVariable("TopCakeMidWaterMat0","HPARA");
+  Control.addVariable("TopCakeMidH2Height0",1.5);
+  Control.addVariable("TopCakeMidH2Depth0",1.5);
+  Control.addVariable("TopCakeMidH2Thick0",15);
+  Control.addVariable("TopCakeMidH2Mat0","HPARA");
 
-  Control.addVariable("TopCakeMidWaterHeight1",0.3);
-  Control.addVariable("TopCakeMidWaterDepth1",0.3);
-  Control.addVariable("TopCakeMidWaterThick1",0.3);
-  Control.addVariable("TopCakeMidWaterMat1","Void");
+  Control.addVariable("TopCakeMidH2Height1",0.3);
+  Control.addVariable("TopCakeMidH2Depth1",0.3);
+  Control.addVariable("TopCakeMidH2Thick1",0.3);
+  Control.addVariable("TopCakeMidH2Mat1","Void");
 
-  Control.addVariable("TopCakeMidWaterHeight2",0.3);
-  Control.addVariable("TopCakeMidWaterDepth2",0.3);
-  Control.addVariable("TopCakeMidWaterThick2",0.3);
-  Control.addVariable("TopCakeMidWaterMat2","Aluminium20K");
+  Control.addVariable("TopCakeMidH2Height2",0.3);
+  Control.addVariable("TopCakeMidH2Depth2",0.3);
+  Control.addVariable("TopCakeMidH2Thick2",0.3);
+  Control.addVariable("TopCakeMidH2Mat2","Aluminium20K");
 
   Control.addVariable("TopCakeLeftWaterWidth",15.76);  
   Control.addVariable("TopCakeLeftWaterWallThick",0.347);

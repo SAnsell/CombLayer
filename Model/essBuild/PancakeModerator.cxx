@@ -83,7 +83,7 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
   constructSystem::ModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
-  MidWater(new DiskPreMod(Key+"MidWater")),
+  MidH2(new DiskPreMod(Key+"MidH2")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
   /*!
@@ -94,7 +94,7 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
    ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-   OR.addObject(MidWater);
+   OR.addObject(MidH2);
    OR.addObject(LeftWater);
    OR.addObject(RightWater);
 }
@@ -103,7 +103,7 @@ PancakeModerator::PancakeModerator(const PancakeModerator& A) :
   constructSystem::ModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
   bfType(A.bfType),
-  MidWater(A.MidWater->clone()),
+  MidH2(A.MidH2->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
   totalHeight(A.totalHeight),
@@ -130,7 +130,7 @@ PancakeModerator::operator=(const PancakeModerator& A)
       constructSystem::ModBase::operator=(A);
       cellIndex= A.cellIndex;
       bfType=A.bfType;
-      *MidWater= *A.MidWater;
+      *MidH2= *A.MidH2;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
       totalHeight=A.totalHeight;
@@ -254,7 +254,7 @@ PancakeModerator::createObjects(Simulation& System)
       HeadRule bfHR;
       bfHR.procString(LeftUnit->getSideRule());
       bfHR.addUnion(RightUnit->getSideRule());
-      bfHR.addUnion(MidWater->getSideRule());
+      bfHR.addUnion(MidH2->getSideRule());
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
     }
 
@@ -346,8 +346,8 @@ PancakeModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Orign from center
   
-  FixedComp::setLinkCopy(4,*MidWater,4);
-  FixedComp::setLinkCopy(5,*MidWater,5);
+  FixedComp::setLinkCopy(4,*MidH2,4);
+  FixedComp::setLinkCopy(5,*MidH2,5);
   const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
   const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
@@ -367,7 +367,7 @@ PancakeModerator::createExternal()
 {
   ELog::RegMethod RegA("PancakeModerator","createExternal");
 
-  addOuterUnionSurf(MidWater->getCompExclude());
+  addOuterUnionSurf(MidH2->getCompExclude());
   addOuterUnionSurf(LeftWater->getCompExclude());
   addOuterUnionSurf(RightWater->getCompExclude());
   
@@ -385,8 +385,8 @@ PancakeModerator::getComponent(const std::string& compName) const
   ELog::RegMethod RegA("PancakeModerator","getComponent");
 
   const std::string TStr=keyName+compName;
-  if (TStr==MidWater->getKeyName())
-    return *MidWater;
+  if (TStr==MidH2->getKeyName())
+    return *MidH2;
   if (TStr==LeftWater->getKeyName())
     return *LeftWater;
   if (TStr==RightWater->getKeyName())
@@ -405,7 +405,7 @@ PancakeModerator::getSideRule() const
   ELog::RegMethod RegA("PancakeModerator","getSideRule");
 
   HeadRule HR;
-  HR.addUnion(MidWater->getSideRule());
+  HR.addUnion(MidH2->getSideRule());
   HR.addUnion(LeftWater->getSideRule());
   HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
@@ -449,14 +449,14 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   
-  MidWater->createAll(System,*this,0,false, 0.0, 10);
+  MidH2->createAll(System,*this,0,false, 0.0, 10);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
-  LeftWater->createAll(System,*MidWater,4,Exclude); 
-  RightWater->createAll(System,*MidWater,3,Exclude);
+  LeftWater->createAll(System,*MidH2,4,Exclude); 
+  RightWater->createAll(System,*MidH2,3,Exclude);
 
-  Origin=MidWater->getCentre();
+  Origin=MidH2->getCentre();
   createExternal();  // makes intermediate 
 
 
