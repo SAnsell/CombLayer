@@ -306,27 +306,33 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeWallHeight",0.3);
   
   
-  Control.addVariable("TopCakeMidH2NLayers",3);
+  Control.addVariable("TopCakeMidH2NLayers",4);
   
   Control.addVariable("TopCakeMidH2Height0",1.5);
   Control.addParse<double>("TopCakeMidH2Depth0", "TopCakeMidH2Height0");
   Control.addVariable("TopCakeMidH2Thick0",15);
   Control.addVariable("TopCakeMidH2Mat0","HPARA");
 
-  Control.addVariable("TopCakeMidH2Height1",0.5);
+  Control.addVariable("TopCakeMidH2Height1",0.3);
   Control.addParse<double>("TopCakeMidH2Depth1","TopCakeMidH2Height1");
   Control.addParse<double>("TopCakeMidH2Thick1","TopCakeMidH2Height1");
-  Control.addVariable("TopCakeMidH2Mat1","Void");
+  Control.addVariable("TopCakeMidH2Mat1","Aluminium20K");
 
-  Control.addVariable("TopCakeMidH2Height2",0.0);
-  Control.addVariable("TopCakeMidH2Depth2",0.3);
-  Control.addParse<double>("TopCakeMidH2Thick2","TopCakeMidH2Depth2");
-  Control.addVariable("TopCakeMidH2Mat2","Aluminium20K");
+  Control.addVariable("TopCakeMidH2Height2",0.5);
+  Control.addParse<double>("TopCakeMidH2Depth2","TopCakeMidH2Height2");
+  Control.addParse<double>("TopCakeMidH2Thick2","TopCakeMidH2Height2");
+  Control.addVariable("TopCakeMidH2Mat2","Void");
+
+  Control.addVariable("TopCakeMidH2Height3",0.0);
+  Control.addVariable("TopCakeMidH2Depth3",0.0);
+  Control.addParse<double>("TopCakeMidH2Thick3","TopCakeMidH2Depth3");
+  Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
   // Control.addVariable("TopCakeTotalHeight",3+0.5*2+0.3*2 );
-  Control.addParse<double>("TopCakeTotalHeight","TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+0.3*2" );
+  Control.addParse<double>("TopCakeTotalHeight",
+			   "TopCakeWallHeight+TopCakeWallDepth+TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2");
   Control.addParse<double>("TopCakeMidH2ZStep",
-			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+2*TopCakeMidH2Depth2+TopCakeMidH2Height2)/2.0");
+			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
 
   
   Control.addVariable("TopCakeLeftWaterWidth",30);  
