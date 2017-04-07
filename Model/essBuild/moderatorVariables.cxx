@@ -310,7 +310,7 @@ EssButterflyModerator(FuncDataBase& Control)
   
   Control.addVariable("TopCakeMidH2Height0",1.5);
   Control.addParse<double>("TopCakeMidH2Depth0", "TopCakeMidH2Height0");
-  Control.addVariable("TopCakeMidH2Thick0",15);
+  Control.addVariable("TopCakeMidH2Thick0",10);
   Control.addVariable("TopCakeMidH2Mat0","HPARA");
 
   Control.addVariable("TopCakeMidH2Height1",0.3);
@@ -335,23 +335,18 @@ EssButterflyModerator(FuncDataBase& Control)
 			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
   ELog::EM << "TopCake vertical location is wrong" << ELog::endCrit;
 
-  
-  Control.addVariable("TopCakeLeftWaterWidth",30);  
-  Control.addVariable("TopCakeLeftWaterWallThick",0.347);
-  Control.addVariable("TopCakeLeftWaterCutAngle",30.0);
-  Control.addVariable("TopCakeLeftWaterCutWidth",11);
-  Control.addVariable("TopCakeLeftWaterModMat","H2O");
-  Control.addVariable("TopCakeLeftWaterWallMat","Aluminium");
-  Control.addVariable("TopCakeLeftWaterModTemp",300.0);
 
-  Control.addVariable("TopCakeRightWaterWidth",15.76);
-  Control.addVariable("TopCakeRightWaterWallThick",0.347);
-  Control.addVariable("TopCakeRightWaterCutAngle",30.0);
-  Control.addVariable("TopCakeRightWaterCutWidth",10.56);
-  Control.addVariable("TopCakeRightWaterModMat","H2O");
-  Control.addVariable("TopCakeRightWaterWallMat","Aluminium");
-  Control.addVariable("TopCakeRightWaterModTemp",300.0);
-
+  std::vector<std::string> leftright = {"Left", "Right"};
+  for ( const std::string& s : leftright)
+    {
+      Control.addVariable("TopCake"+s+"WaterWidth",30);  
+      Control.addVariable("TopCake"+s+"WaterWallThick",0.347);
+      Control.addVariable("TopCake"+s+"WaterCutAngle",30.0);
+      Control.addVariable("TopCake"+s+"WaterCutWidth",6);
+      Control.addVariable("TopCake"+s+"WaterModMat","H2O");
+      Control.addVariable("TopCake"+s+"WaterWallMat","Aluminium");
+      Control.addVariable("TopCake"+s+"WaterModTemp",300.0);
+    }
   
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
@@ -472,7 +467,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreWingThick", 0.45); // ESS-0032315.3
   Control.addVariable("TopPreWingWallMat", "Aluminium");
   Control.addVariable("TopPreWingWallThick", 0.3);
-  Control.addVariable("TopPreWingTiltAngle", 2.0);
+  Control.addVariable("TopPreWingTiltAngle", 2.0); // ESS-0032315.3
   Control.addVariable("TopPreWingTiltRadius", 39.0/2); // =19.5 ESS-0032315.3
 
   Control.addVariable("TopCapWingMat", "H2OAl47");
