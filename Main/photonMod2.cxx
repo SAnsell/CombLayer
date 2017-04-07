@@ -120,7 +120,7 @@ main(int argc,char* argv[])
 
       photonSystem::makePhoton2 LObj;
       World::createOuterObjects(*SimPtr);
-      LObj.build(SimPtr,IParam);
+      LObj.build(*SimPtr,IParam);
       
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       // Ensure we done loop

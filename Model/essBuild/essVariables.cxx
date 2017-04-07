@@ -495,6 +495,7 @@ EssVariables(FuncDataBase& Control)
   NMXvariables(Control);
   ODINvariables(Control);
   TREXvariables(Control);
+  TESTBEAMvariables(Control);
   VESPAvariables(Control);
   VORvariables(Control);
   simpleITEMvariables(Control);
@@ -560,12 +561,8 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"SideGap",0.6);
       Control.addVariable(baseKey+"BaseGap",0.1);
       Control.addVariable(baseKey+"TopGap",0.8); 
-      Control.addVariable(baseKey+"Width1",16.0);
-      if (i==3)
-	Control.addVariable(baseKey+"Depth1",5.5);
-      else 
-	Control.addVariable(baseKey+"Depth1",5.0);
-
+      Control.addVariable(baseKey+"Width1",20.0);
+      Control.addVariable(baseKey+"Depth1",5.0);
       Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",22.0);
@@ -620,23 +617,41 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("TopAFlightXYangle",180.0);
   Control.addVariable("TopAFlightZangle",0.0);
-  Control.addVariable("TopAFlightAngleZTop",1.1);  // Step down angle !!! 1.455 is too much - fight line cuts the Bilbao target wheel ESS-0032315.3
-  Control.addVariable("TopAFlightAngleZBase",1.33); // Step up angle ESS-0032315.3
+  // Step down angle !!! 1.455 is too much -
+  Control.addVariable("TopAFlightAngleZTop",1.1);       // fight line cuts the Bilbao target wheel ESS-0032315.3
+  Control.addVariable("TopAFlightAngleZBase",1.33);   // Step up angle ESS-0032315.3 
 
-  //  Control.Parse("TopFlyTotalHeight");
-  Control.addVariable("TopAFlightHeight", 2.9);     // Full height = TopFlyTotalHeight
+  // Full height = TopFlyTotalHeight
+  Control.addVariable("TopAFlightHeight", 2.9);     
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
   Control.addVariable("TopAFlightNLiner", 1);      // Liner
   Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
   Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
 
+  // LOWER flight lines
+  // B FLIGHT CORRECTED
+  Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
+  Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
+  Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
+  Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
+  Control.addVariable("TopBFlightXYangle", 0.0);
+  Control.addVariable("TopBFlightZangle", 0.0);
+  Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
+  Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
+  Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
+  Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
+  Control.addParse<double>("TopBFlightLinerThick1","TopAFlightLinerThick1");
+  Control.addVariable("TopBFlightNLiner",1);     
+  Control.addVariable("TopBFlightLinerMat1","Aluminium");
+
+  
   // The moderator focal points are (89,54)
   // The wedge focus at (80,48). This is a result of the line of sight from
   // the neutron beam channels towards the moderator
   const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
   const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
 
-  const int TopAFlightNWedges = 14;
+  const int TopAFlightNWedges = 0;
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
   const double t1 = 3.5+11.95*3; // Rickard Holmberg: slides 9-10
@@ -704,7 +719,6 @@ EssFlightLineVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Mat","SS316L");
     }
 
-  
   Control.addVariable("TopBFlightTapSurf", "cone");
   Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
@@ -725,7 +739,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  const int TopBFlightNWedges = 12;
+  const int TopBFlightNWedges = 0;
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
 

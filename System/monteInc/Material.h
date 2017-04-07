@@ -3,7 +3,7 @@
  
  * File:   monteInc/Material.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Material_h
-#define Material_h
+#ifndef MonteCarlo_Material_h
+#define MonteCarlo_Material_h
 
 namespace MonteCarlo
 {
@@ -118,7 +118,8 @@ class Material
   void print() const;
   void write(std::ostream&) const;               
   void writeCinder(std::ostream&) const;
-  void writeFLUKA(std::ostream&) const;               
+  void writeFLUKA(std::ostream&) const;
+  void writePOVRay(std::ostream&) const;               
   
 };
 

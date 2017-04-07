@@ -3,7 +3,7 @@
  
  * File:   monte/RuleItems.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -344,6 +344,18 @@ CompObj::displayFluka() const
   throw ColErr::AbsObjMethod("CompObj::displayFluka");
 }
 
+std::string
+CompObj::displayPOVRay() const
+  /*!
+    Display the union in the POV-Ray form
+    union{N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("CompObj","displayPOVRay");
+  throw ColErr::AbsObjMethod("CompObj::displayPOVRay");
+}
+
 // -----------------------------------------------
 // BOOLVALUE
 // -----------------------------------------------
@@ -604,6 +616,18 @@ BoolValue::displayFluka() const
 {
   ELog::RegMethod RegA("BoolValue","displayFluka");
   throw ColErr::AbsObjMethod("BoolValue::displayFluka");
+}
+
+std::string
+BoolValue::displayPOVRay() const
+  /*!
+    Display the union in the POVRay form
+    union{N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("BoolValue","displayPOVRay");
+  throw ColErr::AbsObjMethod("BoolValue::displayPOVRay");
 }
 
 //----------------------------------------
@@ -935,6 +959,18 @@ CompGrp::displayFluka() const
   throw ColErr::AbsObjMethod("CompGrp::displayFluka");
 }
 
+std::string
+CompGrp::displayPOVRay() const
+  /*!
+    Display the union in the POV-Ray form
+    union{N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("","");
+  throw ColErr::AbsObjMethod("CompGrp::displayPOVRay");
+}
+
 //----------------------------------------
 //       CONTGRP
 //----------------------------------------
@@ -1244,6 +1280,18 @@ ContGrp::displayFluka() const
   throw ColErr::AbsObjMethod("ContGrp::displayFluka");
 }
 
+std::string
+ContGrp::displayPOVRay() const
+  /*!
+    Display the union in the POV-Ray form
+    union {N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("","");
+  throw ColErr::AbsObjMethod("ContGrp::displayPOVRay");
+}
+
 //----------------------------------------
 //       CONTOBJ
 //----------------------------------------
@@ -1532,3 +1580,14 @@ ContObj::displayFluka() const
   throw ColErr::AbsObjMethod("ContObj::displayFluka");
 }
 
+std::string
+ContObj::displayPOVRay() const
+  /*!
+    Display the union in the POV-Ray form
+    union{N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  ELog::RegMethod RegA("","");
+  throw ColErr::AbsObjMethod("ContObj::displayPOVRay");
+}

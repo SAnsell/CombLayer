@@ -3,7 +3,7 @@
  
  * File:   process/MainProcess.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "Simulation.h"
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
+#include "SimPOVRay.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
@@ -398,6 +399,8 @@ createSimulation(inputParam& IParam,
     SimPtr=new SimPHITS;
   else if (IParam.flag("FLUKA"))
     SimPtr=new SimFLUKA;
+  else if (IParam.flag("PovRay"))
+    SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
   else 

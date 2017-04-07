@@ -3,7 +3,7 @@
  
  * File:   geomInc/Surface.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,13 +95,16 @@ class Surface
   virtual void displace(const Geometry::Vec3D&)  =0;
   virtual void rotate(const Geometry::Matrix<double>&) =0;
   virtual void mirror(const Geometry::Plane&) =0; 
-  virtual void write(std::ostream&) const =0;
+
   virtual void writeFLUKA(std::ostream&) const =0;
+  virtual void writePOVRay(std::ostream&) const =0;
+  virtual void write(std::ostream&) const =0;
   /// \endcond ABSTRACT
 
   virtual void rotate(const Geometry::Quaternion&);
 
   void writeHeader(std::ostream&) const;
+
   virtual void print() const; 
   virtual void writeXML(const std::string&) const;
 

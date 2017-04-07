@@ -3,7 +3,7 @@
  
  * File:   photon/makePhoton3.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,37 +125,36 @@ makePhoton3::~makePhoton3()
 {}
 
 void 
-makePhoton3::build(Simulation* SimPtr,
+makePhoton3::build(Simulation& System,
 		   const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input parameters
    */
 {
-  // For output stream
   ELog::RegMethod RControl("makePhoton3","build");
 
   int voidCell(74123);
 
   Chamber->addInsertCell(voidCell);
-  Chamber->createAll(*SimPtr,World::masterOrigin(),0);
+  Chamber->createAll(System,World::masterOrigin(),0);
   
   ModContObj->addInsertCell(Chamber->getCell("Void",0));
-  ModContObj->createAll(*SimPtr,*Chamber,0);
+  ModContObj->createAll(System,*Chamber,0);
 
   ModObj->addInsertCell(ModContObj->getCell("Void"));
   ModObj->setOuter(ModContObj->getSignedFullRule(9));    
-  ModObj->createAll(*SimPtr,ModContObj->getBackFlange(),7);
+  ModObj->createAll(System,ModContObj->getBackFlange(),7);
 
   BaseSupport->addInsertCell(Chamber->getCell("Void"));
-  BaseSupport->createAll(*SimPtr,*Chamber,0);
+  BaseSupport->createAll(System,*Chamber,0);
     
   leftTubes->addInsertCell(voidCell);
-  leftTubes->createAll(*SimPtr,*ModObj,-1);
+  leftTubes->createAll(System,*ModObj,-1);
 
   leftColl->addInsertCell(voidCell);
-  leftColl->createAll(*SimPtr,*leftTubes,0);
+  leftColl->createAll(System,*leftTubes,0);
   
   return;
 }

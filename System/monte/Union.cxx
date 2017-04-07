@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/RuleItems.cxx
+ * File:   monte/Union.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -445,6 +445,33 @@ Union::displayFluka() const
     out+="| "+B->displayFluka()+" |";
   else
     out+=B->displayFluka();
+
+  return out;
+}
+
+std::string
+Union::displayPOVRay() const
+  /*!
+    Display the union in the POV-Ray form
+    union{N M} where N,M are the downward rules
+    \returns bracket string 
+  */
+{
+  std::string out;
+  if (!A || !B)
+    throw ColErr::ExBase(2,"Union::displayPOVRay incomplete type");
+  
+  if (A->type()==1)
+    out="intersection{ "+A->displayPOVRay()+" }";
+  else
+    out=A->displayPOVRay();
+
+  out+=" ";
+  
+  if (B->type()==1)
+    out+="intersection{ "+B->displayPOVRay()+" }";
+  else
+    out+=B->displayPOVRay();
 
   return out;
 }

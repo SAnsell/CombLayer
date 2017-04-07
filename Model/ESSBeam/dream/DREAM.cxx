@@ -3,7 +3,7 @@
  
  * File:   essBuild/DREAM.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -287,6 +287,7 @@ DREAM::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith edge
 
+  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeB->createAll(System,GItem.getKey("Beam"),2);
 

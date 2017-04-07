@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vespa/VESPAvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "CryoGenerator.h"
 
 namespace setVariable
 {
@@ -72,6 +73,7 @@ VESPAvariables(FuncDataBase& Control)
   ELog::RegMethod RegA("VESPAvariables[F]","VESPAvariables");
 
   setVariable::ChopperGenerator CGen;
+  setVariable::CryoGenerator CryGen;
   setVariable::FocusGenerator FGen;
   setVariable::ShieldGenerator SGen;
   setVariable::PitGenerator PGen;
@@ -79,6 +81,9 @@ VESPAvariables(FuncDataBase& Control)
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JawGen;
 
+  Control.addVariable("vespaStartPoint",0);
+  Control.addVariable("vespaStopPoint",0);
+  
   PipeGen.setPipe(8.0,0.5);
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
@@ -92,6 +97,7 @@ VESPAvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(8.0);
+  FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"vespaFA",350.0,7.6,4.02,5.0,7.6250);
 
   PipeGen.generatePipe(Control,"vespaPipeA",6.0,46.0);
@@ -188,8 +194,12 @@ VESPAvariables(FuncDataBase& Control)
   BGen.addPhase({-15,165},{30.0,30.0});   // chopper open
   BGen.generateBlades(Control,"vespaT0Disk",2.0,20.0,30.0);
 
-
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"vespaPipeWall",4.0,348.0);
   // Guide in wall
+
+  FGen.clearYOffset();
+  FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"vespaFWall",344.0,9.0,9.0,8.5,8.5);
 
   PGen.setFeLayer(6.0);
@@ -207,6 +217,8 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaT0ExitPortShape","Circle");
   Control.addVariable("vespaT0ExitPortRadius",5.0);
 
+  CGen.setMainRadius(38.0);
+  CGen.setFrame(110.0,110.0);
   CGen.generateChopper(Control,"vespaChopperOutA",22.0,12.0,5.55);
 
   // Double Blade chopper
@@ -236,12 +248,13 @@ VESPAvariables(FuncDataBase& Control)
       SGen.generateShield(Control,shieldName,600.0,40.0,40.0,40.0,4,8);
       PipeGen.generatePipe(Control,vacName,2.0,598.0);  //
       FGen.clearYOffset();
-      FGen.generateRectangle(Control,focusName,594.0,10.0,10.0);
+      FGen.setThickness(0.5,0.5);
+      FGen.generateRectangle(Control,focusName,594.0,8.0,8.0);
     }
   
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"vespaOutPitB",3163.0,25.0,220.0,210.0,40.0);
+  PGen.generatePit(Control,"vespaOutPitB",3163.0,25.0,220.0,90.0,40.0);
   
   Control.addVariable("vespaPitBPortAShape","Circle");
   Control.addVariable("vespaPitBPortARadius",5.0);
@@ -267,10 +280,10 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaCaveYStep",25.0);
   Control.addVariable("vespaCaveXStep",0.0);
   Control.addVariable("vespaCaveVoidFront",60.0);
-  Control.addVariable("vespaCaveVoidHeight",100.0);
+  Control.addVariable("vespaCaveVoidHeight",270.0);
   Control.addVariable("vespaCaveVoidDepth",225.0);
-  Control.addVariable("vespaCaveVoidWidth",600.0);
-  Control.addVariable("vespaCaveVoidLength",1000.0);
+  Control.addVariable("vespaCaveVoidWidth",480.0);  // max 5.8 full
+  Control.addVariable("vespaCaveVoidLength",960.0);
 
   Control.addVariable("vespaCaveFeFront",25.0);
   Control.addVariable("vespaCaveFeLeftWall",15.0);
@@ -295,7 +308,7 @@ VESPAvariables(FuncDataBase& Control)
 
   JawGen.generateJaws(Control,"vespaVJaws",55.0);
 
-  Control.addVariable("vespaSampleYStep",300.0);
+  Control.addVariable("vespaSampleYStep",0.0);
   Control.addVariable("vespaSampleNLayers",2);
   Control.addVariable("vespaSampleRadius1",1.0);
   Control.addVariable("vespaSampleRadius2",1.5);
@@ -303,8 +316,59 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaSampleHeight2",6.0);
   Control.addVariable("vespaSampleMaterial1","H2O");
   Control.addVariable("vespaSampleMaterial2","Aluminium");
+
+  // VESPA DETECTORS
+  Control.addVariable("vespaNDet",32);
   
+  Control.addVariable("vespaXStalWidth",12.0); // tappered to 20cm
+  Control.addVariable("vespaXStalThick",1.0);
+  Control.addVariable("vespaXStalLength",10.0);
+  Control.addVariable("vespaXStalGap",0.3);
+  Control.addVariable("vespaXStalWallThick",0.5);
+  Control.addVariable("vespaXStalBaseThick",0.5);
+                                         
+  Control.addVariable("vespaXStalXtalMat","Silicon300K");
+  Control.addVariable("vespaXStalWallMat","Aluminium");
+
+  Control.addVariable("vespaDBoxNDetectors",20);
+  Control.addVariable("vespaDBoxCentRadius",0.635);
+  Control.addVariable("vespaDBoxTubeRadius",0.425);
+  Control.addVariable("vespaDBoxWallThick",0.1);
+  Control.addVariable("vespaDBoxHeight",20.0);
+  Control.addVariable("vespaDBoxWallMat","Aluminium");
+  Control.addVariable("vespaDBoxDetMat","He3_10Bar");
+
+  Control.addVariable("vespaXStal6Active",0);
+  Control.addVariable("vespaXStal22Active",0);
+
   
+  const double braggAngle[]={-50,-30,-50,-30};
+  const double braggStep[]={32.63,64.157,32.63,64.157};
+  const double detStep[]={24.5,30.0,24.5,30.0};
+  int detCnt(0);
+  for(size_t i=0;i<4;i++)   // 4 rings
+    {
+      double aZ= 0.0;
+      const double aZStep= 45.0;
+      for(size_t j=0;j<8;j++)
+        {
+          const std::string xKey="vespaXStal"+StrFunc::makeString(detCnt);
+          const std::string dKey="vespaDBox"+StrFunc::makeString(detCnt);
+          Control.addVariable(xKey+"YStep",braggStep[i]);
+          Control.addVariable(xKey+"PreXYAngle",braggAngle[i]);
+          Control.addVariable(xKey+"PreZAngle",0.0);
+          Control.addVariable(xKey+"XYAngle",-braggAngle[i]);
+          Control.addVariable(xKey+"ZAngle",0.0);
+          Control.addVariable(dKey+"YStep",detStep[i]);
+          Control.addVariable(dKey+"XYAngle",braggAngle[i]);
+          Control.addVariable(xKey+"YRotation",aZ);
+          Control.addVariable(xKey+"ZRotation",(i>1 ? 180.0 : 0.0));
+          aZ+=aZStep;
+          detCnt++;
+        }
+    }
+  // CRYOSTAT
+  CryGen.generateFridge(Control,"vespaCryo",300.0,-10,4.5);
   return;
 }
  

@@ -3,7 +3,7 @@
  
  * File:   geometry/Cylinder.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -560,6 +560,27 @@ Cylinder::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void
+Cylinder::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POV-Ray
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("Cylinder","writePOVRay");
+
+  masterWrite& MW=masterWrite::Instance();
+  const int Ndir=Normal.masterDir(Geometry::zeroTol);
+
+  
+  OX<<"#declare s"<<getName()<<" = cylinder{ ";
+  OX<<"<"<<MW.NumComma(Centre)<<">,<"
+    <<MW.NumComma(Centre+Normal)<<">, "
+    <<MW.Num(Radius)<<" open }"<<std::endl;
+  
+  return;
+}
+  
 void
 Cylinder::print() const
  /*!

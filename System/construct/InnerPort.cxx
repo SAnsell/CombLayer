@@ -191,6 +191,8 @@ InnerPort::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
+
+
   return;
 }
 
@@ -558,6 +560,7 @@ InnerPort::createAll(Simulation& System,
   createBolts(System);
   createLinks();
   insertObjects(System);   
+
 
   return;
 }

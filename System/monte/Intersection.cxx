@@ -3,7 +3,7 @@
  
  * File:   monte/Intersection.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -342,7 +342,7 @@ Intersection::display() const
 std::string
 Intersection::displayFluka() const
   /*!
-    Displaces a bracket wrapped object
+    Displays a bracket wrapped object
     \return Bracketed string
   */
 {
@@ -360,6 +360,30 @@ Intersection::displayFluka() const
     out+="( "+B->displayFluka()+" )";
   else
     out+=B->displayFluka();
+  return out;
+}
+
+std::string
+Intersection::displayPOVRay() const
+  /*!
+    Displays a bracket wrapped object in the POV-Ray synax
+    \return Bracketed string
+  */
+{
+  std::string out;
+  if (!A || !B)
+    throw ColErr::ExBase(2,"Intersection::displayPOVRay incomplete type");
+  if (A->type()==-1)
+    out="union{ "+A->displayPOVRay()+" }";
+  else
+    out=A->displayPOVRay();
+
+  out+=" ";
+  
+  if (B->type()==-1)
+    out+="union{ "+B->displayPOVRay()+" }";
+  else
+    out+=B->displayPOVRay();
   return out;
 }
 

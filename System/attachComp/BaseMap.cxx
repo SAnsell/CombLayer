@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,6 +94,36 @@ BaseMap::getFCKeyName() const
   const attachSystem::FixedComp* FCPtr=
     dynamic_cast<const attachSystem::FixedComp*>(this);
   return (FCPtr) ? FCPtr->getKeyName() : "Not-FC";
+}
+
+bool
+BaseMap::hasItem(const std::string& Key) const
+  /*!
+    Find is a cell group exist 
+    \param Key :: Keyname
+    \return true if key exists
+  */
+{
+  ELog::RegMethod RegA("BaseMap","hasItem(string)");
+  return hasItem(Key,0);
+}
+
+bool
+BaseMap::hasItem(const std::string& Key,const size_t index) const
+  /*!
+    Find is a cell group exist and is large enough
+    \param Key :: Keyname
+    \param index :: Item number
+    \return true if key and index exists
+  */
+{
+  ELog::RegMethod RegA("BaseMap","hasItem(string,int)");
+  
+  LCTYPE::const_iterator mc=Items.find(Key);
+  if (mc==Items.end())
+    return 0;
+
+  return (!index || mc->second.size()>index) ? 1 : 0;
 }
   
 void

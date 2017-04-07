@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "RefCon.h"
+#include "Vec3D.h"
+#include "masterWrite.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -809,6 +811,29 @@ Material::writeFLUKA(std::ostream& OX) const
 	rx<<*vc<<" ";
       StrFunc::writeMCNPX(rx.str(),OX);
     }
+  return;
+} 
+
+void 
+Material::writePOVRay(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in the POV-Ray form
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writePOVRay");
+
+  masterWrite& MW=masterWrite::Instance();
+  const int rgbScale(0xFFFFF);
+  // RGB : 150 max
+  const int rgb(Mnum*rgbScale/150);
+  Geometry::Vec3D rgbCol(rgb/0xFFFF,(rgb % 0xFFFF)/0xFF,rgb % 0xFF);
+  rgbCol.makeUnit();
+  OX<<"#declare mat"<<Mnum<<" = texture {"
+    << " pigment{color rgb<"
+    <<   MW.NumComma(rgbCol)
+    <<"> } };"<<std::endl;
   return;
 } 
 

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedComp.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,6 +90,8 @@ class FixedComp
   void applyAngleRotate(const double,const double);
   void applyAngleRotate(const double,const double,const double);
   void applyFullRotate(const double,const double,
+		       const Geometry::Vec3D&);
+  void applyFullRotate(const double,const double,const double,
 		       const Geometry::Vec3D&);
 
   void linkAngleRotate(const long int,const double,const double);

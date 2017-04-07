@@ -1019,7 +1019,7 @@ makeESS::build(Simulation& System,
       optionSummary(System);
       throw ColErr::ExitAbort("Help system exit");
     }
-
+  
   buildFocusPoints(System);
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);

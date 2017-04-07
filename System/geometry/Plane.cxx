@@ -3,7 +3,7 @@
  
  * File:   geometry/Plane.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -640,7 +640,7 @@ Plane::setBaseEqn()
   BaseEqn[9]= -Dist;        // K const
   return;
 }
-
+  
 void 
 Plane::writeFLUKA(std::ostream& OX) const
   /*! 
@@ -669,6 +669,36 @@ Plane::writeFLUKA(std::ostream& OX) const
       cx<<PNMX[ptype-1]<<" s"<<getName()<<" "<<MW.Num(D);
     }
   StrFunc::writeMCNPX(cx.str(),OX);
+  return;
+}
+
+  
+void 
+Plane::writePOVRay(std::ostream& OX) const
+  /*! 
+    Object of write is to output a POV-Ray file
+    \param OX :: Output stream (required for multiple std::endl)  
+  */
+{
+  ELog::RegMethod RegA("Plane","writePOVRay");
+  
+  masterWrite& MW=masterWrite::Instance();
+
+  OX<<"#declare s"<<getName()
+    << " = plane { ";
+  const int ptype=planeType();
+  if (!ptype)
+    {
+      OX<<"<"<<MW.NumComma(NormV)<<">,"
+	<<MW.Num(Dist)<<"}"<<std::endl;
+    }
+  else
+    {
+      // NormV[] is -1.0 or 1.0
+      const double D=NormV[ptype-1]*Dist;
+      const std::string PNMX[3]={"x","y","z"};
+      OX<<"xyz"[ptype-1]<< ", " << MW.Num(D)<<"}"<<std::endl;
+    }
   return;
 }
 

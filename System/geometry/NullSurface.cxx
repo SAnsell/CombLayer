@@ -3,7 +3,7 @@
  
  * File:   geometry/NullSurface.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,14 +195,25 @@ NullSurface::print() const
 void 
 NullSurface::writeFLUKA(std::ostream&) const
   /*! 
-    Object of write is to output a MCNPX plane info 
+    Object of write is to output a FLUKA surface info
     This should not write but puts a warning to EMessage
   */
 {
   ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
   return;
 }
-
+  
+void 
+NullSurface::writePOVRay(std::ostream&) const
+  /*! 
+    Object of write is to output a POV-Ray
+    This should not write but puts a warning to EMessage
+  */
+{
+  ELog::EM<<"Writing Null Surface: "<<ELog::endWarn;
+  return;
+}
+  
 void 
 NullSurface::write(std::ostream&) const
   /*! 

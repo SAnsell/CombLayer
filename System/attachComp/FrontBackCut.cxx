@@ -269,6 +269,28 @@ FrontBackCut::backRule() const
     backCut.display()+backDivider.display() : "";    
 }
 
+std::string
+FrontBackCut::frontBridgeRule() const
+  /*!
+    Accessor to front bridge rule
+    \return frontBridgeRule 
+  */
+{
+  return (activeFront) ?
+    frontDivider.display() : "";
+}
+
+std::string
+FrontBackCut::backBridgeRule() const
+  /*!
+    Accessor to back bridge rule
+    \return backRule divider
+  */
+{
+  return (activeBack) ?
+    backDivider.display() : "";    
+}
+
 void
 FrontBackCut::createLinks(attachSystem::FixedComp& FC,
 			  const Geometry::Vec3D& Org,

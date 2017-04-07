@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1301,6 +1301,66 @@ Object::writeFLUKA(std::ostream& OX) const
   return;
 }
 
+void 
+Object::writePOVRay(std::ostream& OX) const
+  /*!
+    Write the object to a standard stream
+    in POVRay output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writePOVRay");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold && MatN>0)
+    {
+      const std::string objName=OR.inRenumberRange(ObjName);
+      
+      // do not render global objects (outer void and black hole)
+      //      if (objName.empty())
+        //	return; 
+      OX<<"// Cell "<<objName<<" "<<ObjName<<"\n";
+      OX<<"intersection{\n"
+	<<HRule.displayPOVRay()<<"\n"
+	<< " texture {mat" << MatN <<"}\n"
+	<< "}"<<std::endl;
+    }
+  
+  return;
+}
+
+void
+Object::writePOVRaymat(std::ostream& OX) const
+  /*!
+    Write the object material assignment to a standard stream
+    in POVRay output format.
+    \param OX :: Output stream (required for multiple std::endl)
+  */
+{
+  ELog::RegMethod RegA("Object","writePOVRaymat");
+  return;
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  if (!placehold)
+    {
+      const std::string objName=OR.inRenumberRange(ObjName);
+      if (objName.empty())
+	return;
+      
+      OX<<"POVRay dummy material string    ";
+      if (!MatN)   // are we really rendering vacuum ????
+	OX<<" VACUUM";
+      else
+	OX<<"    M"<<MatN;
+      
+      OX<<"    "<<objName<<"_"<<ObjName<<std::endl;
+    }
+  
+  return;
+}
+
+  
 void 
 Object::writePHITS(std::ostream& OX) const
   /*!
