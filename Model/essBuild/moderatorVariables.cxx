@@ -323,16 +323,17 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addParse<double>("TopCakeMidH2Thick2","TopCakeMidH2Height2");
   Control.addVariable("TopCakeMidH2Mat2","Void");
 
-  Control.addVariable("TopCakeMidH2Height3",0.0);
-  Control.addVariable("TopCakeMidH2Depth3",0.0);
+  Control.addVariable("TopCakeMidH2Height3",0.3);
+  Control.addVariable("TopCakeMidH2Depth3",0.3);
   Control.addParse<double>("TopCakeMidH2Thick3","TopCakeMidH2Depth3");
   Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
   // Control.addVariable("TopCakeTotalHeight",3+0.5*2+0.3*2 );
   Control.addParse<double>("TopCakeTotalHeight",
-			   "TopCakeWallHeight+TopCakeWallDepth+TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2");
+			   "TopCakeWallHeight+TopCakeWallDepth+TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2+0.6");
   Control.addParse<double>("TopCakeMidH2ZStep",
 			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
+  ELog::EM << "TopCake vertical location is wrong" << ELog::endCrit;
 
   
   Control.addVariable("TopCakeLeftWaterWidth",30);  
