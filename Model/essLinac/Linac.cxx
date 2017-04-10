@@ -130,6 +130,7 @@ Linac::Linac(const Linac& A) :
   tswWidth(A.tswWidth),
   tswGap(A.tswGap),
   tswOffsetY(A.tswOffsetY),
+  tswMat(A.tswMat),
   tswNLayers(A.tswNLayers),
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
@@ -172,6 +173,7 @@ Linac::operator=(const Linac& A)
       tswWidth=A.tswWidth;
       tswGap=A.tswGap;
       tswOffsetY=A.tswOffsetY;
+      tswMat=A.tswMat;
       tswNLayers=A.tswNLayers;
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
@@ -218,8 +220,9 @@ Linac::populate(const FuncDataBase& Control)
   tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
   tswGap=Control.EvalVar<double>(keyName+"TSWGap");
   tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
+  tswMat=ModelSupport::EvalMat<int>(Control,keyName+"TSWMat");
   tswNLayers=Control.EvalDefVar<int>(keyName+"TSWNLayers", 1);
-  
+
   nDTL=Control.EvalDefVar<size_t>(keyName+"NDTLTanks", 5);
 
   return;
@@ -339,7 +342,7 @@ Linac::createDTL(Simulation& System, const long int lp)
       dtl.push_back(d);
     }
   ELog::EM << "Remove substruction of last DTL from FaradayCup" << ELog::endDiag;
-  attachSystem::addToInsertLineCtrl(System,*dtl.back(),*faradayCup); 
+  attachSystem::addToInsertLineCtrl(System,*dtl.back(),*faradayCup);
 }
 
 void
@@ -420,7 +423,7 @@ Linac::createObjects(Simulation& System)
   // temporary shielding walls
   // 1st wall
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 3 -103 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,tswMat,0.0,Out));
   setCell("tsw1", cellIndex-1);
   Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 103 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
@@ -429,7 +432,7 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 3 -104 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 104 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,tswMat,0.0,Out));
   setCell("tsw2", cellIndex-1);
 
   // divide TSW walls
@@ -526,6 +529,8 @@ Linac::createAll(Simulation& System,
 
   faradayCup->createAll(System,*this,0);
   attachSystem::addToInsertControl(System,*this,*faradayCup);
+
+  //  attachSystem::addToInsertControl(System,*beamDump,*faradayCup);
 
   createDTL(System, 10);
 

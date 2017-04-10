@@ -70,6 +70,7 @@ class Linac : public attachSystem::ContainedComp,
   double tswWidth; ///< Temporary shielding wall width
   double tswGap; ///< Distance between Temporary shielding walls
   double tswOffsetY; ///< TSW location on the Y-axis
+  int tswMat; ///< TSW material
   int tswNLayers; ///< number of layers in a TSW wall
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
