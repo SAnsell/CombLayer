@@ -195,6 +195,10 @@ namespace essSystem
     xStep=Control.EvalVar<double>(keyName+"X");
     yStep=Control.EvalVar<double>(keyName+"Y");
 
+    if (vecFP.size()<2)
+      throw ColErr::RangeError<double>(vecFP.size(), 2, INFINITY,
+				       "Focal point vector must have at least 2 entries with zmin/zmax.");
+
     const double zmin = vecFP[vecFP.size()-2].Z();
     const double zmax = vecFP[vecFP.size()-1].Z();
     Control.setVariable<double>(keyName+"Z", (zmin+zmax)/2.0);
