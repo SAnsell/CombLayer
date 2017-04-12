@@ -178,9 +178,6 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
     ModelSupport::objectRegister::Instance();
 
   PipeTYPE& pipeAl=getPipe(pipeAlName);
-  PipeTYPE& pipeConnect=getPipe(pipeConnectName);
-  PipeTYPE& pipeInvar=getPipe(pipeInvarName);
-
   
   const attachSystem::FixedComp* lobe=
     OR.getObjectThrow<attachSystem::FixedComp>
@@ -197,15 +194,23 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   // layerLevel : linkPoint [2]
   pipeAl->createAll(System,*lobe,0,2,2);
 
-  pipeConnect->setAngleSeg(12);
-  pipeConnect->setOption(pipeSpecialization);
-  pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
-  pipeConnect->createAll(System,*pipeAl,2);
-
-  pipeInvar->setAngleSeg(12);
-  pipeInvar->setOption(pipeSpecialization);
-  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
-  pipeInvar->createAll(System,*pipeConnect,2);
+  if (pipeConnectName.length())
+    {
+      PipeTYPE& pipeConnect = getPipe(pipeConnectName);
+      pipeConnect->setAngleSeg(12);
+      pipeConnect->setOption(pipeSpecialization);
+      pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
+      pipeConnect->createAll(System,*pipeAl,2);
+    
+      if (pipeInvarName.length())
+	{
+	  PipeTYPE& pipeInvar = getPipe(pipeInvarName);
+	  pipeInvar->setAngleSeg(12);
+	  pipeInvar->setOption(pipeSpecialization);
+	  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
+	  pipeInvar->createAll(System,*pipeConnect,2);
+	}
+    }
   return;
 }
 
