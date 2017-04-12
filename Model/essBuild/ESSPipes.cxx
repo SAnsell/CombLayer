@@ -188,7 +188,17 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   // layer level is depth into the object layers [0=> inner]
   // linkPt is normal link point in fixedcomp [2]
   // layerLevel : linkPoint [2]
-  pipeAl->createAll(System,*lobe,0,2,2);
+
+  if (lobeName.find("CakeMidH2") != std::string::npos)
+    {
+      if (waterName.find("CakeLeftWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,4,4);
+      else if (waterName.find("CakeRightWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,3,3); // OK
+    } else // Butterfly
+    {
+      pipeAl->createAll(System,*lobe,0,2,2);
+    }
 
   if (pipeConnectName.length())
     {
@@ -241,6 +251,14 @@ ESSPipes::buildTopPipes(Simulation& System,
 	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
 		      "TReturnRightAl");
 	}
+
+      if (pipeUniqName.find("PancakeSupply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopCakeMidH2","TopCakeLeftWater",pipeUniqName,
+		      "TSupplyLeftAl");
+	  buildH2Pipe(System,"TopCakeMidH2","TopCakeRightWater",pipeUniqName,
+		      "TSupplyRightAl");
+	}
     }
   return;
 }
@@ -256,7 +274,7 @@ ESSPipes::buildLowPipes(Simulation& System,
   */
 {
   ELog::RegMethod RegA("makeESS","buildLowPipes");
-  return;
+  //  return;
   if (!pipeUniqName.empty() || pipeUniqName!="help")
     {
       if (pipeUniqName.find("supply") != std::string::npos)

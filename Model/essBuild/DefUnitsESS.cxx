@@ -342,8 +342,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       // straighten the pipes
       A.setVar("TSupplyRightAlNSegIn", 2);
       A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,27,0));
-      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,27,40));
+      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,26,0));
+      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,26,40));
       A.setVar("TSupplyLeftAlNSegIn", 2);
       A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
       A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,26,0));
@@ -368,9 +368,29 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setOption("lowPipe", "supply,return");
     } else if (modtype=="Pancake")
     {
-      ELog::EM << "Pancake" << ELog::endDiag;
       A.setOption("lowMod", "Pancake");
       A.setOption("topMod", "Pancake");
+      
+      A.setOption("topPipe", "PancakeSupply");
+      // straighten the pipes
+      A.setVar("TSupplyRightAlNSegIn", 2);
+      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
+      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
+      A.setVar("TSupplyLeftAlNSegIn", 2);
+      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
+      A.setVar("TSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
+
+      A.setVar("LSupplyRightAlNSegIn", 2);
+      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
+      A.setVar("LSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
+      A.setVar("LSupplyLeftAlNSegIn", 2);
+      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
+      A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
+      
     } else throw ColErr::InvalidLine(modtype,
 				     "Either BF1, BF2 or Pancake are supported in defaultConfig");
 
