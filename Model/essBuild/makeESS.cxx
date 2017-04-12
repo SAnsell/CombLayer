@@ -474,6 +474,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
   std::string midWaterName, lobeName;
   double theta(0.0);
+  std::vector<Geometry::Vec3D> vecFP;
   size_t colIndex(0);
   //  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
   for (size_t i=0; i<nitems; i++)
@@ -514,7 +515,6 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		throw ColErr::InContainerError<std::string>
 		  (lobeName,"Component not found");
 
-	      std::vector<Geometry::Vec3D> vecFP;
 	      for (size_t ii=0; ii<20; ii++) // ??? how to get total number of link points ???
 		vecFP.push_back(midWater->getLinkPt(ii));
 	      vecFP.push_back(lobe->getLinkPt(12)); // zmin
@@ -554,8 +554,38 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      
 	      F5array.push_back(F5);
 	    }
+	} else if (strtmp=="TopCake")
+	{
+	  moderator = strtmp;
+	  range = IParam.getValue<std::string>("f5-collimators", ++i); // thermal or cold
+	  for (size_t j=i+1; j<nitems; j++)
+	    {
+	      strtmp = IParam.getValue<std::string>("f5-collimators", j);
+	      theta = std::stod(strtmp);
+	      std::shared_ptr<F5Collimator> F5(new F5Collimator("F" + std::to_string(colIndex*10+5))); colIndex++;
+	      OR.addObject(F5);
+	      F5->setTheta(theta);
+	      F5->setRange(range); // thermal or cold
+
+	      // set up the focal points
+	      const std::string midH2Name = moderator+"MidH2";
+	      const attachSystem::FixedComp *midH2 = OR.getObject<attachSystem::FixedComp>(midH2Name);
+	      if (!midH2)
+		throw ColErr::InContainerError<std::string>
+		  (midH2Name,"Component not found");
+
+	      ELog::EM << midH2->getLinkPt(4) << ELog::endDiag;
+	      ELog::EM << midH2->getLinkPt(5) << ELog::endDiag;
+	      vecFP.push_back(midH2->getLinkPt(4));
+	      vecFP.push_back(midH2->getLinkPt(5));
+	      F5->setFocalPoints(vecFP);
+
+	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
+	      F5->createAll(System, World::masterOrigin());
+	      F5array.push_back(F5);
+	    }
 	}
-    }
+    } // for
 
   return;
 }
