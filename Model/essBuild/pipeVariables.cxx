@@ -78,12 +78,6 @@ EssPipeVariables(FuncDataBase& Control)
   const std::vector<std::string> matAl
     ({"HPARA","Aluminium20K","Void","Aluminium"});
 
-  const std::vector<std::string> matConnect
-    ({ "HPARA","Aluminium20K","Void","Aluminium"});
-
-  const std::vector<std::string> matInvar
-    ({"HPARA","Aluminium20K","Void","Aluminium"});
-
   const std::vector<double> temp({20.0,20.0,300.0,300.0});
 
   double signV(1.0);
@@ -101,19 +95,6 @@ EssPipeVariables(FuncDataBase& Control)
       Control.addVariable(MItem+"AlActive0",3);
       Control.addVariable(MItem+"AlActive1",15);
 
-      Control.addVariable(MItem+"ConnectNSegIn",1);
-      Control.addVariable(MItem+"ConnectPPt0",Geometry::Vec3D(0,0,0));
-      Control.addVariable(MItem+"ConnectPPt1",Geometry::Vec3D(0,connectPipeLength,0));
-      Control.addVariable(MItem+"ConnectNRadii", nRad);
-      Control.addVariable(MItem+"ConnectActive0",15);
-      
-      Control.addVariable(MItem+"InvarNSegIn",2);
-      Control.addVariable(MItem+"InvarPPt0",Geometry::Vec3D(0,0,0));
-      Control.addVariable(MItem+"InvarPPt1",Geometry::Vec3D(0,invarPipeLength,0));
-      Control.addVariable(MItem+"InvarPPt2",Geometry::Vec3D(0,invarPipeLength,invarPipeHeight));
-      Control.addVariable(MItem+"InvarNRadii", nRad);
-      Control.addVariable(MItem+"InvarActive0",15);
-
       for (size_t i=0;i<nRad;i++)
         {
           const std::string strIndex = StrFunc::makeString(i);
@@ -122,14 +103,6 @@ EssPipeVariables(FuncDataBase& Control)
           Control.addVariable(MItem+"AlRadius"+ strIndex,R[i]);
           Control.addVariable(MItem+"AlMat"+strIndex,matAl[i]); 
           Control.addVariable(MItem+"AlTemp"+strIndex,temp[i]);
-          
-          Control.addVariable(MItem+"ConnectRadius"+strIndex,R[i]);
-          Control.addVariable(MItem+"ConnectMat"+strIndex,matConnect[i]);
-          Control.addVariable(MItem+"ConnectTemp"+strIndex,temp[i]);
-          
-          Control.addVariable(MItem+"InvarRadius"+strIndex,R[i]);
-          Control.addVariable(MItem+"InvarMat"+strIndex,matInvar[i]);
-          Control.addVariable(MItem+"InvarTemp"+strIndex,temp[i]);
         }
           
       signV*=-1.0;

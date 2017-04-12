@@ -82,14 +82,10 @@ ESSPipes::ESSPipes()
  */
 {
   registerPipes({
-      "TSupplyLeftAl","TSupplyLeftConnect","TSupplyLeftInvar",
-      "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar",
-      "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar",
-      "TReturnRightAl","TReturnRightConnect","TReturnRightInvar",
-      "LSupplyLeftAl","LSupplyLeftConnect","LSupplyLeftInvar",
-      "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar",
-      "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar",
-      "LReturnRightAl","LReturnRightConnect","LReturnRightInvar"});
+      "TSupplyLeftAl","TSupplyRightAl",
+      "TReturnLeftAl","TReturnRightAl",
+      "LSupplyLeftAl","LSupplyRightAl",
+      "LReturnLeftAl","LReturnRightAl"});
 }
 
 ESSPipes::ESSPipes(const ESSPipes& A) : 
