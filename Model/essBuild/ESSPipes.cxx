@@ -232,18 +232,18 @@ ESSPipes::buildTopPipes(Simulation& System,
       if (pipeUniqName.find("supply") != std::string::npos)
 	{
 	  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-		      "TSupplyLeftAl","TSupplyLeftConnect", "TSupplyLeftInvar");
+		      "TSupplyLeftAl");
 	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-		      "TSupplyRightAl","TSupplyRightConnect","TSupplyRightInvar");
+		      "TSupplyRightAl");
 	}
 
       if (pipeUniqName.find("return") != std::string::npos)
 	{
 	  buildH2Pipe(System,"TopFlyLeftLobe","TopFlyLeftWater",pipeUniqName,
-		      "TReturnLeftAl","TReturnLeftConnect","TReturnLeftInvar");
+		      "TReturnLeftAl");
 
 	  buildH2Pipe(System,"TopFlyRightLobe","TopFlyRightWater",pipeUniqName,
-		      "TReturnRightAl","TReturnRightConnect","TReturnRightInvar");
+		      "TReturnRightAl");
 	}
     }
   return;
@@ -266,18 +266,18 @@ ESSPipes::buildLowPipes(Simulation& System,
       if (pipeUniqName.find("supply") != std::string::npos)
 	{
 	  buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-		      "LSupplyLeftAl","LSupplyLeftConnect", "LSupplyLeftInvar");
+		      "LSupplyLeftAl");
 
 	  buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-		      "LSupplyRightAl","LSupplyRightConnect","LSupplyRightInvar");
+		      "LSupplyRightAl");
 	}
       if (pipeUniqName.find("return") != std::string::npos)
 	{
 	  buildH2Pipe(System,"LowFlyLeftLobe","LowFlyLeftWater",pipeUniqName,
-		      "LReturnLeftAl","LReturnLeftConnect","LReturnLeftInvar");
+		      "LReturnLeftAl");
 
 	  buildH2Pipe(System,"LowFlyRightLobe","LowFlyRightWater",pipeUniqName,
-		      "LReturnRightAl","LReturnRightConnect","LReturnRightInvar");
+		      "LReturnRightAl");
 	}
     }
   return;
