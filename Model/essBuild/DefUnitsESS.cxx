@@ -340,19 +340,23 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setOption("lowPipe", "supply");
 
       // straighten the pipes
-      A.setVar("TSupplyRightAlNSegIn", 1);
+      A.setVar("TSupplyRightAlNSegIn", 2);
       A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
-      A.setVar("TSupplyLeftAlNSegIn", 1);
+      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,27,0));
+      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,27,40));
+      A.setVar("TSupplyLeftAlNSegIn", 2);
       A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,26,0));
+      A.setVar("TSupplyLeftAlPPt2", Geometry::Vec3D(0,26,40));
 
-      A.setVar("LSupplyRightAlNSegIn", 1);
+      A.setVar("LSupplyRightAlNSegIn", 2);
       A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,15,0));
-      A.setVar("LSupplyLeftAlNSegIn", 1);
+      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,26,0));
+      A.setVar("LSupplyRightAlPPt2", Geometry::Vec3D(0,26,40));
+      A.setVar("LSupplyLeftAlNSegIn", 2);
       A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,15,0));
+      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,26,0));
+      A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,26,40));
     } else if (modtype=="BF2")
     {
       bfType = 2;
