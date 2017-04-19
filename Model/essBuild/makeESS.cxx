@@ -582,6 +582,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
 	      F5->createAll(System, World::masterOrigin());
+	      attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *F5);
 	      F5array.push_back(F5);
 	    }
 	}
