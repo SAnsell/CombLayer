@@ -322,8 +322,10 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSNeutronics");
 
+  A.setOption("mcnp", "10");
+
   size_t bfType=0;
-  
+
   if (modtype=="BF1")
     {
       bfType = 1;
