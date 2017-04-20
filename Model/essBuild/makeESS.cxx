@@ -576,8 +576,8 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      ELog::EM << midH2->getLinkPt(4) << ELog::endDiag;
 	      ELog::EM << midH2->getLinkPt(5) << ELog::endDiag;
-	      vecFP.push_back(midH2->getLinkPt(4));
-	      vecFP.push_back(midH2->getLinkPt(5));
+	      vecFP.push_back(midH2->getLinkPt(7));
+	      vecFP.push_back(midH2->getLinkPt(8));
 	      F5->setFocalPoints(vecFP);
 
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
