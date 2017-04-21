@@ -89,8 +89,8 @@ namespace essSystem
 {
 
 PBW::PBW(const std::string& Key)  :
-  attachSystem::ContainedGroup(),
-  attachSystem::FixedOffset(Key,8),
+  attachSystem::ContainedGroup("Plug","shield"),
+  attachSystem::FixedOffset(Key,9),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   shield(new TelescopicPipe(Key+"Shield"))
@@ -424,8 +424,6 @@ PBW::createObjects(Simulation& System)
 
   std::string Out;
 
-  //  attachSystem::ContainedGroup::addCC("Full");
-
   // plug
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76) "); // outer void
@@ -542,9 +540,7 @@ PBW::createObjects(Simulation& System)
     System.addCell(MonteCarlo::Qhull(cellIndex++,coolingMat,0.0,Out));
     }
 
-
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  attachSystem::ContainedGroup::addCC("Plug");
   addOuterSurf("Plug", Out);
 
   return;
@@ -582,6 +578,9 @@ PBW::createLinks()
 
   FixedComp::setConnect(7,Origin+Z*(plugHeight),Z);
   FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+6));
+
+  FixedComp::setConnect(8,Origin-Y*(plugVoidLength/2.0),Y); // a link point inside proton tube
+  FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+11));
 
   return;
 }
