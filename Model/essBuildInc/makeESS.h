@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/makeESS.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_makeESS_h
@@ -65,6 +65,7 @@ namespace essSystem
   class TwisterModule;
   class ShutterBay;
   class ProtonTube;
+  class PBIP;
   class PreModWing;
   class GuideBay;
   class BeamMonitor;
@@ -81,7 +82,7 @@ namespace essSystem
   class TSMainBuilding;
   class Chicane;
 
-      
+
   /*!
     \class makeESS
     \version 1.0
@@ -89,32 +90,32 @@ namespace essSystem
     \date January 2013
     \brief Main moderator system for ESS
   */
-  
+
 class makeESS
 {
  private:
-  
+
   std::shared_ptr<WheelBase> Target;   ///< target object
   std::shared_ptr<BeRef> Reflector;    ///< reflector object
   std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
-  std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
+  std::shared_ptr<PBIP> pbip; ///< proton beam instrumentation plug
 
   // main moderator focus points
   std::shared_ptr<FocusPoints> topFocus;   ///< Top focus
   std::shared_ptr<FocusPoints> lowFocus;   ///< Lower focus
 
   // Butterfly
-  /// Primary Lower Mod 
+  /// Primary Lower Mod
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<TaperedDiskPreMod> LowPreMod;         ///< Lower mod 
+  std::shared_ptr<TaperedDiskPreMod> LowPreMod;         ///< Lower mod
   std::shared_ptr<TaperedDiskPreMod> LowCapMod;         ///< Upper mod
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
-  
+
   // Butterly
-  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod 
-  std::shared_ptr<TaperedDiskPreMod> TopPreMod;            ///< Top mod 
+  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod
+  std::shared_ptr<TaperedDiskPreMod> TopPreMod;            ///< Top mod
   std::shared_ptr<TaperedDiskPreMod> TopCapMod;            ///< Lower mod
 
   std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
@@ -130,11 +131,11 @@ class makeESS
 
   std::shared_ptr<BulkModule> Bulk;      ///< Main bulk module
   std::shared_ptr<TwisterModule> Twister; ///< Moderator twister module
-  
+
   /// Shutterbay objects
-  std::shared_ptr<ShutterBay> ShutterBayObj;  
+  std::shared_ptr<ShutterBay> ShutterBayObj;
   /// Array of Guidies
-  std::vector<std::shared_ptr<GuideBay> > GBArray;  
+  std::vector<std::shared_ptr<GuideBay> > GBArray;
 
   std::shared_ptr<Bunker> ABunker;  ///< Right bunker [A unit]
   std::shared_ptr<Bunker> BBunker;  ///< Left bunker [B unit]
@@ -146,11 +147,11 @@ class makeESS
   ///< Right bunker Pillars [A]
   std::shared_ptr<RoofPillars> ABunkerPillars;
   ///< Right bunker Pillars [B]
-  std::shared_ptr<RoofPillars> BBunkerPillars; 
+  std::shared_ptr<RoofPillars> BBunkerPillars;
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
 
   /// collimators for F5 tallies
-  std::vector<std::shared_ptr<F5Collimator>> F5array; 
+  std::vector<std::shared_ptr<F5Collimator>> F5array;
   std::shared_ptr<TSMainBuilding> TSMainBuildingObj;
 
   void buildFocusPoints(Simulation&);
@@ -168,7 +169,7 @@ class makeESS
 
   void makeTarget(Simulation&,const std::string&);
   void makeBunker(Simulation&,const mainSystem::inputParam&);
-  
+
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
@@ -188,12 +189,12 @@ class makeESS
   void optionSummary(Simulation&);
 
  public:
-  
+
   makeESS();
   makeESS(const makeESS&);
   makeESS& operator=(const makeESS&);
   ~makeESS();
-  
+
   void build(Simulation&,const mainSystem::inputParam&);
 
 };
