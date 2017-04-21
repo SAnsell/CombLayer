@@ -263,7 +263,9 @@ TelescopicPipe::createObjects(Simulation& System,
   std::string lastEndCup(outerSurfBoundary);
 
   if (outerSurfBoundary.empty())
-    lastEndCup = ModelSupport::getComposite(SMap,ptIndex+(nSec-1)*100," -2 ");
+    lastEndCup =
+      ModelSupport::getComposite(SMap,ptIndex+static_cast<int>((nSec-1)*100),
+				 " -2 ");
 
   attachSystem::ContainedGroup::addCC("Full");
   for(size_t i=0;i<nSec;i++)
@@ -356,12 +358,7 @@ TelescopicPipe::createAll(Simulation& System,
     }
   if (bIndex)
     {
-      // \todo kbat ELog::EM << "which one to use??? check with BeRef geometry" << ELog::endDiag;
-      //<<<<<<< HEAD
-      //const size_t lIndex(static_cast<size_t>(std::abs(bIndex)-1));
-      //=======
       const size_t lIndex(static_cast<size_t>(std::abs(bIndex))-1);
-      //>>>>>>> BeRef-variables-splited
       BSurf=(bIndex>0) ?
 	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
       FixedComp::setLinkComponent(0,BulkFC,lIndex);
