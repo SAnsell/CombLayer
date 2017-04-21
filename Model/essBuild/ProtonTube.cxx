@@ -155,10 +155,10 @@ ProtonTube::createAll(Simulation& System,
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param TargetFC :: FixedComp for origin and target outer surf
+    \param TargetFC :: FixedComp for origin and target outer surf (tube start)
     \param tIndex :: Target plate surface [signed]
-    \param BulkFC :: FixedComp for origin and target outer surf
-    \param bIndex :: Target plate surface [signed]
+    \param BulkFC :: FixedComp for tube end (not used if next arg is 0)
+    \param bIndex :: Tube end link point (not used if 0 - then the tube ends at its max length)
     \param SB :: FixedComp for Monolith Shielding (shutter bay object)
     \param sbIndex :: ShutterBay roof link point
     \param Bulk :: Bulk object (to remove BeamMonitor from)						

@@ -260,13 +260,18 @@ TelescopicPipe::createObjects(Simulation& System,
 
   std::string Out,EndCap,FrontCap;
   int PT(ptIndex);
+  std::string lastEndCup(outerSurfBoundary);
+
+  if (outerSurfBoundary.empty())
+    lastEndCup = ModelSupport::getComposite(SMap,ptIndex+(nSec-1)*100," -2 ");
+
   attachSystem::ContainedGroup::addCC("Full");
   for(size_t i=0;i<nSec;i++)
     {
       const std::string SName=StrFunc::makeString("Sector",i);
       FrontCap=(!i) ? TargetSurfBoundary :
 	ModelSupport::getComposite(SMap,PT-100, " 2 ");
-      EndCap=(i+1 == nSec) ? outerSurfBoundary :
+      EndCap=(i+1 == nSec) ? lastEndCup :
 	ModelSupport::getComposite(SMap,PT, " -2 ");
 
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
@@ -325,8 +330,8 @@ TelescopicPipe::createAll(Simulation& System,
     \param System :: Simulation to add vessel to
     \param TargetFC :: FixedComp for origin and target outer surf
     \param tIndex :: Target plate surface [signed]
-    \param BulkFC :: FixedComp for origin and target outer surf
-    \param bIndex :: Target plate surface [signed]
+    \param BulkFC :: FixedComp for the pipe end (not used if next arg is 0)
+    \param bIndex :: BulkFC link point (not used if 0 - then the tube ends at its max length)
     \param SB :: FixedComp for Monolith Shielding (shutter bay object)
   */
 {
