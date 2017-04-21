@@ -299,10 +299,16 @@ TelescopicPipe::createLinks()
   ELog::RegMethod RegA("TelescopicPipe","createLinks");
 
   FixedComp::setNConnect(nSec+2);
+
+  // radial links
   int PT(ptIndex);
+  double ml; // mid length of the current segment
   for(size_t i=0;i<nSec;i++)
     {
-      FixedComp::setConnect(i+2,Origin+Y*length[i]/2.0,-X);
+      ml  = length[i];
+      ml -= (i==0) ? length[i]/2.0 : (length[i]-length[i-1])/2.0;
+
+      FixedComp::setConnect(i+2,Origin+Y*ml,-X);
       FixedComp::setLinkSurf(i+2,-SMap.realSurf(PT+7));
       PT+=100;
     }
