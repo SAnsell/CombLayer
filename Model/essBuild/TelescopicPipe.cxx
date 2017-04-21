@@ -307,6 +307,10 @@ TelescopicPipe::createLinks()
 
   FixedComp::setNConnect(nSec+2);
 
+  // NB: start and end links are defined in TelescopicPipe::createAll
+  // 0 - start side surf
+  // 1 - end side surf
+  
   // radial links
   int PT(ptIndex);
   double ml; // mid length of the current segment
@@ -361,7 +365,7 @@ TelescopicPipe::createAll(Simulation& System,
       const size_t lIndex(static_cast<size_t>(std::abs(bIndex))-1);
       BSurf=(bIndex>0) ?
 	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
-      FixedComp::setLinkComponent(0,BulkFC,lIndex);
+      FixedComp::setLinkComponent(1,BulkFC,lIndex);
     }
   createObjects(System,TSurf,BSurf);
   createLinks();
