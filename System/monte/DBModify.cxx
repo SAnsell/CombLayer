@@ -75,7 +75,6 @@ cloneBasicMaterial()
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
-  DB.cloneMaterial("Stainless304","SS316L_7.85g");
 
   // Al.20t -- actually available from Los Alamos-t2
   DB.removeThermal("Aluminium");
@@ -121,7 +120,6 @@ cloneESSMaterial()
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
   DB.cloneMaterial("Stainless304","SS316L");
-  DB.cloneMaterial("Stainless304","SS316L_7.85g");
 
   DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("ParaH2","HPARA");
@@ -211,6 +209,12 @@ addESSMaterial()
   MObj.setDensity(-2.7);
   MDB.resetMaterial(MObj); 
 
+  // Same as Aluminium but used in Be container - needed by engineers for Ed mesh
+  MObj.setMaterial(imat++, "AluminiumBe", " 13027.70c 1.0 ", "al27.12t", MLib);
+  MObj.setDensity(-2.7);
+  MDB.resetMaterial(MObj); 
+
+  
   MObj.setMaterial(imat++/*1301*/, "Aluminium20K", " 13027.70c 1.0 ", "al27.10t", MLib);
   MObj.setDensity(-2.73);
   MDB.resetMaterial(MObj); 
@@ -270,9 +274,9 @@ addESSMaterial()
 		   " 42096.71c  0.002423388 "
 		   " 42097.71c  0.001388944 "
 		   " 42098.71c  0.003514494 "
-		   " 42100.71c  0.001404926 ", "fe56.14t", MLib);
+		   " 42100.71c  0.001404926 ", "fe56.12t", MLib);
   MObj.setMXitem(6000, 71, 'c', "h", "06012");
-  MObj.setDensity(-7.76);
+  MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
   // Same ase 2636 but with Bilbao density of 7.93 g/cm3
@@ -310,43 +314,6 @@ addESSMaterial()
 		   " 42100.71c  0.001404926 ", "fe56.14t", MLib);
   MObj.setMXitem(6000, 71, 'c', "h", "06012");
   MObj.setDensity(-7.93);
-  MDB.resetMaterial(MObj);
-
-  // Same ase 2636 but with a2t density of 7.85 g/cm3 and fe56.12t instead of fe56.14t (material 2636 in a2t200)
-  MObj.setMaterial(imat++/*2638*/, "SS316L_7.85g",
-		   " 06000.71c  0.001392603 "
-		   " 14028.71c  0.007323064 "
-		   " 14029.71c  0.000372017 "
-		   " 14030.71c  0.000245523 "
-		   " 15031.71c  0.000360008 "
-		   " 16032.71c  0.000165168 "
-		   " 16033.71c  0.000001304 "
-		   " 16034.71c  0.000007390 "
-		   " 16036.71c  0.000000017 "
-		   " 24050.71c  0.007920331 "
-		   " 24052.71c  0.152735704 "
-		   " 24053.71c  0.017319003 "
-		   " 24054.71c  0.004311066 "
-		   " 25055.71c  0.018267327 "
-		   " 26054.71c  0.038344779 "
-		   " 26056.71c  0.601931034 "
-		   " 26057.71c  0.013901213 "
-		   " 26058.71c  0.001849996 "
-		   " 27059.71c  0.000283816 "
-		   " 28058.71c  0.080834464 "
-		   " 28060.71c  0.031137291 "
-		   " 28061.71c  0.001353516 "
-		   " 28062.71c  0.004315603 "
-		   " 28064.71c  0.001099057 "
-		   " 42092.71c  0.002145890 "
-		   " 42094.71c  0.001341000 "
-		   " 42095.71c  0.002310064 "
-		   " 42096.71c  0.002423388 "
-		   " 42097.71c  0.001388944 "
-		   " 42098.71c  0.003514494 "
-		   " 42100.71c  0.001404926 ", "fe56.12t", MLib);
-  MObj.setMXitem(6000, 71, 'c', "h", "06012");
-  MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
   // ESS  20% vol SS316L 80% vol void
@@ -784,6 +751,79 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setMXitem(6000, 71, 'c', "h", "06012");
   MObj.setDensity(-5.056);
   MDB.resetMaterial(MObj);
+
+  MObj.setMaterial(imat++,"Silver","47107.70c 0.51839 "
+                   "47109.70c 0.48161 ","",MLib); // IAEA table of nuclides
+  MObj.setDensity(-10.49); // wiki
+  MDB.resetMaterial(MObj);
+
+  // Skanska concrete
+  // Composition received from Skanska
+  // Source: MATER.INP from MARS. Material "ESSConc"
+  MObj.setMaterial(imat++,"SkanskaConcrete",
+		   " 01001.70c -3.35720233139058521e-03 "
+		   " 08016.70c -3.82342797668609513e-01 "
+		   " 12024.70c -0.0019 "
+		   " 13027.70c -0.0192 "
+		   " 14028.70c -0.1251 "
+		   " 16032.70c -0.0081 "
+		   " 19039.70c -0.0158 "
+		   " 20040.70c -0.3927 "
+		   " 22048.70c -0.0038 "
+		   " 25055.70c -0.0021 "
+		   " 26056.70c -0.0444 "
+		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+  MObj.setDensity(-2.35);
+  MDB.resetMaterial(MObj);
+
+
+  // Copper - natural composition from IAEA table of nuclides
+  MObj.setMaterial(imat++,"Copper",
+		   " 29063.70c 0.6915 "
+		   " 29065.70c 0.3085 ","",MLib);
+  MObj.setDensity(-8.94); // as in the outp file produced by MARS
+  MDB.resetMaterial(MObj);
+
+  // SS304L composition from ESS Design Update WP3
+  // Reference: Material Data Compilation 29 Mar 2017
+  MObj.setMaterial(imat++, "SS304L",
+		   " 6000.70c      0.001366050 "
+		   " 14028.70c      0.017958587 "
+		   " 14029.70c      0.000912310 "
+		   " 14030.70c      0.000602105 "
+		   " 15031.70c      0.000794573 "
+		   " 16032.70c      0.000486055 "
+		   " 16033.70c      0.000003838 "
+		   " 16034.70c      0.000021747 "
+		   " 16036.70c      0.000000051 "
+		   " 24050.70c      0.008683351 "
+		   " 24052.70c      0.167449786 "
+		   " 24053.70c      0.018987462 "
+		   " 24054.70c      0.004726381 "
+		   " 25055.70c      0.019910026 "
+		   " 26054.70c      0.038864395 "
+		   " 26056.70c      0.610087892 "
+		   " 26057.70c      0.014089590 "
+		   " 26058.70c      0.001875066 "
+		   " 28058.70c      0.063434555 "
+		   " 28060.70c      0.024434877 "
+		   " 28061.70c      0.001062167 "
+		   " 28062.70c      0.003386654 "
+		   " 28064.70c      0.000862481 ", "fe56.12t", MLib);
+  MObj.setMXitem(6000, 70, 'c', "h", "06012");
+  MObj.setDensity(-7.85);
+  MDB.resetMaterial(MObj);
+
+  // Tungsten at 300 K - 4% density for Beam Monitor
+  MObj.setMaterial(imat++, "Tungsten_BeamMonitor",
+		   "74180.50c  0.001200000 "
+		   "74182.70c  0.265000000 "
+		   "74183.70c  0.143100000 "
+		   "74184.70c  0.306400000 "
+		   "74186.70c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-19.298 * 0.04);
+  MDB.resetMaterial(MObj);  
 
   return;
 }

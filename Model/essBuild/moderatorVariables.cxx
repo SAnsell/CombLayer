@@ -106,16 +106,20 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeHeight3",0.0);
   Control.addVariable("LowFlyLeftLobeDepth3",0.0);
 
-  Control.addVariable("LowFlyFlowGuideBaseThick",0.2);
-  Control.addVariable("LowFlyFlowGuideBaseLen",8.5);
-  Control.addVariable("LowFlyFlowGuideArmThick",0.2);
-  Control.addVariable("LowFlyFlowGuideArmLen",8.0);
-  Control.addVariable("LowFlyFlowGuideBaseArmSep",0.1);
-  Control.addVariable("LowFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
-  Control.addVariable("LowFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
   Control.addVariable("LowFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("LowFlyFlowGuideWallTemp",20.0);
-  
+  Control.addVariable("LowFlyFlowGuideBaseThick",0.4);
+  Control.addVariable("LowFlyFlowGuideBaseLen",6.5);
+  Control.addVariable("LowFlyFlowGuideBaseOffset",-12);
+  Control.addVariable("LowFlyFlowGuideAngle",17);
+  Control.addVariable("LowFlyFlowGuideSQOffsetY",4.0);
+  Control.addVariable("LowFlyFlowGuideSQSideA",1.0);
+  Control.addVariable("LowFlyFlowGuideSQSideE",-1.0);
+  Control.addVariable("LowFlyFlowGuideSQSideF",-0.005);
+  Control.addVariable("LowFlyFlowGuideSQCenterA",1.0);
+  Control.addVariable("LowFlyFlowGuideSQCenterE",-0.6);
+  Control.addVariable("LowFlyFlowGuideSQCenterF",-0.005);
+ 
   Control.addVariable("LowFlyRightLobeXStep",-1.0);  
   Control.addVariable("LowFlyRightLobeYStep",0.0);  
 
@@ -224,15 +228,19 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopFlyLeftLobeDepth3",0.0);
 
-  Control.addVariable("TopFlyFlowGuideBaseThick",0.2);
-  Control.addVariable("TopFlyFlowGuideBaseLen",8.5);
-  Control.addVariable("TopFlyFlowGuideArmThick",0.2);
-  Control.addVariable("TopFlyFlowGuideArmLen",8.0);
-  Control.addVariable("TopFlyFlowGuideBaseArmSep",0.1);
-  Control.addVariable("TopFlyFlowGuideBaseOffset",Geometry::Vec3D(0,-10.7,0));
-  Control.addVariable("TopFlyFlowGuideArmOffset",Geometry::Vec3D(0,-9,0));
   Control.addVariable("TopFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
+  Control.addVariable("TopFlyFlowGuideBaseThick",0.3);
+  Control.addVariable("TopFlyFlowGuideBaseLen",6.5);
+  Control.addVariable("TopFlyFlowGuideBaseOffset",-12);
+  Control.addVariable("TopFlyFlowGuideAngle",17);
+  Control.addVariable("TopFlyFlowGuideSQOffsetY",4.0);
+  Control.addVariable("TopFlyFlowGuideSQSideA",1.0);
+  Control.addVariable("TopFlyFlowGuideSQSideE",-1.0);
+  Control.addVariable("TopFlyFlowGuideSQSideF",-0.005);
+  Control.addVariable("TopFlyFlowGuideSQCenterA",1.0);
+  Control.addVariable("TopFlyFlowGuideSQCenterE",-0.6);
+  Control.addVariable("TopFlyFlowGuideSQCenterF",-0.005);
   
   Control.addVariable("TopFlyRightLobeXStep",-1.0);  
   Control.addVariable("TopFlyRightLobeYStep",0.0);  
@@ -389,7 +397,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModHeight2",0);
   Control.addVariable("TopPreModDepth2",0);
   Control.addVariable("TopPreModRadius2", 7.7-3+0.3);
-  Control.addVariable("TopPreModMat2","Aluminium");
+  Control.addVariable("TopPreModMat2","SS316L"); // Requested by LZ 7 Feb 2017
   Control.addVariable("TopPreModHeight3",0.3);
   Control.addVariable("TopPreModDepth3",0.3);
   Control.addVariable("TopPreModRadius3", 0.0);
@@ -448,16 +456,16 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModHeight1",0.0);
   Control.addVariable("TopCapModDepth1",0.0);
   Control.addVariable("TopCapModThick1",0.3);
-  Control.addVariable("TopCapModMat1","Aluminium");
+  Control.addVariable("TopCapModMat1","AluminiumBe");
   Control.addVariable("TopCapModRadius1",6-3+0.3);
   Control.addVariable("TopCapModHeight2",0.0);
   Control.addVariable("TopCapModDepth2",0.3);
   Control.addVariable("TopCapModRadius2",0.0);
-  Control.addVariable("TopCapModMat2","Aluminium");
+  Control.addVariable("TopCapModMat2","AluminiumBe");
   Control.addVariable("TopCapModHeight3",0);
   Control.addVariable("TopCapModDepth3", 0.3);
   Control.addVariable("TopCapModRadius3",0.0);
-  Control.addVariable("TopCapModMat3", "Aluminium");
+  Control.addVariable("TopCapModMat3", "AluminiumBe");
 
   Control.addVariable("TopCapModTiltAngle", 0.0);
   Control.addVariable("TopCapModTiltRadius", 32.17);

@@ -65,15 +65,15 @@ EssWheel(FuncDataBase& Control)
   
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
-  Control.addVariable("BilbaoWheelShaftMat1","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelShaftMat1","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius2",13.5);
   Control.addVariable("BilbaoWheelShaftMat2","SS316L3925");
   Control.addVariable("BilbaoWheelShaftRadius3",14.0);
-  Control.addVariable("BilbaoWheelShaftMat3","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelShaftMat3","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius4",20.0);
   Control.addVariable("BilbaoWheelShaftMat4","SS316L3925");
   Control.addVariable("BilbaoWheelShaftRadius5",23.0);
-  Control.addVariable("BilbaoWheelShaftMat5","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelShaftMat5","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius6",25.0);
   Control.addVariable("BilbaoWheelShaftMat6","Void");
 
@@ -138,7 +138,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelTemperature", 600);
 
   Control.addVariable("BilbaoWheelWMat","Tungsten_15.1g");
-  Control.addVariable("BilbaoWheelSteelMat","SS316L_7.85g");
+  Control.addVariable("BilbaoWheelSteelMat","SS316L");
   Control.addVariable("BilbaoWheelHeMat","Void"); // TSM141108V3000
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
   Control.addVariable("BilbaoWheelInnerMat","Void");
@@ -297,34 +297,34 @@ EssProtonBeam(FuncDataBase& Control)
 
   Control.addVariable("ProtonTubeNSection",4);
 
-  Control.addVariable("ProtonTubeRadius1",11.5);
-  Control.addVariable("ProtonTubeLength1",148.25); //from mod centre leftside
-  Control.addVariable("ProtonTubeZcut1",3.7);  // to have the same height as BeRef::targetVoid
-  Control.addVariable("ProtonTubeWallThick1",0.0);
+  Control.addVariable("ProtonTubeRadius1",20.0); // MK170207
+  Control.addVariable("ProtonTubeLength1",37.0); // MK170207
+  Control.addVariable("ProtonTubeZcut1",0.0);  // to have the same height as BeRef::targetVoid
+  Control.addVariable("ProtonTubeWallThick1",1.0);
   Control.addVariable("ProtonTubeInnerMat1","Helium");  // mat : 2000
-  Control.addVariable("ProtonTubeWallMat1","CastIron"); // mat : 26316
+  Control.addVariable("ProtonTubeWallMat1","SS316L"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius2",15.0);  // as in TSM141108V2003
-  Control.addVariable("ProtonTubeLength2",200.0);
+  Control.addVariable("ProtonTubeRadius2",32.5/2.0); // MK170207
+  Control.addVariable("ProtonTubeLength2",35.0); // MK170207
   Control.addVariable("ProtonTubeZcut2",0.0); 
   Control.addVariable("ProtonTubeWallThick2",1.0);
   Control.addVariable("ProtonTubeInnerMat2","Helium");  // mat : 2000
-  Control.addVariable("ProtonTubeWallMat2","CastIron"); // mat : 26316
+  Control.addVariable("ProtonTubeWallMat2","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius3",15.0);  // as in TSM141108V2003
+  Control.addVariable("ProtonTubeRadius3",21.0/2.0); // MK170207
   Control.addVariable("ProtonTubeLength3",127.5);
   Control.addVariable("ProtonTubeZcut3",0.0);
-  Control.addVariable("ProtonTubeWallThick3",1.0);
+  Control.addVariable("ProtonTubeWallThick3",4.0);
   Control.addVariable("ProtonTubeInnerMat3","Helium");   // mat : 2000
-  Control.addVariable("ProtonTubeWallMat3","CastIron");  // mat : 26316
+  Control.addVariable("ProtonTubeWallMat3","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius4",15.0); // as in TSM141108V2003
+  Control.addVariable("ProtonTubeRadius4",10.5);  // same as in TSV30
   // Control.addVariable("ProtonTubeLength4",147.5);
   Control.addVariable("ProtonTubeLength4",152.5);
   Control.addVariable("ProtonTubeZcut4",0.0);
-  Control.addVariable("ProtonTubeWallThick4",1.0);
+  Control.addVariable("ProtonTubeWallThick4",4.0);
   Control.addVariable("ProtonTubeInnerMat4","Void");
-  Control.addVariable("ProtonTubeWallMat4","CastIron");  // mat: 26316
+  Control.addVariable("ProtonTubeWallMat4","SS316L");  // differs from TSV30: M2636
 
 
   Control.addVariable("BeamMonitorXStep",0.0);
@@ -375,9 +375,115 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("BeamMonitorBoxTubeAlMat","Aluminium");
   Control.addVariable("BeamMonitorBoxExtHeMat","helium");
 
-
   Control.addVariable("ProtonBeamViewRadius",4.0);
+
+  // Proton beam window
+  Control.addVariable("ProtonTubePBWPlugMat","SS316L");
+  Control.addVariable("ProtonTubePBWPlugLength1",45.0); // Drawing received from AT (https://plone.esss.lu.se/docs/neutronics/engineering/drawings/monolith/pbw-drawings/view)
+  Control.addVariable("ProtonTubePBWPlugLength2",43.0);
+  Control.addVariable("ProtonTubePBWPlugWidth1",76.3);
+  Control.addVariable("ProtonTubePBWPlugWidth2",93.0);
+  Control.addVariable("ProtonTubePBWPlugHeight",42.5);
+  Control.addVariable("ProtonTubePBWPlugDepth",54.5);
+
+  Control.addVariable("ProtonTubePBWPlugVoidLength",41.5);
+  Control.addVariable("ProtonTubePBWPlugVoidWidth",50.0);
+  Control.addVariable("ProtonTubePBWPlugVoidDepth",25.0);
+  Control.Parse("ProtonTubePBWPlugHeight");
+  Control.addVariable("ProtonTubePBWPlugVoidHeight");
+
+  Control.addVariable("ProtonTubePBWPlugAlLength", 9.695); // ESS-0066872.1 page 4
+  Control.addVariable("ProtonTubePBWPlugAlGrooveRadius", 16.0); // ESS-0066872.1 page 4
+  Control.addVariable("ProtonTubePBWPlugAlGrooveDepth", 0.5); // ESS-0066872.1 page 4
+  Control.addVariable("ProtonTubePBWPlugAlGapHeight", 20.75); // ESS-0066872.1 page 3 and 4
+  Control.addVariable("ProtonTubePBWPlugAlGapWidth", 19.8); // ESS-0058437.3 and ESS-0066872.1 page 3 (there is a frame which is inserted into gap, but in this (and Alan's) geometries it is not modelled, just gap width reduced)
+
+  Control.Parse("ProtonTubeRadius4");
+  Control.addVariable("ProtonTubePBWProtonTubeRadius");
+  Control.addVariable("ProtonTubePBWProtonTubeMatBefore", "Void");
+  Control.addVariable("ProtonTubePBWProtonTubeMatAfter", "Helium");
+
+  Control.addVariable("ProtonTubePBWFlangeRadius",29.0/2); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingRadiusIn",31.0/2.0); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingRadiusOut",42.0/2.0); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingThick",5.4); // ESS-0066872.1 page 5
+  Control.addVariable("ProtonTubePBWFlangeWaterRingOffset",4.5); // TSV30
+  Control.addVariable("ProtonTubePBWFlangeNotchDepth",3.5); // TSV30
+  Control.addVariable("ProtonTubePBWFlangeNotchThick",4.0); // TSV30
+  Control.addVariable("ProtonTubePBWFlangeNotchOffset",10.9); // TSV30
+
+  
+  Control.addVariable("ProtonTubePBWCoolingMat","H2O");
+  Control.addVariable("ProtonTubePBWMat","Aluminium");
+  Control.addVariable("ProtonTubePBWYStep",-375);
+  
+  Control.addVariable("ProtonTubePBWFoilThick",0.4); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilRadius",8.9); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilOffset",1.0); // ESS-0066872.1 page 3
+  Control.addVariable("ProtonTubePBWFoilCylOffset",7.0); // to make 2.0 cm top/bottom distance as in ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilWaterThick",0.2); // ESS-0058437.3
+  Control.addVariable("ProtonTubePBWFoilWaterLength",9.2); // ESS-0058437.3
+  
+  Control.addVariable("ProtonTubePBWShieldXStep",0);
+  Control.addVariable("ProtonTubePBWShieldYStep",0);
+  Control.addVariable("ProtonTubePBWShieldZStep",0);
+  Control.addVariable("ProtonTubePBWShieldXYangle",0);
+  Control.addVariable("ProtonTubePBWShieldZangle",0);
+
+  Control.addVariable("ProtonTubePBWShieldNSection",5);
+  Control.addVariable("ProtonTubePBWShieldLength1",21.5); // void
+  Control.addVariable("ProtonTubePBWShieldLength2",40.0); // m650
+  Control.addVariable("ProtonTubePBWShieldLength3",152.5); // m2634, cell 10008
+  Control.addVariable("ProtonTubePBWShieldLength4",98.5); // m2634, c10007
+  Control.addVariable("ProtonTubePBWShieldLength5",50.0); // m2634, c10006
+  Control.addVariable("ProtonTubePBWShieldLength6",50.0); // !!! remove me
+  Control.addVariable("ProtonTubePBWShieldRadius1",63.0/2.0); // !! remove me
+  Control.addVariable("ProtonTubePBWShieldRadius2",63.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius3",73.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius4",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius5",83.0/2.0); // ESS-0066872.1 page 7
+  Control.addVariable("ProtonTubePBWShieldRadius6",83.0/2.0); // ESS-0066872.1 page 7
+
+  for (int i=1; i<=6; i++)
+    {
+      Control.addVariable("ProtonTubePBWShieldZcut" + std::to_string(i),0);
+      Control.addVariable("ProtonTubePBWShieldWallThick" + std::to_string(i),1);
+      Control.addVariable("ProtonTubePBWShieldInnerMat" + std::to_string(i),"Void");
+      Control.addVariable("ProtonTubePBWShieldWallMat" + std::to_string(i),"Void");
+    }
+
+  // Beam instrumentation plug (dummy variables)
+  Control.addVariable("PBIPYStep",-177.2); // MK170207
+
+  Control.addVariable("PBIPLength",2.1*20/0.85); // measured from MK170207
+  Control.addVariable("PBIPWidth",2.6*20/0.85); // measured from MK170207
+  Control.addVariable("PBIPHeight",20.0); // a dummy value
+  Control.addVariable("PBIPWallThick",1.0);
+  Control.addVariable("PBIPMainMat","Helium");
+  Control.addVariable("PBIPWallMat","SS316L");
+
+  Control.addVariable("PBIPPipeBeforeHeight",7.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthLeft",20.0); // MK170207
+  Control.addVariable("PBIPPipeBeforeAngleLeft",4.14); // MK170207
+  Control.addVariable("PBIPPipeBeforeWidthRight",9.0); // MK170207
+  
+  Control.addVariable("PBIPPipeAfterHeight",8.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthLeft",9.0); // MK170207
+  Control.addVariable("PBIPPipeAfterWidthRight",20.0); // MK170207
+  Control.addVariable("PBIPPipeAfterAngleRight",4.07); // MK170207
+
+  Control.addVariable("PBIPFoilOffset",5.0); // a dummy value
+  ELog::EM << "PBIP Foil offset??? + references for PBIP foil" << ELog::endCrit;
+  Control.addVariable("PBIPFoilThick",0.05); // YJL
+  Control.addVariable("PBIPFoilMat", "Tungsten_BeamMonitor"); // YJL
+  
+
+  
   return;
 }
   
 }  // NAMESPACE setVariable
+
+// References:
+// MK170207: https://plone.esss.lu.se/docs/neutronics/engineering/drawings/monolith/pbip-drawings/view

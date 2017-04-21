@@ -336,29 +336,163 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("TopFlyMidWaterMidYStep", 7.0);
       A.setOption("topPipe", "supply");
 
-      A.setVar("LowFlyLeftLobeXStep", -2.0);
-      A.setVar("LowFlyRightLobeXStep", 2.0);
-      A.setVar("LowFlyMidWaterMidYStep", 7.0);
+      // These variables are as in the model received from Luca 22 Feb 2017
+      // there is no engieering drawings for BF1 yet, so this email is
+      // the only reference
+      const std::vector<std::string> TLfly = {"TopFly", "LowFly"};
+      std::string s;
+      for (std::string s : TLfly) {
+	A.setVar(s+"LeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	A.setVar(s+"LeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	A.setVar(s+"LeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+	
+	A.setVar(s+"RightLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	A.setVar(s+"RightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	A.setVar(s+"RightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+	
+	A.setVar(s+"LeftLobeRadius1",1.0);
+	A.setVar(s+"RightLobeRadius1",1.0);
+	
+	A.setVar(s+"LeftLobeXStep",-0.85);
+	A.setVar(s+"RightLobeXStep",0.85);
+	
+	A.setVar(s+"LeftWaterCutWidth",9.6);
+	A.setVar(s+"RightWaterCutWidth",9.6);
+	
+	A.setVar(s+"MidWaterLength",9.9);
+	A.setVar(s+"MidWaterMidYStep",6.3);
+      }
+
+      // flow guides
+      for (std::string strmod : TLfly) {
+	s = strmod + "FlowGuide";
+	A.setVar(s+"WallMat","Aluminium20K");
+	A.setVar(s+"WallTemp",20.0);
+	A.setVar(s+"BaseThick",0.3);
+	A.setVar(s+"BaseLen",6.5);
+	A.setVar(s+"BaseOffset",-11);
+	A.setVar(s+"Angle",23);
+	A.setVar(s+"SQOffsetY",3.0);
+	A.setVar(s+"SQSideA",1.0);
+	A.setVar(s+"SQSideE",-1.0);
+	A.setVar(s+"SQSideF",-0.005);
+	A.setVar(s+"SQCenterA",1.0);
+	A.setVar(s+"SQCenterE",-0.6);
+	A.setVar(s+"SQCenterF",-0.005);
+      }
+
+      // These variables (until "moderator end") are copied from the BF2
+      // section of moderatorVarialbes to be sure that the BF1 geometry
+      // does not change if we change the BF2 variables:
+
+      A.setVar("TopFlyXStep",0.0);
+      A.setVar("TopFlyYStep",0.0);
+      A.setVar("TopFlyZStep",0.0);
+      A.setVar("TopFlyXYangle",90.0);
+      A.setVar("TopFlyZangle",0.0);
+      A.setVar("TopFlyTotalHeight",4.9);
+      A.setVar("TopFlyWallMat","Aluminium");
+      A.setVar("TopFlyWallDepth",0.0);
+      A.setVar("TopFlyWallHeight",0.3);
+  
+      A.setVar("TopFlyLeftLobeYStep",0.0);
+  
+      A.setVar("TopFlyLeftLobeRadius2",2.506);
+      A.setVar("TopFlyLeftLobeRadius3",2.506);
+
+      A.setVar("TopFlyLeftLobeModMat","HPARA");
+      A.setVar("TopFlyLeftLobeModTemp",20.0);
+
+      A.setVar("TopFlyLeftLobeNLayers",4);
+      A.setVar("TopFlyLeftLobeThick1",0.3);
+      A.setVar("TopFlyLeftLobeMat1","Aluminium20K");
+
+      A.setVar("TopFlyLeftLobeHeight1",0.3);
+      A.setVar("TopFlyLeftLobeDepth1",0.3);
+      A.setVar("TopFlyLeftLobeTemp1",20.0);
+  
+      A.setVar("TopFlyLeftLobeThick2",0.5);
+      A.setVar("TopFlyLeftLobeMat2","Void");
+
+      A.setVar("TopFlyLeftLobeHeight2",0.5);
+      A.setVar("TopFlyLeftLobeDepth2",0.5);
+
+      A.setVar("TopFlyLeftLobeThick3",0.3);
+      A.setVar("TopFlyLeftLobeMat3","Aluminium");
+
+      A.setVar("TopFlyLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
+      A.setVar("TopFlyLeftLobeDepth3",0.0);
+  
+      A.setVar("TopFlyRightLobeYStep",0.0);
+
+      A.setVar("TopFlyRightLobeRadius2",2.506);
+      A.setVar("TopFlyRightLobeRadius3",2.506);
+
+      A.setVar("TopFlyRightLobeModMat","HPARA");
+      A.setVar("TopFlyRightLobeModTemp",20.0);
+
+      A.setVar("TopFlyRightLobeNLayers",4);
+      A.setVar("TopFlyRightLobeThick1",0.3);
+      A.setVar("TopFlyRightLobeMat1","Aluminium20K");
+
+      A.setVar("TopFlyRightLobeHeight1",0.3);
+      A.setVar("TopFlyRightLobeDepth1",0.3);
+      A.setVar("TopFlyRightLobeTemp1",20.0);
+  
+      A.setVar("TopFlyRightLobeThick2",0.5);
+      A.setVar("TopFlyRightLobeMat2","Void");
+
+      A.setVar("TopFlyRightLobeHeight2",0.5);
+      A.setVar("TopFlyRightLobeDepth2",0.5);
+
+      A.setVar("TopFlyRightLobeThick3",0.3);
+      A.setVar("TopFlyRightLobeMat3","Aluminium");
+
+      A.setVar("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
+      A.setVar("TopFlyRightLobeDepth3",0.0);
+
+      A.setVar("TopFlyMidWaterCutLayer",3);
+      A.setVar("TopFlyMidWaterMidAngle",90);
+      A.setVar("TopFlyMidWaterEdgeRadius",0.5);
+
+      A.setVar("TopFlyMidWaterWallThick",0.2);
+      A.setVar("TopFlyMidWaterModMat","H2O");
+      A.setVar("TopFlyMidWaterWallMat","Aluminium");
+      A.setVar("TopFlyMidWaterModTemp",300.0);
+
+      A.setVar("TopFlyLeftWaterWidth",15.76);  
+      A.setVar("TopFlyLeftWaterWallThick",0.347);
+      A.setVar("TopFlyLeftWaterCutAngle",30.0);
+      A.setVar("TopFlyLeftWaterModMat","H2O");
+      A.setVar("TopFlyLeftWaterWallMat","Aluminium");
+      A.setVar("TopFlyLeftWaterModTemp",300.0);
+
+      A.setVar("TopFlyRightWaterWidth",15.76);
+      A.setVar("TopFlyRightWaterWallThick",0.347);
+      A.setVar("TopFlyRightWaterCutAngle",30.0);
+      A.setVar("TopFlyRightWaterModMat","H2O");
+      A.setVar("TopFlyRightWaterWallMat","Aluminium");
+      A.setVar("TopFlyRightWaterModTemp",300.0);
+      // moderator end
+
+      // pipes
+      A.setOption("topPipe", "supply");
       A.setOption("lowPipe", "supply");
 
-      // straighten the pipes
-      A.setVar("TSupplyRightAlNSegIn", 2);
-      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,26,0));
-      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,26,40));
-      A.setVar("TSupplyLeftAlNSegIn", 2);
-      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,26,0));
-      A.setVar("TSupplyLeftAlPPt2", Geometry::Vec3D(0,26,40));
-
-      A.setVar("LSupplyRightAlNSegIn", 2);
-      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,26,0));
-      A.setVar("LSupplyRightAlPPt2", Geometry::Vec3D(0,26,40));
-      A.setVar("LSupplyLeftAlNSegIn", 2);
-      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,26,0));
-      A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,26,40));
+      const std::vector<std::string> TLpipe = {"T", "L"};
+      for (std::string strpipe : TLpipe) {
+	s = strpipe + "Supply";
+	A.setVar(s+"RightAlNSegIn", 1);
+	A.setVar(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,15,0));
+	A.setVar(s+"RightInvarPPt1", Geometry::Vec3D(0,8.3,0)); // should be inside twister
+	A.setVar(s+"RightInvarPPt2", Geometry::Vec3D(0,8.3,30));
+	A.setVar(s+"LeftAlNSegIn", 1);
+	A.setVar(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,15,0));
+	A.setVar(s+"LeftInvarPPt1", Geometry::Vec3D(0,8.3,0)); // should be inside twister
+	A.setVar(s+"LeftInvarPPt2", Geometry::Vec3D(0,8.3,30));
+      }
     } else if (modtype=="BF2")
     {
       bfType = 2;
@@ -403,9 +537,25 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
     {
       A.setOption("lowMod", "None");
       A.setVar("BeRefLowVoidThick", 0);
-      A.setVar("BeRefLowRefMat", "Iron_10H2O");
-      A.setVar("BeRefLowWallMat", "Iron_10H2O");
-      A.setVar("BeRefLowInnerStructureActive", 0);
+      A.setVar("BeRefLowRefMat", "SS316L");
+      A.setVar("BeRefLowWallMat", "AluminiumBe");
+      A.setVar("BeRefLowInnerStructureActive", 1);
+      // The following numbers are from Yannick's email 31 Jan 2017:
+      A.setVar("BeRefDepth", 50.3); // (157.5+17.5 + 120 + 30 + 50 +30 +20)/10.0+7.8
+      A.setVar("BeRefLowInnerStructureNLayers", 7);
+      A.setVar("BeRefLowInnerStructureBaseLen1", 0.0470589); // 2 cm
+      A.setVar("BeRefLowInnerStructureBaseLen2", 0.0705882); // 3
+      A.setVar("BeRefLowInnerStructureBaseLen3", 0.117647); // 5
+      A.setVar("BeRefLowInnerStructureBaseLen4", 0.0705882); // 3
+      A.setVar("BeRefLowInnerStructureBaseLen5", 0.282353); // 12
+      A.setVar("BeRefLowInnerStructureBaseLen6", 0.0411765); // 1.75
+      A.setVar("BeRefLowInnerStructureMat0", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat1", "H2O");
+      A.setVar("BeRefLowInnerStructureMat2", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat3", "H2O");
+      A.setVar("BeRefLowInnerStructureMat4", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat5", "H2O");
+      A.setVar("BeRefLowInnerStructureMat6", "SS316L");
       // Since there is no bunkers, we have to 
       // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
       A.setVar("F5DefaultLength", 500.0);
