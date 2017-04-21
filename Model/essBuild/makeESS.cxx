@@ -920,8 +920,8 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
 
   attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
+  //attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
+  //  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
 
   // split Twister by components
@@ -1086,15 +1086,17 @@ makeESS::build(Simulation& System,
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,
-				    PBeam->getCC("Full"));
+  // attachSystem::addToInsertSurfCtrl(System,*Bulk,
+  // 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
 				    PBeam->getCC("Sector3"));
 
   if (engActive)
-    {
       buildTwister(System);
-    }
+  else {
+    // if no -eng flag then Twister is not built -> must insert into Bulk
+    attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
+  }
 
   if (lowModType != "None")
     makeBeamLine(System,IParam);
