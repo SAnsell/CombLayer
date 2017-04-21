@@ -37,7 +37,7 @@ namespace essSystem
 
   class TelescopicPipe;
 
-class PBW : public attachSystem::ContainedGroup,
+class PBW : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset
 {
  private:
