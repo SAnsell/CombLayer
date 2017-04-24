@@ -159,6 +159,11 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 
   DB.writePOVRay(OX);
   
+  // Overwrite textures by a user-provided file textures.inc
+  OX << "#if (file_exists(\"textures.inc\"))" << std::endl;
+  OX << "#include \"textures.inc\"" << std::endl;
+  OX << "#end"  << std::endl;
+
   return;
 }
   
