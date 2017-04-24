@@ -231,14 +231,19 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
   
-  Control.addVariable("LinacDTL1EngineeringActive", 1);
+  Control.addVariable("LinacDTL1EngineeringActive", 0);
   Control.addVariable("LinacDTL1PMQ1Length", 10);
-  Control.addVariable("LinacDTL1PMQ1IntertankLength", 2);
-  Control.addVariable("LinacDTL1PMQ1IntertankRadius", 3);
-  Control.addVariable("LinacDTL1PMQ1IntertankWallThick", 1);
-  Control.addVariable("LinacDTL1PMQ1NLayers", 1);
-  Control.addVariable("LinacDTL1PMQ1Radius1", 5);
-  Control.addVariable("LinacDTL1PMQ1Mat1", "SS304L");
+  Control.addVariable("LinacDTL1PMQ1NLayers", 4);
+  Control.addVariable("LinacDTL1PMQ1Radius1", 1.0);
+  Control.addVariable("LinacDTL1PMQ1Mat1", "Void");
+  Control.addVariable("LinacDTL1PMQ1Radius2", 1.15);
+  Control.addVariable("LinacDTL1PMQ1Mat2", "Copper"); // rbfrend2-9100
+  Control.addVariable("LinacDTL1PMQ1Radius3", 2.9);
+  Control.addVariable("LinacDTL1PMQ1Mat3", "Void");
+  Control.addVariable("LinacDTL1PMQ1Radius4", 4.5);
+  ELog::EM << "LinacDTL1PMQ1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
+  Control.addVariable("LinacDTL1PMQ1Mat4", "SS304L");
+  
   Control.addVariable("LinacDTL1PMQ1CoverThick", 0.2);
   Control.addVariable("LinacDTL1AirMat", "Air");
 
