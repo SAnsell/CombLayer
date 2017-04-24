@@ -12,10 +12,21 @@
     finish { ambient 0.2 diffuse 0.3 crand 0.003 reflection 0 } normal {
     dents .5 scale .5 }}
 
+// Steel
+#declare mat3 = texture {
+	 pigment{color rgb<0.0,0.802342191,0.596864313> transmit 0 }
+	 finish {
+	 	ambient 0.1
+		diffuse 0.9
+		phong 1
+	 	metallic
+		}
+	 };
+
 
 // SkanskaConcrete
 #declare mat234 = texture { Concrete1 };
 // SS304L
 //#declare mat236 = texture { pigment { rgb <0.80, 0.45, 0.35> }
-//	                    finish {reflection {1.0} metallic 1 }
+//	                    finish {reflection {1.0} metallic }
 //			    };
