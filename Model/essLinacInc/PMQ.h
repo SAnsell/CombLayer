@@ -54,6 +54,7 @@ class PMQ : public attachSystem::ContainedComp,
   double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
   int airMat; ///< air material
+  size_t nBars; ///< Number of magnet bars
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -110,7 +110,8 @@ PMQ::PMQ(const PMQ& A) :
   length(A.length),
   nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
   mat(A.mat),
-  airMat(A.airMat)
+  airMat(A.airMat),
+  nBars(A.nBars)
   /*!
     Copy constructor
     \param A :: PMQ to copy
@@ -137,6 +138,7 @@ PMQ::operator=(const PMQ& A)
       radius=A.radius;
       mat=A.mat;
       airMat=A.airMat;
+      nBars=A.nBars;
       coverThick=A.coverThick;
     }
   return *this;
@@ -188,6 +190,7 @@ PMQ::populate(const FuncDataBase& Control)
 
   coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
   airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
+  nBars = Control.EvalVar<size_t>(keyName+"NBars");
 
   return;
 }

@@ -243,6 +243,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL1PMQ1Radius4", 4.5);
   ELog::EM << "LinacDTL1PMQ1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
   Control.addVariable("LinacDTL1PMQ1Mat4", "SS304L");
+
+  Control.addVariable("LinacDTL1PMQ1NBars", 16);
   
   Control.addVariable("LinacDTL1PMQ1CoverThick", 0.2);
   Control.addVariable("LinacDTL1AirMat", "Air");
