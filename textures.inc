@@ -15,3 +15,7 @@
 
 // SkanskaConcrete
 #declare mat234 = texture { Concrete1 };
+// SS304L
+//#declare mat236 = texture { pigment { rgb <0.80, 0.45, 0.35> }
+//	                    finish {reflection {1.0} metallic 1 }
+//			    };

@@ -1,13 +1,14 @@
 #version 3.7;
 #include  "colors.inc"
+#include "metals.inc"
 
 global_settings {
 assumed_gamma 1.0
 }
 
 camera {
-     location  < 250, -100, 0 >
-     look_at <0, 0, 0>
+     location  < 250, -160, 0 >
+     look_at <0, -1000, 0>
      sky z
      angle 90
 }
