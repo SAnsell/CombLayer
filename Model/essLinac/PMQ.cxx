@@ -193,6 +193,8 @@ PMQ::populate(const FuncDataBase& Control)
 
   airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
   nBars = Control.EvalVar<size_t>(keyName+"NBars");
+  if (nBars % 2)
+    throw ColErr::NumericalAbort(keyName+"NBars must be even");
   barHeight = Control.EvalVar<double>(keyName+"BarHeight");
   barThick = Control.EvalVar<double>(keyName+"BarThick");
 
@@ -251,9 +253,10 @@ PMQ::createSurfaces()
       Geometry::Plane *p = ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Y, theta);
       ModelSupport::buildShiftedPlane(SMap, SJ+2, p, -barThick/2.0);
       ModelSupport::buildShiftedPlane(SMap, SJ+3, p,  barThick/2.0);
+      ModelSupport::buildPlaneRotAxis(SMap, SJ+5, Origin, Z, Y, theta);
       SJ += 10;
     }
-  SMap.addMatch(SJ+1,SMap.realSurf(surfIndex+static_cast<int>(nLayers-1)*10+1));
+  //  SMap.addMatch(SJ+1,SMap.realSurf(surfIndex+static_cast<int>(nLayers-1)*10+1));
   return;
 }
 
@@ -269,7 +272,8 @@ PMQ::createObjects(Simulation& System)
   std::string Out,Side;
 
   int SI(surfIndex);
-  int SJ(surfIndex+static_cast<int>(nLayers-1)*10); // magnet bars
+  const int SJ0(surfIndex+static_cast<int>(nLayers-1)*10); // magnet bars
+  int SJ(SJ0); // magnet bars
   for (size_t i=0; i<nLayers; i++)
     {
       if (i==0)
@@ -279,10 +283,11 @@ PMQ::createObjects(Simulation& System)
 	} else if (i==2) // magnet goes there
 	{
 	  Side=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10," 1 -2 -7M 7N ");
-	  for (size_t j=0; j<nBars;j++)
+	  // first loop builds bars, 2nd - area betwen them
+	  for (size_t j=0; j<nBars/2;j++)
 	    {
-	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 1 -1M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Side));
+	      Out=ModelSupport::getComposite(SMap,SJ," 2 -3 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out+Side));
 	      SJ += 10;
 	    }
 	} else
