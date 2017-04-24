@@ -247,8 +247,8 @@ EssLinacVariables(FuncDataBase& Control)
   // PMQ parameters are from:
   // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
   Control.addVariable("LinacDTL1PMQ1NBars", 16); //  // DePrisco2015, page 1
-  Control.addVariable("LinacDTL1PMQ1BarHeight", 14); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL1PMQ1BarThick",   4); // DePrisco2015, fig 2
+  Control.addVariable("LinacDTL1PMQ1BarHeight", 1.4); // DePrisco2015, fig 2
+  Control.addVariable("LinacDTL1PMQ1BarThick",  0.4); // DePrisco2015, fig 2
   
   Control.addVariable("LinacDTL1AirMat", "Air");
 

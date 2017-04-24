@@ -239,6 +239,21 @@ PMQ::createSurfaces()
       SI += 10;
     }
 
+  // magnet bars
+  int SJ(surfIndex+static_cast<int>(nLayers-1)*10); // magnet bars
+  double theta(0.0);
+  const double dTheta = 360.0/nBars;
+  Geometry::Vec3D dirX(X);
+  for (size_t i=0; i<nBars; i++)
+    {
+      theta = i*dTheta;
+      //      Geometry::Quaternion::calcQRotDeg(theta,Y).rotate(dirX);
+      Geometry::Plane *p = ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Y, theta);
+      ModelSupport::buildShiftedPlane(SMap, SJ+2, p, -barThick/2.0);
+      ModelSupport::buildShiftedPlane(SMap, SJ+3, p,  barThick/2.0);
+      SJ += 10;
+    }
+  SMap.addMatch(SJ+1,SMap.realSurf(surfIndex+static_cast<int>(nLayers-1)*10+1));
   return;
 }
 
@@ -251,19 +266,30 @@ PMQ::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PMQ","createObjects");
 
-  std::string Out;
+  std::string Out,Side;
 
   int SI(surfIndex);
+  int SJ(surfIndex+static_cast<int>(nLayers-1)*10); // magnet bars
   for (size_t i=0; i<nLayers; i++)
     {
       if (i==0)
 	{
 	  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
+	} else if (i==2) // magnet goes there
+	{
+	  Side=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10," 1 -2 -7M 7N ");
+	  for (size_t j=0; j<nBars;j++)
+	    {
+	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 1 -1M ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Side));
+	      SJ += 10;
+	    }
 	} else
 	{
 	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 1 -2 -7M 7N ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
 	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
       SI += 10;
     }
 
