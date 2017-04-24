@@ -108,10 +108,10 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBlockShutterDefMat","Stainless304");
 
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"lokiPipeB",6.0,44.0);
+  PipeGen.generatePipe(Control,"lokiPipeB",7.0,43.0);
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateBender(Control,"lokiBB",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeBLink",2.0,44.0);
@@ -198,7 +198,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiAppAInnerHeight",5.0);
   Control.addVariable("lokiAppAWidth",100.0);
   Control.addVariable("lokiAppAHeight",20.0);
-  Control.addVariable("lokiAppADepth",20.0);
+  Control.addVariable("lokiAppAThick",20.0);
   Control.addVariable("lokiAppAYStep",5.0); 
   Control.addVariable("lokiAppADefMat","Tungsten");
 
@@ -220,10 +220,10 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCollBMat","Copper"); 
 
   Control.addVariable("lokiAppBInnerWidth",4.0);
-  Control.addVariable("lokiAppBInnerHeight",9.0);
-  Control.addVariable("lokiAppBWidth",60.0);
-  Control.addVariable("lokiAppBHeight",5.0);
-  Control.addVariable("lokiAppBDepth",5.0);
+  Control.addVariable("lokiAppBInnerHeight",4.0);
+  Control.addVariable("lokiAppBWidth",10.0);
+  Control.addVariable("lokiAppBHeight",10.0);
+  Control.addVariable("lokiAppBThick",5.0);
   Control.addVariable("lokiAppBYStep",5.0); 
   Control.addVariable("lokiAppBDefMat","Tungsten");
 

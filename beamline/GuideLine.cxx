@@ -779,7 +779,7 @@ GuideLine::getXSectionOut(const size_t shapeIndex,
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
-    \param shapelayerIndex :: Layer number [numberd from outside]
+    \param shapeLayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {

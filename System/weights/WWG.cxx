@@ -133,7 +133,6 @@ WWG::resetMesh(const std::vector<double>& W)
 {
   ELog::RegMethod RegA("WWG","resetMesh");
   
-  const long int WSize=static_cast<long int>(W.size());
 
   // boundaries need to be  2 or greater
   const long int LX=static_cast<long int >(Grid.getXSize());
@@ -156,10 +155,7 @@ WWG::resetMesh(const std::vector<double>& W)
       for(long int k=0;k<LZ;k++)
 	for(long int e=0;e<EBSize;e++)
 	  {
-	    if (WSize>e)
-	      WMesh[i][j][k][e]=0.0;   // W[static_cast<size_t>(e)];
-	    else
-	      WMesh[i][j][k][e]=0.0;
+	    WMesh[i][j][k][e]=0.0;   // W[static_cast<size_t>(e)];
 	  }
 
   
@@ -202,7 +198,7 @@ WWG::updateWM(const WWGWeight& UMesh,
     Mulitiply the wwg:master mesh by factors in WWGWeight
     It assumes that the mesh size and WWGWeight are compatable.
     \param UMesh :: Weight window mesh to update
-    \param scaleFactor :: Scale factor for track
+    \param scaleFactor :: Scale factor for track [exp(-scale)]
    */
 {
   ELog::RegMethod RegA("WWG","updateWM");
@@ -216,26 +212,32 @@ WWG::updateWM(const WWGWeight& UMesh,
   const long int NZ=UMesh.getZSize();
   const long int NE=UMesh.getESize();
 
+  double MinMesh(1e8);
+  double MinW(1e8);
   double W;
+  
   for(long int i=0;i<NX;i++)
     for(long int j=0;j<NY;j++)
       for(long int k=0;k<NZ;k++)
 	for(long int e=0;e<NE;e++)
 	  {
 	    W=UGrid[i][j][k][e]*scaleFactor;
-	    if (W>-20)
+	    if (W>-40)
 	      {
 		W=exp(W);
 		WMesh[i][j][k][e]+=W;
-
+		if (WMesh[i][j][k][e]<MinMesh)
+		  MinMesh=WMesh[i][j][k][e];
+		if (W<MinW)
+		  MinW=W;
+			 
 	      }
 	  }
+  ELog::EM<<"Min == "<<MinW<<" "<<MinMesh<<" "<<scaleFactor<<ELog::endDiag;
   
   return;
 }
 
-
-  
   
 void 
 WWG::writeHead(std::ostream& OX) const
@@ -278,7 +280,7 @@ WWG::powerRange(const double pR)
   double* TData=WMesh.data();
 
   const size_t NData=WMesh.num_elements();
-  if (NData)
+  if (NData && std::abs(pR-1.0)>Geometry::zeroTol)
     {
       ELog::EM<<"power range == "<<pR<<ELog::endDiag;
       for(size_t i=0;i<NData;i++)
@@ -286,7 +288,30 @@ WWG::powerRange(const double pR)
     }
   return;
 }
-  
+
+void
+WWG::normalize()
+  /*!
+    Normalize the mesh to have a max at 0.0 
+    (note it is a log scale
+  */
+{
+  ELog::RegMethod RegA("WWG","normalize");
+
+  double* TData=WMesh.data();
+
+  const size_t NData=WMesh.num_elements();
+  if (NData)
+    {
+      const double maxValue = *std::max_element(TData,TData+NData-1);
+      ELog::EM<<"Rescaling to max value == "<<maxValue<<ELog::endDiag;
+      if (maxValue>1e-38)
+	for(size_t i=0;i<NData;i++)
+	  TData[i]/=maxValue;
+    }
+  return;
+}
+
 void
 WWG::scaleRange(const double minR,const double maxR)
   /*!
@@ -315,16 +340,6 @@ WWG::scaleRange(const double minR,const double maxR)
   return;
 }
   
-void
-WWG::normalize()
-  /*!
-    Normalize the mesh to have a max at 1.0 to 0.0
-  */
-{
-  ELog::RegMethod RegA("WWG","normalize");
-  scaleRange(0,1.0);
-  return;
-}
   
 void
 WWG::scaleMeshItem(const size_t I,const size_t J,const size_t K,
@@ -394,15 +409,15 @@ WWG::writeWWINP(const std::string& FName) const
   const long int YSize(static_cast<long int>(WMesh.shape()[1]));
   const long int ZSize(static_cast<long int>(WMesh.shape()[2]));
   const long int ESize(static_cast<long int>(WMesh.shape()[3]));
-
   for(long int EI=0;EI<ESize;EI++)
     {
+      itemCnt=0;
       for(long int K=0;K<ZSize;K++)
 	for(long int J=0;J<YSize;J++)
 	  for(long int I=0;I<XSize;I++)
 	    StrFunc::writeLine(OX,WMesh[I][J][K][EI],itemCnt,6);
+      if (itemCnt)   OX<<std::endl;
     }
-  OX<<std::endl;
   OX.close();
 		       
   return;

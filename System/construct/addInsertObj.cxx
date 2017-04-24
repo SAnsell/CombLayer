@@ -85,6 +85,7 @@
 #include "insertPlate.h"
 #include "insertSphere.h"
 #include "insertCylinder.h"
+#include "insertCurve.h"
 #include "addInsertObj.h"
 
 
@@ -92,6 +93,63 @@
 
 namespace constructSystem
 {
+
+void
+addInsertCurveCell(Simulation& System,
+                   const std::string& objName,
+                   const Geometry::Vec3D& APt,
+                   const Geometry::Vec3D& BPt,
+                   const int yFlag,
+                   const Geometry::Vec3D& ZAxis,
+		   const double radius,
+                   const double width,
+		   const double height,
+		   const std::string& mat)
+  /*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: object name
+    \param APt :: Begin point
+    \param BPt :: End point
+    \param yFlag :: y rotation +/-
+    \param ZAxis :: Axis out of plane
+    \param radius :: radial size
+    \param width :: Full gap
+    \param height :: Full height
+    \param mat :: Material 
+  */
+{
+  ELog::RegMethod RegA("addInsertObj","addInsertCurveCell(FC)");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertCurve>
+    TCurve(new constructSystem::insertCurve(objName));
+
+  OR.addObject(TCurve);
+ 
+  // calc proper length
+  const Geometry::Vec3D YDir((BPt-APt).unit());
+  const Geometry::Vec3D XDir(ZAxis*YDir*yFlag);
+  const double Dist=APt.Distance(BPt)/2.0;
+  const double hplus=radius-sqrt(radius*radius-Dist*Dist);
+  const Geometry::Vec3D CentPos=XDir*hplus+(BPt+APt)/2.0;
+  
+  const double theta=asin(Dist/radius);
+  const double length=2*radius*theta;
+
+  TCurve->setValues(radius,length,width,height,mat);
+  TCurve->createAll(System,CentPos,XDir,ZAxis);
+
+  return;
+}
 
 void
 addInsertCylinderCell(Simulation& System,
@@ -112,7 +170,7 @@ addInsertCylinderCell(Simulation& System,
     \param linkName :: link direction
     \param XYZStep :: Step in xyz direction
     \param radius :: radial size
-    \param length :: full length
+    \param length :: full height
     \param mat :: Material 
   */
 {
@@ -144,8 +202,7 @@ addInsertCylinderCell(Simulation& System,
                       const std::string& objName,
                       const Geometry::Vec3D& CentPos,
                       const Geometry::Vec3D& YAxis,
-                      const double radius,
-                      const double length,
+                      const double radius,const double length,
                       const std::string& mat)
   /*!
     Adds a cell for tallying in 
@@ -155,7 +212,6 @@ addInsertCylinderCell(Simulation& System,
     \param CentPos :: Central positoin
     \param YAxis :: Direction along Y
     \param radius :: radius
-    \param length :: length of object
     \param mat :: material
   */
 {
@@ -256,7 +312,7 @@ addInsertPlateCell(Simulation& System,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+ 
   System.populateCells();
   System.validateObjSurfMap();
 

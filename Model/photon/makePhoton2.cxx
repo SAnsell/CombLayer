@@ -203,7 +203,7 @@ makePhoton2::build(Simulation& System,
   centralSupport->addInsertCell(voidCell);
   centralSupport->createAll(System,*PModObj,-1);
 
-  centralTubes->addInsertCell(voidCell);
+  //  centralTubes->addInsertCell(voidCell);
   centralTubes->addInsertCell(centralSupport->getCell("Main"));
   centralTubes->createAll(System,*centralSupport,0);
   

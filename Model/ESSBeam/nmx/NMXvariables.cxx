@@ -140,6 +140,18 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxCollALength",30.0);
   Control.addVariable("nmxCollAMat","Tungsten");
 
+  Control.addVariable("nmxMainShutterYStep",3.0);
+  Control.addVariable("nmxMainShutterLiftZStep",0.0);
+  Control.addVariable("nmxMainShutterWidth",5.0);
+  Control.addVariable("nmxMainShutterHeight",5.0);
+  Control.addVariable("nmxMainShutterLength",20.0);
+  Control.addVariable("nmxMainShutterNLayers",1);
+  Control.addVariable("nmxMainShutterMat0","Stainless304");
+
+  Control.addVariable("nmxMainShutterSurroundThick",1.0);
+  Control.addVariable("nmxMainShutterSurroundMat","Aluminium");
+  Control.addVariable("nmxMainShutterTopVoid",6.0);
+  
   return;
 }
 

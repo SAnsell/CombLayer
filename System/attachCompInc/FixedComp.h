@@ -24,6 +24,13 @@
 
 class localRotate;
 class HeadRule;
+/*!
+  \namespace attachSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief General linking/contained holders
+*/
 
 
 namespace attachSystem
@@ -141,7 +148,7 @@ class FixedComp
   /// Access beamOrigin
   virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
 
-  virtual int getExitWindow(const size_t,std::vector<int>&) const;
+  virtual int getExitWindow(const long int,std::vector<int>&) const;
   virtual int getMasterSurf(const size_t) const;
 			 
   void copyLinkObjects(const FixedComp&);

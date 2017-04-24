@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,10 @@
 #include "variableSetup.h"
 #include "singleItemVariables.h"
 
+#include "CryoGenerator.h"
+#include "BladeGenerator.h"
+#include "TwinGenerator.h"
+
 namespace setVariable
 {
 
@@ -69,6 +73,25 @@ SingleItemVariables(FuncDataBase& Control)
 
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
+
+  setVariable::CryoGenerator CryGen;
+  CryGen.generateFridge(Control,"singleCryo",3.0,-10,4.5);
+
+  setVariable::TwinGenerator TGen;
+  TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);  
+
+  setVariable::BladeGenerator BGen;
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"singleBBladeTop",-2.0,22.5,35.0);
+
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"singleBBladeLow",2.0,22.5,35.0);
+
+  
   return;
 }
 

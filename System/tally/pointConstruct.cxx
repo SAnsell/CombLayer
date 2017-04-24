@@ -166,7 +166,6 @@ pointConstruct::processPoint(Simulation& System,
       
       processPointFree(System,PPoint,WindowPts);
     }
-
   else if (PType=="window")
     {
       const std::string place=
@@ -248,23 +247,20 @@ pointConstruct::processPointWindow(Simulation& System,
   Geometry::Vec3D orgPoint;
   Geometry::Vec3D BAxis;
   int masterPlane(0);
-  const int negAxis= (linkPt<0) ? -1 : 1;
-  linkPt*=negAxis;
   if (linkPt!=0)
     {
       const attachSystem::FixedComp* TPtr=
 	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
-      const size_t iLP=static_cast<size_t>(linkPt-1);
-
-      masterPlane=TPtr->getExitWindow(iLP,Planes);
-      orgPoint= TPtr->getLinkPt(iLP); 
-      BAxis= TPtr->getLinkAxis(iLP)*negAxis;
-      TPoint=orgPoint+BAxis*(beamDist-timeStep);
+      masterPlane=TPtr->getExitWindow(linkPt,Planes);
+      orgPoint= TPtr->getSignedLinkPt(linkPt); 
+      BAxis= TPtr->getSignedLinkAxis(linkPt);
+      TPoint=orgPoint+BAxis*beamDist;
       
       ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;
       ELog::EM<<"Link Axis    == "<<BAxis<<ELog::endDiag;
       ELog::EM<<"Tally Point  == "<<TPoint<<ELog::endDiag;
+      ELog::EM<<"TimeStep  == "<<timeStep<<ELog::endDiag;
 
     }
   // Add tally:
@@ -273,8 +269,10 @@ pointConstruct::processPointWindow(Simulation& System,
       ELog::EM<<"Failed to set tally : Object "<<FObject<<ELog::endErr;
       return;
     }
-
-
+  // Remove dividing plane [not used]
+  if (Planes.size()>4) Planes.resize(4);
+     
+  ELog::EM<<"Plane size == "<<Planes.size()<<ELog::endDiag;
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,orgPoint);
@@ -380,7 +378,6 @@ pointConstruct::calcWindowIntercept(const int bPlane,
 				    const Geometry::Vec3D& viewPoint)
   /*!
     Calculate the window for the point tally
-    \param System :: Simulation item
     \param bPlane :: back plane/ cylinder /sphere etc.
     \param EdgeSurf :: In pairs
     \param viewPoint :: Point to start view
@@ -401,7 +398,13 @@ pointConstruct::calcWindowIntercept(const int bPlane,
 	    VList.push_back(Out);
 	}
     }
-  ELog::EM<<"Check for only 4 points here"<<ELog::endCrit;
+  // remove most distant point
+  std::sort(VList.begin(),VList.end(),
+	    [&viewPoint](const Geometry::Vec3D& A,
+			 const Geometry::Vec3D& B) -> bool
+	    { return viewPoint.Distance(A)<viewPoint.Distance(B); }
+	    );
+  VList.resize(4);
   
   return VList;
 }

@@ -3,7 +3,7 @@
  
  * File:   singleBuildItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,9 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -70,6 +73,9 @@
 #include "World.h"
 #include "AttachSupport.h"
 
+#include "Cryostat.h"
+#include "TwinChopper.h"
+#include "DiskChopper.h"
 #include "makeSingleItem.h"
 
 namespace singleItemSystem
@@ -79,10 +85,7 @@ makeSingleItem::makeSingleItem()
  /*!
     Constructor
  */
-{
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-}
+{}
 
 
 makeSingleItem::~makeSingleItem()
@@ -104,7 +107,27 @@ makeSingleItem::build(Simulation& System,
   ELog::RegMethod RegA("makeSingleItem","build");
 
   int voidCell(74123);
+
+  constructSystem::TwinChopper TwinB("singleTwinB");
+  constructSystem::DiskChopper BDiskTop("singleBBladeTop");
+  constructSystem::DiskChopper BDiskLow("singleBBladeLow");
+
+  TwinB.addInsertCell(voidCell);
+  TwinB.createAll(System,World::masterOrigin(),0);
+
+  BDiskLow.addInsertCell(TwinB.getCell("Void"));
+  BDiskLow.createAll(System,TwinB.getKey("Motor"),6,
+                      TwinB.getKey("BuildBeam"),-1);
+
+  BDiskTop.addInsertCell(TwinB.getCell("Void"));
+  BDiskTop.createAll(System,TwinB.getKey("Motor"),3,
+                      TwinB.getKey("BuildBeam"),-1);
   
+
+  return;
+  constructSystem::Cryostat A("singleCryo");  
+  A.addInsertCell(voidCell);
+  A.createAll(System,World::masterOrigin(),0);
   return;
 }
 

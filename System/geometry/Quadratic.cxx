@@ -577,14 +577,23 @@ Quadratic::writeFLUKA(std::ostream& OX) const
 void
 Quadratic::writePOVRay(std::ostream& OX) const
   /*!
-    Writes out  an Fluka surface description [free format]
-    \param OX :: Output stream (required for multiple std::endl)
+  /*! 
+    Write out the cylinder for POV-Ray
+    POVray required Ax^2+By^2+Cz^2+Dxy+Exz+Fyz+Gx+Hy+Jz+K=0
+    \param OX :: output stream
   */
 {
   ELog::RegMethod RegA("Quadratic","writePOVRay");
   masterWrite& MW=masterWrite::Instance();
   
-  ELog::EM<<"# Currenly unknow to write POV"<<ELog::endWarn;
+  OX<<"#declare s"<<getName()<<" = quadric{ \n"
+    <<"<"
+    <<MW.Num(BaseEqn[0])<<" "<<MW.Num(BaseEqn[1])<<" "<<MW.Num(BaseEqn[2])
+    <<">,<"
+    <<MW.Num(BaseEqn[3])<<" "<<MW.Num(BaseEqn[4])<<" "<<MW.Num(BaseEqn[5])
+    <<">,<"
+    <<MW.Num(BaseEqn[6])<<" "<<MW.Num(BaseEqn[7])<<" "<<MW.Num(BaseEqn[8])
+    <<">,"<<MW.Num(BaseEqn[9])<<"\n"<<" }"<<std::endl;  
   return;
 }
   

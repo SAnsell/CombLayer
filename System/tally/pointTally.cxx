@@ -679,6 +679,8 @@ pointTally::write(std::ostream& OX) const
 
   if (!isActive())
     return;
+
+
   
   std::stringstream cx;
   if (IDnum)  // maybe default 
@@ -687,18 +689,23 @@ pointTally::write(std::ostream& OX) const
       writeParticles(cx);
       cx<<Centre<<" "<<Radius;
       StrFunc::writeMCNPX(cx.str(),OX);
-      if (mcnp6Out)
-	writeMCNP6(OX);
     }
+
   if (!fuCard.empty() || fuFlag)
     {
       cx.str("");
       cx<<"fu"<<IDnum<<" "<<fuCard;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
-  else if (!mcnp6Out && !Window.empty())
-    StrFunc::writeMCNPX(StrFunc::makeString("fu",IDnum),OX);
-
+  
+  if ( !Window.empty() )
+    {
+      if ( !mcnp6Out )
+        StrFunc::writeMCNPX(StrFunc::makeString("fu",IDnum),OX);
+      else
+        writeMCNP6(OX);
+    }
+            
   writeFields(OX);
   return;
 }

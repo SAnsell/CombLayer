@@ -3,7 +3,7 @@
  
  * File:   tally/surfaceConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,6 +112,7 @@ surfaceConstruct::processSurface(Simulation& System,
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
+    \return 1 on success / 0 on failure 
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurface");
@@ -190,6 +191,7 @@ surfaceConstruct::processSurfObject(Simulation& System,
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param linkN :: surface exclude number for making a region of interest
+    \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfObject");
@@ -230,6 +232,7 @@ surfaceConstruct::processSurfMap(Simulation& System,
     \param SObject :: SurfMap object for surfaces
     \param SurfUnit :: Object within surfMap
     \param linkPt :: Link point [-ve for beam object]
+    \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
@@ -266,6 +269,7 @@ surfaceConstruct::processSurfaceCurrent(Simulation& System,
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
+    \return 1 on success / 0 on failure 
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfaceCurrent");
@@ -282,6 +286,7 @@ surfaceConstruct::processSurfaceFlux(Simulation& System,
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
+    \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfaceCurrent");
@@ -295,7 +300,7 @@ void
 surfaceConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<"Surface tally options:\n"

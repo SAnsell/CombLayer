@@ -3,7 +3,7 @@
  
  * File:   attach/FrontBackCut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,7 +171,7 @@ void
 FrontBackCut::setBack(const std::string& FRule)
   /*!
     Set a back wall
-    \param BRule :: Back rule string
+    \param FRule :: Back rule string
   */
 {
   ELog::RegMethod RegA("FrontBackCut","setBack(string)");

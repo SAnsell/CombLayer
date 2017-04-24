@@ -47,8 +47,7 @@ my @systemInclude = qw(
                      endfInc funcBaseInc geomInc inputInc logInc md5Inc 
                      mersenneInc monteInc physicsInc polyInc processInc 
                      simMCInc sourceInc supportInc tallyInc 
-                     visitInc weightsInc 
-                     worldInc workInc xmlInc 
+                     visitInc weightsInc worldInc workInc xmlInc 
                      );
 
 my @incdir=qw( include beamlineInc globalInc instrumentInc 
@@ -78,8 +77,9 @@ $gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp","visit",
                              "beer","bifrost","cspec","dream","estia",
-			     "freia","loki","magic","miracles","nmx","nnbar",
-                             "odin","testBeam","trex","vor","vespa",
+			     "freia","heimdal","loki","magic","miracles",
+			     "nmx","nnbar","odin","testBeam","trex",
+			     "vor","vespa",
 			     "shortDream","shortNmx","shortOdin","longLoki",
 			     "commonVar","simpleItem"
     	 	             ]);
@@ -104,11 +104,12 @@ $gM->addDepUnit("essBeamline",
 			     "endf","process","world","work",
 			     "monte","geometry","mersenne","src","xml","poly",
 			     "weights","global","attachComp","visit",
-                             "beer","bifrost","cspec","dream","estia",
-			     "freia","loki","magic","miracles","nmx","nnbar",
-                             "odin","testBeam","trex","vor","vespa",
-			      "shortDream","shortNmx","shortOdin",
-			      "longLoki","commonVar","simpleItem"
+			     "beer","bifrost","cspec","dream","estia",
+			     "freia","heimdal","loki","magic","miracles",
+			     "nmx","nnbar","odin","testBeam","trex",
+			     "vor","vespa",
+			     "shortDream","shortNmx","shortOdin",
+			     "longLoki","commonVar","simpleItem"
     	 	             ]);
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
@@ -248,7 +249,8 @@ $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src","simMC",
 			       "source","monte","funcBase","log","monte",
 			       "tally","geometry","mersenne","src","world",
 			       "work","xml","poly","support","weights",
-			       "md5","global","attachComp","visit","poly"]);
+			       "md5","global","attachComp","visit","poly",
+			       "commonVar"]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",

@@ -25,7 +25,6 @@
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
   class CellMap;
 }
 

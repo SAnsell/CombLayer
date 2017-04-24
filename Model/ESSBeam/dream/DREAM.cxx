@@ -155,6 +155,7 @@ DREAM::DREAM(const std::string& keyName) :
 
  /*!
     Constructor
+    \param keyName :: main instrument name
  */
 {
   ELog::RegMethod RegA("DREAM","DREAM");

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   d4cModelInc/DetectorArray.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,14 @@
 #define instrumentSystem_DetectorArray_h
 
 class Simulation;
+
+/*!
+  \namespace d4cSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief Model component for simulating D4C
+*/
 
 namespace d4cSystem
 {

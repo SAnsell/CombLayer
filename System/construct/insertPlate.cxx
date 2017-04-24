@@ -226,7 +226,6 @@ insertPlate::createSurfaces()
   ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
   ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
 
-
   if (!frontActive())
     setSurf("Front",ptIndex+1);
   else
@@ -252,6 +251,7 @@ insertPlate::createLinks()
 {
   ELog::RegMethod RegA("insertPlate","createLinks");
 
+  FixedComp::setNConnect(14);
   if (frontActive())
     {
       setLinkSurf(0,getFrontRule());

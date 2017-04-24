@@ -25,7 +25,6 @@
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
   class CellMap;
 }
 
@@ -199,17 +198,17 @@ class VESPA : public attachSystem::CopiedComp
 
   /// Jaws in cave
   std::shared_ptr<constructSystem::JawSet> VJaws;
-
   /// Sample
   std::shared_ptr<instrumentSystem::CylSample> Sample;
   /// Cryostat
   std::shared_ptr<constructSystem::Cryostat> Cryo;
 
-  /// Array of crystals and detectors
+  /// Array of crystals
   std::vector<std::shared_ptr<constructSystem::CrystalMount>> XStalArray;
+  /// Array of detectors
   std::vector<std::shared_ptr<constructSystem::TubeDetBox>> ADetArray;
 
-  void setBeamAxis(const GuideItem&,const bool);
+  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);

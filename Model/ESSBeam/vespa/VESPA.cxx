@@ -273,16 +273,19 @@ VESPA::~VESPA()
 {}
 
 void
-VESPA::setBeamAxis(const GuideItem& GItem,
+VESPA::setBeamAxis(const FuncDataBase& Control,
+		   const GuideItem& GItem,
                    const bool reverseZ)
   /*!
     Set the primary direction object
+    \param Control :: Database for variables
     \param GItem :: Guide Item to 
     \param reverseZ :: Reverse axis
    */
 {
   ELog::RegMethod RegA("VESPA","setBeamAxis");
 
+  vespaAxis->populate(Control);
   vespaAxis->createUnitVector(GItem);
   vespaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
   vespaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
@@ -715,7 +718,7 @@ VESPA::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
 
-  setBeamAxis(GItem,0);
+  setBeamAxis(Control,GItem,0);
     
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

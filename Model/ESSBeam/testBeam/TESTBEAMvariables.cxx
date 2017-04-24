@@ -57,11 +57,11 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "CryoGenerator.h"
 
 namespace setVariable
 {
- 
-  
+   
 void
 TESTBEAMvariables(FuncDataBase& Control)
   /*!
@@ -79,6 +79,7 @@ TESTBEAMvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
   setVariable::JawGenerator JawGen;
+  setVariable::CryoGenerator CryGen;
 
   Control.addVariable("testBeamStartPoint",0);
   Control.addVariable("testBeamStopPoint",0);
@@ -96,69 +97,38 @@ TESTBEAMvariables(FuncDataBase& Control)
 
   FGen.setGuideMat("Copper");
   FGen.setYOffset(8.0);
-  FGen.generateTaper(Control,"testBeamFA",350.0,7.6,4.02,5.0,7.6250);
+  FGen.generateTaper(Control,"testBeamFA",350.0, 10.0,6.0, 12.0,12.0);
 
-  TGen.generateChopper(Control,"testTwinA",0.0,30.0,18.0);  
-
-  // Single Blade chopper
-  BGen.setThick({0.2});
-  BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"testBladeA",-2.0,22.5,33.5);
+  TGen.generateChopper(Control,"testBeamTwinA",0.0,30.0,18.0);  
 
   // Single Blade chopper
   BGen.setThick({0.2});
   BGen.addPhase({95,275},{30.0,30.0});
-  BGen.generateBlades(Control,"testBladeB",2.0,22.5,33.5);
+  BGen.generateBlades(Control,"testBeamBladeA",-2.0,22.5,33.5);
 
+  // Single Blade chopper
+  BGen.setThick({0.2});
+  BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"testBeamBladeB",2.0,22.5,33.5);
 
-  Control.addVariable("testCryoASampleRadius",0.75);
-  Control.addVariable("testCryoASampleHeight",2.0);
+  // T0 chopper:
+  CGen.setMaterial("Stainless304","Aluminium");
+  CGen.generateChopper(Control,"testBeamChopperT0",120.0,36.0,32.0);
+
+  // T0 Chopper disk 
+  BGen.setMaterials("Inconnel","Tungsten");
+  BGen.setThick({5.0});
+  BGen.setInnerThick({5.4});
+  BGen.addPhase({90,270},{30.0,30.0});
+
+  Control.addVariable("testBeamT0MotorLength",20.0);
+  Control.addVariable("testBeamT0MotorRadius",5.0);
+  Control.addVariable("testBeamT0MotorMat","Copper");
   
-  Control.addVariable("testCryoAVoidRadius",5.0);
-  Control.addVariable("testCryoAVoidDepth",12.0);
-  Control.addVariable("testCryoAVoidHeight",6.0);
-  Control.addVariable("testCryoAVoidWallThick",0.5);
+  BGen.generateBlades(Control,"testBeamT0Disk",0.0,25.0,35.0);
 
-  Control.addVariable("testCryoAStickLen",105.0);
-  Control.addVariable("testCryoAStickRadius",0.6);
-
-  Control.addVariable("testCryoAStickBoreRadius",1.8);
-  Control.addVariable("testCryoAStickBoreHeight",107.0-12.0);
-  Control.addVariable("testCryoAStickBoreThick",0.5);
-
-  Control.addVariable("testCryoAHeatRadius",8.0);
-  Control.addVariable("testCryoAHeatHeight",11.0);
-  Control.addVariable("testCryoAHeatDepth",16.0);
-  Control.addVariable("testCryoAHeatThick",0.5);
-
-  Control.addVariable("testCryoATailRadius",11.0);
-  Control.addVariable("testCryoATailHeight",7.0);
-  Control.addVariable("testCryoATailDepth",18.5);
-  Control.addVariable("testCryoATailThick",0.5);
-
-  Control.addVariable("testCryoAHeatOuterRadius",13.5);
-  Control.addVariable("testCryoAHeatOuterLift",15.0);
-
-  Control.addVariable("testCryoALiqN2InnerRadius",15.6);
-  Control.addVariable("testCryoALiqN2OuterRadius",21.2);
-  Control.addVariable("testCryoALiqN2WallThick",0.5);
-  Control.addVariable("testCryoALiqN2Height",53.0);
-  
-  Control.addVariable("testCryoALiqHeInnerRadius",5.7);
-  Control.addVariable("testCryoALiqHeOuterRadius",12.85);
-  Control.addVariable("testCryoALiqHeWallThick",0.5);
-  Control.addVariable("testCryoALiqHeHeight",51.0);
-  Control.addVariable("testCryoALiqHeExtraLift",2.0);
-
-  Control.addVariable("testCryoATailOuterRadius",22.80);
-  Control.addVariable("testCryoATailOuterHeight",89.0);
-  Control.addVariable("testCryoATailOuterLift",12.0);
-
-  Control.addVariable("testCryoASampleMat","H2O");
-  Control.addVariable("testCryoAWallMat","Aluminium");
-  Control.addVariable("testCryoAStickMat","Stainless304");
-  Control.addVariable("testCryoALiqN2Mat","LiqN2");
-  Control.addVariable("testCryoALiqHeMat","LiqHelium");
+  // CRYOSTAT
+  CryGen.generateFridge(Control,"testBeamCryoA",10.0,-10,4.5);
 
 
 

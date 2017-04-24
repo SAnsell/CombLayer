@@ -82,6 +82,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperUnit.h"
+#include "Motor.h"
 #include "TwinChopper.h"
 #include "Cryostat.h"
 
@@ -96,11 +97,14 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   testAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
+  
   TwinA(new constructSystem::TwinChopper(newName+"TwinA")),
-
   ADisk(new constructSystem::DiskChopper(newName+"BladeA")),
   BDisk(new constructSystem::DiskChopper(newName+"BladeB")),
 
+  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")), 
+  T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
+  T0Motor(new constructSystem::Motor(newName+"T0Motor")),
   CryoA(new constructSystem::Cryostat(newName+"CryoA"))
   /*!
     Constructor
@@ -122,10 +126,13 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   OR.addObject(ADisk);
   OR.addObject(BDisk);
 
+  OR.addObject(ChopperT0);  
+  OR.addObject(T0Disk);
+  OR.addObject(T0Motor);
+
   OR.addObject(CryoA);
 
 }
-
   
 TESTBEAM::~TESTBEAM()
   /*!
@@ -176,11 +183,20 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
 {
   ELog::RegMethod RegA("TESTBEAM","buildBunkerUnits");
 
+  ChopperT0->addInsertCell(bunkerVoid);
+  ChopperT0->createAll(System,FA,startIndex);
+
+  T0Disk->addInsertCell(ChopperT0->getCell("Void"));
+  T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
+                    ChopperT0->getKey("BuildBeam"),0);
+
+  T0Motor->addInsertCell(bunkerVoid);
+  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
+  return;
   CryoA->addInsertCell(bunkerVoid);
   CryoA->createAll(System,FA,startIndex);
-  return;
-  
-  
+
+    
   TwinA->addInsertCell(bunkerVoid);
   TwinA->createAll(System,FA,startIndex);
 

@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1674,20 +1674,25 @@ FixedComp::getMasterSurf(const size_t outIndex) const
 }
 
 int
-FixedComp::getExitWindow(const size_t outIndex,
+FixedComp::getExitWindow(const long int sideIndex,
 			 std::vector<int>& window) const
   /*!
     Generic exit window system : 
     -- Requires at least 6 surfaces
     -- Requires 3-6 to be sign surf
-    \param outIndex :: Direction 0  for entry 1 for exit
+    \param sideIndex :: Link point
     \param window :: window vector of paired planes
     \return Viewed surface
   */
 {
   ELog::RegMethod RegA("FixedComp","getExitWindow");
-  if (LU.size()<6)
+  if (LU.size()<5)
     throw ColErr::IndexError<size_t>(LU.size(),6,"Link size too small");
+
+  const size_t outIndex((sideIndex>0) ?
+			static_cast<size_t>(sideIndex)-1 :
+			static_cast<size_t>(-sideIndex)-1);
+			
   if (outIndex>LU.size())
     throw ColErr::IndexError<size_t>(outIndex,6,"outIndex too big");
 

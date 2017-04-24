@@ -205,8 +205,7 @@ BaseMap::setItems(const std::string& Key,
   /*!
     Insert a set of cells
     \param Key :: Keyname
-    \param cVec ::  
-    \param CNB :: Item number [End]
+    \param cVec ::  Cell list
   */
 {
   ELog::RegMethod RegA("BaseMap","setItems<Vector>");

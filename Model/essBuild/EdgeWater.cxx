@@ -311,8 +311,8 @@ EdgeWater::getSurfacePoint(const size_t,
 			const long int) const
   /*!
     Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param  :: layer, 0 is inner moderator [0-6]
+    \param  :: Side [0-3] // mid sides   
     \return Surface point
   */
 {

@@ -3,7 +3,7 @@
  
  * File:   weights/WWGControl.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@
 #include "WWG.h"
 #include "WWGItem.h"
 #include "WWGWeight.h"
+#include "MarkovProcess.h"
 #include "WeightControl.h"
 
 namespace WeightSystem
@@ -104,6 +105,7 @@ WeightControl::procWWGWeights(Simulation& System,
   wwgEnergy(IParam);             // set default energy grid
 
   wwgCreate(System,IParam);
+  wwgMarkov(System,IParam);
   wwgNormalize(IParam); 
   wwgVTK(IParam);
   WM.getParticle('n')->setActiveWWP(0);
@@ -111,6 +113,39 @@ WeightControl::procWWGWeights(Simulation& System,
   return;
 }
 
+void
+WeightControl::wwgMarkov(const Simulation& System,
+			 const mainSystem::inputParam& IParam)
+  /*!
+    Process a Markov chain iteration for the system
+    \param System :: Simulation
+    \param IParam :: Input deck
+   */
+{
+  ELog::RegMethod RegA("WeightControl","wwgMarkov");
+
+  // Find if we need to do Markov:
+  const size_t NSetCnt=IParam.setCnt("wwgMarkov");
+  if (!NSetCnt) return;
+  
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+  const std::vector<double> EBin=wwg.getEBin();
+  const std::vector<Geometry::Vec3D> GridMidPt=wwg.getMidPoints();
+  
+  for(size_t index=0;index<NSetCnt;index++)
+    {
+      procMarkov(IParam,"wwgMarkov",index);
+      if (nMarkov)
+	{
+	  MarkovProcess MCalc;
+	  MCalc.initializeData(wwg);
+	}
+    }
+
+  return;
+}
 
 void
 WeightControl::wwgCreate(const Simulation& System,
@@ -158,14 +193,26 @@ WeightControl::wwgCreate(const Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (activePtType,"SourceType no known");
 
-      if (minWeight<0) minWeight*=-1;
-      if (minWeight<1e-30) minWeight=30;
-      if (minWeight<1.0) minWeight= -log(minWeight);
-      
-      if (!activeAdjointFlag)
-	wSet.makeSource(minWeight);
+      // min weight == exp(w) (negative) 
+      if (minWeight>1.0)
+	minWeight*= -log(10.0);
+      else if (minWeight<0.0)
+	minWeight*= log(10);
+      else if (minWeight>1e-30)
+	minWeight= exp(minWeight);
       else
-	wSet.makeAdjoint(minWeight);
+	minWeight= exp(1e-30);
+
+
+      if (!activeAdjointFlag)
+	{
+	  wSet.makeSource(minWeight);
+	}
+      else
+	{
+	  ELog::EM<<"Call adjoint:"<<minWeight<<ELog::endDiag;
+	  wSet.makeAdjoint(minWeight);
+	}
 
       wwg.updateWM(wSet,scaleFactor);
     }
@@ -188,12 +235,17 @@ WeightControl::wwgNormalize(const mainSystem::inputParam& IParam)
   if (IParam.flag("wwgNorm"))
     {
       const double minWeight=
-        IParam.getDefValue<double>(10.0,"wwgNorm",0,0);
-      const double powerWeight=
-        IParam.getDefValue<double>(1.0,"wwgNorm",0,1);
-      ELog::EM<<"Scale Range == "<<std::pow(10.0,-minWeight)<<ELog::endDiag;
-      wwg.scaleRange(std::pow(10.0,-minWeight),1.0);
-      wwg.powerRange(powerWeight);
+        IParam.getDefValue<double>(-100.0,"wwgNorm",0,0);
+      if (minWeight<-90)
+	wwg.normalize();
+      else
+	{
+	  const double powerWeight=
+	    IParam.getDefValue<double>(1.0,"wwgNorm",0,1);
+	  ELog::EM<<"Scale Range == "<<std::pow(10.0,-minWeight)<<ELog::endDiag;
+	  wwg.scaleRange(std::pow(10.0,-minWeight),1.0);
+	  wwg.powerRange(powerWeight);
+	}
     }
   return;
 }

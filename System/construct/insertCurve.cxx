@@ -78,20 +78,17 @@
 #include "SurfMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "SurInter.h"
 #include "AttachSupport.h"
+#include "insertObject.h"
 #include "insertCurve.h"
-
 
 namespace constructSystem
 {
-  
+
 insertCurve::insertCurve(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
-  attachSystem::CellMap(),attachSystem::SurfMap(),
-  ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ptIndex+1),populated(0),
-  defMat(0),delayInsert(0)
+  insertObject(Key),yFlag(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -99,12 +96,9 @@ insertCurve::insertCurve(const std::string& Key)  :
 {}
 
 insertCurve::insertCurve(const insertCurve& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),
-  populated(A.populated),radius(A.radius),
-  width(A.width),height(A.height),
-  defMat(A.defMat),delayInsert(A.delayInsert)
+  constructSystem::insertObject(A),
+  yFlag(A.yFlag),radius(A.radius),width(A.width),
+  height(A.height),length(A.length),Centre(A.Centre)
   /*!
     Copy constructor
     \param A :: insertCurve to copy
@@ -121,21 +115,17 @@ insertCurve::operator=(const insertCurve& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
-      populated=A.populated;
+      constructSystem::insertObject::operator=(A);
+      yFlag=A.yFlag;
       radius=A.radius;
       width=A.width;
       height=A.height;
-
-      defMat=A.defMat;
-      delayInsert=A.delayInsert;
+      length=A.length;
+      Centre=A.Centre;
     }
   return *this;
 }
+
 
 insertCurve::~insertCurve() 
   /*!
@@ -154,19 +144,19 @@ insertCurve::populate(const FuncDataBase& Control)
   
   if (!populated)
     {
-      FixedOffset::populate(Control);      
-      width=Control.EvalVar<double>(keyName+"Width");
-      height=Control.EvalVar<double>(keyName+"Height");
+      insertObject::populate(Control);
+      yFlag=Control.EvalDefVar<int>(keyName+"YFlag",1);
       radius=Control.EvalVar<double>(keyName+"Radius");
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat");
-      populated=1;
+      width=Control.EvalVar<double>(keyName+"Width");
+      // radial length
+      length=Control.EvalVar<double>(keyName+"Length");
     }
   return;
 }
 
 void
 insertCurve::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+                              const long int lIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed coordinate system
@@ -175,31 +165,54 @@ insertCurve::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("insertCurve","createUnitVector(FC,index)");
 
-
-  FixedComp::createUnitVector(FC,sideIndex);
+  FixedComp::createUnitVector(FC,lIndex);
   applyOffset();
+  Centre= Origin+Y*(radius*yFlag);
   return;
 }
 
 void
 insertCurve::createUnitVector(const Geometry::Vec3D& OG,
-			      const attachSystem::FixedComp& FC,
-                              const long int sideIndex)
+                                 const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
     \param OG :: Origin
-    \param FC :: FixedComp to attach to
-    \param sideIndex :: linkPoint
+    \param FC :: LinearComponent to attach to
   */
 {
   ELog::RegMethod RegA("insertCurve","createUnitVector");
 
-  FixedComp::createUnitVector(FC,sideIndex);
+  FixedComp::createUnitVector(FC);
   Origin=OG;
   applyOffset();
+
+  Centre = Origin+Y*(radius*yFlag);
   return;
 }
 
+void
+insertCurve::createUnitVector(const Geometry::Vec3D& OG,
+                              const Geometry::Vec3D& YAxis,
+                              const Geometry::Vec3D& ZAxis)
+  /*!
+    Create the unit vectors
+    \param OG :: Origin
+    \param YAxis :: Y-direction 
+    \param ZAxis :: Z-direction 
+  */
+{
+  ELog::RegMethod RegA("insertCurve","createUnitVector<Vec,Vec,Vec>");
+  
+  Y=YAxis.unit();
+  Z=ZAxis.unit();
+  X=Y*Z;
+  FixedComp::computeZOffPlane(Y,Z,X);  // note applied to X
+  Origin=OG;
+  applyOffset();
+
+  Centre= Origin-YAxis*(radius*yFlag);
+  return;
+}
 
 void
 insertCurve::createSurfaces()
@@ -209,17 +222,43 @@ insertCurve::createSurfaces()
 {
   ELog::RegMethod RegA("insertCurve","createSurface");
 
-  // calculate the normal from the start ppoint
+  const double theta=length/(2*radius);  // angle in radians
 
-  const Geometry::Vec3D norm=(BPt-APt).unit();
-  ModelSupport::buildPlane(SMap,ptIndex+1,APt,Centre,Centre+Z,norm);
-  ModelSupport::buildPlane(SMap,ptIndex+2,BPt,Centre,Centre+Z,norm);
+  const Geometry::Quaternion QFront=
+    Geometry::Quaternion::calcQRot(theta,Z*yFlag);
+  
+  if (!frontActive())
+    {
+      Geometry::Vec3D AAxis(X);
+      QFront.rotate(AAxis);
+      ModelSupport::buildPlane(SMap,ptIndex+1,Centre,AAxis);
+    }
+  if (!backActive())
+    {
+      Geometry::Vec3D BAxis(X);
+      QFront.invRotate(BAxis);
+      ModelSupport::buildPlane(SMap,ptIndex+2,Centre,BAxis);
+    }
 
+  
+  ModelSupport::buildCylinder(SMap,ptIndex+7,Centre,Z,radius-width/2.0);
+  ModelSupport::buildCylinder(SMap,ptIndex+17,Centre,Z,radius+width/2.0);
 
-  //  setSurf("Left",SMap.realSurf(ptIndex+3));
-  //  setSurf("Right",SMap.realSurf(ptIndex+4));
-  //  setSurf("Base",SMap.realSurf(ptIndex+5));
-  //  setSurf("Top",SMap.realSurf(ptIndex+6));
+  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
+
+  if (!frontActive())
+    setSurf("Front",ptIndex+1);
+  else
+    setSurf("Front",getFrontRule().getPrimarySurface());
+
+  if (!backActive())
+    setSurf("Back",SMap.realSurf(ptIndex+2));
+  else
+    setSurf("Back",getBackRule().getPrimarySurface());
+
+  setSurf("InnerRadius",SMap.realSurf(ptIndex+7));
+  setSurf("OuterRadius",SMap.realSurf(ptIndex+17));
   return;
 }
 
@@ -230,59 +269,47 @@ insertCurve::createLinks()
   */
 {
   ELog::RegMethod RegA("insertCurve","createLinks");
-  /*
-  if (frontActive)
+
+  FixedComp::setNConnect(10);
+
+  Geometry::Vec3D APt,BPt;
+  const double theta=length/(2*radius);  // angle in radians
+  FrontBackCut::createLinks(*this,Origin,Y);
+  if (!frontActive())
     {
-      FixedComp::setLinkSurf(0,frontSurf);
-      FixedComp::setBridgeSurf(0,frontBridge);
-      FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontBridge),-Y);
-    }
-  else
-    {
-      FixedComp::setConnect(0,Origin-Y*(depth/2.0),-Y);
+      APt=Centre+(Y*cos(theta)-X*sin(theta)) * (yFlag*radius);
+      FixedComp::setConnect(0,APt,-X*yFlag);
       FixedComp::setLinkSurf(0,-SMap.realSurf(ptIndex+1));
     }
 
-  if (backActive)
+  if (!backActive())
     {
-      FixedComp::setLinkSurf(1,backSurf);
-      FixedComp::setBridgeSurf(1,backBridge);
-      FixedComp::setConnect
-        (1,SurInter::getLinePoint(Origin,Y,backSurf,backBridge),Y);
-    }
-  else
-    {
-      FixedComp::setConnect(1,Origin+Y*(depth/2.0),-Y);
+      BPt=Centre+(Y*cos(theta)+X*sin(theta)) * (yFlag*radius);
+      FixedComp::setConnect(1,BPt,X*yFlag);
       FixedComp::setLinkSurf(1,SMap.realSurf(ptIndex+2));
     }
   
-  FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
-  FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+  FixedComp::setConnect(2,Origin-Y*(width/2.0),-Y);
+  FixedComp::setConnect(3,Origin+Y*(width/2.0),Y);
   FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
   FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+4));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(ptIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(ptIndex+17));
   FixedComp::setLinkSurf(4,-SMap.realSurf(ptIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
 
-  // corners 
-  FixedComp::setConnect(6,Origin-X*(width/2.0)-Z*(height/2.0),-X-Z);
-  FixedComp::setConnect(7,Origin+X*(width/2.0)-Z*(height/2.0),X-Z);
-  FixedComp::setConnect(8,Origin-X*(width/2.0)+Z*(height/2.0),-X+Z);
-  FixedComp::setConnect(9,Origin+X*(width/2.0)+Z*(height/2.0),X+Z);
+  FixedComp::setConnect(6,APt-Z*(height/2.0),-X*yFlag);
+  FixedComp::setConnect(7,BPt-Z*(height/2.0),X*yFlag);
+  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+1));
+  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+2));
 
-  FixedComp::setLinkSurf(6,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(7,SMap.realSurf(ptIndex+4));
-  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+3));
-  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+4));
+  FixedComp::setConnect(8,APt+Z*(height/2.0),-X*yFlag);
+  FixedComp::setConnect(9,BPt+Z*(height/2.0),X*yFlag);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(ptIndex+1));
+  FixedComp::setLinkSurf(9,SMap.realSurf(ptIndex+2));
 
-  FixedComp::addLinkSurf(6,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(7,-SMap.realSurf(ptIndex+5));
-  FixedComp::addLinkSurf(8,SMap.realSurf(ptIndex+6));
-  FixedComp::addLinkSurf(9,SMap.realSurf(ptIndex+6));
-  */
+
   return;
 }
 
@@ -294,121 +321,56 @@ insertCurve::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("insertCurve","createObjects");
-  
+
   std::string Out=
-    ModelSupport::getSetComposite(SMap,ptIndex,"1 -2 3 -4 5 -6");
-  //  if (frontActive) Out+=frontSurf.display()+frontBridge.display();
-  //  if (backActive) Out+=backSurf.display()+backBridge.display();
+    ModelSupport::getSetComposite(SMap,ptIndex," 1 -2 7 -17 5 -6 ");
+  Out+=frontRule();
+  Out+=backRule();
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
   addCell("Main",cellIndex-1);
   addOuterSurf(Out);
   return;
 }
-  
-void
-insertCurve::findObjects(Simulation& System)
-  /*!
-    Insert the objects into the main simulation. It is separated
-    from creation since we need to determine those object that 
-    need to have an exclude item added to them.
-    \param System :: Simulation to add object to
-  */
-{
-  ELog::RegMethod RegA("insertCurve","findObjects");
-
-  typedef std::map<int,MonteCarlo::Object*> MTYPE;
-  
-  System.populateCells();
-  System.validateObjSurfMap();
-
-  MTYPE OMap;
-  attachSystem::lineIntersect(System,*this,OMap);
-
-  // Add exclude string
-  MTYPE::const_iterator ac;
-  for(ac=OMap.begin();ac!=OMap.end();ac++)
-    attachSystem::ContainedComp::addInsertCell(ac->first);
-  
-  
-  return;
-}
 
 void
-insertCurve::setStep(const double XS,const double YS,
-		       const double ZS)
-  /*!
-    Set the values but NOT the populate flag
-    \param XS :: X-step [width]
-    \param YS :: Y-step [depth] 
-    \param ZS :: Z-step [height]
-   */
-{
-  xStep=XS;
-  yStep=YS;
-  zStep=ZS;
-  return;
-}
-
-void
-insertCurve::setStep(const Geometry::Vec3D& XYZ)
-  /*!
-    Set the values but NOT the populate flag
-    \param XYZ :: X/Y/Z
-   */
-{
-  xStep=XYZ[0];
-  yStep=XYZ[1];
-  zStep=XYZ[2];
-  return;
-}
-
-void
-insertCurve::setAngles(const double XS,const double ZA)
-  /*!
-    Set the values but NOT the populate flag
-    \param XY :: XY angle
-    \param ZA :: Z angle
-   */
-{
-  xyAngle=XS;
-  zAngle=ZA;
-  return;
-}
-
-void
-insertCurve::setValues(const double R,const double XW,
-                       const double ZH,const int Mat)
+insertCurve::setValues(const double R,const double L,
+                       const double W,const double H,
+                       const int Mat)
   /*!
     Set the values and populate flag
-    \param R :: radius
-    \param XW :: Y-size [depth] 
-    \param ZH :: Z-size [height]
+    \param R :: Radius
+    \param L :: length
+    \param W :: Width 
+    \param H :: height
     \param Mat :: Material number
    */
 {
   radius=R;
-  width=XW;
-  height=ZH;
+  length=L;
+  width=W;
+  height=H;
   defMat=Mat;
   populated=1;
   return;
 }
 
 void
-insertCurve::setValues(const double R,const double XW,
-                       const double ZH,const std::string& Mat)
+insertCurve::setValues(const double R,const double L,
+                       const double W,const double H,
+                       const std::string& Mat)
   /*!
     Set the values and populate flag
-    \param R :: radius
-    \param XW :: Y-size [depth] 
-    \param ZH :: Z-size [height]
-    \param Mat :: Material number
+    \param R :: Radius
+    \param L :: length
+    \param W :: width
+    \param H :: height
+    \param Mat :: Material name
    */
 {
-  ELog::RegMethod RegA("insertCurve","setValues");
+  ELog::RegMethod RegA("insertCurve","setValues(string)");
   
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
-  setValues(R,XW,ZH,DB.processMaterial(Mat));
+  setValues(R,L,W,H,DB.processMaterial(Mat));
   return;
 }
 
@@ -416,15 +378,15 @@ void
 insertCurve::mainAll(Simulation& System)
   /*!
     Common part to createAll:
-    Note: the strnage order -- create links and findObject
+    Note: the strange order -- create links and findObject
     before createObjects. This allows findObjects not to 
     find ourselves (and correctly to find whatever this object
     is in).
+    
     \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("insertCurve","mainAll");
-
   
   createSurfaces();
   createLinks();
@@ -432,66 +394,71 @@ insertCurve::mainAll(Simulation& System)
   if (!delayInsert)
     findObjects(System);
   createObjects(System);
+
   insertObjects(System);
   return;
 }
 
 
-
 void
-insertCurve::calcCentre()
-  /*!
-    Simple method to caculate the centre [3d] of 
-    the circle that intersect the points A,B and the plane
-    defined by the normal ZA
-   */
+insertCurve::createAll(Simulation& System,const Geometry::Vec3D& OG,
+                          const attachSystem::FixedComp& FC)
+/*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param OG :: Offset origin							
+    \param FC :: Linear component to set axis etc
+  */
 {
-  ELog::RegMethod RegA("insertCurve","calcCentre");
-
-  const Geometry::Vec3D MidPt=(APt+BPt)/2.0;
-  const Geometry::Vec3D u=(BPt-APt).unit();
-  const Geometry::Vec3D v=(u*Z).unit();   // sign issued gives two solution.
-
-  const double l=APt.Distance(BPt)/2.0;
-  const double x=sqrt(radius*radius-l*l);
-  const std::vector<Geometry::Vec3D> Out({MidPt-v*x,MidPt+v*x});
-  
-  Centre= SurInter::nearPoint(Out,Origin);
+  ELog::RegMethod RegA("insertCurve","createAll(Vec,FC)");
+  if (!populated) 
+    populate(System.getDataBase());  
+  createUnitVector(OG,FC);
+  mainAll(System);
   return;
 }
 
-  
 void
 insertCurve::createAll(Simulation& System,
-                       const attachSystem::FixedComp& FC,
-                       const long int sideIndex,
-		       const Geometry::Vec3D& PtA,
-                       const Geometry::Vec3D& PtB)
-                       
+		       const attachSystem::FixedComp& FC,
+		       const long int lIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param Orig :: Point to define the sence of the curve
-    \param PtA :: Point on the curve
-    \param PtB :: Point on the curve
+    \param FC :: Linear component to set axis etc
+    \param lIndex :: link Index
   */
 {
-  ELog::RegMethod RegA("insertCurve","createAll");
+  ELog::RegMethod RegA("insertCurve","createAll(FC,index)");
+  
   if (!populated) 
-    populate(System.getDataBase());
-  createUnitVector(FC,sideIndex);
-  // calc points
-  APt=PtA;
-  BPt=PtB;
-
-  calcCentre();
-  
-  
+    populate(System.getDataBase());  
+  createUnitVector(FC,lIndex);
   mainAll(System);
   
   return;
 }
- 
 
+void
+insertCurve::createAll(Simulation& System,
+                       const Geometry::Vec3D& Orig,
+                       const Geometry::Vec3D& YAxis,
+                       const Geometry::Vec3D& ZAxis)
+  /*!
+    Generic function to create everything
+    \param System :: Simulation item
+    \param Orig :: Origin point 
+    \param YAxis :: Main axis
+    \param ZAxis :: Z axis
+  */
+{
+  ELog::RegMethod RegA("insertCurve","createAll");
+  if (!populated) 
+    populate(System.getDataBase());  
+  createUnitVector(Orig,YAxis,ZAxis);
+  mainAll(System);
+  
+  return;
+}
+   
 }  // NAMESPACE constructSystem
-

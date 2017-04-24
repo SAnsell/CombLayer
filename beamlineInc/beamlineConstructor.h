@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/beamlineConstructor.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,9 +54,10 @@ class beamlineConstructor
 
  public:
   
-  beamlineConstructor() {}
-  beamlineConstructor(const beamlineConstructor&) {}
-  beamlineConstructor& operator=(const beamlineConstructor&)
+  beamlineConstructor() {}   ///< constructo
+  beamlineConstructor(const beamlineConstructor&) {}  ///< null assignement
+  /// null assignement
+  beamlineConstructor& operator=(const beamlineConstructor&) 
     { return *this; }
   virtual ~beamlineConstructor() {}   ///< Destructor
   

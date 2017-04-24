@@ -307,8 +307,7 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
 
   ChopE->addInsertCell(bunkerVoid);
-  ChopE->getKey("Main").setAxisControl(3,ZVert);
-  
+  ChopE->getKey("Main").setAxisControl(3,ZVert);  
   ChopE->createAll(System,FocusE->getKey("Guide0"),2);
 
   EDisk->addInsertCell(ChopE->getCell("Void"));

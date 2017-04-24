@@ -104,7 +104,6 @@ BunkerQuake::~BunkerQuake()
     Destructor
   */
 {}
-
  
 void
 BunkerQuake::createAll(Simulation& System,
@@ -123,8 +122,6 @@ BunkerQuake::createAll(Simulation& System,
   ELog::RegMethod RegA("BunkerQuake","createAll");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-
 
   const FuncDataBase& Control=System.getDataBase();
 

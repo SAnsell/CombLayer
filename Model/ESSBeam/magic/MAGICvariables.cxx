@@ -220,7 +220,7 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicAppAInnerHeight",4.0);
   Control.addVariable("magicAppAWidth",12.0);
   Control.addVariable("magicAppAHeight",12.0);
-  Control.addVariable("magicAppADepth",5.0);
+  Control.addVariable("magicAppAThick",5.0);
   Control.addVariable("magicAppAYStep",7.0);
   Control.addVariable("magicAppADefMat","Tungsten");
 

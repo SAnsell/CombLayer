@@ -3,7 +3,7 @@
  
  * File:   construct/insertSphere.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,6 +183,7 @@ insertSphere::createLinks()
 {
   ELog::RegMethod RegA("insertSphere","createLinks");
 
+  FixedComp::setNConnect(6);
   const Geometry::Vec3D Dir[3]={Y,X,Z};
 
   for(size_t i=0;i<6;i++)

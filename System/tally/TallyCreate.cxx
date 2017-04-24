@@ -252,7 +252,6 @@ addF7Tally(Simulation& System,const int tallyNum,
     Addition of a tally to the mcnpx deck
     \param System :: Simulation class
     \param tallyNum :: Cell number to tally 
-    \param pType :: particle to tally over
     \param Units :: List of cells to add
   */
 {
@@ -302,7 +301,6 @@ addF5Tally(Simulation& System,const int tNumber,
   if (VList.size()>=4)
     {
       TX.setWindow(VList);
-      TX.setFUflag(1);
     }
   TX.setCentre(Point);
   TX.setActive(1);
@@ -573,7 +571,7 @@ divideF5Tally(Simulation& System,const int tNumber,
     \param System :: Simulation
     \param tNumber :: tally number
     \param xPts :: Number of x points
-    \param xPts :: Number of y points
+    \param yPts :: Number of y points
   */
 {
   ELog::RegMethod RegA("TallyCreate","divideF5Tally");
@@ -662,9 +660,9 @@ addF6Tally(Simulation& System,const int tNumber,
   /*!
     Creates a +f6 type tally
     \param System :: Simulation to add
-    \param pType :: particle type
     \param tNumber :: tally number 
-    \param cellList :: Cells to add
+    \param particleType :: particle type
+    \param cellList :: Cells to tally in
    */
 {
   ELog::RegMethod RegA("TallyCreate[F]","addF6Tally");
@@ -886,8 +884,8 @@ int
 setAngle(Simulation& System,const int tNumber,
         const std::string& tPart)
   /*!
-    Set the cos of a tally
-    \param Sim :: Simulation
+    Set the cos bins of a tally
+    \param System :: Simulation
     \param tNumber :: tally nubmer
     \param tPart :: time segment string [MCNPX format]
     \return number of tallies split
@@ -914,11 +912,11 @@ setAngle(Simulation& System,const int tNumber,
 }
 
 int
-setFormat(Simulation& Sim,const int tNumber,
+setFormat(Simulation& System,const int tNumber,
           const std::string& fPart)
   /*!
     Set the format of a tally.
-    \param Sim :: Simulation
+    \param System :: Simulation
     \param tNumber :: tally nubmer [-ve for type / 0 for all]
     \param fPart :: format string [MCNP format]
     \return number of tallies split
@@ -926,7 +924,7 @@ setFormat(Simulation& Sim,const int tNumber,
 {
   ELog::RegMethod RegA("TallyCreate","setFormat");
   
-  Simulation::TallyTYPE& tmap=Sim.getTallyMap();
+  Simulation::TallyTYPE& tmap=System.getTallyMap();
   int fnum(0);
   Simulation::TallyTYPE::iterator mc;
   for(mc=tmap.begin();mc!=tmap.end();mc++)
@@ -1123,7 +1121,9 @@ getLastTallyNumber(const Simulation& ASim,const int type)
   /*!
     Get the last tally nubmer
     \param ASim :: Simulation
-   */
+    \param type :: tally type [0 for any]
+    \return tally number for last assigned tally
+  */
 {
   const Simulation::TallyTYPE& tmap=ASim.getTallyMap();
   int outN(0);

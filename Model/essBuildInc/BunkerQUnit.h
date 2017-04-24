@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BunkerQUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,15 +48,14 @@ class BunkerQUnit : public attachSystem::ContainedComp,
   const int cutIndex;             ///< Surface index
   int cellIndex;                  ///< Cell index
   
-  double xGap;                          ///< x stuff
-  double zGap;                          ///< Needs to be surface
+  double xGap;                    ///< x stuff
+  double zGap;                    ///< Needs to be surface
 
-  std::vector<int> PFlag;              ///< absolute/ZRelative/XYZ
+  std::vector<int> PFlag;             ///< absolute/ZRelative/XYZ
   std::vector<Geometry::Vec3D> cPts;  ///< Centre points of cut
+  std::vector<double> Radii;          ///< Curve radii [-ve for plane]
+  std::vector<int> yFlag;             ///< Y flags   [0 for plane]
   
-
-  
-
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int,const long int);

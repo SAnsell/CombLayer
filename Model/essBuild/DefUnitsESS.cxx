@@ -218,11 +218,11 @@ setESSSingle(defaultConfig& A,
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
-     {"HEIMDAL","G1BLineLow8"},     // W8
-     {"SLEIPNIR","G1BLineLow13"},   // N9
-     {"ANNI","G2BLineTop3"},        // E3
-     {"SURFSCATTER","G2BLineTop8"},        // E8
-     {"SKADI","G2BLineTop5"}         // E5
+     {"HEIMDAL","G1BLineTop18"},       // S2
+     {"SLEIPNIR","G1BLineLow13"},      // N9
+     {"ANNI","G2BLineTop3"},           // E3
+     {"SURFSCATTER","G2BLineTop8"},    // E8
+     {"SKADI","G2BLineTop5"}           // E5
     };     
   const std::map<std::string,std::string> beamDef=
     {{"NMX","G1BLineTop1"},        // W1
@@ -232,17 +232,21 @@ setESSSingle(defaultConfig& A,
      {"MIRACLES","G1BLineTop5"},   // W5
      {"MAGIC","G1BLineTop6"},      // W6     
      {"TREX","G1BLineTop7"},       // W7
-
+     {"HEIMDAL","G1BLineTop8"},    // W8 
+     
      {"LOKI","G1BLineTop15"},      // N7
      {"FREIA","G1BLineTop17"},     // N5
 
+
      {"NNBAR","G1BLineTop11"},      // TEST PORT
+     {"TESTBEAM","G1BLineTop11"},   // TEST PORT
      
      {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
      {"DREAM","G2BLineTop19"},     // S3
 
      {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
      {"VESPA","G2BLineTop7"},     // E7
+
 
      {"ESTIA","G2BLineTop2"},     // E2
      
@@ -255,9 +259,9 @@ setESSSingle(defaultConfig& A,
 
     };     
   const std::set<std::string> beamFilled=
-    {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "MAGIC","MIRACLES","NMX","NNBAR","ODIN","TREX","VESPA",
-     "VOR","SHORTNMX","SHORTDREAM"};
+    {"BEER","BIFROST","CSPEC","DREAM","FREIA","HEIMDAL","LOKI",
+     "MAGIC","MIRACLES","NMX","NNBAR","ODIN","TESTBEAM",
+     "TREX","VESPA","VOR","SHORTNMX","SHORTDREAM"};
 
   size_t beamLineIndex(0);
   while(!LItems.empty())

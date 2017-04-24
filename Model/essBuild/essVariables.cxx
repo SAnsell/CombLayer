@@ -363,7 +363,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"BaseGap",0.1);
       Control.addVariable(baseKey+"TopGap",0.8); 
       Control.addVariable(baseKey+"Width1",20.0);
-      Control.addVariable(baseKey+"Depth1",5.0);
+      Control.addVariable(baseKey+"Depth1",10.0);
       Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",22.0);
@@ -611,7 +611,8 @@ EssInstrumentVariables(const std::set<std::string>& BL,
      {"CSPEC",       &CSPECvariables},
      {"DREAM",       &DREAMvariables},     
      {"ESTIA",       &ESTIAvariables},   
-     {"FREIA",       &FREIAvariables}, 
+     {"FREIA",       &FREIAvariables},
+     {"HEIMDAL",     &HEIMDALvariables},
      {"LOKI",        &LOKIvariables},
      {"MAGIC",       &MAGICvariables},
      {"MIRACLES",    &MIRACLESvariables},

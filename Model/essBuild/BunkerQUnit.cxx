@@ -85,6 +85,7 @@
 #include "LayerDivide3D.h"
 #include "insertObject.h"
 #include "insertPlate.h"
+#include "insertCurve.h"
 #include "addInsertObj.h"
 #include "BunkerQUnit.h"
 
@@ -108,7 +109,7 @@ BunkerQUnit::BunkerQUnit(const BunkerQUnit& A) :
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   cutIndex(A.cutIndex),
   cellIndex(A.cellIndex),xGap(A.xGap),zGap(A.zGap),
-  PFlag(A.PFlag),cPts(A.cPts)
+  PFlag(A.PFlag),cPts(A.cPts),Radii(A.Radii),yFlag(A.yFlag)
   /*!
     Copy constructor
     \param A :: BunkerQUnit to copy
@@ -134,6 +135,8 @@ BunkerQUnit::operator=(const BunkerQUnit& A)
       zGap=A.zGap;
       PFlag=A.PFlag;
       cPts=A.cPts;
+      Radii=A.Radii;
+      yFlag=A.yFlag;
     }
   return *this;
 }
@@ -164,13 +167,19 @@ BunkerQUnit::populate(const FuncDataBase& Control)
   const size_t NPt=Control.EvalVar<size_t>(keyName+"NPoint");
 
   int flag(1);
+  int yF;
+  double R;
   for(size_t index=0;index<NPt;index++)
     {
       const std::string IStr=StrFunc::makeString(index);
       flag=Control.EvalDefVar<int>(keyName+"PtFlag"+IStr,flag);
       APt=Control.EvalVar<Geometry::Vec3D>(keyName+"PtA"+IStr);
+      yF=Control.EvalDefVar(keyName+"YFlag"+IStr,0);
+      R=Control.EvalDefVar(keyName+"Radius"+IStr,-1.0);
       cPts.push_back(APt);
       PFlag.push_back(flag);
+      Radii.push_back(R);
+      yFlag.push_back(yF);
     }
   return;
 }
@@ -229,12 +238,24 @@ BunkerQUnit::createObjects(Simulation& System)
   for(size_t index=1;index<cPts.size();index++)
     {
       const std::string ItemName(keyName+"Cut"+StrFunc::makeString(index));
-      const Geometry::Vec3D YDir((cPts[index]-cPts[index-1]).unit());
-      const double yGap=cPts[index].Distance(cPts[index-1]);
-
-      constructSystem::addInsertPlateCell
-        (System,ItemName,(cPts[index-1]+cPts[index])/2.0+Z*(zGap/2.0),
-         YDir,Z,xGap,yGap,zGap,"Void");
+      const double radius(Radii[index-1]);
+      const int yF(yFlag[index-1]);
+      if ((radius<Geometry::zeroTol) || !yF)
+        {
+          const Geometry::Vec3D YDir((cPts[index]-cPts[index-1]).unit());
+          const double yGap=cPts[index].Distance(cPts[index-1]);
+          
+          constructSystem::addInsertPlateCell
+            (System,ItemName,(cPts[index-1]+cPts[index])/2.0+Z*(zGap/2.0),
+             YDir,Z,xGap,yGap,zGap,"Void");
+        }
+      else  // cylinder
+        {
+          constructSystem::addInsertCurveCell
+            (System,ItemName,cPts[index-1]+Z*(zGap/2.0),
+             cPts[index]+Z*(zGap/2.0),yF,Z,radius,xGap,zGap,
+             "Void");
+        }
     }      
 
   return;

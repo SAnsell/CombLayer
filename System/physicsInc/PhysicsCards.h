@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysicsCards.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,15 @@
  ****************************************************************************/
 #ifndef PhysicsSystem_PhysicsCards_h
 #define PhysicsSystem_PhysicsCards_h
+
+
+/*!
+  \namespace PhysicsSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief MCNP physics list cards
+*/
 
 namespace physicsSystem
 {

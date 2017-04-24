@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1695,27 +1695,31 @@ Simulation::writePhysics(std::ostream& OX) const
   std::map<int,tallySystem::Tally*>::const_iterator mc;
   std::vector<int> Idum;
   std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
+  if (mcnpVersion==10)
     {
-      const tallySystem::pointTally* Ptr=
-        dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-          Idum.push_back(Ptr->getKey());
-          for(size_t i=0;i<4;i++)
-            Rdum.push_back(Ptr->getWindowPt(i));
-          Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
-        }
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-        OX<<"           "<< *vc<<std::endl;
+      for(mc=TItem.begin();mc!=TItem.end();mc++)
+	{
+	  const tallySystem::pointTally* Ptr=
+	    dynamic_cast<const tallySystem::pointTally*>(mc->second);
+	  if(Ptr && Ptr->hasRdum())
+	    {
+	      Idum.push_back(Ptr->getKey());
+	      for(size_t i=0;i<4;i++)
+		Rdum.push_back(Ptr->getWindowPt(i));
+	      Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
+	    }
+	}
+      
+      if (!Idum.empty())
+	{
+	  OX<<"idum "<<Idum.size()<<" ";
+	  copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
+	  OX<<std::endl;
+	  OX<<"rdum       "<<Rdum.front()<<std::endl;
+	  std::vector<Geometry::Vec3D>::const_iterator vc;
+	  for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
+	    OX<<"           "<< *vc<<std::endl;
+	}
     }
   
   // Remaining Physics cards

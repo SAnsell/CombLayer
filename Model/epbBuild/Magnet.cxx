@@ -3,7 +3,7 @@
  
  * File:   epbBuild/Magnet.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,7 +72,8 @@
 #include "MaterialSupport.h"
 #include "generateSurf.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
+#include "FixedComp.h"
+#include "FixedOffset.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "Magnet.h"
@@ -81,7 +82,7 @@ namespace epbSystem
 {
 
 Magnet::Magnet(const std::string& Key,const size_t Index) : 
-  attachSystem::FixedComp(StrFunc::makeString(Key,Index),6),
+  attachSystem::FixedOffset(StrFunc::makeString(Key,Index),6),
   attachSystem::ContainedComp(),baseName(Key),
   magIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(magIndex+1)
@@ -92,11 +93,9 @@ Magnet::Magnet(const std::string& Key,const size_t Index) :
 {}
 
 Magnet::Magnet(const Magnet& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   baseName(A.baseName),magIndex(A.magIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),segIndex(A.segIndex),
-  segLen(A.segLen),length(A.length),height(A.height),
+  segIndex(A.segIndex),segLen(A.segLen),length(A.length),height(A.height),
   width(A.width),feMat(A.feMat)
   /*!
     Copy constructor
@@ -114,14 +113,9 @@ Magnet::operator=(const Magnet& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       segIndex=A.segIndex;
       segLen=A.segLen;
       length=A.length;
@@ -139,24 +133,18 @@ Magnet::~Magnet()
 {}
 
 void
-Magnet::populate(const Simulation& System)
+Magnet::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("Magnet","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
+  FixedOffset::populate(Control);
+  
   segIndex=Control.EvalVar<size_t>(keyName+"SegIndex");
   segLen=Control.EvalDefVar<size_t>(keyName+"SegLen",1);
-
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYangle");
-  zAngle=Control.EvalPair<double>(keyName,baseName,"Zangle");
 
   length=Control.EvalPair<double>(keyName,baseName,"Length");
   height=Control.EvalPair<double>(keyName,baseName,"Height");
@@ -172,11 +160,12 @@ void
 Magnet::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
     Create the unit vectors
-    \param FC :: TwinComp to attach to
+    \param FC :: FixedComp to attach to
   */
 {
   ELog::RegMethod RegA("Magnet","createUnitVector");
 
+  
   Geometry::Vec3D Axis;
   for(size_t i=0;i<segLen;i++)
     Axis+=FC.getLU(segIndex+i).getAxis();
@@ -185,8 +174,7 @@ Magnet::createUnitVector(const attachSystem::FixedComp& FC)
   beamAxis=FC.getLU(segIndex+segLen-1).getAxis();
 
   FixedComp::createUnitVector(FC,static_cast<long int>(segIndex+1));
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
   return;
 }
 
@@ -208,7 +196,8 @@ Magnet::createSurfaces()
 }
 
 void
-Magnet::createObjects(Simulation& System,const attachSystem::FixedComp& FC)
+Magnet::createObjects(Simulation& System,
+		      const attachSystem::FixedComp& FC)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -265,7 +254,7 @@ Magnet::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("Magnet","createAll");
   
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System,FC);

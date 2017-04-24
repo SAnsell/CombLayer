@@ -192,9 +192,11 @@ addToInsertLineCtrl(Simulation& System,
     the point is tested REGARDLESS of being in the CC, to 
     being in the BaseFC. If it is an insert is made
     \param System :: Simulation to use
-    \param OuterFC :: FixedComp for name
+    \param BaseCell :: CellMap to extract cells for testing
+    \param cellName :: Particular cells to use from BaseCell
     \param InsertFC :: FixedComp with a ContainedComp/containedGroup
     dynamics cast
+    \param CC :: Container for insersion
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
@@ -222,7 +224,7 @@ addToInsertLineCtrl(Simulation& System,
     \param System :: Simulation to use
     \param OuterFC :: FixedComp to get name for cells
     \param InsertFC :: FixedComp 
-    dynamics cast
+    \param CC :: Container for insersion
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");

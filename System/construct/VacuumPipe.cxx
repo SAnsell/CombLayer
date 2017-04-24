@@ -97,15 +97,16 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),
-  frontJoin(A.frontJoin),FPt(A.FPt),FAxis(A.FAxis),
-  backJoin(A.backJoin),BPt(A.BPt),BAxis(A.BAxis),
-  radius(A.radius),length(A.length),feThick(A.feThick),
-  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength),
+  vacIndex(A.vacIndex),cellIndex(A.cellIndex),frontJoin(A.frontJoin),
+  FPt(A.FPt),FAxis(A.FAxis),backJoin(A.backJoin),
+  BPt(A.BPt),BAxis(A.BAxis),radius(A.radius),height(A.height),
+  width(A.width),length(A.length),feThick(A.feThick),
+  flangeRadius(A.flangeRadius),flangeHeight(A.flangeHeight),
+  flangeWidth(A.flangeWidth),flangeLength(A.flangeLength),
   activeWindow(A.activeWindow),windowThick(A.windowThick),
-  windowRadius(A.windowRadius),voidMat(A.voidMat),
-  feMat(A.feMat),windowMat(A.windowMat),
-  nDivision(A.nDivision)
+  windowRadius(A.windowRadius),windowHeight(A.windowHeight),
+  windowWidth(A.windowWidth),voidMat(A.voidMat),
+  feMat(A.feMat),windowMat(A.windowMat),nDivision(A.nDivision)
   /*!
     Copy constructor
     \param A :: VacuumPipe to copy
@@ -134,13 +135,19 @@ VacuumPipe::operator=(const VacuumPipe& A)
       BPt=A.BPt;
       BAxis=A.BAxis;
       radius=A.radius;
+      height=A.height;
+      width=A.width;
       length=A.length;
       feThick=A.feThick;
       flangeRadius=A.flangeRadius;
+      flangeHeight=A.flangeHeight;
+      flangeWidth=A.flangeWidth;
       flangeLength=A.flangeLength;
       activeWindow=A.activeWindow;
       windowThick=A.windowThick;
       windowRadius=A.windowRadius;
+      windowHeight=A.windowHeight;
+      windowWidth=A.windowWidth;
       voidMat=A.voidMat;
       feMat=A.feMat;
       windowMat=A.windowMat;
@@ -178,12 +185,27 @@ VacuumPipe::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
-  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
+  flangeRadius=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
+  flangeHeight=Control.EvalDefVar<double>(keyName+"FlangeHeight",-1.0);
+  flangeWidth=Control.EvalDefVar<double>(keyName+"FlangeWidth",-1.0);
+
+  if (flangeRadius<0.0 && (flangeWidth<0.0 || flangeHeight<0.0))
+    throw ColErr::EmptyContainer
+      ("Pipe:["+keyName+"] has neither flangeRadius or flangeHeight/Width");
+
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
   activeWindow=Control.EvalDefVar<int>(keyName+"WindowActive",0);
+  
   windowThick=Control.EvalDefVar<double>(keyName+"WindowThick",0.0);
-  windowRadius=Control.EvalDefVar<double>(keyName+"WindowRadius",0.0);
+  windowRadius=Control.EvalDefVar<double>(keyName+"WindowRadius",-1.0);
+  windowHeight=Control.EvalDefVar<double>(keyName+"WindowHeight",-1.0);
+  windowWidth=Control.EvalDefVar<double>(keyName+"WindowWidth",-1.0);
+
+  if (activeWindow && (windowRadius<0.0 && (windowWidth<0.0 || windowHeight<0.0)))
+    throw ColErr::EmptyContainer
+      ("Pipe:["+keyName+"] has neither windowRadius or windowHeight/Width");
+
   windowMat=ModelSupport::EvalDefMat<int>(Control,keyName+"WindowMat",0);
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
@@ -355,7 +377,7 @@ VacuumPipe::createSurfaces()
 	}	    
 
     }
-  
+  // MAIN SURFACES:
   if (radius>0.0)
     {
       ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
@@ -374,9 +396,30 @@ VacuumPipe::createSurfaces()
       ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*(feThick+height/2.0),Z);
     }
 
-  ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeRadius);
+  // FLANGE SURFACES:
+  if (flangeRadius>0.0)
+    ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeRadius);
+  else
+    {
+      ModelSupport::buildPlane(SMap,vacIndex+103,Origin-X*(flangeWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,vacIndex+104,Origin+X*(flangeWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,vacIndex+105,Origin-Z*(flangeHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,vacIndex+106,Origin+Z*(flangeHeight/2.0),Z);
+    }
+
+  // WINDOW SURFACES:  
   if (activeWindow)
-    ModelSupport::buildCylinder(SMap,vacIndex+1007,Origin,Y,windowRadius);
+    {
+      if (windowRadius>0.0)
+	ModelSupport::buildCylinder(SMap,vacIndex+1007,Origin,Y,windowRadius);
+      else
+	{
+	  ModelSupport::buildPlane(SMap,vacIndex+1003,Origin-X*(windowWidth/2.0),X);
+	  ModelSupport::buildPlane(SMap,vacIndex+1004,Origin+X*(windowWidth/2.0),X);
+	  ModelSupport::buildPlane(SMap,vacIndex+1005,Origin-Z*(windowHeight/2.0),Z);
+	  ModelSupport::buildPlane(SMap,vacIndex+1006,Origin+Z*(windowHeight/2.0),Z);
+	}
+    }
   
   return;
 }
@@ -403,7 +446,7 @@ VacuumPipe::createObjects(Simulation& System)
   std::string windowBackExclude;
   if (activeWindow & 1)      // FRONT
     { 
-      Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1001 -1002 ");
+      Out=ModelSupport::getSetComposite(SMap,vacIndex,"-1007 1003 -1004 1005 -1006 1001 -1002 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,
 				       Out+frontBridgeRule()));
       addCell("Window",cellIndex-1);
@@ -414,7 +457,7 @@ VacuumPipe::createObjects(Simulation& System)
     }
   if (activeWindow & 2)
     { 
-      Out=ModelSupport::getComposite(SMap,vacIndex,"-1007 1102 -1101");
+      Out=ModelSupport::getSetComposite(SMap,vacIndex,"-1007 1003 -1004 1005 -1006 1102 -1101");
       System.addCell(MonteCarlo::Qhull(cellIndex++,windowMat,0.0,
 				       Out+backBridgeRule()));
       addCell("Window",cellIndex-1);
@@ -442,13 +485,15 @@ VacuumPipe::createObjects(Simulation& System)
   addCell("Steel",cellIndex-1);
   addCell("MainSteel",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-101 -107 ");
+  // FLANGE: 107 OR 103-106 valid 
+  Out=ModelSupport::getSetComposite(SMap,vacIndex," -101 -107 103 -104 105 -106 ");
   Out+=InnerVoid.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
 				   frontStr+windowFrontExclude));
   addCell("Steel",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"102 -107 ");
+  // FLANGE: 107 OR 103-106 valid 
+  Out=ModelSupport::getSetComposite(SMap,vacIndex,"102 -107 103 -104 105 -106 ");
   Out+=InnerVoid.display()+backStr+windowBackExclude;
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
@@ -456,13 +501,13 @@ VacuumPipe::createObjects(Simulation& System)
   
   // outer void:
   WallLayer.makeComplement();
-  Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 -107 ");
+  Out=ModelSupport::getSetComposite(SMap,vacIndex,"101 -102 -107 103 -104 105 -106 ");
   Out+=WallLayer.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("OutVoid",cellIndex-1);
 
   // Outer
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-107 ");
+  Out=ModelSupport::getSetComposite(SMap,vacIndex,"-107 103 -104 105 -106 ");
   addOuterSurf(Out+frontStr+backStr);
   
   return;
@@ -508,10 +553,6 @@ VacuumPipe::createLinks()
 
   //stufff for intersection
 
-  FixedComp::setConnect(2,Origin-X*radius,-X);
-  FixedComp::setConnect(3,Origin+X*radius,X);
-  FixedComp::setConnect(4,Origin-Z*radius,-Z);
-  FixedComp::setConnect(5,Origin+Z*radius,Z);
 
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
   if (!frontActive())
@@ -526,26 +567,61 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
     }
 
-  
-  FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+7));
+  // Round pipe
+  if (radius>0.0)
+    {
+      FixedComp::setConnect(2,Origin-X*radius,-X);
+      FixedComp::setConnect(3,Origin+X*radius,X);
+      FixedComp::setConnect(4,Origin-Z*radius,-Z);
+      FixedComp::setConnect(5,Origin+Z*radius,Z);
+      FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
+      FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
+      FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+7));
+      FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+7));
 
+      FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
+      FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
+      FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+17));
+      FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+17));
+      
+    }
+  else // rectangular pipe
+    {
+      FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+      FixedComp::setConnect(3,Origin+X*(width/2.0),X);
+      FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+      FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
+      FixedComp::setLinkSurf(2,-SMap.realSurf(vacIndex+3));
+      FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+4));
+      FixedComp::setLinkSurf(4,-SMap.realSurf(vacIndex+5));
+      FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+6));
+
+      FixedComp::setConnect(7,Origin-Z*(height/2.0+feThick),-Z);
+      FixedComp::setConnect(8,Origin+Z*(height/2.0+feThick),Z);
+      FixedComp::setLinkSurf(7,-SMap.realSurf(vacIndex+15));
+      FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+16));
+      }
+  
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
     (getSignedLinkPt(1)+getSignedLinkPt(2))/2.0;
   FixedComp::setConnect(6,midPt,Y);
-  
-  FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
-  FixedComp::setConnect(9,Origin-Z*flangeRadius,-Z);
-  FixedComp::setConnect(10,Origin+Z*flangeRadius,Z);
 
-  FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+17));
-  FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+17));
-  FixedComp::setLinkSurf(9,SMap.realSurf(vacIndex+107));
-  FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+107));
+  if (flangeRadius>0.0)
+    {
+      FixedComp::setConnect(9,Origin-Z*flangeRadius,-Z);
+      FixedComp::setConnect(10,Origin+Z*flangeRadius,Z);
+      
+      FixedComp::setLinkSurf(9,SMap.realSurf(vacIndex+107));
+      FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+107));
+    }
+  else
+    {
+      FixedComp::setConnect(9,Origin-Z*(flangeHeight/2.0),-Z);
+      FixedComp::setConnect(10,Origin+Z*(flangeHeight/2.0),Z);
+      FixedComp::setLinkSurf(9,-SMap.realSurf(vacIndex+105));
+      FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+106));
+    }
 
   return;
 }

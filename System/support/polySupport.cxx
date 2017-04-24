@@ -3,7 +3,7 @@
  
  * File:   support/polySupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ solveQuadratic(const double* D,
 size_t 
 solveQuadratic(const double& a,const double& b,const double& c,
 	       std::pair<std::complex<double>,
-			 std::complex<double> >& OutAns)
+	                 std::complex<double> >& OutAns)
 /*!
   Solves Complex Quadratic  \f[ Ax^2+Bx+C \f].
   \param a :: x^2 coeff
@@ -134,8 +134,7 @@ solveCubic(const std::vector<double>& DVec,
 	   std::complex<double>& AnsC)
 /*!
   Solves Cubic equation
-  \param Coef :: iterator over all the coefients in the order
-  \f[ Ax^3+Bx^2+Cx+D \f].
+  Coef of eqn: \f[ Ax^3+Bx^2+Cx+D \f].
   \param DVec :: Parameters x^3 to const
   \param AnsA :: complex roots of the equation 
   \param AnsB :: complex roots of the equation 
@@ -154,7 +153,7 @@ solveCubic(const double* D,
 	   std::complex<double>& AnsC)
 /*!
   Solves Cubic equation
-  Iiterator over all the coefients in the order
+  Iiterator over all the coefficients in the order
   \f[ Ax^3+Bx^2+Cx+D \f].
   \param D :: Parameters x^3 to const
   \param AnsA :: complex roots of the equation 

@@ -85,12 +85,14 @@
 #include "DREAM.h"
 #include "ESTIA.h"
 #include "FREIA.h"
+#include "HEIMDAL.h"
 #include "LOKI.h"
 #include "MAGIC.h"
 #include "MIRACLES.h"
 #include "NMX.h"
 #include "NNBAR.h"
 #include "ODIN.h"
+#include "TESTBEAM.h"
 #include "TREX.h"
 #include "VESPA.h"
 #include "VOR.h"
@@ -173,11 +175,10 @@ makeESSBL::getBeamNum(const std::string& Name)
 }
   
 void 
-makeESSBL::build(Simulation& System,
-		 const Bunker& bunkerObj)
+makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param bunkerObj :: Bunker cell system
    */
 {
@@ -226,6 +227,12 @@ makeESSBL::build(Simulation& System,
       FREIA freiaBL("freia");
       freiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }  
+  else if (beamName=="HEIMDAL")
+    {
+      // DREAM beamline
+      HEIMDAL heimdalBL("heimdal");
+      heimdalBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="LOKI")
     {
       // LOKI beamline
@@ -262,7 +269,13 @@ makeESSBL::build(Simulation& System,
       ODIN OdinBL("odin");
       OdinBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
-  else if (beamName=="TREX")
+  else if (beamName=="TESTBEAM")
+    {
+      // TEST beamline
+      TESTBEAM testBL("testBeam");
+      testBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
+ else if (beamName=="TREX")
     {
       // Odin beamline
       TREX TrexBL("trex");
