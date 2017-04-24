@@ -88,7 +88,7 @@ namespace essSystem
 
   PMQ::PMQ(const std::string& Base,const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),8),
+  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),6),
   attachSystem::CellMap(),
   baseName(Base),
   extraName(Base+Key),
@@ -108,7 +108,7 @@ PMQ::PMQ(const PMQ& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),
-  nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
+  nLayers(A.nLayers),radius(A.radius),
   mat(A.mat),
   airMat(A.airMat),
   nBars(A.nBars),
@@ -143,7 +143,6 @@ PMQ::operator=(const PMQ& A)
       nBars=A.nBars;
       barHeight=A.barHeight;
       barThick=A.barThick;
-      coverThick=A.coverThick;
     }
   return *this;
 }
@@ -192,7 +191,6 @@ PMQ::populate(const FuncDataBase& Control)
       mat.push_back(m);
     }
 
-  coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
   airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
   nBars = Control.EvalVar<size_t>(keyName+"NBars");
   barHeight = Control.EvalVar<double>(keyName+"BarHeight");
@@ -234,10 +232,6 @@ PMQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
-  // cover
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(coverThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length-coverThick),Y);
-
   int SI(surfIndex);
   for (size_t i=0; i<nLayers; i++)
     {
@@ -264,22 +258,16 @@ PMQ::createObjects(Simulation& System)
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -7 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -7 ");
 	} else
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 11 -12 -7M 7N ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 1 -2 -7M 7N ");
 	}
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
       SI += 10;
     }
 
   // covers
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
-
   Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -2 -7M ");
   addOuterSurf(Out);
 
@@ -321,13 +309,6 @@ PMQ::createLinks()
   FixedComp::setConnect(5,Origin+Y*(hl)+X*radius.back(),X);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
-
-  // inner covers
-  FixedComp::setConnect(6,Origin+Y*(coverThick),Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+11));
-
-  FixedComp::setConnect(7,Origin+Y*(length-coverThick),-Y);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(surfIndex+12));
 
   // for (int i=6; i<8; i++)
   //   ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;

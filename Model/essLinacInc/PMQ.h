@@ -51,7 +51,6 @@ class PMQ : public attachSystem::ContainedComp,
   double length;                ///< Total length including void
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
-  double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
   int airMat; ///< air material
   size_t nBars; ///< Number of magnet bars

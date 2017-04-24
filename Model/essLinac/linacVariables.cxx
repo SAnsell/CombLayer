@@ -250,7 +250,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL1PMQ1BarHeight", 14); // DePrisco2015, fig 2
   Control.addVariable("LinacDTL1PMQ1BarThick",   4); // DePrisco2015, fig 2
   
-  Control.addVariable("LinacDTL1PMQ1CoverThick", 0.2);
   Control.addVariable("LinacDTL1AirMat", "Air");
 
   
