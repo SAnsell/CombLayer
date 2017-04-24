@@ -108,9 +108,6 @@ PMQ::PMQ(const PMQ& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),
-  itLength(A.itLength),
-  itRadius(A.itRadius),
-  itWallThick(A.itWallThick),
   nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
   mat(A.mat),
   airMat(A.airMat)
@@ -136,9 +133,6 @@ PMQ::operator=(const PMQ& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
-      itLength=A.itLength;
-      itRadius=A.itRadius;
-      itWallThick=A.itWallThick;
       nLayers=A.nLayers;
       radius=A.radius;
       mat=A.mat;
@@ -177,9 +171,6 @@ PMQ::populate(const FuncDataBase& Control)
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
-  itLength=Control.EvalVar<double>(keyName+"IntertankLength");
-  itRadius=Control.EvalPair<double>(keyName,extraName,"IntertankRadius");
-  itWallThick=Control.EvalPair<double>(keyName,extraName,"IntertankWallThick");
   nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
   double R;
   int m;
@@ -238,11 +229,6 @@ PMQ::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(coverThick),Y);
   ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length-coverThick),Y);
 
-  // intertank
-  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
-  ModelSupport::buildCylinder(SMap,surfIndex+8,Origin,Y,itRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+9,Origin,Y,itRadius+itWallThick);
-
   int SI(surfIndex);
   for (size_t i=0; i<nLayers; i++)
     {
@@ -279,32 +265,13 @@ PMQ::createObjects(Simulation& System)
     }
 
   // covers
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 8 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -7M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 8 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -7M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
 
-  // intertank
-  if (itLength>0.0)
-    {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 2 -22 -8 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 8 -9 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
-
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 9 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-    }
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -22 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -2 -7M ");
   addOuterSurf(Out);
 
   return;
@@ -323,11 +290,11 @@ PMQ::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
+  FixedComp::setConnect(1,Origin+Y*(length),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
   const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
-  const double hl = (length+itLength)/2.0;
+  const double hl = (length)/2.0;
 
   FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));

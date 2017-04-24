@@ -49,9 +49,6 @@ class PMQ : public attachSystem::ContainedComp,
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
-  double itLength; ///< intertank length
-  double itRadius; ///< intertank pipe radius
-  double itWallThick; ///< intertank pipe wall thick
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
   double coverThick;                ///< cover thickness
