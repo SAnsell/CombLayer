@@ -244,6 +244,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
+
+  // DTL1 first half
+  Control.addVariable("LinacDTL1PMQ1Mat5", "SS304L");
+
   
   Control.addVariable("LinacDTL1PMQ1Length", 3.1054);
   Control.addVariable("LinacDTL1PMQ1GapLength", 5.0);

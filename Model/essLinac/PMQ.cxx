@@ -314,11 +314,12 @@ PMQ::createObjects(Simulation& System)
   for (size_t i=0; i<ldtl; i++)
     {
       if (i==0)
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2  -12 -7M ");
+	Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2  -12 -7M ");
       else
 	Out=ModelSupport::getComposite(SMap,surfIndex,SI-10,SI," 2 -12 7M -7N ");
       
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[nLayers-ldtl+i],0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,
+				       i==0 ? mat[0] : mat[nLayers-ldtl+i],0.0,Out));
       
       SI += 10;
     }
