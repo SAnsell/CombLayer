@@ -232,8 +232,11 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL5NPMQ", 0);
   
   Control.addVariable("LinacDTL1EngineeringActive", 0);
+  // PMQ parameters are from:
+  // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
   Control.addVariable("LinacDTL1PMQ1Length", 10);
-  Control.addVariable("LinacDTL1PMQ1NLayers", 4);
+  Control.addVariable("LinacDTL1PMQ1GapLength", 10);
+  Control.addVariable("LinacDTL1PMQ1NLayers", 7);
   Control.addVariable("LinacDTL1PMQ1Radius1", 1.0); // DePrisco2015, table 2
   Control.addVariable("LinacDTL1PMQ1Mat1", "Void");
   Control.addVariable("LinacDTL1PMQ1Radius2", 1.15); // DePrisco2015, table 2
@@ -243,9 +246,13 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL1PMQ1Radius4", 4.5);
   ELog::EM << "LinacDTL1PMQ1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
   Control.addVariable("LinacDTL1PMQ1Mat4", "SS304L");
+  Control.addVariable("LinacDTL1PMQ1Radius5", 25.95);
+  Control.addVariable("LinacDTL1PMQ1Mat5", "Void");
+  Control.addVariable("LinacDTL1PMQ1Radius6", 26);
+  Control.addVariable("LinacDTL1PMQ1Mat6", "Copper");
+  Control.addVariable("LinacDTL1PMQ1Radius7", 31);
+  Control.addVariable("LinacDTL1PMQ1Mat7", "SS304L");
 
-  // PMQ parameters are from:
-  // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
   Control.addVariable("LinacDTL1PMQ1NBars", 16); //  // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQ1BarHeight", 1.4); // DePrisco2015, fig 2
   Control.addVariable("LinacDTL1PMQ1BarThick",  0.4); // DePrisco2015, fig 2

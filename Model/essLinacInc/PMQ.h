@@ -49,6 +49,7 @@ class PMQ : public attachSystem::ContainedComp,
   int engActive;                ///< Engineering active flag
 
   double length;                ///< Total length including void
+  double gapLength; ///< gap size after PMQ
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
   std::vector<int> mat; ///< materials

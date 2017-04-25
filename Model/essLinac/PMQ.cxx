@@ -108,6 +108,7 @@ PMQ::PMQ(const PMQ& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),
+  gapLength(A.gapLength),
   nLayers(A.nLayers),radius(A.radius),
   mat(A.mat),
   airMat(A.airMat),
@@ -137,6 +138,7 @@ PMQ::operator=(const PMQ& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
+      gapLength=A.gapLength;
       nLayers=A.nLayers;
       radius=A.radius;
       mat=A.mat;
@@ -178,6 +180,7 @@ PMQ::populate(const FuncDataBase& Control)
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
+  gapLength=Control.EvalVar<double>(keyName+"GapLength");
   nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
   double R;
   int m;
@@ -236,6 +239,7 @@ PMQ::createSurfaces()
   //  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(sideIndex));
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length+gapLength),Y);
 
   int SI(surfIndex);
   for (size_t i=0; i<nLayers; i++)
@@ -304,7 +308,22 @@ PMQ::createObjects(Simulation& System)
       SI += 10;
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -2 -7M ");
+  // gap
+  const size_t ldtl(3); // number of layers in the gap
+  SI = surfIndex+static_cast<int>(nLayers-ldtl)*10;
+  for (size_t i=0; i<ldtl; i++)
+    {
+      if (i==0)
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2  -12 -7M ");
+      else
+	Out=ModelSupport::getComposite(SMap,surfIndex,SI-10,SI," 2 -12 7M -7N ");
+      
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[nLayers-ldtl+i],0.0,Out));
+      
+      SI += 10;
+    }
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -12 -7M ");
   addOuterSurf(Out);
 
   return;
@@ -323,11 +342,11 @@ PMQ::createLinks()
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(1,Origin+Y*(length),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  FixedComp::setConnect(1,Origin+Y*(length+gapLength),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
 
   const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
-  const double hl = (length)/2.0;
+  const double hl = (length+gapLength)/2.0;
 
   FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
