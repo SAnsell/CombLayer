@@ -179,7 +179,7 @@ PMQ::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  length=Control.EvalPair<double>(keyName,extraName,"Length");
   gapLength=Control.EvalVar<double>(keyName+"GapLength");
   nLayers=Control.EvalPair<size_t>(keyName,baseName,"NLayers");
   double R;

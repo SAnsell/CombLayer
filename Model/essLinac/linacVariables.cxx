@@ -247,14 +247,18 @@ EssLinacVariables(FuncDataBase& Control)
 
   // DTL1 first half
   Control.addVariable("LinacDTL1PMQ1Mat5", "SS304L");
+  Control.addVariable("LinacDTL1PMQ1Length", 2.5);
 
-  
-  Control.addVariable("LinacDTL1PMQ1Length", 3.1054);
+  // PMQ lengths:  DePrisco2015, table 2
+  Control.addVariable("LinacDTL1PMQLength", 5.0);
+  for (size_t i=2; i<=5; i++)
+    Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
+
   Control.addVariable("LinacDTL1PMQ1GapLength", 5.0);
-  Control.addVariable("LinacDTL1PMQ2Length", 6.2819);
+  Control.addVariable("LinacDTL1PMQ2Length", 5.0);
   Control.addVariable("LinacDTL1PMQ2GapLength", 5.0);
 
-  Control.addVariable("LinacDTL1PMQNBars", 16); //  // DePrisco2015, page 1
+  Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
   Control.addVariable("LinacDTL1PMQBarThick",  0.4); // DePrisco2015, fig 2
   Control.addVariable("LinacDTL1PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
