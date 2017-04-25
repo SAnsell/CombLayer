@@ -239,7 +239,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL1Mat7", "SS304L");
 
   // PMQs
-  Control.addVariable("LinacDTL1NPMQ", 2);
+  Control.addVariable("LinacDTL1NPMQ", 31);
   Control.addVariable("LinacDTL2NPMQ", 0);
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
@@ -247,16 +247,57 @@ EssLinacVariables(FuncDataBase& Control)
 
   // DTL1 first half
   Control.addVariable("LinacDTL1PMQ1Mat5", "SS304L");
-  Control.addVariable("LinacDTL1PMQ1Length", 2.5);
 
-  // PMQ lengths:  DePrisco2015, table 2
-  Control.addVariable("LinacDTL1PMQLength", 5.0);
-  for (size_t i=2; i<=5; i++)
-    Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
+  // // PMQ lengths:  DePrisco2015, table 2
+  // Control.addVariable("LinacDTL1PMQLength", 5.0);
+  // for (size_t i=2; i<=5; i++)
+  //   Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
 
-  Control.addVariable("LinacDTL1PMQ1GapLength", 5.0);
-  Control.addVariable("LinacDTL1PMQ2Length", 5.0);
-  Control.addVariable("LinacDTL1PMQ2GapLength", 5.0);
+  // PMQ gap lengths: read from the optics file
+  std::ifstream optFile("optics.dat");
+  if (!optFile.is_open())
+    throw ColErr::ExitAbort("Can't open the Linac optics file.");
+  std::string optstr;
+  bool found = false;
+  std::string strtmp;
+  size_t iLine(1), iPMQ(1), iGap(1);
+  while(!optFile.eof())
+    {
+      std::getline(optFile, optstr);
+      std::stringstream ss(optstr);
+      int col = 0;
+      while (ss >> strtmp)
+	{
+	  if ( (col==2) and ss.str().find("\"quad1213\"")!=std::string::npos)
+	    {
+	      //	      std::cout << ss.str() << std::endl;
+	      found = true;
+	    }
+	  if ((found) && (col==4))
+	    {
+              std::cout << strtmp << std::endl;
+	      if (iLine%2)
+		{
+		Control.addVariable("LinacDTL1PMQ" + std::to_string(iPMQ) + "Length",
+				    ::atof(strtmp.c_str())*100.0);
+		ELog::EM << "LinacDTL1PMQ" + std::to_string(iPMQ) + "Length " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
+		iPMQ++;
+		}
+	      else
+		{
+		Control.addVariable("LinacDTL1PMQ" + std::to_string(iPMQ-1) + "GapLength",
+				    ::atof(strtmp.c_str())*100.0);
+		ELog::EM << "LinacDTL1PMQ" + std::to_string(iPMQ-1) + "GapLength " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
+		iGap++;
+		}
+		
+	      iLine++;
+	    }
+	  col++;
+	}
+      
+    }
+  optFile.close();
 
   Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
