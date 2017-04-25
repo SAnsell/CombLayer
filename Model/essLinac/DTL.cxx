@@ -90,7 +90,7 @@ namespace essSystem
 
   DTL::DTL(const std::string& Base,const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),8),
+  attachSystem::FixedOffset(Base+Key+StrFunc::makeString(Index),6),
   attachSystem::CellMap(),
   baseName(Base),
   extraName(Base+Key),
@@ -196,7 +196,6 @@ DTL::createPMQ(Simulation& System, const long int lp)
       	  p->createAll(System, *pmq[i-1],1+1);
 	}
       
-      attachSystem::addToInsertControl(System,*this,*p);
       pmq.push_back(p);
     }
   
@@ -360,11 +359,9 @@ DTL::createLinks()
   FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
 
   // inner covers
-  FixedComp::setConnect(6,Origin,Y);
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+11));
 
-  FixedComp::setConnect(7,Origin+Y*(length),-Y);
-  FixedComp::setLinkSurf(7,-SMap.realSurf(surfIndex+12));
+  //  FixedComp::setConnect(7,Origin+Y*(length),-Y);
+  //  FixedComp::setLinkSurf(7,-SMap.realSurf(surfIndex+12));
 
   // for (int i=6; i<8; i++)
   //   ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
@@ -395,7 +392,7 @@ DTL::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  createPMQ(System, 6);
+  createPMQ(System, -1);
   
   return;
 }
