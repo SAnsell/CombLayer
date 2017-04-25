@@ -358,11 +358,6 @@ DTL::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
 
-  // inner covers
-
-  //  FixedComp::setConnect(7,Origin+Y*(length),-Y);
-  //  FixedComp::setLinkSurf(7,-SMap.realSurf(surfIndex+12));
-
   // for (int i=6; i<8; i++)
   //   ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
 
