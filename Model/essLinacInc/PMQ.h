@@ -56,6 +56,7 @@ class PMQ : public attachSystem::ContainedComp,
   size_t nBars; ///< Number of magnet bars
   double barHeight; ///< magnet bar height
   double barThick; ///< magnet bar thick
+  int barMat; ///< magnet bar material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

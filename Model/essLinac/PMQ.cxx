@@ -113,7 +113,8 @@ PMQ::PMQ(const PMQ& A) :
   airMat(A.airMat),
   nBars(A.nBars),
   barHeight(A.barHeight),
-  barThick(A.barThick)
+  barThick(A.barThick),
+  barMat(A.barMat)
   /*!
     Copy constructor
     \param A :: PMQ to copy
@@ -143,6 +144,7 @@ PMQ::operator=(const PMQ& A)
       nBars=A.nBars;
       barHeight=A.barHeight;
       barThick=A.barThick;
+      barMat=A.barMat;
     }
   return *this;
 }
@@ -197,6 +199,7 @@ PMQ::populate(const FuncDataBase& Control)
     throw ColErr::NumericalAbort(keyName+"NBars must be even");
   barHeight = Control.EvalVar<double>(keyName+"BarHeight");
   barThick = Control.EvalVar<double>(keyName+"BarThick");
+  barMat = ModelSupport::EvalMat<int>(Control,keyName+"BarMat");
 
   return;
 }
@@ -286,8 +289,7 @@ PMQ::createObjects(Simulation& System)
 	  for (size_t j=0; j<nBars/2;j++)
 	    {
 	      Out=ModelSupport::getComposite(SMap,SJ," 2 -3 ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out+Side));
-	      ELog::EM << "Correct material for magnet" << ELog::endDiag;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,barMat,0.0,Out+Side));
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 5 3 -2M ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Side));
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," -5 -2 3M ");
