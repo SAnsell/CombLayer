@@ -202,7 +202,6 @@ DTL::createPMQ(Simulation& System, const long int lp)
   return;
 }
 
-  
 void
 DTL::populate(const FuncDataBase& Control)
   /*!
@@ -300,20 +299,21 @@ DTL::createObjects(Simulation& System)
   ELog::RegMethod RegA("DTL","createObjects");
 
   std::string Out;
+  std::string pmqEnd = pmq.back()->getLinkString(1);
 
   int SI(surfIndex+static_cast<int>(nLayers-1)*10);
 
   // intertank
   if (itLength>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 2 -22 -8 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex," -22 -8 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,pmqEnd+Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -22 8 -9 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," -22 8 -9 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,pmqEnd+Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -22 9 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," -22 9 -7M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,pmqEnd+Out));
     }
 
   Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1 -22 -7M ");
@@ -383,11 +383,12 @@ DTL::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
+  createPMQ(System, -1);
   createObjects(System);
   createLinks();
   insertObjects(System);
 
-  createPMQ(System, -1);
+  ELog::EM << pmq.back()->getLinkPt(1) << ELog::endDiag;
   
   return;
 }
