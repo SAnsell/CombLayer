@@ -75,53 +75,53 @@ setPMQLength(FuncDataBase& Control, const std::string &base,
     Sets the PMQ length variables
     \param Control :: data base
    */
-    std::ifstream optFile(optFileName);
+  std::ifstream optFile(optFileName);
   if (!optFile.is_open())
     throw ColErr::ExitAbort("Can't open the Linac optics file " + optFileName);
-  std::string optstr;
+  
+  std::string optstr,strcol;
   bool found = false;
-  std::string strtmp;
-  size_t iLine(1), iPMQ(1), iGap(1);
+  int colLength,colGap;
+  size_t iPMQ(1);
   while(!optFile.eof())
     {
       std::getline(optFile, optstr);
       std::stringstream ss(optstr);
-      int col = 0;
-      while (ss >> strtmp)
+      colLength = 0;
+      while (ss >> strcol)
 	{
-	  if ( (col==2) and ss.str().find(start)!=std::string::npos)
+	  if ( (colLength==2) and (strcol.find(start)!=std::string::npos))
 	      found = true;
 
-	  if (found && (col==4))
+	  if (found && (colLength==4))
 	    {
-              std::cout << strtmp << std::endl;
-	      if (iLine%2)
+	      Control.addVariable(base + std::to_string(iPMQ) + "Length",
+				  ::atof(strcol.c_str())*100.0);
+	      // read next line with GapLength
+	      std::getline(optFile, optstr);
+	      std::stringstream ss1(optstr);
+	      colGap = 0;
+	      while (ss1 >> strcol)
 		{
-		Control.addVariable(base + std::to_string(iPMQ) + "Length",
-				    ::atof(strtmp.c_str())*100.0);
-		ELog::EM << base + std::to_string(iPMQ) + "Length " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
-		iPMQ++;
+		  if (colGap++==4)
+		    {
+		      Control.addVariable(base + std::to_string(iPMQ) + "GapLength",
+					  ::atof(strcol.c_str())*100.0);
+		      break;
+		    }
 		}
-	      else
-		{
-		Control.addVariable(base + std::to_string(iPMQ-1) + "GapLength",
-				    ::atof(strtmp.c_str())*100.0);
-		ELog::EM << base + std::to_string(iPMQ-1) + "GapLength " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
-		iGap++;
-		}
-		
-	      iLine++;
+	      iPMQ++;
 	    }
-	  if ( (col==2) and ss.str().find(end)!=std::string::npos)
-	    {
-	      ELog::EM << ss.str() << ELog::endCrit;
-	      found = false;
-	    }
-	  col++;
+	  
+	  if ( (colLength==2) and (strcol.find(end)!=std::string::npos))
+	    found = false;
+	  
+	  colLength++;
 	}
-      
     }
+  
   optFile.close();
+  
   return;
 }
 
