@@ -276,10 +276,6 @@ DTL::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
-  // cover
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin+Y*(coverThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length-coverThick),Y);
-
   // intertank
   ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
   ModelSupport::buildCylinder(SMap,surfIndex+8,Origin,Y,itRadius);
@@ -306,32 +302,7 @@ DTL::createObjects(Simulation& System)
 
   std::string Out;
 
-  int SI(surfIndex);
-  for (size_t i=0; i<nLayers; i++)
-    {
-      if (i==0)
-	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 -7 ");
-	} else
-	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,SI-10, " 11 -12 -7M 7N ");
-	}
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out));
-      SI += 10;
-    }
-
-  // covers
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -11 8 -7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 -8 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 12 -2 8 -7M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
+  int SI(surfIndex+static_cast<int>(nLayers-1)*10);
 
   // intertank
   if (itLength>0.0)
@@ -339,14 +310,14 @@ DTL::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,surfIndex," 2 -22 -8 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 8 -9 ");
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -22 8 -9 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 2 -22 9 -7M ");
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -22 9 -7M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI-10," 1 -22 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1 -22 -7M ");
   addOuterSurf(Out);
 
   return;
@@ -389,10 +360,10 @@ DTL::createLinks()
   FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
 
   // inner covers
-  FixedComp::setConnect(6,Origin+Y*(coverThick),Y);
+  FixedComp::setConnect(6,Origin,Y);
   FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+11));
 
-  FixedComp::setConnect(7,Origin+Y*(length-coverThick),-Y);
+  FixedComp::setConnect(7,Origin+Y*(length),-Y);
   FixedComp::setLinkSurf(7,-SMap.realSurf(surfIndex+12));
 
   // for (int i=6; i<8; i++)
