@@ -196,12 +196,15 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
-  Control.addVariable("LinacNDTLTanks", 5);
+  Control.addVariable("LinacNDTLTanks", 1);
   // DTL lengths are from Google drive / ESS DTL
   // 02 - Mechanical development and prototype construction.pdf
   // page 21
+  // PMQ parameters are from:
+  // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
   Control.addVariable("LinacDTL1YStep", 950.0);  // an arbitrary number
 
+  Control.addVariable("LinacDTL1EngineeringActive", 0);
   Control.addVariable("LinacDTL1Length", 768.76);
   Control.addVariable("LinacDTL1IntertankLength", 10.83);
   Control.addVariable("LinacDTL2Length", 717.11);
@@ -213,50 +216,44 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL5Length", 775.79);
   Control.addVariable("LinacDTL5IntertankLength", 100.0);
   
-  Control.addVariable("LinacDTLNLayers", 3);
-  Control.addVariable("LinacDTLRadius1", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
-  Control.addVariable("LinacDTLRadius2", 26);  // MARS
-  Control.addVariable("LinacDTLRadius3", 31);  // MARS
-  Control.addVariable("LinacDTLMat1", "Void"); 
-  Control.addVariable("LinacDTLMat2", "Copper"); 
-  Control.addVariable("LinacDTLMat3", "SS304L");
   Control.addVariable("LinacDTLCoverThick", 3.6); // MARS
 
   Control.addVariable("LinacDTLIntertankRadius", 2.8); // MARS
   Control.addVariable("LinacDTLIntertankWallThick", 0.2); // MARS
 
-  Control.addVariable("LinacDTL1NPMQ", 1);
+  Control.addVariable("LinacDTL1NLayers", 7);
+  Control.addVariable("LinacDTL1Radius1", 1.0); // DePrisco2015, table 2
+  Control.addVariable("LinacDTL1Mat1", "Void");
+  Control.addVariable("LinacDTL1Radius2", 1.15); // DePrisco2015, table 2
+  Control.addVariable("LinacDTL1Mat2", "Copper"); // rbfrend2-9100
+  Control.addVariable("LinacDTL1Radius3", 2.9);
+  Control.addVariable("LinacDTL1Mat3", "Void");
+  Control.addVariable("LinacDTL1Radius4", 4.5);
+  ELog::EM << "LinacDTL1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
+  Control.addVariable("LinacDTL1Mat4", "SS304L");
+  Control.addVariable("LinacDTL1Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
+  Control.addVariable("LinacDTL1Mat5", "Void");
+  Control.addVariable("LinacDTL1Radius6", 26);  // MARS
+  Control.addVariable("LinacDTL1Mat6", "Copper");
+  Control.addVariable("LinacDTL1Radius7", 31);  // MARS
+  Control.addVariable("LinacDTL1Mat7", "SS304L");
+
+  // PMQs
+  Control.addVariable("LinacDTL1NPMQ", 2);
   Control.addVariable("LinacDTL2NPMQ", 0);
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
   
-  Control.addVariable("LinacDTL1EngineeringActive", 0);
-  // PMQ parameters are from:
-  // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
-  Control.addVariable("LinacDTL1PMQ1Length", 10);
-  Control.addVariable("LinacDTL1PMQ1GapLength", 10);
-  Control.addVariable("LinacDTL1PMQ1NLayers", 7);
-  Control.addVariable("LinacDTL1PMQ1Radius1", 1.0); // DePrisco2015, table 2
-  Control.addVariable("LinacDTL1PMQ1Mat1", "Void");
-  Control.addVariable("LinacDTL1PMQ1Radius2", 1.15); // DePrisco2015, table 2
-  Control.addVariable("LinacDTL1PMQ1Mat2", "Copper"); // rbfrend2-9100
-  Control.addVariable("LinacDTL1PMQ1Radius3", 2.9);
-  Control.addVariable("LinacDTL1PMQ1Mat3", "Void");
-  Control.addVariable("LinacDTL1PMQ1Radius4", 4.5);
-  ELog::EM << "LinacDTL1PMQ1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
-  Control.addVariable("LinacDTL1PMQ1Mat4", "SS304L");
-  Control.addVariable("LinacDTL1PMQ1Radius5", 25.95);
-  Control.addVariable("LinacDTL1PMQ1Mat5", "Void");
-  Control.addVariable("LinacDTL1PMQ1Radius6", 26);
-  Control.addVariable("LinacDTL1PMQ1Mat6", "Copper");
-  Control.addVariable("LinacDTL1PMQ1Radius7", 31);
-  Control.addVariable("LinacDTL1PMQ1Mat7", "SS304L");
+  Control.addVariable("LinacDTL1PMQ1Length", 3.1054);
+  Control.addVariable("LinacDTL1PMQ1GapLength", 5.0);
+  Control.addVariable("LinacDTL1PMQ2Length", 6.2819);
+  Control.addVariable("LinacDTL1PMQ2GapLength", 5.0);
 
-  Control.addVariable("LinacDTL1PMQ1NBars", 16); //  // DePrisco2015, page 1
-  Control.addVariable("LinacDTL1PMQ1BarHeight", 1.4); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL1PMQ1BarThick",  0.4); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL1PMQ1BarMat",  "Sm2Co17"); // DePrisco2015, page 1
+  Control.addVariable("LinacDTL1PMQNBars", 16); //  // DePrisco2015, page 1
+  Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
+  Control.addVariable("LinacDTL1PMQBarThick",  0.4); // DePrisco2015, fig 2
+  Control.addVariable("LinacDTL1PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
   
   Control.addVariable("LinacDTL1AirMat", "Air");
 

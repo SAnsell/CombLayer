@@ -181,28 +181,28 @@ PMQ::populate(const FuncDataBase& Control)
 
   length=Control.EvalVar<double>(keyName+"Length");
   gapLength=Control.EvalVar<double>(keyName+"GapLength");
-  nLayers=Control.EvalPair<size_t>(keyName,extraName,"NLayers");
+  nLayers=Control.EvalPair<size_t>(keyName,baseName,"NLayers");
   double R;
   int m;
   std::string strmat;
   for (size_t i=0; i<nLayers; i++)
     {
-      R = Control.EvalPair<double>(keyName,extraName,
+      R = Control.EvalPair<double>(keyName,baseName,
 				   "Radius"+std::to_string(i+1));
       radius.push_back(R);
 
       strmat = "Mat"+std::to_string(i+1);
-      m = ModelSupport::EvalMat<int>(Control,keyName+strmat,extraName+strmat);
+      m = ModelSupport::EvalMat<int>(Control,keyName+strmat,baseName+strmat);
       mat.push_back(m);
     }
 
   airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
-  nBars = Control.EvalVar<size_t>(keyName+"NBars");
+  nBars = Control.EvalPair<size_t>(keyName,extraName,"NBars");
   if (nBars % 2)
     throw ColErr::NumericalAbort(keyName+"NBars must be even");
-  barHeight = Control.EvalVar<double>(keyName+"BarHeight");
-  barThick = Control.EvalVar<double>(keyName+"BarThick");
-  barMat = ModelSupport::EvalMat<int>(Control,keyName+"BarMat");
+  barHeight = Control.EvalPair<double>(keyName,extraName,"BarHeight");
+  barThick = Control.EvalPair<double>(keyName,extraName,"BarThick");
+  barMat = ModelSupport::EvalMat<int>(Control,keyName+"BarMat",extraName+"BarMat");
 
   return;
 }
