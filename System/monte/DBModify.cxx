@@ -847,6 +847,18 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
   MObj.setDensity(-7.85);
   MDB.resetMaterial(MObj);
 
+  // Samarium Cobalt - Sm2Co17
+  // rbfrend2-9100
+  MObj.setMaterial(imat++,"Sm2Co17",
+		   " 27059.70c  8.5   "
+		   " 62147.70c  0.521 "
+		   " 62149.70c  0.138 "
+		   " 62150.70c  0.074 "
+		   " 62152.70c  0.267 ","",MLib);
+  MObj.setDensity(-8.4);
+  MDB.resetMaterial(MObj);
+
+  
   return;
 }
 
