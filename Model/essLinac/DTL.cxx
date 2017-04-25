@@ -109,7 +109,6 @@ DTL::DTL(const DTL& A) :
   extraName(A.extraName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),
   itLength(A.itLength),
   itRadius(A.itRadius),
   itWallThick(A.itWallThick),
@@ -139,7 +138,6 @@ DTL::operator=(const DTL& A)
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      length=A.length;
       itLength=A.itLength;
       itRadius=A.itRadius;
       itWallThick=A.itWallThick;
@@ -214,7 +212,6 @@ DTL::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
   itLength=Control.EvalVar<double>(keyName+"IntertankLength");
   itRadius=Control.EvalPair<double>(keyName,extraName,"IntertankRadius");
   itWallThick=Control.EvalPair<double>(keyName,extraName,"IntertankWallThick");
@@ -272,10 +269,9 @@ DTL::createSurfaces()
 
   //  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(sideIndex));
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length),Y);
 
   // intertank
-  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
+  //  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
   ModelSupport::buildCylinder(SMap,surfIndex+8,Origin,Y,itRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+9,Origin,Y,itRadius+itWallThick);
 
@@ -300,6 +296,7 @@ DTL::createObjects(Simulation& System)
 
   std::string Out;
   std::string pmqEnd = pmq.back()->getLinkString(1);
+  SMap.addMatch(surfIndex+22,pmq.back()->getLinkSurf(1));
 
   int SI(surfIndex+static_cast<int>(nLayers-1)*10);
 
@@ -332,9 +329,12 @@ DTL::createLinks()
 {
   ELog::RegMethod RegA("DTL","createLinks");
 
+  const double length = Origin.Distance(pmq.back()->getLinkPt(1));
+  ELog::EM << "total DTL length: " << length << ELog::endDiag;
+
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-
+  
   FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
 

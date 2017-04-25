@@ -49,7 +49,6 @@ class DTL : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
-  double length;                ///< Total length including void
   double itLength; ///< intertank length
   double itRadius; ///< intertank pipe radius
   double itWallThick; ///< intertank pipe wall thick
