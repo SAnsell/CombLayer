@@ -255,7 +255,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
-  Control.addVariable("LinacNDTLTanks", 1);
+  Control.addVariable("LinacNDTLTanks", 2);
   // DTL lengths are from Google drive / ESS DTL
   // 02 - Mechanical development and prototype construction.pdf
   // page 21
@@ -297,9 +297,32 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL1Radius7", 31);  // MARS
   Control.addVariable("LinacDTL1Mat7", "SS304L");
 
+  // DTL2
+  Control.addVariable("LinacDTL2EngineeringActive", 0);
+
+  Control.addVariable("LinacDTL2NLayers", 7);
+  Control.addVariable("LinacDTL2Radius1", 1.0); // DePrisco2015, table 2
+  Control.addVariable("LinacDTL2Mat1", "Void");
+  Control.addVariable("LinacDTL2Radius2", 1.15); // DePrisco2015, table 2
+  Control.addVariable("LinacDTL2Mat2", "Copper"); // rbfrend2-9100
+  Control.addVariable("LinacDTL2Radius3", 2.9);
+  Control.addVariable("LinacDTL2Mat3", "Void");
+  Control.addVariable("LinacDTL2Radius4", 4.5);
+  ELog::EM << "LinacDTL2Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
+  Control.addVariable("LinacDTL2Mat4", "SS304L");
+  Control.addVariable("LinacDTL2Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
+  Control.addVariable("LinacDTL2Mat5", "Void");
+  Control.addVariable("LinacDTL2Radius6", 26);  // MARS
+  Control.addVariable("LinacDTL2Mat6", "Copper");
+  Control.addVariable("LinacDTL2Radius7", 31);  // MARS
+  Control.addVariable("LinacDTL2Mat7", "SS304L");
+
+
+
+  
   // PMQs
   Control.addVariable("LinacDTL1NPMQ", 30);
-  Control.addVariable("LinacDTL2NPMQ", 0);
+  Control.addVariable("LinacDTL2NPMQ", 30);
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
@@ -314,13 +337,20 @@ EssLinacVariables(FuncDataBase& Control)
 
   // PMQ gap lengths: read from the optics file
   setPMQLength(Control,"LinacDTL1PMQ", "optics.dat", "\"quad1213\"", "\"quad133\"");
+  setPMQLength(Control,"LinacDTL2PMQ", "optics.dat", "\"quad137\"", "\"quad367\"");
 
   Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
   Control.addVariable("LinacDTL1PMQBarThick",  0.4); // DePrisco2015, fig 2
   Control.addVariable("LinacDTL1PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
+
+  Control.addVariable("LinacDTL2PMQNBars", 16);      // DePrisco2015, page 1
+  Control.addVariable("LinacDTL2PMQBarHeight", 1.4); // DePrisco2015, fig 2
+  Control.addVariable("LinacDTL2PMQBarThick",  0.4); // DePrisco2015, fig 2
+  Control.addVariable("LinacDTL2PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
   
   Control.addVariable("LinacDTL1AirMat", "Air");
+  Control.addVariable("LinacDTL2AirMat", "Air");
 
   
   // Control.addVariable("LinacDTLRadius1", 1.0); 

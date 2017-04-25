@@ -330,7 +330,7 @@ DTL::createLinks()
   ELog::RegMethod RegA("DTL","createLinks");
 
   const double length = Origin.Distance(pmq.back()->getLinkPt(1));
-  ELog::EM << "total DTL length: " << length << ELog::endDiag;
+  ELog::EM << keyName << " total length: " << length << " delta: " << 768.76-length << ELog::endDiag;
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
