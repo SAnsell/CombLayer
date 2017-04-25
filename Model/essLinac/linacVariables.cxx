@@ -112,6 +112,11 @@ setPMQLength(FuncDataBase& Control, const std::string &base,
 		
 	      iLine++;
 	    }
+	  if ( (col==2) and ss.str().find(end)!=std::string::npos)
+	    {
+	      ELog::EM << ss.str() << ELog::endCrit;
+	      found = false;
+	    }
 	  col++;
 	}
       
@@ -292,7 +297,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL1Mat7", "SS304L");
 
   // PMQs
-  Control.addVariable("LinacDTL1NPMQ", 31);
+  Control.addVariable("LinacDTL1NPMQ", 30);
   Control.addVariable("LinacDTL2NPMQ", 0);
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
