@@ -66,6 +66,59 @@ const double SCALE3(32.0/34.0);
 namespace setVariable
 {
 
+void
+setPMQLength(FuncDataBase& Control, const std::string &base,
+	     const std::string &optFileName,
+	     const std::string &start,const std::string &end)
+{
+  /*!
+    Sets the PMQ length variables
+    \param Control :: data base
+   */
+    std::ifstream optFile(optFileName);
+  if (!optFile.is_open())
+    throw ColErr::ExitAbort("Can't open the Linac optics file " + optFileName);
+  std::string optstr;
+  bool found = false;
+  std::string strtmp;
+  size_t iLine(1), iPMQ(1), iGap(1);
+  while(!optFile.eof())
+    {
+      std::getline(optFile, optstr);
+      std::stringstream ss(optstr);
+      int col = 0;
+      while (ss >> strtmp)
+	{
+	  if ( (col==2) and ss.str().find(start)!=std::string::npos)
+	      found = true;
+
+	  if (found && (col==4))
+	    {
+              std::cout << strtmp << std::endl;
+	      if (iLine%2)
+		{
+		Control.addVariable(base + std::to_string(iPMQ) + "Length",
+				    ::atof(strtmp.c_str())*100.0);
+		ELog::EM << base + std::to_string(iPMQ) + "Length " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
+		iPMQ++;
+		}
+	      else
+		{
+		Control.addVariable(base + std::to_string(iPMQ-1) + "GapLength",
+				    ::atof(strtmp.c_str())*100.0);
+		ELog::EM << base + std::to_string(iPMQ-1) + "GapLength " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
+		iGap++;
+		}
+		
+	      iLine++;
+	    }
+	  col++;
+	}
+      
+    }
+  optFile.close();
+  return;
+}
 
 void
 EssLinacVariables(FuncDataBase& Control)
@@ -254,50 +307,7 @@ EssLinacVariables(FuncDataBase& Control)
   //   Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
 
   // PMQ gap lengths: read from the optics file
-  std::ifstream optFile("optics.dat");
-  if (!optFile.is_open())
-    throw ColErr::ExitAbort("Can't open the Linac optics file.");
-  std::string optstr;
-  bool found = false;
-  std::string strtmp;
-  size_t iLine(1), iPMQ(1), iGap(1);
-  while(!optFile.eof())
-    {
-      std::getline(optFile, optstr);
-      std::stringstream ss(optstr);
-      int col = 0;
-      while (ss >> strtmp)
-	{
-	  if ( (col==2) and ss.str().find("\"quad1213\"")!=std::string::npos)
-	    {
-	      //	      std::cout << ss.str() << std::endl;
-	      found = true;
-	    }
-	  if ((found) && (col==4))
-	    {
-              std::cout << strtmp << std::endl;
-	      if (iLine%2)
-		{
-		Control.addVariable("LinacDTL1PMQ" + std::to_string(iPMQ) + "Length",
-				    ::atof(strtmp.c_str())*100.0);
-		ELog::EM << "LinacDTL1PMQ" + std::to_string(iPMQ) + "Length " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
-		iPMQ++;
-		}
-	      else
-		{
-		Control.addVariable("LinacDTL1PMQ" + std::to_string(iPMQ-1) + "GapLength",
-				    ::atof(strtmp.c_str())*100.0);
-		ELog::EM << "LinacDTL1PMQ" + std::to_string(iPMQ-1) + "GapLength " << atof(strtmp.c_str())*100.0 << ELog::endDiag;
-		iGap++;
-		}
-		
-	      iLine++;
-	    }
-	  col++;
-	}
-      
-    }
-  optFile.close();
+  setPMQLength(Control,"LinacDTL1PMQ", "optics.dat", "\"quad1213\"", "\"quad133\"");
 
   Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
