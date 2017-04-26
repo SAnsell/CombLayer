@@ -271,7 +271,6 @@ DTL::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
 
   // intertank
-  //  ModelSupport::buildPlane(SMap,surfIndex+22,Origin+Y*(length+itLength),Y);
   ModelSupport::buildCylinder(SMap,surfIndex+8,Origin,Y,itRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+9,Origin,Y,itRadius+itWallThick);
 
@@ -295,25 +294,30 @@ DTL::createObjects(Simulation& System)
   ELog::RegMethod RegA("DTL","createObjects");
 
   std::string Out;
-  std::string pmqEnd = pmq.back()->getLinkString(1);
-  SMap.addMatch(surfIndex+22,pmq.back()->getLinkSurf(1));
+  // back plane of last PMQ:
+  SMap.addMatch(surfIndex+23,pmq.back()->getLinkSurf(1));
+  // back plane of the DTL intertank
+  ModelSupport::buildShiftedPlane(SMap,surfIndex+24,
+				  SMap.realPtr<Geometry::Plane>(surfIndex+23),
+				  itLength);
+
 
   int SI(surfIndex+static_cast<int>(nLayers-1)*10);
 
   // intertank
   if (itLength>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," -22 -8 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,pmqEnd+Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex," 23 -24 -8 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI," -22 8 -9 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,pmqEnd+Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," 23 -24 8 -9 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SI," -22 9 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,pmqEnd+Out));
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," 23 -24 9 -7M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
     }
 
-  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1 -22 -7M ");
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1 -24 -7M ");
   addOuterSurf(Out);
 
   return;
@@ -336,7 +340,7 @@ DTL::createLinks()
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
   
   FixedComp::setConnect(1,Origin+Y*(length+itLength),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+22));
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+24));
 
   const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
   const double hl = (length+itLength)/2.0;
@@ -344,7 +348,7 @@ DTL::createLinks()
   FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
   FixedComp::addLinkSurf(2,-SMap.realSurf(surfIndex+5));
-  ELog::EM << "addLinkSurf or addBridgeSurf ?" << ELog::endDiag;
+  //  ELog::EM << "addLinkSurf or addBridgeSurf ?" << ELog::endDiag;
 
   FixedComp::setConnect(3,Origin+Y*(hl)+Z*radius.back(),Z);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
@@ -388,8 +392,6 @@ DTL::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  ELog::EM << pmq.back()->getLinkPt(1) << ELog::endDiag;
-  
   return;
 }
 
