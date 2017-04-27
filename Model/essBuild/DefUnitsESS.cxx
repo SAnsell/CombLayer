@@ -527,6 +527,12 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
       A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
       
+      A.setVar("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      A.setVar("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      A.setVar("TopCapWingThick", 1.1);
+      A.setVar("TopCapWingTiltAngle", 1.7);
+      A.setVar("TopPreWingThick", 0.8);
+      A.setVar("TopPreWingTiltAngle", 1.5);
     } else throw ColErr::InvalidLine(modtype,
 				     "Either BF1, BF2 or Pancake are supported in defaultConfig");
 
