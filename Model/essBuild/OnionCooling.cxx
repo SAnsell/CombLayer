@@ -45,6 +45,11 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
+
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "AttachSupport.h"
+
 #include "OnionCooling.h"
 
 
@@ -70,9 +75,7 @@ OnionCooling::OnionCooling(const OnionCooling& A) :
   wallMat(A.wallMat),wallTemp(A.wallTemp),
   nRings(A.nRings),
   radius(A.radius),
-  gateWidth(A.gateWidth),gateLength(A.gateLength),
-  BottomSurface(A.BottomSurface),
-  UpperSurface(A.UpperSurface)
+  gateWidth(A.gateWidth),gateLength(A.gateLength)
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -100,8 +103,6 @@ OnionCooling::operator=(const OnionCooling& A)
       radius=A.radius;
       gateWidth=A.gateWidth;
       gateLength=A.gateLength;
-      BottomSurface=A.BottomSurface;
-      UpperSurface=A.UpperSurface;
    }
   return *this;
 }
@@ -205,7 +206,9 @@ OnionCooling::createSurfaces()
 }
 
 
-void OnionCooling::createObjects(Simulation& System)
+void
+OnionCooling::createObjects(Simulation& System,
+			    const attachSystem::FixedComp& FC)
   /*!
     Create the onion piping
     \param System :: Simulation to add results
@@ -213,7 +216,22 @@ void OnionCooling::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("OnionCooling","createObjects");
 
+ const attachSystem::CellMap* CM=
+    dynamic_cast<const attachSystem::CellMap*>(&FC);
+  MonteCarlo::Object* InnerObj(0);
+  int innerCell(0);
+  if (CM)
+    {
+      innerCell=CM->getCell("Inner");
+      InnerObj=System.findQhull(innerCell);
+    }
+  if (!InnerObj)
+    throw ColErr::InContainerError<int>
+      (innerCell,"Inner Cell not found");
+
   std::string Out;
+  const std::string topBottomStr=FC.getLinkString(7)+FC.getLinkString(8);
+  HeadRule wallExclude;
   
   // [2:1381] There are 2 types of cells: object cells (Monte Carlo objects = MC qhulls)
 
@@ -221,18 +239,22 @@ void OnionCooling::createObjects(Simulation& System)
   for (size_t i=1; i<=nRings; i++) {
     // upper half-ring
     //Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (1M -2M -4) (-1M:2M:3) "); // same: (1M -2M -4 3)
-    Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (7 -8 5 -6 3: 6 3 -4) ") + UpperSurface + " " + BottomSurface;
-    System.addCell(MonteCarlo::Qhull(cellIndex++, wallMat, wallTemp, Out));
+    Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (7 -8 5 -6 3: 6 3 -4) ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
     addOuterUnionSurf(Out);
+    wallExclude.addUnion(Out);
 
     // bottom half-ring
-    Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (7 -8 -10 9 3: -9 3 -4) ") + UpperSurface + " " + BottomSurface;
-    System.addCell(MonteCarlo::Qhull(cellIndex++, wallMat, wallTemp, Out));
+    Out=ModelSupport::getComposite(SMap, SI, onionIndex, " (7 -8 -10 9 3: -9 3 -4) ");
+    System.addCell(MonteCarlo::Qhull(cellIndex++, wallMat, wallTemp, Out+topBottomStr));
     addOuterUnionSurf(Out);
-
+    wallExclude.addUnion(Out);
 
     SI += 10;
   }
+
+  wallExclude.makeComplement();
+  InnerObj->addSurfString(wallExclude.display());
 
   return; 
 
@@ -281,24 +303,11 @@ void OnionCooling::createAll(Simulation& System, const attachSystem::FixedComp& 
   populate(System.getDataBase()); // populate variables
   createUnitVector(FC); // take fixed component, then apply shift and angle rotation (transformation) for this object centre
   createSurfaces();
-  createObjects(System);
+  createObjects(System,FC);
   createLinks();
   insertObjects(System);       
 
   return;
 }
-
-  void OnionCooling::setBottomSurface(const attachSystem::FixedComp& FC, const long int link)
-  {
-    BottomSurface  = (link<0) ? FC.getLinkComplement(static_cast<size_t>(-(link+1))) : FC.getLinkString(static_cast<size_t>(link));
-    std::cout << "BottomSurface: " << BottomSurface << std::endl;
-  }
-
-  void OnionCooling::setUpperSurface(const attachSystem::FixedComp& FC, const long int link)
-  {
-    UpperSurface  = (link<0) ? FC.getLinkComplement(static_cast<size_t>(-(link+1))) : FC.getLinkString(static_cast<size_t>(link));
-    std::cout << "UpperSurface: " << UpperSurface << std::endl;
-  }
-
 
 }  // NAMESPACE instrumentSystem

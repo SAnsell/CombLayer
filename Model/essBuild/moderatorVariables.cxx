@@ -375,7 +375,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2OnionCoolingGateLength1", 2);
   Control.addVariable("TopCakeMidH2OnionCoolingRadius2", 8);
   Control.addVariable("TopCakeMidH2OnionCoolingGateWidth2", 2);
-  Control.addVariable("TopCakeMidH2OnionCoolingGateLength2", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateLength2", 1.5);
 
   
   Control.addVariable("LowPreModNLayers",4);

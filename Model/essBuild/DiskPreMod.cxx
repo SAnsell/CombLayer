@@ -550,12 +550,8 @@ DiskPreMod::createAll(Simulation& System,
   if (engActive)
     {
       if (flowGuideType.find("Onion")!=std::string::npos)
-	{
-	  onion->setBottomSurface(*this, 7);
-	  onion->setUpperSurface(*this, 8);
-	  //	  this->addToInsertChain(*onion);
 	  onion->createAll(System,*this);
-	} else
+      else
 	InnerComp->createAll(System,*this,7);
     }
 

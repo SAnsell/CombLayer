@@ -36,16 +36,13 @@ class OnionCooling : public attachSystem::ContainedComp,
   std::vector<double> gateWidth;                  ///< full width of spacing in the corresponding ring
   std::vector<double> gateLength;                  ///< length of 'the door' in the corresponding ring
 
-  std::string BottomSurface; ///< bottom surface number
-  std::string UpperSurface;  ///< upper surface number
-
   // Functions:
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
   void createSurfaces();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&, const attachSystem::FixedComp&);
   void createLinks();
 
  public:
