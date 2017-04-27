@@ -71,6 +71,7 @@
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
+#include "OnionCooling.h"
 #include "DiskPreMod.h"
 
 
@@ -85,6 +86,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide")),
+  onion(new OnionCooling(Key+"OnionCooling")),
   sideRule("")
   /*!
     Constructor
@@ -94,6 +96,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   OR.addObject(InnerComp);
+  OR.addObject(onion);
 }
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) :
@@ -103,7 +106,9 @@ DiskPreMod::DiskPreMod(const DiskPreMod& A) :
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
+  flowGuideType(A.flowGuideType),
   InnerComp(A.InnerComp->clone()),
+  onion(A.onion->clone()),
   sideRule(A.sideRule)
   /*!
     Copy constructor
@@ -132,7 +137,9 @@ DiskPreMod::operator=(const DiskPreMod& A)
       width=A.width;
       mat=A.mat;
       temp=A.temp;
+      flowGuideType=A.flowGuideType;
       *InnerComp=*A.InnerComp;
+      *onion=*A.onion;
       sideRule=A.sideRule;
    }
   return *this;
@@ -169,6 +176,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
   ELog::RegMethod RegA("DiskPreMod","populate");
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
   outerRadius=outRadius;
@@ -332,7 +340,7 @@ DiskPreMod::createObjects(Simulation& System)
   addOuterSurf(Out);
 
   sideRule=ModelSupport::getComposite(SMap,SI," -7 ");
-  
+
   return;
 }
 
@@ -540,8 +548,16 @@ DiskPreMod::createAll(Simulation& System,
   insertObjects(System);
 
   if (engActive)
-    InnerComp->createAll(System,*this,7);
-
+    {
+      if (flowGuideType.find("Onion")!=std::string::npos)
+	{
+	  onion->setBottomSurface(*this, 7);
+	  onion->setUpperSurface(*this, 8);
+	  //	  this->addToInsertChain(*onion);
+	  onion->createAll(System,*this);
+	} else
+	InnerComp->createAll(System,*this,7);
+    }
 
   return;
 }

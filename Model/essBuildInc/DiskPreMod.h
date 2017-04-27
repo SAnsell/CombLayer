@@ -27,6 +27,7 @@ class Simulation;
 namespace essSystem
 {
   class CylFlowGuide;
+  class OnionCooling;
 /*!
   \class DiskPreMod
   \author S. Ansell
@@ -54,12 +55,14 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::vector<double> width;          ///< Widths [additive]
   std::vector<int> mat;               ///< Materials
   std::vector<double> temp;           ///< Temperatures
-
+  
+  std::string flowGuideType; ///< cooling flow guide type
 
   size_t NWidth;                      ///< Number of widths active
   int engActive;                  ///< Engineering active flag
   /// Flow guide pattern inside DiskPreMod (engineering detail)
   std::shared_ptr<CylFlowGuide> InnerComp;
+  std::shared_ptr<OnionCooling> onion;
   std::string sideRule; ///< side rule
 
   void populate(const FuncDataBase&,const double,const double);

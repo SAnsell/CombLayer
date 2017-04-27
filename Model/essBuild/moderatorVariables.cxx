@@ -357,6 +357,26 @@ EssButterflyModerator(FuncDataBase& Control)
       Control.addVariable("TopCake"+s+"WaterWallMat","Aluminium");
       Control.addVariable("TopCake"+s+"WaterModTemp",300.0);
     }
+
+  // onion cooling
+  Control.addVariable("TopCakeMidH2FlowGuideType","Onion");
+  Control.addVariable("TopCakeMidH2OnionCoolingXStep", 0);
+  Control.addVariable("TopCakeMidH2OnionCoolingYStep", 0);
+  Control.addVariable("TopCakeMidH2OnionCoolingZStep", 0.0);
+  Control.addVariable("TopCakeMidH2OnionCoolingXYangle",0.0); 
+  Control.addVariable("TopCakeMidH2OnionCoolingZangle",0.0);
+  Control.addVariable("TopCakeMidH2OnionCoolingHeight", 3); // should be same as moderator height
+  Control.addVariable("TopCakeMidH2OnionCoolingWallThick", 0.3); // in addition to Be
+  Control.addVariable("TopCakeMidH2OnionCoolingWallMat",   "Aluminium20K");
+  Control.addVariable("TopCakeMidH2OnionCoolingWallTemp",   20.0);
+  Control.addVariable("TopCakeMidH2OnionCoolingNRings", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingRadius1", 4);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateWidth1", 1);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateLength1", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingRadius2", 8);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateWidth2", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateLength2", 2);
+
   
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
