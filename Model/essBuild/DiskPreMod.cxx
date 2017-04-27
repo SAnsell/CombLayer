@@ -331,10 +331,7 @@ DiskPreMod::createObjects(Simulation& System)
 
   addOuterSurf(Out);
 
-  HeadRule HR;
-  HR.procString(ContainedComp::getExclude());
-  HR.makeComplement();
-  sideRule = HR.display();
+  sideRule=ModelSupport::getComposite(SMap,SI," -7 ");
   
   return;
 }
