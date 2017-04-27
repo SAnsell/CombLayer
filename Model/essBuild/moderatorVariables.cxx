@@ -331,9 +331,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addParse<double>("TopCakeMidH2Thick2","TopCakeMidH2Height2");
   Control.addVariable("TopCakeMidH2Mat2","Void");
 
-  Control.addVariable("TopCakeMidH2Height3",0.3);
-  Control.addVariable("TopCakeMidH2Depth3",0.3);
-  Control.addParse<double>("TopCakeMidH2Thick3","TopCakeMidH2Height3");
+  Control.addVariable("TopCakeMidH2Height3",0.0);
+  Control.addVariable("TopCakeMidH2Depth3",0.0);
+  Control.addVariable("TopCakeMidH2Thick3",0.3);
   Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
   // Control.addVariable("TopCakeTotalHeight",3+0.5*2+0.3*2 );
