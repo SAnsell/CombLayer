@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   essBuild/EdgeWater.cxx 
+
+ * File:   essBuild/EdgeWater.cxx
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -102,17 +102,19 @@ EdgeWater::EdgeWater(const std::string& key) :
   */
 {}
 
-EdgeWater::EdgeWater(const EdgeWater& A) : 
+EdgeWater::EdgeWater(const EdgeWater& A) :
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
-  width(A.width),wallThick(A.wallThick),modMat(A.modMat),
+  width(A.width),wallThick(A.wallThick),midWallThick(A.midWallThick),
+  midWallLength(A.midWallLength),
+  modMat(A.modMat),
   wallMat(A.wallMat),modTemp(A.modTemp),sideRule(A.sideRule)
   /*!
     Copy constructor
     \param A :: EdgeWater to copy
   */
-{} 
+{}
 
 EdgeWater&
 EdgeWater::operator=(const EdgeWater& A)
@@ -131,6 +133,8 @@ EdgeWater::operator=(const EdgeWater& A)
       cellIndex=A.cellIndex;
       width=A.width;
       wallThick=A.wallThick;
+      midWallThick=A.midWallThick;
+      midWallLength=A.midWallLength;
       modMat=A.modMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
@@ -148,8 +152,8 @@ EdgeWater::clone() const
 {
   return new EdgeWater(*this);
 }
-  
-EdgeWater::~EdgeWater() 
+
+EdgeWater::~EdgeWater()
   /*!
     Destructor
   */
@@ -166,6 +170,8 @@ EdgeWater::populate(const FuncDataBase& Control)
 
   width=Control.EvalVar<double>(keyName+"Width");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
+  midWallLength=Control.EvalVar<double>(keyName+"MidWallLength");
 
   cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
   cutWidth=Control.EvalVar<double>(keyName+"CutWidth");
@@ -173,10 +179,10 @@ EdgeWater::populate(const FuncDataBase& Control)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
-  
+
   return;
 }
-  
+
 void
 EdgeWater::createUnitVector(const attachSystem::FixedComp& FC,
 			    const long int sideIndex)
@@ -200,7 +206,7 @@ EdgeWater::createLinks()
   /*!
     Construct links for the triangle moderator
     The normal 1-3 and 5-6 are plane,
-    7,8,9 are 
+    7,8,9 are
   */
 {
   ELog::RegMethod RegA("EdgeWater","createLinks");
@@ -209,7 +215,7 @@ EdgeWater::createLinks()
 
   return;
 }
-  
+
 
 
 void
@@ -230,22 +236,26 @@ EdgeWater::createSurfaces()
   ModelSupport::buildPlane(SMap,edgeIndex+12,
 			   Origin+X*(wallThick+width/2.0),X);
 
+  // mid wall
+  ModelSupport::buildPlane(SMap,edgeIndex+21,Origin-X*(midWallThick/2.0),X);
+  ModelSupport::buildPlane(SMap,edgeIndex+22,Origin+X*(midWallThick/2.0),X);
+  ModelSupport::buildPlane(SMap,edgeIndex+23,Origin+Y*(midWallLength),Y);
 
-    
+
   // front dividers:
   const Geometry::Vec3D EdPtA=Origin-X*(cutWidth/2.0);
   const Geometry::Vec3D EdPtB=Origin+X*(cutWidth/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+103,EdPtA,X,Z,cutAngle);
   ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+104,EdPtB,X,Z,-cutAngle);
-  
+
   ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+203,EdPtA-X*wallThick,
 				  X,Z,cutAngle);
   ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+204,EdPtB+X*wallThick,
 				  X,Z,-cutAngle);
-  
+
   return;
 }
- 
+
 void
 EdgeWater::createObjects(Simulation& System,
 			 const std::string& divider,
@@ -260,11 +270,32 @@ EdgeWater::createObjects(Simulation& System,
   ELog::RegMethod RegA("EdgeWater","createObjects");
 
   std::string Out;
+
+  if (midWallThick>Geometry::zeroTol) // build the wall in the middle
+    {
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -21 103 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container+divider));
+
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -22 -23 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container+divider));
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 21 -22 23 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+				       modTemp,Out+container+divider));
+
+
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 22 -2 -104 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container+divider));
+    } else // no middle wall
+    {
+      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+				       modTemp,Out+container+divider));
+    }
   
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-				   modTemp,Out+container+divider));
-  CellMap::setCell("Water",  cellIndex-1);
+  //  CellMap::setCell("Water",  cellIndex-1);
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 103 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out+container));
@@ -283,7 +314,7 @@ EdgeWater::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
   CellMap::addCell("Wall",  cellIndex-1);
-  
+
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -12 203 -204") + divider;
   addOuterSurf(Out);
   sideRule = Out;
@@ -291,14 +322,14 @@ EdgeWater::createObjects(Simulation& System,
 }
 
 
-  
+
 Geometry::Vec3D
 EdgeWater::getSurfacePoint(const size_t,
 			const long int) const
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: Side [0-3] // mid sides
     \return Surface point
   */
 {
@@ -312,7 +343,7 @@ EdgeWater::getLayerSurf(const size_t ,
   /*!
     Given a side and a layer calculate the link point
     \param  :: layer, 0 is inner moderator [0-3]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
     \return Surface point
   */
 {
@@ -326,7 +357,7 @@ EdgeWater::getLayerString(const size_t,
   /*!
     Given a side and a layer calculate the link point
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
     \return Surface point
   */
 {
@@ -359,8 +390,8 @@ EdgeWater::createAll(Simulation& System,
   createObjects(System,divider,container);
 
   createLinks();
-  insertObjects(System);       
+  insertObjects(System);
   return;
 }
-  
+
 }  // NAMESPACE essSystem

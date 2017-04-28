@@ -173,7 +173,10 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftWaterModMat","H2O");
   Control.addVariable("LowFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("LowFlyLeftWaterModTemp",300.0);
-
+  // Julich drawing #212-000473 (bottom right drawing)
+  // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
+  Control.addVariable("LowFlyLeftWaterMidWallThick",0.2);
+  Control.addVariable("LowFlyLeftWaterMidWallLength",3.0);
 
   Control.addVariable("LowFlyRightWaterWidth",15.76);
   Control.addVariable("LowFlyRightWaterWallThick",0.347);
@@ -182,6 +185,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightWaterModMat","H2O");
   Control.addVariable("LowFlyRightWaterWallMat","Aluminium");
   Control.addVariable("LowFlyRightWaterModTemp",300.0);
+  Control.addParse<double>("LowFlyRightWaterMidWallThick","LowFlyLeftWaterMidWallThick");
+  Control.addParse<double>("LowFlyRightWaterMidWallLength","LowFlyLeftWaterMidWallLength");
+
   // TOP MODERATOR
 
   Control.addVariable("TopFlyXStep",0.0);  
@@ -294,6 +300,10 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftWaterModMat","H2O");
   Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
   Control.addVariable("TopFlyLeftWaterModTemp",300.0);
+  // Julich drawing #212-000473 (bottom right drawing)
+  // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
+  Control.addVariable("TopFlyLeftWaterMidWallThick",0.2);
+  Control.addVariable("TopFlyLeftWaterMidWallLength",3.0);
 
   Control.addVariable("TopFlyRightWaterWidth",15.76);
   Control.addVariable("TopFlyRightWaterWallThick",0.347);
@@ -302,6 +312,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightWaterModMat","H2O");
   Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
   Control.addVariable("TopFlyRightWaterModTemp",300.0);
+  Control.addParse<double>("TopFlyRightWaterMidWallThick","TopFlyLeftWaterMidWallThick");
+  Control.addParse<double>("TopFlyRightWaterMidWallLength","TopFlyLeftWaterMidWallLength");
 
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
