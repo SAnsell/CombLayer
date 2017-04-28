@@ -318,19 +318,19 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
   Control.addVariable("LowPreModDepth0",1.5);
-  Control.addVariable("LowPreModRadius0",30.0);
+  Control.addVariable("LowPreModRadius0",29.6);
   Control.addVariable("LowPreModMat0","H2OAl47");
   Control.addVariable("LowPreModHeight1",0);
   Control.addVariable("LowPreModDepth1",0);
-  Control.addVariable("LowPreModRadius1",0.3);
+  Control.addVariable("LowPreModRadius1",0.4);
   Control.addVariable("LowPreModMat1","Aluminium");
   Control.addVariable("LowPreModHeight2",0);
   Control.addVariable("LowPreModDepth2",0);
   //  Control.Parse("BeRefRadius");
-  Control.addVariable("LowPreModRadius2",7.7-3+0.3);
+  Control.addVariable("LowPreModRadius2",7.7-3+0.6);
   //  Control.Parse("BeRefRadius-LowPreModRadius0-LowPreModRadius1");
   //  Control.addVariable("LowPreModRadius2");
-  Control.addVariable("LowPreModMat2","Aluminium");
+  Control.addVariable("LowPreModMat2","SS316L");
 
   Control.addVariable("LowPreModHeight3",0.3);
   Control.addVariable("LowPreModDepth3",0.3);
@@ -347,15 +347,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModNLayers",4);
   Control.addVariable("TopPreModHeight0",1.5);
   Control.addVariable("TopPreModDepth0",1.5);
-  Control.addVariable("TopPreModRadius0",30.0);
+  Control.addVariable("TopPreModRadius0",29.6);
   Control.addVariable("TopPreModMat0","H2OAl47");
   Control.addVariable("TopPreModHeight1",0);
   Control.addVariable("TopPreModDepth1",0);
-  Control.addVariable("TopPreModRadius1",0.3);
+  Control.addVariable("TopPreModRadius1",0.4);
   Control.addVariable("TopPreModMat1","Aluminium");
   Control.addVariable("TopPreModHeight2",0);
   Control.addVariable("TopPreModDepth2",0);
-  Control.addVariable("TopPreModRadius2", 7.7-3+0.3);
+  Control.addVariable("TopPreModRadius2", 7.7-3+0.6);
   Control.addVariable("TopPreModMat2","SS316L"); // Requested by LZ 7 Feb 2017
   Control.addVariable("TopPreModHeight3",0.3);
   Control.addVariable("TopPreModDepth3",0.3);
