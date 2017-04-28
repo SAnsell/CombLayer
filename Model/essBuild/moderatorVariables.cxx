@@ -157,17 +157,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeHeight3",0.0);
   Control.addVariable("LowFlyRightLobeDepth3",0.0);
 
-  Control.addVariable("LowFlyMidWaterCutLayer",3);
-  Control.addVariable("LowFlyMidWaterMidYStep",4.635);
-  Control.addVariable("LowFlyMidWaterMidAngle",90);
-  Control.addVariable("LowFlyMidWaterLength",11.4);
-  Control.addVariable("LowFlyMidWaterEdgeRadius",0.5);
-
-  Control.addVariable("LowFlyMidWaterWallThick",0.2);
-  Control.addVariable("LowFlyMidWaterModMat","H2O");
-  Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
-  Control.addVariable("LowFlyMidWaterModTemp",300.0);
-
   // TOP MODERATOR
 
   Control.addVariable("TopFlyXStep",0.0);  
@@ -262,19 +251,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopFlyRightLobeDepth3",0.0);
 
-  Control.addVariable("TopFlyMidWaterCutLayer",3);
-  Control.addVariable("TopFlyMidWaterMidYStep",4.635);
-  Control.addVariable("TopFlyMidWaterMidAngle",90);
-  Control.addVariable("TopFlyMidWaterLength",11.4);
-  Control.addVariable("TopFlyMidWaterEdgeRadius",0.5);
-
-  Control.addVariable("TopFlyMidWaterWallThick",0.2);
-  Control.addVariable("TopFlyMidWaterModMat","H2O");
-  Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyMidWaterModTemp",300.0);
-
-  for (const std::string& lr : LR)
-    for (const std::string& tb : TB)
+  for (const std::string& tb : TB)
+    {
+    for (const std::string& lr : LR)
       {
 	Control.addVariable(tb+"Fly"+lr+"WaterWidth",15.76);
 	Control.addVariable(tb+"Fly"+lr+"WaterWallThick",0.347);
@@ -288,6 +267,17 @@ EssButterflyModerator(FuncDataBase& Control)
 	Control.addVariable(tb+"Fly"+lr+"WaterMidWallThick",0.2);
 	Control.addVariable(tb+"Fly"+lr+"WaterMidWallLength",3.0);
       }
+    Control.addVariable(tb+"FlyMidWaterCutLayer",3);
+    Control.addVariable(tb+"FlyMidWaterMidYStep",4.635);
+    Control.addVariable(tb+"FlyMidWaterMidAngle",90);
+    Control.addVariable(tb+"FlyMidWaterLength",11.4);
+    Control.addVariable(tb+"FlyMidWaterEdgeRadius",0.5);
+    
+    Control.addVariable(tb+"FlyMidWaterWallThick",0.2);
+    Control.addVariable(tb+"FlyMidWaterModMat","H2O");
+    Control.addVariable(tb+"FlyMidWaterWallMat","Aluminium");
+    Control.addVariable(tb+"FlyMidWaterModTemp",300.0);
+    }
 
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
