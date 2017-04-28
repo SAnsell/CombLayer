@@ -62,6 +62,9 @@ EssButterflyModerator(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssButterflyModerator");
 
+  const std::vector<std::string> TB = {"Top", "Low"};
+  const std::vector<std::string> LR = {"Left", "Right"};
+  
   Control.addVariable("LowFlyXStep",0.0);  
   Control.addVariable("LowFlyYStep",0.0);  
   Control.addVariable("LowFlyZStep",0.0);
@@ -164,29 +167,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyMidWaterModMat","H2O");
   Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
   Control.addVariable("LowFlyMidWaterModTemp",300.0);
-
-  Control.addVariable("LowFlyLeftWaterWidth",15.76);
-  Control.addVariable("LowFlyLeftWaterWallThick",0.347);
-  Control.addVariable("LowFlyLeftWaterCutAngle",30.0);
-  Control.addVariable("LowFlyLeftWaterCutWidth",10.56);
-  
-  Control.addVariable("LowFlyLeftWaterModMat","H2O");
-  Control.addVariable("LowFlyLeftWaterWallMat","Aluminium");
-  Control.addVariable("LowFlyLeftWaterModTemp",300.0);
-  // Julich drawing #212-000473 (bottom right drawing)
-  // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
-  Control.addVariable("LowFlyLeftWaterMidWallThick",0.2);
-  Control.addVariable("LowFlyLeftWaterMidWallLength",3.0);
-
-  Control.addVariable("LowFlyRightWaterWidth",15.76);
-  Control.addVariable("LowFlyRightWaterWallThick",0.347);
-  Control.addVariable("LowFlyRightWaterCutAngle",30.0);
-  Control.addVariable("LowFlyRightWaterCutWidth",10.56);
-  Control.addVariable("LowFlyRightWaterModMat","H2O");
-  Control.addVariable("LowFlyRightWaterWallMat","Aluminium");
-  Control.addVariable("LowFlyRightWaterModTemp",300.0);
-  Control.addParse<double>("LowFlyRightWaterMidWallThick","LowFlyLeftWaterMidWallThick");
-  Control.addParse<double>("LowFlyRightWaterMidWallLength","LowFlyLeftWaterMidWallLength");
 
   // TOP MODERATOR
 
@@ -293,27 +273,21 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
   Control.addVariable("TopFlyMidWaterModTemp",300.0);
 
-  Control.addVariable("TopFlyLeftWaterWidth",15.76);  
-  Control.addVariable("TopFlyLeftWaterWallThick",0.347);
-  Control.addVariable("TopFlyLeftWaterCutAngle",30.0);
-  Control.addVariable("TopFlyLeftWaterCutWidth",10.562);
-  Control.addVariable("TopFlyLeftWaterModMat","H2O");
-  Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyLeftWaterModTemp",300.0);
-  // Julich drawing #212-000473 (bottom right drawing)
-  // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
-  Control.addVariable("TopFlyLeftWaterMidWallThick",0.2);
-  Control.addVariable("TopFlyLeftWaterMidWallLength",3.0);
-
-  Control.addVariable("TopFlyRightWaterWidth",15.76);
-  Control.addVariable("TopFlyRightWaterWallThick",0.347);
-  Control.addVariable("TopFlyRightWaterCutAngle",30.0);
-  Control.addVariable("TopFlyRightWaterCutWidth",10.56);
-  Control.addVariable("TopFlyRightWaterModMat","H2O");
-  Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyRightWaterModTemp",300.0);
-  Control.addParse<double>("TopFlyRightWaterMidWallThick","TopFlyLeftWaterMidWallThick");
-  Control.addParse<double>("TopFlyRightWaterMidWallLength","TopFlyLeftWaterMidWallLength");
+  for (const std::string& lr : LR)
+    for (const std::string& tb : TB)
+      {
+	Control.addVariable(tb+"Fly"+lr+"WaterWidth",15.76);
+	Control.addVariable(tb+"Fly"+lr+"WaterWallThick",0.347);
+	Control.addVariable(tb+"Fly"+lr+"WaterCutAngle",30.0);
+	Control.addVariable(tb+"Fly"+lr+"WaterCutWidth",10.562);
+	Control.addVariable(tb+"Fly"+lr+"WaterModMat","H2O");
+	Control.addVariable(tb+"Fly"+lr+"WaterWallMat","Aluminium");
+	Control.addVariable(tb+"Fly"+lr+"WaterModTemp",300.0);
+	// Julich drawing #212-000473 (bottom right drawing)
+	// https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
+	Control.addVariable(tb+"Fly"+lr+"WaterMidWallThick",0.2);
+	Control.addVariable(tb+"Fly"+lr+"WaterMidWallLength",3.0);
+      }
 
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
