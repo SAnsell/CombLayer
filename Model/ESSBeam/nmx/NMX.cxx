@@ -82,6 +82,7 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "BeamShutter.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "PipeCollimator.h"
@@ -112,6 +113,7 @@ NMX::NMX(const std::string& keyName) :
   CollA(new constructSystem::PipeCollimator(newName+"CollA")),
   BInsert(new BunkerInsert(newName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  MainShutter(new constructSystem::BeamShutter(newName+"MainShutter")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA"))
   /*!
     Constructor
@@ -142,6 +144,7 @@ NMX::NMX(const std::string& keyName) :
 
   OR.addObject(CollA);
   
+  OR.addObject(MainShutter);
   OR.addObject(ShieldA);
 }
 
@@ -280,7 +283,10 @@ NMX::build(Simulation& System,
   ShieldA->setFront(bunkerObj,2);
   ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
 
-
+  MainShutter->addInsertCell(ShieldA->getCells("Void"));
+  MainShutter->createAll(System,*ShieldA,-1);
+  
+                             
   return;
 }
 
