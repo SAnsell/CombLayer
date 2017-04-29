@@ -46,15 +46,6 @@ class insertPlate : public constructSystem::insertObject
   double depth;             ///< Full Depth 
   
   virtual void populate(const FuncDataBase&);
-  void createUnitVector(const Geometry::Vec3D&,
-				const attachSystem::FixedComp&);
-
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-  void createUnitVector(const Geometry::Vec3D&,
-			const Geometry::Vec3D&,
-			const Geometry::Vec3D&);
-
 
   void createSurfaces();
   void createObjects(Simulation&);

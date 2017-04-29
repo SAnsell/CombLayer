@@ -3,7 +3,7 @@
  
  * File:   constructInc/insertObject.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,19 @@ class insertObject : public attachSystem::ContainedComp,
   virtual void populate(const FuncDataBase&);
   virtual void findObjects(Simulation&);
 
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const attachSystem::FixedComp&);
+
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
+  virtual void createUnitVector(const Geometry::Vec3D&,
+				const Geometry::Vec3D&);
+
+
+  
  public:
 
   insertObject(const std::string&);

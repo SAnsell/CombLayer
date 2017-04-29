@@ -147,65 +147,6 @@ insertPlate::populate(const FuncDataBase& Control)
   return;
 }
 
-void
-insertPlate::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int lIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed coordinate system
-    \param lIndex :: link index
-  */
-{
-  ELog::RegMethod RegA("insertPlate","createUnitVector(FC,index)");
-
-
-  FixedComp::createUnitVector(FC,lIndex);
-  applyOffset();
-  return;
-}
-
-void
-insertPlate::createUnitVector(const Geometry::Vec3D& OG,
-			      const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param FC :: LinearComponent to attach to
-  */
-{
-  ELog::RegMethod RegA("insertPlate","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  Origin=OG;
-  applyOffset();
-  return;
-}
-
-void
-insertPlate::createUnitVector(const Geometry::Vec3D& OG,
-			      const Geometry::Vec3D& YUnit,
-			      const Geometry::Vec3D& ZUnit)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param YUnit :: Y-direction
-    \param ZUnit :: Z-direction
-  */
-{
-  ELog::RegMethod RegA("insertPlate","createUnitVector<Vec>");
-
-
-  Geometry::Vec3D xTest(YUnit.unit()*ZUnit.unit());
-  Geometry::Vec3D yTest(YUnit.unit());
-  Geometry::Vec3D zTest(ZUnit.unit());
-  FixedComp::computeZOffPlane(xTest,yTest,zTest);
-
-  FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
-  Origin=OG;
-  applyOffset();
-
-  return;
-}
 
 void
 insertPlate::createSurfaces()
@@ -216,15 +157,15 @@ insertPlate::createSurfaces()
   ELog::RegMethod RegA("insertPlate","createSurface");
 
   if (!frontActive())
-    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*depth/2.0,Y);
+    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*(depth/2.0),Y);
   if (!backActive())
-    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*depth/2.0,Y);
+    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*(depth/2.0),Y);
 
 
-  ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*width/2.0,X);
-  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*height/2.0,Z);
-  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*height/2.0,Z);
+  ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,ptIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*(height/2.0),Z);
+  ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*(height/2.0),Z);
 
   if (!frontActive())
     setSurf("Front",ptIndex+1);
@@ -399,7 +340,7 @@ insertPlate::mainAll(Simulation& System)
   
   createSurfaces();
   createLinks();
-
+  ELog::EM<<"ASDFASDF :"<<delayInsert<<ELog::endDiag;
   if (!delayInsert)
     findObjects(System);
   createObjects(System);
@@ -444,7 +385,6 @@ insertPlate::createAll(Simulation& System,
     populate(System.getDataBase());  
   createUnitVector(FC,lIndex);
   mainAll(System);
-  
   return;
 }
 

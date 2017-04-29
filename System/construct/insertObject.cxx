@@ -157,8 +157,84 @@ insertObject::populate(const FuncDataBase& Control)
   return;
 }
 
+void
+insertObject::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int lIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed coordinate system
+    \param lIndex :: link index
+  */
+{
+  ELog::RegMethod RegA("insertObject","createUnitVector(FC,index)");
 
 
+  FixedComp::createUnitVector(FC,lIndex);
+  applyOffset();
+  return;
+}
+
+void
+insertObject::createUnitVector(const Geometry::Vec3D& OG,
+			       const attachSystem::FixedComp& FC)
+  /*!
+    Create the unit vectors
+    \param OG :: Origin
+    \param FC :: LinearComponent to attach to
+  */
+{
+  ELog::RegMethod RegA("insertObject","createUnitVector");
+
+  FixedComp::createUnitVector(FC);
+  Origin=OG;
+  applyOffset();
+  return;
+}
+
+void
+insertObject::createUnitVector(const Geometry::Vec3D& OG,
+                                 const Geometry::Vec3D& Axis)
+  /*!
+    Create the unit vectors
+    \param OG :: Origin
+    \param Axis :: Y-direction 
+  */
+{
+  ELog::RegMethod RegA("insertObject","createUnitVector<Vec,Vec>");
+  
+  Y=Axis.unit();
+  X=Y.crossNormal();
+  Z=X*Y;
+  createUnitVector(OG,Axis,Z);
+  return;
+}
+
+  
+void
+insertObject::createUnitVector(const Geometry::Vec3D& OG,
+			       const Geometry::Vec3D& YUnit,
+			       const Geometry::Vec3D& ZUnit)
+  /*!
+    Create the unit vectors
+    \param OG :: Origin
+    \param YUnit :: Y-direction
+    \param ZUnit :: Z-direction
+  */
+{
+  ELog::RegMethod RegA("insertObject","createUnitVector<Vec>");
+
+
+  Geometry::Vec3D xTest(YUnit.unit()*ZUnit.unit());
+  Geometry::Vec3D yTest(YUnit.unit());
+  Geometry::Vec3D zTest(ZUnit.unit());
+  FixedComp::computeZOffPlane(xTest,yTest,zTest);
+
+  FixedComp::createUnitVector(OG,yTest*zTest,yTest,zTest);
+  Origin=OG;
+  applyOffset();
+
+  return;
+}
   
 void
 insertObject::findObjects(Simulation& System)

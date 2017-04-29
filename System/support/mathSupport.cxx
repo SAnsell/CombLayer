@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -729,6 +729,38 @@ mathFunc::Swap(T& A,T& B)
   A=tmp;
   return;
 }
+
+double
+mathFunc::logAdd(const double& A,const double& B)
+  /*!
+    Add up to value that are exp
+    Equivilent of log(exp(A)+exp(B))
+    \param A :: log value to add
+    \param B :: log value to add
+    \return log(exp(A)+exp(B))
+  */
+{
+  return std::max(A,B) +
+    std::log(1.0+exp(-std::abs(A-B)));
+}
+
+double
+mathFunc::logSubtract(const double& A,const double& B)
+  /*!
+    Add up to value that are exp
+    Equivilent of log(exp(A)+exp(B))
+    \param A :: log value to add
+    \param B :: log value to add
+    \return log(exp(A)+exp(B))
+  */
+{
+   if(A <= B)
+     {
+       throw ColErr::OrderError<double>
+         (A,B,"logSubtract:B > A:");
+     }
+   return A+std::log(1.0+exp(-(B-A)));
+ }
 
 ///\cond TEMPLATE 
 

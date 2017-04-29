@@ -163,6 +163,7 @@ int
 EvalMatName(const std::string& matName)
   /*!
     Convert material name into a number
+    \throw InContainerError :: Material not known in DB
     \param matName :: Material to change
     \return index 
   */

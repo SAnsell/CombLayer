@@ -142,6 +142,9 @@ namespace mathFunc
   template<typename T>
   T mean(const std::vector<T>&);
 
+  double logAdd(const double&,const double&);
+  double logSubtract(const double&,const double&);
+  
 }
 
 

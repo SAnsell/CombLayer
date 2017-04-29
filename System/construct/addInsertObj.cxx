@@ -85,6 +85,7 @@
 #include "insertPlate.h"
 #include "insertSphere.h"
 #include "insertCylinder.h"
+#include "insertGrid.h"
 #include "insertCurve.h"
 #include "addInsertObj.h"
 
@@ -236,8 +237,7 @@ addInsertCylinderCell(Simulation& System,
 
   
 void
-addInsertPlateCell(Simulation& System,
-		   const std::string& objName,
+addInsertPlateCell(Simulation& System,const std::string& objName,
 		   const std::string& FCname,
 		   const std::string& linkName,
 		   const Geometry::Vec3D& XYZStep,
@@ -327,6 +327,116 @@ addInsertPlateCell(Simulation& System,
   return;
 }
 
+void
+addInsertGridCell(Simulation& System,
+		  const std::string& objName,
+		  const std::string& FCname,
+		  const std::string& linkName,
+		  const Geometry::Vec3D& XYZStep,
+		  const size_t NL,
+		  const double length,
+		  const double thick,
+		  const double gap,
+		  const std::string& layerMat)
+  /*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: object name
+    \param FCname :: FixedComp reference name
+    \param linkName :: link direction
+    \param NL :: Number of layers
+    \param length :: primary length
+    \param thick :: thickness of layer
+    \param gap :: gap layer (and 2xmid)
+    \param layerMat :: Material 
+  */
+{
+  ELog::RegMethod RegA("addInsertObj","addInsertGridCell(FC)");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  const attachSystem::FixedComp* mainFCPtr=
+    OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
+  const long int linkIndex=attachSystem::getLinkIndex(linkName);
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertGrid>
+    TGrid(new constructSystem::insertGrid(objName));
+
+  OR.addObject(TGrid);
+  TGrid->setStep(XYZStep);
+  TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
+  for(size_t i=0;i<NL;i++)
+    {
+      if (i % 2)
+	TGrid->addLayer(gap,"Void");	  
+      else
+	TGrid->addLayer(thick,layerMat);
+    }
+  
+  TGrid->createAll(System,*mainFCPtr,linkIndex);
+
+  return;
+}
+
+void
+addInsertGridCell(Simulation& System,
+		  const std::string& objName,
+		  const Geometry::Vec3D& Origin,
+		  const Geometry::Vec3D& YAxis,
+		  const Geometry::Vec3D& ZAxis,
+		  const size_t NL,
+		  const double length,
+		  const double thick,
+		  const double gap,
+		  const std::string& layerMat)
+  /*!
+    Adds a void cell for tallying in the guide if required
+    Note his normally leave a "hole" in the guide so 
+    it is ideally not used unless absolutely needed.
+    
+    \param System :: Simulation to used
+    \param objName :: object name
+    \param NL :: Number of layers
+    \param length :: primary length
+    \param thick :: thickness of layer
+    \param gap :: gap layer (and 2xmid)
+    \param layerMat :: Material 
+  */
+{
+  ELog::RegMethod RegA("addInsertObj","addInsertGridCell(Vec)");
+  
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  std::shared_ptr<constructSystem::insertGrid>
+    TGrid(new constructSystem::insertGrid(objName));
+
+  OR.addObject(TGrid);
+  TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
+  for(size_t i=0;i<NL;i++)
+    {
+      if (i % 2)
+	TGrid->addLayer(gap,"Void");	  
+      else
+	TGrid->addLayer(thick,layerMat);
+    }
+  
+  TGrid->createAll(System,Origin,YAxis,ZAxis);
+
+  return;
+}
+  
 void
 addInsertSphereCell(Simulation& System,
 		    const std::string& objName,

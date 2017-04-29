@@ -203,7 +203,6 @@ WeightControl::wwgCreate(const Simulation& System,
       else
 	minWeight= exp(1e-30);
 
-
       if (!activeAdjointFlag)
 	{
 	  wSet.makeSource(minWeight);

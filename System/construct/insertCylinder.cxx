@@ -146,60 +146,6 @@ insertCylinder::populate(const FuncDataBase& Control)
 }
 
 void
-insertCylinder::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int lIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed coordinate system
-    \param lIndex :: link index
-  */
-{
-  ELog::RegMethod RegA("insertCylinder","createUnitVector(FC,index)");
-
-
-  FixedComp::createUnitVector(FC,lIndex);
-  applyOffset();
-  return;
-}
-
-void
-insertCylinder::createUnitVector(const Geometry::Vec3D& OG,
-			      const attachSystem::FixedComp& FC)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param FC :: LinearComponent to attach to
-  */
-{
-  ELog::RegMethod RegA("insertCylinder","createUnitVector");
-
-  FixedComp::createUnitVector(FC);
-  Origin=OG;
-  applyOffset();
-  return;
-}
-
-void
-insertCylinder::createUnitVector(const Geometry::Vec3D& OG,
-                                 const Geometry::Vec3D& Axis)
-  /*!
-    Create the unit vectors
-    \param OG :: Origin
-    \param Axis :: Y-direction 
-  */
-{
-  ELog::RegMethod RegA("insertCylinder","createUnitVector<Vec>");
-  
-  Y=Axis.unit();
-  X=Y.crossNormal();
-  Z=X*Y;
-  Origin=OG;
-  applyOffset();
-
-  return;
-}
-
-void
 insertCylinder::createSurfaces()
   /*!
     Create all the surfaces
@@ -414,7 +360,7 @@ insertCylinder::createAll(Simulation& System,
   ELog::RegMethod RegA("insertCylinder","createAll");
   if (!populated) 
     populate(System.getDataBase());  
-  createUnitVector(Orig,Axis);
+  insertObject::createUnitVector(Orig,Axis);
   mainAll(System);
   
   return;

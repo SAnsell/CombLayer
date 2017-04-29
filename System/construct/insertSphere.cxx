@@ -144,24 +144,6 @@ insertSphere::populate(const FuncDataBase& Control)
 }
 
 void
-insertSphere::createUnitVector(const attachSystem::FixedComp& FC,
-			       const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed coordinate system
-    \param sideIndex :: link index
-  */
-{
-  ELog::RegMethod RegA("insertSphere","createUnitVector(FC,index)");
-
-
-  FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
-  return;
-}
-
-
-void
 insertSphere::createSurfaces()
   /*!
     Create all the surfaces

@@ -3,7 +3,7 @@
  
  * File:   build/TS2variables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -273,7 +273,18 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cvacAlMat","Aluminium");           // Inner Material
   Control.addVariable("cvacOutMat","Aluminium");          // Outer Material 
 
-//  NEW DECOUPLED MODERATOR
+  // PLACEHOLDER
+  Control.addVariable("decPlateXStep",0.0);        //  X [across] shift
+  Control.addVariable("decPlateYStep",4.6);        //  Y [target] shift
+  Control.addVariable("decPlateZStep",11.862);     //  Z Shift 
+  Control.addVariable("decPlateZAngle",0.0);       //  Tilt angle
+  Control.addVariable("decPlateXYAngle",57.0);     // Angle  [relative to Y]
+  Control.addVariable("decPlateWidth",14.0);       //  Tilt angle
+  Control.addVariable("decPlateHeight",12.0);       //  Tilt angle
+  Control.addVariable("decPlateDepth",5.0);       //  Tilt angle
+  Control.addVariable("decPlateDefMat","Aluminium");       //  Tilt angle
+
+    //  NEW DECOUPLED MODERATOR
 
   Control.addVariable("decoupledXStep",0.0);        //  X [across] shift
   Control.addVariable("decoupledYStep",4.6);        //  Y [target] shift
@@ -301,7 +312,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decLayer2Thick",0.15);   // Al layer
   Control.addVariable("decLayer2Temp",20.0);   
   Control.addVariable("decLayer2Mat","Aluminium");   
-  Control.addVariable("decLayer3Thick",0.5);   // Type 2 Methane
+  Control.addVariable("decLayer3Thick",0.4);   // Type 2 Methane
   Control.addVariable("decLayer3Temp",20.0);   
   Control.addVariable("decLayer3Mat","CH4AlTypeII");   
   Control.addVariable("decLayer4Thick",1.0);   // Type 2 Methane
@@ -348,11 +359,11 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decoupledModTemp",26.0);        // Moderator temperature
   
   // Poisoning:
-  Control.addVariable("decPoisonNBlades",0);        // Number of blades
-  Control.addVariable("decPoisonBladeWidth",0.3);    // Thickness [total]
-  Control.addVariable("decPoisonBladeGap",0.7);       // Space of blade
-  Control.addVariable("decPoisonAbsThick",0.05);      // Space in blade
-  Control.addVariable("decPoisonYLength",1.0);       // Planeare
+  Control.addVariable("decPoisonNBlades",7);        // Number of blades
+  Control.addVariable("decPoisonBladeWidth",1.0);    // Thickness [total]
+  Control.addVariable("decPoisonBladeGap",1.2);       // Space of blade
+  Control.addVariable("decPoisonAbsThick",0.5);      // Space in blade
+  Control.addVariable("decPoisonYLength",6.0);       // Planeare
   Control.addVariable("decPoisonZLength",-1.0);       // -ve : to to bottom
   Control.addVariable("decPoisonXOffset",0.0);       
   Control.addVariable("decPoisonYOffset",0.0);       

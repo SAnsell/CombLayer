@@ -72,7 +72,7 @@ class Reflector : public attachSystem::ContainedComp,
   std::shared_ptr<PreMod> PMhydro;          ///< Hydro Pre mod
   std::shared_ptr<HWrapper> Horn;           ///< Hydro Horn wrapper
 
-  std::shared_ptr<Decoupled> DMod;         ///< Decoupled moderator
+  std::shared_ptr<attachSystem::FixedComp> DMod;  ///< Decoupled moderator
   std::shared_ptr<VacVessel> DVacObj;       ///< Vac Vessel round 
   std::shared_ptr<FlightLine> FLwish;       ///< Wish [broad] flight line
   std::shared_ptr<FlightLine> FLnarrow;     ///< Narrow flight line

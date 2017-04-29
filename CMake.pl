@@ -67,21 +67,19 @@ $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
 $gM->findSubSrcDir("");
 
-
-$gM->addDepUnit("ess",      ["essBuild","visit","src","simMC",
-			     "beamline","physics","support",
-			     "input","instrument","source","monte",
-			     "funcBase","log","tally","construct",
-			     "crystal","transport","scatMat","md5",
-			     "endf","process","world","work",
-			     "monte","geometry","mersenne","src","xml","poly",
+$gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
+			     "funcBase","log","construct","md5",
+			     "process","world","monte","geometry",
+                             "mersenne","src","xml","poly",
 			     "weights","global","attachComp","visit",
                              "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
 			     "nmx","nnbar","odin","testBeam","trex",
 			     "vor","vespa",
 			     "shortDream","shortNmx","shortOdin","longLoki",
-			     "commonVar","simpleItem"
+			     "commonVar","simpleItem","physics","simMC",
+			     "transport","scatMat","endf","crystal",
+			     "tally","source","instrument","work"
     	 	             ]);
 
 $gM->addDepUnit("linac",

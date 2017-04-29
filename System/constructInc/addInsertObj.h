@@ -61,7 +61,24 @@ void
 addInsertSphereCell(Simulation&,const std::string&,
 		   const Geometry::Vec3D&,const double,
 		   const std::string&);
-  
+
+void
+addInsertGridCell(Simulation&,const std::string&,
+		  const std::string&,const std::string&,
+		  const Geometry::Vec3D&,
+		  const size_t,const double,
+		  const double,const double,
+		  const std::string&);
+
+void
+addInsertGridCell(Simulation&,const std::string&,
+		  const Geometry::Vec3D&,const Geometry::Vec3D&,
+		  const Geometry::Vec3D&,
+		  const size_t,const double,
+		  const double,const double,
+		  const std::string&);
+
+ 
 }
 
 #endif

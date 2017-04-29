@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,9 +69,13 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "TargetBase.h"
 #include "TS2target.h"
 #include "TS2ModifyTarget.h"
@@ -95,6 +99,9 @@
 #include "RefCutOut.h"
 #include "RefBolts.h"
 #include "Reflector.h"
+
+#include "insertObject.h"
+#include "insertPlate.h"
 
 namespace moderatorSystem
 {
@@ -161,7 +168,7 @@ Reflector::Reflector(const Reflector& A) :
   PMgroove(new PreMod(*A.PMgroove)),
   PMhydro(new PreMod(*A.PMhydro)),
   Horn(new HWrapper(*A.Horn)),
-  DMod((A.DMod) ? std::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
+  //  DMod((A.DMod) ? std::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
   DVacObj(new VacVessel(*A.DVacObj)),
   FLwish(new FlightLine(*A.FLwish)),
   FLnarrow(new FlightLine(*A.FLnarrow)),
@@ -203,10 +210,6 @@ Reflector::operator=(const Reflector& A)
       *PMgroove = *A.PMgroove;
       *PMhydro = *A.PMhydro;
       *Horn = *A.Horn;
-      if (A.DMod)
-	DMod = std::shared_ptr<Decoupled>(A.DMod->clone());
-      else
-	DMod=A.DMod;       
       *DVacObj = *A.DVacObj;
       *FLwish = *A.FLwish;
       *FLnarrow = *A.FLnarrow;
@@ -398,24 +401,37 @@ Reflector::processDecoupled(Simulation& System,
     {
       // This strange construct :
       DecFileMod* DFPtr=new DecFileMod("decoupled");
-      DFPtr->createAllFromFile(System,*this,
-	    IParam.getValue<std::string>("decFile"));
+      DFPtr->createAllFromFile(System,*this,0,
+          IParam.getValue<std::string>("decFile"));
       DMod=std::shared_ptr<Decoupled>(DFPtr);  
       OR.addObject(DMod);
       return;
     }
+
   const std::string DT=IParam.getValue<std::string>("decType");
   if (DT=="standard")  // Standard one
     {
-      DMod=std::shared_ptr<Decoupled>(new Decoupled("decoupled"));  
-      OR.addObject(DMod);
-      DMod->createAll(System,World::masterTS2Origin());
+      std::shared_ptr<Decoupled> DModPtr(new Decoupled("decoupled"));
+      OR.addObject(DModPtr);
+      DModPtr->createAll(System,World::masterTS2Origin(),0);
+      DMod=DModPtr;
     }
   else if (DT=="layer")  // layer
     {
-      DMod=std::shared_ptr<Decoupled>(new DecLayer("decoupled","decLayer"));  
-      OR.addObject(DMod);
-      DMod->createAll(System,World::masterTS2Origin());
+      std::shared_ptr<Decoupled> DModPtr(new DecLayer("decoupled","decLayer")); 
+      OR.addObject(DModPtr);
+      DModPtr->createAll(System,World::masterTS2Origin(),0);
+      DMod=DModPtr;
+    }
+  else if (DT=="plate")  // layer
+    {
+      std::shared_ptr<constructSystem::insertPlate>
+	PPtr(new constructSystem::insertPlate("decPlate")); 
+       OR.addObject(PPtr);
+       PPtr->setNoInsert();
+       PPtr->addInsertCell(cellIndex-1);
+       PPtr->createAll(System,World::masterTS2Origin(),0);
+       DMod=PPtr;
     }
   else 
     {
@@ -441,7 +457,7 @@ Reflector::createInternalObjects(Simulation& System,
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
-
+  const std::string DT=IParam.getValue<std::string>("decType");
 
   TarObj->setRefPlates(-SMap.realSurf(refIndex+12),
 		       -SMap.realSurf(refIndex+11));
@@ -492,33 +508,54 @@ Reflector::createInternalObjects(Simulation& System,
   Horn->createAll(System,*VacObj,*FLhydro,*PMhydro);
   
   processDecoupled(System,IParam);
-  DVacObj->createAll(System,*DMod,*DMod);
+  const attachSystem::ContainedComp* CMod=
+    OR.getObjectThrow<attachSystem::ContainedComp>
+    (DMod->getKeyName(),"DMod to CC failed");
 
-  Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
-  FLnarrow->addBoundarySurf("inner",Out);  
-  FLnarrow->addBoundarySurf("outer",Out);  
-  FLnarrow->createAll(System,*DVacObj,1);
-
-  Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
-  FLwish->addBoundarySurf("inner",Out);  
-  FLwish->addBoundarySurf("outer",Out);  
-  FLwish->createAll(System,*DVacObj,2);
-
-  PMdec->setTargetSurf(TarObj->getLinkSurf(0));
-  PMdec->createAll(System,4,*DVacObj,1);
-
+  if (DT!="plate")
+    {
+      DVacObj->createAll(System,*DMod,*CMod);
+  
+      Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+      FLnarrow->addBoundarySurf("inner",Out);  
+      FLnarrow->addBoundarySurf("outer",Out);  
+      FLnarrow->createAll(System,*DVacObj,1);
+      
+      Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
+      FLwish->addBoundarySurf("inner",Out);  
+      FLwish->addBoundarySurf("outer",Out);  
+      FLwish->createAll(System,*DVacObj,2);
+      
+      PMdec->setTargetSurf(TarObj->getLinkSurf(0));
+      PMdec->createAll(System,4,*DVacObj,1);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+      FLnarrow->addBoundarySurf("inner",Out);  
+      FLnarrow->addBoundarySurf("outer",Out);  
+      FLnarrow->createAll(System,*DMod,1);
+      
+      Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
+      FLwish->addBoundarySurf("inner",Out);  
+      FLwish->addBoundarySurf("outer",Out);  
+      FLwish->createAll(System,*DMod,2);
+      
+      PMdec->setTargetSurf(TarObj->getLinkSurf(0));
+      PMdec->createAll(System,5,*DMod,1);
+    }  
   Out=ModelSupport::getComposite(SMap,refIndex,"-2");
   IRcut->addBoundarySurf(Out);  
   IRcut->createAll(System,*TarObj);
-
+  
   CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
   CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
   CdBucket->addBoundarySurf(TarObj->getExclude());
   CdBucket->createAll(System,*this);
-
+  
   for(CoolPad& PD : Pads)
     PD.createAll(System,*this,2);
-
+      
   return;
 }
 
@@ -539,7 +576,7 @@ Reflector::insertPipeObjects(Simulation& System,
   CP.createAll(System,*HydObj,4,*VacObj);
 
   DecouplePipe DP("decPipe");
-  DP.createAll(System,*DMod,5,*DVacObj,DMod->needsHePipe());
+  //  DP.createAll(System,*DMod,5,*DVacObj,DMod->needsHePipe());
 
   if (IParam.flag("bolts"))
     {
@@ -573,13 +610,13 @@ Reflector::calcModeratorPlanes(const int BeamLine,
   if (BeamLine<4)       // NARROW
     {
       FLnarrow->getInnerVec(Window);
-      dSurf=DMod->getDividePlane(1);
+      //      dSurf=DMod->getDividePlane(1);
       return DVacObj->getLinkSurf(0);
     }
   if (BeamLine<9)      // H2
     {
       FLhydro->getInnerVec(Window);
-      dSurf=HydObj->getDividePlane();
+      //      dSurf=HydObj->getDividePlane();
       return VacObj->getLinkSurf(1);
     }
   if (BeamLine<14)      // Groove
@@ -590,7 +627,7 @@ Reflector::calcModeratorPlanes(const int BeamLine,
     }
   // WISH
       FLwish->getInnerVec(Window);
-      dSurf=DMod->getDividePlane(0);
+      //      dSurf=DMod->getDividePlane(0);
       return DVacObj->getLinkSurf(1);
 }
 

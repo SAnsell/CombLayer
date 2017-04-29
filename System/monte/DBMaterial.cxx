@@ -1212,6 +1212,12 @@ DBMaterial::initMaterial()
   MObj.setDensity(-1.05);
   setMaterial(MObj);
 
+  // 
+  // Material #138 Ammonia [695kg/m^3]
+  MObj.setMaterial(138,"Ammonia","7014.70c 0.024801 "
+		   "1001.70c 0.074402","orthh.99t",MLib);
+  setMaterial(MObj);
+
   
   return;
 }

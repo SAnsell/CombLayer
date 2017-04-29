@@ -72,6 +72,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "FrontBackCut.h"
 #include "SurfMap.h"
 #include "SurInter.h"
@@ -85,7 +86,7 @@ namespace constructSystem
 VacuumPipe::VacuumPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,11),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),
+  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1),frontJoin(0),backJoin(0)
   /*!
@@ -96,7 +97,8 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  attachSystem::SurfMap(A),attachSystem::CellMap(A),
+  attachSystem::FrontBackCut(A),
   vacIndex(A.vacIndex),cellIndex(A.cellIndex),frontJoin(A.frontJoin),
   FPt(A.FPt),FAxis(A.FAxis),backJoin(A.backJoin),
   BPt(A.BPt),BAxis(A.BAxis),radius(A.radius),height(A.height),
@@ -126,6 +128,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
       attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
       frontJoin=A.frontJoin;
@@ -202,7 +205,8 @@ VacuumPipe::populate(const FuncDataBase& Control)
   windowHeight=Control.EvalDefVar<double>(keyName+"WindowHeight",-1.0);
   windowWidth=Control.EvalDefVar<double>(keyName+"WindowWidth",-1.0);
 
-  if (activeWindow && (windowRadius<0.0 && (windowWidth<0.0 || windowHeight<0.0)))
+  if (activeWindow && (windowRadius<0.0 &&
+		       (windowWidth<0.0 || windowHeight<0.0)))
     throw ColErr::EmptyContainer
       ("Pipe:["+keyName+"] has neither windowRadius or windowHeight/Width");
 
@@ -271,7 +275,7 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
     \param index :: offset index
     \param dFlag :: direction flag
     \param length :: length to shift by
-   */
+  */
 {
   ELog::RegMethod RegA("VacuumPipe","getShiftedSurf");
   
@@ -349,6 +353,13 @@ VacuumPipe::createSurfaces()
 				   Origin-Y*(midFlange-windowThick/2.0),Y);
 	}	    
     }
+  // add data to surface
+  if (activeWindow & 1)
+    {
+      addSurf("FrontWindow",vacIndex+1001);
+      addSurf("FrontWindow",vacIndex+1002);
+    }
+  
     // Inner void
   if (backActive())
     {
@@ -377,6 +388,16 @@ VacuumPipe::createSurfaces()
 	}	    
 
     }
+
+  // add data to surface
+  if (activeWindow & 1)
+    {
+      addSurf("BackWindow",vacIndex+1101);
+      addSurf("BackWindow",vacIndex+1102);
+    }
+
+
+  
   // MAIN SURFACES:
   if (radius>0.0)
     {

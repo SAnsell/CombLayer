@@ -122,6 +122,12 @@ tallyAddition(Simulation& System,
 	    " -- sphere object FixedComp linkPt +Vec3D(x,y,z) radius \n";
 	  ELog::EM<<
 	    " -- sphere free Vec3D(x,y,z) radius \n";
+	  ELog::EM<<
+	    " -- grid object FixedComp linkPt +Vec3D(x,y,z) "
+	    " NL length thick gap mat \n";
+	  ELog::EM<<
+	    " -- grid free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis)"
+	    " NL length thick gap mat \n";
 	  ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;
@@ -168,6 +174,46 @@ tallyAddition(Simulation& System,
 	  else
 	    constructSystem::addInsertPlateCell
 	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
+	  
+	}
+      else if (key=="Grid" || key=="Grid")
+	{
+	  size_t ptI;
+	  const std::string PName="insertGrid"+StrFunc::makeString(index);
+	  if (PType=="object")
+	    {
+	      ptI=4;
+	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
+	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
+	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else if (PType=="free")
+	    {
+	      ptI=2;
+              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              ZAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"plate type");
+	  
+	  const double NL=
+	    IParam.getValueError<size_t>("TAdd",index,ptI,eMess);
+	  const double length=
+	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	  const double thick=
+	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	  const double gap=
+	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+3);
+	  const std::string mat=
+            IParam.getDefValue<std::string>("Void","TAdd",index,ptI+4);
+	  
+	  if (PType=="object")
+	    constructSystem::addInsertGridCell
+	      (System,PName,FName,LName,VPos,NL,length,thick,gap,mat);
+	  else
+	    constructSystem::addInsertGridCell
+	      (System,PName,VPos,YAxis,ZAxis,NL,length,thick,gap,mat);
 	  
 	}
       else if (key=="Sphere" || key=="sphere")

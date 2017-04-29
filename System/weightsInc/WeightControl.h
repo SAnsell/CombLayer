@@ -76,7 +76,6 @@ class WeightControl
   std::string activePtType;                 ///< ptType 
   size_t activePtIndex;                     ///< plant/source/track pt 
 
-
   std::vector<Geometry::Cone> conePt;         ///< Cone points
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
