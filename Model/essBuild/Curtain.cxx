@@ -431,7 +431,7 @@ Curtain::createLinks()
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   // Lower first:
-  const double angleStep((M_PI/180.0)*(rightPhase-leftPhase)/3.0);
+  //  const double angleStep((M_PI/180.0)*(rightPhase-leftPhase)/3.0);
   double angle(M_PI*leftPhase/180.0);
   for(size_t i=0;i<4;i++)
     {

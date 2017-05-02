@@ -331,7 +331,6 @@ VESPA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   WFMDiskA->addInsertCell(ChopperA->getCell("Void"));
   WFMDiskA->setCentreFlag(3);  // Z direction
-  WFMDiskA->setOffsetFlag(1);  // Z direction
   WFMDiskA->createAll(System,ChopperA->getKey("Beam"),0);
 
   VPipeC->addInsertCell(bunkerVoid);
@@ -348,7 +347,6 @@ VESPA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   WFMDiskB->addInsertCell(ChopperB->getCell("Void"));
   WFMDiskB->setCentreFlag(3);  // Z direction
-  WFMDiskB->setOffsetFlag(1);  // Z direction
   WFMDiskB->createAll(System,ChopperB->getKey("Beam"),0);
 
   VPipeD->addInsertCell(bunkerVoid);
@@ -364,7 +362,6 @@ VESPA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   WFMDiskC->addInsertCell(ChopperC->getCell("Void"));
   WFMDiskC->setCentreFlag(3);  // Z direction
-  WFMDiskC->setOffsetFlag(1);  // Z direction
   WFMDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
   VPipeE->addInsertCell(bunkerVoid);
@@ -380,7 +377,6 @@ VESPA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   FOCDiskA->addInsertCell(ChopperD->getCell("Void"));
   FOCDiskA->setCentreFlag(3);  // Z direction
-  FOCDiskA->setOffsetFlag(1);  // Z direction
   FOCDiskA->createAll(System,ChopperD->getKey("Beam"),0);
   
   VPipeF->addInsertCell(bunkerVoid);
@@ -458,7 +454,6 @@ VESPA::buildOutGuide(Simulation& System,
   // Double disk chopper
   FOCDiskB->addInsertCell(ChopperOutA->getCell("Void"));
   FOCDiskB->setCentreFlag(3);  // Z direction
-  FOCDiskB->setOffsetFlag(1);  // Z direction
   FOCDiskB->createAll(System,ChopperOutA->getKey("Beam"),0);
  
  
@@ -524,7 +519,6 @@ VESPA::buildOutGuide(Simulation& System,
   // Double disk chopper FOC
   FOCDiskOutB->addInsertCell(ChopperOutB->getCell("Void"));
   FOCDiskOutB->setCentreFlag(3);  // Z direction
-  FOCDiskOutB->setOffsetFlag(1);  // Z direction
   FOCDiskOutB->createAll(System,ChopperOutB->getKey("Beam"),0);
 
   return;

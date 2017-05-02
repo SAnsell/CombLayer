@@ -216,6 +216,9 @@ DiskChopper::createUnitVector(const attachSystem::FixedComp& FC,
           beamFC.applyShift(0.0,TD,0.0);
         }
       mainFC.applyShift(XYZ[0],XYZ[1],XYZ[2]);
+      ELog::EM<<"KETY == "<<keyName<<" "<<totalThick/2.0<<ELog::endDiag;
+      ELog::EM<<"Beam center == "<<beamFC.getCentre()<<ELog::endDiag;
+      ELog::EM<<"Main center == "<<mainFC.getCentre()<<"\n"<<ELog::endDiag;
     }
   setDefault("Main");
 
