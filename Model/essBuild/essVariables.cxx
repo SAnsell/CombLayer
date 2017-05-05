@@ -375,18 +375,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkNLayer",3);
 
   Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
-  /*!
-    \todo : This is ugly conterintuative
-    and going to break if anyone make a change
-  */
-
-  /*  Control.Parse("BeRefHeight/2.0+BeRefWallThick+"
-                "TopBeRefWaterDiscHeight0+TopBeRefWaterDiscDepth0+"
-		"TopBeRefWaterDiscHeight1+0.2");  */
-  Control.addVariable("BulkHeight1", 41.5);
-  /*  Control.Parse("BeRefHeight/2.0+BeRefWallThick+LowBeRefWaterDiscHeight0"
-      "+LowBeRefWaterDiscDepth0+LowBeRefWaterDiscHeight1+0.2");*/
-  Control.addVariable("BulkDepth1", 41.5);
+  Control.addVariable("BulkHeight1", 38);
+  Control.addVariable("BulkDepth1", 38);
   Control.addVariable("BulkMat1","Void");
 
   Control.addVariable("BulkRadius2",65.0);

@@ -62,6 +62,9 @@ EssButterflyModerator(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssButterflyModerator");
 
+  const std::vector<std::string> TB = {"Top", "Low"};
+  const std::vector<std::string> LR = {"Left", "Right"};
+  
   Control.addVariable("LowFlyXStep",0.0);  
   Control.addVariable("LowFlyYStep",0.0);  
   Control.addVariable("LowFlyZStep",0.0);
@@ -154,34 +157,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyRightLobeHeight3",0.0);
   Control.addVariable("LowFlyRightLobeDepth3",0.0);
 
-  Control.addVariable("LowFlyMidWaterCutLayer",3);
-  Control.addVariable("LowFlyMidWaterMidYStep",4.635);
-  Control.addVariable("LowFlyMidWaterMidAngle",90);
-  Control.addVariable("LowFlyMidWaterLength",11.4);
-  Control.addVariable("LowFlyMidWaterEdgeRadius",0.5);
-
-  Control.addVariable("LowFlyMidWaterWallThick",0.2);
-  Control.addVariable("LowFlyMidWaterModMat","H2O");
-  Control.addVariable("LowFlyMidWaterWallMat","Aluminium");
-  Control.addVariable("LowFlyMidWaterModTemp",300.0);
-
-  Control.addVariable("LowFlyLeftWaterWidth",15.76);
-  Control.addVariable("LowFlyLeftWaterWallThick",0.347);
-  Control.addVariable("LowFlyLeftWaterCutAngle",30.0);
-  Control.addVariable("LowFlyLeftWaterCutWidth",10.56);
-  
-  Control.addVariable("LowFlyLeftWaterModMat","H2O");
-  Control.addVariable("LowFlyLeftWaterWallMat","Aluminium");
-  Control.addVariable("LowFlyLeftWaterModTemp",300.0);
-
-
-  Control.addVariable("LowFlyRightWaterWidth",15.76);
-  Control.addVariable("LowFlyRightWaterWallThick",0.347);
-  Control.addVariable("LowFlyRightWaterCutAngle",30.0);
-  Control.addVariable("LowFlyRightWaterCutWidth",10.56);
-  Control.addVariable("LowFlyRightWaterModMat","H2O");
-  Control.addVariable("LowFlyRightWaterWallMat","Aluminium");
-  Control.addVariable("LowFlyRightWaterModTemp",300.0);
   // TOP MODERATOR
 
   Control.addVariable("TopFlyXStep",0.0);  
@@ -276,32 +251,33 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
   Control.addVariable("TopFlyRightLobeDepth3",0.0);
 
-  Control.addVariable("TopFlyMidWaterCutLayer",3);
-  Control.addVariable("TopFlyMidWaterMidYStep",4.635);
-  Control.addVariable("TopFlyMidWaterMidAngle",90);
-  Control.addVariable("TopFlyMidWaterLength",11.4);
-  Control.addVariable("TopFlyMidWaterEdgeRadius",0.5);
-
-  Control.addVariable("TopFlyMidWaterWallThick",0.2);
-  Control.addVariable("TopFlyMidWaterModMat","H2O");
-  Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyMidWaterModTemp",300.0);
-
-  Control.addVariable("TopFlyLeftWaterWidth",15.76);  
-  Control.addVariable("TopFlyLeftWaterWallThick",0.347);
-  Control.addVariable("TopFlyLeftWaterCutAngle",30.0);
-  Control.addVariable("TopFlyLeftWaterCutWidth",10.562);
-  Control.addVariable("TopFlyLeftWaterModMat","H2O");
-  Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyLeftWaterModTemp",300.0);
-
-  Control.addVariable("TopFlyRightWaterWidth",15.76);
-  Control.addVariable("TopFlyRightWaterWallThick",0.347);
-  Control.addVariable("TopFlyRightWaterCutAngle",30.0);
-  Control.addVariable("TopFlyRightWaterCutWidth",10.56);
-  Control.addVariable("TopFlyRightWaterModMat","H2O");
-  Control.addVariable("TopFlyRightWaterWallMat","Aluminium");
-  Control.addVariable("TopFlyRightWaterModTemp",300.0);
+  for (const std::string& tb : TB)
+    {
+    for (const std::string& lr : LR)
+      {
+	Control.addVariable(tb+"Fly"+lr+"WaterWidth",15.76);
+	Control.addVariable(tb+"Fly"+lr+"WaterWallThick",0.347);
+	Control.addVariable(tb+"Fly"+lr+"WaterCutAngle",30.0);
+	Control.addVariable(tb+"Fly"+lr+"WaterCutWidth",10.562);
+	Control.addVariable(tb+"Fly"+lr+"WaterModMat","H2O");
+	Control.addVariable(tb+"Fly"+lr+"WaterWallMat","Aluminium");
+	Control.addVariable(tb+"Fly"+lr+"WaterModTemp",300.0);
+	// Julich drawing #212-000473 (bottom right drawing)
+	// https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
+	Control.addVariable(tb+"Fly"+lr+"WaterMidWallThick",0.2);
+	Control.addVariable(tb+"Fly"+lr+"WaterMidWallLength",3.0);
+      }
+    Control.addVariable(tb+"FlyMidWaterCutLayer",3);
+    Control.addVariable(tb+"FlyMidWaterMidYStep",4.635);
+    Control.addVariable(tb+"FlyMidWaterMidAngle",90);
+    Control.addVariable(tb+"FlyMidWaterLength",11.4);
+    Control.addVariable(tb+"FlyMidWaterEdgeRadius",0.5);
+    
+    Control.addVariable(tb+"FlyMidWaterWallThick",0.2);
+    Control.addVariable(tb+"FlyMidWaterModMat","H2O");
+    Control.addVariable(tb+"FlyMidWaterWallMat","Aluminium");
+    Control.addVariable(tb+"FlyMidWaterModTemp",300.0);
+    }
 
   // Pancake
   Control.addVariable("TopCakeXStep",0.0);  
@@ -338,13 +314,10 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2Thick3",0.3);
   Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
-  // Control.addVariable("TopCakeTotalHeight",3+0.5*2+0.3*2 );
   Control.addParse<double>("TopCakeTotalHeight",
 			   "TopCakeWallHeight+TopCakeWallDepth+TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2");
   Control.addParse<double>("TopCakeMidH2ZStep",
 			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
-  ELog::EM << "TopCake vertical location is wrong" << ELog::endCrit;
-
 
   std::vector<std::string> leftright = {"Left", "Right"};
   for ( const std::string& s : leftright)
@@ -356,6 +329,7 @@ EssButterflyModerator(FuncDataBase& Control)
       Control.addVariable("TopCake"+s+"WaterModMat","H2O");
       Control.addVariable("TopCake"+s+"WaterWallMat","Aluminium");
       Control.addVariable("TopCake"+s+"WaterModTemp",300.0);
+      Control.addVariable("TopCake"+s+"WaterMidWallThick",0.0);
     }
 
   // onion cooling
@@ -381,19 +355,19 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);
   Control.addVariable("LowPreModDepth0",1.5);
-  Control.addVariable("LowPreModRadius0",30.0);
+  Control.addVariable("LowPreModRadius0",29.6);
   Control.addVariable("LowPreModMat0","H2OAl47");
   Control.addVariable("LowPreModHeight1",0);
   Control.addVariable("LowPreModDepth1",0);
-  Control.addVariable("LowPreModRadius1",0.3);
+  Control.addVariable("LowPreModRadius1",0.4);
   Control.addVariable("LowPreModMat1","Aluminium");
   Control.addVariable("LowPreModHeight2",0);
   Control.addVariable("LowPreModDepth2",0);
   //  Control.Parse("BeRefRadius");
-  Control.addVariable("LowPreModRadius2",7.7-3+0.3);
+  Control.addVariable("LowPreModRadius2",7.7-3+0.6);
   //  Control.Parse("BeRefRadius-LowPreModRadius0-LowPreModRadius1");
   //  Control.addVariable("LowPreModRadius2");
-  Control.addVariable("LowPreModMat2","Aluminium");
+  Control.addVariable("LowPreModMat2","SS316L");
 
   Control.addVariable("LowPreModHeight3",0.3);
   Control.addVariable("LowPreModDepth3",0.3);
@@ -410,15 +384,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModNLayers",4);
   Control.addVariable("TopPreModHeight0",1.5);
   Control.addVariable("TopPreModDepth0",1.5);
-  Control.addVariable("TopPreModRadius0",30.0);
+  Control.addVariable("TopPreModRadius0",29.6);
   Control.addVariable("TopPreModMat0","H2OAl47");
   Control.addVariable("TopPreModHeight1",0);
   Control.addVariable("TopPreModDepth1",0);
-  Control.addVariable("TopPreModRadius1",0.3);
+  Control.addVariable("TopPreModRadius1",0.4);
   Control.addVariable("TopPreModMat1","Aluminium");
   Control.addVariable("TopPreModHeight2",0);
   Control.addVariable("TopPreModDepth2",0);
-  Control.addVariable("TopPreModRadius2", 7.7-3+0.3);
+  Control.addVariable("TopPreModRadius2", 7.7-3+0.6);
   Control.addVariable("TopPreModMat2","SS316L"); // Requested by LZ 7 Feb 2017
   Control.addVariable("TopPreModHeight3",0.3);
   Control.addVariable("TopPreModDepth3",0.3);
