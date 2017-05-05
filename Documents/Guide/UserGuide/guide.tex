@@ -30,8 +30,9 @@ The variable name consists of the component name and its corresponding parameter
 the first variable {\tt ABunkerFloorDepth} in the list above sets the floor depth of the component called {\tt ABunker}.
 
 Only variables that have needed to be examined are included in this output. Several components are optional and if not built then
-their corresponding variables are not seen in the output.
-
+their corresponding variables are not seen in the output. All variables start with an initial value and stateless variables are prohibited.
+Most variables are defined appropiately within the CombLayer program and obviously can be changed by editing the code and recompiling.
+However for a simple variable change that is excessive work so there are a number of methods to change variables from the command line.
 
 \subsubsection{How to change variables}
 Any of these variables can be changed either via a command line arguments or an XML file.
@@ -82,13 +83,13 @@ you will be presented
 
 \begin{bash}
 ./ess -r -v BeRefHHH 1 modelOut
-Failure to find variable name BeRefHHH                                          MainProcess[F]::setRunTimeVariable
-Exiting from BeRefHHH not found                                                 ::main
-Exit Stack:                                                                     ::main
-::main                                                                          ::main
-  MainProcess::InputModifications                                               ::main
-    MainProcess::setVariables                                                   ::main
-      MainProcess[F]::setRunTimeVariable                                        ::main
+Failure to find variable name BeRefHHH                     MainProcess[F]::setRunTimeVariable
+Exiting from BeRefHHH not found                            ::main
+Exit Stack:                                                ::main
+::main                                                     ::main
+  MainProcess::InputModifications                          ::main
+    MainProcess::setVariables                              ::main
+      MainProcess[F]::setRunTimeVariable                   ::main
 \end{bash}
 
 Like most CombLayer error messages it is expected that you read them from top to bottom. So the first thing it tells you is
@@ -101,10 +102,11 @@ It is also possible to use strings and Vec3D objects as variables.
 e.g.
 
 \begin{bash}
-  ./ess -r -v BeRefTopRefMat Nickel -v ABunkerQuakePtA0 'Vec3D(1200,191.2,0.0)' modelOut
+  ./ess -r -v BeRefTopRefMat Nickel \
+           -v ABunkerQuakePtA0 'Vec3D(1200,191.2,0.0)' modelOut
 \end{bash}
 
-will the Top reflector material to Nickel and the start of the dilitation joint at 1200,191.2,0 (relative to
+will set the Top reflector material to {\it Nickel} and the start of the dilitation joint at 1200,191.2,0 (relative to
 target centre. Note that on bash you will need to hard quote (single quote) the Vec3D value or it will
 be split into commands.
 
@@ -131,5 +133,14 @@ All the variables can be exported in the XML file by running
 \begin{bash}
   ./ess -r -X modelOut.xml modelOut
 \end{bash}
-
 Note that the -X command will overwrite existing files.
+
+The commands can be done combined simulantiously with both XML and command line and output.
+\begin{bash}
+  ./ess -r -X modelOut.xml -x model.xml -v BeRefHeight 80.0 modelOut 
+\end{bash}
+
+This will first read the model.xml file and change the variables. Second it will
+change BeRefHeight to 80, and finally write out the XML file of all variables to the file
+modelOut.xml.
+
