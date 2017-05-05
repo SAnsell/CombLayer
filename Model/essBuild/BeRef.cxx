@@ -124,10 +124,6 @@ BeRef::operator=(const BeRef& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       *InnerComp = *A.InnerComp;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       radius=A.radius;
       height=A.height;
@@ -141,7 +137,6 @@ BeRef::operator=(const BeRef& A)
       topWallMat=A.topWallMat;
       lowWallMat=A.lowWallMat;
       targSepMat=A.targSepMat;
-
     }
   return *this;
 }
