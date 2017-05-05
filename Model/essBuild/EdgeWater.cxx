@@ -171,7 +171,10 @@ EdgeWater::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   midWallThick=Control.EvalVar<double>(keyName+"MidWallThick");
-  midWallLength=Control.EvalVar<double>(keyName+"MidWallLength");
+  if (midWallThick>Geometry::zeroTol)
+    midWallLength=Control.EvalVar<double>(keyName+"MidWallLength");
+  else
+    midWallLength=0.0;
 
   cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
   cutWidth=Control.EvalVar<double>(keyName+"CutWidth");
