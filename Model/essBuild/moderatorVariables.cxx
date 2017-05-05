@@ -288,8 +288,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeWallMat","Aluminium");
   Control.addVariable("TopCakeWallDepth",0.0);
   Control.addVariable("TopCakeWallHeight",0.3);
-  
-  
+
   Control.addVariable("TopCakeMidH2NLayers",4);
   
   Control.addVariable("TopCakeMidH2Height0",1.5);
@@ -319,8 +318,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addParse<double>("TopCakeMidH2ZStep",
 			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
 
-  std::vector<std::string> leftright = {"Left", "Right"};
-  for ( const std::string& s : leftright)
+  for ( const std::string& s : LR)
     {
       Control.addVariable("TopCake"+s+"WaterWidth",30);  
       Control.addVariable("TopCake"+s+"WaterWallThick",0.347);
