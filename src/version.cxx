@@ -31,8 +31,9 @@
 #include "support.h"
 #include "version.h"
 
-version::version() : VFile("/home/ansell/Model_MCNPX.ver"),
-		     vNum(1)
+version::version() :
+  VFile("/home/stuartansell/Model_MCNPX.ver"),
+  vNum(1)
  ///< Constructor
 {
   setFile(VFile);
@@ -73,6 +74,15 @@ version::Instance()
   return APtr;
 }
 
+std::string
+version::getBuildTag() const
+  /*!
+    Return build tag
+   */
+{
+  return buildTag;
+}
+
 int
 version::getIncrement()
   /*!
@@ -99,10 +109,26 @@ version::setFile(const std::string& FName)
   std::ifstream OX;
   OX.open(FName.c_str());
   if (!OX.good()) return -1;
-  
-  std::string Line=StrFunc::getLine(OX,256);
+
   int N;
-  if (!StrFunc::section(Line,N)) return -2;
+  std::string LineA=StrFunc::getLine(OX,256);
+  std::string LineB=StrFunc::getLine(OX,256);
+  if (!StrFunc::section(LineB,N))
+    {
+      if (StrFunc::section(LineA,N))
+        {
+          vNum=N;
+          buildTag="unknown";
+          VFile=FName;
+          return 0;
+        }
+      return -2;
+    }
+  
+  if (!StrFunc::section(LineA,buildTag))
+    buildTag="unknown";
+  
+  std::cout<<":ine == "<<buildTag<<std::endl;
   vNum=N;
   VFile=FName;
   return 0;
@@ -119,7 +145,10 @@ version::write() const
       std::ofstream OX;
       OX.open(VFile.c_str());
       if (OX.good())
-	OX<<vNum<<std::endl;
+        {
+          OX<<buildTag<<std::endl;
+          OX<<vNum<<std::endl;
+        }
       OX.close();
     }
   return;

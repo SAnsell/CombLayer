@@ -111,14 +111,14 @@ VESPA::VESPA(const std::string& keyName) :
 
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
-
+  
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
   WFMDiskA(new constructSystem::DiskChopper(newName+"WFMBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")), 
   WFMDiskB(new constructSystem::DiskChopper(newName+"WFMBladeB")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -741,7 +741,7 @@ VESPA::build(Simulation& System,
 
   if (stopPoint==4) return;                      // STOP At hutch
   buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);
-  
+  buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
   return;
 }
 

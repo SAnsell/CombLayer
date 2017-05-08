@@ -100,13 +100,13 @@ VESPAvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setYOffset(2.0);
   FGen.setThickness(0.5,0.5);
-  FGen.generateTaper(Control,"vespaFA",350.0,7.6,4.02,5.0,7.6250);
+  FGen.generateTaper(Control,"vespaFA",350.0,3.5,4.0, 3.5,4.0);
 
   PipeGen.generatePipe(Control,"vespaPipeA",6.0,46.0);
 
   FGen.setGuideMat("Aluminium");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"vespaFB",44.0,4.0,3.5,7.6,8.0);   
+  FGen.generateRectangle(Control,"vespaFB",44.0,4.0,4.0);   
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
@@ -119,7 +119,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.setGap(3.0);
   BGen.generateBlades(Control,"vespaWFMBladeA",0.0,25.0,35.5);
 
-  // Double Blade chopper
+  // Pipe between choppers:
   PipeGen.generatePipe(Control,"vespaPipeC",2.0,20.0);
   FGen.generateTaper(Control,"vespaFC",16.0,3.7,4.0,8.0,8.0);   
   //  Control.addVariable("vespaFBBeamYStep",4.0);
@@ -139,7 +139,7 @@ VESPAvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"vespaPipeD",2.0,60.0);
 
   FGen.clearYOffset();
-  FGen.generateRectangle(Control,"vespaFD",56.0,4.0,8.0);   
+  FGen.generateRectangle(Control,"vespaFD",56.0,5.0,8.0);   
   //  Control.addVariable("vespaFBBeamYStep",4.0);
 
   // VACBOX A : 6.10m target centre
@@ -154,7 +154,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"vespaWFMBladeC",0.0,25.0,35.5);
 
   PipeGen.generatePipe(Control,"vespaPipeE",2.0,270.0);
-  FGen.generateTaper(Control,"vespaFE",266.0,4.0,7.5,8.0,7.5);   
+  FGen.generateTaper(Control,"vespaFE",266.0, 4.0,7.5, 8.0,7.5);   
   //  Control.addVariable("vespaFBBeamYStep",4.0);
 
   // VACBOX
