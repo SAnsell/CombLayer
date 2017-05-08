@@ -128,7 +128,6 @@ version::setFile(const std::string& FName)
   if (!StrFunc::section(LineA,buildTag))
     buildTag="unknown";
   
-  std::cout<<":ine == "<<buildTag<<std::endl;
   vNum=N;
   VFile=FName;
   return 0;
