@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/LineShield.cxx
+ * File:   construct/TriangleShield.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -47,6 +47,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
@@ -69,110 +70,53 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurInter.h"
 #include "surfDIter.h"
 
-#include "LineShield.h"
+#include "TriangleShield.h"
 
 namespace constructSystem
 {
 
-LineShield::LineShield(const std::string& Key) : 
+TriangleShield::TriangleShield(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::FrontBackCut(),
   shieldIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(shieldIndex+1),activeFront(0),activeBack(0)
+  cellIndex(shieldIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
   */
 {}
 
-LineShield::LineShield(const LineShield& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),
-  shieldIndex(A.shieldIndex),cellIndex(A.cellIndex),
-  activeFront(A.activeFront),activeBack(A.activeBack),
-  frontSurf(A.frontSurf),frontCut(A.frontCut),
-  backSurf(A.backSurf),backCut(A.backCut),
-  length(A.length),left(A.left),right(A.right),
-  height(A.height),depth(A.depth),defMat(A.defMat),
-  nSeg(A.nSeg),nWallLayers(A.nWallLayers),
-  wallFrac(A.wallFrac),wallMat(A.wallMat),
-  nRoofLayers(A.nRoofLayers),roofFrac(A.roofFrac),
-  roofMat(A.roofMat),nFloorLayers(A.nFloorLayers),
-  floorFrac(A.floorFrac),floorMat(A.floorMat)
-  /*!
-    Copy constructor
-    \param A :: LineShield to copy
-  */
-{}
 
-LineShield&
-LineShield::operator=(const LineShield& A)
-  /*!
-    Assignment operator
-    \param A :: LineShield to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
-      activeFront=A.activeFront;
-      activeBack=A.activeBack;
-      frontSurf=A.frontSurf;
-      frontCut=A.frontCut;
-      backSurf=A.backSurf;
-      backCut=A.backCut;
-      length=A.length;
-      left=A.left;
-      right=A.right;
-      height=A.height;
-      depth=A.depth;
-      defMat=A.defMat;
-      nSeg=A.nSeg;
-      nWallLayers=A.nWallLayers;
-      wallFrac=A.wallFrac;
-      wallMat=A.wallMat;
-      nRoofLayers=A.nRoofLayers;
-      roofFrac=A.roofFrac;
-      roofMat=A.roofMat;
-      nFloorLayers=A.nFloorLayers;
-      floorFrac=A.floorFrac;
-      floorMat=A.floorMat;
-    }
-  return *this;
-}
-
-LineShield::~LineShield() 
+TriangleShield::~TriangleShield() 
   /*!
     Destructor
   */
 {}
 
 void
-LineShield::removeFrontOverLap()
+TriangleShield::removeFrontOverLap()
   /*!
     Remove segments that are completly covered by the
     active front.
   */
 {
-  ELog::RegMethod RegA("LineShield","removeFrontOverLap");
+  ELog::RegMethod RegA("TriangleShield","removeFrontOverLap");
 
-  if (activeFront)
+  if (frontActive())
     {
       size_t index(1);
       const double segStep(length/static_cast<double>(nSeg));
       // note : starts one step ahead of front.
       Geometry::Vec3D SP(Origin-Y*(length/2.0-segStep));
-      frontSurf.populateSurf();
-      while(index<nSeg && !frontSurf.isValid(SP))
+
+      while(index<nSeg && !getFrontRule().isValid(SP))
         {
           SP+=Y*segStep;
           index++;
@@ -192,22 +136,25 @@ LineShield::removeFrontOverLap()
 }
   
 void
-LineShield::populate(const FuncDataBase& Control)
+TriangleShield::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("LineShield","populate");
+  ELog::RegMethod RegA("TriangleShield","populate");
   
   FixedOffset::populate(Control);
 
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
+  leftAngle=Control.EvalDefVar<double>(keyName+"LeftAngle",0.0);
+  rightAngle=Control.EvalDefVar<double>(keyName+"RightAngle",0.0);
   left=Control.EvalVar<double>(keyName+"Left");
   right=Control.EvalVar<double>(keyName+"Right");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
+  endWall=Control.EvalDefVar<double>(keyName+"EndWall",0.0);
   
   defMat=ModelSupport::EvalDefMat<int>(Control,keyName+"DefMat",0);
 
@@ -237,7 +184,7 @@ LineShield::populate(const FuncDataBase& Control)
 }
 
 void
-LineShield::createUnitVector(const attachSystem::FixedComp& FC,
+TriangleShield::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -245,7 +192,7 @@ LineShield::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("LineShield","createUnitVector");
+  ELog::RegMethod RegA("TriangleShield","createUnitVector");
 
 
   FixedComp::createUnitVector(FC,sideIndex);
@@ -256,24 +203,28 @@ LineShield::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-LineShield::createSurfaces()
+TriangleShield::createSurfaces()
   /*!
     Create the surfaces. Note that layers is not used
     because we want to break up the objects into sub components
   */
 {
-  ELog::RegMethod RegA("LineShield","createSurfaces");
+  ELog::RegMethod RegA("TriangleShield","createSurfaces");
 
+  removeFrontOverLap();
   // Inner void
-  if (!activeFront)
-    ModelSupport::buildPlane(SMap,shieldIndex+1,Origin-Y*(length/2.0),Y);
-      
-  if (!activeBack)
-    ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
+  if (!FrontBackCut::frontActive())
+    {
+      ModelSupport::buildPlane(SMap,shieldIndex+1,Origin-Y*(length/2.0),Y);
+      setFront(SMap.realSurf(shieldIndex+1));
+    }
 
-  if (activeFront)
-    removeFrontOverLap();
-  
+  if (!FrontBackCut::backActive())
+    {
+      ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
+      setBack(SMap.realSurf(shieldIndex+2));      
+    }
+
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
   int SI(shieldIndex+10);
@@ -284,13 +235,23 @@ LineShield::createSurfaces()
       SI+=10;
     }
 
+  // wall rotation
+  const Geometry::Quaternion QLeft=
+    Geometry::Quaternion::calcQRot(-leftAngle,Z);
+  const Geometry::Quaternion QRight=
+    Geometry::Quaternion::calcQRot(rightAngle,Z);
+  Geometry::Vec3D XL(X);
+  Geometry::Vec3D XR(X);
+  QLeft.rotate(XL);
+  QRight.rotate(XR);
+  
   int WI(shieldIndex);
   for(size_t i=0;i<nWallLayers;i++)
     {
       ModelSupport::buildPlane(SMap,WI+3,
-			       Origin-X*(left*wallFrac[i]),X);
+			       Origin-XL*(left*wallFrac[i]),XL);
       ModelSupport::buildPlane(SMap,WI+4,
-			       Origin+X*(right*wallFrac[i]),X);
+			       Origin+XR*(right*wallFrac[i]),XR);
       WI+=10;
     }
 
@@ -313,22 +274,18 @@ LineShield::createSurfaces()
 }
 
 void
-LineShield::createObjects(Simulation& System)
+TriangleShield::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("LineShield","createObjects");
+  ELog::RegMethod RegA("TriangleShield","createObjects");
 
   std::string Out;
   
-  const std::string frontStr
-    (activeFront ? frontSurf.display()+frontCut.display() : 
-     ModelSupport::getComposite(SMap,shieldIndex," 1 "));
-  const std::string backStr
-    (activeBack ? backSurf.display()+backCut.display() : 
-     ModelSupport::getComposite(SMap,shieldIndex," -2 "));
+  const std::string frontStr=frontRule();
+  const std::string backStr=backRule();
 
   // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
@@ -412,14 +369,16 @@ LineShield::createObjects(Simulation& System)
 }
 
 void
-LineShield::createLinks()
+TriangleShield::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("LineShield","createLinks");
+  ELog::RegMethod RegA("TriangleShield","createLinks");
 
+  FrontBackCut::createLinks(*this,Origin,Y);
+  
   FixedComp::setConnect(2,Origin-X*left,-X);
   FixedComp::setConnect(3,Origin+X*right,X);
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
@@ -429,29 +388,8 @@ LineShield::createLinks()
   const int RI(shieldIndex+(static_cast<int>(nRoofLayers)-1)*10);
   const int FI(shieldIndex+(static_cast<int>(nFloorLayers)-1)*10);
 
-  if (!activeFront)
-    {
-      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(shieldIndex+1));      
-    }
-  else
-    {
-      FixedComp::setLinkSurf(0,frontSurf,1,frontCut,0);      
-      FixedComp::setConnect
-        (0,SurInter::getLinePoint(Origin,Y,frontSurf,frontCut),-Y);
-    }
-  
-  if (!activeBack)
-    {
-      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(shieldIndex+2));
-    }
-  else
-    {
-      FixedComp::setLinkSurf(1,backSurf,1,backCut,0);      
-      FixedComp::setConnect
-        (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
-    }
+
+
   FixedComp::setLinkSurf(2,-SMap.realSurf(WI+3));
   FixedComp::setLinkSurf(3,SMap.realSurf(WI+4));
   FixedComp::setLinkSurf(4,-SMap.realSurf(FI+5));
@@ -462,60 +400,15 @@ LineShield::createLinks()
   return;
 }
   
-void
-LineShield::setFront(const attachSystem::FixedComp& FC,
-		     const long int sideIndex)
-  /*!
-    Set front surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("LineShield","setFront");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
-  activeFront=1;
-  frontSurf=FC.getSignedMainRule(sideIndex);
-  frontCut=FC.getSignedCommonRule(sideIndex);
-  frontSurf.populateSurf();
-  frontCut.populateSurf();
-  
-  return;
-}
-
-void
-LineShield::setBack(const attachSystem::FixedComp& FC,
-		    const long int sideIndex)
-  /*!
-    Set back surface
-    \param FC :: FixedComponent 
-    \param sideIndex ::  Direction to link
-   */
-{
-  ELog::RegMethod RegA("LineShield","setBack");
-  
-  if (sideIndex==0)
-    throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
-
-  activeBack=1;
-  backSurf=FC.getSignedMainRule(sideIndex);
-  backCut=FC.getSignedCommonRule(sideIndex);
-  backSurf.populateSurf();
-  backCut.populateSurf();
-  
-  return;
-}
 
 HeadRule
-LineShield::getXSectionIn() const
+TriangleShield::getXSectionIn() const
   /*!
     Get the line shield inner void section
     \return HeadRule of cross-section
    */
 {
-  ELog::RegMethod RegA("LineShield","getXSectionIn");
+  ELog::RegMethod RegA("TriangleShield","getXSectionIn");
   const std::string Out=
     ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
   HeadRule HR(Out);
@@ -525,7 +418,7 @@ LineShield::getXSectionIn() const
   
     
 void
-LineShield::createAll(Simulation& System,
+TriangleShield::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int FIndex)
   /*!
@@ -535,7 +428,7 @@ LineShield::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("LineShield","createAll(FC)");
+  ELog::RegMethod RegA("TriangleShield","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

@@ -88,6 +88,7 @@
 #include "TwinChopper.h"
 #include "DetectorTank.h"
 #include "LineShield.h"
+#include "TriangleShield.h"
 #include "Jaws.h"
 #include "HoleShape.h"
 #include "JawSet.h"
@@ -146,7 +147,7 @@ VESPA::VESPA(const std::string& keyName) :
   T0ExitPort(new constructSystem::HoleShape(newName+"T0ExitPort")),
   
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
+  ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
   ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
@@ -482,7 +483,8 @@ VESPA::buildOutGuide(Simulation& System,
 
   OutPitB->addInsertCell(voidCell);
   OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
-
+  ELog::EM<<"Pit = "<<OutPitB->getCentre()<<ELog::endDiag;
+  
   PitBPortA->addInsertCell(OutPitB->getCells("MidLayerFront"));
   PitBPortA->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
                        OutPitB->getKey("Mid").getSignedFullRule(-1));

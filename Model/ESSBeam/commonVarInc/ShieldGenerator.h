@@ -39,9 +39,14 @@ class ShieldGenerator
 {
  private:
 
+  /// storage for layers
   typedef std::map<size_t,double> MLTYPE;
+  /// storage for layer material
   typedef std::map<size_t,std::string> MSTYPE;
 
+  double leftAngle;             ///< Left wall angle 
+  double rightAngle;            ///< Right wall angle
+  
   size_t nWall;                 ///< number of wall layers
   size_t nRoof;                 ///< number of roof layers
   size_t nFloor;                ///< number of floor layers  
@@ -60,6 +65,8 @@ class ShieldGenerator
   std::map<size_t,std::string> roofMat;       ///< roof mat changes
   std::map<size_t,std::string> floorMat;      ///< floor mat changes
 
+  void setAngle(const double,const double);
+  
   void setLayers(MLTYPE&,MSTYPE&,double&,size_t&,
 		 const size_t,const double,
 		 const std::vector<double>&,
@@ -93,6 +100,10 @@ class ShieldGenerator
   void generateShield(FuncDataBase&,const std::string&,
 		      const double,const double,const double,const double,
 		      const size_t,const size_t)  const;
+
+  void generateTriShield(FuncDataBase&,const std::string&,
+			 const double,const double,const double,const double,
+			 const size_t,const size_t)  const;
 };
 
 }
