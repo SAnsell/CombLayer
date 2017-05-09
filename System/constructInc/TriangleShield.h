@@ -53,7 +53,7 @@ class TriangleShield :
   double right;                 ///< total right width
   double height;                ///< Total height
   double depth;                 ///< Total depth
-  double endWall  ;             ///< Total back wall thick
+  double endWall;               ///< Total back wall thick
   
   int defMat;                       ///< Fe material layer
 

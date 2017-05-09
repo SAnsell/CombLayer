@@ -93,10 +93,11 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
   SGen.addFloor(1,20.0,"CastIron");
-  SGen.addFloorMat(5,"Concrete");
-  SGen.addRoofMat(5,"Concrete");
-  SGen.addWallMat(5,"Concrete");
-
+  SGen.addFloorMat(4,"Concrete");
+  SGen.addRoofMat(4,"Concrete");
+  SGen.addWallMat(4,"Concrete");
+  //  SGen.setAngle(10.0,10.0);
+  
   FGen.setGuideMat("Copper");
   FGen.setYOffset(2.0);
   FGen.setThickness(0.5,0.5);
@@ -208,8 +209,7 @@ VESPAvariables(FuncDataBase& Control)
   PGen.setConcLayer(40.0);
   PGen.generatePit(Control,"vespaOutPitA",440.0,25.0,130.0,110.0,40.0);
 
-  //  SGen.generateShield(Control,"vespaShieldA",350.0,40.0,40.0,40.0,4,8);
-  SGen.generateTriShield(Control,"vespaShieldA",350.0,40.0,40.0,40.0,4,8);
+  SGen.generateTriShield(Control,"vespaShieldA",350.0,100.0,100.0,100.0,4,9);
 
   PipeGen.setPipe(9.0,0.5);  // R/T
   PipeGen.generatePipe(Control,"vespaPipeOutA",55.0,395.0);  
@@ -237,7 +237,15 @@ VESPAvariables(FuncDataBase& Control)
   FGen.setYOffset(2.0);
   FGen.generateTaper(Control,"vespaFOutB",750.0,9.0,11.0,8.5,10.0);
 
-  SGen.generateShield(Control,"vespaShieldB",770.0,40.0,40.0,40.0,4,8);
+  SGen.clearLayers();
+  SGen.addWall(1,20.0,"CastIron");
+  SGen.addRoof(1,20.0,"CastIron");
+  SGen.addFloor(1,20.0,"CastIron");
+  // SGen.addFloor(5,30.0,"Concrete");
+  // SGen.addRoof(5,30.0,"Concrete");
+  // SGen.addWall(5,30.0,"Concrete");
+
+  SGen.generateShield(Control,"vespaShieldB",770.0,80.0,80.0,80.0,4,8);
 
   const double slen(595.0);
   for(size_t i=0;i<4;i++)

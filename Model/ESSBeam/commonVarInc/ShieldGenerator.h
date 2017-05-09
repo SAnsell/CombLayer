@@ -65,7 +65,6 @@ class ShieldGenerator
   std::map<size_t,std::string> roofMat;       ///< roof mat changes
   std::map<size_t,std::string> floorMat;      ///< floor mat changes
 
-  void setAngle(const double,const double);
   
   void setLayers(MLTYPE&,MSTYPE&,double&,size_t&,
 		 const size_t,const double,
@@ -81,6 +80,9 @@ class ShieldGenerator
   ShieldGenerator& operator=(const ShieldGenerator&);
   ~ShieldGenerator();  
 
+  void setAngle(const double,const double);
+    
+  void clearLayers();
   void addFloor(const size_t,const double,const std::string&);
   void addRoof(const size_t,const double,const std::string&);
   void addWall(const size_t,const double,const std::string&);

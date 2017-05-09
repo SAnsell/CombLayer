@@ -224,6 +224,12 @@ TriangleShield::createSurfaces()
       ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
       setBack(SMap.realSurf(shieldIndex+2));      
     }
+  //create back cut for wall
+  const int BSurf=getBackRule().getPrimarySurface();
+  Geometry::Surface* SPtr=SMap.realSurfPtr(BSurf);
+  
+  ELog::EM<<"BSurf = "<<BSurf<<ELog::endDiag;
+  ELog::EM<<"BSurfS = "<<*SPtr<<ELog::endDiag;
 
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
@@ -237,21 +243,22 @@ TriangleShield::createSurfaces()
 
   // wall rotation
   const Geometry::Quaternion QLeft=
-    Geometry::Quaternion::calcQRot(-leftAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(leftAngle,Z);
   const Geometry::Quaternion QRight=
-    Geometry::Quaternion::calcQRot(rightAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(-rightAngle,Z);
   Geometry::Vec3D XL(X);
   Geometry::Vec3D XR(X);
   QLeft.rotate(XL);
   QRight.rotate(XR);
-  
+
+  const Geometry::Vec3D RotOrigin=Origin-Y*(length/2.0);
   int WI(shieldIndex);
   for(size_t i=0;i<nWallLayers;i++)
     {
       ModelSupport::buildPlane(SMap,WI+3,
-			       Origin-XL*(left*wallFrac[i]),XL);
+			       RotOrigin-XL*(left*wallFrac[i]),XL);
       ModelSupport::buildPlane(SMap,WI+4,
-			       Origin+XR*(right*wallFrac[i]),XR);
+			       RotOrigin+XR*(right*wallFrac[i]),XR);
       WI+=10;
     }
 

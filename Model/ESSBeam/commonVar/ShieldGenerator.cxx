@@ -203,7 +203,22 @@ ShieldGenerator::setLayers(MLTYPE& lenMap,MSTYPE& matMap,
   return;
 }
 
+void
+ShieldGenerator::clearLayers()
+  /*!
+    Clear layers
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","clearLayers");
 
+  wallLen.clear();
+  floorLen.clear();
+  roofLen.clear();
+  wallMat.clear();
+  floorMat.clear();
+  roofMat.clear();
+  return;
+}
   
 void
 ShieldGenerator::addWall(const size_t index,const double Len,
