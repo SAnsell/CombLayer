@@ -86,7 +86,8 @@ PipeGenerator::PipeGenerator() :
   pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
   flangeRadius(12.0),flangeLen(1.0),
   windowRadius(10.0),windowThick(0.5),
-  pipeMat("Aluminium"),windowMat("Silicon300K"),
+  pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
+  backWindowMat("Silicon300K"),
   voidMat("Void")
   /*!
     Constructor and defaults
@@ -158,6 +159,32 @@ PipeGenerator::setFlange(const double R,const double L)
   flangeLen=L;
   return;
 }
+
+void
+PipeGenerator::setWindowMat(const std::string& M)
+  /*!
+    Set the window materials [back/front]
+    \param M :: Material
+   */
+{
+  frontWindowMat=M;
+  backWindowMat=M;
+  return;
+}
+
+void
+PipeGenerator::setWindowMat(const std::string& MA,
+                            const std::string& MB)
+  /*!
+    Set the window materials [back/front]
+    \param MA :: Front Material
+    \param MB :: Back Material
+   */
+{
+  frontWindowMat=MA;
+  backWindowMat=MB;
+  return;
+}
   
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
@@ -200,7 +227,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"WindowRadius",realWindowRadius);
   
   Control.addVariable(keyName+"WindowThick",windowThick);
-  Control.addVariable(keyName+"WindowMat",windowMat);
+  Control.addVariable(keyName+"WindowFrontMat",frontWindowMat);
+  Control.addVariable(keyName+"WindowBackMat",backWindowMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
   
   return;
