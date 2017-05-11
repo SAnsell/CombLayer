@@ -188,12 +188,12 @@ addESSMaterial()
   MObj.setDensity(-1.085);
   MDB.resetMaterial(MObj);
 
-  // Mix of water and 4.7% vol Al as calculated by Marc (email from LZ 15.01.16) - checked by AT
-  MObj.setMaterial(imat++/*147*/, "H2OAl47",
-		   " 1001.70c 0.647478328682 "
-		   " 13027.70c 0.0287825069767 "
-		   " 8016.70c 0.323739164341 ", "lwtr.10t al27.12t", MLib);
-  MObj.setDensity(-1.0799);
+  // Mix of water and 7% vol of Al as estimated by Mark (emails from Mark and Luca 9 May 2017)
+  MObj.setMaterial(imat++, "H2O_7Al",
+		   " 1001.70c  0.637818426911  "
+		   " 13027.70c 0.0432723596334 "
+		   " 8016.70c  0.318909213456  ", "lwtr.10t al27.12t", MLib);
+  MObj.setDensity(-1.119);
   MDB.resetMaterial(MObj);
 
   // Natural Helium. Density -1.74E-4 g/cm3

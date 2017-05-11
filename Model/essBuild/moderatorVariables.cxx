@@ -354,7 +354,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModHeight0",1.5);
   Control.addVariable("LowPreModDepth0",1.5);
   Control.addVariable("LowPreModRadius0",29.6);
-  Control.addVariable("LowPreModMat0","H2OAl47");
+  Control.addVariable("LowPreModMat0","H2O_7Al");
   Control.addVariable("LowPreModHeight1",0);
   Control.addVariable("LowPreModDepth1",0);
   Control.addVariable("LowPreModRadius1",0.4);
@@ -383,7 +383,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModHeight0",1.5);
   Control.addVariable("TopPreModDepth0",1.5);
   Control.addVariable("TopPreModRadius0",29.6);
-  Control.addVariable("TopPreModMat0","H2OAl47");
+  Control.addVariable("TopPreModMat0","H2O_7Al");
   Control.addVariable("TopPreModHeight1",0);
   Control.addVariable("TopPreModDepth1",0);
   Control.addVariable("TopPreModRadius1",0.4);
@@ -421,7 +421,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowCapModHeight0",0.5);
   Control.addVariable("LowCapModDepth0", 0.5);
   Control.addVariable("LowCapModRadius0",32);
-  Control.addVariable("LowCapModMat0","H2OAl47");
+  Control.addVariable("LowCapModMat0","H2O_7Al");
   Control.addVariable("LowCapModHeight1",0.0);
   Control.addVariable("LowCapModDepth1",0.0);
   Control.addVariable("LowCapModThick1",0.3);
@@ -446,7 +446,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModHeight0",0.5);
   Control.addVariable("TopCapModDepth0", 0.5);
   Control.addVariable("TopCapModRadius0",32);
-  Control.addVariable("TopCapModMat0","H2OAl47");
+  Control.addVariable("TopCapModMat0","H2O_7Al");
   Control.addVariable("TopCapModHeight1",0.0);
   Control.addVariable("TopCapModDepth1",0.0);
   Control.addVariable("TopCapModThick1",0.3);
@@ -465,28 +465,28 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCapModTiltRadius", 32.17);
 
     // wings
-  Control.addVariable("TopPreWingMat", "H2OAl47");
+  Control.addVariable("TopPreWingMat", "H2O_7Al");
   Control.addVariable("TopPreWingThick", 0.45); // ESS-0032315.3
   Control.addVariable("TopPreWingWallMat", "Aluminium");
   Control.addVariable("TopPreWingWallThick", 0.3);
   Control.addVariable("TopPreWingTiltAngle", 2.0); // ESS-0032315.3
   Control.addVariable("TopPreWingTiltRadius", 39.0/2); // =19.5 ESS-0032315.3
 
-  Control.addVariable("TopCapWingMat", "H2OAl47");
+  Control.addVariable("TopCapWingMat", "H2O_7Al");
   Control.addVariable("TopCapWingThick", 0.75); // ESS-0032315.3
   Control.addVariable("TopCapWingWallMat", "Aluminium");
   Control.addVariable("TopCapWingWallThick", 0.3);
   Control.addVariable("TopCapWingTiltAngle", 1.33); // ESS-0032315.3
   Control.addVariable("TopCapWingTiltRadius", 39.0/2); // = 19.5  ESS-0032315.3
 
-  Control.addVariable("LowPreWingMat", "H2OAl47");
+  Control.addVariable("LowPreWingMat", "H2O_7Al");
   Control.addVariable("LowPreWingThick", 0.55);  // ESS-0032315.3
   Control.addVariable("LowPreWingWallMat", "Aluminium");
   Control.addVariable("LowPreWingWallThick", 0.3);
   Control.addVariable("LowPreWingTiltAngle", 0.9); // ESS-0032315.3
   Control.addVariable("LowPreWingTiltRadius", 39.0/2.0);  // = 19.5  ESS-0032315.3
 
-  Control.addVariable("LowCapWingMat", "H2OAl47");
+  Control.addVariable("LowCapWingMat", "H2O_7Al");
   Control.addVariable("LowCapWingThick", 0.85);  // ESS-0032315.3
   Control.addVariable("LowCapWingWallMat", "Aluminium");
   Control.addVariable("LowCapWingWallThick", 0.3);
