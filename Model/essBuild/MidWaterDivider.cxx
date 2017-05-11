@@ -177,6 +177,7 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   topThick=Control.EvalDefVar<double>(keyName+"TopThick",0.0);
+  baseThick=Control.EvalDefVar<double>(keyName+"BaseThick",0.0);
   
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");

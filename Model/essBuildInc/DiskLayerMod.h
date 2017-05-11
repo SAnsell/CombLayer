@@ -38,7 +38,8 @@ namespace essSystem
 class DiskLayerMod : public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
     public attachSystem::FixedComp,
-    public attachSystem::CellMap
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
   

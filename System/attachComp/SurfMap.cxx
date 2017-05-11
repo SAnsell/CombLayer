@@ -46,6 +46,8 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Rules.h"
+#include "HeadRule.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
 
@@ -81,7 +83,41 @@ SurfMap::operator=(const SurfMap& A)
   return *this;
 }
   
+HeadRule
+SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
+  /*!
+    Get the rule based on a surface
+    \param Key :: Keyname
+    \param Index :: Offset number
+    \retun HeadRule
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfRule(Key,index)"); 
 
+  HeadRule Out;
+  const int sn=getItem(Key,Index);
+  Out.addIntersection(sn);
+  
+  return Out;
+}
+
+HeadRule
+SurfMap::getSurfRules(const std::string& Key) const
+  /*!
+    Get the rule based on a surface
+    \param Key :: Keyname
+    \retun HeadRule
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfRules(Key)"); 
+
+  HeadRule Out;
+  const std::vector<int> sVec=getItems(Key);
+  for(const int sn : sVec)
+    Out.addIntersection(sn);
+  
+  return Out;
+}
 
 
 

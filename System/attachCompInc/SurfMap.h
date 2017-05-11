@@ -23,6 +23,7 @@
 #define attachSystem_SurfMap_h
 
 class Simulation;
+class HeadRule;
 
 namespace attachSystem
 {
@@ -67,6 +68,7 @@ class SurfMap : public BaseMap
   void addSurfs(const std::string& K,const std::vector<int>& CN)
     { BaseMap::addItems(K,CN); }
 
+  
   int getSurf(const std::string& K) const
     { return BaseMap::getItem(K); }
   int getSurf(const std::string& K,const size_t Index) const
@@ -78,8 +80,8 @@ class SurfMap : public BaseMap
     { return BaseMap::getItems(); }
   //@}
 
-  //@{
-  //! Rename functions
+  HeadRule getSurfRules(const std::string&) const;
+  HeadRule getSurfRule(const std::string&,const size_t =0) const;
   
 };
 

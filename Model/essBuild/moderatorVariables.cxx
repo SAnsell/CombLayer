@@ -84,24 +84,23 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyLeftLobeModTemp",20.0);
 
   Control.addVariable("LowFlyLeftLobeNLayers",4);
-  Control.addVariable("LowFlyLeftLobeThick1",0.3);
-  Control.addVariable("LowFlyLeftLobeMat1","Aluminium20K");
 
   Control.addVariable("LowFlyLeftLobeHeight1",0.3);
   Control.addVariable("LowFlyLeftLobeDepth1",0.3);
+  Control.addVariable("LowFlyLeftLobeThick1",0.3);
+  Control.addVariable("LowFlyLeftLobeMat1","Aluminium20K");
   Control.addVariable("LowFlyLeftLobeTemp1",20.0);
   
+  Control.addVariable("LowFlyLeftLobeHeight2",0.5);
+  Control.addVariable("LowFlyLeftLobeDepth2",0.5);
   Control.addVariable("LowFlyLeftLobeThick2",0.5);
   Control.addVariable("LowFlyLeftLobeMat2","Void");
 
-  Control.addVariable("LowFlyLeftLobeHeight2",0.5);
-  Control.addVariable("LowFlyLeftLobeDepth2",0.5);
-
+  Control.addVariable("LowFlyLeftLobeHeight3",0.0);
+  Control.addVariable("LowFlyLeftLobeDepth3",0.0);  
   Control.addVariable("LowFlyLeftLobeThick3",0.3);
   Control.addVariable("LowFlyLeftLobeMat3","Aluminium");
 
-  Control.addVariable("LowFlyLeftLobeHeight3",0.0);
-  Control.addVariable("LowFlyLeftLobeDepth3",0.0);
 
   Control.addVariable("LowFlyFlowGuideBaseThick",0.2);
   Control.addVariable("LowFlyFlowGuideBaseLen",8.5);
@@ -182,7 +181,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyZStep",0.0);
   Control.addVariable("TopFlyXYAngle",90.0);
   Control.addVariable("TopFlyZAngle",0.0);
-  Control.addVariable("TopFlyTotalHeight",4.9);
+  Control.addVariable("TopFlyTotalHeight",5.5);
   
   Control.addVariable("TopFlyLeftLobeXStep",1.0);  
   Control.addVariable("TopFlyLeftLobeYStep",0.0);  
@@ -199,11 +198,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeModTemp",20.0);
 
   Control.addVariable("TopFlyLeftLobeNLayers",4);
-  Control.addVariable("TopFlyLeftLobeThick1",0.3);
-  Control.addVariable("TopFlyLeftLobeMat1","Aluminium");
 
   Control.addVariable("TopFlyLeftLobeHeight1",0.3);
   Control.addVariable("TopFlyLeftLobeDepth1",0.3);
+  Control.addVariable("TopFlyLeftLobeThick1",0.3);
+  Control.addVariable("TopFlyLeftLobeMat1","Aluminium");
   Control.addVariable("TopFlyLeftLobeTemp1",20.0);
   
   Control.addVariable("TopFlyLeftLobeThick2",0.5);
@@ -216,7 +215,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeMat3","Aluminium");
 
   Control.addVariable("TopFlyLeftLobeHeight3",0.30);
-  Control.addVariable("TopFlyLeftLobeDepth3",0.0);
+  Control.addVariable("TopFlyLeftLobeDepth3",0.30);
 
   Control.addVariable("TopFlyFlowGuideBaseThick",0.2);
   Control.addVariable("TopFlyFlowGuideBaseLen",8.5);
@@ -243,11 +242,11 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeModTemp",20.0);
 
   Control.addVariable("TopFlyRightLobeNLayers",4);
-  Control.addVariable("TopFlyRightLobeThick1",0.3);
-  Control.addVariable("TopFlyRightLobeMat1","Aluminium");  // 20K
 
   Control.addVariable("TopFlyRightLobeHeight1",0.3);
   Control.addVariable("TopFlyRightLobeDepth1",0.3);
+  Control.addVariable("TopFlyRightLobeThick1",0.3);
+  Control.addVariable("TopFlyRightLobeMat1","Aluminium20K");  // 20K
   Control.addVariable("TopFlyRightLobeTemp1",20.0);
   
   Control.addVariable("TopFlyRightLobeThick2",0.5);
@@ -257,10 +256,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyRightLobeDepth2",0.5);
 
   Control.addVariable("TopFlyRightLobeThick3",0.3);
-  Control.addVariable("TopFlyRightLobeMat3","Aluminium");
-
   Control.addVariable("TopFlyRightLobeHeight3",0.3);
-  Control.addVariable("TopFlyRightLobeDepth3",0.0);
+  Control.addVariable("TopFlyRightLobeDepth3",0.3);
+  Control.addVariable("TopFlyRightLobeMat3","Aluminium");
 
   Control.addVariable("TopFlyMidWaterCutLayer",3);
   Control.addVariable("TopFlyMidWaterMidYStep",4.635);
@@ -269,6 +267,7 @@ EssButterflyModerator(FuncDataBase& Control)
  
   Control.addVariable("TopFlyMidWaterWallThick",0.2);
   Control.addVariable("TopFlyMidWaterTopThick",0.2);
+  Control.addVariable("TopFlyMidWaterBaseThick",0.2);
   Control.addVariable("TopFlyMidWaterModMat","H2O");
   Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
   Control.addVariable("TopFlyMidWaterModTemp",300.0);
@@ -326,7 +325,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowPreModFlowGuideNBaffles", 9);
   Control.addVariable("LowPreModFlowGuideGapWidth", 3);
 
-  Control.addVariable("TopPreModNLayers",3);
+  Control.addVariable("TopPreModNLayers",2);
   
   Control.addVariable("TopPreModThick0",0.3);
   Control.addVariable("TopPreModThick1",2.85);
@@ -338,7 +337,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModMat0x1","Void");
   Control.addVariable("TopPreModMat0x2","Stainless304");
 
-
   Control.addVariable("TopPreModRadius1x0",30.0);
   Control.addVariable("TopPreModRadius1x1",30.3);
   Control.addVariable("TopPreModRadius1x2",30.6);
@@ -347,11 +345,13 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModMat1x2","Void"); 
   Control.addVariable("TopPreModMat1x3","Stainless304");
 
-  Control.addVariable("TopPreModRadius2x0",30.3);
-  Control.addVariable("TopPreModRadius2x1",30.6);
-  Control.addVariable("TopPreModMat2x0","Aluminium");
-  Control.addVariable("TopPreModMat2x1","Void");
-  Control.addVariable("TopPreModMat2x2","Stainless304");
+  Control.addVariable("TopPreModRadius2x0",30.0);
+  Control.addVariable("TopPreModRadius2x1",30.3);
+  Control.addVariable("TopPreModRadius2x2",30.6);
+  Control.addVariable("TopPreModMat2x0","Empty");
+  Control.addVariable("TopPreModMat2x1","Aluminium");
+  Control.addVariable("TopPreModMat2x2","Void");
+  Control.addVariable("TopPreModMat2x3","Stainless304");
 
   Control.copyVarSet("LowPreModFlowGuide","TopPreModFlowGuide");
 
@@ -415,7 +415,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingInnerDepth",2.0);
   Control.addVariable("TopLeftPreWingOuterDepth",2.5);
   Control.addVariable("TopLeftPreWingInnerRadius",10.0);
-  Control.addVariable("TopLeftPreWingOuterRadius",28.2);
+  Control.addVariable("TopLeftPreWingOuterRadius",35.0);
   Control.addVariable("TopLeftPreWingInnerYCut",8.0);
   Control.addVariable("TopLeftPreWingWallThick",0.3);
   Control.addVariable("TopLeftPreWingMat","H2O");
@@ -428,7 +428,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopRightPreWingInnerDepth",1.8);
   Control.addVariable("TopRightPreWingOuterDepth",2.5);
   Control.addVariable("TopRightPreWingInnerRadius",10.0);
-  Control.addVariable("TopRightPreWingOuterRadius",28.2);
+  Control.addVariable("TopRightPreWingOuterRadius",35.0);
   Control.addVariable("TopRightPreWingInnerYCut",8.0);
   Control.addVariable("TopRightPreWingWallThick",0.3);
   Control.addVariable("TopRightPreWingMat","H2O");

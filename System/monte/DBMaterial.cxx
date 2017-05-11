@@ -120,7 +120,9 @@ DBMaterial::initMaterial()
 
   MonteCarlo::Material MObj;
   // TWO ULTRA SPECIAL MATERIALS!!!
-  MObj.setMaterial(-1,"InValid","00000.00c 1.0","",MLib); 
+  MObj.setMaterial(-2,"InValid","00000.00c 1.0","",MLib); 
+  setMaterial(MObj);
+  MObj.setMaterial(-1,"Empty","00000.00c 1.0","",MLib); 
   setMaterial(MObj);
   MObj.setMaterial(0,"Void","00000.00c 1.0","",MLib);
   setMaterial(MObj);

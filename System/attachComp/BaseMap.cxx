@@ -299,7 +299,8 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
 
   if (Index>=mc->second.size())
     throw ColErr::IndexError<size_t>
-      (Index,0,"Object:"+getFCKeyName()+" Key["+Key+"] index error");
+      (Index,mc->second.size(),
+       "Object:"+getFCKeyName()+" Key["+Key+"] index error");
   
   return mc->second[Index];
 }

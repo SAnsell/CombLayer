@@ -57,10 +57,12 @@ class PreModWing : public attachSystem::ContainedComp,
 
   int mat;                        ///< (water) material
   int wallMat;                    ///< wall material
-
+  
+  
   HeadRule topSurf;              ///< Top cut surface
   HeadRule baseSurf;             ///< Base cut surface
   HeadRule innerSurf;            ///< Inner surface(s)
+  HeadRule outerSurf;            ///< Outer surface(s)
   HeadRule mainDivider;          ///< Seperatue unit for divider [to simpify boundary]
   
   void populate(const FuncDataBase&);
@@ -71,6 +73,8 @@ class PreModWing : public attachSystem::ContainedComp,
   void createObjects(Simulation&);
   void createLinks();
 
+
+  
  public:
 
   PreModWing(const std::string&);
@@ -88,7 +92,8 @@ class PreModWing : public attachSystem::ContainedComp,
   void setTopCut(const HeadRule& HR) { topSurf=HR; }
   /// assignement of divider rule
   void setDivider(const HeadRule& HR) { mainDivider=HR; }
-  
+
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

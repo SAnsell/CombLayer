@@ -765,7 +765,8 @@ makeESS::buildPreWings(Simulation& System)
       OR.addObject(TopPreWingA);
       TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
       TopPreWingA->setInnerExclude(TMod->getLeftExclude());
-      TopPreWingA->setBaseCut(TopPreMod->getSignedFullRule(6));
+
+      TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
       TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
       
       TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));

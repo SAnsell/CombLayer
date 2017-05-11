@@ -69,6 +69,7 @@
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
 #include "DiskPreMod.h"
@@ -81,7 +82,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,9),
-  attachSystem::CellMap(),  
+  attachSystem::CellMap(),attachSystem::SurfMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
   InnerComp(new CylFlowGuide(Key+"FlowGuide"))
@@ -98,7 +99,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
   attachSystem::LayerComp(A),attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
@@ -123,6 +124,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
@@ -261,6 +263,9 @@ DiskPreMod::createSurfaces()
 
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*depth[i],Z);  
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*height[i],Z);
+      SurfMap::setSurf("LayerBase"+std::to_string(i),SMap.realSurf(SI+5));
+      SurfMap::setSurf("LayerTop"+std::to_string(i),SMap.realSurf(SI+6));
+      
       if (i<NWidth)
 	{
 	  ModelSupport::buildPlane(SMap,SI+3,Origin-X*(width[i]/2.0),X);

@@ -215,9 +215,12 @@ PreModWing::createSurfaces()
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
 
-  // First define the inner/outer radiii
   ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,innerRadius);
-  ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
+  if (!outerSurf.hasRule())
+    {
+      ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
+      outerSurf.procSurfNum(-SMap.realSurf(modIndex+17));
+    }
 
   // make height cone if given:
   const double IR(innerRadius>Geometry::zeroTol  ? innerRadius : 0.0);
@@ -275,29 +278,29 @@ PreModWing::createObjects(Simulation& System)
 
   std::string Out;
 
-  
   // BASE
   // inner first
-  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7");
+  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ");
   Out+=innerSurf.display();
   Out+=baseSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -15 5  -7 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," -15 5 -7 ");
   Out+=innerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // cone section
-  Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 7 -17 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 7 ");
   Out+=innerSurf.display();
   Out+=baseSurf.display();
+  Out+=outerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 7 -17 (8:1005) ");
+  Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 7 (8:1005) ");
   Out+=innerSurf.display();
   Out+=baseSurf.display();
+  Out+=outerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-
 
   // TOP
   // inner first
@@ -306,23 +309,26 @@ PreModWing::createObjects(Simulation& System)
   Out+=topSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6  -7 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6 -7 ");
   Out+=innerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // cone section
-  Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 7 -17 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 7 ");
   Out+=innerSurf.display();
   Out+=topSurf.display();
+  Out+=outerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 7 -17 (9:-1006) ");
+  Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 7 (9:-1006) ");
   Out+=innerSurf.display();
   Out+=topSurf.display();
+  Out+=outerSurf.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
 
-  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) -17 ");
+  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) ");
+  Out+=outerSurf.display();
   Out+=mainDivider.display();
   addOuterSurf(Out);
 
