@@ -415,7 +415,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingInnerDepth",2.0);
   Control.addVariable("TopLeftPreWingOuterDepth",2.5);
   Control.addVariable("TopLeftPreWingInnerRadius",10.0);
-  Control.addVariable("TopLeftPreWingOuterRadius",35.0);
+  Control.addVariable("TopLeftPreWingOuterRadius",38.0);
   Control.addVariable("TopLeftPreWingInnerYCut",8.0);
   Control.addVariable("TopLeftPreWingWallThick",0.3);
   Control.addVariable("TopLeftPreWingMat","H2O");
@@ -428,7 +428,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopRightPreWingInnerDepth",1.8);
   Control.addVariable("TopRightPreWingOuterDepth",2.5);
   Control.addVariable("TopRightPreWingInnerRadius",10.0);
-  Control.addVariable("TopRightPreWingOuterRadius",35.0);
+  Control.addVariable("TopRightPreWingOuterRadius",38.0);
   Control.addVariable("TopRightPreWingInnerYCut",8.0);
   Control.addVariable("TopRightPreWingWallThick",0.3);
   Control.addVariable("TopRightPreWingMat","H2O");

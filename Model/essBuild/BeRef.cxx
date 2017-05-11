@@ -124,7 +124,6 @@ BeRef::operator=(const BeRef& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       *InnerComp = *A.InnerComp;
-      zAngle=A.zAngle;
       radius=A.radius;
       height=A.height;
       wallThick=A.wallThick;

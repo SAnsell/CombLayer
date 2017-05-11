@@ -261,6 +261,7 @@ DiskLayerMod::createSurfaces()
       SI+=200;
     }
   ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,outerRadius);
+  SurfMap::setSurf("OuterRad",SMap.realSurf(modIndex+7));
   return; 
 }
 

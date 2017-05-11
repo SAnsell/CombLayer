@@ -36,14 +36,14 @@ namespace essSystem
 */
 
 class BulkModule : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::SurfMap
 {
  private:
   
   const int bulkIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
- 
+   
   size_t nLayer;                 ///< Number of layers
   std::vector<double> radius;        ///< radius of outer
   std::vector<double> height;        ///< Heights

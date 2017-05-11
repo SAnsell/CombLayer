@@ -768,8 +768,8 @@ makeESS::buildPreWings(Simulation& System)
 
       TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
       TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
-      
       TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
+      TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
       TopPreWingA->createAll(System,*TMod,0);
 
       TopPreWingB = std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
@@ -778,16 +778,11 @@ makeESS::buildPreWings(Simulation& System)
       TopPreWingB->setInnerExclude(TMod->getRightExclude());
       TopPreWingB->setBaseCut(TopPreMod->getSignedFullRule(6));
       TopPreWingB->setTopCut(TopCapMod->getSignedFullRule(5));
+      TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
       
       TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingB->createAll(System,*TMod,0);
-}
-  //  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
-
-      //      LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
-      //      OR.addObject(LowPreWing);
-      //      LowPreWing->createAll(System,*LowPreMod,9);
-      // attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+    }
 
   return;
 }
@@ -894,7 +889,6 @@ makeESS::build(Simulation& System,
 
   LowCapMod->createAll(System,*LowMod,6,false,
    		       0.0,Reflector->getRadius());
-
   buildPreWings(System);
   
   Reflector->createAll(System,World::masterOrigin(),0,
@@ -907,6 +901,7 @@ makeESS::build(Simulation& System,
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
+
   // Build flightlines after bulk
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);

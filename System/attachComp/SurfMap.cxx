@@ -3,7 +3,7 @@
  
  * File:   attachComp/SurfMap.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,9 +95,11 @@ SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
   ELog::RegMethod RegA("SurfMap","getSurfRule(Key,index)"); 
 
   HeadRule Out;
-  const int sn=getItem(Key,Index);
-  Out.addIntersection(sn);
-  
+
+  const int sn=(!Key.empty() && Key[0]=='-') ?
+    -getItem(Key.substr(1),Index) : getItem(Key,Index);
+
+  Out.addIntersection(sn);  
   return Out;
 }
 
@@ -111,11 +113,21 @@ SurfMap::getSurfRules(const std::string& Key) const
 {
   ELog::RegMethod RegA("SurfMap","getSurfRules(Key)"); 
 
-  HeadRule Out;
-  const std::vector<int> sVec=getItems(Key);
-  for(const int sn : sVec)
-    Out.addIntersection(sn);
   
+  HeadRule Out;
+  if (!Key.empty() && Key[0]=='-')
+    {
+      const std::vector<int> sVec=getItems(Key.substr(1));
+      for(const int sn : sVec)
+	Out.addUnion(-sn);
+    }
+  else
+    {
+      const std::vector<int> sVec=getItems(Key);
+
+      for(const int sn : sVec)
+	Out.addIntersection(sn);
+    }
   return Out;
 }
 
