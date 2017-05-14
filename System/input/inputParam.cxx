@@ -618,19 +618,51 @@ inputParam::outputItem(const std::string& K,
 }
 
 template<typename T>
+T
+inputParam::outputDefItem(const std::string& K,
+			  const size_t setIndex,
+			  size_t& itemIndex,
+			  const T& DefValue) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated]
+    \param DefValue :: Default Value
+    \return Value
+*/
+
+{
+  ELog::RegMethod RegA("inputParam","outputItem(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return DefValue;
+
+  try
+    {
+      const T Out=IPtr->getObj<T>(setIndex,itemIndex);
+      itemIndex++;
+      return Out;
+    }
+  catch(ColErr::IndexError<size_t>&)
+    { }
+  return DefValue;
+}
+
+template<typename T>
 int
 inputParam::checkItem(const std::string& K,
 		      const size_t setIndex,
 		      const size_t itemIndex,
 		      T& Out) const
-/*!
-  Get a value based on key
-  \param K :: Key to seach
-  \param setIndex :: set Value
-  \param itemIndex :: Index value
-  \param Out :: returned value if found
-  \return 1 on success / 0 on failure
-*/
+ /*!
+   Get a value based on key
+   \param K :: Key to seach
+   \param setIndex :: set Value
+   \param itemIndex :: Index value
+   \param Out :: returned value if found
+   \return 1 on success / 0 on failure
+ */
 
 {
   ELog::RegMethod RegA("inputParam","checkItem(setIndex,index)");
@@ -1303,6 +1335,21 @@ template std::string
 inputParam::outputItem(const std::string&,const size_t,
 		       const size_t,const std::string&) const;
   
+
+template double
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const double&) const;
+template int
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const int&) const;
+template long int
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const long int&) const;
+template size_t
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const size_t&) const;
+
+
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,
 		       const std::string&,const size_t) const;

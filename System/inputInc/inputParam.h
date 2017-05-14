@@ -121,6 +121,11 @@ class inputParam
   template<typename T>
   T outputItem(const std::string&,const size_t,
 	 const size_t,const std::string&) const;
+
+  template<typename T>
+  T outputDefItem(const std::string&,const size_t,
+		  size_t&,const T&) const;
+  
   template<typename T>
   int checkItem(const std::string&,const size_t,const size_t,T&) const;
   int checkCntVec3D(const std::string&,const size_t,

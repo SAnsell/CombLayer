@@ -431,11 +431,9 @@ WeightControl::procPlanePoint(const mainSystem::inputParam& IParam)
       size_t itemCnt(0);
       while(NItem>itemCnt)
         {
+	  // This use object names / FC / and normal Vec3D
 	  const Geometry::Vec3D PPoint=
             attachSystem::getCntVec3D(IParam,wKey,index,itemCnt);
-
-          //          IParam.getCntVec3D(wKey,index,itemCnt,
-          //			       wKey+" Vec3D");
 	  const Geometry::Vec3D Norm=
 	    IParam.getCntVec3D(wKey,index,itemCnt,
 			       wKey+" Vec3D");
