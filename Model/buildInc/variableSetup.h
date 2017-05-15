@@ -39,6 +39,7 @@ namespace setVariable
   void DelftModel(FuncDataBase&);
   void EssVariables(FuncDataBase&,const std::set<std::string>&);
   void EssLinacVariables(FuncDataBase&);
+  void EssLinacPMQVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
   void FilterVariables(FuncDataBase&);

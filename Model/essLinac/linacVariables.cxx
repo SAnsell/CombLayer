@@ -67,84 +67,6 @@ namespace setVariable
 {
 
 void
-setPMQLength(FuncDataBase& Control, const std::string &dtlName,
-	     const std::string &optFileName,
-	     const std::string &start,const std::string &end)
-{
-  /*!
-    Sets the PMQ length variables
-    \param Control :: data base
-   */
-  std::ifstream optFile(optFileName);
-  if (!optFile.is_open())
-    throw ColErr::ExitAbort("Can't open the Linac optics file " + optFileName);
-
-  const std::string pmqBase = dtlName + "PMQ";
-  std::string optstr,strcol;
-  bool found = false;
-  bool stop  = false; // flag to stop search
-  int colLength,colGap;
-  size_t iPMQ(1);
-  while(!optFile.eof())
-    {
-      if (stop) break;
-
-      std::getline(optFile, optstr);
-      std::stringstream ss(optstr);
-      colLength = 0;
-      while (ss >> strcol) // section !!!
-	{
-	  if ( (colLength==2) and (strcol.find(start)!=std::string::npos))
-	      found = true;
-
-	  if (found && (colLength==4))
-	    {
-	      Control.addVariable(pmqBase + std::to_string(iPMQ) + "Length",
-				  ::atof(strcol.c_str())*100.0);
-
-	      ELog::EM << "use section instead of atof" << ELog::endDiag;
-	      
-	      // read next line with GapLength
-	      std::getline(optFile, optstr);
-	      std::stringstream ss1(optstr);
-	      colGap = 0;
-	      while (ss1 >> strcol)
-		{
-		  if (colGap++==4)
-		    {
-		      Control.addVariable(pmqBase + std::to_string(iPMQ) + "GapLength",
-					  ::atof(strcol.c_str())*100.0);
-		      ELog::EM << iPMQ << ":\t" << strcol << ELog::endDiag;
-		      break;
-		    }
-		}
-	      iPMQ++;
-	      break;
-	    }
-
-	  if (found and (colLength==2))
-	    {
-	      ELog::EM << strcol << ELog::endDiag;
-	    }
-	  
-	  if ( found and (colLength==2) and (strcol.find(end)!=std::string::npos)) {
-	    stop = true;
-	    break;
-	  }
-	  
-	  colLength++;
-	}
-    }
-  
-  // Set the number of PMQs based on what we have found in the optics file:
-  Control.addVariable(dtlName + "NPMQ", iPMQ-1);
-  
-  optFile.close();
-  
-  return;
-}
-
-void
 EssLinacVariables(FuncDataBase& Control)
   /*!
     Create all the linac variables
@@ -353,9 +275,9 @@ EssLinacVariables(FuncDataBase& Control)
   // for (size_t i=2; i<=5; i++)
   //   Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
 
-  // PMQ gap lengths: read from the optics file
-  setPMQLength(Control,"LinacDTL1", "optics.dat", "\"quad1213\"", "\"D204\"");
-  // setPMQLength(Control,"LinacDTL2PMQ", "optics.dat", "\"quad137\"", "\"quad367\"");
+  // PMQ gap lengths are read from the optics file and dumped in the
+  // automaticall generated pmqVariables.cxx by the optics2var script
+  EssLinacPMQVariables(Control);
 
   Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
