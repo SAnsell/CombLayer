@@ -39,13 +39,13 @@
 */
 
 double
-logFromLinear(const double A,const double B,const size_t N,
-	      const size_t index)
+mathFunc::logFromLinear(const double A,const double B,const size_t N,
+                        const size_t index)
   /*!
     Calculate the log step in a range A-B
     \param A :: Low range 
     \param B :: High range 
-    \param N :: Numbero step [not checked]
+    \param N :: Number of steps [not checked]
     \param index :: value at step size [index between 0 - N] 
     \return value at log(Index)
   */
@@ -546,6 +546,8 @@ d2dxQuadratic(const typename std::vector<T>::const_iterator& Xpts,
 
   return A*static_cast<T>(2.0);
 }
+
+
 
 template<typename T>
 long int

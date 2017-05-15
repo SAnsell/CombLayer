@@ -174,19 +174,19 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerWallMat13","ChipIRSteel");
       Control.addVariable(KItem+"BunkerWallMat14","Poly");
       
-      Control.addVariable(KItem+"BunkerWallLen1",45.0);  // p
-      Control.addVariable(KItem+"BunkerWallLen2",15.0);  // s 1
-      Control.addVariable(KItem+"BunkerWallLen3",15.0);  // p
-      Control.addVariable(KItem+"BunkerWallLen4",30.0);  // s 3 
-      Control.addVariable(KItem+"BunkerWallLen5",15.0);  // p
-      Control.addVariable(KItem+"BunkerWallLen6",20.0);  // s 5
-      Control.addVariable(KItem+"BunkerWallLen7",15.0);  // p
-      Control.addVariable(KItem+"BunkerWallLen8",20.0);  // s 6
-      Control.addVariable(KItem+"BunkerWallLen9",30.0); // p 
-      Control.addVariable(KItem+"BunkerWallLen10",15.0); // s   
+      Control.addVariable(KItem+"BunkerWallLen1",45.0);   // p
+      Control.addVariable(KItem+"BunkerWallLen2",15.0);   // s 1
+      Control.addVariable(KItem+"BunkerWallLen3",15.0);   // p
+      Control.addVariable(KItem+"BunkerWallLen4",30.0);   // s 3 
+      Control.addVariable(KItem+"BunkerWallLen5",15.0);   // p
+      Control.addVariable(KItem+"BunkerWallLen6",20.0);   // s 5
+      Control.addVariable(KItem+"BunkerWallLen7",15.0);   // p
+      Control.addVariable(KItem+"BunkerWallLen8",20.0);   // s 6
+      Control.addVariable(KItem+"BunkerWallLen9",30.0);   // p 
+      Control.addVariable(KItem+"BunkerWallLen10",15.0);  // s   
       Control.addVariable(KItem+"BunkerWallLen11",31.0);  // p
       Control.addVariable(KItem+"BunkerWallLen12",15.5);  // s
-      Control.addVariable(KItem+"BunkerWallLen13",25.5);  // s
+      Control.addVariable(KItem+"BunkerWallLen13",25.5);  // p
       Control.addVariable(KItem+"BunkerWallLen14",15.5);  // s
     }
   
