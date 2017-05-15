@@ -77,7 +77,8 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacEngineeringActive",1);
 
-  Control.addVariable("LinacLength",10000.0); // Lali
+  Control.addVariable("LinacLengthBack",5000.0); // Lali
+  Control.addVariable("LinacLengthFront",5000.0); // Lali
   Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011
   Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011
   Control.addVariable("LinacHeight",200.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali

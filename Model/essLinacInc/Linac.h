@@ -50,7 +50,8 @@ class Linac : public attachSystem::ContainedComp,
 
   int engActive;                ///< Engineering active flag
 
-  double length;                ///< Total length including void
+  double lengthBack;                ///< length backward the proton beam direction
+  double lengthFront; ///< length towards the proton beam direction
   double widthLeft;             ///< Inner width towards x+
   double widthRight;            ///< inner width towards x-
   double height;                ///< Inner height

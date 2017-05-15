@@ -115,7 +115,8 @@ Linac::Linac(const Linac& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  length(A.length),widthLeft(A.widthLeft),
+  lengthBack(A.lengthBack),widthLeft(A.widthLeft),
+  lengthFront(A.lengthFront),
   widthRight(A.widthRight),
   height(A.height),
   depth(A.depth),
@@ -156,7 +157,8 @@ Linac::operator=(const Linac& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
-      length=A.length;
+      lengthBack=A.lengthBack;
+      lengthFront=A.lengthFront;
       widthLeft=A.widthLeft;
       widthRight=A.widthRight;
       height=A.height;
@@ -201,7 +203,8 @@ Linac::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
-  length=Control.EvalVar<double>(keyName+"Length");
+  lengthBack=Control.EvalVar<double>(keyName+"LengthBack");
+  lengthFront=Control.EvalVar<double>(keyName+"LengthFront");
   widthLeft=Control.EvalVar<double>(keyName+"WidthLeft");
   widthRight=Control.EvalVar<double>(keyName+"WidthRight");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -353,8 +356,8 @@ Linac::createSurfaces()
 {
   ELog::RegMethod RegA("Linac","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(widthRight),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(widthLeft),X);
@@ -362,8 +365,8 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(depth),Z);
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height),Z);
 
-  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(length/2.0+wallThick),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(length/2.0+wallThick),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(lengthBack+wallThick),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+12,Origin+Y*(lengthFront+wallThick),Y);
 
   ModelSupport::buildPlane(SMap,surfIndex+13,Origin-X*(widthRight+wallThick),X);
   ModelSupport::buildPlane(SMap,surfIndex+14,Origin+X*(widthLeft+wallThick),X);
@@ -459,10 +462,10 @@ Linac::createLinks()
   ELog::RegMethod RegA("Linac","createLinks");
 
   // outer links
-  FixedComp::setConnect(0,Origin-Y*(length/2.0+wallThick),-Y);
+  FixedComp::setConnect(0,Origin-Y*(lengthBack+wallThick),-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+11));
 
-  FixedComp::setConnect(1,Origin+Y*(length/2.0+wallThick),Y);
+  FixedComp::setConnect(1,Origin+Y*(lengthFront+wallThick),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+12));
 
   FixedComp::setConnect(2,Origin-X*(widthRight+wallThick),-X);
@@ -492,10 +495,10 @@ Linac::createLinks()
   FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+112));
 
   // walls
-  FixedComp::setConnect(10,Origin-Y*(length/2.0),Y);
+  FixedComp::setConnect(10,Origin-Y*(lengthBack),Y);
   FixedComp::setLinkSurf(10,SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(11,Origin+Y*(length/2.0),Y); // should be negative, but layerProcess needs positive
+  FixedComp::setConnect(11,Origin+Y*(lengthFront),Y); // should be negative, but layerProcess needs positive
   FixedComp::setLinkSurf(11,SMap.realSurf(surfIndex+2));
 
   return;
