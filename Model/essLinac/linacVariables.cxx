@@ -67,7 +67,7 @@ namespace setVariable
 {
 
 void
-setPMQLength(FuncDataBase& Control, const std::string &base,
+setPMQLength(FuncDataBase& Control, const std::string &dtlName,
 	     const std::string &optFileName,
 	     const std::string &start,const std::string &end)
 {
@@ -78,25 +78,32 @@ setPMQLength(FuncDataBase& Control, const std::string &base,
   std::ifstream optFile(optFileName);
   if (!optFile.is_open())
     throw ColErr::ExitAbort("Can't open the Linac optics file " + optFileName);
-  
+
+  const std::string pmqBase = dtlName + "PMQ";
   std::string optstr,strcol;
   bool found = false;
+  bool stop  = false; // flag to stop search
   int colLength,colGap;
   size_t iPMQ(1);
   while(!optFile.eof())
     {
+      if (stop) break;
+
       std::getline(optFile, optstr);
       std::stringstream ss(optstr);
       colLength = 0;
-      while (ss >> strcol)
+      while (ss >> strcol) // section !!!
 	{
 	  if ( (colLength==2) and (strcol.find(start)!=std::string::npos))
 	      found = true;
 
 	  if (found && (colLength==4))
 	    {
-	      Control.addVariable(base + std::to_string(iPMQ) + "Length",
+	      Control.addVariable(pmqBase + std::to_string(iPMQ) + "Length",
 				  ::atof(strcol.c_str())*100.0);
+
+	      ELog::EM << "use section instead of atof" << ELog::endDiag;
+	      
 	      // read next line with GapLength
 	      std::getline(optFile, optstr);
 	      std::stringstream ss1(optstr);
@@ -105,21 +112,32 @@ setPMQLength(FuncDataBase& Control, const std::string &base,
 		{
 		  if (colGap++==4)
 		    {
-		      Control.addVariable(base + std::to_string(iPMQ) + "GapLength",
+		      Control.addVariable(pmqBase + std::to_string(iPMQ) + "GapLength",
 					  ::atof(strcol.c_str())*100.0);
+		      ELog::EM << iPMQ << ":\t" << strcol << ELog::endDiag;
 		      break;
 		    }
 		}
 	      iPMQ++;
 	      break;
 	    }
+
+	  if (found and (colLength==2))
+	    {
+	      ELog::EM << strcol << ELog::endDiag;
+	    }
 	  
-	  if ( (colLength==2) and (strcol.find(end)!=std::string::npos))
-	    found = false;
+	  if ( found and (colLength==2) and (strcol.find(end)!=std::string::npos)) {
+	    stop = true;
+	    break;
+	  }
 	  
 	  colLength++;
 	}
     }
+  
+  // Set the number of PMQs based on what we have found in the optics file:
+  Control.addVariable(dtlName + "NPMQ", iPMQ-1);
   
   optFile.close();
   
@@ -255,7 +273,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
-  Control.addVariable("LinacNDTLTanks", 2);
+  Control.addVariable("LinacNDTLTanks", 1);
   // DTL lengths are from Google drive / ESS DTL
   // 02 - Mechanical development and prototype construction.pdf
   // page 21
@@ -321,7 +339,7 @@ EssLinacVariables(FuncDataBase& Control)
 
   
   // PMQs
-  Control.addVariable("LinacDTL1NPMQ", 30);
+  Control.addVariable("LinacDTL1NPMQ", 31);
   Control.addVariable("LinacDTL2NPMQ", 30);
   Control.addVariable("LinacDTL3NPMQ", 0);
   Control.addVariable("LinacDTL4NPMQ", 0);
@@ -336,8 +354,8 @@ EssLinacVariables(FuncDataBase& Control)
   //   Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
 
   // PMQ gap lengths: read from the optics file
-  setPMQLength(Control,"LinacDTL1PMQ", "optics.dat", "\"quad1213\"", "\"quad133\"");
-  setPMQLength(Control,"LinacDTL2PMQ", "optics.dat", "\"quad137\"", "\"quad367\"");
+  setPMQLength(Control,"LinacDTL1", "optics.dat", "\"quad1213\"", "\"D204\"");
+  // setPMQLength(Control,"LinacDTL2PMQ", "optics.dat", "\"quad137\"", "\"quad367\"");
 
   Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
   Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
