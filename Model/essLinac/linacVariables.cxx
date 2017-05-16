@@ -257,13 +257,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL2Mat6", "Copper");
   Control.addVariable("LinacDTL2Radius7", 31);  // MARS
   Control.addVariable("LinacDTL2Mat7", "SS304L");
-  
-  // PMQs
-  Control.addVariable("LinacDTL1NPMQ", 31);
-  Control.addVariable("LinacDTL2NPMQ", 18);
-  Control.addVariable("LinacDTL3NPMQ", 0);
-  Control.addVariable("LinacDTL4NPMQ", 0);
-  Control.addVariable("LinacDTL5NPMQ", 0);
 
   for (size_t i=1; i<=nDTL; i++)
     {
