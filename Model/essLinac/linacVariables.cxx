@@ -196,7 +196,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
-  Control.addVariable("LinacNDTLTanks", 1);
+  const size_t nDTL = 1;
+  Control.addVariable("LinacNDTLTanks", nDTL);
   // DTL lengths are from Google drive / ESS DTL
   // 02 - Mechanical development and prototype construction.pdf
   // page 21
@@ -264,8 +265,11 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
 
-  Control.addVariable("LinacDTL1PMQ1Mat5", "SS304L");  // DTL1 first half
-  Control.addVariable("LinacDTL1PMQ31Mat5", "SS304L"); // last half
+  for (size_t i=1; i<=nDTL; i++)
+    {
+      Control.addVariable("LinacDTL"+std::to_string(i)+"PMQ1Mat5", "SS304L");  // DTL1 first half
+      Control.addVariable("LinacDTL"+std::to_string(i)+"PMQ31Mat5", "SS304L"); // last half
+    }
 
   // // PMQ lengths:  DePrisco2015, table 2
   // Control.addVariable("LinacDTL1PMQLength", 5.0);
