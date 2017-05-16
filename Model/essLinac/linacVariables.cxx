@@ -196,7 +196,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldInnerLength",10.0);
 
   // DTL
-  const size_t nDTL = 3;
+  const size_t nDTL = 5;
   Control.addVariable("LinacNDTLTanks", nDTL);
   // DTL lengths are from Google drive / ESS DTL
   // 02 - Mechanical development and prototype construction.pdf
