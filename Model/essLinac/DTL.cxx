@@ -112,7 +112,7 @@ DTL::DTL(const DTL& A) :
   itLength(A.itLength),
   itRadius(A.itRadius),
   itWallThick(A.itWallThick),
-  nLayers(A.nLayers),radius(A.radius),coverThick(A.coverThick),
+  nLayers(A.nLayers),radius(A.radius),
   mat(A.mat),
   airMat(A.airMat),
   nPMQ(A.nPMQ),
@@ -147,7 +147,6 @@ DTL::operator=(const DTL& A)
       airMat=A.airMat;
       nPMQ=A.nPMQ;
       pmq=A.pmq;
-      coverThick=A.coverThick;
     }
   return *this;
 }
@@ -230,7 +229,6 @@ DTL::populate(const FuncDataBase& Control)
       mat.push_back(m);
     }
 
-  coverThick=Control.EvalPair<double>(keyName,extraName,"CoverThick");
   airMat = ModelSupport::EvalMat<int>(Control,extraName+"AirMat",baseName+"AirMat");
   
   nPMQ=Control.EvalVar<size_t>(keyName+"NPMQ");

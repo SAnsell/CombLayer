@@ -54,7 +54,6 @@ class DTL : public attachSystem::ContainedComp,
   double itWallThick; ///< intertank pipe wall thick
   size_t nLayers;                   ///< number of layers
   std::vector<double> radius;   ///< Radii of each layer
-  double coverThick;                ///< cover thickness
   std::vector<int> mat; ///< materials
   int airMat; ///< air material
   size_t nPMQ; ///< number of PMQs

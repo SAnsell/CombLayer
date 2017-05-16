@@ -216,8 +216,6 @@ EssLinacVariables(FuncDataBase& Control)
   //  Control.addVariable("LinacDTL5Length", 775.79);
   Control.addVariable("LinacDTL5IntertankLength", 100.0);
   
-  Control.addVariable("LinacDTLCoverThick", 3.6); // MARS
-
   Control.addVariable("LinacDTLIntertankRadius", 2.8); // MARS
   Control.addVariable("LinacDTLIntertankWallThick", 0.2); // MARS
 
