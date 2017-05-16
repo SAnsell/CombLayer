@@ -145,6 +145,40 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL2PMQ18GapLength",1);
   Control.addVariable("LinacDTL2NPMQ",18);
 
+  Control.addVariable("LinacDTL3PMQ1Length",8);
+  Control.addVariable("LinacDTL3PMQ1GapLength",40.5869);
+  Control.addVariable("LinacDTL3PMQ2Length",8);
+  Control.addVariable("LinacDTL3PMQ2GapLength",40.9382);
+  Control.addVariable("LinacDTL3PMQ3Length",8);
+  Control.addVariable("LinacDTL3PMQ3GapLength",41.5867);
+  Control.addVariable("LinacDTL3PMQ4Length",8);
+  Control.addVariable("LinacDTL3PMQ4GapLength",42.2312);
+  Control.addVariable("LinacDTL3PMQ5Length",8);
+  Control.addVariable("LinacDTL3PMQ5GapLength",42.8709);
+  Control.addVariable("LinacDTL3PMQ6Length",8);
+  Control.addVariable("LinacDTL3PMQ6GapLength",43.5064);
+  Control.addVariable("LinacDTL3PMQ7Length",8);
+  Control.addVariable("LinacDTL3PMQ7GapLength",44.1372);
+  Control.addVariable("LinacDTL3PMQ8Length",8);
+  Control.addVariable("LinacDTL3PMQ8GapLength",44.7635);
+  Control.addVariable("LinacDTL3PMQ9Length",8);
+  Control.addVariable("LinacDTL3PMQ9GapLength",45.3853);
+  Control.addVariable("LinacDTL3PMQ10Length",8);
+  Control.addVariable("LinacDTL3PMQ10GapLength",46.0014);
+  Control.addVariable("LinacDTL3PMQ11Length",8);
+  Control.addVariable("LinacDTL3PMQ11GapLength",46.615);
+  Control.addVariable("LinacDTL3PMQ12Length",8);
+  Control.addVariable("LinacDTL3PMQ12GapLength",47.2241);
+  Control.addVariable("LinacDTL3PMQ13Length",8);
+  Control.addVariable("LinacDTL3PMQ13GapLength",47.4799);
+  Control.addVariable("LinacDTL3PMQ14Length",8);
+  Control.addVariable("LinacDTL3PMQ14GapLength",48.7397);
+  Control.addVariable("LinacDTL3PMQ15Length",8);
+  Control.addVariable("LinacDTL3PMQ15GapLength",49.0898);
+  Control.addVariable("LinacDTL3PMQ16Length",8);
+  Control.addVariable("LinacDTL3PMQ16GapLength",1);
+  Control.addVariable("LinacDTL3NPMQ",16);
+
   return;
 }
 }
