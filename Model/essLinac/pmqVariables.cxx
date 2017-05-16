@@ -106,6 +106,43 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL1PMQ31Length",5);
   Control.addVariable("LinacDTL1PMQ31GapLength",1);
 
+  Control.addVariable("LinacDTL2PMQ1Length",5);
+  Control.addVariable("LinacDTL2PMQ1GapLength",29.908);
+  Control.addVariable("LinacDTL2PMQ2Length",8);
+  Control.addVariable("LinacDTL2PMQ2GapLength",28.7645);
+  Control.addVariable("LinacDTL2PMQ3Length",8);
+  Control.addVariable("LinacDTL2PMQ3GapLength",29.4515);
+  Control.addVariable("LinacDTL2PMQ4Length",8);
+  Control.addVariable("LinacDTL2PMQ4GapLength",30.1815);
+  Control.addVariable("LinacDTL2PMQ5Length",8);
+  Control.addVariable("LinacDTL2PMQ5GapLength",30.9092);
+  Control.addVariable("LinacDTL2PMQ6Length",8);
+  Control.addVariable("LinacDTL2PMQ6GapLength",31.6348);
+  Control.addVariable("LinacDTL2PMQ7Length",8);
+  Control.addVariable("LinacDTL2PMQ7GapLength",32.3564);
+  Control.addVariable("LinacDTL2PMQ8Length",8);
+  Control.addVariable("LinacDTL2PMQ8GapLength",33.0747);
+  Control.addVariable("LinacDTL2PMQ9Length",8);
+  Control.addVariable("LinacDTL2PMQ9GapLength",33.7895);
+  Control.addVariable("LinacDTL2PMQ10Length",8);
+  Control.addVariable("LinacDTL2PMQ10GapLength",34.5005);
+  Control.addVariable("LinacDTL2PMQ11Length",8);
+  Control.addVariable("LinacDTL2PMQ11GapLength",35.2071);
+  Control.addVariable("LinacDTL2PMQ12Length",8);
+  Control.addVariable("LinacDTL2PMQ12GapLength",35.9112);
+  Control.addVariable("LinacDTL2PMQ13Length",8);
+  Control.addVariable("LinacDTL2PMQ13GapLength",36.6108);
+  Control.addVariable("LinacDTL2PMQ14Length",8);
+  Control.addVariable("LinacDTL2PMQ14GapLength",37.3062);
+  Control.addVariable("LinacDTL2PMQ15Length",8);
+  Control.addVariable("LinacDTL2PMQ15GapLength",37.9972);
+  Control.addVariable("LinacDTL2PMQ16Length",8);
+  Control.addVariable("LinacDTL2PMQ16GapLength",38.3937);
+  Control.addVariable("LinacDTL2PMQ17Length",8);
+  Control.addVariable("LinacDTL2PMQ17GapLength",39.6163);
+  Control.addVariable("LinacDTL2PMQ18Length",8);
+  Control.addVariable("LinacDTL2PMQ18GapLength",1);
+
   return;
 }
 }
