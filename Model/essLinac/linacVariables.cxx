@@ -220,83 +220,45 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTLIntertankRadius", 2.8); // MARS
   Control.addVariable("LinacDTLIntertankWallThick", 0.2); // MARS
 
-  // these variables define radii of PMQ
-  Control.addVariable("LinacDTL1NLayers", 7);
-  Control.addVariable("LinacDTL1Radius1", 1.0); // DePrisco2015, table 2
-  Control.addVariable("LinacDTL1Mat1", "Void");
-  Control.addVariable("LinacDTL1Radius2", 1.15); // DePrisco2015, table 2
-  Control.addVariable("LinacDTL1Mat2", "Copper"); // rbfrend2-9100
-  Control.addVariable("LinacDTL1Radius3", 2.9);
-  Control.addVariable("LinacDTL1Mat3", "Void");
-  Control.addVariable("LinacDTL1Radius4", 4.5);
+
   ELog::EM << "LinacDTL1Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
-  Control.addVariable("LinacDTL1Mat4", "SS304L");
-  Control.addVariable("LinacDTL1Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
-  Control.addVariable("LinacDTL1Mat5", "Void");
-  Control.addVariable("LinacDTL1Radius6", 26);  // MARS
-  Control.addVariable("LinacDTL1Mat6", "Copper");
-  Control.addVariable("LinacDTL1Radius7", 31);  // MARS
-  Control.addVariable("LinacDTL1Mat7", "SS304L");
 
-  // DTL2
-  Control.addVariable("LinacDTL2EngineeringActive", 0);
-
-  Control.addVariable("LinacDTL2NLayers", 7);
-  Control.addVariable("LinacDTL2Radius1", 1.0); // DePrisco2015, table 2
-  Control.addVariable("LinacDTL2Mat1", "Void");
-  Control.addVariable("LinacDTL2Radius2", 1.15); // DePrisco2015, table 2
-  Control.addVariable("LinacDTL2Mat2", "Copper"); // rbfrend2-9100
-  Control.addVariable("LinacDTL2Radius3", 2.9);
-  Control.addVariable("LinacDTL2Mat3", "Void");
-  Control.addVariable("LinacDTL2Radius4", 4.5);
-  ELog::EM << "LinacDTL2Mat4: RB: mix of Cu with water; MARS: STST. What is correct?" << ELog::endCrit;
-  Control.addVariable("LinacDTL2Mat4", "SS304L");
-  Control.addVariable("LinacDTL2Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
-  Control.addVariable("LinacDTL2Mat5", "Void");
-  Control.addVariable("LinacDTL2Radius6", 26);  // MARS
-  Control.addVariable("LinacDTL2Mat6", "Copper");
-  Control.addVariable("LinacDTL2Radius7", 31);  // MARS
-  Control.addVariable("LinacDTL2Mat7", "SS304L");
-
+  std::string strtmp;
   for (size_t i=1; i<=nDTL; i++)
     {
-      Control.addVariable("LinacDTL"+std::to_string(i)+"PMQ1Mat5", "SS304L");  // DTL1 first half
-      Control.addVariable("LinacDTL"+std::to_string(i)+"PMQ31Mat5", "SS304L"); // last half
+      strtmp = std::to_string(i);
+      Control.addVariable("LinacDTL"+strtmp+"PMQ1Mat5", "SS304L");  // DTL1 first half
+      Control.addVariable("LinacDTL"+strtmp+"PMQ31Mat5", "SS304L"); // last half
+
+      // these variables define radii of PMQ
+      Control.addVariable("LinacDTL"+strtmp+"EngineeringActive", 0);
+      Control.addVariable("LinacDTL"+strtmp+"NLayers", 7);
+      Control.addVariable("LinacDTL"+strtmp+"Radius1", 1.0); // DePrisco2015, table 2
+      Control.addVariable("LinacDTL"+strtmp+"Mat1", "Void");
+      Control.addVariable("LinacDTL"+strtmp+"Radius2", 1.15); // DePrisco2015, table 2
+      Control.addVariable("LinacDTL"+strtmp+"Mat2", "Copper"); // rbfrend2-9100
+      Control.addVariable("LinacDTL"+strtmp+"Radius3", 2.9);
+      Control.addVariable("LinacDTL"+strtmp+"Mat3", "Void");
+      Control.addVariable("LinacDTL"+strtmp+"Radius4", 4.5);
+      Control.addVariable("LinacDTL"+strtmp+"Mat4", "SS304L");
+      Control.addVariable("LinacDTL"+strtmp+"Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017
+      Control.addVariable("LinacDTL"+strtmp+"Mat5", "Void");
+      Control.addVariable("LinacDTL"+strtmp+"Radius6", 26);  // MARS
+      Control.addVariable("LinacDTL"+strtmp+"Mat6", "Copper");
+      Control.addVariable("LinacDTL"+strtmp+"Radius7", 31);  // MARS
+      Control.addVariable("LinacDTL"+strtmp+"Mat7", "SS304L");
+      Control.addVariable("LinacDTL"+strtmp+"AirMat", "Air");
+
+      Control.addVariable("LinacDTL"+strtmp+"PMQNBars", 16);      // DePrisco2015, page 1
+      Control.addVariable("LinacDTL"+strtmp+"PMQBarHeight", 1.4); // DePrisco2015, fig 2
+      Control.addVariable("LinacDTL"+strtmp+"PMQBarThick",  0.4); // DePrisco2015, fig 2
+      Control.addVariable("LinacDTL"+strtmp+"PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
     }
 
-  // // PMQ lengths:  DePrisco2015, table 2
-  // Control.addVariable("LinacDTL1PMQLength", 5.0);
-  // for (size_t i=2; i<=5; i++)
-  //   Control.addVariable("LinacDTL" + std::to_string(i) + "PMQLength", 8.0);
-
-  // PMQ gap lengths are read from the optics file and dumped in the
+  // PMQ lengths are read from the optics file and dumped in the
   // automaticall generated pmqVariables.cxx by the optics2var script
   EssLinacPMQVariables(Control);
 
-  Control.addVariable("LinacDTL1PMQNBars", 16);      // DePrisco2015, page 1
-  Control.addVariable("LinacDTL1PMQBarHeight", 1.4); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL1PMQBarThick",  0.4); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL1PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
-
-  Control.addVariable("LinacDTL2PMQNBars", 16);      // DePrisco2015, page 1
-  Control.addVariable("LinacDTL2PMQBarHeight", 1.4); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL2PMQBarThick",  0.4); // DePrisco2015, fig 2
-  Control.addVariable("LinacDTL2PMQBarMat",  "Sm2Co17"); // DePrisco2015, page 1
-  
-  Control.addVariable("LinacDTL1AirMat", "Air");
-  Control.addVariable("LinacDTL2AirMat", "Air");
-
-  
-  // Control.addVariable("LinacDTLRadius1", 1.0); 
-  // Control.addVariable("LinacDTLRadius2", 1.15); 
-  // Control.addVariable("LinacDTLRadius3", 2.90); 
-  // Control.addVariable("LinacDTLRadius4", 4.50); 
-  // Control.addVariable("LinacDTLRadius5", 26.0); 
-  // Control.addVariable("LinacDTLMat3", "Void"); 
-  // Control.addVariable("LinacDTLMat5", "Void"); 
-  // Control.addVariable("LinacDTLMat6", "H2O"); 
-  // Control.addVariable("LinacDTLMat7", "SS316L"); 
- 
   return;
 }
 
