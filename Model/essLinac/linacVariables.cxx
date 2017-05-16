@@ -219,6 +219,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTLIntertankRadius", 2.8); // MARS
   Control.addVariable("LinacDTLIntertankWallThick", 0.2); // MARS
 
+  // these variables define radii of PMQ
   Control.addVariable("LinacDTL1NLayers", 7);
   Control.addVariable("LinacDTL1Radius1", 1.0); // DePrisco2015, table 2
   Control.addVariable("LinacDTL1Mat1", "Void");
@@ -255,9 +256,6 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL2Mat6", "Copper");
   Control.addVariable("LinacDTL2Radius7", 31);  // MARS
   Control.addVariable("LinacDTL2Mat7", "SS304L");
-
-
-
   
   // PMQs
   Control.addVariable("LinacDTL1NPMQ", 31);
@@ -266,8 +264,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacDTL4NPMQ", 0);
   Control.addVariable("LinacDTL5NPMQ", 0);
 
-  // DTL1 first half
-  Control.addVariable("LinacDTL1PMQ1Mat5", "SS304L");
+  Control.addVariable("LinacDTL1PMQ1Mat5", "SS304L");  // DTL1 first half
+  Control.addVariable("LinacDTL1PMQ31Mat5", "SS304L"); // last half
 
   // // PMQ lengths:  DePrisco2015, table 2
   // Control.addVariable("LinacDTL1PMQLength", 5.0);
