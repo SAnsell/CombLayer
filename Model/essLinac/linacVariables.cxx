@@ -77,8 +77,8 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacEngineeringActive",1);
 
-  Control.addVariable("LinacLengthBack",5000.0); // Lali
-  Control.addVariable("LinacLengthFront",5000.0); // Lali
+  Control.addVariable("LinacLengthBack",905.3); // MARS
+  Control.addVariable("LinacLengthFront",10000.0-905.3); // Lali
   Control.addVariable("LinacWidthLeft",600./2.0+15.0); // K01-20---6-G01---011
   Control.addVariable("LinacWidthRight",600./2.0-15.0); // K01-20---6-G01---011
   Control.addVariable("LinacHeight",200.0); // Height+Depth from K01-20---6-G01---011; center communicated by Lali
@@ -101,7 +101,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addParse<double>("LinacTSWLength", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
   Control.addVariable("LinacTSWWidth", 100.0); // Lali said
   Control.addVariable("LinacTSWGap", 120.0); // Lali said
-  Control.addVariable("LinacTSWOffsetY", 300.0-150); // some location (must be 20 cm off the beam dump)
+  Control.addVariable("LinacTSWOffsetY", 5300.0); // some location (must be 20 cm off the beam dump)
   Control.addVariable("LinacTSWMat", "SkanskaConcrete");
   Control.addVariable("LinacTSWNLayers", 1); // for biasing
 
@@ -202,7 +202,7 @@ EssLinacVariables(FuncDataBase& Control)
   // page 21
   // PMQ parameters are from:
   // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
-  Control.addVariable("LinacDTL1YStep", 950.0);  // an arbitrary number
+  Control.addParse<double>("LinacDTL1YStep", "398.5 + LinacLengthBack");  // MARS
 
   Control.addVariable("LinacDTL1EngineeringActive", 0);
   //  Control.addVariable("LinacDTL1Length", 768.76);
