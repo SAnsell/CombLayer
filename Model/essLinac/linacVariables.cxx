@@ -203,11 +203,11 @@ EssLinacVariables(FuncDataBase& Control)
   // page 21
   // PMQ parameters are from:
   // DePrisco2015: 05 - PMQ Transverse Section and Data (Lali's google drive folder)
-  Control.addParse<double>("LinacDTL1YStep", "398.5 + LinacLengthBack");  // MARS
+  Control.addParse<double>("LinacDTL1YStep", "398.6 + LinacLengthBack");  // MARS
 
   Control.addVariable("LinacDTL1EngineeringActive", 0);
   //  Control.addVariable("LinacDTL1Length", 768.76);
-  Control.addVariable("LinacDTL1IntertankLength", 10.83);
+  Control.addVariable("LinacDTL1IntertankLength", 30.49389999999994-1);
   //  Control.addVariable("LinacDTL2Length", 717.11);
   Control.addVariable("LinacDTL2IntertankLength", 16.84);
   //  Control.addVariable("LinacDTL3Length", 765.26);
