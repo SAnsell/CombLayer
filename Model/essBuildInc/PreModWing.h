@@ -27,7 +27,7 @@ class Simulation;
 namespace essSystem
 {
 
-  /*!
+/*!
   \class PreModWing
   \author S. Ansell / K. Batkov
   \version 2.0
@@ -56,13 +56,19 @@ class PreModWing : public attachSystem::ContainedComp,
   
   int mat;                        ///< (water) material
   int wallMat;                    ///< wall material
-  
+
+  size_t nLayers;                 ///< Number of layers
+  std::vector<double> layerRadii; ///< Radii for change in material
+  std::vector<int> innerMat;      ///< Inner materials [water]
+  std::vector<int> surfMat;       ///< Surface material [al]
   
   HeadRule topSurf;              ///< Top cut surface
   HeadRule baseSurf;             ///< Base cut surface
   HeadRule innerSurf;            ///< Inner surface(s)
   HeadRule outerSurf;            ///< Outer surface(s)
   HeadRule mainDivider;          ///< Seperatue unit for divider [to simpify boundary]
+
+  std::string getLayerZone(const size_t) const;
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

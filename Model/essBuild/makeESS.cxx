@@ -761,7 +761,9 @@ makeESS::buildPreWings(Simulation& System)
     dynamic_cast<const ButterflyModerator*>(TopMod.get());
   if (TMod)
     {
-      TopPreWingA = std::shared_ptr<PreModWing>(new PreModWing("TopLeftPreWing"));
+      TopPreWingA = std::shared_ptr<PreModWing>
+        (new PreModWing("TopLeftPreWing"));
+      
       OR.addObject(TopPreWingA);
       TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
       TopPreWingA->setInnerExclude(TMod->getLeftExclude());
@@ -772,7 +774,9 @@ makeESS::buildPreWings(Simulation& System)
       TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
       TopPreWingA->createAll(System,*TMod,0);
 
-      TopPreWingB = std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
+      TopPreWingB =
+        std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
+      
       OR.addObject(TopPreWingB);
       TopPreWingB->setDivider(TMod->getSignedMainRule(7));
       TopPreWingB->setInnerExclude(TMod->getRightExclude());
