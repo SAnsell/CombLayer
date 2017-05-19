@@ -93,13 +93,10 @@ Exit Stack:                                        ::main
 
 Like most CombLayer error messages it is expected that you read them from top to bottom. So the first thing it tells you is
 that variable BeRefHHH does not exist in the model. Second that this is a fatal error and finally the calling stack that generated
-that error. If you are not debugging the code etc, Then only concern yourself with the error/warning messages above the line {\it Exit Stack:}.
+that error. If you are not debugging the code etc, then only concern yourself with the error/warning messages above the line {\it Exit Stack:}.
 
 
-It is also possible to use strings and Vec3D objects as variables.
-
-e.g.
-
+It is also possible to use strings and Vec3D objects as variables:
 \begin{bash}
   ./ess -r -v BeRefTopRefMat Nickel \
            -v ABunkerQuakePtA0 'Vec3D(1200,191.2,0.0)' modelOut
@@ -132,7 +129,7 @@ All the variables can be exported in the XML file by running
 \begin{bash}
   ./ess -r -X modelOut.xml modelOut
 \end{bash}
-Note that the -X command will overwrite existing files.
+Note that the {\tt -X} command will overwrite existing files.
 
 The commands can be done combined simulantiously with both XML and command line and output.
 \begin{bash}
@@ -140,6 +137,6 @@ The commands can be done combined simulantiously with both XML and command line 
 \end{bash}
 
 This will first read the model.xml file and change the variables. Second it will
-change BeRefHeight to 80, and finally write out the XML file of all variables to the file
-modelOut.xml.
+change {\tt BeRefHeight} to 80, and finally write out the XML file of all variables to the file
+{\tt modelOut.xml}.
 
