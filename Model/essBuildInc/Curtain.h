@@ -64,6 +64,10 @@ class Curtain : public attachSystem::ContainedGroup,
   std::vector<double> topFrac;    ///< Layer divider
   std::vector<double> midFrac;    ///< Layer divider
   std::vector<double> baseFrac;   ///< Layer divider
+
+  std::vector<int> topMat;    ///< Top layer materials
+  std::vector<int> midMat;    ///< Mid layer materials
+  std::vector<int> baseMat;   ///< Low layer materials
   
   int wallMat;                   ///< wall material  
   

@@ -192,6 +192,11 @@ Curtain::populate(const FuncDataBase& Control)
   ModelSupport::populateDivideLen(Control,nBaseLayers,keyName+"BaseLen",
 				  depth,baseFrac);
 
+  ModelSupport::populateDivide(Control,nBaseLayers,keyName+"BaseMat",
+                               ModelSupport::EvalMatName("Void"),
+                               baseMat);	  
+
+
   return;
 }
   
@@ -379,27 +384,27 @@ Curtain::layerProcess(Simulation& System,
     }
   if (nBaseLayers>1)
     {
+      ELog::EM<<"Base"<<nBaseLayers<<ELog::endDiag;
       const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
       ModelSupport::surfDivide DA;
             
-      for(size_t i=1;i<nTopLayers;i++)
+      for(size_t i=1;i<nBaseLayers;i++)
 	{
-	  DA.addFrac(topFrac[i-1]);
-	  DA.addMaterial(wallMat);
+	  DA.addFrac(baseFrac[i-1]);
+	  DA.addMaterial(baseMat[i-1]);
 	}
-      DA.addMaterial(wallMat);
+      DA.addMaterial(baseMat.back());
       
       DA.setCellN(getCell("baseWall"));
       DA.setOutNum(cellIndex,curIndex+1101);
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
-      surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
-			       SMap.realSurf(topSurf));
+      surroundRule.setSurfPair(SMap.realSurf(topSurf),
+                               SMap.realSurf(curIndex+5));
       
-      OutA=ModelSupport::getComposite(SMap,curIndex," 5 ");
-      OutB=FC.getSignedLinkString(-topIndex);
-	//      OutB=ModelSupport::getComposite(SMap,curIndex,
-	//			      );
+
+      OutA=FC.getSignedLinkString(-topIndex);
+      OutB=ModelSupport::getComposite(SMap,curIndex," 5 ");
       
       surroundRule.setInnerRule(OutA);
       surroundRule.setOuterRule(OutB);

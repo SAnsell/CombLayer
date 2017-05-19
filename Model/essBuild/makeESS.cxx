@@ -719,18 +719,12 @@ makeESS::makeBunker(Simulation& System,
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
       // THIS IS HORIFFICALLY INEFFICENT :: FIX
-      TopCurtain->addInsertCell("Top",74123);
-      TopCurtain->addInsertCell("Lower",74123);
-      TopCurtain->addInsertCell("Mid",74123);
+      TopCurtain->addInsertCell("Top",voidCell);
+      TopCurtain->addInsertCell("Lower",voidCell);
+      TopCurtain->addInsertCell("Mid",voidCell);
       TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
-      TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
-      TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
-      
-      TopCurtain->createAll(System,*ShutterBayObj,6,4);
-      
-      //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
-      //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+      TopCurtain->createAll(System,*ShutterBayObj,6,4);      
     }
   if (bunkerType.find("help")!=std::string::npos)
     {

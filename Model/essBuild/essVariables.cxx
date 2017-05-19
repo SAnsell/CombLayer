@@ -244,18 +244,22 @@ EssVariables(FuncDataBase& Control,
 
 
   // SHUTTER BAY
-  Control.addVariable("ShutterBayXStep",0.0);  
-  Control.addVariable("ShutterBayYStep",0.0);  
-  Control.addVariable("ShutterBayZStep",0.0);
-  Control.addVariable("ShutterBayXYAngle",0.0); 
-  Control.addVariable("ShutterBayZAngle",0.0);
   Control.addVariable("ShutterBayRadius",550.0);
+  Control.addVariable("ShutterBayTopRadius",500.0);
+  Control.addVariable("ShutterBayTopCut",128.0);
   Control.addVariable("ShutterBayHeight",400.0);
   Control.addVariable("ShutterBayDepth",400.0);
   Control.addVariable("ShutterBaySkin",6.0);
   Control.addVariable("ShutterBayTopSkin",6.0);
   Control.addVariable("ShutterBayMat","CastIron");
+
   Control.addVariable("ShutterBaySkinMat","Void");
+  Control.addVariable("ShutterBayNCurtain",3);
+  Control.addVariable("ShutterBayCurtainMat0","Stainless304");
+  Control.addVariable("ShutterBayCurtainMat1","Void");
+  Control.addVariable("ShutterBayCurtainMat2","Concrete");
+  Control.addVariable("ShutterBayCurtainThick0",70.0);
+  Control.addVariable("ShutterBayCurtainThick1",6.0);
 
   // Guide BAY [ All 4 same ]
   Control.addVariable("GuideBayXStep",0.0);  
