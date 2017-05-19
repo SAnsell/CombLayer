@@ -421,6 +421,18 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingMat","H2O");
   Control.addVariable("TopLeftPreWingWallMat","Aluminium");
 
+  Control.addVariable("TopLeftPreWingNLayers",4);
+  Control.addVariable("TopLeftPreWingLayerRadius1",30.0);
+  Control.addVariable("TopLeftPreWingInnerMat1","Aluminium");
+  Control.addVariable("TopLeftPreWingSurfMat1","Aluminium");
+
+  Control.addVariable("TopLeftPreWingLayerRadius2",30.3);
+  Control.addVariable("TopLeftPreWingInnerMat2","Void");
+  Control.addVariable("TopLeftPreWingSurfMat2","Void");
+  
+  Control.addVariable("TopLeftPreWingLayerRadius3",30.6);
+  Control.addVariable("TopLeftPreWingInnerMat3","Stainless304");
+  Control.addVariable("TopLeftPreWingSurfMat3","Stainless304");
   
   Control.addVariable("TopRightPreWingXYAngle",180.0);
   Control.addVariable("TopRightPreWingInnerHeight",1.8);
@@ -434,12 +446,19 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopRightPreWingMat","H2O");
   Control.addVariable("TopRightPreWingWallMat","Aluminium");
 
-  Control.addVariable("TopRightPreWingNLayers",0);
-  Control.addVariable("TopRightPreWingLayerRadius1",28.5);
-  Control.addVariable("TopRightPreWingInnerMat1","Tungsten");
-          
-  Control.addVariable("TopRightPreWingSurfMat1","D2O");
+  Control.addVariable("TopRightPreWingNLayers",4);
+  Control.addVariable("TopRightPreWingLayerRadius1",30.0);
+  Control.addVariable("TopRightPreWingInnerMat1","Aluminium");
+  Control.addVariable("TopRightPreWingSurfMat1","Aluminium");
+
+  Control.addVariable("TopRightPreWingLayerRadius2",30.3);
+  Control.addVariable("TopRightPreWingInnerMat2","Void");
+  Control.addVariable("TopRightPreWingSurfMat2","Void");
   
+  Control.addVariable("TopRightPreWingLayerRadius3",30.6);
+  Control.addVariable("TopRightPreWingInnerMat3","Stainless304");
+  Control.addVariable("TopRightPreWingSurfMat3","Stainless304");
+
 
 
   

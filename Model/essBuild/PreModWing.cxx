@@ -182,11 +182,13 @@ PreModWing::populate(const FuncDataBase& Control)
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
   innerYCut=Control.EvalVar<double>(keyName+"InnerYCut");
-  ELog::EM<<"Inner Radius == "<<innerRadius<<" "<<outerRadius<<ELog::endDiag;
+
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
+  if (nLayers<1) nLayers=1;
+  
   innerMat.push_back(mat);
   surfMat.push_back(wallMat);
   for(size_t i=1;i<nLayers;i++)
@@ -306,6 +308,8 @@ PreModWing::getLayerZone(const size_t layerIndex) const
   const int CL(modIndex+static_cast<int>(layerIndex)*100);
   if (!layerIndex)
     Out=innerSurf.display();
+  else
+    Out=mainDivider.display();
 
   Out+=ModelSupport::getComposite(SMap,CL," 7 ");
   
@@ -313,7 +317,7 @@ PreModWing::getLayerZone(const size_t layerIndex) const
     Out+=outerSurf.display();
   else
     Out+=ModelSupport::getComposite(SMap,CL," -107 ");
-  ELog::EM<<"Out["<<layerIndex<<"] == "<<Out<<ELog::endDiag;
+
   return Out;
 }
 
@@ -344,26 +348,28 @@ PreModWing::createObjects(Simulation& System)
   // cone section
   for(size_t i=0;i<nLayers;i++)
     {
+      const std::string Zone=getLayerZone(i);
       // base layer
       Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 ");
       Out+=baseSurf.display();
-      Out+=getLayerZone(i);
+      Out+=Zone;
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 (8:1005) ");
-      Out+=getLayerZone(i);
+      Out+=Zone;
       Out+=baseSurf.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
       
       // Top layer
       Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 ");
+      Out+=Zone;
       Out+=topSurf.display();
       Out+=getLayerZone(i);
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 (9:-1006) ");
       Out+=topSurf.display();
-      Out+=getLayerZone(i);
+      Out+=Zone;
       System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
     }
   
