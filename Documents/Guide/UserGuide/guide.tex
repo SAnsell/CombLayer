@@ -140,3 +140,52 @@ This will first read the model.xml file and change the variables. Second it will
 change {\tt BeRefHeight} to 80, and finally write out the XML file of all variables to the file
 {\tt modelOut.xml}.
 
+\paragraph[Dependent variables]{Dealing with dependent variables}
+If some other variables depend on the variable you are going to change, it can break the geometry.
+Consider, for instance, changing the BeRef radius from the baseline value of 34.3 to \SI{40}{\centi\meter}:
+\begin{bash}
+  ./ess -r modelOut
+\end{bash}
+this generates the \SI{34.3}{\centi\meter} model\footnote{34.3\,cm is the baseline BeRef radius in the commit {\tt e47bf6d}.} as shown in \figref{fig:user:BeRef:343}.
+
+Now let's set it to \SI{40}{\centi\meter}:
+\begin{bash}
+  ./ess -r -v BeRefRadius 40 modelOut
+\end{bash}
+This geometry is shown in \figref{fig:user:BeRef:40:wrong} and it is broken since now {\tt BeRef} intersects with the Bulk component.
+
+
+\begin{figure}
+  \centering
+  \subfloat[Baseline radius of \SI{34.3}{\centi\meter} \label{fig:user:BeRef:343}]{\includegraphics[width=0.5\textwidth, clip=true, trim=8.5cm 10cm 4cm 2.5cm]{UserGuide/BeRefRadius343.pdf}}~
+  \subfloat[{\tt BeRefRadius} increased to \SI{40}{\centi\meter} without taking into account dependent variables, which produced geometric errors \label{fig:user:BeRef:40:wrong}]{\includegraphics[width=0.5\textwidth, clip=true, trim=8.5cm 10cm 4cm 2.5cm]{UserGuide/BeRefRadius40wrong.pdf}} \\
+  \subfloat[{\tt BeRefRadius} increased to \SI{40}{\centi\meter} taking into account dependent variables \label{fig:user:BeRef:40:correct}]{\includegraphics[width=0.5\textwidth, clip=true, trim=8.5cm 10cm 4cm 2.5cm]{UserGuide/BeRefRadius40correct.pdf}}
+  \caption{Geometries with different BeRef radii}
+  \label{fig:user:BeRef}
+\end{figure}
+
+In order to find out which other variables depend on the given one ({\tt BeRefRadius} in our case), find it in the variables setup in the C++ variable definition:
+
+\begin{bash}
+ grep BeRefRadius Model/essBuild/*.cxx
+ Model/essBuild/essVariables.cxx:  Control.addVariable("BeRefRadius",34.3);
+ Model/essBuild/essVariables.cxx:  Control.addParse<double>("BulkRadius1",
+                                                   "BeRefRadius+BeRefWallThick+0.2");
+\end{bash}
+It means that we have to adjust the {\tt BulkRadius1} variable accordingly. This variable depends upon both {\tt BeRefRadius} and {\tt BeRefWallThick}.
+Find out the {\tt BeRefWallThick} value:
+\begin{bash}
+  grep BeRefWallThick modelOut1.x
+  c BeRefWallThick 3
+\end{bash}
+Therefore the {\tt BulkRadius1} value must be $40+3+0.2=43.2$\,cm:
+\begin{bash}
+ ./ess -r -v BeRefRadius 40 -v BulkRadius1 43.2 modelOut
+\end{bash}
+which produces the correct geometry shown in \figref{fig:user:BeRef:40:correct}.
+
+\subparagraph{Important note} Sometimes in the C++ variable definitions the dependence is not set explicitly, i.e. in our case {\tt BulkRadius1} would be defined just by the value:
+\begin{bash}
+ Model/essBuild/essVariables.cxx:  Control.addParse<double>("BulkRadius1",43.2);
+\end{bash}
+In this case we have to inspect the geometry manually in order to find out which other variables we need to change to produce the correct input deck.
