@@ -399,15 +399,16 @@ Curtain::layerProcess(Simulation& System,
       DA.setOutNum(cellIndex,curIndex+1101);
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
-      surroundRule.setSurfPair(SMap.realSurf(topSurf),
-                               SMap.realSurf(curIndex+5));
-      
+      surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
+                               SMap.realSurf(topSurf));
 
       OutA=FC.getSignedLinkString(-topIndex);
       OutB=ModelSupport::getComposite(SMap,curIndex," 5 ");
       
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(OutB);
+      surroundRule.setOuterRule(OutA);
+      ELog::EM<<"Top == "<<OutA<<ELog::endDiag;
+      ELog::EM<<"Base == "<<OutB<<ELog::endDiag;
       
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);
@@ -416,8 +417,6 @@ Curtain::layerProcess(Simulation& System,
       //      setCells(cellName,firstCell,cellIndex-1);
 
     }
-  // Steel layers
-  //  layerSpecial(System);
 
   return;
 }

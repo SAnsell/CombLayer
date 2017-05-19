@@ -323,17 +323,14 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",1);   // 7 
   Control.addVariable("CurtainNMidLayers",1);   // 2 
-  Control.addVariable("CurtainNBaseLayers",5);  // 7
-  Control.addVariable("CurtainBaseLen0",10.0);
-  Control.addVariable("CurtainBaseLen1",20.0);
-  Control.addVariable("CurtainBaseLen2",40.0);
-  Control.addVariable("CurtainBaseLen3",60.0);
+  Control.addVariable("CurtainNBaseLayers",3);  // 7
+
+  Control.addVariable("CurtainBaseLen1",70.0);
+  Control.addVariable("CurtainBaseLen2",6.0);
+  Control.addVariable("CurtainBaseLen3",30.0);
   Control.addVariable("CurtainBaseMat0","Stainless304");
   Control.addVariable("CurtainBaseMat1","Void");
-  Control.addVariable("CurtainBaseMat2","Concrete");
-  Control.addVariable("CurtainBaseMat3","Silicon20K");
-  Control.addVariable("CurtainBaseMat4","H2O");
- 
+  Control.addVariable("CurtainBaseMat2","Concrete"); 
   
 
   Control.addVariable("BunkerFeedOffset",Geometry::Vec3D(0,0,0));
