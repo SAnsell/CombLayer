@@ -147,6 +147,7 @@ ShutterBay::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   skin=Control.EvalVar<double>(keyName+"Skin");
   topSkin=Control.EvalVar<double>(keyName+"TopSkin");
+  cutSkin=Control.EvalVar<double>(keyName+"CutSkin");
   topCut=Control.EvalVar<double>(keyName+"TopCut");
   topRadius=Control.EvalVar<double>(keyName+"TopRadius");
 
@@ -216,7 +217,7 @@ ShutterBay::createSurfaces()
   for(size_t i=0;i<NCurtain;i++)
     {
       ModelSupport::buildPlane
-        (SMap,CL+6,Origin+Z*(height+topSkin-curLayer[i]),Z);
+        (SMap,CL+6,Origin+Z*(height+cutSkin-curLayer[i]),Z);
       CL+=10;
     }
   

@@ -82,8 +82,6 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	  const std::string NName=StrFunc::makeString(i);
 	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
 	  Vec.push_back(fA);
-          if (Name=="CurtainBaseLen")
-            ELog::EM<<"FA["<<Name<<"] = "<<fA<<" "<<TLen<<ELog::endDiag;
 	  if (fabs(fA-frac)>Geometry::zeroTol)
 	    {
 	      curLen+=std::fabs(fA);    // NOTE: vec.back is negative
@@ -91,15 +89,8 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	      if (curLen>TLen)
 		ELog::EM<<"Warning: over length in fractions [unit("
                         <<i<<")]"<<curLen<<" "<<TLen<<ELog::endErr;
-              if (Name=="CurtainBaseLen")
-                ELog::EM<<"cur["<<Name<<"] = "<<curLen<<ELog::endDiag;
-
 	      Vec.back()=curLen/TLen;
-              if (Name=="CurtainBaseLen")
-                ELog::EM<<"cur["<<Name<<"] = "<<curLen<<" "<<Vec.back()<<ELog::endDiag;
-
 	    }
-	  //	  ELog::EM<<Name+NName<<"["<<i<<"] "<<Vec.back()<<ELog::endDiag;
 	  curLen=Vec.back()*TLen;
 	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
        }

@@ -48,7 +48,8 @@ class ShutterBay : public attachSystem::ContainedComp,
   double height;        ///< height
   double depth;         ///< Depth
   double skin;          ///< radius of void surround
-  double topSkin;        ///< top gap thickness (Required?)
+  double topSkin;        ///< top gap thickness 
+  double cutSkin;        ///< cut gap skin in top cut
 
   double topCut;        ///< Distance below top height for cut
   double topRadius;     ///< Outer Radius at cut section

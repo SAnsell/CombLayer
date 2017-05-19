@@ -321,6 +321,7 @@ Bunker::createSurfaces(const bool revX)
 
   setSurf("floorInner",SMap.realSurf(bnkIndex+5));
   setSurf("roofInner",SMap.realSurf(bnkIndex+6));
+  setSurf("roofOuter",SMap.realSurf(bnkIndex+16));
   // CREATE Sector boundary lines
   // Note negative subtraction as moving +ve to -ve
 
@@ -499,6 +500,7 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
   const std::string Out=ModelSupport::getComposite(SMap,bnkIndex," 1 ");
   roofObj->initialize(System.getDataBase(),*this,6);
   roofObj->setVertSurf(SMap.realSurf(bnkIndex+6),SMap.realSurf(bnkIndex+16));
+  
   roofObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
   roofObj->setDivider(Out);
 

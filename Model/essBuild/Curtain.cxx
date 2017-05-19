@@ -76,6 +76,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
@@ -102,14 +103,17 @@ Curtain::Curtain(const std::string& Key)  :
 
 Curtain::Curtain(const Curtain& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
-  attachSystem::CellMap(A),
-  curIndex(A.curIndex),cellIndex(A.cellIndex),wallRadius(A.wallRadius),
-  leftPhase(A.leftPhase),rightPhase(A.rightPhase),
-  innerStep(A.innerStep),wallThick(A.wallThick),baseGap(A.baseGap),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  curIndex(A.curIndex),cellIndex(A.cellIndex),
+  wallRadius(A.wallRadius),leftPhase(A.leftPhase),
+  rightPhase(A.rightPhase),innerStep(A.innerStep),
+  wallThick(A.wallThick),baseGap(A.baseGap),
   outerGap(A.outerGap),topRaise(A.topRaise),depth(A.depth),
-  height(A.height),nTopLayers(A.nTopLayers),nMidLayers(A.nMidLayers),
-  nBaseLayers(A.nBaseLayers),topFrac(A.topFrac),
-  midFrac(A.midFrac),baseFrac(A.baseFrac),wallMat(A.wallMat)
+  height(A.height),nTopLayers(A.nTopLayers),
+  nMidLayers(A.nMidLayers),nBaseLayers(A.nBaseLayers),
+  topFrac(A.topFrac),midFrac(A.midFrac),baseFrac(A.baseFrac),
+  topMat(A.topMat),midMat(A.midMat),baseMat(A.baseMat),
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: Curtain to copy
@@ -129,6 +133,7 @@ Curtain::operator=(const Curtain& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       wallRadius=A.wallRadius;
       leftPhase=A.leftPhase;
@@ -146,10 +151,14 @@ Curtain::operator=(const Curtain& A)
       topFrac=A.topFrac;
       midFrac=A.midFrac;
       baseFrac=A.baseFrac;
+      topMat=A.topMat;
+      midMat=A.midMat;
+      baseMat=A.baseMat;
       wallMat=A.wallMat;
     }
   return *this;
 }
+
 
 Curtain::~Curtain() 
   /*!
@@ -195,8 +204,6 @@ Curtain::populate(const FuncDataBase& Control)
   ModelSupport::populateDivide(Control,nBaseLayers,keyName+"BaseMat",
                                ModelSupport::EvalMatName("Void"),
                                baseMat);	  
-
-
   return;
 }
   
@@ -266,7 +273,8 @@ Curtain::createSurfaces()
 			      Origin,Z,wallRadius+wallThick);
   ModelSupport::buildCylinder(SMap,curIndex+127,
 			      Origin,Z,wallRadius+wallThick+outerGap);
-
+  setSurf("OuterRadius",SMap.realSurf(curIndex+127));
+  
   ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
   ModelSupport::buildPlane(SMap,curIndex+15,Origin+Z*topRaise,Z);
@@ -384,7 +392,6 @@ Curtain::layerProcess(Simulation& System,
     }
   if (nBaseLayers>1)
     {
-      ELog::EM<<"Base"<<nBaseLayers<<ELog::endDiag;
       const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
       ModelSupport::surfDivide DA;
             
@@ -407,8 +414,6 @@ Curtain::layerProcess(Simulation& System,
       
       surroundRule.setInnerRule(OutB);
       surroundRule.setOuterRule(OutA);
-      ELog::EM<<"Top == "<<OutA<<ELog::endDiag;
-      ELog::EM<<"Base == "<<OutB<<ELog::endDiag;
       
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);

@@ -304,10 +304,10 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BBunkerQuake0NPoint",2);
   Control.addVariable("BBunkerQuake0XGap",5.0);
   Control.addVariable("BBunkerQuake0ZGap",22.0);
-  Control.addVariable("BBunkerQuake0PtA0",Geometry::Vec3D(600,0,0));
+  Control.addVariable("BBunkerQuake0PtA0",Geometry::Vec3D(620,0,0));
   Control.addVariable("BBunkerQuake0PtA1",
-		      Geometry::Vec3D(600.0/sqrt(2),-600.0/sqrt(2.0),0.0));
-  Control.addVariable("BBunkerQuake0Radius0",600.0);
+		      Geometry::Vec3D(620.0/sqrt(2),-620.0/sqrt(2.0),0.0));
+  Control.addVariable("BBunkerQuake0Radius0",620.0);
   Control.addVariable("BBunkerQuake0YFlag0",1);
 
 
@@ -319,7 +319,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainOuterGap",5.0);
   Control.addVariable("CurtainTopRaise",60.0);
   Control.addVariable("CurtainHeight",250.0);
-  Control.addVariable("CurtainDepth",128.0);     // fixed by Ben.
+  Control.addVariable("CurtainDepth",186.0);     // fixed by Ben.
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",1);   // 7 
   Control.addVariable("CurtainNMidLayers",1);   // 2 
@@ -327,7 +327,6 @@ EssBunkerVariables(FuncDataBase& Control)
 
   Control.addVariable("CurtainBaseLen1",70.0);
   Control.addVariable("CurtainBaseLen2",6.0);
-  Control.addVariable("CurtainBaseLen3",30.0);
   Control.addVariable("CurtainBaseMat0","Stainless304");
   Control.addVariable("CurtainBaseMat1","Void");
   Control.addVariable("CurtainBaseMat2","Concrete"); 

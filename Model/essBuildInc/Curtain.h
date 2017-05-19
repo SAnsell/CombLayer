@@ -37,7 +37,8 @@ namespace essSystem
 
 class Curtain : public attachSystem::ContainedGroup,
   public attachSystem::FixedGroup,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
    
