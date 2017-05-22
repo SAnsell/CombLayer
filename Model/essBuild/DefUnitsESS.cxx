@@ -119,22 +119,31 @@ setESSFull(defaultConfig& A)
 
   const std::map<std::string,std::string> beamDef=
     {
-      {"MAGIC","G1BLineTop6"},      // W6
-      {"BIFROST","G1BLineTop4"},    // W4
       {"NMX","G1BLineTop1"},        // W1
-      {"VOR","G2BLineTop10"},   // also 17
-      {"LOKI","G1BLineTop17"},
-      {"DREAM","G1BLineTop19"},
-      // {"CSPEC","G4BLine3"},
-       {"VESPA","G2BLineTop7"},
-      {"FREIA","G1BLineTop15"},     // N5
-      {"ODIN","G1BLineTop20"}        // was low / now high
+      //      {"BEER","G1BLineTop2"},       // W2
+      {"CSPEC","G1BLineTop3"},      // W3
+      {"BIFROST","G1BLineTop4"},    // W4
+      {"MIRACLES","G1BLineTop5"},   // W5
+      {"MAGIC","G1BLineTop6"},      // W6     
+      //      {"TREX","G1BLineTop7"},       // W7
+      {"HEIMDAL","G1BLineTop8"},    // W8 
+
+      {"NNBAR","G1BLineTop11"},      // TEST PORT
+      {"LOKI","G1BLineTop15"},
+      {"FREIA","G1BLineTop17"},     // N5
+      
+      // {"VESPA","G2BLineTop7"},     // E7
+      // {"VOR","G2BLineTop10"},   // also 17
+      {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
+      {"DREAM","G2BLineTop19"},     // S3
+
+
     };
-  
+
   const std::set<std::string> beamFilled=
-    {"NMX","CSPEC","DREAM","FREIA","SHORTDREAM","SHORTDREAM2",
-     "SHORTNMX","LOKI",
-     "MAGIC","VESPA","VOR"};
+    {"BEER","BIFROST","CSPEC","DREAM","FREIA","HEIMDAL","LOKI",
+     "MAGIC","MIRACLES","NMX","NNBAR","ODIN","TESTBEAM",
+     "TREX","VESPA","VOR","SHORTNMX","SHORTDREAM"};
 
   size_t index(0);
   std::map<std::string,std::string>::const_iterator mc;
@@ -233,25 +242,22 @@ setESSSingle(defaultConfig& A,
      {"MAGIC","G1BLineTop6"},      // W6     
      {"TREX","G1BLineTop7"},       // W7
      {"HEIMDAL","G1BLineTop8"},    // W8 
-     
      {"LOKI","G1BLineTop15"},      // N7
      {"FREIA","G1BLineTop17"},     // N5
 
 
      {"NNBAR","G1BLineTop11"},      // TEST PORT
      {"TESTBEAM","G1BLineTop11"},   // TEST PORT
-     
-     {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
-     {"DREAM","G2BLineTop19"},     // S3
-
-     {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
-     {"VESPA","G2BLineTop7"},     // E7
-
 
      {"ESTIA","G2BLineTop2"},     // E2
+     {"VESPA","G2BLineTop7"},     // E7
+     {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
+     {"SIMPLE","G1BLineTop17"},
+     {"DREAM","G2BLineTop19"},     // S3
+     {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
+
      
      {"SIMPLE","G1BLineTop17"},
-
      {"SHORTDREAM","G1BLineTop17"},
      {"SHORTNMX","G1BLineTop13"},
      {"SHORTODIN","G1BLineLow4"}
@@ -328,7 +334,7 @@ setESS(defaultConfig& A)
       {"NMX","G1BLineTop1"},
       {"DREAM","G1BLineTop19"},
       {"CSPEC","G1BLineTop3"},
-      {"VOR","G1BLinetop7"},   // also 17  
+      {"VOR","G1BLineTop7"},   // also 17  
       {"LOKI","G1BLineTop17"},
       {"ODIN","G2BLineTop20"}
     };     

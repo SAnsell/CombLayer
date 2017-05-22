@@ -165,7 +165,13 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::HoleShape> OutBCutBack;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
+
  public:
   
   FREIA(const std::string&);

@@ -110,8 +110,8 @@ MAGICvariables(FuncDataBase& Control)
                       6500,0.0);
 
   CGen.setMainRadius(25.0);
-  CGen.setFrame(80.0,80.0);
-  CGen.generateChopper(Control,"magicChopperA",42.0,10.0,4.55);
+  CGen.setFrame(65.0,65.0);
+  CGen.generateChopper(Control,"magicChopperA",38.0,10.0,4.55);
 
   // Double Blade chopper
   BGen.setThick({0.2,0.2});

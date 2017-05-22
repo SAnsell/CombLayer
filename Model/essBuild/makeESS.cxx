@@ -948,13 +948,6 @@ makeESS::build(Simulation& System,
   // been completed. Otherwize we can't find the pipe in the volume.
 
   ModPipes->buildTopPipes(System,topPipeType);
-  if (lowModType != "None")
-    {
-      makeBeamLine(System,IParam);
-      ModPipes->buildLowPipes(System,lowPipeType);
-    }
-   // Add feedthoughs/chicanes 
-
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
   if (IParam.flag("bunkerQuake"))
@@ -962,7 +955,15 @@ makeESS::build(Simulation& System,
   if (IParam.flag("bunkerChicane"))
     buildBunkerChicane(System,IParam);
 
-  buildF5Collimator(System, nF5);
+  if (lowModType != "None")
+    ModPipes->buildLowPipes(System,lowPipeType);
+
+  makeBeamLine(System,IParam);
+  ELog::EM<<"=Finished beamlines="<<ELog::endDiag;
+   // Add feedthoughs/chicanes 
+
+
+  //buildF5Collimator(System, nF5);
 
   return;
 }
