@@ -115,8 +115,9 @@ Linac::Linac(const Linac& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  lengthBack(A.lengthBack),widthLeft(A.widthLeft),
+  lengthBack(A.lengthBack),
   lengthFront(A.lengthFront),
+  widthLeft(A.widthLeft),
   widthRight(A.widthRight),
   height(A.height),
   depth(A.depth),
@@ -355,6 +356,11 @@ Linac::createSurfaces()
   */
 {
   ELog::RegMethod RegA("Linac","createSurfaces");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+
+  // Redefine the outer void boundary sphere since the default one is too small
+  SurI.createSurface(1,"so 60000");
 
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
