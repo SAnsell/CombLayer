@@ -98,7 +98,7 @@ namespace essSystem
 
 FREIA::FREIA(const std::string& keyName) :
   attachSystem::CopiedComp("freia",keyName),
-  stopPoint(0),
+  startPoint(0),stopPoint(0),
   freiaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
 
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
@@ -134,6 +134,7 @@ FREIA::FREIA(const std::string& keyName) :
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
+  VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
@@ -295,7 +296,6 @@ FREIA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
   DDisk->setCentreFlag(3);  // Z direction
-  DDisk->setOffsetFlag(1);  // Z direction
   DDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
 
 
@@ -308,7 +308,6 @@ FREIA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   WFMDisk->addInsertCell(ChopperB->getCell("Void"));
   WFMDisk->setCentreFlag(3);  // Z direction
-  WFMDisk->setOffsetFlag(1);  // Z direction
   WFMDisk->createAll(System,ChopperB->getKey("BuildBeam"),0);
 
   VPipeD->addInsertCell(bunkerVoid);
@@ -325,7 +324,6 @@ FREIA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
   FOCDiskC->setCentreFlag(3);  // Z direction
-  FOCDiskC->setOffsetFlag(1);  // Z direction
   FOCDiskC->createAll(System,ChopperC->getKey("BuildBeam"),0);
 
 
@@ -343,7 +341,6 @@ FREIA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
   WBC2Disk->setCentreFlag(3);  // Z direction
-  WBC2Disk->setOffsetFlag(1);  // Z direction
   WBC2Disk->createAll(System,ChopperD->getKey("BuildBeam"),0);
 
   VPipeF->addInsertCell(bunkerVoid);
@@ -361,64 +358,34 @@ FREIA::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
   FOC2Disk->setCentreFlag(3);  // Z direction
-  FOC2Disk->setOffsetFlag(1);  // Z direction
   FOC2Disk->createAll(System,ChopperE->getKey("BuildBeam"),0);
 
   return;
 }
-  
-void 
-FREIA::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
+
+
+void
+FREIA::buildOutGuide(Simulation& System,
+                     const attachSystem::FixedComp& FW,
+                     const long int startIndex,
+                     const int voidCell)
   /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
-    \param voidCell :: Void cell
+    Build all the components that are outside of the wall
+    \param System :: Simulation 
+    \param FW :: Focus wall fixed axis
+    \param startPoint :: link point 
+    \param voidCell :: void cell nubmer
    */
 {
-  ELog::RegMethod RegA("FREIA","build");
+  ELog::RegMethod RegA("FREIA","buildOutGuide");
 
-  ELog::EM<<"\nBuilding FREIA on : "<<GItem.getKeyName()<<ELog::endDiag;
-  
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
-  const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());  
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
-	  <<ELog::endDiag;
-  
-  setBeamAxis(Control,GItem,0);
-  
-  BendA->addInsertCell(GItem.getCells("Void"));
-  BendA->setFront(GItem.getKey("Beam"),-1);
-  BendA->setBack(GItem.getKey("Beam"),-2);
-  BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
+    // OUTSIDE:
+  //  added before:
+  //    OutPitT0->addFrontWall(bunkerObj,2);
+  //
 
-  if (stopPoint==1) return;                      // STOP At monolith
-                                                 // edge
-
-  
-  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
-                   bunkerObj.getCell("MainVoid"));
-  
-  if (stopPoint==2) return;                      // STOP At bunker edge
-  // IN WALL
-  // Make bunker insert
-  BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
-
-    // using 7 : mid point 
-  FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
-
-  if (stopPoint==3) return;                      // STOP Out of bunker
-  
   OutPitA->addInsertCell(voidCell);
-  OutPitA->addFrontWall(bunkerObj,2);
   OutPitA->setAxisControl(3,ZVert);
   OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
 
@@ -469,6 +436,152 @@ FREIA::build(Simulation& System,
 
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
+
+  return;
+}
+
+void
+FREIA::buildHut(Simulation& System,
+		const attachSystem::FixedComp& connectFC,
+		const long int connectIndex,
+                const int voidCell)
+  /*!
+    Builds the hut connected to the FixedPoint given
+    \param System :: Simulation to build with
+    \param connectFC :: Connection point
+    \param connectIndex :: Connection index
+    \param voidCell :: Main void cell for this model
+   */
+{
+  ELog::RegMethod RegA("FREIA","buildHut");
+
+  CaveJaw->setInsertCell(JawPit->getCell("Void"));
+  CaveJaw->createAll(System,JawPit->getKey("Inner"),0);
+
+  OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
+  OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
+  OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
+                        JawPit->getKey("Mid").getSignedFullRule(-2));
+  OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
+
+  OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
+  OutBCutFront->setFaces(JawPit->getKey("Mid").getSignedFullRule(-1),
+                         JawPit->getKey("Inner").getSignedFullRule(1));
+  OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
+
+  return;
+}
+
+  
+void
+FREIA::buildIsolated(Simulation& System,const int voidCell)
+  /*!
+    Carry out the build in isolation
+    \param System :: Simulation system
+    \param voidCell :: void cell
+   */
+{
+  ELog::RegMethod RegA("FREIA","buildIsolated");
+
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"BUILD ISOLATED Start/Stop:"
+          <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
+  long int startIndex(0);
+  
+  if (!startPoint)
+    {
+      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      FStart= &ChopperE->getKey("Beam");
+      startIndex= 2;
+    }
+  if (stopPoint==2 || stopPoint==1) return;
+
+  if (startPoint<2)
+    {
+      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      OutPitA->addFrontWall(*VPipeWall,2);
+      startIndex=2;
+    }
+  if (stopPoint==3) return;
+
+  if (startPoint<3)
+    {
+      buildOutGuide(System,*FStart,startIndex,voidCell);      
+      FStart=&(ChopperOutB->getKey("Beam"));
+      startIndex=2;
+    }
+
+  if (stopPoint==4) return;      
+
+  if (startPoint<4)
+    {
+      buildHut(System,*FStart,startIndex,voidCell);
+      //      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
+    }
+  
+  return;
+}
+  
+void 
+FREIA::build(Simulation& System,
+	    const GuideItem& GItem,
+	    const Bunker& bunkerObj,
+	    const int voidCell)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param GItem :: Guide Item 
+    \param BunkerObj :: Bunker component [for inserts]
+    \param voidCell :: Void cell
+   */
+{
+  ELog::RegMethod RegA("FREIA","build");
+
+  ELog::EM<<"\nBuilding FREIA on : "<<GItem.getKeyName()<<ELog::endDiag;
+  
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());  
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+	  <<ELog::endDiag;
+  
+  setBeamAxis(Control,GItem,0);
+  
+  BendA->addInsertCell(GItem.getCells("Void"));
+  BendA->setFront(GItem.getKey("Beam"),-1);
+  BendA->setBack(GItem.getKey("Beam"),-2);
+  BendA->createAll(System,*freiaAxis,-3,*freiaAxis,-3);
+
+  if (stopPoint==1) return;                 // STOP At monolith edge
+  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
+  
+  if (stopPoint==2) return;                      // STOP At bunker edge
+  // IN WALL
+  // Make bunker insert
+  BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+    // using 7 : mid point 
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+
+  if (stopPoint==3) return;                      // STOP Out of bunker
+
+  OutPitA->addFrontWall(bunkerObj,2);
+  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);      
+
+  if (stopPoint==4) return;                      // STOP Out of bunker
 
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);

@@ -959,12 +959,9 @@ makeESS::build(Simulation& System,
     ModPipes->buildLowPipes(System,lowPipeType);
 
   makeBeamLine(System,IParam);
+
+  buildF5Collimator(System, nF5);
   ELog::EM<<"=Finished beamlines="<<ELog::endDiag;
-   // Add feedthoughs/chicanes 
-
-
-  //buildF5Collimator(System, nF5);
-
   return;
 }
 

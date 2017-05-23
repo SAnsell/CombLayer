@@ -627,9 +627,7 @@ VESPA::buildDetectorArray(Simulation& System,
   return;
 
 }
-  
-
-  
+    
 void
 VESPA::buildIsolated(Simulation& System,const int voidCell)
   /*!
