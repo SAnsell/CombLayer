@@ -228,7 +228,6 @@ EssLinacVariables(FuncDataBase& Control)
     {
       strtmp = std::to_string(i);
       Control.addVariable("LinacDTL"+strtmp+"PMQ1Mat5", "SS304L");  // DTL1 first half
-      Control.addVariable("LinacDTL"+strtmp+"PMQ31Mat5", "SS304L"); // last half
 
       // these variables define radii of PMQ
       Control.addVariable("LinacDTL"+strtmp+"EngineeringActive", 0);

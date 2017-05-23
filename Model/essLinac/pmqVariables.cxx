@@ -106,6 +106,7 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL1PMQ31Length",5);
   Control.addVariable("LinacDTL1PMQ31GapLength",1);
   Control.addVariable("LinacDTL1NPMQ",31);
+  Control.addVariable("LinacDTL1PMQ31Mat5","SS304L");
 
   Control.addVariable("LinacDTL2PMQ1Length",5);
   Control.addVariable("LinacDTL2PMQ1GapLength",29.908);
@@ -144,6 +145,7 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL2PMQ18Length",8);
   Control.addVariable("LinacDTL2PMQ18GapLength",1);
   Control.addVariable("LinacDTL2NPMQ",18);
+  Control.addVariable("LinacDTL2PMQ18Mat5","SS304L");
 
   Control.addVariable("LinacDTL3PMQ1Length",8);
   Control.addVariable("LinacDTL3PMQ1GapLength",40.5869);
@@ -178,6 +180,7 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL3PMQ16Length",8);
   Control.addVariable("LinacDTL3PMQ16GapLength",1);
   Control.addVariable("LinacDTL3NPMQ",16);
+  Control.addVariable("LinacDTL3PMQ16Mat5","SS304L");
 
   Control.addVariable("LinacDTL4PMQ1Length",8);
   Control.addVariable("LinacDTL4PMQ1GapLength",49.8069);
@@ -208,6 +211,7 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL4PMQ14Length",8);
   Control.addVariable("LinacDTL4PMQ14GapLength",1);
   Control.addVariable("LinacDTL4NPMQ",14);
+  Control.addVariable("LinacDTL4PMQ14Mat5","SS304L");
 
   Control.addVariable("LinacDTL5PMQ1Length",8);
   Control.addVariable("LinacDTL5PMQ1GapLength",57.1164);
@@ -234,6 +238,7 @@ EssLinacPMQVariables(FuncDataBase &Control)
   Control.addVariable("LinacDTL5PMQ12Length",25);
   Control.addVariable("LinacDTL5PMQ12GapLength",1);
   Control.addVariable("LinacDTL5NPMQ",12);
+  Control.addVariable("LinacDTL5PMQ12Mat5","SS304L");
 
   return;
 }
