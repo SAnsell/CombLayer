@@ -340,7 +340,7 @@ insertPlate::mainAll(Simulation& System)
   
   createSurfaces();
   createLinks();
-  ELog::EM<<"ASDFASDF :"<<delayInsert<<ELog::endDiag;
+
   if (!delayInsert)
     findObjects(System);
   createObjects(System);

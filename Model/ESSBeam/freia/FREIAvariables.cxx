@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/freia/FREIAvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,6 +195,8 @@ FREIAvariables(FuncDataBase& Control)
 
   // Guide in wall
   FGen.generateTaper(Control,"freiaFWall",346.0,6.0,6.0,6.0,6.0);
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"freiaPipeWall",4.0,348.0);
 
   CGen.setMainRadius(56.0);
   CGen.setFrame(120.0,120.0);

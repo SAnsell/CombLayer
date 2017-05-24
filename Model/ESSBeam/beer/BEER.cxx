@@ -134,6 +134,7 @@ BEER::BEER(const std::string& keyName) :
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
+  VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
@@ -196,6 +197,7 @@ BEER::BEER(const std::string& keyName) :
   OR.addObject(FOC2Disk);  
 
   OR.addObject(BInsert);
+  OR.addObject(VPipeWall);
   OR.addObject(FocusWall);  
 
   OR.addObject(OutPitA);
@@ -250,130 +252,117 @@ BEER::setBeamAxis(const FuncDataBase& Control,
   return;
 }
 
-  
-void 
-BEER::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
+void
+BEER::buildBunkerUnits(Simulation& System,
+                        const attachSystem::FixedComp& FA,
+                        const long int startIndex,
+                        const int bunkerVoid)
   /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param GItem :: Guide Item 
-    \param BunkerObj :: Bunker component [for inserts]
-    \param voidCell :: Void cell
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
    */
 {
-  ELog::RegMethod RegA("BEER","build");
+  ELog::RegMethod RegA("BEER","buildBunkerUnits");
 
-  ELog::EM<<"\nBuilding BEER on : "<<GItem.getKeyName()<<ELog::endDiag;
-
-  const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
-	  <<ELog::endDiag;
-  setBeamAxis(Control,GItem,0);
-  
-  BendA->addInsertCell(GItem.getCells("Void"));
-  BendA->setBack(GItem.getKey("Beam"),-2);
-  BendA->createAll(System,*beerAxis,-3,*beerAxis,-3);
-  ELog::EM<<"BeerAxis == "<<beerAxis->getSignedLinkAxis(-3)<<ELog::endDiag;
-  if (stopPoint==1) return;                      // STOP At monolith
-                                                 // edge
-
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,BendA->getKey("Guide0"),2);
+  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->createAll(System,FA,startIndex);
 
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
   
-  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,BendB->getKey("Guide0"),2);
 
   BendC->addInsertCell(VPipeC->getCells("Void"));
   BendC->createAll(System,*VPipeC,0,*VPipeC,0);
   
   // First (green chopper)
-  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->addInsertCell(bunkerVoid);
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
   DDisk->setCentreFlag(3);  // Z direction
-  DDisk->setOffsetFlag(1);  // Z direction
   DDisk->createAll(System,ChopperA->getKey("Beam"),0);
 
     // First (green chopper)
-  ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperB->addInsertCell(bunkerVoid);
   ChopperB->createAll(System,ChopperA->getKey("Beam"),2);
 
   // Double disk chopper
   WFMDisk->addInsertCell(ChopperB->getCell("Void"));
   WFMDisk->setCentreFlag(3);  // Z direction
-  WFMDisk->setOffsetFlag(1);  // Z direction
   WFMDisk->createAll(System,ChopperB->getKey("Beam"),0);
 
-  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
   BendD->addInsertCell(VPipeD->getCells("Void"));
   BendD->createAll(System,*VPipeD,0,*VPipeD,0);
 
   // 8.5m FOC chopper
-  ChopperC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperC->addInsertCell(bunkerVoid);
   ChopperC->createAll(System,BendD->getKey("Guide0"),2);
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
   FOCDiskC->setCentreFlag(3);  // Z direction
-  FOCDiskC->setOffsetFlag(1);  // Z direction
   FOCDiskC->createAll(System,ChopperC->getKey("Beam"),0);
 
 
-  VPipeE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
   BendE->addInsertCell(VPipeE->getCells("Void"));
   BendE->createAll(System,*VPipeE,0,*VPipeE,0);
 
     // 8.5m FOC chopper
-  ChopperD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperD->addInsertCell(bunkerVoid);
   ChopperD->createAll(System,BendE->getKey("Guide0"),2);
   // Double disk chopper
   WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
   WBC2Disk->setCentreFlag(3);  // Z direction
-  WBC2Disk->setOffsetFlag(1);  // Z direction
   WBC2Disk->createAll(System,ChopperD->getKey("Beam"),0);
 
-  VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeF->addInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
 
   BendF->addInsertCell(VPipeF->getCells("Void"));
   BendF->createAll(System,*VPipeF,0,*VPipeF,0);
 
   // 11.1m FOC chopper
-  ChopperE->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperE->addInsertCell(bunkerVoid);
   ChopperE->createAll(System,BendF->getKey("Guide0"),2);
 
   // Double disk chopper
   FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
   FOC2Disk->setCentreFlag(3);  // Z direction
-  FOC2Disk->setOffsetFlag(1);  // Z direction
   FOC2Disk->createAll(System,ChopperE->getKey("Beam"),0);
 
-  if (stopPoint==2) return;                      // STOP At bunker edge
-  // IN WALL
-  // Make bunker insert
-  BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
-    // using 7 : mid point
-  FocusWall->addInsertCell(BInsert->getCell("Void"));
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  return;
+}
+
+void
+BEER::buildOutGuide(Simulation& System,
+                    const attachSystem::FixedComp& FW,
+                    const long int startIndex,
+                    const int voidCell)
+  /*!
+    Build all the components that are outside of the wall
+    \param System :: Simulation 
+    \param FW :: Focus wall fixed axis
+    \param startPoint :: link point 
+    \param voidCell :: void cell nubmer
+   */
+{
+  ELog::RegMethod RegA("BEER","buildOutGuide");
+
 
   OutPitA->addInsertCell(voidCell);
-  OutPitA->addFrontWall(bunkerObj,2);
-  OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
+  OutPitA->createAll(System,FW,startIndex);
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayer"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
@@ -387,7 +376,6 @@ BEER::build(Simulation& System,
   // Double disk chopper
   WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
   WBC3Disk->setCentreFlag(3);  // Z direction
-  WBC3Disk->setOffsetFlag(1);  // Z direction
   WBC3Disk->createAll(System,ChopperOutA->getKey("Beam"),0);
 
   ChopperOutB->addInsertCell(OutPitA->getCell("Void"));
@@ -396,7 +384,6 @@ BEER::build(Simulation& System,
   // Double disk chopper
   FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
   FOC3Disk->setCentreFlag(3);  // Z direction
-  FOC3Disk->setOffsetFlag(1);  // Z direction
   FOC3Disk->createAll(System,ChopperOutB->getKey("Beam"),0);
 
   JawPit->addInsertCell(voidCell);
@@ -418,6 +405,116 @@ BEER::build(Simulation& System,
   FocusOutA->addInsertCell(VPipeOutA->getCells("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
+  return;
+}
+
+void
+BEER::buildIsolated(Simulation& System,const int voidCell)
+  /*!
+    Carry out the build in isolation
+    \param System :: Simulation system
+    \param voidCell :: void cell
+   */
+{
+  ELog::RegMethod RegA("BEER","buildIsolated");
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"BUILD ISOLATED Start/Stop:"
+          <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
+  long int startIndex(0);
+  
+  if (!startPoint)
+    {
+      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      FStart= &ChopperE->getKey("Beam");
+      startIndex= 2;
+    }
+  if (stopPoint==2 || stopPoint==1) return;
+
+  if (startPoint<2)
+    {
+      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      OutPitA->addFrontWall(*VPipeWall,2);
+      startIndex=2;
+    }
+  if (stopPoint==3) return;
+
+  if (startPoint<3)
+    {
+      buildOutGuide(System,*FStart,startIndex,voidCell);      
+      FStart=&(ChopperOutB->getKey("Beam"));
+      startIndex=2;
+    }
+
+  if (stopPoint==4) return;      
+
+  if (startPoint<4)
+    {
+      //      buildHut(System,*FStart,startIndex,voidCell);
+      //      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
+    }
+  
+  return;
+}
+  
+void 
+BEER::build(Simulation& System,
+	    const GuideItem& GItem,
+	    const Bunker& bunkerObj,
+	    const int voidCell)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param GItem :: Guide Item 
+    \param BunkerObj :: Bunker component [for inserts]
+    \param voidCell :: Void cell
+   */
+{
+  ELog::RegMethod RegA("BEER","build");
+
+  ELog::EM<<"\nBuilding BEER on : "<<GItem.getKeyName()<<ELog::endDiag;
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+	  <<ELog::endDiag;
+  setBeamAxis(Control,GItem,0);
+  
+  BendA->addInsertCell(GItem.getCells("Void"));
+  BendA->setBack(GItem.getKey("Beam"),-2);
+  BendA->createAll(System,*beerAxis,-3,*beerAxis,-3);
+  ELog::EM<<"BeerAxis == "<<beerAxis->getSignedLinkAxis(-3)<<ELog::endDiag;
+  if (stopPoint==1) return;                      // STOP At monolith
+                                                 // edge
+  
+  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
+  
+
+  if (stopPoint==2) return;                      // STOP At bunker edge
+  // IN WALL
+  // Make bunker insert
+  BInsert->createAll(System,ChopperE->getKey("Beam"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+    // using 7 : mid point
+  FocusWall->addInsertCell(BInsert->getCell("Void"));
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7);
+  
+  OutPitA->addFrontWall(bunkerObj,2);
+  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
+  
   return;
   CaveJaw->setInsertCell(JawPit->getCell("Void"));
   CaveJaw->createAll(System,JawPit->getKey("Inner"),0);

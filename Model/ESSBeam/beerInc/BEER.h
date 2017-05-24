@@ -69,6 +69,8 @@ class BEER : public attachSystem::CopiedComp
 {
  private:
 
+  /// Start at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -130,6 +132,9 @@ class BEER : public attachSystem::CopiedComp
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Vac pipe in wall (if used)
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
+
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
@@ -161,14 +166,21 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::JawSet> CaveJaw;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
+
  public:
   
   BEER(const std::string&);
   BEER(const BEER&);
   BEER& operator=(const BEER&);
   ~BEER();
-  
+
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

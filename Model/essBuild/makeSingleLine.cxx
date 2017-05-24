@@ -166,10 +166,25 @@ makeSingleLine::build(Simulation& System,
     beamName=IParam.getValueError<std::string>
       ("beamlines",0,1,"Single beamline not defined");
     
-  if (beamName=="HEIMDAL")
+  if (beamName=="BEER")
+    {
+      BEER beerBL("beer");
+      beerBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="FREIA")
+    {
+      FREIA freiaBL("freia");
+      freiaBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="HEIMDAL")
     {
       HEIMDAL heimdalBL("heimdal");
       heimdalBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="LOKI")
+    {
+      LOKI lokiBL("loki");
+      lokiBL.buildIsolated(System,voidCell);      
     }
   else if (beamName=="MAGIC")
     {

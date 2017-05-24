@@ -277,13 +277,13 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     }
  else if (beamName=="TREX")
     {
-      // Odin beamline
+      // TREX beamline
       TREX TrexBL("trex");
       TrexBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="VESPA")
     {
-      // DREAM beamline
+      // VESPA beamline
       VESPA vespaBL("vespa");
       vespaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

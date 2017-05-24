@@ -363,13 +363,26 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
   ELog::EM<<"Physics Model == "<<PModel<<ELog::endBasic;
 
   if (PModel=="CEM03")
-    lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");  // CEM
+    {
+      lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");  // CEM
+      lea.setValues("lea","1 4 1 0 1 0 0 1");
+    }
   else if (PModel=="IA")
-    lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
+    {
+      lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
+      lea.setValues("lea","1 4 1 0 1 0 2 1");
+    }
   else if (PModel=="BD")
-    lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini - DrAnnesner   
+    {
+      lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini -
+                                                      // DrAnnesner
+      lea.setValues("lea","1 4 1 0 1 0 0 1");
+    }
   else if (PModel=="BA")
-    lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA  
+    {
+      lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA
+      lea.setValues("lea","1 4 1 0 1 0 2 1");
+    }
   else
     {
       ELog::EM<<"physModel :\n"
@@ -379,7 +392,7 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
 	"BA :: Bertini - ABLA model"<<ELog::endBasic;
       throw ColErr::ExitAbort("No model");
     }
-  lea.setValues("lea","1 4 1 0 1 0 0 1");
+
   return;
 }
 

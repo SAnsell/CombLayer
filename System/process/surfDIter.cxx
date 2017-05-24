@@ -85,12 +85,12 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	  if (fabs(fA-frac)>Geometry::zeroTol)
 	    {
 	      curLen+=std::fabs(fA);    // NOTE: vec.back is negative
+              
 	      if (curLen>TLen)
 		ELog::EM<<"Warning: over length in fractions [unit("
                         <<i<<")]"<<curLen<<" "<<TLen<<ELog::endErr;
 	      Vec.back()=curLen/TLen;
 	    }
-	  //	  ELog::EM<<Name+NName<<"["<<i<<"] "<<Vec.back()<<ELog::endDiag;
 	  curLen=Vec.back()*TLen;
 	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
        }

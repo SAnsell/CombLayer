@@ -162,6 +162,8 @@ LOKIvariables(FuncDataBase& Control)
 
 
   FGen.generateBender(Control,"lokiFWall",355.0,2.5,2.5,2.5,2.5,6125.0,-90.0); 
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"lokiPipeWall",4.0,348.0);
 
   PGen.setFeLayer(20.0);
   PGen.setConcLayer(30.0);
