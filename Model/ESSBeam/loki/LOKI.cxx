@@ -274,7 +274,7 @@ LOKI::buildBunkerUnits(Simulation& System,
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());  
 
   VPipeB->addInsertCell(bunkerVoid);
-  VPipeB->createAll(System,BendA->getKey("Guide0"),2);
+  VPipeB->createAll(System,FA,startIndex);
   BendB->addInsertCell(VPipeB->getCells("Void"));
   BendB->createAll(System,*VPipeB,0,*VPipeB,0);
 
@@ -315,116 +315,24 @@ LOKI::buildBunkerUnits(Simulation& System,
 
 }
 
-  
 void
-LOKI::buildIsolated(Simulation& System,const int voidCell)
+LOKI::buildOutGuide(Simulation& System,
+                    const attachSystem::FixedComp& FW,
+                    const long int startIndex,
+                    const int voidCell)
   /*!
-    Carry out the build in isolation
-    \param System :: Simulation system
-    \param voidCell :: void cell
+    Build all the components that are outside of the wall
+    \param System :: Simulation 
+    \param FW :: Focus wall fixed axis
+    \param startPoint :: link point 
+    \param voidCell :: void cell nubmer
    */
 {
-  ELog::RegMethod RegA("LOKI","buildIsolated");
-
-
-  const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());
-  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"BUILD ISOLATED Start/Stop:"
-          <<startPoint<<" "<<stopPoint<<ELog::endDiag;
-  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
-  long int startIndex(0);
-  
-  if (!startPoint)
-    {
-      buildBunkerUnits(System,*FStart,startIndex,voidCell);
-      FStart= &FocusC->getKey("Guide0");
-      startIndex= 2;
-    }
-  if (stopPoint==2 || stopPoint==1) return;
-
-  if (startPoint<2)
-    {
-      VPipeWall->addInsertCell(voidCell);
-      VPipeWall->createAll(System,*FStart,startIndex);
-      
-      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
-      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
-      FStart= &(FocusWall->getKey("Guide0"));
-      OutPitA->addFrontWall(*VPipeWall,2);
-      startIndex=2;
-    }
-  if (stopPoint==3) return;
-
-  if (startPoint<3)
-    {
-      //      buildOutGuide(System,*FStart,startIndex,voidCell);      
-      //      FStart=&(ChopperOutB->getKey("Beam"));
-      startIndex=2;
-    }
-
-  if (stopPoint==4) return;      
-
-  if (startPoint<4)
-    {
-      //      buildHut(System,*FStart,startIndex,voidCell);
-      //      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
-    }
-  
-  return;
-}
-  
-void 
-LOKI::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
-  /*!
-    Carry out the full build
-    \param System :: Simulation system
-    \param GItem :: Guide Item 
-    \param bunkerObj :: Bunker component [for inserts]
-    \param voidCell :: Void cell
-   */
-{
-  // For output stream
-  ELog::RegMethod RegA("LOKI","build");
-  ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
-  
-  FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(Control);
-  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-
-  setBeamAxis(System.getDataBase(),GItem,0);
-
-  BendA->addInsertCell(GItem.getCells("Void"));
-  BendA->setFront(GItem.getKey("Beam"),-1);
-  BendA->setBack(GItem.getKey("Beam"),-2);
-  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
-
-  if (stopPoint==1) return;                // STOP At monolith edge
-
-  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
-                   bunkerObj.getCell("MainVoid"));
-
-  // WALL
-  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsert->setFront(bunkerObj,-1);
-  BInsert->setBack(bunkerObj,-2);
-  BInsert->createAll(System,FocusC->getKey("Guide0"),2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
-
-  FocusWall->addInsertCell(BInsert->getCells("Item"));
-  FocusWall->setFront(*BInsert,-1);
-  FocusWall->setBack(*BInsert,-2);
-  FocusWall->createAll(System,*BInsert,7,*BInsert,7); 
+  ELog::RegMethod RegA("LOKI","buildOutGuide");
 
   //Chopper pit merged with bunker wall
   OutPitA->addInsertCell(voidCell);
-  OutPitA->addFrontWall(bunkerObj,2);
-  OutPitA->createAll(System,FocusWall->getKey("Guide0"),2);
+  OutPitA->createAll(System,FW,startIndex);
   
   //Cut throught chopper pit for guide and pipe that are following it 
   PitACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
@@ -495,6 +403,118 @@ LOKI::build(Simulation& System,
   AppB->addInsertCell(ShieldB->getCell("Void"));
   AppB->createAll(System,FocusOutB->getKey("Guide0"),2);
 
+  return;
+}
+  
+void
+LOKI::buildIsolated(Simulation& System,const int voidCell)
+  /*!
+    Carry out the build in isolation
+    \param System :: Simulation system
+    \param voidCell :: void cell
+   */
+{
+  ELog::RegMethod RegA("LOKI","buildIsolated");
+
+
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());
+  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  ELog::EM<<"BUILD ISOLATED Start/Stop:"
+          <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
+  long int startIndex(0);
+  
+  if (!startPoint)
+    {
+      buildBunkerUnits(System,*FStart,startIndex,voidCell);
+      FStart= &FocusC->getKey("Guide0");
+      startIndex= 2;
+    }
+  if (stopPoint==2 || stopPoint==1) return;
+
+  if (startPoint<2)
+    {
+      VPipeWall->addInsertCell(voidCell);
+      VPipeWall->createAll(System,*FStart,startIndex);
+      
+      FocusWall->addInsertCell(VPipeWall->getCell("Void"));
+      FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
+      FStart= &(FocusWall->getKey("Guide0"));
+      OutPitA->addFrontWall(*VPipeWall,2);
+      startIndex=2;
+    }
+  if (stopPoint==3) return;
+
+  if (startPoint<3)
+    {
+
+      //      buildOutGuide(System,*FStart,startIndex,voidCell);      
+      //      FStart=&(ChopperOutB->getKey("Beam"));
+      startIndex=2;
+    }
+
+  if (stopPoint==4) return;      
+
+  if (startPoint<4)
+    {
+      //      buildHut(System,*FStart,startIndex,voidCell);
+      //      buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
+    }
+  
+  return;
+}
+  
+void 
+LOKI::build(Simulation& System,
+	    const GuideItem& GItem,
+	    const Bunker& bunkerObj,
+	    const int voidCell)
+  /*!
+    Carry out the full build
+    \param System :: Simulation system
+    \param GItem :: Guide Item 
+    \param bunkerObj :: Bunker component [for inserts]
+    \param voidCell :: Void cell
+   */
+{
+  // For output stream
+  ELog::RegMethod RegA("LOKI","build");
+  ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+  
+  FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(Control);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+
+  setBeamAxis(System.getDataBase(),GItem,0);
+
+  BendA->addInsertCell(GItem.getCells("Void"));
+  BendA->setFront(GItem.getKey("Beam"),-1);
+  BendA->setBack(GItem.getKey("Beam"),-2);
+  BendA->createAll(System,*lokiAxis,-3,*lokiAxis,-3); // beam front reversed
+
+  if (stopPoint==1) return;                // STOP At monolith edge
+
+  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
+
+  // WALL
+  BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
+  BInsert->setFront(bunkerObj,-1);
+  BInsert->setBack(bunkerObj,-2);
+  BInsert->createAll(System,FocusC->getKey("Guide0"),2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+
+  FocusWall->addInsertCell(BInsert->getCells("Item"));
+  FocusWall->setFront(*BInsert,-1);
+  FocusWall->setBack(*BInsert,-2);
+  FocusWall->createAll(System,*BInsert,7,*BInsert,7); 
+
+  OutPitA->addFrontWall(bunkerObj,2);
+  buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
+  
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldB,2);
 

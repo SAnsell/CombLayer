@@ -181,6 +181,11 @@ makeSingleLine::build(Simulation& System,
       HEIMDAL heimdalBL("heimdal");
       heimdalBL.buildIsolated(System,voidCell);
     }
+  else if (beamName=="LOKI")
+    {
+      LOKI lokiBL("loki");
+      lokiBL.buildIsolated(System,voidCell);      
+    }
   else if (beamName=="MAGIC")
     {
       MAGIC magicBL("magic");
