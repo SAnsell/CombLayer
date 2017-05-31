@@ -237,7 +237,7 @@ EssLinacVariables(FuncDataBase& Control)
       Control.addVariable("LinacDTL"+strtmp+"Radius2", 1.15); // DePrisco2015, table 2
       Control.addVariable("LinacDTL"+strtmp+"Mat2", "Copper"); // rbfrend2-9100
       Control.addVariable("LinacDTL"+strtmp+"Radius3", 2.9);
-      Control.addVariable("LinacDTL"+strtmp+"Mat3", "Void");
+      Control.addVariable("LinacDTL"+strtmp+"Mat3", "SS304L");
       Control.addVariable("LinacDTL"+strtmp+"Radius4", 4.5);
       Control.addVariable("LinacDTL"+strtmp+"Mat4", "SS304L");
       Control.addVariable("LinacDTL"+strtmp+"Radius5", 25.95);  // DTL_model_picture.png - email from RB 14 Mar 2017

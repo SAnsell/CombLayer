@@ -295,9 +295,9 @@ PMQ::createObjects(Simulation& System)
 	      Out=ModelSupport::getComposite(SMap,SJ," 2 -3 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,barMat,0.0,Out+Side));
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 5 3 -2M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Side));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Side));
 	      Out=ModelSupport::getComposite(SMap,SJ,SJ+10," -5 -2 3M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Side));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0.0,Out+Side));
 	      SJ += 10;
 	    }
 	} else
