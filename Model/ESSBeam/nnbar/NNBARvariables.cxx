@@ -92,7 +92,7 @@ NNBARvariables(FuncDataBase& Control)
   FGen.setGuideMat("Copper");
   FGen.setYOffset(2.0);
   FGen.setThickness(0.5,0.5);
-  FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 12.0,20.0);
+  FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 30.0,50.0);
 
   PipeGen.setPipe(35.0,1.0);
   PipeGen.setWindow(-4.0,1.0);
@@ -173,10 +173,17 @@ NNBARvariables(FuncDataBase& Control)
 
   Control.addVariable("G1BLineTop11Width1",50.0);
   Control.addVariable("G1BLineTop11Width2",65.0);
-  Control.addVariable("G1BLineTop11Depth1",15.0);
+
+  Control.addVariable("G1BLineTop11Depth1",40.0);
+  Control.addVariable("G1BLineTop11Depth2",45.0);
+  
+  Control.addVariable("G1BLineTop11Height1",40.0);
+  Control.addVariable("G1BLineTop11Height2",44.0);
   Control.addVariable("GuideBayInnerHeight",60.0);
+  Control.addVariable("GuideBayHeight",70.0);
 
   return;
 }
  
 }  // NAMESPACE setVariable
+ 

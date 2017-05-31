@@ -3,7 +3,7 @@
  
  * File:   essBuild/RoofPillars.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,6 +153,12 @@ RoofPillars::populate(const FuncDataBase& Control)
   thick=Control.EvalVar<double>(keyName+"Thick");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
+  topFootHeight=Control.EvalDefVar<double>(keyName+"TopFootHeight",0.0);
+  topFootDepth=Control.EvalDefVar<double>(keyName+"TopFootDepth",0.0);
+  topFootWidth=Control.EvalDefVar<double>(keyName+"TopFootWidth",0.0);
+  topFootThick=Control.EvalDefVar<double>(keyName+"TopFootThick",0.0);
+  topFootGap=Control.EvalDefVar<double>(keyName+"TopFootGap",0.0);
+
   const size_t nRadius=Control.EvalVar<size_t>(keyName+"NRadius");
   for(size_t i=0;i<nRadius;i++)
     {
@@ -213,6 +219,40 @@ RoofPillars::createSurfaces()
 {
   ELog::RegMethod RegA("RoofPillars","createSurface");
 
+  if (topFootHeight>Geometry::zeroTol)
+    {
+      int RI(rodIndex);
+      const std::set<int> FS=  topFoot.getSurfSet();
+      for(const int& SNum : FS)
+        {
+          int footIndex(RI);  // in case multiple surfaces
+          const Geometry::Surface* SPtr=SMap.realSurfPtr(SNum);
+          const Geometry::Plane* PPtr=
+            dynamic_cast<const Geometry::Plane*>(SPtr);
+          if (PPtr)
+            {
+              // top plate
+              if (SNum>0)
+                ModelSupport::buildShiftedPlane
+                    (SMap,footIndex+6,PPtr,topFootHeight-topFootThick);
+              else
+                ModelSupport::buildShiftedPlaneReversed
+                  (SMap,footIndex+6,PPtr,topFootHeight-topFootThick);
+              topFootPlate.addIntersection(SMap.realSurf(footIndex+6));
+              
+              // Full height
+              if (SNum>0)
+                ModelSupport::buildShiftedPlane
+                    (SMap,footIndex+16,PPtr,topFootHeight);
+              else
+                ModelSupport::buildShiftedPlaneReversed
+                  (SMap,footIndex+16,PPtr,topFootHeight);
+              topFoot.addIntersection(SMap.realSurf(footIndex+16));
+              footIndex++;
+            }
+        }
+      RI+=50;
+    }
   
   int RI(rodIndex);
   for(size_t index=0;index<CentPoint.size();index++)
@@ -221,16 +261,37 @@ RoofPillars::createSurfaces()
       const Geometry::Vec3D CP(Origin+CentPoint[index]);
       const Geometry::Vec3D YAxis=AxisY[index];
       const Geometry::Vec3D XAxis=Z*YAxis;
-      ModelSupport::buildPlane(SMap,RI+1,CP-XAxis*(width/2.0),XAxis);
-      ModelSupport::buildPlane(SMap,RI+2,CP+XAxis*(width/2.0),XAxis);
-      ModelSupport::buildPlane(SMap,RI+3,CP-YAxis*(depth/2.0),YAxis);
-      ModelSupport::buildPlane(SMap,RI+4,CP+YAxis*(depth/2.0),YAxis);
+      double WT(width/2.0);
+      double DT(depth/2.0);      
+      ModelSupport::buildPlane(SMap,RI+1,CP-XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+2,CP+XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+3,CP-YAxis*DT,YAxis);
+      ModelSupport::buildPlane(SMap,RI+4,CP+YAxis*DT,YAxis);
 
-      ModelSupport::buildPlane(SMap,RI+11,CP-XAxis*(thick+width/2.0),XAxis);
-      ModelSupport::buildPlane(SMap,RI+12,CP+XAxis*(thick+width/2.0),XAxis);
-      ModelSupport::buildPlane(SMap,RI+13,CP-YAxis*(thick+depth/2.0),YAxis);
-      ModelSupport::buildPlane(SMap,RI+14,CP+YAxis*(thick+depth/2.0),YAxis);
-      RI+=20;
+      WT+=thick;
+      DT+=thick;      
+      ModelSupport::buildPlane(SMap,RI+11,CP-XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+12,CP+XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+13,CP-YAxis*DT,YAxis);
+      ModelSupport::buildPlane(SMap,RI+14,CP+YAxis*DT,YAxis);
+
+      WT=topFootWidth/2.0;
+      DT=topFootDepth/2.0;
+      ModelSupport::buildPlane(SMap,RI+21,CP-XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+22,CP+XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+23,CP-YAxis*DT,YAxis);
+      ModelSupport::buildPlane(SMap,RI+24,CP+YAxis*DT,YAxis);
+
+      
+      
+      WT+=topFootGap;
+      DT+=topFootGap;
+      ModelSupport::buildPlane(SMap,RI+31,CP-XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+32,CP+XAxis*WT,XAxis);
+      ModelSupport::buildPlane(SMap,RI+33,CP-YAxis*DT,YAxis);
+      ModelSupport::buildPlane(SMap,RI+34,CP+YAxis*DT,YAxis);
+      
+      RI+=50;
     }
       
   return;
@@ -258,7 +319,7 @@ RoofPillars::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Base));
       addCell("Pillar"+CentName[i],cellIndex-1);
 
-      RI+=20;
+      RI+=50;
     }
         
   return;
@@ -284,7 +345,7 @@ RoofPillars::insertPillars(Simulation& System,
       HeadRule HR(Out);
       HR.makeComplement();
       bObj.insertComponent(System,"MainVoid",HR);
-      RI+=20;
+      RI+=50;
     }
   return;
 }
@@ -315,8 +376,8 @@ RoofPillars::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(bunkerObj,7);
 
-  setFront(bunkerObj,11);
-  setBack(bunkerObj,12);
+  setFront(bunkerObj,11);    // floor
+  setBack(bunkerObj,12);     // roof [inner]
 
   createSurfaces();
   createObjects(System);

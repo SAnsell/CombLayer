@@ -268,8 +268,8 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("GuideBayZStep",0.0);
   Control.addVariable("GuideBayZAngle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
-  Control.addVariable("GuideBayInnerHeight",30.0);
-  Control.addVariable("GuideBayInnerDepth",30.0);
+  Control.addVariable("GuideBayInnerHeight",40.0);
+  Control.addVariable("GuideBayInnerDepth",40.0);
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",50.0);
   Control.addVariable("GuideBayDepth",50.0);

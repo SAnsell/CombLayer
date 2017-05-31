@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/RoofPillars.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,17 @@ class RoofPillars : public attachSystem::FixedComp,
   double width;                ///< X-beam length
   double depth;                ///< Along beam length
   double thick;                ///< metal thickness
-  int mat;                      ///< Matieral
-    
+  int mat;                     ///< Matieral
+
+  double topFootHeight;        ///< Height of top feet [total]
+  double topFootDepth;         ///< Depth (along beam) of top feet
+  double topFootWidth;         ///< X-beam width of top feet
+  double topFootThick;         ///< Thickness of filled metal 
+  double topFootGap;           ///< Clearance gap
+
+  HeadRule topFoot;            ///< Full headrule
+  HeadRule topFootPlate;       ///< Plate headrule
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
