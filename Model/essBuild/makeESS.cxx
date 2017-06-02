@@ -528,13 +528,13 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      if (theta<90)
 		{
 		  attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
-		  //		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
+		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
 		}
 	      else if (theta<180)
 		{
 		  attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
-		  //		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
+		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
 		}
 	      else if (theta<270)
