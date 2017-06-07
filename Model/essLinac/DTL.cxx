@@ -305,14 +305,20 @@ DTL::createObjects(Simulation& System)
   // intertank
   if (itLength>0.0)
     {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 23 -24 -8 ");
+      const std::string Side = ModelSupport::getComposite(SMap,
+							  surfIndex," 23 -24 ");
+      
+      Out=ModelSupport::getComposite(SMap,surfIndex,SI," -7M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Side));
+
+      /*Out=ModelSupport::getComposite(SMap,surfIndex," 23 -24 -8 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,surfIndex,SI," 23 -24 8 -9 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat.back(),0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,surfIndex,SI," 23 -24 9 -7M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));*/
     }
 
   Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1 -24 -7M ");
