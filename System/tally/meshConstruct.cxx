@@ -318,9 +318,10 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
+	      <<"  DOSE :: neutrons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: photons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPROTON :: protons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  InternalDOSE :: neutrons - ICRP-74 1996 ambient dose equivalent (uSv/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
@@ -396,10 +397,10 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPROTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
+	      <<"  DOSE :: neutrons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: photons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPROTON :: protons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  InternalDOSE :: neutrons - ICRP-74 1996 ambient dose equivalent (uSv/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
