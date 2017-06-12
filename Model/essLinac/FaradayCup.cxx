@@ -310,16 +310,19 @@ FaradayCup::createObjects(Simulation& System)
   if (nShieldLayers>0)
     {
       // shielding
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 (-1:2:17) ");
+      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 17 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -112 -117 (-1:102:107) ");
+      Out=ModelSupport::getComposite(SMap,surfIndex," 2 -102 -17 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,surfIndex," 102 -112 -117 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
 
       // shielding backward part
       if (shieldBackLength>0.0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -117 107 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -102 -117 107 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -107 ");
