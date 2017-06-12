@@ -64,7 +64,7 @@ class FaradayCup : public attachSystem::ContainedComp,
   int wallMat;                   ///< wall material
   int airMat; ///< air material
   
-  bool shieldActive; ///< on/off flag for shielding
+  size_t nShieldLayers; ///< Number of shield layers. No shielding if zero.
   double shieldRadius; ///< shield radius
   double shieldInnerRadius; ///< shielding inner radius
   double shieldForwardLength; ///< shield length

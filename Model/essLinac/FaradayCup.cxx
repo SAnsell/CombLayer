@@ -114,7 +114,7 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   colLength(A.colLength),
   colMat(A.colMat),wallMat(A.wallMat),
   airMat(A.airMat),
-  shieldActive(A.shieldActive),
+  nShieldLayers(A.nShieldLayers),
   shieldRadius(A.shieldRadius),
   shieldInnerRadius(A.shieldInnerRadius),
   shieldForwardLength(A.shieldForwardLength),
@@ -154,7 +154,7 @@ FaradayCup::operator=(const FaradayCup& A)
       colMat=A.colMat;
       wallMat=A.wallMat;
       airMat=A.airMat;
-      shieldActive=A.shieldActive;
+      nShieldLayers=A.nShieldLayers;
       shieldRadius=A.shieldRadius;
       shieldInnerRadius=A.shieldInnerRadius;
       shieldForwardLength=A.shieldForwardLength;
@@ -208,7 +208,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
 
-  shieldActive=Control.EvalDefVar<int>(keyName+"ShieldActive", true);
+  nShieldLayers=Control.EvalVar<int>(keyName+"NShieldLayers");
   shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
   shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
   shieldForwardLength=Control.EvalVar<double>(keyName+"ShieldForwardLength");
@@ -307,9 +307,7 @@ FaradayCup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  ELog::EM << "shieldActive" << shieldActive << ELog::endDiag;
-
-  if (shieldActive)
+  if (nShieldLayers>0)
     {
       // shielding
       Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 (-1:2:17) ");
@@ -347,7 +345,7 @@ FaradayCup::createLinks()
 {
   ELog::RegMethod RegA("FaradayCup","createLinks");
 
-  if (shieldActive)
+  if (nShieldLayers>0)
     {
       FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+111));
