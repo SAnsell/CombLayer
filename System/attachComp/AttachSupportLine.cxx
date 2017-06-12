@@ -320,7 +320,7 @@ lineIntersect(Simulation& System,
     in the model and add them to cells
     \param System :: Simualation to use
     \param APt :: Start Point
-    \param BPt :: Start Point
+    \param BPt :: End Point
     \param OMap :: Object map to add extra units to
   */
 {

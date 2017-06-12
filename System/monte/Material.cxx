@@ -846,39 +846,34 @@ Material::write(std::ostream& OX) const
   */
 {
   typedef std::map<std::string,MXcards> MXTYPE;
-
   
   std::ostringstream cx;
   cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity;
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
-
+  
   cx.precision(10);
   cx<<"m"<<Mnum<<"     ";
   if (Mnum<10) cx<<" ";
-  std::vector<Zaid>::const_iterator zc;
-  std::vector<std::string>::const_iterator vc;
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    cx<<*zc<<" ";
+  std::copy(zaidVec.begin(),zaidVec.end(),std::ostream_iterator<Zaid>(cx," "));
 
-  for(vc=Libs.begin();vc!=Libs.end();vc++)
-    cx<<*vc<<"  ";
-
+  for(const std::string& libItem : Libs)
+    cx<<libItem<<"  ";
   StrFunc::writeMCNPX(cx.str(),OX);
 
   MXTYPE::const_iterator mc;
   for(mc=mxCards.begin();mc!=mxCards.end();mc++)
     mc->second.write(OX);
 
-
+  // avoid having to reset flags/precision in cx
   std::ostringstream rx;
   if (!SQW.empty())
     {
       rx.str("");
       rx<<"mt"<<Mnum<<"    ";
       if (Mnum<10) rx<<" ";
-      for(vc=SQW.begin();vc!=SQW.end();vc++)
-	rx<<*vc<<" ";
+      std::copy(SQW.begin(),SQW.end(),
+		std::ostream_iterator<std::string>(rx," "));
       StrFunc::writeMCNPX(rx.str(),OX);
     }
   return;

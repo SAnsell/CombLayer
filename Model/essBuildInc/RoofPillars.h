@@ -27,6 +27,7 @@ class Simulation;
 namespace essSystem
 {
   class Bunker;
+
   
 /*!
   \class RoofPillars
@@ -46,11 +47,7 @@ class RoofPillars : public attachSystem::FixedComp,
   int cellIndex;                ///< Cell index
 
   /// Name for each centre
-  std::vector<std::string> CentName;
-  /// Relative point for each centre
-  std::vector<Geometry::Vec3D> CentPoint;
-  /// Axis direciton
-  std::vector<Geometry::Vec3D> AxisY;
+  std::map<std::string,pillarInfo> PInfo;
   
   double width;                ///< X-beam length
   double depth;                ///< Along beam length
@@ -63,6 +60,12 @@ class RoofPillars : public attachSystem::FixedComp,
   double topFootThick;         ///< Thickness of filled metal 
   double topFootGap;           ///< Clearance gap
 
+  double beamWidth;            ///< Total beam width
+  double beamWallThick;        ///< Wall thick in beam
+  
+  size_t nCrossBeam;           ///< Number of cross beam
+  std::vector< std::pair<std::string,std::string> > beamLinks;
+  
   HeadRule topFoot;            ///< Full headrule
   HeadRule topFootPlate;       ///< Plate headrule
   
@@ -73,8 +76,13 @@ class RoofPillars : public attachSystem::FixedComp,
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
-  void insertPillars(Simulation&,const attachSystem::CellMap&);
+  void createCrossBeams(Simulation&);
   
+  void insertPillars(Simulation&,const attachSystem::CellMap&);
+  void insertRoofCells(Simulation&,const pillarInfo&,const std::string&);
+  void insertCrossBeam(Simulation&,const pillarInfo&,const pillarInfo&,
+		       const std::string&);
+    
  public:
 
   RoofPillars(const std::string&);

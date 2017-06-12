@@ -1639,7 +1639,6 @@ Simulation::writeMaterial(std::ostream& OX) const
   DB.resetActive();
 
 
-
   if (!PhysPtr->getMode().hasElm("h"))
     DB.deactivateParticle("h");
   

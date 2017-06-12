@@ -86,7 +86,7 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
     \param sndHR :: Secondary/ Bridge rule
    */
 {
-  ELog::RegMethod RegA("SurInter[F]","getLinePoint");
+  ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,HR)");
   
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;

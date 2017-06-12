@@ -104,6 +104,7 @@
 #include "DiskPreMod.h"
 #include "DiskLayerMod.h"
 #include "Bunker.h"
+#include "pillarInfo.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
 #include "BunkerQuake.h"

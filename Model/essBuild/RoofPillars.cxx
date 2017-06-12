@@ -62,6 +62,7 @@
 #include "FuncDataBase.h"
 #include "inputParam.h"
 #include "HeadRule.h"
+#include "SurInter.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
@@ -76,9 +77,11 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "AttachSupport.h"
 
 #include "World.h"
 #include "Bunker.h"
+#include "pillarInfo.h"
 #include "RoofPillars.h"
 
 
@@ -97,41 +100,6 @@ RoofPillars::RoofPillars(const std::string& Key)  :
   */
 {}
 
-RoofPillars::RoofPillars(const RoofPillars& A) : 
-  attachSystem::FixedComp(A),attachSystem::CellMap(A),
-  attachSystem::FrontBackCut(A),
-  rodIndex(A.rodIndex),cellIndex(A.cellIndex),
-  CentName(A.CentName),CentPoint(A.CentPoint),
-  width(A.width),depth(A.depth),thick(A.thick),mat(A.mat)
-  /*!
-    Copy constructor
-    \param A :: RoofPillars to copy
-  */
-{}
-
-RoofPillars&
-RoofPillars::operator=(const RoofPillars& A)
-  /*!
-    Assignment operator
-    \param A :: RoofPillars to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
-      CentName=A.CentName;
-      CentPoint=A.CentPoint;
-      width=A.width;
-      depth=A.depth;
-      thick=A.thick;
-      mat=A.mat;
-    }
-  return *this;
-}
 
 RoofPillars::~RoofPillars() 
   /*!
@@ -139,6 +107,58 @@ RoofPillars::~RoofPillars()
   */
 {}
 
+
+void
+RoofPillars::insertRoofCells(Simulation& System,
+			     const pillarInfo& pillarItem,
+			     const std::string& innerCut)
+  /*!
+    Insert roof cell
+    \param System :: Simulation system
+    \param pillarInfo :: Pillar Info 
+    \param innerCut :: cut string for pillar void
+  */
+{
+  ELog::RegMethod RegA("RoofPillars","insertRoofCells");
+  
+  const Geometry::Vec3D& CP(Origin+pillarItem.centPoint);
+  const Geometry::Vec3D& YAxis=pillarItem.YAxis;
+  const Geometry::Vec3D& XAxis=Z*YAxis;
+
+  // horrizontal points:
+  const double WT=topFootWidth/2.0+topFootGap;
+  const double DT=topFootDepth/2.0+topFootGap;
+  const std::vector<Geometry::Vec3D> CPts
+    ({  CP-XAxis*WT,
+        CP+XAxis*WT,
+        CP-YAxis*DT,
+        CP+YAxis*DT });
+
+  const Geometry::Vec3D ZBase=
+    SurInter::getLinePoint(Origin,Z,getBackRule(),getBackBridgeRule());
+  const Geometry::Vec3D ZTop=ZBase+Z*topFootHeight;
+
+  System.populateCells();
+  System.validateObjSurfMap();
+
+  typedef std::map<int,MonteCarlo::Object*> OTYPE;
+  OTYPE OMap;
+  for(size_t i=0;i<4;i++)
+    for(size_t j=0;j<4;j++)
+      attachSystem::lineIntersect(System,CPts[i]+ZBase,CPts[j]+ZTop,OMap);
+  
+  HeadRule IC(innerCut);
+  IC.makeComplement();
+  for(const OTYPE::value_type Vunit : OMap)
+    {
+      ELog::EM<<"Adding = "<<Vunit.second->getName()<<ELog::endDiag;
+      Vunit.second->addSurfString(IC.display());
+    }
+
+  return;
+  
+}
+  
 void
 RoofPillars::populate(const FuncDataBase& Control)
   /*!
@@ -153,12 +173,33 @@ RoofPillars::populate(const FuncDataBase& Control)
   thick=Control.EvalVar<double>(keyName+"Thick");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
+
   topFootHeight=Control.EvalDefVar<double>(keyName+"TopFootHeight",0.0);
   topFootDepth=Control.EvalDefVar<double>(keyName+"TopFootDepth",0.0);
   topFootWidth=Control.EvalDefVar<double>(keyName+"TopFootWidth",0.0);
   topFootThick=Control.EvalDefVar<double>(keyName+"TopFootThick",0.0);
   topFootGap=Control.EvalDefVar<double>(keyName+"TopFootGap",0.0);
 
+  beamWidth=Control.EvalDefVar<double>(keyName+"BeamWidth",0.0);
+  beamWallThick=Control.EvalDefVar<double>(keyName+"BeamWallThick",0.0);
+
+
+  // load cross beam data
+  if (beamWidth>Geometry::zeroTol)
+    {
+      const size_t nCrossBeam=Control.EvalDefVar<size_t>(keyName+"NXBeam",0);
+      for(size_t i=0;i<nCrossBeam;i++)
+        {
+          const std::string Num=StrFunc::makeString(i);
+          const std::string AKey=
+            Control.EvalVar<std::string>(keyName+"XBeam"+Num+"A");
+          const std::string BKey=
+            Control.EvalVar<std::string>(keyName+"XBeam"+Num+"B");
+          beamLinks.push_back(std::pair<std::string,std::string>(AKey,BKey));
+        }
+    }
+  
+  
   const size_t nRadius=Control.EvalVar<size_t>(keyName+"NRadius");
   for(size_t i=0;i<nRadius;i++)
     {
@@ -177,15 +218,18 @@ RoofPillars::populate(const FuncDataBase& Control)
 
           if (active)
             {
+              
               // degrees:
               const double angle=M_PI*Control.EvalPair<double>
                 (keyName+"R_"+Num+"S_"+NSec,keyName+"RS_"+NSec)/180.0;
-              CentName.push_back("R_"+Num+"S_"+NSec);
-              CentPoint.push_back
-                (Geometry::Vec3D(rotRadius*sin(angle),
-                                 rotRadius*cos(angle),0.0));
-              AxisY.push_back
-                (Geometry::Vec3D(sin(angle),cos(angle),0.0));
+              const std::string CName("R_"+Num+"S_"+NSec);
+
+              const Geometry::Vec3D
+                CPos(rotRadius*sin(angle),rotRadius*cos(angle),0.0);
+              
+              const Geometry::Vec3D YA(sin(angle),cos(angle),0.0);
+              
+              PInfo.emplace(CName,pillarInfo(CName,CPos,YA));
             }
         }          
     }
@@ -205,8 +249,11 @@ RoofPillars::createUnitVector(const attachSystem::FixedComp& MainCentre,
   ELog::RegMethod RegA("RoofPillars","createUnitVector");
 
   FixedComp::createUnitVector(MainCentre,sideIndex);
-  for(Geometry::Vec3D& Pt : CentPoint)
-    Pt=X*Pt.X()+Y*Pt.Y()+Z*Pt.Z();
+  for(std::map<std::string,pillarInfo>::value_type& pItem : PInfo)
+    {
+      const Geometry::Vec3D& Pt(pItem.second.centPoint);
+      pItem.second.centPoint=X*Pt.X()+Y*Pt.Y()+Z*Pt.Z();
+    }
 
   return;
 }
@@ -222,9 +269,10 @@ RoofPillars::createSurfaces()
   if (topFootHeight>Geometry::zeroTol)
     {
       int RI(rodIndex);
-      const std::set<int> FS=  topFoot.getSurfSet();
+      const std::set<int> FS= FrontBackCut::getBackRule().getSurfSet();
       for(const int& SNum : FS)
         {
+          ELog::EM<<"Sruface == "<<SNum<<ELog::endDiag;
           int footIndex(RI);  // in case multiple surfaces
           const Geometry::Surface* SPtr=SMap.realSurfPtr(SNum);
           const Geometry::Plane* PPtr=
@@ -232,7 +280,7 @@ RoofPillars::createSurfaces()
           if (PPtr)
             {
               // top plate
-              if (SNum>0)
+              if (SNum<0)
                 ModelSupport::buildShiftedPlane
                     (SMap,footIndex+6,PPtr,topFootHeight-topFootThick);
               else
@@ -241,7 +289,7 @@ RoofPillars::createSurfaces()
               topFootPlate.addIntersection(SMap.realSurf(footIndex+6));
               
               // Full height
-              if (SNum>0)
+              if (SNum<0)
                 ModelSupport::buildShiftedPlane
                     (SMap,footIndex+16,PPtr,topFootHeight);
               else
@@ -255,12 +303,11 @@ RoofPillars::createSurfaces()
     }
   
   int RI(rodIndex);
-  for(size_t index=0;index<CentPoint.size();index++)
-    {
-      
-      const Geometry::Vec3D CP(Origin+CentPoint[index]);
-      const Geometry::Vec3D YAxis=AxisY[index];
-      const Geometry::Vec3D XAxis=Z*YAxis;
+  for(const std::map<std::string,pillarInfo>::value_type& PItem : PInfo)
+    {      
+      const Geometry::Vec3D& CP(PItem.second.centPoint);
+      const Geometry::Vec3D& YAxis(PItem.second.YAxis);
+      const Geometry::Vec3D& XAxis=Z*YAxis;
       double WT(width/2.0);
       double DT(depth/2.0);      
       ModelSupport::buildPlane(SMap,RI+1,CP-XAxis*WT,XAxis);
@@ -282,8 +329,6 @@ RoofPillars::createSurfaces()
       ModelSupport::buildPlane(SMap,RI+23,CP-YAxis*DT,YAxis);
       ModelSupport::buildPlane(SMap,RI+24,CP+YAxis*DT,YAxis);
 
-      
-      
       WT+=topFootGap;
       DT+=topFootGap;
       ModelSupport::buildPlane(SMap,RI+31,CP-XAxis*WT,XAxis);
@@ -296,7 +341,7 @@ RoofPillars::createSurfaces()
       
   return;
 }
-
+  
 void
 RoofPillars::createObjects(Simulation& System)
   /*!
@@ -309,22 +354,82 @@ RoofPillars::createObjects(Simulation& System)
   std::string Out;
 
   const std::string Base=frontRule()+backRule();
+  const std::string footLevel=topFoot.complement().display();
+  const std::string plateLevelComp=topFootPlate.complement().display();
+  const std::string plateLevel=topFootPlate.display();
+  const std::string roofLevel=getBackRule().complement().display();
+    
   int RI(rodIndex);
-  for(size_t i=0;i<CentPoint.size();i++)
+
+  for(const std::map<std::string,pillarInfo>::value_type& PItem : PInfo)
     {
       Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Base));
-      addCell("Pillar"+CentName[i],cellIndex-1);
+      addCell("Pillar"+PItem.first,cellIndex-1);
       Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+Base));
-      addCell("Pillar"+CentName[i],cellIndex-1);
+      addCell("Pillar"+PItem.first,cellIndex-1);
+      
+      
+      if (RI-rodIndex <  50* 10)   // DEBUG
+        {
+          // Object must be added afterward otherwise we add to self
+	  // innser pillar part
+          Out=ModelSupport::getComposite(SMap,RI," 31 -32 33 -34  ");
+          insertRoofCells(System,PItem.second,Out+footLevel+roofLevel);
+	       
+          Out=ModelSupport::getComposite(SMap,RI," 1 -2 3 -4 ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+                                           Out+roofLevel+plateLevelComp));
+          addCell("Pillar"+PItem.first,cellIndex-1);
+          Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 (-1:2:-3:4) ");
+          System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+                                           Out+roofLevel+plateLevelComp));
+          addCell("Pillar"+PItem.first,cellIndex-1);
+          
+          // pillar in 
+	  Out=ModelSupport::getComposite(SMap,RI,
+					 " 31 -32 33 -34  (-11:12:-13:14) ");
+	  System.addCell(MonteCarlo::Qhull
+                         (cellIndex++,0,0.0,Out+roofLevel+plateLevelComp));
 
+	  Out=ModelSupport::getComposite(SMap,RI," 21 -22 23 -24  ");
+	  System.addCell(MonteCarlo::Qhull
+                         (cellIndex++,mat,0.0,Out+plateLevel+footLevel));
+	  
+	  Out=ModelSupport::getComposite(SMap,RI,
+					 " 31 -32 33 -34  (-21:22:-23:24) ");
+	  System.addCell(MonteCarlo::Qhull
+                         (cellIndex++,0,0.0,Out+plateLevel+footLevel));
+          addCell("Foot"+PItem.first,cellIndex-1);
+        }
       RI+=50;
     }
         
   return;
 }
 
+
+void
+RoofPillars::createCrossBeams(Simulation& System)
+  /*!
+    A system for construction cross beams
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("RoofPillars","createCrossBeams");
+
+  typedef std::pair<std::string,std::string> SPAIR;
+  for(const SPAIR& BItem : beamLinks)
+    {
+      
+    }
+
+  return;
+}
+
+
+  
 void
 RoofPillars::insertPillars(Simulation& System,
                            const attachSystem::CellMap& bObj)
@@ -339,7 +444,8 @@ RoofPillars::insertPillars(Simulation& System,
   const std::string Base=frontRule()+backRule();    
   std::string Out;
   int RI(rodIndex);
-  for(size_t i=0;i<CentPoint.size();i++)
+  const size_t PSize=PInfo.size();
+  for(size_t i=0;i<PSize;i++)
     {
       Out=ModelSupport::getComposite(SMap,RI," 11 -12 13 -14 ");
       HeadRule HR(Out);

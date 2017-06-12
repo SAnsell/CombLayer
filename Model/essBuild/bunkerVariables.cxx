@@ -148,7 +148,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofVert1",30.0);
       Control.addVariable(KItem+"BunkerRoofVert2",40.0);
       Control.addVariable(KItem+"BunkerRoofVert3",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert4",30.0);
+      Control.addVariable(KItem+"BunkerRoofVert4",35.0);
   
       
       Control.addVariable(KItem+"BunkerRoofMat0","Poly");
@@ -201,7 +201,13 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsMat","Stainless304");
   Control.addVariable(AKey+"BunkerPillarsNRadius",5);
   Control.addVariable(AKey+"BunkerPillarsNSector",9); // default
-  
+
+  Control.addVariable(AKey+"BunkerPillarsTopFootWidth",35.0);
+  Control.addVariable(AKey+"BunkerPillarsTopFootDepth",35.0);
+  Control.addVariable(AKey+"BunkerPillarsTopFootHeight",29.9);  // vertical
+  Control.addVariable(AKey+"BunkerPillarsTopFootThick",11.0);  // vertical
+  Control.addVariable(AKey+"BunkerPillarsTopFootGap",3.0);
+
   Control.addVariable(AKey+"BunkerPillarsR0",600.0);
   Control.addVariable(AKey+"BunkerPillarsR1",900.0);
   Control.addVariable(AKey+"BunkerPillarsR2",1200.0);
