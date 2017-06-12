@@ -188,15 +188,19 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.addVariable("LinacFaradayCupWallMat", "Copper");
 
-  Control.addVariable("LinacFaradayCupNShieldLayers", 2);
+  Control.addVariable("LinacFaradayCupNShieldLayers", 3);
   Control.addVariable("LinacFaradayCupShieldMat1","Air");
-  Control.addVariable("LinacFaradayCupShieldMat2","SkanskaConcrete");
+  Control.addVariable("LinacFaradayCupShieldMat2","SS304L");
+  Control.addVariable("LinacFaradayCupShieldMat3","SkanskaConcrete%Boron%99");
   Control.addVariable("LinacFaradayCupShieldRadius1",10.0);
-  Control.addVariable("LinacFaradayCupShieldRadius2",100.0);
+  Control.addVariable("LinacFaradayCupShieldRadius2",30.0);
+  Control.addVariable("LinacFaradayCupShieldRadius3",100.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength1",10.0);
-  Control.addVariable("LinacFaradayCupShieldForwardLength2",100.0);
+  Control.addVariable("LinacFaradayCupShieldForwardLength2",30.0);
+  Control.addVariable("LinacFaradayCupShieldForwardLength3",100.0);
   Control.addVariable("LinacFaradayCupShieldBackLength1",100.0);
   Control.addVariable("LinacFaradayCupShieldBackLength2",100.0);
+  Control.addVariable("LinacFaradayCupShieldBackLength3",100.0);
 
   // DTL
   const size_t nDTL = 5;
