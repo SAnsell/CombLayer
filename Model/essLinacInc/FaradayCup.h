@@ -65,12 +65,10 @@ class FaradayCup : public attachSystem::ContainedComp,
   int airMat; ///< air material
   
   size_t nShieldLayers; ///< Number of shield layers. No shielding if zero.
-  double shieldRadius; ///< shield radius
-  double shieldInnerRadius; ///< shielding inner radius
-  double shieldForwardLength; ///< shield length
-  double shieldBackLength; ///< shield length towards the proton beam origin
-  double shieldInnerLength; ///< shielding inner length
-  int shieldMat; ///< shielding material
+  std::vector<double> shieldRadius; ///< shield radius
+  std::vector<double> shieldForwardLength; ///< shield length
+  std::vector<double> shieldBackLength; ///< shield length towards the proton beam origin
+  std::vector<int>    shieldMat; ///< shielding material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -116,10 +116,8 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   airMat(A.airMat),
   nShieldLayers(A.nShieldLayers),
   shieldRadius(A.shieldRadius),
-  shieldInnerRadius(A.shieldInnerRadius),
   shieldForwardLength(A.shieldForwardLength),
   shieldBackLength(A.shieldBackLength),
-  shieldInnerLength(A.shieldInnerLength),
   shieldMat(A.shieldMat)
   /*!
     Copy constructor
@@ -156,10 +154,8 @@ FaradayCup::operator=(const FaradayCup& A)
       airMat=A.airMat;
       nShieldLayers=A.nShieldLayers;
       shieldRadius=A.shieldRadius;
-      shieldInnerRadius=A.shieldInnerRadius;
       shieldForwardLength=A.shieldForwardLength;
       shieldBackLength=A.shieldBackLength;
-      shieldInnerLength=A.shieldInnerLength;
       shieldMat=A.shieldMat;
     }
   return *this;
@@ -209,12 +205,25 @@ FaradayCup::populate(const FuncDataBase& Control)
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
 
   nShieldLayers=Control.EvalVar<size_t>(keyName+"NShieldLayers");
-  shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
-  shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
-  shieldForwardLength=Control.EvalVar<double>(keyName+"ShieldForwardLength");
-  shieldBackLength=Control.EvalVar<double>(keyName+"ShieldBackLength");
-  shieldInnerLength=Control.EvalVar<double>(keyName+"ShieldInnerLength");
-  shieldMat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat");
+
+  for (size_t i=0; i<nShieldLayers; i++)
+    {
+      double R,FL,BL;
+      int mat;
+      const std::string Num=std::to_string(i+1);
+      R = Control.EvalVar<double>(keyName+"ShieldRadius"+Num);
+      FL = Control.EvalVar<double>(keyName+"ShieldForwardLength"+Num);
+      BL = Control.EvalVar<double>(keyName+"ShieldBackLength"+Num);
+      mat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat"+Num);
+
+      shieldRadius.push_back(R);
+      shieldForwardLength.push_back(FL);
+      shieldBackLength.push_back(BL);
+      shieldMat.push_back(mat);
+    }
+
+  // check if the variables are sorted
+  //std::is_sorted(shieldRadius.begin(),shieldRadius.end());
 
   return;
 }
@@ -261,11 +270,11 @@ FaradayCup::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
 
-  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldInnerLength),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+111,Origin-Y*(shieldBackLength),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(shieldForwardLength),Y);
-  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,shieldInnerRadius);
-  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,shieldRadius);
+  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldForwardLength[0]),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+111,Origin-Y*(shieldBackLength[0]),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(shieldForwardLength[1]),Y);
+  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,shieldRadius[0]);
+  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,shieldRadius[1]);
 
   return;
 }
@@ -317,16 +326,16 @@ FaradayCup::createObjects(Simulation& System)
       System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,surfIndex," 102 -112 -117 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[1],0.0,Out));
 
       // shielding backward part
-      if (shieldBackLength>0.0)
+      if (shieldBackLength[0]>0.0)
 	{
 	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -102 -117 107 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat,0.0,Out));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[1],0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -107 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
 	}
 
       Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 -117 ");
@@ -350,13 +359,13 @@ FaradayCup::createLinks()
 
   if (nShieldLayers>0)
     {
-      FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
+      FixedComp::setConnect(0,Origin-Y*shieldBackLength[0],-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+111));
 
-      FixedComp::setConnect(1,Origin+Y*(shieldForwardLength),Y);
+      FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[1]),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+112));
 
-      FixedComp::setConnect(2,Origin+Z*(shieldRadius),Z);
+      FixedComp::setConnect(2,Origin+Z*(shieldRadius[1]),Z);
       FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+117));
     } else
     {
