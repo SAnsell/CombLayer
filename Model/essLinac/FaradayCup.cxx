@@ -270,11 +270,14 @@ FaradayCup::createSurfaces()
   ModelSupport::buildCylinder(SMap,surfIndex+17,Origin,Y,outerRadius);
   ModelSupport::buildCylinder(SMap,surfIndex+27,Origin,Y,faceRadius);
 
-  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(shieldForwardLength[0]),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+111,Origin-Y*(shieldBackLength[0]),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(shieldForwardLength[1]),Y);
-  ModelSupport::buildCylinder(SMap,surfIndex+107,Origin,Y,shieldRadius[0]);
-  ModelSupport::buildCylinder(SMap,surfIndex+117,Origin,Y,shieldRadius[1]);
+  int SI(surfIndex+100);
+  for (size_t i=0; i<nShieldLayers; i++)
+    {
+      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength[i]),Y);
+      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(shieldForwardLength[i]),Y);
+      ModelSupport::buildCylinder(SMap,SI+7,Origin,Y,shieldRadius[i]);
+      SI += 10;
+    }
 
   return;
 }
@@ -316,33 +319,35 @@ FaradayCup::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -2 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  if (nShieldLayers>0)
+  int SI(surfIndex+100);
+  for (size_t i=0; i<nShieldLayers; i++)
     {
-      // shielding
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -102 -107 17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-
-      Out=ModelSupport::getComposite(SMap,surfIndex," 2 -102 -17 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-
-      Out=ModelSupport::getComposite(SMap,surfIndex," 102 -112 -117 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[1],0.0,Out));
-
-      // shielding backward part
-      if (shieldBackLength[0]>0.0)
+      if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -102 -117 107 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[1],0.0,Out));
-
-	  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -1 -107 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1 -2M 17 -7M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
-	}
+	      
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -2M -17 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 -117 ");
-    } else
-    {
-      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -17 ");
+	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 1M -1 -7M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
+	} else
+	{
+	  Out=ModelSupport::getComposite(SMap,SI,SI-10," 1 -2M 7M -7 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[i],0.0,Out));
+	      
+	  Out=ModelSupport::getComposite(SMap,SI,SI-10," 2M -2 -7 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[i],0.0,Out));
+	}
+      SI += 10;
     }
+      
+  if (nShieldLayers>0)
+      Out=ModelSupport::getComposite(SMap,SI-10," 1 -2 -7 ");
+  else
+      Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 -17 ");
+
   addOuterSurf(Out);
 
   return;
