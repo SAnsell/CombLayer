@@ -255,7 +255,7 @@ createESSLinacSource(const FuncDataBase& Control,Source& sourceCard)
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",     2000.0);
   const double xStart=Control.EvalDefVar<double>("sdefXPos",     0.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",   -150.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",   400.0);
   const double zStart=Control.EvalDefVar<double>("sdefZPos",     0.0);
 
   sourceCard.setActive();

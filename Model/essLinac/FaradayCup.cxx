@@ -208,7 +208,7 @@ FaradayCup::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
 
-  nShieldLayers=Control.EvalVar<int>(keyName+"NShieldLayers");
+  nShieldLayers=Control.EvalVar<size_t>(keyName+"NShieldLayers");
   shieldRadius=Control.EvalVar<double>(keyName+"ShieldRadius");
   shieldInnerRadius=Control.EvalVar<double>(keyName+"ShieldInnerRadius");
   shieldForwardLength=Control.EvalVar<double>(keyName+"ShieldForwardLength");
