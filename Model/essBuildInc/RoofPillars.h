@@ -64,6 +64,7 @@ class RoofPillars : public attachSystem::FixedComp,
   double beamWallThick;        ///< Wall thick in beam
   
   size_t nCrossBeam;           ///< Number of cross beam
+  /// link of each beamline
   std::vector< std::pair<std::string,std::string> > beamLinks;
   
   HeadRule topFoot;            ///< Full headrule
@@ -79,9 +80,18 @@ class RoofPillars : public attachSystem::FixedComp,
   void createCrossBeams(Simulation&);
   
   void insertPillars(Simulation&,const attachSystem::CellMap&);
-  void insertRoofCells(Simulation&,const pillarInfo&,const std::string&);
-  void insertCrossBeam(Simulation&,const pillarInfo&,const pillarInfo&,
+  void insertBeamCells(Simulation&,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,
+		       const std::array<Geometry::Vec3D,2>&,
 		       const std::string&);
+  void insertPillarCells(Simulation&,const pillarInfo&,const std::string&);
+  void insertRoofCells(Simulation&,const std::array<Geometry::Vec3D,4>&,
+		       const std::string&);
+  
+
+  HeadRule getInterPillarBoundary
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const int,const int,std::array<Geometry::Vec3D,2>&) const;
     
  public:
 

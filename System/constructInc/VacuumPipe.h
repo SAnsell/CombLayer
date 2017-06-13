@@ -27,6 +27,13 @@ class Simulation;
 namespace constructSystem
 {
 
+  /*!
+    \struct windowInfo
+    \version 1.0
+    \date July 2015
+    \author S. Ansell
+    \brief window build data
+  */
 struct windowInfo
 {
   double thick;           ///< Joining Flange length

@@ -135,7 +135,6 @@ tallyAddition(Simulation& System,
       const std::string PType=
 	IParam.getValueError<std::string>("TAdd",index,1,eMess);
 
-      size_t ptI;
       std::string FName,LName;
       Geometry::Vec3D VPos,YAxis,ZAxis;
       if (key=="Plate" || key=="plate")
@@ -197,7 +196,7 @@ tallyAddition(Simulation& System,
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"plate type");
 	  
-	  const double NL=
+	  const size_t NL=
 	    IParam.getValueError<size_t>("TAdd",index,ptI,eMess);
 	  const double length=
 	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);

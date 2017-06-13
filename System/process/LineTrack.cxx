@@ -163,7 +163,6 @@ LineTrack::calculate(const Simulation& ASim)
     ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
   int SN=OPtr->isOnSide(InitPt);
   
-  const MonteCarlo::Object* prevOPtr(0);
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
@@ -171,7 +170,6 @@ LineTrack::calculate(const Simulation& ASim)
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,aDist))
 	{
-	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());

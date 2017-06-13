@@ -105,7 +105,8 @@ buildSignedShiftedPlane(surfRegister& SMap,const int signValue,
     \return New plane ptr [inserted/tested]
    */
 {
-  ELog::RegMethod("generateSurf","buildShiftedPlane");
+  ELog::RegMethod("generateSurf","buildSignedShiftedPlane");
+  
   return (signValue>=0) ?
     buildShiftedPlane(SMap,N,PN,Dist) :
     buildShiftedPlaneReversed(SMap,N,PN,Dist);  

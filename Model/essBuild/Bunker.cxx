@@ -159,6 +159,7 @@ Bunker::populate(const FuncDataBase& Control)
     wallFrac[i]=(wallFrac[i]-wallRadius)/wallThick;
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
+  nSectors=std::max<size_t>(nSectors,1);
   ModelSupport::populateRange(Control,nSectors,keyName+"SectAngle",
 			      leftPhase,rightPhase,sectPhase);
 
@@ -336,7 +337,7 @@ Bunker::createSurfaces(const bool revX)
   int divIndex(bnkIndex+1001);
 
   double phase(leftPhase);
-  const double phaseStep((rightPhase-leftPhase)/nSectors);
+  const double phaseStep((rightPhase-leftPhase)/static_cast<double>(nSectors));
 
   SMap.addMatch(divIndex,SMap.realSurf(bnkIndex+3));
   for(size_t i=1;i<nSectors;i++)

@@ -208,6 +208,10 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsTopFootThick",11.0);  // vertical
   Control.addVariable(AKey+"BunkerPillarsTopFootGap",3.0);
 
+  Control.addVariable(AKey+"BunkerPillarsBeamWidth",12.0);
+  Control.addVariable(AKey+"BunkerPillarsBeamWallThick",2.0);
+  
+
   Control.addVariable(AKey+"BunkerPillarsR0",600.0);
   Control.addVariable(AKey+"BunkerPillarsR1",900.0);
   Control.addVariable(AKey+"BunkerPillarsR2",1200.0);
@@ -232,6 +236,15 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
 
 
+  Control.addVariable(AKey+"BunkerPillarsNXBeam",1);
+  Control.addVariable(AKey+"BunkerPillarsXBeam0A","R_1S_0");
+  Control.addVariable(AKey+"BunkerPillarsXBeam0B","R_1S_1");
+  
+
+  
+
+
+  
   //
   // RIGHT BUNKER : B PART
   //

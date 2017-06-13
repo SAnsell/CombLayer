@@ -50,17 +50,35 @@ namespace essSystem
 {
 
 pillarInfo::pillarInfo(const std::string& S,
+		       const int RIndex,
 		       const Geometry::Vec3D& CP,
 		       const Geometry::Vec3D& YA) :
-  Name(S),centPoint(CP),YAxis(YA.unit())
+  Name(S),RI(RIndex),centPoint(CP),YAxis(YA.unit())
+  /*!
+    Constructor
+    \param S :: Name
+    \param RIndex :: Offset number
+    \param CP :: Central point
+    \param YA :: YAxis direction
+  */
 {}
 
 pillarInfo::pillarInfo(const pillarInfo& A) :
-  Name(A.Name),centPoint(A.centPoint),YAxis(A.YAxis)
+  Name(A.Name),RI(A.RI),
+  centPoint(A.centPoint),YAxis(A.YAxis)
+  /*!
+    Copy constructor
+    \param A :: pillarInfo object to construct
+  */
 {}
 
 pillarInfo&
 pillarInfo::operator=(const pillarInfo& A)
+  /*!
+    Assignment operator
+    \param A :: pillarInfo object to construct
+    \return *this
+  */
 {
   if (this!=&A)
     {

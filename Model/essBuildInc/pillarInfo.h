@@ -37,11 +37,12 @@ namespace essSystem
 struct pillarInfo
 {
   const std::string Name;         ///< Name of pillar
+  const int RI;                   ///< Region index
   Geometry::Vec3D centPoint;      ///< Centre point [non z]
   Geometry::Vec3D YAxis;          ///< Y Axis 
 
-  pillarInfo(const std::string&,const Geometry::Vec3D&,
-	     const Geometry::Vec3D&);
+  pillarInfo(const std::string&,const int,
+	     const Geometry::Vec3D&,const Geometry::Vec3D&);
   pillarInfo(const pillarInfo&);
   pillarInfo& operator=(const pillarInfo&);
   ~pillarInfo() {}                ///< Destructor
