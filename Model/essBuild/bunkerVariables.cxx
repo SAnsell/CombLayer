@@ -239,7 +239,11 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsNXBeam",1);
   Control.addVariable(AKey+"BunkerPillarsXBeam0A","R_1S_0");
   Control.addVariable(AKey+"BunkerPillarsXBeam0B","R_1S_1");
-  
+
+  Control.addVariable(AKey+"BunkerPillarsNLBeam",1);
+  Control.addVariable(AKey+"BunkerPillarsLBeam0A","R_0S_1");
+  Control.addVariable(AKey+"BunkerPillarsLBeam0B","R_1S_1");
+
 
   
 

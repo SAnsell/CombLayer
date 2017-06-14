@@ -63,15 +63,24 @@ class RoofPillars : public attachSystem::FixedComp,
   double beamWidth;            ///< Total beam width
   double beamWallThick;        ///< Wall thick in beam
   double beamWallGap;          ///< Gap round wall
-  
+
+  double longWidth;            ///< Total beam width
+  double longWallThick;        ///< Wall thick in beam
+  double longWallGap;          ///< Gap round wall
+
   size_t nCrossBeam;           ///< Number of cross beam
-  /// link of each beamline
+  /// link of each X-beamline
   std::vector< std::pair<std::string,std::string> > beamLinks;
+  size_t nLongBeam;           ///< Number of long beam
+  /// link of each long-beamline
+  std::vector< std::pair<std::string,std::string> > longLinks;
   
   HeadRule topFoot;            ///< Full headrule
   HeadRule topFootPlate;       ///< Plate headrule
   HeadRule topBeam;            ///< Top beam inner
   HeadRule baseBeam;           ///< Base beam inner
+  HeadRule topLong;            ///< Top long  inner
+  HeadRule baseLong;           ///< Base long inner
     
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -81,6 +90,7 @@ class RoofPillars : public attachSystem::FixedComp,
   void createLinks();
   void createObjects(Simulation&);
   void createCrossBeams(Simulation&);
+  void createLongBeams(Simulation&);
   
   void insertPillars(Simulation&,const attachSystem::CellMap&);
   void insertBeamCells(Simulation&,const Geometry::Vec3D&,
@@ -91,9 +101,28 @@ class RoofPillars : public attachSystem::FixedComp,
   void insertRoofCells(Simulation&,const std::array<Geometry::Vec3D,4>&,
 		       const std::string&);
   
+  
+  void getPillarPair(const std::string&,const std::string&,
+		     Geometry::Vec3D&,Geometry::Vec3D&,
+		     Geometry::Vec3D&,int&,int&) const;
+  void createBeamSurfaces(const int,const Geometry::Vec3D&,
+			  const Geometry::Vec3D&,const double,
+			  const double,const double);
+  void createBeamObjects(Simulation&,const int,const std::string&,
+			 const HeadRule&,const HeadRule&,
+			 const Geometry::Vec3D&,const Geometry::Vec3D&,
+			 const std::array<Geometry::Vec3D,2>&);
+  
+  
+  HeadRule getCrossPillarBoundary
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const int,const int,std::array<Geometry::Vec3D,2>&) const;
+  HeadRule getLongPillarBoundary
+    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+     const int,const int,std::array<Geometry::Vec3D,2>&) const;
 
   HeadRule getInterPillarBoundary
-    (const Geometry::Vec3D&,const Geometry::Vec3D&,
+    (const int,const int,const Geometry::Vec3D&,const Geometry::Vec3D&,
      const int,const int,std::array<Geometry::Vec3D,2>&) const;
     
  public:

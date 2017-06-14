@@ -92,7 +92,7 @@ RoofPillars::RoofPillars(const std::string& Key)  :
   attachSystem::FixedComp(Key,0),
   attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
-  rodIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  rodIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
   cellIndex(rodIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -213,7 +213,6 @@ RoofPillars::populate(const FuncDataBase& Control)
   thick=Control.EvalVar<double>(keyName+"Thick");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
-
   topFootHeight=Control.EvalDefVar<double>(keyName+"TopFootHeight",0.0);
   topFootDepth=Control.EvalDefVar<double>(keyName+"TopFootDepth",0.0);
   topFootWidth=Control.EvalDefVar<double>(keyName+"TopFootWidth",0.0);
@@ -224,12 +223,17 @@ RoofPillars::populate(const FuncDataBase& Control)
   beamWallThick=Control.EvalDefVar<double>(keyName+"BeamWallThick",0.0);
   beamWallGap=Control.EvalDefVar<double>(keyName+"BeamWallGap",2.0);
 
+  longWidth=Control.EvalDefVar<double>(keyName+"LongWidth",beamWidth);
+  longWallThick=Control.EvalDefVar<double>
+    (keyName+"LongWallThick",beamWallThick);
+  longWallGap=Control.EvalDefVar<double>(keyName+"LongWallGap",beamWallGap);
+
 
   // load cross beam data
   if (beamWidth>Geometry::zeroTol)
     {
       const size_t nCrossBeam=Control.EvalDefVar<size_t>(keyName+"NXBeam",0);
-      ELog::EM<<"NCBEAM["<<keyName<<"] == "<<nCrossBeam<<ELog::endDiag;
+      ELog::EM<<"XBEAM["<<keyName<<"] == "<<nCrossBeam<<ELog::endDiag;
       for(size_t i=0;i<nCrossBeam;i++)
         {
           const std::string Num=StrFunc::makeString(i);
@@ -240,7 +244,23 @@ RoofPillars::populate(const FuncDataBase& Control)
           beamLinks.push_back(std::pair<std::string,std::string>(AKey,BKey));
         }
     }
-  
+
+  // load cross beam data
+  if (longWidth>Geometry::zeroTol)
+    {
+      const size_t nLongBeam=Control.EvalDefVar<size_t>(keyName+"NLBeam",0);
+      ELog::EM<<"LongBEAM["<<keyName<<"] == "<<nLongBeam<<ELog::endDiag;
+      for(size_t i=0;i<nLongBeam;i++)
+        {
+          const std::string Num=StrFunc::makeString(i);
+          const std::string AKey=
+            Control.EvalVar<std::string>(keyName+"LBeam"+Num+"A");
+          const std::string BKey=
+            Control.EvalVar<std::string>(keyName+"LBeam"+Num+"B");
+          longLinks.push_back(std::pair<std::string,std::string>(AKey,BKey));
+        }
+    }
+
   
   const size_t nRadius=Control.EvalVar<size_t>(keyName+"NRadius");
   int index(0);
@@ -326,27 +346,31 @@ RoofPillars::createSurfaces()
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+6,
 				      PPtr,topFootHeight-topFootThick);
               topFootPlate.addIntersection(SMap.realSurf(footIndex+6));
-	      ELog::EM<<"topFoot == "<<topFootHeight-topFootThick<<ELog::endDiag;
               // Full height
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+16,
 				      PPtr,topFootHeight);	      
               topFoot.addIntersection(SMap.realSurf(footIndex+16));
-	      ELog::EM<<"topFoot == "<<topFootHeight<<ELog::endDiag;
               // Beam inner meta; 
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+26,
 				      PPtr,beamWallThick);	      
               baseBeam.addIntersection(SMap.realSurf(footIndex+26));
-	      ELog::EM<<"BW == "<<beamWallThick<<ELog::endDiag;
 	      // Beam Top inner metal [down -wallThick]
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+36,
 				      PPtr,topFootHeight-beamWallThick); 
               topBeam.addIntersection(SMap.realSurf(footIndex+36));
-	      ELog::EM<<"BW == "<<topFootHeight-beamWallThick<<ELog::endDiag;
+
+              // Beam inner meta; 
+	      buildSignedShiftedPlane(SMap,-SNum,footIndex+46,
+				      PPtr,longWallThick);	      
+              baseLong.addIntersection(SMap.realSurf(footIndex+46));
+	      // Beam Top inner metal [down -wallThick]
+	      buildSignedShiftedPlane(SMap,-SNum,footIndex+56,
+				      PPtr,topFootHeight-longWallThick); 
+              topLong.addIntersection(SMap.realSurf(footIndex+56));
 	      
 	      footIndex++;
             }
         }
-      RI+=50;
     }
   
 
@@ -453,13 +477,53 @@ RoofPillars::createObjects(Simulation& System)
 }
 
 HeadRule
-RoofPillars::getInterPillarBoundary(const Geometry::Vec3D& midPoint,
+RoofPillars::getCrossPillarBoundary(const Geometry::Vec3D& midPoint,
 				    const Geometry::Vec3D& YVec,
-				    const int aIR,
-				    const int bIR,
+				    const int aIR,const int bIR,
+				    std::array<Geometry::Vec3D,2>& endPt) const
+  /*!
+    Compute and return the headrule that divides two pillars on 
+    horrizontal (crossing)
+    \param midPoint :: MidPoint between pillars
+    \param YVec :: vector along axis
+    \param aIR :: pillar index for A
+    \param bIR :: pillar index for B
+    \param endPt :: End points
+   */
+{
+  ELog::RegMethod RegA("RoofPillar","getCrossPillarBoundary");
+  return getInterPillarBoundary(23,24,midPoint,YVec,aIR,bIR,endPt);
+}
+
+HeadRule
+RoofPillars::getLongPillarBoundary(const Geometry::Vec3D& midPoint,
+				   const Geometry::Vec3D& YVec,
+				   const int aIR,const int bIR,
+				   std::array<Geometry::Vec3D,2>& endPt) const
+  /*!
+    Compute and return the headrule that divides two pillars on
+    long (going out in radius)
+    \param midPoint :: MidPoint between pillars
+    \param YVec :: vector along axis
+    \param aIR :: pillar index for A
+    \param bIR :: pillar index for B
+    \param endPt :: End points
+   */
+{
+  ELog::RegMethod RegA("RoofPillar","getCrossPillarBoundary");
+  return getInterPillarBoundary(21,22,midPoint,YVec,aIR,bIR,endPt);
+}
+
+HeadRule
+RoofPillars::getInterPillarBoundary(const int aSurf,const int bSurf,
+				    const Geometry::Vec3D& midPoint,
+				    const Geometry::Vec3D& YVec,
+				    const int aIR,const int bIR,
 				    std::array<Geometry::Vec3D,2>& endPt) const
   /*!
     Compute and return the headrule that divides two pillars
+    \parma aSurf :: offset to pillar surface
+    \parma bSurf :: offset to pillar surface
     \param midPoint :: MidPoint between pillars
     \param YVec :: vector along axis
     \param aIR :: pillar index for A
@@ -474,8 +538,8 @@ RoofPillars::getInterPillarBoundary(const Geometry::Vec3D& midPoint,
   HeadRule Out;
   for(size_t i=0;i<2;i++)
     {
-      const Geometry::Plane* AP=SMap.realPtr<Geometry::Plane>(RIvec[i]+23);
-      const Geometry::Plane* BP=SMap.realPtr<Geometry::Plane>(RIvec[i]+24);
+      const Geometry::Plane* AP=SMap.realPtr<Geometry::Plane>(RIvec[i]+aSurf);
+      const Geometry::Plane* BP=SMap.realPtr<Geometry::Plane>(RIvec[i]+bSurf);
       const Geometry::Vec3D aPt=SurInter::getLinePoint(midPoint,YVec,AP);
       const Geometry::Vec3D bPt=SurInter::getLinePoint(midPoint,YVec,BP);
       if (aPt.Distance(midPoint) > bPt.Distance(midPoint))
@@ -494,109 +558,219 @@ RoofPillars::getInterPillarBoundary(const Geometry::Vec3D& midPoint,
   return Out;
 }
 
+
+void
+RoofPillars::getPillarPair(const std::string& AName,
+			   const std::string& BName,
+			   Geometry::Vec3D& midPoint,
+			   Geometry::Vec3D& XVec,
+			   Geometry::Vec3D& YVec,
+			   int& aRI,int& bRI) const
+  /*!
+    Determine scalar value between different componet
+    \param AName :: Name of object
+    \param BName :: Name of object
+    \param midPoint :: mid point between pillars
+    \param XVec :: XVector [cross unit vector]
+    \param YVec :: Main Axis vector
+    \param aRI :: index for A
+    \param bRI :: index for B
+  */
+{
+  ELog::RegMethod RegA("RoofPillar","getPillarPair");
+
+  typedef std::map<std::string,pillarInfo> MTYPE;
+  
+  MTYPE::const_iterator ac=PInfo.find(AName);
+  MTYPE::const_iterator bc=PInfo.find(BName);
+
+  if (ac==PInfo.end())
+    throw ColErr::InContainerError<std::string>(AName,"Beamlink");
+  if (bc==PInfo.end())
+    throw ColErr::InContainerError<std::string>(BName,"Beamlink");
+  if (ac==bc)
+    throw ColErr::IndexError<std::string>(AName,BName,"Beamlink items equal");
+  
+  const pillarInfo& APillar(ac->second);
+  const pillarInfo& BPillar(bc->second);
+  YVec=(BPillar.centPoint-APillar.centPoint).unit();
+  XVec=Z*YVec;
+  midPoint=Origin+(BPillar.centPoint+APillar.centPoint)/2.0;
+  aRI=APillar.RI;
+  bRI=BPillar.RI;
+  
+  return;
+}
+
+
+void
+RoofPillars::createBeamSurfaces(const int RI,
+				const Geometry::Vec3D& midPoint,
+				const Geometry::Vec3D& XVec,
+				const double Width,
+				const double WallThick,
+				const double WallGap)
+  /*!
+    Create the surfaces for the beamxs
+    \param RI :: Index offset
+    \param midPoint :: Mid point of beam
+  */
+{
+  ELog::RegMethod RegA("RoofPillar","createBeamSurfaces");
+  
+  // SURFACES:
+  double W(Width/2.0);  // inner void
+  ModelSupport::buildPlane(SMap,RI+3,midPoint-XVec*W,XVec);
+  ModelSupport::buildPlane(SMap,RI+4,midPoint+XVec*W,XVec);
+  W+=WallThick;          // metal wall
+  ModelSupport::buildPlane(SMap,RI+13,midPoint-XVec*W,XVec);
+  ModelSupport::buildPlane(SMap,RI+14,midPoint+XVec*W,XVec);
+  W+=WallGap;          // clearance gap
+  ModelSupport::buildPlane(SMap,RI+23,midPoint-XVec*W,XVec);
+  ModelSupport::buildPlane(SMap,RI+24,midPoint+XVec*W,XVec);
+
+  return;
+}
+
+
+void
+RoofPillars::createBeamObjects(Simulation& System,
+			       const int RI,const std::string& fbBStr,
+			       const HeadRule& topBUnit,
+			       const HeadRule& baseBUnit,
+			       const Geometry::Vec3D& midPoint,
+			       const Geometry::Vec3D& XVec,
+			       const std::array<Geometry::Vec3D,2>& EPts)
+  /*!
+    Create the objects for a beam
+    \param RI :: Index offset
+    \param fbBStr :: front/back cut string
+    \param topBUnit :: HeadRule for top cut
+    \param baseBUnit :: HeadRule for base cut
+    \param midPoint :: Centre point of beamline
+    \param XVec :: Cross direction
+    \param EPts :: End points
+  */
+{
+  ELog::RegMethod RegA("RoofPillars","createBeamObjects");
+
+  std::string Out;
+     
+  HeadRule Outer(topFoot.complement());
+  Outer.addIntersection(getBackRule().complement());
+  
+  HeadRule Inner(topBUnit.complement());
+  Inner.addIntersection(baseBUnit);
+  
+  Out=ModelSupport::getComposite(SMap,RI," 23 -24 ");
+  Out+=fbBStr+Outer.display();
+  insertBeamCells(System,midPoint,XVec,EPts,Out);
+  
+  // gap
+  Out=ModelSupport::getComposite(SMap,RI," 23 -13  ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				   Out+Outer.display()+fbBStr));
+  Out=ModelSupport::getComposite(SMap,RI," 14 -24  ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				   Out+Outer.display()+fbBStr));
+  
+  Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
+  Out+=fbBStr+Inner.display();
+  //      insertBeamCells(System,midPoint,XVec,EPts,Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  
+  
+  // steel box [NOTE CARE for INCLUSION]:
+  Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
+  Inner.addIntersection(Out);
+
+
+  Out=ModelSupport::getComposite(SMap,RI," 13 -14 ");
+  Out+=fbBStr+Outer.display();
+  Inner.makeComplement();
+  Out+=Inner.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+
+  return;
+}
+
 void
 RoofPillars::createCrossBeams(Simulation& System)
   /*!
-    A system for construction cross beams
+    A system for construction long beams
     \param System :: Simulation to create objects in
   */
 {
   ELog::RegMethod RegA("RoofPillars","createCrossBeams");
 
-  const std::string footLevel=topFoot.complement().display();
-  const std::string roofLevel=getBackRule().complement().display();
 
   typedef std::pair<std::string,std::string> SPAIR;
-  typedef std::map<std::string,pillarInfo> MTYPE;
-  ELog::EM<<"Cross BEAM"<<beamLinks.size()<<ELog::endDiag;
+  ELog::EM<<"Cross BEAM"<<longLinks.size()<<ELog::endDiag;
   int RI(rodIndex+5000);
   for(const SPAIR& BItem : beamLinks)
     {
+      Geometry::Vec3D midPoint;
+      Geometry::Vec3D XVec;
+      Geometry::Vec3D YVec;
+      int aRI,bRI;
+		  
+      getPillarPair(BItem.first,BItem.second,midPoint,
+		    XVec,YVec,aRI,bRI);
       
-      MTYPE::const_iterator ac=PInfo.find(BItem.first);
-      MTYPE::const_iterator bc=PInfo.find(BItem.second);
+  // Calculate closest surface to line (3/4):
 
-      if (ac==PInfo.end())
-	throw ColErr::InContainerError<std::string>(BItem.first,"Beamlink");
-      if (bc==PInfo.end())
-	throw ColErr::InContainerError<std::string>(BItem.second,"Beamlink");
-      if (ac==bc)
-	throw ColErr::IndexError<std::string>
-	  (BItem.first,BItem.second,"Beamlink items equal");
-
-      const pillarInfo& APillar(ac->second);
-      const pillarInfo& BPillar(bc->second);
-      const Geometry::Vec3D YVec
-	((BPillar.centPoint-APillar.centPoint).unit());
-      const Geometry::Vec3D& XVec=Z*YVec;
-      const Geometry::Vec3D midPoint
-	(Origin+(BPillar.centPoint+APillar.centPoint)/2.0);
-      ELog::EM<<"Mid Point == "<<midPoint<<ELog::endDiag;
-      // Calculate closest surface to line (3/4):
       std::array<Geometry::Vec3D,2> EPts;
       const HeadRule fbBoundary=
-	getInterPillarBoundary(midPoint,YVec,APillar.RI,BPillar.RI,EPts);
-            
-      // SURFACES:
-      double W(beamWidth/2.0);  // inner void
-      ModelSupport::buildPlane(SMap,RI+3,midPoint-XVec*W,XVec);
-      ModelSupport::buildPlane(SMap,RI+4,midPoint+XVec*W,XVec);
-      W+=beamWallThick;          // metal wall
-      ModelSupport::buildPlane(SMap,RI+13,midPoint-XVec*W,XVec);
-      ModelSupport::buildPlane(SMap,RI+14,midPoint+XVec*W,XVec);
-      W+=beamWallGap;          // clearance gap
-      ModelSupport::buildPlane(SMap,RI+23,midPoint-XVec*W,XVec);
-      ModelSupport::buildPlane(SMap,RI+24,midPoint+XVec*W,XVec);
+	getCrossPillarBoundary(midPoint,YVec,aRI,bRI,EPts);
+
+      createBeamSurfaces(RI,midPoint,XVec,beamWidth,beamWallThick,beamWallGap);
       
       // OBJECTS:
-      std::string Out;
+      createBeamObjects(System,RI,fbBoundary.display(),topBeam,baseBeam,
+			midPoint,XVec,EPts);
 
-      const std::string fbBStr=fbBoundary.display();
-      HeadRule Outer(topFoot.complement());
-      Outer.addIntersection(getBackRule().complement());
-      HeadRule Inner(topBeam.complement());
-      Inner.addIntersection(baseBeam);
-
-      Out=ModelSupport::getComposite(SMap,RI," 23 -24 ");
-      Out+=fbBStr+Outer.display();
-      insertBeamCells(System,midPoint,XVec,EPts,Out);
-
-      // gap
-      Out=ModelSupport::getComposite(SMap,RI," 23 -13  ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
-				       Out+Outer.display()+fbBStr));
-      Out=ModelSupport::getComposite(SMap,RI," 14 -24  ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
-				       Out+Outer.display()+fbBStr));
-      /*
-      // mid void
-      ELog::EM<<"Inner == "<<Inner.display()<<ELog::endDiag;
-      Inner.makeComplement();
-      ELog::EM<<"Inner == "<<Inner.display()<<ELog::endDiag;
-      ELog::EM<<"Outer == "<<Outer.display()<<ELog::endDiag;
-      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
-				       Out+Inner.display()+fbBStr));
-      */
-
-      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
-      Out+=fbBStr+Inner.display();
-      //      insertBeamCells(System,midPoint,XVec,EPts,Out);
-      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-
-
-      // steel box [NOTE CARE for INCLUSION]:
-      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
-      Inner.addIntersection(Out);
-
-
-      Out=ModelSupport::getComposite(SMap,RI," 13 -14 ");
-      Out+=fbBStr+Outer.display();
-      Inner.makeComplement();
-      Out+=Inner.display();
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+      RI+=100;
     }
+  return;
+}
 
+void
+RoofPillars::createLongBeams(Simulation& System)
+  /*!
+    A system for construction long beams
+    \param System :: Simulation to create objects in
+  */
+{
+  ELog::RegMethod RegA("RoofPillars","createLongBeams");
+
+
+  typedef std::pair<std::string,std::string> SPAIR;
+  ELog::EM<<"Long BEAM"<<longLinks.size()<<ELog::endDiag;
+  int RI(rodIndex+10000);
+  for(const SPAIR& BItem : longLinks)
+    {
+      Geometry::Vec3D midPoint;
+      Geometry::Vec3D XVec;
+      Geometry::Vec3D YVec;
+      int aRI,bRI;
+		  
+      getPillarPair(BItem.first,BItem.second,midPoint,
+		    XVec,YVec,aRI,bRI);
+      
+  // Calculate closest surface to line (3/4):
+
+      std::array<Geometry::Vec3D,2> EPts;
+      const HeadRule fbBoundary=
+	getLongPillarBoundary(midPoint,YVec,aRI,bRI,EPts);
+
+      createBeamSurfaces(RI,midPoint,XVec,longWidth,longWallThick,longWallGap);
+      
+      // OBJECTS:
+      createBeamObjects(System,RI,fbBoundary.display(),topLong,baseLong,
+			midPoint,XVec,EPts);
+
+      RI+=100;
+    }
   return;
 }
   
