@@ -46,7 +46,7 @@ class RoofPillars : public attachSystem::FixedComp,
   const int rodIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  /// Name for each centre
+  /// Information for each centre
   std::map<std::string,pillarInfo> PInfo;
   
   double width;                ///< X-beam length
@@ -62,6 +62,7 @@ class RoofPillars : public attachSystem::FixedComp,
 
   double beamWidth;            ///< Total beam width
   double beamWallThick;        ///< Wall thick in beam
+  double beamWallGap;          ///< Gap round wall
   
   size_t nCrossBeam;           ///< Number of cross beam
   /// link of each beamline
@@ -69,7 +70,9 @@ class RoofPillars : public attachSystem::FixedComp,
   
   HeadRule topFoot;            ///< Full headrule
   HeadRule topFootPlate;       ///< Plate headrule
-  
+  HeadRule topBeam;            ///< Top beam inner
+  HeadRule baseBeam;           ///< Base beam inner
+    
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

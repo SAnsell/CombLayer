@@ -125,10 +125,10 @@ RoofPillars::insertBeamCells(Simulation& System,
   
   // horrizontal points:
   const double WT=beamWidth/2.0;
-  const std::array<Geometry::Vec3D,4> CPts
-    ({  midPoint-XAxis*WT,
+  const std::array<Geometry::Vec3D,4> CPts=
+    {{  midPoint-XAxis*WT,
         midPoint+XAxis*WT,
-	EPts[0],EPts[1] });
+	EPts[0],EPts[1] }};
   
   insertRoofCells(System,CPts,innerCut);
   return;
@@ -154,11 +154,11 @@ RoofPillars::insertPillarCells(Simulation& System,
   // horrizontal points:
   const double WT=topFootWidth/2.0+topFootGap;
   const double DT=topFootDepth/2.0+topFootGap;
-  const std::array<Geometry::Vec3D,4> CPts
-    ({  CP-XAxis*WT,
+  const std::array<Geometry::Vec3D,4> CPts=
+    {{  CP-XAxis*WT,
         CP+XAxis*WT,
         CP-YAxis*DT,
-        CP+YAxis*DT });
+        CP+YAxis*DT }};
 
   insertRoofCells(System,CPts,innerCut);
   return;
@@ -176,7 +176,7 @@ RoofPillars::insertRoofCells(Simulation& System,
   */
 {
   ELog::RegMethod RegA("RoofPillars","insertRoofCells");
-  
+
   const Geometry::Vec3D ZBase=
     SurInter::getLinePoint(Origin,Z,getBackRule(),getBackBridgeRule());
   const Geometry::Vec3D ZTop=ZBase+Z*topFootHeight;
@@ -222,6 +222,7 @@ RoofPillars::populate(const FuncDataBase& Control)
 
   beamWidth=Control.EvalDefVar<double>(keyName+"BeamWidth",0.0);
   beamWallThick=Control.EvalDefVar<double>(keyName+"BeamWallThick",0.0);
+  beamWallGap=Control.EvalDefVar<double>(keyName+"BeamWallGap",2.0);
 
 
   // load cross beam data
@@ -312,9 +313,9 @@ RoofPillars::createSurfaces()
     {
       int RI(rodIndex);
       const std::set<int> FS= FrontBackCut::getBackRule().getSurfSet();
+      int footIndex(RI);  // in case multiple surfaces
       for(const int& SNum : FS)
         {
-          int footIndex(RI);  // in case multiple surfaces
           const Geometry::Surface* SPtr=SMap.realSurfPtr(SNum);
           const Geometry::Plane* PPtr=
             dynamic_cast<const Geometry::Plane*>(SPtr);
@@ -325,12 +326,24 @@ RoofPillars::createSurfaces()
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+6,
 				      PPtr,topFootHeight-topFootThick);
               topFootPlate.addIntersection(SMap.realSurf(footIndex+6));
-              
+	      ELog::EM<<"topFoot == "<<topFootHeight-topFootThick<<ELog::endDiag;
               // Full height
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+16,
 				      PPtr,topFootHeight);	      
               topFoot.addIntersection(SMap.realSurf(footIndex+16));
-              footIndex++;
+	      ELog::EM<<"topFoot == "<<topFootHeight<<ELog::endDiag;
+              // Beam inner meta; 
+	      buildSignedShiftedPlane(SMap,-SNum,footIndex+26,
+				      PPtr,beamWallThick);	      
+              baseBeam.addIntersection(SMap.realSurf(footIndex+26));
+	      ELog::EM<<"BW == "<<beamWallThick<<ELog::endDiag;
+	      // Beam Top inner metal [down -wallThick]
+	      buildSignedShiftedPlane(SMap,-SNum,footIndex+36,
+				      PPtr,topFootHeight-beamWallThick); 
+              topBeam.addIntersection(SMap.realSurf(footIndex+36));
+	      ELog::EM<<"BW == "<<topFootHeight-beamWallThick<<ELog::endDiag;
+	      
+	      footIndex++;
             }
         }
       RI+=50;
@@ -461,8 +474,8 @@ RoofPillars::getInterPillarBoundary(const Geometry::Vec3D& midPoint,
   HeadRule Out;
   for(size_t i=0;i<2;i++)
     {
-      const Geometry::Plane* AP=SMap.realPtr<Geometry::Plane>(RIvec[i]+33);
-      const Geometry::Plane* BP=SMap.realPtr<Geometry::Plane>(RIvec[i]+34);
+      const Geometry::Plane* AP=SMap.realPtr<Geometry::Plane>(RIvec[i]+23);
+      const Geometry::Plane* BP=SMap.realPtr<Geometry::Plane>(RIvec[i]+24);
       const Geometry::Vec3D aPt=SurInter::getLinePoint(midPoint,YVec,AP);
       const Geometry::Vec3D bPt=SurInter::getLinePoint(midPoint,YVec,BP);
       if (aPt.Distance(midPoint) > bPt.Distance(midPoint))
@@ -525,18 +538,63 @@ RoofPillars::createCrossBeams(Simulation& System)
 	getInterPillarBoundary(midPoint,YVec,APillar.RI,BPillar.RI,EPts);
             
       // SURFACES:
-      ModelSupport::buildPlane(SMap,RI+3,midPoint-XVec*beamWidth,XVec);
-      ModelSupport::buildPlane(SMap,RI+4,midPoint+XVec*beamWidth,XVec);
+      double W(beamWidth/2.0);  // inner void
+      ModelSupport::buildPlane(SMap,RI+3,midPoint-XVec*W,XVec);
+      ModelSupport::buildPlane(SMap,RI+4,midPoint+XVec*W,XVec);
+      W+=beamWallThick;          // metal wall
+      ModelSupport::buildPlane(SMap,RI+13,midPoint-XVec*W,XVec);
+      ModelSupport::buildPlane(SMap,RI+14,midPoint+XVec*W,XVec);
+      W+=beamWallGap;          // clearance gap
+      ModelSupport::buildPlane(SMap,RI+23,midPoint-XVec*W,XVec);
+      ModelSupport::buildPlane(SMap,RI+24,midPoint+XVec*W,XVec);
       
       // OBJECTS:
       std::string Out;
-      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
-      Out+=fbBoundary.display()+roofLevel+footLevel;
+
+      const std::string fbBStr=fbBoundary.display();
+      HeadRule Outer(topFoot.complement());
+      Outer.addIntersection(getBackRule().complement());
+      HeadRule Inner(topBeam.complement());
+      Inner.addIntersection(baseBeam);
+
+      Out=ModelSupport::getComposite(SMap,RI," 23 -24 ");
+      Out+=fbBStr+Outer.display();
       insertBeamCells(System,midPoint,XVec,EPts,Out);
-      
+
+      // gap
+      Out=ModelSupport::getComposite(SMap,RI," 23 -13  ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				       Out+Outer.display()+fbBStr));
+      Out=ModelSupport::getComposite(SMap,RI," 14 -24  ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				       Out+Outer.display()+fbBStr));
+      /*
+      // mid void
+      ELog::EM<<"Inner == "<<Inner.display()<<ELog::endDiag;
+      Inner.makeComplement();
+      ELog::EM<<"Inner == "<<Inner.display()<<ELog::endDiag;
+      ELog::EM<<"Outer == "<<Outer.display()<<ELog::endDiag;
+      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
+				       Out+Inner.display()+fbBStr));
+      */
+
+      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
+      Out+=fbBStr+Inner.display();
+      //      insertBeamCells(System,midPoint,XVec,EPts,Out);
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-      
+
+      // steel box [NOTE CARE for INCLUSION]:
+      Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
+      Inner.addIntersection(Out);
+
+
+      Out=ModelSupport::getComposite(SMap,RI," 13 -14 ");
+      Out+=fbBStr+Outer.display();
+      Inner.makeComplement();
+      Out+=Inner.display();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
     }
 
   return;
