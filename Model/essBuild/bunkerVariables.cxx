@@ -199,7 +199,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsDepth",18.0);
   Control.addVariable(AKey+"BunkerPillarsThick",1.0);
   Control.addVariable(AKey+"BunkerPillarsMat","Stainless304");
-  Control.addVariable(AKey+"BunkerPillarsNRadius",5);
+  Control.addVariable(AKey+"BunkerPillarsNRadius",7);
   Control.addVariable(AKey+"BunkerPillarsNSector",9); // default
 
   Control.addVariable(AKey+"BunkerPillarsTopFootWidth",35.0);
@@ -210,6 +210,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(AKey+"BunkerPillarsBeamWidth",12.0);
   Control.addVariable(AKey+"BunkerPillarsBeamWallThick",2.0);
+  Control.addVariable(AKey+"BunkerPillarsBeamWallGap",5.0);
   
 
   Control.addVariable(AKey+"BunkerPillarsR0",600.0);
@@ -218,6 +219,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsR3",1500.0);
   Control.addVariable(AKey+"BunkerPillarsR4",1800.0);
   Control.addVariable(AKey+"BunkerPillarsR5",2100.0);
+  Control.addVariable(AKey+"BunkerPillarsR6",2400.0);
   
   Control.addVariable(AKey+"BunkerPillarsRS_0",-15.0);
   Control.addVariable(AKey+"BunkerPillarsRS_1",-21.0);
@@ -236,18 +238,34 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
 
 
-  Control.addVariable(AKey+"BunkerPillarsNXBeam",1);
-  Control.addVariable(AKey+"BunkerPillarsXBeam0A","R_1S_0");
-  Control.addVariable(AKey+"BunkerPillarsXBeam0B","R_1S_1");
-
-  Control.addVariable(AKey+"BunkerPillarsNLBeam",1);
-  Control.addVariable(AKey+"BunkerPillarsLBeam0A","R_0S_1");
-  Control.addVariable(AKey+"BunkerPillarsLBeam0B","R_1S_1");
-
-
-  
+  Control.addVariable(AKey+"BunkerPillarsNXBeam",-3);
+  Control.addVariable(AKey+"BunkerPillarsXBeam0A","R_3S_1");
+  Control.addVariable(AKey+"BunkerPillarsXBeam0B","R_3S_2");
+  Control.addVariable(AKey+"BunkerPillarsXBeam1A","R_4S_4");
+  Control.addVariable(AKey+"BunkerPillarsXBeam1B","R_4S_5");
+  Control.addVariable(AKey+"BunkerPillarsXBeam2A","R_5S_5");
+  Control.addVariable(AKey+"BunkerPillarsXBeam2B","R_5S_6");
 
 
+  Control.addVariable(AKey+"BunkerPillarsNLBeam",-8);
+
+  // R0 BLOCK
+  Control.addVariable(AKey+"BunkerPillarsLBeam0A","R_2S_0");
+  Control.addVariable(AKey+"BunkerPillarsLBeam0B","R_3S_0");
+  Control.addVariable(AKey+"BunkerPillarsLBeam1A","R_2S_1");
+  Control.addVariable(AKey+"BunkerPillarsLBeam1B","R_3S_1");
+  Control.addVariable(AKey+"BunkerPillarsLBeam2A","R_3S_2");
+  Control.addVariable(AKey+"BunkerPillarsLBeam2B","R_4S_2");
+  Control.addVariable(AKey+"BunkerPillarsLBeam3A","R_3S_3");
+  Control.addVariable(AKey+"BunkerPillarsLBeam3B","R_4S_3");
+  Control.addVariable(AKey+"BunkerPillarsLBeam4A","R_3S_4");
+  Control.addVariable(AKey+"BunkerPillarsLBeam4B","R_4S_4");
+  Control.addVariable(AKey+"BunkerPillarsLBeam5A","R_4S_5");
+  Control.addVariable(AKey+"BunkerPillarsLBeam5B","R_5S_5");
+  Control.addVariable(AKey+"BunkerPillarsLBeam6A","R_5S_6");
+  Control.addVariable(AKey+"BunkerPillarsLBeam6B","R_6S_6");
+  Control.addVariable(AKey+"BunkerPillarsLBeam7A","R_5S_7");
+  Control.addVariable(AKey+"BunkerPillarsLBeam7B","R_6S_7");
   
   //
   // RIGHT BUNKER : B PART
@@ -290,10 +308,13 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake0NPoint",12);
   Control.addVariable("ABunkerQuake0XGap",13.5);
   Control.addVariable("ABunkerQuake0ZGap",100.0);
+  Control.addVariable("ABunkerQuake0XStep",-40.0);
+  Control.addVariable("ABunkerQuake0YStep",100.0);
 
+  // adjusted to look right
   Control.addVariable("ABunkerQuake0PtA0",Geometry::Vec3D(1196.3,191.2,0));
-  Control.addVariable("ABunkerQuake0PtA1",Geometry::Vec3D(1126.5,447.5,0));
-  Control.addVariable("ABunkerQuake0PtA2",Geometry::Vec3D(1358.8,536.9,0));
+  Control.addVariable("ABunkerQuake0PtA1",Geometry::Vec3D(1106.5,447.5,0));
+  Control.addVariable("ABunkerQuake0PtA2",Geometry::Vec3D(1308.8,566.9,0));
   Control.addVariable("ABunkerQuake0PtA3",Geometry::Vec3D(1125.2,930.2,0));
   Control.addVariable("ABunkerQuake0PtA4",Geometry::Vec3D(1281.6,1056.0,0));
   Control.addVariable("ABunkerQuake0PtA5",Geometry::Vec3D(1166.2,1184.6,0));
@@ -304,10 +325,11 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake0PtA10",Geometry::Vec3D(1171.5,1804.0,0));
   Control.addVariable("ABunkerQuake0PtA11",Geometry::Vec3D(1007.5,1899.2,0));
 
+  // as measured -- maybe correct?
   Control.addVariable("ABunkerQuake1NPoint",12);
   Control.addVariable("ABunkerQuake1XGap",13.5);
   Control.addVariable("ABunkerQuake1ZGap",100.0);
-  Control.addVariable("ABunkerQuake1XStep",100.0);
+  Control.addVariable("ABunkerQuake1YStep",100.0);
   Control.addVariable("ABunkerQuake1ZStep",100.0);
   Control.addVariable("ABunkerQuake1PtA0",Geometry::Vec3D(1196.3,191.2,0));
   Control.addVariable("ABunkerQuake1PtA1",Geometry::Vec3D(1126.5,447.5,0));

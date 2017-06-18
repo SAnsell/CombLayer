@@ -42,7 +42,9 @@ class RoofPillars : public attachSystem::FixedComp,
   public attachSystem::FrontBackCut
 {
  private:
-   
+
+  /// Link storage type
+  typedef std::set< std::pair<std::string,std::string> > BeamTYPE;
   const int rodIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -69,11 +71,9 @@ class RoofPillars : public attachSystem::FixedComp,
   double longWallGap;          ///< Gap round wall
 
   size_t nCrossBeam;           ///< Number of cross beam
-  /// link of each X-beamline
-  std::vector< std::pair<std::string,std::string> > beamLinks;
-  size_t nLongBeam;           ///< Number of long beam
-  /// link of each long-beamline
-  std::vector< std::pair<std::string,std::string> > longLinks;
+  BeamTYPE beamLinks;          ///< link of each X-beamline
+  size_t nLongBeam;            ///< Number of long beam
+  BeamTYPE longLinks;          ///< link of each long-beamline
   
   HeadRule topFoot;            ///< Full headrule
   HeadRule topFootPlate;       ///< Plate headrule
@@ -83,6 +83,9 @@ class RoofPillars : public attachSystem::FixedComp,
   HeadRule baseLong;           ///< Base long inner
     
   void populate(const FuncDataBase&);
+  void populateBeamSet(const FuncDataBase&,const std::string&,
+		       const size_t,const size_t,BeamTYPE&) const;
+			      
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -93,7 +96,7 @@ class RoofPillars : public attachSystem::FixedComp,
   void createLongBeams(Simulation&);
   
   void insertPillars(Simulation&,const attachSystem::CellMap&);
-  void insertBeamCells(Simulation&,const Geometry::Vec3D&,
+  void insertBeamCells(Simulation&,const double,
 		       const Geometry::Vec3D&,
 		       const std::array<Geometry::Vec3D,2>&,
 		       const std::string&);
@@ -110,7 +113,7 @@ class RoofPillars : public attachSystem::FixedComp,
 			  const double,const double);
   void createBeamObjects(Simulation&,const int,const std::string&,
 			 const HeadRule&,const HeadRule&,
-			 const Geometry::Vec3D&,const Geometry::Vec3D&,
+			 const double,const Geometry::Vec3D&,
 			 const std::array<Geometry::Vec3D,2>&);
   
   
