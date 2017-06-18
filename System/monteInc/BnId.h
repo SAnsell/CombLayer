@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/BnId.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,12 +46,12 @@ class BnId
 
   size_t size;              ///< number of variables
   int PI;                   ///< Prime Implicant
-  size_t Tnum;                 ///< True number (1 in Tval)
-  size_t Znum;                 ///< Zero number (0 in Tval)
+  size_t Tnum;              ///< True number (1 in Tval)
+  size_t Znum;              ///< Zero number (0 in Tval)
   std::vector<int> Tval;    ///< Truth values
   std::set<int> MinTerm;    ///< Minterms list
 
-  void setCounters();    ///< Calculates Tnum and Znum
+  void setCounters();    
 
  public:
   
@@ -61,26 +61,26 @@ class BnId
   BnId& operator=(const BnId&);
   ~BnId();
 
-  int operator==(const BnId&) const;    ///< Equals operator for tri-state object
-  int operator<(const BnId&) const;    ///< operator> for tri-state object
-  int operator>(const BnId&) const;    ///< operator> for tri-state object
-  int operator[](const size_t) const;       ///< Access operator
-  int operator++(int);        ///< addition operator (returns !carry flag)
-  int operator++();           ///< addition operator (returns !carry flag)
-  int operator--(int);        ///< subtraction operator (returns !carry flag)
-  int operator--();           ///< subtraction operator (returns !carry flag)
+  int operator==(const BnId&) const;  
+  int operator<(const BnId&) const;   
+  int operator>(const BnId&) const;   
+  int operator[](const size_t) const;  
+  int operator++(int);
+  int operator++();   
+  int operator--(int);
+  int operator--();   
 
   /// Set a MinTerm
   void setMinTerm(const int);
   void addMinTerm(const BnId&); 
   int hasMinTerm(const int) const;
 
-  int equivalent(const BnId&) const;     ///< Equal but - is assume to be ok
-  void reverse();                     ///< Swap -1 to 1 adn leaver the zeros
+  int equivalent(const BnId&) const;    
+  void reverse();     
 
   int PIstatus() const { return PI; }     ///< PI accessor
   void setPI(const int A) { PI=A; }       ///< PI accessor
-  size_t intValue() const;                   ///< Integer from binary expression
+  size_t intValue() const;              
   std::pair<int,BnId> 
     makeCombination(const BnId&) const;  
 

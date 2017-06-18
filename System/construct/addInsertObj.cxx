@@ -213,6 +213,7 @@ addInsertCylinderCell(Simulation& System,
     \param CentPos :: Central positoin
     \param YAxis :: Direction along Y
     \param radius :: radius
+    \param length :: length of cylinder
     \param mat :: material
   */
 {
@@ -347,6 +348,7 @@ addInsertGridCell(Simulation& System,
     \param objName :: object name
     \param FCname :: FixedComp reference name
     \param linkName :: link direction
+    \param XYZStep :: Extent of cell in X,Y,Z direction
     \param NL :: Number of layers
     \param length :: primary length
     \param thick :: thickness of layer
@@ -403,6 +405,8 @@ addInsertGridCell(Simulation& System,
     
     \param System :: Simulation to used
     \param objName :: object name
+    \parma YAxis :: Main Y axis
+    \parma ZAxis :: Z axis [Orthoganalized if not]
     \param NL :: Number of layers
     \param length :: primary length
     \param thick :: thickness of layer

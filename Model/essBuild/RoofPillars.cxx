@@ -260,7 +260,6 @@ RoofPillars::populate(const FuncDataBase& Control)
           longLinks.push_back(std::pair<std::string,std::string>(AKey,BKey));
         }
     }
-
   
   const size_t nRadius=Control.EvalVar<size_t>(keyName+"NRadius");
   int index(0);
@@ -705,7 +704,7 @@ RoofPillars::createCrossBeams(Simulation& System)
 
 
   typedef std::pair<std::string,std::string> SPAIR;
-  ELog::EM<<"Cross BEAM"<<longLinks.size()<<ELog::endDiag;
+  ELog::EM<<"Cross BEAM"<<beamLinks.size()<<ELog::endDiag;
   int RI(rodIndex+5000);
   for(const SPAIR& BItem : beamLinks)
     {
@@ -833,6 +832,7 @@ RoofPillars::createAll(Simulation& System,
   createObjects(System);
   insertPillars(System,bunkerObj);
   createCrossBeams(System);
+  createLongBeams(System);
   return;
 }
 

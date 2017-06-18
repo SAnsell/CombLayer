@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   supportInc/Binary.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,13 +49,14 @@ public:
   Binary(const Binary&);
   Binary& operator=(const Binary&);
   ~Binary();
+
   /// Conversion operator
   operator unsigned long int () const { return num; }
- 
   /// Set Padding
   void setPad(const int P) { pad=P; }
   /// Accessor to the number
   unsigned long int getNumber() const { return num; }
+  
   void setNum(const std::string&);
   void setNum(const unsigned long int&);
 

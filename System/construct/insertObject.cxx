@@ -193,7 +193,7 @@ insertObject::createUnitVector(const Geometry::Vec3D& OG,
 
 void
 insertObject::createUnitVector(const Geometry::Vec3D& OG,
-                                 const Geometry::Vec3D& Axis)
+			       const Geometry::Vec3D& Axis)
   /*!
     Create the unit vectors
     \param OG :: Origin
