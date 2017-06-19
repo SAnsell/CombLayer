@@ -331,6 +331,8 @@ WWG::scaleRange(const double minR,const double maxR)
       const double maxValue = *std::max_element(TData,TData+NData-1);
       const double minValue = *std::min_element(TData,TData+NData-1);
       const double TScale=maxValue-minValue;
+      ELog::EM<<"R == "<<minR<<" "<<maxR<<ELog::endDiag;
+      ELog::EM<<"Max == "<<minValue<<" "<<maxValue<<ELog::endDiag;
       if (TScale>1e-38)
 	{
 	  for(size_t i=0;i<NData;i++)

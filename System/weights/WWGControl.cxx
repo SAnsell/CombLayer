@@ -162,7 +162,7 @@ WeightControl::wwgCreate(const Simulation& System,
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
   const std::vector<double> EBin=wwg.getEBin();
-  const std::vector<Geometry::Vec3D> GridMidPt=wwg.getMidPoints();
+  const std::vector<Geometry::Vec3D> GridMidPts=wwg.getMidPoints();
   const size_t NSetCnt=IParam.setCnt("wwgCalc");
 
   for(size_t index=0;index<NSetCnt;index++)
@@ -173,11 +173,11 @@ WeightControl::wwgCreate(const Simulation& System,
 
       if (activePtType=="Plane")   //
 	{
-	  ELog::EM<<"Active type == Plane"<<ELog::endDiag;
+	  ELog::EM<<"Active type == Plane "<<ELog::endDiag;
           if (activePtIndex>=planePt.size())
             throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
                                              "planePt.size() < activePtIndex");
-	  wSet.wTrack(System,planePt[activePtIndex],EBin,GridMidPt,
+	  wSet.wTrack(System,planePt[activePtIndex],EBin,GridMidPts,
 		      density,r2Length,r2Power);
 	}
       else if (activePtType=="Source")
@@ -186,7 +186,7 @@ WeightControl::wwgCreate(const Simulation& System,
             throw ColErr::IndexError<size_t>(activePtIndex,sourcePt.size(),
                                              "sourcePt.size() < activePtIndex");
           ELog::EM<<"Calling Source Point"<<ELog::endDiag;
-          wSet.wTrack(System,sourcePt[activePtIndex],EBin,GridMidPt,
+          wSet.wTrack(System,sourcePt[activePtIndex],EBin,GridMidPts,
 		      density,r2Length,r2Power);
         }
       else 
@@ -203,6 +203,7 @@ WeightControl::wwgCreate(const Simulation& System,
       else
 	minWeight= exp(1e-30);
 
+      ELog::EM<<"MinW == "<<minWeight<<ELog::endDiag;
       if (!activeAdjointFlag)
 	{
 	  wSet.makeSource(minWeight);
