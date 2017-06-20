@@ -349,6 +349,59 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2OnionCoolingGateWidth2", 2);
   Control.addVariable("TopCakeMidH2OnionCoolingGateLength2", 1.5);
 
+
+  // Box moderator
+  Control.addVariable("TopBoxXStep",0.0);
+  Control.addVariable("TopBoxYStep",0.0);
+  Control.addVariable("TopBoxZStep",0.0);
+  Control.addVariable("TopBoxZangle",0.0);
+  Control.addVariable("TopBoxXYangle",90.0);
+  Control.addVariable("TopBoxWallMat","Aluminium");
+  Control.addVariable("TopBoxWallDepth",0.0);
+  Control.addVariable("TopBoxWallHeight",0.3);
+
+  Control.addVariable("TopBoxMidH2NLayers",4);
+
+  Control.addVariable("TopBoxMidH2Height0",1.5);
+  Control.addParse<double>("TopBoxMidH2Depth0", "TopBoxMidH2Height0");
+  Control.addVariable("TopBoxMidH2Thick0",10);
+  Control.addVariable("TopBoxMidH2Mat0","HPARA");
+  Control.addVariable("TopBoxMidH2Temp0",20.0);
+
+  Control.addVariable("TopBoxMidH2Height1",0.3);
+  Control.addParse<double>("TopBoxMidH2Depth1","TopBoxMidH2Height1");
+  Control.addParse<double>("TopBoxMidH2Thick1","TopBoxMidH2Height1");
+  Control.addVariable("TopBoxMidH2Mat1","Aluminium20K");
+  Control.addVariable("TopBoxMidH2Temp1",20.0);
+
+  Control.addVariable("TopBoxMidH2Height2",0.5);
+  Control.addParse<double>("TopBoxMidH2Depth2","TopBoxMidH2Height2");
+  Control.addParse<double>("TopBoxMidH2Thick2","TopBoxMidH2Height2");
+  Control.addVariable("TopBoxMidH2Mat2","Void");
+
+  Control.addVariable("TopBoxMidH2Height3",0.0);
+  Control.addVariable("TopBoxMidH2Depth3",0.0);
+  Control.addVariable("TopBoxMidH2Thick3",0.3);
+  Control.addVariable("TopBoxMidH2Mat3","Aluminium");
+
+  Control.addParse<double>("TopBoxTotalHeight",
+			   "TopBoxWallHeight+TopBoxWallDepth+TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2");
+  Control.addParse<double>("TopBoxMidH2ZStep",
+			   "-(TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Depth2+TopBoxMidH2Height2+TopBoxMidH2Depth3+TopBoxMidH2Height3)/2.0-0.15");
+
+  for ( const std::string& s : LR)
+    {
+      Control.addVariable("TopBox"+s+"WaterWidth",30);  
+      Control.addVariable("TopBox"+s+"WaterWallThick",0.347);
+      Control.addVariable("TopBox"+s+"WaterCutAngle",30.0);
+      Control.addVariable("TopBox"+s+"WaterCutWidth",6);
+      Control.addVariable("TopBox"+s+"WaterModMat","H2O");
+      Control.addVariable("TopBox"+s+"WaterWallMat","Aluminium");
+      Control.addVariable("TopBox"+s+"WaterModTemp",300.0);
+      Control.addVariable("TopBox"+s+"WaterMidWallThick",0.0);
+    }
+  Control.addVariable("TopBoxMidH2FlowGuideType", "None");
+  ////////////////////////////////////////////////////////////////////////
   
   Control.addVariable("LowPreModNLayers",4);
   Control.addVariable("LowPreModHeight0",1.5);

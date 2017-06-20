@@ -81,6 +81,7 @@
 #include <typeinfo>
 #include "ButterflyModerator.h"
 #include "PancakeModerator.h"
+#include "BoxModerator.h"
 
 namespace essSystem
 {
@@ -277,7 +278,7 @@ PreModWing::createObjects(Simulation& System,
 
   ELog::EM << "This is UGLY" << ELog::endDiag;
   // Check with SA how to do it correctly.
-  // The problem is that BM can derive both from the Pancake or Butterfly classes,
+  // The problem is that BM can derive both from the Box, Pancake or Butterfly classes,
   // so I need to cast type of BM correctly.
   std::string excludeBM, excludeBMLeftRightWater, linkStr;
   const std::string modclass = typeid(Mod).name();
@@ -288,7 +289,15 @@ PreModWing::createObjects(Simulation& System,
       excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
       excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
       linkStr = BM->getLinkString(2);
-    } else if (modclass.find("Butterfly")!=std::string::npos)
+    }
+  else if (modclass.find("Box")!=std::string::npos)
+    {
+      const BoxModerator *BM = dynamic_cast<const BoxModerator*>(&Mod);
+      excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
+      excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
+      linkStr = BM->getLinkString(2);
+    }
+  else if (modclass.find("Butterfly")!=std::string::npos)
     {
       const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
       excludeBM = BM->getSideRule();//BM->getExcludeStr(); 

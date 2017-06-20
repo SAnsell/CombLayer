@@ -535,8 +535,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("TopPreWingTiltAngle", 1.5);
     } else if (modtype=="Box")
     {
-      A.setOption("lowMod", "Pancake");
-      A.setOption("topMod", "Pancake");
+      A.setOption("lowMod", "Box");
+      A.setOption("topMod", "Box");
 
       A.setOption("topPipe", "None");
 

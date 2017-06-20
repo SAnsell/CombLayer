@@ -436,7 +436,7 @@ makeESS::buildTopPancake(Simulation& System)
 void
 makeESS::buildLowBox(Simulation& System)
   /*!
-    Build the lower pancake moderator
+    Build the lower box moderator
     \param System :: Stardard simulation
   */
 {
@@ -458,7 +458,7 @@ makeESS::buildLowBox(Simulation& System)
 void
 makeESS::buildTopBox(Simulation& System)
   /*!
-    Build the top pancake moderator
+    Build the top box moderator
     \param System :: Stardard simulation
   */
 {
