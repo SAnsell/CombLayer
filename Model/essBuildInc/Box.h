@@ -36,9 +36,9 @@ namespace essSystem
 */
 
 class Box : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
-  //  public attachSystem::LayerComp,
-  //  public attachSystem::CellMap
+  public attachSystem::FixedOffset,
+  public attachSystem::LayerComp,
+  public attachSystem::CellMap
 {
  private:
 

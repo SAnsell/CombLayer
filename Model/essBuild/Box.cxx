@@ -72,16 +72,15 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "ContainedComp.h"
+#include "BaseMap.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ContainedComp.h"
-#include "BaseMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
 #include "SurInter.h"
-#include "mergeTemplate.h"
 
 #include "Box.h"
 
@@ -91,8 +90,8 @@ namespace essSystem
 Box::Box(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Key,6),
-  //  attachSystem::LayerComp(0),
-  //  attachSystem::CellMap(),
+  attachSystem::LayerComp(0),
+  attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1)
   /*!
@@ -104,8 +103,8 @@ Box::Box(const std::string& Key)  :
 Box::Box(const Box& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
-  //  attachSystem::LayerComp(A),
-  //  attachSystem::CellMap(A),
+  attachSystem::LayerComp(A),
+  attachSystem::CellMap(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   nLayers(A.nLayers),
@@ -132,8 +131,8 @@ Box::operator=(const Box& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
-      //      attachSystem::LayerComp::operator=(A);
-      //      attachSystem::CellMap::operator=(A);
+      attachSystem::LayerComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       nLayers=A.nLayers;
@@ -263,7 +262,7 @@ Box::createObjects(Simulation& System)
       if (i)
 	Out += ModelSupport::getComposite(SMap,SI-10," (-1:2:-3:4:-5:6) ");
       else
-        CellMap::setCell("Inner", cellIndex-1);
+	CellMap::setCell("Inner", cellIndex-1);
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
 
@@ -308,7 +307,7 @@ Box::getLayerSurf(const size_t layerIndex,
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const int SI(10*static_cast<int>(layerIndex)+surfIndex);
   const long int uSIndex(std::abs(sideIndex));
   const int signValue((sideIndex>0) ? 1 : -1);
 
@@ -343,23 +342,23 @@ Box::getLayerString(const size_t layerIndex,
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
-  const int SI(10*static_cast<int>(layerIndex)+modIndex);
+  const int SI(10*static_cast<int>(layerIndex)+surfIndex);
 
   std::string Out;
   const long int uSIndex(std::abs(sideIndex));
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -2M ");
+      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 -2M ");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 2M ");
+      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 2M ");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 -1M ");
+      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 -1M ");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI,modIndex," 7 1M ");
+      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 1M ");
       break;
     case 5:
       Out=ModelSupport::getComposite(SMap,SI,"  -5 ");

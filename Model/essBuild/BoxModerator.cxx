@@ -72,6 +72,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ModBase.h"
+#include "FixedOffset.h"
 #include "Box.h"
 #include "EdgeWater.h"
 #include "BoxModerator.h"
