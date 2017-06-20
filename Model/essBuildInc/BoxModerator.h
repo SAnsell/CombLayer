@@ -26,7 +26,7 @@ class Simulation;
 
 namespace essSystem
 {
-  class DiskPreMod;
+  class Box;
   class EdgeWater;
 
 /*!
@@ -47,7 +47,7 @@ class BoxModerator :
 
   int bfType;                  ///< Type (BF1 or BF2)
   
-  std::shared_ptr<DiskPreMod> MidH2;    ///< Water disc in the middle
+  std::shared_ptr<Box> MidH2;    ///< Hydrogen box in the middle
   std::shared_ptr<EdgeWater> LeftWater;    ///< Left reflector part
   std::shared_ptr<EdgeWater> RightWater;    ///< Right reflector part
 

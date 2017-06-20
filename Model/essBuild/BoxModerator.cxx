@@ -72,7 +72,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ModBase.h"
-#include "DiskPreMod.h"
+#include "Box.h"
 #include "EdgeWater.h"
 #include "BoxModerator.h"
 
@@ -83,7 +83,7 @@ BoxModerator::BoxModerator(const std::string& Key) :
   constructSystem::ModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
-  MidH2(new DiskPreMod(Key+"MidH2")),
+  MidH2(new Box(Key+"MidH2")),
   LeftWater(new EdgeWater(Key+"LeftWater")),
   RightWater(new EdgeWater(Key+"RightWater"))
   /*!
@@ -449,7 +449,7 @@ BoxModerator::createAll(Simulation& System,
   createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
   
-  MidH2->createAll(System,*this,0,false, 0.0, 0.0);
+  MidH2->createAll(System,*this,0);
     
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
