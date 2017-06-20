@@ -163,6 +163,9 @@ class makeESS
 
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
+  void buildLowBox(Simulation&);
+  void buildTopBox(Simulation&);
+
   void buildLowPancake(Simulation&);
   void buildTopPancake(Simulation&);
 

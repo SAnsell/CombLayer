@@ -533,8 +533,21 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("TopCapWingTiltAngle", 1.7);
       A.setVar("TopPreWingThick", 0.8);
       A.setVar("TopPreWingTiltAngle", 1.5);
+    } else if (modtype=="Box")
+    {
+      A.setOption("lowMod", "Pancake");
+      A.setOption("topMod", "Pancake");
+
+      A.setOption("topPipe", "None");
+
+      A.setVar("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      A.setVar("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      A.setVar("TopCapWingThick", 1.1);
+      A.setVar("TopCapWingTiltAngle", 1.7);
+      A.setVar("TopPreWingThick", 0.8);
+      A.setVar("TopPreWingTiltAngle", 1.5);
     } else throw ColErr::InvalidLine(modtype,
-				     "Either BF1, BF2 or Pancake are supported in defaultConfig");
+				     "Either BF1, BF2, Pancake or Box are supported in defaultConfig");
 
   if (single=="")
     {

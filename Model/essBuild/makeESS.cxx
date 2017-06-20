@@ -96,6 +96,7 @@
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
 #include "PancakeModerator.h"
+#include "BoxModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
 #include "PreModWing.h"
@@ -395,7 +396,7 @@ makeESS::buildLowPancake(Simulation& System)
     \param System :: Stardard simulation
   */
 {
-  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
+  ELog::RegMethod RegA("makeESS","buildLowPancake");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -424,6 +425,50 @@ makeESS::buildTopPancake(Simulation& System)
 
   std::shared_ptr<PancakeModerator> BM
     (new essSystem::PancakeModerator("TopCake"));
+  BM->setRadiusX(Reflector->getRadius());
+  TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
+  OR.addObject(TopMod);
+  
+  TopMod->createAll(System,*Reflector,TopPreMod.get(),6);
+  return;
+}
+
+void
+makeESS::buildLowBox(Simulation& System)
+  /*!
+    Build the lower pancake moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowBox");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::shared_ptr<BoxModerator> BM
+    (new essSystem::BoxModerator("LowBox"));
+  BM->setRadiusX(Reflector->getRadius());
+  LowMod=std::shared_ptr<constructSystem::ModBase>(BM);
+  OR.addObject(LowMod);
+  LowMod->createAll(System,*Reflector,LowPreMod.get(),6);
+  return;
+}
+
+  
+void
+makeESS::buildTopBox(Simulation& System)
+  /*!
+    Build the top pancake moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildTopBox");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  std::shared_ptr<BoxModerator> BM
+    (new essSystem::BoxModerator("TopBox"));
   BM->setRadiusX(Reflector->getRadius());
   TopMod=std::shared_ptr<constructSystem::ModBase>(BM);
   OR.addObject(TopMod);
@@ -1070,15 +1115,21 @@ makeESS::build(Simulation& System,
 		       Reflector->getRadius(),true);
 
   if (lowModType != "None")
-    if (lowModType == "Butterfly")
-      buildLowButterfly(System);
-    else if (lowModType == "Pancake")
-      buildLowPancake(System);
+    {
+      if (lowModType == "Butterfly")
+	buildLowButterfly(System);
+      else if (lowModType == "Pancake")
+	  buildLowPancake(System);
+      else if (lowModType == "Box")
+	  buildLowBox(System);
+    }
   
   if (topModType == "Butterfly")
     buildTopButterfly(System);
   else if (topModType == "Pancake")
     buildTopPancake(System);
+  else if (topModType == "Box")
+    buildTopBox(System);
 
   const double LMHeight=(lowModType == "None") ? 0.0 : attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
