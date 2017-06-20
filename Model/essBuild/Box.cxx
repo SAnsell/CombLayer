@@ -304,6 +304,8 @@ Box::getLayerSurf(const size_t layerIndex,
 {
   ELog::RegMethod RegA("Box","getLinkSurf");
 
+  ELog::EM << "Dummy method" << ELog::endDiag;
+
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
@@ -338,6 +340,8 @@ Box::getLayerString(const size_t layerIndex,
   */
 {
   ELog::RegMethod RegA("Box","getLayerString");
+
+  ELog::EM << "Dummy method" << ELog::endDiag;
 
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -376,6 +380,47 @@ Box::getLayerString(const size_t layerIndex,
       return HR.display();
     }
   return Out;
+}
+
+Geometry::Vec3D
+Box::getSurfacePoint(const size_t layerIndex,
+                            const long int sideIndex) const
+  /*!
+    Given a side and a layer calculate the link point
+    \param layerIndex :: layer, 0 is inner moderator [0-6]
+    \param sideIndex :: Side [0-6]
+   \return Surface point
+  */
+{
+  ELog::RegMethod RegA("DiskPreMod","getSurfacePoint");
+
+  if (layerIndex>nLayers)
+    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
+  if (!sideIndex) return Origin;
+  const size_t SI((sideIndex>0) ?
+                  static_cast<size_t>(sideIndex-1) :
+                  static_cast<size_t>(-1-sideIndex));
+
+  ELog::EM << "Dummy method" << ELog::endDiag;
+
+  switch(SI)
+    {
+    case 0:
+      return Origin-Y*(length[layerIndex]);
+    case 1:
+      return Origin+Y*(length[layerIndex]);
+    case 2:
+      return 
+        Origin-X*(width[layerIndex]/2.0);
+
+    case 3:
+      return Origin+X*(width[layerIndex]);
+    case 4:
+      return Origin-Z*(height[layerIndex]);
+    case 5:
+      return Origin+Z*(height[layerIndex]);
+    }
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 
