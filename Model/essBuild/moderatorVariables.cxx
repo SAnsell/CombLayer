@@ -362,26 +362,30 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("TopBoxMidH2NLayers",4);
 
+  Control.addVariable("TopBoxMidH2Length0",10.0);
+  Control.addVariable("TopBoxMidH2Width0",10);
   Control.addVariable("TopBoxMidH2Height0",1.5);
   Control.addParse<double>("TopBoxMidH2Depth0", "TopBoxMidH2Height0");
-  Control.addVariable("TopBoxMidH2Thick0",10);
   Control.addVariable("TopBoxMidH2Mat0","HPARA");
   Control.addVariable("TopBoxMidH2Temp0",20.0);
 
-  Control.addVariable("TopBoxMidH2Height1",0.3);
-  Control.addParse<double>("TopBoxMidH2Depth1","TopBoxMidH2Height1");
-  Control.addParse<double>("TopBoxMidH2Thick1","TopBoxMidH2Height1");
+  Control.addVariable("TopBoxMidH2Length1",0.3);
+  Control.addParse<double>("TopBoxMidH2Width1","TopBoxMidH2Length1");
+  Control.addParse<double>("TopBoxMidH2Height1","TopBoxMidH2Length1");
+  Control.addParse<double>("TopBoxMidH2Depth1", "TopBoxMidH2Height1");
   Control.addVariable("TopBoxMidH2Mat1","Aluminium20K");
   Control.addVariable("TopBoxMidH2Temp1",20.0);
 
-  Control.addVariable("TopBoxMidH2Height2",0.5);
-  Control.addParse<double>("TopBoxMidH2Depth2","TopBoxMidH2Height2");
-  Control.addParse<double>("TopBoxMidH2Thick2","TopBoxMidH2Height2");
+  Control.addVariable("TopBoxMidH2Length2",0.5);
+  Control.addParse<double>("TopBoxMidH2Width2","TopBoxMidH2Length2");
+  Control.addParse<double>("TopBoxMidH2Height2","TopBoxMidH2Length2");
+  Control.addParse<double>("TopBoxMidH2Depth2", "TopBoxMidH2Height2");
   Control.addVariable("TopBoxMidH2Mat2","Void");
 
+  Control.addVariable("TopBoxMidH2Length3",0.3);
+  Control.addParse<double>("TopBoxMidH2Width3","TopBoxMidH2Length3");
   Control.addVariable("TopBoxMidH2Height3",0.0);
-  Control.addVariable("TopBoxMidH2Depth3",0.0);
-  Control.addVariable("TopBoxMidH2Thick3",0.3);
+  Control.addParse<double>("TopBoxMidH2Depth3", "TopBoxMidH2Height3");
   Control.addVariable("TopBoxMidH2Mat3","Aluminium");
 
   Control.addParse<double>("TopBoxTotalHeight",
