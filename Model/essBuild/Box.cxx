@@ -218,6 +218,9 @@ Box::createUnitVector(const attachSystem::FixedComp& FC,
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
 
+  const double D=(depth.empty()) ? 0.0 : depth.back();
+  applyShift(0,0,D);
+
   return;
 }
 
