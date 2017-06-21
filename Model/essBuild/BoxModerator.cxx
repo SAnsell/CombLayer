@@ -103,7 +103,6 @@ BoxModerator::BoxModerator(const std::string& Key) :
 BoxModerator::BoxModerator(const BoxModerator& A) : 
   constructSystem::ModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
-  bfType(A.bfType),
   MidH2(A.MidH2->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
@@ -130,7 +129,6 @@ BoxModerator::operator=(const BoxModerator& A)
     {
       constructSystem::ModBase::operator=(A);
       cellIndex= A.cellIndex;
-      bfType=A.bfType;
       *MidH2= *A.MidH2;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
@@ -170,9 +168,6 @@ BoxModerator::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BoxModerator","populate");
 
   ModBase::populate(Control);
-  bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
-  if ((bfType != 1)  && (bfType != 2))
-    throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
 
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
