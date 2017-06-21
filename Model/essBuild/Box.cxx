@@ -294,14 +294,17 @@ Box::createLinks()
 
   const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
 
-  FixedComp::setConnect(0,Origin-Y*(length[nLayers-1]/2.0),-Y);
+  const double l = length[nLayers-1]/2.0;
+  const double w = width[nLayers-1]/2.0;
+
+  FixedComp::setConnect(0,Origin-Y*l,-Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
-  FixedComp::setConnect(1,Origin+Y*(length[nLayers-1]/2.0),Y);
+  FixedComp::setConnect(1,Origin+Y*l,Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
 
-  FixedComp::setConnect(2,Origin-X*(width[nLayers-1]/2.0),-X);
+  FixedComp::setConnect(2,Origin-X*w,-X);
   FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
-  FixedComp::setConnect(3,Origin+X*(width[nLayers-1]/2.0),X);
+  FixedComp::setConnect(3,Origin+X*w,X);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
 
   FixedComp::setConnect(4,Origin-Z*(depth[nLayers-1]),-Z);
