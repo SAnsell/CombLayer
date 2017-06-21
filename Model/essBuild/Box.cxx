@@ -235,8 +235,8 @@ Box::createSurfaces()
   int SI(surfIndex);
   for (size_t i=0;i<nLayers;i++)
     {
-      double l = length[i]/2.0;
-      double w = width[i]/2.0;
+      const double l = length[i]/2.0;
+      const double w = width[i]/2.0;
 
       ModelSupport::buildPlane(SMap,SI+1,Origin-Y*l,Y);
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*l,Y);
@@ -406,15 +406,13 @@ Geometry::Vec3D
 Box::getSurfacePoint(const size_t layerIndex,
                             const long int sideIndex) const
   /*!
-    Given a side and a layer calculate the link point
-    \param layerIndex :: layer, 0 is inner moderator [0-6]
+    Given a side and a layer calculate the surface point
+    \param layerIndex :: layer, 0 is inner moderator
     \param sideIndex :: Side [0-6]
    \return Surface point
   */
 {
   ELog::RegMethod RegA("DiskPreMod","getSurfacePoint");
-
-  ELog::EM << "Dummy method" << ELog::endDiag;
 
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -422,23 +420,24 @@ Box::getSurfacePoint(const size_t layerIndex,
   const size_t SI((sideIndex>0) ?
                   static_cast<size_t>(sideIndex-1) :
                   static_cast<size_t>(-1-sideIndex));
+  
+  const double l = length[layerIndex]/2.0;
+  const double w = width[layerIndex]/2.0;
 
   switch(SI)
     {
     case 0:
-      return Origin-Y*(length[layerIndex]);
+      return Origin-Y*l;
     case 1:
-      return Origin+Y*(length[layerIndex]);
+      return Origin+Y*l;
     case 2:
-      return 
-        Origin-X*(width[layerIndex]/2.0);
-
+      return Origin-X*w;
     case 3:
-      return Origin+X*(width[layerIndex]);
+      return Origin+X*w;
     case 4:
-      return Origin-Z*(height[layerIndex]);
+      return Origin-Z*depth[layerIndex];
     case 5:
-      return Origin+Z*(height[layerIndex]);
+      return Origin+Z*height[layerIndex];
     }
   throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
