@@ -293,15 +293,15 @@ Box::createLinks()
   FixedComp::setConnect(1,Origin+Y*(length[nLayers-1]/2.0),Y);
   FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
 
-  FixedComp::setConnect(3,Origin-X*(width[nLayers-1]/2.0),-X);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(SI+3));
-  FixedComp::setConnect(4,Origin+X*(width[nLayers-1]/2.0),X);
-  FixedComp::setLinkSurf(4,SMap.realSurf(SI+4));
+  FixedComp::setConnect(2,Origin-X*(width[nLayers-1]/2.0),-X);
+  FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
+  FixedComp::setConnect(3,Origin+X*(width[nLayers-1]/2.0),X);
+  FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
 
-  FixedComp::setConnect(3,Origin-Z*(depth[nLayers-1]),-Z);
-  FixedComp::setLinkSurf(3,-SMap.realSurf(SI+5));
-  FixedComp::setConnect(4,Origin+Z*(height[nLayers-1]),Z);
-  FixedComp::setLinkSurf(4,SMap.realSurf(SI+6));
+  FixedComp::setConnect(4,Origin-Z*(depth[nLayers-1]),-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+  FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]),Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
 
   return;
 }
@@ -408,14 +408,14 @@ Box::getSurfacePoint(const size_t layerIndex,
 {
   ELog::RegMethod RegA("DiskPreMod","getSurfacePoint");
 
+  ELog::EM << "Dummy method" << ELog::endDiag;
+
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
   if (!sideIndex) return Origin;
   const size_t SI((sideIndex>0) ?
                   static_cast<size_t>(sideIndex-1) :
                   static_cast<size_t>(-1-sideIndex));
-
-  ELog::EM << "Dummy method" << ELog::endDiag;
 
   switch(SI)
     {
