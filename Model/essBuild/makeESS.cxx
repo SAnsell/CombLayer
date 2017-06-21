@@ -600,7 +600,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
 	      F5array.push_back(F5);
 	    }
-	} else if (strtmp=="TopCake")
+	} else if ((strtmp=="TopCake") || (strtmp=="TopBox"))
 	{
 	  moderator = strtmp;
 	  range = IParam.getValue<std::string>("f5-collimators", ++i); // thermal or cold
