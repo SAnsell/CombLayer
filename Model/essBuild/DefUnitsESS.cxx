@@ -538,8 +538,26 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setOption("lowMod", "Box");
       A.setOption("topMod", "Box");
 
-      A.setOption("topPipe", "None");
+      A.setOption("topPipe", "BoxSupply");
+      // straighten the pipes
+      A.setVar("TSupplyRightAlNSegIn", 2);
+      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,40,0));
+      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,40,40));
+      A.setVar("TSupplyLeftAlNSegIn", 2);
+      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,40,0));
+      A.setVar("TSupplyLeftAlPPt2", Geometry::Vec3D(0,40,40));
 
+      A.setVar("LSupplyRightAlNSegIn", 2);
+      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,40,0));
+      A.setVar("LSupplyRightAlPPt2", Geometry::Vec3D(0,40,40));
+      A.setVar("LSupplyLeftAlNSegIn", 2);
+      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,40,0));
+      A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,40,40));
+      
       A.setVar("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
       A.setVar("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
       A.setVar("TopCapWingThick", 1.1);
