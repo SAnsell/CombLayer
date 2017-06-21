@@ -185,8 +185,8 @@ Box::populate(const FuncDataBase& Control)
   for (size_t i=0; i<nLayers; i++)
     {
       const std::string NStr(std::to_string(i));
-      L+=Control.EvalVar<double>(keyName+"Length"+NStr);
-      W+=Control.EvalVar<double>(keyName+"Width"+NStr);
+      L+=Control.EvalVar<double>(keyName+"Length"+NStr) * ((i==0) ? 1.0 : 2.0);
+      W+=Control.EvalVar<double>(keyName+"Width"+NStr) * ((i==0) ? 1.0 : 2.0);
       H+=Control.EvalVar<double>(keyName+"Height"+NStr);
       D+=Control.EvalVar<double>(keyName+"Depth"+NStr);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);
@@ -235,10 +235,13 @@ Box::createSurfaces()
   int SI(surfIndex);
   for (size_t i=0;i<nLayers;i++)
     {
-      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(length[i]/2.0),Y);
-      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(length[i]/2.0),Y);
-      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(width[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(width[i]/2.0),X);
+      double l = length[i]/2.0;
+      double w = width[i]/2.0;
+
+      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*l,Y);
+      ModelSupport::buildPlane(SMap,SI+2,Origin+Y*l,Y);
+      ModelSupport::buildPlane(SMap,SI+3,Origin-X*w,X);
+      ModelSupport::buildPlane(SMap,SI+4,Origin+X*w,X);
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*(depth[i]),Z);
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*(height[i]),Z);
       SI += 10;
