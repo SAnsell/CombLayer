@@ -89,7 +89,7 @@ namespace essSystem
 
 Box::Box(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
+  attachSystem::FixedOffset(Key,9),
   attachSystem::LayerComp(0),
   attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -312,6 +312,13 @@ Box::createLinks()
   FixedComp::setConnect(5,Origin+Z*(height[nLayers-1]),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
 
+  // inner link points for F5 collimators
+  FixedComp::setConnect(7,Origin-Z*depth[0],Z);
+  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(8,Origin+Z*height[0],-Z);
+  FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
+
   return;
 }
 
@@ -379,6 +386,7 @@ Box::getLayerString(const size_t layerIndex,
       HR.makeComplement();
       return HR.display();
     }
+
   return Out;
 }
 
@@ -392,7 +400,7 @@ Box::getSurfacePoint(const size_t layerIndex,
    \return Surface point
   */
 {
-  ELog::RegMethod RegA("DiskPreMod","getSurfacePoint");
+  ELog::RegMethod RegA("Box","getSurfacePoint");
 
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
