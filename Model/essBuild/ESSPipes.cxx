@@ -189,12 +189,18 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   // linkPt is normal link point in fixedcomp [2]
   // layerLevel : linkPoint [2]
 
-  if (lobeName.find("CakeMidH2") != std::string::npos)
+  if (lobeName.find("CakeMidH2") != std::string::npos) // Pancake
     {
       if (waterName.find("CakeLeftWater") != std::string::npos)
 	pipeAl->createAll(System,*lobe,0,4,4);
       else if (waterName.find("CakeRightWater") != std::string::npos)
-	pipeAl->createAll(System,*lobe,0,3,3); // OK
+	pipeAl->createAll(System,*lobe,0,3,3);
+    } else if (lobeName.find("BoxMidH2") != std::string::npos) // Box
+    {
+      if (waterName.find("BoxLeftWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,4,4);
+      else if (waterName.find("BoxRightWater") != std::string::npos)
+	pipeAl->createAll(System,*lobe,0,3,3);
     } else // Butterfly
     {
       pipeAl->createAll(System,*lobe,0,2,2);
@@ -257,6 +263,14 @@ ESSPipes::buildTopPipes(Simulation& System,
 	  buildH2Pipe(System,"TopCakeMidH2","TopCakeLeftWater",pipeUniqName,
 		      "TSupplyLeftAl");
 	  buildH2Pipe(System,"TopCakeMidH2","TopCakeRightWater",pipeUniqName,
+		      "TSupplyRightAl");
+	}
+
+      if (pipeUniqName.find("BoxSupply") != std::string::npos)
+	{
+	  buildH2Pipe(System,"TopBoxMidH2","TopBoxLeftWater",pipeUniqName,
+		      "TSupplyLeftAl");
+	  buildH2Pipe(System,"TopBoxMidH2","TopBoxRightWater",pipeUniqName,
 		      "TSupplyRightAl");
 	}
     }
