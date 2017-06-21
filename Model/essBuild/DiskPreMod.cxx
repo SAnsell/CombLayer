@@ -443,8 +443,11 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkSurf");
+  ELog::RegMethod RegA("DiskPreMod","getLinkSurf");
 
+  throw ColErr::AbsObjMethod("Not implemented yet");
+
+  /*
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
 
@@ -465,6 +468,7 @@ DiskPreMod::getLayerSurf(const size_t layerIndex,
       return signValue*SMap.realSurf(SI+6);
     }
   throw ColErr::IndexError<long int>(sideIndex,7,"sideIndex");
+  */
 }
 
 std::string
