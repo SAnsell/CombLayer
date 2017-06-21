@@ -188,7 +188,7 @@ Box::populate(const FuncDataBase& Control)
       L+=Control.EvalVar<double>(keyName+"Length"+NStr);
       W+=Control.EvalVar<double>(keyName+"Width"+NStr);
       H+=Control.EvalVar<double>(keyName+"Height"+NStr);
-      D+=Control.EvalVar<double>(keyName+"Height"+NStr);
+      D+=Control.EvalVar<double>(keyName+"Depth"+NStr);
       M=ModelSupport::EvalMat<int>(Control,keyName+"Mat"+NStr);
       const std::string TStr=keyName+"Temp"+NStr;
       T=(!M || !Control.hasVariable(TStr)) ? 0.0 : Control.EvalVar<double>(TStr);
@@ -286,8 +286,22 @@ Box::createLinks()
 {
   ELog::RegMethod RegA("Box","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  const int SI(surfIndex+static_cast<int>(nLayers-1)*10);
+
+  FixedComp::setConnect(0,Origin-Y*(length[nLayers-1]/2.0),-Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
+  FixedComp::setConnect(1,Origin+Y*(length[nLayers-1]/2.0),Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
+
+  FixedComp::setConnect(3,Origin-X*(width[nLayers-1]/2.0),-X);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(SI+3));
+  FixedComp::setConnect(4,Origin+X*(width[nLayers-1]/2.0),X);
+  FixedComp::setLinkSurf(4,SMap.realSurf(SI+4));
+
+  FixedComp::setConnect(3,Origin-Z*(depth[nLayers-1]),-Z);
+  FixedComp::setLinkSurf(3,-SMap.realSurf(SI+5));
+  FixedComp::setConnect(4,Origin+Z*(height[nLayers-1]),Z);
+  FixedComp::setLinkSurf(4,SMap.realSurf(SI+6));
 
   return;
 }
