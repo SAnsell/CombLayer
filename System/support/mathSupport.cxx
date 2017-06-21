@@ -50,8 +50,9 @@ mathFunc::logFromLinear(const double A,const double B,const size_t N,
     \return value at log(Index)
   */
 {
-  const double step(log(fabs((B-A)/A))/N);
-  return (A>B) ? B*exp(index*step) : A*exp(index*step);
+  const double step(static_cast<double>(index)*
+		    log(fabs((B-A)/A))/static_cast<double>(N));
+  return (A>B) ? B*exp(step) : A*exp(step);
 }
   
 

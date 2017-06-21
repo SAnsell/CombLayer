@@ -3,7 +3,7 @@
  
  * File:   physics/PWTControl.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,12 +165,12 @@ PWTControl::renumberCell(const int originalCell,const int newCell)
 void
 PWTControl::write(std::ostream& OX,
 		  const std::vector<int>& cellOutOrder,
-		  const std::set<int>& voidCells) const
+		  const std::set<int>& ) const
   /*!
     Write out the card
     \param OX :: Output stream
     \param cellOutOrder :: Cell List
-    \param voidCells :: List of void cells
+    \param voidCells :: List of void cells [placeholder]
   */
 {
   ELog::RegMethod RegA("PWTControl","write");

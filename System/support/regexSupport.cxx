@@ -49,20 +49,22 @@ StrLook(const std::string& Text,const std::string& ReExpression)
     \returns 0 on failure and 1 on success
   */
 {
-  /*  boost::regex Re(ReExpression);
+  boost::regex Re(ReExpression);
   return StrLook(Text,Re);
-  */
-  return 0;
 }
 
 int
 findPattern(std::istream& IX,const std::string& ReExpression,std::string& Out)
+  /*!
+    Helper function to convert string to expression
+    \param IX :: Input stream
+    \param ReExpression :: Regular expression as string
+    \param Out :: Match segment
+    \return true if match found
+   */
 {
-  /*
   boost::regex RE(ReExpression);
   return findPattern(IX,RE,Out);
-  */
-  return 0;
 }
 
 
@@ -79,11 +81,8 @@ StrComp(const std::string& Text,const std::string& ReExpression,
     \returns 0 on failure and 1 on success
   */
 {
-  /*
   boost::regex RE(ReExpression);
   return StrComp<T>(Text,RE,Aout,compNum);
-  */
-  return 0;
 }
 
   
@@ -101,7 +100,6 @@ StrComp(const std::string& Text,const boost::regex& Re,T& Aout,
     \returns 0 on failure and 1 on success
   */
 {
-  /*
   boost::sregex_iterator m1(Text.begin(),Text.end(),Re);
   boost::sregex_iterator empty;
   // Failed search
@@ -109,8 +107,6 @@ StrComp(const std::string& Text,const boost::regex& Re,T& Aout,
       static_cast<int>((*m1).size())<=compNum-1)  
     return 0;
   return convert( (*m1)[compNum+1].str(),Aout);
-  */
-  return 0 ;    //DEBUG RETURN
 }
 
 template<>
@@ -126,7 +122,7 @@ StrComp(const std::string& Text,const boost::regex& Re,std::string& Aout,
     \returns 0 on failure and 1 on success
   */
 {
-  /*
+
   boost::sregex_iterator m1(Text.begin(),Text.end(),Re);
   boost::sregex_iterator empty;
   // Failed search
@@ -136,7 +132,7 @@ StrComp(const std::string& Text,const boost::regex& Re,std::string& Aout,
 
   Aout=(*m1)[compNum+1].str();
 
-  */
+
   return 1; 
 }
 
@@ -168,13 +164,11 @@ StrLook(const std::string& Text,const boost::regex& Re)
     \returns 0 on failure and 1 on success
   */
 {
-  /*
   boost::sregex_iterator m1(Text.begin(),Text.end(),Re);
   boost::sregex_iterator empty;
   // Failed search
   if (m1==empty)
     return 0;
-  */
   return 1;
 }
 
@@ -189,7 +183,7 @@ StrParts(std::string Sdx,const boost::regex& Re)
   */
 {
   std::vector<std::string> Aout;
-  /*  boost::regex_split(std::back_inserter(Aout), Sdx, Re);   // Destroys string in process */
+  boost::regex_split(std::back_inserter(Aout), Sdx, Re);   // Destroys string in process 
   return Aout;
 
 }   
@@ -212,7 +206,6 @@ StrFullCut(std::string& Text,
     \retval 1 :: success
    */
 {
-  /*
   boost::sregex_iterator m1(Text.begin(),Text.end(),Re);
   boost::sregex_iterator empty;
   if (m1==empty)
@@ -229,7 +222,6 @@ StrFullCut(std::string& Text,
   const size_t PStart=
     static_cast<size_t>((*m1).position(Zero));
   Text.erase(PStart,(*m1)[0].str().length());
-  */
   
   return 1;
 }
@@ -250,7 +242,6 @@ StrFullCut(std::string& Text,const boost::regex& Re,
     \retval 1 :: success
    */
 {
-  /*
   boost::sregex_iterator m1(Text.begin(),Text.end(),Re);
   boost::sregex_iterator empty;
   if (m1==empty)
@@ -268,7 +259,7 @@ StrFullCut(std::string& Text,const boost::regex& Re,
   const size_t PStart=
     static_cast<size_t>((*m1).position(Zero));
   Text.erase(PStart,(*m1)[0].str().length());
-  */
+
   return 1;
 }
 
@@ -290,7 +281,6 @@ StrFullCut(std::string& Text,const boost::regex& Re,
     \retval 1 :: success
    */
 {
-  /*
   boost::sregex_iterator m1(Text.begin(),Text.end(),Re);
   boost::sregex_iterator empty;
   if (m1==empty)
@@ -305,7 +295,7 @@ StrFullCut(std::string& Text,const boost::regex& Re,
   const size_t PStart=
     static_cast<size_t>((*m1).position(Zero));
   Text.erase(PStart,(*m1)[0].str().length());
-  */
+
   return 1;
 }
 
@@ -321,7 +311,6 @@ StrRemove(std::string& Sdx,std::string& Extract,const boost::regex& Re)
   \retval 1 :: succes
 */
 {
-  /*
   boost::sregex_token_iterator empty;
 
   boost::cmatch ans;
@@ -335,7 +324,6 @@ StrRemove(std::string& Sdx,std::string& Extract,const boost::regex& Re)
 	std::string(ans[0].second);
       return 1;
     }
-  */
   return 0;
 }
 
@@ -354,7 +342,6 @@ StrFullSplit(const std::string& text,
     \retval Number :: number of components added to Aout.
    */
 {
-  /*
   boost::sregex_iterator m1(text.begin(),text.end(),Re);
   boost::sregex_iterator empty;
   for(;m1!=empty;m1++)
@@ -365,7 +352,7 @@ StrFullSplit(const std::string& text,
 	  return static_cast<int>(Aout.size());
 	Aout.push_back(tmp);
       }
-  */
+
   return static_cast<int>(Aout.size());
 }
 
@@ -384,13 +371,12 @@ StrFullSplit(const std::string& text,
     \retval Number :: number of components added to Aout.
    */
 {
-  /*
   boost::sregex_iterator m1(text.begin(),text.end(),Re);
   boost::sregex_iterator empty;
   for(;m1!=empty;m1++)
     for(int index=1;index<static_cast<int>(m1->size());index++)
       Aout.push_back((*m1)[index].str());
-  */
+
   return static_cast<int>(Aout.size());
 }
 
@@ -410,7 +396,6 @@ StrSingleSplit(const std::string& text,
     \retval Number :: number of components added to Aout.
    */
 {
-  /*
   boost::sregex_iterator m1(text.begin(),text.end(),Re);
   boost::sregex_iterator empty;
   if (m1!=empty)
@@ -421,7 +406,7 @@ StrSingleSplit(const std::string& text,
 	  return static_cast<int>(Aout.size());
 	Aout.push_back(tmp);
       }
-  */
+
   return static_cast<int>(Aout.size());
 }
 
@@ -441,7 +426,6 @@ StrSingleSplit(const std::string& text,
     \retval Number :: number of components added to Aout.
    */
 {
-  /*
   boost::sregex_iterator m1(text.begin(),text.end(),Re);
   boost::sregex_iterator empty;
   if (m1!=empty)
@@ -450,7 +434,6 @@ StrSingleSplit(const std::string& text,
 	Aout.push_back((*m1)[index].str());
       return 1;
     }
-  */
   return 0;
 }
 
@@ -466,10 +449,9 @@ findPattern(std::istream& IX,const boost::regex& Re,std::string& Out)
     \returns count of line that matched (or zero on failure)
   */
 {
-
   char ss[513];   // max of 512 
   int cnt=1;
-  /*
+
   boost::cmatch ans;
   
   IX.getline(ss,512,'\n');
@@ -481,7 +463,6 @@ findPattern(std::istream& IX,const boost::regex& Re,std::string& Out)
   if (IX.fail())
     return 0;
   Out = ss;
-  */
   return cnt;
 }
 
@@ -497,7 +478,6 @@ findComp(std::istream& IX,const boost::regex& Re,T& Out)
   */
 {
   int cnt(1);
-  /*
   char ss[513];   // max of 512 
   boost::cmatch ans;
 
@@ -514,7 +494,6 @@ findComp(std::istream& IX,const boost::regex& Re,T& Out)
       if (StrFunc::convert(xout,Out))
 	return cnt;
     }
-  */
   return 0;
 }
 
@@ -530,7 +509,6 @@ findComp(std::istream& IX,const boost::regex& Re,std::string& Out)
   */
 {
   int cnt(1);
-  /*
   char ss[513];   // max of 512 
   boost::cmatch ans;
 
@@ -546,7 +524,6 @@ findComp(std::istream& IX,const boost::regex& Re,std::string& Out)
       Out=std::string(ans[1].first,ans[1].second);
 	return cnt;
     }
-  */
   return 0;
 }
 

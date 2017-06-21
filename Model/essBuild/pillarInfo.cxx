@@ -96,5 +96,27 @@ pillarInfo::operator=(const pillarInfo& A)
   return *this;
 }
   
+std::string
+pillarInfo::getNext(const long int dirR,const long int dirX) const
+  /*!
+    Get the linking pillar based on +dir +dirX
+    \param dirR :: Increase / decrease in R
+    \param dirX :: Increase / decrease in S
+    \return String
+  */
+{
+  ELog::RegMethod RegA("pillarInfo","getNext");
+  
+  const long int RN(static_cast<long int>(radN)+dirR);
+  const long int SN(static_cast<long int>(sectN)+dirX);
+
+  if (RN<0 || SN<0)
+    throw ColErr::RangeError<long int>(0,RN,SN,"RN/SN < 0");
+  const std::string Out="R_"+std::to_string(RN)+
+	 "S_"+std::to_string(SN);
+  
+  return Out;
+}
+
   
 }  // NAMESPACE essSystem

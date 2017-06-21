@@ -157,10 +157,10 @@ RoofPillars::insertPillarCells(Simulation& System,
   const double WT=topFootWidth/2.0+topFootGap;
   const double DT=topFootDepth/2.0+topFootGap;
   const std::array<Geometry::Vec3D,4> CPts=
-    {{  CP-XAxis*WT,
-        CP+XAxis*WT,
-        CP-YAxis*DT,
-        CP+YAxis*DT }};
+    {{  CP-XAxis*WT-YAxis*DT,
+        CP+XAxis*WT-YAxis*DT,
+        CP-XAxis*WT+YAxis*DT,
+        CP+XAxis*WT+YAxis*DT }};
 
   insertRoofCells(System,CPts,innerCut);
   return;
@@ -183,6 +183,7 @@ RoofPillars::insertRoofCells(Simulation& System,
     SurInter::getLinePoint(Origin,Z,getBackRule(),getBackBridgeRule());
   const Geometry::Vec3D ZTop=ZBase+Z*topFootHeight;
 
+  
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -288,6 +289,8 @@ RoofPillars::populateBeamSet(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("RoofPillars","populateBeamSet");
 
+  typedef std::map<std::string,pillarInfo> PMAP;
+
   Links.clear();
   // keyName+"NLBeam" / keyName+"NXBeam" 
   const long int nBeam=Control.EvalDefVar<long int>(keyName+"N"+nameKey,0);
@@ -297,28 +300,31 @@ RoofPillars::populateBeamSet(const FuncDataBase& Control,
       const std::string Num=std::to_string(i);
       const std::string AKey=
 	Control.EvalVar<std::string>(keyName+nameKey+Num+"A");
-      const std::string BKey=
-	    Control.EvalVar<std::string>(keyName+nameKey+Num+"B");
-      Links.insert(std::pair<std::string,std::string>(AKey,BKey));
+      // find next item
+      PMAP::const_iterator mc=PInfo.find(AKey);
+      if (mc!=PInfo.end())
+	{
+	  const std::string BKey(mc->second.getNext(dirR,dirX));
+	  Links.insert(std::pair<std::string,std::string>(AKey,BKey));
+	}
+      
     }
+  
   // SPECIAL CASE to EXCLUDE
   if (nBeam<=0)  // can use zero here because width has been pre-tested
     {
-      typedef std::map<std::string,pillarInfo> PMAP;
       for(const PMAP::value_type& PItem : PInfo)
 	{
 	  const pillarInfo& PVal(PItem.second);
-	  const std::string BRad=std::to_string(PVal.radN+dirR);
-	  const std::string BSec=std::to_string(PVal.sectN+dirX);
-	  const std::string BKey("R_"+BRad+"S_"+BSec);
+	  const std::string BKey(PVal.getNext(dirR,dirX));
 	  if (PInfo.find(BKey)!=PInfo.end())
 	    {
 	      const std::pair<std::string,std::string> LL(PVal.Name,BKey);
 	      BeamTYPE::iterator mc=Links.find(LL);
-	      if (mc==Links.end())
-		Links.insert(LL);
-	      else
+	      if (mc!=Links.end())
 		Links.erase(mc);
+	      else
+		Links.insert(LL);
 	    }
 	}
     }
@@ -546,7 +552,7 @@ RoofPillars::getInterPillarBoundary(const int aSurf,const int bSurf,
 				    const int aIR,const int bIR,
 				    std::array<Geometry::Vec3D,2>& endPt) const
   /*!
-    Compute and return the headrule that divides two pillars
+    Compute and return the headRule that divides two pillars
     \parma aSurf :: offset to pillar surface
     \parma bSurf :: offset to pillar surface
     \param midPoint :: MidPoint between pillars
@@ -729,7 +735,7 @@ RoofPillars::createCrossBeams(Simulation& System)
 
 
   typedef std::pair<std::string,std::string> SPAIR;
-  ELog::EM<<"Cross BEAM"<<beamLinks.size()<<ELog::endDiag;
+  ELog::EM<<"Cross BEAM:"<<beamLinks.size()<<ELog::endDiag;
   int RI(rodIndex+10000);
   for(const SPAIR& BItem : beamLinks)
     {
@@ -770,7 +776,7 @@ RoofPillars::createLongBeams(Simulation& System)
 
 
   typedef std::pair<std::string,std::string> SPAIR;
-  ELog::EM<<"Long BEAM"<<longLinks.size()<<ELog::endDiag;
+  ELog::EM<<"Long BEAM:"<<longLinks.size()<<ELog::endDiag;
   int RI(rodIndex+20000);
   for(const SPAIR& BItem : longLinks)
     {

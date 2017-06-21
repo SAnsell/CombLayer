@@ -86,32 +86,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   
   for(const std::string& KItem : {AKey,BKey})
     {
-
-      // Control.addVariable(KItem+"BunkerWallMat0","Lead");
-      // Control.addVariable(KItem+"BunkerWallMat1","CarstonConc");
-      // Control.addVariable(KItem+"BunkerWallMat2","ChipIRSteel");
-      // Control.addVariable(KItem+"BunkerWallMat3","CarstonConc");
-      // Control.addVariable(KItem+"BunkerWallMat4","ChipIRSteel");
-      // Control.addVariable(KItem+"BunkerWallMat5","CarstonConc");
-      // Control.addVariable(KItem+"BunkerWallMat6","ChipIRSteel");
-      // Control.addVariable(KItem+"BunkerWallMat7","ChipIRSteel");
-      // Control.addVariable(KItem+"BunkerWallMat8","CarstonConc");
-      // Control.addVariable(KItem+"BunkerWallMat9","CarstonConc");
-      // Control.addVariable(KItem+"BunkerWallMat10","ChipIRSteel");
-      // Control.addVariable(KItem+"BunkerWallMat11","CarstonConc");
-      
-      // Control.addVariable(KItem+"BunkerWallLen1",10.0);  
-      // Control.addVariable(KItem+"BunkerWallLen2",15.5);  // c 
-      // Control.addVariable(KItem+"BunkerWallLen3",15.5);  // s
-      // Control.addVariable(KItem+"BunkerWallLen4",15.5);  // c
-      // Control.addVariable(KItem+"BunkerWallLen5",15.5);  // s
-      // Control.addVariable(KItem+"BunkerWallLen6",46.5);  // c
-      // Control.addVariable(KItem+"BunkerWallLen7",46.5);  // s
-      // Control.addVariable(KItem+"BunkerWallLen8",46.5);  // s
-      // Control.addVariable(KItem+"BunkerWallLen9",46.5);  // c
-      // Control.addVariable(KItem+"BunkerWallLen10",46.5); // c
-      // Control.addVariable(KItem+"BunkerWallLen11",31.0); // s
-      // Control.addVariable(KItem+"BunkerWallLen12",15.5); // c
       Control.addVariable(KItem+"BunkerWallActive",0);
 
       Control.addVariable(KItem+"BunkerWallNVert",8);
@@ -214,11 +188,11 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   
 
   Control.addVariable(AKey+"BunkerPillarsR0",600.0);
-  Control.addVariable(AKey+"BunkerPillarsR1",900.0);
-  Control.addVariable(AKey+"BunkerPillarsR2",1200.0);
-  Control.addVariable(AKey+"BunkerPillarsR3",1500.0);
-  Control.addVariable(AKey+"BunkerPillarsR4",1800.0);
-  Control.addVariable(AKey+"BunkerPillarsR5",2100.0);
+  Control.addVariable(AKey+"BunkerPillarsR1",981.0);
+  Control.addVariable(AKey+"BunkerPillarsR2",1309.0);
+  Control.addVariable(AKey+"BunkerPillarsR3",1581.0);
+  Control.addVariable(AKey+"BunkerPillarsR4",1854.0);
+  Control.addVariable(AKey+"BunkerPillarsR5",2127.0);
   Control.addVariable(AKey+"BunkerPillarsR6",2400.0);
   
   Control.addVariable(AKey+"BunkerPillarsRS_0",-15.0);
@@ -238,34 +212,37 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
 
 
-  Control.addVariable(AKey+"BunkerPillarsNXBeam",-3);
-  Control.addVariable(AKey+"BunkerPillarsXBeam0A","R_3S_1");
-  Control.addVariable(AKey+"BunkerPillarsXBeam0B","R_3S_2");
-  Control.addVariable(AKey+"BunkerPillarsXBeam1A","R_4S_4");
-  Control.addVariable(AKey+"BunkerPillarsXBeam1B","R_4S_5");
-  Control.addVariable(AKey+"BunkerPillarsXBeam2A","R_5S_5");
-  Control.addVariable(AKey+"BunkerPillarsXBeam2B","R_5S_6");
+  Control.addVariable(AKey+"BunkerPillarsNXBeam",-8);
+  Control.addVariable(AKey+"BunkerPillarsXBeam0A","R_1S_0");
+  Control.addVariable(AKey+"BunkerPillarsXBeam1A","R_1S_1");
+  Control.addVariable(AKey+"BunkerPillarsXBeam2A","R_1S_2");
+  Control.addVariable(AKey+"BunkerPillarsXBeam3A","R_2S_3");
+  Control.addVariable(AKey+"BunkerPillarsXBeam4A","R_2S_4");
+  Control.addVariable(AKey+"BunkerPillarsXBeam5A","R_3S_5");
+  Control.addVariable(AKey+"BunkerPillarsXBeam6A","R_4S_6");
+  Control.addVariable(AKey+"BunkerPillarsXBeam7A","R_5S_7");
 
 
-  Control.addVariable(AKey+"BunkerPillarsNLBeam",-8);
+  Control.addVariable(AKey+"BunkerPillarsNLBeam",-15);
 
   // R0 BLOCK
-  Control.addVariable(AKey+"BunkerPillarsLBeam0A","R_2S_0");
-  Control.addVariable(AKey+"BunkerPillarsLBeam0B","R_3S_0");
-  Control.addVariable(AKey+"BunkerPillarsLBeam1A","R_2S_1");
-  Control.addVariable(AKey+"BunkerPillarsLBeam1B","R_3S_1");
-  Control.addVariable(AKey+"BunkerPillarsLBeam2A","R_3S_2");
-  Control.addVariable(AKey+"BunkerPillarsLBeam2B","R_4S_2");
-  Control.addVariable(AKey+"BunkerPillarsLBeam3A","R_3S_3");
-  Control.addVariable(AKey+"BunkerPillarsLBeam3B","R_4S_3");
-  Control.addVariable(AKey+"BunkerPillarsLBeam4A","R_3S_4");
-  Control.addVariable(AKey+"BunkerPillarsLBeam4B","R_4S_4");
-  Control.addVariable(AKey+"BunkerPillarsLBeam5A","R_4S_5");
-  Control.addVariable(AKey+"BunkerPillarsLBeam5B","R_5S_5");
-  Control.addVariable(AKey+"BunkerPillarsLBeam6A","R_5S_6");
-  Control.addVariable(AKey+"BunkerPillarsLBeam6B","R_6S_6");
-  Control.addVariable(AKey+"BunkerPillarsLBeam7A","R_5S_7");
-  Control.addVariable(AKey+"BunkerPillarsLBeam7B","R_6S_7");
+  Control.addVariable(AKey+"BunkerPillarsLBeam0A","R_0S_0");
+  Control.addVariable(AKey+"BunkerPillarsLBeam1A","R_0S_1");
+  Control.addVariable(AKey+"BunkerPillarsLBeam2A","R_0S_2");
+  Control.addVariable(AKey+"BunkerPillarsLBeam3A","R_1S_2");
+  Control.addVariable(AKey+"BunkerPillarsLBeam4A","R_1S_3");
+  Control.addVariable(AKey+"BunkerPillarsLBeam5A","R_1S_4");
+  Control.addVariable(AKey+"BunkerPillarsLBeam6A","R_2S_5");
+  Control.addVariable(AKey+"BunkerPillarsLBeam7A","R_3S_6");
+  Control.addVariable(AKey+"BunkerPillarsLBeam8A","R_4S_7");
+
+  Control.addVariable(AKey+"BunkerPillarsLBeam9A","R_0S_8");
+  Control.addVariable(AKey+"BunkerPillarsLBeam10A","R_1S_8");
+  Control.addVariable(AKey+"BunkerPillarsLBeam11A","R_2S_8");
+  Control.addVariable(AKey+"BunkerPillarsLBeam12A","R_3S_8");
+  Control.addVariable(AKey+"BunkerPillarsLBeam13A","R_4S_8");
+  Control.addVariable(AKey+"BunkerPillarsLBeam14A","R_5S_8");
+    
   
   //
   // RIGHT BUNKER : B PART
@@ -305,25 +282,22 @@ EssBunkerVariables(FuncDataBase& Control)
   
   Control.addVariable("ABunkerQuakeNPath",2);
 
-  Control.addVariable("ABunkerQuake0NPoint",12);
-  Control.addVariable("ABunkerQuake0XGap",13.5);
+  Control.addVariable("ABunkerQuake0NPoint",9);
+  Control.addVariable("ABunkerQuake0XGap",6.5);
   Control.addVariable("ABunkerQuake0ZGap",100.0);
-  Control.addVariable("ABunkerQuake0XStep",-40.0);
-  Control.addVariable("ABunkerQuake0YStep",100.0);
+  Control.addVariable("ABunkerQuake0XStep",0.0);
+  Control.addVariable("ABunkerQuake0YStep",0.0);
 
-  // adjusted to look right
-  Control.addVariable("ABunkerQuake0PtA0",Geometry::Vec3D(1196.3,191.2,0));
-  Control.addVariable("ABunkerQuake0PtA1",Geometry::Vec3D(1106.5,447.5,0));
-  Control.addVariable("ABunkerQuake0PtA2",Geometry::Vec3D(1308.8,566.9,0));
-  Control.addVariable("ABunkerQuake0PtA3",Geometry::Vec3D(1125.2,930.2,0));
-  Control.addVariable("ABunkerQuake0PtA4",Geometry::Vec3D(1281.6,1056.0,0));
-  Control.addVariable("ABunkerQuake0PtA5",Geometry::Vec3D(1166.2,1184.6,0));
-  Control.addVariable("ABunkerQuake0PtA6",Geometry::Vec3D(1306.0,1325.7,0));
-  Control.addVariable("ABunkerQuake0PtA7",Geometry::Vec3D(1162.0,1455.4,0));
-  Control.addVariable("ABunkerQuake0PtA8",Geometry::Vec3D(1286.4,1610.4,0));
-  Control.addVariable("ABunkerQuake0PtA9",Geometry::Vec3D(1125.1,1728.4,0));
-  Control.addVariable("ABunkerQuake0PtA10",Geometry::Vec3D(1171.5,1804.0,0));
-  Control.addVariable("ABunkerQuake0PtA11",Geometry::Vec3D(1007.5,1899.2,0));
+  // Midlayer dilitation
+  Control.addVariable("ABunkerQuake0PtA0",Geometry::Vec3D(1111.3,253.0,0));
+  Control.addVariable("ABunkerQuake0PtA1",Geometry::Vec3D(646,151.0,0));
+  Control.addVariable("ABunkerQuake0PtA2",Geometry::Vec3D(575,349,0)); //curve
+  Control.addVariable("ABunkerQuake0PtA3",Geometry::Vec3D(1068,683,0));
+  Control.addVariable("ABunkerQuake0PtA4",Geometry::Vec3D(905,882,0));
+  Control.addVariable("ABunkerQuake0PtA5",Geometry::Vec3D(1264,1255,0));
+  Control.addVariable("ABunkerQuake0PtA6",Geometry::Vec3D(984,1451,0));
+  Control.addVariable("ABunkerQuake0PtA7",Geometry::Vec3D(1258,1876,0));
+  Control.addVariable("ABunkerQuake0PtA8",Geometry::Vec3D(927,2043,0));
 
   // as measured -- maybe correct?
   Control.addVariable("ABunkerQuake1NPoint",12);

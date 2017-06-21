@@ -3,7 +3,7 @@
  
  * File:   crystal/CifStore.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,7 +297,7 @@ CifStore::readTypes(const CifLoop& CLoop)
   std::vector<size_t> IntVec;
   const int nIndex=CLoop.getIntFromKey(ItemNames,IntVec);
   if (nIndex<1)  return 0;
-  int retval(1);
+
   double ion(0.0);
   std::string SymElm;
   const size_t lneCnt(CLoop.getLineCnt());
@@ -313,12 +313,11 @@ CifStore::readTypes(const CifLoop& CLoop)
 	}
       else
         {
-	  ELog::EM<<"Cif::readTypes Error with on line "<<i;
-	  ELog::EM.error();
-	  retval=-1;
+	  ELog::EM<<"Cif::readTypes Error with on line "<<i<<ELog::endErr;
+	  return -1;
 	}
     }
-  return  1;
+  return 1;
 }
 
 
@@ -644,7 +643,7 @@ CifStore::primaryRotation(const Triple<int>& zIndex,
   ELog::RegMethod RegA("CifStore","primaryRotation");
   // First rotate the zIndex vector to the zAxis
   Geometry::Vec3D zPlane=UVec(zIndex[0],zIndex[1],zIndex[2]);
-  ELog::EM<<"Z == :"<<zPlane<<" "<<zAxis<<ELog::endErr;
+
   zPlane.makeUnit();
   const Geometry::Vec3D zAxisUnit=zAxis.unit();
 
@@ -660,7 +659,7 @@ CifStore::primaryRotation(const Triple<int>& zIndex,
       QZA.rotate(recipVec[i]);
     }
   // Now calculate the x 
-  Geometry::Vec3D xPlane=UVec(zIndex[0],zIndex[1],zIndex[2]);
+  Geometry::Vec3D xPlane=UVec(xIndex[0],xIndex[1],xIndex[2]);
   xPlane.makeUnit();
 
   // Projection of vector into plane is : n * (X * n)
@@ -676,7 +675,7 @@ CifStore::primaryRotation(const Triple<int>& zIndex,
       QXA.rotate(unitVec[i]);
       QXA.rotate(recipVec[i]);
     }
-  ELog::EM<<"Zout == :"<<UVec(1,1,1)<<" "<<BVec(1,1,1)<<ELog::endErr;
+
   return;
 }
 

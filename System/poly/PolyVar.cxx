@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVar.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -661,7 +661,7 @@ PolyVar<VCount>::derivative()
     }
 
   for(size_t i=0;i<iDegree;i++)
-    PCoeff[i]=PCoeff[i+1] * (i+1.0);
+    PCoeff[i]=PCoeff[i+1] * static_cast<double>(i+1);
   iDegree--;
   compress();
   return *this;
@@ -1035,7 +1035,6 @@ PolyVar<VCount>::read(const std::string& Line)
       if (bracket)
 	throw ColErr::InvalidLine("PolVar::read",Line,0);
 
-      size_t workPoint(0);
       std::string Comp;      
       if (bCut!=ULONG_MAX)
         {
@@ -1044,25 +1043,21 @@ PolyVar<VCount>::read(const std::string& Line)
 	  if (sign)
 	    {
 	      CLine.erase(bCut-1,pos-bCut+2);
-	      workPoint=bCut-1;
 	    }
 	  else
 	    {
 	      CLine.erase(bCut,pos-bCut+1);
-	      workPoint=bCut;
 	    }
 	}
       else if (sign)
         {
 	  Comp=CLine.substr(compStart+1,pos-compStart-1);
 	  CLine.erase(compStart,pos-compStart+1);
-	  workPoint=compStart;
 	}
       else
         {
 	  Comp=CLine.substr(compStart,pos-compStart);
 	  CLine.erase(compStart,pos-compStart+1);
-	  workPoint=compStart;
 	  sign=1;
 	}
       // Need -ve on bracket: ??

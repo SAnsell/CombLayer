@@ -3,7 +3,7 @@
  
  * File:   poly/PolyVarOne.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -679,7 +679,7 @@ PolyVar<1>::derivative()
     }
 
   for(size_t i=0;i<iDegree;i++)
-    PCoeff[i]=PCoeff[i+1]*(i+1);
+    PCoeff[i]=PCoeff[i+1]*static_cast<double>(i+1);
   iDegree--;
 
   return *this;
@@ -781,7 +781,7 @@ PolyVar<1>::divide(const PolyVar<1>& pD,PolyVar<1>& pQ,
     \param epsilon :: Tolerance  [-ve to use master tolerance]
   */ 
 {
-
+  
   if (iDegree>=pD.iDegree)
     {
       const size_t iQuotDegree = iDegree - pD.iDegree;  

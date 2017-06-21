@@ -44,12 +44,15 @@ struct pillarInfo
   Geometry::Vec3D centPoint;      ///< Centre point [non z]
   Geometry::Vec3D YAxis;          ///< Y Axis 
 
+  
   pillarInfo(const std::string&,const size_t,const size_t,
 	     const int,const int,
 	     const Geometry::Vec3D&,const Geometry::Vec3D&);
   pillarInfo(const pillarInfo&);
   pillarInfo& operator=(const pillarInfo&);
   ~pillarInfo() {}                ///< Destructor
+
+  std::string getNext(const long int,const long int) const;
   
 };
 
