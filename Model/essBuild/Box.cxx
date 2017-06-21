@@ -324,28 +324,7 @@ Box::getLayerSurf(const size_t layerIndex,
 {
   ELog::RegMethod RegA("Box","getLinkSurf");
 
-  ELog::EM << "Dummy method" << ELog::endDiag;
-
-  if (layerIndex>nLayers)
-    throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
-
-  const int SI(10*static_cast<int>(layerIndex)+surfIndex);
-  const long int uSIndex(std::abs(sideIndex));
-  const int signValue((sideIndex>0) ? 1 : -1);
-
-  switch(uSIndex)
-    {
-    case 1:
-    case 2:
-    case 3:
-    case 4:
-      return signValue*SMap.realSurf(SI+7);
-    case 5:
-      return -signValue*SMap.realSurf(SI+5);
-    case 6:
-      return signValue*SMap.realSurf(SI+6);
-    }
-  throw ColErr::IndexError<long int>(sideIndex,7,"sideIndex");
+  throw ColErr::AbsObjMethod("Not implemented yet - do it similar to DiskPreMod?");
 }
 
 
@@ -353,15 +332,13 @@ std::string
 Box::getLayerString(const size_t layerIndex,
                            const long int sideIndex) const
   /*!
-    Given a side and a layer calculate the link surf
+    Given a side and a layer calculate the layer string
     \param layerIndex :: layer, 0 is inner moderator [0-4]
     \param sideIndex :: Side [0-3]
     \return Surface string
   */
 {
   ELog::RegMethod RegA("Box","getLayerString");
-
-  ELog::EM << "Dummy method" << ELog::endDiag;
 
   if (layerIndex>nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -373,19 +350,19 @@ Box::getLayerString(const size_t layerIndex,
   switch(uSIndex)
     {
     case 1:
-      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 -2M ");
+      Out=ModelSupport::getComposite(SMap,SI," -1 ");
       break;
     case 2:
-      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 2M ");
+      Out=ModelSupport::getComposite(SMap,SI," 2 ");
       break;
     case 3:
-      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 -1M ");
+      Out=ModelSupport::getComposite(SMap,SI," -3 ");
       break;
     case 4:
-      Out=ModelSupport::getComposite(SMap,SI,surfIndex," 7 1M ");
+      Out=ModelSupport::getComposite(SMap,SI," 4 ");
       break;
     case 5:
-      Out=ModelSupport::getComposite(SMap,SI,"  -5 ");
+      Out=ModelSupport::getComposite(SMap,SI," -5 ");
       break;
     case 6:
       Out=ModelSupport::getComposite(SMap,SI," 6 ");
