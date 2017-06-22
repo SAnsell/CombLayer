@@ -7,7 +7,7 @@ use strict;
 
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
-		"sns","reactor","t1MarkII","linac","essBeamline",
+		"sns","reactor","t1MarkII","essBeamline",
 		"filter","singleItem","testMain"); 
 
 
@@ -74,24 +74,24 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "weights","global","attachComp","visit",
                              "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
-			     "nmx","nnbar","odin","testBeam","trex",
-			     "vor","vespa",
+			     "nmx","nnbar","odin","skadi","testBeam",
+			     "trex","vor","vespa",
 			     "shortDream","shortNmx","shortOdin","longLoki",
 			     "commonVar","simpleItem","physics","simMC",
 			     "transport","scatMat","endf","crystal",
 			     "tally","source","instrument","work"
     	 	             ]);
 
-$gM->addDepUnit("linac",
-		["essLinac","visit","src","simMC",
-		 "beamline","physics","support",
-		 "input","instrument","source","monte",
-		 "funcBase","log","tally","construct",
-		 "crystal","transport","scatMat","md5",
-		 "endf","process","world","work",
-		 "monte","geometry","mersenne","src","xml","poly",
-		 "weights","global","attachComp","visit"
-		]);
+#$gM->addDepUnit("linac",
+#		["essLinac","visit","src","simMC",
+#		 "beamline","physics","support",
+#		 "input","instrument","source","monte",
+#		 "funcBase","log","tally","construct",
+#		 "crystal","transport","scatMat","md5",
+#		 "endf","process","world","work",
+#		 "monte","geometry","mersenne","src","xml","poly",
+#		 "weights","global","attachComp","visit"
+#		]);
 
 $gM->addDepUnit("essBeamline",
 		             ["essBuild","visit","src","simMC",
@@ -104,7 +104,7 @@ $gM->addDepUnit("essBeamline",
 			     "weights","global","attachComp","visit",
 			     "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
-			     "nmx","nnbar","odin","testBeam","trex",
+			     "nmx","nnbar","odin","skadi","testBeam","trex",
 			     "vor","vespa",
 			     "shortDream","shortNmx","shortOdin",
 			     "longLoki","commonVar","simpleItem"
@@ -238,6 +238,7 @@ $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 			 "transport","scatMat","endf","crystal",
 			 "source","monte","funcBase","log","monte",
 			 "tally","geometry","mersenne","src","world",
+			 "attachComp","beamline","support","commonVar",
 			 "work","xml","poly","support","weights",
 			 "md5","global","attachComp","visit","poly"]);
 

@@ -450,7 +450,35 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
 	}
+      else if (typeID=="Octagon")   
+	{
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
+	  const double SA=Control.EvalVar<double>(keyName+NStr+"WidthStart");
+	  const double SB=Control.EvalVar<double>(keyName+NStr+"WidthEnd");
+	  const double aA=sqrt(2.0)*SA/(2.0+sqrt(2.0));
+	  const double aB=sqrt(2.0)*SB/(2.0+sqrt(2.0));
+	  SU->addPairPoint(Geometry::Vec3D(SA/2.0,0.0,aA/2.0),
+			   Geometry::Vec3D(SB/2.0,0.0,aB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(aA/2.0,0.0,SA/2.0),
+			   Geometry::Vec3D(aB/2.0,0.0,SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-aA/2.0,0.0,SA/2.0),
+			   Geometry::Vec3D(-aB/2.0,0.0,SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-SA/2.0,0.0,aA/2.0),
+			   Geometry::Vec3D(-SB/2.0,0.0,aB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-SA/2.0,0.0,-aA/2.0),
+			   Geometry::Vec3D(-SB/2.0,0.0,-aB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-aA/2.0,0.0,-SA/2.0),
+			   Geometry::Vec3D(-aB/2.0,0.0,-SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(aA/2.0,0.0,-SA/2.0),
+			   Geometry::Vec3D(aB/2.0,0.0,-SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(SA/2.0,0.0,-aA/2.0),
+			   Geometry::Vec3D(SB/2.0,0.0,-aB/2.0));
 
+	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setXAxis(X,Z);      
+	  SU->constructConvex();
+	  shapeUnits.push_back(SU);
+	}
       else
 	{
 	  throw ColErr::InContainerError<std::string>

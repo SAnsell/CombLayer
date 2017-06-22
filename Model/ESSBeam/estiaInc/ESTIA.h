@@ -57,7 +57,6 @@ namespace essSystem
     \date September 2015
     \brief ESTIA beamline constructor for the ESS
   */
-  
 class ESTIA : public attachSystem::CopiedComp
 {
  private:

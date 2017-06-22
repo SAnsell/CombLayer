@@ -1220,6 +1220,14 @@ DBMaterial::initMaterial()
 		   "1001.70c 0.074402","orthh.99t",MLib);
   setMaterial(MObj);
 
+  // 
+  // Material #139 boro-silicate glass (rho=2.24g 75% siO2 12% B2O4 13% Al2O3
+  MObj.setMaterial(139,"Borosilicate",
+		   "14028.70c 0.0160107 14029.70c 0.000812983  "
+		   "14030.70c 0.000535924 5010.70c 0.000663275  "
+		   "5011.70c 0.00266976 13027.70c 0.00361079  "
+		   "8016.70c 0.0451349 ","",MLib);
+  setMaterial(MObj);
   
   return;
 }

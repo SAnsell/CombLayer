@@ -118,7 +118,9 @@ class FocusGenerator
 		      const double,const double,
 		      const double,const double) const;
   
-
+  void generateOctagon(FuncDataBase&,
+		       const std::string&,const double,
+		       const double,const double) const;
   
 };
 
