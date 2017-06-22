@@ -399,11 +399,14 @@ EssButterflyModerator(FuncDataBase& Control)
       Control.addVariable("TopBox"+s+"WaterWallThick",0.347);
       Control.addVariable("TopBox"+s+"WaterCutAngle",30.0);
       Control.addVariable("TopBox"+s+"WaterCutWidth",6);
-      Control.addVariable("TopBox"+s+"WaterModMat","H2O");
+      Control.addVariable("TopBox"+s+"WaterModMat","Be5H2O");
       Control.addVariable("TopBox"+s+"WaterWallMat","Aluminium");
       Control.addVariable("TopBox"+s+"WaterModTemp",300.0);
       Control.addVariable("TopBox"+s+"WaterMidWallThick",0.0);
-    }
+      Control.addVariable("TopBox"+s+"WaterPreThick",10);
+      Control.addVariable("TopBox"+s+"WaterPreMat","H2O");
+      Control.addVariable("TopBox"+s+"WaterPreTemp",300.0);
+   }
   Control.addVariable("TopBoxMidH2FlowGuideType", "None");
   ////////////////////////////////////////////////////////////////////////
   

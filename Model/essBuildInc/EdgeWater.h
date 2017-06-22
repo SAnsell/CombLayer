@@ -54,10 +54,13 @@ class EdgeWater :
 
   double cutAngle;    ///<  Angle cut away from H2 surface
   double cutWidth;    ///< Water thickness at its connection to the H2-lobe
+  double preThick; ///< Premoderator thickness (if any)
 
   int modMat;               ///< Water material
+  int preMat; ///< Premoderator material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
+  double preTemp; ///< Premoderator temperature
 
   std::string sideRule;     ///< Side rule
 

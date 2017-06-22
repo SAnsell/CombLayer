@@ -108,8 +108,12 @@ EdgeWater::EdgeWater(const EdgeWater& A) :
   edgeIndex(A.edgeIndex),cellIndex(A.cellIndex),
   width(A.width),wallThick(A.wallThick),midWallThick(A.midWallThick),
   midWallLength(A.midWallLength),
+  cutAngle(A.cutAngle),cutWidth(A.cutWidth),preThick(A.preThick),
   modMat(A.modMat),
-  wallMat(A.wallMat),modTemp(A.modTemp),sideRule(A.sideRule)
+  preMat(A.preMat),
+  wallMat(A.wallMat),modTemp(A.modTemp),preTemp(A.preTemp),
+  sideRule(A.sideRule)
+
   /*!
     Copy constructor
     \param A :: EdgeWater to copy
@@ -135,9 +139,14 @@ EdgeWater::operator=(const EdgeWater& A)
       wallThick=A.wallThick;
       midWallThick=A.midWallThick;
       midWallLength=A.midWallLength;
+      cutAngle=A.cutAngle;
+      cutWidth=A.cutWidth;
+      preThick=A.preThick;
       modMat=A.modMat;
+      preMat=A.preMat;
       wallMat=A.wallMat;
       modTemp=A.modTemp;
+      preTemp=A.preTemp;
       sideRule=A.sideRule;
     }
   return *this;
@@ -178,10 +187,13 @@ EdgeWater::populate(const FuncDataBase& Control)
 
   cutAngle=Control.EvalVar<double>(keyName+"CutAngle");
   cutWidth=Control.EvalVar<double>(keyName+"CutWidth");
+  preThick=Control.EvalDefVar<double>(keyName+"PreThick", 0.0);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  preMat=ModelSupport::EvalMat<int>(Control,keyName+"PreMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
+  preTemp=Control.EvalVar<double>(keyName+"PreTemp");
 
   return;
 }
@@ -293,11 +305,30 @@ EdgeWater::createObjects(Simulation& System,
 				       modTemp,Out+container+divider));
     } else // no middle wall
     {
-      Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-				       modTemp,Out+container+divider));
+      if (preThick>Geometry::zeroTol)
+	{
+	  HeadRule HR(divider);
+	  Geometry::Plane *surfDivider = dynamic_cast<Geometry::Plane*>(SMap.realSurfPtr(HR.getPrimarySurface()));
+	  if (Origin.Y()>0)
+	    ModelSupport::buildShiftedPlaneReversed(SMap,edgeIndex+302,surfDivider,
+						    -preThick);
+	  else
+	    ModelSupport::buildShiftedPlane(SMap,edgeIndex+302,surfDivider,
+					    -preThick);
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 -302");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+					   modTemp,Out+container+divider));
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 302");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,preMat,
+					   preTemp,Out+container+divider));
+	} else // no premoderator needed
+	{
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
+					   modTemp,Out+container+divider));
+	}
     }
-  
+
   //  CellMap::setCell("Water",  cellIndex-1);
   // Two walls : otherwise divider container
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -1 103 ");
