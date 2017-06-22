@@ -311,8 +311,8 @@ EdgeWater::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,edgeIndex," 11 -103 203 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
-    CellMap::addCell("Wall",  cellIndex-1);
-    CellMap::setCell("InnerAlSupply",  cellIndex-1);
+  CellMap::addCell("Wall",  cellIndex-1);
+  CellMap::setCell("InnerAlSupply",  cellIndex-1);
   Out=ModelSupport::getComposite(SMap,edgeIndex," -12 104 -204");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,
 				   Out+container+divider));
