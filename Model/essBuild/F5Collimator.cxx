@@ -175,8 +175,8 @@ namespace essSystem
       }
 
     // check the range value:
-    if ((range.find("cold")==std::string::npos) && (range.find("thermal")==std::string::npos) && (range.find("center")==std::string::npos))
-      throw ColErr::InvalidLine(range,"range can be either \"cold\", \"thermal\" or \"center\"");
+    if ((range.find("cold")==std::string::npos) && (range.find("thermal")==std::string::npos) && (range.find("centre")==std::string::npos))
+      throw ColErr::InvalidLine(range,"range can be either \"cold\", \"thermal\" or \"centre\"");
 
     radius=Control.EvalDefPair<double>(keyName, "F5Default", "Radius", -1);  // Must be positive to be used with theta.
     if (radius<=0)
@@ -318,7 +318,7 @@ namespace essSystem
     if (BC.abs()-viewWidth>Geometry::zeroTol)
       ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
 
-    if (range=="center") // center of the collimator looks at the focal point
+    if (range=="centre") // centre of the collimator looks at the focal point
 	B = B-BC/2;
 
     Geometry::Vec3D C(B+BC);
