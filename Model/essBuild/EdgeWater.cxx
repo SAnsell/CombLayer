@@ -325,10 +325,10 @@ EdgeWater::createObjects(Simulation& System,
 	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 -303");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
 					   modTemp,Out+container));
-	  Out=ModelSupport::getComposite(SMap,edgeIndex," 103 -104 303 -302");
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 303 -302");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
 					   modTemp,Out+container));
-	  Out=ModelSupport::getComposite(SMap,edgeIndex," 103 -104 302");
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 302");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,preMat,
 					   preTemp,Out+container+divider));
 	} else // no premoderator needed
