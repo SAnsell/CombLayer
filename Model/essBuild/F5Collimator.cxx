@@ -175,8 +175,8 @@ namespace essSystem
       }
 
     // check the range value:
-    if ((range.find("cold")==std::string::npos) && (range.find("thermal")==std::string::npos))
-      throw ColErr::InvalidLine(range,"range can be either \"cold\" or \"thermal\"");
+    if ((range.find("cold")==std::string::npos) && (range.find("thermal")==std::string::npos) && (range.find("center")==std::string::npos))
+      throw ColErr::InvalidLine(range,"range can be either \"cold\", \"thermal\" or \"center\"");
 
     radius=Control.EvalDefPair<double>(keyName, "F5Default", "Radius", -1);  // Must be positive to be used with theta.
     if (radius<=0)
@@ -286,7 +286,7 @@ namespace essSystem
 	B = Geometry::Vec3D(tmpB.X(), tmpB.Y(), zmax);
       } else
       {
-	if (LinkPoint>vecFP.size()-1)
+	if (static_cast<unsigned int>(LinkPoint)>vecFP.size()-1)
 	  ELog::EM << "LinkPoint number exceeds the vecFP size: " << LinkPoint << " " << vecFP.size() << ELog::endCrit;
 	B = Geometry::Vec3D(vecFP[static_cast<unsigned int>(LinkPoint)].X(),
 			    vecFP[static_cast<unsigned int>(LinkPoint)].Y(), zmax);
@@ -310,12 +310,16 @@ namespace essSystem
     if (range=="thermal")
       BOC *= -1;
 
+
     Geometry::Vec3D OC(OB);
     Geometry::Quaternion::calcQRotDeg(BOC*180/M_PI,Z).rotate(OC);
 
     Geometry::Vec3D BC(OC-OB);
     if (BC.abs()-viewWidth>Geometry::zeroTol)
       ELog::EM << "Problem with tally " << keyName << ": distance between B and C is " << BC.abs() << " --- not equal to F5ViewWidth = " << viewWidth << ELog::endErr;
+
+    if (range=="center") // center of the collimator looks at the focal point
+	B = B-BC/2;
 
     Geometry::Vec3D C(B+BC);
 
