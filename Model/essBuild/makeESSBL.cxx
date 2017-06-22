@@ -120,7 +120,8 @@ makeESSBL::makeESSBL(const std::string& SN,
 {
 }
 
-makeESSBL::makeESSBL(const makeESSBL& A) : 
+makeESSBL::makeESSBL(const makeESSBL& A) :
+  beamlineSystem::beamlineConstructor(A),
   shutterName(A.shutterName),beamName(A.beamName)
   /*!
     Copy constructor
@@ -138,6 +139,7 @@ makeESSBL::operator=(const makeESSBL& A)
 {
   if (this!=&A)
     {
+      beamlineSystem::beamlineConstructor::operator=(A);
     }
   return *this;
 }

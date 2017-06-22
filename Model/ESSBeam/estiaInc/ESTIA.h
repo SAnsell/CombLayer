@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/ESTIA.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,9 +58,12 @@ namespace essSystem
     \brief ESTIA beamline constructor for the ESS
   */
   
-class ESTIA
+class ESTIA : public attachSystem::CopiedComp
 {
  private:
+
+  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int stopPoint;  
 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> estiaAxis;
@@ -96,7 +99,7 @@ class ESTIA
   
  public:
   
-  ESTIA();
+  ESTIA(const std::string&);
   ESTIA(const ESTIA&);
   ESTIA& operator=(const ESTIA&);
   ~ESTIA();

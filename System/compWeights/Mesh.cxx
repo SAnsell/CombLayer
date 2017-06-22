@@ -137,11 +137,11 @@ Mesh::setCylinder(const Geometry::Vec3D& Base,
   for(size_t i=0;i<=NR;i++)
     X.push_back(static_cast<double>(i)*dR);
 
-  const double dL=((Top-Base).abs())/NZ;
+  const double dL=((Top-Base).abs())/static_cast<double>(NZ);
   for(size_t i=0;i<=NZ;i++)
     Y.push_back(dL*static_cast<double>(i));
 
-  const double dT=1.0/NT;
+  const double dT=1.0/static_cast<double>(NT);
   for(size_t i=0;i<=NT;i++)
     Z.push_back(dT*static_cast<double>(i));
   

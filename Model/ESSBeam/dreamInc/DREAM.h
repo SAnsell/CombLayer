@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DREAM.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
-
+-
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> dreamAxis;
 
