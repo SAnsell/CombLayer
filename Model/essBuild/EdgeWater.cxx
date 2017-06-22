@@ -190,10 +190,17 @@ EdgeWater::populate(const FuncDataBase& Control)
   preThick=Control.EvalDefVar<double>(keyName+"PreThick", 0.0);
 
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
-  preMat=ModelSupport::EvalMat<int>(Control,keyName+"PreMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
-  preTemp=Control.EvalVar<double>(keyName+"PreTemp");
+  if (preThick>Geometry::zeroTol)
+    {
+      preMat=ModelSupport::EvalMat<int>(Control,keyName+"PreMat");
+      preTemp=Control.EvalVar<double>(keyName+"PreTemp");
+    } else
+    {
+      preMat = 0;
+      preTemp = 0.0;
+    }
 
   return;
 }
