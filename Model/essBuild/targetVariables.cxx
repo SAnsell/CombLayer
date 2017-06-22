@@ -474,7 +474,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("PBIPPipeAfterAngleRight",4.07); // MK170207
 
   Control.addVariable("PBIPFoilOffset",5.0); // a dummy value
-  ELog::EM << "PBIP Foil offset??? + references for PBIP foil" << ELog::endCrit;
+  ELog::EM << "PBIP Foil offset??? + references for PBIP foil" << ELog::endDebug;
   Control.addVariable("PBIPFoilThick",0.05); // YJL
   Control.addVariable("PBIPFoilMat", "Tungsten_BeamMonitor"); // YJL
   
