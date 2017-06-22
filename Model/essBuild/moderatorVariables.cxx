@@ -421,7 +421,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingMat","H2O");
   Control.addVariable("TopLeftPreWingWallMat","Aluminium");
 
-  Control.addVariable("TopLeftPreWingNLayers",1);
+  Control.addVariable("TopLeftPreWingNLayers",4);    // RADII!!!!!
   Control.addVariable("TopLeftPreWingLayerRadius1",30.0);
   Control.addVariable("TopLeftPreWingInnerMat1","Aluminium");
   Control.addVariable("TopLeftPreWingSurfMat1","Aluminium");
