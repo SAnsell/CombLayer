@@ -263,9 +263,9 @@ EdgeWater::createSurfaces()
   ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+103,EdPtA,X,Z,cutAngle);
   ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+104,EdPtB,X,Z,-cutAngle);
 
-  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+203,EdPtA-X*wallThick,
+  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+203,EdPtA-X*wallThick/cos(cutAngle*M_PI/180),
 				  X,Z,cutAngle);
-  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+204,EdPtB+X*wallThick,
+  ModelSupport::buildPlaneRotAxis(SMap,edgeIndex+204,EdPtB+X*wallThick/cos(cutAngle*M_PI/180),
 				  X,Z,-cutAngle);
 
   return;

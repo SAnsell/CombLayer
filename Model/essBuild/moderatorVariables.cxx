@@ -403,7 +403,7 @@ EssButterflyModerator(FuncDataBase& Control)
       Control.addVariable("TopBox"+s+"WaterWallMat","Aluminium");
       Control.addVariable("TopBox"+s+"WaterModTemp",300.0);
       Control.addVariable("TopBox"+s+"WaterMidWallThick",0.0);
-      Control.addVariable("TopBox"+s+"WaterPreThick",10);
+      Control.addVariable("TopBox"+s+"WaterPreThick",3);
       Control.addVariable("TopBox"+s+"WaterPreMat","H2O");
       Control.addVariable("TopBox"+s+"WaterPreTemp",300.0);
    }
