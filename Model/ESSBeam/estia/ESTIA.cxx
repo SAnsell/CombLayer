@@ -67,6 +67,7 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
