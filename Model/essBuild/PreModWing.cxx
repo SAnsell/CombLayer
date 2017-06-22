@@ -276,7 +276,7 @@ PreModWing::createObjects(Simulation& System,
     throw ColErr::InContainerError<int>
       (ambientCell,"PancakeModerator ambientVoid cell not found");
 
-  ELog::EM << "This is UGLY" << ELog::endDiag;
+  ELog::EM << "This is UGLY" << ELog::endDebug;
   // Check with SA how to do it correctly.
   // The problem is that BM can derive both from the Box, Pancake or Butterfly classes,
   // so I need to cast type of BM correctly.
