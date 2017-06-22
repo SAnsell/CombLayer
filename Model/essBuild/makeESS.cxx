@@ -620,8 +620,12 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		throw ColErr::InContainerError<std::string>
 		  (midH2Name,"Component not found");
 
-	      // ELog::EM << midH2->getLinkPt(4) << ELog::endDiag;
-	      // ELog::EM << midH2->getLinkPt(5) << ELog::endDiag;
+	      // just fill vecFP with large enough coordinates, so
+	      // F5Collimator.cxx could work:
+	      for (size_t i=0; i<10; i++)
+		vecFP.push_back(midH2->getLinkPt(0));
+	      
+	      // last two must be zmin/zmax:
 	      vecFP.push_back(midH2->getLinkPt(7));
 	      vecFP.push_back(midH2->getLinkPt(8));
 	      F5->setFocalPoints(vecFP);
