@@ -310,15 +310,25 @@ EdgeWater::createObjects(Simulation& System,
 	  HeadRule HR(divider);
 	  Geometry::Plane *surfDivider = dynamic_cast<Geometry::Plane*>(SMap.realSurfPtr(HR.getPrimarySurface()));
 	  if (Origin.Y()>0)
+	    {
 	    ModelSupport::buildShiftedPlaneReversed(SMap,edgeIndex+302,surfDivider,
 						    -preThick);
-	  else
-	    ModelSupport::buildShiftedPlane(SMap,edgeIndex+302,surfDivider,
-					    -preThick);
-	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 -302");
+	    ModelSupport::buildShiftedPlaneReversed(SMap,edgeIndex+303,surfDivider,
+						    -preThick-wallThick);
+	    } else
+	    {
+	      ModelSupport::buildShiftedPlane(SMap,edgeIndex+302,surfDivider,
+					      -preThick);
+	      ModelSupport::buildShiftedPlane(SMap,edgeIndex+303,surfDivider,
+					      -preThick-wallThick);
+	    }
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 -303");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,
-					   modTemp,Out+container+divider));
-	  Out=ModelSupport::getComposite(SMap,edgeIndex," 1 -2 103 -104 302");
+					   modTemp,Out+container));
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 103 -104 303 -302");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,
+					   modTemp,Out+container));
+	  Out=ModelSupport::getComposite(SMap,edgeIndex," 103 -104 302");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,preMat,
 					   preTemp,Out+container+divider));
 	} else // no premoderator needed
