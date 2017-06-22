@@ -286,6 +286,8 @@ namespace essSystem
 	B = Geometry::Vec3D(tmpB.X(), tmpB.Y(), zmax);
       } else
       {
+	if (LinkPoint>vecFP.size()-1)
+	  ELog::EM << "LinkPoint number exceeds the vecFP size: " << LinkPoint << " " << vecFP.size() << ELog::endCrit;
 	B = Geometry::Vec3D(vecFP[static_cast<unsigned int>(LinkPoint)].X(),
 			    vecFP[static_cast<unsigned int>(LinkPoint)].Y(), zmax);
       }
