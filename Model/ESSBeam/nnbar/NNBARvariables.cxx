@@ -89,9 +89,9 @@ NNBARvariables(FuncDataBase& Control)
   LGen.setRoof(100.0,{35.0,65.0}, {4,4}, {"CastIron","Concrete"});
   LGen.setFloor(100.0,{35.0,65.0}, {4,4}, {"CastIron","Concrete"});
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(2.0);
-  FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 30.0,50.0);
 
   PipeGen.setPipe(35.0,1.0);
@@ -99,7 +99,7 @@ NNBARvariables(FuncDataBase& Control)
   PipeGen.setFlange(-8.0,4.0);
   PipeGen.generatePipe(Control,"nnbarPipeB",8.0,46.0);
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"nnbarFB",38.0, 50.0,55.0, 20.0,25.0);
 

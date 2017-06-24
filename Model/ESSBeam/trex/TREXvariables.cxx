@@ -87,9 +87,9 @@ void TREXvariables(FuncDataBase& Control)
   Control.addVariable("trexAxisZStep",0.0);   // +/- height
   Control.addVariable("trexAxisYStep",175.0);   // +/- 
 
-  FGen.setGuideMat("Aluminium","CastIron");
-  FGen.setThickness(0.8,0.5,0.5);
-  
+  FGen.setLayer(1,0.8,"Aluminium");
+  FGen.setLayer(2,0.5,"CastIron");
+  FGen.setLayer(3,0.5,"Void");  
   FGen.generateTaper(Control,"trexFMono",350.0,9.0,6.38,3.0,4.43);
 
   //  light shutter 
@@ -204,9 +204,10 @@ void TREXvariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"trexPipeOutA",0.25,369.5);
   Control.addVariable("trexPipeOutAXYAngle",-0.0086);
-
-  FGen.setGuideMat("Borosilicate","CastIron");
-  FGen.setThickness(0.5,0.5,0.5);
+  
+  FGen.setLayer(1,0.5,"Borosilicate");
+  FGen.setLayer(2,0.5,"CastIron");
+  FGen.setLayer(3,0.5,"Void");  
   FGen.clearYOffset();
   FGen.generateBender(Control,"trexBOutA",367.5,6.0,6.0,8.04,8.27,
 		      1900000.0,0.0);

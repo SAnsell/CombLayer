@@ -94,13 +94,13 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostAxisZAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZStep",2.0);   // +/- height
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"bifrostFA",350.0,8.0,5.0 ,10.0,5.0);
   
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"bifrostPipeB",8.0,46.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"bifrostFB",44.0, 5.0,4.0, 5.0,4.0);
 
@@ -231,7 +231,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Guide in wall
   FGen.generateTaper(Control,"bifrostFWall",344.0,4.0,5.232, 4.0,5.232);
 
-  FGen.setGuideMat("Glass");
+  FGen.setLayer(1,0.5,"Glass");
   PipeGen.setMat("Stainless304");
   
   // Shield: leaving bunker
@@ -308,7 +308,7 @@ BIFROSTvariables(FuncDataBase& Control)
       yStep=4.0;
     }
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   double gap(8.0);
   for(size_t i=0;i<4;i++)
     {

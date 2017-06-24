@@ -169,7 +169,7 @@ BEERvariables(FuncDataBase& Control)
   Control.addVariable("beerAxisXYAngle",0.9);   // rotation
   Control.addVariable("beerAxisZAngle",0.0);   // rotation 
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   FGen.setYOffset(0.0);
   FGen.generateBender(Control,"beerBA",350.0,4.0,4.0,10.593,17.566,
                       7000.0,0.0);

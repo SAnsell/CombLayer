@@ -276,7 +276,7 @@ RoofPillars::populate(const FuncDataBase& Control)
 void
 RoofPillars::populateBeamSet(const FuncDataBase& Control,
 			     const std::string& nameKey,
-			     const size_t dirR,const size_t dirX,
+			     const long int dirR,const long int dirX,
 			     BeamTYPE& Links) const
   /*!
     Populate the variables for the cross/long beams 

@@ -96,14 +96,14 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAxisZAngle",0.0);  // rotation
   Control.addVariable("miraclesAxisZStep",0.0);   // offset
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.3);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.3,"Void");  
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"miraclesFA",350.0, 6.0,5.0 ,5.0,9.5);
   
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"miraclesPipeB",8.0,44.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.8,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFB",42.0, 5.0,4.857,  9.5,9.85714);
 

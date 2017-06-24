@@ -84,7 +84,7 @@ class RoofPillars : public attachSystem::FixedComp,
     
   void populate(const FuncDataBase&);
   void populateBeamSet(const FuncDataBase&,const std::string&,
-		       const size_t,const size_t,BeamTYPE&) const;
+		       const long int,const long int,BeamTYPE&) const;
 			      
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

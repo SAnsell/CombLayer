@@ -94,9 +94,8 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiAxisXYAngle",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisZAngle",0.0);
 
-  FGen.setGuideMat("Aluminium");
-
-  FGen.setThickness(0.5,0.5);
+  FGen.setLayer(1,0.5,"Aluminium");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
   FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0);
 
@@ -109,7 +108,7 @@ LOKIvariables(FuncDataBase& Control)
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeB",7.0,43.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
 

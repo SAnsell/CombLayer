@@ -94,8 +94,8 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicAxisZAngle",0.46);   // rotation
   Control.addVariable("magicAxisZStep",0.0);   // rotation
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.5,0.4);
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.4,"Void");
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"magicFA",350.0,12.4,3.0 ,4.0,3.0);
 
@@ -103,8 +103,9 @@ MAGICvariables(FuncDataBase& Control)
 
   // out to 6.18m
   PipeGen.generatePipe(Control,"magicPipeC",10.0,75.0);
+  
 
-  FGen.setGuideMat("SiCrystal");
+  FGen.setLayer(1,0.5,"SiCrystal");
   FGen.clearYOffset();
   FGen.generateBender(Control,"magicBC",15.0, 3.0,3.0,3.0,3.0,
                       6500,0.0);
@@ -124,7 +125,7 @@ MAGICvariables(FuncDataBase& Control)
   // out from ChopA (6.5m) to 12m
   PipeGen.generatePipe(Control,"magicPipeD",3.0,650.0);
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"magicFD",646.0 ,2.7,4.08  ,2.4,4.06 );
 

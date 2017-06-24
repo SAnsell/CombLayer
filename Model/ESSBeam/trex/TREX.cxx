@@ -240,6 +240,7 @@ TREX::TREX(const std::string& keyName):
   OR.addObject(PitCCutBack);
   OR.addObject(ChopperC);
   OR.addObject(DiskC);
+  
   for(size_t i=0;i<nC;i++)
     {
       const std::string strNum(StrFunc::makeString(i));
