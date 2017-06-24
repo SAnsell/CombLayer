@@ -140,7 +140,7 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   Control.addVariable(keyName+"ActiveShield",0);
 
   Control.addVariable(keyName+"LayerMat0",layerMat[0]);
-  size_t activeLayer(1);
+  size_t activeLayer(0);
   for(size_t i=1;i<layerThick.size();i++)
     {
       if (layerThick[i]>Geometry::zeroTol)
