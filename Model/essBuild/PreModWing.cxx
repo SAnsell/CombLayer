@@ -346,7 +346,6 @@ PreModWing::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // cone section
-  ELog::EM<<"Mid == "<<keyName<<" "<<midSurf.display()<<ELog::endDiag;
   for(size_t i=0;i<nLayers;i++)
     {
       const std::string Zone=getLayerZone(i);

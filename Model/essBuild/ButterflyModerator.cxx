@@ -408,8 +408,11 @@ ButterflyModerator::getLeftFarExclude() const
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
-  
-  return LeftWater->getSignedLinkString(4);     
+
+  std::string Out;
+  Out+=LeftWater->getSignedLinkString(4);   
+  Out+=RightWater->getSignedLinkString(3);
+  return Out;
 }
 
 std::string
@@ -422,8 +425,11 @@ ButterflyModerator::getRightFarExclude() const
 {
   ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
 
+  std::string Out;
+  Out+=LeftWater->getSignedLinkString(3);   
+  Out+=RightWater->getSignedLinkString(4);
 
-  return RightWater->getSignedLinkString(4);
+  return Out;
 }
 
 std::string
