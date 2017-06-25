@@ -98,14 +98,14 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addWallMat(4,"Concrete");
   //  SGen.setAngle(10.0,10.0);
   
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.5,"Void");  
   FGen.setYOffset(2.0);
-  FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"vespaFA",350.0,3.5,4.0, 3.5,4.0);
 
   PipeGen.generatePipe(Control,"vespaPipeA",6.0,46.0);
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateRectangle(Control,"vespaFB",44.0,4.0,4.0);   
   
@@ -202,7 +202,6 @@ VESPAvariables(FuncDataBase& Control)
   // Guide in wall
 
   FGen.clearYOffset();
-  FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"vespaFWall",344.0,9.0,9.0,8.5,8.5);
 
   PGen.setFeLayer(15.0);
@@ -260,7 +259,6 @@ VESPAvariables(FuncDataBase& Control)
       SGen.generateShield(Control,shieldName,slen,40.0,40.0,40.0,4,8);
       PipeGen.generatePipe(Control,vacName,2.0,slen-2.0);  //
       FGen.clearYOffset();
-      FGen.setThickness(0.5,0.5);
       FGen.generateRectangle(Control,focusName,slen-6.0,8.0,8.0);
     }
   

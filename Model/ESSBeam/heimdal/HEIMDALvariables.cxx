@@ -103,9 +103,9 @@ HEIMDALvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(2.0);
-  FGen.setThickness(0.5,0.5);
   FGen.generateTaper(Control,"heimdalFTA",350.0, 3.0,3.0, 3.0,3.0);
   FGen.generateRectangle(Control,"heimdalFCA",350.0,2.0,2.0);
   
@@ -120,7 +120,7 @@ HEIMDALvariables(FuncDataBase& Control)
   Control.addVariable("heimdalPipeBZStep",-8.0);
 
   
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.setYOffset(7.5);
   // THERMAL ON MASTER LINE:
   // COLD offset by 

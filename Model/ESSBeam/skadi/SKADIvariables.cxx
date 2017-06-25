@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/skadi/SKADIvariables.cxx
  *
- * Copyright (c) 2004-2016 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,9 +81,9 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiAxisZAngle",0.0);   // rotation
   //  Control.addVariable("skadiAxisZStep",0.0);   // +/- height
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.5);
-  
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.5,"Void");
+
   const double w=3.0;
   // Vertical bender
   FGen.setYOffset(0.0);
@@ -135,7 +135,8 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiBInsertWallMat","Stainless304");
 
   FGen.setYOffset(0.0);
-  FGen.setThickness(0.8,0.2);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.2,"Void");
   FGen.generateRectangle(Control,"skadiFWallA",200.6,w,w);
 
   Control.addVariable("skadiCInsertNBox",1);
@@ -147,7 +148,8 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiCInsertWallThick",2.5);
   Control.addVariable("skadiCInsertWallMat","Stainless304");
 
-  FGen.setThickness(4.0,0.2);
+  FGen.setLayer(1,4.0,"Copper");
+  FGen.setLayer(2,0.2,"Void");
   FGen.generateRectangle(Control,"skadiFWallB",203.0,w,w);
  
   const double s_matThickness = 70.0;
@@ -188,7 +190,9 @@ void SKADIvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"skadiADisk",0.0,25.0,35.0);
 
   FGen.clearYOffset();
-  FGen.setThickness(0.8,0.5);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.5,"Void");
+
   PipeGen.generatePipe(Control,"skadiPipeOutA",0.5,51.0);
   FGen.generateRectangle(Control,"skadiGOutA",49.0,w,w);
 

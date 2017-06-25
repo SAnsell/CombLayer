@@ -94,8 +94,8 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamAxisXYAngle",0.0);   // rotation
   Control.addVariable("dreamAxisZAngle",0.0);   // rotation 
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.5);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
   FGen.generateTaper(Control,"dreamFA",350.0,9.49,2.75,2.39,3.79);
 
@@ -128,8 +128,8 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.generatePipe(Control,"dreamPipeC",0.5,320.0);
 
-  FGen.setGuideMat("Aluminium");
-  FGen.setThickness(0.8,0.5);
+  FGen.setLayer(1,0.8,"Aluminium");
+  FGen.setLayer(2,0.5,"Void");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"dreamFC",318.0,1.19,3.53,4.06,4.74);   
 
@@ -207,8 +207,8 @@ DREAMvariables(FuncDataBase& Control)
   // Guide Section 2 (after wall) [+17.6m]  
   PipeGen.setPipe(6.0,0.5);
   PipeGen.generatePipe(Control,"dreamPipeOutA",0.5,1314.5);  //
-  FGen.setGuideMat("Borosilicate");
-  FGen.setThickness(1.0,0.5);
+  FGen.setLayer(1,1.0,"Borosilicate");
+  FGen.setLayer(2,0.5,"Void");
   FGen.generateRectangle(Control,"dreamFOutA",1312.5,5.86,5.86); // end of second part
 
   // Guide Section 3 [+17.6m]
@@ -228,7 +228,7 @@ DREAMvariables(FuncDataBase& Control)
   FGen.generateOctagon(Control,"dreamFCaveA",516.36,4.33,1.5);
 
   // Boron Nose
-  FGen.setGuideMat("Boron");
+  FGen.setLayer(1,1.0,"Boron");
   FGen.generateOctagon(Control,"dreamFCaveB",27.3,1.8,1.1);
   Control.addVariable("dreamFCaveBYStep",0.0);
 
