@@ -86,6 +86,8 @@ class ButterflyModerator :
 
   std::string getLeftExclude() const;
   std::string getRightExclude() const;
+  std::string getLeftFarExclude() const;
+  std::string getRightFarExclude() const;
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp*,

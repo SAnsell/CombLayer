@@ -399,6 +399,32 @@ ButterflyModerator::createAll(Simulation& System,
   return;
 }
 
+std::string
+ButterflyModerator::getLeftFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
+  
+  return LeftWater->getSignedLinkString(4);     
+}
+
+std::string
+ButterflyModerator::getRightFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
+
+
+  return RightWater->getSignedLinkString(4);
+}
 
 std::string
 ButterflyModerator::getLeftExclude() const
@@ -419,7 +445,6 @@ ButterflyModerator::getLeftExclude() const
   Out+=RightWater->getSignedLinkString(3);
   
   return Out;
-  
 }
 
 std::string

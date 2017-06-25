@@ -596,6 +596,7 @@ createESSInputs(inputParam& IParam)
   
   IParam.regMulti("bunkerChicane","bunkerChicane",1000,1);
   IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
+  IParam.regMulti("bunkerPillars","bunkerPillars",1000,1);
   IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);
   

@@ -714,9 +714,6 @@ makeESS::makeBunker(Simulation& System,
   CBunker->insertComponent(System,"roofFarEdge",*DBunker);
   CBunker->insertComponent(System,"floor",*DBunker);
 
-  if (bunkerType.find("noPillar")==std::string::npos)
-    buildPillars(System);
-
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
       // THIS IS HORIFFICALLY INEFFICENT :: FIX
@@ -762,6 +759,7 @@ makeESS::buildPreWings(Simulation& System)
       OR.addObject(TopPreWingA);
       TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
       TopPreWingA->setInnerExclude(TMod->getLeftExclude());
+      TopPreWingA->setMidExclude(TMod->getLeftFarExclude());
 
       TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
       TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
@@ -775,6 +773,7 @@ makeESS::buildPreWings(Simulation& System)
       OR.addObject(TopPreWingB);
       TopPreWingB->setDivider(TMod->getSignedMainRule(7));
       TopPreWingB->setInnerExclude(TMod->getRightExclude());
+      TopPreWingB->setMidExclude(TMod->getRightFarExclude());
       TopPreWingB->setBaseCut(TopPreMod->getSignedFullRule(6));
       TopPreWingB->setTopCut(TopCapMod->getSignedFullRule(5));
       TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
@@ -948,7 +947,10 @@ makeESS::build(Simulation& System,
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
 
+  
   ModPipes->buildTopPipes(System,topPipeType);
+  if (IParam.flag("bunkerPillars"))
+    buildPillars(System);
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
   if (IParam.flag("bunkerQuake"))

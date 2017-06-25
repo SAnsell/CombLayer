@@ -346,28 +346,33 @@ PreModWing::createObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
   // cone section
+  ELog::EM<<"Mid == "<<keyName<<" "<<midSurf.display()<<ELog::endDiag;
   for(size_t i=0;i<nLayers;i++)
     {
       const std::string Zone=getLayerZone(i);
       // base layer
       Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 ");
       Out+=baseSurf.display();
+      Out+=midSurf.display();
       Out+=Zone;
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 (8:1005) ");
+      Out+=midSurf.display();
       Out+=Zone;
       Out+=baseSurf.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
       
       // Top layer
       Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 ");
+      Out+=midSurf.display();
       Out+=Zone;
       Out+=topSurf.display();
       Out+=getLayerZone(i);
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 
       Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 (9:-1006) ");
+      Out+=midSurf.display();
       Out+=topSurf.display();
       Out+=Zone;
       System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));

@@ -65,6 +65,7 @@ class PreModWing : public attachSystem::ContainedComp,
   HeadRule topSurf;              ///< Top cut surface
   HeadRule baseSurf;             ///< Base cut surface
   HeadRule innerSurf;            ///< Inner surface(s)
+  HeadRule midSurf;              ///< Extended Inner surface(s)
   HeadRule outerSurf;            ///< Outer surface(s)
   HeadRule mainDivider;          ///< Seperatue unit for divider [to simpify boundary]
 
@@ -77,8 +78,6 @@ class PreModWing : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
-
   
  public:
 
@@ -91,6 +90,9 @@ class PreModWing : public attachSystem::ContainedComp,
   /// assignment of main string
   void setInnerExclude(const std::string& HRStr)
   { innerSurf.procString(HRStr); }
+  /// assignment of oute radial divider
+  void setMidExclude(const std::string& HRStr)
+  { midSurf.procString(HRStr); }
   /// assignment of base rule
   void setBaseCut(const HeadRule& HR) { baseSurf=HR; }
   /// assignement of top rule

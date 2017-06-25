@@ -300,7 +300,7 @@ setVariables(Simulation& System,const inputParam& IParam,
     \param System :: Simulation
     \param IParam :: Parameter set
     \param Names :: Vector of Options and values
-    \todo Value/AddValues not set but used by setRunTimeVariables
+    \todo Value/AddValues not set bu-t used by setRunTimeVariables
   */
 {
   ELog::RegMethod RegA("MainProcess","setVariables");

@@ -212,7 +212,7 @@ EdgeWater::createLinks()
   HR.makeComplement();
   FixedComp::setLinkSurf(2,HR);
   FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
-                        
+  
   Out=ModelSupport::getComposite(SMap,edgeIndex," -12 -204 ");
   HR.procString(Out);
   HR.makeComplement();
