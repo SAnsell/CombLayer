@@ -145,6 +145,7 @@ TREX::TREX(const std::string& keyName):
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   BendOutB(new beamlineSystem::GuideLine(newName+"BOutB")),
 
+  ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
   PitC(new constructSystem::ChopperPit(newName+"PitC")),
   PitCCutFront(new constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
@@ -245,8 +246,8 @@ TREX::TREX(const std::string& keyName):
     {
       const std::string strNum(StrFunc::makeString(i));
 
-      ShieldCs[i]=std::shared_ptr<constructSystem::LineShield>
-     	(new constructSystem::LineShield(newName+"ShieldC"+strNum));
+      //      ShieldCs[i]=std::shared_ptr<constructSystem::LineShield>
+      //     	(new constructSystem::LineShield(newName+"ShieldC"+strNum));
 
       VPipeOutCs[i]=std::shared_ptr<constructSystem::VacuumPipe>
 	(new constructSystem::VacuumPipe(newName+"PipeOutC"+strNum));
@@ -254,7 +255,6 @@ TREX::TREX(const std::string& keyName):
       BendOutCs[i]=std::shared_ptr<beamlineSystem::GuideLine>
 	(new beamlineSystem::GuideLine(newName+"BOutC"+strNum));
 
-      OR.addObject(ShieldCs[i]);
       OR.addObject(VPipeOutCs[i]);
       OR.addObject(BendOutCs[i]);
     }
@@ -511,15 +511,18 @@ TREX::build(Simulation& System,
   DiskC->setOffsetFlag(1);
   DiskC->createAll(System,ChopperC->getKey("Beam"),0);
   
-  ShieldCs[0]->addInsertCell(voidCell);
-  ShieldCs[0]->addInsertCell(PitB->getCells("Outer"));
-  ShieldCs[0]->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldCs[0]->setFront(PitB->getKey("Mid"),2);
-  ShieldCs[0]->createAll(System,PitB->getKey("Mid"),2);
+  ShieldC->addInsertCell(voidCell);
+  ShieldC->addInsertCell(PitB->getCells("Outer"));
+  ShieldC->addInsertCell(PitB->getCells("MidLayer"));
+  ShieldC->setFront(PitB->getKey("Mid"),2);
+  ShieldC->addInsertCell(PitC->getCells("MidLayer"));
+  ShieldC->addInsertCell(PitC->getCells("Outer"));
+  ShieldC->setBack(PitC->getKey("Mid"),1);
+  ShieldC->createAll(System,PitB->getKey("Mid"),2);
 
-  VPipeOutCs[0]->addInsertCell(ShieldCs[0]->getCell("Void"));
+  VPipeOutCs[0]->addInsertCell(ShieldC->getCell("Void"));
   VPipeOutCs[0]->addInsertCell(PitB->getCells("MidLayer"));
-  VPipeOutCs[0]->createAll(System,*ShieldCs[0],-1);
+  VPipeOutCs[0]->createAll(System,*ShieldC,-1);
   BendOutCs[0]->addInsertCell(VPipeOutCs[0]->getCells("Void"));
   BendOutCs[0]->createAll(System,*VPipeOutCs[0],0,*VPipeOutCs[0],0);
   
@@ -532,31 +535,18 @@ TREX::build(Simulation& System,
   const attachSystem::FixedComp* LinkPtr= &BendOutCs[0]->getKey("Guide0");
       
   for(size_t i=1;i<nC-1;i++)
-    {
-      ShieldCs[i]->addInsertCell(voidCell);
-      ShieldCs[i]->setFront(*ShieldCs[i-1],2);
-      ShieldCs[i]->createAll(System,*LinkPtr,2);
-      
-      VPipeOutCs[i]->addInsertCell(ShieldCs[i]->getCell("Void"));
-      VPipeOutCs[i]->createAll(System,*ShieldCs[i],-1);
-      
+    {      
+      VPipeOutCs[i]->addInsertCell(ShieldC->getCell("Void"));
+      VPipeOutCs[i]->createAll(System,*VPipeOutCs[i-1],2);
       BendOutCs[i]->addInsertCell(VPipeOutCs[i]->getCells("Void"));
       BendOutCs[i]->createAll(System,*VPipeOutCs[i],0,*VPipeOutCs[i],0);
-
       LinkPtr= &BendOutCs[i]->getKey("Guide0");
     }
   
-  ShieldCs[6]->addInsertCell(voidCell);
-  ShieldCs[6]->setFront(*ShieldCs[5],2);
-  ShieldCs[6]->addInsertCell(PitC->getCells("MidLayer"));
-  ShieldCs[6]->addInsertCell(PitC->getCells("Outer"));
-  ShieldCs[6]->setBack(PitC->getKey("Mid"),1);
-  ShieldCs[6]->createAll(System,*LinkPtr,2);
-  
-  VPipeOutCs[6]->addInsertCell(ShieldCs[6]->getCell("Void"));
+  VPipeOutCs[6]->addInsertCell(ShieldC->getCell("Void"));
   VPipeOutCs[6]->addInsertCell(PitC->getCells("MidLayer"));
   VPipeOutCs[6]->addInsertCell(PitC->getCells("Outer"));
-  VPipeOutCs[6]->createAll(System,*ShieldCs[6],-1);
+  VPipeOutCs[6]->createAll(System,*VPipeOutCs[5],2);
 
   BendOutCs[6]->addInsertCell(VPipeOutCs[6]->getCells("Void"));
   BendOutCs[6]->createAll(System,*VPipeOutCs[6],0,*VPipeOutCs[6],0);
@@ -567,7 +557,7 @@ TREX::build(Simulation& System,
   PitCCutFront->setFaces(PitC->getKey("Mid").getSignedFullRule(-1),
   			 PitC->getKey("Inner").getSignedFullRule(1));
   PitCCutFront->createAll(System,*LinkPtr,2);
-  
+  return;  
   
   if (stopPoint==5) return; // Up to T0 Chopper Pit      
 

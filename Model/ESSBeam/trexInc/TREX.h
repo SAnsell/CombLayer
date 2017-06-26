@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trexInc/TREX.h
  *
- * Copyright (c) 2004-2016 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,12 +125,14 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendOutB;
 
   /// Structur up to the T0 chopper position
+  std::shared_ptr<constructSystem::LineShield> ShieldC;
   std::shared_ptr<constructSystem::ChopperPit> PitC;
   std::shared_ptr<constructSystem::HoleShape> PitCCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitCCutBack;
   std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
   std::shared_ptr<constructSystem::DiskChopper> DiskC;
-  std::array<std::shared_ptr<constructSystem::LineShield>,7> ShieldCs;
+
+
   std::array<std::shared_ptr<constructSystem::VacuumPipe>,7>
   VPipeOutCs;
   std::array<std::shared_ptr<beamlineSystem::GuideLine>,7> BendOutCs;
@@ -152,8 +154,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutE;
 
   std::shared_ptr<constructSystem::LineShield> ShieldF;
-  std::array<std::shared_ptr<constructSystem::VacuumPipe>,8>
-  VPipeOutFs;
+  std::array<std::shared_ptr<constructSystem::VacuumPipe>,8> VPipeOutFs;
   std::array<std::shared_ptr<beamlineSystem::GuideLine>,8> GuideOutFs;
 
   std::shared_ptr<TrexHut> Cave;

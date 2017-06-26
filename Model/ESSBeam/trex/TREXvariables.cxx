@@ -249,8 +249,9 @@ void TREXvariables(FuncDataBase& Control)
   
   /// array section
   FGen.clearYOffset();
- 
-  SGen.generateShield(Control,"trexShieldC0",708.25,shieldTotalThick,shieldTotalThick,shieldTotalThick,3,8);
+
+  SGen.generateShield(Control,"trexShieldC",4958.2,
+		      shieldTotalThick,shieldTotalThick,shieldTotalThick,1,8);
 
   PipeGen.generatePipe(Control,"trexPipeOutC0",0.25,707.75);
   FGen.generateBender(Control,"trexBOutC0",705.75,6.0,6.0,8.50,8.50,
@@ -259,15 +260,16 @@ void TREXvariables(FuncDataBase& Control)
   for(size_t i=1;i<6;i++)
     {
       const std::string strNum(StrFunc::makeString(i));
-      SGen.generateShield(Control,"trexShieldC"+strNum,708.25,shieldTotalThick,shieldTotalThick,
-            		  shieldTotalThick,3,8);
-      Control.addVariable("trexShieldC"+strNum+"YStep",1.25);
+      //      SGen.generateShield(Control,"trexShieldC"+strNum,708.25,shieldTotalThick,shieldTotalThick,
+      //          		  shieldTotalThick,3,8);
+      //      Control.addVariable("trexShieldC"+strNum+"YStep",1.25);
       PipeGen.generatePipe(Control,"trexPipeOutC"+strNum,0.25,707.75);
       FGen.generateBender(Control,"trexBOutC"+strNum,705.75,6.0,6.0,8.50,
 			  8.50,1900000.0,0.0);
     }
   
-  SGen.generateShield(Control,"trexShieldC6",708.5,shieldTotalThick,shieldTotalThick,shieldTotalThick,3,8);
+  //  SGen.generateShield(Control,"trexShieldC6",708.5,shieldTotalThick,shieldTotalThick,shieldTotalThick,3,8);
+  
   PipeGen.generatePipe(Control,"trexPipeOutC6",0.25,708.0);
   FGen.generateBender(Control,"trexBOutC6",706.0,6.0,6.0,8.50,8.50,
 		      1900000.0,0.0);
