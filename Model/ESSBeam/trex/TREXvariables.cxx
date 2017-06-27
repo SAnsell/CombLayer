@@ -253,28 +253,17 @@ void TREXvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"trexShieldC",4958.2,
 		      shieldTotalThick,shieldTotalThick,shieldTotalThick,1,8);
 
-  PipeGen.generatePipe(Control,"trexPipeOutC0",0.25,707.75);
-  FGen.generateBender(Control,"trexBOutC0",705.75,6.0,6.0,8.50,8.50,
-		      1900000.0,0.0);
   
-  for(size_t i=1;i<6;i++)
+  for(size_t i=0;i<7;i++)
     {
       const std::string strNum(StrFunc::makeString(i));
-      //      SGen.generateShield(Control,"trexShieldC"+strNum,708.25,shieldTotalThick,shieldTotalThick,
-      //          		  shieldTotalThick,3,8);
-      //      Control.addVariable("trexShieldC"+strNum+"YStep",1.25);
       PipeGen.generatePipe(Control,"trexPipeOutC"+strNum,0.25,707.75);
       FGen.generateBender(Control,"trexBOutC"+strNum,705.75,6.0,6.0,8.50,
 			  8.50,1900000.0,0.0);
     }
+  SGen.generateShield(Control,"trexShieldD",576.5,shieldTotalThick,
+                      shieldTotalThick,shieldTotalThick,4,8);
   
-  //  SGen.generateShield(Control,"trexShieldC6",708.5,shieldTotalThick,shieldTotalThick,shieldTotalThick,3,8);
-  
-  PipeGen.generatePipe(Control,"trexPipeOutC6",0.25,708.0);
-  FGen.generateBender(Control,"trexBOutC6",706.0,6.0,6.0,8.50,8.50,
-		      1900000.0,0.0);
-
-  SGen.generateShield(Control,"trexShieldD",576.5,shieldTotalThick,shieldTotalThick,shieldTotalThick,4,8);
   PipeGen.generatePipe(Control,"trexPipeOutD",0.25,576.0);
   FGen.generateBender(Control,"trexBOutD",574.0,6.0,6.0,8.50,8.50,
 		      1900000.0,0.0);
@@ -290,11 +279,13 @@ void TREXvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"trexE1Disk",-10.0,20.0,30.0);
   BGen.generateBlades(Control,"trexE2Disk",10.0,20.0,30.0);
 
-  SGen.generateShield(Control,"trexShieldE",1366.5,shieldTotalThick,shieldTotalThick,shieldTotalThick,10,8);
+  SGen.generateShield(Control,"trexShieldE",1366.5,shieldTotalThick,
+                      shieldTotalThick,shieldTotalThick,1,8);
   PipeGen.generatePipe(Control,"trexPipeOutE",0.25,1366.0);
   FGen.generateRectangle(Control,"trexGOutE",1364.0,6.0,8.50);
 
-  SGen.generateShield(Control,"trexShieldF",5106.0,shieldTotalThick,shieldTotalThick,shieldTotalThick,10,8);
+  SGen.generateShield(Control,"trexShieldF",5106.0,shieldTotalThick,
+                      shieldTotalThick,shieldTotalThick,1,8);
   
   PipeGen.generatePipe(Control,"trexPipeOutF0",0.25,638.0);
   FGen.generateTaper(Control,"trexGOutF0",636.0,6.0,6.23,8.5,8.5);

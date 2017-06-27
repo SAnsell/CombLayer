@@ -174,10 +174,11 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"dreamPipeF",0.5,200.0);
   FGen.generateTaper(Control,"dreamFF",198.0,5.82,5.86,5.84,5.86); 
 
-  PipeGen.generatePipe(Control,"dreamPipeG",0.5,64.5);
-  FGen.generateRectangle(Control,"dreamFG",62.5,5.86,5.86); 
+  PipeGen.generatePipe(Control,"dreamPipeG",0.5,62.5);
+  FGen.generateRectangle(Control,"dreamFG",60.5,5.86,5.86); 
 
   // BEAM INSERT:
+  Control.addVariable("dreamBInsertAYStep",2.0);
   Control.addVariable("dreamBInsertANBox",1);
   Control.addVariable("dreamBInsertAHeight",18.0);
   Control.addVariable("dreamBInsertAWidth",18.0);
@@ -197,8 +198,8 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamBInsertBWallMat","Stainless304"); 
 
   // Guides in wall
-  FGen.generateRectangle(Control,"dreamFWallA",188.5,5.86,5.86);  
-  FGen.generateRectangle(Control,"dreamFWallB",191.5,5.86,5.86);
+  FGen.setYOffset(2.0);
+  FGen.generateRectangle(Control,"dreamFWallA",380.0,5.86,5.86);  
 
   SGen.setRFLayers(3,8);
   SGen.generateShield(Control,"dreamShieldA",1335.0,40.0,40.0,40.0,8,8);
@@ -207,6 +208,7 @@ DREAMvariables(FuncDataBase& Control)
   // Guide Section 2 (after wall) [+17.6m]  
   PipeGen.setPipe(6.0,0.5);
   PipeGen.generatePipe(Control,"dreamPipeOutA",0.5,1314.5);  //
+  FGen.clearYOffset();
   FGen.setLayer(1,1.0,"Borosilicate");
   FGen.setLayer(2,0.5,"Void");
   FGen.generateRectangle(Control,"dreamFOutA",1312.5,5.86,5.86); // end of second part

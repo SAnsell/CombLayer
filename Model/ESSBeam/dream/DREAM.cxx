@@ -141,10 +141,9 @@ DREAM::DREAM(const std::string& keyName) :
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
   
   BInsertA(new CompBInsert(newName+"BInsertA")),
+  BInsertB(new CompBInsert(newName+"BInsertB")),
   FocusWallA(new beamlineSystem::GuideLine(newName+"FWallA")),
 
-  BInsertB(new CompBInsert(newName+"BInsertB")),
-  FocusWallB(new beamlineSystem::GuideLine(newName+"FWallB")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
@@ -216,10 +215,8 @@ DREAM::DREAM(const std::string& keyName) :
   OR.addObject(FocusF);
 
   OR.addObject(BInsertA);
-  OR.addObject(FocusWallA);
-
   OR.addObject(BInsertB);
-  OR.addObject(FocusWallB);
+  OR.addObject(FocusWallA);
 
   OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
@@ -404,35 +401,33 @@ DREAM::build(Simulation& System,
   // IN WALL
   // Make bunker insert
   //  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
-  //  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
+  //  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
+
   BInsertA->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsertA->createAll(System,*VPipeG,2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
-
+  
   FocusWallA->addInsertCell(BInsertA->getCell("Item"));
-  FocusWallA->createAll(System,*BInsertA,7,*BInsertA,7);
+  FocusWallA->createAll(System,*BInsertA,-1,*BInsertA,-1);
 
   ShieldA->addInsertCell(voidCell);
   ShieldA->setFront(bunkerObj,2);
   ShieldA->createAll(System,*BInsertA,2);
+  BInsertA->addInsertCell(ShieldA->getCell("Void"));
+  BInsertA->insertObjects(System);
 
   BInsertB->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsertB->addInsertCell(ShieldA->getCell("Void"));
   BInsertB->addInsertCell(voidCell);
   BInsertB->createAll(System,*BInsertA,2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
-
-  // using 7 : mid point
-  FocusWallB->addInsertCell(BInsertB->getCell("Item"));
-  FocusWallB->createAll(System,*BInsertB,7,*BInsertB,7);
-
   
   if (stopPoint==3) return;                      // STOP At bunker edge
   
   // Section up to 41.35 m 
   VPipeOutA->addInsertCell(ShieldA->getCell("Void"));
   VPipeOutA->setBack(*ShieldA,-2);
-  VPipeOutA->createAll(System,FocusWallB->getKey("Guide0"),2);
+  VPipeOutA->createAll(System,FocusWallA->getKey("Guide0"),2);
       
   FocusOutA->addInsertCell(VPipeOutA->getCell("Void"));
   FocusOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);

@@ -127,9 +127,8 @@ class DREAM : public attachSystem::CopiedComp
 
   /// Bunker insert
   std::shared_ptr<essSystem::CompBInsert> BInsertA;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWallA;
   std::shared_ptr<essSystem::CompBInsert> BInsertB;
-  std::shared_ptr<beamlineSystem::GuideLine> FocusWallB;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusWallA;
 
   /// First outer shield section
   std::shared_ptr<constructSystem::LineShield> ShieldA;

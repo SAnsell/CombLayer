@@ -241,20 +241,15 @@ TREX::TREX(const std::string& keyName):
   OR.addObject(PitCCutBack);
   OR.addObject(ChopperC);
   OR.addObject(DiskC);
+  OR.addObject(ShieldC);
   
   for(size_t i=0;i<nC;i++)
     {
       const std::string strNum(StrFunc::makeString(i));
-
-      //      ShieldCs[i]=std::shared_ptr<constructSystem::LineShield>
-      //     	(new constructSystem::LineShield(newName+"ShieldC"+strNum));
-
       VPipeOutCs[i]=std::shared_ptr<constructSystem::VacuumPipe>
 	(new constructSystem::VacuumPipe(newName+"PipeOutC"+strNum));
-
       BendOutCs[i]=std::shared_ptr<beamlineSystem::GuideLine>
 	(new beamlineSystem::GuideLine(newName+"BOutC"+strNum));
-
       OR.addObject(VPipeOutCs[i]);
       OR.addObject(BendOutCs[i]);
     }
@@ -308,6 +303,9 @@ TREX::TREX(const std::string& keyName):
 
 
 TREX::~TREX()
+  /*!
+    Destructor
+   */
 {}
 
 void
@@ -557,7 +555,7 @@ TREX::build(Simulation& System,
   PitCCutFront->setFaces(PitC->getKey("Mid").getSignedFullRule(-1),
   			 PitC->getKey("Inner").getSignedFullRule(1));
   PitCCutFront->createAll(System,*LinkPtr,2);
-  return;  
+
   
   if (stopPoint==5) return; // Up to T0 Chopper Pit      
 
