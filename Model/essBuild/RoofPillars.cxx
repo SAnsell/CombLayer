@@ -215,6 +215,7 @@ RoofPillars::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   thick=Control.EvalVar<double>(keyName+"Thick");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
 
   topFootHeight=Control.EvalDefVar<double>(keyName+"TopFootHeight",0.0);
   topFootDepth=Control.EvalDefVar<double>(keyName+"TopFootDepth",0.0);
@@ -276,7 +277,8 @@ RoofPillars::populate(const FuncDataBase& Control)
 void
 RoofPillars::populateBeamSet(const FuncDataBase& Control,
 			     const std::string& nameKey,
-			     const size_t dirR,const size_t dirX,
+			     const long int dirR,
+                             const long int dirX,
 			     BeamTYPE& Links) const
   /*!
     Populate the variables for the cross/long beams 
@@ -707,7 +709,7 @@ RoofPillars::createBeamObjects(Simulation& System,
   
   Out=ModelSupport::getComposite(SMap,RI," 3 -4 ");
   Out+=fbBStr+Inner.display();
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out));
   
   
   // steel box [NOTE CARE for INCLUSION]:
@@ -725,7 +727,7 @@ RoofPillars::createBeamObjects(Simulation& System,
 }
 
 void
-RoofPillars::createCrossBeams(Simulation& System)
+RoofPillars::createCrossBeams(Simulation& System) 
   /*!
     A system for construction long beams
     \param System :: Simulation to create objects in

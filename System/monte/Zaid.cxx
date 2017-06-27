@@ -3,7 +3,7 @@
  
  * File:   monte/Zaid.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,9 +189,13 @@ Zaid::write(std::ostream& OX) const
 {
   boost::format FMTstr("%1$d.%2$02d%3$c");
   boost::format FMTnum("%1$.6g");
-  OX<<FMTstr % index % tag % type;
-  if (type=='c')
-    OX<<" "<<FMTnum % density;
+
+  if (index)  // avoid writing 00000 zaid
+    {
+      OX<<FMTstr % index % tag % type;
+      if (type=='c')
+        OX<<" "<<FMTnum % density;
+    }
   return;
 }
 

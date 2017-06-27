@@ -173,6 +173,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   Control.addVariable(AKey+"BunkerPillarsDepth",18.0);
   Control.addVariable(AKey+"BunkerPillarsThick",1.0);
   Control.addVariable(AKey+"BunkerPillarsMat","Stainless304");
+  Control.addVariable(AKey+"BunkerPillarsInnerMat","Poly%Void%50.0");
   Control.addVariable(AKey+"BunkerPillarsNRadius",7);
   Control.addVariable(AKey+"BunkerPillarsNSector",9); // default
 
@@ -277,47 +278,67 @@ EssBunkerVariables(FuncDataBase& Control)
   setBunkerVar(Control,"C","D");
 
   // BUNKER QUAKE:
-  Control.addVariable("ABunkerQuake0XGap",13.5);
-  Control.addVariable("ABunkerQuake0ZGap",100.0);
-  
-  Control.addVariable("ABunkerQuakeNPath",2);
-
-  Control.addVariable("ABunkerQuake0NPoint",9);
   Control.addVariable("ABunkerQuake0XGap",6.5);
   Control.addVariable("ABunkerQuake0ZGap",100.0);
+  
+  Control.addVariable("ABunkerQuakeNPath",3);
+
+  Control.addVariable("ABunkerQuake0NPoint",11);
+  Control.addVariable("ABunkerQuake0XGap",6.5);
+  Control.addVariable("ABunkerQuake0ZGap",40.0);
   Control.addVariable("ABunkerQuake0XStep",0.0);
   Control.addVariable("ABunkerQuake0YStep",0.0);
+  Control.addVariable("ABunkerQuake0ZStep",30.0);
+
+  // top dilitation
+  Control.addVariable("ABunkerQuake0PtA0",Geometry::Vec3D(785,103,0));
+  Control.addVariable("ABunkerQuake0PtA1",Geometry::Vec3D(595,79,0));
+  Control.addVariable("ABunkerQuake0PtA2",Geometry::Vec3D(491,332,0));
+  Control.addVariable("ABunkerQuake0PtA3",Geometry::Vec3D(819,545,0));
+  Control.addVariable("ABunkerQuake0PtA4",Geometry::Vec3D(673,703,0));
+  Control.addVariable("ABunkerQuake0PtA5",Geometry::Vec3D(894,940,0));
+  Control.addVariable("ABunkerQuake0PtA6",Geometry::Vec3D(809,1036,0));
+  Control.addVariable("ABunkerQuake0PtA7",Geometry::Vec3D(977,1244,0));
+  Control.addVariable("ABunkerQuake0PtA8",Geometry::Vec3D(859,1324,0));
+  Control.addVariable("ABunkerQuake0PtA9",Geometry::Vec3D(1003,1553,0));
+  Control.addVariable("ABunkerQuake0PtA10",Geometry::Vec3D(841,1652,0));
 
   // Midlayer dilitation
-  Control.addVariable("ABunkerQuake0PtA0",Geometry::Vec3D(1111.3,253.0,0));
-  Control.addVariable("ABunkerQuake0PtA1",Geometry::Vec3D(646,151.0,0));
-  Control.addVariable("ABunkerQuake0PtA2",Geometry::Vec3D(575,349,0)); //curve
-  Control.addVariable("ABunkerQuake0PtA3",Geometry::Vec3D(1068,683,0));
-  Control.addVariable("ABunkerQuake0PtA4",Geometry::Vec3D(905,882,0));
-  Control.addVariable("ABunkerQuake0PtA5",Geometry::Vec3D(1264,1255,0));
-  Control.addVariable("ABunkerQuake0PtA6",Geometry::Vec3D(984,1451,0));
-  Control.addVariable("ABunkerQuake0PtA7",Geometry::Vec3D(1258,1876,0));
-  Control.addVariable("ABunkerQuake0PtA8",Geometry::Vec3D(927,2043,0));
+  Control.addVariable("ABunkerQuake1NPoint",9);
+  Control.addVariable("ABunkerQuake1XGap",6.5);
+  Control.addVariable("ABunkerQuake1ZGap",60.0);
+  Control.addVariable("ABunkerQuake1XStep",0.0);
+  Control.addVariable("ABunkerQuake1YStep",0.0);
+  Control.addVariable("ABunkerQuake1ZStep",70.0);
 
-  // as measured -- maybe correct?
-  Control.addVariable("ABunkerQuake1NPoint",12);
-  Control.addVariable("ABunkerQuake1XGap",13.5);
-  Control.addVariable("ABunkerQuake1ZGap",100.0);
-  Control.addVariable("ABunkerQuake1YStep",100.0);
-  Control.addVariable("ABunkerQuake1ZStep",100.0);
-  Control.addVariable("ABunkerQuake1PtA0",Geometry::Vec3D(1196.3,191.2,0));
-  Control.addVariable("ABunkerQuake1PtA1",Geometry::Vec3D(1126.5,447.5,0));
-  Control.addVariable("ABunkerQuake1PtA2",Geometry::Vec3D(1358.8,536.9,0));
-  Control.addVariable("ABunkerQuake1PtA3",Geometry::Vec3D(1125.2,930.2,0));
-  Control.addVariable("ABunkerQuake1PtA4",Geometry::Vec3D(1281.6,1056.0,0));
-  Control.addVariable("ABunkerQuake1PtA5",Geometry::Vec3D(1166.2,1184.6,0));
-  Control.addVariable("ABunkerQuake1PtA6",Geometry::Vec3D(1306.0,1325.7,0));
-  Control.addVariable("ABunkerQuake1PtA7",Geometry::Vec3D(1162.0,1455.4,0));
-  Control.addVariable("ABunkerQuake1PtA8",Geometry::Vec3D(1286.4,1610.4,0));
-  Control.addVariable("ABunkerQuake1PtA9",Geometry::Vec3D(1125.1,1728.4,0));
-  Control.addVariable("ABunkerQuake1PtA10",Geometry::Vec3D(1171.5,1804.0,0));
-  Control.addVariable("ABunkerQuake1PtA11",Geometry::Vec3D(1007.5,1899.2,0));
+  Control.addVariable("ABunkerQuake1PtA0",Geometry::Vec3D(1111.3,253.0,0));
+  Control.addVariable("ABunkerQuake1PtA1",Geometry::Vec3D(646,151.0,0));
+  Control.addVariable("ABunkerQuake1PtA2",Geometry::Vec3D(575,349,0)); //curve
+  Control.addVariable("ABunkerQuake1PtA3",Geometry::Vec3D(1068,683,0));
+  Control.addVariable("ABunkerQuake1PtA4",Geometry::Vec3D(905,882,0));
+  Control.addVariable("ABunkerQuake1PtA5",Geometry::Vec3D(1264,1255,0));
+  Control.addVariable("ABunkerQuake1PtA6",Geometry::Vec3D(984,1451,0));
+  Control.addVariable("ABunkerQuake1PtA7",Geometry::Vec3D(1258,1876,0));
+  Control.addVariable("ABunkerQuake1PtA8",Geometry::Vec3D(927,2043,0));
 
+  Control.addVariable("ABunkerQuake2NPoint",8);
+  Control.addVariable("ABunkerQuake2XGap",6.5);
+  Control.addVariable("ABunkerQuake2ZGap",30.0);
+  Control.addVariable("ABunkerQuake2XStep",0.0);
+  Control.addVariable("ABunkerQuake2YStep",0.0);
+  Control.addVariable("ABunkerQuake2ZStep",130.0);
+
+  // top dilitation
+  Control.addVariable("ABunkerQuake2PtA0",Geometry::Vec3D(1347.0,317.0,0));
+  Control.addVariable("ABunkerQuake2PtA1",Geometry::Vec3D(1317,424,0));
+  Control.addVariable("ABunkerQuake2PtA2",Geometry::Vec3D(749,241,0));
+  Control.addVariable("ABunkerQuake2PtA3",Geometry::Vec3D(689,396,0));
+  Control.addVariable("ABunkerQuake2PtA4",Geometry::Vec3D(1192,711,0));
+  Control.addVariable("ABunkerQuake2PtA5",Geometry::Vec3D(1017,923,0));
+  Control.addVariable("ABunkerQuake2PtA6",Geometry::Vec3D(1490,1344,0));
+  Control.addVariable("ABunkerQuake2PtA7",Geometry::Vec3D(917,1784,0));
+
+  
   // BBUNKER : 
   Control.addVariable("BBunkerQuakeNPath",1);
   Control.addVariable("BBunkerQuake0NPoint",2);

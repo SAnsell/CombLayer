@@ -55,6 +55,7 @@ class RoofPillars : public attachSystem::FixedComp,
   double depth;                ///< Along beam length
   double thick;                ///< metal thickness
   int mat;                     ///< Matieral
+  int innerMat;                ///< Inner filling material
 
   double topFootHeight;        ///< Height of top feet [total]
   double topFootDepth;         ///< Depth (along beam) of top feet
@@ -84,7 +85,7 @@ class RoofPillars : public attachSystem::FixedComp,
     
   void populate(const FuncDataBase&);
   void populateBeamSet(const FuncDataBase&,const std::string&,
-		       const size_t,const size_t,BeamTYPE&) const;
+		       const long int,const long int,BeamTYPE&) const;
 			      
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

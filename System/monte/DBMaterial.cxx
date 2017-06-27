@@ -119,7 +119,7 @@ DBMaterial::initMaterial()
   const std::string MLib="hlib=.70h pnlib=70u";
 
   MonteCarlo::Material MObj;
-  // TWO ULTRA SPECIAL MATERIALS!!!
+  // THREE ULTRA SPECIAL MATERIALS!!!
   MObj.setMaterial(-2,"InValid","00000.00c 1.0","",MLib); 
   setMaterial(MObj);
   MObj.setMaterial(-1,"Empty","00000.00c 1.0","",MLib); 

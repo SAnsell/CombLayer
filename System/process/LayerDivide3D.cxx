@@ -3,7 +3,7 @@
  
  * File:   essBuild/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- *
+ * 
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
@@ -487,9 +487,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   checkDivide();
   
-  ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
   const MonteCarlo::Object* CPtr=System.findQhull(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");
