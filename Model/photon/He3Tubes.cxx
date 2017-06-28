@@ -201,7 +201,8 @@ He3Tubes::createSurfaces()
   ModelSupport::buildPlane(SMap,heIndex+5,Origin-Z*(length/2.0),Z);
   ModelSupport::buildPlane(SMap,heIndex+6,Origin+Z*(length/2.0),Z);
 
-  Geometry::Vec3D CentPt(Origin-X*(separation*(static_cast<double>(nTubes)-1.0)/2.0));
+  Geometry::Vec3D CentPt(Origin-X*(separation*
+				   (static_cast<double>(nTubes)-1.0)/2.0));
 
   int tubeIndex(heIndex);
   for(size_t i=0;i<nTubes;i++)

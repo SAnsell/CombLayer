@@ -36,7 +36,7 @@ namespace gammaSystem
 */
 
 class NordBall : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset
 {
  private:
 
@@ -44,12 +44,6 @@ class NordBall : public attachSystem::ContainedComp,
   const std::string baseName;     ///< Base name
   const int detIndex;             ///< Index
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Rotation angle
-  double zAngle;                  ///< Vertical rotation angle
 
   size_t nFace;                   ///< Number of layers
   double faceWidth;               ///< Face short distance

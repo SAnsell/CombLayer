@@ -282,7 +282,7 @@ TwinChopper::createSurfaces()
   int BI(houseIndex+5000);
 
   double angle(0.0);
-  const double angStep(M_PI/(outerRingNBolt+1));
+  const double angStep(M_PI/static_cast<double>(outerRingNBolt+1));
   const Geometry::Vec3D RX(X*(mainRadius-outerBoltStep));
   const Geometry::Vec3D RZ(Z*(mainRadius-outerBoltStep));
   for(size_t i=0;i<outerRingNBolt;i++)
@@ -297,7 +297,8 @@ TwinChopper::createSurfaces()
   // MAIN Line bolts
   BI=houseIndex+6000;
   Geometry::Vec3D zPos(lowOutCent);
-  const Geometry::Vec3D ZStep((topOutCent-lowOutCent)/(outerLineNBolt+1.0));
+  const Geometry::Vec3D ZStep((topOutCent-lowOutCent)/
+			      static_cast<double>(outerLineNBolt+1.0));
   
   for(size_t i=0;i<outerLineNBolt;i++)
     {
@@ -555,7 +556,7 @@ TwinChopper::createLineBolts(Simulation& System,const int surfOffset,
 
   if (NBolts>=1)
     {
-      const double bStep(upDownLength/(NBolts+1));
+      const double bStep(upDownLength/static_cast<double>(NBolts+1));
       int boltIndex(surfOffset);
 
       Geometry::Vec3D leftBoltCentre=

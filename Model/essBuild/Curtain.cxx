@@ -90,7 +90,7 @@ namespace essSystem
 {
 
 Curtain::Curtain(const std::string& Key)  :
-  attachSystem::ContainedGroup("Top","Mid","Lower"),
+  attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
   attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
   attachSystem::CellMap(),
   curIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -320,8 +320,11 @@ Curtain::createObjects(Simulation& System,
   // Mid section
   Out=ModelSupport::getComposite(SMap,curIndex," 7 -27 3 -4 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+topSurf));
-  addOuterSurf("Mid",Out+topSurf);
   setCell("midWall",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 -15 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topSurf));
+  setCell("MidGap",cellIndex-1);
 
   // Lower section
   Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 5 ");
@@ -331,15 +334,20 @@ Curtain::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 -5 105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideSurf));
-  setCell("BaseBap",cellIndex-1);
+  setCell("BaseGap",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topBase+sideSurf));
-  setCell("BaseBap",cellIndex-1);
+  setCell("BaseGap",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,curIndex,"-127 3 -4 105 ");
   addOuterSurf("Lower",Out+topBase);
 
+  Out=ModelSupport::getComposite(SMap,curIndex,"7 -127 3 -4 -15 ");
+  addOuterSurf("Mid",Out+topSurf);
+
+  Out=ModelSupport::getComposite(SMap,curIndex,"105 -127 3 -4 ");
+  addOuterSurf("RoofCut",Out);
   return;
 }
 

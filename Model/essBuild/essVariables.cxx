@@ -521,10 +521,11 @@ EssFlightLineVariables(FuncDataBase& Control)
     TopBFlightWedgeTheta.push_back(t3-dt2*static_cast<double>(i));
 
   // email from Rickard Holmberg 15 Sep, slide 6
-  const double t4 = -15.45-180; 
+  const double t4 = -15.45-180.0; 
   TopBFlightWedgeTheta.push_back(t4);
-  for (size_t i=1; i<=2; i++)
-    TopBFlightWedgeTheta.push_back(t4-dt1*i);
+
+  TopBFlightWedgeTheta.push_back(t4-dt1);
+  TopBFlightWedgeTheta.push_back(t4-2.0*dt1);
 
   if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
     throw ColErr::RangeError<int>(TopBFlightNWedges,0,
@@ -606,7 +607,7 @@ EssInstrumentVariables(const std::set<std::string>& BL,
                        "EssInstrumentVariables");
 
   typedef void (*VariableFunction)(FuncDataBase&);
-  typedef std::map<std::string,VariableFunction> VMap;
+  typedef std::multimap<std::string,VariableFunction> VMap;
   
   const VMap VarInit({
      {"BEER",        &BEERvariables},
@@ -626,24 +627,31 @@ EssInstrumentVariables(const std::set<std::string>& BL,
      {"TREX",        &TREXvariables},
      {"TESTBEAM",    &TESTBEAMvariables},
      {"VESPA",       &VESPAvariables},
-     {"VOR",         &VORvariables}
+     {"VOR",         &VORvariables},
+     {"SHORTNMX",     &NMXvariables},
+     {"SHORTNMX",     &shortNMXvariables},
+     {"SHORTDREAM",   &DREAMvariables},
+     {"SHORTDREAM",   &shortDREAMvariables},
+     {"SHORTDREAM2",  &DREAMvariables},
+     {"SHORTDREAM2",  &shortDREAM2variables},
+     {"SHORTODIN",    &ODINvariables},
+     {"SHORTODIN",    &shortODINvariables}
+
+       
    });
 
+  
   for(const std::string& beam : BL)
     {
-
-      VMap::const_iterator mc=VarInit.find(beam);
-      if (mc!=VarInit.end())
-        {
-          mc->second(Control);
-        }
+      // std::pair<VMap::const_iterator,VMap::const_iterator>
+      VMap::const_iterator mc;
+      decltype(VarInit.equal_range("")) rangePair
+	= VarInit.equal_range(beam);
+      for(mc=rangePair.first;mc!=rangePair.second;mc++)
+	mc->second(Control);
     }
-
+  
   simpleITEMvariables(Control);
-  shortDREAMvariables(Control);
-  shortDREAM2variables(Control);
-  shortNMXvariables(Control);
-  shortODINvariables(Control);
 
   return;
 }  

@@ -85,8 +85,7 @@ shortNMXvariables(FuncDataBase& Control)
 
   // Pipe to wall
   PipeGen.generatePipe(Control,"shortNMXPipeC",2.0,495.0);
-  FGen.generateTaper(Control,"shortNMXFC",440.0,8.0,8.0,2.0,2.0);
-
+  FGen.generateTaper(Control,"shortNMXFC",440.0,10.0,1.0,10.0,1.0);
 
   return;
 }

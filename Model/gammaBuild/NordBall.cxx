@@ -65,16 +65,16 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "NordBall.h"
 
 namespace gammaSystem
 {
 
-NordBall::NordBall(const size_t Index,
-		   const std::string& Key) :
+NordBall::NordBall(const size_t Index,const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(Index),6),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),6),
   detNumber(Index),baseName(Key),
   detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(detIndex+1)
@@ -84,6 +84,56 @@ NordBall::NordBall(const size_t Index,
     \param Key :: Name of construction key
   */
 {}
+
+NordBall::NordBall(const NordBall& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  detNumber(A.detNumber),baseName(A.baseName),
+  detIndex(A.detIndex),cellIndex(A.cellIndex),nFace(A.nFace),
+  faceWidth(A.faceWidth),backWidth(A.backWidth),
+  frontLength(A.frontLength),backLength(A.backLength),
+  wallThick(A.wallThick),plateThick(A.plateThick),
+  plateRadius(A.plateRadius),supportThick(A.supportThick),
+  elecRadius(A.elecRadius),elecThick(A.elecThick),mat(A.mat),
+  wallMat(A.wallMat),plateMat(A.plateMat),
+  supportMat(A.supportMat),elecMat(A.elecMat)
+  /*!
+    Copy constructor
+    \param A :: NordBall to copy
+  */
+{}
+
+NordBall&
+NordBall::operator=(const NordBall& A)
+  /*!
+    Assignment operator
+    \param A :: NordBall to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      cellIndex=A.cellIndex;
+      nFace=A.nFace;
+      faceWidth=A.faceWidth;
+      backWidth=A.backWidth;
+      frontLength=A.frontLength;
+      backLength=A.backLength;
+      wallThick=A.wallThick;
+      plateThick=A.plateThick;
+      plateRadius=A.plateRadius;
+      supportThick=A.supportThick;
+      elecRadius=A.elecRadius;
+      elecThick=A.elecThick;
+      mat=A.mat;
+      wallMat=A.wallMat;
+      plateMat=A.plateMat;
+      supportMat=A.supportMat;
+      elecMat=A.elecMat;
+    }
+  return *this;
+}
 
 NordBall::~NordBall()
   /*!
@@ -100,12 +150,7 @@ NordBall::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("NordBall","populate");
 
-    // Master values
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYangle");
-  zAngle=Control.EvalPair<double>(keyName,baseName,"Zangle");
+  FixedOffset::populate(Control);
 
   nFace=Control.EvalPair<size_t>(keyName,baseName,"NFace");
   faceWidth=Control.EvalPair<double>(keyName,baseName,"FaceWidth");
@@ -145,9 +190,7 @@ NordBall::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("NordBall","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyAngleRotate(xyAngle,zAngle);
-  applyShift(xStep,yStep,zStep);
+  applyOffset();
 
   return;
 }
@@ -193,7 +236,7 @@ NordBall::createSurfaces()
       DI+=50;
     }
   // Back plate
-  ELog::EM<<"Plate == "<<plateThick<<ELog::endDiag;
+
   double TLen(frontLength+backLength+plateThick);
   ModelSupport::buildCylinder(SMap,detIndex+1107,Origin,Y,plateRadius);
   ModelSupport::buildPlane(SMap,detIndex+1101,Origin+Y*TLen,Y);
