@@ -3,7 +3,7 @@
  
  * File:   delft/BeamTube.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,8 +69,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
+#include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "BeamTube.h"
 
@@ -78,7 +79,8 @@ namespace delftSystem
 {
 
 BeamTube::BeamTube(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::TwinComp(Key,3),
+  attachSystem::ContainedComp(),
+  attachSystem::FixedOffsetGroup(Key,"Main",3,"Beam",3),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flightIndex+1),innerVoid(0)
   /*!
@@ -88,10 +90,9 @@ BeamTube::BeamTube(const std::string& Key)  :
 {}
 
 BeamTube::BeamTube(const BeamTube& A) : 
-  attachSystem::ContainedComp(A),attachSystem::TwinComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffsetGroup(A),
   flightIndex(A.flightIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
+  length(A.length),
   innerRadius(A.innerRadius),innerWall(A.innerWall),
   outerRadius(A.outerRadius),outerWall(A.outerWall),
   frontWall(A.frontWall),frontGap(A.frontGap),frontIWall(A.frontIWall),
@@ -116,13 +117,8 @@ BeamTube::operator=(const BeamTube& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::TwinComp::operator=(A);
+      attachSystem::FixedOffsetGroup::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       length=A.length;
       innerRadius=A.innerRadius;
       innerWall=A.innerWall;
@@ -158,13 +154,7 @@ BeamTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BeamTube","populate");
 
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  attachSystem::FixedOffsetGroup::populate(Control);
   waterStep=Control.EvalVar<double>(keyName+"WaterStep");
 
   length=Control.EvalVar<double>(keyName+"Length");
@@ -231,42 +221,25 @@ BeamTube::populatePortals(const FuncDataBase& Control)
 
 void
 BeamTube::createUnitVector(const attachSystem::FixedComp& FC,
-			   const Geometry::Vec3D& PAxis)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
-    \param PAxis :: Primary axis
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("BeamTube","createUnitVector");
-  
-  // PROCESS Origin of a point
-  attachSystem::FixedComp::createUnitVector(FC);
-  attachSystem::FixedComp::applyShift(xStep+waterStep,yStep,zStep);
 
+  attachSystem::FixedComp& mainFC=getKey("Main");
+  attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  bZ=Z= FC.getZ();
-  bY=Y= PAxis;
-  bX=X= Y*Z;
+  beamFC.createUnitVector(FC,sideIndex);
+  mainFC.createUnitVector(FC,sideIndex);
 
-  if (fabs(xyAngle)>Geometry::zeroTol || 
-      fabs(zAngle)>Geometry::zeroTol)
-    {
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(zAngle,X);
-      const Geometry::Quaternion Qxy=
-	Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  
-      Qz.rotate(bY);
-      Qz.rotate(bZ);
-      Qxy.rotate(bY);
-      Qxy.rotate(bX);
-      Qxy.rotate(bZ); 
-    }
-  bEnter=Origin;
+  xStep+=waterStep;
+  applyOffset();
+   
+  setDefault("Main");
   return;
 }
 
@@ -278,9 +251,12 @@ BeamTube::createSurfaces()
 {
   ELog::RegMethod RegA("BeamTube","createSurfaces");
 
+
+  //  const attachSystem::FixedComp& mainFC=getKey("Main");
+  const attachSystem::FixedComp& beamFC=getKey("Beam");
+
+  const Geometry::Vec3D bY(beamFC.getY());
   // Outer layers
-
-
   if (capRadius>Geometry::zeroTol)
     {
       
@@ -498,42 +474,48 @@ BeamTube::createLinks()
 {
   ELog::RegMethod RegA("BeamTube","createLinks");
 
+  attachSystem::FixedComp& mainFC=getKey("Main");
+  attachSystem::FixedComp& beamFC=getKey("Beam");
 
-  SecondTrack::setBeamExit(Origin+bY*length,bY);
-  setExit(Origin+bY*length,bY);
+  const Geometry::Vec3D bY(beamFC.getY());
+  beamFC.setConnect(1,Origin+bY*length,bY);
 
-  FixedComp::setConnect(0,Origin,-Y);      // Note always to the reactor
-  FixedComp::setConnect(1,Origin+Y*frontWall,Y);
-  FixedComp::setConnect(2,Origin+Y*frontWall+bY*frontGap,bY);
+  mainFC.setConnect(0,Origin,-Y);      // Note always to the reactor
+  mainFC.setConnect(1,Origin+Y*frontWall,Y);
+  mainFC.setConnect(2,Origin+Y*frontWall+bY*frontGap,bY);
 
   if (capRadius>Geometry::zeroTol)
     {
-      FixedComp::setLinkSurf(0,SMap.realSurf(flightIndex+8));
-      FixedComp::addBridgeSurf(0,-SMap.realSurf(flightIndex+1));
+      mainFC.setLinkSurf(0,SMap.realSurf(flightIndex+8));
+      mainFC.addBridgeSurf(0,-SMap.realSurf(flightIndex+1));
     }
   else
-    FixedComp::setLinkSurf(0,SMap.realSurf(flightIndex+1));
+    mainFC.setLinkSurf(0,SMap.realSurf(flightIndex+1));
 
-  FixedComp::setLinkSurf(1,SMap.realSurf(flightIndex+2));
-  FixedComp::setLinkSurf(2,SMap.realSurf(flightIndex+21));
+  mainFC.setLinkSurf(1,SMap.realSurf(flightIndex+2));
+  mainFC.setLinkSurf(2,SMap.realSurf(flightIndex+21));
+
+  beamFC.setLinkSurf(1,SMap.realSurf(flightIndex+2));
+  beamFC.setLinkSurf(2,SMap.realSurf(flightIndex+21));
 
   return;
 }
 
 void
 BeamTube::createAll(Simulation& System,const attachSystem::FixedComp& FC,
-		    const Geometry::Vec3D& PAxis)
+		    const long int sideIndex)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
+    \param sideIndex :: Link point
     \param PAxis :: directional axis
   */
 {
   ELog::RegMethod RegA("BeamTube","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC,PAxis);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   if (capRadius>Geometry::zeroTol)
     createCapEndObjects(System);

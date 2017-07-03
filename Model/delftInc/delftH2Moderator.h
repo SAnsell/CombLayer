@@ -3,7 +3,7 @@
  
  * File:   delftInc/delftH2Moderator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,8 @@ class delftH2Moderator : public virtualMod
   Geometry::Vec3D calcCentre(const int,const int,const double) const;
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::SecondTrack&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -88,7 +89,8 @@ class delftH2Moderator : public virtualMod
   /// Access to hydrogen region
   virtual int getMainBody() const { return HCell; }
 
-  virtual void createAll(Simulation&,const attachSystem::TwinComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
   virtual void postCreateWork(Simulation&);
 };
 

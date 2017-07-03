@@ -71,8 +71,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -162,7 +160,6 @@ SphereModerator::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   
-
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerAl=Control.EvalVar<double>(keyName+"InnerAl");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -193,12 +190,8 @@ SphereModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
   */
 {
   ELog::RegMethod RegA("SphereModerator","createUnitVector");
-  // Opposite since other face:
-  X=CUnit.getBX();
-  Y=CUnit.getBY();
-  Z=CUnit.getBZ();
 
-  Origin=CUnit.getBeamStart();
+  FixedComp::createUnitVector(CUnit,sideIndex);
   applyOffset();
 
   return;

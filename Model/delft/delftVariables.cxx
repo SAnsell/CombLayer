@@ -300,7 +300,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR2XStep",23.127);
   Control.addVariable("delftFlightR2YStep",0.0);
   Control.addVariable("delftFlightR2ZStep",0.0);
-  Control.addVariable("delftFlightR2XYAngle",0.0);
+  Control.addVariable("delftFlightR2PreXYAngle",0.0);
+  Control.addVariable("delftFlightR2XYAngle",-90.0);
   Control.addVariable("delftFlightR2ZAngle",0.0);
 
   Control.addVariable("delftFlightR2Length",1000.0);
@@ -335,7 +336,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR1XStep",23.127);
   Control.addVariable("delftFlightR1YStep",0);
   Control.addVariable("delftFlightR1ZStep",-24.5);
-  Control.addVariable("delftFlightR1XYAngle",21.0);
+  Control.addVariable("delftFlightR1XYAngle",21.0-90);
   Control.addVariable("delftFlightR1ZAngle",0.0);
 
   Control.addVariable("delftFlightR1Length",1000.0);
@@ -371,7 +372,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightR3XStep",23.127);
   Control.addVariable("delftFlightR3YStep",0.0);
   Control.addVariable("delftFlightR3ZStep",24.5);
-  Control.addVariable("delftFlightR3XYAngle",-26.0);
+  Control.addVariable("delftFlightR3XYAngle",-26.0-90);
   Control.addVariable("delftFlightR3ZAngle",0.0);
 
   Control.addVariable("delftFlightR3Length",1000.0);
@@ -407,7 +408,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL3XStep",-23.127);
   Control.addVariable("delftFlightL3YStep",0.00);
   Control.addVariable("delftFlightL3ZStep",24.5);
-  Control.addVariable("delftFlightL3XYAngle",26.0);
+  Control.addVariable("delftFlightL3XYAngle",26.0+90);
   Control.addVariable("delftFlightL3ZAngle",0.0);
 
   Control.addVariable("delftFlightL3Length",1000.0);
@@ -443,7 +444,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL2XStep",-23.127);
   Control.addVariable("delftFlightL2YStep",0.0);
   Control.addVariable("delftFlightL2ZStep",0.0);
-  Control.addVariable("delftFlightL2XYAngle",0.0);
+  Control.addVariable("delftFlightL2XYAngle",90.0);
   Control.addVariable("delftFlightL2ZAngle",0.0);
 
   Control.addVariable("delftFlightL2Length",1000.0);
@@ -478,7 +479,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL1XStep",-23.127);
   Control.addVariable("delftFlightL1YStep",0.0);
   Control.addVariable("delftFlightL1ZStep",-24.5);
-  Control.addVariable("delftFlightL1XYAngle",21.0);
+  Control.addVariable("delftFlightL1XYAngle",21.0+90.0);
   Control.addVariable("delftFlightL1ZAngle",0.0);
 
   Control.addVariable("delftFlightL1Length",1000.0);

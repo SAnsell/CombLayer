@@ -76,12 +76,12 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FixedGroup.h"
+#include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
 #include "World.h"
@@ -414,33 +414,33 @@ makeDelft::buildFlight(Simulation& System,
   if (flightConfig=="Single")
     {
       FlightA->addInsertCell(74123);
-      FlightA->createAll(System,WC,WC.getX());
+      FlightA->createAll(System,WC,0);
       return;
     }
 
   FlightA->addInsertCell(Pool->getCells("Water"));
   FlightA->addInsertCell(74123);
-  FlightA->createAll(System,WC,WC.getX());
+  FlightA->createAll(System,WC,0);
 
   FlightB->addInsertCell(Pool->getCells("Water"));
   FlightB->addInsertCell(74123);
-  FlightB->createAll(System,WC,WC.getX());
+  FlightB->createAll(System,WC,0);
 
   FlightC->addInsertCell(Pool->getCells("Water"));
   FlightC->addInsertCell(74123);
-  FlightC->createAll(System,WC,WC.getX());
+  FlightC->createAll(System,WC,0);
 
   FlightD->addInsertCell(Pool->getCells("Water"));
   FlightD->addInsertCell(74123);
-  FlightD->createAll(System,WC,-WC.getX());
+  FlightD->createAll(System,WC,0);
 
   FlightE->addInsertCell(Pool->getCells("Water"));
   FlightE->addInsertCell(74123);
-  FlightE->createAll(System,WC,-WC.getX());
+  FlightE->createAll(System,WC,0);
 
   FlightF->addInsertCell(Pool->getCells("Water"));
   FlightF->addInsertCell(74123);
-  FlightF->createAll(System,WC,-WC.getX());
+  FlightF->createAll(System,WC,0);
   return;
 }
   
@@ -493,7 +493,7 @@ makeDelft::buildModerator(Simulation& System,
     {
       if (!vacReq)
 	ColdMod->addInsertCell(FlightA->getInnerVoid());
-      ColdMod->createAll(System,*FlightA);
+      ColdMod->createAll(System,*FlightA,0);
       
       const int MB=ColdMod->getMainBody();
       if (MB)
@@ -544,9 +544,9 @@ makeDelft::build(Simulation& System,
     {
       Pool->addInsertCell(74123);
       Pool->createAll(System,WC,0);
-      buildFlight(System,buildType);
       
       makeBlocks(System);
+      buildCore(System,IParam);
       makeRabbit(System);
     }
   

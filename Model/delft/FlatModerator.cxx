@@ -3,7 +3,7 @@
  
  * File:   delft/FlatModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,7 +142,6 @@ FlatModerator::operator=(const FlatModerator& A)
 }
 
 
-
 FlatModerator::~FlatModerator() 
   /*!
     Destructor
@@ -180,23 +179,17 @@ FlatModerator::populate(const FuncDataBase& Control)
   
 
 void
-FlatModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
+FlatModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
+				const long int sideIndex)
   /*!
     Create the unit vectors
     Origin is the back point of the moderator
-    - Y Points down the FlatModerator direction
-    - X Across the FlatModerator
-    - Z up (towards the target)
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: link point						
   */
 {
   ELog::RegMethod RegA("FlatModerator","createUnitVector");
-  // Opposite since other face:
-  X=CUnit.getBX();
-  Y=CUnit.getBY();
-  Z=CUnit.getBZ();
-
-  Origin=CUnit.getBeamStart();
+  FixedComp::createUnitVector(CUnit,sideIndex);
   applyOffset();
   return;
 }
@@ -288,17 +281,19 @@ FlatModerator::postCreateWork(Simulation&)
   
 void
 FlatModerator::createAll(Simulation& System,
-		       const attachSystem::TwinComp& FUnit)
+			 const attachSystem::FixedComp& FUnit,
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("FlatModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit);
+  createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

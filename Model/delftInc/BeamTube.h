@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/BeamTube.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,20 +39,13 @@ namespace delftSystem
 */
 
 class BeamTube : public attachSystem::ContainedComp,
-    public attachSystem::TwinComp
+    public attachSystem::FixedOffsetGroup
 {
  private:
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on X to Target
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< xyRotation angle
-  double zAngle;                ///< zRotation angle
-
   double waterStep;             ///< Forward water step
   double length;                ///< Total length
   double capRadius;             ///< Radius of cap [zero for flat]
@@ -85,7 +78,7 @@ class BeamTube : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void populatePortals(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const Geometry::Vec3D&);
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -103,7 +96,7 @@ class BeamTube : public attachSystem::ContainedComp,
   int getInnerVoid() const { return innerVoid; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const Geometry::Vec3D&);
+		 const long int);
 
 };
 

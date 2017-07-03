@@ -86,7 +86,8 @@ class SphereModerator : public virtualMod
   /// Main body for H2 item
   virtual int getMainBody() const { return HCell; }
 
-  virtual void createAll(Simulation&,const attachSystem::TwinComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
   virtual void postCreateWork(Simulation&);
 
 };
