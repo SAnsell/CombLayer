@@ -64,13 +64,10 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
-#include "SurInter.h"
 #include "Simulation.h"
-#include "SimPHITS.h"
 #include "SimInput.h"
 #include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
 #include "TallySelector.h"
 #include "variableSetup.h"
 #include "World.h"
@@ -116,10 +113,9 @@ main(int argc,char* argv[])
       setVariable::DelftCoreType(IParam,SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
   
-
-      delftSystem::makeDelft RObj(IParam.getValue<std::string>("modType"));
+      delftSystem::makeDelft RObj;
       World::createOuterObjects(*SimPtr);
-      RObj.build(SimPtr,IParam);
+      RObj.build(*SimPtr,IParam);
 
       RObj.setSource(SimPtr,IParam);
 

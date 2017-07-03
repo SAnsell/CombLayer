@@ -339,6 +339,7 @@ createDelftInputs(inputParam& IParam)
   IParam.regItem("coreType","coreType",1);
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
+  IParam.regDefItem<std::string>("buildType","buildType",1,"Full");
   IParam.regMulti("kcode","kcode",1000);
   IParam.regMulti("ksrcMat","ksrcMat",1000);
   IParam.regMulti("ksrcVec","ksrcVec",1000);
@@ -350,6 +351,7 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("kcode","MatN nsourcePart keff skip realRuns");
   IParam.setDesc("ksrcMat","Acceptable material number for ksrc");
   IParam.setDesc("ksrcVec","Positions for ksrc [after matN check]");
+  IParam.setDesc("buildType","Single/Full -- build moderator only");
   IParam.setDesc("modType","Type of moderator (sphere/tunnel)");
   IParam.setDesc("refExtra","Type of extra Be around moderators");
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");

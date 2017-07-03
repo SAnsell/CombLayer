@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/makeDelft.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #ifndef delftSystem_makeDelft_h
 #define delftSystem_makeDelft_h
 
+namespace attachSystem
+{
+  class FixedComp;
+  class FixedOffset;
+}
 /*!
   \namespace delftSystem
   \brief Delft reactor build system
@@ -58,8 +63,6 @@ class makeDelft
 {
  private:
 
-  int vacReq;                            ///< Vac vessel required
-
   std::shared_ptr<ReactorGrid> GridPlate;    ///< Grid 
   std::shared_ptr<SwimingPool> Pool;         ///< Pool
   std::shared_ptr<BeamTube> FlightA;         ///< Direct beamline 
@@ -77,9 +80,9 @@ class makeDelft
   // --  Inserts for flightline  --
   std::shared_ptr<BeamInsert> R2Insert;      ///< FlightA/R2 inset
 
-  // Reflector additional
-  std::shared_ptr<BeSurround> R2Be;      ///< R2 tube refle
-  std::shared_ptr<BeCube> R2Cube;      ///< R2 tube refle
+  /// Reflector additional on tube
+  std::shared_ptr<attachSystem::FixedOffset> R2Be; 
+  std::shared_ptr<BeCube> R2Cube;          ///< R2 tube refle
   std::shared_ptr<BeFullBlock> RFull;      ///< R Full block
   std::shared_ptr<BeFullBlock> LFull;      ///< L Full block
 
@@ -95,14 +98,18 @@ class makeDelft
   void makeBlocks(Simulation&);
   void makeRabbit(Simulation&);
 
+  void buildCore(Simulation&,const mainSystem::inputParam&);
+  void buildFlight(Simulation&,const std::string&);
+  void buildModerator(Simulation&,const std::string&,const std::string&);
+
  public:
   
-  makeDelft(const std::string&);
+  makeDelft();
   makeDelft(const makeDelft&);
   makeDelft& operator=(const makeDelft&);
   ~makeDelft();
   
-  void build(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
   void setSource(Simulation*,const mainSystem::inputParam&);
 
 };
