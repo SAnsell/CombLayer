@@ -3,7 +3,7 @@
  
  * File:   build/beamTallyConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -246,9 +245,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 
   int masterPlane(0);
 
-  size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
-	     static_cast<size_t>(-viewSurface-1));
-  int VSign((viewSurface<0) ? -1 : 1);
+  long int vSurface(viewSurface);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
@@ -256,26 +253,25 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
   // Do something if using old TS2 style point tally
   if (modName.empty())
     {
-      VSign=1;
       if (beamNum<4)
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
-	  iLP=0;
+	  vSurface=1;
 	}
       else if (beamNum<9)
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("hydrogen");
-	  iLP=0;
+	  vSurface=1;
 	}
       else if (beamNum<14)
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("groove");
-	  iLP=0;
+	  vSurface=1;
 	}
       else
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
-	  iLP=1;
+	  vSurface=2;
 	}
     }
   else
@@ -293,8 +289,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
       (modName,"Moderator Object not found");
 
   // MODERATOR PLANE
-  masterPlane=
-    ModPtr->getExitWindow(iLP,Planes);
+  masterPlane=ModPtr->getExitWindow(vSurface,Planes);
 
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
@@ -608,7 +603,7 @@ void
 beamTallyConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<

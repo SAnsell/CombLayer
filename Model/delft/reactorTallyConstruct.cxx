@@ -3,7 +3,7 @@
  
  * File:   build/reactorTallyConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@
 #include "MainProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Simulation.h"
 #include "inputParam.h"
@@ -91,19 +92,26 @@ namespace tallySystem
 
 reactorTallyConstruct::reactorTallyConstruct() :
   fissionConstruct()
-  /// Constructor
+  /*!
+    Constructor
+  */
 {}
 
 reactorTallyConstruct::reactorTallyConstruct(const reactorTallyConstruct& A) :
   fissionConstruct(A)
   /*!
     Copy Constructor
+    \param A :: reactorTallyConstructor to copy
   */
 {}
 
 reactorTallyConstruct&
 reactorTallyConstruct::operator=(const reactorTallyConstruct& A) 
-  /// Assignment operator
+  /*!
+    Assignment operator
+    \param A :: Tally to copy
+    \return *this
+  */
 {
   if (this!=&A)
     {
@@ -116,12 +124,13 @@ int
 reactorTallyConstruct::processPower
         (Simulation& System,const mainSystem::inputParam& IParam,
 	 const size_t Index,const bool renumberFlag) const
-/*!
+  /*!
     Add point tally (s) as needed
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: Index of tally
     \param renumberFlag :: Renubmer call
+    \return 0 on success
    */
 {
   ELog::RegMethod RegA("reactorTallyConstruct","processPower");
@@ -159,7 +168,7 @@ void
 reactorTallyConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<"-- Reactor Name";

@@ -172,6 +172,7 @@ FuelLoad::loadXML(const std::string& FName)
   */
 {
   ELog::RegMethod RegA("FuelLoad","loadXML");
+
   ELog::EM<<"Load fuel "<<FName<<ELog::endDiag;
   XML::XMLcollect CO;
   if (FName.empty() || CO.loadXML(FName))
@@ -192,7 +193,7 @@ FuelLoad::loadXML(const std::string& FName)
       MatName= AR->getNamedItem<std::string>("Material");
       MatName=StrFunc::fullBlock(MatName);
       const size_t HN=FuelLoad::hash(GridItem,bladeN,IndexN);
-      FuelMap.insert(std::map<size_t,std::string>::value_type(HN,MatName));
+      FuelMap.emplace(HN,MatName);
       CO.deleteObj(AR);      
       AR=CO.findObj("Fuel");
     }

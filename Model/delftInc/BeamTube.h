@@ -34,12 +34,13 @@ namespace delftSystem
   \date June 2012
   \brief BeamTube for reactor
   
-  This is a twin object Fixed for the primary build
+  This is a Fixed for the primary build
   and Beamline to take acount of the track (inner build)
 */
 
 class BeamTube : public attachSystem::ContainedComp,
-    public attachSystem::FixedOffsetGroup
+  public attachSystem::FixedOffsetGroup,
+  public attachSystem::CellMap
 {
  private:
   
@@ -47,6 +48,7 @@ class BeamTube : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
   
   double waterStep;             ///< Forward water step
+  double innerStep;             ///< Forward inner linder
   double length;                ///< Total length
   double capRadius;             ///< Radius of cap [zero for flat]
   double innerRadius;           ///< Outer radius [minus wall]

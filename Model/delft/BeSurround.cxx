@@ -148,7 +148,10 @@ BeSurround::populate(const FuncDataBase& Control)
       length=Control.EvalVar<double>(keyName+"Length");
       innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
       outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+      frontThick=Control.EvalDefVar<double>(keyName+"FrontThick",0.0);
+
       mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+      frontMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FrontMat",mat);
     }
 
   return;
@@ -166,8 +169,8 @@ BeSurround::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BeSurround","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyOffset();
 
+  applyOffset();
   return;
 }
 
@@ -187,6 +190,9 @@ BeSurround::createSurfaces()
   ModelSupport::buildCylinder(SMap,insertIndex+17,
 			      Origin,Y,outerRadius);
 
+  // front surface
+  ModelSupport::buildPlane(SMap,insertIndex+11,Origin+Y*frontThick,Y);
+    
   return;
 }
 
@@ -196,17 +202,22 @@ BeSurround::createObjects(Simulation& System,
   /*!
     Adds the BeamLne components
     \param System :: Simulation to add beamline to
+    \param FC :: FixecCom 
     \param ExcludeString :: internal structure
   */
 {
   ELog::RegMethod RegA("BeSurround","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 -17 7 ");
-  addOuterSurf(Out);
-  Out+=ExcludeString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,insertIndex," 11 -2 -17 7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+ExcludeString));
   
+  Out=ModelSupport::getComposite(SMap,insertIndex,"1 -11 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,frontMat,0.0,Out+ExcludeString));
+
+  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 -17 (7:-11) ");
+  addOuterSurf(Out);
+    
   return;
 }
 

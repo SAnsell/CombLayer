@@ -72,6 +72,8 @@
 #include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "BeamTube.h"
 
@@ -81,6 +83,7 @@ namespace delftSystem
 BeamTube::BeamTube(const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffsetGroup(Key,"Main",3,"Beam",3),
+  attachSystem::CellMap(),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flightIndex+1),innerVoid(0)
   /*!
@@ -91,6 +94,7 @@ BeamTube::BeamTube(const std::string& Key)  :
 
 BeamTube::BeamTube(const BeamTube& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffsetGroup(A),
+  attachSystem::CellMap(A),
   flightIndex(A.flightIndex),cellIndex(A.cellIndex),
   length(A.length),
   innerRadius(A.innerRadius),innerWall(A.innerWall),
@@ -118,6 +122,7 @@ BeamTube::operator=(const BeamTube& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       length=A.length;
       innerRadius=A.innerRadius;
@@ -156,6 +161,7 @@ BeamTube::populate(const FuncDataBase& Control)
 
   attachSystem::FixedOffsetGroup::populate(Control);
   waterStep=Control.EvalVar<double>(keyName+"WaterStep");
+  innerStep=Control.EvalDefVar<double>(keyName+"InnerStep",0.0);
 
   length=Control.EvalVar<double>(keyName+"Length");
   capRadius=Control.EvalDefVar<double>(keyName+"CapRadius",0.0);
@@ -259,7 +265,6 @@ BeamTube::createSurfaces()
   // Outer layers
   if (capRadius>Geometry::zeroTol)
     {
-      
       ModelSupport::buildPlane(SMap,flightIndex+1,Origin+bY*capRadius,Y);
       ModelSupport::buildSphere(SMap,flightIndex+8,
 				Origin+bY*capRadius,capRadius);
@@ -282,8 +287,10 @@ BeamTube::createSurfaces()
 			       Origin+Y*frontWall+bY*frontGap,bY);
       ModelSupport::buildPlane(SMap,flightIndex+31,Origin+Y*frontWall+
 			       bY*(frontGap+frontIWall),bY);
+      ModelSupport::buildPlane(SMap,flightIndex+1001,Origin+Y*innerStep,Y);
     }
 
+  
   ModelSupport::buildCylinder(SMap,flightIndex+7,
 			      Origin+Y*frontWall,bY,outerRadius+outerWall);
   ModelSupport::buildPlane(SMap,flightIndex+2,Origin+bY*length,bY);
@@ -360,8 +367,8 @@ BeamTube::createCapEndObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,flightIndex,
 				 " (-18:1) -2 -17  ((28 -1) : 27) (-41:-67)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out));
-
   // Inner wall
+  
   Out=ModelSupport::getComposite(SMap,flightIndex,
 				 " (-28:1) ((38 -1) : 37) -2 -27 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
@@ -427,7 +434,8 @@ BeamTube::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,flightIndex,
 				 "11 -2 -17 (-21:27) (-41:-67)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,gapMat,0.0,Out));
-
+  addCell("FrontVoid",cellIndex-1);
+  
   // Inner wall
   Out=ModelSupport::getComposite(SMap,flightIndex," 21 -2 -27 (-31:37)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));

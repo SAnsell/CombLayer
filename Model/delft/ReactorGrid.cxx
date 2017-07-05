@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -253,7 +253,7 @@ ReactorGrid::getElementNumber(const std::string& Name)
 
 
 ReactorGrid::ReactorGrid(const std::string& Key) : 
-  attachSystem::FixedComp(Key,7),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,7),attachSystem::ContainedComp(),
   gridIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(gridIndex+1)
   /*!
@@ -263,11 +263,9 @@ ReactorGrid::ReactorGrid(const std::string& Key) :
 {}
 
 ReactorGrid::ReactorGrid(const ReactorGrid& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   gridIndex(A.gridIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),NX(A.NX),
-  NY(A.NY),Width(A.Width),Depth(A.Depth),Base(A.Base),
+  NX(A.NX),NY(A.NY),Width(A.Width),Depth(A.Depth),Base(A.Base),
   Top(A.Top),plateThick(A.plateThick),plateRadius(A.plateRadius),
   plateMat(A.plateMat),waterMat(A.waterMat),GType(A.GType),
   Grid(A.Grid)
@@ -287,14 +285,9 @@ ReactorGrid::operator=(const ReactorGrid& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       NX=A.NX;
       NY=A.NY;
       Width=A.Width;
@@ -326,14 +319,10 @@ ReactorGrid::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ReactorGrid","populate");
 
+  FixedOffset::populate(Control);
+  
   NX=Control.EvalVar<size_t>(keyName+"XSize");
   NY=Control.EvalVar<size_t>(keyName+"YSize");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   Width=Control.EvalVar<double>(keyName+"Width");
   Depth=Control.EvalVar<double>(keyName+"Depth");
@@ -367,16 +356,18 @@ ReactorGrid::populate(const FuncDataBase& Control)
 }
 
 void
-ReactorGrid::createUnitVector(const attachSystem::FixedComp& FC)
+ReactorGrid::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Orign object
+    \param sideIndex :: Link point						
   */
 {
   ELog::RegMethod RegA("ReactorGrid","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
-  attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
+  
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -725,17 +716,19 @@ ReactorGrid::writeFuelXML(const std::string& FName)
 
 void
 ReactorGrid::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Object for origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ReactorGrid","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

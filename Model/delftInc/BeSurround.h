@@ -52,8 +52,10 @@ class BeSurround : public attachSystem::ContainedComp,
   double innerRadius;           ///< Inner radius
   double outerRadius;           ///< Radius of Be outer
   double length;                ///< Total length
+  double frontThick;            ///< Front thickness
 
-  int mat;                      ///< Material 
+  int mat;                      ///< Material
+  int frontMat;                 ///< Front Material 
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

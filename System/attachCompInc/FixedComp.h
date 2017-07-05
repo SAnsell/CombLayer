@@ -107,6 +107,8 @@ class FixedComp
   void reverseZ();
   
   void setConnect(const size_t,const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void setLineConnect(const size_t,const Geometry::Vec3D&,
+		      const Geometry::Vec3D&);
   void setBasicExtent(const double,const double,const double);
 
   void setLinkSurf(const size_t,const FixedComp&,const size_t);

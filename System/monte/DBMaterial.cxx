@@ -1301,6 +1301,19 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   return;
 }
 
+
+bool
+DBMaterial::createComposite(const std:::string& MName)
+  /*!
+    Creates a composite material based on an approximate
+    zaid.
+    \param MName :: Material name based on fraction load
+
+    \return 0 if not possible / 1 on material existing or created
+  */
+{
+}
+  
 bool
 DBMaterial::createMaterial(const std::string& MName)
   /*!
@@ -1316,7 +1329,6 @@ DBMaterial::createMaterial(const std::string& MName)
   std::string::size_type pos=MName.find('%');
   if (pos!=std::string::npos)
     {
-	
       double PFrac;
       const std::string AKey=MName.substr(0,pos);
       const std::string BKey=MName.substr(pos+1);

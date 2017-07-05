@@ -481,5 +481,17 @@ LinkUnit::applyRotation(const localRotate& LR)
   return;
 }
 
+void
+LinkUnit::populateSurf()
+  /*!
+    Populate surface
+   */
+{
+  ELog::RegMethod RegA("LinkUnit","populateSurf");
+    
+  mainSurf.populateSurf();
+  bridgeSurf.populateSurf();
+  return;
+}
   
 }  // NAMESPACE attachSystem

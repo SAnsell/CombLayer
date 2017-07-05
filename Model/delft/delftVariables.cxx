@@ -296,22 +296,16 @@ DelftModel(FuncDataBase& Control)
   
   // FlightLines
   
-  Control.addVariable("delftFlightR2WaterStep",1.8);
-  Control.addVariable("delftFlightR2XStep",23.127);
-  Control.addVariable("delftFlightR2YStep",0.0);
-  Control.addVariable("delftFlightR2ZStep",0.0);
-  Control.addVariable("delftFlightR2PreXYAngle",0.0);
-  Control.addVariable("delftFlightR2XYAngle",-90.0);
-  Control.addVariable("delftFlightR2ZAngle",0.0);
+  //  Control.addVariable("delftFlightR2XStep",23.127);
 
   Control.addVariable("delftFlightR2Length",1000.0);
-  Control.addVariable("delftFlightR2InnerRadius",10.3);
+  Control.addVariable("delftFlightR2InnerRadius",10.3); // was 10.3
   Control.addVariable("delftFlightR2InnerWall",0.4);
   Control.addVariable("delftFlightR2OuterRadius",11.75);
   Control.addVariable("delftFlightR2OuterWall",0.5);
 
   Control.addVariable("delftFlightR2FrontWall",0.7);
-  Control.addVariable("delftFlightR2FrontGap",0.1);
+  Control.addVariable("delftFlightR2FrontGap",75.1);
   Control.addVariable("delftFlightR2FrontIWall",0.5);
 
   Control.addVariable("delftFlightR2InterThick",0.2);
@@ -534,131 +528,71 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftH2SurfMat","Aluminium");           // Aluminium
 
 
-  // CONE MODERATOR
-
-  Control.addVariable("coneXStep",0.0);      
-  Control.addVariable("coneYStep",3.0);      
-  Control.addVariable("coneZStep",0.0);      
-  Control.addVariable("coneDepth",5.0);      
-  Control.addVariable("coneLength",50.0);      
-  Control.addVariable("coneInnerAngle",11.0);      
-  Control.addVariable("coneOuterAngle",11.0);      
-  Control.addVariable("coneFrontCut",10.0);      
-
-  Control.addVariable("coneAlView",0.5);      
-  Control.addVariable("coneFaceThick",1.0);      
-  Control.addVariable("coneAlBack",1.0);      
-
-  Control.addVariable("coneModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("coneModMat","ParaOrtho");            // Liquid H2
-  Control.addVariable("coneAlMat","Aluminium");              // Aluminium
 
   // FLAT MODERATOR
 
   Control.addVariable("flatXStep",0.0);      
-  Control.addVariable("flatYStep",3.0);      
-  Control.addVariable("flatZStep",0.0);      
-  Control.addVariable("flatDepth",2.0);      
-  Control.addVariable("flatLength",30.0);      
-  Control.addVariable("flatFrontRad",100.0);      
-  Control.addVariable("flatBackRad",100.0);      
-  Control.addVariable("flatRadius",10.0);      
-  Control.addVariable("flatWallThick",0.2);      
-  Control.addVariable("flatSideThick",1.0);      
+  Control.addVariable("flatYStep",-26.0);      
+  Control.addVariable("flatZStep",0.0);
+  
+  Control.addVariable("flatFocusDepth",19.50);      
 
+  Control.addVariable("flatFrontRadius",16.23);      
+  Control.addVariable("flatBackRadius",19.35);      
+  Control.addVariable("flatFrontWallThick",0.22);
+  Control.addVariable("flatBackWallThick",0.15);
+
+  Control.addVariable("flatViewExtent",10.32);  // inner+corner radii
+  Control.addVariable("flatWingAngle",4.0);  // cone angle [4deg]
+
+  Control.addVariable("flatFrontRoundRadius",1.73);      
+  Control.addVariable("flatBackRoundRadius",4.85);      
+
+
+  // old stuff
+  Control.addVariable("flatSideThick",1.0);      
+  Control.addVariable("flatLength",16.0);      
 
   Control.addVariable("flatModTemp",20.0);         // Temperature of H2 
   Control.addVariable("flatGasTemp",25.0);         // Temperature of H2 
   Control.addVariable("flatModMat","ParaOrtho%35");  // Liq-H2 (65% ortho)
-  Control.addVariable("flatGasMat","ParaOrtho%35");  //Gas H2 (65% ortho)
+  Control.addVariable("flatGasMat","Void");         
   Control.addVariable("flatAlMat","Aluminium");             // Aluminium
 
-  // CONTAINER
+  // CONTAINER VAC VESSEL
+  
+  Control.addVariable("delftVacYStep",0.0);
+  Control.addVariable("delftVacSideRadius",22.1/2.0);   
+  Control.addVariable("delftVacSideWall",0.25);
+  
+  Control.addVariable("delftVacFrontLength",6.5);
+  Control.addVariable("delftVacFrontRadius",19.7);
+  Control.addVariable("delftVacFrontWall",0.2);
 
-  Control.addVariable("delftH2ContVacPosRadius",30.2);   //  First Vac layer
-  Control.addVariable("delftH2ContVacNegRadius",60.2);   // 
-  Control.addVariable("delftH2ContVacPosGap",2.3);       // 
-  Control.addVariable("delftH2ContVacNegGap",1.2);       // 
-  Control.addVariable("delftH2ContVacSide",0.3);   //
+  Control.addVariable("delftVacBackRadius",11.1);
+  Control.addVariable("delftVacBackWall",0.2);
+  Control.addVariable("delftVacBackLength",19.45);
+  
+  Control.addVariable("delftVacWallMat","Aluminium");   
 
-  Control.addVariable("delftH2ContAlPos",0.15);    // First Al layer
-  Control.addVariable("delftH2ContAlNeg",0.15);    // 
-  Control.addVariable("delftH2ContAlSide",0.15);    // Sides of view
+  // CONTAINER : Outer Pressure container
 
-  Control.addVariable("delftH2ContTerPos",0.2);    // Teriary GAP
-  Control.addVariable("delftH2ContTerNeg",0.2);    // 
-  Control.addVariable("delftH2ContTerSide",0.2);    //
+  Control.addVariable("delftPressXYAngle",0.0);
+  Control.addVariable("delftPressReshiftOrigin",-1);
+  Control.addVariable("delftPressYStep",1.85+0.4);
+  Control.addVariable("delftPressSideRadius",23.5/2.0);   
+  Control.addVariable("delftPressSideWall",0.65);
+  
+  Control.addVariable("delftPressFrontLength",6.5);
+  Control.addVariable("delftPressFrontRadius",20.2);
+  Control.addVariable("delftPressFrontWall",0.5);
 
-  Control.addVariable("delftH2ContOutPos",0.2);    // Outer Al layer
-  Control.addVariable("delftH2ContOutNeg",0.2);    // Actual curve
-  Control.addVariable("delftH2ContOutSide",0.2);    // Sides of view
+  Control.addVariable("delftPressBackRadius",11.75);
+  Control.addVariable("delftPressBackWall",0.5);
+  Control.addVariable("delftPressBackLength",19.45);
+  
+  Control.addVariable("delftPressWallMat","Aluminium");   
 
-  Control.addVariable("delftH2ContClearPos",0.6);    // Actual curve
-  Control.addVariable("delftH2ContClearNeg",0.6);    // Actual curve
-  Control.addVariable("delftH2ContClearSide",0.6);    // Sides of view
-
-  Control.addVariable("delftH2ContAlMat","Aluminium");            
-  Control.addVariable("delftH2ContOutMat","Aluminium");           
-
-  Control.addVariable("delftH2NGroove",0);      
-
-  Control.addVariable("delftH2GrooveFace",-1);      
-  Control.addVariable("delftH2GrooveYStep",-3.0);      
-  Control.addVariable("delftH2GrooveZStep",0.0);      
-  Control.addVariable("delftH2GrooveXYAngleA",25.0);      
-  Control.addVariable("delftH2GrooveXYAngleB",-25.0);      
-  Control.addVariable("delftH2GrooveSiMat","Void");      
-  Control.addVariable("delftH2GrooveSiTemp",0.0);      
-  Control.addVariable("delftH2GrooveHeight",8.0);        
-
-  Control.addVariable("delftH2Groove1XStep",-4.0);      
-  Control.addVariable("delftH2Groove2XStep",-2.0);      
-  Control.addVariable("delftH2Groove3XStep",2.0);      
-  Control.addVariable("delftH2Groove4XStep",4.0);      
-
-  // Default Spherica model
-  Control.addVariable("sphereH2XStep",0.0);      
-  Control.addVariable("sphereH2YStep",14.0);      
-  Control.addVariable("sphereH2ZStep",0.0);      
-
-  Control.addVariable("sphereH2InnerRadius",5.1);   // Radius of inner H2
-  Control.addVariable("sphereH2InnerAl",0.3);      // Radius of iner Al  H2
-  Control.addVariable("sphereH2OuterRadius",8.1);      // Radius of outer H2
-  Control.addVariable("sphereH2OuterAl",0.3);      
-  Control.addVariable("sphereH2OutYShift",-0.50);   // Shift of centre
-
-  Control.addVariable("sphereH2ForwardStep",3.55);   // Shift of centre
-  Control.addVariable("sphereH2CapThick",1.75);      // Shift of centre
-
-  Control.addVariable("sphereH2PipeLen",30.0);      
-  Control.addVariable("sphereH2PipeRadius",1.0);      
-  Control.addVariable("sphereH2PipeAlRadius",1.2);      
-
-  Control.addVariable("sphereH2ModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("sphereH2ModMat","ParaOrtho");            // Liquid H2
-  Control.addVariable("sphereH2AlMat","Aluminium");              // Aluminium
-
-  // Default Spherica model
-  Control.addVariable("sphereLongXStep",0.0);      
-  Control.addVariable("sphereLongYStep",14.0);      
-  Control.addVariable("sphereLongZStep",0.0);      
-
-  Control.addVariable("sphereLongInnerRadius",9.0);   // Radius of inner H2
-  Control.addVariable("sphereLongInnerAl",0.1);      // Radius of iner Al  H2
-  Control.addVariable("sphereLongOuterRadius",10.0);      // Radius of outer H2
-  Control.addVariable("sphereLongOuterAl",0.1);      
-  Control.addVariable("sphereLongOutYShift",0.0);   // Shift of centre
-
-  Control.addVariable("sphereLongForwardStep",20.0);   // Shift of centre
-  Control.addVariable("sphereLongCapThick",1.75);      // Shift of centre
-
-  Control.addVariable("sphereLongPipeLen",10.0);      
-  Control.addVariable("sphereLongPipeRadius",0.3);      
-  Control.addVariable("sphereLongPipeAlRadius",0.5);      
-
-  Control.addVariable("sphereLongModTemp",20.0);         // Temperature of H2 
-  Control.addVariable("sphereLongModMat","ParaOrtho");            // Liquid H2
-  Control.addVariable("sphereLongAlMat","Aluminium");              // Aluminium
 
 
 
@@ -716,39 +650,14 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("R2Slot4XSize",10.0);
   Control.addVariable("R2Slot4ZSize",2.65);
 
-  // BE SURROUND:
-  Control.addVariable("R2CubeXStep",0.0);
-  Control.addVariable("R2CubeYStep",0.0);
-  Control.addVariable("R2CubeZStep",0.0);
-  Control.addVariable("R2CubeActive",0);
-  Control.addVariable("R2CubeMat","Be300K");  
 
-  Control.addVariable("R2RefXStep",0.0);
-  Control.addVariable("R2RefYStep",0.0);
-  Control.addVariable("R2RefZStep",0.0);
   Control.addVariable("R2RefActive",1);  
+  Control.addVariable("R2RefYStep",-0.4);
   Control.addVariable("R2RefLength",10.0);  
-  Control.addVariable("R2RefInnerRadius",13.25);  
-  Control.addVariable("R2RefOuterRadius",18.25);  
+  Control.addVariable("R2RefInnerRadius",12.85);  
+  Control.addVariable("R2RefOuterRadius",20.00);
+  Control.addVariable("R2RefFrontThick",4.0);
   Control.addVariable("R2RefMat","Be300K");  
-
-  // BE Full SURROUND: [someone ?]
-  Control.addVariable("RFullXStep",0.0);
-  Control.addVariable("RFullYStep",0.0);
-  Control.addVariable("RFullZStep",0.0);
-  Control.addVariable("RFullLength",30.0);  
-  Control.addVariable("RFullHeight",60.0);  
-  Control.addVariable("RFullWidth",55.0);  
-  Control.addVariable("RFullMat","Be300K");  
-
-  // BE Full SURROUND: [someone ?]
-  Control.addVariable("LFullXStep",0.0);
-  Control.addVariable("LFullYStep",0.0);
-  Control.addVariable("LFullZStep",0.0);
-  Control.addVariable("LFullLength",30.0);  
-  Control.addVariable("LFullHeight",60.0);  
-  Control.addVariable("LFullWidth",55.0);  
-  Control.addVariable("LFullMat","Be300K");  
 
   return;
 }
