@@ -3,7 +3,7 @@
  
  * File:   delftInc/beamSlot.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ class beamSlot : public attachSystem::ContainedComp,
  private:
 
   const std::string baseName;  ///< Base name
-  const int surfIndex;     ///< surf number
-  int cellIndex;           ///< Cell index
+  const int surfIndex;         ///< surf number
+  int cellIndex;               ///< Cell index
   
   double axisAngle;      ///< Angle round the centre line
   double xyAngle;        ///< Angle round the hole

@@ -287,8 +287,7 @@ Material::removeLib(const std::string& lHead)
 int
 Material::lineType(std::string& Line)
   /*!
-    Determine the type of the line. Removes
-    trailing spaces etc
+    Determine the type of the line. Removes trailing spaces etc
     \param Line :: Line to process
     \retval 0 :: no information / contline
     \retval -1 :: empty/comment line
@@ -306,16 +305,13 @@ Material::lineType(std::string& Line)
        (Line.size()==1 || isspace(Line[1]))))
     return -1;
   
-
   Line=StrFunc::fullBlock(Line);                
   int index;
   std::string part;
   if (!StrFunc::convert(Line,part)) return 0;
   if (part.size()<2 || (part[0]!='m' && part[0]!='M')) 
     return 0;
-  size_t i(0);
-  while(i<part.size() && !isdigit(part[i]))
-    part[i]=' ';
+  part[0]=' ';
   if (StrFunc::convert(part,index))
     return index;
 
@@ -487,14 +483,12 @@ Material::setMaterial(const std::vector<std::string>& PVec)
     \retval 0 :: on success
   */
 {
-  ELog::RegMethod RegA("Material","setMaterial");
-  // Process First line : 
-  std::string Pstr=PVec[0];
+  ELog::RegMethod RegA("Material","setMaterial<Vec>");
 
+  // Process First line : 
   // Divide line into zaid / density / extras:
-  std::vector<std::string> Items=StrFunc::StrParts(Pstr);
-  if (Items.size()<2)
-    return -1;
+  std::vector<std::string> Items=StrFunc::StrParts(PVec[0]);
+  if (Items.size()<2) return -1;
 
   std::string& FItem(Items[0]);  
   const char pItem=FItem[0];
@@ -507,23 +501,22 @@ Material::setMaterial(const std::vector<std::string>& PVec)
   
   Zaid AZ;
   double Dens;                   // density
-  std::vector<std::string>::iterator vc=Items.begin();
+
   int typeFlag(0);
   // skip first item
-  for(vc++;vc!=Items.end();vc++)
+  Items.erase(Items.begin());
+  for(const std::string& unit : Items)
     {
       if (!typeFlag)
 	{
-	  if (AZ.setZaid(*vc))
+	  if (AZ.setZaid(unit))
 	    typeFlag=1;
-	  else              // Maybe a modifier 
-	    {
-	      Libs.push_back(*vc);
-	    }
+	  else              // Maybe a modifier [hopefully]
+	    Libs.push_back(unit);
 	}
       else
 	{
-	  if (StrFunc::convert(*vc,Dens))
+	  if (StrFunc::convert(unit,Dens))
 	    {
 	      AZ.setDensity(Dens);
 	      zaidVec.push_back(AZ);
@@ -531,7 +524,7 @@ Material::setMaterial(const std::vector<std::string>& PVec)
 	    }
 	}
     }
-  // NOW PROCESS EXTRA LINES: 
+  // NOW PROCESS EXTRA LINES (and libs)
   std::vector<std::string>::const_iterator sc=PVec.begin();
   for(sc++;sc!=PVec.end();sc++)
     {
@@ -544,10 +537,11 @@ Material::setMaterial(const std::vector<std::string>& PVec)
 	  SQW.push_back(StrFunc::fullBlock(ItemStr));
 	  break;
 	case 2:          // mx card
-	  ELog::EM.error("Un supported mx card");
-	  break;
+	  throw ColErr::InContainerError<std::string>
+	    (ItemStr,"Un supported mx card");
 	}
     }
+  Name="m"+std::to_string(Mnum);
   calcAtomicDensity();
   return 0;
 }

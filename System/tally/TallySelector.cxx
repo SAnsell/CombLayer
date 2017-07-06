@@ -56,12 +56,12 @@
 #include "addInsertObj.h"
 #include "TallySelector.h"
 
-
 #include "basicConstruct.h"
 #include "pointConstruct.h"
 #include "meshConstruct.h"
 #include "fluxConstruct.h"
 #include "heatConstruct.h"
+#include "fissionConstruct.h"
 #include "itemConstruct.h"
 #include "surfaceConstruct.h"
 #include "sswConstruct.h"

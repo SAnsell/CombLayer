@@ -3,7 +3,7 @@
  
  * File:   delft/delftVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -328,10 +328,9 @@ DelftModel(FuncDataBase& Control)
   // FLIGHT 2:
   Control.addVariable("delftFlightR1WaterStep",1.8);
   Control.addVariable("delftFlightR1XStep",23.127);
-  Control.addVariable("delftFlightR1YStep",0);
   Control.addVariable("delftFlightR1ZStep",-24.5);
-  Control.addVariable("delftFlightR1XYAngle",21.0-90);
-  Control.addVariable("delftFlightR1ZAngle",0.0);
+  Control.addVariable("delftFlightR1XYAngle",-90);
+  Control.addVariable("delftFlightR1BeamXYAngle",21.0);
 
   Control.addVariable("delftFlightR1Length",1000.0);
   Control.addVariable("delftFlightR1InnerRadius",7.5);
@@ -364,10 +363,9 @@ DelftModel(FuncDataBase& Control)
   // FLIGHT 3:
   Control.addVariable("delftFlightR3WaterStep",1.8);
   Control.addVariable("delftFlightR3XStep",23.127);
-  Control.addVariable("delftFlightR3YStep",0.0);
   Control.addVariable("delftFlightR3ZStep",24.5);
-  Control.addVariable("delftFlightR3XYAngle",-26.0-90);
-  Control.addVariable("delftFlightR3ZAngle",0.0);
+  Control.addVariable("delftFlightR3XYAngle",-90);
+  Control.addVariable("delftFlightR3BeamXYAngle",-26.0);
 
   Control.addVariable("delftFlightR3Length",1000.0);
   Control.addVariable("delftFlightR3InnerRadius",7.5);
@@ -400,10 +398,10 @@ DelftModel(FuncDataBase& Control)
   // FLIGHT 4:  Lower 
   Control.addVariable("delftFlightL3WaterStep",-1.8);
   Control.addVariable("delftFlightL3XStep",-23.127);
-  Control.addVariable("delftFlightL3YStep",0.00);
   Control.addVariable("delftFlightL3ZStep",24.5);
-  Control.addVariable("delftFlightL3XYAngle",26.0+90);
-  Control.addVariable("delftFlightL3ZAngle",0.0);
+  Control.addVariable("delftFlightL3XYAngle",90);
+  Control.addVariable("delftFlightL3BeamXYAngle",26.0);
+
 
   Control.addVariable("delftFlightL3Length",1000.0);
   Control.addVariable("delftFlightL3InnerRadius",7.5);
@@ -473,7 +471,8 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftFlightL1XStep",-23.127);
   Control.addVariable("delftFlightL1YStep",0.0);
   Control.addVariable("delftFlightL1ZStep",-24.5);
-  Control.addVariable("delftFlightL1XYAngle",21.0+90.0);
+  Control.addVariable("delftFlightL1XYAngle",90.0);
+  Control.addVariable("delftFlightL1BeamXYAngle",21.0);
   Control.addVariable("delftFlightL1ZAngle",0.0);
 
   Control.addVariable("delftFlightL1Length",1000.0);

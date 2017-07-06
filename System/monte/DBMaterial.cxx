@@ -109,6 +109,51 @@ DBMaterial::getFreeNumber() const
 }
 
 void
+DBMaterial::readFile(const std::string& FName)
+  /*!
+    Read a basic MCNP material file
+    \param FName :: Filename
+   */
+{
+  ELog::RegMethod RegItem("DBMaterial","readMaterial");
+
+
+  if (FName.empty()) return;
+
+  std::vector<std::string> MatLines;
+  std::ifstream IX;
+  IX.open(FName.c_str());
+  if (!IX.good())
+    throw ColErr::FileError(0,FName,"File could not be opened");
+  
+  int currentMat(0);          // Current material
+  std::string Line = StrFunc::getLine(IX);           
+  while(IX.good() && currentMat != -100)
+    {
+      const int lineType = MonteCarlo::Material::lineType(Line);
+      if (lineType==0 && !MatLines.empty())             // Continue line
+	MatLines.back()+=" "+Line;
+      else if (lineType>0 && lineType==currentMat)      // mt/mx etc line
+	MatLines.push_back(Line);
+      else if (lineType>0 || lineType==-100)            // newMat / END
+	{
+	  if (currentMat)
+	    {
+	      MonteCarlo::Material MObj;
+	      if (!MObj.setMaterial(MatLines))     
+		setMaterial(MObj);
+	      MatLines.clear();
+	    }
+	  MatLines.push_back(Line);
+	  currentMat=lineType;
+	}
+      Line = StrFunc::getLine(IX);           
+    }
+  return;
+}
+
+  
+void
 DBMaterial::initMaterial()
   /*!
      Initialize the database of materials
@@ -1300,19 +1345,6 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   IndexMap.insert(SCTYPE::value_type(MName,MIndex));
   return;
 }
-
-
-bool
-DBMaterial::createComposite(const std:::string& MName)
-  /*!
-    Creates a composite material based on an approximate
-    zaid.
-    \param MName :: Material name based on fraction load
-
-    \return 0 if not possible / 1 on material existing or created
-  */
-{
-}
   
 bool
 DBMaterial::createMaterial(const std::string& MName)
@@ -1758,17 +1790,14 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 {
   ELog::RegMethod RegA("DBMaterial","writeMCNPX");
 
-  std::set<int>::const_iterator sc;
-  for(sc=active.begin();sc!=active.end();sc++)
+  for(const int sActive : active)
     {
-      if (*sc)
+      if (sActive)
 	{
-	  MTYPE::const_iterator mp=MStore.find(*sc);
+	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (*sc,"MStore find(active item)");
-	  if (mp->first)
-	    mp->second.write(OX);
+	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
+	  mp->second.write(OX);
 	}
     }
   return;
@@ -1781,7 +1810,7 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
+  ELog::RegMethod RegA("DBMaterial","writeFLUKA");
 
   for(const int sActive : active)
     {
@@ -1789,11 +1818,9 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
 	  
-	  if (mp->first)
-	    mp->second.writeFLUKA(OX);
+	  mp->second.writeFLUKA(OX);
 	}
     }
   return;
@@ -1814,11 +1841,9 @@ DBMaterial::writePOVRay(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
 	  
-	  if (mp->first)
-	    mp->second.writePOVRay(OX);
+	  mp->second.writePOVRay(OX);
 	}
     }
   return;

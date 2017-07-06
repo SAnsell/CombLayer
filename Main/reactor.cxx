@@ -112,7 +112,8 @@ main(int argc,char* argv[])
       setVariable::DelftModel(SimPtr->getDataBase());
       setVariable::DelftCoreType(IParam,SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
-  
+      mainSystem::setMaterialsDataBase(IParam);
+	
       delftSystem::makeDelft RObj;
       World::createOuterObjects(*SimPtr);
       RObj.build(*SimPtr,IParam);
@@ -120,7 +121,7 @@ main(int argc,char* argv[])
       RObj.setSource(SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      reactorTallySelection(*SimPtr,IParam);
+      //      reactorTallySelection(*SimPtr,IParam);
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);

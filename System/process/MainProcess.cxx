@@ -460,6 +460,13 @@ setMaterialsDataBase(const inputParam& IParam)
   else
     throw ColErr::InContainerError<std::string>(materials,
 						"Materials Data Base type");
+
+  if (IParam.flag("matFile"))
+    {
+      const std::string matFile=IParam.getValue<std::string>("matFile");
+      ModelSupport::processMaterialFile(matFile);
+    }
+  return;
 }
   
 void

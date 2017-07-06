@@ -87,6 +87,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("m","multi",1,1);
   IParam.regDefItem<std::string>("matDB","materialDatabase",1,
                                  std::string("shielding"));  
+  IParam.regItem("matFile","matFile");
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");
@@ -204,6 +205,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("m","Create multiple files (diff: RNDseed)");
   IParam.setDesc("matDB","Set the material database to use "
                  "(shielding or neutronics)");  
+  IParam.setDesc("matFile","Set the materials from a file");
+
   IParam.setDesc("M","Add mesh tally");
   IParam.setDesc("MA","Lower Point in mesh tally");
   IParam.setDesc("MB","Upper Point in mesh tally");
