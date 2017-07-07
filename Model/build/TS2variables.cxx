@@ -93,13 +93,14 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("beamDY",0.0);        // Shift in beam horrizontal
 
   // REFLECTOR
-  Control.addVariable("reflectXYAngle",45);   // x-y angle
+  Control.addVariable("reflectXYAngle",0.0);   // x-y angle
   Control.addVariable("reflectXStep",0);      // x shift of reflector
   Control.addVariable("reflectYStep",10.0);     // y shift of reflector
   Control.addVariable("reflectZStep",0);      // z shift of reflector
-  Control.addVariable("reflectXYSize",35);    // half width (xy direction)
-  Control.addVariable("reflectZSize",35);     // half height
-  Control.addVariable("reflectCutSize",30*sqrt(2.0));     // End cut
+  Control.addVariable("reflectXYSize",35.0);    // half width (xy direction)
+  Control.addVariable("reflectZSize",35.0);     // half height
+  Control.addVariable("reflectCornerAngle",45.0);     // End cut
+  Control.addVariable("reflectCutSize",30.0*sqrt(2.0));     // End cut
   Control.addVariable("reflectMat","Be300K");     // End cut
 
 

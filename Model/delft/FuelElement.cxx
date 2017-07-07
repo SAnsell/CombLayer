@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"

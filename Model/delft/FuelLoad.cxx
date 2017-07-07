@@ -78,7 +78,8 @@ FuelLoad::hash(const size_t XGrid,const size_t YGrid,
 
 size_t 
 FuelLoad::hash(const std::string& GName,
-	       const size_t Element,const size_t Index) 
+	       const size_t Element,
+	       const size_t Index) 
   /*!
     Calculate the hash from the input data [NOTE: Some of the 
     data is general so must accept zeros
@@ -196,6 +197,24 @@ FuelLoad::loadXML(const std::string& FName)
       FuelMap.emplace(HN,MatName);
       CO.deleteObj(AR);      
       AR=CO.findObj("Fuel");
+    }
+
+  // PARSE MATERIALS:
+
+  XML::XMLgroup* BurnUp=CO.findGroup("Burnup");
+  if (BurnUp)
+    AR=BurnUp->findObj("Material");
+
+  while(AR)
+    {
+      const std::string GridItem=AR->getItem<std::string>("Grid");
+      const size_t IndexN=AR->getDefItem<size_t>("Index",0);
+      MatName= AR->getNamedItem<std::string>("Material");
+      MatName=StrFunc::fullBlock(MatName);
+      const size_t HN=FuelLoad::hash(GridItem,0,IndexN);
+      FuelMap.emplace(HN,MatName);
+      CO.deleteObj(AR);
+      AR=BurnUp->findObj("Material");
     }
   return (FuelMap.empty()) ? 0 : 1;
 }

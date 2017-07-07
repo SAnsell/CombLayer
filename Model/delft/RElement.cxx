@@ -3,7 +3,7 @@
  
  * File:   delft/RElement.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,8 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 
 #include "FuelLoad.h"
@@ -78,6 +80,7 @@ RElement::RElement(const size_t XI,const size_t YI,
 		   const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),
+  attachSystem::CellMap(),
   XIndex(XI),YIndex(YI),
   surfIndex(ModelSupport::objectRegister::Instance().
 	    cell(ReactorGrid::getElementName(Key,XI,YI))),
@@ -92,6 +95,7 @@ RElement::RElement(const size_t XI,const size_t YI,
 
 RElement::RElement(const RElement& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   XIndex(A.XIndex),YIndex(A.YIndex),surfIndex(A.surfIndex),
   cellIndex(A.cellIndex),insertCell(A.insertCell)
   /*!

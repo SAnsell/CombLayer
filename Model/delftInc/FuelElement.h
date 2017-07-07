@@ -3,7 +3,7 @@
  
  * File:   delftInc/FuelElement.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,8 +39,8 @@ class FuelElement  : public RElement
 {
  protected:
 
-  size_t nElement;           ///< Number of elements
-  std::set<size_t> Exclude;     ///< Exclude set
+  size_t nElement;            ///< Number of elements
+  std::set<size_t> Exclude;   ///< Exclude set
 
   double depth;              ///< Total depth of the cell
   double width;              ///< Total width of the cell

@@ -113,7 +113,6 @@
 namespace delftSystem
 {
 
-
 makeDelft::makeDelft() :
   GridPlate(new ReactorGrid("delftGrid")),
   Pool(new SwimingPool("delftPool")),

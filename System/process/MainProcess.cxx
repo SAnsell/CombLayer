@@ -458,13 +458,17 @@ setMaterialsDataBase(const inputParam& IParam)
       throw ColErr::ExitAbort("help");
     }	
   else
-    throw ColErr::InContainerError<std::string>(materials,
-						"Materials Data Base type");
+    throw ColErr::InContainerError<std::string>
+      (materials,"Materials Data Base type");
 
   if (IParam.flag("matFile"))
     {
-      const std::string matFile=IParam.getValue<std::string>("matFile");
-      ModelSupport::processMaterialFile(matFile);
+      const size_t NCnt(IParam.itemCnt("matFile",0));
+      for(size_t i=0;i<NCnt;i++)
+	{
+	  const std::string matFile=IParam.getValue<std::string>("matFile",i);
+	  ModelSupport::processMaterialFile(matFile);
+	}
     }
   return;
 }

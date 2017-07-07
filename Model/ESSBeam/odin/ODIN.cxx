@@ -297,7 +297,6 @@ ODIN::buildBunkerUnits(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ODIN","buildBunkerUnits");
-  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
 
   VPipeB->addInsertCell(bunkerVoid);
   VPipeB->createAll(System,FA,startIndex);  

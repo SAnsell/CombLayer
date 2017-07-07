@@ -107,7 +107,7 @@ namespace moderatorSystem
 {
 
 Reflector::Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,10),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1),
   TarObj(new TMRSystem::TS2target("t2Target")),
@@ -154,9 +154,8 @@ Reflector::Reflector(const std::string& Key)  :
 
 
 Reflector::Reflector(const Reflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
   xySize(A.xySize),zSize(A.zSize),cutSize(A.cutSize),
   defMat(A.defMat),
   TarObj(new TMRSystem::TS2target(*A.TarObj)),
@@ -193,10 +192,6 @@ Reflector::operator=(const Reflector& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
       xySize=A.xySize;
       zSize=A.zSize;
       cutSize=A.cutSize;
@@ -236,14 +231,12 @@ Reflector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Reflector","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  FixedOffset::populate(Control);
+  
   xySize=Control.EvalVar<double>(keyName+"XYSize");
   zSize=Control.EvalVar<double>(keyName+"ZSize");
   cutSize=Control.EvalVar<double>(keyName+"CutSize");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  cornerAngle=Control.EvalVar<double>(keyName+"CornerAngle");
   
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -256,15 +249,18 @@ Reflector::populate(const FuncDataBase& Control)
 }
   
 void
-Reflector::createUnitVector()
+Reflector::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
+    \param FC :: Fixed Comp 
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Reflector","createUnitVector");
 
-  FixedComp::createUnitVector(World::masterTS2Origin());
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -279,7 +275,7 @@ Reflector::createSurfaces()
 
   // rotation of axis:
   const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(cornerAngle,Z);
   Geometry::Vec3D XR(X);
   Geometry::Vec3D YR(Y);
   Qxy.rotate(XR);
@@ -287,21 +283,21 @@ Reflector::createSurfaces()
   
   // Simple box planes
 
-  ModelSupport::buildPlane(SMap,refIndex+1,Origin-YR*xySize,YR);
-  ModelSupport::buildPlane(SMap,refIndex+2,Origin+YR*xySize,YR);
+  ModelSupport::buildPlane(SMap,refIndex+1,Origin-Y*xySize,Y);
+  ModelSupport::buildPlane(SMap,refIndex+2,Origin+Y*xySize,Y);
 
-  ModelSupport::buildPlane(SMap,refIndex+3,Origin-XR*xySize,XR);
-  ModelSupport::buildPlane(SMap,refIndex+4,Origin+XR*xySize,XR);
+  ModelSupport::buildPlane(SMap,refIndex+3,Origin-X*xySize,X);
+  ModelSupport::buildPlane(SMap,refIndex+4,Origin+X*xySize,X);
 
   ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*zSize,Z);
   ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*zSize,Z);
  
   // Corner cuts:
-  ModelSupport::buildPlane(SMap,refIndex+11,Origin-Y*cutSize,Y);
-  ModelSupport::buildPlane(SMap,refIndex+12,Origin+Y*cutSize,Y);
+  ModelSupport::buildPlane(SMap,refIndex+11,Origin-YR*cutSize,YR);
+  ModelSupport::buildPlane(SMap,refIndex+12,Origin+YR*cutSize,YR);
 
-  ModelSupport::buildPlane(SMap,refIndex+13,Origin-X*cutSize,X);
-  ModelSupport::buildPlane(SMap,refIndex+14,Origin+X*cutSize,X);
+  ModelSupport::buildPlane(SMap,refIndex+13,Origin-XR*cutSize,XR);
+  ModelSupport::buildPlane(SMap,refIndex+14,Origin+XR*cutSize,XR);
 
   createLinks(XR,YR);
 
@@ -319,17 +315,17 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
 {
   ELog::RegMethod RegA("Reflector","createLinks");
 
-  FixedComp::setConnect(0,Origin-YR*xySize,-YR);  // chipIR OPPOSITE
-  FixedComp::setConnect(1,Origin+YR*xySize,YR);   // chipIR
-  FixedComp::setConnect(2,Origin-XR*xySize,-XR);
-  FixedComp::setConnect(3,Origin+XR*xySize,XR);
+  FixedComp::setConnect(0,Origin-Y*xySize,-Y);  // chipIR OPPOSITE
+  FixedComp::setConnect(1,Origin+Y*xySize,Y);   // chipIR
+  FixedComp::setConnect(2,Origin-X*xySize,-X);
+  FixedComp::setConnect(3,Origin+X*xySize,X);
   FixedComp::setConnect(4,Origin-Z*zSize,-Z);
   FixedComp::setConnect(5,Origin+Z*zSize,Z);
 
-  FixedComp::setConnect(6,Origin-Y*cutSize,-Y);
-  FixedComp::setConnect(7,Origin+Y*cutSize,Y);
-  FixedComp::setConnect(8,Origin-X*cutSize,-X);
-  FixedComp::setConnect(9,Origin+X*cutSize,X);
+  FixedComp::setConnect(6,Origin-YR*cutSize,-YR);
+  FixedComp::setConnect(7,Origin+YR*cutSize,YR);
+  FixedComp::setConnect(8,Origin-XR*cutSize,-XR);
+  FixedComp::setConnect(9,Origin+XR*cutSize,XR);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(refIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+2));
@@ -551,7 +547,7 @@ Reflector::createInternalObjects(Simulation& System,
   CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
   CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
   CdBucket->addBoundarySurf(TarObj->getExclude());
-  CdBucket->createAll(System,*this);
+  CdBucket->createAll(System,*this,0);
   
   for(CoolPad& PD : Pads)
     PD.createAll(System,*this,2);
@@ -689,7 +685,8 @@ Reflector::createAll(Simulation& System,
   ELog::RegMethod RegA("Reflector","createAll");
   populate(System.getDataBase());
 
-  createUnitVector();
+  createUnitVector(World::masterTS2Origin(),0);
+
   createSurfaces();
   createObjects(System);
   createInternalObjects(System,IParam);

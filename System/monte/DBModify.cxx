@@ -63,10 +63,9 @@ processMaterialFile(const std::string& matFile)
   ELog::RegMethod RegA("DBModify[F]","processMaterialFile");
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
-   DB.readFile(matFile);
+  DB.readFile(matFile);
   return;
 }
-
   
 void
 cloneBasicMaterial()

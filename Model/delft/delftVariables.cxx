@@ -101,7 +101,7 @@ DelftModel(FuncDataBase& Control)
   // Special for Hf Element
 
   Control.addVariable("delftHfCutSize",3);      
-  Control.addVariable("delftHfLift",30.0);      
+  Control.addVariable("delftHfLift",13.55);       // 
   Control.addVariable("delftHfAbsHeight",75.0);      
   Control.addVariable("delftHfAbsMat","Hafnium");      
   Control.addVariable("delftHfBladeMat","Aluminium");      
@@ -158,7 +158,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftControlOuterLength",74.5);   // Al from base-top
   Control.addVariable("delftControlOuterCapLen",3.9);   // Al from base-top
   Control.addVariable("delftControlEndCap",2.5);   // Al from base-top
-  Control.addVariable("delftControlLift",46.39);    
+  Control.addVariable("delftControlLift",46.39-13.55);    
 
   // BeO Blocks
   Control.addVariable("delftBeOWidth",7.6);    
@@ -171,6 +171,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftBeOWallMat","Aluminium"); 
 
   // Be Blocks
+  Control.addVariable("delftBeNLayer",1);
   Control.addVariable("delftBeWidth",7.6);    
   Control.addVariable("delftBeDepth",8.0);    
   Control.addVariable("delftBeTopHeight",34.15); 
