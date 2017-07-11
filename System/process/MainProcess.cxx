@@ -512,15 +512,13 @@ buildFullSimulation(Simulation* SimPtr,
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
-  const int renumCellWork=tallySelection(*SimPtr,IParam);
+  tallySelection(*SimPtr,IParam);
   reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;
   // 
   SimProcess::importanceSim(*SimPtr,IParam);
   SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-  if (renumCellWork)
-    tallyRenumberWork(*SimPtr,IParam);
   tallyModification(*SimPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);

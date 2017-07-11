@@ -299,7 +299,6 @@ IrradElement::createObjects(Simulation& System)
   ELog::RegMethod RegA("IrradElement","createObjects");
 
   std::string Out;
-  // Outer Layers
   Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -45 ");
   addOuterSurf(Out);      
 

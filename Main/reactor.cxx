@@ -49,7 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
 #include "Surface.h"
@@ -71,6 +70,11 @@
 #include "TallySelector.h"
 #include "variableSetup.h"
 #include "World.h"
+
+#include "fissionConstruct.h"
+#include "reactorTallyConstruct.h"
+#include "tallyConstructFactory.h" 
+#include "tallyConstruct.h" 
 
 #include "makeDelft.h"
 
@@ -120,8 +124,12 @@ main(int argc,char* argv[])
 
       RObj.setSource(*SimPtr,IParam);
 
+      tallySystem::tallyConstructFactory FC;
+      tallySystem::tallyConstruct& TC=
+	tallySystem::tallyConstruct::Instance(&FC);
+      TC.setFission(new tallySystem::reactorTallyConstruct);
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      //      reactorTallySelection(*SimPtr,IParam);
+
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);

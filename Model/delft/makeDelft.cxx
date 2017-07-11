@@ -269,8 +269,6 @@ makeDelft::makeRabbit(Simulation& System)
 	}
       index++;
     } while (flag);  
-
-  
   return;
 }
 
@@ -301,8 +299,21 @@ makeDelft::setSource(Simulation& System,
 	  std::vector<int> fuelCells=
 	    GridPlate->getFuelCells(System,fissileZaid);
 
-	  std::vector<Geometry::Vec3D> FissionVec=
-	    GridPlate->fuelCentres();
+	  std::vector<Geometry::Vec3D> FissionVec;
+	  for(const int FC : fuelCells)
+	    {
+	      MonteCarlo::Qhull* OPtr=
+		System.findQhull(FC);
+	      if (!OPtr)
+		throw ColErr::InContainerError<int>(FC,"Cell Not found");
+	      if (OPtr->calcVertex())
+		{
+		  const Geometry::Vec3D& CPt(OPtr->getCofM());
+		  if (OPtr->isValid(CPt))
+		    FissionVec.push_back(CPt);
+		}		
+	    }
+	  ELog::EM<<"Fission size == "<<FissionVec.size()<<ELog::endDiag;
 	  KCard.setKSRC(FissionVec);
 	}
     }
