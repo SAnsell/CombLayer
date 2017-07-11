@@ -70,7 +70,6 @@
 #include "TallyCreate.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "surfaceConstruct.h" 
 
 namespace tallySystem
@@ -87,6 +86,7 @@ surfaceConstruct::surfaceConstruct(const surfaceConstruct& A) :
   idType(A.idType)
   /*! 
     Copy Constructor
+    \param A :: surfaceConstructor to copy
   */
 {}
 

@@ -82,7 +82,6 @@
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "fissionConstruct.h" 
 #include "reactorTallyConstruct.h" 
 

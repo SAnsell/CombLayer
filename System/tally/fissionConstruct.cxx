@@ -71,11 +71,37 @@
 #include "inputParam.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "fissionConstruct.h" 
 
 namespace tallySystem
 {
+
+int
+fissionConstruct::convertRange(const std::string& Word,
+			       int& RA,int &RB)
+  /*!
+    Convert a pair range into two numbers:
+    Range given as X - Y
+    \param Word :: Unit to convert
+    \param RA :: First nubmer
+    \param RB :: Second number
+    \return true/false
+  */
+{
+  ELog::RegMethod RegA("fissionConstruct","convertRange");
+
+  int A,B;
+  size_t ALen=StrFunc::convPartNum(Word,A);
+  if (!ALen) return 0;
+  for(;ALen<Word.size() && Word[ALen]!='-';ALen++) ;
+  if (ALen==Word.size()) return 0;
+  
+  if (!StrFunc::convert(Word.substr(ALen),B))
+    return 0;
+  RA=A;
+  RB=B;
+  return 1;
+}
 
 fissionConstruct::fissionConstruct() 
   /// Constructor
@@ -135,7 +161,7 @@ fissionConstruct::processPower(Simulation& System,
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
-      else if (basicConstruct::convertRange(CVal,RA,RB))
+      else if (convertRange(CVal,RA,RB))
 	{
 	  RB=std::max<int>(cellRange,RB);
 	  for(;RA<=RB;RA++)

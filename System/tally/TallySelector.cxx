@@ -56,7 +56,6 @@
 #include "addInsertObj.h"
 #include "TallySelector.h"
 
-#include "basicConstruct.h"
 #include "pointConstruct.h"
 #include "meshConstruct.h"
 #include "fluxConstruct.h"

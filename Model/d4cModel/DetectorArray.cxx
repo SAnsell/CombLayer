@@ -71,12 +71,12 @@
 #include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "DetectorArray.h"
 
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h" 
 
 namespace d4cSystem

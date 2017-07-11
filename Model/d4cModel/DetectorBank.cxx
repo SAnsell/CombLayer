@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   d4cModel/DetectorBank.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,12 +71,12 @@
 #include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "DetectorBank.h"
 
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h"
 #include "Detector.h" 
 #include "PointDetector.h" 
@@ -87,7 +87,7 @@ namespace d4cSystem
 
 DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(BN),6),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(BN),6),
   bankNumber(BN),baseName(Key),
   detIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(detIndex+1)
@@ -99,11 +99,10 @@ DetectorBank::DetectorBank(const size_t BN,const std::string& Key) :
 {}
 
 DetectorBank::DetectorBank(const DetectorBank& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   bankNumber(A.bankNumber),baseName(A.baseName),
-  detIndex(A.detIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),centreOffset(A.centreOffset),
+  detIndex(A.detIndex),cellIndex(A.cellIndex),
+  centreOffset(A.centreOffset),
   centreAngle(A.centreAngle),detDepth(A.detDepth),
   detLength(A.detLength),detHeight(A.detHeight),
   wallThick(A.wallThick),wallMat(A.wallMat),detMat(A.detMat),
@@ -125,13 +124,8 @@ DetectorBank::operator=(const DetectorBank& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       centreOffset=A.centreOffset;
       centreAngle=A.centreAngle;
       detDepth=A.detDepth;
@@ -160,7 +154,7 @@ DetectorBank::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("DetectorBank","populate");
 
-
+  FixedOffset::populate(Control);
     // Master values
   xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
   yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
@@ -199,7 +193,7 @@ DetectorBank::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("DetectorBank","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
-
+  
   Origin=Origin+(X*sin(centreAngle)+Y*cos(centreAngle))*centreOffset;
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);

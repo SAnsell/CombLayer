@@ -46,7 +46,8 @@ namespace tallySystem
 class fissionConstruct 
 {
  private:
-  
+
+  static int convertRange(const std::string&,int&,int&);
 
  public:
 

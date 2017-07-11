@@ -27,6 +27,11 @@ namespace attachSystem
   class FixedComp;
 }
 
+namespace mainSystem
+{
+  class inputParam;
+}
+
 
 class Simulation;
 
