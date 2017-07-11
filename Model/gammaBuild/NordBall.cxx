@@ -394,4 +394,4 @@ NordBall::createAll(Simulation& System,
   return;
 }
 
-}  // NAMESPACE constructSystem
+}  // NAMESPACE gammaSystem

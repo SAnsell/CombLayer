@@ -323,6 +323,7 @@ lowerString(std::string& LN)
 {
   for(size_t i=0;i<LN.length();i++)
     LN[i]=static_cast<char>(tolower(LN[i]));
+  
   return;
 }
 

@@ -229,7 +229,7 @@ FuelElement::makeFuelDivider()
   
   for(size_t i=1;i<nFuel;i++)
     {
-      fuelFrac.push_back(static_cast<double>(i+1)/
+      fuelFrac.push_back(static_cast<double>(i)/
 			 static_cast<double>(nFuel));
     }
 
@@ -477,6 +477,7 @@ FuelElement::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 47 3 -4 1 -2");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
+  ELog::EM<<"FuelCentre == "<<fuelCentre.size()<<ELog::endDiag;
   return;
 }
 
@@ -530,19 +531,19 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
   */
 {
   ELog::RegMethod RegA("FuelElement","layerProcess");
-  
+
   if (nFuel<2) return;
   // All fuel cells
   int SI(surfIndex+4001);
   for(size_t i=0;i<fuelCells.size();i++)
     {
       ModelSupport::surfDivide DA;
-      for(size_t j=0;j<nFuel-1;j++)
+      for(size_t j=1;j<nFuel;j++)
 	{
-	  DA.addFrac(fuelFrac[j]);
+	  DA.addFrac(fuelFrac[j-1]);
 	  
 	  DA.addMaterial
-	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j+1,fuelMat));
+	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j,fuelMat));
 	}
       DA.addMaterial(FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,
 					    nFuel,fuelMat));

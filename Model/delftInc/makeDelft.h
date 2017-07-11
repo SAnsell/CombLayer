@@ -109,7 +109,7 @@ class makeDelft
   ~makeDelft();
   
   void build(Simulation&,const mainSystem::inputParam&);
-  void setSource(Simulation*,const mainSystem::inputParam&);
+  void setSource(Simulation&,const mainSystem::inputParam&);
 
 };
 

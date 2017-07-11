@@ -1,7 +1,7 @@
 /******************************************************************** 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/reactorTallyConstruct.cxx
+ * File:   delft/reactorTallyConstruct.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -138,29 +138,27 @@ reactorTallyConstruct::processPower
   const ModelSupport::objectRegister& OR= 
     ModelSupport::objectRegister::Instance();
 
-  const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<2)
-    throw ColErr::IndexError<size_t>(NItems,2,
-				     "Insufficient items for tally");
-
-  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
-
+				     
+  const std::string PType=IParam.getValueError<std::string>
+    ("tally",Index,1,"Insufficient items for tally");
+  
   const delftSystem::ReactorGrid* GPtr=
     dynamic_cast<const delftSystem::ReactorGrid*>
     (OR.getObject<attachSystem::FixedComp>(PType));
-
+  
   if (!GPtr)
-    throw ColErr::InContainerError<std::string>(PType,"ReactorGrid object");
-
+    throw ColErr::InContainerError<std::string>
+      (PType,"ReactorGrid type not found");
+  
   const int nTally=System.nextTallyNum(7);
   tallySystem::addF7Tally(System,nTally,GPtr->getAllCells(System));
+
   tallySystem::Tally* TX=System.getTally(nTally); 
   TX->setPrintField("e f");
   boost::format Cmt("tally: %d Cell %s ");
   const std::string Comment=(Cmt % nTally % "ReactorGrid" ).str();
   TX->setComment(Comment);
 
-  
   return 0;
 }
 

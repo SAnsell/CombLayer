@@ -453,6 +453,17 @@ DiskLayerMod::getLayerString(const size_t layerIndex,
 }
 
 
+double
+DiskLayerMod::getHeight() const
+  /*!
+    Special calculation for the distance between two
+    link point for the effective vertical height
+    \return Full-Height [linkPoint 5-6]
+  */
+{
+  return getLinkDistance(5,6);
+}
+
 void
 DiskLayerMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,

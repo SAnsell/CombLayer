@@ -628,6 +628,45 @@ ReactorGrid::fuelCentres() const
 }
 
 std::vector<int>
+ReactorGrid::getFuelCells(const Simulation& System,
+			  const int zaid) const
+  /*!
+    Get a comprehensive list of all cells
+    \param System :: Simualation to check cell existance
+    \param zaid :: isotope to check for in zaid
+    \return All cell numbers of fuel
+   */
+{
+  ELog::RegMethod RegA("ReactorGrid","getFuelCells");
+  const ModelSupport::objectRegister& OR= 
+    ModelSupport::objectRegister::Instance();
+  const ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  
+  std::vector<int> cellOut;
+  for(long int i=0;i<static_cast<long int>(NX);i++)
+    {
+      for(long int j=0;j<static_cast<long int>(NY);j++)
+	{
+	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
+	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
+	  for(int index=cellBegin;index<=cellEnd;index++)
+	    {
+	      const MonteCarlo::Object* OPtr=
+		System.findQhull(index);
+	      if (OPtr)
+		{
+		  const int matN=OPtr->getMat();
+		  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
+		  if (cellMat.hasZaid(zaid,0,0))
+		    cellOut.push_back(index);
+		}
+	    }
+	}
+    }
+  return cellOut;
+}
+
+std::vector<int>
 ReactorGrid::getAllCells(const Simulation& System) const
   /*!
     Get a comprehensive list of all cells
@@ -644,8 +683,9 @@ ReactorGrid::getAllCells(const Simulation& System) const
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const int EOff=OR.getCell(Grid[i][j]->getItemKeyName());
-	  for(int index=EOff;index<EOff+10000;index++)
+	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
+	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
+	  for(int index=cellBegin;index<=cellEnd;index++)
 	    {
 	      if (System.existCell(index))
 		cellOut.push_back(index);

@@ -118,7 +118,7 @@ main(int argc,char* argv[])
       World::createOuterObjects(*SimPtr);
       RObj.build(*SimPtr,IParam);
 
-      RObj.setSource(SimPtr,IParam);
+      RObj.setSource(*SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       //      reactorTallySelection(*SimPtr,IParam);

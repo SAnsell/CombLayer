@@ -130,12 +130,13 @@ DBMaterial::readFile(const std::string& FName)
   std::string Line = StrFunc::getLine(IX);           
   while(IX.good() && currentMat != -100)
     {
+      Line = StrFunc::getLine(IX);           
       const int lineType = MonteCarlo::Material::lineType(Line);
       if (lineType==0 && !MatLines.empty())             // Continue line
 	MatLines.back()+=" "+Line;
       else if (lineType>0 && lineType==currentMat)      // mt/mx etc line
 	MatLines.push_back(Line);
-      else if (lineType>0 || lineType==-100)            // newMat / END
+      else if (lineType>0 || lineType==-100 || !IX.good())    // newMat / END
 	{
 	  if (currentMat)
 	    {
@@ -144,10 +145,9 @@ DBMaterial::readFile(const std::string& FName)
 		setMaterial(MObj);
 	      MatLines.clear();
 	    }
-	  MatLines.push_back(Line);
 	  currentMat=lineType;
+	  MatLines.push_back(Line);
 	}
-      Line = StrFunc::getLine(IX);           
     }
   return;
 }

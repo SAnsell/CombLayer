@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   build/reactorTallySelector.cxx
+ * File:   delft/reactorTallySelector.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *

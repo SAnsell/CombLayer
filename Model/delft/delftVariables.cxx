@@ -594,14 +594,7 @@ DelftModel(FuncDataBase& Control)
   Control.addVariable("delftPressWallMat","Aluminium");   
 
 
-
-
-
-  Control.addVariable("R2InsertXStep",0.0);
-  Control.addVariable("R2InsertYStep",100.0);
-  Control.addVariable("R2InsertZStep",0.0);
-  Control.addVariable("R2InsertZAngle",0.0);
-  Control.addVariable("R2InsertXYAngle",0.0);
+  Control.addVariable("R2InsertYStep",40.0);
   Control.addVariable("R2InsertRadius",10.05);
   Control.addVariable("R2InsertLength",100.0);
   Control.addVariable("R2InsertMat","Aluminium");               // Al
@@ -653,7 +646,7 @@ DelftModel(FuncDataBase& Control)
 
   Control.addVariable("R2RefActive",1);  
   Control.addVariable("R2RefYStep",-0.4);
-  Control.addVariable("R2RefLength",10.0);  
+  Control.addVariable("R2RefLength",50.0);  
   Control.addVariable("R2RefInnerRadius",12.85);  
   Control.addVariable("R2RefOuterRadius",20.00);
   Control.addVariable("R2RefFrontThick",4.0);

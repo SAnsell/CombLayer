@@ -314,6 +314,13 @@ Material::lineType(std::string& Line)
   part[0]=' ';
   if (StrFunc::convert(part,index))
     return index;
+  // do something clever here:
+  if (part[1]=='x' || part[1]=='X' ||
+      part[1]=='t' || part[1]=='T' )
+    part[1]=' ';
+  if (StrFunc::convert(part,index))
+    return index;
+  
 
   return 0;
 }
@@ -336,16 +343,15 @@ Material::getExtraType(std::string& Line,std::string& particles)
   std::string LCopy(Line);
   if (!StrFunc::section(LCopy,FItem) || FItem.size()<3)
     return 0;
-  if (FItem[0]!='m' && FItem[0]!='M')
-    return 0;
+  StrFunc::lowerString(FItem);
+  if (FItem[0]!='m') return 0;
   // get key
-  std::string key("m");
+  std::string key;
   for(size_t i=0;i<FItem.size() && isalpha(FItem[i]);i++)
     {
-      key+=static_cast<char>(tolower(FItem[i]));
+      key+=FItem[i];
       FItem[i]=' ';
     }
- 
   int index;
   if (!StrFunc::sectPartNum(FItem,index))
     return 0;
@@ -485,6 +491,8 @@ Material::setMaterial(const std::vector<std::string>& PVec)
 {
   ELog::RegMethod RegA("Material","setMaterial<Vec>");
 
+  if (PVec.empty()) return -1;
+
   // Process First line : 
   // Divide line into zaid / density / extras:
   std::vector<std::string> Items=StrFunc::StrParts(PVec[0]);
@@ -502,6 +510,7 @@ Material::setMaterial(const std::vector<std::string>& PVec)
   Zaid AZ;
   double Dens;                   // density
 
+  // PROCESS : mXX zaid line
   int typeFlag(0);
   // skip first item
   Items.erase(Items.begin());
@@ -525,20 +534,21 @@ Material::setMaterial(const std::vector<std::string>& PVec)
 	}
     }
   // NOW PROCESS EXTRA LINES (and libs)
-  std::vector<std::string>::const_iterator sc=PVec.begin();
-  for(sc++;sc!=PVec.end();sc++)
+  std::vector<std::string>::const_iterator sc(PVec.begin());
+
+  for(sc++;sc<PVec.end();sc++)
     {
-      std::string ItemStr=*sc;
+      std::string sqwItem(*sc);
       std::string Particle;
-      const int mType=getExtraType(ItemStr,Particle);
+      const int mType=getExtraType(sqwItem,Particle);
       switch (mType)
 	{
 	case 1:          // mt card
-	  SQW.push_back(StrFunc::fullBlock(ItemStr));
+	  SQW.push_back(StrFunc::fullBlock(sqwItem));
 	  break;
 	case 2:          // mx card
 	  throw ColErr::InContainerError<std::string>
-	    (ItemStr,"Un supported mx card");
+	    (sqwItem,"Un supported mx card");
 	}
     }
   Name="m"+std::to_string(Mnum);

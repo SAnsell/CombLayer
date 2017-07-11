@@ -481,9 +481,9 @@ Vec3D::principleDir() const
   size_t maxI=0;
   double maxV=0.0;
   for(size_t i=0;i<3;i++)
-    if (fabs(this->operator[](i))>maxV)
+    if (std::abs(this->operator[](i))>maxV)
       {
-	maxV=fabs(this->operator[](i));
+	maxV=std::abs(this->operator[](i));
 	maxI=i;
       }
   return maxI;

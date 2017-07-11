@@ -275,17 +275,16 @@ makeDelft::makeRabbit(Simulation& System)
 }
 
 void 
-makeDelft::setSource(Simulation* SimPtr,
+makeDelft::setSource(Simulation& System,
 		     const mainSystem::inputParam& IParam)
   /*!
     Carry out the full build
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: Input system
   */
 {
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
-
   
   if (IParam.flag("kcode"))
     {
@@ -293,15 +292,17 @@ makeDelft::setSource(Simulation* SimPtr,
       std::ostringstream cx;
       for(size_t i=0;i<NItems;i++)
 	cx<<IParam.getValue<std::string>("kcode",i)<<" ";
-      SDef::KCode& KCard=SimPtr->getPC().getKCodeCard();
+      SDef::KCode& KCard=System.getPC().getKCodeCard();
       KCard.setLine(cx.str());
 
       if (IParam.flag("ksrcMat"))
 	{
+	  const int fissileZaid=IParam.getDefValue<int>(0,"ksrcMat",0,0);
+	  std::vector<int> fuelCells=
+	    GridPlate->getFuelCells(System,fissileZaid);
+
 	  std::vector<Geometry::Vec3D> FissionVec=
 	    GridPlate->fuelCentres();
-	  ELog::EM<<"Kmat vector size :"
-		  <<FissionVec.size()<<ELog::endDiag;
 	  KCard.setKSRC(FissionVec);
 	}
     }
@@ -381,7 +382,8 @@ makeDelft::buildModerator(Simulation& System,
   /*!
     Build the main moderator in flightA
     \param System :: Simualation system
-    \param modType :: Moderator type
+    \param FC :: Fixed point of side of reactro
+    \param sideIndex :: link point 
     \param refExtra :: Extra reflector be piece type
    */
 {
@@ -403,12 +405,14 @@ makeDelft::buildModerator(Simulation& System,
   ColdMod->addInsertCell(ColdVac->getCells("Void"));
   ColdMod->createAll(System,*ColdVac,0);
 
+  // Joins onto the pressure vessel
   FlightA->addInsertCell(Pool->getCells("Water"));
   FlightA->addInsertCell(74123);
   FlightA->createAll(System,*ColdPress,2);
-  
+
   R2Insert->addInsertCell(FlightA->getCells("Void"));
   R2Insert->createAll(System,*FlightA,0);
+    
 
   if (refExtra=="R2Surround")
     {
@@ -457,7 +461,7 @@ makeDelft::build(Simulation& System,
       makeBlocks(System);
       buildCore(System,IParam);
       makeRabbit(System);
-      FCPtr=GridPlate.get();
+      FCPtr=GridPlate.get();  
       sideIndex=2;
     }
   
