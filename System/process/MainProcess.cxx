@@ -497,7 +497,6 @@ buildFullSimulation(Simulation* SimPtr,
     \param IParam :: input pararmeter
     \param OName :: output file name
    */
-  
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
 

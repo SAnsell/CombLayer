@@ -51,7 +51,7 @@ class reactorTallyConstruct : virtual public fissionConstruct
   virtual ~reactorTallyConstruct() {}  ///< Destructor
 
   virtual int processPower(Simulation&,const mainSystem::inputParam&,
-			    const size_t,const bool) const;
+			    const size_t) const;
 
   virtual void writeHelp(std::ostream&) const;
 };

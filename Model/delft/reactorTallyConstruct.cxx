@@ -123,13 +123,12 @@ reactorTallyConstruct::operator=(const reactorTallyConstruct& A)
 int
 reactorTallyConstruct::processPower
         (Simulation& System,const mainSystem::inputParam& IParam,
-	 const size_t Index,const bool renumberFlag) const
+	 const size_t Index) const
   /*!
     Add point tally (s) as needed
     \param System :: Simulation to add tallies
     \param IParam :: Main input parameters
     \param Index :: Index of tally
-    \param renumberFlag :: Renubmer call
     \return 0 on success
    */
 {

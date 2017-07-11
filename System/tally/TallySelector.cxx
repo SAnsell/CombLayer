@@ -81,7 +81,8 @@ tallySelection(Simulation& System,const mainSystem::inputParam& IParam)
   ELog::RegMethod RegA("TallySelector","tallySelection(basic)");
 
   tallySystem::tallyConstructFactory FC;
-  tallySystem::tallyConstruct TallyBuilder(FC);
+  tallySystem::tallyConstruct& TallyBuilder=
+    tallySystem::tallyConstruct::Instance(&FC);
 
   return TallyBuilder.tallySelection(System,IParam);
 }
@@ -480,9 +481,9 @@ tallyRenumberWork(Simulation& System,
   ELog::RegMethod RegA("TallySelector","tallyRenumberWork");
 
 
-  tallySystem::tallyConstructFactory FC;
-  tallySystem::tallyConstruct TallyBuilder(FC);
-  TallyBuilder.tallyRenumber(System,IParam);
+  // tallySystem::tallyConstructFactory FC;
+  // tallySystem::tallyConstruct TallyBuilder(FC);
+  // TallyBuilder.tallyRenumber(System,IParam);
  
   return;
 }

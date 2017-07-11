@@ -639,6 +639,7 @@ objectRegister::getObjectRange(const std::string& objName) const
         Out.push_back(calcRenumber(CN));
       return Out;
     }
+
   
   // Just an object name:
 

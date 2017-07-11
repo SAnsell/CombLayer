@@ -131,35 +131,35 @@ surfaceConstruct::processSurface(Simulation& System,
   if (pType=="object")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
+      
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
   if (pType=="surfMap")
     {
-      const std::string object=
-	IParam.outputItem<std::string>
+      const std::string object=IParam.getValueError<std::string>
 	("tally",Index,2,"Object component not given");
-      const std::string surfItem=
-	IParam.outputItem<std::string>
-	("tally",Index,3,"SurfMap set key not give");
+
+      const std::string surfItem=IParam.getValueError<std::string>
+	("tally",Index,3,"SurfMap set key not given");
 
       // This should be a range (?):
-      const long int surfIndex=IParam.outputItem<long int>
+      const long int surfIndex=IParam.getValueError<long int>
 	("tally",Index,4,"Index Offset direction");
-      
-      
+            
       return processSurfMap(System,object,surfItem,surfIndex);
     }
 
   if (pType=="viewObject")
     {
-      const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
-      const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+      const std::string place=IParam.getValueError<std::string>
+	("tally",Index,2,"position not given");
+      const std::string snd=IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       std::vector<int> surfN;
       const size_t maxIndex=IParam.itemCnt("tally",Index);
@@ -235,8 +235,6 @@ surfaceConstruct::processSurfMap(Simulation& System,
   ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  ModelSupport::surfIndex& SurI=
-    ModelSupport::surfIndex::Instance();
   
   const int tNum=System.nextTallyNum(idType);
   if (linkIndex)

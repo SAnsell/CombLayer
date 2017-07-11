@@ -197,20 +197,20 @@ meshConstruct::processMesh(Simulation& System,
     {
       size_t itemIndex(5);
       const std::string place=
-	IParam.outputItem<std::string>("tally",Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string linkName=
-	IParam.outputItem<std::string>("tally",Index,3,"front/back/side not given");      
+	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not given");      
       const std::string doseType=
-	inputItem<std::string>(IParam,Index,4,"Dose type");
+	IParam.getValueError<std::string>("tally",Index,4,"Dose type");
       Geometry::Vec3D APt=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
       Geometry::Vec3D BPt=
 	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
 
       size_t Nxyz[3];
-      Nxyz[0]=inputItem<size_t>(IParam,Index,itemIndex++,"NXpts");
-      Nxyz[1]=inputItem<size_t>(IParam,Index,itemIndex++,"NYpts");
-      Nxyz[2]=inputItem<size_t>(IParam,Index,itemIndex++,"NZpts");
+      Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
+      Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
+      Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
 
       calcXYZ(place,linkName,APt,BPt);
       
@@ -225,16 +225,18 @@ meshConstruct::processMesh(Simulation& System,
     {
       size_t itemIndex(2);
       const std::string doseType=
-	inputItem<std::string>(IParam,Index,itemIndex++,"Dose type");
+	IParam.getValueError<std::string>
+	("tally",Index,itemIndex++,"Dose type");
+
       Geometry::Vec3D APt=
 	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
       Geometry::Vec3D BPt=
 	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
       
       // Rotation:
-      std::string revStr;
-      const int flag=checkItem<std::string>(IParam,Index,itemIndex,revStr);
-      if (!flag && revStr!="r" &&
+      const std::string revStr=
+	IParam.getDefValue<std::string>("","tally",Index,itemIndex);
+      if (revStr!="r" &&
 	  PType!="freeRotated" && PType!="heatRotated")
 	{
 	  ELog::EM<<"Reverse rotating"<<ELog::endDiag;
@@ -244,9 +246,9 @@ meshConstruct::processMesh(Simulation& System,
 	}
       
       size_t Nxyz[3];
-      Nxyz[0]=inputItem<size_t>(IParam,Index,itemIndex++,"NXpts");
-      Nxyz[1]=inputItem<size_t>(IParam,Index,itemIndex++,"NYpts");
-      Nxyz[2]=inputItem<size_t>(IParam,Index,itemIndex++,"NZpts");
+      Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
+      Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
+      Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
       if (PType=="heat" || PType=="heatRotated")
 	rectangleMesh(System,3,"void",APt,BPt,Nxyz);
       else

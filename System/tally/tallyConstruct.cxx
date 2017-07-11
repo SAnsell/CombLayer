@@ -3,7 +3,7 @@
  
  * File:   tally/tallyConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,6 @@
 #include "TwinComp.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "pointConstruct.h"
 #include "gridConstruct.h" 
 #include "meshConstruct.h" 
@@ -111,7 +110,7 @@ tallyConstruct::initStatic()
 }
   
 tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) : 
-  basicConstruct(),pointPtr(FC.makePoint()),gridPtr(FC.makeGrid()),
+  pointPtr(FC.makePoint()),gridPtr(FC.makeGrid()),
   meshPtr(FC.makeMesh()),fluxPtr(FC.makeFlux()),
   heatPtr(FC.makeHeat()),itemPtr(FC.makeItem()),
   surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission()),
@@ -125,7 +124,6 @@ tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) :
 }
 
 tallyConstruct::tallyConstruct(const tallyConstruct& A) : 
-  basicConstruct(A),
   pointPtr(new pointConstruct(*A.pointPtr)),
   gridPtr(new gridConstruct(*A.gridPtr)),
   meshPtr(new meshConstruct(*A.meshPtr)),
@@ -151,8 +149,6 @@ tallyConstruct::operator=(const tallyConstruct& A)
 {
   if (this!=&A)
     {
-      basicConstruct::operator=(A);
-
       *pointPtr=*A.pointPtr;
       *gridPtr=*A.gridPtr;
       *meshPtr=*A.meshPtr;
@@ -182,6 +178,35 @@ tallyConstruct::~tallyConstruct()
   delete fissionPtr;
   delete sswPtr;
 }
+
+tallyConstruct&
+tallyConstruct::buildInstance(const tallyConstructFactory& FC)
+  /*!
+    Inner constructor
+    \param FC :: Factory to use
+   */
+{
+  static tallyConstruct A(FC);
+  return A;
+}
+
+tallyConstruct&
+tallyConstruct::Instance(const tallyConstructFactory* FC)
+  /*!
+    External system for building 
+    \param FC :: Factory pointer [0 normally]
+   */
+{
+  static tallyConstruct* TC(0);
+  if (!TC)
+    {
+      if(!FC)
+	throw ColErr::EmptyValue<void>
+	  ("tallyConstructorFactor not set in tallyConstruct");
+      TC= &tallyConstruct::buildInstance(*FC);
+    }
+  return *TC;
+}
   
 void
 tallyConstruct::setPoint(pointConstruct* PPtr) 
@@ -200,10 +225,10 @@ tallyConstruct::setPoint(pointConstruct* PPtr)
   
 void
 tallyConstruct::setFission(fissionConstruct* PPtr) 
-/*!
-  Modify/assign the pointConstructor 
-  \param PPtr :: New point Ptr [MANGAGED]
-*/
+  /*!
+    Modify/assign the pointConstructor 
+    \param PPtr :: New point Ptr [MANGAGED]
+  */
 {
   if (PPtr)
     {
@@ -250,7 +275,7 @@ tallyConstruct::tallySelection(Simulation& System,
       else if (TType=="flux")
 	workFlag+=fluxPtr->processFlux(System,IParam,i);
       else if (TType=="fission")
-	workFlag+=fissionPtr->processPower(System,IParam,i,0);
+	workFlag+=fissionPtr->processPower(System,IParam,i);
       else if (TType=="heat")
 	heatPtr->processHeat(System,IParam,i);
       else if (TType=="item")
@@ -323,6 +348,8 @@ tallyConstruct::helpTallyType(const std::string& HType) const
     surfPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="flux")
     fluxPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="flux")
+    fissionPtr->writeHelp(ELog::EM.Estream());
   else
     {
       ELog::EM<<"Tally Types:\n\n";
@@ -332,6 +359,8 @@ tallyConstruct::helpTallyType(const std::string& HType) const
       ELog::EM<<"-- surface : \n";
       ELog::EM<<"-- flux : \n";
       ELog::EM<<"-- heat : \n";
+      ELog::EM<<"-- fission : \n";
+      ELog::EM<<"-- SSW : \n";
     }
   
   ELog::EM<<ELog::endBasic;
@@ -339,3 +368,4 @@ tallyConstruct::helpTallyType(const std::string& HType) const
 }
 
 }  // NAMESPACE tallySystem
+

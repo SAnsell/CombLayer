@@ -95,14 +95,12 @@ fissionConstruct::operator=(const fissionConstruct&)
 int
 fissionConstruct::processPower(Simulation& System,
 			       const mainSystem::inputParam& IParam,
-			       const size_t Index,
-			       const bool renumberFlag) const
+			       const size_t Index) const
   /*!
     Process a fission power on a cell
     \param System :: Simulation to use
     \param IParam :: Input system
     \param Index :: index of the -T card
-    \param renumberFlag :: Is this a renumber call
     \return renumber required status [1 for true]
   */
 {

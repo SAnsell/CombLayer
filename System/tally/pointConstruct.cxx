@@ -79,7 +79,6 @@
 #include "SurfLine.h"
 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h" 
 
 
@@ -121,7 +120,7 @@ pointConstruct::processPoint(Simulation& System,
 
 
   const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
-  
+
   const masterRotate& MR=masterRotate::Instance();
   std::string revStr;
 
@@ -131,10 +130,10 @@ pointConstruct::processPoint(Simulation& System,
       size_t itemIndex(2);
       Geometry::Vec3D PPoint=IParam.getCntVec3D
 	("tally",Index,itemIndex,"Point for point detector");
-      const int flag=IParam.checkItem<std::string>
-	("tally",Index,itemIndex,revStr);
+      const std::string revStr=
+	IParam.getDefValue<std::string>("","tally",Index,itemIndex);
 
-      if (flag && (revStr=="r" || revStr=="R"))
+      if (revStr=="r" || revStr=="R")
 	{
 	  PPoint=MR.forceReverseRotate(PPoint);
 	  ELog::EM<<"Remapped point == "<<PPoint<<ELog::endDiag;
@@ -159,9 +158,9 @@ pointConstruct::processPoint(Simulation& System,
       for(size_t i=0;i<4;i++)
 	WindowPts[i]=IParam.getCntVec3D
 	  ("tally",Index,itemIndex,"Window point "+StrFunc::makeString(i+1));
-      
-      flag=checkItem<std::string>(IParam,Index,5,revStr);
-      if (flag && (revStr=="r" || revStr=="R"))
+
+      revStr=IParam.getDefValue<std::string>("","tally",Index,5);
+      if (revStr=="r" || revStr=="R")
 	PPoint=MR.forceReverseRotate(PPoint);
       
       processPointFree(System,PPoint,WindowPts);
@@ -169,17 +168,20 @@ pointConstruct::processPoint(Simulation& System,
   else if (PType=="window")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not given");
+	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not given");
+
       const double D=
-	inputItem<double>(IParam,Index,4,"Distance not given");
+	IParam.getValueError<double>("tally",Index,4,"Distance not given");
 
-      double timeStep(0.0);
-      double windowOffset(0.0);
 
-      checkItem<double>(IParam,Index,5,timeStep);
-      checkItem<double>(IParam,Index,6,windowOffset);
+      const double timeStep=
+	IParam.getDefValue<double>(0.0,"tally",Index,5);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
+	    
+
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointWindow(System,place,linkNumber,D,timeStep,windowOffset);
     }
@@ -187,21 +189,20 @@ pointConstruct::processPoint(Simulation& System,
   else if (PType=="object")
     {
       const std::string place=
-	IParam.outputItem<std::string>("tally",Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-        IParam.outputItem<std::string>("tally",Index,3,
-                                       "front/back/side not given");
+	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not given");
       const double D=
-	IParam.outputItem<double>("tally",Index,4,"Distance not given");
+	IParam.getValueError<double>("tally",Index,4,"Distance not given");
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       processPointFree(System,place,linkNumber,D);
     }
   else if (PType=="objOffset")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not give");
 
       size_t itemIndex(4);
       const Geometry::Vec3D DVec=

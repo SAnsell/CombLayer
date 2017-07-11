@@ -477,7 +477,6 @@ FuelElement::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex,"5 -25 47 3 -4 1 -2");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,0.0,Out));
 
-  ELog::EM<<"FuelCentre == "<<fuelCentre.size()<<ELog::endDiag;
   return;
 }
 
