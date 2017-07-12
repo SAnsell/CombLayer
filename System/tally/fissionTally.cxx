@@ -259,12 +259,6 @@ fissionTally::write(std::ostream& OX)  const
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");
     }
-  if (!SDfield.empty())
-    {
-      cx<<"sd"<<IDnum<<" "<<SDfield;
-      StrFunc::writeMCNPX(cx.str(),OX);
-      cx.str("");
-    }
 
   writeFields(OX);
   return;

@@ -151,7 +151,6 @@ NList<Unit>::processString(const std::string& N)
   // exist.
   Unit Value;
   std::string Comp;
-
   while(StrFunc::section(MS,Comp))
     {
       // First determine if it is "T" or "C"

@@ -108,7 +108,6 @@ cellSelection(const Simulation& System,
 
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();
-
   
   if (matName=="All" || matName=="all")
     return inputGrp;
@@ -138,12 +137,17 @@ cellSelection(const Simulation& System,
       if (OPtr)
 	{
 	  const int matN=OPtr->getMat();
+	  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
 	  switch (matFlag)
 	    {
 	    case -1:       // allnonvoid
 	      if (matN) addItem(cellOut,CN);
 	      break;
 	    case 0:        // ?
+	      if (cellMat.hasZaid(matNumber,0,0))
+		addItem(cellOut,CN);
+	      break;
+	    case 1:        // named material
 	      if (matN==matNumber) addItem(cellOut,CN);
 	      break;
 	    }
@@ -201,4 +205,7 @@ getCellSelection(const Simulation& System,
   return Out;
 }
 
-}  // NAMESPACE tallySystem
+template std::vector<int>
+cellSelection(const Simulation&,const std::string&,const std::vector<int>&);
+
+}  // NAMESPACE objectSupport

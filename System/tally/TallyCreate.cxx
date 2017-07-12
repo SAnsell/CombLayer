@@ -998,7 +998,7 @@ setSDField(Simulation& Sim,const int tNumber,
    */
 {
   ELog::RegMethod RegA("TallyCreate","setSDField");
-  
+
   Simulation::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
   Simulation::TallyTYPE::iterator mc;

@@ -596,7 +596,8 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::vector<int> Out=CPtr->getCells(cellName);
       if (Out.empty())
         {
-          ELog::EM<<"EMPTY NAME::Possible names == "<<ELog::endDiag;
+          ELog::EM<<"EMPTY NAME::Possible names["<<itemName
+		  <<"] == "<<ELog::endDiag;
           std::vector<std::string> NameVec=CPtr->getNames();
           for(const std::string CName : NameVec)
             ELog::EM<<"  "<<CName<<ELog::endDiag;

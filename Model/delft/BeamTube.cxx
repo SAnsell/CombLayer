@@ -136,6 +136,7 @@ BeamTube::operator=(const BeamTube& A)
       interFrontWall=A.interFrontWall;
       interWallThick=A.interWallThick;
       interYOffset=A.interYOffset;
+      innerMat=A.innerMat;
       interMat=A.interMat;
       wallMat=A.wallMat;
       gapMat=A.gapMat;
@@ -178,8 +179,9 @@ BeamTube::populate(const FuncDataBase& Control)
   interWallThick=Control.EvalVar<double>(keyName+"InterWallThick");
   interYOffset=Control.EvalVar<double>(keyName+"InterYOffset");
   interFrontWall=Control.EvalVar<double>(keyName+"InterFrontWall");
-  interMat=ModelSupport::EvalMat<int>(Control,keyName+"InterMat");
 
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
+  interMat=ModelSupport::EvalMat<int>(Control,keyName+"InterMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   gapMat=ModelSupport::EvalMat<int>(Control,keyName+"GapMat");
 
@@ -388,10 +390,12 @@ BeamTube::createCapEndObjects(Simulation& System)
 	  const std::string OutP=
 	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
-	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
+	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)");
+	  addCell("Portal"+std::to_string(i),cellIndex-1);
 	}
     }
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutComposite));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out+OutComposite));
+  addCell("innerVoid",cellIndex-1);
   innerVoid=cellIndex-1;
 
   // Inter wall
@@ -455,10 +459,13 @@ BeamTube::createObjects(Simulation& System)
 	  const std::string OutP=
 	    ModelSupport::getComposite(SMap,PN," -17 11 -12");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,portalMat[i],0.0,OutP));
+	  addCell("Portal"+std::to_string(i),cellIndex-1);
 	  OutComposite +=ModelSupport::getComposite(SMap,PN," (17:-11:12)"); 
 	}
     }
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+OutComposite));
+
+  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,0.0,Out+OutComposite));
+  addCell("innerVoid",cellIndex-1);
   innerVoid=cellIndex-1;
   // Inter wall
   Out=ModelSupport::getComposite(SMap,flightIndex," -47 57 51 -2 ");

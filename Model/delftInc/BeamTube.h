@@ -68,6 +68,7 @@ class BeamTube : public attachSystem::ContainedComp,
   double portalRadius;          ///< Portal radius
   double portalThick;           ///< Portal thickness
 
+  int innerMat;                 ///< Inner Material number in main void
   int interMat;                 ///< Inter Material number
   int wallMat;                  ///< Wall Material number
   int gapMat;                   ///< Material in the gap

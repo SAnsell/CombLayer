@@ -41,10 +41,10 @@ namespace objectSupport
 {
 
   template<typename T> void addItem(T&,const int);
-  template<typename T> T cellSelection(const Simulation&,
-				       const std::string&,
-				       const T&);
 
+  template<typename T>
+  T cellSelection(const Simulation&,const std::string&,const T&);
+  
   
   std::vector<int> getCellSelection(const Simulation&,
 				    const int,
