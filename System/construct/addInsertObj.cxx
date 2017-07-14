@@ -194,7 +194,8 @@ addInsertCylinderCell(Simulation& System,
   TCyl->setStep(XYZStep);
   TCyl->setValues(radius,length,mat);
   TCyl->createAll(System,*mainFCPtr,linkIndex);
-
+  ELog::EM<<"Cylinder["<<TCyl->getKeyName()<<"] at "<<
+    TCyl->getCentre()<<ELog::endDiag;
   return;
 }
 

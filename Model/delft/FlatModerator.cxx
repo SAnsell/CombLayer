@@ -259,10 +259,6 @@ FlatModerator::createSurfaces()
       ModelSupport::buildCone(SMap,flatIndex+28,FConePt-Y*frontWShift,Y,wingAngle);
       ModelSupport::buildCone(SMap,flatIndex+38,FConePt,Y,wingAngle);
 
-      Geometry::Vec3D BCC(BConePt+Y*backWShift);
-      const double D=BConePt.Distance(FConePt-Y*frontWShift);
-      const double D1=BCC.Distance(FConePt-Y*frontWShift);
-      const double D2=BCC.Distance(FConePt);
     }
   else  // cylinder join
     {

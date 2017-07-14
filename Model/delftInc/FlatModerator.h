@@ -40,16 +40,19 @@ class FlatModerator : public virtualMod
  private:
   
   const int flatIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  int cellIndex;                 ///< Cell index
 
   double frontRadius;       ///< inner(front) radius
   double backRadius;        ///< Back(outer) radius
   double frontRoundRadius;  ///< inner(front) radius
   double backRoundRadius;   ///< Back(outer) radius
+
   double frontWallThick;    ///< Wall thickenss of view side
   double backWallThick;     ///< Wall thickenss of core side
 
-
+  double frontGasThick;    ///< Laye of gas on front wall
+  double backGasThick;     ///< Layer of gas on back wall
+  
   double wingAngle;         ///< Angle of cone
   double viewExtent;        ///< Distance across join
 

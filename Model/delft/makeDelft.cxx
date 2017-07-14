@@ -425,6 +425,7 @@ makeDelft::buildModerator(Simulation& System,
   R2Insert->createAll(System,*FlightA,0);
     
 
+  // Built relative to main plate
   if (refExtra=="R2Surround")
     {
       BeSurround* BePtr=new BeSurround("R2Ref");
@@ -433,7 +434,7 @@ makeDelft::buildModerator(Simulation& System,
 	BePtr->addInsertCell(voidCell);
       HeadRule CPCut(ColdPress->getSignedFullRule(1));
       CPCut.addUnion(ColdPress->getSignedFullRule(3));
-      BePtr->createAll(System,*ColdPress,-1,
+      BePtr->createAll(System,FC,sideIndex,
 		       FlightB->getExclude()+FlightC->getExclude()+
 		       CPCut.display());
       R2Be=std::shared_ptr<attachSystem::FixedOffset>(BePtr);

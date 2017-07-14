@@ -493,7 +493,9 @@ BeamTube::createLinks()
   attachSystem::FixedComp& beamFC=getKey("Beam");
 
   const Geometry::Vec3D bY(beamFC.getY());
+  beamFC.setConnect(0,Origin,bY);
   beamFC.setConnect(1,Origin+bY*length,bY);
+
 
   mainFC.setConnect(0,Origin,-Y);      // Note always to the reactor
   mainFC.setConnect(1,Origin+Y*frontWall,Y);
@@ -505,11 +507,12 @@ BeamTube::createLinks()
       mainFC.addBridgeSurf(0,-SMap.realSurf(flightIndex+1));
     }
   else
-    mainFC.setLinkSurf(0,SMap.realSurf(flightIndex+1));
+    mainFC.setLinkSurf(0,-SMap.realSurf(flightIndex+1));
 
   mainFC.setLinkSurf(1,SMap.realSurf(flightIndex+2));
   mainFC.setLinkSurf(2,SMap.realSurf(flightIndex+21));
 
+  beamFC.setLinkSurf(0,-SMap.realSurf(flightIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(flightIndex+2));
   beamFC.setLinkSurf(2,SMap.realSurf(flightIndex+21));
 
