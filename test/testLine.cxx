@@ -136,18 +136,19 @@ testLine::testConeIntersect()
 
   // Cone : Start Point : Normal : NResults : distance A : distance B 
   typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
-		       size_t,double,double> TTYPE;
-  std::vector<TTYPE> Tests;
-  
-  Tests.push_back(TTYPE("ky 1 1 1",
-			Geometry::Vec3D(-3,0,0),Geometry::Vec3D(1,0,0),
-			0,0.0,0.0));
-  Tests.push_back(TTYPE("ky 1 1 -1",
-			Geometry::Vec3D(-3,0,0),Geometry::Vec3D(1,0,0),
-			2,4.0,2.0));
-  Tests.push_back(TTYPE("ky 12.3 1 -1",
-			Geometry::Vec3D(-7.0,8.90,0),Geometry::Vec3D(1,0,0),
-			2,10.4,3.6));
+		     size_t,Geometry::Vec3D,Geometry::Vec3D> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("ky 1 1",Geometry::Vec3D(-3,0,0),Geometry::Vec3D(0,1,0),
+	    2,Geometry::Vec3D(-3,-2,0),Geometry::Vec3D(-3,4,0)),
+      
+      TTYPE("k/y 2 1 4 1",Geometry::Vec3D(-3,0,0),Geometry::Vec3D(1,0,0),
+	    2,Geometry::Vec3D(-3,-2,0),Geometry::Vec3D(-3,4,0))
+
+      
+      // TTYPE("k/y 12.3 1 -1",Geometry::Vec3D(-7.0,8.90,0),Geometry::Vec3D(1,0,0),
+      // 	    2,10.4,3.6)
+    };
   
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -165,32 +166,37 @@ testLine::testConeIntersect()
 	}
       std::vector<Geometry::Vec3D> OutPt;
       const size_t NR=LX.intersect(OutPt,A);
+      
+      std::vector<Geometry::Vec3D> OutPtExtra;
+      const size_t NRExtra=LX.intersect(OutPtExtra,static_cast<Quadratic>(A));
 
+      ELog::EM<<"NR == "<<NR<<" "<<NRExtra<<ELog::endDiag;
+      int retValue(0);
       if (NR!=std::get<3>(tc))
 	{
 	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Solution Count"<<NR<<" ["<<
 	    std::get<3>(tc)<<"] "<<ELog::endCrit;
-	  return -1;
+	  retValue=-1;
 	}
-      const double DA=(NR>0) ? OutPt[0].Distance(std::get<1>(tc)) : 0.0;
-      const double DB=(NR>1) ? OutPt[1].Distance(std::get<1>(tc)) : 0.0;
-      if (NR>0 && fabs(DA-std::get<4>(tc))> 1e-5) 
+      
+      if (NR>0 && OutPt[0].Distance(std::get<4>(tc)) > 1e-5)
+	retValue=-1;
+      if (NR>1 && OutPt[1].Distance(std::get<5>(tc)) > 1e-5)
+	retValue=-1;
+
+      if (retValue)
 	{
 	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
-	  ELog::EM<<"Point A "<<OutPt[0]<<" :: "<<
-	    std::get<1>(tc)+std::get<2>(tc)*std::get<4>(tc)<<ELog::endDiag;
-	  ELog::EM<<"DA "<<DA<<ELog::endCrit;
-	  ELog::EM<<"DB "<<DB<<ELog::endCrit;
-	  return -1;
-	}
-      if (NR>1 && fabs(DB-std::get<5>(tc))> 1e-5) 
-	{
-	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
-	  ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<
-	    std::get<1>(tc)+std::get<2>(tc)*std::get<5>(tc)<<ELog::endCrit;
-	  ELog::EM<<"DB "<<DB<<ELog::endCrit;
-	  return -1;
+	  ELog::EM<<"Line "<<std::get<1>(tc)<<" -- "
+		  <<std::get<1>(tc)<<" -- "<<ELog::endDiag;
+	  if (NR)
+	    ELog::EM<<"Point A "<<OutPt[0]<<" :: "<<std::get<4>(tc)
+		    <<ELog::endDiag;
+	  if (NR>1)
+	    ELog::EM<<"Point B "<<OutPt[1]<<" :: "<<std::get<5>(tc)
+		    <<ELog::endDiag;
+	  return retValue;
 	}
       cnt++;
     }

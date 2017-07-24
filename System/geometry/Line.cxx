@@ -3,7 +3,7 @@
  
  * File:   geometry/Line.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -442,11 +442,6 @@ Line::intersect(std::vector<Geometry::Vec3D>& PntOut,
   const double BdotN=b.dotProd(Direct);
   const double gamma2=CObj.getCosAngle()*CObj.getCosAngle();
 
-
-      ///\todo BUG HERE
-  //  if ((CObj.getCutFlag()>0 && AdotB<0) ||
-  //      (CObj.getCutFlag()<0 && AdotB>0))
-  //    return 0;
   
   double C[3];  
   C[0]=AdotN*AdotN-gamma2;

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMD5.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,8 @@ testMD5::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testMD5","applyTest");
-
+  TestFunc::regSector("testMD5");
+  
   typedef int (testMD5::*testPtr)();
   testPtr TPtr[]=
     {
@@ -89,7 +90,7 @@ testMD5::applyTest(const int extra)
     {
       if (extra<0 || extra==i+1)
         {
-	  TestFunc::bracketTest(TestName[i],std::cout);
+	  TestFunc::regTest(TestName[i]);
 	  const int retValue= (this->*TPtr[i])();
 	  if (retValue || extra>0)
 	    return retValue;
@@ -109,16 +110,15 @@ testMD5::testNext()
   ELog::RegMethod("testMD5","testNext");
 
   typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE(
-		  "The quick brown fox jumps over the lazy dog.",
-		  "e4d909c290d0fb1ca068ffaddf22cbd0"));
-  Tests.push_back(TTYPE(
-		  "The quick brown fox jumps over the lazy dog",
-		  "9e107d9d372bb6826bd81d3542a419d6"));
-  Tests.push_back(TTYPE("",
-			"d41d8cd98f00b204e9800998ecf8427e"));
-  
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("The quick brown fox jumps over the lazy dog.",
+	    "e4d909c290d0fb1ca068ffaddf22cbd0"),
+      
+      TTYPE("The quick brown fox jumps over the lazy dog",
+	    "9e107d9d372bb6826bd81d3542a419d6"),
+      TTYPE("","d41d8cd98f00b204e9800998ecf8427e")
+    };
   
   MD5hash sum;
   for(const TTYPE& tc : Tests)

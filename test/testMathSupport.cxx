@@ -424,14 +424,13 @@ testMathSupport::testPermSort()
   std::vector<double> V(30);
   std::generate(V.begin(),V.end(),
   		std::bind<double(MTRand::*)()>(&MTRand::rand,Rand));
-  ELog::EM<<"Generated "<<ELog::endDiag;
+
   std::vector<size_t> Index=
     mathSupport::sortPermutation(V,[](const double& a,
                                       const double& b)
                                  { return (a<b); } );
-  ELog::EM<<"Index "<<ELog::endDiag;
+
   mathSupport::applyPermutation(V,Index);
-  ELog::EM<<"APPL "<<ELog::endDiag;
   for(size_t i=1;i<V.size();i++)
     {
       if (V[i-1]>V[i])

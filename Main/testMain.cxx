@@ -550,8 +550,6 @@ funcbaseTest(const int type,const int extra)
       std::cout<<"testFunction             (1)"<<std::endl;
       std::cout<<"testMD5                  (2)"<<std::endl;
       std::cout<<"testVarNameOrder         (3)"<<std::endl;
-      std::cout<<"testVarList              (4)"<<std::endl;
-
     }
 
   if(type==1 || type<0)

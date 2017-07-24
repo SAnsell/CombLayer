@@ -104,6 +104,16 @@ Quadratic::~Quadratic()
   */
 {}
 
+Quadratic*
+Quadratic::clone() const
+  /*!
+    Makes a clone (implicit virtual copy constructor) 
+    \return Quadratic(this)
+  */
+{
+  return new Quadratic(*this);
+}
+
 bool
 Quadratic::operator==(const Quadratic& A) const
   /*!
@@ -162,6 +172,27 @@ Quadratic::eqnValue(const Geometry::Vec3D& Pt) const
   return res;
 }
 
+int
+Quadratic::setSurface(const std::string&)
+  /*!
+    Use General Surface ?
+    \return -1
+   */
+{
+  return -1;
+}
+
+  
+void 
+Quadratic::setBaseEqn()
+  /*!
+    Set baseEqn (nothing to do) as it is 
+    already a baseEqn driven system
+  */
+{
+  return;
+}
+  
 int
 Quadratic::side(const Geometry::Vec3D& Pt) const
   /*!
