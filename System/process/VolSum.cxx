@@ -64,6 +64,7 @@
 #include "ObjSurfMap.h"
 #include "neutron.h"
 #include "Simulation.h"
+#include "LineTrack.h"
 #include "volUnit.h"
 #include "VolSum.h"
 
@@ -74,10 +75,10 @@ namespace ModelSupport
 
 VolSum::VolSum(const Geometry::Vec3D& OPt,
 	       const Geometry::Vec3D& AxisRange) : 
-  Origin(OPt),X(fabs(AxisRange[0]),0,0),
-  Y(0,fabs(AxisRange[1]),0),Z(0,0,fabs(AxisRange[2])),
+  Origin(OPt),X(std::abs(AxisRange[0]),0,0),
+  Y(0,std::abs(AxisRange[1]),0),Z(0,0,std::abs(AxisRange[2])),
   fullVol(0.0),totalDist(0),nTracks(0)
-  /*!
+  /*!g
     Constructor
     \param OPt :: Centre
     \param AxisRange :: X/Y/Z extent
@@ -383,52 +384,28 @@ VolSum::trackRun(const Simulation& System,const size_t N)
   fracX=AreaXY/totalArea;
   fracY=(AreaXZ+AreaXY)/totalArea;
   
-  const Geometry::Surface* SPtr;          // Output surface
-  double aDist;       
-
   // Note for sphere that you can use X,Y,Z in any orthogonal 
   // directiron
 
   for(size_t i=0;i<N;i++)
     {
-      Geometry::Vec3D Pt=getCubePoint();
-      Geometry::Vec3D XPt=getCubePoint();
-      double trackDistance=Pt.Distance(XPt);
-      XPt-=Pt;
-      totalDist+=trackDistance;
-      
-      // track length to go == [Max]
-      
-      MonteCarlo::neutron TNeut(1,Pt,XPt);
-      // Find Initial cell [Store for next time]
-      InitObj=System.findCell(TNeut.Pos,InitObj);      
-      MonteCarlo::Object* OPtr=InitObj;
-      int SN(0);
+      const Geometry::Vec3D Pt=getCubePoint();
+      const Geometry::Vec3D XPt=getCubePoint();
 
-      while(OPtr)
+
+      LineTrack A(Pt,XPt);
+      A.calculate(System);
+      const std::vector<MonteCarlo::Object*>& OVec=A.getObjVec();
+      const std::vector<double>& TVec=A.getTrack();
+      for(size_t i=0;i<OVec.size();i++)
 	{
-	  // Note: Need OPPOSITE Sign on exiting surface
-	  SN= -OPtr->trackOutCell(TNeut,aDist,SPtr,-SN);
-	  trackDistance-=aDist;
-	  if (trackDistance > 0.0)
-	    {
-	      addDistance(OPtr->getName(),aDist);
-	      trackDistance-=aDist;
-	      TNeut.moveForward(aDist+2.0*Geometry::zeroTol);
-
-	      OPtr=(SN) ?
-		OSMPtr->findNextObject
-		(SN,TNeut.Pos,OPtr->getName()) : 0;		
-	    }
-	  else
-	    {
-	      //	      ELog::EM<<"Adding "<<
-	      //		trackDistance-TNeut.travel<<ELog::endDebug;
-	      //	      addDistance(OPtr->getName(),
-	      //			  trackDistance-TNeut.travel);
-	      OPtr=0;
-	    }
+	  const MonteCarlo::Object* OPtr=OVec[i];
+	  if (OPtr)
+	    addDistance(OPtr->getName(),TVec[i]);
 	}
+
+      const double trackDistance=Pt.Distance(XPt);
+      totalDist+=trackDistance;
     }
   ELog::EM<<"Total Dist == "<<totalDist<<ELog::endTrace;  
   nTracks+=N;

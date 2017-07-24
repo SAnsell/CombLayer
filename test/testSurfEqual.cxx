@@ -3,7 +3,7 @@
  
  * File:   test/testSurfEqual.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,6 +108,9 @@ testSurfEqual::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
+  ELog::RegMethod RegA("testSurfEqual","applyTest");
+  TestFunc::regSector("testSurfEqual");
+
   typedef int (testSurfEqual::*testPtr)();
   testPtr TPtr[]=
     {

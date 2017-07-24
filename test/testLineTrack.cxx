@@ -190,7 +190,6 @@ testLineTrack::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testLineTrack","applyTest");
-
   TestFunc::regSector("testLineTrack");
 
   typedef int (testLineTrack::*testPtr)();

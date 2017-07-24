@@ -125,6 +125,9 @@ testPairFactory::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
+  ELog::RegMethod RegA("testPairFactory","applyTest");
+  TestFunc::regSector("testPairFactory");
+
   typedef int (testPairFactory::*testPtr)();
   testPtr TPtr[]=
     {
@@ -174,7 +177,7 @@ testPairFactory::testConstructPair()
   
   // SurfN:SurfN : Type [string]
   typedef std::tuple<int,int,std::string> TTYPE;
-  typedef pairItem<Geometry::Plane,Geometry::Plane> PTYPE;
+
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,11,"Plane Plane"));
   Tests.push_back(TTYPE(3,13,"Cylinder Cylinder"));

@@ -1015,7 +1015,6 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-
   
   if(type==index || type<0)
     {
