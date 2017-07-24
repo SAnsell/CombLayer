@@ -13,7 +13,7 @@ sub new
     bcomp => "clang",
     ccomp => "clang",
     cflag => "-fPIC -Wconversion -W -Wall -Wextra -Wno-comment -fexceptions -std=c++11",
-    boostLib => "-L/opt/local/lib -lboost_regex ",
+    boostLib => "-L/opt/local/lib ",
     
     masterProg => undef,
     definitions => undef,

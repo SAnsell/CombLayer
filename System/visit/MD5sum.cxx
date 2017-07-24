@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   visit/MD5sum.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2015 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "mathSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
@@ -167,7 +168,7 @@ MD5sum::populate(const Simulation* SimPtr)
   std::vector<size_t> index(3);
   for(size_t i=0;i<3;i++)
     {
-      sizeXYZ[i]=fabs(XYZ[i]/nPts[i]);
+      sizeXYZ[i]=std::abs(XYZ[i]/static_cast<double>(nPts[i]));
       index[i]=i;
     }
   indexSort(sizeXYZ,index);
@@ -177,22 +178,30 @@ MD5sum::populate(const Simulation* SimPtr)
   const size_t c=index[0];
   for(size_t i=0;i<nPts[a];i++)
     {
-      aVec[a]=XYZ[a]*((i+0.5)/nPts[a]);
+      aVec[a]=XYZ[a]*(static_cast<double>(i)+0.5)/
+	static_cast<double>(nPts[a]);
+      
       for(size_t j=0;j<nPts[b];j++)
         {
-	  aVec[1]=XYZ[b]*((j+0.5)/nPts[b]);
+	  aVec[b]=XYZ[b]*(static_cast<double>(j)+0.5)/
+			  static_cast<double>(nPts[b]);
+
 	  for(size_t k=0;k<nPts[c];k++)
 	    {
-	      aVec[c]=XYZ[c]*((k+0.5)/nPts[c]);
+	      aVec[c]=XYZ[c]*(static_cast<double>(k)+0.5)/
+		static_cast<double>(nPts[c]);
+	      
 	      const Geometry::Vec3D Pt=Origin+aVec;
 	      ObjPtr=SimPtr->findCell(Pt,ObjPtr);
 	      const size_t matN=static_cast<size_t>(ObjPtr->getMat());
 	      if (matN>=RSize)
 		{
-		  ELog::EM<<"Error at point "<<aVec<<ELog::endCrit;
-		  throw ColErr::IndexError<size_t>(matN,RSize,"RSize");
+		  throw ColErr::IndexError<size_t>
+		    (matN,RSize,"RSize[point="+StrFunc::makeString(aVec)+"]");
 		}
+	      
 	      Results[matN].addUnit(aVec);
+	      
 	      if (cnt>reportTime)
 		{
 		  percent++;

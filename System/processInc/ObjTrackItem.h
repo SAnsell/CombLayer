@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   processInc/ObjTrackItem.h
-*
- * Copyright (c) 2004-2015 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ class ObjTrackItem
   /// Determine if track is complete 
   bool isCompelete() const { return (aimDist-TDist)<1e-4; }
 
-  int addDistance(const int,const double);
+  void addDistance(const int,const double);
   /// Accessor to track
   const std::map<int,double>& getTrack() const { return MTrack; }
   

@@ -76,10 +76,10 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
   if (N && TLen>Geometry::zeroTol)
     {
       double curLen(0.0);
-      double frac=1.0/N;
+      double frac=1.0/static_cast<double>(N);
       for(size_t i=1;i<N;i++)
 	{
-	  const std::string NName=StrFunc::makeString(i);
+	  const std::string NName=std::to_string(i);
 	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
 	  Vec.push_back(fA);
 	  if (fabs(fA-frac)>Geometry::zeroTol)
@@ -92,8 +92,9 @@ populateDivideLen(const FuncDataBase& Control,const size_t N,
 	      Vec.back()=curLen/TLen;
 	    }
 	  curLen=Vec.back()*TLen;
-	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
-       }
+	  frac=((static_cast<double>(N-i)-1.0)*Vec.back()+1.0)/
+	    static_cast<double>(N-i);
+	}
     }
   return;
 }
@@ -113,13 +114,14 @@ populateDivide(const FuncDataBase& Control,const size_t N,
   ELog::RegMethod RegA("surfDIter","populateDivide");
   if (N>0)
     {
-      double frac=1.0/N;
+      double frac=1.0/static_cast<double>(N);
       for(size_t i=1;i<N;i++)
 	{
 	  const std::string NName=StrFunc::makeString(i);
 	  const double fA=Control.EvalDefVar<double>(Name+NName,frac);
 	  Vec.push_back(fA);
- 	  frac=((N-i-1.0)*Vec.back()+1.0)/(N-i);
+	  frac=((static_cast<double>(N-i)-1.0)*Vec.back()+1.0)/
+	    static_cast<double>(N-i);
 	}
     }
   return;
@@ -144,7 +146,7 @@ populateDivide(const FuncDataBase& Control,const size_t N,
   for(size_t i=0;i<N;i++)
     {
       defV=ModelSupport::EvalDefMat<int>
-	(Control,Name+StrFunc::makeString(i),defV);
+	(Control,Name+std::to_string(i),defV);
       Vec.push_back(defV);
     }
   return;
@@ -218,7 +220,6 @@ populateAddRange(const FuncDataBase& Control,const size_t N,
     \param ARange :: Start value    
     \param BRange :: End value 
     \param Vec :: Vector to populate [and cleared]
-    \param additionFlag :: addition flag
   */
 {
   ELog::RegMethod RegA("surfDIter","populateRange[flag]");
@@ -235,7 +236,7 @@ populateAddRange(const FuncDataBase& Control,const size_t N,
       setValues.push_back(0);
       for(size_t i=1;i<N;i++)
 	{
-	  const std::string NName=Name+StrFunc::makeString(i);
+	  const std::string NName=Name+std::to_string(i);
 	  if (Control.hasVariable(NName))
 	    {
 	      const double fA=Control.EvalVar<double>(NName);

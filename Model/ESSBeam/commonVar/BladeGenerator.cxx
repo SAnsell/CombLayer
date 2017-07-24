@@ -235,7 +235,7 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
     {
       realYStep= -std::accumulate(thick.begin(),thick.end(),0.0);
       realYStep+=thick.front();  // front allowed for
-      realYStep-=(thick.size()-1.0)*gap;
+      realYStep-=(static_cast<double>(thick.size())-1.0)*gap;
       realYStep/=2.0;
     }
   

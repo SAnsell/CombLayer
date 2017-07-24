@@ -291,14 +291,14 @@ testLineTrack::checkResult(const LineTrack& LT,
   const std::vector<long int>& cells=LT.getCells();
   const std::vector<double>& tLen=LT.getTrack();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
-  int cValue(0);
+  long int cValue(0);
   double tValue(0.0);
   for(size_t i=0;i<cells.size();i++)
     {
       if (!oVec[i] || oVec[i]->getName()!=cells[i])
 	return 0;
       cValue+=cells[i];
-      tValue+=tLen[i]*cells[i];
+      tValue+=tLen[i]*static_cast<double>(cells[i]);
     }  
-  return (cValue!=CSum || fabs(TSum-tValue)>1e-3) ? 0 : 1;
+  return (cValue!=CSum || std::abs(TSum-tValue)>1e-3) ? 0 : 1;
 }

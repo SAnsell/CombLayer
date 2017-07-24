@@ -147,11 +147,10 @@ ReactorGrid::getElement(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ReactorGrid","getElement");
 
-  const std::string Key[2]=
-    { 
-      std::string(1,static_cast<char>(I)+'A'),
-      StrFunc::makeString(J),
-    };
+  std::array<std::string,2> Key;
+  Key[0]=StrFunc::indexToAlpha(I);
+  Key[1]=std::to_string(J);
+
   // Completely specified:
   if (Control.hasVariable(Name+Key[0]+Key[1]))
     return Control.EvalVar<T>(Name+Key[0]+Key[1]);
@@ -187,11 +186,10 @@ ReactorGrid::getDefElement(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ReactorGrid","getElement");
 
-  const std::string Key[2]=
-    { 
-      std::string(1,static_cast<char>(I)+'A'),
-      StrFunc::makeString(J),
-    };
+  std::array<std::string,2> Key;
+  Key[0]=StrFunc::indexToAlpha(I);
+  Key[1]=std::to_string(J);
+
   // Completely specified:
   if (Control.hasVariable(Name+Key[0]+Key[1]))
     return Control.EvalVar<T>(Name+Key[0]+Key[1]);
@@ -229,7 +227,7 @@ ReactorGrid::getElementName(const std::string& Name,const size_t I,
   ELog::RegMethod RegA("ReactorGrid","getElementName");
   
   std::string Out(Name);
-  Out+=std::string(1,static_cast<char>(I)+'A');
+  Out+=StrFunc::indexToAlpha(I);
   Out+=StrFunc::makeString(J);
   return Out;
 }
@@ -411,8 +409,10 @@ ReactorGrid::createSurfaces()
   for(int dimI=0;dimI<2;dimI++)
     {
       Geometry::Vec3D layerO(Origin-Axis[dimI]*SArray[dimI]/2.0);
-      const Geometry::Vec3D LStep(Axis[dimI]*(SArray[dimI]/NArray[dimI]));
-      int sNum(gridIndex+7+static_cast<int>(dimI));
+      const Geometry::Vec3D LStep
+	(Axis[dimI]*(SArray[dimI]/static_cast<double>(NArray[dimI])));
+      
+      int sNum(gridIndex+7+dimI);
 
       SMap.addMatch(sNum,gridIndex+1+dimI*2);   // match 1,3,5 to 7,8,9
       for(size_t i=1;i<NArray[dimI];i++)
@@ -420,8 +420,8 @@ ReactorGrid::createSurfaces()
 	  sNum+=10; 
 	  layerO+=LStep;
 	  ModelSupport::buildPlane(SMap,sNum,layerO,Axis[dimI]);
-
 	}
+      
       sNum+=10;  // For exit
       SMap.addMatch(sNum,gridIndex+2+dimI*2);   // match 2,4 to x7,x8
     }
@@ -519,8 +519,9 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
   
-  return Origin+X*(Width*(2.0*i-NX+1.0)/(2.0*NX))+
-    Y*(Depth*(2.0*j-NY+1.0)/(2.0*NY));
+  return Origin+
+    X*(Width*static_cast<double>(2*i-NX+1)/static_cast<double>(2*NX))+
+    X*(Depth*static_cast<double>(2*j-NY+1)/static_cast<double>(2*NY));
 }
 
 

@@ -63,6 +63,7 @@
 #include "Simulation.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "LineTrack.h"
 #include "ObjTrackItem.h"
 
 #include "testFunc.h"
@@ -145,20 +146,22 @@ testObjTrackItem::createObjects()
   int cellIndex(1);
   const int surIndex(0);
   Out=ModelSupport::getComposite(surIndex,"100");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
+  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));  // Outside void Void
+  MonteCarlo::Object* OPtr=ASim.findQhull(cellIndex-1);
+  OPtr->setImp(0);
 
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
+  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));    // steel object
 
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
-				 " (-1:2:-3:4:-5:6) ");
+                                          " (-1:2:-3:4:-5:6) ");
+  
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
-				 " #4");
+  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16) #4");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
@@ -223,8 +226,6 @@ testObjTrackItem::testTrackNeutron()
 {
   ELog::RegMethod RegA("testObjTrackItem","testTrackNeutron");
 
-
-  
   typedef std::tuple<size_t,size_t,size_t> TTYPE;
   typedef std::tuple<size_t,int,double> RTYPE;
 
@@ -233,14 +234,7 @@ testObjTrackItem::testTrackNeutron()
     {
       MonteCarlo::neutron(10,Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0))
     };
-  
-  // Starting positions:
-  const std::vector<Geometry::Vec3D> TPos=
-    {
-      Geometry::Vec3D(0,0,0),
-      Geometry::Vec3D(9,0,0)
-    };
-  
+    
   // Results [number / sum Mat / length sum]
   const std::vector<RTYPE> Results=
     {
@@ -258,34 +252,24 @@ testObjTrackItem::testTrackNeutron()
       const TTYPE& tc(TestIndex[index]);
 
       MonteCarlo::neutron nOut(TNeut[std::get<0>(tc)]);
-      // Starting neutron
-      ObjTrackItem OA(TPos[std::get<1>(tc)],
-		      TPos[std::get<2>(tc)]);
+      ObjTrackItem OA(nOut.Pos,nOut.uVec);
+			    
+      LineTrack A(nOut.Pos,nOut.uVec,8.0);
+      A.calculate(ASim);
 
-      const ModelSupport::ObjSurfMap* OSMPtr =ASim.getOSM();
-      // Find Initial cell [tested in testSimulation]
-      MonteCarlo::Object* OPtr=ASim.findCell(nOut.Pos,0);
-      int flag(0);
-      while(OPtr && !flag)
+      const std::vector<MonteCarlo::Object*>& OVec=A.getObjVec();
+      const std::vector<double>& TVec=A.getTrack();
+      for(size_t i=0;i<OVec.size();i++)
 	{
-	  // Track to outgoing surface
-	  const Geometry::Surface* SPtr;          // Output surface
-	  double aDist;                           // Output distribution
-	  
-	  // Note: Need OPPOSITE Sign on exiting surface
-	  const int SN= -OPtr->trackOutCell(nOut,aDist,SPtr);
-	  // Update ObjTrackItem:
-	  flag=(SN) ? OA.addDistance(OPtr->getMat(),aDist) : 1; 
-
-	  MonteCarlo::Object* NextObj(0);
-	  if (!flag)
+	  const MonteCarlo::Object* OPtr=OVec[i];
+	  if (!OPtr)
 	    {
-	      nOut.moveForward(aDist+1e-5);
-	      NextObj=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
+	      ELog::EM<<"No object for point "<<i<<ELog::endDiag;
+	      return -1;
 	    }
-	  OPtr=NextObj;
+	  OA.addDistance(OPtr->getMat(),TVec[i]);
 	}
-      // Done with output:
+
       const int errFlag=
 	checkResult(OA,Results[index]);
 
@@ -328,7 +312,7 @@ testObjTrackItem::checkResult(const ObjTrackItem& OA,
   if (sumMat!=std::get<1>(Result)) 
     resFlag+=2;
 
-  if (fabs(sumDist-std::get<2>(Result))>1e-4) 
+  if (std::abs(sumDist-std::get<2>(Result))>1e-4) 
     resFlag+=4;
   
   if (resFlag)

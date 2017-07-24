@@ -283,8 +283,6 @@ ObjSurfMap::findNextObject(const int SN,
 
   ELog::EM<<"Failure to find surface on "<<SN<<" :: "
 	  <<MR.calcRotate(Pos)<<ELog::endCrit;
-  if (SN != -119)
-    return 0;
 
   ELog::EM<<"EXCLUDE  "<<objExclude<<" "
 	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endDiag;

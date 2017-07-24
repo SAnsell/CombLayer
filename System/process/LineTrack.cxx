@@ -102,6 +102,19 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
   */
 {}
 
+LineTrack::LineTrack(const Geometry::Vec3D& IP,
+		     const Geometry::Vec3D& UVec,
+		     const double ADist) :
+  InitPt(IP),EndPt(IP+UVec),aimDist(ADist),
+  TDist(0.0)
+  /*! 
+    Constructor 
+    \param IP :: Initial point
+    \param EP :: End point
+    \param ADist :: Aim dist 
+  */
+{}
+
 LineTrack::LineTrack(const LineTrack& A) : 
   InitPt(A.InitPt),EndPt(A.EndPt),aimDist(A.aimDist),TDist(A.TDist),
   Cells(A.Cells),ObjVec(A.ObjVec),Track(A.Track)
@@ -299,7 +312,6 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D)
       Track.push_back(D-TDist+aimDist);
       return 0;
     }
-
   Track.push_back(D);
   return 1;
 }

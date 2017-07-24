@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Engineer/BulletDivider.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@
 namespace ts1System
 {
 
-  BulletDivider::BulletDivider(const std::string& Key,const int Index,
+BulletDivider::BulletDivider(const std::string& Key,const int Index,
 			       const int sideDir)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedComp(Key+StrFunc::makeString(Index),6),
@@ -87,8 +87,46 @@ namespace ts1System
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
+    \param Index :: ID number of divider
+    \param sideDir :: Direction of curve
   */
 {}
+
+BulletDivider::BulletDivider(const BulletDivider& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  ID(A.ID),baseName(A.baseName),divIndex(A.divIndex),
+  cellIndex(A.cellIndex),divDirection(A.divDirection),
+  YStep(A.YStep),radii(A.radii),length(A.length),
+  endPts(A.endPts),wallThick(A.wallThick),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: BulletDivider to copy
+  */
+{}
+
+BulletDivider&
+BulletDivider::operator=(const BulletDivider& A)
+  /*!
+    Assignment operator
+    \param A :: BulletDivider to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      YStep=A.YStep;
+      radii=A.radii;
+      length=A.length;
+      endPts=A.endPts;
+      wallThick=A.wallThick;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+
 
 
 BulletDivider::~BulletDivider() 
@@ -191,7 +229,7 @@ BulletDivider::createSurfaces()
 
   int DV(divIndex);
   Geometry::Vec3D CPt(Origin);
-  double tAngle;
+  double tAngle(0.0);
   for(size_t i=0;i<length.size();i++)
     {
       tAngle=0.0;
@@ -205,7 +243,7 @@ BulletDivider::createSurfaces()
 	{
 	  // using similar triangles:
 	  const double x=radii[i]*length[i]/(radii[i+1]-radii[i]);
-	  tAngle=fabs(radii[i+1]-radii[i])/length[i];
+	  tAngle=std::abs(radii[i+1]-radii[i])/length[i];
 	  const double theta=180.0/M_PI*atan(tAngle);	  	  
 	  // Inner
 	  ModelSupport::buildCone(SMap,DV+7,CPt-Y*x,Y,theta);
@@ -219,6 +257,7 @@ BulletDivider::createSurfaces()
       ModelSupport::buildPlane(SMap,DV+2,CPt,Y);
       DV+=100;
     }
+  
   if (tAngle>Geometry::zeroTol)
     endPts.push_back(CPt+XDir*(radii.back()+(wallThick/tAngle/2.0)));
   else
@@ -237,7 +276,10 @@ BulletDivider::createObjects(Simulation& System,
     Creates the target vessel objects
     \param System :: Simulation to create objects in
     \param TarObj :: Inner link surface for radius
+    \param radialSide :: link point for inner radius
     \param vesselObj :: Inner link surface for top/base
+    \param topSide :: Link point for top
+    \param baseSide :: Link point for bas
   */
 {
   ELog::RegMethod RegA("BulletVessel","createObjects");

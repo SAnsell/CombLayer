@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   visitInc/MD5sum.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@
 class Simulation;
 namespace MonteCarlo
 {
-class Object;
+  class Object;
 }
 
 
 
 /*!
   \class MD5sum
-  \brief Hold an official model number
+  \brief Calculate the MD5 sum of a model
   \date August 2010
   \author S. Ansell
   \version 1.0
