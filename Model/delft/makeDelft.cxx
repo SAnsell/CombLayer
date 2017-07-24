@@ -389,17 +389,20 @@ void
 makeDelft::buildModerator(Simulation& System,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex,
+			  const std::string& modType,
 			  const std::string& refExtra)
   /*!
     Build the main moderator in flightA
     \param System :: Simualation system
     \param FC :: Fixed point of side of reactro
     \param sideIndex :: link point 
+    \param modType :: Name of moderator type
     \param refExtra :: Extra reflector be piece type
    */
 {
   ELog::RegMethod RegA("makeDeflt","buildModerator");
 
+  ELog::EM<<"Mod type == "<<modType<<ELog::endDiag;
   const int voidCell(74123);
   
   ModelSupport::objectRegister& OR=
@@ -412,9 +415,11 @@ makeDelft::buildModerator(Simulation& System,
 
   ColdVac->addInsertCell(ColdPress->getCells("Void"));
   ColdVac->createAll(System,*ColdPress,0);
-
-  ColdMod->addInsertCell(ColdVac->getCells("Void"));
-  ColdMod->createAll(System,*ColdVac,0);
+  if (modType!="Empty" && modType!="empty")
+    {
+      ColdMod->addInsertCell(ColdVac->getCells("Void"));
+      ColdMod->createAll(System,*ColdVac,0);
+    }
 
   // Joins onto the pressure vessel
   FlightA->addInsertCell(Pool->getCells("Water"));
@@ -478,7 +483,8 @@ makeDelft::build(Simulation& System,
     }
   
   buildFlight(System,buildType);
-  buildModerator(System,*FCPtr,sideIndex,refExtra);
+
+  buildModerator(System,*FCPtr,sideIndex,modType,refExtra);
   
   return;
 }

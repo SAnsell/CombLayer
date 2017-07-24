@@ -994,7 +994,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   checkKeys(K,LK);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,1);
+  IPtr->setMaxN(1,0,reqItem);
 
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())

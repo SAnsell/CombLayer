@@ -31,9 +31,6 @@
 #include <stack>
 #include <sys/stat.h>
 #include <time.h>
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,7 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
+#include "regexBuild.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"

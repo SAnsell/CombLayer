@@ -469,8 +469,7 @@ tallyModification(Simulation& System,
 }
 
 void
-tallyRenumberWork(Simulation& System,
-		  const mainSystem::inputParam& IParam)
+tallyRenumberWork(Simulation&,const mainSystem::inputParam&)
   /*!
     An amalgumation of values to determine what sort of tallies to put
     in the system.

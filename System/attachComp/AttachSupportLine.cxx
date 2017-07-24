@@ -232,10 +232,6 @@ addToInsertLineCtrl(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // Determin cells to scan
-  const int cellN=OR.getCell(OuterFC.getKeyName());
-  const int cellL=OR.getLast(OuterFC.getKeyName());
-
   const std::vector<int> CNum=
     OR.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)

@@ -31,9 +31,6 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif 
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -45,7 +42,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "regexSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "XMLwriteVisitor.h"
@@ -710,7 +706,7 @@ FuncDataBase::compileFunctionParams(
 {
   const size_t curStackPtr = Build.getStackPtr();
   const size_t Ind2 = compileExpression(FString, Ind); 
-
+  
   if(Build.getStackPtr() != curStackPtr+reqParam)
     throw ColErr::IndexError<size_t>(Build.getStackPtr(),reqParam,
 				  "FuncDataBase::compileFunctionParams "
@@ -1014,7 +1010,7 @@ FuncDataBase::processXML(const std::string& FName)
       const std::string Type=AR->getDefItem<std::string>("type","double");
 
       if (!hasVariable(Name))
-	ELog::EM<<"Adding variable "<<Name<<ELog::endWarn;
+	ELog::EM<<"Re-Adding variable "<<Name<<ELog::endWarn;
       
       // Only vector type 
       if (Type=="function")

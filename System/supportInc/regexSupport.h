@@ -26,40 +26,37 @@
 namespace StrFunc
 {
 
-int StrLook(const std::string&,const std::string&);  
-int findPattern(std::istream&,const std::string&,std::string&);
+template<typename T> int findComp(std::istream&,const std::regex&,T&);
 
- 
+int findPattern(std::istream&,const std::regex&,std::string&);
+
+template<typename T> int findComp(std::istream&,const std::string&,T&);
+template<typename T> int findComp(std::istream&,const std::regex&,T&);
+  
 template<typename T>
-int StrComp(const std::string&,
-	    const std::string&,T&,const int=0); 
-
-
+int StrComp(const std::string&,const std::regex&,T&,const size_t =0);
  
-template<typename T> int StrComp(const std::string&,
-				 const boost::regex&,T&,const int=0); 
-int StrLook(const char*,const boost::regex&);
-int StrLook(const std::string&,const boost::regex&);
+int StrLook(const char*,const std::regex&);
+int StrLook(const std::string&,const std::regex&);
 
 /// Split  a line into component parts
 std::vector<std::string> 
-StrParts(std::string,const boost::regex&);
+StrParts(std::string,const std::regex&);
 
 /// Split  a line searched parts
-template<typename T> int StrFullSplit(const std::string&,const boost::regex&,std::vector<T>&);
-template<typename T> int StrSingleSplit(const std::string&,const boost::regex&,std::vector<T>&);
+template<typename T> int StrFullSplit(const std::string&,const std::regex&,std::vector<T>&);
+template<typename T> int StrSingleSplit(const std::string&,const std::regex&,std::vector<T>&);
 
 /// Cut out the searched section and returns component
 template<typename T> 
-int StrFullCut(std::string&,const boost::regex&,T&,const int= -1);
+int StrFullCut(std::string&,const std::regex&,T&,const long int= -1);
 template<typename T> 
-int StrFullCut(std::string&,const boost::regex&,std::vector<T>&);
+int StrFullCut(std::string&,const std::regex&,std::vector<T>&);
 
-int StrRemove(std::string&,std::string&,const boost::regex&);
+int StrRemove(std::string&,std::string&,const std::regex&);
 
-template<typename T> int findComp(std::istream&,const boost::regex&,T&);
 
-int findPattern(std::istream&,const boost::regex&,std::string&);
+
 
 } // NAMESPACE StrFunc
 

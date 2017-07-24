@@ -118,16 +118,12 @@ testSingleObject::cylModVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("testSingleObject","cylModVariable");
 
-  Control.addVariable("H2CylModXStep",0.0);  
-  Control.addVariable("H2CylModYStep",0.0);  
-  Control.addVariable("H2CylModZStep",0.0);
-  Control.addVariable("H2CylModXYangle",0.0);
-  Control.addVariable("H2CylModZangle",0.0);
   Control.addVariable("H2CylModRadius",6.0);
   Control.addVariable("H2CylModHeight",12.0);
   Control.addVariable("H2CylModMat","ParaH2");
   Control.addVariable("H2CylModTemp",20.0);
   Control.addVariable("H2CylModNLayers",0);
+  Control.addVariable("H2CylModNWedge",0);
   // al layer
   Control.addVariable("H2CylModHGap1",0.3);
   Control.addVariable("H2CylModRadGap1",0.3);
@@ -221,6 +217,8 @@ testSingleObject::applyTest(const int extra)
 {
   ELog::RegMethod RegA("testSingleObject","applyTest");
 
+  TestFunc::regSector("testSingleObject");
+  
   typedef int (testSingleObject::*testPtr)();
   testPtr TPtr[]=
     {

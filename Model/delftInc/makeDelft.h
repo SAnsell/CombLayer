@@ -99,7 +99,8 @@ class makeDelft
   void buildCore(Simulation&,const mainSystem::inputParam&);
   void buildFlight(Simulation&,const std::string&);
   void buildModerator(Simulation&,const attachSystem::FixedComp&,
-		      const long int,const std::string&);
+		      const long int,const std::string&,
+		      const std::string&);
 
  public:
   

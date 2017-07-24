@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testObjTrackItem.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,27 +223,35 @@ testObjTrackItem::testTrackNeutron()
 {
   ELog::RegMethod RegA("testObjTrackItem","testTrackNeutron");
 
-  std::vector<MonteCarlo::neutron> TNeut;
-  std::vector<Geometry::Vec3D> TPos;
+
   
   typedef std::tuple<size_t,size_t,size_t> TTYPE;
   typedef std::tuple<size_t,int,double> RTYPE;
 
-  std::vector<TTYPE> TestIndex;
-  std::vector<RTYPE> Results;
   // Test neutrons
-  TNeut.push_back(MonteCarlo::neutron(10,Geometry::Vec3D(0,0,0),
-				      Geometry::Vec3D(1,0,0)));
+  const std::vector<MonteCarlo::neutron> TNeut=
+    {
+      MonteCarlo::neutron(10,Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0))
+    };
   
   // Starting positions:
-  TPos.push_back(Geometry::Vec3D(0,0,0));
-  TPos.push_back(Geometry::Vec3D(9,0,0));
+  const std::vector<Geometry::Vec3D> TPos=
+    {
+      Geometry::Vec3D(0,0,0),
+      Geometry::Vec3D(9,0,0)
+    };
   
   // Results [number / sum Mat / length sum]
-  Results.push_back(RTYPE(3,8,3.0));
+  const std::vector<RTYPE> Results=
+    {
+      RTYPE(3,8,3.0)
+    };
   
   // Tests [ neutron : StartVec3D : EndVec3D ]
-  TestIndex.push_back(TTYPE(0,0,1));
+  const std::vector<TTYPE> TestIndex=
+    {
+      TTYPE(0,0,1)
+    };
   
   for(size_t index=0;index<TestIndex.size();index++)
     {

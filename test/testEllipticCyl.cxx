@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testEllipticCyl.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -144,8 +144,8 @@ testEllipticCyl::testDistance()
   Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,0,0),3.0));
   Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,0,3.4),3.0));
   Tests.push_back(TTYPE("ez 5.0 5.0",Geometry::Vec3D(-4,4,0),sqrt(32)-5.0));
-  Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,3,0),0.0));
-  Tests.push_back(TTYPE("ez 5.0 3.0",Geometry::Vec3D(0,3,0),2.0));
+  Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(3,0,0),0.0));
+  Tests.push_back(TTYPE("ez 5.0 3.0",Geometry::Vec3D(1,0,0),2.90474));
   
   for(const TTYPE& tc : Tests)
     {

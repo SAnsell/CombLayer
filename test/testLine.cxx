@@ -132,7 +132,7 @@ testLine::testConeIntersect()
     \return -ve on error
   */
 {
-  ELog::RegMethod RegA("testLine","testCone");
+  ELog::RegMethod RegA("testLine","testConeIntersect");
 
   // Cone : Start Point : Normal : NResults : distance A : distance B 
   typedef std::tuple<std::string,Geometry::Vec3D,Geometry::Vec3D,
@@ -179,8 +179,9 @@ testLine::testConeIntersect()
 	{
 	  ELog::EM<<"Failure for test "<<cnt<<ELog::endCrit;
 	  ELog::EM<<"Point A "<<OutPt[0]<<" :: "<<
-	    std::get<1>(tc)+std::get<2>(tc)*std::get<4>(tc)<<ELog::endDebug;
+	    std::get<1>(tc)+std::get<2>(tc)*std::get<4>(tc)<<ELog::endDiag;
 	  ELog::EM<<"DA "<<DA<<ELog::endCrit;
+	  ELog::EM<<"DB "<<DB<<ELog::endCrit;
 	  return -1;
 	}
       if (NR>1 && fabs(DB-std::get<5>(tc))> 1e-5) 

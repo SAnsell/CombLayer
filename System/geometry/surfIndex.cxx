@@ -31,10 +31,6 @@
 #include <string>
 #include <algorithm>
 
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -47,7 +43,7 @@
 #include "Triple.h"
 #include "Quaternion.h"
 #include "support.h"
-#include "regexSupport.h"
+#include "regexBuild.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
