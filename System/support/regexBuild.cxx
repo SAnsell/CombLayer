@@ -87,6 +87,19 @@ StrComp(const std::string& Text,const std::string& ReExpression,
   return StrComp<T>(Text,RE,Aout,compNum);
 }
   
+std::vector<std::string> 
+StrParts(const std::string& Sdx,const std::string& ReExpression )
+  /*! 
+    Find the match, return the disected items.
+    Note it is complementary to support.h StrParts(Sdx)
+    \param Sdx :: Input string (note implicit copy since altered)
+    \param ReExpression :: Regular expression for separator component
+    \returns vector of string components
+  */
+{
+  std::regex RE(ReExpression);
+  return StrParts(Sdx,RE);
+}   
 
 /// \cond TEMPLATE 
 

@@ -770,34 +770,33 @@ testSupport::testStrParts()
 {
   ELog::RegMethod RegA("testSupport","testStrParts");
 
-#ifndef NO_REGEX
-  
   typedef std::tuple<std::string,std::string,unsigned int,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
+  const std::vector<TTYPE> Tests=
+    {
   
-  // remove space/> at start then split on 
-  Tests.push_back(TTYPE("$var s566>s4332 dxx","[\\s>]*([^\\s>]+)",4,"$var:s566:s4332:dxx:"));
+      // remove space/> at start then split on 
+      TTYPE("$var s566>s4332 dxx","[\\s>]*([^\\s>]+)",4,"$var:s566:s4332:dxx:")
+    };
 
   for(const TTYPE& tc : Tests)
     {
-      std::string Y=std::get<0>(tc);
+      const std::string Y=std::get<0>(tc);
       std::regex sstr(std::get<1>(tc));
-      std::vector<std::string> outVec=StrFunc::StrParts(Y,sstr);      
+      const std::vector<std::string> outVec=
+	StrFunc::StrParts(Y,sstr);
+      
       std::ostringstream cx;
-      copy(outVec.begin(),outVec.end(),
-	   std::ostream_iterator<std::string>(cx,":"));
+
+      copy(outVec.begin(),outVec.end(),std::ostream_iterator<std::string>(cx,":"));
 
       if (outVec.size()!=std::get<2>(tc) || cx.str()!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Test of :"<<std::get<0>(tc)<<ELog::endTrace;
-	  ELog::EM<<"Remain[] == "<<Y<< "=="<<ELog::endTrace;
-	  ELog::EM<<"Out == "<<cx.str()<<ELog::endTrace;
+	  ELog::EM<<"Test of :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Remain[] == "<<Y<< "=="<<ELog::endDiag;
+	  ELog::EM<<"Out == "<<cx.str()<<ELog::endDiag;
 	  return -1;
 	}
     }
-
-#endif
-
   return 0;
 }
 

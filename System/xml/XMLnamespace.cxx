@@ -821,10 +821,10 @@ matchPath(const std::string& A,const std::string& B)
 {
   if (A==B)
     return 1;
-#ifndef NO_REGEX
+
   if (StrFunc::StrLook(A,B))
     return 2;
-#endif
+
   return 0;
 }
 

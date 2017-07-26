@@ -213,7 +213,7 @@ StrComp(const std::string& Text,const std::regex& Re,
 // -------------------------------------------------------------
 
 std::vector<std::string> 
-StrParts(std::string Sdx,const std::regex& Re)
+StrParts(std::string Text,const std::regex& Re)
   /*! 
     Find the match, return the disected items.
     Note it is complementary to support.h StrParts(Sdx)
@@ -222,10 +222,16 @@ StrParts(std::string Sdx,const std::regex& Re)
     \returns vector of string components
   */
 {
-
   std::vector<std::string> Aout;
-  // Destroys string in process
-  //  std::regex_split(std::back_inserter(Aout), Sdx, Re);   
+
+  std::sregex_iterator match=
+    std::sregex_iterator(Text.begin(), Text.end(), Re);
+  while(match != std::sregex_iterator())
+    {
+      for(size_t i=1;i<match->size();i++)
+	Aout.push_back( (*match)[i].str() );	
+      match++;
+    }
   return Aout;
 }   
 

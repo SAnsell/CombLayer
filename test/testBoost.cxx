@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testBoost.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -147,7 +147,8 @@ Report::setNum(const int A)
 }
 
 // REF ADDITON
-ReportRef::ReportRef(const double& P) : Report(),Param(P)
+ReportRef::ReportRef(const double& P) :
+  Report(),Param(P)
   /*!
     Constructor
     \param P :: Parameter to Track
@@ -162,7 +163,9 @@ ReportRef::ReportRef(const double& P,const int I)
     \param P :: Parameter to Track
     \param I :: Index point
   */
-{ }
+{
+  ELog::EM<<"Constructor == "<<P<<" "<<I<<ELog::endDiag;
+}
 
 ReportRef::ReportRef(const ReportRef& A) 
   : Report(A),Param(A.Param) 
@@ -170,7 +173,10 @@ ReportRef::ReportRef(const ReportRef& A)
     Copy Constructor
     \param A :: ReportRef to copy
   */
-{ }
+{
+  ELog::EM<<"Copy == "<<Param<<" "<<Report::getNum()<<ELog::endDiag;
+
+}
 
 ReportRef&
 ReportRef::operator=(const ReportRef& A) 
@@ -361,7 +367,7 @@ testBoost::testRepPtr()
 {
   ELog::RegMethod RegA("testBoost","testRepPtr");
 
-  std::vector<RefControl<Report> > vec;
+  std::vector< RefControl<Report> > vec;
   for(size_t i=0;i<3;i++)
     {
       vec.push_back(RefControl<Report>());
@@ -440,9 +446,6 @@ testBoost::testRepRefPtr()
   // std::cout<<"Vector num =="<<vec[i].access().getNum()<<std::endl;
   // X.access().num=10;
   
-  std::cout<<std::endl;
-  std::cout<<"--------------------------------"<<std::endl;
-  std::cout<<std::endl;
 
   return 0;
 }
@@ -493,22 +496,29 @@ testBoost::testSharePtrMap()
   tmapTYPE TMap;
   tmapTYPE CMap;
 
-  TMap.insert(tmapTYPE::value_type("A",RPtr(new ReportRef(11.1,1))));
-  TMap.insert(tmapTYPE::value_type("E",RPtr(new ReportRef(15.5,5))));
-  TMap.insert(tmapTYPE::value_type("B",RPtr(new ReportRef(12.2,2))));
-  TMap.insert(tmapTYPE::value_type("C",RPtr(new ReportRef(13.3,3))));
-  TMap.insert(tmapTYPE::value_type("D",RPtr(new ReportRef(14.4,4))));
+
+  TMap.emplace("A",std::make_shared<ReportRef>(11.1,1));
+  TMap.emplace("B",std::make_shared<ReportRef>(12.2,2));
+  TMap.emplace("C",std::make_shared<ReportRef>(13.3,3));
+  TMap.emplace("D",std::make_shared<ReportRef>(14.4,4));
+
 
   CMap=TMap;
-  TMap["C"]=RPtr(new ReportRef(21.0,21));
+  TMap["C"]=std::make_shared<ReportRef>(21.0,21);
+  const double CD=std::dynamic_pointer_cast<ReportRef>(TMap["C"])->getParam();
   const double TD = std::static_pointer_cast<ReportRef>(TMap["C"])->getParam();
-  const double CD = std::static_pointer_cast<ReportRef>(CMap["C"])->getParam();
-  if (TMap["C"]->getNum()!=21 || CMap["C"]->getNum()!=3 ||
-      fabs(TD-21.0)>1e-4 || 
-      fabs(CD-13.3)>1e-4)
+  //  const double CD = std::static_pointer_cast<ReportRef>(CMap["C"])->getParam();
+  if (TMap["C"]->getNum()!=21 ||
+      CMap["C"]->getNum()!=3 ||
+      std::abs(TD-21.0)>1e-4 ||  
+      std::abs(CD-21.0)>1e-4)
     {
       ELog::EM<<"TMap == "<< *TMap["C"] <<ELog::endTrace;
-      ELog::EM<<"CMap == "<<*CMap["C"]<<ELog::endTrace;
+      ELog::EM<<"CMap == "<< *CMap["C"]<<ELog::endTrace;
+      ELog::EM<<"TMap[21] == "<< TMap["C"]->getNum()<<ELog::endTrace;
+      ELog::EM<<"CMap[3] == "<< CMap["C"]->getNum()<<ELog::endTrace;
+      ELog::EM<<"TD == "<< TD<<ELog::endTrace;
+      ELog::EM<<"CD[13.3] == "<< CD<<ELog::endTrace;
       return -1;
     }
 

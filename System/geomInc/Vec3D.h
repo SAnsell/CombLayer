@@ -117,7 +117,7 @@ class Vec3D
   int reBase(const Vec3D&,const Vec3D&,const Vec3D&);   
   int masterDir(const double= Geometry::zeroTol) const;
   size_t principleDir() const;
-  int nullVector(const double=Geometry::zeroTol) const;             
+  int nullVector(const double= Geometry::zeroTol) const;             
   int coLinear(const Vec3D&,const Vec3D&) const;
   Vec3D crossNormal() const; 
 

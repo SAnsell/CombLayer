@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testWrapper.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,7 +134,8 @@ testWrapper::createSurfaces()
 
   // PLANE SURFACES:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
+  SurI.reset();
+  
   typedef std::pair<int,std::string> SCompT;
   std::vector<SCompT> SurfLine;
   SurfLine.push_back(SCompT(1,"px -1"));

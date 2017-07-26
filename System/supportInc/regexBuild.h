@@ -32,6 +32,9 @@ int StrLook(const std::string&,const std::string&);
 template<typename T>
 int StrComp(const std::string&,const std::string&,T&,const size_t =0); 
 
+std::vector<std::string>
+StrParts(const std::string&,const std::string&); 
+
 
 } // NAMESPACE StrFunc
 
