@@ -102,6 +102,112 @@ TwinChopper::TwinChopper(const std::string& Key) :
   OR.addObject(IPB);
 }
 
+TwinChopper::TwinChopper(const TwinChopper& A) : 
+  attachSystem::FixedOffsetGroup(A),
+  attachSystem::ContainedComp(A),attachSystem::CellMap(A),
+  houseIndex(A.houseIndex),cellIndex(A.cellIndex),
+  lowCentre(A.lowCentre),topCentre(A.topCentre),
+  lowOutCent(A.lowOutCent),topOutCent(A.topOutCent),
+  stepHeight(A.stepHeight),length(A.length),
+  mainRadius(A.mainRadius),innerRadius(A.innerRadius),
+  innerTopStep(A.innerTopStep),innerLowStep(A.innerLowStep),
+  innerVoid(A.innerVoid),portRadius(A.portRadius),
+  portOuter(A.portOuter),portStep(A.portStep),
+  portWindow(A.portWindow),portNBolt(A.portNBolt),
+  portBoltRad(A.portBoltRad),portBoltAngOff(A.portBoltAngOff),
+  portSeal(A.portSeal),portSealMat(A.portSealMat),
+  portWindowMat(A.portWindowMat),motorAFlag(A.motorAFlag),
+  motorARadius(A.motorARadius),motorAOuter(A.motorAOuter),
+  motorAStep(A.motorAStep),motorANBolt(A.motorANBolt),
+  motorABoltRad(A.motorABoltRad),
+  motorABoltAngOff(A.motorABoltAngOff),
+  motorASeal(A.motorASeal),motorASealMat(A.motorASealMat),
+  motorAMat(A.motorAMat),motorBFlag(A.motorBFlag),
+  motorBRadius(A.motorBRadius),motorBOuter(A.motorBOuter),
+  motorBStep(A.motorBStep),motorBNBolt(A.motorBNBolt),
+  motorBBoltRad(A.motorBBoltRad),
+  motorBBoltAngOff(A.motorBBoltAngOff),
+  motorBSeal(A.motorBSeal),motorBSealMat(A.motorBSealMat),
+  motorBMat(A.motorBMat),outerRingNBolt(A.outerRingNBolt),
+  outerLineNBolt(A.outerLineNBolt),
+  outerBoltStep(A.outerBoltStep),
+  outerBoltRadius(A.outerBoltRadius),
+  outerBoltMat(A.outerBoltMat),boltMat(A.boltMat),
+  wallMat(A.wallMat),RS(A.RS),IPA(A.IPA),IPB(A.IPB)
+  /*!
+    Copy constructor
+    \param A :: TwinChopper to copy
+  */
+{}
+
+TwinChopper&
+TwinChopper::operator=(const TwinChopper& A)
+  /*!
+    Assignment operator
+    \param A :: TwinChopper to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffsetGroup::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      lowCentre=A.lowCentre;
+      topCentre=A.topCentre;
+      lowOutCent=A.lowOutCent;
+      topOutCent=A.topOutCent;
+      stepHeight=A.stepHeight;
+      length=A.length;
+      mainRadius=A.mainRadius;
+      innerRadius=A.innerRadius;
+      innerTopStep=A.innerTopStep;
+      innerLowStep=A.innerLowStep;
+      innerVoid=A.innerVoid;
+      portRadius=A.portRadius;
+      portOuter=A.portOuter;
+      portStep=A.portStep;
+      portWindow=A.portWindow;
+      portNBolt=A.portNBolt;
+      portBoltRad=A.portBoltRad;
+      portBoltAngOff=A.portBoltAngOff;
+      portSeal=A.portSeal;
+      portSealMat=A.portSealMat;
+      portWindowMat=A.portWindowMat;
+      motorAFlag=A.motorAFlag;
+      motorARadius=A.motorARadius;
+      motorAOuter=A.motorAOuter;
+      motorAStep=A.motorAStep;
+      motorANBolt=A.motorANBolt;
+      motorABoltRad=A.motorABoltRad;
+      motorABoltAngOff=A.motorABoltAngOff;
+      motorASeal=A.motorASeal;
+      motorASealMat=A.motorASealMat;
+      motorAMat=A.motorAMat;
+      motorBFlag=A.motorBFlag;
+      motorBRadius=A.motorBRadius;
+      motorBOuter=A.motorBOuter;
+      motorBStep=A.motorBStep;
+      motorBNBolt=A.motorBNBolt;
+      motorBBoltRad=A.motorBBoltRad;
+      motorBBoltAngOff=A.motorBBoltAngOff;
+      motorBSeal=A.motorBSeal;
+      motorBSealMat=A.motorBSealMat;
+      motorBMat=A.motorBMat;
+      outerRingNBolt=A.outerRingNBolt;
+      outerLineNBolt=A.outerLineNBolt;
+      outerBoltStep=A.outerBoltStep;
+      outerBoltRadius=A.outerBoltRadius;
+      outerBoltMat=A.outerBoltMat;
+      boltMat=A.boltMat;
+      wallMat=A.wallMat;
+      RS=A.RS;
+      IPA=A.IPA;
+      IPB=A.IPB;
+    }
+  return *this;
+}
 
 TwinChopper::~TwinChopper() 
   /*!
@@ -277,6 +383,7 @@ TwinChopper::createSurfaces()
       ModelSupport::buildPlane(SMap,houseIndex+2012,
                                Origin+Y*(sealYDist+portSeal/2.0),Y);
     }
+  ELog::EM<<"EARLY RETURN"<<ELog::endWarn;
   return;
   // MAIN OUTER BOLTS AT [5000]
   int BI(houseIndex+5000);
@@ -298,7 +405,7 @@ TwinChopper::createSurfaces()
   BI=houseIndex+6000;
   Geometry::Vec3D zPos(lowOutCent);
   const Geometry::Vec3D ZStep((topOutCent-lowOutCent)/
-			      static_cast<double>(outerLineNBolt+1.0));
+			      static_cast<double>(outerLineNBolt+1));
   
   for(size_t i=0;i<outerLineNBolt;i++)
     {
@@ -326,8 +433,8 @@ TwinChopper::createRing(Simulation& System,const int surfOffset,
     \param System :: Simulation
     \param surfOffset :: Start of surface offset
     \param Centre :: Centre of dist
-    \param EdgeStr :: Edges of ring/area
     \param FBStr :: Front/Back plates
+    \param EdgeStr :: Edges of ring/area
     \param BRad :: Radius of bolt from Centre
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
@@ -447,18 +554,18 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
 			      const double BRadius,const size_t NBolts,
 			      const double radius,const double angOff,
 			      const double arcAngle,const int startSurf,
-                              const int endSurf)
-			      
+                              const int endSurf)			      
   /*!
     Create the outer bolts
     \param System :: Simualation to use
     \param Centre :: Centre of dist
-    \param EdgeStr :: Edges of ring/area
     \param FBStr :: Front/Back plates
+    \param EdgeStr :: Edges of ring/area
     \param BRadius :: Radius of bolt from Centre
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
-    \param angOff :: angle offset
+    \param angOff :: angle offset  [deg]
+    \param arcAngle :: angular range of bolts (typcially 180/360) [deg]
     \param startSurf :: Start surface [signed]
     \param endSurf :: end surface [signed]
    */
@@ -539,18 +646,17 @@ TwinChopper::createLineBolts(Simulation& System,const int surfOffset,
   /*!
     Create the outer bolts
     \param System :: Simualation to use
-    \param EdgeStr :: Edges of ring/area
     \param FBStr :: Front/Back plates
+    \param leftEdgeStr :: left Edges of ring/area
+    \param rightEdgeStr :: left Edges of ring/area
     \param upDownLength :: lenght of bolts
     \param NBolts :: Number of bolts
     \param radius :: radius of bolt
-    \param angOff :: angle offset
     \param startSurf :: Start surface [signed]
     \param endSurf :: end surface [signed]
    */
 {
   ELog::RegMethod RegA("TwinChopper","createLineBolts");
-
 
   std::string Out;
 
@@ -622,7 +728,7 @@ TwinChopper::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-    */
+  */
 {
   ELog::RegMethod RegA("TwinChopper","createObjects");
 

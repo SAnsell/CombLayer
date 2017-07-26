@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/DSTerm.cxx
  *
- * Copyright (c) 2004-2014by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -348,20 +348,20 @@ void
 DSIndex::write(const size_t Index,std::ostream& OX) const
   /*!
     Write DS line to an MCNPX output
+    \todo Check doesn't seem correct
     \param Index :: Index number
     \param OX :: Output stream
   */   
 {
   std::ostringstream cx;
   cx<<"ds"<<Index<<" s";
-  std::vector<SrcData>::const_iterator vc;
-  for(vc=PMesh.begin();vc!=PMesh.end();vc++)
-    cx<<" "<<vc->getIndex();
+
+  for(const SrcData& sd : PMesh)
+    cx<<" "<<sd.getIndex();
   StrFunc::writeMCNPX(cx.str(),OX);
 
-
-  for(vc=PMesh.begin();vc!=PMesh.end();vc++)
-    vc->write(OX);
+  for(const SrcData& sd : PMesh)
+    sd.write(OX);
   
   return;
 }

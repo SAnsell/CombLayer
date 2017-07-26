@@ -46,6 +46,7 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "masterWrite.h"
+#include "polySupport.h"
 #include "PolyFunction.h"
 #include "PolyVar.h"
 
@@ -1034,7 +1035,8 @@ PolyVar<1>::solveQuadratic(std::complex<double>& AnsA,
 }
 
 size_t
-PolyVar<1>::solveCubic(std::complex<double>& AnsA,std::complex<double>& AnsB,
+PolyVar<1>::solveCubic(std::complex<double>& AnsA,
+		       std::complex<double>& AnsB,
 		       std::complex<double>& AnsC) const
   /*!
     Solves Cubic equation of type
@@ -1044,8 +1046,9 @@ PolyVar<1>::solveCubic(std::complex<double>& AnsA,std::complex<double>& AnsB,
     \param AnsC :: complex roots of the equation 
     \return number of unique solutions 
   */
-
 {
+  ELog::EM<<"C == "<<ELog::endDiag;
+	      
   double q,r;        /* solution parameters */
   double s,t,termR,termI,discrim;
   double q3,r13;
@@ -1077,6 +1080,7 @@ PolyVar<1>::solveCubic(std::complex<double>& AnsA,std::complex<double>& AnsB,
       termI = sqrt(3.0)*(-t + s)/2;
       AnsB=std::complex<double>(-termR,termI);
       AnsC=std::complex<double>(-termR,-termI);
+
       return 3;
     }
 
@@ -1091,6 +1095,7 @@ PolyVar<1>::solveCubic(std::complex<double>& AnsA,std::complex<double>& AnsB,
       AnsA=std::complex<double>(-termR + r13*cos(q3/3.0),0.0);
       AnsB=std::complex<double>(-termR + r13*cos((q3 + 2.0*M_PI)/3.0),0.0);
       AnsC=std::complex<double>(-termR + r13*cos((q3 - 2.0*M_PI)/3.0),0.0);
+	    
       return 3;
     }
 

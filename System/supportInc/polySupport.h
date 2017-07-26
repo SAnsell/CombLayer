@@ -36,6 +36,10 @@ solveQuadratic(const double&,const double&,const double&,
 	       std::complex<double> >&);
 
 size_t 
+solveQuadratic(const double&,const double&,const double&,
+	       std::complex<double>&,std::complex<double>&);
+
+size_t 
 solveQuadratic(const std::vector<double>&,std::pair<std::complex<double>,
 	       std::complex<double> >&);
 
@@ -50,7 +54,8 @@ solveCubic(const double*,std::complex<double>&,
 	   std::complex<double>&,std::complex<double>&);
 
 size_t 
-solveCubic(double,double,double,double,std::complex<double>&,
+solveCubic(const double,const double,const double,
+	   const double,std::complex<double>&,
 	   std::complex<double>&,std::complex<double>&);
 
 

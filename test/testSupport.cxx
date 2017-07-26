@@ -74,7 +74,8 @@ testSupport::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testSupport","applyTest");
-
+  TestFunc::regSector("testSupport");
+  
   typedef int (testSupport::*testPtr)();
   testPtr TPtr[]=
     {

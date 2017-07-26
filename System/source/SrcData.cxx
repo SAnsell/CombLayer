@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/SrcData.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -447,7 +447,8 @@ SrcProb::SrcProb() : option('D')
  */
 {}
 
-SrcProb::SrcProb(const char O) : option(O)
+SrcProb::SrcProb(const char O) :
+  option(isalpha(O) ? O : 0)
  /*!
    Constructor 
    \param O :: Option character
@@ -589,14 +590,13 @@ SrcProb::write(const size_t Index,std::ostream& OX) const
   std::ostringstream cx;
   cx<<"sp"<<Index<<" ";
 
-  if (!minusF)
-    cx<<option<<" ";
-  else  
+  if (minusF)
     cx<<minusF<<" ";
+  else if (option)
+    cx<<option<<" ";
 
-  std::vector<double>::const_iterator vc;
-  for(vc=Values.begin();vc!=Values.end();vc++)
-    cx<<FMTStr % *vc;
+  for(const double& V: Values)
+    cx<<FMTStr % V;
 
 
   StrFunc::writeMCNPX(cx.str(),OX);

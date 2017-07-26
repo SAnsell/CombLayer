@@ -51,6 +51,26 @@ quad(const double aa,const double bb,const double cc,const double x)
 }
 
 size_t 
+solveQuadratic(const double& a,const double& b,const double& c,
+	       std::complex<double>& AnsA,std::complex<double>& AnsB)
+/*!
+  Solves Complex Quadratic  \f[ Ax^2+Bx+C \f].
+  \param a :: x^2 coeff
+  \param b :: x coeff
+  \param c :: const coeff
+  \param AnsA :: complex roots of the equation 
+  \param AnsB :: complex roots of the equation 
+  \return number of unique solutions 
+*/
+{
+  std::pair<std::complex<double>,std::complex<double> > OutAns;
+  const size_t res=solveQuadratic(a,b,c,OutAns);
+  AnsA=OutAns.first;
+  AnsB=OutAns.second;
+  return res;
+}
+
+size_t 
 solveQuadratic(const std::vector<double>& Coef,
 	       std::pair<std::complex<double>,
 			 std::complex<double> >& OutAns)
@@ -146,6 +166,7 @@ solveCubic(const std::vector<double>& DVec,
 }
 
 
+
 size_t
 solveCubic(const double* D,
 	   std::complex<double>& AnsA,
@@ -166,86 +187,68 @@ solveCubic(const double* D,
 }
 
 size_t
-solveCubic(double a,double b,double c,double d,
+solveCubic(const double A,const double B,
+	   const double C,const double D,
 	   std::complex<double>& AnsA,
 	   std::complex<double>& AnsB,
-	   std::complex<double>& AnsC)
-/*!
-  Solves Cubic equation
-  Iterator over all the coefients in the order
-  \f[ Ax^3+Bx^2+Cx+D \f].
-  \param a :: x^3 coeff
-  \param b :: x^2 coeff
-  \param c :: x coeff
-  \param d :: const coeff
-  \param AnsA :: complex roots of the equation 
-  \param AnsB :: complex roots of the equation 
-  \param AnsC :: complex roots of the equation 
-  \return number of unique solutions 
-*/
+	   std::complex<double>& AnsC) 
+  /*!
+    Solves Cubic equation of type
+    \f$ ax^3+bx^2+cx+d=0 \f$
+    \param AnsA :: complex roots of the equation 
+    \param AnsB :: complex roots of the equation 
+    \param AnsC :: complex roots of the equation 
+    \return number of unique solutions 
+  */
 {
-  typedef std::complex<double> Cpair;
-  double q,r;        /* solution parameters */
+  double q,r;        // solution parameters 
   double s,t,termR,termI,discrim;
   double q3,r13;
-  std::pair<std::complex<double>,
-	    std::complex<double> > SQ;
 
-  if (fabs(a)<1e-20)
-    {
-      const size_t xi=
-	solveQuadratic(b,c,d,SQ);
-      AnsA=SQ.first;
-      AnsB=SQ.second;
-      AnsC=SQ.second;
-      return xi;
-    }
-  if (fabs(d)<1e-20)
-    { 
-      const size_t xi=solveQuadratic(a,b,c,SQ);
-      AnsA=SQ.first;
-      AnsB=(xi==1) ? SQ.first : SQ.second;
-      AnsC=std::complex<double>(0.0,0.0);
-      return (AnsC!=AnsA) ? xi+1 : xi;
-    }
-  b/=a;
-  c/=a;
-  d/=a;
+  if (std::abs(A)<1e-30)
+    return solveQuadratic(B,C,D,AnsA,AnsB);
 
+  const double b = B/A;
+  const double c = C/A;
+  const double d = D/A;
+  std::pair<std::complex<double>,std::complex<double> > SQ;
+  
   q = (3.0*c - (b*b))/9.0;                   // -q
   r = -27.0*d + b*(9.0*c - 2.0*b*b);       // -r 
   r /= 54.0;
  
   discrim = q*q*q + r*r;           // r^2-qq^3 
-  /* The first root is always real. */
+  // The first root is always real. 
   termR = (b/3.0);
 
-  if (discrim > 1e-13)  /* one root real, two are complex */
+  if (discrim > 1e-13)  // one root real, two are complex 
     { 
       s = r + sqrt(discrim);
       s = ((s < 0) ? -pow(-s, (1.0/3.0)) : pow(s, (1.0/3.0)));
       t = r - sqrt(discrim);
       t = ((t < 0) ? -pow(-t, (1.0/3.0)) : pow(t, (1.0/3.0)));
-      AnsA=Cpair(-termR+s+t,0.0);
+      AnsA=std::complex<double>(-termR+s+t,0.0);
       // second real point.
       termR += (s + t)/2.0;
       termI = sqrt(3.0)*(-t + s)/2;
-      AnsB=Cpair(-termR,termI);
-      AnsC=Cpair(-termR,-termI);
+      AnsB=std::complex<double>(-termR,termI);
+      AnsC=std::complex<double>(-termR,-termI);
+
       return 3;
     }
 
-  /* The remaining options are all real */
+  // The remaining options are all real 
 
-  if (discrim<1e-13) // All roots real 
+  if (discrim< -1e-13) // All roots real and different 
     {
       q = -q;
       q3 = q*q*q;
       q3 = acos(-r/sqrt(q3));
       r13 = -2.0*sqrt(q);
-      AnsA=Cpair(-termR + r13*cos(q3/3.0),0.0);
-      AnsB=Cpair(-termR + r13*cos((q3 + 2.0*M_PI)/3.0),0.0);
-      AnsC=Cpair(-termR + r13*cos((q3 - 2.0*M_PI)/3.0),0.0);
+      AnsA=std::complex<double>(-termR + r13*cos(q3/3.0),0.0);
+      AnsB=std::complex<double>(-termR + r13*cos((q3 + 2.0*M_PI)/3.0),0.0);
+      AnsC=std::complex<double>(-termR + r13*cos((q3 - 2.0*M_PI)/3.0),0.0);
+	    
       return 3;
     }
 
@@ -253,9 +256,8 @@ solveCubic(double a,double b,double c,double d,
   // (to get here, q*q*q=r*r)
 
   r13 = ((r < 0) ? -pow(-r,(1.0/3.0)) : pow(r,(1.0/3.0)));
-  AnsA=Cpair(-termR+2.0*r13,0.0);
-  AnsB=Cpair(-(r13+termR),0.0);
-  AnsC=Cpair(-(r13+termR),0.0);
+  AnsA=std::complex<double>(-termR+2.0*r13,0.0);
+  AnsB=std::complex<double>(-(r13+termR),0.0);
+  AnsC=std::complex<double>(-(r13+termR),0.0);
   return 2;
 }
-

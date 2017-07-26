@@ -3,7 +3,7 @@
  
  * File:   test/testRules.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,12 +166,15 @@ testRules::testCreateDNF()
   ELog::RegMethod RegA("testRules","testCreateDNF");
 
   typedef std::tuple<std::string,int,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("3 0 11  -12  13  -14  15  (-16 : 17 )",1,
-			"( -16 15 -14 13 -12 11 ) : ( 17 15 -14 13 -12 11 )"));
-  Tests.push_back(TTYPE("3 0 12:-12:13:-14",0,""));
-  Tests.push_back(TTYPE("3 0 11:-12:13:-14",1,
-			"-14 : -12 : 11 : 13"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("3 0 11  -12  13  -14  15  (-16 : 17 )",1,
+	    "( -16 15 -14 13 -12 11 ) : ( 17 15 -14 13 -12 11 )"),
+      
+      TTYPE("3 0 12:-12:13:-14",0,""),
+      
+      TTYPE("3 0 11:-12:13:-14",1,"-14 : -12 : 11 : 13")
+    };
 
   MonteCarlo::Object Tx;
   for(const TTYPE& tc : Tests)

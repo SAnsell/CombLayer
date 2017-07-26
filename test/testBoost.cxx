@@ -163,9 +163,7 @@ ReportRef::ReportRef(const double& P,const int I)
     \param P :: Parameter to Track
     \param I :: Index point
   */
-{
-  ELog::EM<<"Constructor == "<<P<<" "<<I<<ELog::endDiag;
-}
+{}
 
 ReportRef::ReportRef(const ReportRef& A) 
   : Report(A),Param(A.Param) 
@@ -174,8 +172,6 @@ ReportRef::ReportRef(const ReportRef& A)
     \param A :: ReportRef to copy
   */
 {
-  ELog::EM<<"Copy == "<<Param<<" "<<Report::getNum()<<ELog::endDiag;
-
 }
 
 ReportRef&
@@ -312,7 +308,7 @@ testBoost::testVecPtr()
   // Check if unsorted
   double sum(0.0);   
   for(size_t i=0;i<4;i++)
-    sum+=(i+1)*(*Vitem)[i];
+    sum+=static_cast<double>(i+1)*(*Vitem)[i];
 
   if (fabs(sum-189.0)>1e-4)
     {
@@ -334,13 +330,13 @@ testBoost::testVecRef()
   ELog::RegMethod RegA("testBoost","testVecRef");
 
   typedef RefControl<std::vector<double> > Rtype;
-  std::vector<Rtype > Vitem;
+  std::vector<Rtype> Vitem;
   Vitem.resize(3);
   for(size_t i=0;i<3;i++)
     for(size_t j=0;j<5;j++)
-      Vitem[i].access().push_back(j+100*i);
+      Vitem[i].access().push_back(static_cast<double>(j+100*i));
 
-  std::vector<Rtype > Jitem;
+  std::vector<Rtype> Jitem;
 
   Jitem=Vitem;
   Vitem[2].access()[1]=999;

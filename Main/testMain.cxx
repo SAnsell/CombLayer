@@ -342,7 +342,7 @@ startTest(const int section,const int type,const int extra)
 	  return montecarloTest(type,extra);
 	}
 
-      // POLY
+      // PHYSICS
       if (section==8)
 	{
 	  TestFunc::regGroup("Physics");
@@ -1282,7 +1282,7 @@ fullTest()
 {
   ELog::RegMethod RegA("testMain","fullTest");
 
-  for(int i=0;i<11;i++)
+  for(int i=0;i<14;i++)
     {
       std::ostringstream cx;
       cx<<"TEST SECTION : "<<i+1;
