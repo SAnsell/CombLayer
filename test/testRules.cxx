@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testRules.cxx
  *
@@ -176,6 +176,7 @@ testRules::testCreateDNF()
       TTYPE("3 0 11:-12:13:-14",1,"-14 : -12 : 11 : 13")
     };
 
+  int cnt(1);
   MonteCarlo::Object Tx;
   for(const TTYPE& tc : Tests)
     {
@@ -192,6 +193,7 @@ testRules::testCreateDNF()
 	    (!OutRule || OutRule->display()!=std::get<2>(tc))) ||
 	   (!std::get<1>(tc) && OutRule))
 	{
+	  ELog::EM<<"Test :: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Original == "<<TRule->display()<<ELog::endTrace;
 	  ELog::EM<<"D == "<<Dlist<<ELog::endTrace;
 	  ELog::EM<<ELog::endDiag;
@@ -206,6 +208,7 @@ testRules::testCreateDNF()
 	}
       delete XRule;
       delete OutRule;
+      cnt++;
     }
   return 0;
 }
