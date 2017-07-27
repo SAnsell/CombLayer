@@ -156,7 +156,8 @@ FuelElement::plateCentre(const size_t Index) const
    */
 {
   const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
-  return Origin+Y*plateDepth*(Index-(nElement-1.0)/2.0);
+  return Origin+Y*plateDepth*
+    (static_cast<double>(Index)-(static_cast<double>(nElement)-1.0)/2.0);
 }
 
 void

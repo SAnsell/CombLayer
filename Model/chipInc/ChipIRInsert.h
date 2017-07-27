@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/ChipIRInsert.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,7 +88,6 @@ class ChipIRInsert : public BulkInsert
 
   void createSurfaces();
   void createObjects(Simulation&);
-  void createCollimator(Simulation&);
   void createLeadPlate(Simulation&);
   void layerProcess(Simulation&);
 

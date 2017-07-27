@@ -81,6 +81,7 @@
 #include "FrontBackCut.h"
 #include "SurInter.h"
 #include "AttachSupport.h"
+#include "LayerDivide3D.h"
 #include "insertObject.h"
 #include "insertPlate.h"
 
@@ -88,7 +89,7 @@ namespace constructSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
-  insertObject(Key)
+  insertObject(Key),nGrid(1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -97,7 +98,8 @@ insertPlate::insertPlate(const std::string& Key)  :
 
 insertPlate::insertPlate(const insertPlate& A) : 
   insertObject(A),
-  width(A.width),height(A.height),depth(A.depth)
+  width(A.width),height(A.height),depth(A.depth),
+  nGrid(A.nGrid)
   /*!
     Copy constructor
     \param A :: insertPlate to copy
@@ -118,6 +120,7 @@ insertPlate::operator=(const insertPlate& A)
       width=A.width;
       height=A.height;
       depth=A.depth;
+      nGrid=A.nGrid;
     }
   return *this;
 }
@@ -143,6 +146,7 @@ insertPlate::populate(const FuncDataBase& Control)
       width=Control.EvalVar<double>(keyName+"Width");
       height=Control.EvalVar<double>(keyName+"Height");
       depth=Control.EvalVar<double>(keyName+"Depth");
+      nGrid=Control.EvalDefVar<size_t>(keyName+"NGrid",1);
     }
   return;
 }
@@ -157,9 +161,20 @@ insertPlate::createSurfaces()
   ELog::RegMethod RegA("insertPlate","createSurface");
 
   if (!frontActive())
-    ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*(depth/2.0),Y);
+    {
+      ModelSupport::buildPlane(SMap,ptIndex+1,Origin-Y*(depth/2.0),Y);
+      setSurf("Front",ptIndex+1);
+    }
+  else
+    setSurf("Front",getFrontRule().getPrimarySurface());
+  
   if (!backActive())
-    ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*(depth/2.0),Y);
+    {
+      ModelSupport::buildPlane(SMap,ptIndex+2,Origin+Y*(depth/2.0),Y);
+      setSurf("Back",SMap.realSurf(ptIndex+2));
+    }
+  else
+    setSurf("Back",getBackRule().getPrimarySurface());
 
 
   ModelSupport::buildPlane(SMap,ptIndex+3,Origin-X*(width/2.0),X);
@@ -167,15 +182,7 @@ insertPlate::createSurfaces()
   ModelSupport::buildPlane(SMap,ptIndex+5,Origin-Z*(height/2.0),Z);
   ModelSupport::buildPlane(SMap,ptIndex+6,Origin+Z*(height/2.0),Z);
 
-  if (!frontActive())
-    setSurf("Front",ptIndex+1);
-  else
-    setSurf("Front",getFrontRule().getPrimarySurface());
-
-  if (!backActive())
-    setSurf("Back",SMap.realSurf(ptIndex+2));
-  else
-    setSurf("Back",getBackRule().getPrimarySurface());
+  
 
   setSurf("Left",SMap.realSurf(ptIndex+3));
   setSurf("Right",SMap.realSurf(ptIndex+4));
@@ -324,6 +331,48 @@ insertPlate::setValues(const double XS,const double YS,
   return;
 }
 
+void
+insertPlate::setGrid(const size_t NG)
+  /*!
+    Set the plate to be a grid plate
+    \param NG :: Number of division in XZ
+   */
+{
+  nGrid=NG;
+  return;
+}
+  
+void
+insertPlate::createDivision(Simulation& System)
+  /*!
+    Create a divided plate
+    \param System :: Simulation to use
+   */
+{
+  ELog::RegMethod RegA("insertPlate","createDivision");
+  
+  ModelSupport::LayerDivide3D LD3(keyName+"DivXZ");
+
+  if (nGrid>1)
+    {
+      // Front/back??
+      LD3.setSurfPair(0,getSurf("Front"),getSurf("Back"));
+      LD3.setSurfPair(1,SMap.realSurf(ptIndex+3),SMap.realSurf(ptIndex+4));
+      LD3.setSurfPair(2,SMap.realSurf(ptIndex+5),SMap.realSurf(ptIndex+6));
+
+      LD3.setFractions(0,1);
+      LD3.setFractions(1,nGrid);	    
+      LD3.setFractions(2,nGrid);
+
+      const int cellN=getCell("Main");
+      
+      LD3.divideCell(System,cellN);
+      addCells("Grid",LD3.getCells());
+    }
+
+  return;
+}
+  
 void
 insertPlate::mainAll(Simulation& System)
   /*!

@@ -307,7 +307,7 @@ LayerDivide3D::setFractions(const size_t index,
   /*!
     Set the fractions
     \param index :: Type index 0 to 2
-    \param FV :: Fraction
+    \param FV :: Fractions [0 - 1]
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","setFractions");

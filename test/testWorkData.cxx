@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testWorkData.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,13 +204,13 @@ testWorkData::testSum()
   // Check:
   for(size_t i=0;i<10;i++)
     {
-      const double x(1.0*(i+1));
-      if (fabs(A.getYdata()[i].getVal()+0.6*x)>1e-5)
+      const double x(static_cast<double>(i+1));
+      if (std::abs(A.getYdata()[i].getVal()+0.6*x)>1e-5)
 	{
 	  ELog::EM<<"Failed on point["<<i<<"]("<<-0.6*x<<") "
-		  <<A.getYdata()[i]<<ELog::endDebug;
+		  <<A.getYdata()[i]<<ELog::endDiag;
 	  A.stream(ELog::EM.Estream());
-	  ELog::EM<<ELog::endDebug;
+	  ELog::EM<<ELog::endDiag;
 	  return -1;
 	}
     }

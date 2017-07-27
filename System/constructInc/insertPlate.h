@@ -44,13 +44,15 @@ class insertPlate : public constructSystem::insertObject
   double width;             ///< Full Width
   double height;            ///< Full Height
   double depth;             ///< Full Depth 
+  size_t nGrid;             ///< Simple XZ grid division
   
   virtual void populate(const FuncDataBase&);
 
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void createDivision(Simulation&);
+  
   void mainAll(Simulation&);
 
  public:
@@ -64,6 +66,8 @@ class insertPlate : public constructSystem::insertObject
 		 const int);
   void setValues(const double,const double,const double,
 		 const std::string&);
+  void setGrid(const size_t);
+  
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,const Geometry::Vec3D&);
 
