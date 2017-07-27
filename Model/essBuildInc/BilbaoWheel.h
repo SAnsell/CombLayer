@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BilbaoWheel.h
  *
- * Copyright (c) 2015-2016 Konstantin Batkov
+ * Copyright (c) 2015-2017 Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,12 +41,6 @@ class BilbaoWheel : public WheelBase
 {
  private:
   
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
-
   int engActive;                 ///< Engineering active flag
   std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
@@ -88,8 +82,6 @@ class BilbaoWheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

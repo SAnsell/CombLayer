@@ -124,7 +124,7 @@ TriangleShield::removeFrontOverLap()
       index--;
       if (index>0)
         {
-          length-=segStep*index;
+          length-=segStep*static_cast<double>(index);
           nSeg-=index;
           Origin+=Y*(index*segStep/2.0);
           ELog::EM<<"Removal["<<keyName<<"] of Active segment == "

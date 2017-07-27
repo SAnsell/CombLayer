@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BilbaoWheelInnerStructure.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,8 @@ namespace essSystem
   \brief Inner structure of Bilbao Wheel (engineering details)
 */
 
-class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
+class BilbaoWheelInnerStructure :
+  public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
@@ -80,9 +81,9 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
   void createBricks(Simulation&,const attachSystem::FixedComp&,
 		    const std::string&,const std::string&,const size_t);
 
-  // polar angle of the given sector's centre. Clockwise starting from -Y
+  /// polar angle of the given sector's centre. Clockwise starting from -Y
   double getSectorAngle(const size_t index) const
-  { return (2*(index+1)-1)*M_PI/nSectors * 180.0/M_PI; }
+  { return 180.0*static_cast<double>(2*(index+1)-1)/static_cast<double>(nSectors); }
 
   double sideIntersect(const std::string&, const Geometry::Plane*);
 

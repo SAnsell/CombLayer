@@ -3,7 +3,7 @@
  
   * File:   essBuild/BilbaoWheelInnerStructure.cxx
   *
-  * Copyright (c) 2004-2016 by Stuart Ansell/Konstain Batkov
+  * Copyright (c) 2004-2017 by Stuart Ansell/Konstain Batkov
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -86,7 +87,8 @@ BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
   */
 {}
 
-BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure& A) : 
+BilbaoWheelInnerStructure::BilbaoWheelInnerStructure
+(const BilbaoWheelInnerStructure& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
   insIndex(A.insIndex),cellIndex(A.cellIndex),xyAngle(A.xyAngle),
   temp(A.temp),brickLen(A.brickLen),brickWidth(A.brickWidth),
@@ -179,7 +181,8 @@ BilbaoWheelInnerStructure::populate(const FuncDataBase& Control)
 
   nBrickSectors=Control.EvalVar<size_t>(keyName+"NBrickSectors");
   if (nBrickSectors>nSectors)
-    throw ColErr::RangeError<double>(nBrickSectors, 0, nSectors, "nBrickSectors can not exceed nSectors:");
+    throw ColErr::RangeError<size_t>(nBrickSectors,0,nSectors,
+				     "nBrickSectors can not exceed nSectors:");
 
   nSteelLayers=Control.EvalVar<size_t>(keyName+"NSteelLayers");
   brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
@@ -215,7 +218,7 @@ BilbaoWheelInnerStructure::createSurfaces(const attachSystem::FixedComp& Wheel)
   ModelSupport::buildPlane(SMap,insIndex+5,Origin,Z);
   
   // segmentation
-  const double dTheta = 360.0/nSectors;
+  const double dTheta = 360.0/static_cast<double>(nSectors);
   int SIsec(insIndex+0);
 
   // -dTheta is needed to shoot a proton in the center of a sector,
@@ -268,9 +271,11 @@ void
 BilbaoWheelInnerStructure::createObjects(Simulation& System,
 					 attachSystem::FixedComp& Wheel)
  /*!
-   Create the objects
+   Create the objects.
+   Note that wheel is NOt const as we need to delete its inner cell.
    \param System :: Simulation to add results
    \param Wheel :: Wheel object where the inner structure is to be added
+   
  */
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createObjects");
@@ -280,7 +285,9 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
   if (!CM)
     throw ColErr::DynamicConv("FixedComp","CellMap",Wheel.getKeyName());
   
-  const std::pair<int,double> MatInfo=CM->deleteCellWithData(System, "Inner");
+  const std::pair<int,double> MatInfo=
+    CM->deleteCellWithData(System,"Inner");
+  
   const int innerMat = MatInfo.first;
   temp = MatInfo.second;
   
@@ -353,8 +360,8 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   // radial planes
   int SI(insIndex+1000*(static_cast<int>(sector)+1));
   // first (outermost) layer
-  Geometry::Plane *prad1 = 0; // first radial plane of the bricks
-  Geometry::Vec3D p4; // intersection of radial plane and inner cylinder:
+  Geometry::Plane *prad1(0); // first radial plane of the bricks
+  Geometry::Vec3D p4;        // intersection of radial plane and inner cylinder:
   size_t iLayer=0;
   for (;;) // while we are between outer and inner cylinders
     {
@@ -366,14 +373,15 @@ BilbaoWheelInnerStructure::createBrickSurfaces
       else
 	{
 	  // plane which goes after brick and gap
-	  ModelSupport::buildShiftedPlane(SMap, SI+5, prad1,
-					  -(brickLen+brickGapLen)*iLayer);
+	  ModelSupport::buildShiftedPlane
+	    (SMap,SI+5,prad1,
+	     -(brickLen+brickGapLen)*static_cast<double>(iLayer));
 	}
       
       // back side of the brick
-      Geometry::Plane *ptmp =
-	ModelSupport::buildShiftedPlane
-	(SMap, SI+6, prad1,-((brickLen+brickGapLen)*iLayer+brickLen));
+      Geometry::Plane *ptmp =ModelSupport::buildShiftedPlane
+	(SMap,SI+6,prad1,-((brickLen+brickGapLen)*
+			     static_cast<double>(iLayer)+brickLen));
       try
 	{
 	  p4 = SurInter::getPoint(ptmp,innerCyl,pz,nearPt);
@@ -449,7 +457,7 @@ BilbaoWheelInnerStructure::sideIntersect(const std::string& surf,
   if (!plSide->onSurface(Org))
     ELog::EM << "Origin of line is not on the surface" << ELog::endErr;
   
-  size_t n = HR.calcSurfIntersection(Org, Unit, Pts, SNum);
+  const size_t n = HR.calcSurfIntersection(Org, Unit, Pts, SNum);
   double dist = -1.0;
   if (n>1)
     dist = Pts[0].Distance(Pts[1])+0.01; // 0.01 is a "safety" summand to get rid of the bricks where we cross in the corner. For some reason, 1st layer is not built without this number.
@@ -606,20 +614,20 @@ BilbaoWheelInnerStructure::createLinks()
   
 void
 BilbaoWheelInnerStructure::createAll(Simulation& System,
-				     attachSystem::FixedComp& FC)
-/*!
-  Extrenal build everything
-  \param System :: Simulation
-  \param FC :: Attachment point	       
-*/
+				     attachSystem::FixedComp& WheelFC)
+  /*!
+    Extrenal build everything
+    \param System :: Simulation
+    \param WheelFC :: Attachment point and inner cell to remove
+  */
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(WheelFC);
   
-  createSurfaces(FC);
-  createObjects(System, FC);
+  createSurfaces(WheelFC);
+  createObjects(System, WheelFC);
   createLinks();
   
   insertObjects(System);       

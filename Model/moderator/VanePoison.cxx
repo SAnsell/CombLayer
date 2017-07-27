@@ -3,7 +3,7 @@
  
  * File:   moderator/VanePoison.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,7 +207,8 @@ VanePoison::createSurfaces()
   
 
   // First calc half width
-  const double width=((nBlades-1)*bGap+nBlades*bWidth)/2.0;
+  const double width=(static_cast<double>(nBlades-1)*bGap+
+		      static_cast<double>(nBlades)*bWidth)/2.0;
   
   if (fabs(yOffset)>Geometry::zeroTol)
     ModelSupport::buildPlane(SMap,vaneIndex+11,Origin,Y);
