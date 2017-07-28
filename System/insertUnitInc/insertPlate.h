@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/insertPlate.h
+ * File:   insertUnitInc/insertPlate.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_insertPlate_h
-#define constructSystem_insertPlate_h
+#ifndef insertSystem_insertPlate_h
+#define insertSystem_insertPlate_h
 
 class Simulation;
 
-namespace constructSystem
+namespace insertSystem
 {
 /*!
   \class insertPlate
@@ -37,7 +37,7 @@ namespace constructSystem
   for fluxes/tallies etc
 */
 
-class insertPlate : public constructSystem::insertObject
+class insertPlate : public insertSystem::insertObject
 {
  private:
     

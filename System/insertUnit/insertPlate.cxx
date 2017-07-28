@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertPlate.cxx
+ * File:   insertUnit/insertPlate.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -85,7 +85,7 @@
 #include "insertObject.h"
 #include "insertPlate.h"
 
-namespace constructSystem
+namespace insertSystem
 {
 
 insertPlate::insertPlate(const std::string& Key)  :
@@ -459,4 +459,4 @@ insertPlate::createAll(Simulation& System,
   return;
 }
    
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem

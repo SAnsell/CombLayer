@@ -111,7 +111,7 @@ LOKI::LOKI(const std::string& keyN) :
   lokiAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
   BendA(new beamlineSystem::GuideLine(newName+"BA")),
 
-  ShutterA(new constructSystem::insertPlate(newName+"BlockShutter")),  
+  ShutterA(new insertSystem::insertPlate(newName+"BlockShutter")),  
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
 

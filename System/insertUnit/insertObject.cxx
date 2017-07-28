@@ -83,7 +83,7 @@
 #include "AttachSupport.h"
 #include "insertObject.h"
 
-namespace constructSystem
+namespace insertSystem
 {
 
 insertObject::insertObject(const std::string& Key)  :
@@ -170,6 +170,8 @@ insertObject::createUnitVector(const attachSystem::FixedComp& FC,
 
 
   FixedComp::createUnitVector(FC,lIndex);
+  ELog::EM<<"Y Axis == "<<Y<<ELog::endDiag;
+  ELog::EM<<"Y Step == "<<yStep<<ELog::endDiag;
   applyOffset();
   return;
 }
@@ -297,7 +299,7 @@ void
 insertObject::setAngles(const double XS,const double ZA)
   /*!
     Set the values but NOT the populate flag
-    \param XY :: XY angel
+    \param XY :: XY angle
     \param ZA :: Z angle
    */
 {
@@ -308,4 +310,4 @@ insertObject::setAngles(const double XS,const double ZA)
 
  
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem

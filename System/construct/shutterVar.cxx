@@ -317,7 +317,7 @@ shutterVar::buildVar(FuncDataBase& Control,
 			      steelLen,steelWidth,steelHeight,
 			      blockVertGap+bZ,blockHorGap+bX,
 			      steelMat,steelNumber);
-	  blockIndex+=static_cast<int>(steelNumber)+b4cNumber;
+	  blockIndex+=static_cast<size_t>(steelNumber)+b4cNumber;
 	}
     }
 

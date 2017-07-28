@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/addInsertObj.cxx
+ * File:   insertUnit/addInsertObj.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -131,8 +131,8 @@ addInsertCurveCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertCurve>
-    TCurve(new constructSystem::insertCurve(objName));
+  std::shared_ptr<insertSystem::insertCurve>
+    TCurve(new insertSystem::insertCurve(objName));
 
   OR.addObject(TCurve);
  
@@ -187,8 +187,8 @@ addInsertCylinderCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertCylinder>
-    TCyl(new constructSystem::insertCylinder(objName));
+  std::shared_ptr<insertSystem::insertCylinder>
+    TCyl(new insertSystem::insertCylinder(objName));
 
   OR.addObject(TCyl);
   TCyl->setStep(XYZStep);
@@ -226,8 +226,8 @@ addInsertCylinderCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertCylinder>
-    TCyl(new constructSystem::insertCylinder(objName));
+  std::shared_ptr<insertSystem::insertCylinder>
+    TCyl(new insertSystem::insertCylinder(objName));
 
   OR.addObject(TCyl);
   TCyl->setValues(radius,length,mat);
@@ -273,8 +273,8 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertPlate>
-    TPlate(new constructSystem::insertPlate(objName));
+  std::shared_ptr<insertSystem::insertPlate>
+    TPlate(new insertSystem::insertPlate(objName));
 
   OR.addObject(TPlate);
   TPlate->setStep(XYZStep);
@@ -318,8 +318,8 @@ addInsertPlateCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertPlate>
-    TPlate(new constructSystem::insertPlate(objName));
+  std::shared_ptr<insertSystem::insertPlate>
+    TPlate(new insertSystem::insertPlate(objName));
 
   OR.addObject(TPlate);
   TPlate->setValues(xSize,ySize,zSize,mat);
@@ -369,8 +369,8 @@ addInsertGridCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertGrid>
-    TGrid(new constructSystem::insertGrid(objName));
+  std::shared_ptr<insertSystem::insertGrid>
+    TGrid(new insertSystem::insertGrid(objName));
 
   OR.addObject(TGrid);
   TGrid->setStep(XYZStep);
@@ -424,8 +424,8 @@ addInsertGridCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertGrid>
-    TGrid(new constructSystem::insertGrid(objName));
+  std::shared_ptr<insertSystem::insertGrid>
+    TGrid(new insertSystem::insertGrid(objName));
 
   OR.addObject(TGrid);
   TGrid->setValues(gap*2.0,length,gap*2.0,layerMat);
@@ -468,8 +468,8 @@ addInsertSphereCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertSphere>
-    TSphere(new constructSystem::insertSphere(objName));
+  std::shared_ptr<insertSystem::insertSphere>
+    TSphere(new insertSystem::insertSphere(objName));
 
   OR.addObject(TSphere);
   TSphere->setValues(radius,mat);
@@ -513,8 +513,8 @@ addInsertSphereCell(Simulation& System,
   System.populateCells();
   System.validateObjSurfMap();
 
-  std::shared_ptr<constructSystem::insertSphere>
-    TSphere(new constructSystem::insertSphere(objName));
+  std::shared_ptr<insertSystem::insertSphere>
+    TSphere(new insertSystem::insertSphere(objName));
 
   OR.addObject(TSphere);
   TSphere->setStep(XYZStep);
@@ -526,4 +526,4 @@ addInsertSphereCell(Simulation& System,
 
 
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem

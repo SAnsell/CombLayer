@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/insertCurve.h
+ * File:   insertUnitInc/insertCurve.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_insertCurve_h
-#define constructSystem_insertCurve_h
+#ifndef insertSystem_insertCurve_h
+#define insertSystem_insertCurve_h
 
 class Simulation;
 
-namespace constructSystem
+namespace insertSystem
 {
 /*!
   \class insertCurve
@@ -37,7 +37,7 @@ namespace constructSystem
   for fluxes/tallies etc
 */
 
-class insertCurve : public constructSystem::insertObject
+class insertCurve : public insertSystem::insertObject
 {
  private:
 

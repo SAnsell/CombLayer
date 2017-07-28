@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/insertGrid.h
+ * File:   insertUnitInc/insertCylinder.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,39 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_insertGrid_h
-#define constructSystem_insertGrid_h
+#ifndef insertSystem_insertCylinder_h
+#define insertSystem_insertCylinder_h
 
 class Simulation;
 
-namespace constructSystem
+namespace insertSystem
 {
 /*!
-  \class insertGrid
+  \class insertCylinder
   \version 1.0
   \author S. Ansell
-  \date November 2011
-  \brief Plate inserted in object 
+  \date February 2017
+  \brief Cylinder inserted in object 
   
   Designed to be a quick plate to put an object into a model
   for fluxes/tallies etc
 */
 
-class insertGrid : public constructSystem::insertObject
+class insertCylinder : public insertSystem::insertObject
 {
  private:
-  
-  double innerWidth;              ///< inner Width
-  double innerHeight;             ///< inner Height
-  double innerDepth;              ///< inner Depth 
-  double plateAngle;              ///< Rotation angle from centre [+Y]
-  
-  size_t nLayer;                  ///< Number of layers
-  std::vector<double> wallThick;  ///< wall thick
-  std::vector<int> wallMat;       ///< wall material
-
+    
+  double radius;             ///< Main radius
+  double length;             ///< Main distance				    
   
   virtual void populate(const FuncDataBase&);
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -60,18 +54,15 @@ class insertGrid : public constructSystem::insertObject
 
  public:
 
-  insertGrid(const std::string&);
-  insertGrid(const insertGrid&);
-  insertGrid& operator=(const insertGrid&);
-  virtual ~insertGrid();
+  insertCylinder(const std::string&);
+  insertCylinder(const insertCylinder&);
+  insertCylinder& operator=(const insertCylinder&);
+  virtual ~insertCylinder();
 
-  void addLayer(const double,const std::string&);
-  void setValues(const double,const double,const double,
-		 const int);
-  void setValues(const double,const double,const double,
-		 const std::string&);
+  void setValues(const double,const double,const int);
+  void setValues(const double,const double,const std::string&);
   void createAll(Simulation&,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,const Geometry::Vec3D&);
+		 const Geometry::Vec3D&);
 
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);

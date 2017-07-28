@@ -421,8 +421,8 @@ Reflector::processDecoupled(Simulation& System,
     }
   else if (DT=="plate")  // layer
     {
-      std::shared_ptr<constructSystem::insertPlate>
-	PPtr(new constructSystem::insertPlate("decPlate")); 
+      std::shared_ptr<insertSystem::insertPlate>
+	PPtr(new insertSystem::insertPlate("decPlate")); 
        OR.addObject(PPtr);
        PPtr->setNoInsert();
        PPtr->addInsertCell(cellIndex-1);

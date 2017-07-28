@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertCylinder.cxx
+ * File:   insertUnit/insertCylinder.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -84,7 +84,7 @@
 #include "insertObject.h"
 #include "insertCylinder.h"
 
-namespace constructSystem
+namespace insertSystem
 {
 
 insertCylinder::insertCylinder(const std::string& Key)  :
@@ -366,4 +366,4 @@ insertCylinder::createAll(Simulation& System,
   return;
 }
    
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertGrid.cxx
+ * File:   insertUnit/insertGrid.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -86,7 +86,7 @@
 #include "insertObject.h"
 #include "insertGrid.h"
 
-namespace constructSystem
+namespace insertSystem
 {
 
 insertGrid::insertGrid(const std::string& Key)  :
@@ -98,7 +98,7 @@ insertGrid::insertGrid(const std::string& Key)  :
 {}
 
 insertGrid::insertGrid(const insertGrid& A) : 
-  constructSystem::insertObject(A),
+  insertSystem::insertObject(A),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
   innerDepth(A.innerDepth),plateAngle(A.plateAngle),
   nLayer(A.nLayer),wallThick(A.wallThick),wallMat(A.wallMat)
@@ -118,7 +118,7 @@ insertGrid::operator=(const insertGrid& A)
 {
   if (this!=&A)
     {
-      constructSystem::insertObject::operator=(A);
+      insertSystem::insertObject::operator=(A);
       innerWidth=A.innerWidth;
       innerHeight=A.innerHeight;
       innerDepth=A.innerDepth;
@@ -479,4 +479,4 @@ insertGrid::createAll(Simulation& System,
   return;
 }
    
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuildInc/simpleITEM.h
+ * File:   ESSBeam/simpleItemInc/SimpleITEM.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
  *
@@ -30,7 +30,7 @@ namespace attachSystem
   class CellMap;
 }
 
-namespace constructSystem
+namespace insertSystem
 {
   class insertPlate;
 }
@@ -58,7 +58,7 @@ class simpleITEM : public attachSystem::CopiedComp
   std::shared_ptr<attachSystem::FixedOffset> simpleAxis;
 
   /// Simple plate
-  std::shared_ptr<constructSystem::insertPlate> Plate;
+  std::shared_ptr<insertSystem::insertPlate> Plate;
 
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   

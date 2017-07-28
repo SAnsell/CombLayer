@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   ESSBeam/simpleComp/SimpleComp.cxx
+ * File:   ESSBeam/simpleItem/SimpleITEM.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ namespace essSystem
 simpleITEM::simpleITEM(const std::string& keyN) :
   attachSystem::CopiedComp("simple",keyN),stopPoint(0),
   simpleAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
-  Plate(new constructSystem::insertPlate(newName+"Plate"))
+  Plate(new insertSystem::insertPlate(newName+"Plate"))
   /*!
     Constructor
     \param keyN :: keyName

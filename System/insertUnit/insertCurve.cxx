@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertCurve.cxx
+ * File:   insertUnit/insertCurve.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -84,7 +84,7 @@
 #include "insertObject.h"
 #include "insertCurve.h"
 
-namespace constructSystem
+namespace insertSystem
 {
 
 insertCurve::insertCurve(const std::string& Key)  :
@@ -96,7 +96,7 @@ insertCurve::insertCurve(const std::string& Key)  :
 {}
 
 insertCurve::insertCurve(const insertCurve& A) : 
-  constructSystem::insertObject(A),
+  insertSystem::insertObject(A),
   yFlag(A.yFlag),radius(A.radius),width(A.width),
   height(A.height),length(A.length),Centre(A.Centre)
   /*!
@@ -115,7 +115,7 @@ insertCurve::operator=(const insertCurve& A)
 {
   if (this!=&A)
     {
-      constructSystem::insertObject::operator=(A);
+      insertSystem::insertObject::operator=(A);
       yFlag=A.yFlag;
       radius=A.radius;
       width=A.width;
@@ -461,4 +461,4 @@ insertCurve::createAll(Simulation& System,
   return;
 }
    
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem

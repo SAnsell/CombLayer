@@ -91,7 +91,7 @@ void
 tallyAddition(Simulation& System,
 	      const mainSystem::inputParam& IParam)
   /*
-    Applies a large number of modifications to the tally system
+    Adds components to the model -- should NOT be here
     \param System :: Simulation to get tallies from 
     \param IParam :: Parameters
   */

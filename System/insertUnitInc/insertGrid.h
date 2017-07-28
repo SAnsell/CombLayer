@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/insertSphere.h
+ * File:   insertUnitInc/insertGrid.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,57 +19,65 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_insertSphere_h
-#define constructSystem_insertSphere_h
+#ifndef insertSystem_insertGrid_h
+#define insertSystem_insertGrid_h
 
 class Simulation;
 
-namespace constructSystem
+namespace insertSystem
 {
 /*!
-  \class insertSphere
+  \class insertGrid
   \version 1.0
   \author S. Ansell
-  \date June 2016
-  \brief Spherical insert object
+  \date November 2011
+  \brief Plate inserted in object 
   
-  Designed to be a quick spher to put an object into a model
+  Designed to be a quick plate to put an object into a model
   for fluxes/tallies etc
 */
 
-class insertSphere : public insertObject
+class insertGrid : public insertSystem::insertObject
 {
  private:
   
+  double innerWidth;              ///< inner Width
+  double innerHeight;             ///< inner Height
+  double innerDepth;              ///< inner Depth 
+  double plateAngle;              ///< Rotation angle from centre [+Y]
+  
+  size_t nLayer;                  ///< Number of layers
+  std::vector<double> wallThick;  ///< wall thick
+  std::vector<int> wallMat;       ///< wall material
 
-  double radius;             ///< Full Width
-
+  
   virtual void populate(const FuncDataBase&);
-
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  virtual void findObjects(Simulation&);
 
   void mainAll(Simulation&);
 
  public:
 
-  insertSphere(const std::string&);
-  insertSphere(const insertSphere&);
-  insertSphere& operator=(const insertSphere&);
-  virtual ~insertSphere();
+  insertGrid(const std::string&);
+  insertGrid(const insertGrid&);
+  insertGrid& operator=(const insertGrid&);
+  virtual ~insertGrid();
 
-  void setValues(const double,const int);
-  void setValues(const double,const std::string&);
+  void addLayer(const double,const std::string&);
+  void setValues(const double,const double,const double,
+		 const int);
+  void setValues(const double,const double,const double,
+		 const std::string&);
+  void createAll(Simulation&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(Simulation&,const Geometry::Vec3D&);
-
   
 };
 

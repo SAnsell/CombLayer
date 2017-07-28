@@ -29,6 +29,10 @@ namespace attachSystem
   class TwinComp;
   class CellMap;
 }
+namespace insertSystem
+{
+  class insertPlate;
+}
 
 namespace constructSystem
 {  
@@ -36,7 +40,6 @@ namespace constructSystem
   class ChopperUnit;
   class Jaws;
   class DiskChopper;
-  class insertPlate;
   class PipeCollimator;
   class RotaryCollimator;
   class VacuumBox;
@@ -72,7 +75,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
   /// Shutter around pipe in gamma block
-  std::shared_ptr<constructSystem::insertPlate> ShutterA;
+  std::shared_ptr<insertSystem::insertPlate> ShutterA;
   /// Vacuum pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in gamma shield

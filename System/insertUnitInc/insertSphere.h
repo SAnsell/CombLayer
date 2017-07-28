@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/insertCylinder.h
+ * File:   insertUnitInc/insertSphere.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,56 +19,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_insertCylinder_h
-#define constructSystem_insertCylinder_h
+#ifndef insertSystem_insertSphere_h
+#define insertSystem_insertSphere_h
 
 class Simulation;
 
-namespace constructSystem
+namespace insertSystem
 {
 /*!
-  \class insertCylinder
+  \class insertSphere
   \version 1.0
   \author S. Ansell
-  \date February 2017
-  \brief Cylinder inserted in object 
+  \date June 2016
+  \brief Spherical insert object
   
-  Designed to be a quick plate to put an object into a model
+  Designed to be a quick spher to put an object into a model
   for fluxes/tallies etc
 */
 
-class insertCylinder : public constructSystem::insertObject
+class insertSphere : public insertObject
 {
  private:
-    
-  double radius;             ///< Main radius
-  double length;             ///< Main distance				    
   
+
+  double radius;             ///< Full Width
+
   virtual void populate(const FuncDataBase&);
 
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+  virtual void findObjects(Simulation&);
 
   void mainAll(Simulation&);
 
  public:
 
-  insertCylinder(const std::string&);
-  insertCylinder(const insertCylinder&);
-  insertCylinder& operator=(const insertCylinder&);
-  virtual ~insertCylinder();
+  insertSphere(const std::string&);
+  insertSphere(const insertSphere&);
+  insertSphere& operator=(const insertSphere&);
+  virtual ~insertSphere();
 
-  void setValues(const double,const double,const int);
-  void setValues(const double,const double,const std::string&);
-  void createAll(Simulation&,const Geometry::Vec3D&,
-		 const Geometry::Vec3D&);
+  void setValues(const double,const int);
+  void setValues(const double,const std::string&);
 
   void createAll(Simulation&,const Geometry::Vec3D&,
 		 const attachSystem::FixedComp&);
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
+  void createAll(Simulation&,const Geometry::Vec3D&);
+
   
 };
 

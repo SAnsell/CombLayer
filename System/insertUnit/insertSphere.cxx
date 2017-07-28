@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/insertSphere.cxx
+ * File:   insertUnit/insertSphere.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -84,7 +84,7 @@
 #include "insertObject.h"
 #include "insertSphere.h"
 
-namespace constructSystem
+namespace insertSystem
 {
 
 insertSphere::insertSphere(const std::string& Key)  :
@@ -367,4 +367,4 @@ insertSphere::createAll(Simulation& System,
   
 
   
-}  // NAMESPACE constructSystem
+}  // NAMESPACE insertSystem
