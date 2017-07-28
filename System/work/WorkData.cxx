@@ -135,7 +135,7 @@ WorkData::setLogX(const double XMin,const double XMax,const size_t NPts)
     throw ColErr::NumericalAbort("Xmin == "+std::to_string(XMin)+
                                  " Xmax == "+std::to_string(XMax));
 
-  XCoord.clear();
+  XCoord.resize(NPts);
   Yvec.clear();
   for(size_t i=0;i<NPts;i++)
     XCoord[i]=mathFunc::logFromLinear(XMin,XMax,NPts,i);
@@ -588,6 +588,7 @@ WorkData::operator*(const double V)  const
   return Out;
 }
 
+
 WorkData
 WorkData::operator/(const double V)  const
   /*!
@@ -600,6 +601,25 @@ WorkData::operator/(const double V)  const
   WorkData Out=WorkData(*this);
   Out/=V;
   return Out;
+}
+
+void
+WorkData::normalize(const size_t NPts)
+  /*!
+    Normalize the data to N pts
+    \param NPts :: Number of points [not zero]
+  */
+{
+  ELog::RegMethod RegA("WorkData","normalize");
+
+  if (NPts)
+    {
+      const double scale(1.0/static_cast<double>(NPts));
+      weight*=scale;
+  
+      this->operator*=(scale);
+    }
+  return;
 }
 
 WorkData&
@@ -804,6 +824,11 @@ WorkData::getXIndex(const double X) const
 
 void
 WorkData::addPoint(const double XC,const double YVal)
+  /*!
+    Add a point to existing bin
+    \param XC :: XValue
+    \parma YVal :: Data point ot add
+  */
 {
   const size_t Index=getXIndex(XC);
   if (Index<=XCoord.size())
@@ -1000,7 +1025,7 @@ WorkData::integrate(const double xMin,const double xMax) const
   // Get first point
   size_t i;
   for(i=0;i<Yvec.size() && XCoord[i+1]<xMin;i++) ;
-  if (i!=Yvec.size())   
+  if (i<Yvec.size())   
     {
       // Only one bin:
       if (XCoord[i+1]>xMax)
@@ -1052,6 +1077,35 @@ WorkData::integrateX(const double xMin,const double xMax) const
 	sum+=Yvec[i]*(xMax-XCoord[i]);
     }
   return sum;
+}
+WorkData&
+WorkData::sort()
+  /*!
+    Sort the data based on the X value
+    \return WorkData [after sort]
+  */
+{
+  ELog::RegMethod RegA("WorkData","sort");
+  
+  if (XCoord.size()>=2)
+    {
+      std::vector<size_t> Index(XCoord.size());
+      std::generate(Index.begin(),Index.end(),IncSeq());
+      indexSort(XCoord,Index);
+      std::vector<double> XItems;
+      std::vector<DError::doubleErr> YItems;
+      std::vector<size_t>::const_iterator vc;
+      for(vc=Index.begin();vc!=Index.end();vc++)
+	{
+	  XItems.push_back(XCoord[*vc]);
+	  if (*vc)
+	    YItems.push_back(Yvec[*vc-1]);
+	}
+      XCoord=XItems;
+      Yvec=YItems;
+    }
+  
+  return *this;
 }
 
 void

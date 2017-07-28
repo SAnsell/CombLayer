@@ -184,9 +184,11 @@ testRules::testCreateDNF()
       const Rule* TRule=Tx.topRule();
       Rule* XRule=TRule->clone();
       RuleBinary Dlist(XRule);
+      ELog::EM<<"DList == "<<Dlist<<ELog::endDiag;
       Dlist.makeSurfIndex();
-      Dlist.createDNFitems();
-      Dlist.group();
+      ELog::EM<<"DN == "<<Dlist.createDNFitems()<<ELog::endDiag;
+      ELog::EM<<"Gro == "<<Dlist.group()<<ELog::endDiag;
+      ELog::EM<<"DList == "<<Dlist<<ELog::endDiag;
       
       Rule* OutRule=Dlist.createTree();
       if ( (std::get<1>(tc) && 

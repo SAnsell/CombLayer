@@ -77,6 +77,7 @@ class WorkData
 
   WorkData& rebin(const std::vector<double>&);
   WorkData& rebin(const WorkData&);
+  WorkData& sort();
   WorkData& binDivide(const double);
   WorkData& xScale(const double);
   double XInverse(const double) const;
@@ -119,6 +120,8 @@ class WorkData
 
   void addPoint(const double,const double);
   void addPoint(const double,const DError::doubleErr&);
+
+  void normalize(const size_t);
   
   int load(const std::string&,const int,const int,const int=0);
 
