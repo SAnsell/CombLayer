@@ -19,8 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Zaid_h
-#define Zaid_h
+#ifndef MonteCarlo_Zaid_h
+#define MonteCarlo_Zaid_h
+
+namespace MonteCarlo
+{
 
 /*!
   \class Zaid 
@@ -34,8 +37,8 @@ class Zaid
 {
  private:
   
-  int index;           ///< Index number
-  int tag;             ///< 2 digit tag
+  size_t index;           ///< Index number
+  size_t tag;             ///< 2 digit tag
   char type;           ///< Type letter
   double density;      ///< Number density
   
@@ -48,24 +51,24 @@ class Zaid
 
   bool operator==(const Zaid&) const;
 
-  bool isEquavilent(const int,const int,const char) const;
-  int setZaid(const std::string&);
+  bool isEquavilent(const size_t,const size_t,const char) const;
+  size_t setZaid(const std::string&);
   void setDensity(const double); 
   /// Set a tag number
-  void setTag(const int T) { tag=T % 100; }
+  void setTag(const size_t T) { tag=T % 100; }
 
   /// Get Density
   double getDensity() const { return density; }
   /// Get Isotopic number 
-  int getIso() const { return index % 1000; }
+  size_t getIso() const { return index % 1000; }
   /// Get Element Z
-  int getZ() const { return index / 1000; } 
+  size_t getZ() const { return index / 1000; } 
   /// Get Index
-  int getZaidNum() const { return index; }
+  size_t getZaidNum() const { return index; }
   /// get Tag
-  int getTag() const { return tag; }
+  size_t getTag() const { return tag; }
   /// Get Element key
-  int getKey() const { return type; } 
+  char getKey() const { return type; } 
   double getAtomicMass() const;
 
   void write(std::ostream&) const;
@@ -73,5 +76,7 @@ class Zaid
 };
 
 std::ostream& operator<<(std::ostream&,const Zaid&);
+
+}
 
 #endif

@@ -44,6 +44,9 @@
 #include "Element.h"
 #include "Zaid.h"
 
+namespace MonteCarlo
+{
+
 std::ostream&
 operator<<(std::ostream& OX,const Zaid& Z)
   /*!
@@ -106,7 +109,7 @@ Zaid::operator==(const Zaid& A) const
 }
 
 bool
-Zaid::isEquavilent(const int Z,const int T,const char C) const
+Zaid::isEquavilent(const size_t Z,const size_t T,const char C) const
   /*!
     Determine if the numbers are equivilent
     \param Z :: Zaid number [0 to ignore]
@@ -121,7 +124,7 @@ Zaid::isEquavilent(const int Z,const int T,const char C) const
 }
 
 
-int
+size_t
 Zaid::setZaid(const std::string& A)
   /*!
     Given a zaid string determine if 
@@ -132,7 +135,7 @@ Zaid::setZaid(const std::string& A)
 {
   ELog::RegMethod RegA("Zaid","setZaid");
 
-  int Z;  
+  size_t Z;  
   std::string::size_type pos=A.find('.');
   if ( pos==std::string::npos ||
        pos+4>A.size() ||
@@ -170,7 +173,7 @@ Zaid::getAtomicMass() const
     \return mean atomic mass
   */
 {
-  const int INum=getIso();
+  const size_t INum=getIso();
   if (INum) 
     {
       const IsoTable& IT=IsoTable::Instance();
@@ -199,3 +202,4 @@ Zaid::write(std::ostream& OX) const
   return;
 }
 
+}  // NAMESPACE MonteCarlo

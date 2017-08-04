@@ -184,7 +184,7 @@ LayerDivide3D::processSurface(const size_t Index,
   // 
   // mirror planes only work with planes(!)
   std::string surGroup="ASurf";
-  surGroup[0]+=Index;
+  surGroup[0]=StrFunc::indexToAlpha(Index);
 
   if (WallSurf.first<0)
     {

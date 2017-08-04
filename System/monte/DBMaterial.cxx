@@ -1525,23 +1525,24 @@ DBMaterial::initMXUnits()
 {
   ELog::RegMethod RegA("DBMaterial","initMXUnits");
 
-  typedef std::tuple<int,int,char,std::string,
-		       std::string> MXTYPE;
-  std::vector<MXTYPE> mxVec;
-
-  mxVec.push_back(MXTYPE(6000,70,'c',"h","6012.70h"));
-  mxVec.push_back(MXTYPE(4009,24,'c',"h","model"));
-  mxVec.push_back(MXTYPE(4009,70,'c',"h","model"));
-
-  mxVec.push_back(MXTYPE(4009,80,'c',"h","4009.80h"));
-  mxVec.push_back(MXTYPE(4010,80,'c',"h","4010.80h"));
-
-  mxVec.push_back(MXTYPE(78190,80,'c',"h","78190.80h"));
-  mxVec.push_back(MXTYPE(78192,80,'c',"h","78192.80h"));
-  mxVec.push_back(MXTYPE(78194,80,'c',"h","78194.80h"));
-  mxVec.push_back(MXTYPE(78195,80,'c',"h","78195.80h"));
-  mxVec.push_back(MXTYPE(78196,80,'c',"h","78196.80h"));
-  mxVec.push_back(MXTYPE(78198,80,'c',"h","78198.80h"));
+  typedef std::tuple<size_t,size_t,char,std::string,
+		     std::string> MXTYPE;
+  std::vector<MXTYPE> mxVec=
+    {
+      MXTYPE(6000,70,'c',"h","6012.70h"),
+      MXTYPE(4009,24,'c',"h","model"),
+      MXTYPE(4009,70,'c',"h","model"),
+      
+      MXTYPE(4009,80,'c',"h","4009.80h"),
+      MXTYPE(4010,80,'c',"h","4010.80h"),
+      
+      MXTYPE(78190,80,'c',"h","78190.80h"),
+      MXTYPE(78192,80,'c',"h","78192.80h"),
+      MXTYPE(78194,80,'c',"h","78194.80h"),
+      MXTYPE(78195,80,'c',"h","78195.80h"),
+      MXTYPE(78196,80,'c',"h","78196.80h"),
+      MXTYPE(78198,80,'c',"h","78198.80h")
+    };
 
 
   // NOTE : u is an illegal particle so how does MX work here??

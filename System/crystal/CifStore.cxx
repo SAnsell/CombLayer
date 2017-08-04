@@ -130,12 +130,15 @@ CifStore::insertElement(const std::string& KeyName,double Ion)
     \param Ion :: Ion 
   */
 {
+  ELog::RegMethod RegA("CifStore","insertElement");
+  
   if (!KeyName.empty())
     {
       ZTYPE::const_iterator mc=Zmap.find(KeyName);
       if (mc==Zmap.end())
         {
-	  std::pair<int,int> ZI=Element::Instance().elmIonPair(KeyName);
+	  std::pair<int,int> ZI=
+	    MonteCarlo::Element::Instance().elmIonPair(KeyName);
 	  if (Ion<-100) Ion=ZI.second;
 	  if (ZI.first>0)
 	    {
@@ -754,7 +757,7 @@ CifStore::inCube(const Geometry::Vec3D& Pt,const double R) const
   */
 {
   for(size_t i=0;i<3;i++)
-    if (fabs(Pt[i])>R)
+    if (std::abs(Pt[i])>R)
       return 0;
   // success
   return 1;

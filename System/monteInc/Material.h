@@ -37,7 +37,7 @@ namespace MonteCarlo
 */
 
 class Material 
-{
+{ 
  private:
   
   int Mnum;                        ///< Material Number (Necessary)  
@@ -52,8 +52,8 @@ class Material
   int getExtraType(std::string&,std::string&);
   void calcAtomicDensity();
 
-  size_t getZaidIndex(const int,const int,const char) const;
-  static void writeZaid(std::ostream&,const double,const int);
+  size_t getZaidIndex(const size_t,const size_t,const char) const;
+  static void writeZaid(std::ostream&,const double,const size_t);
 
  public:
   
@@ -97,7 +97,7 @@ class Material
   int setMaterial(const int,const std::string&,const std::string&,
 		  const std::string&);
 
-  void setMXitem(const int,const int,const char,const std::string&,
+  void setMXitem(const size_t,const size_t,const char,const std::string&,
 		 const std::string&);
   /// Get atomic density
   double getAtomDensity() const { return atomDensity; }
@@ -105,14 +105,14 @@ class Material
   double getMeanA() const;
   void setENDF7();
   void setDensity(const double);
-  bool hasZaid(const int,const int,const char) const;
+  bool hasZaid(const size_t,const size_t,const char) const;
 
   /// remove mt cards
   void removeSQW() { SQW.clear(); }
   void removeMX(const std::string&);
   void removeLib(const std::string&);
     
-  void changeLibrary(const int,const char);
+  void changeLibrary(const size_t,const char);
 
   void listComponent() const;
   void print() const;
