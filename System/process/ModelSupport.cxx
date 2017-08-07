@@ -3,7 +3,7 @@
  
  * File:   process/ModelSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ spcDelimString(const std::string& baseString)
   /*
     Space delimit the input string to remove : and ( without spaces
     \param baseString :: input string
+    \return Striped string
   */
 {
   std::ostringstream cx;
@@ -89,6 +90,7 @@ removeOpenPair(const std::string& CStr)
   /*!
     Remove double : : / : ) etc
     \param CStr :: Input string
+    \return stripped string
   */
 {
   // Remove all == (:

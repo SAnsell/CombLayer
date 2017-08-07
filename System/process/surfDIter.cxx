@@ -284,7 +284,6 @@ populateRange(const FuncDataBase& Control,const size_t N,
     \param ARange :: Start value    
     \param BRange :: End value 
     \param Vec :: Vector to populate [and cleared]
-    \param additionFlag :: addition flag
   */
 {
   ELog::RegMethod RegA("surfDIter","populateRange[flag]");

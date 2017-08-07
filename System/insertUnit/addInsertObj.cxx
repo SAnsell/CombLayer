@@ -406,6 +406,7 @@ addInsertGridCell(Simulation& System,
     
     \param System :: Simulation to used
     \param objName :: object name
+    \parma Origin :: Centre of grid
     \parma YAxis :: Main Y axis
     \parma ZAxis :: Z axis [Orthoganalized if not]
     \param NL :: Number of layers

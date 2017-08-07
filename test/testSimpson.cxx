@@ -72,7 +72,7 @@ struct etaFunc
   /// Eta function [Eqn 9: Nucl Inst Method. 213 (1983) 495]
   double operator()(const double& eta)
     {
-      return (fabs(eta)>1e-7) ? eta/(exp(-eta)-1.0) : 1.0;
+      return (std::abs(eta)>1e-7) ? eta/(exp(-eta)-1.0) : 1.0;
     }
 };
 

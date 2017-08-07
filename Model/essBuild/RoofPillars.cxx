@@ -171,9 +171,9 @@ RoofPillars::insertRoofCells(Simulation& System,
 			     const std::array<Geometry::Vec3D,4>& CPts,
 			     const std::string& innerCut)
   /*!
-    Insert roof cell
+    Insert roof cells
     \param System :: Simulation system
-    \param pillarInfo :: Pillar Info 
+    \param CPts :: plan points on layer of roof cross beam
     \param innerCut :: cut string for pillar void
   */
 {
@@ -555,13 +555,14 @@ RoofPillars::getInterPillarBoundary(const int aSurf,const int bSurf,
 				    std::array<Geometry::Vec3D,2>& endPt) const
   /*!
     Compute and return the headRule that divides two pillars
-    \parma aSurf :: offset to pillar surface
-    \parma bSurf :: offset to pillar surface
+    \param aSurf :: offset to pillar surface
+    \param bSurf :: offset to pillar surface
     \param midPoint :: MidPoint between pillars
     \param YVec :: vector along axis
     \param aIR :: pillar index for A
     \param bIR :: pillar index for B
     \param endPt :: End points
+    \return Rule for overlap region
    */
 {
   ELog::RegMethod RegA("RoofPillar","getInterPillarBoundary");
@@ -647,6 +648,10 @@ RoofPillars::createBeamSurfaces(const int RI,
     Create the surfaces for the beamxs
     \param RI :: Index offset
     \param midPoint :: Mid point of beam
+    \param XVec :: X coordinate value [unit]
+    \param Width :: Full width of beam
+    \param WallThick :: Thickness of wall
+    \param WallGap :: Gap round wall 
   */
 {
   ELog::RegMethod RegA("RoofPillar","createBeamSurfaces");
@@ -862,7 +867,8 @@ RoofPillars::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(bunkerObj,7);
 
-  setFront(bunkerObj,11);    // floor
+  setFront(bunkerObj,
+	   11);    // floor
   setBack(bunkerObj,12);     // roof [inner]
 
   createSurfaces();

@@ -292,8 +292,6 @@ void
 RotaryCollimator::setHoleIndex()
   /*!
     Given a hole index determine and set the angle offset
-    \param HIndex :: Index to use [ Zero :: use HAngle directly]
-    \param HAngle :: Angle to use if HIndex is zero
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","setHoleIndex");
@@ -387,7 +385,7 @@ RotaryCollimator::layerProcess(Simulation&)
     Processes the splitting of the surfaces into a multilayer system
     This has to deal with the three layers that invade cells:
     
-    \param System :: Simulation to work on
+    \param  :: Simulation to work on
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","LayerProcess");
@@ -419,4 +417,4 @@ RotaryCollimator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

@@ -89,7 +89,7 @@ SurfMap::getSurfRule(const std::string& Key,const size_t Index) const
     Get the rule based on a surface
     \param Key :: Keyname
     \param Index :: Offset number
-    \retun HeadRule
+    \return HeadRule
    */
 {
   ELog::RegMethod RegA("SurfMap","getSurfRule(Key,index)"); 
@@ -108,7 +108,7 @@ SurfMap::getSurfRules(const std::string& Key) const
   /*!
     Get the rule based on a surface
     \param Key :: Keyname
-    \retun HeadRule
+    \return HeadRule
    */
 {
   ELog::RegMethod RegA("SurfMap","getSurfRules(Key)"); 

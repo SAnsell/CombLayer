@@ -115,8 +115,8 @@ struct EqualSurfaces
       Creates the pointer to the surface
       Index refers to the positon on the Geometry::ExportClass list
       \param I :: Index of runtime value (check with Index)
-      \param SPtr :: Surface pointer      
-      \param TPtr :: Second surface point
+      \param SPtr :: First Surface pointer      
+      \param TPtr :: Second surface pointer
       \return success/failure
     */
     {
@@ -144,15 +144,13 @@ struct EqualSurfaces
 //                    OUTSIDE
 //----------------------------------------------------------------------
 
-
-
 int
 equalSurface(const Geometry::Surface* SPtr,const Geometry::Surface* TPtr)
   /*!
-    Process a equal surface request
+    Process a equal surface request to check surfaces are equal
     \param SPtr :: surface pointer
     \param TPtr :: surface pointer
-    \return Second sruface
+    \return true if surfaces are equivalent 
    */
 {
   if (!SPtr || !TPtr)

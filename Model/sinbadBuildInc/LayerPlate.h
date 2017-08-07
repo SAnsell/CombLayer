@@ -15,19 +15,13 @@ namespace sinbadSystem
 */
 
 class LayerPlate  : public attachSystem::ContainedComp,
-      public attachSystem::FixedComp
+      public attachSystem::FixedOffset
 {
  protected:
   
   const int slabIndex;        ///< Index of surface offset
 
   int cellIndex;                ///< Cell index
-
-  double xStep;               ///< X Step distance 
-  double yStep;               ///< Y Step distance
-  double zStep;               ///< Z Step distance 
-  double xyAngle;             ///< xyAngle rotation
-  double zAngle;              ///< z angle rotation
 
   bool frontShared;           ///< Front surface shared
 

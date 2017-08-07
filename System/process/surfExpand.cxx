@@ -173,7 +173,7 @@ struct surfExpand
       \param I :: Index of runtime value (check with Index)
       \param SPtr :: Surface pointer      
       \param Dist :: Distance to move surface by
-      \retval Ptr :: success
+      \retval Ptr to new surface  /  next dispatch
     */
     {
       if (I==Index())

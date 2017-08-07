@@ -397,7 +397,7 @@ int
 BlockMod::getCommonSurf(const long int) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [1-6]
+    \param  :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {

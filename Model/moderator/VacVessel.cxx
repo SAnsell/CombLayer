@@ -463,7 +463,7 @@ VacVessel::getSurfacePoint(const size_t layer,
   /*!
     Get the center point for the surfaces in each layer
     \param layer :: Layer number : 0 is inner 4 is outer
-    \param side :: Index to side (front/back/left/right/up/down)
+    \param sideIndex :: Index to side (front/back/left/right/up/down)
     \return point on surface
   */
 {

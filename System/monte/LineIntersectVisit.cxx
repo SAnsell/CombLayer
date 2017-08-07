@@ -3,7 +3,7 @@
  
  * File:   monte/LineIntersectVisit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -374,7 +374,8 @@ LineIntersectVisit::getPoint(const std::string& RuleStr,
   /*!
     Calculate the point at the closest point along the line
     to the surface SPtr
-    \param SPtr :: surface to intersect
+    \param RuleStr :: Rule descriptor to intersect
+    \param nearPt :: Point ot use to intersect
     \return Points
   */
 {
