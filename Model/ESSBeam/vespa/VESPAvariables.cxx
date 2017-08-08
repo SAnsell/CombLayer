@@ -86,8 +86,8 @@ VESPAvariables(FuncDataBase& Control)
 
   Control.addVariable("vespaAxisZStep",0.0);
   
-  PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setWindow(-2.0,0.5); 
   PipeGen.setFlange(-4.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
@@ -114,7 +114,7 @@ VESPAvariables(FuncDataBase& Control)
   CGen.generateChopper(Control,"vespaChopperA",8.0,12.0,5.55);
 
   // Double Blade chopper
-  BGen.setThick({0.2,0.2});
+  BGen.setThick({0.2,0.2,0.2});
   BGen.addPhase({0.0,90.0,220.0},{24.31,40.98,57.32});
   BGen.addPhase({30.0,120.0,250.0},{24.31,40.98,57.32});
   BGen.setGap(3.0);
@@ -286,7 +286,7 @@ VESPAvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vespaFOutC",220.0,9.0,11.0,8.5,10.0);
 
-    // HUT:  
+  // HUT:  
   Control.addVariable("vespaCaveYStep",25.0);
   Control.addVariable("vespaCaveXStep",0.0);
   Control.addVariable("vespaCaveVoidFront",60.0);
@@ -326,7 +326,8 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaSampleHeight2",6.0);
   Control.addVariable("vespaSampleMaterial1","H2O");
   Control.addVariable("vespaSampleMaterial2","Aluminium");
-
+  Control.addVariable("vespaSampleTemp2",20.0);
+  
   // VESPA DETECTORS
   Control.addVariable("vespaNDet",32);
   
@@ -350,6 +351,9 @@ VESPAvariables(FuncDataBase& Control)
 
   Control.addVariable("vespaXStal6Active",0);
   Control.addVariable("vespaXStal22Active",0);
+
+  Control.addVariable("vespaDBox6Active",0);
+  Control.addVariable("vespaDBox22Active",0);
 
   
   const double braggAngle[]={-50,-30,-50,-30};

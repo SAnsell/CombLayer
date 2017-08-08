@@ -19,6 +19,7 @@ sub new
     definitions => undef,
     depLists => undef,
     optimise => "",
+    gtk => 0,
     debug => "",
     noregex => 0,
     
@@ -196,6 +197,7 @@ sub setParameters
 	  $self->{noregex}=1 if ($Ostr eq "-NR");
 	  $self->{optimise}.=" -pg " if ($Ostr eq "-p"); ## Gprof
 	  $self->{gcov}=1 if ($Ostr eq "-C");
+	  $self->{gtk}=1 if ($Ostr eq "-gtk");
 	  $self->{debug}="" if ($Ostr eq "-g");
 	  $self->{bcomp}=$1 if ($Ostr=~/-gcc=(.*)/);
 	  $self->{ccomp}=$1 if ($Ostr=~/-g\+\+=(.*)/);
@@ -233,6 +235,12 @@ sub writeHeader
   
   print $DX "set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./lib)\n";
 
+  if ($self->{gtk})
+  {
+      print $DX "find_package(PkgConfig REQUIRED)\n";
+      print $DX "pkg_check_modules(GTK3 REQUIRED gtk+-3.0)\n";
+  }
+  
   foreach my $item (@{$self->{definitions}})
   {
     print $DX "add_definitions(-D",$item,")\n";
@@ -252,6 +260,8 @@ sub writeIncludes
   my $self=shift;
   my $DX=shift;
 
+  print $DX "include_directories(\${GTK3_INCLUDE_DIRS})\n" if ($self->{gtk});
+      
   foreach my $item (@{$self->{incDir}})
     {
       print $DX "include_directories(\"\${PROJECT_SOURCE_DIR}/";

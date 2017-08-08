@@ -1193,7 +1193,7 @@ DBMaterial::initMaterial()
 
   // Carston concrete
   // Regular concrete - with B4C
-  MObj.setMaterial(131,"RegCartonConcB4C",
+  MObj.setMaterial(131,"RegCarstonConcB4C",
                    "1001.70c 5.50969e-05 1002.70c 6.33687e-09  "
                    "5010.70c 0.0250581 5011.70c 0.100862  "
                    "6000.70c 0.000163366 8016.70c 0.000700512  "

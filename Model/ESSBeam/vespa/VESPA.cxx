@@ -567,13 +567,13 @@ VESPA::buildHut(Simulation& System,
 
   VJaws->setInsertCell(Cave->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);
-
   
   Cryo->setInsertCell(Cave->getCell("Void"));
   Cryo->createAll(System,*VJaws,2);
 
   Sample->setInsertCell(Cryo->getCell("SampleVoid"));
   Sample->createAll(System,*Cryo,0);
+
   return;
 }
 
@@ -608,18 +608,11 @@ VESPA::buildDetectorArray(Simulation& System,
       OR.addObject(xsPtr);
       OR.addObject(dsPtr);
 
-      
-      // ADetArray.push_back
-      //   (DTYPE(new constructSystem::TubeDetBox(newName+"DBox",i)));
-      // OR.addObject(ADetArray.back());
-
       xsPtr->addInsertCell(voidCell);
       xsPtr->createAll(System,sampleFC,sampleIndex);
 
       dsPtr->addInsertCell(voidCell);
       dsPtr->createAll(System,*xsPtr,8);
-      //      ADetArray.back()->addInsertCell(voidCell);
-      //      ADetArray.back()->createAll(System,XS,sampleIndex);
 
       XStalArray.push_back(xsPtr);
       ADetArray.push_back(dsPtr);      
