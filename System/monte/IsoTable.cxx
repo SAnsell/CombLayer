@@ -24,6 +24,7 @@
 #include <fstream>
 #include <vector>
 #include <array>
+#include <tuple>
 
 #include "Exception.h"
 #include "Triple.h"
