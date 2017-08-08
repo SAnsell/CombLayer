@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2015 by Konstantin Batkov
+ * Copyright (c) 2015-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -66,29 +67,27 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
-#include "PreModWing.h"
 #include "Cone.h"
 #include "Plane.h"
 #include "Cylinder.h"
-// for Butterfly
 #include "LayerComp.h"
 #include "ModBase.h"
 #include "H2Wing.h"
-#include <typeinfo>
 #include "ButterflyModerator.h"
-#include "PancakeModerator.h"
-#include "BoxModerator.h"
+#include "PreModWing.h"
+
 
 namespace essSystem
 {
 
 PreModWing::PreModWing(const std::string& Key) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key,9),
+  attachSystem::FixedOffset(Key,3),
   attachSystem::CellMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
@@ -96,18 +95,18 @@ PreModWing::PreModWing(const std::string& Key) :
     Constructor
     \param Key :: Name of construction key
   */
-{
-}
+{}
 
 PreModWing::PreModWing(const PreModWing& A) : 
-  attachSystem::ContainedComp(A),
-  attachSystem::FixedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),attachSystem::CellMap(A),
+  
   modIndex(A.modIndex),cellIndex(A.cellIndex),
-  engActive(A.engActive),thick(A.thick),mat(A.mat),
-  wallThick(A.wallThick),wallMat(A.wallMat),
-  tiltSide(A.tiltSide),tiltAngle(A.tiltAngle),
-  tiltRadius(A.tiltRadius)
+  innerHeight(A.innerHeight),outerHeight(A.outerHeight),
+  innerDepth(A.innerDepth),outerDepth(A.outerDepth),
+  wallThick(A.wallThick),innerRadius(A.innerRadius),
+  outerRadius(A.outerRadius),innerYCut(A.innerYCut),
+  mat(A.mat),wallMat(A.wallMat),topSurf(A.topSurf),
+  baseSurf(A.baseSurf),innerSurf(A.innerSurf)
   /*!
     Copy constructor
     \param A :: PreModWing to copy
@@ -125,18 +124,23 @@ PreModWing::operator=(const PreModWing& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      engActive=A.engActive;
-      thick=A.thick;
-      mat=A.mat;
+      innerHeight=A.innerHeight;
+      outerHeight=A.outerHeight;
+      innerDepth=A.innerDepth;
+      outerDepth=A.outerDepth;
       wallThick=A.wallThick;
+      innerRadius=A.innerRadius;
+      outerRadius=A.outerRadius;
+      innerYCut=A.innerYCut;
+      mat=A.mat;
       wallMat=A.wallMat;
-      tiltSide=A.tiltSide;
-      tiltAngle=A.tiltAngle;
-      tiltRadius=A.tiltRadius;
-   }
+      topSurf=A.topSurf;
+      baseSurf=A.baseSurf;
+      innerSurf=A.innerSurf;
+    }
   return *this;
 }
 
@@ -150,6 +154,7 @@ PreModWing::clone() const
   return new PreModWing(*this);
 }
 
+
 PreModWing::~PreModWing()
   /*!
     Destructor
@@ -162,50 +167,61 @@ PreModWing::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height a
-    \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("PreModWing","populate");
 
-  ///< \todo Make this part of IParam NOT a variable
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-
-  thick=Control.EvalVar<double>(keyName+"Thick");
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  FixedOffset::populate(Control);
+  
+  innerHeight=Control.EvalVar<double>(keyName+"InnerHeight");
+  outerHeight=Control.EvalVar<double>(keyName+"OuterHeight");
+  innerDepth=Control.EvalVar<double>(keyName+"InnerDepth");
+  outerDepth=Control.EvalVar<double>(keyName+"OuterDepth");
 
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+  innerYCut=Control.EvalVar<double>(keyName+"InnerYCut");
+
+  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
 
-  tiltAngle=Control.EvalVar<double>(keyName+"TiltAngle");
-  tiltRadius=Control.EvalVar<double>(keyName+"TiltRadius");
+  nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
+  if (nLayers<1) nLayers=1;
+  
+  innerMat.push_back(mat);
+  surfMat.push_back(wallMat);
+  for(size_t i=1;i<nLayers;i++)
+    {
+      const std::string sNum=std::to_string(i);
+      const double RL=Control.EvalVar<double>
+        (keyName+"LayerRadius"+sNum);
+      const int iMat=ModelSupport::EvalDefMat<int>
+        (Control,keyName+"InnerMat"+sNum,mat);
+      const int sMat=ModelSupport::EvalDefMat<int>
+        (Control,keyName+"SurfMat"+sNum,wallMat);
+      layerRadii.push_back(RL);
+      innerMat.push_back(iMat);
+      surfMat.push_back(sMat);
 
+    }
+  
+  
   return;
 }
 
 void
-PreModWing::createUnitVector(const attachSystem::FixedComp& FC, const long int sideIndex,
-			     const bool zRotate)
+PreModWing::createUnitVector(const attachSystem::FixedComp& FC,
+                             const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Centre for object
     \param sideIndex :: index for link
-    \param zRotate :: rotate Zaxis
   */
 {
   ELog::RegMethod RegA("PreModWing","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getSignedLinkPt(sideIndex);
-  //  ELog::EM << Origin << ELog::endCrit;
-  if (zRotate)
-    {
-      X*=-1;
-      Z*=-1;
-    }
-  //  const double D=(depth.empty()) ? 0.0 : depth.back();
-  //  applyShift(0,0,zStep+D);
-
-
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -213,135 +229,170 @@ PreModWing::createUnitVector(const attachSystem::FixedComp& FC, const long int s
 void
 PreModWing::createSurfaces()
   /*!
-    Create planes for the silicon and Polyethene layers
-    \param tiltSide :: top/bottom side to tilt
+    Create Plane and surfaces 
   */
 {
   ELog::RegMethod RegA("PreModWing","createSurfaces");
 
-  const double h = tiltRadius * tan(tiltAngle*M_PI/180.0); // cone must be shifted for the tilting to start at Y=tiltRadius
 
-  // Divide plane
-  ModelSupport::buildPlane(SMap,modIndex+1,Origin,X);  
-  ModelSupport::buildPlane(SMap,modIndex+2,Origin,Y);  
-
-  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,tiltRadius);  
-
-  const int tiltSign = tiltSide ? 1 : -1;
-
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin+Z*(thick)*tiltSign,Z*tiltSign);  
-  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*(thick+wallThick)*tiltSign,Z*tiltSign);  
-  if (tiltAngle>Geometry::zeroTol)
+  ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,innerRadius);
+  if (!outerSurf.hasRule())
     {
-      ModelSupport::buildCone(SMap, modIndex+8, Origin+Z*(thick+h)*tiltSign, Z, 90-tiltAngle, -tiltSign);
-      ModelSupport::buildCone(SMap, modIndex+9, Origin+Z*(thick+wallThick+h)*tiltSign, Z, 90-tiltAngle, -tiltSign);
-    }
-  else
-    {
-      ModelSupport::buildPlane(SMap, modIndex+8, Origin+Z*(thick+h)*tiltSign, Z*tiltSign);
-      ModelSupport::buildPlane(SMap, modIndex+9, Origin+Z*(thick+wallThick+h)*tiltSign, Z*tiltSign);
+      ModelSupport::buildCylinder(SMap,modIndex+17,Origin,Z,outerRadius);
+      outerSurf.procSurfNum(-SMap.realSurf(modIndex+17));
     }
 
+  // make height cone if given:
+  const double IR(innerRadius>Geometry::zeroTol  ? innerRadius : 0.0);
+  if (outerHeight>innerHeight+Geometry::zeroTol)
+    {
+      const double effHeight=
+	  outerHeight-(outerHeight-innerHeight)*outerRadius/(outerRadius-IR);
+      const double tanHTheta=(outerRadius-IR)/(outerHeight-innerHeight);
+      const double thetaH=atan(tanHTheta)*180.0/M_PI;
+
+      ModelSupport::buildCone(SMap,modIndex+9,Origin+Z*effHeight,-Z,thetaH);
+      ModelSupport::buildCone(SMap,modIndex+19,
+                              Origin+Z*(effHeight-wallThick),-Z,thetaH);
+      ModelSupport::buildPlane(SMap,modIndex+1006,Origin+Z*effHeight,Z);
+      ModelSupport::buildPlane(SMap,modIndex+1016,Origin+Z*(effHeight-wallThick),Z);
+
+    }
+        
+  ModelSupport::buildPlane(SMap,modIndex+6,Origin+Z*innerHeight,Z);
+  ModelSupport::buildPlane(SMap,modIndex+16,Origin+Z*(innerHeight-wallThick),Z);
+
+  // make height cone if given:
+  // calculate relative to outer zero [and correct to centre]
+  if (outerDepth>innerDepth+Geometry::zeroTol)
+    {
+      const double effDepth=
+	  outerDepth-(outerDepth-innerDepth)*outerRadius/(outerRadius-IR);
+
+      const double tanDTheta=(outerRadius-IR)/(outerDepth-innerDepth);
+      const double thetaD=atan(tanDTheta)*180.0/M_PI;
+
+      ModelSupport::buildCone(SMap,modIndex+8,Origin-Z*effDepth,Z,thetaD);
+      ModelSupport::buildCone(SMap,modIndex+18,Origin-Z*(effDepth-wallThick),Z,thetaD);
+      // cutters for cone
+      // not at lifted positoin
+      ModelSupport::buildPlane(SMap,modIndex+1005,Origin-Z*effDepth,Z);
+      ModelSupport::buildPlane(SMap,modIndex+1015,Origin-Z*(effDepth-wallThick),Z);
+    }
+  // flat section
+  ModelSupport::buildPlane(SMap,modIndex+5,Origin-Z*innerDepth,Z);
+  ModelSupport::buildPlane(SMap,modIndex+15,Origin-Z*(innerDepth-wallThick),Z);
+
+  // Build layres for different material structure
+  int CL(modIndex+100);
+  for(size_t i=1;i<nLayers;i++)
+    {
+      ModelSupport::buildCylinder(SMap,CL+7,Origin,Z,layerRadii[i-1]);
+      CL+=100;
+    }
+  
   return; 
 }
 
+std::string
+PreModWing::getLayerZone(const size_t layerIndex) const
+  /*!
+    Generate the inner zone for a given index
+    \param layerIndex :: zone index
+    \return string for surfaces in zone
+  */
+{
+  ELog::RegMethod RegA("PreModWing","getLayerZone");
+
+  std::string Out;
+  const int CL(modIndex+static_cast<int>(layerIndex)*100);
+  if (!layerIndex)
+    Out=innerSurf.display();
+  else
+    Out=mainDivider.display();
+
+  Out+=ModelSupport::getComposite(SMap,CL," 7 ");
+  
+  if (layerIndex+1==nLayers)
+    Out+=outerSurf.display();
+  else
+    Out+=ModelSupport::getComposite(SMap,CL," -107 ");
+
+  return Out;
+}
+
+  
 void
-PreModWing::createObjects(Simulation& System,
-			  const attachSystem::FixedComp& Pre, const long int preLP, 
-			  const attachSystem::FixedComp& Mod)
+PreModWing::createObjects(Simulation& System)
 
   /*!
     Create the disc component
     \param System :: Simulation to add results
-    \param Mod :: butterfly moderator (to get it's side rule)
-    \param Pre :: attachment top/bottom object
-    \param preLP :: link point of the attachemt object
-    \param Mod :: Moderator
   */
 {
   ELog::RegMethod RegA("PreModWing","createObjects");
 
-
-  const attachSystem::CellMap* CM=
-    dynamic_cast<const attachSystem::CellMap*>(&Mod);
-
-  MonteCarlo::Object* AmbientVoid(0);
-  int ambientCell(0);
-  if (CM)
-    {
-      ambientCell=CM->getCell("ambientVoid");
-      AmbientVoid=System.findQhull(ambientCell);
-    }
-  if (!AmbientVoid)
-    throw ColErr::InContainerError<int>
-      (ambientCell,"PancakeModerator ambientVoid cell not found");
-
-  ELog::EM << "This is UGLY" << ELog::endDebug;
-  // Check with SA how to do it correctly.
-  // The problem is that BM can derive both from the Box, Pancake or Butterfly classes,
-  // so I need to cast type of BM correctly.
-  std::string excludeBM, excludeBMLeftRightWater, linkStr;
-  const std::string modclass = typeid(Mod).name();
-
-  if (modclass.find("Pancake")!=std::string::npos)
-    {
-      const PancakeModerator *BM = dynamic_cast<const PancakeModerator*>(&Mod);
-      excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
-      excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
-      linkStr = BM->getLinkString(2);
-    }
-  else if (modclass.find("Box")!=std::string::npos)
-    {
-      const BoxModerator *BM = dynamic_cast<const BoxModerator*>(&Mod);
-      excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
-      excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
-      linkStr = BM->getLinkString(2);
-    }
-  else if (modclass.find("Butterfly")!=std::string::npos)
-    {
-      const ButterflyModerator *BM = dynamic_cast<const ButterflyModerator*>(&Mod);
-      excludeBM = BM->getSideRule();//BM->getExcludeStr(); 
-      excludeBMLeftRightWater = BM->getLeftRightWaterSideRule();
-      linkStr = BM->getLinkString(2);
-    }
-
-  // BM outer cylinder side surface
-  HeadRule HR;
-  HR.procString(linkStr);
-  HR.makeComplement();
-  const std::string BMouterCyl = HR.display();
-
   std::string Out;
 
-  std::string PreString;
-  HR.procString(Pre.getLinkString(preLP));
-  HR.makeComplement();
-  PreString = HR.display();
+  // BASE
+  // inner first
+  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ");
+  Out+=innerSurf.display();
+  Out+=baseSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," -5 -7 ") + PreString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+excludeBM));
+  Out=ModelSupport::getComposite(SMap,modIndex," -15 5 -7 ");
+  Out+=innerSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 5 -6 -7 ");// + PreString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+excludeBM));
+  // cone section
+  for(size_t i=0;i<nLayers;i++)
+    {
+      const std::string Zone=getLayerZone(i);
+      // base layer
+      Out=ModelSupport::getComposite(SMap,modIndex," -8 -1005 ");
+      Out+=baseSurf.display();
+      Out+=midSurf.display();
+      Out+=Zone;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,modIndex," -18 -1015 (8:1005) ");
+      Out+=midSurf.display();
+      Out+=Zone;
+      Out+=baseSurf.display();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
+      
+      // Top layer
+      Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 ");
+      Out+=midSurf.display();
+      Out+=Zone;
+      Out+=topSurf.display();
+      Out+=getLayerZone(i);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
+
+      Out=ModelSupport::getComposite(SMap,modIndex," -19 1016 (9:-1006) ");
+      Out+=midSurf.display();
+      Out+=topSurf.display();
+      Out+=Zone;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,surfMat[i],0.0,Out));
+    }
   
-  Out=ModelSupport::getComposite(SMap,modIndex," 7 -8 ") + PreString;
-  // Originally I excluded all moderator by +excludeBM string, but actually this particular cell
-  // only crosses its left+right water cells, so I use +BM->getLeftRightWaterSideRule()
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,
-				   Out+excludeBMLeftRightWater+BMouterCyl));
+  // TOP
+  // inner first
+  Out=ModelSupport::getComposite(SMap,modIndex," 6 -7 ");
+  Out+=innerSurf.display();
+  Out+=topSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,modIndex," 7 8 -9 ") + PreString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
-				   Out + excludeBMLeftRightWater + BMouterCyl)); // same trick with excludeBMLeftRightWater as in the previous cell
+  Out=ModelSupport::getComposite(SMap,modIndex," 16 -6 -7 ");
+  Out+=innerSurf.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
 
-  HeadRule wingExclude;
-  Out=ModelSupport::getComposite(SMap,modIndex," (-6 -7):(7 -9) ") + PreString;
-  wingExclude.procString(Out);
-  wingExclude.makeComplement();
-  AmbientVoid->addSurfString(wingExclude.display());
-
-  Out=ModelSupport::getComposite(SMap,modIndex," -9 ") + PreString+excludeBM+BMouterCyl;
+  Out=ModelSupport::getComposite(SMap,modIndex," ((-19 16 ) : (-18 -15)) ");
+  Out+=outerSurf.display();
+  Out+=mainDivider.display();
   addOuterSurf(Out);
+
   return; 
 }
 
@@ -349,9 +400,6 @@ void
 PreModWing::createLinks()
   /*!
     Creates a full attachment set
-    First two are in the -/+Y direction and have a divider
-    Last two are in the -/+X direction and have a divider
-    The mid two are -/+Z direction
   */
 {  
   ELog::RegMethod RegA("PreModWing","createLinks");
@@ -362,32 +410,24 @@ PreModWing::createLinks()
 
 void
 PreModWing::createAll(Simulation& System,
-		      const attachSystem::FixedComp& Pre, const long int preLP,
-		      const bool zRotate,
-		      const bool ts,
-		      const attachSystem::FixedComp& Mod)
+		      const attachSystem::FixedComp& ModFC,
+                      const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param Pre :: Attachment point
-    \param preLP :: z-surface of Pre
-    \param zRotate :: true if must be flipped
-    \param ts :: tilt side
-    \param Mod :: Pancake moderator
+    \param ModFC :: Attachment point
+    \param sideIndex :: link point
    */
 {
   ELog::RegMethod RegA("PreModWing","createAll");
 
-  tiltSide = ts;
 
   populate(System.getDataBase());
-  createUnitVector(Pre, preLP, zRotate);
+  createUnitVector(ModFC,sideIndex);
 
   createSurfaces();
-  createObjects(System, Pre, preLP, Mod);
+  createObjects(System);
   createLinks();
-
-
 
   insertObjects(System);
 
