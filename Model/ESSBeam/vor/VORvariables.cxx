@@ -75,6 +75,12 @@ VORvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
+  Control.addVariable("vorStopPoint",0);
+  Control.addVariable("vorStartPoint",0);
+  Control.addVariable("vorAxisXYAngle",0.0);   // rotation
+  Control.addVariable("vorAxisZAngle",0.0);   // rotation 
+
+  
   SGen.addWall(1,15.0,"CastIron");
   SGen.addRoof(1,15.0,"CastIron");
   SGen.addFloor(1,15.0,"CastIron");
@@ -83,19 +89,17 @@ VORvariables(FuncDataBase& Control)
   SGen.addWallMat(5,"Concrete");
 
   FGen.setLayer(1,0.5,"Copper");
-  FGen.setYOffset(0.1);
+  FGen.setLayer(2,0.5,"Void");
+  FGen.setYOffset(2.0);
 
   PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
 
     
-  Control.addVariable("vorStopPoint",0);
-  Control.addVariable("vorAxisXYAngle",0.0);   // rotation
-  Control.addVariable("vorAxisZAngle",0.0);   // rotation 
   
   //  Control.addVariable("vorGABeamXYAngle",1.0);
-  FGen.setYOffset(0.1);
+  FGen.setYOffset(.20);
   FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);
 
   // VACUUM PIPE in Gamma shield

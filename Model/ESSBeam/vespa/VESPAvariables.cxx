@@ -114,7 +114,7 @@ VESPAvariables(FuncDataBase& Control)
   CGen.generateChopper(Control,"vespaChopperA",8.0,12.0,5.55);
 
   // Double Blade chopper
-  BGen.setThick({0.2,0.2,0.2});
+  BGen.setThick({0.2,0.2});
   BGen.addPhase({0.0,90.0,220.0},{24.31,40.98,57.32});
   BGen.addPhase({30.0,120.0,250.0},{24.31,40.98,57.32});
   BGen.setGap(3.0);
