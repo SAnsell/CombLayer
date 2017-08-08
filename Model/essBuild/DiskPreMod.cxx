@@ -176,7 +176,8 @@ DiskPreMod::populate(const FuncDataBase& Control,
   ELog::RegMethod RegA("DiskPreMod","populate");
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-  flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
+  flowGuideType= engActive ?
+    Control.EvalVar<std::string>(keyName+"FlowGuideType") : "None";
 
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
   outerRadius=outRadius;
