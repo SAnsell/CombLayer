@@ -71,7 +71,6 @@ namespace essSystem
   class BeamMonitor;
   class DiskPreMod;
   class DiskLayerMod;
-  class TaperedDiskPreMod;
   class Bunker;
   class TwisterModule;
   class RoofPillars;
@@ -107,19 +106,22 @@ class makeESS
   // Butterfly
   /// Primary Lower Mod
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<TaperedDiskPreMod> LowPreMod;         ///< Lower mod
-  std::shared_ptr<TaperedDiskPreMod> LowCapMod;         ///< Upper mod
+  std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod
+  std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
 
   // Butterly
   std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod
-  std::shared_ptr<TaperedDiskPreMod> TopPreMod;            ///< Top mod
-  std::shared_ptr<TaperedDiskPreMod> TopCapMod;            ///< Lower mod
+  std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod
+  std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod
 
-  std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
-  std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
+  std::shared_ptr<PreModWing> LowPreWingA; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> LowPreWingB; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWingA; ///< Top premoderator wing
+  std::shared_ptr<PreModWing> TopPreWingB; ///< Top premoderator wing
+  
   std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
   std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
 
@@ -185,7 +187,7 @@ class makeESS
 			  const mainSystem::inputParam&);
   void buildBunkerQuake(Simulation&,
 			const mainSystem::inputParam&);
-  void buildPreWings(Simulation&,const std::string&);
+  void buildPreWings(Simulation&);
   void buildTwister(Simulation&);
 
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used

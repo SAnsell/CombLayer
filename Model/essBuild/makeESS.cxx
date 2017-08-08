@@ -107,7 +107,6 @@
 #include "GuideBay.h"
 #include "DiskPreMod.h"
 #include "DiskLayerMod.h"
-#include "TaperedDiskPreMod.h"
 #include "Bunker.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
@@ -135,14 +134,14 @@ makeESS::makeESS() :
 
   topFocus(new FocusPoints("TopFocus")),
   lowFocus(new FocusPoints("LowFocus")),
-  LowPreMod(new TaperedDiskPreMod("LowPreMod")),
-  LowCapMod(new TaperedDiskPreMod("LowCapMod")),
+  LowPreMod(new DiskPreMod("LowPreMod")),
+  LowCapMod(new DiskPreMod("LowCapMod")),
 
   LowAFL(new essSystem::WedgeFlightLine("LowAFlight")),
   LowBFL(new essSystem::WedgeFlightLine("LowBFlight")),
 
-  TopPreMod(new TaperedDiskPreMod("TopPreMod")),
-  TopCapMod(new TaperedDiskPreMod("TopCapMod")),
+  TopPreMod(new DiskLayerMod("TopPreMod")),
+  TopCapMod(new DiskLayerMod("TopCapMod")),
 
   TopAFL(new essSystem::WedgeFlightLine("TopAFlight")),
   TopBFL(new essSystem::WedgeFlightLine("TopBFlight")),
@@ -150,7 +149,6 @@ makeESS::makeESS() :
 
   Bulk(new BulkModule("Bulk")),
   ShutterBayObj(new ShutterBay("ShutterBay")),
-  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
 
   ABunker(new Bunker("ABunker")),
   BBunker(new Bunker("BBunker")),
@@ -158,7 +156,8 @@ makeESS::makeESS() :
   DBunker(new Bunker("DBunker")),
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
-  TopCurtain(new Curtain("Curtain"))
+  TopCurtain(new Curtain("Curtain")),
+  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding"))
 
  /*!
     Constructor
@@ -984,12 +983,11 @@ makeESS::makeBunker(Simulation& System,
 }
 
 void
-makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
+makeESS::buildPreWings(Simulation& System)
   /*!
     Build pre wings :: These are little layers of pre-moderator that
-    drop into the flight-line space
+    drop into the flight-line space 
     \param System :: Simulation
-    \param lowModType :: key for lower moderator type
    */
 {
   ELog::RegMethod RegA("makeESS","buildPreWings");
@@ -997,28 +995,39 @@ makeESS::buildPreWings(Simulation& System, const std::string& lowModType)
     ModelSupport::objectRegister::Instance();
   enum Side {bottom, top};
 
-  TopPreWing = std::shared_ptr<PreModWing>(new PreModWing("TopPreWing"));
-  OR.addObject(TopPreWing);
-  TopPreWing->createAll(System,*TopPreMod,9,false,top, *TopMod);
-  attachSystem::addToInsertSurfCtrl(System, *TopPreMod, *TopPreWing);
-
-  TopCapWing = std::shared_ptr<PreModWing>(new PreModWing("TopCapWing"));
-  OR.addObject(TopCapWing);
-  TopCapWing->createAll(System,*TopCapMod,10,false,bottom, *TopMod);
-  attachSystem::addToInsertSurfCtrl(System, *TopCapMod, *TopCapWing);
-
-  if (lowModType != "None")
+  const ButterflyModerator* TMod=
+    dynamic_cast<const ButterflyModerator*>(TopMod.get());
+  if (TMod)
     {
-      LowPreWing = std::shared_ptr<PreModWing>(new PreModWing("LowPreWing"));
-      OR.addObject(LowPreWing);
-      LowPreWing->createAll(System,*LowPreMod,9,true,bottom, *LowMod);
-      attachSystem::addToInsertSurfCtrl(System, *LowPreMod, *LowPreWing);
+      TopPreWingA = std::shared_ptr<PreModWing>
+        (new PreModWing("TopLeftPreWing"));
+      
+      OR.addObject(TopPreWingA);
+      TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
+      TopPreWingA->setInnerExclude(TMod->getLeftExclude());
+      TopPreWingA->setMidExclude(TMod->getLeftFarExclude());
 
-      LowCapWing = std::shared_ptr<PreModWing>(new PreModWing("LowCapWing"));
-      OR.addObject(LowCapWing);
-      LowCapWing->createAll(System,*LowCapMod,10,true,top, *LowMod);
-      attachSystem::addToInsertSurfCtrl(System, *LowCapMod, *LowCapWing);
+      TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
+      TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
+      TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
+      TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingA->createAll(System,*TMod,0);
+
+      TopPreWingB =
+        std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
+      
+      OR.addObject(TopPreWingB);
+      TopPreWingB->setDivider(TMod->getSignedMainRule(7));
+      TopPreWingB->setInnerExclude(TMod->getRightExclude());
+      TopPreWingB->setMidExclude(TMod->getRightFarExclude());
+      TopPreWingB->setBaseCut(TopPreMod->getSignedFullRule(6));
+      TopPreWingB->setTopCut(TopCapMod->getSignedFullRule(5));
+      TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      
+      TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));
+      TopPreWingB->createAll(System,*TMod,0);
     }
+
   return;
 }
 
@@ -1112,11 +1121,11 @@ makeESS::build(Simulation& System,
   if (lowModType != "None")
     LowPreMod->createAll(System,World::masterOrigin(),0,true,
 			 Target->wheelHeight()/2.0,
-			 Reflector->getRadius(),false);
+			 Reflector->getRadius());
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius(),true);
+		       Reflector->getRadius());
 
   if (lowModType != "None")
     {
@@ -1140,11 +1149,11 @@ makeESS::build(Simulation& System,
 
   // Cap moderator DOES not span whole unit
   TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius(),false);
+   		       0.0,Reflector->getRadius());
 
   if (lowModType != "None")
     LowCapMod->createAll(System,*LowMod,6,false,
-			 0.0,Reflector->getRadius(),true);
+			 0.0,Reflector->getRadius());
 
   if (lowModType != "None")
     Reflector->createAll(System,World::masterOrigin(),
@@ -1157,7 +1166,7 @@ makeESS::build(Simulation& System,
 			 0.0,
 			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
 
-  buildPreWings(System,lowModType);
+  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
