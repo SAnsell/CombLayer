@@ -155,7 +155,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wPWT","wPWT",25,0);
   IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regItem("WType","weightType",1,30);
+  IParam.regItem("WEType","weightEnergyType",1,30);
   IParam.regMulti("WSource","weightSource",30,1);
   IParam.regMulti("WPlane","weightPlane",30,2);
   IParam.regMulti("WTally","weightTally",30,1);
@@ -172,8 +172,8 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regItem("wwgVTK","wwgVTK",1,10);
   IParam.regItem("wwgNorm","wwgNorm",0,30);
-  IParam.regMulti("wwgAdjoint","wwgAdjoint",100,1);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
+  IParam.regItem("wwgCADIS","wwgCADIS",0,30);
   IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
   IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
@@ -267,7 +267,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("wIMP","set imp partile imp object(s)  ");
   IParam.setDesc("wFCL","Forced Collision ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
-  IParam.setDesc("WType","Initial model for weights [help for info]");
+  IParam.setDesc("WEType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WRebase","Rebase the weights based on a cell");
   IParam.setDesc("WObject","Reconstruct weights base on cells");

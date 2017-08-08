@@ -69,7 +69,6 @@
 #include "inputParam.h"
 #include "PositionSupport.h"
 #include "TallyCreate.h"
-#include "TempWeights.h"
 #include "ImportControl.h"
 
 #include "LineTrack.h"
@@ -82,39 +81,248 @@
 #include "WWGWeight.h"
 #include "MarkovProcess.h"
 #include "WeightControl.h"
+#include "WWGControl.h"
 
 namespace WeightSystem
 {
 
-void
-WeightControl::procWWGWeights(Simulation& System,
-			      const mainSystem::inputParam& IParam)
+WWGControl::WWGControl() :
+  WeightControl(),
+  nMarkov(0),sourceFlux(0),adjointFlux(0)
   /*!
-    Set individual weights based on WWG
-    \param System :: Simulation
-    \param IParam :: input stream
+    Constructor
+  */
+{}
+
+  
+WWGControl::WWGControl(const WWGControl& A) :
+  WeightControl(A),nMarkov(A.nMarkov),
+  sourceFlux((A.sourceFlux) ? new WWGWeight(*A.sourceFlux) : 0),
+  adjointFlux((A.adjointFlux) ? new WWGWeight(*A.adjointFlux) : 0)
+  /*!
+    Copy Constructor
+    \param A :: WWGControl item to copy
+  */
+{}
+
+WWGControl&
+WWGControl::operator=(const WWGControl& A)
+  /*!
+    Assignment operator
+    \param A :: WWGControl to copy
+    \return this
   */
 {
-  ELog::RegMethod RegA("WeightControl","procWWGWeights");
+  if (this!=&A)
+    {
+      WeightControl::operator=(A);
+      nMarkov=A.nMarkov;
+      *sourceFlux= *A.sourceFlux;
+      *adjointFlux= *A.adjointFlux;
+    }
+  return *this;
+}
+
+WWGControl::~WWGControl()
+  /*!
+    Destructor
+   */
+{
+  delete sourceFlux;
+  delete adjointFlux;
+}
+  
+  
+void
+WWGControl::wwgMesh(const mainSystem::inputParam& IParam)
+  /*!
+    Process wwg Mesh - constructs the 3D mesh boundary
+    \todo Modify to remove ability to create complex boundaries
+    \param IParam :: Input parameters
+  */
+{
+  ELog::RegMethod RegA("WWGControl","wwgMesh");
 
   WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
 
-  procParam(IParam,"wWWG",0,0);
-  wwgMesh(IParam);               // create mesh [wwgXMesh etc]
-  wwgEnergy(IParam);             // set default energy grid
+  const std::string XYZ[3]={"X","Y","Z"};
+  std::vector<std::vector<double>> boundaryVal(3);
+  std::vector<std::vector<size_t>> bCnt(3);
+  
+  for(size_t index=0;index<3;index++)
+    {
+      const std::string itemName("wwg"+XYZ[index]+"Mesh");
+      const size_t NXM=IParam.itemCnt(itemName,0);
 
-  wwgCreate(System,IParam);
-  wwgMarkov(System,IParam);
-  wwgNormalize(IParam); 
-  wwgVTK(IParam);
-  WM.getParticle('n')->setActiveWWP(0);
-  setWWGImp(System);
+      if (NXM!=3)
+	throw ColErr::IndexError<size_t>
+	  (NXM,3,"Insufficient items for "+itemName+
+	   ": X_0 : N_0 : X1 ");
+
+      for(size_t i=0;i<NXM;i++)
+	{
+	  if (i % 2)   // Odd : Integer
+	    bCnt[index].push_back
+	      (IParam.getValue<size_t>(itemName,i));
+	  else
+            boundaryVal[index].push_back
+	      (IParam.getValue<double>(itemName,i));
+	}
+    }
+  const Geometry::Vec3D RefPt=
+    IParam.getDefValue(Geometry::Vec3D(0.1,0.1,0.1),"wwgRPtMesh",0);
+
+  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
+			boundaryVal[1],bCnt[1],
+			boundaryVal[2],bCnt[2]);
+  wwg.calcGridMidPoints();
+  wwg.setRefPoint(RefPt);
+  
+  return;
+}
+
+
+void
+WWGControl::wwgEnergy(const mainSystem::inputParam& IParam)
+  /*!
+    Modify the energy grid if explicitly given as an wwgE card.
+    If htat is not given then a full 
+    just one energy grid.
+    \param IParam :: Input paramters
+  */
+{
+  ELog::RegMethod RegA("WWGControl","wwgEnergy");
+
+  if (IParam.flag("wwgE"))
+    {
+      const size_t NEnergy=IParam.itemCnt("wwgE",0);
+      if (!NEnergy ||
+          IParam.getValue<std::string>("wwgE",0)!="default")
+        {
+          EBand.clear();
+          WT.clear();
+          double EPrev(0.0);
+          for(size_t i=0;i<NEnergy;i++)
+            {
+              const double ETest=IParam.getValue<double>("wwgE",0,i);
+              if (ETest<=EPrev)
+                throw ColErr::OrderError<double>
+                  (EPrev,ETest,"Energy Point["+std::to_string(i)+"]");
+              
+              EBand.push_back(ETest);
+              WT.push_back(1.0);
+              EPrev=ETest;
+            }
+          if (!NEnergy)
+            {
+              EBand.push_back(1.3e5);
+              WT.push_back(1.0);    
+            }
+        }
+    }
   return;
 }
 
 void
-WeightControl::wwgMarkov(const Simulation& System,
+WWGControl::wwgInitWeight()
+  /*!
+    Initialize the WWGWeight arrays
+   */
+{
+  ELog::RegMethod RegA("WWGControl","wwgInitWeight");
+  
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+  wwg.setEnergyBin(EBand,WT);
+
+  // 99% of the time these are either not set of the wrong size
+  delete sourceFlux;
+  delete adjointFlux;
+
+  // built and zeroed
+  sourceFlux=new WWGWeight(EBand.size(),wwg.getGrid());
+  adjointFlux=new WWGWeight(EBand.size(),wwg.getGrid());
+
+  return;
+}
+  
+void
+WWGControl::wwgCreate(const Simulation& System,
+                      const mainSystem::inputParam& IParam)
+  /*!
+    Calculate a WWG weights based 
+    \param System :: Simulation
+    \param IParam :: Input deck
+   */
+{
+  ELog::RegMethod RegA("WWGControl","wwgCreate");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+
+  int wwgFlag(0);
+  
+  const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
+  const size_t NSetCnt=IParam.setCnt("wwgCalc");
+  
+  for(size_t iSet=0;iSet<NSetCnt;iSet++)
+    {
+      std::string ptType;
+      size_t ptIndex;
+      bool adjointFlag;
+      
+      const std::string SourceStr=
+        IParam.getValueError<std::string>
+        ("wwgCalc",iSet,0,"wwgCalc without source term");
+
+      processPtString(SourceStr,ptType,ptIndex,adjointFlag);
+      
+      // get values [ecut / density / minWeight/ r2Length / r2Power ]
+      procParam(IParam,"wwgCalc",iSet,1);      
+      WWGWeight& wSet=(adjointFlag) ? *adjointFlux : *sourceFlux;
+
+      if (ptType=="Plane")   
+	{
+          if (ptIndex>=planePt.size())
+            throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
+                                             "planePt.size() < ptIndex");
+          
+	  wSet.wTrack(System,planePt[ptIndex],GridMidPt,
+		      density,r2Length,r2Power);
+	}
+      else if (ptType=="Source")
+        {
+	  ELog::EM<<"Here "<<ptIndex<<" "<<sourcePt.size()<<ELog::endDiag;
+	  if (ptIndex>=sourcePt.size())
+            throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
+                                             "sourcePt.size() < ptIndex");
+
+          wSet.wTrack(System,sourcePt[ptIndex],GridMidPt,
+		      density,r2Length,r2Power);
+        }
+      else 
+	throw ColErr::InContainerError<std::string>
+	  (ptType,"SourceType not known");
+
+      wSet.controlMinValue(minWeight);
+      wwgFlag|= (adjointFlag) ? 2 : 1;
+    }
+  
+  if ((wwgFlag & 1)==0)
+    ELog::EM<<"Failed to calculate : Source for WWG"<<ELog::endCrit;
+  if ((wwgFlag & 2)==0)
+    ELog::EM<<"Failed to calculate : Adjoint for WWG"<<ELog::endCrit;
+
+  return;
+}
+  
+
+void
+WWGControl::wwgMarkov(const Simulation& System,
 			 const mainSystem::inputParam& IParam)
   /*!
     Process a Markov chain iteration for the system
@@ -122,7 +330,7 @@ WeightControl::wwgMarkov(const Simulation& System,
     \param IParam :: Input deck
    */
 {
-  ELog::RegMethod RegA("WeightControl","wwgMarkov");
+  ELog::RegMethod RegA("WWGControl","wwgMarkov");
 
   // Find if we need to do Markov:
   const size_t NSetCnt=IParam.setCnt("wwgMarkov");
@@ -148,96 +356,28 @@ WeightControl::wwgMarkov(const Simulation& System,
 }
 
 void
-WeightControl::wwgCreate(const Simulation& System,
-                         const mainSystem::inputParam& IParam)
-  /*!
-    Calculate a WWG weights based 
-    \param System :: Simulation
-    \param IParam :: Input deck
-   */
-{
-  ELog::RegMethod RegA("WeightControl","wwgCreate");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-  const std::vector<double> EBin=wwg.getEBin();
-  const std::vector<Geometry::Vec3D> GridMidPts=wwg.getMidPoints();
-  const size_t NSetCnt=IParam.setCnt("wwgCalc");
-
-  for(size_t index=0;index<NSetCnt;index++)
-    {
-      // local mesh - zeroed
-      WWGWeight wSet(EBin.size(),wwg.getGrid());   
-      procParam(IParam,"wwgCalc",index,0);
-
-      if (activePtType=="Plane")   //
-	{
-	  ELog::EM<<"Active type == Plane "<<ELog::endDiag;
-          if (activePtIndex>=planePt.size())
-            throw ColErr::IndexError<size_t>(activePtIndex,planePt.size(),
-                                             "planePt.size() < activePtIndex");
-	  wSet.wTrack(System,planePt[activePtIndex],EBin,GridMidPts,
-		      density,r2Length,r2Power);
-	}
-      else if (activePtType=="Source")
-        {
-	  if (activePtIndex>=sourcePt.size())
-            throw ColErr::IndexError<size_t>(activePtIndex,sourcePt.size(),
-                                             "sourcePt.size() < activePtIndex");
-          ELog::EM<<"Calling Source Point"<<ELog::endDiag;
-          wSet.wTrack(System,sourcePt[activePtIndex],EBin,GridMidPts,
-		      density,r2Length,r2Power);
-        }
-      else 
-	throw ColErr::InContainerError<std::string>
-	  (activePtType,"SourceType no known");
-
-      // min weight == exp(w) (negative) 
-      if (minWeight>1.0)
-	minWeight*= -log(10.0);
-      else if (minWeight<0.0)
-	minWeight*= log(10);
-      else if (minWeight>1e-30)
-	minWeight= exp(minWeight);
-      else
-	minWeight= exp(1e-30);
-
-      ELog::EM<<"MinW == "<<minWeight<<ELog::endDiag;
-      if (!activeAdjointFlag)
-	{
-	  wSet.makeSource(minWeight);
-	}
-      else
-	{
-	  ELog::EM<<"Call adjoint:"<<minWeight<<ELog::endDiag;
-	  wSet.makeAdjoint(minWeight);
-	}
-
-      wwg.updateWM(wSet,scaleFactor);
-    }
-  return;
-}
-  
-void
-WeightControl::wwgNormalize(const mainSystem::inputParam& IParam)
+WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   /*!
     Normalize the main weight system
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("WeightControl","wwgNormalize");
+  ELog::RegMethod RegA("WWGControl","wwgNormalize");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   WWG& wwg=WM.getWWG();
 
+  wwg.updateWM(*sourceFlux,1.0);
   if (IParam.flag("wwgNorm"))
     {
       const double minWeight=
         IParam.getDefValue<double>(-100.0,"wwgNorm",0,0);
       if (minWeight<-90)
-	wwg.normalize();
+	{
+	  ELog::EM<<"Norm == "<<ELog::endDiag;
+	  wwg.normalize();
+	}
       else
 	{
 	  const double powerWeight=
@@ -245,106 +385,24 @@ WeightControl::wwgNormalize(const mainSystem::inputParam& IParam)
 	  ELog::EM<<"Scale Range == "<<std::pow(10.0,-minWeight)<<ELog::endDiag;
 	  wwg.scaleRange(std::pow(10.0,-minWeight),1.0);
 	  wwg.powerRange(powerWeight);
-	}
-    }
-  return;
-}
-  
-void
-WeightControl::wwgEnergy(const mainSystem::inputParam& IParam)
-  /*!
-    Modify the energy grid if explicitly given as an wwgE card.
-    If not an a weightType has been set then use that -- else
-    just one energy grid.
-  */
-{
-  ELog::RegMethod RegA("WeightControl","wwgEnergy");
 
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-
-  if (IParam.flag("wwgE"))
-    {
-      std::vector<double> EWWG;
-      std::vector<double> DefVal;
-      const size_t NEnergy=IParam.itemCnt("wwgE",0);
-      ELog::EM<<"NEnergy = "<<NEnergy<<ELog::endDiag;
-      for(size_t i=0;i<NEnergy;i++)
-	{
-	  EWWG.push_back(IParam.getValue<double>("wwgE",i));
-	  DefVal.push_back(1.0);
+	      
 	}
-      if (!NEnergy)
-	{
-	  EWWG.push_back(1.3e5);
-	  DefVal.push_back(1.0);
-	}
-      wwg.setEnergyBin(EWWG,DefVal);
     }
   else
-    wwg.setEnergyBin(EBand,WT);
-
+    ELog::EM<<"Warning : No WWG normalization step"<<ELog::endWarn;
   return;
 }
   
-void
-WeightControl::wwgMesh(const mainSystem::inputParam& IParam)
-  /*!
-    Process wwg Mesh
-    \param IParam :: Input parameters
-  */
-{
-  ELog::RegMethod RegA("WeightControl","wwgMesh");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  WWG& wwg=WM.getWWG();
-
-  const std::string XYZ[3]={"X","Y","Z"};
-  std::vector<std::vector<double>> boundaryVal(3);
-  std::vector<std::vector<size_t>> bCnt(3);
-  
-  for(size_t index=0;index<3;index++)
-    {
-      const std::string itemName("wwg"+XYZ[index]+"Mesh");
-      const size_t NXM=IParam.itemCnt(itemName,0);
-
-      if (NXM<3 || !(NXM % 2) )
-	throw ColErr::IndexError<size_t>
-	  (NXM,3,"Insufficient items for "+itemName+
-	   ": X_0 : N_0 : X1 : N1 ...");
-
-      for(size_t i=0;i<NXM;i++)
-	{
-	  if (i % 2)   // Odd : Integer
-	    bCnt[index].push_back
-	      (IParam.getValue<size_t>(itemName,i));
-	  else
-            boundaryVal[index].push_back
-	      (IParam.getValue<double>(itemName,i));
-	}
-    }
-  const Geometry::Vec3D RefPt=
-    IParam.getDefValue(Geometry::Vec3D(0.1,0.1,0.1),"wwgRPtMesh",0);
-
-  wwg.getGrid().setMesh(boundaryVal[0],bCnt[0],
-			boundaryVal[1],bCnt[1],
-			boundaryVal[2],bCnt[2]);
-  wwg.calcGridMidPoints();
-  wwg.setRefPoint(RefPt);
-  
-  return;
-}
 
 void
-WeightControl::wwgVTK(const mainSystem::inputParam& IParam)
+WWGControl::wwgVTK(const mainSystem::inputParam& IParam)
   /*!
     Write out an vkt file
     \param IParam :: Data for point
   */
 {
-  ELog::RegMethod RegA("WeightControl","wwgvTK");
+  ELog::RegMethod RegA("WWGControl","wwgvTK");
   
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
@@ -354,11 +412,95 @@ WeightControl::wwgVTK(const mainSystem::inputParam& IParam)
       WWG& wwg=WM.getWWG();
       const std::string FName=
 	IParam.getValue<std::string>("wwgVTK",0);
-
       wwg.writeVTK(FName);
     }
   return;
 }
-		       
+
+void
+WWGControl::procMarkov(const mainSystem::inputParam&,
+                       const std::string&,
+                       const size_t)
+  /*!
+    Markov update -- 
+   */
+{
+  ELog::RegMethod RegA("WWGControl","procMarkov");
+  ELog::EM<<"Calling placeholder"<<ELog::endDiag;
+  return;
+}
+
+void
+WWGControl::wwgCombine(const Simulation& System,
+		       const mainSystem::inputParam& IParam)
+  /*!
+    Co-joint the adjoint/source terms
+    \param System :: Model simulation
+    \param IParam :: input data
+   */
+{
+  ELog::RegMethod RegA("WWGControl","wwgCombine");
+
+  if (IParam.flag("wwgCADIS"))
+    {
+      WeightSystem::weightManager& WM=
+	WeightSystem::weightManager::Instance();
+      WWG& wwg=WM.getWWG();
+	
+      size_t itemCnt(0);
+
+      const Geometry::Vec3D SPoint=
+	IParam.getCntVec3D("wwgCADIS",0,itemCnt,"CADIS Source Point");
+      const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
+
+      sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);      
+    }
+  else
+    ELog::EM<<"Warning : No WWG CADIS step"<<ELog::endWarn;
+
+
+  return;
+}
+  
+
+void
+WWGControl::processWeights(Simulation& System,
+			   const mainSystem::inputParam& IParam)
+  /*!
+    External control sequence for WWG:
+    Controls full build of WWG mesh/ calculation / and final setting
+    \param System :: Simulation
+    \param IParam :: input stream
+  */
+{
+  ELog::RegMethod RegA("WWGControl","processWeights");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();  
+
+  if (IParam.flag("wWWG"))
+    {
+      WeightControl::processWeights(System,IParam);
+      
+      procParam(IParam,"wWWG",0,0);
+      wwgMesh(IParam);               // create mesh [wwgXMesh etc]
+      wwgEnergy(IParam);             // set default energy grid
+      wwgInitWeight();               // Zero arrays etc
+      wwgCreate(System,IParam);      // LOG space
+      wwgMarkov(System,IParam);
+      
+      wwgCombine(System,IParam);                 
+      wwgNormalize(IParam); 
+      wwgVTK(IParam);
+      
+      WM.getParticle('n')->setActiveWWP(0);
+      setWWGImp(System);
+    }
+
+  return;
+}
+
+
+  
 }  // NAMESPACE weightSystem
 

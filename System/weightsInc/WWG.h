@@ -76,7 +76,7 @@ class WWG
   const Geometry::Mesh3D& getGrid() const { return Grid; }
   /// get grid mid point
   const std::vector<Geometry::Vec3D>& getMidPoints() const
-    {return GridMidPt; }
+    { return GridMidPt; }
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&,

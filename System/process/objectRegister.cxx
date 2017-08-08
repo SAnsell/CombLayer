@@ -552,13 +552,12 @@ objectRegister::calcRenumber(const int CN) const
   /*!
     Take a cell number and calculate the renumber [not ideal]
     \param CN :: orignal cell number
-    \return correct offset nubmer
+    \return correct offset number
    */
 {
   const std::string key=inRange(CN);
   if (key.empty())
     return CN;
-
 
   MTYPE::const_iterator Amc=regionMap.find(key);
   MTYPE::const_iterator Bmc=renumMap.find(key);
@@ -566,7 +565,7 @@ objectRegister::calcRenumber(const int CN) const
     return CN;
 
   const int Cdiff=CN-Amc->second.first;
-  return Bmc->second.first+Cdiff;
+  return Bmc->second.first+Cdiff-1;
 }
 
 std::vector<int>
@@ -606,11 +605,10 @@ objectRegister::getObjectRange(const std::string& objName) const
         }
       
       for(int& CN : Out)
-        CN=calcRenumber(CN);
-
+	CN=calcRenumber(CN);
       return Out;
     }
-
+  
   // Simple number range
   pos=objName.find("-");
   if (pos!=std::string::npos)
@@ -658,6 +656,7 @@ objectRegister::getObjectRange(const std::string& objName) const
   std::vector<int> Out;
   std::set<int>::const_iterator sc=activeCells.end();
 
+  ELog::EM<<"BStart = "<<BStart<<" : "<<BRange<<ELog::endDiag;
   for(int i=BStart;i<BRange+BStart;i++)
     {
       sc=activeCells.find(i);
@@ -666,7 +665,12 @@ objectRegister::getObjectRange(const std::string& objName) const
       
     }
   for(int& CN : Out)
-    CN=calcRenumber(CN);
+    {
+
+      ELog::EM<<"CN:"<<CN<<":";
+      CN=calcRenumber(CN);
+      ELog::EM<<CN<<ELog::endDiag;
+    }
 
   return Out;
 }

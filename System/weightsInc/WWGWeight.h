@@ -3,7 +3,7 @@
  
  * File:   weightInc/WWGWeight.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,12 +37,14 @@ class WWGWeight
 {
  private:
 
+  int logFlag;                  ///<  normal values[-1]/ no state[0] / log values [1]
+  
   const long int WX;             ///< Weight XIndex size
   const long int WY;             ///< Weight YIndex size
   const long int WZ;             ///< Weight ZIndex size
   const long int WE;             ///< Energy size
   
-  /// local storage for data [i,j,j,Energy]
+  /// local storage for data [i,j,k,Energy]
   boost::multi_array<double,4> WGrid; 
   
  public:
@@ -57,31 +59,39 @@ class WWGWeight
   long int getZSize() const { return WZ; }
   long int getESize() const { return WE; }
 
+  /// set log state
+  void assignLogState(const bool L) { logFlag=L; }
+  bool getLogState() const { return logFlag; }
+  
   void zeroWGrid();
   double calcMaxAttn(const long int) const;
   double calcMaxAttn() const;
 
-  void makeSource(const double);
-  void makeAdjoint(const double);
+  void controlMinValue(const double);
   
-  //  void updateWM(WWG&,const double,const double,
-  //		const double,const double) const;
-
   /// accessor to Cells
   const boost::multi_array<double,4>& getGrid() const
     { return WGrid; }
   void setPoint(const long int,const long int,const double);
-
+  void addPoint(const long int,const long int,const double);
+  void scaleSource(const double);
+  
+  double distTrack(const Simulation&,const Geometry::Vec3D&,
+		   const Geometry::Vec3D&,const double,
+		   const double,const double) const;
+  
   void wTrack(const Simulation&,const Geometry::Vec3D&,
-	      const std::vector<double>&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const double,const double,const double);
   
   void wTrack(const Simulation&,const Geometry::Plane&,
-	      const std::vector<double>&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const double,const double,const double);
 
+  void CADISnorm(const Simulation&,const WWGWeight&,
+		 const std::vector<Geometry::Vec3D>&,
+		 const Geometry::Vec3D&);
+  
   void write(std::ostream&) const;
 };
 
