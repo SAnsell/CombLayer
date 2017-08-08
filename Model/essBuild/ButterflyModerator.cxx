@@ -481,7 +481,6 @@ ButterflyModerator::createAll(Simulation& System,
 
   createObjects(System);
   createLinks();
-  
   return;
 }
 
@@ -561,4 +560,5 @@ ButterflyModerator::getRightExclude() const
   
 }
 
+  
 }  // NAMESPACE essSystem

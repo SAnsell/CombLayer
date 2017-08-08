@@ -307,6 +307,11 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(4,-SMap.realSurf(triOffset+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(triOffset+6));
 
+  // OuterCorners and linkage
+  FixedComp::setLinkSurf(6,getLayerString(nLayers-1,-7));
+  FixedComp::setLinkSurf(7,getLayerString(nLayers-1,-8));
+  FixedComp::setLinkSurf(8,getLayerString(nLayers-1,-9));
+
   // INNER LINKS
   
   cornerSet(0.0,CPts,NPts);
@@ -323,6 +328,8 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(12,SMap.realSurf(wingIndex+105));
   FixedComp::setLinkSurf(13,-SMap.realSurf(wingIndex+106));
 
+
+  
   return;
 }
   
