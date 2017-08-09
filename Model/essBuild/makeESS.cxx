@@ -86,7 +86,7 @@
 #include "Wheel.h"
 #include "BilbaoWheel.h"
 #include "BeRef.h"
-#include "ProtonTube.h"
+#include "TelescopicPipe.h"
 #include "BeamMonitor.h"
 #include "ModBase.h"
 #include "ConicInfo.h"
@@ -122,7 +122,7 @@ namespace essSystem
 
 makeESS::makeESS() :
   Reflector(new BeRef("BeRef")),
-  PBeam(new ProtonTube("ProtonTube")),
+  PBeam(new TelescopicPipe("ProtonTube")),
   BMon(new BeamMonitor("BeamMonitor")),
 
   topFocus(new FocusPoints("TopFocus")),
@@ -854,8 +854,7 @@ makeESS::build(Simulation& System,
   const std::string iradLine=IParam.getValue<std::string>("iradLineType");
 
   const size_t nF5=IParam.getValue<size_t>("nF5");
-  const int engActive=Control.EvalPair<int>
-    ("BulkEngineeringActive","EngineeringActive");
+  const int engActive=IParam.flag("eng");
   
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
@@ -932,15 +931,11 @@ makeESS::build(Simulation& System,
 
   // PROTON BEAMLINE
   
-
-  PBeam->createAll(System,*Reflector,1,*ShutterBayObj,-1);
-  // attachSystem::addToInsertSurfCtrl(System,*Reflector,
-  // 				    PBeam->getCC("Sector0"));
-  
-  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
-				    PBeam->getCC("Full"));
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,
-				    PBeam->getCC("Full"));
+  PBeam->setFront(*Reflector,1);
+  PBeam->setBack(*ShutterBayObj,-1);
+  PBeam->createAll(System,*Reflector,1);  
+  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,PBeam->getCC("Full"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,PBeam->getCC("Full"));
 
   if (engActive)
     buildTwister(System);

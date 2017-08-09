@@ -63,7 +63,7 @@ namespace essSystem
   class IradCylinder;
   class BulkModule;
   class ShutterBay;
-  class ProtonTube;
+  class TelescopicPipe;
   class PreModWing;
   class GuideBay;
   class BeamMonitor;
@@ -93,7 +93,7 @@ class makeESS
   
   std::shared_ptr<WheelBase> Target;   ///< target object
   std::shared_ptr<BeRef> Reflector;    ///< reflector object
-  std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
+  std::shared_ptr<TelescopicPipe> PBeam;   ///< Proton Void
   std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // main moderator focus points

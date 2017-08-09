@@ -867,8 +867,7 @@ RoofPillars::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(bunkerObj,7);
 
-  setFront(bunkerObj,
-	   11);    // floor
+  setFront(bunkerObj,11);    // floor
   setBack(bunkerObj,12);     // roof [inner]
 
   createSurfaces();

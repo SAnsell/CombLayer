@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/ProtonTube.cxx
+ * File:   essBuild/TelescopicPipe.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,54 +71,55 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "FrontBackCut.h"
 
-#include "ProtonTube.h"
+#include "TelescopicPipe.h"
 
 namespace essSystem
 {
 
-ProtonTube::ProtonTube(const std::string& Key) :
-  attachSystem::ContainedGroup(),attachSystem::FixedComp(Key,3),
+
+TelescopicPipe::TelescopicPipe(const std::string& Key) :
+  attachSystem::ContainedGroup(),attachSystem::FixedOffset(Key,3),
+  attachSystem::FrontBackCut(),
   ptIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ptIndex+1)
   /*!
     Constructor
+    \param Key :: Keyname
   */
 {}
 
-ProtonTube::ProtonTube(const ProtonTube& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
-  ptIndex(A.ptIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),nSec(A.nSec),radius(A.radius),
-  length(A.length),zCut(A.zCut),thick(A.thick),
-  inMat(A.inMat),wallMat(A.wallMat)
+TelescopicPipe::TelescopicPipe(const TelescopicPipe& A) : 
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
+  attachSystem::FrontBackCut(A),
+  ptIndex(A.ptIndex),cellIndex(A.cellIndex),nSec(A.nSec),
+  radius(A.radius),length(A.length),zCut(A.zCut),
+  thick(A.thick),inMat(A.inMat),wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: ProtonTube to copy
+    \param A :: TelescopicPipe to copy
   */
 {}
 
-ProtonTube&
-ProtonTube::operator=(const ProtonTube& A)
+   
+TelescopicPipe&
+TelescopicPipe::operator=(const TelescopicPipe& A)
   /*!
     Assignment operator
-    \param A :: ProtonTube to copy
+    \param A :: TelescopicPipe to copy
     \return *this
   */
 {
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       nSec=A.nSec;
       radius=A.radius;
       length=A.length;
@@ -129,49 +130,37 @@ ProtonTube::operator=(const ProtonTube& A)
     }
   return *this;
 }
+   
 
-ProtonTube::~ProtonTube()
+TelescopicPipe::~TelescopicPipe()
   /*!
     Destructor
    */
 {}
 
 void
-ProtonTube::populate(const FuncDataBase& Control)
+TelescopicPipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
   */
 {
-  ELog::RegMethod RegA("ProtonTube","populate");
+  ELog::RegMethod RegA("TelescopicPipe","populate");
 
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
-  
   nSec=Control.EvalVar<size_t>(keyName+"NSection");   
   double R,L(0.0),C,T;
   int Imat,Wmat;
 
   for(size_t i=0;i<nSec;i++)
     {
-     R=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Radius",i+1));   
-     L+=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Length",i+1));   
-     C=Control.EvalVar<double>
-	(StrFunc::makeString(keyName+"Zcut",i+1));   
-     T=Control.EvalVar<double>
-       (StrFunc::makeString(keyName+"WallThick",i+1));     
-     Imat=ModelSupport::EvalMat<int>
-       (Control,StrFunc::makeString(keyName+"InnerMat",i+1));   
-     Wmat=ModelSupport::EvalMat<int>
-       (Control,StrFunc::makeString(keyName+"WallMat",i+1));   
-     
+      const std::string Num(std::to_string(i+1));
+      R=Control.EvalVar<double>(keyName+"Radius"+Num);
+      L+=Control.EvalVar<double>(keyName+"Length"+Num);   
+      C=Control.EvalVar<double>(keyName+"Zcut"+Num);   
+      T=Control.EvalVar<double>(keyName+"WallThick"+Num);     
+      Imat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat"+Num);   
+      Wmat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat"+Num);   
+      
       radius.push_back(R);
       length.push_back(L);
       zCut.push_back(C);
@@ -184,31 +173,29 @@ ProtonTube::populate(const FuncDataBase& Control)
 }
 
 void
-ProtonTube::createUnitVector(const attachSystem::FixedComp& FC,
-			     const long int sideIndex)
+TelescopicPipe::createUnitVector(const attachSystem::FixedComp& FC,
+				 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
     \param sideIndex :: link point on target [signed]
   */
 {
-  ELog::RegMethod RegA("ProtonTube","createUnitVector");
+  ELog::RegMethod RegA("TelescopicPipe","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyAngleRotate(xyAngle,zAngle);
-  applyShift(xStep,yStep,zStep);
+  applyOffset();
 
   return;
 }
 
 void
-ProtonTube::createSurfaces()
+TelescopicPipe::createSurfaces()
   /*!
-    Create all the surface
+    Create all the surfaces
   */
 {
-  ELog::RegMethod RegA("ProtonTube","createSurfaces");
+  ELog::RegMethod RegA("TelescopicPipe","createSurfaces");
  
 
   int PT(ptIndex);
@@ -229,27 +216,24 @@ ProtonTube::createSurfaces()
 }
 
 void
-ProtonTube::createObjects(Simulation& System, 
-			  const std::string& TargetSurfBoundary,
-			  const std::string& outerSurfBoundary)
+TelescopicPipe::createObjects(Simulation& System)
   /*!
     Adds the components
     \param System :: Simulation to create objects in
-    \param TargetSurfBoundary :: boundary layer [expect to be target edge]
-    \param outerSurfBoundary :: boundary layer [expect to be reflector/Bulk edge]
   */
 {
-  ELog::RegMethod RegA("ProtonTube","createObjects");
+  ELog::RegMethod RegA("TelescopicPipe","createObjects");
 
   std::string Out,EndCap,FrontCap;
+
   int PT(ptIndex);
   attachSystem::ContainedGroup::addCC("Full");
   for(size_t i=0;i<nSec;i++)
     {
       const std::string SName=StrFunc::makeString("Sector",i);
-      FrontCap=(!i) ? TargetSurfBoundary :
+      FrontCap=(!i) ? frontRule() :
 	ModelSupport::getComposite(SMap,PT-100, " 2 ");
-      EndCap=(i+1 == nSec) ? outerSurfBoundary :
+      EndCap=(i+1 == nSec) ? backRule() : 
 	ModelSupport::getComposite(SMap,PT, " -2 ");
       
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
@@ -274,13 +258,14 @@ ProtonTube::createObjects(Simulation& System,
 
 
 void
-ProtonTube::createLinks()
+TelescopicPipe::createLinks()
   /*!
     Creates a full attachment set
   */
 { 
-  ELog::RegMethod RegA("ProtonTube","createLinks");
-  
+  ELog::RegMethod RegA("TelescopicPipe","createLinks");
+
+  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
   FixedComp::setNConnect(nSec+2);
   int PT(ptIndex);
   for(size_t i=0;i<nSec;i++)
@@ -293,47 +278,23 @@ ProtonTube::createLinks()
 }
 
 void
-ProtonTube::createAll(Simulation& System,
-		      const attachSystem::FixedComp& TargetFC,
-		      const long int tIndex,
-		      const attachSystem::FixedComp& BulkFC,
-		      const long int bIndex)
+TelescopicPipe::createAll(Simulation& System,
+			  const attachSystem::FixedComp& TargetFC,
+			  const long int tIndex)
   /*!
-    Global creation of the hutch
+    Global creation of the pipe
     \param System :: Simulation to add vessel to
     \param TargetFC :: FixedComp for origin and target outer surf
     \param tIndex :: Target plate surface [signed]
-    \param BulkFC :: FixedComp for origin and target outer surf
-    \param bIndex :: Target plate surface [signed]
   */
 {
-  ELog::RegMethod RegA("ProtonTube","createAll");
+  ELog::RegMethod RegA("TelescopicPipe","createAll");
   //  populate(System);
   populate(System.getDataBase());
 
   createUnitVector(TargetFC,tIndex);
   createSurfaces();
-  std::string TSurf,BSurf;
-  
-  if (tIndex)
-    {
-      TSurf=(tIndex>0) ? 
-	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) : 
-	TargetFC.getBridgeComplement(static_cast<size_t>(-(tIndex+1)));
-      if (tIndex<0)
-	FixedComp::setLinkComponent(0,TargetFC,
-				    static_cast<size_t>(-(tIndex-1)));
-      else
-	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));	
-    }
-  if (bIndex)
-    {
-      const size_t lIndex(static_cast<size_t>(std::abs(bIndex)-1));
-      BSurf=(bIndex>0) ?
-	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
-      FixedComp::setLinkComponent(0,BulkFC,lIndex);
-    }
-  createObjects(System,TSurf,BSurf);
+  createObjects(System);
   createLinks();
   insertObjects(System); 
   return;
