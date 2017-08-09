@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -80,8 +79,7 @@
 
 namespace essSystem
 {
-
-
+  
 TelescopicPipe::TelescopicPipe(const std::string& Key) :
   attachSystem::ContainedGroup(),attachSystem::FixedOffset(Key,3),
   attachSystem::FrontBackCut(),
@@ -230,7 +228,7 @@ TelescopicPipe::createObjects(Simulation& System)
   attachSystem::ContainedGroup::addCC("Full");
   for(size_t i=0;i<nSec;i++)
     {
-      const std::string SName=StrFunc::makeString("Sector",i);
+      const std::string SName="Sector"+std::to_string(i);
       FrontCap=(!i) ? frontRule() :
 	ModelSupport::getComposite(SMap,PT-100, " 2 ");
       EndCap=(i+1 == nSec) ? backRule() : 

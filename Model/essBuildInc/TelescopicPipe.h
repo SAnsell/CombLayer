@@ -7,7 +7,7 @@ namespace essSystem
 {
 
 /*!
-  \class ProtonTube
+  \class TelescopicPipe
   \author S. Ansell
   \version 1.0
   \date February 2013
