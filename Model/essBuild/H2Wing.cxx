@@ -186,9 +186,6 @@ H2Wing::populate(const FuncDataBase& Control)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
 
-  bfDepth = Control.EvalDefVar<double>(baseName+"WallDepth",0.0);
-  bfHeight = Control.EvalDefVar<double>(baseName+"WallHeight",0.0);
-
   for(size_t i=0;i<3;i++)
     {
       Pts[i]=Control.EvalVar<Geometry::Vec3D>
@@ -254,8 +251,7 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
 
   FixedComp::createUnitVector(FC);
   const double dh = std::accumulate(layerDepth.begin(),layerDepth.end(),0.0) -
-    std::accumulate(layerHeight.begin(),layerHeight.end(),0.0)-
-    +bfDepth-bfHeight;
+    std::accumulate(layerHeight.begin(),layerHeight.end(),0.0);
 
   applyShift(xStep,yStep, dh/2.0);
   applyAngleRotate(xyOffset,0.0);

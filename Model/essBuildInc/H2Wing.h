@@ -56,9 +56,6 @@ class H2Wing :
   double yStep;                 ///< Step along proton beam direction
   double xyOffset;              ///< xy-Angle offset
 
-  double bfDepth;               ///< BF moderator lower wall thick
-  double bfHeight;              ///< BF moderator upper wall thick
-
   std::array<Geometry::Vec3D,3> Pts;    ///< Corner Points
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
