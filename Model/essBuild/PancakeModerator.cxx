@@ -406,8 +406,8 @@ PancakeModerator::getSideRule() const
 
   HeadRule HR;
   HR.addUnion(MidH2->getSideRule());
-  HR.addUnion(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
+  // HR.addUnion(LeftWater->getSideRule());
+  // HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
 
   return HR.display();
@@ -422,8 +422,8 @@ PancakeModerator::getLeftRightWaterSideRule() const
 {
   std::string side("");
   HeadRule HR;
-  HR.procString(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
+  // HR.procString(LeftWater->getSideRule());
+  // HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
 
   return HR.display();
