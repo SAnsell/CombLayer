@@ -1127,15 +1127,12 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
 
-  if (lowModType != "None")
-    {
-      if (lowModType == "Butterfly")
-	buildLowButterfly(System);
-      else if (lowModType == "Pancake")
-	  buildLowPancake(System);
-      else if (lowModType == "Box")
-	  buildLowBox(System);
-    }
+  if (lowModType == "Butterfly")
+    buildLowButterfly(System);
+  else if (lowModType == "Pancake")
+    buildLowPancake(System);
+  else if (lowModType == "Box")
+    buildLowBox(System);
   
   if (topModType == "Butterfly")
     buildTopButterfly(System);
