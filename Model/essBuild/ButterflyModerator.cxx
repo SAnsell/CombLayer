@@ -3,7 +3,7 @@
  
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -107,17 +108,12 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
 ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) : 
   constructSystem::ModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
-  bfType(A.bfType),
   LeftUnit(A.LeftUnit->clone()),
   RightUnit(A.RightUnit->clone()),
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  totalHeight(A.totalHeight),
-  outerRadius(A.outerRadius),
-  wallMat(A.wallMat),
-  wallDepth(A.wallDepth),
-  wallHeight(A.wallHeight)
+  outerRadius(A.outerRadius)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -136,17 +132,12 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
     {
       constructSystem::ModBase::operator=(A);
       cellIndex= A.cellIndex;
-      bfType=A.bfType;
       *LeftUnit= *A.LeftUnit;
       *RightUnit= *A.RightUnit;
       *MidWater= *A.MidWater;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
-      totalHeight=A.totalHeight;
       outerRadius=A.outerRadius;
-      wallMat=A.wallMat;
-      wallDepth=A.wallDepth;
-      wallHeight=A.wallHeight;
     }
   return *this;
 }
@@ -178,15 +169,7 @@ ButterflyModerator::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("ButterflyModerator","populate");
 
   ModBase::populate(Control);
-  bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
-  if ((bfType != 1)  && (bfType != 2))
-    throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
-
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
-  wallHeight = Control.EvalVar<double>(keyName+"WallHeight");
-
   return;
 }
 
@@ -224,9 +207,6 @@ ButterflyModerator::createSurfaces()
   ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
 
-  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
-
   return;
 }
 
@@ -238,44 +218,14 @@ ButterflyModerator::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
-
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
-
-  HeadRule HR(sideRule);
-  HR.makeComplement();
+  
+  const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-
-  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-    }
-
-  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-      // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
-      HeadRule bfHR;
-      bfHR.procString(LeftUnit->getSideRule());
-      bfHR.addUnion(RightUnit->getSideRule());
-      bfHR.addUnion(MidWater->getSideRule());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
-    }
-
-  
-  
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string Exclude=sideRule;//ContainedComp::getExclude();
-
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");  
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
-  setCell("ambientVoid", cellIndex-1);
-
+  addCell("MainVoid",cellIndex-1);
+  
   clearRules();
   addOuterSurf(Out);
   
@@ -353,17 +303,19 @@ ButterflyModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy surface top/bottom from H2Wing and Orign from center
+  // copy surface top/bottom from H2Wing and Origin from center
   
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
-  const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
-  const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
+  const double LowV= LU[4].getConnectPt().Z();
+  const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
+  FixedComp::setLinkCopy(6,*MidWater,12);  
+  
   return;
 }
 
@@ -409,43 +361,6 @@ ButterflyModerator::getComponent(const std::string& compName) const
   throw ColErr::InContainerError<std::string>(compName,keyName+" component");
 }
 
-
-std::string
-ButterflyModerator::getSideRule() const
-/*
-  Return side rule
-  \todo // SA: Use union of link points as it is faster
-*/
-{
-  ELog::RegMethod RegA("ButterflyModerator","getSideRule");
-
-  HeadRule HR;
-  HR.procString(LeftUnit->getSideRule());
-  HR.addUnion(RightUnit->getSideRule());
-  HR.addUnion(MidWater->getSideRule());
-  HR.addUnion(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
-  HR.makeComplement();
-
-  return HR.display();
-}
-
-std::string
-ButterflyModerator::getLeftRightWaterSideRule() const
-/*
-  Return left+right water side rule
-  \todo // SA: Use union of link points as it is faster
-*/
-{
-  std::string side("");
-  HeadRule HR;
-  HR.procString(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
-  HR.makeComplement();
-
-  return HR.display();
-}
-
   
 void
 ButterflyModerator::createAll(Simulation& System,
@@ -471,7 +386,7 @@ ButterflyModerator::createAll(Simulation& System,
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
     
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
+    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
   LeftWater->createAll(System,*LeftUnit,2,Exclude);
   RightWater->createAll(System,*RightUnit,2,Exclude);
 
@@ -559,6 +474,6 @@ ButterflyModerator::getRightExclude() const
   return Out;
   
 }
-
   
+
 }  // NAMESPACE essSystem

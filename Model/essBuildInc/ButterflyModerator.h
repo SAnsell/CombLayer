@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/ButterflyModerator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,6 @@ class ButterflyModerator :
 
   const int flyIndex;        ///< Index of surface offset
   int cellIndex;             ///< Cell index
-
-  int bfType;                  ///< Type (BF1 or BF2)
   
   std::shared_ptr<H2Wing> LeftUnit;        ///< Left part of the moderator
   std::shared_ptr<H2Wing> RightUnit;       ///< Right part of the moderator
@@ -57,9 +55,6 @@ class ButterflyModerator :
 
   double totalHeight;                     ///< Total height
   double outerRadius;                     ///< Main outer radius
-  int    wallMat;                         ///< upper/bottom wall material
-  double wallDepth;                       ///< upper wall thickness
-  double wallHeight;                      ///< bottom wall thickness
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -93,12 +88,7 @@ class ButterflyModerator :
   std::string getRightExclude() const;
   std::string getLeftFarExclude() const;
   std::string getRightFarExclude() const;
-
-  std::string getSideRule() const;
-  std::string getLeftRightWaterSideRule() const;
-  Geometry::Vec3D getFocalPoint(const long int) const;
-  std::vector<Geometry::Vec3D> getFocalPoints() const;
-
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp*,
 		 const long int);

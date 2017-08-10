@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/MidWaterDivider.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,17 +54,14 @@ class MidWaterDivider :
 
   double length;            ///< Inner length
   double height;            ///< Inner height
+  double topThick;          ///< Roof thickness
+  double baseThick;         ///< Base thickness
   double wallThick;         ///< Wall thickness
 
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
-  double edgeRadius;        ///< water edge radius
 
-  double totalHeight;       ///< Total height of system
-  
-  std::string sideRule;     ///< Side rule
-  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
@@ -72,7 +69,6 @@ class MidWaterDivider :
   void createObjects(Simulation&,const H2Wing&,const H2Wing&);
   void cutOuterWing(Simulation&,const H2Wing&,const H2Wing&) const;
   void createLinks(const H2Wing&,const H2Wing&);
-
 
  public:
 
@@ -85,9 +81,6 @@ class MidWaterDivider :
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
-
-  inline const std::string getSideRule() const { return sideRule; }
-
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const H2Wing&,const H2Wing&);
 };

@@ -50,14 +50,12 @@ class H2Wing :
   int cellIndex;             ///< Cell index
 
   int engActive;             ///< Engineering active
-  int bfType;                ///< Type (BF1 or BF2)
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
   
   double xStep;                 ///< Step across proton beam direction
   double yStep;                 ///< Step along proton beam direction
   double xyOffset;              ///< xy-Angle offset
 
-  // bfDepth and bfHeight are needed due to ButterflyModerator wallDepth and wallHeight
   double bfDepth;               ///< BF moderator lower wall thick
   double bfHeight;              ///< BF moderator upper wall thick
 
@@ -65,7 +63,7 @@ class H2Wing :
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
   double totalHeight;           ///< total height moderator
-
+  
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
 
@@ -75,12 +73,11 @@ class H2Wing :
   std::vector<int> mat;             ///< Layer material
   std::vector<double> temp;         ///< Layer temperature
 
-  std::string sideRule;         ///< Side rule
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
@@ -103,9 +100,6 @@ class H2Wing :
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
-
-  const std::string& getSideRule() const { return sideRule; }
-
   void createAll(Simulation&,const attachSystem::FixedComp&);
 };
 
