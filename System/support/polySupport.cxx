@@ -139,7 +139,7 @@ solveQuadratic(const double& a,const double& b,const double& c,
       return (cf==0) ? 1 : 2;
     } 
 
-  std::complex<double> CQ(-0.5*b,
+  const std::complex<double> CQ(-0.5*b,
 			  ((b>=0) ? -0.5*sqrt(-cf) :
 			   0.5*sqrt(-cf)));
   OutAns.first= CQ/a;

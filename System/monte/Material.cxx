@@ -658,6 +658,7 @@ double
 Material::getMeanA() const
   /*!
     Return the mean A value 
+    \return mean atomic number
   */
 {
   double AW(0.0);

@@ -337,7 +337,7 @@ WWGWeight::wTrack(const Simulation& System,
       if (DistT<1.0) DistT=1.0;
       const double AT=OTrack.getAttnSum(cN);    // this can take an
                                                 // energy
-      if (!((cN-1) % 100))
+      if (!((cN-1) % 1000))
 	ELog::EM<<"WTRAC["<<cN<<"] "<<-densityFactor*AT-r2Power*log(DistT)
 		<<" "<<logFlag<<ELog::endDiag;
       if (logFlag)
@@ -460,23 +460,29 @@ WWGWeight::CADISnorm(const Simulation& System,
   if (NData!=ANData)
     throw ColErr::MisMatch<size_t>
       (NData,ANData,"Source/Adjoint grids do not match");
-  if (NData!=gridPts.size())
+
+  if (NData!=gridPts.size()*WE)
     throw ColErr::MisMatch<size_t>
-      (NData,gridPts.size(),"Source/Grids do not match");
+      (NData,gridPts.size()*WE,"Source/Grids do not match");
 
   double sumR(0.0);
   double sumRA(0.0);
   if (logFlag ==1 && Adjoint.logFlag ==1)
     {
+
       // STILL in log space
-      for(size_t i=0;i<NData;i++)
+      for(size_t i=0;i<gridPts.size();i++)
 	{
 	  const double W=distTrack(System,sourcePt,gridPts[i],1.0,1.0,2.0);
-	  sumR=(i) ? mathFunc::logAdd(sumR,SData[i]+W) : SData[i]+W;
-	  sumRA=(i) ? mathFunc::logAdd(sumRA,AData[i]+W) : AData[i]+W;
+	  sumR=(i) ? mathFunc::logAdd(sumR,SData[i*WE]+W) :
+	    SData[i*WE]+W;
+	  
+	  sumRA=(i) ? mathFunc::logAdd(sumRA,AData[i*WE]+W) :
+	    AData[i*WE]+W;
+	  
 	  if (!(i % 100))
-	    ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[i]<<" "
-		    <<AData[i]<<" == "<<gridPts[i]<<ELog::endDiag;
+	    ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[i*WE]<<" "
+		    <<AData[i*WE]<<" == "<<gridPts[i]<<ELog::endDiag;
 	}
       ELog::EM<<"sumR== "<<sumR<<" "<<exp(sumR)<<ELog::endDiag;
       // SETS THIS

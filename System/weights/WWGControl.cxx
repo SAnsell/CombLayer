@@ -184,46 +184,6 @@ WWGControl::wwgMesh(const mainSystem::inputParam& IParam)
 }
 
 
-void
-WWGControl::wwgEnergy(const mainSystem::inputParam& IParam)
-  /*!
-    Modify the energy grid if explicitly given as an wwgE card.
-    If htat is not given then a full 
-    just one energy grid.
-    \param IParam :: Input paramters
-  */
-{
-  ELog::RegMethod RegA("WWGControl","wwgEnergy");
-
-  if (IParam.flag("wwgE"))
-    {
-      const size_t NEnergy=IParam.itemCnt("wwgE",0);
-      if (!NEnergy ||
-          IParam.getValue<std::string>("wwgE",0)!="default")
-        {
-          EBand.clear();
-          WT.clear();
-          double EPrev(0.0);
-          for(size_t i=0;i<NEnergy;i++)
-            {
-              const double ETest=IParam.getValue<double>("wwgE",0,i);
-              if (ETest<=EPrev)
-                throw ColErr::OrderError<double>
-                  (EPrev,ETest,"Energy Point["+std::to_string(i)+"]");
-              
-              EBand.push_back(ETest);
-              WT.push_back(1.0);
-              EPrev=ETest;
-            }
-          if (!NEnergy)
-            {
-              EBand.push_back(1.3e5);
-              WT.push_back(1.0);    
-            }
-        }
-    }
-  return;
-}
 
 void
 WWGControl::wwgInitWeight()
@@ -453,12 +413,15 @@ WWGControl::wwgCombine(const Simulation& System,
 	IParam.getCntVec3D("wwgCADIS",0,itemCnt,"CADIS Source Point");
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
 
+      //      sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);
       sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);      
     }
   else
     ELog::EM<<"Warning : No WWG CADIS step"<<ELog::endWarn;
 
 
+  
+  
   return;
 }
   
@@ -484,7 +447,6 @@ WWGControl::processWeights(Simulation& System,
       
       procParam(IParam,"wWWG",0,0);
       wwgMesh(IParam);               // create mesh [wwgXMesh etc]
-      wwgEnergy(IParam);             // set default energy grid
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);

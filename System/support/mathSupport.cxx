@@ -772,12 +772,6 @@ namespace Geometry
   class Surface;
 }
  
-// template
-// size_t solveQuadratic(const double*,
-//        std::pair<std::complex<double>,std::complex<double> >&);
-// template
-// size_t solveQuadratic(const std::vector<double>::const_iterator,
-//        std::pair<std::complex<double>,std::complex<double> >&);
 
 template std::complex<double> 
 polFit(const double&,const unsigned int,

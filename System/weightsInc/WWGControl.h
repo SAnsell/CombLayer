@@ -60,7 +60,6 @@ class WWGControl : public WeightControl
 		  const size_t);
 		  
   void wwgMesh(const mainSystem::inputParam&);
-  void wwgEnergy(const mainSystem::inputParam&);
   void wwgVTK(const mainSystem::inputParam&);
   void wwgInitWeight();
   void wwgCreate(const Simulation&,const mainSystem::inputParam&);
