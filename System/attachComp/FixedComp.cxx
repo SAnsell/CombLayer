@@ -322,7 +322,6 @@ FixedComp::reOrientate()
   */
 {
   ELog::RegMethod RegA("FixedComp","reOrientate");
-
   
   if (primeAxis>0)
     reOrientate(static_cast<size_t>(primeAxis)-1,orientateAxis);
@@ -1506,9 +1505,9 @@ FixedComp::selectAltAxis(const long int sideIndex,
   YOut=getSignedLinkAxis(sideIndex);
 
   double dp[3];
-  dp[0]=fabs(X.dotProd(YOut)); 
-  dp[1]=fabs(Y.dotProd(YOut)); 
-  dp[2]=fabs(Z.dotProd(YOut)); 
+  dp[0]=std::abs(X.dotProd(YOut)); 
+  dp[1]=std::abs(Y.dotProd(YOut)); 
+  dp[2]=std::abs(Z.dotProd(YOut)); 
   const double* dptr=std::max_element(dp,dp+3);
 
   XOut=(dptr==dp) ? Y : X;

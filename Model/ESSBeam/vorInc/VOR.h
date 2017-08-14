@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/VOR.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,8 @@ class VOR : public attachSystem::CopiedComp
 {
  private:
 
+  /// Start at [0:Complete / 1:Mono Wall / 2:Cave ]
+  int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -148,14 +150,24 @@ class VOR : public attachSystem::CopiedComp
 
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
+  void buildDetectorArray(Simulation&,const attachSystem::FixedComp&,
+			  const long int,const int);
+
  public:
   
   VOR(const std::string&);
   VOR(const VOR&);
   VOR& operator=(const VOR&);
   ~VOR();
-  
+
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

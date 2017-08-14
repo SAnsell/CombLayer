@@ -697,8 +697,8 @@ VESPA::build(Simulation& System,
 {
   ELog::RegMethod RegA("VESPA","build");
 
-  ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()<<ELog::endDiag;
-
+  ELog::EM<<"\nBuilding VESPA on : "<<GItem.getKeyName()
+	  <<" Bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);

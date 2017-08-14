@@ -276,7 +276,7 @@ VacuumPipe::applyActiveFrontBack()
   Origin=(curFP+curBP)/2.0;
   Geometry::Vec3D YAxis=(curBP-curFP).unit();
   const Geometry::Quaternion QR=
-    Geometry::Quaternion::calcQVRot(Y,YAxis);
+    Geometry::Quaternion::calcQVRot(Y,YAxis,Z);
   QR.rotate(X);
   QR.rotate(Z);
   Y=YAxis;
