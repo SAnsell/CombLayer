@@ -1,30 +1,37 @@
 \subsection{Variance reduction}
 
 \subsubsection{FW-CADIS}
-We consider our result~$R$ to be some a convolution of some flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
-(position~$\vec{r}$, energy~$E$,  angular coordinate~$\Phi\vec{\Omega}$) and a determenistic cross section~$\sigma_D(\vec{P})$
-that relates to that:
+We consider our result~$R$ to be some a convolution of some
+flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
+(position~$\vec{r}$, energy~$E$, angular
+coordinate~$\Phi\vec{\Omega}$) and a determenistic cross
+section~$\sigma_D(\vec{P})$ that relates to that:
 \begin{equation}
   \label{eq:vr:result}
   R = \int \Psi(\vec{P}) \sigma_D(\vec{P}) d\vec{P}
 \end{equation}
 
 % 2:12
-That allowes you to have a selectivity because a neutron must cross a certain surface or have a certain energy or direction.
+That allowes you to have a selectivity because a neutron must cross a
+certain surface or have a certain energy or direction and this is encoded into $\sigma_D(\vec{P})$.
 
 \paragraph{Cross section}
-$\sigma_D(\vec{P})$ is a {\em determenistic} cross section, which you have decided is the thing I am interested in knowning.
-For example, if you wish to know the flux going through a cell for the energy between \SIrange[range-phrase=\ and\ ]{1}{2}{\electronvolt},
-this cross section is 1 when the particle is located in the given cell and energy is between these two values, otherwise it is zero.\todo{SA: check this sentence}
+$\sigma_D(\vec{P})$ is a {\em determenistic} cross section, which constructed to be representative of the quantity
+that the simulation is going to measure. For example, if the flux going through a cell for the energy between
+\SIrange[range-phrase=\ and\ ]{1}{2}{\electronvolt} is the quantity of interest, then this
+this cross section is 1 when the particle is located in the given cell and energy is between these two values,
+otherwise it is zero.
 
 \bigskip
 
-Now we can operate this with a classical Hamiltonian, which we have not defined yet:
+We will now imply the the integral over $d\vec{P}$, and imply that there is a unique Hamiltonian,
+that can express the flux at all points in the phase space are equal to the source value. It is basically
+second order differential equation. The transport equations can be written as:
 \begin{equation}
   \label{eq:vr:Hamiltonian}
-  H \Psi = \vec{q}
+  H \Psi = q
 \end{equation}
-where $\vec{q}$ is a vector we have not defined yet.
+
 
 So we operate on the whole flux, and this allows the field to be evolved.
 Hamiltonian always operates on flux in order to evolve it to a new type.
@@ -32,34 +39,68 @@ We will assume that we start at some source at time zero and we will evolve it, 
 hold for all time since we have conservation.
 
 Conjugated form:
-\begin{eqnarray*}
-  H^* \Psi^* & = & \vec{q}^{\,*} \\
-  < \Psi^*,H,\Psi > & = & <\Psi, H^*, \Psi^*> \\
-\end{eqnarray*}
+\begin{equation}
+  H^* \Psi^*  =  \vec{q}^{\,*} 
+\end{equation}
 
-% 5:20
-Now we know that if we calculate $R$ with
+This is the general form. As an example, for a simple neutron that under, elastic scattering and absorption only we will see that equation \ref{eq:vr:Hamiltonian} becomes the classical  scattering equation:
+
+\begin{equation}
+  [\Omega \cdot \Delta + \Sigma_t(\vec{r},E)] \Psi(r,\Omega,E) = \int^\infty_0 dE' \int_{4\pi}
+  d\Omega' \Sigma_s(\vec{r},E' \rightarrow E,\Omega') \Psi(r,\Omega,E) + q(\vec{r},\Omega,E)
+\end{equation}
+
+\begin{equation}
+  [-\Omega \cdot \Delta + \Sigma_t(\vec{r},E)] \Psi^*(r,\Omega,E) = \int^\infty_0 dE' \int_{4\pi}
+  d\Omega' \Sigma_s(\vec{r},E' \rightarrow E,\Omega') \Psi^*(r,\Omega,E) + q^*(\vec{r},\Omega,E)
+\end{equation}
+
+These two cases are the forward going (i.e. from the source to the tally region) and the backward going from the
+tally to the source. Note tha the flux must be the same is we assume reversibility.
+
+We can [with a lot of algebra/Mathematica] show that they obey the identity
+\begin{equation}
+  < \Psi^*,H,\Psi >  =  <\Psi, H^*, \Psi^*> 
+\end{equation}
+
+and therefore 
+\begin{equation}
+  < q,\Psi^* >  =  <q^*,\Psi> 
+\end{equation}
+where $< >$ is the inner product, which is the integral over $\vec{P}$.
+
+Now if we set $q^* \equiv \Sigma_d$, then we have
+
+\begin{equation}
+<q^*,\Psi>  = <\Sigma_d,\{< q,\Psi^* >  =  R = <q^,\Psi^*> 
+\end{equation}
+
+this is the same as
 \begin{equation*}
   R = \int \Psi(\vec{P}) q^*(\vec{P}) d\vec{P}
 \end{equation*}
 
-then the inverse must also be valid:
+and
+
 \begin{equation*}
   R = \int \Psi^*(\vec{P}) q(\vec{P}) d\vec{P}
 \end{equation*}
 
 \paragraph{Assumptions}
-Now we make the following two assumptions:
+We have made the following two assumptions:
 \begin{enumerate}
 \item Time reversal for neutrons completely valid;
 \item If we start with the neutron at our tally point and run it backwards, we get exactly the same thing as running it forwards.
 \end{enumerate}
-This means that we are operating with one-group equations, i.e. not allowing the neutrons to change energy.
+This means that we are operating with one-group/multi-group equations,
+i.e. not allowing the neutrons to change energy or allowing the neutrons to change energy only into discrete
+probabilities.
 
 This situation is valid if we consider only elastic scattering and absorption processes, and we believe that
 this approximation should be enough for variance reduction purposes.
 
 \bigskip
+
 
 % 6:37
 Now we state that absorption is all absorption capture + all loss, where a neutron losses energy and falls out of the group
@@ -68,9 +109,10 @@ Now we state that absorption is all absorption capture + all loss, where a neutr
 The contribution of the individual piece of flux to $R$ (what we really want to know) can be expressed by
 \begin{equation}
   \label{eq:vr:w}
-  w = \frac{R}{\Psi^*(\vec{P})}
+  w(\vec{P}) = \frac{R}{\Psi^*(\vec{P})}
 \end{equation}
 where $\Psi^*(\vec{P})$ is adjoined flux (backward going flux with respect to $\Psi(\vec{P})$).
+ans w is the inverse of the probability importance of a region in $\vec{P}$.
 
 At the same time we know that we can express our weight as
 \begin{equation}
@@ -95,7 +137,7 @@ Therefore we will only find $\Psi$ in a one-group approximation.
 To do this, we need $\sigma_{T}$ and $\sigma_{A}^\dagger$, where
 
 \begin{description}
-\item[$\sigma_{T}$] \alert{???} \todo{Definition}
+\item[$\sigma_{T}$] The total interaction cross section [including all absorption terms].
 \item[$\sigma_{A}^\dagger$] Probability that a neutron is lost from the group {\em plus} the probability that a neutron is being absorbed.
 \end{description}
 
@@ -117,7 +159,7 @@ So, you can have as many source points as you like, as long as you have an adjoi
 Not all sources are points: some are planes, some are cylinders. At the moment in CL there are 3 types of shapes: a point, a plane, a cone.
 More shapes and head rules will be added in the future.
 Equally, same shapes can be set as the adjoint sources~(where we are focusing into).
-Points work reasonably well, but should be extended to cones/cylinders.\todo{SA: check}
+Points work reasonably well, but should be extended to cones/cylinders.
 
 The user defines the source point and the adjoint point, and CombLayer computes $R$ based on \eqref{eq:vr:R1} and
 weight based on~\eqref{eq:vr:w}\dots\ and you are done!
@@ -125,10 +167,23 @@ weight based on~\eqref{eq:vr:w}\dots\ and you are done!
 \paragraph{Normalisation}
 
 % 13:26
-SA did not appreciate normalisation as it is done in the papers \todo{cite}.
-SA has hist normalisation process within his variance reduction, that you can add by adding flag -wwg no.
-But you do not need to do it~--- this normalises out perfectly.
-Therefore SA believes there is no reason to do normalisation.
+Previous one sided variance reduction, not base on both a source term
+and an adjoint form, lead to an unbiased variance reduction that is
+not normalized. If the source and the tally variance reduction terms
+are both used then the above theory does not give rise to any need to
+do normalization. However, due to the need to issues like doing a
+quick and simple simulation were a source is approximated or multiple
+tallies normalization may be required. For example if a simulation is
+started from the ess target but the flux down a beamline is required
+two sources may be used e.g one at the target and one at the exit of
+the monolith. There is currently no weighting system for the
+contribution of both variances [which should be done using the
+  probability of exiting the monolith] and thus the variance reduction
+mesh can be significantly mis-scaled.
+
+Therefore, there is the option to re-normalized the whole variance reduction mesh by adding the flag
+{\it -wwgNorm AValue BValue} such that the new normalization range between low/high is limited between A and B.
+
 
 There is a rounding error of the order \SIrange{10}{15}{\percent}.
 It comes mainly because sometimes we divide very small numbers (of the range \num[retain-unity-mantissa=false]{1e-30}). So, you can do normalisation here, but
@@ -141,8 +196,7 @@ are not going in the appropriate way.
 For example, you can change the density of the entire model (for the variance reduction only, not for the real run).
 If you decrease it~(say, to \SI{80}{\percent}), it would oversample the area in the end.
 
-You can also put a limit to indicate that you do not want to write variance reduction down to \num[retain-unity-mantissa=false]{1e-317}, because it overpopulates too much
-the given cell. Normally, this limit is \numrange[retain-unity-mantissa=false]{1e-30}{1e-20}.\todo{Check}
+You can also put a limit to indicate that you do not want to write variance reduction down to \num[retain-unity-mantissa=false]{1e-317}, because it overpopulates too much the given cell. Normally, this limit is \numrange[retain-unity-mantissa=false]{1e-46}{1e-20}.
 
 % 16:15.482 - start recording desktop
 
