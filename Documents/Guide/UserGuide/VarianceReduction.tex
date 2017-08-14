@@ -1,0 +1,223 @@
+\subsection{Variance reduction}
+
+\subsubsection{FW-CADIS}
+We consider our result~$R$ to be some a convolution of some flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
+(position~$\vec{r}$, energy~$E$,  angular coordinate~$\Phi\vec{\Omega}$) and a determenistic cross section~$\sigma_D(\vec{P})$
+that relates to that:
+\begin{equation}
+  \label{eq:vr:result}
+  R = \int \Psi(\vec{P}) \sigma_D(\vec{P}) d\vec{P}
+\end{equation}
+
+% 2:12
+That allowes you to have a selectivity because a neutron must cross a certain surface or have a certain energy or direction.
+
+\paragraph{Cross section}
+$\sigma_D(\vec{P})$ is a {\em determenistic} cross section, which you have decided is the thing I am interested in knowning.
+For example, if you wish to know the flux going through a cell for the energy between \SIrange[range-phrase=\ and\ ]{1}{2}{\electronvolt},
+this cross section is 1 when the particle is located in the given cell and energy is between these two values, otherwise it is zero.\todo{SA: check this sentence}
+
+\bigskip
+
+Now we can operate this with a classical Hamiltonian, which we have not defined yet:
+\begin{equation}
+  \label{eq:vr:Hamiltonian}
+  H \Psi = \vec{q}
+\end{equation}
+where $\vec{q}$ is a vector we have not defined yet.
+
+So we operate on the whole flux, and this allows the field to be evolved.
+Hamiltonian always operates on flux in order to evolve it to a new type.
+We will assume that we start at some source at time zero and we will evolve it, and \eqref{eq:vr:Hamiltonian} has to
+hold for all time since we have conservation.
+
+Conjugated form:
+\begin{eqnarray*}
+  H^* \Psi^* & = & \vec{q}^{\,*} \\
+  < \Psi^*,H,\Psi > & = & <\Psi, H^*, \Psi^*> \\
+\end{eqnarray*}
+
+% 5:20
+Now we know that if we calculate $R$ with
+\begin{equation*}
+  R = \int \Psi(\vec{P}) q^*(\vec{P}) d\vec{P}
+\end{equation*}
+
+then the inverse must also be valid:
+\begin{equation*}
+  R = \int \Psi^*(\vec{P}) q(\vec{P}) d\vec{P}
+\end{equation*}
+
+\paragraph{Assumptions}
+Now we make the following two assumptions:
+\begin{enumerate}
+\item Time reversal for neutrons completely valid;
+\item If we start with the neutron at our tally point and run it backwards, we get exactly the same thing as running it forwards.
+\end{enumerate}
+This means that we are operating with one-group equations, i.e. not allowing the neutrons to change energy.
+
+This situation is valid if we consider only elastic scattering and absorption processes, and we believe that
+this approximation should be enough for variance reduction purposes.
+
+\bigskip
+
+% 6:37
+Now we state that absorption is all absorption capture + all loss, where a neutron losses energy and falls out of the group
+(i.e. it's much bigger absorption cross section than the stated one, see $\sigma_{A}^\dagger$ below).
+
+The contribution of the individual piece of flux to $R$ (what we really want to know) can be expressed by
+\begin{equation}
+  \label{eq:vr:w}
+  w = \frac{R}{\Psi^*(\vec{P})}
+\end{equation}
+where $\Psi^*(\vec{P})$ is adjoined flux (backward going flux with respect to $\Psi(\vec{P})$).
+
+At the same time we know that we can express our weight as
+\begin{equation}
+  \label{eq:vr:w0}
+  w = w_0 \cdot q(\vec{P})
+\end{equation}
+$q(\vec{P})$ we can calculate using the Hamiltonian in \eqref{eq:vr:Hamiltonian}.
+
+This leaves us with the new expression for $R$ (\alert{Where did we lose $\Phi$?}):
+\begin{equation}
+  \label{eq:vr:R1}
+  R = \int d\Omega \int d\vec{r} \int dE \, \Psi(\vec{r},E,\Omega) \, f(\vec{r},E,\Omega)
+\end{equation}
+where $f(\vec{r},E,\Omega)$ is an approximation \alert{of what?} from the CADIS paper. \todo{Explain}
+They can find an approximation for this based on the true weight of the number of particles in the given cell
+(times the Monte Carlo density).
+
+CADIS is the name of the program they wrote.
+
+First, we need to find $\Psi$, but we are not going to find it because it means we need to run full simulation.
+Therefore we will only find $\Psi$ in a one-group approximation.
+To do this, we need $\sigma_{T}$ and $\sigma_{A}^\dagger$, where
+
+\begin{description}
+\item[$\sigma_{T}$] \alert{???} \todo{Definition}
+\item[$\sigma_{A}^\dagger$] Probability that a neutron is lost from the group {\em plus} the probability that a neutron is being absorbed.
+\end{description}
+
+% 10:04
+CADIS divides energy range into 33 energy bins. CombLayer does not support so many~(SA says he tried 7).
+
+\bigskip
+
+When we run our variance reduction, we are going to calculate two things:
+\begin{itemize}
+\item We are going to tell the program what $\sigma_D$ is, and that's easy because it's defined by the tally.
+\item We have to roughly define where the source of our particles is going to start from. In principle that's where the proton start,
+  and that would be a good thing except that in reality that's not the most efficient thing at all.
+  You can multiply the variance reductions together, therefore it's better to define several weight window meshes~(i.e.
+  first~--- from Target to Moderator, second~--- from Moderator to Monolith Insert, third~--- Insert to Bunker Wall etc).
+\end{itemize}
+
+So, you can have as many source points as you like, as long as you have an adjoint point to go with it.
+Not all sources are points: some are planes, some are cylinders. At the moment in CL there are 3 types of shapes: a point, a plane, a cone.
+More shapes and head rules will be added in the future.
+Equally, same shapes can be set as the adjoint sources~(where we are focusing into).
+Points work reasonably well, but should be extended to cones/cylinders.\todo{SA: check}
+
+The user defines the source point and the adjoint point, and CombLayer computes $R$ based on \eqref{eq:vr:R1} and
+weight based on~\eqref{eq:vr:w}\dots\ and you are done!
+
+\paragraph{Normalisation}
+
+% 13:26
+SA did not appreciate normalisation as it is done in the papers \todo{cite}.
+SA has hist normalisation process within his variance reduction, that you can add by adding flag -wwg no.
+But you do not need to do it~--- this normalises out perfectly.
+Therefore SA believes there is no reason to do normalisation.
+
+There is a rounding error of the order \SIrange{10}{15}{\percent}.
+It comes mainly because sometimes we divide very small numbers (of the range \num[retain-unity-mantissa=false]{1e-30}). So, you can do normalisation here, but
+SA can't be bothered most of the time.
+
+\bigskip
+
+That's the principle of the variance reduction. In addition, there is a whole pile of tools which can help you out when things
+are not going in the appropriate way.
+For example, you can change the density of the entire model (for the variance reduction only, not for the real run).
+If you decrease it~(say, to \SI{80}{\percent}), it would oversample the area in the end.
+
+You can also put a limit to indicate that you do not want to write variance reduction down to \num[retain-unity-mantissa=false]{1e-317}, because it overpopulates too much
+the given cell. Normally, this limit is \numrange[retain-unity-mantissa=false]{1e-30}{1e-20}.\todo{Check}
+
+% 16:15.482 - start recording desktop
+
+\subsection{How to use it}
+There are two types of variance reduction in MCNP and in CombLayer.
+One is a cell-based, the other one is a mesh-based variance reduction.
+SA had modified his MCNP version to allow both at the same time.
+
+Git commit used: 7348754
+
+\subsubsection{Mesh-based variance reduction}
+\begin{bash}
+ess -r -w -wWWG \ 
+ --weightSource 'Vec3D(1000.0, 0.0, 14.0)' \
+ --weightSource 'Vec3D(1500.0, 0.0, 14.0)' \
+ --weightPlane 'Vec3D(1500.0, 0.0, 14.0)' 'Vec3D(-1, 0, 0)' \
+ --wwgCalc SS0 1.0 \
+ --wwgCalc TP0 -2 1 2 -4\
+ --wwgCADIS 'Vec3D(1000.0, 0.0, 14.0)' \
+ --wwgXMesh 1000 40 1600 \
+ --wwgYMesh -50 10 50 \
+ --wwgZMesh -100 20 100 \
+ --wwgE 1.0 \
+ --wwgVTK testWWG.vtk \
+   a
+\end{bash}
+
+\begin{description}
+\item[-w] needs to be the first flag in the list of biasing-related flags
+\item[-wWWG] we are interested in the mesh-based weight window generator
+\item[--weightSource] defines a (source or adjoint) {\em single point} in space. It's possible to define as many as necessary, and not all of them should be used.
+  Here we defined two point sources.
+\item[--wwg{[XYZ]}Mesh] defines a mesh (if we need it). Format: min nbins max.
+\item[--wwgE] defines energy grid with MCNP notation (below \SI{1}{\mega\electronvolt}). There is no variance reduction above last energy bin.
+\item[--wwgVTK] optionally you can output the mesh file into a VTK file for plotting.
+\item[--wwgCalc] define source and adjoined points. We must define at least one source and {\em at least} one adjoined point.
+  Syntax:
+  \begin{description}
+  \item[SS0] First 'S': true source point. 'S0': first point in the list.
+  \item[1] means energy range above \SI{1}{\mega\electronvolt} (-1 would mean below \SI{1}{\mega\electronvolt}).
+  \item[TP0] First 'T': adjoined point (tally). 'P0': from the 1st plane in the list.
+    % 23:00
+  \item[-2] define energy grid. Negative number: up till this energy (cut-off energy).
+  \item[1] density factor. Normally the trick is to decrease density in order to populate remote cells.
+  \item[2] the power of $r^2$. SA does not find this parameter very useful.
+  \item[1] absolute minimal weight you can have. If the number is negative, it means the exponent ($10^{-n}$). If it's not negative, it must be between 0 and 1 (remember that weights can not go above 1).
+  \end{description}
+% 25:45
+\item[--wwgCADIS] Finally you better do the CADIS summation~--- the integral over the whole thing. The final weight value has to still
+  come from the intrinsic integral point, and that should be the source point in order to do normalisation correctly (SA believes it's semi-redundant, but he is still using it anyway. In principle one should integrate all the source points, weight them and not need this coordinate, but currently SA take one point approximated. It will be changed in the future.)
+\end{description}
+
+% 25:15
+The source terms must cover the full energy range.
+It's completely acceptable that an individual source term does not cover full energy range,
+but somewhere you must have at least one other source term that covers the rest.
+
+When you run it, the output is very verbose:
+\begin{bash}
+...
+CADIS norm[7700]:-46.0517 0.693147 == 1577.5 5 -95          WWGWeight::CADISnorm
+CADIS norm[7800]:-46.0517 0.693147 == 1592.5 -45 -95        WWGWeight::CADISnorm
+CADIS norm[7900]:-46.0517 0.693147 == 1592.5 5 -95          WWGWeight::CADISnorm
+sumR== -7.37277 0.000628129                                 WWGWeight::CADISnorm
+Min == 0.000314064 0.000314064 1                                  WWG::updateWM
+Warning : No WWG normalization step                        WWGControl::wwgNormalize
+\end{bash}
+
+% 27:51
+Every 100 points during integration it writes you the ratios of contribution of flux to a given point and the source to the given point.
+So, it finds that you get about
+\num[retain-unity-mantissa=false]{1e9} (0.693147) \todo{1e9 does not correspond to the output}
+contributions from the source at the start of the wall, but once you get through the wall you get
+\num[retain-unity-mantissa=false]{1e46} (-46.0517) contribution.
+You end up with the minimum weight (which is in fact the maximal weight \alert{???}), which is the normalisation factor. \\
+sumR are normalisation terms and its value (-7.37277) says we are out of normalisation a bit (therefore we can maybe do something with it).
+
+% 29:12 - ParaView
