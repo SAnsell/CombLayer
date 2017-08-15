@@ -313,7 +313,6 @@ MidWaterDivider::createSurfaces()
     (SMap,divIndex+24,Origin-Y*midYStep,-X,-Z,midAngle/2.0);
 
   // Make lengths:
-
   Geometry::Vec3D leftNorm(Y);
   Geometry::Quaternion::calcQRotDeg(-midAngle/2.0,Z).rotate(leftNorm);  
   Geometry::Vec3D rightNorm(Y);
@@ -329,7 +328,7 @@ MidWaterDivider::createSurfaces()
   
   // Aluminum layers [+100]
   // +Y section
-  const double LStep(midYStep+wallThick/sin(midAngle/2.0));
+  const double LStep(midYStep+wallThick/sin(M_PI*midAngle/360.0));
   ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+103,Origin+Y*LStep,X,-Z,-midAngle/2.0);
   ModelSupport::buildPlaneRotAxis
