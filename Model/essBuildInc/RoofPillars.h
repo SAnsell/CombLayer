@@ -65,10 +65,12 @@ class RoofPillars : public attachSystem::FixedComp,
 
   double beamWidth;            ///< Total beam width
   double beamWallThick;        ///< Wall thick in beam
+  double beamRoofThick;        ///< Top thick in beam
   double beamWallGap;          ///< Gap round wall
 
   double longWidth;            ///< Total beam width
   double longWallThick;        ///< Wall thick in beam
+  double longRoofThick;        ///< Wall thick in beam
   double longWallGap;          ///< Gap round wall
 
   size_t nCrossBeam;           ///< Number of cross beam

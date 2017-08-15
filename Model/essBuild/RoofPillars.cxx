@@ -225,11 +225,15 @@ RoofPillars::populate(const FuncDataBase& Control)
 
   beamWidth=Control.EvalDefVar<double>(keyName+"BeamWidth",0.0);
   beamWallThick=Control.EvalDefVar<double>(keyName+"BeamWallThick",0.0);
+  beamRoofThick=Control.EvalDefVar<double>
+    (keyName+"BeamRoofThick",beamWallThick);
   beamWallGap=Control.EvalDefVar<double>(keyName+"BeamWallGap",2.0);
 
   longWidth=Control.EvalDefVar<double>(keyName+"LongWidth",beamWidth);
   longWallThick=Control.EvalDefVar<double>
     (keyName+"LongWallThick",beamWallThick);
+  longRoofThick=Control.EvalDefVar<double>
+    (keyName+"LongRoofThick",beamRoofThick);
   longWallGap=Control.EvalDefVar<double>(keyName+"LongWallGap",beamWallGap);
 
   // LOAD PILLAR DATA:
@@ -390,7 +394,7 @@ RoofPillars::createSurfaces()
               baseBeam.addIntersection(SMap.realSurf(footIndex+26));
 	      // Beam Top inner metal [down -wallThick]
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+36,
-				      PPtr,topFootHeight-beamWallThick); 
+				      PPtr,topFootHeight-beamRoofThick); 
               topBeam.addIntersection(SMap.realSurf(footIndex+36));
 
               // Beam inner meta; 
@@ -399,7 +403,7 @@ RoofPillars::createSurfaces()
               baseLong.addIntersection(SMap.realSurf(footIndex+46));
 	      // Beam Top inner metal [down -wallThick]
 	      buildSignedShiftedPlane(SMap,-SNum,footIndex+56,
-				      PPtr,topFootHeight-longWallThick); 
+				      PPtr,topFootHeight-longRoofThick); 
               topLong.addIntersection(SMap.realSurf(footIndex+56));
 	      
 	      footIndex++;

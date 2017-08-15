@@ -71,7 +71,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 {
   ELog::RegMethod RegA("bunkerVariables[F]","setBunkerVar");
 
-
   Control.addVariable(AKey+"BunkerLeftPhase",-65.0);
   Control.addVariable(AKey+"BunkerRightPhase",-12.0);
   Control.addVariable(AKey+"BunkerLeftAngle",0.0);
@@ -185,6 +184,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(AKey+"BunkerPillarsBeamWidth",12.0);
   Control.addVariable(AKey+"BunkerPillarsBeamWallThick",2.0);
+  Control.addVariable(AKey+"BunkerPillarsBeamRoofThick",10.0);
   Control.addVariable(AKey+"BunkerPillarsBeamWallGap",5.0);
   
 
