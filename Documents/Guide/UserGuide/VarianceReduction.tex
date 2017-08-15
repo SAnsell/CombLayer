@@ -48,15 +48,13 @@ This is the general form. As an example, for a simple neutron that under,
 elastic scattering and absorption only we will see that equation \eqref{eq:vr:Hamiltonian} becomes
 the classical  scattering equation~\cite[Eq.\,1]{arXiv:1612.00793}:
 
-\begin{equation}
-  [\Omega \cdot \Delta + \Sigma_t(\vec{r},E)] \Psi(r,\Omega,E) = \int^\infty_0 dE' \int_{4\pi}
-  d\Omega' \Sigma_s(\vec{r},E' \rightarrow E,\Omega') \Psi(r,\Omega,E) + q(\vec{r},\Omega,E)
-\end{equation}
+\begin{eqnarray}
+  \lbrack\Omega \cdot \nabla + \Sigma_t(\vec{r},E)\rbrack \, \Psi(r,\hat\Omega,E) & = & \int^\infty_0 dE' \int_{4\pi}
+  d\hat\Omega' \, \Sigma_s(\vec{r},E' \to E,\hat\Omega' \cdot \hat\Omega) \, \Psi(\vec{r},\hat\Omega',E') + q(\vec{r},\hat\Omega,E) \\
+  \lbrack-\hat\Omega \cdot \nabla + \Sigma_t(\vec{r},E)\rbrack \, \Psi^*(\vec{r},\hat\Omega,E) & = & \int^\infty_0 dE' \int_{4\pi}
+  d\hat\Omega' \, \Sigma_s(\vec{r},E \to E',\hat\Omega \cdot \hat\Omega') \, \Psi^*(\vec{r},\hat\Omega',E') + q^*(\vec{r},\hat\Omega,E) 
+\end{eqnarray}
 
-\begin{equation}
-  [-\Omega \cdot \Delta + \Sigma_t(\vec{r},E)] \Psi^*(r,\Omega,E) = \int^\infty_0 dE' \int_{4\pi}
-  d\Omega' \Sigma_s(\vec{r},E' \rightarrow E,\Omega') \Psi^*(r,\Omega,E) + q^*(\vec{r},\Omega,E)
-\end{equation}
 
 These two cases are the forward going (i.e. from the source to the tally region) and the backward going from the
 tally to the source. Note tha the flux must be the same is we assume reversibility.
