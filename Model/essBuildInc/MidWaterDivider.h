@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/MidWaterDivider.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_MidWaterDivider_h
@@ -32,11 +32,11 @@ namespace essSystem
   \class MidWaterDivider
   \version 1.0
   \author S. Ansell
-  \date April 2015 
+  \date April 2015
   \brief MidWaterDivider component in the butterfly moderator
 */
 
-class MidWaterDivider : 
+class MidWaterDivider :
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
   public attachSystem::FixedComp
@@ -44,7 +44,7 @@ class MidWaterDivider :
  private:
 
   const std::string baseName; ///< Base Name
-      
+
   const int divIndex;       ///< Index of surface offset
   int cellIndex;            ///< Cell index
 
@@ -61,6 +61,7 @@ class MidWaterDivider :
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
+  double edgeRadius;        ///< water edge radius
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
@@ -88,4 +89,4 @@ class MidWaterDivider :
 }
 
 #endif
- 
+
