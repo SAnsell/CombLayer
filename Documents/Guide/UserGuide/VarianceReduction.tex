@@ -1,7 +1,7 @@
 \subsection{Variance reduction}
 
 \subsubsection{FW-CADIS}
-We consider our result~$R$ to be some a convolution of some
+We consider our result~$R$ to be a convolution of some
 flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
 (position~$\vec{r}$, energy~$E$, angular
 coordinate~$\Phi\vec{\Omega}$) and a determenistic cross
@@ -18,15 +18,16 @@ certain surface or have a certain energy or direction and this is encoded into $
 \paragraph{Cross section}
 $\sigma_D(\vec{P})$ is a {\em determenistic} cross section, which constructed to be representative of the quantity
 that the simulation is going to measure. For example, if the flux going through a cell for the energy between
-\SIrange[range-phrase=\ and\ ]{1}{2}{\electronvolt} is the quantity of interest, then this
-this cross section is 1 when the particle is located in the given cell and energy is between these two values,
-otherwise it is zero.
+\SIrange[range-phrase=\ and\ ]{1}{2}{\electronvolt} is the quantity of interest, then
+$\sigma_D=1$ when the particle is located in the given cell and energy is between these two values,
+otherwise $\sigma_D=0$.
 
 \bigskip
 
-We will now imply the the integral over $d\vec{P}$, and imply that there is a unique Hamiltonian,
+We will now imply the integral over $d\vec{P}$, and imply that there is a unique Hamiltonian,
 that can express the flux at all points in the phase space are equal to the source value. It is basically
 second order differential equation. The transport equations can be written as:
+% integration is implied here
 \begin{equation}
   \label{eq:vr:Hamiltonian}
   H \Psi = q
@@ -43,7 +44,7 @@ Conjugated form:
   H^* \Psi^*  =  \vec{q}^{\,*} 
 \end{equation}
 
-This is the general form. As an example, for a simple neutron that under, elastic scattering and absorption only we will see that equation \ref{eq:vr:Hamiltonian} becomes the classical  scattering equation:
+This is the general form. As an example, for a simple neutron that under, elastic scattering and absorption only we will see that equation \eqref{eq:vr:Hamiltonian} becomes the classical  scattering equation:
 
 \begin{equation}
   [\Omega \cdot \Delta + \Sigma_t(\vec{r},E)] \Psi(r,\Omega,E) = \int^\infty_0 dE' \int_{4\pi}
@@ -69,7 +70,7 @@ and therefore
 \end{equation}
 where $< >$ is the inner product, which is the integral over $\vec{P}$.
 
-Now if we set $q^* \equiv \Sigma_d$, then we have
+Now if we set $q^* \equiv \Sigma_d$, then we have \alert{check the '\{' symbol and '$q^,$' in the line below}
 
 \begin{equation}
 <q^*,\Psi>  = <\Sigma_d,\{< q,\Psi^* >  =  R = <q^,\Psi^*> 
@@ -112,7 +113,7 @@ The contribution of the individual piece of flux to $R$ (what we really want to 
   w(\vec{P}) = \frac{R}{\Psi^*(\vec{P})}
 \end{equation}
 where $\Psi^*(\vec{P})$ is adjoined flux (backward going flux with respect to $\Psi(\vec{P})$).
-ans w is the inverse of the probability importance of a region in $\vec{P}$.
+ans $w$ is the inverse of the probability importance of a region in $\vec{P}$.
 
 At the same time we know that we can express our weight as
 \begin{equation}
@@ -174,7 +175,7 @@ are both used then the above theory does not give rise to any need to
 do normalization. However, due to the need to issues like doing a
 quick and simple simulation were a source is approximated or multiple
 tallies normalization may be required. For example if a simulation is
-started from the ess target but the flux down a beamline is required
+started from the ESS target but the flux down a beamline is required
 two sources may be used e.g one at the target and one at the exit of
 the monolith. There is currently no weighting system for the
 contribution of both variances [which should be done using the
@@ -182,7 +183,7 @@ contribution of both variances [which should be done using the
 mesh can be significantly mis-scaled.
 
 Therefore, there is the option to re-normalized the whole variance reduction mesh by adding the flag
-{\it -wwgNorm AValue BValue} such that the new normalization range between low/high is limited between A and B.
+{\tt --wwgNorm AValue BValue} such that the new normalization range between low/high is limited between A and B.
 
 
 There is a rounding error of the order \SIrange{10}{15}{\percent}.
@@ -194,7 +195,7 @@ SA can't be bothered most of the time.
 That's the principle of the variance reduction. In addition, there is a whole pile of tools which can help you out when things
 are not going in the appropriate way.
 For example, you can change the density of the entire model (for the variance reduction only, not for the real run).
-If you decrease it~(say, to \SI{80}{\percent}), it would oversample the area in the end.
+If you decrease it~(say, to \SI{80}{\percent}), it would oversample the area in the end\footnote{See the {\tt --wwgCalc} flag in \secref{sec:vr:cadis:mesh}.}.
 
 You can also put a limit to indicate that you do not want to write variance reduction down to \num[retain-unity-mantissa=false]{1e-317}, because it overpopulates too much the given cell. Normally, this limit is \numrange[retain-unity-mantissa=false]{1e-46}{1e-20}.
 
@@ -205,9 +206,9 @@ There are two types of variance reduction in MCNP and in CombLayer.
 One is a cell-based, the other one is a mesh-based variance reduction.
 SA had modified his MCNP version to allow both at the same time.
 
-Git commit used: 7348754
-
 \subsubsection{Mesh-based variance reduction}
+\label{sec:vr:cadis:mesh}
+\git{7348754}
 \begin{bash}
 ess -r -w -wWWG \ 
  --weightSource 'Vec3D(1000.0, 0.0, 14.0)' \
