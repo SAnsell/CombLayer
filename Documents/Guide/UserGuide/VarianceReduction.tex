@@ -1,6 +1,6 @@
 \subsection{Variance reduction}
 
-\subsubsection{FW-CADIS}
+\subsubsection{New way: FW-CADIS}
 \nomenclature{CADIS}{Consistent Adjoint Driven Importance Sampling}
 We consider our result~$R$ to be a convolution of some
 flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
@@ -209,7 +209,7 @@ SA had modified his MCNP version to allow both at the same time.
 
 \subsubsection{Mesh-based variance reduction}
 \label{sec:vr:cadis:mesh}
-\git{7348754}
+\git{7348754} \label{bash:vr:cadis:mesh:run}
 \begin{bash}
 ess -r -w -wWWG \ 
  --weightSource 'Vec3D(1000.0, 0.0, 14.0)' \
@@ -233,6 +233,7 @@ ess -r -w -wWWG \
   Here we defined two point sources.
 \item[--wwg{[XYZ]}Mesh] defines a mesh (if we need it). Format: min nbins max.
 \item[--wwgE] defines energy grid with MCNP notation (below \SI{1}{\mega\electronvolt}). There is no variance reduction above last energy bin.
+  It is also possible to use the {\tt --weightEnergyType} argument as shown in \secref{sec:vr:cadis:cell}.
 \item[--wwgVTK] optionally you can output the mesh file into a VTK file for plotting.
 \item[--wwgCalc] define source and adjoined points. We must define at least one source and {\em at least} one adjoined point.
   Syntax:
@@ -277,4 +278,80 @@ You end up with the minimum weight (which is in fact the maximal weight \alert{?
 sumR are normalisation terms and its value (-7.37277) says we are out of normalisation a bit (therefore we can maybe do something with it).
 
 % 29:12 - ParaView
+The weight window is saved in the {\tt wwinp} file and optionally can be exported in a {\tt VTK} file by using the {\tt --wwgVTK} command line argument
+as shown in the listing on page \pageref{bash:vr:cadis:mesh:run}.
+This {\tt VTK} file can be visualised by an external program like {\tt VisIt} or {\tt ParaView}.
 
+In the input deck, the weight-window parameters are defined as
+\begin{deck}
+ wwp:n 8 1.4 5 -1 -2 0
+\end{deck}
+where {\tt switchn=-2}. In the non-modified \mcnp this value indicates that ``the lower weight-window bounds should be read from an external {\tt wwinp} file
+containing either cell- or mesh-based lower weight window bounds''.
+SA modifies \mcnp, and this value means {\em both} cell and weight.
+It's possible to use {\tt switchn=-2} for non-modified \mcnp versions, and the rule is that when you've got outside of the mesh boundary, you score
+importance only. In your input file you have a list of the cells and cell weights, and with regular \mcnp you will get a warning saying that the cell weights being ignored.
+\mcnp will happily run, and if a particle drops outside of the boundary and has a scatter, you will be warned that importances are being sampled instead of {\tt wwinp} \todo{Show the exact message}
+and you will get the default importance which in this case is 1.
+
+\paragraph{Modification of MCNP}
+\mcnp uses a single array to mean either the mesh or the cell grid, that's why it can't do both at the same time.
+SA added a multiple array in order to be able to have several simplified meshes, which can be put in arbitary way.
+These meshes can be ordered.
+% 33:30
+We thest the first one first. If you want to have a mesh in a mesh, you simply put the final mesh at the top,
+so you can have exactly the same behaviour as you currently have, but you can also have much better behaviour in the sence
+that two meshes do not need to be orthogonal, they can follow bending in a curving beam line, which is useful\footnote{Especially for LOKI, wich has two \SI{\sim 5}{\degree} bends.}.
+Or you can have a fixed mesh around the moderator, which does not have to respect whichever direction of beam line we are taking away.
+And SA can have that mesh isolated and separate.
+
+\subsubsection{Old way: cell-based biasing}
+\label{sec:vr:cadis:cell}
+Cell-based variance reduction is the old method implemented in CombLayer.
+
+\lstinputlisting[language=bash,numbers=none,backgroundcolor=\color{yellow!20},frame=tb]{UserGuide/cell-biasing.sh}
+
+\begin{description}
+\item[-C] defines energy cut
+\item[--weightEnergyType] defines energy grid. With the {\tt wwg} card you can either use this expression or {\tt --wwgE}.
+  If use use the word ``energy'' then the format is energy (0.1), default weight for that bin (0.95). If you drop the word ``energy'' then you just set the energy grid.
+  In the given example for energies below \SI{0.1}{\mega\electronvolt} the default weight is 0.95 etc.
+\item[--weightPlane] Here we can set two planes
+\item[--weightObject] {\tt BBunkerWallMainWall1}: object we are interested in calculating; {\tt TP1}: tally plane 1;
+  \mbox{\tt 1.0 0.15 1e-20}: energy above \SI{1}{\mega\electronvolt} (below it we are not interested~--- use default values);
+  {\tt 0.15}: density factor; {\tt 1e-20}: minimum \alert{???} % 41:12
+
+\end{description}
+
+Here we need to define an object we are interested in calculating, and the idea is exactly the same as we had previously.
+When you run it, it takes longer time to generate the weight window since the implementation is not perfect: it calculates every individual cell and calculate track through it.
+In the new method described in \ref{sec:vr:cadis:mesh} SA takes a cell and track a line through it and removes from the need to be calculated every cell it goes through \todo{SA: check}.
+
+In the generated input deck the cells 687--701 belong to the wall and they are being evaluated:
+\begin{deck}
+wwe:n 0.1 1 10 100 5000
+wwp:n 2 1.4 5 0 0 0
+#   wwn1:n  wwn2:n  wwn3:n  wwn4:n  wwn5:n
+c   c        c        c        c        c
+...
+685   9.50e-01 8.50e-01 5.00e-01 4.00e-01 3.00e-01
+686   9.50e-01 8.50e-01 5.00e-01 4.00e-01 3.00e-01
+687   9.50e-01 2.73e-01 1.61e-01 1.29e-01 9.64e-02
+688   9.50e-01 2.72e-01 1.60e-01 1.28e-01 9.60e-02
+689   9.50e-01 2.95e-01 1.74e-01 1.39e-01 1.04e-01
+690   9.50e-01 3.24e-01 1.90e-01 1.52e-01 1.14e-01
+691   9.50e-01 3.60e-01 2.12e-01 1.70e-01 1.27e-01
+692   9.50e-01 3.63e-01 2.14e-01 1.71e-01 1.28e-01
+693   9.50e-01 3.98e-01 2.34e-01 1.87e-01 1.41e-01
+694   9.50e-01 4.21e-01 2.48e-01 1.98e-01 1.49e-01
+695   9.50e-01 4.72e-01 2.78e-01 2.22e-01 1.67e-01
+696   9.50e-01 4.93e-01 2.90e-01 2.32e-01 1.74e-01
+697   9.50e-01 5.47e-01 3.22e-01 2.58e-01 1.93e-01
+698   9.50e-01 5.85e-01 3.44e-01 2.76e-01 2.07e-01
+699   9.50e-01 6.59e-01 3.88e-01 3.10e-01 2.33e-01
+700   9.50e-01 7.03e-01 4.13e-01 3.31e-01 2.48e-01
+701   9.50e-01 8.07e-01 4.75e-01 3.80e-01 2.85e-01
+702   9.50e-01 8.50e-01 5.00e-01 4.00e-01 3.00e-01
+\end{deck}
+
+% 42:26
