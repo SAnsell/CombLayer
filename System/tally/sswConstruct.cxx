@@ -113,7 +113,6 @@ sswConstruct::processSSW(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
     throw ColErr::IndexError<size_t>(NItems,4,
@@ -149,10 +148,16 @@ sswConstruct::processSSW(Simulation& System,
         IParam.getValueError<std::string>("tally",Index,2,eMess);
       const std::string surfObj=
         IParam.getValueError<std::string>("tally",Index,3,eMess);
+      const size_t index=
+        IParam.getDefValue<size_t>(0,"tally",Index,4);
+
       const attachSystem::SurfMap* SMPtr=
         OR.getObjectThrow<attachSystem::SurfMap>(SMName,"SurfMap");
-      
-      SList=SMPtr->getSurfs(surfObj);
+
+      if (index)
+	SList.push_back(SMPtr->getSurf(surfObj,index-1));
+      else
+	SList=SMPtr->getSurfs(surfObj);
     }
   else
     throw ColErr::InContainerError<std::string>(PType,"PType not known");

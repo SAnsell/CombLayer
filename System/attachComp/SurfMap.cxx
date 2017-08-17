@@ -67,7 +67,7 @@ SurfMap::SurfMap(const SurfMap& A) :
     \param A :: SurfMap to copy
   */
 {}
-
+  
 SurfMap&
 SurfMap::operator=(const SurfMap& A)
   /*!
@@ -81,6 +81,25 @@ SurfMap::operator=(const SurfMap& A)
       BaseMap::operator=(A);
     }
   return *this;
+}
+
+int
+SurfMap::getSignedSurf(const std::string& K,const long int Index) const
+  /*!
+    Get the rule based on a surface
+    \param K :: Keyname
+    \param Index :: Offset number [signed]
+    \return Signed surface map
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getSignedSurf");
+
+  if (!Index)
+    return BaseMap::getItem(K);
+  else if (Index>0)
+    return BaseMap::getItem(K,static_cast<size_t>(Index-1));
+  else
+    return -BaseMap::getItem(K,static_cast<size_t>(-Index-1));
 }
   
 HeadRule

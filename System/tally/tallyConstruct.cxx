@@ -257,12 +257,11 @@ tallyConstruct::tallySelection(Simulation& System,
     {
       const std::string TType=
 	IParam.getValue<std::string>("tally",i,0);
-      ELog::EM<<"TTY == "<<TType<<ELog::endDiag;
       
       const size_t NItems=IParam.itemCnt("tally",i);
       const std::string HType=(NItems>1) ?
 	IParam.getValue<std::string>("tally",i,1) : "help";
-      ELog::EM<<"HType == "<<HType<<ELog::endDiag;
+
       
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
@@ -341,16 +340,16 @@ tallyConstruct::helpTallyType(const std::string& HType) const
 
   if (HType=="grid")
     gridPtr->writeHelp(ELog::EM.Estream());
-  else if (HType=="heat")
-    heatPtr->writeHelp(ELog::EM.Estream());
-  else if (HType=="point")
-    pointPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="mesh")
     meshPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="point")
+    pointPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="surface")
     surfPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="flux")
     fluxPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="heat")
+    heatPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="fission")
     fissionPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="ssw")

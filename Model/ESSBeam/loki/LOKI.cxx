@@ -67,8 +67,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -94,7 +92,6 @@
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
 #include "Hut.h"
-
 #include "RotaryCollimator.h"
 #include "PinHole.h"
 #include "RentrantBS.h"
@@ -482,8 +479,7 @@ LOKI::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
-  
+
   FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(Control);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
@@ -530,15 +526,7 @@ LOKI::build(Simulation& System,
 
   VTank->addInsertCell(Cave->getCell("Void"));
   VTank->createAll(System,FocusOutC->getKey("Guide0"),2);
-  
-  return;
-  
-
-  // Vacuum tank
-  VTank->addInsertCell(Cave->getCell("Void"));
-  //  VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
-  //  VTank->createAll(System,GridD->getKey("Beam"),2);
-
+ 
   return;
 }
 

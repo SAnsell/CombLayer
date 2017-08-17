@@ -74,11 +74,14 @@ class SurfMap : public BaseMap
   int getSurf(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
+
   std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
   std::vector<int> getSurfs() const
     { return BaseMap::getItems(); }
   //@}
+
+  int getSignedSurf(const std::string&,const long int) const;
 
   HeadRule getSurfRules(const std::string&) const;
   HeadRule getSurfRule(const std::string&,const size_t =0) const;
