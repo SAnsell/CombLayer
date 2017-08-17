@@ -5,7 +5,7 @@
 We consider our result~$R$ to be a convolution of some
 flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
 (position~$\vec{r}$, energy~$E$, angular
-coordinate~$\Phi\vec{\Omega}$) and a determenistic cross
+coordinate~$\hat{\Omega}$, i.e. all phase space) and a determenistic cross
 section~$\sigma_D(\vec{P})$ that relates to that:
 \begin{equation}
   \label{eq:vr:result}
@@ -13,7 +13,7 @@ section~$\sigma_D(\vec{P})$ that relates to that:
 \end{equation}
 
 % 2:12
-That allowes you to have a selectivity because a neutron must cross a
+That allows you to have a selectivity because a neutron must cross a
 certain surface or have a certain energy or direction and this is encoded into $\sigma_D(\vec{P})$.
 
 \paragraph{Cross section}
@@ -33,7 +33,7 @@ second order differential equation. The transport equations can be written as:
   \label{eq:vr:Hamiltonian}
   H \Psi = q
 \end{equation}
-
+where $q(\vec{P})$ is the source response function.\todo{check}
 
 So we operate on the whole flux, and this allows the field to be evolved.
 Hamiltonian always operates on flux in order to evolve it to a new type.
@@ -50,7 +50,7 @@ elastic scattering and absorption only we will see that equation \eqref{eq:vr:Ha
 the classical  scattering equation~\cite[Eq.\,1]{arXiv:1612.00793}:
 
 \begin{eqnarray}
-  \lbrack\Omega \cdot \nabla + \Sigma_t(\vec{r},E)\rbrack \, \Psi(r,\hat\Omega,E) & = & \int^\infty_0 dE' \int_{4\pi}
+  \lbrack\hat\Omega \cdot \nabla + \Sigma_t(\vec{r},E)\rbrack \, \Psi(r,\hat\Omega,E) & = & \int^\infty_0 dE' \int_{4\pi}
   d\hat\Omega' \, \Sigma_s(\vec{r},E' \to E,\hat\Omega' \cdot \hat\Omega) \, \Psi(\vec{r},\hat\Omega',E') + q(\vec{r},\hat\Omega,E) \\
   \lbrack-\hat\Omega \cdot \nabla + \Sigma_t(\vec{r},E)\rbrack \, \Psi^*(\vec{r},\hat\Omega,E) & = & \int^\infty_0 dE' \int_{4\pi}
   d\hat\Omega' \, \Sigma_s(\vec{r},E \to E',\hat\Omega \cdot \hat\Omega') \, \Psi^*(\vec{r},\hat\Omega',E') + q^*(\vec{r},\hat\Omega,E) 
@@ -58,9 +58,9 @@ the classical  scattering equation~\cite[Eq.\,1]{arXiv:1612.00793}:
 
 
 These two cases are the forward going (i.e. from the source to the tally region) and the backward going from the
-tally to the source. Note tha the flux must be the same is we assume reversibility.
+tally to the source. Note the the flux must be the same is we assume reversibility.
 
-We can [with a lot of algebra/Mathematica] show that they obey the identity
+We can [with a lot of algebra/Mathematics] show that they obey the identity
 \begin{equation}
   < \Psi^*,H,\Psi >  =  <\Psi, H^*, \Psi^*> 
 \end{equation}
@@ -113,7 +113,7 @@ The contribution of the individual piece of flux to $R$ (what we really want to 
   \label{eq:vr:w}
   w(\vec{P}) = \frac{R}{\Psi^*(\vec{P})}
 \end{equation}
-where $\Psi^*(\vec{P})$ is adjoined flux (backward going flux with respect to $\Psi(\vec{P})$).
+where $\Psi^*(\vec{P})$ is adjoint flux (backward going flux with respect to $\Psi(\vec{P})$).
 ans $w$ is the inverse of the probability importance of a region in $\vec{P}$.
 
 At the same time we know that we can express our weight as
@@ -123,7 +123,7 @@ At the same time we know that we can express our weight as
 \end{equation}
 $q(\vec{P})$ we can calculate using the Hamiltonian in \eqref{eq:vr:Hamiltonian}.
 
-This leaves us with the new expression for $R$ (\alert{Where did we lose $\Phi$?}):
+This leaves us with the new expression for $R$:
 \begin{equation}
   \label{eq:vr:R1}
   R = \int d\Omega \int d\vec{r} \int dE \, \Psi(\vec{r},E,\Omega) \, f(\vec{r},E,\Omega)
@@ -171,20 +171,20 @@ weight based on~\eqref{eq:vr:w}\dots\ and you are done!
 % 13:26
 Previous one sided variance reduction, not base on both a source term
 and an adjoint form, lead to an unbiased variance reduction that is
-not normalized. If the source and the tally variance reduction terms
+not normalised. If the source and the tally variance reduction terms
 are both used then the above theory does not give rise to any need to
-do normalization. However, due to the need to issues like doing a
+do normalisation. However, due to the need to issues like doing a
 quick and simple simulation were a source is approximated or multiple
-tallies normalization may be required. For example if a simulation is
-started from the ESS target but the flux down a beamline is required
+tallies normalisation may be required. For example if a simulation is
+started from the ESS target but the flux down a beam line is required
 two sources may be used e.g one at the target and one at the exit of
 the monolith. There is currently no weighting system for the
 contribution of both variances [which should be done using the
   probability of exiting the monolith] and thus the variance reduction
 mesh can be significantly mis-scaled.
 
-Therefore, there is the option to re-normalized the whole variance reduction mesh by adding the flag
-{\tt --wwgNorm AValue BValue} such that the new normalization range between low/high is limited between A and B.
+Therefore, there is the option to re-normalised the whole variance reduction mesh by adding the flag
+{\tt --wwgNorm AValue BValue} such that the new normalisation range between low/high is limited between A and B.
 
 
 There is a rounding error of the order \SIrange{10}{15}{\percent}.
@@ -235,12 +235,12 @@ ess -r -w -wWWG \
 \item[--wwgE] defines energy grid with MCNP notation (below \SI{1}{\mega\electronvolt}). There is no variance reduction above last energy bin.
   It is also possible to use the {\tt --weightEnergyType} argument as shown in \secref{sec:vr:cadis:cell}.
 \item[--wwgVTK] optionally you can output the mesh file into a VTK file for plotting.
-\item[--wwgCalc] define source and adjoined points. We must define at least one source and {\em at least} one adjoined point.
+\item[--wwgCalc] define source and adjoint points. We must define at least one source and {\em at least} one adjoint point.
   Syntax:
   \begin{description}
   \item[SS0] First 'S': true source point. 'S0': first point in the list.
   \item[1] means energy range above \SI{1}{\mega\electronvolt} (-1 would mean below \SI{1}{\mega\electronvolt}).
-  \item[TP0] First 'T': adjoined point (tally). 'P0': from the 1st plane in the list.
+  \item[TP0] First 'T': adjoint point (tally). 'P0': from the 1st plane in the list.
     % 23:00
   \item[-2] define energy grid. Negative number: up till this energy (cut-off energy).
   \item[1] density factor. Normally the trick is to decrease density in order to populate remote cells.
@@ -296,12 +296,12 @@ and you will get the default importance which in this case is 1.
 
 \paragraph{Modification of MCNP}
 \mcnp uses a single array to mean either the mesh or the cell grid, that's why it can't do both at the same time.
-SA added a multiple array in order to be able to have several simplified meshes, which can be put in arbitary way.
+SA added a multiple array in order to be able to have several simplified meshes, which can be put in arbitrary way.
 These meshes can be ordered.
 % 33:30
-We thest the first one first. If you want to have a mesh in a mesh, you simply put the final mesh at the top,
-so you can have exactly the same behaviour as you currently have, but you can also have much better behaviour in the sence
-that two meshes do not need to be orthogonal, they can follow bending in a curving beam line, which is useful\footnote{Especially for LOKI, wich has two \SI{\sim 5}{\degree} bends.}.
+We test the first one first. If you want to have a mesh in a mesh, you simply put the final mesh at the top,
+so you can have exactly the same behaviour as you currently have, but you can also have much better behaviour in the sense
+that two meshes do not need to be orthogonal, they can follow bending in a curving beam line, which is useful\footnote{Especially for LOKI, which has two \SI{\sim 5}{\degree} bends.}.
 Or you can have a fixed mesh around the moderator, which does not have to respect whichever direction of beam line we are taking away.
 And SA can have that mesh isolated and separate.
 
@@ -355,3 +355,152 @@ c   c        c        c        c        c
 \end{deck}
 
 % 42:26
+There is one problem here: since we've reduced the density, these numbers are not aggressive enough.
+Therefore for actual run we should set the density factor to 1, so the weights will be more reasonable:
+\begin{deck}
+wwe:n 0.1 1 10 100 5000
+wwp:n 2 1.4 5 0 0 0
+#   wwn1:n  wwn2:n  wwn3:n  wwn4:n  wwn5:n
+c   c        c        c        c        c
+...
+685   9.50e-01 8.50e-01 5.00e-01 4.00e-01 3.00e-01
+686   9.50e-01 8.50e-01 5.00e-01 4.00e-01 3.00e-01
+687   9.50e-01 4.39e-04 2.58e-04 2.07e-04 1.55e-04
+688   9.50e-01 4.26e-04 2.50e-04 2.00e-04 1.50e-04
+689   9.50e-01 7.39e-04 4.35e-04 3.48e-04 2.61e-04
+690   9.50e-01 1.36e-03 8.02e-04 6.42e-04 4.81e-04
+691   9.50e-01 2.78e-03 1.64e-03 1.31e-03 9.82e-04
+692   9.50e-01 2.93e-03 1.72e-03 1.38e-03 1.03e-03
+693   9.50e-01 5.43e-03 3.19e-03 2.55e-03 1.92e-03
+694   9.50e-01 7.89e-03 4.64e-03 3.71e-03 2.78e-03
+695   9.50e-01 1.68e-02 9.89e-03 7.91e-03 5.93e-03
+696   9.50e-01 2.24e-02 1.32e-02 1.06e-02 7.92e-03
+697   9.50e-01 4.51e-02 2.66e-02 2.12e-02 1.59e-02
+698   9.50e-01 7.08e-02 4.16e-02 3.33e-02 2.50e-02
+699   9.50e-01 1.56e-01 9.16e-02 7.32e-02 5.49e-02
+700   9.50e-01 2.39e-01 1.41e-01 1.12e-01 8.43e-02
+701   9.50e-01 6.02e-01 3.54e-01 2.83e-01 2.12e-01
+702   9.50e-01 8.50e-01 5.00e-01 4.00e-01 3.00e-01
+\end{deck}
+
+There is very little in this program from stop you from being stupid if you want to be.
+There is no warnings. You need to understand what you are doing.
+
+The reason the density factor is there because sometimes you look at the simulation and see that neutrons are not going far enough.
+So, you tweak the density (normally from \numrange{0.9}{0.95}), and you are still not sure whether it is completely legitimate.
+
+The weights \numrange[retain-unity-mantissa=false, range-phrase=\ --\ ]{1e-5}{1e-3} are the numbers we expect to see for a single point process.
+
+This weight window generator has been in CombLayer since the middle of 2016.
+
+\bigskip
+
+In the new mesh-based weight window generator you've lost nothing, but you gain some new things.
+
+% 45:04 - recordmydesktop stopped
+
+\subsubsection{Technical details}
+
+\paragraph{Angular term approximation}
+
+% 52:44
+For a given cell the integral you have to do is 
+\begin{equation}
+\label{eq:vr:phi}
+  \phi^\dag(\vec{r},E) = \frac{\int_\Omega \phi(\vec{r},E,\hat{\Omega})
+    \phi^\dag(\vec{r},E,\hat{\Omega}) }
+  {\int_\Omega \phi(\vec{r},E,\hat{\Omega}) }
+\end{equation}
+
+and you need some angular term, but you do not calculate the angular term. You approximate it in a really brutal approximation way:
+\begin{equation}
+  \label{eq:vr:phi:discrete}
+  \phi(\vec{r},E,\hat\Omega_{ijk})=
+  \frac{\phi_{000} (\phi_{000}+(\phi_{ijk} - \phi_{-i-j-k})/2) }
+  { 26 \phi_{000} }
+\end{equation}
+
+%53:10
+This is the cell I wish to compute something for. So I need the adjoint flux on this cell.
+And I am going to compute the integral \eqref{eq:vr:phi}.
+
+The angular parts proportionate as \eqref{eq:vr:phi:discrete}.
+Each cell as 26 neighbours~(\figref{fig:vr:cell}). The approximation is done by whole set of single subtractions from the cell in all directions.
+
+The $ijk$ is standard Einstein summation. You do this summation over positive and negative directions, and across the diagonals all the time.
+Then you can put $\phi(\vec{r},E,\hat\Omega_{ijk})$ calculated in \eqref{eq:vr:phi:discrete} into \eqref{eq:vr:phi}.
+
+Then you do exactly the same thing for $\phi^\dag(\vec{r},E,\hat\Omega_{ijk})$ as well, and that gives the value of 
+$\phi^\dag(\vec{r},E)$ in \eqref{eq:vr:phi}.
+
+
+\begin{figure}
+  \centering
+  \input{UserGuide/cube.tex}
+  \caption{Cell with its neighbours}
+  \label{fig:vr:cell}
+\end{figure}
+
+\paragraph{Markov chain update}
+%55:30
+You also must have done the Markov chain update. You populate the flux with the initial source, and then you do the Markov chain update for cells to contribute to each others local cells.
+
+$$
+\sigma_\text{total} = \sigma_\text{elastic} + \sigma_\text{abs}^*
+$$
+
+For every cell we compute the probability of going to its neighbour. We say that no cell can go to anything other than its neighbour.
+The idea is not to make an $\mathcal{O}(n^2)$ computation, but the $\mathcal{O}(n\log{}n)$ one.
+
+So, first of all I compute every neighbour, so I have a Markov chain matrix.\footnote{The matrix is too big, so we store only its sparse components.} %56:20
+
+And notice contribution probability from going to the given cell from one of its neighbour cells~(all the touching neighbours are considered).
+
+Then you use the Markov chain process, where you integrate this [\alert{???}] matrix together with $n\to\infty$ and you get stability.
+
+You take the value in all the cells according to that prescription.
+
+% 57:15
+% Imagine the is a beam line...
+
+%58:25
+The Markov chain process allows you to have a structure within the mesh, which you do not need to be carefully align with to do staff.
+
+\paragraph{Comparison with ADVANTAG}
+
+The adjoint process the CADIS people do indeed accounts for that, but they run full simulation to do it using discrete ordinance (?).
+CombLayer does not do these calculations because they take long time.
+
+If you really need CADIS adjoint and ADVANTAGE, go and do that.
+The CombLayer implementation is somewhere half way stage between doing it manually and the ADVANTAG way.
+
+%59:58: Esben was running ADVANTAG for 3.5 days on the cluster, and it took him days to set it up
+
+If the CombLayer way does not work, maybe you have to do ADVANTAG, but it can be tricky to set it up.
+
+ADVANTAG really computes the angular phase term, while Stuart just approximates it.
+
+The beauty of CombLayer way is that it does not take much time to set it up. It's simple: you either list the object you are interested in and put the variance reduction for it,
+or you set the grid you are interested in and you put basic flags down.
+
+It's work in progress. More will be added to it.
+
+Stuart is using it for long beam lines.
+
+%1:03:50 - description of MCNP6 modifications
+
+%1:18:46 - upper and lower bound should modify the variance reduction, but SA says the difference is just factor of 2
+
+
+\cite{arXiv:1612.00793} is the only paper where they say what exactly needs to be done.
+% 1:22:52 - listen about the paper
+You compute this adjoint flux;
+compute R, which eventually will be your weight term;
+compute q, which you are going to multiply through by to get this term which is going invert by computing this cross integral.
+You use equations 3 and 4, because you have both, and you just simply solve. And you are done.
+
+This is approx what SA does with the approximation he made.
+
+It will probably not work, but for SA it worked for the wall and for the roof.
+
+% 1:24:45 - how to use it with a linac geometry
