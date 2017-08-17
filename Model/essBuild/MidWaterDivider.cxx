@@ -335,7 +335,6 @@ MidWaterDivider::createSurfaces()
     (SMap,divIndex+104,Origin+Y*LStep,X,-Z,midAngle/2.0);
 
   // -Y section
-
   ModelSupport::buildPlaneRotAxis
     (SMap,divIndex+123,Origin-Y*LStep,-X,-Z,-midAngle/2.0);
   ModelSupport::buildPlaneRotAxis
@@ -346,7 +345,6 @@ MidWaterDivider::createSurfaces()
 			   Origin+leftNorm*(length+wallThick),leftNorm);
   ModelSupport::buildPlane(SMap,divIndex+112,
 			   Origin+rightNorm*(length+wallThick),rightNorm);
-
   // Length below [note reverse of normals]
   ModelSupport::buildPlane(SMap,divIndex+131,
 			   Origin-rightNorm*(wallThick+length),-rightNorm);
@@ -373,17 +371,17 @@ MidWaterDivider::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
-
+  
   const std::string Base=leftWing.getLinkComplement(4);
   const std::string Top=leftWing.getLinkComplement(5);
   
   HeadRule LCut(leftWing.getLayerString(cutLayer,7));
   HeadRule RCut(rightWing.getLayerString(cutLayer,7));
-
+  
   LCut.makeComplement();
   RCut.makeComplement();
   std::string Out;
-
+  
   if (topThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 -5 ");

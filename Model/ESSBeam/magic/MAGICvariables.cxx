@@ -133,8 +133,8 @@ MAGICvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"magicPipeE",3.0,600.0);
   FGen.generateTaper(Control,"magicFE",596.0 ,4.08,4.93, 4.06,4.79 );
   // out (19m to bunker wall)
-  PipeGen.generatePipe(Control,"magicPipeF",3.0,510.0);
-  FGen.generateTaper(Control,"magicFF",506.0 ,4.93,5.60,  4.79,5.50 );
+  PipeGen.generatePipe(Control,"magicPipeF",3.0,490.0);
+  FGen.generateTaper(Control,"magicFF",486.0 ,4.93,5.60,  4.79,5.50 );
 
     // BEAM INSERT:
   Control.addVariable("magicBInsertHeight",20.0);
@@ -151,12 +151,13 @@ MAGICvariables(FuncDataBase& Control)
   
   // 28m to 38m
   SGen.generateShield(Control,"magicShieldA",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutA",1.0,998.0);
+  PipeGen.generatePipe(Control,"magicPipeOutA",5.0,994.0);
   FGen.clearYOffset();
-  FGen.setYMainOffset(4.0);  
-  FGen.generateTaper(Control,"magicOutFA",994.0, 5.89,6.65, 5.80,6.60 );
+  FGen.setYMainOffset(8.0);  
+  FGen.generateTaper(Control,"magicOutFA",990.0, 5.89,6.65, 5.80,6.60 );
 
   // 38m to 48m
+  FGen.setYMainOffset(4.0);  
   SGen.generateShield(Control,"magicShieldB",1000.0,40.0,40.0,60.0,4,8);
   PipeGen.generatePipe(Control,"magicPipeOutB",4.0,996.0);
   FGen.generateTaper(Control,"magicOutFB",992.0, 6.65,7.20, 6.60,7.18 );

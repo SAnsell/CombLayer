@@ -120,7 +120,7 @@ class Bunker : public attachSystem::ContainedComp,
 			const long int,const bool);
 
   void createSurfaces(const bool);
-  void createLinks();
+  void createLinks(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 

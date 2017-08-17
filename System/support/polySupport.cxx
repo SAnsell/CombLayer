@@ -195,6 +195,10 @@ solveCubic(const double A,const double B,
   /*!
     Solves Cubic equation of type
     \f$ ax^3+bx^2+cx+d=0 \f$
+    \parma A :: x^3 value
+    \parma B :: x^2 value
+    \parma C :: x value
+    \parma D :: const value
     \param AnsA :: complex roots of the equation 
     \param AnsB :: complex roots of the equation 
     \param AnsC :: complex roots of the equation 

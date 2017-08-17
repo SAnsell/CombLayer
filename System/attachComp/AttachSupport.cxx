@@ -527,8 +527,8 @@ addToInsertSurfCtrl(Simulation& System,
    must be set. It is tested against all the ojbect with
    this object .
    \param System :: Simulation to use
-   \param CellA :: First cell number [to test]
-   \param CellB :: Last cell number  [to test]
+   \param cellA :: First cell number [to test]
+   \param cellB :: Last cell number  [to test]
    \param CC :: ContainedComp object to add to this
   */
 {
@@ -781,8 +781,7 @@ addToInsertForced(Simulation& System,
  /*!
    Force CC into the BaseFC objects
   \param System :: Simulation to use
-  \param CellA :: First cell number [to test]
-  \param CellB :: Last cell number  [to test]
+  \param BaseFC :: Object to get range for cells
   \param CC :: ContainedComp object to add to the BaseFC
  */
 {

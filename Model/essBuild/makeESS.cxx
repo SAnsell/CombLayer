@@ -109,6 +109,7 @@
 #include "BunkerFeed.h"
 #include "BunkerQuake.h"
 #include "Curtain.h"
+#include "HighBay.h"
 #include "ConicModerator.h"
 #include "makeESSBL.h"
 #include "ESSPipes.h"
@@ -149,7 +150,8 @@ makeESS::makeESS() :
   DBunker(new Bunker("DBunker")),
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
-  TopCurtain(new Curtain("Curtain"))
+  TopCurtain(new Curtain("Curtain")),
+  ABHighBay(new HighBay("ABHighBay"))
  /*!
     Constructor
  */
@@ -186,6 +188,7 @@ makeESS::makeESS() :
   OR.addObject(ABunkerPillars);
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
+  OR.addObject(ABHighBay);
 }
 
 
@@ -680,7 +683,7 @@ makeESS::makeBunker(Simulation& System,
   /*!
     Make the bunker system
     \param System :: Simulation 
-    \param bunkerType :: different bunker to make
+    \param IParam :: Input parameter
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
@@ -705,7 +708,6 @@ makeESS::makeBunker(Simulation& System,
   CBunker->addInsertCell(voidCell);
   CBunker->createAll(System,*ShutterBayObj,3,true);
 
-
   DBunker->addInsertCell(voidCell);
   DBunker->setCutWall(0,1);
   DBunker->createAll(System,*ShutterBayObj,3,true);
@@ -723,7 +725,10 @@ makeESS::makeBunker(Simulation& System,
 
       TopCurtain->addInsertCell("RoofCut",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
-      TopCurtain->createAll(System,*ShutterBayObj,6,4);      
+      TopCurtain->createAll(System,*ShutterBayObj,6,4);
+
+      ABHighBay->addInsertCell(voidCell);
+      ABHighBay->createAll(System,*ABunker,*BBunker);
     }
   if (bunkerType.find("help")!=std::string::npos)
     {

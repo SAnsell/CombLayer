@@ -296,10 +296,9 @@ MAGIC::buildBunkerUnits(Simulation& System,
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
-  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
-  PSCDisk->setCentreFlag(3);  // Z direction
-  PSCDisk->setOffsetFlag(1);  // Z direction
-  PSCDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
+  //  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
+  //  PSCDisk->setCentreFlag(3);  // Z direction
+  //  PSCDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
@@ -364,6 +363,7 @@ MAGIC::buildOutGuide(Simulation& System,
 
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
+
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
 
@@ -557,6 +557,7 @@ MAGIC::build(Simulation& System,
 
 
   if (stopPoint==2) return;                      // STOP At bunker edge
+  ELog::EM<<"STOP POINT == "<<stopPoint<<ELog::endDiag;
   // IN WALL
   // Make bunker insert
   BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);

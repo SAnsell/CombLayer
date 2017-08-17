@@ -54,7 +54,8 @@ class WorkData
   WorkData(const WorkData&);
   WorkData& operator=(const WorkData&);
   virtual ~WorkData();
-  /// Effective typeid
+
+  /// Effective typeid 
   virtual std::string className() const { return "WorkData"; }
   
   WorkData& operator+=(const WorkData&);

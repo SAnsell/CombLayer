@@ -325,9 +325,10 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
 std::string
 BilbaoWheel::getSQSurface(const double R, const double e)
-
   /*
     Return MCNP(X) surface card for SQ ellipsoids
+    \param R :: Radius 
+    \param e :: aspect ratio
   */
 {
   std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
@@ -460,7 +461,10 @@ BilbaoWheel::createSurfaces()
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       SI+=10;
     }
-  
+
+  //  ModelSupport::buildCylinder(SMap,wheelIndex+517,Origin,Z,coolantRadiusOut);
+  //  ModelSupport::buildCylinder(SMap,wheelIndex+527,Origin,Z,caseRadius);
+
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
 
@@ -471,18 +475,14 @@ BilbaoWheel::createSurfaces()
   GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+527);
   GA->setSurface(getSQSurface(caseRadius, aspectRatio));
   SMap.registerSurf(GA);
+  GA->normalizeGEQ(0);
 
   Geometry::EllipticCyl* ECPtr=
     ModelSupport::buildEllipticCyl(SMap,wheelIndex+528,Origin,Z,
 				   X,caseRadius,caseRadius);
 
-  GA->normalizeGEQ(0);
-  //  ELog::EM<<"XXN ="<<*GA<<ELog::endDiag;
-  //  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
+
   ECPtr->normalizeGEQ(0);
-  //  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
-
-
   
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 

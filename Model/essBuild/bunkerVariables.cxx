@@ -385,7 +385,12 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BunkerChicane0Height", 30.0);
   Control.addVariable("BunkerChicane0Mat", "Void");
 
-  
+
+  Control.addVariable("ABHighBayLength",450.0);
+  Control.addVariable("ABHighBayHeight",220.0);
+  Control.addVariable("ABHighBayThick",200.0);
+  Control.addVariable("ABHighBayWallMat","Concrete");
+  Control.addVariable("ABHighBayRoofMat","Concrete"); 
   return;
 }
   

@@ -124,7 +124,6 @@ SurfMap::getSurfRules(const std::string& Key) const
   else
     {
       const std::vector<int> sVec=getItems(Key);
-
       for(const int sn : sVec)
 	Out.addIntersection(sn);
     }

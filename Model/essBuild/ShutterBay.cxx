@@ -92,6 +92,7 @@ ShutterBay::ShutterBay(const std::string& Key)  :
 
 ShutterBay::ShutterBay(const ShutterBay& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   radius(A.radius),height(A.height),depth(A.depth),
   skin(A.skin),topSkin(A.topSkin),
@@ -114,6 +115,7 @@ ShutterBay::operator=(const ShutterBay& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A),
       cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;

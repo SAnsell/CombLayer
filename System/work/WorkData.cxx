@@ -827,7 +827,7 @@ WorkData::addPoint(const double XC,const double YVal)
   /*!
     Add a point to existing bin
     \param XC :: XValue
-    \parma YVal :: Data point ot add
+    \param YVal :: Data point ot add
   */
 {
   const size_t Index=getXIndex(XC);

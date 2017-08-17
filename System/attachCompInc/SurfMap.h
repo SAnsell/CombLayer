@@ -51,9 +51,10 @@ class SurfMap : public BaseMap
 
   //@{
   /*!
-    Rename functions
-  */
-  
+    Rename transform functions to BaseMap
+    \param K :: Key name 
+    \param CN :: Offset index
+  */  
   void setSurf(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
       
@@ -67,7 +68,6 @@ class SurfMap : public BaseMap
     { BaseMap::addItem(K,CN); }
   void addSurfs(const std::string& K,const std::vector<int>& CN)
     { BaseMap::addItems(K,CN); }
-
   
   int getSurf(const std::string& K) const
     { return BaseMap::getItem(K); }

@@ -443,7 +443,7 @@ WeightControl::processWeights(Simulation& System,
 
   if (IParam.flag("weightEnergyType"))
     procEnergyType(IParam);
-  ELog::EM<<"HERER :"<<ELog::endDiag;
+
   if (IParam.flag("weight"))
     setWeights(System);
 

@@ -73,10 +73,12 @@ namespace essSystem
   class TwisterModule;
   class RoofPillars;
   class Curtain;
+  class HighBay;
   class F5Collimator;
   class BunkerFeed;
   class WedgeFlightLine;
   class Chicane;
+
 
       
   /*!
@@ -146,6 +148,7 @@ class makeESS
   ///< Right bunker Pillars [B]
   std::shared_ptr<RoofPillars> BBunkerPillars; 
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
+  std::shared_ptr<HighBay> ABHighBay;   ///< HighBay structure
 
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 

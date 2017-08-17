@@ -376,8 +376,8 @@ VacuumPipe::createSurfaces()
   // add data to surface
   if (activeWindow & 1)
     {
-      addSurf("FrontWindow",vacIndex+1001);
-      addSurf("FrontWindow",vacIndex+1002);
+      addSurf("FrontWindow",SMap.realSurf(vacIndex+1001));
+      addSurf("FrontWindow",SMap.realSurf(vacIndex+1002));
     }
   
     // Inner void
