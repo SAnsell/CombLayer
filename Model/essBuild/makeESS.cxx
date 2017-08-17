@@ -151,7 +151,8 @@ makeESS::makeESS() :
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain")),
-  ABHighBay(new HighBay("ABHighBay"))
+  ABHighBay(new HighBay("ABHighBay")),
+  CDHighBay(new HighBay("CDHighBay"))
  /*!
     Constructor
  */
@@ -189,6 +190,7 @@ makeESS::makeESS() :
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
   OR.addObject(ABHighBay);
+  OR.addObject(CDHighBay);
 }
 
 
@@ -718,17 +720,25 @@ makeESS::makeBunker(Simulation& System,
 
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
-      // THIS IS HORRIFFICALLY INEFFICENT :: FIX
+
       TopCurtain->addInsertCell("Top",voidCell);
       TopCurtain->addInsertCell("Lower",voidCell);
       TopCurtain->addInsertCell("Mid",voidCell);
 
+      // THIS IS HORRIFFICALLY INEFFICENT :: FIX
       TopCurtain->addInsertCell("RoofCut",ABunker->getCells("roof"));
       TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
 
+      ABHighBay->setCurtainCut
+	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
       ABHighBay->addInsertCell(voidCell);
       ABHighBay->createAll(System,*ABunker,*BBunker);
+
+      //      CDHighBay->setCurtainCut
+      //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+      CDHighBay->addInsertCell(voidCell);
+      CDHighBay->createAll(System,*CBunker,*DBunker);
     }
   if (bunkerType.find("help")!=std::string::npos)
     {

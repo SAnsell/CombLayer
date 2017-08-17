@@ -358,7 +358,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainBaseGap",6.0);
   Control.addVariable("CurtainOuterGap",5.0);
   Control.addVariable("CurtainTopRaise",60.0);
-  Control.addVariable("CurtainHeight",250.0);
+  Control.addVariable("CurtainHeight",450.0);
   Control.addVariable("CurtainDepth",186.0);     // fixed by Ben.
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",1);   // 7 
@@ -387,11 +387,17 @@ EssBunkerVariables(FuncDataBase& Control)
 
 
   Control.addVariable("ABHighBayLength",450.0);
-  Control.addVariable("ABHighBayHeight",220.0);
+  Control.addVariable("ABHighBayHeight",330.0);
   Control.addVariable("ABHighBayThick",200.0);
   Control.addVariable("ABHighBayWallMat","Concrete");
   Control.addVariable("ABHighBayRoofMat","Concrete"); 
-  return;
+  
+  Control.addVariable("CDHighBayLength",450.0);
+  Control.addVariable("CDHighBayHeight",330.0);
+  Control.addVariable("CDHighBayThick",200.0);
+  Control.addVariable("CDHighBayWallMat","Concrete");
+  Control.addVariable("CDHighBayRoofMat","Concrete"); 
+return;
 }
   
 }  // NAMESPACE setVariable

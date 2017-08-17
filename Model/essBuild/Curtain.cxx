@@ -273,7 +273,7 @@ Curtain::createSurfaces()
 			      Origin,Z,wallRadius+wallThick);
   ModelSupport::buildCylinder(SMap,curIndex+127,
 			      Origin,Z,wallRadius+wallThick+outerGap);
-  setSurf("OuterRadius",SMap.realSurf(curIndex+127));
+
   
   ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
@@ -283,7 +283,9 @@ Curtain::createSurfaces()
   
   ModelSupport::buildPlane(SMap,curIndex+3,AWall,AWallDir);
   ModelSupport::buildPlane(SMap,curIndex+4,BWall,BWallDir);
-  
+
+  setSurf("OuterRadius",SMap.realSurf(curIndex+127));
+  setSurf("OuterZStep",SMap.realSurf(curIndex+15));
   return;
 }
 
@@ -444,7 +446,6 @@ Curtain::createLinks()
   ELog::RegMethod RegA("Curtain","createLinks");
 
   attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
-  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   // Lower first:

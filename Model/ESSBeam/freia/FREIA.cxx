@@ -326,7 +326,6 @@ FREIA::buildBunkerUnits(Simulation& System,
   FOCDiskC->setCentreFlag(3);  // Z direction
   FOCDiskC->createAll(System,ChopperC->getKey("BuildBeam"),0);
 
-
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 

@@ -130,6 +130,23 @@ SurfMap::getSurfRules(const std::string& Key) const
   return Out;
 }
 
+HeadRule
+SurfMap::combine(const std::set<std::string>& KeySet) const
+  /*!
+    Add the rules as intesection
+    \param KeySet :: Keynames
+    \return HeadRule
+   */
+{
+  ELog::RegMethod RegA("SurfMap","combine"); 
+  
+  HeadRule Out;
+  for(const std::string& KS : KeySet)
+    Out.addIntersection(getSurfRules(KS));
+
+  return Out;
+}
+
 
 
  

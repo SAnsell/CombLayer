@@ -113,6 +113,7 @@ sswConstruct::processSSW(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  ELog::EM<<"ASDFASF "<<ELog::endDiag;
   const size_t NItems=IParam.itemCnt("tally",Index);
   if (NItems<4)
     throw ColErr::IndexError<size_t>(NItems,4,

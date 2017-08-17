@@ -82,6 +82,7 @@ class SurfMap : public BaseMap
 
   HeadRule getSurfRules(const std::string&) const;
   HeadRule getSurfRule(const std::string&,const size_t =0) const;
+  HeadRule combine(const std::set<std::string>&) const;
   
 };
 

@@ -149,6 +149,7 @@ class makeESS
   std::shared_ptr<RoofPillars> BBunkerPillars; 
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
   std::shared_ptr<HighBay> ABHighBay;   ///< HighBay structure
+  std::shared_ptr<HighBay> CDHighBay;   ///< HighBay structure
 
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 

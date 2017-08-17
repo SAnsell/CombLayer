@@ -55,11 +55,15 @@ class HighBay : public attachSystem::ContainedComp,
 
   int wallMat;                   ///< Default wall material
   int roofMat;                   ///< Default wall material
-  
+
+  HeadRule curtainCut;           ///< Extra cut for curtain
+
+ 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void createSurfaces(const Bunker&,const Bunker&);
+  void createObjects(Simulation&,const Bunker&,const Bunker&);
 
  public:
 
@@ -69,6 +73,8 @@ class HighBay : public attachSystem::ContainedComp,
   virtual ~HighBay();
 
 
+  /// set Curtain cut
+  void setCurtainCut(const HeadRule& H) { curtainCut=H;}
   void createAll(Simulation&,const Bunker&,const Bunker&);
 
 

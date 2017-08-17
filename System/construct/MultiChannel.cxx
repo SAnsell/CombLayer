@@ -233,7 +233,8 @@ MultiChannel::createSurfaces()
     throw ColErr::SizeError<double>(TotalD,nBlades*bladeThick,
       "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
   
-  const double voidThick((TotalD-nBlades*bladeThick)/(nBlades+1.0));
+  const double voidThick((TotalD-nBlades*bladeThick)/
+			 static_cast<double>(nBlades+1));
 
   double DPosA(voidThick);
   double DPosB(voidThick+bladeThick);

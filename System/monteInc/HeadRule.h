@@ -125,14 +125,14 @@ class HeadRule
   int procRule(const Rule*);
   int procString(const std::string&);
 
-  void addIntersection(const int);
-  void addUnion(const int);
-  void addIntersection(const std::string&);
-  void addUnion(const std::string&);
-  void addIntersection(const HeadRule&);
-  void addUnion(const HeadRule&);
-  void addIntersection(const Rule*);
-  void addUnion(const Rule*);
+  HeadRule& addIntersection(const int);
+  HeadRule& addUnion(const int);
+  HeadRule& addIntersection(const std::string&);
+  HeadRule& addUnion(const std::string&);
+  HeadRule& addIntersection(const HeadRule&);
+  HeadRule& addUnion(const HeadRule&);
+  HeadRule& addIntersection(const Rule*);
+  HeadRule& addUnion(const Rule*);
 
   int level(const int) const;
   HeadRule getLevel(const size_t) const;

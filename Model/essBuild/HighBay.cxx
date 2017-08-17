@@ -167,7 +167,65 @@ HighBay::createSurfaces(const Bunker& leftBunker,
 	 height+roofThick);
     }
 
-  ModelSupport::buildPlane(SMap,highIndex+1,Origin+Y*length,Y);  
+  ModelSupport::buildPlane(SMap,highIndex+2,Origin+Y*length,Y);  
+  return;
+}
+
+void
+HighBay::createObjects(Simulation& System,
+		       const Bunker& leftBunker,
+		       const Bunker& rightBunker)
+  /*!
+    Create all the objects
+    \param System :: Simulation
+    \param leftBunker :: left bunker unit    
+    \param rightBunker :: left bunker unit
+  */
+{
+  ELog::RegMethod RegA("HighBay","createObjects");
+  std::string Out;
+
+
+  const std::string frontCut=leftBunker.getSignedLinkString(3);
+
+  const HeadRule leftWallInner(leftBunker.getSurfRules("leftWallInner"));
+  const HeadRule rightWallInner(rightBunker.getSurfRules("-rightWallInner"));
+  const HeadRule leftWallOuter(leftBunker.getSurfRules("leftWallOuter"));
+  const HeadRule rightWallOuter(rightBunker.getSurfRules("-rightWallOuter"));
+  const HeadRule bunkerTop=leftBunker.getSurfRules("roofOuter");
+
+  // void area
+  Out=ModelSupport::getComposite(SMap,highIndex," -2 -6 ");
+  Out+=leftWallInner.display()+rightWallInner.display();
+  Out+=frontCut;
+  Out+=bunkerTop.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,
+				   Out+curtainCut.complement().display()));
+
+  // Roof area
+  Out=ModelSupport::getComposite(SMap,highIndex," -2 6 -16 ");
+  Out+=leftWallInner.display()+rightWallInner.display();
+  Out+=frontCut;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out));
+
+  // Left wall
+  Out=ModelSupport::getComposite(SMap,highIndex," -2 -16 ");
+  Out+=leftWallOuter.display()+leftWallInner.complement().display();
+  Out+=bunkerTop.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontCut));
+  // Right wall
+  Out=ModelSupport::getComposite(SMap,highIndex," -2 -16 ");
+  Out+=rightWallOuter.display()+rightWallInner.complement().display();
+  Out+=bunkerTop.display();
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+frontCut));
+		 
+  
+  Out=ModelSupport::getComposite(SMap,highIndex," -2 -16 ");
+  Out+=leftWallOuter.display()+rightWallOuter.display();
+  Out+=frontCut;
+  Out+=bunkerTop.display();
+  addOuterSurf(Out);
+
   return;
 }
   
@@ -188,6 +246,8 @@ HighBay::createAll(Simulation& System,
   populate(System.getDataBase());  
   createUnitVector(leftBunker,0);
   createSurfaces(leftBunker,rightBunker);
+  createObjects(System,leftBunker,rightBunker);
+  insertObjects(System);              
 
   return;
 }

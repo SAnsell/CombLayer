@@ -257,15 +257,18 @@ tallyConstruct::tallySelection(Simulation& System,
     {
       const std::string TType=
 	IParam.getValue<std::string>("tally",i,0);
-
+      ELog::EM<<"TTY == "<<TType<<ELog::endDiag;
+      
       const size_t NItems=IParam.itemCnt("tally",i);
       const std::string HType=(NItems>1) ?
 	IParam.getValue<std::string>("tally",i,1) : "help";
+      ELog::EM<<"HType == "<<HType<<ELog::endDiag;
       
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
       else if (HType=="help" || HType=="?")
 	helpTallyType(TType);
+
       else if (TType=="grid") 
 	gridPtr->processGrid(System,IParam,i);
       else if (TType=="point")
@@ -348,8 +351,10 @@ tallyConstruct::helpTallyType(const std::string& HType) const
     surfPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="flux")
     fluxPtr->writeHelp(ELog::EM.Estream());
-  else if (HType=="flux")
+  else if (HType=="fission")
     fissionPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="ssw")
+    sswPtr->writeHelp(ELog::EM.Estream());
   else
     {
       ELog::EM<<"Tally Types:\n\n";
