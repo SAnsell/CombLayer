@@ -2,11 +2,12 @@
 
 \subsubsection{New way: FW-CADIS}
 \nomenclature{CADIS}{Consistent Adjoint Driven Importance Sampling}
-We consider our result~$R$ to be a convolution of some
+We consider our result (response of a detector)~$R$ to be a convolution of particle angular
 flux~$\Psi(\vec{P})$ determined by all the parameters~$\vec{P}$
 (position~$\vec{r}$, energy~$E$, angular
 coordinate~$\hat{\Omega}$, i.e. all phase space) and a determenistic cross
-section~$\sigma_D(\vec{P})$ that relates to that:
+section\footnote{Detector cross section, response function.} % Haghighat2003, page 33
+$\sigma_D(\vec{P})$ that relates to that:
 \begin{equation}
   \label{eq:vr:result}
   R = \int \Psi(\vec{P}) \sigma_D(\vec{P}) d\vec{P}
@@ -27,13 +28,13 @@ otherwise $\sigma_D=0$.
 
 We will now imply the integral over $d\vec{P}$, and imply that there is a unique Hamiltonian,
 that can express the flux at all points in the phase space are equal to the source value. It is basically
-second order differential equation. The transport equations can be written as:
+second order differential equation. The Boltzmann transport equation expresses the particle balance in a phase space as\footnote{More detailed derivations can be found in \cite{Haghighat2003}.}:
 % integration is implied here
 \begin{equation}
   \label{eq:vr:Hamiltonian}
   H \Psi = q
 \end{equation}
-where $q(\vec{P})$ is the source response function.\todo{check}
+where $q(\vec{P})$ is the source response function.
 
 So we operate on the whole flux, and this allows the field to be evolved.
 Hamiltonian always operates on flux in order to evolve it to a new type.
@@ -42,7 +43,7 @@ hold for all time since we have conservation.
 
 Conjugated form:
 \begin{equation}
-  H^* \Psi^*  =  \vec{q}^{\,*} 
+  H^* \Psi^*  =  q^* 
 \end{equation}
 
 This is the general form. As an example, for a simple neutron that under,
@@ -60,21 +61,21 @@ the classical  scattering equation~\cite[Eq.\,1]{arXiv:1612.00793}:
 These two cases are the forward going (i.e. from the source to the tally region) and the backward going from the
 tally to the source. Note the the flux must be the same is we assume reversibility.
 
-We can [with a lot of algebra/Mathematics] show that they obey the identity
+We can [with a lot of algebra/Mathematics] show that they obey the ``adjoint property'',
 \begin{equation}
-  < \Psi^*,H,\Psi >  =  <\Psi, H^*, \Psi^*> 
+  < \Psi^*,H\Psi >  =  <\Psi, H^*\Psi^*> 
 \end{equation}
 
 and therefore 
 \begin{equation}
-  < q,\Psi^* >  =  <q^*,\Psi> 
+  <\Psi,q^*>   =  <\Psi^*,q> 
 \end{equation}
-where $< >$ is the inner product, which is the integral over $\vec{P}$.
+where the Diract signs, $< >$, refer to integration over all variables $\vec{P}$ (the inner product).
 
-Now if we set $q^* \equiv \Sigma_d$, then we have \alert{check the '\{' symbol and '$q^,$' in the line below}
+Now if we set $q^* \equiv \sigma_D$, then we have
 
 \begin{equation}
-<q^*,\Psi>  = <\Sigma_d,\{< q,\Psi^* >  =  R = <q^,\Psi^*> 
+<q^*,\Psi>  = <\sigma_D,\Psi>  =  R = <q,\Psi^*> 
 \end{equation}
 
 this is the same as
