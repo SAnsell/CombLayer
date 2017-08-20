@@ -63,6 +63,7 @@
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
+#include "WWGWeight.h"
 #include "WWG.h"
 
 #include "MarkovProcess.h"

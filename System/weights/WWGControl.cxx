@@ -76,11 +76,11 @@
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
 #include "Mesh3D.h"
-#include "WWG.h"
 #include "WWGItem.h"
 #include "WWGWeight.h"
 #include "MarkovProcess.h"
 #include "WeightControl.h"
+#include "WWG.h"
 #include "WWGControl.h"
 
 namespace WeightSystem
@@ -256,7 +256,7 @@ WWGControl::wwgCreate(const Simulation& System,
 	}
       else if (ptType=="Source")
         {
-	  ELog::EM<<"Here "<<ptIndex<<" "<<sourcePt.size()<<ELog::endDiag;
+	  ELog::EM<<"SRC: "<<ptIndex<<" "<<sourcePt.size()<<ELog::endDiag;
 	  if (ptIndex>=sourcePt.size())
             throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
                                              "sourcePt.size() < ptIndex");
@@ -268,7 +268,7 @@ WWGControl::wwgCreate(const Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (ptType,"SourceType not known");
 
-      wSet.controlMinValue(minWeight);
+      wSet.setMinSourceValue(minWeight);
       wwgFlag|= (adjointFlag) ? 2 : 1;
     }
   
@@ -331,23 +331,18 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   wwg.updateWM(*sourceFlux,1.0);
   if (IParam.flag("wwgNorm"))
     {
-      const double minWeight=
-        IParam.getDefValue<double>(-100.0,"wwgNorm",0,0);
-      if (minWeight<-90)
-	{
-	  ELog::EM<<"Norm == "<<ELog::endDiag;
-	  wwg.normalize();
-	}
-      else
-	{
-	  const double powerWeight=
-	    IParam.getDefValue<double>(1.0,"wwgNorm",0,1);
-	  ELog::EM<<"Scale Range == "<<std::pow(10.0,-minWeight)<<ELog::endDiag;
-	  wwg.scaleRange(std::pow(10.0,-minWeight),1.0);
-	  wwg.powerRange(powerWeight);
+      const double weightRange=
+        IParam.getValueError<double>("wwgNorm",0,0,"Weight range not give");
+      const double lowRange=
+        IParam.getDefValue<double>(1.0,"wwgNorm",0,1);    // +ve means default
+      const double highRange=
+        IParam.getDefValue<double>(0.0,"wwgNorm",0,2);
+      //      const double powerRange=
+      //        IParam.getDefValue<double>(1.0,"wwgNorm",0,3);
+      
 
-	      
-	}
+      wwg.scaleRange(lowRange,highRange,weightRange);
+      //      wwg.powerRange(powerWeight);
     }
   else
     ELog::EM<<"Warning : No WWG normalization step"<<ELog::endWarn;

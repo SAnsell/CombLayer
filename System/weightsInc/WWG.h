@@ -57,8 +57,8 @@ class WWG
 
   /// linearized centre point [x,y,z order]
   std::vector<Geometry::Vec3D> GridMidPt;
-  /// weight mesh
-  boost::multi_array<double,4> WMesh;
+  /// final output weight mesh
+  WWGWeight WMesh;
     
   void writeHead(std::ostream&) const;
   
@@ -89,13 +89,12 @@ class WWG
 		     const size_t,const double);
   void calcGridMidPoints();
   void updateWM(const WWGWeight&,const double);
-  void normalize();
-  void scaleRange(const double,const double);
+  void scaleRange(const double,const double,const double);
   void powerRange(const double);
 
   void write(std::ostream&) const;
   void writeWWINP(const std::string&) const;
-  void writeVTK(const std::string&) const;
+  void writeVTK(const std::string&,const long int =0) const;
 
 
   

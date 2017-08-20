@@ -178,8 +178,8 @@ sswConstruct::writeHelp(std::ostream& OX) const
 {
   OX<<"SSW tally :\n"
     "Format :: keyWord components \n"
-    " -- particle [particle string] \n"
-    " -- object FCname linkSurf \n";
+    " -- object ObjectName linkPt \n"
+    " -- surfMap ObjectName surfName [index] \n";
   
   return;
 }

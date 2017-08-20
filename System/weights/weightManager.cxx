@@ -55,6 +55,7 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "Mesh3D.h"
+#include "WWGWeight.h"
 #include "WWG.h"
 #include "weightManager.h"
 
