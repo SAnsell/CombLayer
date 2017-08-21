@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MNCPX Input builder
- 
+
  * File:   essBuildInc/BilbaoWheelInnerStructure.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_BilbaoWheelInnerStructure_h
@@ -33,14 +33,16 @@ namespace essSystem
   \date Nov 2015
   \brief Inner structure of Bilbao Wheel (engineering details)
 */
+  class BilbaoWheelCassette;
 
 class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
-  
+
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
+  std::shared_ptr<BilbaoWheelCassette> sectors; ///< vector of sectors
 
   double temp;                    ///< Temperature (obtained from Inner cell of BilbaoWheel)
   double brickLen;                ///< Tungsten brick length (in radial direction)
@@ -92,4 +94,4 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+

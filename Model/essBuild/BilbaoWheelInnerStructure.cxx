@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
   * File:   essBuild/DiskPreSimple.cxx
   *
   * Copyright (c) 2004-2015 by Stuart Ansell / Konstantin Batkov
@@ -16,7 +16,7 @@
   * GNU General Public License for more details.
   *
   * You should have received a copy of the GNU General Public License
-  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   *
   ****************************************************************************/
 #include <fstream>
@@ -66,10 +66,12 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "Plane.h"
+#include "BilbaoWheelCassette.h"
 #include "BilbaoWheelInnerStructure.h"
 
 namespace essSystem
@@ -87,11 +89,12 @@ namespace essSystem
   {
   }
 
-  BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure& A) : 
+  BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure& A) :
     attachSystem::ContainedComp(A),
     attachSystem::FixedComp(A),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
+    sectors(new BilbaoWheelCassette(*A.sectors)),
     temp(A.temp),
     brickLen(A.brickLen),
     brickWidth(A.brickWidth),
@@ -126,6 +129,7 @@ namespace essSystem
 	attachSystem::FixedComp::operator=(A);
 	temp=A.temp;
 	cellIndex=A.cellIndex;
+	*sectors=*A.sectors;
 	brickLen=A.brickLen;
 	brickWidth=A.brickWidth;
 	brickMat=A.brickMat;
@@ -146,7 +150,7 @@ namespace essSystem
   BilbaoWheelInnerStructure*
   BilbaoWheelInnerStructure::clone() const
   /*!
-    Clone self 
+    Clone self
     \return new (this)
   */
   {
@@ -158,7 +162,7 @@ namespace essSystem
     Destructor
   */
   {}
-  
+
 
   void
   BilbaoWheelInnerStructure::populate(const FuncDataBase& Control)
@@ -191,7 +195,7 @@ namespace essSystem
       }
 
     nSteelLayers=Control.EvalVar<size_t>(keyName+"NSteelLayers");
-    brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");  
+    brickSteelMat=ModelSupport::EvalMat<int>(Control,keyName+"BrickSteelMat");
 
     return;
   }
@@ -257,7 +261,7 @@ namespace essSystem
     }
 
 
-    return; 
+    return;
   }
 
   void
@@ -269,7 +273,7 @@ namespace essSystem
   */
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createObjects");
-    
+
     attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(&Wheel);
     if (!CM)
       throw ColErr::DynamicConv("FixedComp","CellMap",Wheel.getKeyName());
@@ -282,14 +286,14 @@ namespace essSystem
     std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
 
     //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr));
-    
+
 
     //    int SI(insIndex);
     int SIsec(insIndex+0), SI1;
     std::string Out;
     if (nSectors==1)
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr)); // same as "Inner" cell from BilbaoWheel
-    else 
+    else
       {
 	for (size_t j=0; j<nSectors; j++)
 	  {
@@ -297,13 +301,13 @@ namespace essSystem
 	    SI1 = (j!=nSectors-1) ? SIsec+10 : insIndex+0;
 	    Out = ModelSupport::getComposite(SMap, SIsec, SI1, " 4 -3M ");
 	    if (vBricksActive[j])
-	      createBricks(System, Wheel, 
+	      createBricks(System, Wheel,
 			   ModelSupport::getComposite(SMap, SIsec," 4 "), // side plane
 			   ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
 	    else
 		System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
 						 Out+vertStr+cylStr));
-	    
+
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
 	    //     so we need to select only one
@@ -322,8 +326,8 @@ namespace essSystem
     //    vertStr =  // top+bottom
     //    cylStr = Wheel.getLinkString(9) + " a " + Wheel.getLinkString(10) + "b"; // min+max radii
     //    ELog::EM << "cylStr" << cylStr << ELog::endDiag;
-    
-    return; 
+
+    return;
   }
 
 void
@@ -332,7 +336,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
  const Geometry::Plane *pSide2,const size_t sector)
   /*
     Creates surfaces for individual Tungsten bricks
-    \pararm Wheel 
+    \pararm Wheel
     \param pSide1 :: wheel segment side plane
     \parampSide2 :: wheel segment side plane
     \param sector :: number of sector for surface index offset
@@ -340,20 +344,20 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   */
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
-  
+
   const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
   const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
-  
+
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
-  
+
   const double sectorAngle = getSectorAngle(sector)*M_PI/180.0;
   Geometry::Vec3D nearPt(125*sin(sectorAngle), -125*cos(sectorAngle), 0);
   nearPt += Origin;
-  
+
   Geometry::Vec3D p1 = SurInter::getPoint(pSide1, outerCyl, pz, nearPt);
   Geometry::Vec3D p2 = SurInter::getPoint(pSide2, outerCyl, pz, nearPt);
   Geometry::Vec3D p3 = p2 + Geometry::Vec3D(0.0, 0.0, 1.0);
-  
+
   // radial planes
   int SI(insIndex+1000*(static_cast<int>(sector)+1));
   // first (outermost) layer
@@ -373,7 +377,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 	  ModelSupport::buildShiftedPlane(SMap, SI+5, prad1,
 					  -(brickLen+brickGapLen)*iLayer);
 	}
-      
+
       // back side of the brick
       Geometry::Plane *ptmp =
 	ModelSupport::buildShiftedPlane
@@ -388,16 +392,16 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 	}
 
       // if back of the brick crosses inner surface
-      if (p4.abs()>Geometry::zeroTol) 
+      if (p4.abs()>Geometry::zeroTol)
 	{
 	  nBrickLayers = iLayer;
 	  break;
 	}
-      
+
       iLayer++;
       SI += 10;
     }
-  
+
   // tangential (perpendicular to radial) planes
   // only 2 layers are needed since other layers use the same planes
   Geometry::Plane *ptan1 = 0; // first tangential plane of the bricks
@@ -409,12 +413,12 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 	ptan1 = ModelSupport::buildRotatedPlane(SMap, SJ+1, prad1, 90, Z, p2);
       else // after brick and gap
 	ModelSupport::buildShiftedPlane(SMap, SJ+1, ptan1,
-					i*(brickWidth+brickGapWidth)); 
-      
+					i*(brickWidth+brickGapWidth));
+
       // after brick
       ModelSupport::buildShiftedPlane(SMap, SJ+2, ptan1,
 				      i*(brickWidth+brickGapWidth)+brickWidth);
-      
+
       // 2nd layer
       // after brick
       ModelSupport::buildShiftedPlane(SMap, SJ+11, ptan1,
@@ -422,7 +426,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
       // after brick and gap
       ModelSupport::buildShiftedPlane(SMap, SJ+12, ptan1,
 					(2*i+1)*(brickWidth+brickGapWidth)/2.0+brickWidth-brickWidth-brickGapWidth);
-	
+
 	SJ += 20;
       }
     return;
@@ -468,20 +472,20 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,
 					     i<nBrickLayers-nSteelLayers ? brickMat : brickSteelMat, temp,
 					     Out1+layerStr+vertStr+sideStr));  // !!! sideStr is tmp
-	      
+
 	    Out1 = ModelSupport::getComposite(SMap, bOffset, bOffset+20, " 2 -1M ");
 	    System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp,
 					     Out1+layerStr+vertStr+sideStr)); // !!! sideStr is TMP
-	      
+
 	    SJ += 20;
 	  }
 
-	if (i==nBrickLayers-1) 
+	if (i==nBrickLayers-1)
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6  ") + innerCyl;
 	else
 	  Out = ModelSupport::getComposite(SMap, SI, SI+10, " -6 5M ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++, brickGapMat, temp, Out+vertStr+sideStr));
-	
+
 	SI += 10;
       }
   }
@@ -491,7 +495,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   /*!
     Creates a full attachment set
   */
-  {  
+  {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createLinks");
 
 
@@ -504,7 +508,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   /*!
     Extrenal build everything
     \param System :: Simulation
-    \param FC :: Attachment point	       
+    \param FC :: Attachment point
   */
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createAll");
@@ -516,7 +520,7 @@ BilbaoWheelInnerStructure::createBrickSurfaces
     createObjects(System, FC);
     createLinks();
 
-    insertObjects(System);       
+    insertObjects(System);
     return;
   }
 
