@@ -619,11 +619,11 @@ Quadratic::writePOVRay(std::ostream& OX) const
   
   OX<<"#declare s"<<getName()<<" = quadric{ \n"
     <<"<"
-    <<MW.Num(BaseEqn[0])<<" "<<MW.Num(BaseEqn[1])<<" "<<MW.Num(BaseEqn[2])
+    <<MW.Num(BaseEqn[0])<<", "<<MW.Num(BaseEqn[1])<<", "<<MW.Num(BaseEqn[2])
     <<">,<"
-    <<MW.Num(BaseEqn[3])<<" "<<MW.Num(BaseEqn[4])<<" "<<MW.Num(BaseEqn[5])
+    <<MW.Num(BaseEqn[3])<<", "<<MW.Num(BaseEqn[4])<<", "<<MW.Num(BaseEqn[5])
     <<">,<"
-    <<MW.Num(BaseEqn[6])<<" "<<MW.Num(BaseEqn[7])<<" "<<MW.Num(BaseEqn[8])
+    <<MW.Num(BaseEqn[6])<<", "<<MW.Num(BaseEqn[7])<<", "<<MW.Num(BaseEqn[8])
     <<">,"<<MW.Num(BaseEqn[9])<<"\n"<<" }"<<std::endl;  
   return;
 }
