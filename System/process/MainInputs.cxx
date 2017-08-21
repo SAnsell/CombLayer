@@ -273,7 +273,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
   IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
-  IParam.regItem("wwgNorm"," normalization step : "
+  IParam.setDesc("wwgNorm"," normalization step : "
 		 "[weightRange - lowRange - highRange - powerRange]");
   
   IParam.setDesc("x","XML input file");
