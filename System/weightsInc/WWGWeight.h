@@ -97,22 +97,23 @@ class WWGWeight
   void scalePower(const double);
   void scaleRange(const double,const double,const double);
   void setMinSourceValue(const double);
-  
-  double distTrack(const Simulation&,const Geometry::Vec3D&,
+
+
+  template<typename T>
+  double distTrack(const Simulation&,const T&,
 		   const Geometry::Vec3D&,const double,
 		   const double,const double) const;
-  
-  void wTrack(const Simulation&,const Geometry::Vec3D&,
-	      const std::vector<Geometry::Vec3D>&,
-	      const double,const double,const double);
-  
-  void wTrack(const Simulation&,const Geometry::Plane&,
+
+  template<typename T>
+  void wTrack(const Simulation&,const T&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const double,const double,const double);
 
+  template<typename T>
   void CADISnorm(const Simulation&,const WWGWeight&,
 		 const std::vector<Geometry::Vec3D>&,
-		 const Geometry::Vec3D&);
+		 const T&);
+  
   
   void writeWWINP(std::ostream&) const;
   void writeVTK(std::ostream&,const long int) const;

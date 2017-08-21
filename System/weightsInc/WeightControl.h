@@ -63,7 +63,6 @@ class WeightControl
 
   double energyCut;              ///< Energy cut [MeV]
   double scaleFactor;            ///< Scale factor
-  double minWeight;              ///< Min weight
   double weightPower;            ///< makes weight W^power
   double density;                ///< scales the material density
   double r2Length;               ///< scale factor of r2 Length 
@@ -76,7 +75,7 @@ class WeightControl
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
 
-  static void processPtString(std::string,std::string&,size_t&,bool&);
+  void processPtString(std::string,std::string&,size_t&,bool&);
   
   void setHighEBand();
   void setMidEBand();

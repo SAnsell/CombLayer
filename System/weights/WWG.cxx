@@ -196,6 +196,7 @@ WWG::updateWM(const WWGWeight& UMesh,const double scaleFactor)
   ELog::RegMethod RegA("WWG","updateWM");
 
   WMesh=UMesh;
+  ELog::EM<<"Calling updateWM"<<ELog::endDiag;
   WMesh.scaleGrid(scaleFactor);
   return;
 }

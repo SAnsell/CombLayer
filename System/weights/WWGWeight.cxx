@@ -96,18 +96,19 @@ WWGWeight::WWGWeight(const size_t EB,
   zeroWGrid();
 }
 
-WWGWeight::WWGWeight(const WWGWeight& A)  :
+
+WWGWeight::WWGWeight(const WWGWeight& A) : 
   zeroFlag(A.zeroFlag),WX(A.WX),WY(A.WY),WZ(A.WZ),WE(A.WE),
   WGrid(A.WGrid)
-  /*! 
-    Copy Constructor 
+  /*!
+    Copy constructor
     \param A :: WWGWeight to copy
   */
 {}
 
 WWGWeight&
 WWGWeight::operator=(const WWGWeight& A)
-  /*! 
+  /*!
     Assignment operator
     \param A :: WWGWeight to copy
     \return *this
@@ -116,6 +117,10 @@ WWGWeight::operator=(const WWGWeight& A)
   if (this!=&A)
     {
       zeroFlag=A.zeroFlag;
+      WX=A.WX;
+      WY=A.WY;
+      WZ=A.WZ;
+      WE=A.WE;
       WGrid=A.WGrid;
     }
   return *this;
@@ -130,7 +135,7 @@ WWGWeight::isSized(const long int LX,const long int LY,
     \parma LY :: Y coorindate size
     \parma LZ :: Z coorindate size
     \parma LE :: Energy coorindate size
-    \return ture if properly sized
+    \return true if properly sized
    */
 {
   return ((LX==WX) && (LY==WY) && (LZ==WZ) && (LE==WE));
@@ -154,7 +159,7 @@ WWGWeight::resize(const long int LX,const long int LY,
 void
 WWGWeight::zeroWGrid()
   /*!
-    Zero WGrid
+    Zero WGrid and set the zeroflag 
   */
 {
   zeroFlag=1;
@@ -378,8 +383,7 @@ WWGWeight::scaleMeshItem(const long int I,const long int J,
 }
 
 void
-WWGWeight::scaleRange(double AValue,double BValue,
-		      const double fullRange)
+WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
   /*!
     Convert a set of value [EXP not taken]
     into  a source. 
@@ -397,37 +401,61 @@ WWGWeight::scaleRange(double AValue,double BValue,
   double* TData=WGrid.data();
   const size_t NData=WGrid.num_elements();
 
-  if (AValue>1e-10)
+  if (AValue > 1e-10)
     AValue= *std::min_element(TData,TData+NData-1);
-  if (BValue>1e-10)
+  if (BValue > 1e-10)
     BValue= *std::max_element(TData,TData+NData-1);
 
-  if (AValue>0.0) AValue=0.0;
-  if (BValue>0.0) BValue=0.0;
 
+  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+	  <<ELog::endDiag;
+    
 
+  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+	  <<ELog::endDiag;
+
+  double maxValue(-1e30);
+  double minValue(1e30);
   if (AValue<BValue)
     {
       const double ABRange(BValue-AValue);
       for(size_t i=0;i<NData;i++)
 	{
 	  if (TData[i]<=AValue)
-	    TData[i]=fullRange;
+	    TData[i] = -fullRange;
 	  else if (TData[i]>=BValue)
-	    TData[i]=0;
+	    TData[i] = 0.0;
 	  else
 	    {
+	      if (TData[i]>maxValue)
+		{
+		  maxValue=TData[i];
+		  ELog::EM<<"Max == "<<i<<" "<<maxValue<<ELog::endDiag;
+		}
+	      if (TData[i]<minValue)
+		{
+		  minValue=TData[i];
+		  ELog::EM<<"Min == "<<i<<" "<<minValue<<ELog::endDiag;
+		}
+	      // F is +ve
 	      const double F=(TData[i]-AValue)/ABRange;
-	      TData[i]=(1.0-F)*fullRange;
+	      TData[i]= -(1.0-F)*fullRange;
+
 	    }
 	}
     }
+
+  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+	  <<ELog::endDiag;
+
+  
   return;
 }
-  
+
+template<typename T>
 void
 WWGWeight::wTrack(const Simulation& System,
-		  const Geometry::Vec3D& initPt,
+		  const T& initPt,
 		  const std::vector<Geometry::Vec3D>& MidPt,
 		  const double densityFactor,
 		  const double r2Length,
@@ -442,92 +470,42 @@ WWGWeight::wTrack(const Simulation& System,
     \param r2Power :: power of 1/r^2 factor
   */
 {
-  ELog::RegMethod RegA("WWGWeight","wTrack(Vec3D)");
+  ELog::RegMethod RegA("WWGWeight","wTrack");
 
-  ModelSupport::ObjectTrackPoint OTrack(initPt);
 
   long int cN(1);
   ELog::EM<<"Processing  "<<MidPt.size()<<" for WWG"<<ELog::endDiag;
-  
+
   for(const Geometry::Vec3D& Pt : MidPt)
     {
-      ModelSupport::ObjectTrackPoint OTrack(initPt);
-      OTrack.addUnit(System,cN,Pt);
-      double DistT=OTrack.getDistance(cN)/r2Length;
-      if (DistT<1.0) DistT=1.0;
-      const double AT=OTrack.getAttnSum(cN);    // this can take an
+      const double DT=
+	distTrack(System,initPt,Pt,densityFactor,r2Length,r2Power);
                                                 // energy
       if (!((cN-1) % 1000))
-	ELog::EM<<"WTRAC["<<cN<<"] "
-		<<-densityFactor*AT-r2Power*log(DistT)<<ELog::endDiag;
+	ELog::EM<<"WTRAC["<<cN<<"] "<<DT<<ELog::endDiag;
       
       if (!zeroFlag)
 	for(long int index=0;index<WE;index++)
-	  addLogPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
+	  addLogPoint(cN-1,index,DT);
       else
 	for(long int index=0;index<WE;index++)
-	  setLogPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
+	  setLogPoint(cN-1,index,DT);
 	
       if (!(cN % 10000))
 	ELog::EM<<"Item "<<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
 		<<r2Length<<ELog::endDiag;
       cN++;
     }
-
+  zeroFlag =0;
+  
   return;
 }
 
 
-void
-WWGWeight::wTrack(const Simulation& System,
-		  const Geometry::Plane& initPlane,
-		  const std::vector<Geometry::Vec3D>& MidPt,
-		  const double densityFactor,
-		  const double r2Length,
-		  const double r2Power)
-  /*!
-    Calculate a specific trac from sourcePoint to  postion
-    \param System :: Simulation to use    
-    \param initPlane :: Plane for outgoing track
-    \param EBin :: Energy points
-    \param MidPt :: Grid points
-    \param densityFactor :: Scaling factor for density
-    \param r2Length :: scale factor for length
-    \param r2Power :: power of 1/r^2 factor
-  */
-{
-  ELog::RegMethod RegA("WWGWeight","wTrack(Plane)");
-
-  ModelSupport::ObjectTrackPlane OTrack(initPlane);
-  long int cN(1);
-  double minV(1.0);
-  for(const Geometry::Vec3D& Pt : MidPt)
-    {
-      OTrack.addUnit(System,cN,Pt);
-      double DistT=OTrack.getDistance(cN)/r2Length;
-      if (DistT<1.0) DistT=1.0;
-      const double AT=OTrack.getAttnSum(cN);    // this can take an energy
-      double V= -densityFactor*AT-r2Power*log(DistT);
-      if (V<minV)
-	minV=V;
-
-      if (zeroFlag)
-	// exp(-Sigma)/r^2  in log form
-	for(long int index=0;index<WE;index++)
-	  setLogPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
-      else
-	for(long int index=0;index<WE;index++)
-	  addLogPoint(cN-1,index,-densityFactor*AT-r2Power*log(DistT));
-      
-      cN++;
-    }
-  zeroFlag=0;
-  return;
-}
-
+template<typename T>
 double
 WWGWeight::distTrack(const Simulation& System,
-		     const Geometry::Vec3D& aimPt,
+		     const T& aimPt,
 		     const Geometry::Vec3D& gridPt,
 		     const double densityFactor,
 		     const double r2Length,
@@ -535,8 +513,8 @@ WWGWeight::distTrack(const Simulation& System,
   /*!
     Calculate a specific track from sourcePoint to position
     \param System :: Simulation to use    
-    \param initPt :: Point for outgoing track
-    \param MidPt :: Grid points
+    \param aimPt :: Point for outgoing track
+    \param gridPt :: Grid points
     \param densityFactor :: Scaling factor for density
     \param r2Length :: scale factor for length
     \param r2Power :: power of 1/r^2 factor
@@ -544,8 +522,13 @@ WWGWeight::distTrack(const Simulation& System,
 {
   ELog::RegMethod RegA("WWGWeight","distTrack");
 
+  typedef typename std::conditional<
+    std::is_same<T,Geometry::Plane>::value,
+    ModelSupport::ObjectTrackPlane,
+    ModelSupport::ObjectTrackPoint>::type TrackType;
 
-  ModelSupport::ObjectTrackPoint OTrack(aimPt);
+
+  TrackType OTrack(aimPt);
   
   OTrack.addUnit(System,1,gridPt);
   double DistT=OTrack.getDistance(1)/r2Length;
@@ -553,20 +536,22 @@ WWGWeight::distTrack(const Simulation& System,
   const double AT=OTrack.getAttnSum(1);
   return -densityFactor*AT-r2Power*log(DistT);
 }
-  
+
+
+template<typename T>
 void
 WWGWeight::CADISnorm(const Simulation& System,
 		     const WWGWeight& Adjoint,
 		     const std::vector<Geometry::Vec3D>& gridPts,
-		     const Geometry::Vec3D& sourcePt)
+		     const T& sourcePt)
   /*!
     Normalize this relative to an adjoint based on 
     the cadis formalism [M. Munk et al : Nucl Sci Eng (2017)]
     Sets the sourceFlux to to R/adjoint[i] flux
+    \param System :: Simulation for tracking
     \param Adjoint :: Adjoint WWGWeight
     \param gridPts :: Grid points
-    \param sourcePoint :: source Point 
-
+    \param sourcePt :: source Point / plane
   */
 {
   ELog::RegMethod RegA("WWGWeight","CADISnorm");
@@ -580,11 +565,15 @@ WWGWeight::CADISnorm(const Simulation& System,
       (NData,ANData,"Source/Adjoint grids do not match");
 
   if (NData!=gridPts.size()*static_cast<size_t>(WE))
-    throw ColErr::MisMatch<size_t>
-      (NData,gridPts.size()*static_cast<size_t>(WE),"Source/Grids do not match");
+    {
+      throw ColErr::MisMatch<size_t>(NData,
+				     gridPts.size()*static_cast<size_t>(WE),
+				     "Source/Grids do not match");
+    }
 
   double sumR(0.0);
   double sumRA(0.0);
+
   const size_t EnergyStride(static_cast<size_t>(WE));
   if (!zeroFlag && !Adjoint.zeroFlag)
     {
@@ -602,14 +591,21 @@ WWGWeight::CADISnorm(const Simulation& System,
 	  if (!(i % tenthValue))
 	    ELog::EM<<"CADIS norm["<<i<<"]:"<<SData[i*EnergyStride]<<" "
 		    <<AData[i*EnergyStride]<<" == "<<gridPts[i]<<ELog::endDiag;
+
+	  //	  SData[i*EnergyStride]-=AData[i*EnergyStride];
 	}
-      ELog::EM<<"sumR== "<<sumR<<" "<<exp(sumR)<<ELog::endDiag;
+
+      ELog::EM<<"sumR  == "<<sumR<<" "<<exp(sumR)<<ELog::endDiag;
+      ELog::EM<<"sumRA == "<<sumRA<<" "<<exp(sumRA)<<ELog::endDiag;
       // SETS THIS
       for(size_t i=0;i<NData;i++)  
-	SData[i]=sumR-AData[i];
+	SData[i]+=sumR-AData[i];
+      //      for(size_t i=0;i<NData;i++)  
+      //	SData[i]+=sumR;
     }
   return;
 }
+
 
 void
 WWGWeight::writeWWINP(std::ostream& OX) const
@@ -648,7 +644,7 @@ WWGWeight::writeVTK(std::ostream& OX,
 
   if (EIndex<0 || EIndex>=WE)
     throw ColErr::IndexError<long int>(EIndex,WE,"index in WMesh.ESize");
-
+  
   for(long int K=0;K<WZ;K++)
     for(long int J=0;J<WY;J++)
       {
@@ -682,5 +678,39 @@ WWGWeight::write(std::ostream& OX) const
 
   return;
 }
-  
+
+
+///\cond TEMPLATE
+
+template
+double WWGWeight::distTrack(const Simulation&,const Geometry::Plane&,
+		   const Geometry::Vec3D&,const double,
+		   const double,const double) const;
+template
+double WWGWeight::distTrack(const Simulation&,const Geometry::Vec3D&,
+		   const Geometry::Vec3D&,const double,
+		   const double,const double) const;
+
+template
+void WWGWeight::wTrack(const Simulation&,const Geometry::Vec3D&,
+	    const std::vector<Geometry::Vec3D>&,
+	    const double,const double,const double);
+
+template
+void WWGWeight::wTrack(const Simulation&,const Geometry::Plane&,
+	    const std::vector<Geometry::Vec3D>&,
+	    const double,const double,const double);
+
+template 
+void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
+	       const std::vector<Geometry::Vec3D>&,
+	       const Geometry::Vec3D&);
+
+template 
+void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
+	       const std::vector<Geometry::Vec3D>&,
+	       const Geometry::Plane&);
+
+///\endcond TEMPLATE
+
 } // Namespace WeightSystem

@@ -222,21 +222,13 @@ procAngle(const mainSystem::inputParam& IParam,
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
-      ELog::EM<<"Axis YVec == "<<YRotAxis<<ELog::endDiag;
-      ELog::EM<<"AXis ZVec == "<<ZRotAxis<<ELog::endDiag;
 
       
       const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
 	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
-
-      ELog::EM<<"AXsi Vec == "<<QR.getTheta()<<ELog::endDiag;
-      ELog::EM<<"AXsi Z == "<<QR.getAxis()<<ELog::endDiag;
-      ELog::EM<<"VALUE == "<<-180.0*QR.getTheta()/M_PI<<ELog::endDiag;
       
       MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
-		     -179.0*QR.getTheta()/M_PI);
-      //      MR.addRotation(QR.getAxis(),
-      //                     Geometry::Vec3D(0,0,0),-180.0*QR.getTheta()/M_PI);
+		     -180.0*QR.getTheta()/M_PI);
     }
   else if (AItem=="free" || AItem=="FREE")
     {

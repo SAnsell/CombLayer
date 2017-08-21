@@ -239,28 +239,29 @@ WWGControl::wwgCreate(const Simulation& System,
         IParam.getValueError<std::string>
         ("wwgCalc",iSet,0,"wwgCalc without source term");
 
-      processPtString(SourceStr,ptType,ptIndex,adjointFlag);
+      WeightControl::processPtString(SourceStr,ptType,ptIndex,adjointFlag);
       
-      // get values [ecut / density / minWeight/ r2Length / r2Power ]
+      // get values [ecut / density / r2Length / r2Power ]
       procParam(IParam,"wwgCalc",iSet,1);      
       WWGWeight& wSet=(adjointFlag) ? *adjointFlux : *sourceFlux;
 
-      if (ptType=="Plane")   
+      if (ptType=="help" || ptType=="Help")
 	{
-          if (ptIndex>=planePt.size())
-            throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
-                                             "planePt.size() < ptIndex");
-          
+	  ELog::EM<<"wwgCalc ==> \n"
+	    "       SourceType [S/T Plane/Source/Cone Index]\n"
+	    "       Energy cut [MeV] \n"
+	    "       ScaleFactor [default: 1.0] \n"
+	    "       densityFactor [default: 1.0] \n"
+	    "       r2Length factor [default: 1.0] \n"
+	    "       r2Power [default: 2.0] \n"<<ELog::endCrit;
+	}
+      else if (ptType=="Plane")   
+	{
 	  wSet.wTrack(System,planePt[ptIndex],GridMidPt,
 		      density,r2Length,r2Power);
 	}
       else if (ptType=="Source")
         {
-	  ELog::EM<<"SRC: "<<ptIndex<<" "<<sourcePt.size()<<ELog::endDiag;
-	  if (ptIndex>=sourcePt.size())
-            throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
-                                             "sourcePt.size() < ptIndex");
-
           wSet.wTrack(System,sourcePt[ptIndex],GridMidPt,
 		      density,r2Length,r2Power);
         }
@@ -268,7 +269,6 @@ WWGControl::wwgCreate(const Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (ptType,"SourceType not known");
 
-      wSet.setMinSourceValue(minWeight);
       wwgFlag|= (adjointFlag) ? 2 : 1;
     }
   
@@ -329,14 +329,27 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   WWG& wwg=WM.getWWG();
 
   wwg.updateWM(*sourceFlux,1.0);
+  
   if (IParam.flag("wwgNorm"))
     {
+      const std::string info=
+        IParam.getDefValue<std::string>("","wwgNorm",0,0);
+      if (info=="help" || info=="Help")
+	{
+	  ELog::EM<<"wwgNorm ==> \n"
+	    "       log(weightRange) [Manditory] (typical 20) \n"
+	    "       lowRange (+ve takes data range) [default 1.0]\n"
+	    "       highRange (+ve takes data range) [default 1.0]\n"
+	    <<ELog::endCrit;
+	  return;
+	}
+
       const double weightRange=
-        IParam.getValueError<double>("wwgNorm",0,0,"Weight range not give");
+        IParam.getValueError<double>("wwgNorm",0,0,"Weight range not given");
       const double lowRange=
         IParam.getDefValue<double>(1.0,"wwgNorm",0,1);    // +ve means default
       const double highRange=
-        IParam.getDefValue<double>(0.0,"wwgNorm",0,2);
+        IParam.getDefValue<double>(1.0,"wwgNorm",0,2);
       //      const double powerRange=
       //        IParam.getDefValue<double>(1.0,"wwgNorm",0,3);
       
@@ -404,18 +417,28 @@ WWGControl::wwgCombine(const Simulation& System,
 	
       size_t itemCnt(0);
 
-      const Geometry::Vec3D SPoint=
-	IParam.getCntVec3D("wwgCADIS",0,itemCnt,"CADIS Source Point");
+      const std::string SUnit=
+      	IParam.getValueError<std::string>("wwgCADIS",0,itemCnt,
+					  "CADIS Source Point");
+      std::string ptType;
+      size_t ptIndex;
+      bool adjointFlag;
+      WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
-
-      //      sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);
-      sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);      
+      
+      if (ptType=="Plane")
+	{
+	  sourceFlux->CADISnorm(System,*adjointFlux,
+				GridMidPt,planePt[ptIndex]);      
+	}
+      else if (ptType=="Source")
+	{
+	  sourceFlux->CADISnorm(System,*adjointFlux,
+				GridMidPt,sourcePt[ptIndex]);
+	}
     }
   else
     ELog::EM<<"Warning : No WWG CADIS step"<<ELog::endWarn;
-
-
-  
   
   return;
 }

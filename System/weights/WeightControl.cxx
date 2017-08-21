@@ -83,7 +83,7 @@ namespace WeightSystem
 {
   
 WeightControl::WeightControl() :
-  scaleFactor(1.0),minWeight(1e-20),weightPower(0.5),
+  scaleFactor(1.0),weightPower(0.5),
   density(1.0),r2Length(1.0),r2Power(2.0)
   /*
     Constructor
@@ -94,7 +94,7 @@ WeightControl::WeightControl() :
 
 WeightControl::WeightControl(const WeightControl& A) : 
   energyCut(A.energyCut),scaleFactor(A.scaleFactor),
-  minWeight(A.minWeight),weightPower(A.weightPower),
+  weightPower(A.weightPower),
   density(A.density),r2Length(A.r2Length),r2Power(A.r2Power),
   EBand(A.EBand),WT(A.WT),conePt(A.conePt),planePt(A.planePt),
   sourcePt(A.sourcePt)
@@ -116,7 +116,6 @@ WeightControl::operator=(const WeightControl& A)
     {
       energyCut=A.energyCut;
       scaleFactor=A.scaleFactor;
-      minWeight=A.minWeight;
       weightPower=A.weightPower;
       density=A.density;
       r2Length=A.r2Length;
@@ -284,6 +283,13 @@ WeightControl::processPtString(std::string ptStr,
   if (!StrFunc::sectPartNum(ptStr,ptIndex))
     throw ColErr::InvalidLine(Input,"PtStr Index not found");
 
+  if (ptType=="Plane" && ptIndex>=planePt.size())
+    throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
+				     "planePt.size() < ptIndex");
+  else if (ptType=="Source" && ptIndex>=sourcePt.size())
+    throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
+				     "sourcePt.size() < ptIndex");
+
   return;
 }
 
@@ -335,6 +341,7 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
                          const size_t iOffset)
   /*!
     Set the global constants based on a unit and the offset numbers
+    Numbers are in log space [nat log]
     \param IParam :: Input parameters
     \param unit :: unit string
     \param iSet :: group number [normally 0]
@@ -351,17 +358,17 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
 
   energyCut=IParam.getDefValue<double>(0.0,unitName,iSet,index++);
   scaleFactor=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
-  minWeight=IParam.getDefValue<double>(1e-20,unitName,iSet,index++);
   density=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
+  ELog::EM<<"SCALE == "<<energyCut<<" "<<scaleFactor<<" "
+	  <<density<<ELog::endDiag;
   if (scaleFactor>1.0)
     ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
   
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
-    	  <<" minW:"<<minWeight
     	  <<" rho:"<<density
     	  <<" r2Len:"<<r2Length
 	  <<" r2Pow:"<<r2Power<<ELog::endDiag;

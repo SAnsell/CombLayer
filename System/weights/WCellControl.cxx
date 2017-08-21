@@ -167,9 +167,14 @@ WCellControl::procObject(const Simulation& System,
 */
 {
   ELog::RegMethod RegA("WCellControl","procObject");
+
+  const double minWeight(1e-16);
+  
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  
+  
   const size_t nSet=IParam.setCnt("weightObject");
   // default values:
   procParam(IParam,"weightControl",0,0);
