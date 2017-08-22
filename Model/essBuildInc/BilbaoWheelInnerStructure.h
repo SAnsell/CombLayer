@@ -39,7 +39,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
     public attachSystem::FixedComp
 {
  private:
-
+  const std::string baseName;     ///< Base Name
   const int insIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
   std::shared_ptr<BilbaoWheelCassette> sectors; ///< vector of sectors
@@ -81,7 +81,7 @@ class BilbaoWheelInnerStructure : public attachSystem::ContainedComp,
 
  public:
 
-  BilbaoWheelInnerStructure(const std::string&);
+  BilbaoWheelInnerStructure(const std::string&,const std::string&);
   BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure&);
   BilbaoWheelInnerStructure& operator=(const BilbaoWheelInnerStructure&);
   virtual BilbaoWheelInnerStructure* clone() const;

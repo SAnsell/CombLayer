@@ -77,10 +77,12 @@
 namespace essSystem
 {
 
-  BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& Key) :
+  BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const std::string& baseKey,
+						       const std::string& extraKey) :
     attachSystem::ContainedComp(),
-    attachSystem::FixedComp(Key,6),
-    insIndex(ModelSupport::objectRegister::Instance().cell(Key, 1E+5)), // max number of surfaces
+    attachSystem::FixedComp(baseKey+extraKey,6),
+    baseName(baseKey),
+    insIndex(ModelSupport::objectRegister::Instance().cell(keyName, 1E+5)), // max number of surfaces
     cellIndex(insIndex+1)
     /*!
       Constructor
@@ -92,6 +94,7 @@ namespace essSystem
   BilbaoWheelInnerStructure::BilbaoWheelInnerStructure(const BilbaoWheelInnerStructure& A) :
     attachSystem::ContainedComp(A),
     attachSystem::FixedComp(A),
+    baseName(A.baseName),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
     temp(A.temp),

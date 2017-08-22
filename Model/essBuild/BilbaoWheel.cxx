@@ -83,7 +83,7 @@ namespace essSystem
 
 BilbaoWheel::BilbaoWheel(const std::string& Key) :
   WheelBase(Key),
-  InnerComp(new BilbaoWheelInnerStructure(Key + "InnerStructure"))
+  InnerComp(new BilbaoWheelInnerStructure(Key, "InnerStructure"))
   /*!
     Constructor
     \param Key :: Name of construction key
