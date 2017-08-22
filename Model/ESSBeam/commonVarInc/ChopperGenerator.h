@@ -73,7 +73,8 @@ class ChopperGenerator
   void setMaterial(const std::string&,const std::string&);
   void setFrame(const double,const double);  
   void setMainRadius(const double);
-
+  void setMotorRadius(const double);
+  void setPortRadius(const double);
 
   void generateChopper(FuncDataBase&,
 		       const std::string&,

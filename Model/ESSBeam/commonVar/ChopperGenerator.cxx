@@ -148,6 +148,39 @@ ChopperGenerator::setMainRadius(const double R)
 }
 
 void
+ChopperGenerator::setPortRadius(const double R)
+  /*!
+    Set the port radius for the chopper.
+    Note that the motor radius should be reduce if the 
+    main radius is not being increased
+    \param R :: Radius
+  */
+{
+
+  portOuter*=R/portRadius;
+  portBoltStep*=R/portRadius;
+  portOuter*=R/portRadius;
+  portWidth*=R/portRadius;
+  portRadius=R;
+  return;
+}
+
+void
+ChopperGenerator::setMotorRadius(const double R)
+  /*!
+    Set the motor radius for the chopper.
+    Note that the port radius should be reduce if the 
+    main radius is not being increased
+    \param R :: Radius
+  */
+{
+  motorOuter*=R/motorRadius;
+  motorRadius=R;
+  return;
+}
+
+  
+void
 ChopperGenerator::setFrame(const double H,const double W)
   /*!
     Set the main width/height
