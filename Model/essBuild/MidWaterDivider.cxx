@@ -149,7 +149,7 @@ MidWaterDivider::clone() const
   /*!
     Virtual copy constructor
     \return new (this)
-   */
+  */
 {
   return new MidWaterDivider(*this);
 }
@@ -178,6 +178,7 @@ MidWaterDivider::populate(const FuncDataBase& Control)
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   topThick=Control.EvalDefVar<double>(keyName+"TopThick",0.0);
   baseThick=Control.EvalDefVar<double>(keyName+"BaseThick",0.0);
+  cornerRadius=Control.EvalDefVar<double>(keyName+"CornerRadius",0.0);
   
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -356,6 +357,46 @@ MidWaterDivider::createSurfaces()
     ModelSupport::buildPlane(SMap,divIndex+5,
                              Origin+Z*(height/2.0-topThick),Z);
 
+
+  // Create corners:
+  if (cornerRadius>Geometry::zeroTol)
+    {
+      const std::vector<int> sideSurf({-11, -12, -32, -31});
+      const std::vector<int> frontSurf({4, -3,  24, -23});
+
+      int CI(divIndex);
+      for(size_t i=0;i<0;i++)
+        {
+          const std::string Out=ModelSupport::getComposite(SMap,divIndex,
+                                         std::to_string(sideSurf[i])+" "+
+                                         std::to_string(frontSurf[i]));
+
+          HeadRule CCorner(Out);
+          CCorner.populateSurf();
+          const Geometry::Vec3D CPt=Geometry::cornerCircleTouch
+            (CCorner,
+             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(sideSurf[i])),
+             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(frontSurf[i])),
+             *SMap.realPtr<Geometry::Plane>(60000),
+             cornerRadius);
+          const std::pair<Geometry::Vec3D,Geometry::Vec3D> ABPts=
+            Geometry::cornerCircle
+            (CCorner,
+             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(sideSurf[i])),
+             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(frontSurf[i])),
+             *SMap.realPtr<Geometry::Plane>(60000),
+             cornerRadius);
+
+          ModelSupport::buildCylinder(SMap,CI+7,CPt,Z,cornerRadius);
+          // Towards centre of circle
+          ModelSupport::buildPlane(SMap,CI+8,ABPts.first,ABPts.second,
+                                   ABPts.first+Z,CPt-ABPts.first);
+	  const Geometry::Plane* PM=SMap.realPtr<Geometry::Plane>(CI+8);
+	  ELog::EM<<"Norm == "<<PM->getNormal()<<ELog::endDiag;
+          CI+=10;
+        }      
+    }
+  
   return;
 }
  
@@ -384,42 +425,44 @@ MidWaterDivider::createObjects(Simulation& System,
   
   if (topThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 -5 ");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"100 (-3 : 4 ) -11 -12 -5 (8:7) (18:17) ");
       Out+=LCut.display()+RCut.display()+Base;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 5 ");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 5 (8:7) (18:17) ");
       Out+=LCut.display()+RCut.display()+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
       // Reverse side
-      Out=ModelSupport::getComposite(SMap,divIndex,
-                                     "-100 (-23 : 24) -31 -32 -5 ");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "-100 (-23 : 24) -31 -32 -5 (28:27) (38:37) ");
       Out+=LCut.display()+RCut.display()+Base;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      Out=ModelSupport::getComposite(SMap,divIndex,
-                                     "-100 (-23 : 24) -31 -32 5 ");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "-100 (-23 : 24) -31 -32 5 (28:27) (38:37) ");
       Out+=LCut.display()+RCut.display()+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
     }
   else 
     {
-      Out=ModelSupport::getComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 ");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"100 (-3 : 4) -11 -12 (8:7) (18:17)");
       Out+=LCut.display()+RCut.display()+Base+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
+
       // Reverse layer
-      Out=ModelSupport::getComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 ");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-100 (-23 : 24) -31 -32 (28:27) (38:37) ");
       Out+=LCut.display()+RCut.display()+Base+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
-      
+
     }
   
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "100 (-103 : 104) -111 -112 "
-				 " ( (3  -4) : 11 : 12 ) ");
-				 
+
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				    "100 (-103 : 104) -111 -112 "
+				    " ( (3  -4) : 11 : 12 : (-8 -7) : (-18 -17) ) ");
+
   Out+=LCut.display()+RCut.display()+Base+Top;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
@@ -428,9 +471,10 @@ MidWaterDivider::createObjects(Simulation& System,
   addOuterSurf(Out);
 
   
-  Out=ModelSupport::getComposite(SMap,divIndex,
-				 "-100 (-123 : 124)  -131 -132 "
-				 "((23  -24) : 31 : 32 )");
+  Out=ModelSupport::getSetComposite(SMap,divIndex,
+				    "-100 (-123 : 124)  -131 -132 "
+				    "((23  -24) : 31 : 32 (-28 -27) : (-38 -37))");
+      
   Out+=LCut.display()+RCut.display()+Base+Top;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
   Out=ModelSupport::getComposite(SMap,divIndex,

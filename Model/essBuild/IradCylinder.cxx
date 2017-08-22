@@ -3,7 +3,7 @@
  
  * File:   essBuild/IradCylinder.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -247,7 +247,7 @@ IradCylinder::createInnerObjects(Simulation& System)
       posY+=sampleY;
       DI+=10;
     }
-  double posZ(-sampleZ*(NZ/2));
+  double posZ(-sampleZ*(static_cast<double>(NZ)/2));
   DI=iradIndex+1005;
   for(size_t i=0;i<=NZ;i++)
     {

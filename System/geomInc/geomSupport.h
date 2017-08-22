@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/geomSupport.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,33 @@
 #ifndef Geometry_geomSupport_h
 #define Geometry_geomSupport_h
 
+class HeadRule;
+
 namespace Geometry
 {
 
+  class Vec3D;
+  class Plane;
+  
+  Geometry::Vec3D
+    cornerCircleTouch(const HeadRule&,
+		      const Geometry::Plane&,
+		      const Geometry::Plane&,
+		      const Geometry::Plane&,
+		      const double);
   Geometry::Vec3D
     cornerCircleTouch(const Geometry::Vec3D&,
 		      const Geometry::Vec3D&,
 		      const Geometry::Vec3D&,
 		      const double);
+
+  std::pair<Geometry::Vec3D,Geometry::Vec3D>
+    cornerCircle(const HeadRule&,
+		 const Geometry::Plane&,
+		 const Geometry::Plane&,
+		 const Geometry::Plane&,
+		 const double);
+  
   std::pair<Geometry::Vec3D,Geometry::Vec3D>
     cornerCircle(const Geometry::Vec3D&,
 		 const Geometry::Vec3D&,

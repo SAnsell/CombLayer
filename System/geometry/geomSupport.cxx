@@ -26,6 +26,7 @@
 #include <complex>
 #include <cmath>
 #include <vector>
+#include <set>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -42,11 +43,63 @@
 #include "Vec3D.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Rules.h"
+#include "HeadRule.h"
+#include "SurInter.h"
 #include "geomSupport.h"
+
 
 namespace Geometry
 {
 
+Geometry::Vec3D
+cornerCircleTouch(const HeadRule& zoneRule,
+                  const Geometry::Plane& APln,
+		  const Geometry::Plane& BPln,
+		  const Geometry::Plane& ZPln,
+		  const double radius)
+  /*!
+    Given a circle of radius , find the centre 
+    relative to the two lines between A-Cpt and B-Cpt
+    where Cpt is the intersection between Plane A-B.
+    
+    \parma zoneRule :: Two Plane rule for valid section
+    \param APln :: Plane not parallel to other
+    \param BPln :: Plane not parallel to other
+    \param ZPln :: Z-plane : normal is axis of cylinder
+
+    \param radius :: Radius of circle
+    \return Centre point of circle of the cylinder intersecting Z plane
+  */
+{
+  ELog::RegMethod RegA("geomSupport[F]","cornerCircleTouch(Plane)");
+
+  // corner point
+  const Geometry::Vec3D CPt=SurInter::getPoint(&APln,&BPln,&ZPln);
+  
+  const Geometry::Vec3D& Zunit=ZPln.getNormal();
+  const Geometry::Vec3D& Na=APln.getNormal();
+  const Geometry::Vec3D& Nb=BPln.getNormal();
+
+  const Geometry::Vec3D Za=(Na-Zunit*(Na.dotProd(Zunit))).unit();
+  const Geometry::Vec3D Zb=(Nb-Zunit*(Nb.dotProd(Zunit))).unit();
+
+  const Geometry::Vec3D Ma=Za*Zunit;
+  const Geometry::Vec3D Mb=Zb*Zunit;
+
+  // construct two points on the plane/lines that are valid to the headrule
+  const Geometry::Vec3D PA=
+    (zoneRule.isValid(CPt+Ma,APln.getName())) ? CPt+Ma : CPt-Ma;
+  const Geometry::Vec3D PB=
+    (zoneRule.isValid(CPt+Mb,BPln.getName())) ? CPt+Mb : CPt-Mb;
+  
+  return cornerCircleTouch(CPt,PA,PB,radius);
+}
+
+  
 Geometry::Vec3D
 cornerCircleTouch(const Geometry::Vec3D& C,
 		  const Geometry::Vec3D& A,
@@ -78,6 +131,54 @@ cornerCircleTouch(const Geometry::Vec3D& C,
   return C+midDivide*lambda;
 }
 
+
+
+std::pair<Geometry::Vec3D,Geometry::Vec3D>
+cornerCircle(const HeadRule& zoneRule,
+             const Geometry::Plane& APln,
+             const Geometry::Plane& BPln,
+             const Geometry::Plane& ZPln,
+             const double radius)
+  /*!
+    Given a circle of radius R, find the centre 
+    relative to the two lines between A-C and B-C
+    
+    Lines must not be parallel.
+    
+    \parma zoneRule :: Two Plane rule for valid section
+    \param APln :: Plane not parallel to other
+    \param BPln :: Plane not parallel to other
+    \param ZPln :: Z-plane : normal is axis of cylinder
+
+    \param radius :: Radius of circle
+    \return Two touching points
+  */
+{
+  ELog::RegMethod RegA("geomSupport[F]","cornerCircleTouch(Plane)");
+
+  // corner point
+  const Geometry::Vec3D CPt=SurInter::getPoint(&APln,&BPln,&ZPln);
+  
+  const Geometry::Vec3D& Zunit=ZPln.getNormal();
+  const Geometry::Vec3D& Na=APln.getNormal();
+  const Geometry::Vec3D& Nb=BPln.getNormal();
+
+  const Geometry::Vec3D Za=(Na-Zunit*(Na.dotProd(Zunit))).unit();
+  const Geometry::Vec3D Zb=(Nb-Zunit*(Nb.dotProd(Zunit))).unit();
+
+  const Geometry::Vec3D Ma=Za*Zunit;
+  const Geometry::Vec3D Mb=Zb*Zunit;
+
+  // construct two points on the plane/lines that are valid to the headrule
+  const Geometry::Vec3D PA=
+    (zoneRule.isValid(CPt+Ma,APln.getName())) ? CPt+Ma : CPt-Ma;
+  const Geometry::Vec3D PB=
+    (zoneRule.isValid(CPt+Mb,BPln.getName())) ? CPt+Mb : CPt-Mb;
+  
+  return cornerCircle(CPt,PA,PB,radius);
+}
+
+  
 std::pair<Geometry::Vec3D,Geometry::Vec3D>
 cornerCircle(const Geometry::Vec3D& C,
 	     const Geometry::Vec3D& A,

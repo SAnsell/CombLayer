@@ -57,7 +57,8 @@ class MidWaterDivider :
   double topThick;          ///< Roof thickness
   double baseThick;         ///< Base thickness
   double wallThick;         ///< Wall thickness
-
+  double cornerRadius;      ///< Corner radius
+  
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
