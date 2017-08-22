@@ -276,6 +276,8 @@ namespace essSystem
   {
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createObjects");
 
+      ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+
     attachSystem::CellMap* CM = dynamic_cast<attachSystem::CellMap*>(&Wheel);
     if (!CM)
       throw ColErr::DynamicConv("FixedComp","CellMap",Wheel.getKeyName());
@@ -286,6 +288,16 @@ namespace essSystem
 
     std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
     std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+
+    for (size_t i=0; i<nSectors; i++)
+      {
+	std::shared_ptr<BilbaoWheelCassette>
+	  c(new BilbaoWheelCassette(baseName + "Sec" + std::to_string(i)));
+	OR.addObject(c);
+      }
+
+    ELog::EM << "Early return - remove the code below" << ELog::endCrit;
+    return;
 
     //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr));
 
