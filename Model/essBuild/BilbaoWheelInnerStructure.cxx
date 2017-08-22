@@ -94,7 +94,6 @@ namespace essSystem
     attachSystem::FixedComp(A),
     insIndex(A.insIndex),
     cellIndex(A.cellIndex),
-    sectors(new BilbaoWheelCassette(*A.sectors)),
     temp(A.temp),
     brickLen(A.brickLen),
     brickWidth(A.brickWidth),

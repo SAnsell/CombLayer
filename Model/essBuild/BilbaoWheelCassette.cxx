@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/BilbaoWheelCassette.cxx
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -96,11 +96,12 @@ BilbaoWheelCassette::BilbaoWheelCassette(const std::string& Key)  :
   */
 {}
 
-BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) : 
+BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
+  bricksActive(A.bricksActive),
   length(A.length),width(A.width),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
@@ -124,6 +125,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
+      bricksActive=A.bricksActive;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -143,8 +145,8 @@ BilbaoWheelCassette::clone() const
 {
     return new BilbaoWheelCassette(*this);
 }
-  
-BilbaoWheelCassette::~BilbaoWheelCassette() 
+
+BilbaoWheelCassette::~BilbaoWheelCassette()
   /*!
     Destructor
   */
@@ -161,6 +163,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  bricksActive=Control.EvalDefVar<int>(keyName+"BricksActive", 0);
 
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -172,7 +175,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   return;
 }
-  
+
 void
 BilbaoWheelCassette::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -189,7 +192,7 @@ BilbaoWheelCassette::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 BilbaoWheelCassette::createSurfaces()
   /*!
@@ -209,7 +212,7 @@ BilbaoWheelCassette::createSurfaces()
 
   return;
 }
-  
+
 void
 BilbaoWheelCassette::createObjects(Simulation& System)
   /*!
@@ -228,7 +231,7 @@ BilbaoWheelCassette::createObjects(Simulation& System)
   return;
 }
 
-  
+
 void
 BilbaoWheelCassette::createLinks()
   /*!
@@ -239,13 +242,13 @@ BilbaoWheelCassette::createLinks()
 
   //  FixedComp::setConnect(0,Origin,-Y);
   //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
-  
+
   return;
 }
-  
-  
 
-  
+
+
+
 void
 BilbaoWheelCassette::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
@@ -264,7 +267,7 @@ BilbaoWheelCassette::createAll(Simulation& System,
   createSurfaces();
   createObjects(System);
   createLinks();
-  insertObjects(System);              
+  insertObjects(System);
 
   return;
 }

@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/BilbaoWheelCassette.h
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2017 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_BilbaoWheelCassette_h
@@ -44,6 +44,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
+  bool bricksActive;            ///< True if bricks are active
 
   double length;                ///< Total length including void
   double width;                 ///< Width
@@ -52,16 +53,16 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double wallThick;             ///< Thickness of wall
 
   int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material  
-  
+  int wallMat;                   ///< wall material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
   BilbaoWheelCassette(const std::string&);
@@ -69,7 +70,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   BilbaoWheelCassette& operator=(const BilbaoWheelCassette&);
   virtual BilbaoWheelCassette* clone() const;
   virtual ~BilbaoWheelCassette();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
 
 };
@@ -77,5 +78,5 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 
