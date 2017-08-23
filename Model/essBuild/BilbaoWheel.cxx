@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "General.h"
@@ -74,7 +75,6 @@
 #include "CellMap.h"
 
 #include "WheelBase.h"
-//#include "BilbaoWheelCassette.h"
 #include "BilbaoWheel.h"
 
 
@@ -91,8 +91,7 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) : 
   WheelBase(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),
+  engActive(A.engActive),
   targetHeight(A.targetHeight),
   targetInnerHeight(A.targetHeight),
   targetInnerHeightRadius(A.targetHeight),
@@ -154,11 +153,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
   if (this!=&A)
     {
       WheelBase::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       engActive=A.engActive;
       targetHeight=A.targetHeight;
       targetInnerHeight=A.targetInnerHeight;
@@ -244,12 +238,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BilbaoWheel","populate");
 
   // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedOffset::populate(Control);
+  
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
@@ -470,7 +460,7 @@ BilbaoWheel::makeShaftSurfaces()
 
   int SJ(wheelIndex+2300);
   double theta, x0, y0;
-  const double dTheta = 360.0/nSectors;
+  const double dTheta = 360.0/static_cast<double>(nSectors);
   R = circlePipesBigRad;
   for (size_t j=0; j<nSectors; j++)
     {

@@ -30,7 +30,7 @@ namespace essSystem
 /*!
   \class BilbaoWheel
   \author Konstantin Batkov
-  \version 1.0
+  \version 2.0
   \date September 2015
   \brief Bilbao-type wheel for ESS
 */
@@ -39,12 +39,6 @@ class BilbaoWheel : public WheelBase
 {
  private:
   
-  double xStep;                  ///< X step
-  double yStep;                  ///< y step
-  double zStep;                  ///< Z step
-  double xyAngle;                ///< xy angle
-  double zAngle;                 ///< zAngle step
-
   int engActive;                 ///< Engineering active flag
   
   double targetHeight;           ///< Total height of target
