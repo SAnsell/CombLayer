@@ -48,7 +48,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   bool bricksActive;            ///< True if bricks are active
 
   double length;                ///< Total length including void
-  double width;                 ///< Width
+  double delta;                 ///< Angular width [deg]
   double height;                ///< height
 
   double wallThick;             ///< Thickness of wall

@@ -105,7 +105,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   bricksActive(A.bricksActive),
-  length(A.length),width(A.width),height(A.height),
+  length(A.length),delta(A.delta),height(A.height),
   wallThick(A.wallThick),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
@@ -130,7 +130,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       engActive=A.engActive;
       bricksActive=A.bricksActive;
       length=A.length;
-      width=A.width;
+      delta=A.delta;
       height=A.height;
       wallThick=A.wallThick;
       mainMat=A.mainMat;
@@ -165,11 +165,18 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BilbaoWheelCassette","populate");
 
   FixedOffset::populate(Control);
-  /*  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+
+  
+  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   bricksActive=Control.EvalDefVar<int>(keyName+"BricksActive", 0);
 
-  length=Control.EvalVar<double>(keyName+"Length");
-  width=Control.EvalVar<double>(keyName+"Width");
+  const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
+  delta = 360.0/nSectors;
+  ELog::EM << keyName << ": angular delta: " << delta << ELog::endDiag;
+  
+
+  /*length=Control.EvalVar<double>(keyName+"Length");
+  delta=Control.EvalVar<double>(keyName+"Delta");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
@@ -204,16 +211,8 @@ BilbaoWheelCassette::createSurfaces()
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfaces");
 
-  ELog::EM << "xyAngle: " << xyAngle << ELog::endDiag;
-  
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
-
-  ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(width/2.0),X);
-
-  ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*(height/2.0),Z);
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(height/2.0),Z);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
   return;
 }
@@ -230,8 +229,8 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
   std::string Out;
-  Out=outer;//ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
 
   addOuterSurf(Out);
 
