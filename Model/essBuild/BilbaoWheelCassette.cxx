@@ -85,10 +85,12 @@
 namespace essSystem
 {
 
-BilbaoWheelCassette::BilbaoWheelCassette(const std::string& Key)  :
+  BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
+					   const std::string& extraKey)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,6),
-  surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
+  attachSystem::FixedOffset(baseKey+extraKey,6),
+  baseName(baseKey),
+  surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -99,6 +101,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const std::string& Key)  :
 BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  baseName(A.baseName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   bricksActive(A.bricksActive),

@@ -40,6 +40,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 {
  private:
 
+  const std::string baseName;     ///< Base Name
   const int surfIndex;             ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
@@ -65,7 +66,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
  public:
 
-  BilbaoWheelCassette(const std::string&);
+  BilbaoWheelCassette(const std::string&, const std::string&);
   BilbaoWheelCassette(const BilbaoWheelCassette&);
   BilbaoWheelCassette& operator=(const BilbaoWheelCassette&);
   virtual BilbaoWheelCassette* clone() const;

@@ -129,9 +129,9 @@ namespace essSystem
       {
 	attachSystem::ContainedComp::operator=(A);
 	attachSystem::FixedComp::operator=(A);
-	temp=A.temp;
 	cellIndex=A.cellIndex;
 	*sectors=*A.sectors;
+	temp=A.temp;
 	brickLen=A.brickLen;
 	brickWidth=A.brickWidth;
 	brickMat=A.brickMat;
@@ -293,7 +293,7 @@ namespace essSystem
     for (size_t i=0; i<nSectors; i++)
       {
 	std::shared_ptr<BilbaoWheelCassette>
-	  c(new BilbaoWheelCassette(baseName + "Sec" + std::to_string(i)));
+	  c(new BilbaoWheelCassette(baseName,"Sec" + std::to_string(i)));
 	OR.addObject(c);
 	c->createAll(System,*this, 0, cassetteOuter);
       }
