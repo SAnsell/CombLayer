@@ -105,8 +105,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   bricksActive(A.bricksActive),
-  length(A.length),delta(A.delta),height(A.height),
-  wallThick(A.wallThick),
+  wallThick(A.wallThick),delta(A.delta),height(A.height),
   mainMat(A.mainMat),wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -129,10 +128,9 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       bricksActive=A.bricksActive;
-      length=A.length;
+      wallThick=A.wallThick;
       delta=A.delta;
       height=A.height;
-      wallThick=A.wallThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
     }
@@ -172,10 +170,11 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
-  ELog::EM << keyName << ": angular delta: " << delta << ELog::endDiag;
   
+  //  wallThick=Control.EvalVar<double>(keyName+"WallThick");
+  wallThick = 1.0;
 
-  /*length=Control.EvalVar<double>(keyName+"Length");
+  /*wallThick=Control.EvalVar<double>(keyName+"WallThick");
   delta=Control.EvalVar<double>(keyName+"Delta");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
@@ -211,8 +210,23 @@ BilbaoWheelCassette::createSurfaces()
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfaces");
 
+  // divider
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+  // outer sides
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
+
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
+
+  ELog::EM << "Why this does not work?" << ELog::endDiag;
+  // ModelSupport::buildShiftedPlane(SMap,surfIndex+13,
+  //                                 SMap.realPtr<Geometry::Plane>(surfIndex+3),
+  //                                 wallThick);
+  // ModelSupport::buildShiftedPlane(SMap,surfIndex+14,
+  //                                 SMap.realPtr<Geometry::Plane>(surfIndex+4),
+  //                                 -wallThick);
+
 
   return;
 }
@@ -229,9 +243,16 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
 
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
   addOuterSurf(Out);
 
   return;

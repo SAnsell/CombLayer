@@ -1122,23 +1122,23 @@ BilbaoWheel::createObjects(Simulation& System)
 	}
       else if ((engActive) && (mat==wMat))
 	{
+	  if (nInner>0)
+	    ELog::EM << "More than one spallation layer" << ELog::endErr;
+	  
 	  const std::string cassetteOuter =
 	    ModelSupport::getComposite(SMap,wheelIndex,SI," 5 -6 7M -17M ");
-	  ELog::EM<< cassetteOuter << ELog::endDiag;
 
 	  for (size_t i=0; i<nSectors; i++)
 	    {
 	      std::shared_ptr<BilbaoWheelCassette>
 	  	c(new BilbaoWheelCassette(keyName,"Sec" + std::to_string(i)));
 	      OR.addObject(c);
-	      c->createAll(System,*this, 0, cassetteOuter,i*360.0/nSectors);
+	      c->createAll(System,*this,0,cassetteOuter,i*360.0/nSectors);
 	    }
 
 	  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	  // CellMap::setCell("Inner",cellIndex-1);
 	  nInner++;
-	  if (nInner>1)
-	    ELog::EM << "More than one spallation layer" << ELog::endErr;
 	} else if (i!=0)
 	{
 	  divideRadial(System, Out, mat);

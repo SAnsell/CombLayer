@@ -40,21 +40,19 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 {
  private:
 
-  const std::string baseName;     ///< Base Name
-  const int surfIndex;             ///< Index of surface offset
+  const std::string baseName;   ///< Base Name
+  const int surfIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
   bool bricksActive;            ///< True if bricks are active
 
-  double length;                ///< Total length including void
+  double wallThick;             ///< Side wall thickness
   double delta;                 ///< Angular width [deg]
   double height;                ///< height
 
-  double wallThick;             ///< Thickness of wall
-
-  int mainMat;                   ///< main material
-  int wallMat;                   ///< wall material
+  int mainMat;                  ///< main material
+  int wallMat;                  ///< wall material
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
