@@ -162,7 +162,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BilbaoWheelCassette","populate");
 
   FixedOffset::populate(Control);
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  /*  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   bricksActive=Control.EvalDefVar<int>(keyName+"BricksActive", 0);
 
   length=Control.EvalVar<double>(keyName+"Length");
@@ -172,7 +172,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
+  */
   return;
 }
 
@@ -214,16 +214,18 @@ BilbaoWheelCassette::createSurfaces()
 }
 
 void
-BilbaoWheelCassette::createObjects(Simulation& System)
+BilbaoWheelCassette::createObjects(Simulation& System,
+				   const std::string& outer)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
+    \param outer :: Tungsten layer rule
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
+  Out=outer;//ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out));
 
   addOuterSurf(Out);
@@ -251,13 +253,15 @@ BilbaoWheelCassette::createLinks()
 
 void
 BilbaoWheelCassette::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int sideIndex)
+			       const attachSystem::FixedComp& FC,
+			       const long int sideIndex,
+			       const std::string &outer)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param sideIndex :: link point for origin
+    \param outer :: Tungsten layer rule
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createAll");
@@ -265,7 +269,7 @@ BilbaoWheelCassette::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System);
+  createObjects(System,outer);
   createLinks();
   insertObjects(System);
 

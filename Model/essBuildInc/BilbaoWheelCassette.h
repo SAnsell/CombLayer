@@ -60,7 +60,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 			const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&);
+  void createObjects(Simulation&,const std::string&);
   void createLinks();
 
  public:
@@ -71,7 +71,9 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   virtual BilbaoWheelCassette* clone() const;
   virtual ~BilbaoWheelCassette();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int,
+		 const std::string&);
 
 };
 

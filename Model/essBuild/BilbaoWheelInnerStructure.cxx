@@ -286,14 +286,16 @@ namespace essSystem
     int innerMat = MatInfo.first;
     temp = MatInfo.second;
 
-    std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
-    std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+    const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+    const std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+    const std::string cassetteOuter = vertStr + cylStr;
 
     for (size_t i=0; i<nSectors; i++)
       {
 	std::shared_ptr<BilbaoWheelCassette>
 	  c(new BilbaoWheelCassette(baseName + "Sec" + std::to_string(i)));
 	OR.addObject(c);
+	c->createAll(System,*this, 0, cassetteOuter);
       }
 
     ELog::EM << "Early return - remove the code below" << ELog::endCrit;
