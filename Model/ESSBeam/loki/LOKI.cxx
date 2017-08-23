@@ -77,6 +77,7 @@
 #include "GuideItem.h"
 #include "insertObject.h"
 #include "insertPlate.h"
+#include "beamlineSupport.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
@@ -220,37 +221,6 @@ LOKI::registerObjects()
   OR.addObject(FocusOutC);
   OR.addObject(VTank);
 
-  return;
-}
-
-void
-LOKI::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse the z-direction 
-   */
-{
-  ELog::RegMethod RegA("LOKI","setBeamAxis");
-
-  lokiAxis->populate(Control);
-  lokiAxis->createUnitVector(GItem);
-  lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  lokiAxis->linkShift(3);
-  lokiAxis->linkShift(4);
-  lokiAxis->linkAngleRotate(3);
-  lokiAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    lokiAxis->reverseZ();
   return;
 }
 
@@ -484,7 +454,7 @@ LOKI::build(Simulation& System,
   CopiedComp::process(Control);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*lokiAxis,System.getDataBase(),GItem,1);
 
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);

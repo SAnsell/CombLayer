@@ -75,6 +75,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -309,45 +310,6 @@ TREX::~TREX()
 {}
 
 void
-TREX::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const int reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis [-1 Z is -ve / 0 no change / 1 Z is +ve]
-   */
-{
-  ELog::RegMethod RegA("TREX","setBeamAxis");
-  
-  trexAxis->populate(Control);
-  trexAxis->createUnitVector(GItem);
-  trexAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  trexAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  trexAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  trexAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  trexAxis->linkShift(3);
-  trexAxis->linkShift(4);
-  trexAxis->linkAngleRotate(3);
-  trexAxis->linkAngleRotate(4);
-
-  trexAxis->applyOffset();
-
-  if (reverseZ)
-    {
-      const Geometry::Vec3D& ZVert(trexAxis->getZ());
-      if ( (reverseZ>0 && ZVert.Z() < -Geometry::zeroTol) ||
-	   (reverseZ<0 && ZVert.Z() > Geometry::zeroTol) )
-	trexAxis->reverseZ();	
-    }
-  
-  return;
-}
-
-
-void
 TREX::buildBunkerUnits(Simulation& System,
 		       const attachSystem::FixedComp& FA,
 		       const long int startIndex,
@@ -453,7 +415,7 @@ TREX::build(Simulation& System,
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*trexAxis,Control,GItem,1);
   
   /// Inside the Monolith
   FocusMono->addInsertCell(GItem.getCells("Void"));
