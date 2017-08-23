@@ -204,6 +204,8 @@ BilbaoWheelCassette::createSurfaces()
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfaces");
 
+  ELog::EM << "xyAngle: " << xyAngle << ELog::endDiag;
+  
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(length/2.0),Y);
 
@@ -258,18 +260,21 @@ void
 BilbaoWheelCassette::createAll(Simulation& System,
 			       const attachSystem::FixedComp& FC,
 			       const long int sideIndex,
-			       const std::string &outer)
+			       const std::string &outer,
+			       const double& theta)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
     \param sideIndex :: link point for origin
     \param outer :: Tungsten layer rule
+    \param angle :: angular coordinate of the given sector
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createAll");
 
   populate(System.getDataBase());
+  xyAngle=theta;
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System,outer);

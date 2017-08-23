@@ -295,7 +295,7 @@ namespace essSystem
 	std::shared_ptr<BilbaoWheelCassette>
 	  c(new BilbaoWheelCassette(baseName,"Sec" + std::to_string(i)));
 	OR.addObject(c);
-	c->createAll(System,*this, 0, cassetteOuter);
+	c->createAll(System,*this, 0, cassetteOuter,i*360.0/nSectors);
       }
 
     ELog::EM << "Early return - remove the code below" << ELog::endCrit;

@@ -74,7 +74,8 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
-		 const std::string&);
+		 const std::string&,
+		 const double&);
 
 };
 
