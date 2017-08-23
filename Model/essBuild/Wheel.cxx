@@ -3,7 +3,7 @@
  
  * File:   essBuild/Wheel.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -86,8 +87,7 @@ Wheel::Wheel(const std::string& Key) :
 
 Wheel::Wheel(const Wheel& A) : 
   WheelBase(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),targetHeight(A.targetHeight),
+  targetHeight(A.targetHeight),
   coolantThickIn(A.coolantThickIn),coolantThickOut(A.coolantThickOut),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),caseRadius(A.caseRadius),
@@ -111,11 +111,6 @@ Wheel::operator=(const Wheel& A)
   if (this!=&A)
     {
       WheelBase::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       targetHeight=A.targetHeight;
       coolantThickIn=A.coolantThickIn;
       coolantThickOut=A.coolantThickOut;
@@ -158,13 +153,8 @@ Wheel::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("Wheel","populate");
+  FixedOffset::populate(Control);
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
   double R;
@@ -273,23 +263,6 @@ Wheel::makeShaftObjects(Simulation& System)
   return;
 }
 
-void
-Wheel::createUnitVector(const attachSystem::FixedComp& FC,
-			const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: sideIndex
-  */
-{
-  ELog::RegMethod RegA("Wheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
-  return;
-}
 
 void
 Wheel::createSurfaces()
@@ -511,7 +484,7 @@ Wheel::createAll(Simulation& System,
   ELog::RegMethod RegA("Wheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC,sideIndex);
+  WheelBase::createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
 

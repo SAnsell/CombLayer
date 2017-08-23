@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/WheelBase.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,12 +36,12 @@ namespace essSystem
 */
 
 class WheelBase : public attachSystem::ContainedGroup,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  protected:
   
-  const int wheelIndex;             ///< Index of surface offset
+  const int wheelIndex;           ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
   public:
@@ -49,15 +49,20 @@ class WheelBase : public attachSystem::ContainedGroup,
   WheelBase(const std::string&);
   WheelBase(const WheelBase&);
   WheelBase& operator=(const WheelBase&);
-  virtual WheelBase* clone() const =0;
+  
+
   virtual ~WheelBase();
 
+  virtual void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+  ///\cond ABSTRACT
+
+  virtual WheelBase* clone() const =0;
   virtual double wheelHeight() const =0;
   
-  //  virtual int getCell() const =0;
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
 			 const long int) =0;
-  
+  ///\endcond ABSTRACT
 };
 
 }
