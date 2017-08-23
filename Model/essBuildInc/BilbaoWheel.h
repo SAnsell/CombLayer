@@ -27,8 +27,6 @@ class Simulation;
 namespace essSystem
 {
 
-class BilbaoWheelInnerStructure;
-
 /*!
   \class BilbaoWheel
   \author Konstantin Batkov
@@ -36,8 +34,6 @@ class BilbaoWheelInnerStructure;
   \date September 2015
   \brief Bilbao-type wheel for ESS
 */
-
-class BilbaoWheelInnerStructure;
 
 class BilbaoWheel : public WheelBase
 {
@@ -50,7 +46,6 @@ class BilbaoWheel : public WheelBase
   double zAngle;                 ///< zAngle step
 
   int engActive;                 ///< Engineering active flag
-  std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
   double targetHeight;           ///< Total height of target
   double targetInnerHeight;      ///< Inner height of target wheel (R<Tungsten)

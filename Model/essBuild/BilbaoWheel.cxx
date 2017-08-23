@@ -74,7 +74,7 @@
 #include "CellMap.h"
 
 #include "WheelBase.h"
-#include "BilbaoWheelInnerStructure.h"
+//#include "BilbaoWheelCassette.h"
 #include "BilbaoWheel.h"
 
 
@@ -82,8 +82,7 @@ namespace essSystem
 {
 
 BilbaoWheel::BilbaoWheel(const std::string& Key) :
-  WheelBase(Key),
-  InnerComp(new BilbaoWheelInnerStructure(Key, "InnerStructure"))
+  WheelBase(Key)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -94,7 +93,6 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
   xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),
-  InnerComp(new BilbaoWheelInnerStructure(*A.InnerComp)),
   targetHeight(A.targetHeight),
   targetInnerHeight(A.targetHeight),
   targetInnerHeightRadius(A.targetHeight),
@@ -162,7 +160,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       xyAngle=A.xyAngle;
       zAngle=A.zAngle;
       engActive=A.engActive;
-      *InnerComp= *A.InnerComp;
       targetHeight=A.targetHeight;
       targetInnerHeight=A.targetInnerHeight;
       targetInnerHeightRadius=A.targetInnerHeightRadius;
@@ -1284,8 +1281,6 @@ BilbaoWheel::createAll(Simulation& System,
 
   createLinks();
   insertObjects(System);       
-  if (engActive)
-    InnerComp->createAll(System, *this);
 
   return;
 }
