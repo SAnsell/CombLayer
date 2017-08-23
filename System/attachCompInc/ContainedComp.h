@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedComp.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,6 +108,7 @@ class ContainedComp
   void setInsertCell(const int);
   void setInsertCell(const std::vector<int>&);
   void insertObjects(Simulation&);
+  void insertInCell(Simulation&,const int) const;
 
   /// Accessor to surface [ugly]
   std::vector<Geometry::Surface*> getSurfaces() const;

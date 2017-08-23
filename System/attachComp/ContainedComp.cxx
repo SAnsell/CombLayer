@@ -616,8 +616,8 @@ ContainedComp::setInsertCell(const std::vector<int>& CN)
 void
 ContainedComp::insertObjects(Simulation& System)
   /*!
-    Create outer virtual space that includes the beamstop etc
-    \param System :: Simulation to add to 
+    Insert the ContainedComp into the cell list
+    \param System :: Simulation to get objects from
   */
 {
   ELog::RegMethod RegA("ContainedComp","insertObjects");
@@ -632,6 +632,27 @@ ContainedComp::insertObjects(Simulation& System)
 	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }
   insertCells.clear();
+  return;
+}
+
+void
+ContainedComp::insertInCell(Simulation& System,
+			    const int cellN) const
+  /*!
+    Insert the ContainedComp in a single cell.
+    \param System :: Simulation to get objects 
+    \param cellN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","insertInCell");
+  
+  if (!hasOuterSurf()) return;
+
+  MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  if (outerObj)
+    outerObj->addSurfString(getExclude());
+  else
+    throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
   return;
 }
 

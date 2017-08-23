@@ -311,12 +311,12 @@ TREX::~TREX()
 void
 TREX::setBeamAxis(const FuncDataBase& Control,
 		  const GuideItem& GItem,
-		  const bool reverseZ)
+		  const int reverseZ)
   /*!
     Set the primary direction object
     \param Control :: Database of variables
     \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
+    \param reverseZ :: Reverse axis [-1 Z is -ve / 0 no change / 1 Z is +ve]
    */
 {
   ELog::RegMethod RegA("TREX","setBeamAxis");
@@ -335,13 +335,101 @@ TREX::setBeamAxis(const FuncDataBase& Control,
 
   trexAxis->applyOffset();
 
-
   if (reverseZ)
-    trexAxis->reverseZ();
-
+    {
+      const Geometry::Vec3D& ZVert(trexAxis->getZ());
+      if ( (reverseZ>0 && ZVert.Z() < -Geometry::zeroTol) ||
+	   (reverseZ<0 && ZVert.Z() > Geometry::zeroTol) )
+	trexAxis->reverseZ();	
+    }
+  
   return;
 }
 
+
+void
+TREX::buildBunkerUnits(Simulation& System,
+		       const attachSystem::FixedComp& FA,
+		       const long int startIndex,
+		       const int bunkerVoid)
+  /*!
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
+   */
+{
+  ELog::RegMethod RegA("TREX","buildBunkerUnits");
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());  
+
+  /// Brigde Guide 
+  VPipeBridge->addInsertCell(bunkerVoid); 
+  VPipeBridge->createAll(System,FA,startIndex);
+  FocusBridge->addInsertCell(VPipeBridge->getCells("Void"));
+  FocusBridge->createAll(System,*VPipeBridge,0,*VPipeBridge,0);
+    
+  /// Start Curve
+  VPipeInA->addInsertCell(bunkerVoid);
+  VPipeInA->createAll(System,*VPipeBridge,2);
+  BendInA->addInsertCell(VPipeInA->getCells("Void"));
+  BendInA->createAll(System,*VPipeInA,0,*VPipeInA,0);
+  
+  CollimA->setOuter(VPipeInA->getSignedFullRule(-6));
+  CollimA->setInner(BendInA->getXSection(0,0)); 
+  CollimA->addInsertCell(VPipeInA->getCells("Void"));
+  CollimA->createAll(System,*VPipeInA,-1);
+
+  VPipeInB->addInsertCell(bunkerVoid);
+  VPipeInB->createAll(System,BendInA->getKey("Guide0"),2);
+  BendInB->addInsertCell(VPipeInB->getCells("Void"));
+  BendInB->createAll(System,*VPipeInB,0,*VPipeInB,0);
+
+  CollimB->setOuter(VPipeInB->getSignedFullRule(-6));
+  CollimB->setInner(BendInB->getXSection(0,0)); 
+  CollimB->addInsertCell(VPipeInB->getCells("Void"));
+  CollimB->createAll(System,*VPipeInB,-1);
+
+  VPipeInC->addInsertCell(bunkerVoid);
+  VPipeInC->createAll(System,BendInB->getKey("Guide0"),2);
+  BendInC->addInsertCell(VPipeInC->getCells("Void"));
+  BendInC->createAll(System,*VPipeInC,0,*VPipeInC,0);
+
+  CollimC->setOuter(VPipeInC->getSignedFullRule(-6));
+  CollimC->setInner(BendInC->getXSection(0,0)); 
+  CollimC->addInsertCell(VPipeInC->getCells("Void"));
+  CollimC->createAll(System,*VPipeInC,-2);
+
+  return;  
+}
+
+void
+TREX::buildBunkerWallUnits(Simulation& System,
+			   const Bunker& bunkerObj,
+			   const attachSystem::FixedComp& FA,
+			   const long int startIndex,
+			   const int bunkerVoid)
+ /*!
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
+ */
+{
+  ELog::RegMethod RegA("TREX","buildBunkerWallUnits");
+  
+  BInsertA->addInsertCell(bunkerVoid);
+  BInsertA->createAll(System,FA,startIndex,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
+
+  FocusWallA->addInsertCell(BInsertA->getCells("Item"));
+  FocusWallA->createAll(System,*BInsertA,0,*BInsertA,0);
+
+  BInsertB->createAll(System,*BInsertA,2,bunkerObj);
+  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
+  return;
+}
 
 void
 TREX::build(Simulation& System,
@@ -365,7 +453,7 @@ TREX::build(Simulation& System,
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(Control,GItem,1);
+  setBeamAxis(Control,GItem,0);
   
   /// Inside the Monolith
   FocusMono->addInsertCell(GItem.getCells("Void"));
@@ -376,53 +464,26 @@ TREX::build(Simulation& System,
   
   if (stopPoint==1) return;                      // STOP At monolith
 
-  /// Brigde Guide 
-  VPipeBridge->addInsertCell(bunkerObj.getCell("MainVoid")); 
-  VPipeBridge->createAll(System,FocusMono->getKey("Guide0"),2);
-  FocusBridge->addInsertCell(VPipeBridge->getCells("Void"));
-  FocusBridge->createAll(System,*VPipeBridge,0,*VPipeBridge,0);
-    
-  /// Start Curve
-  VPipeInA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInA->createAll(System,*VPipeBridge,2);
-  BendInA->addInsertCell(VPipeInA->getCells("Void"));
-  BendInA->createAll(System,*VPipeInA,0,*VPipeInA,0);
-  
-  CollimA->setOuter(VPipeInA->getSignedFullRule(-6));
-  CollimA->setInner(BendInA->getXSection(0,0)); 
-  CollimA->addInsertCell(VPipeInA->getCells("Void"));
-  CollimA->createAll(System,*VPipeInA,-1);
+  buildBunkerUnits(System,FocusMono->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
 
-  VPipeInB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInB->createAll(System,BendInA->getKey("Guide0"),2);
-  BendInB->addInsertCell(VPipeInB->getCells("Void"));
-  BendInB->createAll(System,*VPipeInB,0,*VPipeInB,0);
-
-  CollimB->setOuter(VPipeInB->getSignedFullRule(-6));
-  CollimB->setInner(BendInB->getXSection(0,0)); 
-  CollimB->addInsertCell(VPipeInB->getCells("Void"));
-  CollimB->createAll(System,*VPipeInB,-1);
-
-  VPipeInC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInC->createAll(System,BendInB->getKey("Guide0"),2);
-  BendInC->addInsertCell(VPipeInC->getCells("Void"));
-  BendInC->createAll(System,*VPipeInC,0,*VPipeInC,0);
-
-  CollimC->setOuter(VPipeInC->getSignedFullRule(-6));
-  CollimC->setInner(BendInC->getXSection(0,0)); 
-  CollimC->addInsertCell(VPipeInC->getCells("Void"));
-  CollimC->createAll(System,*VPipeInC,-2);
   
   if (stopPoint==2) return;       // STOP at the bunker edge
+
+  buildBunkerWallUnits(System,bunkerObj,
+		       BendInC->getKey("Guide0"),2,
+		       bunkerObj.getCell("MainVoid"));
+
+
+  if (stopPoint==3)
+    {
+      ShieldA->insertComponent(System,"Void",*BInsertB);
+      BInsertB->insertInCell(System,voidCell);
+      return;       // STOP at the outside of the bunker
+    }
   
-  BInsertA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsertA->addInsertCell(voidCell);
-  BInsertA->createAll(System,BendInC->getKey("Guide0"),2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertA);
-
-  FocusWallA->addInsertCell(BInsertA->getCells("Item"));
-  FocusWallA->createAll(System,*BInsertA,0,*BInsertA,0);
-
+  ELog::EM<<"Z direction"<<FocusMono->getKey("Guide0").getZ()<<ELog::endDiag;
+  
   PitA->addInsertCell(voidCell);  // First pit wrt bunker insert
   PitA->createAll(System,*VPipeBridge,2);
 
@@ -432,12 +493,8 @@ TREX::build(Simulation& System,
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setBack(PitA->getKey("Mid"),1);  
   ShieldA->createAll(System,FocusWallA->getKey("Guide0"),2);
- 
-  BInsertB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsertB->addInsertCell(voidCell);
-  BInsertB->addInsertCell(ShieldA->getCell("Void"));
-  BInsertB->createAll(System,*BInsertA,2,bunkerObj);
-  attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsertB);
+  ShieldA->insertComponent(System,"Void",*BInsertB);
+  
 
   FocusWallB->addInsertCell(BInsertB->getCells("Item"));
   FocusWallB->createAll(System,*BInsertB,0,*BInsertB,0);
@@ -459,7 +516,7 @@ TREX::build(Simulation& System,
 			 PitA->getKey("Inner").getSignedFullRule(1));
   PitACutFront->createAll(System,BendOutA->getKey("Guide0"),2);
 
-  if (stopPoint==3) return;    // Up to BW1 Chopper pit
+  if (stopPoint==4) return;    // Up to BW1 Chopper pit
   
   PitB->addInsertCell(voidCell);
   PitB->createAll(System,*VPipeBridge,2);

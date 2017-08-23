@@ -176,8 +176,16 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutI;
  
   void setBeamAxis(const FuncDataBase&,const GuideItem&,
-		   const bool);
-    
+		   const int);
+
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+                        const long int,const int);
+  void buildBunkerWallUnits(Simulation&,const Bunker&,
+			    const attachSystem::FixedComp&,
+			    const long int,const int);
+  
+
+  
  public:
   
   TREX(const std::string&);

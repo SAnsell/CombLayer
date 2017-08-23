@@ -229,12 +229,14 @@ MultiChannel::createSurfaces()
   const double TotalD=topSurf->distance(Origin)+
     baseSurf->distance(Origin);
 
-  if (TotalD<nBlades*bladeThick+Geometry::zeroTol)
-    throw ColErr::SizeError<double>(TotalD,nBlades*bladeThick,
-      "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
-  
-  const double voidThick((TotalD-nBlades*bladeThick)/
+  const double BladeTotal(static_cast<double>(nBlades)*bladeThick);
+  const double voidThick((TotalD-BladeTotal)/
 			 static_cast<double>(nBlades+1));
+
+  if (TotalD<BladeTotal+Geometry::zeroTol)
+    throw ColErr::SizeError<double>(TotalD,BladeTotal,
+       "Distance:BladeThick["+StrFunc::makeString(nBlades)+"]");
+  
 
   double DPosA(voidThick);
   double DPosB(voidThick+bladeThick);
