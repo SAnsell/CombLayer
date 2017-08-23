@@ -74,6 +74,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 
+#include "BilbaoWheelCassette.h"
 #include "WheelBase.h"
 #include "BilbaoWheel.h"
 
@@ -1041,7 +1042,7 @@ BilbaoWheel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BilbaoWheel","createObjects");
 
-  // Inner Radius is 7
+    ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
   
   const int matNum[4]={0,steelMat,heMat,wMat};
   std::string Out, Out1;
@@ -1121,8 +1122,20 @@ BilbaoWheel::createObjects(Simulation& System)
 	}
       else if ((engActive) && (mat==wMat))
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	  CellMap::setCell("Inner",cellIndex-1);
+	  const std::string cassetteOuter =
+	    ModelSupport::getComposite(SMap,wheelIndex,SI," 5 -6 7M -17M ");
+	  ELog::EM<< cassetteOuter << ELog::endDiag;
+
+	  for (size_t i=0; i<nSectors; i++)
+	    {
+	      std::shared_ptr<BilbaoWheelCassette>
+	  	c(new BilbaoWheelCassette(keyName,"Sec" + std::to_string(i)));
+	      OR.addObject(c);
+	      c->createAll(System,*this, 0, cassetteOuter,i*360.0/nSectors);
+	    }
+
+	  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  // CellMap::setCell("Inner",cellIndex-1);
 	  nInner++;
 	  if (nInner>1)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
