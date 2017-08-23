@@ -30,30 +30,20 @@ namespace Geometry
   class Vec3D;
   class Plane;
   
-  Geometry::Vec3D
-    cornerCircleTouch(const HeadRule&,
-		      const Geometry::Plane&,
-		      const Geometry::Plane&,
-		      const Geometry::Plane&,
-		      const double);
-  Geometry::Vec3D
-    cornerCircleTouch(const Geometry::Vec3D&,
-		      const Geometry::Vec3D&,
-		      const Geometry::Vec3D&,
-		      const double);
-
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    cornerCircle(const HeadRule&,
-		 const Geometry::Plane&,
-		 const Geometry::Plane&,
-		 const Geometry::Plane&,
-		 const double);
+  std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+    findCornerCircle(const HeadRule&,
+		     const Geometry::Plane&,
+		     const Geometry::Plane&,
+		     const Geometry::Plane&,
+		     const double);
   
-  std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    cornerCircle(const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const Geometry::Vec3D&,
-		 const double);
+  
+  std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+    findCornerCircle(const Geometry::Vec3D&,
+		     const Geometry::Vec3D&,
+		     const Geometry::Vec3D&,
+		     const double);
+  
   
 }     // NAMESPACE Geometry
 

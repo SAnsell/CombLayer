@@ -216,7 +216,7 @@ CellMap::insertComponent(Simulation& System,
 			 const std::string& Key,
 			 const FixedComp& FC,
 			 const long int sideIndex) const
-/*!
+  /*!
     Insert an exclude component into a cell
     \param System :: Simulation to obtain cell from
     \param Key :: KeyName for cell
@@ -282,7 +282,5 @@ CellMap::deleteCellWithData(Simulation& System,
   System.removeCell(CN);  // too complex to handle from ObjPtr
   return Out;
 }
-
-
  
 }  // NAMESPACE attachSystem

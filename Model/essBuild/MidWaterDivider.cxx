@@ -375,33 +375,31 @@ MidWaterDivider::createSurfaces()
 
           HeadRule CCorner(Out);
           CCorner.populateSurf();
-          const Geometry::Vec3D CPt=Geometry::cornerCircleTouch
+	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+	    RCircle=Geometry::findCornerCircle
             (CCorner,
              *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(sideSurf[i])),
              *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(frontSurf[i])),
              *SMap.realPtr<Geometry::Plane>(60000),
              cornerRadius);
-          const std::pair<Geometry::Vec3D,Geometry::Vec3D> ABPts=
-            Geometry::cornerCircle
-            (CCorner,
-             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(sideSurf[i])),
-             *SMap.realPtr<Geometry::Plane>(divIndex+std::abs(frontSurf[i])),
-             *SMap.realPtr<Geometry::Plane>(60000),
-             cornerRadius);
-
+	  const Geometry::Vec3D& CPt=std::get<0>(RCircle);
+	  const Geometry::Vec3D& APt=std::get<1>(RCircle);
+	  const Geometry::Vec3D& BPt=std::get<2>(RCircle);
+	  
 	  // axis away from outer radius
-	  const Geometry::Vec3D CAxis((CPt*2.0-ABPts.first-ABPts.second).unit());
+	  const Geometry::Vec3D CAxis((CPt*2.0-APt-BPt).unit());
 
 	  
           ModelSupport::buildCylinder(SMap,CI+7,CPt,Z,cornerRadius);
           // Towards centre of circle
-          ModelSupport::buildPlane(SMap,CI+8,ABPts.first,ABPts.second,
-                                   ABPts.first+Z,CAxis);
+          ModelSupport::buildPlane(SMap,CI+8,APt,BPt,APt+Z,CAxis);
 
 	  // Construct secondaries
 	  
-          ModelSupport::buildCylinder(SMap,CI+107,CPt,Z,cornerRadius+wallThick);
-          ModelSupport::buildShiftedPlane(SMap,CI+108,SMap.realPtr<Geometry::Plane>(CI+8),
+          ModelSupport::buildCylinder(SMap,CI+107,CPt,Z,
+				      cornerRadius+wallThick);
+          ModelSupport::buildShiftedPlane(SMap,CI+108,
+					  SMap.realPtr<Geometry::Plane>(CI+8),
 					  -wallThick);
 				      
 

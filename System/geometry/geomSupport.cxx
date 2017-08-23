@@ -55,12 +55,13 @@
 namespace Geometry
 {
 
-Geometry::Vec3D
-cornerCircleTouch(const HeadRule& zoneRule,
-                  const Geometry::Plane& APln,
-		  const Geometry::Plane& BPln,
-		  const Geometry::Plane& ZPln,
-		  const double radius)
+std::tuple<Vec3D,Vec3D,Vec3D>
+findCornerCircle(const HeadRule& zoneRule,
+		 const Geometry::Plane& APln,
+		 const Geometry::Plane& BPln,
+		 const Geometry::Plane& ZPln,
+		 const double radius)
+
   /*!
     Given a circle of radius , find the centre 
     relative to the two lines between A-Cpt and B-Cpt
@@ -72,10 +73,14 @@ cornerCircleTouch(const HeadRule& zoneRule,
     \param ZPln :: Z-plane : normal is axis of cylinder
 
     \param radius :: Radius of circle
-    \return Centre point of circle of the cylinder intersecting Z plane
+    \return 
+      - Centre point of circle of the cylinder intersecting Z plane :
+      - left touch point of circle
+      - right touch point of circle
+    
   */
 {
-  ELog::RegMethod RegA("geomSupport[F]","cornerCircleTouch(Plane)");
+  ELog::RegMethod RegA("geomSupport[F]","findCornerCircle(Plane)");
 
   // corner point
   const Geometry::Vec3D CPt=SurInter::getPoint(&APln,&BPln,&ZPln);
@@ -95,96 +100,16 @@ cornerCircleTouch(const HeadRule& zoneRule,
     (zoneRule.isValid(CPt+Ma,APln.getName())) ? CPt+Ma : CPt-Ma;
   const Geometry::Vec3D PB=
     (zoneRule.isValid(CPt+Mb,BPln.getName())) ? CPt+Mb : CPt-Mb;
-  
-  return cornerCircleTouch(CPt,PA,PB,radius);
+
+  return findCornerCircle(CPt,PA,PB,radius);
 }
 
-  
-Geometry::Vec3D
-cornerCircleTouch(const Geometry::Vec3D& C,
-		  const Geometry::Vec3D& A,
-		  const Geometry::Vec3D& B,
-		  const double radius)
-  /*!
-    Given a cirlce of radius R, find the centre 
-    relative to the two lines between A-C and B-C
-    
-    Lines must not be parallel.
-    
-    \param C :: Corner
-    \param A :: Extend point (1)
-    \param B :: Extend point (2)
-    \param radius :: Radius of circle
-    \return Centre point of circle
-  */
-{
-  ELog::RegMethod RegA("geomSupport[F]","cornerCircleTouch");
-
-  const Geometry::Vec3D a=(A-C).unit();
-  const Geometry::Vec3D b=(B-C).unit();
-
-  const Geometry::Vec3D midDivide=((a+b)/2.0).unit();
-  
-  const double aDotM=a.dotProd(midDivide);
-  const double lambda=sqrt(radius*radius/(1.0-aDotM*aDotM));
-
-  return C+midDivide*lambda;
-}
-
-
-
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-cornerCircle(const HeadRule& zoneRule,
-             const Geometry::Plane& APln,
-             const Geometry::Plane& BPln,
-             const Geometry::Plane& ZPln,
-             const double radius)
-  /*!
-    Given a circle of radius R, find the centre 
-    relative to the two lines between A-C and B-C
-    
-    Lines must not be parallel.
-    
-    \parma zoneRule :: Two Plane rule for valid section
-    \param APln :: Plane not parallel to other
-    \param BPln :: Plane not parallel to other
-    \param ZPln :: Z-plane : normal is axis of cylinder
-
-    \param radius :: Radius of circle
-    \return Two touching points
-  */
-{
-  ELog::RegMethod RegA("geomSupport[F]","cornerCircleTouch(Plane)");
-
-  // corner point
-  const Geometry::Vec3D CPt=SurInter::getPoint(&APln,&BPln,&ZPln);
-  
-  const Geometry::Vec3D& Zunit=ZPln.getNormal();
-  const Geometry::Vec3D& Na=APln.getNormal();
-  const Geometry::Vec3D& Nb=BPln.getNormal();
-
-  const Geometry::Vec3D Za=(Na-Zunit*(Na.dotProd(Zunit))).unit();
-  const Geometry::Vec3D Zb=(Nb-Zunit*(Nb.dotProd(Zunit))).unit();
-
-  const Geometry::Vec3D Ma=Za*Zunit;
-  const Geometry::Vec3D Mb=Zb*Zunit;
-
-  // construct two points on the plane/lines that are valid to the headrule
-  const Geometry::Vec3D PA=
-    (zoneRule.isValid(CPt+Ma,APln.getName())) ? CPt+Ma : CPt-Ma;
-  const Geometry::Vec3D PB=
-    (zoneRule.isValid(CPt+Mb,BPln.getName())) ? CPt+Mb : CPt-Mb;
-  
-  return cornerCircle(CPt,PA,PB,radius);
-}
-
-  
-std::pair<Geometry::Vec3D,Geometry::Vec3D>
-cornerCircle(const Geometry::Vec3D& C,
-	     const Geometry::Vec3D& A,
-	     const Geometry::Vec3D& B,
-	     const double radius)
-  /*!
+std::tuple<Vec3D,Vec3D,Vec3D>
+findCornerCircle(const Geometry::Vec3D& C,
+		 const Geometry::Vec3D& A,
+		 const Geometry::Vec3D& B,
+		 const double radius)
+/*!
     Given a circle of radius R, find the centre 
     relative to the two lines between A-C and B-C
     
@@ -194,10 +119,10 @@ cornerCircle(const Geometry::Vec3D& C,
     \param A :: Extend point (1)
     \param B :: Extend point (2)
     \param radius :: Radius of circle
-    \return Edge 1  + Edge 2
+    \return Centre : Edge T1 : Edge T2
   */
 {
-  ELog::RegMethod RegA("geomSupport[F]","cornerCircleTouch");
+  ELog::RegMethod RegA("geomSupport[F]","findCornerCircle<Vec3D>");
 
   const Geometry::Vec3D a=(A-C).unit();
   const Geometry::Vec3D b=(B-C).unit();
@@ -211,8 +136,8 @@ cornerCircle(const Geometry::Vec3D& C,
   const double alpha=a.dotProd(RCent);
   const double beta=b.dotProd(RCent);
 
-  return std::pair<Geometry::Vec3D,Geometry::Vec3D>
-    (C+a*alpha,C+b*beta);
+  return std::tuple<Vec3D,Vec3D,Vec3D>
+    (C+RCent,C+a*alpha,C+b*beta);
 }
 
 }  // NAMESPACE Geometry
