@@ -232,14 +232,14 @@ IradCylinder::createInnerObjects(Simulation& System)
   const size_t NZ(2*static_cast<size_t>(radius/sampleZ));
 
   int DI(iradIndex+1003);
-  double posX(-sampleX*(NX/2));
+  double posX(-sampleX*(static_cast<double>(NX)/2));
   for(size_t i=0;i<=NX;i++)
     {
       ModelSupport::buildPlane(SMap,DI,Origin+X*posX,X);
       posX+=sampleX;
       DI+=10;
     }
-  double posY(-sampleY*(NY/2));
+  double posY(-sampleY*(static_cast<double>(NY)/2));
   DI=iradIndex+1001;
   for(size_t i=0;i<=NY;i++)
     {

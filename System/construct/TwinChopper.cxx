@@ -383,37 +383,7 @@ TwinChopper::createSurfaces()
       ModelSupport::buildPlane(SMap,houseIndex+2012,
                                Origin+Y*(sealYDist+portSeal/2.0),Y);
     }
-  ELog::EM<<"EARLY RETURN"<<ELog::endWarn;
-  return;
-  // MAIN OUTER BOLTS AT [5000]
-  int BI(houseIndex+5000);
 
-  double angle(0.0);
-  const double angStep(M_PI/static_cast<double>(outerRingNBolt+1));
-  const Geometry::Vec3D RX(X*(mainRadius-outerBoltStep));
-  const Geometry::Vec3D RZ(Z*(mainRadius-outerBoltStep));
-  for(size_t i=0;i<outerRingNBolt;i++)
-    {
-      angle+=angStep;
-      ModelSupport::buildCylinder
-	(SMap,BI+7,lowOutCent-RX*cos(angle)-RZ*sin(angle),Y,outerBoltRadius);
-      ModelSupport::buildCylinder
-	(SMap,BI+8,topOutCent-RX*cos(angle)+RZ*sin(angle),Y,outerBoltRadius);
-      BI+=10;
-    }
-  // MAIN Line bolts
-  BI=houseIndex+6000;
-  Geometry::Vec3D zPos(lowOutCent);
-  const Geometry::Vec3D ZStep((topOutCent-lowOutCent)/
-			      static_cast<double>(outerLineNBolt+1));
-  
-  for(size_t i=0;i<outerLineNBolt;i++)
-    {
-      zPos+=ZStep;
-      ModelSupport::buildCylinder(SMap,BI+7,zPos-RX,Y,outerBoltRadius);
-      ModelSupport::buildCylinder(SMap,BI+8,zPos+RX,Y,outerBoltRadius);
-      BI+=10;      
-    }
   return;
 }
 

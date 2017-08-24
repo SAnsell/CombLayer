@@ -207,13 +207,13 @@ MIRACLESvariables(FuncDataBase& Control)
   SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
 
   PipeGen.setPipe(10.0,0.5);
-  PipeGen.generatePipe(Control,"miraclesPipeOutA",2.0,1497.0);  
-  FGen.generateBender(Control,"miraclesBOutA",1496.0,
+  PipeGen.generatePipe(Control,"miraclesPipeOutA",4.0,1495.0);  
+  FGen.generateBender(Control,"miraclesBOutA",1491.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
 
   PipeGen.generatePipe(Control,"miraclesPipeOutB",1.0,1498.0);  
-  FGen.generateBender(Control,"miraclesBOutB",1496.0,
+  FGen.generateBender(Control,"miraclesBOutB",1494.0,
 		      12.0,12.0,12.0,12.0,
 		      500000.0,0.0);
 
