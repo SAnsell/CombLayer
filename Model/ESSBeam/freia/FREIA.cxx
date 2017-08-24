@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -227,37 +228,6 @@ FREIA::~FREIA()
     Destructor
   */
 {}
-
-void
-FREIA::setBeamAxis(const FuncDataBase& Control,
-                   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database for variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("FREIA","setBeamAxis");
-
-  freiaAxis->populate(Control);
-  freiaAxis->createUnitVector(GItem);
-  freiaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  freiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  freiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  freiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  freiaAxis->linkShift(3);
-  freiaAxis->linkShift(4);
-  freiaAxis->linkAngleRotate(3);
-  freiaAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    freiaAxis->reverseZ();
-  return;
-}
 
 void
 FREIA::buildBunkerUnits(Simulation& System,
@@ -554,7 +524,7 @@ FREIA::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*freiaAxis,Control,GItem,1);
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);

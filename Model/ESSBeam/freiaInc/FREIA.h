@@ -168,7 +168,6 @@ class FREIA : public attachSystem::CopiedComp
   /// Collimator hole after jaws
   std::shared_ptr<constructSystem::HoleShape> OutBCutBack;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,

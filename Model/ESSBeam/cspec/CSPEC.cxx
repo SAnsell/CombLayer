@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -150,38 +151,6 @@ CSPEC::~CSPEC()
     Destructor
   */
 {}
-
-void
-CSPEC::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("CSPEC","setBeamAxis");
-
-  cspecAxis->populate(Control);
-  cspecAxis->createUnitVector(GItem,0);
-  cspecAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  cspecAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  cspecAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  cspecAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  cspecAxis->linkShift(3);
-  cspecAxis->linkShift(4);
-  cspecAxis->linkAngleRotate(3);
-  cspecAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    cspecAxis->reverseZ();
-  return;
-}
-
-
   
 void 
 CSPEC::build(Simulation& System,
@@ -209,7 +178,7 @@ CSPEC::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*cspecAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -133,33 +134,6 @@ ESTIA::~ESTIA()
   */
 {}
 
-void
-ESTIA::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-		   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("ESTIA","setBeamAxis");
-
-  estiaAxis->populate(Control);
-  estiaAxis->createUnitVector(GItem);
-  estiaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  estiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  estiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  estiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  estiaAxis->linkAngleRotate(3);
-  estiaAxis->linkAngleRotate(4);
-
-  ELog::EM<<"YAXIS = "<<estiaAxis->getSignedLinkAxis(2)<<ELog::endDiag;
-  ELog::EM<<"YAXIS = "<<estiaAxis->getSignedLinkAxis(4)<<ELog::endDiag;
-
-  if (reverseZ)
-    estiaAxis->reverseZ();
-  return;
-}
 
 void
 ESTIA::buildChopperBlock(Simulation& System,
@@ -227,9 +201,13 @@ ESTIA::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("ESTIA","build");
 
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());  
+
   ELog::EM<<"\nBuilding ESTIA on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(System.getDataBase(),GItem,1);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  essBeamSystem::setBeamAxis(*estiaAxis,System.getDataBase(),GItem,1);
 
   FocusMono->addInsertCell(GItem.getCells("Void"));
   FocusMono->setBack(GItem.getKey("Beam").getSignedLinkString(-2));

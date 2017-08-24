@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -242,35 +243,6 @@ DREAM::~DREAM()
     Destructor
   */
 {}
-
-void
-DREAM::setBeamAxis(const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("DREAM","setBeamAxis");
-
-  dreamAxis->createUnitVector(GItem);
-  dreamAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  dreamAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  dreamAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  dreamAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  dreamAxis->linkShift(3);
-  dreamAxis->linkShift(4);
-  dreamAxis->linkAngleRotate(3);
-  dreamAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    dreamAxis->reverseZ();
-  return;
-}
-
   
 void 
 DREAM::build(Simulation& System,
@@ -291,12 +263,12 @@ DREAM::build(Simulation& System,
   ELog::EM<<"\nBuilding DREAM on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());
+  CopiedComp::process(System.getDataBase());  // CONTROL modified
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(GItem,1);
+  essBeamSystem::setBeamAxis(*dreamAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

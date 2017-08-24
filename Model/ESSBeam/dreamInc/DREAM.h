@@ -154,8 +154,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusCaveA;  
   std::shared_ptr<beamlineSystem::GuideLine> FocusCaveB;
  
-  void setBeamAxis(const GuideItem&,const bool);
-  
  public:
   
   DREAM(const std::string&);

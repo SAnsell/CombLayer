@@ -75,6 +75,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -261,40 +262,6 @@ SKADI::~SKADI()
 {}
 
 void
-SKADI::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("SKADI","setBeamAxis");
-  
-  skadiAxis->populate(Control);
-  skadiAxis->createUnitVector(GItem);
-  skadiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  skadiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  skadiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  skadiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  skadiAxis->linkShift(3);
-  skadiAxis->linkShift(4);
-  skadiAxis->linkAngleRotate(3);
-  skadiAxis->linkAngleRotate(4);
-
-  skadiAxis->applyOffset();
-
-  if (reverseZ)
-    skadiAxis->reverseZ();
-
-  return;
-}
-
-
-void
 SKADI::build(Simulation& System,
 	    const GuideItem& GItem,
 	    const Bunker& bunkerObj,
@@ -319,7 +286,7 @@ SKADI::build(Simulation& System,
 
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*skadiAxis,Control,GItem,1);
 
   /// Inside the Monolith
   BendA->addInsertCell(GItem.getCells("Void"));

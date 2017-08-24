@@ -110,8 +110,6 @@ class NNBAR : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::HoleShape> CaveCut;
 
 
-  void setBeamAxis(const GuideItem&,const bool);
-
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,

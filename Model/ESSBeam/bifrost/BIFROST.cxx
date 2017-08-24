@@ -75,6 +75,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
 #include "Jaws.h"
@@ -266,37 +267,6 @@ BIFROST::~BIFROST()
     Destructor
   */
 {}
-
-void
-BIFROST::setBeamAxis(const FuncDataBase& Control,
-                     const GuideItem& GItem,
-                     const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("BIFROST","setBeamAxis");
-
-  bifrostAxis->populate(Control);
-  bifrostAxis->createUnitVector(GItem);
-  bifrostAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  bifrostAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  bifrostAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  bifrostAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  bifrostAxis->linkShift(3);
-  bifrostAxis->linkShift(4);
-  bifrostAxis->linkAngleRotate(3);
-  bifrostAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    bifrostAxis->reverseZ();
-  return;
-}
-
   
 void 
 BIFROST::build(Simulation& System,
@@ -322,7 +292,7 @@ BIFROST::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,1);
+  essBeamSystem::setBeamAxis(*bifrostAxis,Control,GItem,1);
   ELog::EM<<"Beam axis == "<<bifrostAxis->getSignedLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

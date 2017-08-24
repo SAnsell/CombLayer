@@ -104,10 +104,7 @@ class NMX : public attachSystem::CopiedComp
 
   /// Piece after wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;
-  
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
-  
+    
  public:
   
   NMX(const std::string&);

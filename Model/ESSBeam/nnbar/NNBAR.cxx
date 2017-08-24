@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "HoleShape.h"
 #include "Jaws.h"
@@ -151,35 +152,6 @@ NNBAR::~NNBAR()
   */
 {}
 
-void
-NNBAR::setBeamAxis(const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("NNBAR","setBeamAxis");
-
-  nnbarAxis->createUnitVector(GItem);
-  nnbarAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  nnbarAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  nnbarAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  nnbarAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  nnbarAxis->linkShift(3);
-  nnbarAxis->linkShift(4);
-  nnbarAxis->linkAngleRotate(3);
-  nnbarAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    nnbarAxis->reverseZ();
-
-  return;
-}
-  
 
 void
 NNBAR::buildBunkerUnits(Simulation& System,
@@ -297,6 +269,7 @@ NNBAR::buildIsolated(Simulation& System,const int voidCell)
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"BUILD ISOLATED Start/Stop:"
           <<startPoint<<" "<<stopPoint<<ELog::endDiag;
+
   const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
   long int startIndex(0);
   
@@ -332,7 +305,7 @@ NNBAR::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(GItem,0);
+  essBeamSystem::setBeamAxis(*nnbarAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

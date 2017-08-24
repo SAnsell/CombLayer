@@ -161,8 +161,6 @@ class SKADI : public attachSystem::CopiedComp
 
   std::shared_ptr<constructSystem::LineShield> ShieldF; 
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-    
  public:
   
   SKADI(const std::string&);

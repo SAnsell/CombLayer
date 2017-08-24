@@ -185,8 +185,6 @@ class MAGIC : public attachSystem::CopiedComp
 		const long int,const int);
   
   
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
  public:
   
   MAGIC(const std::string&);

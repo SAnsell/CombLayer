@@ -94,8 +94,6 @@ class CSPEC : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// S-Bender first section [in bunker]
   std::shared_ptr<beamlineSystem::GuideLine> BendD;
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
   
  public:
   
