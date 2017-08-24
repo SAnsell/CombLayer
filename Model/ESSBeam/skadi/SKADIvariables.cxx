@@ -198,6 +198,10 @@ void SKADIvariables(FuncDataBase& Control)
   CGen.setFrame(86.5,86.5);
   CGen.generateChopper(Control,"skadiChopperA",0.0,12.0,6.55);
 
+  Control.addVariable("skadiChopAMotorLength",20.0);
+  Control.addVariable("skadiChopAMotorRadius",5.0);
+  Control.addVariable("skadiChopAMotorMat","Copper");
+
   BGen.setMaterials("Copper","B4C");
   BGen.setThick({0.2});
   BGen.addPhase({95},{60});
@@ -216,13 +220,14 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiPitBCutFrontRadius",5.0);
   Control.addVariable("skadiPitBCutBackShape","Square");
   Control.addVariable("skadiPitBCutBackRadius",5.0);
+
   CGen.generateChopper(Control,"skadiChopperB",0.0,12.0,6.55);
   BGen.generateBlades(Control,"skadiBDisk",0.0,25.0,35.0);
 
   SGen.generateShield(Control,"skadiShieldB",688.0,s_HW,s_HW,s_HW,4,10);
 
-  PipeGen.generatePipe(Control,"skadiPipeOutB",0.5,646.0);
-  FGen.generateRectangle(Control,"skadiGOutB",644.0,
+  PipeGen.generatePipe(Control,"skadiPipeOutB",0.5,644.0);
+  FGen.generateRectangle(Control,"skadiGOutB",642.0,
 			 guideWidth,guideHeight);
 
   PGen.generatePit(Control,"skadiPitC",298.0,55.0,160.0,100.0,66.0);
@@ -230,6 +235,7 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiPitCCutFrontRadius",5.0);
   Control.addVariable("skadiPitCCutBackShape","Square");
   Control.addVariable("skadiPitCCutBackRadius",5.0);
+
   SGen.generateShield(Control,"skadiShieldC",297.0,s_HW,s_HW,s_HW,2,8);
   PipeGen.generatePipe(Control,"skadiPipeOutC",0.5,307.0);
   FGen.generateRectangle(Control,"skadiGOutC",305.0,

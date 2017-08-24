@@ -80,6 +80,7 @@
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "Motor.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
 #include "ChopperHousing.h"
@@ -140,6 +141,7 @@ SKADI::SKADI(const std::string& keyName):
   
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
   ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopAMotor(new constructSystem::Motor(newName+"ChopAMotor")),
   DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
@@ -398,10 +400,15 @@ SKADI::build(Simulation& System,
 
   ChopperA->addInsertCell(PitA->getCell("Void"));
   ChopperA->createAll(System,*PitA,0);
+
+  ChopAMotor->addInsertCell(PitA->getCell("Void"));
+  ChopAMotor->createAll(System,ChopperA->getKey("Main"),1);
+  
   DiskA->addInsertCell(ChopperA->getCell("Void"));
   DiskA->setCentreFlag(3);
   DiskA->setOffsetFlag(1);
   DiskA->createAll(System,ChopperA->getKey("Beam"),0);
+
   
   PitB->addInsertCell(voidCell); //Chopper II pit
   PitB->createAll(System,PitA->getKey("Outer"),2);
@@ -438,18 +445,18 @@ SKADI::build(Simulation& System,
   //  VPipeOutB->addInsertCell(ShieldB1->getCell("Void"));
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*VPipeOutA,2);
-  VPipeOutB->addInsertCell(PitB->getCells("Outer"));
-  VPipeOutB->addInsertCell(PitB->getCells("MidLayer"));
-  VPipeOutB->setBack(PitB->getKey("Mid"),1); 
+
   GuideOutB->addInsertCell(VPipeOutB->getCells("Void"));
   GuideOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
   
   PitC->addInsertCell(voidCell); //Chopper III & IV pit
   PitC->createAll(System,PitB->getKey("Outer"),2);
+
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
   PitCCutFront->setFaces(PitC->getKey("Mid").getSignedFullRule(-1),
 			 PitC->getKey("Inner").getSignedFullRule(1));
   PitCCutFront->createAll(System,PitC->getKey("Inner"),-1);
+
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
   PitCCutBack->addInsertCell(PitC->getCells("Collet"));
   PitCCutBack->setFaces(PitC->getKey("Mid").getSignedFullRule(-2),
@@ -460,25 +467,24 @@ SKADI::build(Simulation& System,
   ChopperC1->createAll(System,*PitC,0);
   DiskC1->addInsertCell(ChopperC1->getCell("Void"));
   DiskC1->setCentreFlag(3);
-  DiskC1->setOffsetFlag(1);
   DiskC1->createAll(System,ChopperC1->getKey("Beam"),0);
   
   ChopperC2->addInsertCell(PitC->getCell("Void"));
   ChopperC2->createAll(System,*PitC,0);
   DiskC2->addInsertCell(ChopperC2->getCell("Void"));
   DiskC2->setCentreFlag(3);
-  DiskC2->setOffsetFlag(1);
   DiskC2->createAll(System,ChopperC2->getKey("Beam"),0);
   
   ShieldC->addInsertCell(voidCell);
   ShieldC->addInsertCell(PitB->getCells("Outer"));
-  ShieldC->setFront(PitB->getKey("Mid"),2);
   ShieldC->addInsertCell(PitC->getCells("Outer"));
+  ShieldC->setFront(PitB->getKey("Mid"),2);
   ShieldC->setBack(PitC->getKey("Mid"),1);  
   ShieldC->createAll(System,*VPipeOutB,2);
 
   VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
   VPipeOutC->createAll(System,*ShieldC,-1);
+  
   GuideOutC->addInsertCell(VPipeOutC->getCells("Void"));
   GuideOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
 

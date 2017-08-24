@@ -125,6 +125,7 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::HoleShape> PitACutFront;
   std::shared_ptr<constructSystem::HoleShape> PitACutBack;
   std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::Motor> ChopAMotor;
   std::shared_ptr<constructSystem::DiskChopper> DiskA;
 
   /// Structure Up to the First Chopper II  Pit
