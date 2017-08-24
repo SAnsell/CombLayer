@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -222,35 +223,6 @@ BEER::~BEER()
   */
 {}
 
-void
-BEER::setBeamAxis(const FuncDataBase& Control,
-                   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("BEER","setBeamAxis");
-
-  beerAxis->populate(Control);
-  beerAxis->createUnitVector(GItem);
-  beerAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  beerAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  beerAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  beerAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  beerAxis->linkShift(3);
-  beerAxis->linkShift(4);
-  beerAxis->linkAngleRotate(3);
-  beerAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    beerAxis->reverseZ();
-  return;
-}
 
 void
 BEER::buildBunkerUnits(Simulation& System,
@@ -489,7 +461,7 @@ BEER::build(Simulation& System,
   
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*beerAxis,Control,GItem,1);
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setBack(GItem.getKey("Beam"),-2);

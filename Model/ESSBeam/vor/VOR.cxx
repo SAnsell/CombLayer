@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -193,37 +194,6 @@ VOR::~VOR()
     Destructor
   */
 {}
-
-void
-VOR::setBeamAxis(const FuncDataBase& Control,
-		 const GuideItem& GItem,
-		 const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database for variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis (if required)
-   */
-{
-  ELog::RegMethod RegA("VOR","setBeamAxis");
-
-  vorAxis->populate(Control);
-  vorAxis->createUnitVector(GItem);
-  vorAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  vorAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  vorAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  vorAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  vorAxis->linkShift(3);
-  vorAxis->linkShift(4);
-  vorAxis->linkAngleRotate(3);
-  vorAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    vorAxis->reverseZ();
-  return;
-}
 
 void
 VOR::buildBunkerUnits(Simulation& System,
@@ -361,10 +331,8 @@ VOR::build(Simulation& System,
 
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkAxis(-1)
-	  <<ELog::endDiag;
-  setBeamAxis(Control,GItem,0);
-  ELog::EM<<"BEAM Axis == "<<vorAxis->getY()<<ELog::endDiag;
+
+  essBeamSystem::setBeamAxis(*vorAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

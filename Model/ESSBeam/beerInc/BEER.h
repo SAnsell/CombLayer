@@ -165,7 +165,6 @@ class BEER : public attachSystem::CopiedComp
   /// Beamline from bunker to hutch
   std::shared_ptr<constructSystem::JawSet> CaveJaw;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,

@@ -74,10 +74,11 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "insertObject.h"
 #include "insertPlate.h"
-#include "beamlineSupport.h"
+
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
