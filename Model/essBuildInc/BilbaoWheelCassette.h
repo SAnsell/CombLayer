@@ -54,17 +54,17 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   int mainMat;                  ///< main material
   int wallMat;                  ///< wall material
+  size_t floor;                 ///< Floor link point
+  size_t roof;                  ///< Roof link point
+  size_t back;                  ///< Back cylinder link point
+  size_t front;                 ///< Front cylinder link point
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const size_t,
-		     const size_t,
-		     const size_t,
-		     const size_t);
+  void createObjects(Simulation&,const attachSystem::FixedComp&);
   void createLinks();
 
  public:

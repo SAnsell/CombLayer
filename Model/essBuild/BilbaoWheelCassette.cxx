@@ -110,7 +110,11 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   engActive(A.engActive),
   bricksActive(A.bricksActive),
   wallThick(A.wallThick),delta(A.delta),temp(A.temp),
-  mainMat(A.mainMat),wallMat(A.wallMat)
+  mainMat(A.mainMat),wallMat(A.wallMat),
+  floor(A.floor),
+  roof(A.roof),
+  back(A.back),
+  front(A.front)
   /*!
     Copy constructor
     \param A :: BilbaoWheelCassette to copy
@@ -137,6 +141,10 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       temp=A.temp;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      floor=A.floor;
+      roof=A.roof;
+      back=A.back;
+      front=A.front;
     }
   return *this;
 }
@@ -227,21 +235,17 @@ BilbaoWheelCassette::createSurfaces()
 
 void
 BilbaoWheelCassette::createObjects(Simulation& System,
-				   const attachSystem::FixedComp& FC,
-				   const size_t lpFloor,
-				   const size_t lpRoof,
-				   const size_t lpBack,
-				   const size_t lpFront)
+				   const attachSystem::FixedComp& FC)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
-    \param outer :: Tungsten layer rule
+    \param FC :: Tungsten layer rule
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
-  const std::string outer = FC.getLinkString(lpFloor) +
-    FC.getLinkString(lpRoof) +FC.getLinkString(lpBack) + FC.getLinkString(lpFront);
+  const std::string outer = FC.getLinkString(floor) +
+    FC.getLinkString(roof) +FC.getLinkString(back) + FC.getLinkString(front);
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
@@ -297,11 +301,16 @@ BilbaoWheelCassette::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createAll");
 
+  floor = lpFloor;
+  roof = lpRoof;
+  back = lpBack;
+  front = lpFront;
+  
   populate(System.getDataBase());
   xyAngle=theta;
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,FC,lpFloor,lpRoof,lpBack,lpFront);
+  createObjects(System,FC);
   createLinks();
   insertObjects(System);
 
