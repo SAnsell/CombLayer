@@ -50,7 +50,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   double wallThick;             ///< Side wall thickness
   double delta;                 ///< Angular width [deg]
-  double height;                ///< height
+  double temp;                  ///< Temperature
 
   int mainMat;                  ///< main material
   int wallMat;                  ///< wall material
