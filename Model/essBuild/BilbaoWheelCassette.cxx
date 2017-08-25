@@ -226,7 +226,11 @@ BilbaoWheelCassette::createSurfaces()
 
 void
 BilbaoWheelCassette::createObjects(Simulation& System,
-				   const std::string& outer)
+				   const attachSystem::FixedComp& FC,
+				   const long int lpFloor,
+				   const long int lpRoof,
+				   const long int lpBack,
+				   const long int lpFront)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -234,6 +238,9 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
+
+  const std::string outer = FC.getLinkString(lpFloor) +
+    FC.getLinkString(lpRoof) +FC.getLinkString(lpBack) + FC.getLinkString(lpFront);
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
@@ -246,7 +253,7 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
-  addOuterSurf(Out);
+  addOuterSurf(Out+outer);
 
   return;
 }
@@ -273,7 +280,10 @@ void
 BilbaoWheelCassette::createAll(Simulation& System,
 			       const attachSystem::FixedComp& FC,
 			       const long int sideIndex,
-			       const std::string &outer,
+			       const long int lpFloor,
+			       const long int lpRoof,
+			       const long int lpBack,
+			       const long int lpFront,
 			       const double& theta)
   /*!
     Generic function to create everything
@@ -290,7 +300,7 @@ BilbaoWheelCassette::createAll(Simulation& System,
   xyAngle=theta;
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  createObjects(System,outer);
+  createObjects(System,FC,lpFloor,lpRoof,lpBack,lpFront);
   createLinks();
   insertObjects(System);
 

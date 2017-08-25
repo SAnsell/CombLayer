@@ -296,7 +296,7 @@ namespace essSystem
 	  c(new BilbaoWheelCassette(baseName,"Sec",i));
 	ELog::EM << "here" << ELog::endDiag;
 	OR.addObject(c);
-	c->createAll(System,*this, 0, cassetteOuter,i*360.0/nSectors);
+	//	c->createAll(System,*this, 0, cassetteOuter,i*360.0/nSectors);
       }
 
     ELog::EM << "Early return - remove the code below" << ELog::endCrit;

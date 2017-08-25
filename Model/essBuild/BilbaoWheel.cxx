@@ -1042,8 +1042,6 @@ BilbaoWheel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BilbaoWheel","createObjects");
 
-    ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
-  
   const int matNum[4]={0,steelMat,heMat,wMat};
   std::string Out, Out1;
   // 
@@ -1124,18 +1122,12 @@ BilbaoWheel::createObjects(Simulation& System)
 	{
 	  if (nInner>0)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
+
+	  // Do not build the layer with Tungsten.
+	  // It is created by the buildSectors() method later.
+	  // In order to build this layer as a single cell,
+	  // comment out buildSectors and uncomment next two lines
 	  
-	  const std::string cassetteOuter =
-	    ModelSupport::getComposite(SMap,wheelIndex,SI," 5 -6 7M -17M ");
-
-	  for (size_t i=0; i<nSectors; i++)
-	    {
-	      std::shared_ptr<BilbaoWheelCassette>
-	  	c(new BilbaoWheelCassette(keyName,"Sec",i));
-	      OR.addObject(c);
-	      c->createAll(System,*this,0,cassetteOuter,i*360.0/nSectors);
-	    }
-
 	  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	  // CellMap::setCell("Inner",cellIndex-1);
 	  nInner++;
@@ -1262,6 +1254,25 @@ BilbaoWheel::createLinks()
 }
 
 void
+BilbaoWheel::buildSectors(Simulation& System) const
+{
+  /*!
+    Build Tungsten sectors. Must be called after createLinks.
+   */
+  ELog::RegMethod RegA("BilbaoWheel","buildSectors");
+
+  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+
+  for (size_t i=0; i<nSectors; i++)
+    {
+      std::shared_ptr<BilbaoWheelCassette>
+	c(new BilbaoWheelCassette(keyName,"Sec",i));
+      OR.addObject(c);
+      c->createAll(System,*this,0,6,7,8,9,i*360.0/nSectors);
+    }
+}
+
+void
 BilbaoWheel::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
@@ -1283,6 +1294,8 @@ BilbaoWheel::createAll(Simulation& System,
   makeShaftObjects(System);
 
   createLinks();
+  buildSectors(System);
+  
   insertObjects(System);       
 
   return;

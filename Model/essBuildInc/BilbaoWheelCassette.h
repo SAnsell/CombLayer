@@ -60,7 +60,11 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 			const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&,const std::string&);
+  void createObjects(Simulation&,const attachSystem::FixedComp&,
+		     const long int,
+		     const long int,
+		     const long int,
+		     const long int);
   void createLinks();
 
  public:
@@ -73,7 +77,10 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
-		 const std::string&,
+		 const long int,
+		 const long int,
+		 const long int,
+		 const long int,
 		 const double&);
 
 };
