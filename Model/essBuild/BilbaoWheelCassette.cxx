@@ -214,9 +214,10 @@ BilbaoWheelCassette::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-BilbaoWheelCassette::createSurfaces()
+BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   /*!
     Create All the surfaces
+    \param FC :: wheel object
   */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfaces");
@@ -229,6 +230,17 @@ BilbaoWheelCassette::createSurfaces()
 
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
+
+  // front plane
+  double d = attachSystem::calcLinkDistance(FC, back+static_cast<size_t>(1),
+					    front+static_cast<size_t>(1));
+
+  Geometry::Cylinder *backCyl =
+    SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(back+1));
+
+  d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
+  Geometry::Vec3D offset = Origin-Y*(backCyl->getRadius()+d);
+  ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
 
   return;
 }
@@ -251,7 +263,10 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 -11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
@@ -309,7 +324,7 @@ BilbaoWheelCassette::createAll(Simulation& System,
   populate(System.getDataBase());
   xyAngle=theta;
   createUnitVector(FC,sideIndex);
-  createSurfaces();
+  createSurfaces(FC);
   createObjects(System,FC);
   createLinks();
   insertObjects(System);

@@ -63,7 +63,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
-  void createSurfaces();
+  void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&,const attachSystem::FixedComp&);
   void createLinks();
 
