@@ -79,6 +79,7 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
+#include "AttachSupport.h"
 
 #include "BilbaoWheelCassette.h"
 
@@ -227,10 +228,10 @@ BilbaoWheelCassette::createSurfaces()
 void
 BilbaoWheelCassette::createObjects(Simulation& System,
 				   const attachSystem::FixedComp& FC,
-				   const long int lpFloor,
-				   const long int lpRoof,
-				   const long int lpBack,
-				   const long int lpFront)
+				   const size_t lpFloor,
+				   const size_t lpRoof,
+				   const size_t lpBack,
+				   const size_t lpFront)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -280,10 +281,10 @@ void
 BilbaoWheelCassette::createAll(Simulation& System,
 			       const attachSystem::FixedComp& FC,
 			       const long int sideIndex,
-			       const long int lpFloor,
-			       const long int lpRoof,
-			       const long int lpBack,
-			       const long int lpFront,
+			       const size_t lpFloor,
+			       const size_t lpRoof,
+			       const size_t lpBack,
+			       const size_t lpFront,
 			       const double& theta)
   /*!
     Generic function to create everything

@@ -61,10 +61,10 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,
-		     const long int,
-		     const long int,
-		     const long int);
+		     const size_t,
+		     const size_t,
+		     const size_t,
+		     const size_t);
   void createLinks();
 
  public:
@@ -77,10 +77,10 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
-		 const long int,
-		 const long int,
-		 const long int,
-		 const long int,
+		 const size_t,
+		 const size_t,
+		 const size_t,
+		 const size_t,
 		 const double&);
 
 };
