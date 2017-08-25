@@ -293,7 +293,8 @@ namespace essSystem
     for (size_t i=0; i<nSectors; i++)
       {
 	std::shared_ptr<BilbaoWheelCassette>
-	  c(new BilbaoWheelCassette(baseName,"Sec" + std::to_string(i)));
+	  c(new BilbaoWheelCassette(baseName,"Sec",i));
+	ELog::EM << "here" << ELog::endDiag;
 	OR.addObject(c);
 	c->createAll(System,*this, 0, cassetteOuter,i*360.0/nSectors);
       }

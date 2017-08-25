@@ -86,10 +86,12 @@ namespace essSystem
 {
 
   BilbaoWheelCassette::BilbaoWheelCassette(const std::string& baseKey,
-					   const std::string& extraKey)  :
+					   const std::string& extraKey,
+					   const size_t& Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(baseKey+extraKey,6),
+  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),6),
   baseName(baseKey),
+  commonName(baseKey+extraKey),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
@@ -102,6 +104,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
+  commonName(A.commonName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   bricksActive(A.bricksActive),
@@ -164,17 +167,15 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
 
-  
+
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   bricksActive=Control.EvalDefVar<int>(keyName+"BricksActive", 0);
 
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
-  
-  //  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  wallThick = 1.0;
-  ELog::EM << "wallThick should be a variable" << ELog::endDiag;
-  wallMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
+
+  wallThick=Control.EvalVar<double>(commonName+"WallThick");
+  wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat");
   mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
 
   /*wallThick=Control.EvalVar<double>(keyName+"WallThick");
