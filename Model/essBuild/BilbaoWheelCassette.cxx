@@ -173,14 +173,15 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   
   //  wallThick=Control.EvalVar<double>(keyName+"WallThick");
   wallThick = 1.0;
+  ELog::EM << "wallThick should be a variable" << ELog::endDiag;
+  wallMat=ModelSupport::EvalMat<int>(Control,baseName+"SteelMat");
+  mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
 
   /*wallThick=Control.EvalVar<double>(keyName+"WallThick");
   delta=Control.EvalVar<double>(keyName+"Delta");
   height=Control.EvalVar<double>(keyName+"Height");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
 
-  mainMat=ModelSupport::EvalMat<int>(Control,keyName+"MainMat");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   */
   return;
 }
@@ -244,13 +245,13 @@ BilbaoWheelCassette::createObjects(Simulation& System,
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,0.0,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
   addOuterSurf(Out);
