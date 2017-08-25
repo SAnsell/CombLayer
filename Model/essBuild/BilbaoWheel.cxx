@@ -1239,10 +1239,10 @@ BilbaoWheel::createLinks()
     {
       if (matTYPE[i]==3) // Tungsten layer
 	{
-	  FixedComp::setConnect(8, Origin+Y*radius[i-1], Y);
+	  FixedComp::setConnect(8, Origin-Y*radius[i-1], -Y);
 	  FixedComp::setLinkSurf(8, SMap.realSurf(SI+7));
 
-	  FixedComp::setConnect(9, Origin+Y*radius[i], -Y);
+	  FixedComp::setConnect(9, Origin-Y*radius[i], Y);
 	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI+17));
 
 	  return; // !!! we assume that there is only one Tungsten layer
@@ -1268,7 +1268,8 @@ BilbaoWheel::buildSectors(Simulation& System) const
       std::shared_ptr<BilbaoWheelCassette>
 	c(new BilbaoWheelCassette(keyName,"Sec",i));
       OR.addObject(c);
-      c->createAll(System,*this,0,6,7,8,9,i*360.0/nSectors);
+      c->createAll(System,*this,0,
+		   6,7,8,9,i*360.0/nSectors);
     }
 }
 
