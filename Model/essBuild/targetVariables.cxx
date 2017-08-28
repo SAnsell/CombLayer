@@ -111,7 +111,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
-  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",74.5); // TSM141108V3000
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",68.5); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
 
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2); // TSM141108V3000: upper 0.2, lower 0.3
