@@ -55,6 +55,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   int    nWallSeg;              ///< Number of wall segments (for detailed geometry)
   std::vector<double> wallSegLength; ///< Array of wall lengths (for detailed wall geometry)
   double wallSegDelta;          ///< Wall angular width [deg] (for detailed wall geometry)
+  double wallSegThick;          ///< Wall base thickness (for detailed wall geometry)
 
   int mainMat;                  ///< main material
   int wallMat;                  ///< wall material
@@ -68,7 +69,9 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 			const long int);
 
   void createSurfaces(const attachSystem::FixedComp&);
+  void createSurfacesBricks(const attachSystem::FixedComp&);
   void createObjects(Simulation&,const attachSystem::FixedComp&);
+  void createObjectsBricks(Simulation&,const attachSystem::FixedComp&);
   void createLinks();
 
  public:
