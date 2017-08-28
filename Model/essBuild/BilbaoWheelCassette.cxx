@@ -204,8 +204,8 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 					       "WallSegLength"+std::to_string(i));
       wallSegLength.push_back(wl);
     }
-  wallSegDelta=Control.EvalPair<int>(commonName,keyName,"WallSegDelta");
-  wallSegThick=Control.EvalPair<int>(commonName,keyName,"WallSegThick");
+  wallSegDelta=Control.EvalPair<double>(commonName,keyName,"WallSegDelta");
+  wallSegThick=Control.EvalPair<double>(commonName,keyName,"WallSegThick");
 
   /*wallThick=Control.EvalVar<double>(keyName+"WallThick");
   delta=Control.EvalVar<double>(keyName+"Delta");
@@ -282,16 +282,22 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
 
-  // front plane
-  double d = attachSystem::calcLinkDistance(FC, static_cast<long>(back)+1,
-					    static_cast<long>(front)+1);
-
+  int SI(surfIndex+100);
+  
+  // detailed wall
   Geometry::Cylinder *backCyl =
     SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(static_cast<long>(back)+1));
+  const double R = backCyl->getRadius();
 
-  d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
-  Geometry::Vec3D offset = Origin-Y*(backCyl->getRadius()+d);
+  Geometry::Vec3D offset = Origin-Y*(R+wallSegLength[0]);
   ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
+
+  const double d2 = M_PI*delta/180.0/2.0;
+
+  ModelSupport::buildPlaneRotAxis(SMap,SI+13,Origin-Y*(R*cos(d2)) - X*(R*sin(d2)-wallSegThick),X,Z,
+  				  delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,SI+14,Origin-Y*(R*cos(d2)) + X*(R*sin(d2)-wallSegThick),X,Z,
+  				  -delta/2.0);
 
   return;
 }
@@ -344,17 +350,27 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
     FC.getLinkString(roof) +FC.getLinkString(back) + FC.getLinkString(front);
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
+  int SI(surfIndex+100);
+  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1 -11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 -11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 11 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 -11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+
+  /// 
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 3 -13M -1 11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 14M -4 -1 11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
+
+  
+  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 13M -14M -1 11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);
