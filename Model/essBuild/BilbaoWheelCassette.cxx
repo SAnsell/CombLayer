@@ -186,32 +186,27 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-  bricksActive=Control.EvalDefPair<int>(commonName,keyName,"BricksActive", 0);
+  bricksActive=Control.EvalDefPair<int>(keyName,commonName,"BricksActive", 0);
 
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
 
-  wallThick=Control.EvalPair<double>(commonName,keyName,"WallThick");
+  wallThick=Control.EvalPair<double>(keyName,commonName,"WallThick");
   wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",keyName+"WallMat");
   mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
   temp=Control.EvalVar<double>(baseName+"Temp");
 
   // for detailed wall geometry (if bricksActive=true)
-  nWallSeg=Control.EvalPair<size_t>(commonName,keyName,"NWallSeg");
+  nWallSeg=Control.EvalPair<size_t>(keyName,commonName,"NWallSeg");
   for (size_t i=0; i<nWallSeg; i++)
     {
-      const double wl=Control.EvalPair<double>(commonName,keyName,
+      const double wl=Control.EvalPair<double>(keyName,commonName,
 					       "WallSegLength"+std::to_string(i));
       wallSegLength.push_back(wl);
     }
-  wallSegDelta=Control.EvalPair<double>(commonName,keyName,"WallSegDelta");
-  wallSegThick=Control.EvalPair<double>(commonName,keyName,"WallSegThick");
+  wallSegDelta=Control.EvalPair<double>(keyName,commonName,"WallSegDelta");
+  wallSegThick=Control.EvalPair<double>(keyName,commonName,"WallSegThick");
 
-  /*wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  delta=Control.EvalVar<double>(keyName+"Delta");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-
-  */
   return;
 }
 
@@ -275,12 +270,13 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 
   // divider
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
   // outer sides
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
+  //  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
+  //  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
 
   int SI(surfIndex+100);
   
@@ -291,18 +287,34 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   const double d2 = M_PI*delta/180.0/2.0;
   double R = backCyl->getRadius();
 
+  // 1=AWAY; -1=TO sector separator plane
+  const int d[] = {-1,1,1,-1,1,1,-1,1,1,1,-1,1,1,1,-1,1};
+
   int SJ(SI);
+  Geometry::Vec3D orig13=Origin-Y*(R*cos(d2)) - X*(R*sin(d2)-wallSegThick);
+  Geometry::Vec3D orig14=Origin-Y*(R*cos(d2)) + X*(R*sin(d2)-wallSegThick);
   for (size_t j=0; j<nWallSeg; j++)
     {
       R += wallSegLength[j]*cos(wallSegDelta*M_PI/180.0);
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
 
+      if (j>0)
+	{
+	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-10+11),
+				      SMap.realSurfPtr(SJ-10+13),
+				      SMap.realSurfPtr(surfIndex+5)) - X*wallSegThick*d[j];
+	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-10+11),
+				      SMap.realSurfPtr(SJ-10+14),
+				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*d[j];
+	}
+      ELog::EM << j << ": " << orig13 << ELog::endDiag;
+
       ModelSupport::buildPlaneRotAxis(SMap,SJ+13,
-				      Origin-Y*(R*cos(d2)) - X*(R*sin(d2)-wallSegThick),X,Z,
+				      orig13,X,Z,
 				      delta/2.0-wallSegDelta);
       ModelSupport::buildPlaneRotAxis(SMap,SJ+14,
-				      Origin-Y*(R*cos(d2)) + X*(R*sin(d2)-wallSegThick),X,Z,
+				      orig14,X,Z,
 				      wallSegDelta-delta/2.0);
 
       SJ += 10;

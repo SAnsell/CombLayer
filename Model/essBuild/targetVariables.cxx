@@ -158,7 +158,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSecWallMat","SS316L");
   Control.addVariable("BilbaoWheelSecWallThick",1.0);
 
-  Control.addVariable("BilbaoWheelSecNWallSeg",16);
+  Control.addVariable("BilbaoWheelSecNWallSeg",16); // 15 layers of bricks + 1
   Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
   Control.addVariable("BilbaoWheelSecWallSegLength1",3.2);
   Control.addVariable("BilbaoWheelSecWallSegLength2",3.4);
