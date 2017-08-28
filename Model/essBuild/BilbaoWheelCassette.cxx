@@ -110,6 +110,9 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   engActive(A.engActive),
   bricksActive(A.bricksActive),
   wallThick(A.wallThick),delta(A.delta),temp(A.temp),
+  nWallSeg(A.nWallSeg),
+  wallSegLength(A.wallSegLength),
+  wallSegDelta(A.wallSegDelta),
   mainMat(A.mainMat),wallMat(A.wallMat),
   floor(A.floor),
   roof(A.roof),
@@ -139,6 +142,9 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       wallThick=A.wallThick;
       delta=A.delta;
       temp=A.temp;
+      nWallSeg=A.nWallSeg;
+      wallSegLength=A.wallSegLength;
+      wallSegDelta=A.wallSegDelta;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
       floor=A.floor;
@@ -178,15 +184,25 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-  bricksActive=Control.EvalDefVar<int>(keyName+"BricksActive", 0);
+  bricksActive=Control.EvalDefPair<int>(commonName,keyName,"BricksActive", 0);
 
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
 
-  wallThick=Control.EvalVar<double>(commonName+"WallThick");
-  wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat");
+  wallThick=Control.EvalPair<double>(commonName,keyName,"WallThick");
+  wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",keyName+"WallMat");
   mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
   temp=Control.EvalVar<double>(baseName+"Temp");
+
+  // for detailed wall geometry (if bricksActive=true)
+  nWallSeg=Control.EvalPair<int>(commonName,keyName,"NWallSeg");
+  for (int i=0; i<nWallSeg; i++)
+    {
+      const double wl=Control.EvalPair<double>(commonName,keyName,
+					       "WallSegLength"+std::to_string(i));
+      wallSegLength.push_back(wl);
+    }
+  wallSegDelta=Control.EvalPair<int>(commonName,keyName,"WallSegDelta");
 
   /*wallThick=Control.EvalVar<double>(keyName+"WallThick");
   delta=Control.EvalVar<double>(keyName+"Delta");
@@ -320,7 +336,7 @@ BilbaoWheelCassette::createAll(Simulation& System,
   roof = lpRoof;
   back = lpBack;
   front = lpFront;
-  
+
   populate(System.getDataBase());
   xyAngle=theta;
   createUnitVector(FC,sideIndex);

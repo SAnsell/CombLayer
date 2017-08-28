@@ -52,6 +52,10 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double delta;                 ///< Angular width [deg]
   double temp;                  ///< Temperature
 
+  int    nWallSeg;              ///< Number of wall segments (for detailed geometry)
+  std::vector<double> wallSegLength; ///< Array of wall lengths (for detailed wall geometry)
+  double wallSegDelta;          ///< Wall angular width [deg] (for detailed wall geometry)
+
   int mainMat;                  ///< main material
   int wallMat;                  ///< wall material
   size_t floor;                 ///< Floor link point
