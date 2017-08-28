@@ -357,9 +357,6 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjectsBricks");
 
-  const std::string outer = FC.getLinkString(floor) +
-    FC.getLinkString(roof) + FC.getLinkString(front) + FC.getLinkString(back);
-
   const std::string tb = FC.getLinkString(floor) + FC.getLinkString(roof);
 
   std::string Out;
@@ -388,18 +385,13 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
       SJ += 10;
     }
-  SJ -= 10;
   
-  // wall part from the left (remove)
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ," -1 3 -13 -11M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ," -1 14 -4 -11M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
-  // W part from the left
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ," -1 13 -14 -11M ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+  // Part from the left (remove)
+  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 3 -4 -11M ") +
+    FC.getLinkString(front);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+tb));
       
-
+  const std::string outer = tb + FC.getLinkString(front) + FC.getLinkString(back);
   
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);
