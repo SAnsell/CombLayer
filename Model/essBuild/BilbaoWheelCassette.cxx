@@ -276,9 +276,6 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
-
   int SI(surfIndex+100);
   
   // detailed wall
@@ -387,10 +384,10 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-10," 11 -11M ");
 
       /// 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13 -13M ") + Out1;
+      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -14 ") + Out1;
+      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
   
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13M -14M ") + Out1;
@@ -401,16 +398,8 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
   const std::string Out1 = FC.getLinkString(back) + FC.getLinkString(front);
   
-  // Part of side walls with constant thickness
-  // \todo: Think that they can be removed
-  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1 ") + Out1;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ") + Out1;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
-
-  
   // Part from the left (remove)
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 13 -14 -11M ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 3 -4 -11M ") +
     FC.getLinkString(front);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+tb));
       
