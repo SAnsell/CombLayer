@@ -293,8 +293,9 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
+  const double dw = getSegWallThick();
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*(wallThick+dw),X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*(wallThick+dw),X,Z,delta/2.0);
 
   // front plane
   double d = attachSystem::calcLinkDistance(FC, static_cast<long>(back)+1,
