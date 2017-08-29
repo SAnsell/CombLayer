@@ -1089,6 +1089,7 @@ BilbaoWheel::createObjects(Simulation& System)
       
       if (i==1)
 	{
+	  // layer before Tungsten bricks
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 117 -17M 5 -6 ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
@@ -1118,18 +1119,21 @@ BilbaoWheel::createObjects(Simulation& System)
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -115 35 ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
-      else if ((engActive) && (mat==wMat))
+      else if (mat==wMat)
 	{
 	  if (nInner>0)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;
 
-	  // Do not build the layer with Tungsten.
+	  // Do not build the layer with Tungsten if !engActive
 	  // It is created by the buildSectors() method later.
 	  // In order to build this layer as a single cell,
 	  // comment out buildSectors and uncomment next two lines
-	  
-	  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	  // CellMap::setCell("Inner",cellIndex-1);
+	  if (!engActive)
+	    {
+	      divideRadial(System, Out, mat);
+	      //System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	      //CellMap::setCell("Inner",cellIndex-1);
+	    }
 	  nInner++;
 	} else if (i!=0)
 	{
@@ -1239,11 +1243,20 @@ BilbaoWheel::createLinks()
     {
       if (matTYPE[i]==3) // Tungsten layer
 	{
-	  FixedComp::setConnect(8, Origin-Y*radius[i-1], -Y);
-	  FixedComp::setLinkSurf(8, SMap.realSurf(SI+7));
+	  // 8 and 9 - the layer before Tungsten (He)
+	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius + 
+					     steelTungstenInnerThick), -Y);
+	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
 
-	  FixedComp::setConnect(9, Origin-Y*radius[i], Y);
-	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI+17));
+	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
+	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
+
+	  // 10 and 11 - Tungsten layer
+	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
+	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
+
+	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
+	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
 
 	  return; // !!! we assume that there is only one Tungsten layer
 	}
@@ -1269,7 +1282,7 @@ BilbaoWheel::buildSectors(Simulation& System) const
 	c(new BilbaoWheelCassette(keyName,"Sec",i));
       OR.addObject(c);
       c->createAll(System,*this,0,
-		   6,7,8,9,i*360.0/nSectors);
+		   6,7,10,11,i*360.0/nSectors);
     }
 }
 
@@ -1295,7 +1308,8 @@ BilbaoWheel::createAll(Simulation& System,
   makeShaftObjects(System);
 
   createLinks();
-  buildSectors(System);
+  if (engActive)
+    buildSectors(System);
   
   insertObjects(System);       
 

@@ -62,6 +62,7 @@ EssWheel(FuncDataBase& Control)
 {
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
   Control.addVariable("BilbaoWheelEngineeringActive", 1);
+  ELog::EM << "Why geometry problems if BilbaoWheelEngineeringActive=0 ?" << ELog::endCrit;
   
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
