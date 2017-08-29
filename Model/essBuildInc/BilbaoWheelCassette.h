@@ -71,6 +71,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   size_t front;                 ///< Front cylinder link point
 
   double getSegWallArea() const;
+  double getSegWallThick() const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

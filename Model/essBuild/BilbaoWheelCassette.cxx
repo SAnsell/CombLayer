@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <numeric>
 #include <algorithm>
 #include <memory>
 
@@ -177,8 +178,7 @@ double
 BilbaoWheelCassette::getSegWallArea() const
 {
   /*!
-    Calculate averate wall thickness for simplified (non-detailed)
-    wall geometry. Used when bricksActive is false.
+    Calculate segmented wall area.
    */
   ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallArea");
 
@@ -200,6 +200,27 @@ BilbaoWheelCassette::getSegWallArea() const
     }
 
   return s;
+}
+
+double
+BilbaoWheelCassette::getSegWallThick() const
+{
+  /*!
+    Calculate averate wall thickness for simplified (non-detailed)
+    wall geometry. Used when bricksActive is false.
+    Just calculates the thickness of a rectangular wall in order to
+    have the same area as the segmented one.
+   */
+  ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallThick");
+
+  // Total wall length is sum of all its segments:
+  double L = std::accumulate(std::next(wallSegLength.begin()), wallSegLength.end(),
+			      fabs(wallSegLength[0]),
+			      [](double b, double c){
+			       return fabs(b)+fabs(c);
+			      });
+
+  return getSegWallArea()/L;
 }
 
 void
@@ -298,8 +319,6 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfacesBricks");
 
-  ELog::EM << getSegWallArea() << ELog::endDiag;
-  
   // divider
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
