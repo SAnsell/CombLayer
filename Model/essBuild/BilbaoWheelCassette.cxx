@@ -173,6 +173,35 @@ BilbaoWheelCassette::~BilbaoWheelCassette()
   */
 {}
 
+double
+BilbaoWheelCassette::getSegWallArea() const
+{
+  /*!
+    Calculate averate wall thickness for simplified (non-detailed)
+    wall geometry. Used when bricksActive is false.
+   */
+  ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallArea");
+
+  // get segmented wall area:
+  double s(0.0);
+  double h1(wallSegThick); // downstream thick
+  double h2(0.0); // upstream thick
+  double h3(0.0); // leg of triangle: h2=h1+h3
+  for (size_t i=0; i<nWallSeg; i++)
+    {
+      h3 = fabs(wallSegLength[i])*tan(wallSegDelta*M_PI/180.0);
+      h2 = h1+h3;
+      const double s1 = h1*fabs(wallSegLength[i]);
+      const double s2 = wallSegLength[i]*h3/2.0;
+      s += s1+s2;
+
+      if (i<nWallSeg-1)
+	h1 = wallSegLength[i+1]>0.0 ? h2+wallSegThick : h2-wallSegThick;
+    }
+
+  return s;
+}
+
 void
 BilbaoWheelCassette::populate(const FuncDataBase& Control)
   /*!
@@ -269,6 +298,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createSurfacesBricks");
 
+  ELog::EM << getSegWallArea() << ELog::endDiag;
+  
   // divider
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin,Y);
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin,Z);
@@ -295,7 +326,7 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
 
-      const short dir = wallSegLength[j]>0 ? -1 : 1; // groove direction
+      const short dir = wallSegLength[j]>0.0 ? -1 : 1; // groove direction
 
       if (j>0)
 	{
