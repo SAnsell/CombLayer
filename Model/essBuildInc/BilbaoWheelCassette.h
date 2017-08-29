@@ -53,7 +53,13 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double temp;                  ///< Temperature
 
   size_t   nWallSeg;            ///< Number of wall segments (for detailed geometry)
-  std::vector<double> wallSegLength; ///< Array of wall lengths (for detailed wall geometry)
+  /// Array of wall lengths.
+  /// Sign defines direction of the corresponding groove (to/from the side wall).
+  /// engActive=1: grooves are built;
+  /// engActive=0: wall of constant average thickness is built,
+  /// Thickness is calculated in order to have the same amount of steel
+  /// as in the grooved wall.
+  std::vector<double> wallSegLength;
   double wallSegDelta;          ///< Wall angular width [deg] (for detailed wall geometry)
   double wallSegThick;          ///< Wall base thickness (for detailed wall geometry)
 

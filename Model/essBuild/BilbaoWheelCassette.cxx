@@ -285,27 +285,26 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   const double d2 = M_PI*delta/180.0/2.0;
   double R = backCyl->getRadius();
 
-  // 1=AWAY; -1=TO sector separator plane
-  const int d[] = {-1,1,1,-1,1,1,-1,1,1,1,-1,1,1,1,-1,1};
-
   int SJ(SI);
   const double dx = R*sin(d2)-wallSegThick-wallThick;
   Geometry::Vec3D orig13=Origin-Y*(R*cos(d2)) - X*dx;
   Geometry::Vec3D orig14=Origin-Y*(R*cos(d2)) + X*dx;
   for (size_t j=0; j<nWallSeg; j++)
     {
-      R += wallSegLength[j]*cos(wallSegDelta*M_PI/180.0);
+      R += fabs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
+
+      const short dir = wallSegLength[j]>0 ? -1 : 1; // groove direction
 
       if (j>0)
 	{
 	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-10+11),
 				      SMap.realSurfPtr(SJ-10+13),
-				      SMap.realSurfPtr(surfIndex+5)) - X*wallSegThick*d[j];
+				      SMap.realSurfPtr(surfIndex+5)) - X*wallSegThick*dir;
 	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-10+11),
 				      SMap.realSurfPtr(SJ-10+14),
-				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*d[j];
+				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*dir;
 	}
 
       ModelSupport::buildPlaneRotAxis(SMap,SJ+13,

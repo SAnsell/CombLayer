@@ -161,21 +161,21 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelSecNWallSeg",16); // 15 layers of bricks + 1
   Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
-  Control.addVariable("BilbaoWheelSecWallSegLength1",3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength2",3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength1",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength2",-3.4);
   Control.addVariable("BilbaoWheelSecWallSegLength3",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength4",3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength5",3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength4",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength5",-3.4);
   Control.addVariable("BilbaoWheelSecWallSegLength6",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength7",3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength8",3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength9",3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength7",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength8",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength9",-3.4);
   Control.addVariable("BilbaoWheelSecWallSegLength10",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength11",3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength12",3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength13",3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength11",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength12",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength13",-3.4);
   Control.addVariable("BilbaoWheelSecWallSegLength14",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength15",4+1.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength15",-4-1.2);
   Control.addVariable("BilbaoWheelSecWallSegDelta",5);
   Control.addVariable("BilbaoWheelSecWallSegThick",0.6);
 
