@@ -192,6 +192,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   delta = 360.0/nSectors;
 
   wallThick=Control.EvalPair<double>(keyName,commonName,"WallThick");
+  wallThick /= 2.0; // there is half wall from each side of neighbouring sectors
   wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",keyName+"WallMat");
   mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
   temp=Control.EvalVar<double>(baseName+"Temp");
@@ -275,8 +276,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
-  //  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
-  //  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*wallThick,X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*wallThick,X,Z,delta/2.0);
 
   int SI(surfIndex+100);
   
@@ -291,8 +292,9 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   const int d[] = {-1,1,1,-1,1,1,-1,1,1,1,-1,1,1,1,-1,1};
 
   int SJ(SI);
-  Geometry::Vec3D orig13=Origin-Y*(R*cos(d2)) - X*(R*sin(d2)-wallSegThick);
-  Geometry::Vec3D orig14=Origin-Y*(R*cos(d2)) + X*(R*sin(d2)-wallSegThick);
+  const double dx = R*sin(d2)-wallSegThick-wallThick;
+  Geometry::Vec3D orig13=Origin-Y*(R*cos(d2)) - X*dx;
+  Geometry::Vec3D orig14=Origin-Y*(R*cos(d2)) + X*dx;
   for (size_t j=0; j<nWallSeg; j++)
     {
       R += wallSegLength[j]*cos(wallSegDelta*M_PI/180.0);
@@ -308,7 +310,6 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 				      SMap.realSurfPtr(SJ-10+14),
 				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*d[j];
 	}
-      ELog::EM << j << ": " << orig13 << ELog::endDiag;
 
       ModelSupport::buildPlaneRotAxis(SMap,SJ+13,
 				      orig13,X,Z,
@@ -378,7 +379,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
   for (size_t j=0; j<nWallSeg; j++)
     {
 
-      std::string Out1;
+      std::string Out1; // back-front surfaces
       if (j==0)
 	Out1 = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
 	  FC.getLinkString(back);
@@ -386,10 +387,10 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-10," 11 -11M ");
 
       /// 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + Out1;
+      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13 -13M ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + Out1;
+      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -14 ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
   
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13M -14M ") + Out1;
@@ -397,9 +398,19 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
       SJ += 10;
     }
+
+  const std::string Out1 = FC.getLinkString(back) + FC.getLinkString(front);
+  
+  // Part of side walls with constant thickness
+  // \todo: Think that they can be removed
+  Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1 ") + Out1;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ") + Out1;
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+
   
   // Part from the left (remove)
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 3 -4 -11M ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 13 -14 -11M ") +
     FC.getLinkString(front);
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+tb));
       
