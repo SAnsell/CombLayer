@@ -91,7 +91,7 @@ namespace essSystem
 					   const std::string& extraKey,
 					   const size_t& Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),30),
+  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),40),
   baseName(baseKey),
   commonName(baseKey+extraKey),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
