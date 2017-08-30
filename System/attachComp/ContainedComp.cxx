@@ -545,7 +545,20 @@ ContainedComp::isOuterValid(const Geometry::Vec3D& V) const
   return (outerSurf.isValid(V)) ? 0 : 1;
 }
 
-void 
+void
+ContainedComp::addInsertCell(const ContainedComp& CC)
+  /*!
+    Adds CC-cells to the insert list
+    \param CC :: ContainedComp to copy
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addInsertCell<CC>");
+
+  addInsertCell(CC.insertCells);
+  return;
+}
+
+void
 ContainedComp::addInsertCell(const std::vector<int>& CVec)
   /*!
     Adds a cell to the insert list
@@ -653,6 +666,29 @@ ContainedComp::insertInCell(Simulation& System,
     outerObj->addSurfString(getExclude());
   else
     throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+  return;
+}
+
+void
+ContainedComp::insertInCell(Simulation& System,
+			    const std::vector<int>& cellVec) const
+  /*!
+    Insert the ContainedComp in a single cell.
+    \param System :: Simulation to get objects 
+    \param cellVec :: Cell numbers
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","insertInCell(Vec)");
+  
+  if (!hasOuterSurf()) return;
+  for(const int cellN : cellVec)
+    {
+      MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+      if (outerObj)
+	outerObj->addSurfString(getExclude());
+      else
+	throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+    }
   return;
 }
 

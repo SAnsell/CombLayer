@@ -248,10 +248,13 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   ADiskOne->addInsertCell(TChopA->getCell("Void"));
   ADiskOne->createAll(System,TChopA->getKey("Main"),0);
-
+  TChopA->insertAxle(System,*ADiskOne);
+  
   ADiskTwo->addInsertCell(TChopA->getCell("Void"));
   ADiskTwo->createAll(System,TChopA->getKey("Main"),0);
-
+  TChopA->insertAxle(System,*ADiskOne);
+  TChopA->insertAxle(System,*ADiskTwo);
+  
   VPipeTD->addInsertCell(bunkerVoid);
   VPipeTD->createAll(System,TChopA->getKey("Beam"),2);
 
@@ -274,7 +277,8 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   BDisk->addInsertCell(TChopB->getCell("Void"));
   BDisk->createAll(System,TChopB->getKey("Main"),0);
-
+  TChopB->insertAxle(System,*BDisk);
+  
   VPipeTE->addInsertCell(bunkerVoid);
   VPipeTE->createAll(System,TChopB->getKey("Beam"),2);
 
@@ -287,9 +291,9 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   T0Disk->addInsertCell(ChopperT0->getCell("Void"));
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
                     ChopperT0->getKey("BuildBeam"),0);
-
-  T0Motor->addInsertCell(bunkerVoid);
-  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
+  ChopperT0->insertAxle(System,*T0Disk);
+  //  T0Motor->addInsertCell(bunkerVoid);
+  //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
 
   VPipeTF->addInsertCell(bunkerVoid);
   VPipeTF->createAll(System,ChopperT0->getKey("Beam"),2);

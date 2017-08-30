@@ -111,6 +111,8 @@ VESPAvariables(FuncDataBase& Control)
   
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
+  CGen.setMainRadius(38.0);   // diameter 70.0 emali
+  CGen.setFrame(85.0,85.0);
   CGen.generateChopper(Control,"vespaChopperA",8.0,12.0,5.55);
 
   // Double Blade chopper
@@ -118,7 +120,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.addPhase({0.0,90.0,220.0},{24.31,40.98,57.32});
   BGen.addPhase({30.0,120.0,250.0},{24.31,40.98,57.32});
   BGen.setGap(3.0);
-  BGen.generateBlades(Control,"vespaWFMBladeA",0.0,25.0,35.5);
+  BGen.generateBlades(Control,"vespaWFMBladeA",0.0,20.0,35.5);
 
   // Pipe between choppers:
   PipeGen.generatePipe(Control,"vespaPipeC",2.0,20.0);
@@ -135,7 +137,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.addPhase({0.0,90.0,220.0},{24.31,40.98,57.32});
   BGen.addPhase({30.0,120.0,250.0},{24.31,40.98,57.32});
   BGen.setGap(3.0);
-  BGen.generateBlades(Control,"vespaWFMBladeB",0.0,25.0,35.5);
+  BGen.generateBlades(Control,"vespaWFMBladeB",0.0,20.0,35.5);
 
   PipeGen.generatePipe(Control,"vespaPipeD",2.0,60.0);
 
@@ -152,7 +154,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.addPhase({0.0,90.0,220.0},{24.31,40.98,57.32});
   BGen.addPhase({30.0,120.0,250.0},{24.31,40.98,57.32});
   BGen.setGap(3.0);
-  BGen.generateBlades(Control,"vespaWFMBladeC",0.0,25.0,35.5);
+  BGen.generateBlades(Control,"vespaWFMBladeC",0.0,20.0,35.5);
 
   PipeGen.generatePipe(Control,"vespaPipeE",2.0,270.0);
   FGen.generateTaper(Control,"vespaFE",266.0, 4.0,7.5, 8.0,7.5);   
@@ -165,7 +167,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.setThick({0.2,0.2});
   BGen.addPhase({0.0},{320.0});
   BGen.addPhase({30.0},{320.0});
-  BGen.generateBlades(Control,"vespaFOCBladeA",0.0,25.0,35.5);
+  BGen.generateBlades(Control,"vespaFOCBladeA",0.0,20.0,35.5);
 
   PipeGen.generatePipe(Control,"vespaPipeF",2.0,135.0);
   FGen.generateTaper(Control,"vespaFF",130.0,8.0,7.5,9.0,8.5);  // NOT CORRECT

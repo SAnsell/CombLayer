@@ -164,8 +164,8 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
                     ChopperT0->getKey("BuildBeam"),0);
 
-  T0Motor->addInsertCell(bunkerVoid);
-  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
+  //  T0Motor->addInsertCell(bunkerVoid);
+  //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
   return;
   CryoA->addInsertCell(bunkerVoid);
   CryoA->createAll(System,FA,startIndex);

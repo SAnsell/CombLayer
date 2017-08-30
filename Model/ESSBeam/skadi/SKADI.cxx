@@ -401,14 +401,13 @@ SKADI::build(Simulation& System,
   ChopperA->addInsertCell(PitA->getCell("Void"));
   ChopperA->createAll(System,*PitA,0);
 
-  ChopAMotor->addInsertCell(PitA->getCell("Void"));
-  ChopAMotor->createAll(System,ChopperA->getKey("Main"),1);
+  //  ChopAMotor->addInsertCell(PitA->getCell("Void"));
+  //  ChopAMotor->createAll(System,ChopperA->getKey("Main"),1);
   
   DiskA->addInsertCell(ChopperA->getCell("Void"));
-  DiskA->setCentreFlag(3);
   DiskA->setOffsetFlag(1);
-  DiskA->createAll(System,ChopperA->getKey("Beam"),0);
-
+  DiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DiskA);
   
   PitB->addInsertCell(voidCell); //Chopper II pit
   PitB->createAll(System,PitA->getKey("Outer"),2);
@@ -425,9 +424,9 @@ SKADI::build(Simulation& System,
   ChopperB->addInsertCell(PitB->getCell("Void"));
   ChopperB->createAll(System,*PitB,0);
   DiskB->addInsertCell(ChopperB->getCell("Void"));
-  DiskB->setCentreFlag(3);
   DiskB->setOffsetFlag(1);
-  DiskB->createAll(System,ChopperB->getKey("Beam"),0);
+  DiskB->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*DiskB);
   
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(PitA->getCells("Outer"));
@@ -465,16 +464,17 @@ SKADI::build(Simulation& System,
 
   ChopperC1->addInsertCell(PitC->getCell("Void"));
   ChopperC1->createAll(System,*PitC,0);
+
   DiskC1->addInsertCell(ChopperC1->getCell("Void"));
-  DiskC1->setCentreFlag(3);
-  DiskC1->createAll(System,ChopperC1->getKey("Beam"),0);
-  
+  DiskC1->createAll(System,ChopperC1->getKey("Main"),0);
+  ChopperC1->insertAxle(System,*DiskC1);
+    
   ChopperC2->addInsertCell(PitC->getCell("Void"));
   ChopperC2->createAll(System,*PitC,0);
   DiskC2->addInsertCell(ChopperC2->getCell("Void"));
-  DiskC2->setCentreFlag(3);
-  DiskC2->createAll(System,ChopperC2->getKey("Beam"),0);
-  
+  DiskC2->createAll(System,ChopperC2->getKey("Main"),0);
+  ChopperC2->insertAxle(System,*DiskC2);
+    
   ShieldC->addInsertCell(voidCell);
   ShieldC->addInsertCell(PitB->getCells("Outer"));
   ShieldC->addInsertCell(PitC->getCells("Outer"));

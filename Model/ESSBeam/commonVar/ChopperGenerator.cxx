@@ -236,23 +236,47 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"ShortWidth",shortWidth);
   Control.addVariable(keyName+"MainRadius",mainRadius); // estimate
   Control.addVariable(keyName+"MainThick",voidLength);  // estimate
-  
-  Control.addVariable(keyName+"MotorRadius",motorRadius); // [5691.2]
-  Control.addVariable(keyName+"MotorOuter",motorOuter); // [5691.2]
-  Control.addVariable(keyName+"MotorStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorNBolt",24); 
-  Control.addVariable(keyName+"MotorBoltRadius",0.50); //M10 inc thread
+
+  const double wallThick((length-voidLength)/2.0);
+  Control.addVariable(keyName+"MotorBodyLength",5.0);
+  Control.addVariable(keyName+"MotorPlateThick",wallThick*1.2);
+  Control.addVariable(keyName+"MotorAxleRadius",0.5);
+  Control.addVariable(keyName+"MotorBodyRadius",3.0);
+  Control.addVariable(keyName+"MotorAxleMat","Nickel");
+  Control.addVariable(keyName+"MotorBodyMat","Copper");
+  Control.addVariable(keyName+"MotorPlateMat",wallMat);    
+  Control.addVariable(keyName+"MotorInnerRadius",motorRadius); // [5691.2]
+  Control.addVariable(keyName+"MotorOuterRadius",motorOuter); // [5691.2]
+  Control.addVariable(keyName+"MotorBoltRadius",0.50);       //M10 inc thread
+  Control.addVariable(keyName+"MotorMainMat",wallMat);
+  Control.addVariable(keyName+"MotorBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"MotorSealMat","Poly");
+  Control.addVariable(keyName+"MotorNBolts",24);
+  Control.addVariable(keyName+"MotorSealRadius",(motorRadius+motorOuter)/2.0);
   Control.addVariable(keyName+"MotorSealThick",0.2);  
-  Control.addVariable(keyName+"MortorSealMat","Poly");
-  
-  Control.addVariable(keyName+"PortRadius",portRadius); // [5691.2]
-  Control.addVariable(keyName+"PortOuter",portOuter); // [5691.2]
-  Control.addVariable(keyName+"PortStep",0.0); // estimate
-  Control.addVariable(keyName+"PortNBolt",24); 
-  Control.addVariable(keyName+"PortBoltRadius",0.40); //M8 inc
-  Control.addVariable(keyName+"PortBoltAngOff",180.0/24.0);
-  Control.addVariable(keyName+"PortSealThick",0.2);
-  Control.addVariable(keyName+"PortSealMat","Poly");
+  Control.addVariable(keyName+"MotorSealMat","Poly");
+
+  Control.addVariable(keyName+"FrontFlangeNBolts",24); 
+  Control.addVariable(keyName+"FrontFlangeBoltRadius",0.40); 
+  Control.addVariable(keyName+"FrontFlangeInnerRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"FrontFlangeOuterRadius",portOuter); // [5691.2]
+  Control.addVariable(keyName+"FrontFlangeAngleOffset",180.0/24.0);
+  Control.addVariable(keyName+"FrontFlangeThickness",2.0); // estimate
+  Control.addVariable(keyName+"FrontFlangeSealThick",0.2);
+  Control.addVariable(keyName+"FrontFlangeMainMat",wallMat);
+  Control.addVariable(keyName+"FrontFlangeBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"FrontFlangeSealMat","Poly");
+
+  Control.addVariable(keyName+"BackFlangeNBolts",24); 
+  Control.addVariable(keyName+"BackFlangeBoltRadius",0.40); 
+  Control.addVariable(keyName+"BackFlangeInnerRadius",portRadius); // [5691.2]
+  Control.addVariable(keyName+"BackFlangeOuterRadius",portOuter); // [5691.2]
+  Control.addVariable(keyName+"BackFlangeAngleOffset",180.0/24.0);
+  Control.addVariable(keyName+"BackFlangeThickness",2.0); // estimate
+  Control.addVariable(keyName+"BackFlangeSealThick",0.2);
+  Control.addVariable(keyName+"BackFlangeMainMat",wallMat);
+  Control.addVariable(keyName+"BackFlangeBoltMat","ChipIRSteel");  
+  Control.addVariable(keyName+"BackFlangeSealMat","Poly");
 
   Control.addVariable(keyName+"RingNSection",12);
   Control.addVariable(keyName+"RingNTrack",12);

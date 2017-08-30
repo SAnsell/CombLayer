@@ -199,15 +199,15 @@ CSPEC::build(Simulation& System,
   
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
-  ELog::EM<<"CC == "<<FocusC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
-  ELog::EM<<"CC == "<<FocusC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+
   BWDiskA->addInsertCell(ChopperA->getCell("Void"));
-  BWDiskA->createAll(System,ChopperA->getKey("Main"),0,
-                     ChopperA->getKey("Beam"),2);
+  BWDiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*BWDiskA);
   
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);

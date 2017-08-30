@@ -105,10 +105,13 @@ class ContainedComp
 
   void addInsertCell(const int);
   void addInsertCell(const std::vector<int>&);
+  void addInsertCell(const ContainedComp&);
   void setInsertCell(const int);
   void setInsertCell(const std::vector<int>&);
+
   void insertObjects(Simulation&);
   void insertInCell(Simulation&,const int) const;
+  void insertInCell(Simulation&,const std::vector<int>&) const;
 
   /// Accessor to surface [ugly]
   std::vector<Geometry::Surface*> getSurfaces() const;

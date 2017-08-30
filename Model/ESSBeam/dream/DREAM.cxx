@@ -81,7 +81,6 @@
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
-#include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "Aperture.h"
@@ -286,19 +285,19 @@ DREAM::build(Simulation& System,
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
-
+  
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->setOffsetFlag(1);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
-
+  DDisk->setOffsetFlag(1);  // centre flag
+  DDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDisk);
+ 
   // Double disk chopper
   SDisk->addInsertCell(ChopperA->getCell("Void"));
-  SDisk->setCentreFlag(3);  // Z direction
   SDisk->setOffsetFlag(1);  // Centre offset control
-  SDisk->createAll(System,ChopperA->getKey("Beam"),0);
-
+  SDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*SDisk);
+  
   VPipeC0->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC0->createAll(System,ChopperA->getKey("Beam"),2);
 
@@ -316,10 +315,10 @@ DREAM::build(Simulation& System,
   ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperB->createAll(System,*VPipeC,2);
   BandADisk->addInsertCell(ChopperB->getCell("Void"));
-  BandADisk->setCentreFlag(3);  // Z direction
   BandADisk->setOffsetFlag(1);  // Centre offset control
-  BandADisk->createAll(System,ChopperB->getKey("Beam"),0);
-  
+  BandADisk->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*BandADisk);
+    
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
@@ -332,9 +331,8 @@ DREAM::build(Simulation& System,
 
   // First disk of a T0 chopper
   T0DiskA->addInsertCell(ChopperC->getCell("Void",0));
-  T0DiskA->setCentreFlag(3);  // Z direction
-  T0DiskA->setOffsetFlag(0);  // Centre offset control
-  T0DiskA->createAll(System,ChopperC->getKey("Beam"),0);
+  T0DiskA->createAll(System,ChopperC->getKey("Main"),0);
+  ChopperC->insertAxle(System,*T0DiskA);
   
   VPipeE1->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE1->createAll(System,ChopperC->getKey("Beam"),2);

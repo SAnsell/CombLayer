@@ -268,8 +268,7 @@ MAGIC::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   //  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
-  //  PSCDisk->setCentreFlag(3);  // Z direction
-  //  PSCDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
+  //  PSCDisk->createAll(System,ChopperA->getKey("Main"),0);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);

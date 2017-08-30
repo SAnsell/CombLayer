@@ -283,9 +283,9 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   ChopE->createAll(System,FocusE->getKey("Guide0"),2);
 
   EDisk->addInsertCell(ChopE->getCell("Void"));
-  EDisk->createAll(System,ChopE->getKey("Main"),0,
-		   ChopE->getKey("Beam"),2);
-
+  EDisk->createAll(System,ChopE->getKey("Main"),0);
+  ChopE->insertAxle(System,*EDisk);
+  
   ShutterA->addInsertCell(bunkerVoid);
   ShutterA->createAll(System,ChopE->getKey("Beam"),2);
 

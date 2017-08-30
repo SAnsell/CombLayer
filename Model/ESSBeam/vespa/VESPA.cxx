@@ -80,7 +80,6 @@
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
-#include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
@@ -331,9 +330,9 @@ VESPA::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   WFMDiskA->addInsertCell(ChopperA->getCell("Void"));
-  WFMDiskA->setCentreFlag(3);  // Z direction
-  WFMDiskA->createAll(System,ChopperA->getKey("Beam"),0);
-
+  WFMDiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*WFMDiskA);
+  
   VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
 
@@ -347,9 +346,9 @@ VESPA::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   WFMDiskB->addInsertCell(ChopperB->getCell("Void"));
-  WFMDiskB->setCentreFlag(3);  // Z direction
-  WFMDiskB->createAll(System,ChopperB->getKey("Beam"),0);
-
+  WFMDiskB->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*WFMDiskB);
+  
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
@@ -362,9 +361,9 @@ VESPA::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   WFMDiskC->addInsertCell(ChopperC->getCell("Void"));
-  WFMDiskC->setCentreFlag(3);  // Z direction
-  WFMDiskC->createAll(System,ChopperC->getKey("Beam"),0);
-
+  WFMDiskC->createAll(System,ChopperC->getKey("Main"),0);
+  ChopperC->insertAxle(System,*WFMDiskC);
+  
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
@@ -377,8 +376,8 @@ VESPA::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   FOCDiskA->addInsertCell(ChopperD->getCell("Void"));
-  FOCDiskA->setCentreFlag(3);  // Z direction
-  FOCDiskA->createAll(System,ChopperD->getKey("Beam"),0);
+  FOCDiskA->createAll(System,ChopperD->getKey("Main"),0);
+  ChopperD->insertAxle(System,*FOCDiskA);
   
   VPipeF->addInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
@@ -417,9 +416,9 @@ VESPA::buildOutGuide(Simulation& System,
 
   // Double disk chopper
   T0Disk->addInsertCell(ChopperT0->getCell("Void"));
-  T0Disk->setCentreFlag(3);  // Z direction
   T0Disk->setOffsetFlag(1);  // Z direction
-  T0Disk->createAll(System,ChopperT0->getKey("Beam"),0);
+  T0Disk->createAll(System,ChopperT0->getKey("Main"),0);
+  ChopperT0->insertAxle(System,*T0Disk);
   
   T0ExitPort->addInsertCell(OutPitT0->getCells("MidLayerBack"));
   T0ExitPort->addInsertCell(OutPitT0->getCells("Collet"));
@@ -454,9 +453,8 @@ VESPA::buildOutGuide(Simulation& System,
 
   // Double disk chopper
   FOCDiskB->addInsertCell(ChopperOutA->getCell("Void"));
-  FOCDiskB->setCentreFlag(3);  // Z direction
-  FOCDiskB->createAll(System,ChopperOutA->getKey("Beam"),0);
- 
+  FOCDiskB->createAll(System,ChopperOutA->getKey("Main"),0);
+  ChopperOutA->insertAxle(System,*FOCDiskB); 
  
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->addInsertCell(voidCell);
@@ -483,7 +481,6 @@ VESPA::buildOutGuide(Simulation& System,
 
   OutPitB->addInsertCell(voidCell);
   OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
-  ELog::EM<<"Pit = "<<OutPitB->getCentre()<<ELog::endDiag;
   
   PitBPortA->addInsertCell(OutPitB->getCells("MidLayerFront"));
   PitBPortA->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
@@ -520,9 +517,9 @@ VESPA::buildOutGuide(Simulation& System,
 
   // Double disk chopper FOC
   FOCDiskOutB->addInsertCell(ChopperOutB->getCell("Void"));
-  FOCDiskOutB->setCentreFlag(3);  // Z direction
-  FOCDiskOutB->createAll(System,ChopperOutB->getKey("Beam"),0);
-
+  FOCDiskOutB->createAll(System,ChopperOutB->getKey("Main"),0);
+  ChopperOutB->insertAxle(System,*FOCDiskOutB);
+  
   return;
 }
 

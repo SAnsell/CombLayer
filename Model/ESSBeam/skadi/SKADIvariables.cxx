@@ -198,14 +198,10 @@ void SKADIvariables(FuncDataBase& Control)
   CGen.setFrame(86.5,86.5);
   CGen.generateChopper(Control,"skadiChopperA",0.0,12.0,6.55);
 
-  Control.addVariable("skadiChopAMotorLength",20.0);
-  Control.addVariable("skadiChopAMotorRadius",5.0);
-  Control.addVariable("skadiChopAMotorMat","Copper");
-
   BGen.setMaterials("Copper","B4C");
   BGen.setThick({0.2});
   BGen.addPhase({95},{60});
-  BGen.generateBlades(Control,"skadiADisk",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"skadiADisk",0.0,20.0,35.0);
 
   FGen.clearYOffset();
   FGen.setLayer(1,0.8,"Copper");
@@ -222,7 +218,7 @@ void SKADIvariables(FuncDataBase& Control)
   Control.addVariable("skadiPitBCutBackRadius",5.0);
 
   CGen.generateChopper(Control,"skadiChopperB",0.0,12.0,6.55);
-  BGen.generateBlades(Control,"skadiBDisk",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"skadiBDisk",0.0,20.0,35.0);
 
   SGen.generateShield(Control,"skadiShieldB",688.0,s_HW,s_HW,s_HW,4,10);
 
@@ -242,9 +238,9 @@ void SKADIvariables(FuncDataBase& Control)
 			 guideWidth,guideHeight);
 
   CGen.generateChopper(Control,"skadiChopperC1",-15.0,12.0,6.55);
-  BGen.generateBlades(Control,"skadiC1Disk",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"skadiC1Disk",0.0,20.0,35.0);
   CGen.generateChopper(Control,"skadiChopperC2",15.0,12.0,6.55);
-  BGen.generateBlades(Control,"skadiC2Disk",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"skadiC2Disk",0.0,20.0,35.0);
 
   SGen.generateShield(Control,"skadiShieldD",761.0,s_HW,s_HW,s_HW,5,8);
   PipeGen.generatePipe(Control,"skadiPipeOutD",0.5,692.0);

@@ -333,7 +333,9 @@ BaseMap::getItems(const std::string& Key) const
   if (Key=="All" || Key=="all") return getItems(); 
   std::vector<int> Out;  
   LCTYPE::const_iterator mc=Items.find(Key);
-  return (mc==Items.end()) ? std::vector<int>() : mc->second;
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key");
+  return mc->second;
 }
 
 std::vector<int>

@@ -138,6 +138,8 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamCollimAMat","Copper"); 
 
   // Band chopoper
+  CGen.setMainRadius(33.00);
+  CGen.setFrame(83.5,83.5);
   CGen.generateChopper(Control,"dreamChopperB",7.5,14.0,6.0);
 
   BGen.setMaterials("Inconnel","Void");

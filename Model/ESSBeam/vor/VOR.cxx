@@ -229,9 +229,9 @@ VOR::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->setOffsetFlag(1);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
+  DDisk->setOffsetFlag(1);  // Centre in void
+  DDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDisk);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
@@ -342,7 +342,7 @@ VOR::build(Simulation& System,
 
   buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
                    bunkerObj.getCell("MainVoid"));
-  return;
+
   if (stopPoint==2) return;
 
   // Make bunker insert
@@ -357,6 +357,7 @@ VOR::build(Simulation& System,
   FocusWall->addInsertCell(VPipeWall->getCells("Void"));
   FocusWall->createAll(System,*VPipeWall,0,*VPipeWall,0);
 
+  
   if (stopPoint==3) return;
 
   OutPitA->addInsertCell(voidCell);
@@ -369,9 +370,9 @@ VOR::build(Simulation& System,
 
   // Double disk chopper
   FOCDisk->addInsertCell(ChopperOutA->getCell("Void"));
-  FOCDisk->setCentreFlag(3);  // Z direction
-  FOCDisk->setOffsetFlag(1);  // Z direction
-  FOCDisk->createAll(System,ChopperOutA->getKey("Beam"),0);
+  FOCDisk->setOffsetFlag(1);  // Centre in void
+  FOCDisk->createAll(System,ChopperOutA->getKey("Main"),0);
+  ChopperOutA->insertAxle(System,*FOCDisk);
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));

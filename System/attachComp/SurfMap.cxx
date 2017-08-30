@@ -149,6 +149,33 @@ SurfMap::getSurfRules(const std::string& Key) const
   return Out;
 }
 
+std::string
+SurfMap::getSurfString(const std::string& Key) const
+  /*!
+    Output the rule string
+    \param Key :: Surf Keyname
+    \return surfaces
+  */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfString");
+
+  return getSurfRules(Key).display();
+}
+
+std::string
+SurfMap::getSurfComplement(const std::string& Key) const
+  /*!
+    Output the rule string [complement]
+    \param Key :: Surf Keyname
+    \return surfaces
+  */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfComplement");
+
+  return getSurfRules(Key).complement().display();
+}
+
+  
 HeadRule
 SurfMap::combine(const std::set<std::string>& KeySet) const
   /*!

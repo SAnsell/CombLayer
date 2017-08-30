@@ -117,8 +117,8 @@ LOKIvariables(FuncDataBase& Control)
   FGen.clearYOffset();
   FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
   
-  CGen.setMainRadius(65.5);   // diameter 70.0 emali
-  CGen.setFrame(160.0,160.0);
+  CGen.setMainRadius(35.5);   // diameter 70.0 emali
+  CGen.setFrame(80.0,80.0);
   CGen.generateChopper(Control,"lokiChopperA",9.5,15.7,5.3);  
 
   
@@ -173,8 +173,8 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiPitACutShape","Square");
   Control.addVariable("lokiPitACutRadius",36.0); //should not be radius
 
-  CGen.setMainRadius(65.5);   // diameter 70.0 emali
-  CGen.setFrame(160.0,160.0);
+  CGen.setMainRadius(40.5);   // diameter 70.0 emali
+  CGen.setFrame(90.0,90.0);
   CGen.generateChopper(Control,"lokiChopperOutA",9.3,15.7,5.3);  
 
   // Double Blade chopper

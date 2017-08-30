@@ -665,13 +665,13 @@ makeESS::makeBeamLine(Simulation& System,
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
 	  
-	  if (BLNum.first==1 && BLNum.second<=10)
+	  if (BLNum.first==1 && BLNum.second<=11)
 	    BLfactory.build(System,*ABunker);
-	  else if (BLNum.first==1 && BLNum.second>10)
+	  else if (BLNum.first==1 && BLNum.second>11)
 	    BLfactory.build(System,*BBunker);
-	  else if (BLNum.first==2 && BLNum.second<=10)
+	  else if (BLNum.first==2 && BLNum.second<=11)
 	    BLfactory.build(System,*DBunker);
-	  else if (BLNum.first==2 && BLNum.second>10)
+	  else if (BLNum.first==2 && BLNum.second>11)
 	    BLfactory.build(System,*CBunker);
 	}
     }

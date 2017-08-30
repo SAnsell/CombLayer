@@ -408,7 +408,9 @@ DBMaterial::initMaterial()
   // Material #48 Poly:
   MObj.setMaterial(48,"Poly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
+  MObj.setDensity(-0.91);
   setMaterial(MObj);
+
 
   // Material #49 Regular concrete
   // Regular concrete at 2.339 g/cc [supposedly]
@@ -1256,7 +1258,7 @@ DBMaterial::initMaterial()
   // Material #137 Hi-DensityPoly:
   MObj.setMaterial(137,"HighDensPoly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
-  MObj.setDensity(-1.05);
+  MObj.setDensity(-0.97);
   setMaterial(MObj);
 
   // 

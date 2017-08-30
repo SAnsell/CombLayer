@@ -284,15 +284,15 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperAA->createAll(System,FocusC->getKey("Guide0"),2);
 
   DiskAA->addInsertCell(ChopperAA->getCell("Void"));
-  DiskAA->createAll(System,ChopperAA->getKey("Main"),0,
-		    ChopperAA->getKey("BuildBeam"),0);
+  DiskAA->createAll(System,ChopperAA->getKey("Main"),0);
+  ChopperAA->insertAxle(System,*DiskAA);
 
   ChopperAB->addInsertCell(bunkerVoid);
   ChopperAB->createAll(System,ChopperAA->getKey("Beam"),2);
 
   DiskAB->addInsertCell(ChopperAB->getCell("Void"));
-  DiskAB->createAll(System,ChopperAB->getKey("Main"),0,
-		    ChopperAB->getKey("BuildBeam"),0);
+  DiskAB->createAll(System,ChopperAB->getKey("Main"),0);
+  ChopperAB->insertAxle(System,*DiskAB);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperAB->getKey("Beam"),2);
@@ -305,14 +305,15 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperB->createAll(System,FocusD->getKey("Guide0"),2);
   T0Disk->addInsertCell(ChopperB->getCell("Void"));
   T0Disk->createAll(System,ChopperB->getKey("Main"),0);
-
+  ChopperB->insertAxle(System,*T0Disk);
   
   // FOC1 disk chopper
   ChopperFOC1->addInsertCell(bunkerVoid);
   ChopperFOC1->createAll(System,ChopperB->getKey("Beam"),2);
   FOC1Disk->addInsertCell(ChopperFOC1->getCell("Void"));
   FOC1Disk->createAll(System,ChopperFOC1->getKey("Main"),0);
-
+  ChopperFOC1->insertAxle(System,*FOC1Disk);
+  
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperFOC1->getKey("Beam"),2);
   FocusE->addInsertCell(VPipeE->getCells("Void"));
@@ -323,7 +324,8 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperFOC2->createAll(System,FocusE->getKey("Guide0"),2);
   FOC2Disk->addInsertCell(ChopperFOC2->getCell("Void"));
   FOC2Disk->createAll(System,ChopperFOC2->getKey("Main"),0);
-
+  ChopperFOC2->insertAxle(System,*FOC2Disk);
+  
   VPipeF->addInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperFOC2->getKey("Beam"),2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
@@ -334,7 +336,8 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperFOC3->createAll(System,FocusF->getKey("Guide0"),2);
   FOC3Disk->addInsertCell(ChopperFOC3->getCell("Void"));
   FOC3Disk->createAll(System,ChopperFOC3->getKey("Main"),0);
-
+  ChopperFOC3->insertAxle(System,*FOC3Disk);
+  
   VPipeG->addInsertCell(bunkerVoid);
   VPipeG->createAll(System,ChopperFOC3->getKey("Beam"),2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
@@ -345,7 +348,8 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperFOC4->createAll(System,FocusG->getKey("Guide0"),2);
   FOC4Disk->addInsertCell(ChopperFOC4->getCell("Void"));
   FOC4Disk->createAll(System,ChopperFOC4->getKey("Main"),0);
-
+  ChopperFOC4->insertAxle(System,*FOC4Disk);
+  
   VPipeH->addInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC4->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
@@ -403,7 +407,8 @@ ODIN::buildOutGuide(Simulation& System,
   // Double disk chopper
   FOC5Disk->addInsertCell(ChopOutFOC5->getCell("Void"));
   FOC5Disk->createAll(System,ChopOutFOC5->getKey("Main"),0);
-
+  ChopOutFOC5->insertAxle(System,*FOC5Disk);
+  
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->setFront(OutPitA->getKey("Mid"),2);

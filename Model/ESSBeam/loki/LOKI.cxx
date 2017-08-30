@@ -268,10 +268,9 @@ LOKI::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
-  DDiskA->setCentreFlag(3);  // Z direction
-  DDiskA->setOffsetFlag(1);  // X direction
-  DDiskA->createAll(System,ChopperA->getKey("BuildBeam"),0);
-
+  DDiskA->setOffsetFlag(1);  // centre disk based on thickness
+  DDiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDiskA);
 
   VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
@@ -315,10 +314,9 @@ LOKI::buildOutGuide(Simulation& System,
 
   // Double disk chopper
   DDiskOutA->addInsertCell(ChopperOutA->getCell("Void"));
-  DDiskOutA->setCentreFlag(3);  // Z direction
-  DDiskOutA->setOffsetFlag(1);  // X direction
-  DDiskOutA->createAll(System,ChopperOutA->getKey("BuildBeam"),0);  
-
+  DDiskOutA->setOffsetFlag(1);  // Normalized thickness to centre
+  DDiskOutA->createAll(System,ChopperOutA->getKey("Main"),0);  
+  ChopperOutA->insertAxle(System,*DDiskOutA);
 
  //Beamline Shileding
   ShieldA->addInsertCell(voidCell);

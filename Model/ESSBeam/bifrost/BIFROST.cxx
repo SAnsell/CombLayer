@@ -298,10 +298,6 @@ BIFROST::build(Simulation& System,
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*bifrostAxis,-3,*bifrostAxis,-3); 
-
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   
   if (stopPoint==1) return;                      // STOP At monolith
 
@@ -319,10 +315,10 @@ BIFROST::build(Simulation& System,
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
   DDisk->setOffsetFlag(1);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
-
+  DDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDisk); 
+  
   // Elliptic 4m section
   VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
@@ -334,10 +330,10 @@ BIFROST::build(Simulation& System,
   ChopperB->createAll(System,FocusC->getKey("Guide0"),2);
   // Single disk FOC
   FOCDiskB->addInsertCell(ChopperB->getCell("Void"));
-  FOCDiskB->setCentreFlag(3);  // Z direction
   FOCDiskB->setOffsetFlag(1);  // Z direction
-  FOCDiskB->createAll(System,ChopperB->getKey("Beam"),0);
-
+  FOCDiskB->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*FOCDiskB);
+  
   // Rectangle 6m section
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
@@ -355,10 +351,10 @@ BIFROST::build(Simulation& System,
   ChopperC->createAll(System,FocusE->getKey("Guide0"),2);
   // Single disk FOC-2
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
-  FOCDiskC->setCentreFlag(3);  // Z direction
   FOCDiskC->setOffsetFlag(1);  // Z direction
-  FOCDiskC->createAll(System,ChopperC->getKey("Beam"),0);
-
+  FOCDiskC->createAll(System,ChopperC->getKey("Main"),0);
+  ChopperC->insertAxle(System,*FOCDiskC);
+  
   // Rectangle 4m section
   VPipeF->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeF->createAll(System,ChopperC->getKey("Beam"),2);
@@ -451,10 +447,10 @@ BIFROST::build(Simulation& System,
                                                 // guide array
   // Single disk FOC-OutA
   FOCDiskOutA->addInsertCell(ChopperOutA->getCell("Void"));
-  FOCDiskOutA->setCentreFlag(3);  // Z direction
   FOCDiskOutA->setOffsetFlag(1);  // Z direction
-  FOCDiskOutA->createAll(System,ChopperOutA->getKey("Beam"),0);
-
+  FOCDiskOutA->createAll(System,ChopperOutA->getKey("Main"),0);
+  ChopperOutA->insertAxle(System,*FOCDiskOutA);
+  
   ShieldB->addInsertCell(voidCell);
   ShieldB->setFront(OutPitA->getKey("Mid"),2);
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
