@@ -52,7 +52,8 @@ class Motor :
 
   int frontInner;                  ///< Front inner surf
   int backInner;                   ///< Back inner surf
-  
+
+  int revFlag;                  ///< Reverse motor flag
   double bodyLength;            ///< length out of port
   double plateThick;            ///< Main thickness
   
@@ -65,10 +66,10 @@ class Motor :
   size_t nBolt;                 ///< number of bolts
   double angOffset;             ///< Offset angle
   
-  int boltMat;                      ///< material
-  int bodyMat;                      ///< main motor material
-  int axleMat;                      ///< axle material
-  int plateMat;                     ///< plate material
+  int boltMat;                  ///< material
+  int bodyMat;                  ///< main motor material
+  int axleMat;                  ///< axle material
+  int plateMat;                 ///< plate material
 
   double yFront;                ///< Front y-step
   double yBack;                 ///< back y-step
@@ -90,9 +91,11 @@ class Motor :
   Motor& operator=(const Motor&);
   virtual ~Motor();
 
-  /// REALLY UGLY
+  /// set inner planes -- REALLY UGLY
   void setInnerPlanes(const int F,const int B)
   { frontInner=F; backInner=B; }
+
+  /// set Ystep on inner planes -- REALLY UGLY
   void setYSteps(const double F,const double B)
     { yFront=F;yBack=B; }
   

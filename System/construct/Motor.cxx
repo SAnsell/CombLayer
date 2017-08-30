@@ -103,6 +103,65 @@ Motor::Motor(const std::string& Key) :
 
 }
 
+Motor::Motor(const Motor& A) : 
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  motorIndex(A.motorIndex),cellIndex(A.cellIndex),
+  frontInner(A.frontInner),backInner(A.backInner),
+  revFlag(A.revFlag),bodyLength(A.bodyLength),
+  plateThick(A.plateThick),axleRadius(A.axleRadius),
+  portInnerRadius(A.portInnerRadius),
+  portOuterRadius(A.portOuterRadius),boltRadius(A.boltRadius),
+  bodyRadius(A.bodyRadius),nBolt(A.nBolt),
+  angOffset(A.angOffset),boltMat(A.boltMat),
+  bodyMat(A.bodyMat),axleMat(A.axleMat),plateMat(A.plateMat),
+  yFront(A.yFront),yBack(A.yBack),frontPlate(A.frontPlate),
+  backPlate(A.backPlate)
+  /*!
+    Copy constructor
+    \param A :: Motor to copy
+  */
+{}
+
+Motor&
+Motor::operator=(const Motor& A)
+  /*!
+    Assignment operator
+    \param A :: Motor to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      frontInner=A.frontInner;
+      backInner=A.backInner;
+      revFlag=A.revFlag;
+      bodyLength=A.bodyLength;
+      plateThick=A.plateThick;
+      axleRadius=A.axleRadius;
+      portInnerRadius=A.portInnerRadius;
+      portOuterRadius=A.portOuterRadius;
+      boltRadius=A.boltRadius;
+      bodyRadius=A.bodyRadius;
+      nBolt=A.nBolt;
+      angOffset=A.angOffset;
+      boltMat=A.boltMat;
+      bodyMat=A.bodyMat;
+      axleMat=A.axleMat;
+      plateMat=A.plateMat;
+      yFront=A.yFront;
+      yBack=A.yBack;
+      frontPlate=A.frontPlate;
+      backPlate=A.backPlate;
+    }
+  return *this;
+}
 
 Motor::~Motor() 
   /*!
@@ -124,6 +183,7 @@ Motor::populate(const FuncDataBase& Control)
   bodyLength=Control.EvalVar<double>(keyName+"BodyLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
+  revFlag=ModelSupport::EvalDefVar<int>(Control,keyName+"RevMotor",0);
   bodyRadius=Control.EvalVar<double>(keyName+"BodyRadius");
   axleRadius=Control.EvalVar<double>(keyName+"AxleRadius");
 
