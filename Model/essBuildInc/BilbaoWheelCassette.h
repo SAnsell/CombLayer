@@ -72,6 +72,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   double getSegWallArea() const;
   double getSegWallThick() const;
+  void   buildBricks();
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

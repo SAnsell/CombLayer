@@ -91,7 +91,7 @@ namespace essSystem
 					   const std::string& extraKey,
 					   const size_t& Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),6),
+  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),30),
   baseName(baseKey),
   commonName(baseKey+extraKey),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -176,10 +176,10 @@ BilbaoWheelCassette::~BilbaoWheelCassette()
 
 double
 BilbaoWheelCassette::getSegWallArea() const
-{
   /*!
     Calculate segmented wall area.
    */
+{
   ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallArea");
 
   // get segmented wall area:
@@ -204,13 +204,13 @@ BilbaoWheelCassette::getSegWallArea() const
 
 double
 BilbaoWheelCassette::getSegWallThick() const
-{
   /*!
     Calculate averate wall thickness for simplified (non-detailed)
     wall geometry. Used when bricksActive is false.
     Just calculates the thickness of a rectangular wall in order to
     have the same area as the segmented one.
    */
+{
   ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallThick");
 
   // Total wall length is sum of all its segments:
@@ -221,6 +221,16 @@ BilbaoWheelCassette::getSegWallThick() const
 			      });
 
   return getSegWallArea()/L;
+}
+
+void
+BilbaoWheelCassette::buildBricks()
+  /*!
+    Build the bricks for the given segment
+   */
+{
+  ELog::RegMethod RegA("BilbaoWheelCassette","buildBricks");
+  return;
 }
 
 void
@@ -470,8 +480,34 @@ BilbaoWheelCassette::createLinks()
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createLinks");
 
-  //  FixedComp::setConnect(0,Origin,-Y);
-  //  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  if (bricksActive)
+    {
+      int SJ(surfIndex+100);
+      size_t i(0);
+      for (size_t j=0; j<nWallSeg; j++)
+	{
+	  Geometry::Vec3D p = SurInter::getPoint(SMap.realSurfPtr(SJ+11),
+						 SMap.realSurfPtr(SJ+13),
+						 SMap.realSurfPtr(surfIndex+5));
+	  p += Y*fabs(wallSegLength[j]/2.0);
+	  FixedComp::setConnect(i,p,X);
+	  FixedComp::setLinkSurf(i,SMap.realSurf(SJ+13));
+
+	  i++;
+
+	  p = SurInter::getPoint(SMap.realSurfPtr(SJ+11),
+				 SMap.realSurfPtr(SJ+14),
+				 SMap.realSurfPtr(surfIndex+5));
+	  p += Y*fabs(wallSegLength[j]/2.0);
+	  FixedComp::setConnect(i,p,-X);
+	  FixedComp::setLinkSurf(i,-SMap.realSurf(SJ+14));
+
+	  ELog::EM << p << ELog::endDiag;
+
+	  SJ += 10;
+	  i++;
+	}
+    }
 
   return;
 }
