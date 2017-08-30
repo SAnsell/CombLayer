@@ -183,7 +183,7 @@ Motor::populate(const FuncDataBase& Control)
   bodyLength=Control.EvalVar<double>(keyName+"BodyLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
-  revFlag=ModelSupport::EvalDefVar<int>(Control,keyName+"RevMotor",0);
+  revFlag=Control.EvalDefVar<int>(keyName+"RevMotor",0);
   bodyRadius=Control.EvalVar<double>(keyName+"BodyRadius");
   axleRadius=Control.EvalVar<double>(keyName+"AxleRadius");
 
@@ -230,8 +230,12 @@ Motor::createSurfaces()
   ModelSupport::buildPlane(SMap,motorIndex+1,Origin-Y*(yFront+plateThick),Y);
   ModelSupport::buildPlane(SMap,motorIndex+2,Origin+Y*(yBack+plateThick),Y);
 
-  ModelSupport::buildPlane(SMap,motorIndex+11,
-			   Origin-Y*(yFront+plateThick+bodyLength),Y);
+  if (!revFlag)
+    ModelSupport::buildPlane(SMap,motorIndex+11,
+			     Origin-Y*(yFront+plateThick+bodyLength),Y);
+  else
+    ModelSupport::buildPlane(SMap,motorIndex+12,
+			     Origin+Y*(yBack+plateThick+bodyLength),Y);
 
   return;
 }
@@ -302,16 +306,18 @@ Motor::createObjects(Simulation& System)
   addCell("Axle",cellIndex-1);
     
   // Main motor
-  Out=ModelSupport::getComposite(SMap,motorIndex," 11 -1 -107 ");
+  if (!revFlag)
+    Out=ModelSupport::getComposite(SMap,motorIndex," 11 -1 -107 ");
+  else
+    Out=ModelSupport::getComposite(SMap,motorIndex," -12 2 -107 ");
+      
   System.addCell(MonteCarlo::Qhull(cellIndex++,bodyMat,0.0,Out));
   addCell("MotorBody",cellIndex-1);
 
   addOuterUnionSurf("Outer",Out);
   Out=ModelSupport::getComposite(SMap,motorIndex," -7 ");
   addOuterSurf("Axle",Out);
-
   
-
   return;
 }
 
