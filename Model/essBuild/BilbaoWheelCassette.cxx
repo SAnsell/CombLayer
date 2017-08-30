@@ -116,6 +116,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   wallSegDelta(A.wallSegDelta),
   wallSegThick(A.wallSegThick),
   mainMat(A.mainMat),wallMat(A.wallMat),
+  heMat(A.heMat),
   floor(A.floor),
   roof(A.roof),
   back(A.back),
@@ -150,6 +151,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       wallSegThick=A.wallSegThick;
       mainMat=A.mainMat;
       wallMat=A.wallMat;
+      heMat=A.heMat;
       floor=A.floor;
       roof=A.roof;
       back=A.back;
@@ -254,6 +256,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   wallThick=Control.EvalPair<double>(keyName,commonName,"WallThick");
   wallThick /= 2.0; // there is half wall from each side of neighbouring sectors
   wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",keyName+"WallMat");
+  heMat=ModelSupport::EvalMat<int>(Control,baseName+"HeMat");
   mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
   temp=Control.EvalVar<double>(baseName+"Temp");
 
@@ -338,7 +341,7 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
   int SI(surfIndex+100);
-  
+
   // detailed wall
   Geometry::Cylinder *backCyl =
     SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(static_cast<long>(back)+1));
@@ -432,7 +435,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
   std::string Out;
   int SI(surfIndex+100);
   int SJ(SI);
-  
+
   for (size_t j=0; j<nWallSeg; j++)
     {
 
@@ -443,28 +446,28 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       else
 	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-10," 11 -11M ");
 
-      /// 
+      ///
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
 
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
-  
+
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13M -14M ") + Out1;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+tb));
+      System.addCell(MonteCarlo::Qhull(cellIndex++,j==0?heMat:mainMat,temp,Out+tb));
 
       SJ += 10;
     }
 
   const std::string Out1 = FC.getLinkString(back) + FC.getLinkString(front);
-  
+
   // Part from the left (remove)
   Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 3 -4 -11M ") +
     FC.getLinkString(front);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+tb));
-      
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+
   const std::string outer = tb + FC.getLinkString(front) + FC.getLinkString(back);
-  
+
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);
 

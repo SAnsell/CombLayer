@@ -65,6 +65,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   int mainMat;                  ///< main material
   int wallMat;                  ///< wall material
+  int heMat;                    ///< Helium material
   size_t floor;                 ///< Floor link point
   size_t roof;                  ///< Roof link point
   size_t back;                  ///< Back cylinder link point
