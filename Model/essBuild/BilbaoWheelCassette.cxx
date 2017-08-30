@@ -255,7 +255,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 					       "WallSegLength"+std::to_string(i));
       wallSegLength.push_back(wl);
     }
-  wallSegDelta=Control.EvalPair<double>(keyName,commonName,"WallSegDelta");
+  wallSegDelta=delta/2.0; // otherwise wall planes near bricks are not parallel
   wallSegThick=Control.EvalPair<double>(keyName,commonName,"WallSegThick");
 
   return;

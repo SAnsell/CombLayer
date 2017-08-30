@@ -176,7 +176,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSecWallSegLength13",-3.4);
   Control.addVariable("BilbaoWheelSecWallSegLength14",3.0);
   Control.addVariable("BilbaoWheelSecWallSegLength15",-4-1.2);
-  Control.addVariable("BilbaoWheelSecWallSegDelta",5);
   Control.addVariable("BilbaoWheelSecWallSegThick",0.6);
 
   
