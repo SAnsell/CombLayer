@@ -112,7 +112,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
-  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",68.5); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",68.7); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
 
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2); // TSM141108V3000: upper 0.2, lower 0.3
@@ -129,9 +129,9 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelInnerHoleXYangle",-1.0);  // value not known=>approx to put a hole on the Y-axis (0,65,0) to increase high-energy noise for conservative reasons
 
   Control.addVariable("BilbaoWheelCoolantRadiusIn",64.575); // TSM141108V3000
-  Control.addVariable("BilbaoWheelCoolantRadiusOut",128.95);
-  Control.addVariable("BilbaoWheelCaseRadius",129.15);
-  Control.addVariable("BilbaoWheelVoidRadius",131.15);
+  Control.addVariable("BilbaoWheelCoolantRadiusOut",130.8); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
+  Control.addVariable("BilbaoWheelCaseRadius",131); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
+  Control.addVariable("BilbaoWheelVoidRadius",131.2); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
   Control.addVariable("BilbaoWheelNSectors", 36);
   Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
@@ -152,7 +152,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelRadius2",77.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelMatTYPE2",0); // TSM141108V3000
 
-  Control.addVariable("BilbaoWheelRadius3",125.0);
+  Control.addVariable("BilbaoWheelRadius3",126.4); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017) - this cylinder approximates plane in that file
   Control.addVariable("BilbaoWheelMatTYPE3",3);
 
   // Sectors
