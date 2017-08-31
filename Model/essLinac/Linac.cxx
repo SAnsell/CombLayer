@@ -87,6 +87,7 @@
 #include "BeamDump.h"
 #include "FaradayCup.h"
 #include "DTL.h"
+#include "TSW.h"
 #include "Linac.h"
 
 namespace essSystem
@@ -94,7 +95,7 @@ namespace essSystem
 
 Linac::Linac(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,12), attachSystem::CellMap(),
+  attachSystem::FixedOffset(Key,17), attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(surfIndex+1),
   beamDump(new BeamDump(Key,"BeamDump")),
@@ -128,6 +129,7 @@ Linac::Linac(const Linac& A) :
   floorWidthRight(A.floorWidthRight),
   nAirLayers(A.nAirLayers),
   airMat(A.airMat),wallMat(A.wallMat),
+  nTSW(A.nTSW),
   tswLength(A.tswLength),
   tswWidth(A.tswWidth),
   tswGap(A.tswGap),
@@ -172,6 +174,7 @@ Linac::operator=(const Linac& A)
       nAirLayers=A.nAirLayers;
       airMat=A.airMat;
       wallMat=A.wallMat;
+      nTSW=A.nTSW;
       tswLength=A.tswLength;
       tswWidth=A.tswWidth;
       tswGap=A.tswGap;
@@ -219,6 +222,7 @@ Linac::populate(const FuncDataBase& Control)
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
+  nTSW=Control.EvalVar<size_t>(keyName+"NTSW");
 
   tswLength=Control.EvalVar<double>(keyName+"TSWLength");
   tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
@@ -348,6 +352,27 @@ Linac::createDTL(Simulation& System, const long int lp)
   ELog::EM << "Remove substruction of last DTL from FaradayCup" << ELog::endDiag;
   attachSystem::addToInsertLineCtrl(System,*dtl.back(),*faradayCup);
 }
+
+void
+Linac::buildTSW(Simulation& System) const
+/*!
+  Build Temporary shielding walls
+*/
+{
+  ELog::RegMethod RegA("Linac","buildTSW");
+
+  ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+
+  for (size_t i=0; i<nTSW; i++)
+    {
+      std::shared_ptr<TSW>
+        wall(new TSW(keyName,"TSW",i));
+      OR.addObject(wall);
+      wall->createAll(System,*this,13,14,15,16);
+    }
+  return;
+}
+
 
 void
 Linac::createSurfaces()
@@ -507,6 +532,18 @@ Linac::createLinks()
   FixedComp::setConnect(11,Origin+Y*(lengthFront),Y); // should be negative, but layerProcess needs positive
   FixedComp::setLinkSurf(11,SMap.realSurf(surfIndex+2));
 
+  FixedComp::setConnect(12,Origin-X*(widthRight),X);
+  FixedComp::setLinkSurf(12,SMap.realSurf(surfIndex+3));
+
+  FixedComp::setConnect(13,Origin+X*(widthLeft),-X);
+  FixedComp::setLinkSurf(13,-SMap.realSurf(surfIndex+4));
+  
+  FixedComp::setConnect(14,Origin-Z*(depth),Z);
+  FixedComp::setLinkSurf(14,SMap.realSurf(surfIndex+5));
+
+  FixedComp::setConnect(15,Origin+Z*(height),-Z);
+  FixedComp::setLinkSurf(15,-SMap.realSurf(surfIndex+6));
+
   return;
 }
 
@@ -542,6 +579,7 @@ Linac::createAll(Simulation& System,
   //  attachSystem::addToInsertControl(System,*beamDump,*faradayCup);
 
   createDTL(System, 10);
+  buildTSW(System);
 
   return;
 }

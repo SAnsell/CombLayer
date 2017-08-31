@@ -30,6 +30,7 @@ namespace essSystem
   class BeamDump;
   class FaradayCup;
   class DTL;
+  class TSW;
 
   /*!
     \class Linac
@@ -67,6 +68,7 @@ class Linac : public attachSystem::ContainedComp,
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
 
+  size_t nTSW; ///< Number of TSWs
   double tswLength; ///< Temporary shielding wall length
   double tswWidth; ///< Temporary shielding wall width
   double tswGap; ///< Distance between Temporary shielding walls
@@ -83,6 +85,7 @@ class Linac : public attachSystem::ContainedComp,
 		    const size_t& lpS, const size_t& lsS, const int&, const int&);
 
   void createDTL(Simulation&, const long int);
+  void buildTSW(Simulation& system) const;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
