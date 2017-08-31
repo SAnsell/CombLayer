@@ -368,7 +368,8 @@ Linac::buildTSW(Simulation& System) const
       std::shared_ptr<TSW>
         wall(new TSW(keyName,"TSW",i));
       OR.addObject(wall);
-      wall->createAll(System,*this,13,14,15,16);
+      wall->createAll(System,*this,12,13,14,15);
+      attachSystem::addToInsertControl(System,*this,*wall);
     }
   return;
 }
