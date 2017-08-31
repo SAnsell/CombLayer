@@ -88,7 +88,7 @@ namespace essSystem
 
 FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key,3),
+  attachSystem::FixedOffset(Base+Key,6),
   baseName(Base),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
@@ -257,6 +257,10 @@ FaradayCup::createSurfaces()
 {
   ELog::RegMethod RegA("FaradayCup","createSurfaces");
 
+  // dividers
+  ModelSupport::buildPlane(SMap,surfIndex+300,Origin,X);
+  ModelSupport::buildPlane(SMap,surfIndex+500,Origin,Z);
+
   double dy(0.0);
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin+Y*dy,Y);
   dy += faceLength;
@@ -282,6 +286,7 @@ FaradayCup::createSurfaces()
 
       ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidth[i]/2.0),X);
       ModelSupport::buildPlane(SMap,SI+4,Origin+X*(shieldWidth[i]/2.0),X);
+
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*(shieldHeight[i]/2.0),Z);
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*(shieldHeight[i]/2.0),Z);
 
@@ -377,16 +382,26 @@ FaradayCup::createLinks()
 
   if (nShieldLayers>0)
     {
-      FixedComp::setConnect(0,Origin-Y*shieldBackLength[0],-Y);
-      FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+111));
+      const int n = static_cast<int>(nShieldLayers-1);
+      const int SI(surfIndex+100+n*10);
 
-      FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[1]),Y);
-      FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+112));
+      FixedComp::setConnect(0,Origin-Y*shieldBackLength[n],-Y);
+      FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
 
-      FixedComp::setConnect(2,Origin+Z*(shieldHeight[1]/2.0),Z);
-      FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+117));
+      FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[n]),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
 
-      ELog::EM << "Add more link points" << ELog::endDiag;
+      FixedComp::setConnect(2,Origin-X*(shieldWidth[n]/2.0),-X);
+      FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
+
+      FixedComp::setConnect(3,Origin+X*(shieldWidth[n]/2.0),X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
+
+      FixedComp::setConnect(4,Origin-Z*(shieldHeight[n]/2.0),-Z);
+      FixedComp::setLinkSurf(4,-SMap.realSurf(SI+5));
+
+      FixedComp::setConnect(5,Origin+Z*(shieldHeight[n]/2.0),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
     } else
     {
       FixedComp::setConnect(0,Origin,-Y);
@@ -395,8 +410,21 @@ FaradayCup::createLinks()
       FixedComp::setConnect(1,Origin+Y*(length),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
 
-      FixedComp::setConnect(2,Origin+Z*(outerRadius),Z);
+      FixedComp::setConnect(2,Origin-X*(outerRadius)+Y*(length/2.0),-X);
       FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+17));
+      FixedComp::setBridgeSurf(2,-SMap.realSurf(surfIndex+300));
+
+      FixedComp::setConnect(3,Origin+X*(outerRadius)+Y*(length/2.0),X);
+      FixedComp::setLinkSurf(3,SMap.realSurf(surfIndex+17));
+      FixedComp::setBridgeSurf(3,SMap.realSurf(surfIndex+300));
+
+      FixedComp::setConnect(4,Origin-Z*(outerRadius)+Y*(length/2.0),-Z);
+      FixedComp::setLinkSurf(4,SMap.realSurf(surfIndex+17));
+      FixedComp::setBridgeSurf(4,-SMap.realSurf(surfIndex+500));
+
+      FixedComp::setConnect(5,Origin+Z*(outerRadius)+Y*(length/2.0),Z);
+      FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+17));
+      FixedComp::setBridgeSurf(5,SMap.realSurf(surfIndex+500));
     }
 
   return;
