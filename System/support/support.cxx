@@ -1256,7 +1256,7 @@ writeLine(std::ostream& OX,const T& V,
   const double VUnit=static_cast<double>(V);
 
   const double AVal(std::fabs(VUnit));
-  if (AVal>9.9e4 || (AVal<1e-5 && AVal>1e-38))
+  if (AVal>9.9e4 || (AVal<1e-2 && AVal>1e-38))
     OX<<(SciFMT % VUnit);
   else
     OX<<(DblFMT % VUnit);

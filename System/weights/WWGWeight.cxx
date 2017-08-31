@@ -531,8 +531,9 @@ WWGWeight::distTrack(const Simulation& System,
   TrackType OTrack(aimPt);
   
   OTrack.addUnit(System,1,gridPt);
-  double DistT=OTrack.getDistance(1)/r2Length;
+  double DistT=OTrack.getDistance(1)*r2Length;
   if (DistT<1.0) DistT=1.0;
+  // returns density * Dist * AtomicMass^0.66
   const double AT=OTrack.getAttnSum(1);
   return -densityFactor*AT-r2Power*log(DistT);
 }
