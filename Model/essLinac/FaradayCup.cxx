@@ -334,15 +334,15 @@ FaradayCup::createObjects(Simulation& System)
     {
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,
-					 " 1 -2M 17 3M -4M 5M -6M ");
+	  Out=ModelSupport::getComposite(SMap,SI,surfIndex,
+					 " 1M -2 17M 3 -4 5 -6 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
 
 	  Out=ModelSupport::getComposite(SMap,surfIndex,SI," 2 -2M -17 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
 
-	  Out=ModelSupport::getComposite(SMap,surfIndex,SI,
-					 " 1M -1 3M -4M 5M -6M ");
+	  Out=ModelSupport::getComposite(SMap,SI,surfIndex,
+					 " 1 -1M 3 -4 5 -6 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[0],0.0,Out));
 	} else
 	{
