@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/PointOperation.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@
 #include "Vec3D.h"
 #include "surfProg.h"
 
-
 namespace Geometry
 {
 
@@ -44,7 +43,7 @@ void
 expandCluster(const double D,std::vector<Vec3D>& planePts)
   /*!
     Expand / contract a group of points around the centre
-    point. Determined from entry points.
+    point. Determined from entry points as average mid point.
     \param D :: Distance to move point by +ve is outwards)
     \param planePts :: Point that need to be moved
   */
@@ -52,16 +51,16 @@ expandCluster(const double D,std::vector<Vec3D>& planePts)
   if (planePts.empty())
     return;
 
-  std::vector<Vec3D>::iterator vc;
-  Vec3D centPoint;
-  for(vc=planePts.begin();vc!=planePts.end();vc++)
-    centPoint+=*vc;
-  centPoint/=static_cast<double>(planePts.size());
+  Geometry::Vec3D centPoint;
+  for(const Geometry::Vec3D& Pt : planePts)
+    centPoint+= Pt;
   
-  for(vc=planePts.begin();vc!=planePts.end();vc++)
+  centPoint/=static_cast<double>(planePts.size());
+
+  for(Geometry::Vec3D& Pt : planePts)
     {
-      const Geometry::Vec3D unitVec=(*vc-centPoint).unit();
-      (*vc) += unitVec*D;
+      const Geometry::Vec3D unitVec=(Pt-centPoint).unit();
+      Pt += unitVec*D;
     }
   return;
 }

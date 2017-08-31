@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
@@ -140,33 +141,6 @@ TESTBEAM::~TESTBEAM()
   */
 {}
 
-void
-TESTBEAM::setBeamAxis(const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("TESTBEAM","setBeamAxis");
-
-  testAxis->createUnitVector(GItem);
-  testAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  testAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  testAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  testAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  testAxis->linkShift(3);
-  testAxis->linkShift(4);
-  testAxis->linkAngleRotate(3);
-  testAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    testAxis->reverseZ();
-  return;
-}
 
 void
 TESTBEAM::buildBunkerUnits(Simulation& System,
@@ -190,8 +164,8 @@ TESTBEAM::buildBunkerUnits(Simulation& System,
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
                     ChopperT0->getKey("BuildBeam"),0);
 
-  T0Motor->addInsertCell(bunkerVoid);
-  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
+  //  T0Motor->addInsertCell(bunkerVoid);
+  //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
   return;
   CryoA->addInsertCell(bunkerVoid);
   CryoA->createAll(System,FA,startIndex);
@@ -262,7 +236,7 @@ TESTBEAM::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
 
-  setBeamAxis(GItem,0);
+  essBeamSystem::setBeamAxis(*testAxis,Control,GItem,1);
     
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

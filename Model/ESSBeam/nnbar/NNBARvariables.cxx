@@ -89,17 +89,17 @@ NNBARvariables(FuncDataBase& Control)
   LGen.setRoof(100.0,{35.0,65.0}, {4,4}, {"CastIron","Concrete"});
   LGen.setFloor(100.0,{35.0,65.0}, {4,4}, {"CastIron","Concrete"});
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(2.0);
-  FGen.setThickness(0.5,0.5);
-  FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 12.0,20.0);
+  FGen.generateTaper(Control,"nnbarFA",350.0, 30.0,50.0, 30.0,50.0);
 
   PipeGen.setPipe(35.0,1.0);
   PipeGen.setWindow(-4.0,1.0);
   PipeGen.setFlange(-8.0,4.0);
   PipeGen.generatePipe(Control,"nnbarPipeB",8.0,46.0);
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"nnbarFB",38.0, 50.0,55.0, 20.0,25.0);
 
@@ -173,10 +173,17 @@ NNBARvariables(FuncDataBase& Control)
 
   Control.addVariable("G1BLineTop11Width1",50.0);
   Control.addVariable("G1BLineTop11Width2",65.0);
-  Control.addVariable("G1BLineTop11Depth1",15.0);
+
+  Control.addVariable("G1BLineTop11Depth1",40.0);
+  Control.addVariable("G1BLineTop11Depth2",45.0);
+  
+  Control.addVariable("G1BLineTop11Height1",40.0);
+  Control.addVariable("G1BLineTop11Height2",44.0);
   Control.addVariable("GuideBayInnerHeight",60.0);
+  Control.addVariable("GuideBayHeight",70.0);
 
   return;
 }
  
 }  // NAMESPACE setVariable
+ 

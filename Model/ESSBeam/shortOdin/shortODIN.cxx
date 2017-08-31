@@ -379,7 +379,6 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   PitB->createAll(System,GuideE->getKey("Guide0"),2);
 
   ChopperB->addInsertCell(PitB->getCell("Void"));
-  ChopperB->setCentreFlag(-3);  // -Z direction
   ChopperB->createAll(System,*PitB,0);
 
   ELog::EM<<"PitB == "<<PitB->getCentre()

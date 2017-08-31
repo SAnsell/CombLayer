@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/surfIndex.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,10 +31,6 @@
 #include <string>
 #include <algorithm>
 
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -47,7 +43,7 @@
 #include "Triple.h"
 #include "Quaternion.h"
 #include "support.h"
-#include "regexSupport.h"
+#include "regexBuild.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
@@ -706,9 +702,9 @@ surfIndex::readOutputSurfaces(const std::string& FName)
       return -1;
     }
 
-  boost::regex startSea("SURFACE CARDS");
-  boost::regex surfUnit("^\\s*(\\d+)-\\s+(\\S.*)$");
-  boost::regex stopSea("\\+\\+\\s*END\\s*\\+\\+");
+  const std::string startSea("SURFACE CARDS");
+  const std::string surfUnit("^\\s*(\\d+)-\\s+(\\S.*)$");
+  const std::string stopSea("\\+\\+\\s*END\\s*\\+\\+");
 
   std::string InputLine;
   std::string Line;
@@ -737,7 +733,7 @@ surfIndex::readOutputSurfaces(const std::string& FName)
 	  else if ((!errLine.empty() && monoLine>1) ||
 		   errLine.size()>4)
 	    {
-	      ELog::EM<<"Error with line grp:"<<ELog::endCrit;;
+	      ELog::EM<<"Error with line grp:"<<ELog::endCrit;
 	      for(unsigned int i=0;i<errLine.size();i++)
 		ELog::EM<<"   "<<errLine[i]<<ELog::endCrit;
 	      throw ColErr::InvalidLine(Line,"Line",0);

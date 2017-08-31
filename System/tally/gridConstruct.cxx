@@ -84,7 +84,6 @@
 #include "MeshGrid.h"
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "gridConstruct.h" 
 
 
@@ -145,12 +144,14 @@ gridConstruct::processGrid(Simulation& System,
   
   if (PType=="free")
     {
+      size_t itemIndex(2);
       Geometry::Vec3D TOrigin=
-	inputItem<Geometry::Vec3D>(IParam,Index,2,"Centre point detector");
+	IParam.getCntVec3D("tally",Index,itemIndex,"Centre point detector");
       Geometry::Vec3D XVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,5,"XVector");
+	IParam.getCntVec3D("tally",Index,itemIndex,"XVector");
       Geometry::Vec3D YVec=
-	inputItem<Geometry::Vec3D>(IParam,Index,8,"YVector");
+	IParam.getCntVec3D("tally",Index,itemIndex,"YVector");
+
       TOrigin=MR.reverseRotate(TOrigin);
       XVec=MR.reverseAxisRotate(XVec);
       YVec=MR.reverseAxisRotate(YVec);
@@ -161,9 +162,13 @@ gridConstruct::processGrid(Simulation& System,
     {
       size_t offsetIndex(4);
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"object name not given");
+	IParam.getValueError<std::string>
+	("tally",Index,2,"object name not given");
+      
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
+
       Geometry::Vec3D TOrigin=
 	IParam.getCntVec3D("tally",Index,offsetIndex,"Centre point offset");
       Geometry::Vec3D XVec=

@@ -3,7 +3,7 @@
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -219,7 +219,7 @@ main(int argc,char* argv[])
   ELog::RegMethod RControl("","main");
   mainSystem::activateLogging(RControl);
   ELog::EM.setDebug(0);
-  ELog::EM.setAction(0);
+  ELog::EM.setAction(ELog::error);
 
   int retVal(0);
   if(argc>1)
@@ -342,7 +342,7 @@ startTest(const int section,const int type,const int extra)
 	  return montecarloTest(type,extra);
 	}
 
-      // POLY
+      // PHYSICS
       if (section==8)
 	{
 	  TestFunc::regGroup("Physics");
@@ -550,8 +550,6 @@ funcbaseTest(const int type,const int extra)
       std::cout<<"testFunction             (1)"<<std::endl;
       std::cout<<"testMD5                  (2)"<<std::endl;
       std::cout<<"testVarNameOrder         (3)"<<std::endl;
-      std::cout<<"testVarList              (4)"<<std::endl;
-
     }
 
   if(type==1 || type<0)
@@ -1015,7 +1013,6 @@ processTest(const int type,const int extra)
       if (X) return X;
     }
   index++;
-
   
   if(type==index || type<0)
     {
@@ -1285,7 +1282,7 @@ fullTest()
 {
   ELog::RegMethod RegA("testMain","fullTest");
 
-  for(int i=0;i<11;i++)
+  for(int i=0;i<14;i++)
     {
       std::ostringstream cx;
       cx<<"TEST SECTION : "<<i+1;

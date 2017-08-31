@@ -63,7 +63,7 @@ namespace essSystem
   class IradCylinder;
   class BulkModule;
   class ShutterBay;
-  class ProtonTube;
+  class TelescopicPipe;
   class PreModWing;
   class GuideBay;
   class BeamMonitor;
@@ -73,10 +73,12 @@ namespace essSystem
   class TwisterModule;
   class RoofPillars;
   class Curtain;
+  class HighBay;
   class F5Collimator;
   class BunkerFeed;
   class WedgeFlightLine;
   class Chicane;
+
 
       
   /*!
@@ -93,7 +95,7 @@ class makeESS
   
   std::shared_ptr<WheelBase> Target;   ///< target object
   std::shared_ptr<BeRef> Reflector;    ///< reflector object
-  std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
+  std::shared_ptr<TelescopicPipe> PBeam;   ///< Proton Void
   std::shared_ptr<BeamMonitor> BMon;   ///< Beam Monitor
 
   // main moderator focus points
@@ -146,6 +148,8 @@ class makeESS
   ///< Right bunker Pillars [B]
   std::shared_ptr<RoofPillars> BBunkerPillars; 
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
+  std::shared_ptr<HighBay> ABHighBay;   ///< HighBay structure
+  std::shared_ptr<HighBay> CDHighBay;   ///< HighBay structure
 
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array; 

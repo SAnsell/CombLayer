@@ -83,7 +83,6 @@
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
 #include "pointDetOpt.h"
-#include "basicConstruct.h" 
 #include "meshConstruct.h" 
 
 #include "TallyCreate.h"
@@ -999,7 +998,7 @@ setSDField(Simulation& Sim,const int tNumber,
    */
 {
   ELog::RegMethod RegA("TallyCreate","setSDField");
-  
+
   Simulation::TallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
   Simulation::TallyTYPE::iterator mc;

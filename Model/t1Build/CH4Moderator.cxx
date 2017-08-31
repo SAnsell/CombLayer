@@ -3,7 +3,7 @@
  
  * File:   t1Build/CH4Moderator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,9 +53,6 @@
 #include "objectRegister.h"
 #include "surfEqual.h"
 #include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
@@ -69,9 +66,9 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
-#include "t1Reflector.h"
 #include "CH4Moderator.h"
 
 namespace ts1System
@@ -79,7 +76,7 @@ namespace ts1System
 
 CH4Moderator::CH4Moderator(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::LayerComp(4),
-  attachSystem::FixedComp(Key,6),
+  attachSystem::FixedOffset(Key,6),
   ch4Index(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(ch4Index+1)
   /*!
@@ -90,9 +87,8 @@ CH4Moderator::CH4Moderator(const std::string& Key)  :
 
 CH4Moderator::CH4Moderator(const CH4Moderator& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
-  attachSystem::FixedComp(A),ch4Index(A.ch4Index),
-  cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  attachSystem::FixedOffset(A),ch4Index(A.ch4Index),
+  cellIndex(A.cellIndex),
   width(A.width),height(A.height),depth(A.depth),
   viewSphere(A.viewSphere),innerThick(A.innerThick),
   vacThick(A.vacThick),outerThick(A.outerThick),
@@ -121,12 +117,9 @@ CH4Moderator::operator=(const CH4Moderator& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -159,23 +152,17 @@ CH4Moderator::~CH4Moderator()
 {}
 
 void
-CH4Moderator::populate(const Simulation& System)
+CH4Moderator::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("CH4Moderator","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   nLayers=4;  
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-
+  FixedOffset::populate(Control);
+  
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -206,36 +193,20 @@ CH4Moderator::populate(const Simulation& System)
   ch4Temp=Control.EvalVar<double>(keyName+"CH4Temp");
   return;
 }
-
-void
-CH4Moderator::applyModification(std::map<size_t,double>&) const
-  /*!
-    Create the modified layer set
-    layers are numbered in set of 10 going from the inner all
-    (no modification) to 50 at the outer. Then in -/+ (Y,X,Z).
-    \param MM :: Map to add
-  */
-{
-//  MM[36]=clearTop;
-//  MM[21]=outerView;
-//  MM[22]=outerView;
-//  MM[26]=vacTop;
-  return;
-}
   
 void
-CH4Moderator::createUnitVector(const attachSystem::FixedComp& FC)
+CH4Moderator::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Down the beamline
     \param FC :: Linked object
+    \param sideIndex :: linkpoint
   */
 {
   ELog::RegMethod RegA("CH4Moderator","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,0);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -264,7 +235,6 @@ CH4Moderator::createSurfaces()
 
   // Modification map:
   std::map<size_t,double> modLayer;
-  applyModification(modLayer);
   std::map<size_t,double>::const_iterator mc;
   const double layer[]={innerThick,vacThick,outerThick,clearThick};
 
@@ -332,18 +302,6 @@ CH4Moderator::createSurfaces()
                       
   return;
 }
-
-// void
-// CH4Moderator::addToInsertChain(attachSystem::ContainedComp& CC) const
-//   /*!
-//     Adds this object to the containedComp to be inserted.
-//     \param CC :: ContainedComp object to add to this
-//   */
-// {
-//   for(int i=ch4Index+1;i<cellIndex;i++)
-//     CC.addInsertCell(i);
-//   return;
-// }
 
 void
 CH4Moderator::createObjects(Simulation& System)
@@ -458,7 +416,6 @@ CH4Moderator::getSurfacePoint(const size_t layerIndex,
 
   // Modification map:
   std::map<size_t,double> modLayer;
-  applyModification(modLayer);
   std::map<size_t,double>::const_iterator mc;
 //  const double layer[]={0.0,innerThick,vacThick,outerThick,clearThick};
   const double layer[]={innerThick,vacThick,outerThick,clearThick};
@@ -573,19 +530,20 @@ CH4Moderator::getComposite(const std::string& surfList) const
 
 void
 CH4Moderator::createAll(Simulation& System,
-			const attachSystem::FixedComp& FC)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
     \param FC :: Fixed Component to place object within
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("CH4Moderator","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FC); 
+  createUnitVector(FC,sideIndex); 
   createSurfaces();
-//  createObjects(System);
   createObjects(System);
   createLinks();
   insertObjects(System);       

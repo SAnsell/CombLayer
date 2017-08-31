@@ -76,6 +76,7 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "surfDBase.h"
 #include "surfDIter.h"
 #include "surfDivide.h"
@@ -89,7 +90,7 @@ namespace essSystem
 {
 
 Curtain::Curtain(const std::string& Key)  :
-  attachSystem::ContainedGroup("Top","Mid","Lower"),
+  attachSystem::ContainedGroup("Top","Mid","Lower","RoofCut"),
   attachSystem::FixedGroup(Key,"Top",6,"Mid",14,"Lower",16),
   attachSystem::CellMap(),
   curIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -102,14 +103,17 @@ Curtain::Curtain(const std::string& Key)  :
 
 Curtain::Curtain(const Curtain& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedGroup(A),
-  attachSystem::CellMap(A),
-  curIndex(A.curIndex),cellIndex(A.cellIndex),wallRadius(A.wallRadius),
-  leftPhase(A.leftPhase),rightPhase(A.rightPhase),
-  innerStep(A.innerStep),wallThick(A.wallThick),baseGap(A.baseGap),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  curIndex(A.curIndex),cellIndex(A.cellIndex),
+  wallRadius(A.wallRadius),leftPhase(A.leftPhase),
+  rightPhase(A.rightPhase),innerStep(A.innerStep),
+  wallThick(A.wallThick),baseGap(A.baseGap),
   outerGap(A.outerGap),topRaise(A.topRaise),depth(A.depth),
-  height(A.height),nTopLayers(A.nTopLayers),nMidLayers(A.nMidLayers),
-  nBaseLayers(A.nBaseLayers),topFrac(A.topFrac),
-  midFrac(A.midFrac),baseFrac(A.baseFrac),wallMat(A.wallMat)
+  height(A.height),nTopLayers(A.nTopLayers),
+  nMidLayers(A.nMidLayers),nBaseLayers(A.nBaseLayers),
+  topFrac(A.topFrac),midFrac(A.midFrac),baseFrac(A.baseFrac),
+  topMat(A.topMat),midMat(A.midMat),baseMat(A.baseMat),
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: Curtain to copy
@@ -129,6 +133,7 @@ Curtain::operator=(const Curtain& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedGroup::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       wallRadius=A.wallRadius;
       leftPhase=A.leftPhase;
@@ -146,10 +151,14 @@ Curtain::operator=(const Curtain& A)
       topFrac=A.topFrac;
       midFrac=A.midFrac;
       baseFrac=A.baseFrac;
+      topMat=A.topMat;
+      midMat=A.midMat;
+      baseMat=A.baseMat;
       wallMat=A.wallMat;
     }
   return *this;
 }
+
 
 Curtain::~Curtain() 
   /*!
@@ -192,6 +201,9 @@ Curtain::populate(const FuncDataBase& Control)
   ModelSupport::populateDivideLen(Control,nBaseLayers,keyName+"BaseLen",
 				  depth,baseFrac);
 
+  ModelSupport::populateDivide(Control,nBaseLayers,keyName+"BaseMat",
+                               ModelSupport::EvalMatName("Void"),
+                               baseMat);	  
   return;
 }
   
@@ -262,6 +274,7 @@ Curtain::createSurfaces()
   ModelSupport::buildCylinder(SMap,curIndex+127,
 			      Origin,Z,wallRadius+wallThick+outerGap);
 
+  
   ModelSupport::buildPlane(SMap,curIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,curIndex+6,Origin+Z*height,Z);
   ModelSupport::buildPlane(SMap,curIndex+15,Origin+Z*topRaise,Z);
@@ -270,7 +283,9 @@ Curtain::createSurfaces()
   
   ModelSupport::buildPlane(SMap,curIndex+3,AWall,AWallDir);
   ModelSupport::buildPlane(SMap,curIndex+4,BWall,BWallDir);
-  
+
+  setSurf("OuterRadius",SMap.realSurf(curIndex+127));
+  setSurf("OuterZStep",SMap.realSurf(curIndex+15));
   return;
 }
 
@@ -307,8 +322,11 @@ Curtain::createObjects(Simulation& System,
   // Mid section
   Out=ModelSupport::getComposite(SMap,curIndex," 7 -27 3 -4 -15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+topSurf));
-  addOuterSurf("Mid",Out+topSurf);
   setCell("midWall",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 -15 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topSurf));
+  setCell("MidGap",cellIndex-1);
 
   // Lower section
   Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 5 ");
@@ -318,15 +336,20 @@ Curtain::createObjects(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,curIndex," -27 3 -4 -5 105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+sideSurf));
-  setCell("BaseBap",cellIndex-1);
+  setCell("BaseGap",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,curIndex," 27 -127 3 -4 105 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+topBase+sideSurf));
-  setCell("BaseBap",cellIndex-1);
+  setCell("BaseGap",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,curIndex,"-127 3 -4 105 ");
   addOuterSurf("Lower",Out+topBase);
 
+  Out=ModelSupport::getComposite(SMap,curIndex,"7 -127 3 -4 -15 ");
+  addOuterSurf("Mid",Out+topSurf);
+
+  Out=ModelSupport::getComposite(SMap,curIndex,"105 -127 3 -4 ");
+  addOuterSurf("RoofCut",Out);
   return;
 }
 
@@ -382,27 +405,25 @@ Curtain::layerProcess(Simulation& System,
       const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
       ModelSupport::surfDivide DA;
             
-      for(size_t i=1;i<nTopLayers;i++)
+      for(size_t i=1;i<nBaseLayers;i++)
 	{
-	  DA.addFrac(topFrac[i-1]);
-	  DA.addMaterial(wallMat);
+	  DA.addFrac(baseFrac[i-1]);
+	  DA.addMaterial(baseMat[i-1]);
 	}
-      DA.addMaterial(wallMat);
+      DA.addMaterial(baseMat.back());
       
       DA.setCellN(getCell("baseWall"));
       DA.setOutNum(cellIndex,curIndex+1101);
       ModelSupport::mergeTemplate<Geometry::Plane,
 				  Geometry::Plane> surroundRule;
       surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
-			       SMap.realSurf(topSurf));
+                               SMap.realSurf(topSurf));
+
+      OutA=FC.getSignedLinkString(-topIndex);
+      OutB=ModelSupport::getComposite(SMap,curIndex," 5 ");
       
-      OutA=ModelSupport::getComposite(SMap,curIndex," 5 ");
-      OutB=FC.getSignedLinkString(-topIndex);
-	//      OutB=ModelSupport::getComposite(SMap,curIndex,
-	//			      );
-      
-      surroundRule.setInnerRule(OutA);
-      surroundRule.setOuterRule(OutB);
+      surroundRule.setInnerRule(OutB);
+      surroundRule.setOuterRule(OutA);
       
       DA.addRule(&surroundRule);
       DA.activeDivideTemplate(System);
@@ -411,8 +432,6 @@ Curtain::layerProcess(Simulation& System,
       //      setCells(cellName,firstCell,cellIndex-1);
 
     }
-  // Steel layers
-  //  layerSpecial(System);
 
   return;
 }
@@ -427,11 +446,10 @@ Curtain::createLinks()
   ELog::RegMethod RegA("Curtain","createLinks");
 
   attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
-  attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   // Lower first:
-  const double angleStep((M_PI/180.0)*(rightPhase-leftPhase)/3.0);
+  //  const double angleStep((M_PI/180.0)*(rightPhase-leftPhase)/3.0);
   double angle(M_PI*leftPhase/180.0);
   for(size_t i=0;i<4;i++)
     {

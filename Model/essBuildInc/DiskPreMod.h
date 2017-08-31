@@ -36,9 +36,10 @@ namespace essSystem
 */
 
 class DiskPreMod : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,
-    public attachSystem::FixedComp,
-    public attachSystem::CellMap
+  public attachSystem::LayerComp,
+  public attachSystem::FixedComp,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   

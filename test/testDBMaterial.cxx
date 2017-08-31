@@ -1,9 +1,9 @@
  /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testDBMaterial.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,14 +122,14 @@ testDBMaterial::testCombine()
     \retval 0 :: All passed
   */
 {
-  ELog::RegMethod RegA("testDBMaterial","testSideDirection");
+  ELog::RegMethod RegA("testDBMaterial","testCombine");
 
 
   // "MatLine" : MTLine : MibLine
   typedef std::tuple<std::string,int,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-
-  Tests.push_back(TTYPE("H2O%D2O%50",1,"1002.24c 0.0330067"));
+  std::vector<TTYPE> Tests={
+    TTYPE("H2O%D2O%50",1,"1002.70c 0.0330067")
+  };
 
   DBMaterial& DB=DBMaterial::Instance();
 
@@ -150,6 +150,7 @@ testDBMaterial::testCombine()
 	      ELog::EM<<"Test "<<cnt<<ELog::endDiag;
 	      ELog::EM<<"String "<<std::get<2>(tc)<<ELog::endDiag;
 	      ELog::EM<<"Material --: \n"<<MT<<ELog::endDiag;
+	      return -1;
 	    }
 	}
       else if (res!=std::get<1>(tc))

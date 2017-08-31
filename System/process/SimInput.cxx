@@ -3,7 +3,7 @@
  
  * File:   process/SimInput.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,8 @@
 #include "SimValid.h"
 #include "MainProcess.h"
 #include "WeightControl.h"
+#include "WCellControl.h"
+#include "WWGControl.h"
 #include "SimInput.h"
 
 
@@ -102,8 +104,10 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
   WeightSystem::PWT(System,IParam);
   WeightSystem::EnergyCellCut(System,IParam);
   mainSystem::renumberCells(System,IParam);
-  WeightSystem::WeightControl WC;
-  WC.processWeights(System,IParam);
+  WeightSystem::WCellControl WCell;
+  WeightSystem::WWGControl WWGC;
+  WCell.processWeights(System,IParam);
+  WWGC.processWeights(System,IParam);
   
   return;
 }

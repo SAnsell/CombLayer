@@ -148,6 +148,20 @@ GuideBay::~GuideBay()
 {}
 
 void
+GuideBay::setCylBoundary(const int A,const int B)
+  /*!
+    Set inside and outside cylinder cuts
+    \todo Move to a headrule system
+    \param A :: Inner cylinder 
+    \param B :: Outer cylinder
+   */
+{
+  innerCyl=std::abs(A);
+  outerCyl=std::abs(B);
+  return;
+}
+  
+void
 GuideBay::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables

@@ -141,9 +141,6 @@ class HEIMDAL : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusTF;
 
 
-  
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const attachSystem::FixedComp&,
 			const long int,const int);

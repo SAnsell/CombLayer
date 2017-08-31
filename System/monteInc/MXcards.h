@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/MXcards.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 namespace MonteCarlo
 {
-
+  class Zaid;
 /*!
   \class MXcards
   \version 1.0
@@ -36,32 +36,27 @@ namespace MonteCarlo
 class MXcards 
 {
  private:
-  
-  int Mnum;                           ///< Material number
-  size_t NZaid;                       ///< Number of Zaids
+
   std::string particle;               ///< Item point
-  std::vector<std::string> items;     ///< Items
+  std::map<size_t,std::string> items;     ///< Items [Zaid : value]
 
  public:
   
-  MXcards();
-  MXcards(const int,const size_t,const std::string&);
+  MXcards(const std::string&);
   MXcards(const MXcards&);
   MXcards& operator=(const MXcards&);
+  bool operator==(const MXcards&) const;
+  
   /// Clone function
   MXcards* clone() const { return new MXcards(*this); }
   virtual ~MXcards();
 
-  void setNumber(const int nA) { Mnum=nA; }  ///< set the MXcards number
-  int getNumber() const { return Mnum; }     ///< Assesor function to Number
+  bool hasZaid(const size_t) const;
+  void setZaid(const size_t,const std::string&);
+  const std::string& getZaid(const size_t) const;
 
 
-  void setCard(const int,const std::string&,const size_t);
-  void setItem(const std::vector<std::string>&);
-  void setItem(const size_t,const std::string&);
-
-
-  void write(std::ostream&) const;               
+  void write(std::ostream&,const std::vector<Zaid>&) const;               
   
 };
 

@@ -95,7 +95,7 @@ TESTBEAMvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete"); 
   SGen.addWallMat(5,"Concrete");
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"testBeamFA",350.0, 10.0,6.0, 12.0,12.0);
 

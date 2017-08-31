@@ -1639,7 +1639,6 @@ Simulation::writeMaterial(std::ostream& OX) const
   DB.resetActive();
 
 
-
   if (!PhysPtr->getMode().hasElm("h"))
     DB.deactivateParticle("h");
   
@@ -1739,6 +1738,8 @@ Simulation::writeVariables(std::ostream& OX,
 {
   ELog::RegMethod RegA("Simulation","writeVaraibles");
   OX<<commentChar<<" ---------- VERSION NUMBER ------------------"<<std::endl;
+  OX<<commentChar<<"  ===Git: "<<version::Instance().getBuildTag()
+    <<" ====== "<<std::endl;
   OX<<commentChar<<"  ========= "<<version::Instance().getIncrement()
     <<" ========== "<<std::endl;
   OX<<commentChar<<" ----------------------------------------------"<<std::endl;

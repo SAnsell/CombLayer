@@ -3,7 +3,7 @@
  
  * File:   source/BeamSource.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,7 +245,7 @@ BeamSource::populate(const FuncDataBase& Control)
       ELog::EM<<"Default energy == "<<E<<ELog::endDiag;
       const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
       const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
-      const double EStep((EEnd-E)/(nE+1));
+      const double EStep((EEnd-E)/static_cast<double>(nE+1));
       for(size_t i=0;i<nE;i++)
 	{
 	  Energy.push_back(E);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModel/ProtonFlight.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,6 @@
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -81,10 +78,9 @@ ProtonFlight::ProtonFlight(const std::string& Key)  :
   attachSystem::ContainedGroup("box","line"),
   attachSystem::FixedComp(Key,2),
   protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1),populated(0)
+  cellIndex(protonIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param N :: Index value
     \param Key :: Name for item in search
   */
 {}
@@ -92,7 +88,7 @@ ProtonFlight::ProtonFlight(const std::string& Key)  :
 ProtonFlight::ProtonFlight(const ProtonFlight& A) : 
   attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
-  populated(A.populated),boxX(A.boxX),boxY(A.boxY),boxZ(A.boxZ),
+  boxX(A.boxX),boxY(A.boxY),boxZ(A.boxZ),
   backSurf(A.backSurf),targetCell(A.targetCell),Angle(A.Angle),
   YOffset(A.YOffset),width(A.width),
   height(A.height),targetBeThick(A.targetBeThick),
@@ -121,7 +117,6 @@ ProtonFlight::operator=(const ProtonFlight& A)
       attachSystem::ContainedGroup::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       boxX=A.boxX;
       boxY=A.boxY;
       boxZ=A.boxZ;
@@ -158,15 +153,13 @@ ProtonFlight::~ProtonFlight()
 {}
 
 void
-ProtonFlight::populate(const Simulation& System)
+ProtonFlight::populate(  const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to use
   */
 {
   ELog::RegMethod RegA("ProtonFlight","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   Angle=Control.EvalVar<double>(keyName+"Angle");
   YOffset=Control.EvalVar<double>(keyName+"YOffset");
@@ -193,20 +186,21 @@ ProtonFlight::populate(const Simulation& System)
 
   protonEnergy=Control.EvalVar<double>(keyName+"Energy");
 
-  populated=1;
   return;
 }
 
 void
-ProtonFlight::createUnitVector(const attachSystem::FixedComp& FC)
+ProtonFlight::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComponent
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ProtonFlight","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   
   boxX=X;
   boxY=Y;
@@ -371,7 +365,7 @@ ProtonFlight::exitWindow(const double Dist,
 void
 ProtonFlight::createAll(Simulation& System,
 			const attachSystem::FixedComp& FC,
-			const int)
+			const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -380,8 +374,8 @@ ProtonFlight::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("ProtonFlight","createAll");
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createTarget(System);
@@ -390,4 +384,4 @@ ProtonFlight::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE lensSystem

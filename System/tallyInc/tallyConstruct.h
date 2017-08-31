@@ -3,7 +3,7 @@
  
  * File:   tallyInc/tallyConstruct.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ namespace tallySystem
 
   Provides linkage to its outside on FixedComp[0]
 */
-class tallyConstruct  : public basicConstruct
+class tallyConstruct  
 {
  private:
 
@@ -57,7 +57,7 @@ class tallyConstruct  : public basicConstruct
   heatConstruct* heatPtr;             ///< Heat [f6]
   itemConstruct* itemPtr;             ///< Items : Beamline/named system
   surfaceConstruct* surfPtr;          ///< Surface [f1]
-  fissionConstruct* fissionPtr;       ///< Fission f7
+  fissionConstruct* fissionPtr;       ///< Fission [f7]
   sswConstruct* sswPtr;               ///< SSW tally
 
   virtual void helpTallyType(const std::string&) const;
@@ -75,21 +75,24 @@ class tallyConstruct  : public basicConstruct
 		      const Geometry::Vec3D&,const Geometry::Vec3D&) const;
 
   void initStatic();
-  
- public:
 
   tallyConstruct(const tallyConstructFactory&);
   tallyConstruct(const tallyConstruct&);
   tallyConstruct& operator=(const tallyConstruct&);
-  virtual ~tallyConstruct();
 
-  virtual void setPoint(pointConstruct*);
-  virtual void setFission(fissionConstruct*);
+  static tallyConstruct& buildInstance(const tallyConstructFactory&);
+ public:
+
+  ~tallyConstruct();
+  static tallyConstruct& Instance(const tallyConstructFactory* =0);
+
+  void setPoint(pointConstruct*);
+  void setFission(fissionConstruct*);
   
-  virtual int tallySelection(Simulation&,const mainSystem::inputParam&) const;
-  virtual int tallyRenumber(Simulation&,const mainSystem::inputParam&) const;
+  int tallySelection(Simulation&,const mainSystem::inputParam&) const;
+  int tallyRenumber(Simulation&,const mainSystem::inputParam&) const;
 
-  virtual void writeHelp(std::ostream&) const {}
+  void writeHelp(std::ostream&) const {}
 };
 
 }

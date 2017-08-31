@@ -3,7 +3,7 @@
  
  * File:   t1Build/makeT1Real.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
@@ -429,7 +430,7 @@ makeT1Real::build(Simulation* SimPtr,
   Lh2ModObj->createAll(*SimPtr,*VoidObj);
 
   RefObj->addToInsertChain(*CH4ModObj);
-  CH4ModObj->createAll(*SimPtr,*VoidObj);
+  CH4ModObj->createAll(*SimPtr,*VoidObj,0);
 
   RefObj->addToInsertChain(*MerlinMod);
   MerlinMod->createAll(*SimPtr,*VoidObj);

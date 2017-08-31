@@ -3,7 +3,7 @@
  
  * File:   tally/heatConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,9 +66,9 @@
 #include "NRange.h"
 #include "Tally.h"
 #include "TallyCreate.h"
+#include "objectSupport.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "heatConstruct.h" 
 
 namespace tallySystem
@@ -124,7 +124,7 @@ heatConstruct::processHeat(Simulation& System,
     }
 
   const std::vector<int> cells=
-    getCellSelection(System,matN,cellKey);
+    objectSupport::getCellSelection(System,matN,cellKey);
   if (cells.empty())
     throw ColErr::InContainerError<std::string>
       (cellKey+":"+StrFunc::makeString(MType),"cell/mat not present in model");

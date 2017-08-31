@@ -54,6 +54,7 @@
 #include "surfEqual.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 
@@ -321,7 +322,6 @@ FixedComp::reOrientate()
   */
 {
   ELog::RegMethod RegA("FixedComp","reOrientate");
-
   
   if (primeAxis>0)
     reOrientate(static_cast<size_t>(primeAxis)-1,orientateAxis);
@@ -838,8 +838,7 @@ FixedComp::setLinkSurf(const size_t Index,
   if (otherIndex>=FC.LU.size())
     throw ColErr::IndexError<size_t>(otherIndex,FC.LU.size(),
 				  "otherIndex/LU.size");
-
-  setLinkSurf(Index,-FC.getLinkSurf(otherIndex));
+  setLinkSurf(Index,FC.getMainRule(otherIndex).complement());
   return;
 }
 
@@ -949,6 +948,31 @@ FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
 }
 
 void
+FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
+			  const Geometry::Vec3D& A)
+ /*!
+   Set the axis of the linked component
+   \param Index :: Link number
+   \param C :: Centre coordinate
+   \param A :: Axis direciton
+ */
+{
+  ELog::RegMethod RegA("FixedComp","setLineConnect");
+
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU.size/index");
+
+  LinkUnit& LObj=LU[Index];
+  LObj.populateSurf();
+  const Geometry::Vec3D Pt=
+    SurInter::getLinePoint(C,A,LObj.getMainRule(),LObj.getCommonRule()); 
+  LObj.setConnectPt(Pt);
+  LObj.setAxis(A);
+
+  return;
+}
+
+void
 FixedComp::setLinkComponent(const size_t Index,
 			    const FixedComp& FC,
 			    const size_t sideIndex)
@@ -997,7 +1021,7 @@ FixedComp::setLinkCopy(const size_t Index,
 void
 FixedComp::setLinkSignedCopy(const size_t Index,
 			     const FixedComp& FC,
-			     const long int  sideIndex)
+			     const long int sideIndex)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -1481,9 +1505,9 @@ FixedComp::selectAltAxis(const long int sideIndex,
   YOut=getSignedLinkAxis(sideIndex);
 
   double dp[3];
-  dp[0]=fabs(X.dotProd(YOut)); 
-  dp[1]=fabs(Y.dotProd(YOut)); 
-  dp[2]=fabs(Z.dotProd(YOut)); 
+  dp[0]=std::abs(X.dotProd(YOut)); 
+  dp[1]=std::abs(Y.dotProd(YOut)); 
+  dp[2]=std::abs(Z.dotProd(YOut)); 
   const double* dptr=std::max_element(dp,dp+3);
 
   XOut=(dptr==dp) ? Y : X;

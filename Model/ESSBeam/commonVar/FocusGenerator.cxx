@@ -57,52 +57,15 @@ namespace setVariable
 {
 
 FocusGenerator::FocusGenerator() :
-  substrateThick(0.5),supportThick(0.0),
-  voidThick(1.5),yStepActive(0),
-  yBeamActive(0),yStep(0.0),yBeam(0.0),zStep(0.0),
-  guideMat("Aluminium"),supportMat("Void")
+  yStepActive(0),yBeamActive(0),yStep(0.0),
+  yBeam(0.0),zStep(0.0),
+  layerThick({0.5,0.0,1.5}),
+  layerMat({"Void","Aluminium","Void","Void"})
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
   */
 {}
-
-FocusGenerator::FocusGenerator(const FocusGenerator& A) : 
-  substrateThick(A.substrateThick),
-  supportThick(A.supportThick),voidThick(A.voidThick),
-  yStepActive(A.yStepActive),yBeamActive(A.yBeamActive),
-  yStep(A.yStep),yBeam(A.yBeam),zStep(A.zStep),
-  guideMat(A.guideMat),supportMat(A.supportMat)
-  /*!
-    Copy constructor
-    \param A :: FocusGenerator to copy
-  */
-{}
-
-FocusGenerator&
-FocusGenerator::operator=(const FocusGenerator& A)
-  /*!
-    Assignment operator
-    \param A :: FocusGenerator to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      substrateThick=A.substrateThick;
-      supportThick=A.supportThick;
-      voidThick=A.voidThick;
-      yStepActive=A.yStepActive;
-      yStep=A.yStep;
-      yBeamActive=A.yBeamActive;
-      yBeam=A.yBeam;
-      zStep=A.zStep;
-      guideMat=A.guideMat;
-      supportMat=A.supportMat;
-    }
-  return *this;
-}
-
 
 FocusGenerator::~FocusGenerator() 
  /*!
@@ -111,6 +74,34 @@ FocusGenerator::~FocusGenerator()
 {}
 
 
+void
+FocusGenerator::setLayer(const size_t index,const double T,
+			 const std::string& mat)
+  /*!
+    Set each layer
+    \param index :: Index value
+    \param T :: Thickness
+    \param mat :: material
+   */
+{
+  ELog::RegMethod RegA("FocusGenerator","setLayer");
+
+  if (index>layerThick.size())
+    throw ColErr::IndexError<size_t>(index,layerThick.size(),
+				     "index/layerThick");
+  if (index==layerThick.size())
+    {
+      layerThick.push_back(T);
+      layerMat.push_back(mat);
+    }
+  else
+    {
+      layerThick[index]=T;
+      layerMat[index]=mat;
+    }
+  return;
+}
+  
 void
 FocusGenerator::writeLayers(FuncDataBase& Control,
 			    const std::string& keyName,
@@ -123,8 +114,8 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("FocusGenerator","writeLayers");
-  const size_t activeSupport((supportThick>Geometry::zeroTol) ? 1 : 0);
 
+  
   Control.addVariable(keyName+"Length",length);       
   Control.addVariable(keyName+"XStep",0.0);       
   if (!yStepActive)
@@ -146,26 +137,21 @@ FocusGenerator::writeLayers(FuncDataBase& Control,
   Control.addVariable(keyName+"BeamXYAngle",0.0);       
 
   Control.addVariable(keyName+"NShapes",1);
-  Control.addVariable(keyName+"NShapeLayers",3+activeSupport);
   Control.addVariable(keyName+"ActiveShield",0);
 
-  Control.addVariable(keyName+"LayerThick1",substrateThick);  // glass thick
-  if (activeSupport)
+  Control.addVariable(keyName+"LayerMat0",layerMat[0]);
+  size_t activeLayer(0);
+  for(size_t i=1;i<layerThick.size();i++)
     {
-      Control.addVariable(keyName+"LayerThick2",supportThick);
-      Control.addVariable(keyName+"LayerThick3",voidThick);
-      Control.addVariable(keyName+"LayerMat2",supportMat);
-      Control.addVariable(keyName+"LayerMat3","Void");       
+      if (layerThick[i]>Geometry::zeroTol)
+	{
+	  activeLayer++;
+	  const std::string SNum(std::to_string(activeLayer));
+	  Control.addVariable(keyName+"LayerThick"+SNum,layerThick[i]);
+	  Control.addVariable(keyName+"LayerMat"+SNum,layerMat[i]);
+	}
     }
-  else
-    {
-      Control.addVariable(keyName+"LayerThick2",voidThick);
-      Control.addVariable(keyName+"LayerMat2","Void");
-    }
-      
-
-  Control.addVariable(keyName+"LayerMat0","Void");
-  Control.addVariable(keyName+"LayerMat1",guideMat);
+  Control.addVariable(keyName+"NShapeLayers",activeLayer);
 
   return;
   
@@ -264,6 +250,29 @@ FocusGenerator::generateBender(FuncDataBase& Control,
   return;
 }
   
+void
+FocusGenerator::generateOctagon(FuncDataBase& Control,
+				const std::string& keyName,
+				const double length,
+				const double WS,const double WE)  const
+/*!
+    Generate the focus-Octagon and Taper variables
+    \param Control :: Functional data base
+    \param keyName :: main name
+    \param length :: total length
+    \param WS :: Start Width
+    \param WE :: End Width 
+   */
+{
+  ELog::RegMethod RegA("FocusGenerator","generateOctagon");
+  writeLayers(Control,keyName,length);
+  
+  Control.addVariable(keyName+"0TypeID","Octagon");
+  Control.addVariable(keyName+"0WidthStart",WS);
+  Control.addVariable(keyName+"0WidthEnd",WE);
+  Control.copyVar(keyName+"0Length",keyName+"Length");
 
+  return;
+}
   
 }  // NAMESPACE setVariable

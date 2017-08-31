@@ -3,7 +3,7 @@
  
  * File:   geometry/SurInter.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,6 @@
 namespace SurInter
 {
 
-
 Geometry::Vec3D
 getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
           const HeadRule& mainHR,const HeadRule& sndHR)
@@ -86,10 +85,11 @@ getLinePoint(const Geometry::Vec3D& Origin,const Geometry::Vec3D& N,
     \param sndHR :: Secondary/ Bridge rule
    */
 {
-  ELog::RegMethod RegA("SurInter[F]","getLinePoint");
+  ELog::RegMethod RegA("SurInter[F]","getLinePoint(HR,HR)");
   
   std::vector<Geometry::Vec3D> Pts;
   std::vector<int> SNum;
+
   mainHR.calcSurfIntersection(Origin,N,Pts,SNum);
 
   std::vector<Geometry::Vec3D> out;

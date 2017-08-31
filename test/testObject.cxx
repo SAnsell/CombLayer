@@ -290,10 +290,12 @@ testObject::testSetObject()
   ELog::RegMethod RegA("testObject","testSetObject");
 
   typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 #3",
-			"4 10 0.0552465 #3 -63 62 -61 60 8 -5"));
-
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE(" 4 10 0.05524655  -5  8  60  -61  62  -63 #3",
+	    "4 10 0.0552465 #3 -63 62 -61 60 8 -5")
+    };
+  
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
@@ -301,14 +303,20 @@ testObject::testSetObject()
       Qhull A;
       A.setObject(std::get<0>(tc));
       A.write(cx);
-      if (StrFunc::fullBlock(cx.str())!=std::get<1>(tc))
+      const std::string Out=
+	StrFunc::fullBlock(StrFunc::stripMultSpc(cx.str()));
+      
+      if (Out!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+
 	  ELog::EM<<"Input == "<<std::get<0>(tc)<<ELog::endTrace;
 	  ELog::EM<<"Expect == "<<std::get<1>(tc)<<ELog::endTrace;
+
 	  ELog::EM<<"Result == "<<cx.str()<<ELog::endTrace;
 	  return -1;
 	}
+      cnt++;
     }
 
   return 0;

@@ -3,7 +3,7 @@
  
  * File:   tally/fissionConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,11 +71,37 @@
 #include "inputParam.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "fissionConstruct.h" 
 
 namespace tallySystem
 {
+
+int
+fissionConstruct::convertRange(const std::string& Word,
+			       int& RA,int &RB)
+  /*!
+    Convert a pair range into two numbers:
+    Range given as X - Y
+    \param Word :: Unit to convert
+    \param RA :: First nubmer
+    \param RB :: Second number
+    \return true/false
+  */
+{
+  ELog::RegMethod RegA("fissionConstruct","convertRange");
+
+  int A,B;
+  size_t ALen=StrFunc::convPartNum(Word,A);
+  if (!ALen) return 0;
+  for(;ALen<Word.size() && Word[ALen]!='-';ALen++) ;
+  if (ALen==Word.size()) return 0;
+  
+  if (!StrFunc::convert(Word.substr(ALen),B))
+    return 0;
+  RA=A;
+  RB=B;
+  return 1;
+}
 
 fissionConstruct::fissionConstruct() 
   /// Constructor
@@ -95,14 +121,12 @@ fissionConstruct::operator=(const fissionConstruct&)
 int
 fissionConstruct::processPower(Simulation& System,
 			       const mainSystem::inputParam& IParam,
-			       const size_t Index,
-			       const bool renumberFlag) const
+			       const size_t Index) const
   /*!
     Process a fission power on a cell
     \param System :: Simulation to use
     \param IParam :: Input system
     \param Index :: index of the -T card
-    \param renumberFlag :: Is this a renumber call
     \return renumber required status [1 for true]
   */
 {
@@ -137,7 +161,7 @@ fissionConstruct::processPower(Simulation& System,
       if (StrFunc::convert(CVal,cellNum) &&
 	  System.existCell(cellNum+cellOffset))
 	cellVec.push_back(cellNum+cellOffset);
-      else if (basicConstruct::convertRange(CVal,RA,RB))
+      else if (convertRange(CVal,RA,RB))
 	{
 	  RB=std::max<int>(cellRange,RB);
 	  for(;RA<=RB;RA++)

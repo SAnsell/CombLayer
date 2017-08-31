@@ -86,7 +86,7 @@ void
 WeightControl::calcCellTrack(const Simulation& System,
                              const Geometry::Cone& curCone,
                              CellWeight& CTrack)
-  /*!
+  / *!
     Calculate a given cone : calculate those cells
     that the cone intersects
     \param System :: Simulation to use

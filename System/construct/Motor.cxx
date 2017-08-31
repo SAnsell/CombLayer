@@ -70,9 +70,12 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "FrontBackCut.h"
+#include "boltRing.h"
 #include "Motor.h"
 
 namespace constructSystem
@@ -80,16 +83,85 @@ namespace constructSystem
 
 Motor::Motor(const std::string& Key) : 
   attachSystem::FixedOffset(Key,4),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),
+  attachSystem::ContainedGroup("Axle","Plate","Outer"),
+  attachSystem::CellMap(),attachSystem::SurfMap(),
   motorIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(motorIndex+1)
+  cellIndex(motorIndex+1),frontInner(0),backInner(0),
+  yFront(0.0),yBack(0.0),
+  frontPlate(new constructSystem::boltRing(Key,"FrontPlate")),
+  backPlate(new constructSystem::boltRing(Key,"BackPlate"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
-   \param Key :: KeyName
+    \param Key :: KeyName
+  */
+{
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  OR.addObject(frontPlate);
+  OR.addObject(backPlate);
+
+}
+
+Motor::Motor(const Motor& A) : 
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  motorIndex(A.motorIndex),cellIndex(A.cellIndex),
+  frontInner(A.frontInner),backInner(A.backInner),
+  revFlag(A.revFlag),bodyLength(A.bodyLength),
+  plateThick(A.plateThick),axleRadius(A.axleRadius),
+  portInnerRadius(A.portInnerRadius),
+  portOuterRadius(A.portOuterRadius),boltRadius(A.boltRadius),
+  bodyRadius(A.bodyRadius),nBolt(A.nBolt),
+  angOffset(A.angOffset),boltMat(A.boltMat),
+  bodyMat(A.bodyMat),axleMat(A.axleMat),plateMat(A.plateMat),
+  yFront(A.yFront),yBack(A.yBack),frontPlate(A.frontPlate),
+  backPlate(A.backPlate)
+  /*!
+    Copy constructor
+    \param A :: Motor to copy
   */
 {}
 
+Motor&
+Motor::operator=(const Motor& A)
+  /*!
+    Assignment operator
+    \param A :: Motor to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedGroup::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      frontInner=A.frontInner;
+      backInner=A.backInner;
+      revFlag=A.revFlag;
+      bodyLength=A.bodyLength;
+      plateThick=A.plateThick;
+      axleRadius=A.axleRadius;
+      portInnerRadius=A.portInnerRadius;
+      portOuterRadius=A.portOuterRadius;
+      boltRadius=A.boltRadius;
+      bodyRadius=A.bodyRadius;
+      nBolt=A.nBolt;
+      angOffset=A.angOffset;
+      boltMat=A.boltMat;
+      bodyMat=A.bodyMat;
+      axleMat=A.axleMat;
+      plateMat=A.plateMat;
+      yFront=A.yFront;
+      yBack=A.yBack;
+      frontPlate=A.frontPlate;
+      backPlate=A.backPlate;
+    }
+  return *this;
+}
 
 Motor::~Motor() 
   /*!
@@ -108,11 +180,21 @@ Motor::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   //  + Fe special:
-  length=Control.EvalVar<double>(keyName+"Length");
-  radius=Control.EvalVar<double>(keyName+"Radius");
+  bodyLength=Control.EvalVar<double>(keyName+"BodyLength");
+  plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  revFlag=Control.EvalDefVar<int>(keyName+"RevMotor",0);
+  bodyRadius=Control.EvalVar<double>(keyName+"BodyRadius");
+  axleRadius=Control.EvalVar<double>(keyName+"AxleRadius");
 
+  //  boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
+  bodyMat=ModelSupport::EvalMat<int>(Control,keyName+"BodyMat");
+  axleMat=ModelSupport::EvalMat<int>(Control,keyName+"AxleMat");
+  plateMat=ModelSupport::EvalMat<int>(Control,keyName+"PlateMat");
+
+  yFront=Control.EvalDefVar<double>(keyName+"YFront",yFront);
+  yBack=Control.EvalDefVar<double>(keyName+"YBack",yBack);
+  
   return;
 }
 
@@ -141,10 +223,69 @@ Motor::createSurfaces()
 {
   ELog::RegMethod RegA("Motor","createSurfaces");
 
+  ModelSupport::buildCylinder(SMap,motorIndex+7,Origin,Y,axleRadius);
+  addSurf("axle",SMap.realSurf(motorIndex+7));
+  ModelSupport::buildCylinder(SMap,motorIndex+107,Origin,Y,bodyRadius);
+  
+  ModelSupport::buildPlane(SMap,motorIndex+1,Origin-Y*(yFront+plateThick),Y);
+  ModelSupport::buildPlane(SMap,motorIndex+2,Origin+Y*(yBack+plateThick),Y);
 
-  ModelSupport::buildPlane(SMap,motorIndex+2,Origin+Y*length,Y);
-  ModelSupport::buildCylinder(SMap,motorIndex+7,Origin,Y,radius);
-    
+  if (!revFlag)
+    ModelSupport::buildPlane(SMap,motorIndex+11,
+			     Origin-Y*(yFront+plateThick+bodyLength),Y);
+  else
+    ModelSupport::buildPlane(SMap,motorIndex+12,
+			     Origin+Y*(yBack+plateThick+bodyLength),Y);
+
+  return;
+}
+
+void
+Motor::createPlates(Simulation& System)
+  /*!
+    Create the main plates
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("Motor","createPlates");
+
+  const std::string axle=
+    ModelSupport::getComposite(SMap,motorIndex," 7 ");
+
+  std::string Out;
+  
+  frontPlate->setFront(SMap.realSurf(motorIndex+1));
+  frontPlate->setBack(-frontInner);
+  frontPlate->createAll(System,*this,0);
+
+  backPlate->setFront(-backInner);
+  backPlate->setBack(-SMap.realSurf(motorIndex+2));
+  backPlate->createAll(System,*this,0);
+
+  const std::string FPlate=
+    frontPlate->frontRule()+frontPlate->backRule();
+  const std::string BPlate=
+    backPlate->frontRule()+backPlate->backRule();
+  
+  Out=frontPlate->getSurfComplement("innerRing");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,
+				   Out+FPlate+axle));
+  addCell("MotorFrontPlate",cellIndex-1);
+
+  Out=backPlate->getSurfComplement("innerRing");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,plateMat,0.0,
+				   Out+BPlate+axle));
+  addCell("MotorBackPlate",cellIndex-1);
+
+  // Note plates can be different sizes:
+  Out=frontPlate->getSurfComplement("outerRing");
+  addOuterSurf("Outer",Out+FPlate);
+  addOuterSurf("Plate",Out+FPlate);
+  
+  Out=backPlate->getSurfComplement("outerRing");
+  addOuterUnionSurf("Plate",Out+BPlate);
+  addOuterUnionSurf("Outer",Out+BPlate);
+
   return;
 }
   
@@ -153,21 +294,30 @@ Motor::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-    */
+  */
 {
   ELog::RegMethod RegA("Motor","createObjects");
-
-  if (frontActive())
-    {
-      std::string Out;
-	
-      // Main void
-      Out=ModelSupport::getComposite(SMap,motorIndex," -2 -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+frontRule()));
-      addCell("Motor",cellIndex-1);
   
-      addOuterSurf(Out+frontRule());  
-    }
+  std::string Out;
+
+  // Axle
+  Out=ModelSupport::getComposite(SMap,motorIndex," 1 -2 -7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,axleMat,0.0,Out));
+  addCell("Axle",cellIndex-1);
+    
+  // Main motor
+  if (!revFlag)
+    Out=ModelSupport::getComposite(SMap,motorIndex," 11 -1 -107 ");
+  else
+    Out=ModelSupport::getComposite(SMap,motorIndex," -12 2 -107 ");
+      
+  System.addCell(MonteCarlo::Qhull(cellIndex++,bodyMat,0.0,Out));
+  addCell("MotorBody",cellIndex-1);
+
+  addOuterUnionSurf("Outer",Out);
+  Out=ModelSupport::getComposite(SMap,motorIndex," -7 ");
+  addOuterSurf("Axle",Out);
+  
   return;
 }
 
@@ -185,8 +335,8 @@ Motor::createLinks()
 
 void
 Motor::createAll(Simulation& System,
-                       const attachSystem::FixedComp& motorFC,
-                       const long int FIndex)
+		 const attachSystem::FixedComp& motorFC,
+		 const long int FIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -199,11 +349,10 @@ Motor::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(motorFC,FIndex);
   
-  if (!frontActive())
-    FrontBackCut::setFront(motorFC,FIndex);
-  createSurfaces();    
+  createSurfaces();
+  createPlates(System);  
   createObjects(System);  
-  createLinks();
+  //  createLinks();
   insertObjects(System);   
 
 

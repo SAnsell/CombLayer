@@ -75,6 +75,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
 #include "TwinChopper.h"
@@ -210,35 +211,6 @@ MIRACLES::~MIRACLES()
   */
 {}
 
-void
-MIRACLES::setBeamAxis(const FuncDataBase& Control,
-		      const GuideItem& GItem,
-		      const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("MIRACLES","setBeamAxis");
-
-  miraclesAxis->populate(Control);
-  miraclesAxis->createUnitVector(GItem);
-  miraclesAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  miraclesAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  miraclesAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  miraclesAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  miraclesAxis->linkShift(3);
-  miraclesAxis->linkShift(4);
-  miraclesAxis->linkAngleRotate(3);
-  miraclesAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    miraclesAxis->reverseZ();
-  return;
-}
 
 void
 MIRACLES::buildBunkerUnits(Simulation& System,
@@ -311,9 +283,9 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   ChopE->createAll(System,FocusE->getKey("Guide0"),2);
 
   EDisk->addInsertCell(ChopE->getCell("Void"));
-  EDisk->createAll(System,ChopE->getKey("Main"),0,
-		   ChopE->getKey("Beam"),2);
-
+  EDisk->createAll(System,ChopE->getKey("Main"),0);
+  ChopE->insertAxle(System,*EDisk);
+  
   ShutterA->addInsertCell(bunkerVoid);
   ShutterA->createAll(System,ChopE->getKey("Beam"),2);
 
@@ -426,7 +398,7 @@ MIRACLES::build(Simulation& System,
     \param GItem :: Guide Item 
     \param bunkerObj :: Bunker component [for inserts]
     \param voidCell :: Void cell
-   */
+  */
 {
   // For output stream
   ELog::RegMethod RegA("MIRACLES","build");
@@ -439,7 +411,7 @@ MIRACLES::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*miraclesAxis,Control,GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);

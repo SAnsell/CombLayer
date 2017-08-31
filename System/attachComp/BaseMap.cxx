@@ -299,7 +299,8 @@ BaseMap::getItem(const std::string& Key,const size_t Index) const
 
   if (Index>=mc->second.size())
     throw ColErr::IndexError<size_t>
-      (Index,0,"Object:"+getFCKeyName()+" Key["+Key+"] index error");
+      (Index,mc->second.size(),
+       "Object:"+getFCKeyName()+" Key["+Key+"] index error");
   
   return mc->second[Index];
 }
@@ -332,7 +333,9 @@ BaseMap::getItems(const std::string& Key) const
   if (Key=="All" || Key=="all") return getItems(); 
   std::vector<int> Out;  
   LCTYPE::const_iterator mc=Items.find(Key);
-  return (mc==Items.end()) ? std::vector<int>() : mc->second;
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key");
+  return mc->second;
 }
 
 std::vector<int>

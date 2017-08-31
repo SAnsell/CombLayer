@@ -84,7 +84,7 @@ CryoGenerator::generateFridge(FuncDataBase& Control,
     \param keyName :: Base name for chopper variables
     \param yStep :: main y-step
     \param zStep :: Main +/- of z position
-    \param smapleZ :: Sample stick +/- Z positon
+    \param sampleZ :: Sample stick +/- Z positon
    */
 {
   ELog::RegMethod RegA("CryoGenerator","generateCryostate");

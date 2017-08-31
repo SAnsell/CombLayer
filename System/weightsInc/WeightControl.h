@@ -27,7 +27,12 @@
 class Simulation;
 namespace Geometry
 {
+  class Cone;
   class Plane;
+}
+namespace mainSystem
+{
+  class inputParam;
 }
 
 /*!
@@ -54,11 +59,10 @@ namespace WeightSystem
   
 class WeightControl
 {
- private:
+ protected:
 
   double energyCut;              ///< Energy cut [MeV]
   double scaleFactor;            ///< Scale factor
-  double minWeight;              ///< Min weight
   double weightPower;            ///< makes weight W^power
   double density;                ///< scales the material density
   double r2Length;               ///< scale factor of r2 Length 
@@ -66,98 +70,35 @@ class WeightControl
 
   std::vector<double> EBand;     ///< Energy band
   std::vector<double> WT;        ///< Weight scalar
-
-  // exta factors for MARKOV:
-  size_t nMarkov;                ///< Markov count  
   
-  std::set<std::string> objectList;  ///< Object list to this cut [local]
-
-  bool activeAdjointFlag;                   ///< Active plane
-  std::string activePtType;                 ///< ptType 
-  size_t activePtIndex;                     ///< plant/source/track pt 
-
-
   std::vector<Geometry::Cone> conePt;         ///< Cone points
   std::vector<Geometry::Plane> planePt;       ///< Plane points
   std::vector<Geometry::Vec3D> sourcePt;      ///< Source Points
+
+  void processPtString(std::string,std::string&,size_t&,bool&);
   
   void setHighEBand();
   void setMidEBand();
   void setLowEBand();
-
-  void scaleObject(const Simulation&,const std::string&,
-		   const double,const double);
-  void scaleAllObjects(const Simulation&,const double,const double);
-  double findMax(const Simulation&,const std::string&,
-		 const size_t,const double) const;
   
-  void help() const;
-  
-  void procType(const mainSystem::inputParam&);
-  void procParam(const mainSystem::inputParam&,const std::string&,
-		const size_t,const size_t);
-  void procMarkov(const mainSystem::inputParam&,const std::string&,
-		  const size_t);
-  void procTypeHelp() const;
-
+  void procEnergyType(const mainSystem::inputParam&);
   void procSourcePoint(const mainSystem::inputParam&);
   void procPlanePoint(const mainSystem::inputParam&);
-  void procTrackLine(const mainSystem::inputParam&);
-  void procObject(const Simulation&,
-		  const mainSystem::inputParam&);
-  void procRebase(const Simulation&,
-		  const mainSystem::inputParam&);
-  void procTrack(const Simulation&,
-		 const mainSystem::inputParam&);
-  void procWWGWeights(Simulation&,
-		      const mainSystem::inputParam&);
 
-  
-  void processPtString(std::string);
 
-  void procCalcHelp() const;
-  void procRebaseHelp() const;
-  void procObjectHelp() const;
-  void procConeHelp() const;
+  void procParam(const mainSystem::inputParam&,const std::string&,
+		const size_t,const size_t);  
 
-  
-  
-  void setWeights(Simulation&);
-  void cTrack(const Simulation&,const Geometry::Vec3D&,
-	      const std::vector<Geometry::Vec3D>&,
-	      const std::vector<long int>&,
-	      CellWeight&);
-  void cTrack(const Simulation&,const Geometry::Plane&,
-	      const std::vector<Geometry::Vec3D>&,
-	      const std::vector<long int>&,
-	      CellWeight&);
 
-  void wTrack(const Simulation&,const Geometry::Vec3D&,
-	      WWGWeight&) const;
-  void wTrack(const Simulation&,const Geometry::Plane&,
-	      WWGWeight&) const;
-		  
-  // WWG stuff
-  void wwgGetFactors(const mainSystem::inputParam&,
-		     double&,double&) const;
+  static void help();
 
-  void wwgMesh(const mainSystem::inputParam&);
-  void wwgEnergy(const mainSystem::inputParam&);
-  void wwgVTK(const mainSystem::inputParam&);
-  void wwgCreate(const Simulation&,const mainSystem::inputParam&);
-  void wwgMarkov(const Simulation&,const mainSystem::inputParam&);
-  void wwgNormalize(const mainSystem::inputParam&);
-  
-  void calcWWGTrack(const Simulation&,const Geometry::Plane&,
-		    WWGWeight&);
-  void calcWWGTrack(const Simulation&,const Geometry::Vec3D&,
-		    WWGWeight&);
-  void calcCellTrack(const Simulation&,const Geometry::Vec3D&,
-		     const std::vector<int>&,CellWeight&);
-  void calcCellTrack(const Simulation&,const Geometry::Plane&,
-		     const std::vector<int>&,CellWeight&);
-  void calcCellTrack(const Simulation&,const Geometry::Cone&,
-		     CellWeight&);
+  static void procConeHelp();
+  static void procCalcHelp();
+  static void procEnergyTypeHelp();
+  static void procObjectHelp();
+  static void procRebaseHelp();
+
+  virtual void setWeights(Simulation&);
 
 
  public:
@@ -165,10 +106,11 @@ class WeightControl
   WeightControl();
   WeightControl(const WeightControl&);
   WeightControl& operator=(const WeightControl&);
-  ~WeightControl();
+  virtual ~WeightControl();
 
   
-  void processWeights(Simulation&,const mainSystem::inputParam&);
+  virtual void processWeights(Simulation&,const mainSystem::inputParam&);
+  virtual void normWeights(Simulation&,const mainSystem::inputParam&);
     
 };
 

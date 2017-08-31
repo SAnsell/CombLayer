@@ -3,7 +3,7 @@
  
  * File:   moderator/Reflector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,9 +69,13 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "TargetBase.h"
 #include "TS2target.h"
 #include "TS2ModifyTarget.h"
@@ -96,11 +100,14 @@
 #include "RefBolts.h"
 #include "Reflector.h"
 
+#include "insertObject.h"
+#include "insertPlate.h"
+
 namespace moderatorSystem
 {
 
 Reflector::Reflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,10),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1),
   TarObj(new TMRSystem::TS2target("t2Target")),
@@ -147,9 +154,8 @@ Reflector::Reflector(const std::string& Key)  :
 
 
 Reflector::Reflector(const Reflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
   xySize(A.xySize),zSize(A.zSize),cutSize(A.cutSize),
   defMat(A.defMat),
   TarObj(new TMRSystem::TS2target(*A.TarObj)),
@@ -161,7 +167,7 @@ Reflector::Reflector(const Reflector& A) :
   PMgroove(new PreMod(*A.PMgroove)),
   PMhydro(new PreMod(*A.PMhydro)),
   Horn(new HWrapper(*A.Horn)),
-  DMod((A.DMod) ? std::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
+  //  DMod((A.DMod) ? std::shared_ptr<Decoupled>(A.DMod->clone()) : A.DMod),
   DVacObj(new VacVessel(*A.DVacObj)),
   FLwish(new FlightLine(*A.FLwish)),
   FLnarrow(new FlightLine(*A.FLnarrow)),
@@ -186,10 +192,6 @@ Reflector::operator=(const Reflector& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
       xySize=A.xySize;
       zSize=A.zSize;
       cutSize=A.cutSize;
@@ -203,10 +205,6 @@ Reflector::operator=(const Reflector& A)
       *PMgroove = *A.PMgroove;
       *PMhydro = *A.PMhydro;
       *Horn = *A.Horn;
-      if (A.DMod)
-	DMod = std::shared_ptr<Decoupled>(A.DMod->clone());
-      else
-	DMod=A.DMod;       
       *DVacObj = *A.DVacObj;
       *FLwish = *A.FLwish;
       *FLnarrow = *A.FLnarrow;
@@ -233,14 +231,12 @@ Reflector::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Reflector","populate");
   
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  FixedOffset::populate(Control);
+  
   xySize=Control.EvalVar<double>(keyName+"XYSize");
   zSize=Control.EvalVar<double>(keyName+"ZSize");
   cutSize=Control.EvalVar<double>(keyName+"CutSize");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  cornerAngle=Control.EvalVar<double>(keyName+"CornerAngle");
   
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
@@ -253,15 +249,18 @@ Reflector::populate(const FuncDataBase& Control)
 }
   
 void
-Reflector::createUnitVector()
+Reflector::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
+    \param FC :: Fixed Comp 
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Reflector","createUnitVector");
 
-  FixedComp::createUnitVector(World::masterTS2Origin());
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -276,7 +275,7 @@ Reflector::createSurfaces()
 
   // rotation of axis:
   const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
+    Geometry::Quaternion::calcQRotDeg(cornerAngle,Z);
   Geometry::Vec3D XR(X);
   Geometry::Vec3D YR(Y);
   Qxy.rotate(XR);
@@ -284,21 +283,21 @@ Reflector::createSurfaces()
   
   // Simple box planes
 
-  ModelSupport::buildPlane(SMap,refIndex+1,Origin-YR*xySize,YR);
-  ModelSupport::buildPlane(SMap,refIndex+2,Origin+YR*xySize,YR);
+  ModelSupport::buildPlane(SMap,refIndex+1,Origin-Y*xySize,Y);
+  ModelSupport::buildPlane(SMap,refIndex+2,Origin+Y*xySize,Y);
 
-  ModelSupport::buildPlane(SMap,refIndex+3,Origin-XR*xySize,XR);
-  ModelSupport::buildPlane(SMap,refIndex+4,Origin+XR*xySize,XR);
+  ModelSupport::buildPlane(SMap,refIndex+3,Origin-X*xySize,X);
+  ModelSupport::buildPlane(SMap,refIndex+4,Origin+X*xySize,X);
 
   ModelSupport::buildPlane(SMap,refIndex+5,Origin-Z*zSize,Z);
   ModelSupport::buildPlane(SMap,refIndex+6,Origin+Z*zSize,Z);
  
   // Corner cuts:
-  ModelSupport::buildPlane(SMap,refIndex+11,Origin-Y*cutSize,Y);
-  ModelSupport::buildPlane(SMap,refIndex+12,Origin+Y*cutSize,Y);
+  ModelSupport::buildPlane(SMap,refIndex+11,Origin-YR*cutSize,YR);
+  ModelSupport::buildPlane(SMap,refIndex+12,Origin+YR*cutSize,YR);
 
-  ModelSupport::buildPlane(SMap,refIndex+13,Origin-X*cutSize,X);
-  ModelSupport::buildPlane(SMap,refIndex+14,Origin+X*cutSize,X);
+  ModelSupport::buildPlane(SMap,refIndex+13,Origin-XR*cutSize,XR);
+  ModelSupport::buildPlane(SMap,refIndex+14,Origin+XR*cutSize,XR);
 
   createLinks(XR,YR);
 
@@ -316,17 +315,17 @@ Reflector::createLinks(const Geometry::Vec3D& XR,
 {
   ELog::RegMethod RegA("Reflector","createLinks");
 
-  FixedComp::setConnect(0,Origin-YR*xySize,-YR);  // chipIR OPPOSITE
-  FixedComp::setConnect(1,Origin+YR*xySize,YR);   // chipIR
-  FixedComp::setConnect(2,Origin-XR*xySize,-XR);
-  FixedComp::setConnect(3,Origin+XR*xySize,XR);
+  FixedComp::setConnect(0,Origin-Y*xySize,-Y);  // chipIR OPPOSITE
+  FixedComp::setConnect(1,Origin+Y*xySize,Y);   // chipIR
+  FixedComp::setConnect(2,Origin-X*xySize,-X);
+  FixedComp::setConnect(3,Origin+X*xySize,X);
   FixedComp::setConnect(4,Origin-Z*zSize,-Z);
   FixedComp::setConnect(5,Origin+Z*zSize,Z);
 
-  FixedComp::setConnect(6,Origin-Y*cutSize,-Y);
-  FixedComp::setConnect(7,Origin+Y*cutSize,Y);
-  FixedComp::setConnect(8,Origin-X*cutSize,-X);
-  FixedComp::setConnect(9,Origin+X*cutSize,X);
+  FixedComp::setConnect(6,Origin-YR*cutSize,-YR);
+  FixedComp::setConnect(7,Origin+YR*cutSize,YR);
+  FixedComp::setConnect(8,Origin-XR*cutSize,-XR);
+  FixedComp::setConnect(9,Origin+XR*cutSize,XR);
 
   FixedComp::setLinkSurf(0,-SMap.realSurf(refIndex+1));
   FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+2));
@@ -398,24 +397,37 @@ Reflector::processDecoupled(Simulation& System,
     {
       // This strange construct :
       DecFileMod* DFPtr=new DecFileMod("decoupled");
-      DFPtr->createAllFromFile(System,*this,
-	    IParam.getValue<std::string>("decFile"));
+      DFPtr->createAllFromFile(System,*this,0,
+          IParam.getValue<std::string>("decFile"));
       DMod=std::shared_ptr<Decoupled>(DFPtr);  
       OR.addObject(DMod);
       return;
     }
+
   const std::string DT=IParam.getValue<std::string>("decType");
   if (DT=="standard")  // Standard one
     {
-      DMod=std::shared_ptr<Decoupled>(new Decoupled("decoupled"));  
-      OR.addObject(DMod);
-      DMod->createAll(System,World::masterTS2Origin());
+      std::shared_ptr<Decoupled> DModPtr(new Decoupled("decoupled"));
+      OR.addObject(DModPtr);
+      DModPtr->createAll(System,World::masterTS2Origin(),0);
+      DMod=DModPtr;
     }
   else if (DT=="layer")  // layer
     {
-      DMod=std::shared_ptr<Decoupled>(new DecLayer("decoupled","decLayer"));  
-      OR.addObject(DMod);
-      DMod->createAll(System,World::masterTS2Origin());
+      std::shared_ptr<Decoupled> DModPtr(new DecLayer("decoupled","decLayer")); 
+      OR.addObject(DModPtr);
+      DModPtr->createAll(System,World::masterTS2Origin(),0);
+      DMod=DModPtr;
+    }
+  else if (DT=="plate")  // layer
+    {
+      std::shared_ptr<insertSystem::insertPlate>
+	PPtr(new insertSystem::insertPlate("decPlate")); 
+       OR.addObject(PPtr);
+       PPtr->setNoInsert();
+       PPtr->addInsertCell(cellIndex-1);
+       PPtr->createAll(System,World::masterTS2Origin(),0);
+       DMod=PPtr;
     }
   else 
     {
@@ -441,7 +453,7 @@ Reflector::createInternalObjects(Simulation& System,
 
   const std::string TarName=
     IParam.getValue<std::string>("targetType",0);
-
+  const std::string DT=IParam.getValue<std::string>("decType");
 
   TarObj->setRefPlates(-SMap.realSurf(refIndex+12),
 		       -SMap.realSurf(refIndex+11));
@@ -492,33 +504,54 @@ Reflector::createInternalObjects(Simulation& System,
   Horn->createAll(System,*VacObj,*FLhydro,*PMhydro);
   
   processDecoupled(System,IParam);
-  DVacObj->createAll(System,*DMod,*DMod);
+  const attachSystem::ContainedComp* CMod=
+    OR.getObjectThrow<attachSystem::ContainedComp>
+    (DMod->getKeyName(),"DMod to CC failed");
 
-  Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
-  FLnarrow->addBoundarySurf("inner",Out);  
-  FLnarrow->addBoundarySurf("outer",Out);  
-  FLnarrow->createAll(System,*DVacObj,1);
-
-  Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
-  FLwish->addBoundarySurf("inner",Out);  
-  FLwish->addBoundarySurf("outer",Out);  
-  FLwish->createAll(System,*DVacObj,2);
-
-  PMdec->setTargetSurf(TarObj->getLinkSurf(0));
-  PMdec->createAll(System,4,*DVacObj,1);
-
+  if (DT!="plate")
+    {
+      DVacObj->createAll(System,*DMod,*CMod);
+  
+      Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+      FLnarrow->addBoundarySurf("inner",Out);  
+      FLnarrow->addBoundarySurf("outer",Out);  
+      FLnarrow->createAll(System,*DVacObj,1);
+      
+      Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
+      FLwish->addBoundarySurf("inner",Out);  
+      FLwish->addBoundarySurf("outer",Out);  
+      FLwish->createAll(System,*DVacObj,2);
+      
+      PMdec->setTargetSurf(TarObj->getLinkSurf(0));
+      PMdec->createAll(System,4,*DVacObj,1);
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+      FLnarrow->addBoundarySurf("inner",Out);  
+      FLnarrow->addBoundarySurf("outer",Out);  
+      FLnarrow->createAll(System,*DMod,1);
+      
+      Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
+      FLwish->addBoundarySurf("inner",Out);  
+      FLwish->addBoundarySurf("outer",Out);  
+      FLwish->createAll(System,*DMod,2);
+      
+      PMdec->setTargetSurf(TarObj->getLinkSurf(0));
+      PMdec->createAll(System,5,*DMod,1);
+    }  
   Out=ModelSupport::getComposite(SMap,refIndex,"-2");
   IRcut->addBoundarySurf(Out);  
   IRcut->createAll(System,*TarObj);
-
+  
   CdBucket->addBoundarySurf(FLwish->getExclude("outer"));
   CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
   CdBucket->addBoundarySurf(TarObj->getExclude());
-  CdBucket->createAll(System,*this);
-
+  CdBucket->createAll(System,*this,0);
+  
   for(CoolPad& PD : Pads)
     PD.createAll(System,*this,2);
-
+      
   return;
 }
 
@@ -539,7 +572,7 @@ Reflector::insertPipeObjects(Simulation& System,
   CP.createAll(System,*HydObj,4,*VacObj);
 
   DecouplePipe DP("decPipe");
-  DP.createAll(System,*DMod,5,*DVacObj,DMod->needsHePipe());
+  //  DP.createAll(System,*DMod,5,*DVacObj,DMod->needsHePipe());
 
   if (IParam.flag("bolts"))
     {
@@ -573,13 +606,13 @@ Reflector::calcModeratorPlanes(const int BeamLine,
   if (BeamLine<4)       // NARROW
     {
       FLnarrow->getInnerVec(Window);
-      dSurf=DMod->getDividePlane(1);
+      //      dSurf=DMod->getDividePlane(1);
       return DVacObj->getLinkSurf(0);
     }
   if (BeamLine<9)      // H2
     {
       FLhydro->getInnerVec(Window);
-      dSurf=HydObj->getDividePlane();
+      //      dSurf=HydObj->getDividePlane();
       return VacObj->getLinkSurf(1);
     }
   if (BeamLine<14)      // Groove
@@ -590,7 +623,7 @@ Reflector::calcModeratorPlanes(const int BeamLine,
     }
   // WISH
       FLwish->getInnerVec(Window);
-      dSurf=DMod->getDividePlane(0);
+      //      dSurf=DMod->getDividePlane(0);
       return DVacObj->getLinkSurf(1);
 }
 
@@ -652,7 +685,8 @@ Reflector::createAll(Simulation& System,
   ELog::RegMethod RegA("Reflector","createAll");
   populate(System.getDataBase());
 
-  createUnitVector();
+  createUnitVector(World::masterTS2Origin(),0);
+
   createSurfaces();
   createObjects(System);
   createInternalObjects(System,IParam);

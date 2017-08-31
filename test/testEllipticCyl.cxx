@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testEllipticCyl.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -136,16 +136,15 @@ testEllipticCyl::testDistance()
 
 
   typedef std::tuple<std::string,Geometry::Vec3D,double> TTYPE;
-  std::vector<TTYPE> Tests;
-  
-  // Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),4.0,5.0,
-  // 			"54 ez 4.0 5.0"));
-  Tests.push_back(TTYPE("ez 5.0 5.0",Geometry::Vec3D(0,0,0),5.0));
-  Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,0,0),3.0));
-  Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,0,3.4),3.0));
-  Tests.push_back(TTYPE("ez 5.0 5.0",Geometry::Vec3D(-4,4,0),sqrt(32)-5.0));
-  Tests.push_back(TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,3,0),0.0));
-  Tests.push_back(TTYPE("ez 5.0 3.0",Geometry::Vec3D(0,3,0),2.0));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("ez 5.0 5.0",Geometry::Vec3D(0,0,0),5.0),
+      TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,0,0),3.0),
+      TTYPE("ez 3.0 5.0",Geometry::Vec3D(0,0,3.4),3.0),
+      TTYPE("ez 5.0 5.0",Geometry::Vec3D(-4,4,0),sqrt(32)-5.0),
+      TTYPE("ez 3.0 5.0",Geometry::Vec3D(3,0,0),0.0),
+      TTYPE("ez 5.0 3.0",Geometry::Vec3D(1,0,0),2.90474)
+    };
   
   for(const TTYPE& tc : Tests)
     {
@@ -158,7 +157,7 @@ testEllipticCyl::testDistance()
 	  return -1;
 	}
       double R=A.distance(std::get<1>(tc));
-      if (fabs(R-std::get<2>(tc))>1e-5)
+      if (std::abs(R-std::get<2>(tc))>1e-5)
 	{
 	  ELog::EM<<"elliCylinder == "<<A;
 	  ELog::EM<<"String == "<<std::get<0>(tc)<<ELog::endDiag;
@@ -187,16 +186,13 @@ testEllipticCyl::testGeneral()
   // Cent:axis::Laxis:dist: String
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D,
 		       double,double,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  
-  // Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),4.0,5.0,
-  // 			"54 ez 4.0 5.0"));
-  Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),5.0,4.0,
-   			"54 ez 5.0 4.0"));
-  Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(1,0,0),Vec3D(0,1,0),4.0,5.0,
-			"54 ex 4.0 5.0"));
-  Tests.push_back(TTYPE(Vec3D(0,1,1.0),Vec3D(1,0,0),Vec3D(0,1,0),4.0,5.0,
-   			"54 e/x 1.0 1.0 4.0 5.0"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),5.0,4.0,"54 ez 5.0 4.0"),
+      TTYPE(Vec3D(0,0,0),Vec3D(1,0,0),Vec3D(0,1,0),4.0,5.0,"54 ex 4.0 5.0"),
+      TTYPE(Vec3D(0,1,1.0),Vec3D(1,0,0),Vec3D(0,1,0),4.0,5.0,
+	    "54 e/x 1.0 1.0 4.0 5.0")
+    };
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -213,7 +209,7 @@ testEllipticCyl::testGeneral()
 
       if ((A!=B) || (A.Quadratic::operator!=(B)))
 	{
-	  ELog::EM<<"TEST: "<<cnt<<ELog::endDebug;
+	  ELog::EM<<"TEST: "<<cnt<<ELog::endDiag;
 
 	  ELog::EM<<"Elliptic[A]        == "<<A;
 	  ELog::EM<<"Elliptic[B]        == "<<B;
@@ -248,8 +244,10 @@ testEllipticCyl::testMirror()
   Cylinder Atest(A);
 
   typedef std::tuple<Cylinder*,Plane*,Vec3D,Vec3D> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE(&A,&P,Vec3D(-4,2,18),Vec3D(0,0,-1)));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(&A,&P,Vec3D(-4,2,18),Vec3D(0,0,-1))
+    };
   
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -259,11 +257,11 @@ testEllipticCyl::testMirror()
       if (AT.getCentre()!=std::get<2>(tc) ||
 	  AT.getNormal()!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Test "<<cnt<<ELog::endTrace;
+	  ELog::EM<<"Test "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Cylinder = "<<*std::get<0>(tc);
 	  ELog::EM<<"Plane = "<<*std::get<1>(tc);
 	  ELog::EM<<"Result "<<AT;
-	  ELog::EM<<ELog::endTrace;
+	  ELog::EM<<ELog::endDiag;
 	}
       cnt++;
     }
@@ -283,14 +281,12 @@ testEllipticCyl::testSet()
   // Cent:axis::Laxis:dist: String
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D,
 		       double,double,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  
-  Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),4.0,4.0,
-			"54 cz 4.0"));
-  Tests.push_back(TTYPE(Vec3D(0,0,0),Vec3D(1,0,0),Vec3D(0,0,1),4.0,4.0,
-			"54 cx 4.0"));
-  Tests.push_back(TTYPE(Vec3D(0,1,1.0),Vec3D(1,0,0),Vec3D(0,0,1),4.0,4.0,
-			"54 c/x 1.0 1.0 4.0"));
+  const std::vector<TTYPE> Tests={
+      
+    TTYPE(Vec3D(0,0,0),Vec3D(0,0,1),Vec3D(1,0,0),4.0,4.0,"54 cz 4.0"),
+    TTYPE(Vec3D(0,0,0),Vec3D(1,0,0),Vec3D(0,0,1),4.0,4.0,"54 cx 4.0"),
+    TTYPE(Vec3D(0,1,1.0),Vec3D(1,0,0),Vec3D(0,0,1),4.0,4.0,"54 c/x 1.0 1.0 4.0")
+  };
 
   for(const TTYPE& tc : Tests)
     {
@@ -308,7 +304,7 @@ testEllipticCyl::testSet()
 		       std::get<3>(tc),std::get<4>(tc));
       A.normalizeGEQ(9);
       
-      if ((G!=A) && (C.Quadratic::operator!=(A)))  //StrFunc::fullBlock(cx.str())!=std::get<5>(tc))
+      if ((G!=A) && (C.Quadratic::operator!=(A))) 
 	{
 	  ELog::EM<<"Cylinder        == "<<C;
 	  ELog::EM<<"General         == "<<G;
@@ -343,13 +339,14 @@ testEllipticCyl::testTransform()
   typedef std::tuple<std::string,std::string,
 		       Vec3D,double,double> TTYPE;
 
-  std::vector<TTYPE> Tests;  
-  Tests.push_back(TTYPE("tr2 1 1 2 "
-			"1 0 0 0 1 0 0 0 1 ",	
-			"c/y -3 4.15 0.3",
-			Vec3D(0,0,0),
-			sqrt(4.15*4.15+9)-0.3,
-			sqrt(4+6.15*6.15)-0.3));
+  const std::vector<TTYPE> Tests = {
+    TTYPE("tr2 1 1 2 "
+	  "1 0 0 0 1 0 0 0 1 ",	
+	  "c/y -3 4.15 0.3",
+	  Vec3D(0,0,0),
+	  sqrt(4.15*4.15+9)-0.3,
+	  sqrt(4+6.15*6.15)-0.3)
+  };
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
@@ -358,7 +355,7 @@ testEllipticCyl::testTransform()
       A.setSurface(std::get<1>(tc));
       double D=A.distance(std::get<2>(tc));
 
-      if (fabs(D-std::get<3>(tc))>1e-5)
+      if (std::abs(D-std::get<3>(tc))>1e-5)
 	{
 	  ELog::EM<<"Failed on intial distance : "<<
 	    "Test:"<<cnt<<ELog::endTrace;
@@ -374,15 +371,15 @@ testEllipticCyl::testTransform()
       A.applyTransform(TMap);
       D=A.distance(std::get<2>(tc));
 
-      if (result || fabs(D-std::get<4>(tc))>1e-5)
+      if (result || std::abs(D-std::get<4>(tc))>1e-5)
 	{
 	  ELog::EM<<"Failed on transform distance : "<<
-	    "Test:"<<cnt<<ELog::endTrace;
-	  ELog::EM<<"Result = "<<result<<ELog::endTrace;
+	    "Test:"<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Result = "<<result<<ELog::endDiag;
 	  ELog::EM<<"Surface = "<<A;
 	  ELog::EM<<"Transform = "<<X;
 	  ELog::EM<<"Distance == "<<D<<" Expected == "
-		  <<std::get<4>(tc)<<ELog::endTrace;
+		  <<std::get<4>(tc)<<ELog::endDiag;
 	  return -2;
 	}
       cnt++;

@@ -3,7 +3,7 @@
  
  * File:   support/support.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -323,6 +323,7 @@ lowerString(std::string& LN)
 {
   for(size_t i=0;i<LN.length();i++)
     LN[i]=static_cast<char>(tolower(LN[i]));
+  
   return;
 }
 
@@ -486,6 +487,27 @@ singleLine(const std::string& A)
   Out=StrFunc::stripMultSpc(Out);
   Out=StrFunc::fullBlock(Out);
   return Out;
+}
+
+std::string
+frontBlock(const std::string& A)
+  /*!
+    Returns the string from the first non-space to the 
+    last non-space 
+    \param A :: string to process
+    \returns shortened string
+  */
+{
+  if (A.empty()) return "";
+
+  std::string::size_type posA;
+  
+  for(posA=0;posA<A.size() && 
+	isspace(A[posA]);posA++) ;
+
+  if (posA==A.size()) return "";
+  
+  return A.substr(posA);
 }
 
 std::string

@@ -108,6 +108,8 @@ class DBMaterial
   bool isActive(const int) const;
   void setENDF7();
 
+  void readFile(const std::string&);
+  
   void writeCinder(std::ostream&) const;
   void writeMCNPX(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;

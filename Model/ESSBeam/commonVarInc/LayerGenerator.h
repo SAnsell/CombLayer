@@ -27,6 +27,14 @@ class FuncDataBase;
 namespace setVariable
 {
 
+/*!
+  \struct layerItem
+  \version 1.0
+  \author S. Ansell
+  \date May 2016
+  \brief Indiviual layer info
+*/
+
 struct layerItem
 {
   double thick;       ///< thickness [total]

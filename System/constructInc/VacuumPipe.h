@@ -26,6 +26,22 @@ class Simulation;
 
 namespace constructSystem
 {
+
+  /*!
+    \struct windowInfo
+    \version 1.0
+    \date July 2015
+    \author S. Ansell
+    \brief window build data
+  */
+struct windowInfo
+{
+  double thick;           ///< Joining Flange length
+  double radius;          ///< Window radius
+  double height;          ///< Window Height
+  double width;           ///< Window Width
+  int mat;                ///< Material
+};
   
 /*!
   \class VacuumPipe
@@ -39,6 +55,7 @@ class VacuumPipe :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
+  public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
@@ -68,15 +85,12 @@ class VacuumPipe :
   double flangeLength;          ///< Joining Flange length
 
   int activeWindow;             ///< Flag on window activity
-  double windowThick;           ///< Joining Flange length
-  double windowRadius;          ///< Window radius
-  double windowHeight;          ///< Window Height
-  double windowWidth;           ///< Window Width
-  
+  windowInfo windowFront;          ///< Front window info
+  windowInfo windowBack;           ///< Back window info
+    
   int voidMat;                  ///< Void material
   int feMat;                    ///< Pipe material 
-  int windowMat;                ///< Window material 
-
+  
   size_t nDivision;             ///< Number divisions
   
   void populate(const FuncDataBase&);

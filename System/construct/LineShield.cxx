@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
- ****************************************************************************/
+ *************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -180,9 +180,10 @@ LineShield::removeFrontOverLap()
       index--;
       if (index>0)
         {
-          length-=segStep*index;
+	  const double LUnit=segStep*static_cast<double>(index);
+          length-=LUnit;
           nSeg-=index;
-          Origin+=Y*(index*segStep/2.0);
+          Origin+=Y*(LUnit/2.0);
           ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
                   <<index<<ELog::endDiag;
         }
@@ -448,7 +449,7 @@ LineShield::createLinks()
     }
   else
     {
-      FixedComp::setLinkSurf(0,backSurf,1,backCut,0);      
+      FixedComp::setLinkSurf(1,backSurf,1,backCut,0);      
       FixedComp::setConnect
         (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
     }

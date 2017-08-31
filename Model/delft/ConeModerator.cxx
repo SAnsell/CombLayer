@@ -3,7 +3,7 @@
  
  * File:   delft/ConeModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,8 +67,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -91,7 +89,6 @@ ConeModerator::ConeModerator(const std::string& Key)  :
 ConeModerator::ConeModerator(const ConeModerator& A) : 
   virtualMod(A),
   coneIndex(A.coneIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   depth(A.depth),length(A.length),innerAngle(A.innerAngle),
   outerAngle(A.outerAngle),fCut(A.fCut),fDepth(A.fDepth),
   alView(A.alView),alBack(A.alBack),faceThick(A.faceThick),
@@ -115,9 +112,6 @@ ConeModerator::operator=(const ConeModerator& A)
     {
       virtualMod::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       depth=A.depth;
       length=A.length;
       innerAngle=A.innerAngle;
@@ -184,23 +178,17 @@ ConeModerator::populate(const FuncDataBase& Control)
   
 
 void
-ConeModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
+ConeModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
+				const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points down the ConeModerator direction
-    - X Across the ConeModerator
-    - Z up (towards the target)
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("ConeModerator","createUnitVector");
-  // Opposite since other face:
-
-  X=CUnit.getBX();
-  Y=CUnit.getBY();
-  Z=CUnit.getBZ();
-
-  Origin=CUnit.getBeamStart();
+  
+  FixedComp::createUnitVector(CUnit,sideIndex);
   yStep-=fCut;
   applyOffset();
   return;
@@ -296,17 +284,19 @@ ConeModerator::postCreateWork(Simulation&)
   
 void
 ConeModerator::createAll(Simulation& System,
-		       const attachSystem::TwinComp& FUnit)
+			 const attachSystem::FixedComp& FUnit,
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("ConeModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit);
+  createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

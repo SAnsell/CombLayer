@@ -3,7 +3,7 @@
  
  * File:   constructInc/Motor.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ class Simulation;
 
 namespace constructSystem
 {
+  class boltRing;
   
 /*!
   \class Motor
@@ -40,23 +41,47 @@ namespace constructSystem
 
 class Motor :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
-  public attachSystem::FrontBackCut
+  public attachSystem::SurfMap
 {
  private:
   
   const int motorIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double length;                ///< length out of port
-  double radius;                ///< radius 
-  int mat;                      ///< material
+  int frontInner;                  ///< Front inner surf
+  int backInner;                   ///< Back inner surf
+
+  int revFlag;                  ///< Reverse motor flag
+  double bodyLength;            ///< length out of port
+  double plateThick;            ///< Main thickness
+  
+  double axleRadius;            ///< radius of centre axel
+  double portInnerRadius;       ///< inner port radius
+  double portOuterRadius;       ///< outer port radius
+  double boltRadius;            ///< radius
+  double bodyRadius;            ///< body radius
+
+  size_t nBolt;                 ///< number of bolts
+  double angOffset;             ///< Offset angle
+  
+  int boltMat;                  ///< material
+  int bodyMat;                  ///< main motor material
+  int axleMat;                  ///< axle material
+  int plateMat;                 ///< plate material
+
+  double yFront;                ///< Front y-step
+  double yBack;                 ///< back y-step
+
+  std::shared_ptr<boltRing> frontPlate;     ///< front flange
+  std::shared_ptr<boltRing> backPlate;      ///< back flange
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
+  void createPlates(Simulation&);
   void createLinks();
   
  public:
@@ -66,6 +91,14 @@ class Motor :
   Motor& operator=(const Motor&);
   virtual ~Motor();
 
+  /// set inner planes -- REALLY UGLY
+  void setInnerPlanes(const int F,const int B)
+  { frontInner=F; backInner=B; }
+
+  /// set Ystep on inner planes -- REALLY UGLY
+  void setYSteps(const double F,const double B)
+    { yFront=F;yBack=B; }
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 };

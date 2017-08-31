@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,6 +102,19 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
   */
 {}
 
+LineTrack::LineTrack(const Geometry::Vec3D& IP,
+		     const Geometry::Vec3D& UVec,
+		     const double ADist) :
+  InitPt(IP),EndPt(IP+UVec),aimDist(ADist),
+  TDist(0.0)
+  /*! 
+    Constructor 
+    \param IP :: Initial point
+    \param EP :: End point
+    \param ADist :: Aim dist 
+  */
+{}
+
 LineTrack::LineTrack(const LineTrack& A) : 
   InitPt(A.InitPt),EndPt(A.EndPt),aimDist(A.aimDist),TDist(A.TDist),
   Cells(A.Cells),ObjVec(A.ObjVec),Track(A.Track)
@@ -163,7 +176,6 @@ LineTrack::calculate(const Simulation& ASim)
     ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
   int SN=OPtr->isOnSide(InitPt);
   
-  const MonteCarlo::Object* prevOPtr(0);
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
@@ -171,7 +183,6 @@ LineTrack::calculate(const Simulation& ASim)
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,aDist))
 	{
-	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
@@ -278,6 +289,7 @@ LineTrack::calculateError(const Simulation& ASim)
 	OPtr=0;
 	
     }
+  ELog::EM<<ELog::endErr;
   return;
 }
 
@@ -300,7 +312,6 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D)
       Track.push_back(D-TDist+aimDist);
       return 0;
     }
-
   Track.push_back(D);
   return 1;
 }

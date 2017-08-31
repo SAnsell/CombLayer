@@ -75,6 +75,7 @@
 #include "FrontBackCut.h" 
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
 #include "Jaws.h"
@@ -229,36 +230,6 @@ MAGIC::~MAGIC()
 {}
 
 void
-MAGIC::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-		   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("MAGIC","setBeamAxis");
-
-  magicAxis->populate(Control);
-  magicAxis->createUnitVector(GItem,0);
-  magicAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  magicAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  magicAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  magicAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  magicAxis->linkShift(3);
-  magicAxis->linkShift(4);
-  magicAxis->linkAngleRotate(3);
-  magicAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    magicAxis->reverseZ();
-  return;
-}
-
-void
 MAGIC::buildBunkerUnits(Simulation& System,
                         const attachSystem::FixedComp& FA,
                         const long int startIndex,
@@ -296,10 +267,8 @@ MAGIC::buildBunkerUnits(Simulation& System,
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
-  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
-  PSCDisk->setCentreFlag(3);  // Z direction
-  PSCDisk->setOffsetFlag(1);  // Z direction
-  PSCDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
+  //  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
+  //  PSCDisk->createAll(System,ChopperA->getKey("Main"),0);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
@@ -364,6 +333,7 @@ MAGIC::buildOutGuide(Simulation& System,
 
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
+
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
 
@@ -543,7 +513,8 @@ MAGIC::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
-  setBeamAxis(Control,GItem,0);
+
+  essBeamSystem::setBeamAxis(*magicAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -557,6 +528,7 @@ MAGIC::build(Simulation& System,
 
 
   if (stopPoint==2) return;                      // STOP At bunker edge
+  ELog::EM<<"STOP POINT == "<<stopPoint<<ELog::endDiag;
   // IN WALL
   // Make bunker insert
   BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);

@@ -3,7 +3,7 @@
  
  * File:   polyInc/PolyVar.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,9 +161,6 @@ class PolyVar<1> : public PolyFunction
   size_t iDegree;                    ///< Degree of polynomial [0 == constant]
   std::vector<double> PCoeff;     ///< Coefficients [low->high]
 
-  size_t solveQuadratic(std::complex<double>&,std::complex<double>&) const;
-  size_t solveCubic(std::complex<double>&,std::complex<double>&,
-		 std::complex<double>&) const;
   int checkSmallPoly(std::vector<std::complex<double> >&) const;
 
  public:

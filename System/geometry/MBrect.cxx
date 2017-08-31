@@ -529,9 +529,9 @@ MBrect::calcMainPlane() const
     }
   sumVec/=2.0;
   // Calculate the vector with the most Z:
-  int AI,BI;
-  if ( fabs(LVec[(index+1) % 3].Z()) >
-       fabs(LVec[(index+2) % 2].Z()) )
+  size_t AI,BI;
+  if ( std::abs(LVec[(index+1) % 3].Z()) >
+       std::abs(LVec[(index+2) % 2].Z()) )
     {
       AI=(index+2) % 3;
       BI=(index+1) % 3;
@@ -541,7 +541,6 @@ MBrect::calcMainPlane() const
       AI=(index+1) % 3;
       BI=(index+2) % 3;
     }
-  
  
   // (a) Take the corner (Low point) and 
   //     add half the small vector 
@@ -571,10 +570,10 @@ MBrect::boxType() const
     \retval 0 :: general box
   */
 {
-  for(int i=0;i<3;i++)
+  for(size_t i=0;i<3;i++)
     if (!LVec[i].masterDir(Geometry::zeroTol))
       return 0;
-
+  
   return 1;
 }
 
@@ -596,8 +595,8 @@ MBrect::write(std::ostream& OX) const
       cx<<"box "<<Corner[0]<<" "
 	<<Corner[1]<<" "
 	<<Corner[2]<<" ";
-      for(int i=0;i<3;i++)
-	for(int j=0;j<3;j++)
+      for(size_t i=0;i<3;i++)
+	for(size_t j=0;j<3;j++)
 	  cx<<LVec[i][j]<<" ";
     }
   else

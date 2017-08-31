@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/LOKI.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,10 @@ namespace attachSystem
   class TwinComp;
   class CellMap;
 }
+namespace insertSystem
+{
+  class insertPlate;
+}
 
 namespace constructSystem
 {  
@@ -36,7 +40,6 @@ namespace constructSystem
   class ChopperUnit;
   class Jaws;
   class DiskChopper;
-  class insertPlate;
   class PipeCollimator;
   class RotaryCollimator;
   class VacuumBox;
@@ -61,6 +64,8 @@ class LOKI : public attachSystem::CopiedComp
 {
  private:
 
+  /// Start at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int startPoint;
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;
   
@@ -70,7 +75,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Bender in insert bay
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
   /// Shutter around pipe in gamma block
-  std::shared_ptr<constructSystem::insertPlate> ShutterA;
+  std::shared_ptr<insertSystem::insertPlate> ShutterA;
   /// Vacuum pipe in gamma shield
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Bender in gamma shield
@@ -92,7 +97,11 @@ class LOKI : public attachSystem::CopiedComp
   /// Guide to first chopper
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
-  std::shared_ptr<essSystem::CompBInsert> BInsert;  
+  /// Bunker insert [specialized]
+  std::shared_ptr<essSystem::CompBInsert> BInsert;
+  /// Vac pipe in wall (if used)
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
+  /// Gamma 
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
   /// Shield for ChopperPit merged with bunker wall
@@ -139,7 +148,12 @@ class LOKI : public attachSystem::CopiedComp
   /// Vacuum tank
   std::shared_ptr<VacTank> VTank;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
 
   void registerObjects();
   
@@ -149,7 +163,8 @@ class LOKI : public attachSystem::CopiedComp
   LOKI(const LOKI&);
   LOKI& operator=(const LOKI&);
   ~LOKI();
-  
+
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

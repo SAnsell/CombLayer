@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/surfFunctors.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,4 +63,4 @@ surfaceCheck(const int sign,const Surface* Sptr,const Vec3D& Pt)
   return ((Sptr->side(Pt) * sign)>0) ? 0 : 1;
 }
 
-}  // NAMESPACE Geomtry
+}  // NAMESPACE Geometry

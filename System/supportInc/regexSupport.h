@@ -3,7 +3,7 @@
  
  * File:   supportInc/regexSupport.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,35 +25,38 @@
 
 namespace StrFunc
 {
-/// Find if a pattern matches
-template<typename T> int StrComp(const std::string&,
-				 const boost::regex&,T&,const int=0);
 
-int StrLook(const char*,const boost::regex&);
-int StrLook(const std::string&,const boost::regex&);
+template<typename T> int findComp(std::istream&,const std::regex&,T&);
+
+int findPattern(std::istream&,const std::regex&,std::string&);
+
+template<typename T> int findComp(std::istream&,const std::string&,T&);
+template<typename T> int findComp(std::istream&,const std::regex&,T&);
+  
+template<typename T>
+int StrComp(const std::string&,const std::regex&,T&,const size_t =0);
+ 
+int StrLook(const char*,const std::regex&);
+int StrLook(const std::string&,const std::regex&);
 
 /// Split  a line into component parts
 std::vector<std::string> 
-StrParts(std::string,const boost::regex&);
+StrParts(std::string,const std::regex&);
 
 /// Split  a line searched parts
-template<typename T> int StrFullSplit(const std::string&,const boost::regex&,std::vector<T>&);
-template<typename T> int StrSingleSplit(const std::string&,const boost::regex&,std::vector<T>&);
+template<typename T> int StrFullSplit(const std::string&,const std::regex&,std::vector<T>&);
+template<typename T> int StrSingleSplit(const std::string&,const std::regex&,std::vector<T>&);
 
 /// Cut out the searched section and returns component
 template<typename T> 
-int StrFullCut(std::string&,const boost::regex&,T&,const int= -1);
+int StrFullCut(std::string&,const std::regex&,T&,const long int= -1);
 template<typename T> 
-int StrFullCut(std::string&,const boost::regex&,std::vector<T>&);
+int StrFullCut(std::string&,const std::regex&,std::vector<T>&);
 
-/// Extract a section from a string
-int StrRemove(std::string&,std::string&,const boost::regex&);
+int StrRemove(std::string&,std::string&,const std::regex&);
 
-/// Find a compmonent in a Regex in a file
-template<typename T> int findComp(std::istream&,const boost::regex&,T&);
 
-/// Finds a pattern in a file
-int findPattern(std::istream&,const boost::regex&,std::string&);
+
 
 } // NAMESPACE StrFunc
 

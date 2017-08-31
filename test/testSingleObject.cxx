@@ -118,16 +118,12 @@ testSingleObject::cylModVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("testSingleObject","cylModVariable");
 
-  Control.addVariable("H2CylModXStep",0.0);  
-  Control.addVariable("H2CylModYStep",0.0);  
-  Control.addVariable("H2CylModZStep",0.0);
-  Control.addVariable("H2CylModXYangle",0.0);
-  Control.addVariable("H2CylModZangle",0.0);
   Control.addVariable("H2CylModRadius",6.0);
   Control.addVariable("H2CylModHeight",12.0);
   Control.addVariable("H2CylModMat","ParaH2");
   Control.addVariable("H2CylModTemp",20.0);
   Control.addVariable("H2CylModNLayers",0);
+  Control.addVariable("H2CylModNWedge",0);
   // al layer
   Control.addVariable("H2CylModHGap1",0.3);
   Control.addVariable("H2CylModRadGap1",0.3);
@@ -221,6 +217,8 @@ testSingleObject::applyTest(const int extra)
 {
   ELog::RegMethod RegA("testSingleObject","applyTest");
 
+  TestFunc::regSector("testSingleObject");
+  
   typedef int (testSingleObject::*testPtr)();
   testPtr TPtr[]=
     {
@@ -366,14 +364,14 @@ testSingleObject::checkResult(const ModelSupport::LineTrack& LT,
   const std::vector<long int>& cells=LT.getCells();
   const std::vector<double>& tLen=LT.getTrack();
   const std::vector<MonteCarlo::Object*>& oVec=LT.getObjVec();
-  int cValue(0);
+  long int cValue(0);
   double tValue(0.0);
   for(size_t i=0;i<cells.size();i++)
     {
       if (!oVec[i] || oVec[i]->getName()!=cells[i])
 	return 0;
       cValue+=cells[i];
-      tValue+=tLen[i]*cells[i];
+      tValue+=tLen[i]*static_cast<double>(cells[i]);
     }  
   if (cValue==CSum && fabs(TSum-tValue)<1e-3)
     return 1;

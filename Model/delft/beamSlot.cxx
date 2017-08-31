@@ -216,6 +216,7 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
 
   SMap.addMatch(surfIndex+1,FC.getLinkSurf(0));
   SMap.addMatch(surfIndex+2,FC.getLinkSurf(1));
+
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(xSize/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(xSize/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*zSize/2.0,Z);
@@ -303,7 +304,9 @@ beamSlot::createLinks()
   FixedComp::setConnect(4,Origin-Z*zSize/2.0,-Z); 
   FixedComp::setConnect(5,Origin+Z*zSize/2.0,Z); 
 
-  for(size_t i=0;i<6;i++)
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  for(size_t i=2;i<6;i++)
     {
       const int sN(surfIndex+static_cast<int>(i+1));
       FixedComp::setLinkSurf(i,SMap.realSurf(sN));

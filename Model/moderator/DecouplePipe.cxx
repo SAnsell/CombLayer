@@ -3,7 +3,7 @@
  
  * File:   moderator/DecouplePipe.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "VacVessel.h"
 #include "Decoupled.h"
@@ -159,15 +160,13 @@ DecouplePipe::~DecouplePipe()
 {}
 
 void
-DecouplePipe::populate(const Simulation& System)
+DecouplePipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to use
   */
 {
   ELog::RegMethod RegA("DecouplePipe","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   Xoffset=Control.EvalVar<double>(keyName+"XOffset"); 
   Yoffset=Control.EvalVar<double>(keyName+"YOffset"); 
@@ -205,7 +204,7 @@ DecouplePipe::populate(const Simulation& System)
   
 void
 DecouplePipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards WISH
@@ -217,9 +216,7 @@ DecouplePipe::createUnitVector(const attachSystem::FixedComp& CUnit,
 {
   ELog::RegMethod RegA("DecouplePipe","createUnitVector");
 
-  FixedComp::createUnitVector(CUnit);
-  const attachSystem::LinkUnit& LU=CUnit.getLU(sideIndex);
-  Origin=LU.getConnectPt();
+  FixedComp::createUnitVector(CUnit,sideIndex);
   return;
 }
 
@@ -318,7 +315,7 @@ DecouplePipe::insertPipes(Simulation& System)
 void
 DecouplePipe::createAll(Simulation& System,
 			const attachSystem::FixedComp& FUnit,
-			const size_t sideIndex,
+			const long int sideIndex,
 			const VacVessel& VCell,
 			const int flag)
   /*!
@@ -334,7 +331,7 @@ DecouplePipe::createAll(Simulation& System,
 
 
   // First job is to re-create the OSM and populate cells
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FUnit,sideIndex);
   insertOuter(System,VCell); 
 

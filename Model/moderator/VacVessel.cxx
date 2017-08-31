@@ -3,7 +3,7 @@
  
  * File:   moderator/VacVessel.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,7 +69,6 @@
 #include "ContainedComp.h"
 #include "Groove.h"
 #include "Hydrogen.h"
-#include "Decoupled.h"
 #include "VacVessel.h"
 
 namespace moderatorSystem
@@ -243,6 +242,7 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit)
     BVec[i]=FUnit[i].getConnectPt();
   
   divideSurf= FUnit.getLinkSurf(0);
+  ELog::EM<<"Divide surface == "<<keyName<<" "<<divideSurf<<ELog::endDiag;
   return;
 }
 
@@ -463,7 +463,7 @@ VacVessel::getSurfacePoint(const size_t layer,
   /*!
     Get the center point for the surfaces in each layer
     \param layer :: Layer number : 0 is inner 4 is outer
-    \param side :: Index to side (front/back/left/right/up/down)
+    \param sideIndex :: Index to side (front/back/left/right/up/down)
     \return point on surface
   */
 {

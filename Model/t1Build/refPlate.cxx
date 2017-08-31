@@ -3,7 +3,7 @@
  
  * File:   t1Build/refPlate.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,6 +85,7 @@ refPlate::dirType(const std::string& DN)
   /*!
     Determine the direction based on the +/- and x,y,z value
     in the string
+    \param DN :: direction [+/- or xyz]
     \return 0-5 based no the side
    */
 {
@@ -108,6 +109,7 @@ refPlate::dirOppositeType(const std::string& DN)
   /*!
     Determine the otherside- direction based on the +/- and x,y,z value
     in the string 
+    \param DN :: direction [+/- or xyz]
     \return 0-5 based on the side
    */
 {
@@ -243,7 +245,6 @@ refPlate::setPlane(const std::string& dirName,
     \param dirName :: Direction name
     \param Axis :: Axis on surface
     \param Cent :: Centre point
-    \param D :: distance
   */
 {
   ELog::RegMethod RegA("refPlate","setPlane(string,Vec3D,Vec3D)");
@@ -314,8 +315,6 @@ refPlate::createAll(Simulation& System)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param FC :: Target origin system
-    \param ZB :: RefPlate to take default values
   */
 {
   ELog::RegMethod RegA("refPlate","createAll");
@@ -325,4 +324,4 @@ refPlate::createAll(Simulation& System)
   return;
 }
 
-} // NAMESPACE shutterSystem
+} // NAMESPACE ts1System

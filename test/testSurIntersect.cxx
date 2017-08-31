@@ -3,7 +3,7 @@
  
  * File:   test/testSurIntersect.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -357,15 +357,17 @@ testSurIntersect::testProcessPoint()
 
   // surf : surf : surf : OutSize / out
   typedef std::tuple<size_t,size_t,size_t,unsigned int,Geometry::Vec3D> TTYPE;
-  std::vector<TTYPE> Tests;
-  // Simple plane
-  Tests.push_back(TTYPE(0,1,2,1,Geometry::Vec3D(23,10,30))); 
-  // Failed to hit cylinder
-  Tests.push_back(TTYPE(0,1,5,0,Geometry::Vec3D(0,0,0)));
-  // Hits to cylinder
-  Tests.push_back(TTYPE(0,1,6,2,Geometry::Vec3D(23,10,sqrt(900-22*22)+1.0)));
-  // Hits to cylinder at angle
-  Tests.push_back(TTYPE(3,4,6,0,Geometry::Vec3D(0,0,0)));
+  const std::vector<TTYPE> Tests=
+    {
+      // Simple plane
+      TTYPE(0,1,2,1,Geometry::Vec3D(23,10,30)),
+      // Failed to hit cylinder
+      TTYPE(0,1,5,0,Geometry::Vec3D(0,0,0)),
+      // Hits to cylinder
+      TTYPE(0,1,6,2,Geometry::Vec3D(23,10,-sqrt(900-22*22)+1.0)),
+      // Hits to cylinder at angle
+      TTYPE(3,4,6,0,Geometry::Vec3D(0,0,0))
+    };
 
   int cnt(1);
   for(const TTYPE& tc : Tests)

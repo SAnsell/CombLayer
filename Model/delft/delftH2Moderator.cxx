@@ -3,7 +3,7 @@
  
  * File:   delft/delftH2Moderator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,11 +72,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
-#include "pipeUnit.h"
-#include "PipeLine.h"
 #include "virtualMod.h"
 #include "delftH2Moderator.h"
 
@@ -210,22 +206,17 @@ delftH2Moderator::populate(const FuncDataBase& Control)
   
 
 void
-delftH2Moderator::createUnitVector(const attachSystem::SecondTrack& CUnit)
+delftH2Moderator::createUnitVector(const attachSystem::FixedComp& CUnit,
+				   const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points down the delftH2Moderator direction
-    - X Across the delftH2Moderator
-    - Z up (towards the target)
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("delftH2Moderator","createUnitVector");
   // Opposite since other face:
-  X=CUnit.getBX();
-  Y=CUnit.getBY();
-  Z=CUnit.getBZ();
-
-  Origin=CUnit.getBeamStart();
+  FixedComp::createUnitVector(CUnit,sideIndex);
   applyOffset();
 
   FCentre=calcCentre(frontDir,1,frontRadius);
@@ -437,24 +428,27 @@ void
 delftH2Moderator::postCreateWork(Simulation&)
   /*!
     Add pipework
-   */
+    \param :: Simulation for pipework
+  */
 {
   return;
 }
   
 void
 delftH2Moderator::createAll(Simulation& System,
-		       const attachSystem::TwinComp& FUnit)
+			    const attachSystem::FixedComp& FUnit,
+			    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("delftH2Moderator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit);
+  createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

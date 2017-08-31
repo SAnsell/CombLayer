@@ -3,7 +3,7 @@
  
  * File:   build/beamTallyConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -90,7 +89,6 @@
 
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h" 
 #include "beamTallyConstruct.h" 
 
@@ -144,19 +142,18 @@ beamTallyConstruct::processPoint(Simulation& System,
   
   if (PType=="beamline" || PType=="shutterLine")
     {
-      std::string modName;
-      int viewIndex(0);
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-
-      checkItem<std::string>(IParam,Index,3,modName);
-      checkItem<int>(IParam,Index,4,viewIndex);
-      checkItem<double>(IParam,Index,5,beamDist);
-      checkItem<double>(IParam,Index,6,windowOffset);
-      checkItem<double>(IParam,Index,7,pointZRot);
+      const int beamNum=IParam.getValueError<int>("tally",Index,2,
+						  "beamline number not given");
+      const std::string modName=
+	IParam.getDefValue<std::string>("","tally",Index,3);
+      const long int viewIndex=
+	IParam.getDefValue<long int>(0,"tally",Index,4);
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,5);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,7);
 
       ELog::EM<<"Beamline == "<<beamNum-1<<" "<<beamDist<<" "
 	      <<"Mod name = "<<modName<<" "<<viewIndex<<ELog::endDiag;
@@ -172,17 +169,17 @@ beamTallyConstruct::processPoint(Simulation& System,
     }
   if (PType=="viewLine")  // beamline
     {
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-      double timeOffset(0.0);
+      const int beamNum=IParam.getValueError<int>
+	("tally",Index,2,"beamline number not given");
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,3);
+      const double timeOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,4);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,5);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
 
-      checkItem<double>(IParam,Index,3,beamDist);
-      checkItem<double>(IParam,Index,4,timeOffset);
-      checkItem<double>(IParam,Index,5,windowOffset);
-      checkItem<double>(IParam,Index,6,pointZRot);
 
       addViewLineTally(System,beamNum-1,
 		       beamDist,timeOffset,
@@ -191,21 +188,20 @@ beamTallyConstruct::processPoint(Simulation& System,
     }
   if (PType=="viewInner")  // beamline Inner
     {
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      const std::string face=inputItem<std::string>(IParam,Index,3,
-			       "beamline face : front/back not given");
+      const int beamNum=IParam.getValueError<int>
+	("tally",Index,2,"beamline number not given");
+      const std::string face=IParam.getValueError<std::string>
+	("tally",Index,3,"beamline face : front/back not given");
       const long int linkNumber=attachSystem::getLinkIndex(face);
 
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-      double timeOffset(0.0);
-
-      checkItem<double>(IParam,Index,4,beamDist);
-      checkItem<double>(IParam,Index,5,timeOffset);
-      checkItem<double>(IParam,Index,6,windowOffset);
-      checkItem<double>(IParam,Index,7,pointZRot);
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,3);
+      const double timeOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,4);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,5);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
 
       addViewInnerTally(System,beamNum-1,linkNumber,
 			beamDist,timeOffset,
@@ -246,9 +242,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 
   int masterPlane(0);
 
-  size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
-	     static_cast<size_t>(-viewSurface-1));
-  int VSign((viewSurface<0) ? -1 : 1);
+  long int vSurface(viewSurface);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
@@ -256,26 +250,25 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
   // Do something if using old TS2 style point tally
   if (modName.empty())
     {
-      VSign=1;
       if (beamNum<4)
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
-	  iLP=0;
+	  vSurface=1;
 	}
       else if (beamNum<9)
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("hydrogen");
-	  iLP=0;
+	  vSurface=1;
 	}
       else if (beamNum<14)
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("groove");
-	  iLP=0;
+	  vSurface=1;
 	}
       else
 	{
 	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
-	  iLP=1;
+	  vSurface=2;
 	}
     }
   else
@@ -293,8 +286,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
       (modName,"Moderator Object not found");
 
   // MODERATOR PLANE
-  masterPlane=
-    ModPtr->getExitWindow(iLP,Planes);
+  masterPlane=ModPtr->getExitWindow(vSurface,Planes);
 
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
@@ -608,7 +600,7 @@ void
 beamTallyConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<

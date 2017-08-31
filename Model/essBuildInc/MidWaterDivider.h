@@ -54,9 +54,11 @@ class MidWaterDivider :
 
   double length;            ///< Inner length
   double height;            ///< Inner height
-  double topThick;         ///< Roof thickness
+  double topThick;          ///< Roof thickness
+  double baseThick;         ///< Base thickness
   double wallThick;         ///< Wall thickness
-
+  double cornerRadius;      ///< Corner radius
+  
   int modMat;               ///< Water material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
@@ -68,7 +70,6 @@ class MidWaterDivider :
   void createObjects(Simulation&,const H2Wing&,const H2Wing&);
   void cutOuterWing(Simulation&,const H2Wing&,const H2Wing&) const;
   void createLinks(const H2Wing&,const H2Wing&);
-
 
  public:
 

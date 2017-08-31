@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSimulation.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,19 +183,18 @@ testSimulation::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testSimulation","applyTest");
-
+  TestFunc::regSector("testSimulation");
+  
   typedef int (testSimulation::*testPtr)();
   testPtr TPtr[]=
     {
       &testSimulation::testCreateObjSurfMap,
-      &testSimulation::testInCell,
-      &testSimulation::testTrackNeutron
+      &testSimulation::testInCell
     };
   const std::string TestName[]=
     {
       "CreateObjSurfMap",
       "InCell",
-      "TrackNeutron"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -220,64 +219,6 @@ testSimulation::applyTest(const int extra)
 	}
     }
   return 0;
-}
-
-int
-testSimulation::testTrackNeutron()
-  /*!
-    Tracks a neutron through the system
-    \return 0 on success and -1 on error
-  */
-{
-  ELog::RegMethod RegA("testSimulation","testTrackNeutron");
-
-  std::vector<MonteCarlo::neutron> TNeut;
-  std::vector<int> CellInit;
-  
-  TNeut.push_back(MonteCarlo::neutron(10,Geometry::Vec3D(0,0,0),
-				      Geometry::Vec3D(1,0,0)));
-
-  
-  // InitObj : Neut : dist, surfN
-  typedef std::tuple<int,size_t,double,int> TTYPE;
-
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE(2,0,1.0,-2)); 
-  
-  int cnt(1);
-  for(const TTYPE& tc : Tests)
-    {
-      MonteCarlo::neutron nOut(TNeut[std::get<1>(tc)]);      
-
-      // Find Initial cell
-      MonteCarlo::Object* OPtr=
-	ASim.findCell(nOut.Pos,0);
-      if (!OPtr || OPtr->getName()!=std::get<0>(tc))
-	{
-	  ELog::EM<<"Init cell incorrect"<<ELog::endWarn;
-	  return -1;
-	}
-      // Track to outgoing surface
-      const Geometry::Surface* SPtr;          // Output surface
-      double aDist;                           // Output distribution
-      const int SN=OPtr->trackOutCell(nOut,aDist,SPtr);
-      // Error check result:
-  // InitObj : Neut : dist, surfN
-      if (SN!=std::get<3>(tc) || fabs(std::get<2>(tc)-aDist)>1e-4)
-	{
-	  ELog::EM<<"Results == "<<cnt<<ELog::endWarn;
-	  ELog::EM<<"Exit surf("<<std::get<3>(tc)
-		  <<") == "<<SN<<ELog::endWarn;
-	  ELog::EM<<"Init neut == "<<TNeut[std::get<1>(tc)]<<ELog::endWarn;
-	  ELog::EM<<"Distance("<<std::get<2>(tc)<<") == "
-		  <<aDist<<ELog::endWarn;
-	  ELog::EM<<"------------------"<<ELog::endDebug;
-	  return -1;
-	}
-      cnt++;
-    }
-  return 0;
-            
 }
 
 int
@@ -343,7 +284,7 @@ testSimulation::testInCell()
   for(size_t i=0;i<Pts.size();i++)
     {
       MonteCarlo::Object* OPtr=ASim.findCell(Pts[i],0);
-      ELog::EM<<"Cell == "<<((OPtr) ? OPtr->getName() : 0)<<ELog::endWarn;
+
       if (OPtr && CellN[i]!=OPtr->getName())
 	{
 	  ELog::EM<<"Failed on point:"<<Pts[i]<<ELog::endWarn;

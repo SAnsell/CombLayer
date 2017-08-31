@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/MonoPlug.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -165,7 +165,7 @@ MonoPlug::createUnitVector(const attachSystem::FixedComp& VoidFC,
   /*!
     Create the unit vectors
     \param VoidFC :: VoidVessel to get top and axises
-    \param Index :: Top surface
+    \param index :: Top surface
   */
 {
   ELog::RegMethod RegA("MonoPlug","createUnitVector");
@@ -221,6 +221,9 @@ MonoPlug::createObjects(Simulation& System,
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
+    \param vLCIndex :: void link point
+    \param VoidFC :: Main outer void
+    \param BulkFC :: Bulk steel object
   */
 {
   ELog::RegMethod RegA("MonoPlug","createObjects");
@@ -323,6 +326,9 @@ MonoPlug::createAll(Simulation& System,
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param vLCIndex :: void link point
+    \param VoidFC :: Main outer void
+    \param BulkFC :: Bulk steel object
   */
 {
   ELog::RegMethod RegA("MonoPlug","createAll");

@@ -70,7 +70,6 @@
 #include "TallyCreate.h"
 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "surfaceConstruct.h" 
 
 namespace tallySystem
@@ -87,6 +86,7 @@ surfaceConstruct::surfaceConstruct(const surfaceConstruct& A) :
   idType(A.idType)
   /*! 
     Copy Constructor
+    \param A :: surfaceConstructor to copy
   */
 {}
 
@@ -131,38 +131,35 @@ surfaceConstruct::processSurface(Simulation& System,
   if (pType=="object")
     {
       const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
+	IParam.getValueError<std::string>("tally",Index,2,"position not given");
       const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+	IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
+      
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
   if (pType=="surfMap")
     {
-      const std::string object=
-	IParam.outputItem<std::string>
+      const std::string object=IParam.getValueError<std::string>
 	("tally",Index,2,"Object component not given");
-      const std::string surfItem=
-	IParam.outputItem<std::string>
-	("tally",Index,3,"SurfMap set key not give");
-      // This should be a range:
-      const long int surfIndex=
-	IParam.outputItem<long int>
-	("tally",Index,4,"position not given");
-      
-      Geometry::Vec3D Axis;
-      size_t itemIndex(5);
-      IParam.checkCntVec3D("tally",Index,itemIndex,Axis);
-      
+
+      const std::string surfItem=IParam.getValueError<std::string>
+	("tally",Index,3,"SurfMap set key not given");
+
+      // This should be a range (?):
+      const long int surfIndex=IParam.getValueError<long int>
+	("tally",Index,4,"Index Offset direction");
+            
       return processSurfMap(System,object,surfItem,surfIndex);
     }
 
   if (pType=="viewObject")
     {
-      const std::string place=
-	inputItem<std::string>(IParam,Index,2,"position not given");
-      const std::string snd=
-	inputItem<std::string>(IParam,Index,3,"front/back/side not give");
+      const std::string place=IParam.getValueError<std::string>
+	("tally",Index,2,"position not given");
+      const std::string snd=IParam.getValueError<std::string>
+	("tally",Index,3,"front/back/side not give");
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       std::vector<int> surfN;
       const size_t maxIndex=IParam.itemCnt("tally",Index);
@@ -225,32 +222,29 @@ int
 surfaceConstruct::processSurfMap(Simulation& System,
 				 const std::string& SObject,
 				 const std::string& SurfUnit,
-				 const long int linkPt) const
+				 const long int linkIndex) const
   /*!
     Process a surface tally on a registered object
     \param System :: Simulation to add tallies
     \param SObject :: SurfMap object for surfaces
     \param SurfUnit :: Object within surfMap
-    \param linkPt :: Link point [-ve for beam object]
+    \param linkIndex :: Index of surface [or -ve for all]
     \return 1 on success / 0 on failure to find linkPt
   */
 {
   ELog::RegMethod RegA("surfaceConstruct","processSurfMap");
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  ModelSupport::surfIndex& SurI=
-    ModelSupport::surfIndex::Instance();
   
   const int tNum=System.nextTallyNum(idType);
-  if (linkPt)
+  if (linkIndex)
     {
       const attachSystem::SurfMap* SPtr=
 	OR.getObjectThrow<attachSystem::SurfMap>(SObject,"FixedComp");
 
-      const int side=(linkPt>0) ? 1 : -1;
-      const size_t index=(linkPt>0) ? static_cast<size_t>(linkPt-1) :
-	static_cast<size_t>(-linkPt-1);
+      const int side=(linkIndex>0) ? 1 : -1;
+      const size_t index=(linkIndex>0) ? static_cast<size_t>(linkIndex-1) :
+	static_cast<size_t>(-linkIndex-1);
 
       const int surf=SPtr->getSurf(SurfUnit,index);
 
@@ -306,7 +300,8 @@ surfaceConstruct::writeHelp(std::ostream& OX) const
   OX<<"Surface tally options:\n"
     <<"object linkName\n"
     <<"object objectName front/back \n"
-    <<"surfMap objectName front/back/N {1-4 designator} \n"
+    <<"surfMap objectName surfName index-Direction \n"
+    <<"  -- indexDir is +/- 1-N surfaces stored under surfName\n"
     <<"viewObject objectName front/back/N {1-4 designator} \n";
   return;
 }

@@ -56,7 +56,7 @@ class Quadratic : public Surface
   Quadratic();
   Quadratic(const int,const int);
   Quadratic(const Quadratic&);
-  virtual Quadratic* clone() const =0;   ///< Abstract clone function
+  virtual Quadratic* clone() const;
   Quadratic& operator=(const Quadratic&);
   bool operator==(const Quadratic&) const;
   bool operator!=(const Quadratic&) const;
@@ -80,9 +80,10 @@ class Quadratic : public Surface
   /// access BaseEquation vector
   const std::vector<double>& copyBaseEqn() const { return BaseEqn; } 
 
+  virtual int setSurface(const std::string&);
   virtual int side(const Geometry::Vec3D&) const; 
 
-  virtual void setBaseEqn() =0;      ///< Abstract set baseEqn 
+  virtual void setBaseEqn();      ///< Abstract set baseEqn 
   
   virtual int onSurface(const Geometry::Vec3D&) const;          ///< is point valid on surface 
   virtual double distance(const Geometry::Vec3D&) const;        ///< distance between point and surface (approx)

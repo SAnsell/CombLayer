@@ -3,7 +3,7 @@
  
  * File:   process/mergeDist.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -222,8 +222,8 @@ mergeDist::populate()
 } 
 
 void
-mergeDist::processInnerOuter(const int outerFlag,
-			     std::vector<Token>& Cell) const
+mergeDist::processInnerOuter(const int,
+			     std::vector<Token>&) const
 /*!
   Process the cells 
   \param outerFlag :: Decide if outer/inner process.

@@ -68,6 +68,8 @@ class FREIA : public attachSystem::CopiedComp
 {
  private:
 
+  /// Start at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -129,6 +131,8 @@ class FREIA : public attachSystem::CopiedComp
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Vac pipe in wall (if used)
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
@@ -164,15 +168,21 @@ class FREIA : public attachSystem::CopiedComp
   /// Collimator hole after jaws
   std::shared_ptr<constructSystem::HoleShape> OutBCutBack;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
+
  public:
   
   FREIA(const std::string&);
   FREIA(const FREIA&);
   FREIA& operator=(const FREIA&);
   ~FREIA();
-  
+
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

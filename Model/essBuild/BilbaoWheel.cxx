@@ -3,7 +3,7 @@
  
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2015-2016 by Konstantin Batkov
+ * Copyright (c) 2015-2017 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "General.h"
@@ -82,7 +83,7 @@ namespace essSystem
 {
 
 BilbaoWheel::BilbaoWheel(const std::string& Key) :
-  WheelBase(Key),
+  WheelBase(Key),engActive(0),
   InnerComp(new BilbaoWheelInnerStructure(Key + "InnerStructure"))
   /*!
     Constructor
@@ -92,8 +93,7 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
 
 BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) : 
   WheelBase(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),engActive(A.engActive),
+  engActive(A.engActive),
   InnerComp(new BilbaoWheelInnerStructure(*A.InnerComp)),
   targetHeight(A.targetHeight),
   voidTungstenThick(A.voidTungstenThick),
@@ -129,11 +129,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
   if (this!=&A)
     {
       WheelBase::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       engActive=A.engActive;
       *InnerComp= *A.InnerComp;
       targetHeight=A.targetHeight;
@@ -192,13 +187,9 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BilbaoWheel","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
+  
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
@@ -334,9 +325,10 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
 std::string
 BilbaoWheel::getSQSurface(const double R, const double e)
-
   /*
     Return MCNP(X) surface card for SQ ellipsoids
+    \param R :: Radius 
+    \param e :: aspect ratio
   */
 {
   std::string surf = "sq " + StrFunc::makeString(1./pow(R,2)) + " " +
@@ -361,13 +353,14 @@ BilbaoWheel::createRadialSurfaces()
 
   int SI(wheelIndex+3000);
   double theta(0.0);
-  const double dTheta = 360.0/nSectors;
+  const double dTheta = 360.0/static_cast<double>(nSectors);
 
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta;
+
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
       SI += 10;
+      theta += dTheta;
     }
   // add 1st surface again with reversed normal - to simplify building cells
   SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+3001));
@@ -402,25 +395,6 @@ BilbaoWheel::divideRadial(Simulation& System,
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));  
       SJ+=10;
     }
-  return;
-}
-
-  
-void
-BilbaoWheel::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
-  /*!
-    Create the unit vectors
-    \param FC :: Fixed Component
-    \param sideIndex :: Link point
-  */
-{
-  ELog::RegMethod RegA("BilbaoWheel","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
   return;
 }
 
@@ -487,7 +461,10 @@ BilbaoWheel::createSurfaces()
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);  
       SI+=10;
     }
-  
+
+  //  ModelSupport::buildCylinder(SMap,wheelIndex+517,Origin,Z,coolantRadiusOut);
+  //  ModelSupport::buildCylinder(SMap,wheelIndex+527,Origin,Z,caseRadius);
+
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
 
@@ -498,18 +475,14 @@ BilbaoWheel::createSurfaces()
   GA = SurI.createUniqSurf<Geometry::General>(wheelIndex+527);
   GA->setSurface(getSQSurface(caseRadius, aspectRatio));
   SMap.registerSurf(GA);
+  GA->normalizeGEQ(0);
 
   Geometry::EllipticCyl* ECPtr=
     ModelSupport::buildEllipticCyl(SMap,wheelIndex+528,Origin,Z,
 				   X,caseRadius,caseRadius);
 
-  GA->normalizeGEQ(0);
-  //  ELog::EM<<"XXN ="<<*GA<<ELog::endDiag;
-  //  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
+
   ECPtr->normalizeGEQ(0);
-  //  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
-
-
   
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
 
@@ -698,7 +671,7 @@ BilbaoWheel::createAll(Simulation& System,
   ELog::RegMethod RegA("BilbaoWheel","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC,sideIndex);
+  WheelBase::createUnitVector(FC,sideIndex);
   createSurfaces();
   makeShaftSurfaces();
 

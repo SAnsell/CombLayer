@@ -82,7 +82,6 @@
 namespace ModelSupport
 {
   
-
 void
 calcLineTrack(Simulation& System,
 	      const Geometry::Vec3D& XP,

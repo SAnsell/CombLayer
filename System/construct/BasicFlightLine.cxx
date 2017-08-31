@@ -76,7 +76,6 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "surfExpand.h"
 #include "BasicFlightLine.h"
 
 namespace moderatorSystem

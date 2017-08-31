@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   xml/XMLcomp.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,6 @@ XMLcomp<T>::writeXML(std::ostream& OX) const
   writeDepth(OX);
   std::string::size_type pos=Key.find('%');
   const std::string KeyOut=Key.substr(0,pos);
-  ELog::EM<<"KEy out == "<<KeyOut<<ELog::endDebug;
 
   if (isEmpty())
     {

@@ -27,6 +27,11 @@ namespace attachSystem
   class FixedComp;
 }
 
+namespace mainSystem
+{
+  class inputParam;
+}
+
 
 class Simulation;
 
@@ -43,7 +48,7 @@ namespace tallySystem
   Provides linkage to its outside on FixedComp[0]
 */
 
-class pointConstruct : virtual public basicConstruct
+class pointConstruct
 {
  public:
 

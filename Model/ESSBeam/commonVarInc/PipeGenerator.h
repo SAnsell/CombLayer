@@ -50,7 +50,8 @@ class PipeGenerator
   double windowThick;        ///< window thickness
   
   std::string pipeMat;        ///< Primary default mat
-  std::string windowMat;      ///< window mat
+  std::string frontWindowMat;      ///< window mat
+  std::string backWindowMat;      ///< window mat
   std::string voidMat;        ///< void mat
     
  public:
@@ -66,8 +67,8 @@ class PipeGenerator
   void setFlange(const double,const double);
   /// set pipe material
   void setMat(const std::string& M) { pipeMat=M; }
-  /// set collet material
-  void setWindowMat(const std::string& M) { windowMat=M; }
+  void setWindowMat(const std::string&);
+  void setWindowMat(const std::string&,const std::string&);
   
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double,const double) const;

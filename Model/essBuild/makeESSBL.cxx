@@ -96,6 +96,7 @@
 #include "TREX.h"
 #include "VESPA.h"
 #include "VOR.h"
+#include "SKADI.h"
 
 #include "shortDREAM.h"
 #include "shortNMX.h"
@@ -120,7 +121,8 @@ makeESSBL::makeESSBL(const std::string& SN,
 {
 }
 
-makeESSBL::makeESSBL(const makeESSBL& A) : 
+makeESSBL::makeESSBL(const makeESSBL& A) :
+  beamlineSystem::beamlineConstructor(A),
   shutterName(A.shutterName),beamName(A.beamName)
   /*!
     Copy constructor
@@ -138,6 +140,7 @@ makeESSBL::operator=(const makeESSBL& A)
 {
   if (this!=&A)
     {
+      beamlineSystem::beamlineConstructor::operator=(A);
     }
   return *this;
 }
@@ -219,7 +222,7 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     }
   else if (beamName=="ESTIA")
     {
-      ESTIA estiaBL;
+      ESTIA estiaBL("estia");
       estiaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="FREIA")
@@ -277,13 +280,19 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     }
  else if (beamName=="TREX")
     {
-      // Odin beamline
+      // TREX beamline
       TREX TrexBL("trex");
       TrexBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
+  else if (beamName=="SKADI")
+    {
+      //SKADI beamline
+      SKADI SkadiBL("skadi");
+      SkadiBL.build(System,*mainGIPtr,bunkerObj,voidCell);
+    }
   else if (beamName=="VESPA")
     {
-      // DREAM beamline
+      // vespa beamline
       VESPA vespaBL("vespa");
       vespaBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

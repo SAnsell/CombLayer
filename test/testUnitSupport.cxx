@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testUnitSupport.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ void
 Lower::write() const
   /// Write information
 {
-  std::cout<<"Lower == "<<a<<" "<<b<<" "<<c<<std::endl; 
+  //  std::cout<<"Lower == "<<a<<" "<<b<<" "<<c<<std::endl; 
   return;
 }
 
@@ -99,15 +99,15 @@ void
 Mid::write() const
   /// Write information
 {
-  std::cout<<"Mid == "<<a<<" "<<b<<std::endl; 
-  std::cout<<"Sub == ";
+  // std::cout<<"Mid == "<<a<<" "<<b<<std::endl; 
+  // std::cout<<"Sub == ";
   Hold.write();
   return;
 }
 
 
 // ------------------------------------------------
-//          MID
+//          TOP
 // ------------------------------------------------
 
 void
@@ -133,8 +133,8 @@ Top::write() const
     Write Out top level stuff
   */
 {
-  std::cout<<"Top == "<<a<<" "<<b<<std::endl; 
-  std::cout<<"Sub == ";
+  //  std::cout<<"Top == "<<a<<" "<<b<<std::endl; 
+  //  std::cout<<"Sub == ";
   Hold.write();
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   construct/RingFlange.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,7 +185,7 @@ RingFlange::insertBolt(Simulation& System,
   double aVal(angle-deltaAngle);
   if (aVal<0.0) aVal+=360.0;
   const size_t index=static_cast<size_t>(aVal/angleR);
-  const double xAngle=angle-(index*angleR);
+  const double xAngle=angle-(static_cast<double>(index)*angleR);
   std::vector<int> cellN;
   // before:
   

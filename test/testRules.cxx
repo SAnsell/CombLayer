@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testRules.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,13 +166,17 @@ testRules::testCreateDNF()
   ELog::RegMethod RegA("testRules","testCreateDNF");
 
   typedef std::tuple<std::string,int,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("3 0 11  -12  13  -14  15  (-16 : 17 )",1,
-			"( -16 15 -14 13 -12 11 ) : ( 17 15 -14 13 -12 11 )"));
-  Tests.push_back(TTYPE("3 0 12:-12:13:-14",0,""));
-  Tests.push_back(TTYPE("3 0 11:-12:13:-14",1,
-			"-14 : -12 : 11 : 13"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("3 0 11  -12  13  -14  15  (-16 : 17 )",1,
+	    "( -16 15 -14 13 -12 11 ) : ( 17 15 -14 13 -12 11 )"),
+      
+      TTYPE("3 0 12:-12:13:-14",0,""),
+      
+      TTYPE("3 0 11:-12:13:-14",1,"-14 : -12 : 11 : 13")
+    };
 
+  int cnt(1);
   MonteCarlo::Object Tx;
   for(const TTYPE& tc : Tests)
     {
@@ -180,15 +184,18 @@ testRules::testCreateDNF()
       const Rule* TRule=Tx.topRule();
       Rule* XRule=TRule->clone();
       RuleBinary Dlist(XRule);
+      ELog::EM<<"DList == "<<Dlist<<ELog::endDiag;
       Dlist.makeSurfIndex();
-      Dlist.createDNFitems();
-      Dlist.group();
+      ELog::EM<<"DN == "<<Dlist.createDNFitems()<<ELog::endDiag;
+      ELog::EM<<"Gro == "<<Dlist.group()<<ELog::endDiag;
+      ELog::EM<<"DList == "<<Dlist<<ELog::endDiag;
       
       Rule* OutRule=Dlist.createTree();
       if ( (std::get<1>(tc) && 
 	    (!OutRule || OutRule->display()!=std::get<2>(tc))) ||
 	   (!std::get<1>(tc) && OutRule))
 	{
+	  ELog::EM<<"Test :: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Original == "<<TRule->display()<<ELog::endTrace;
 	  ELog::EM<<"D == "<<Dlist<<ELog::endTrace;
 	  ELog::EM<<ELog::endDiag;
@@ -203,6 +210,7 @@ testRules::testCreateDNF()
 	}
       delete XRule;
       delete OutRule;
+      cnt++;
     }
   return 0;
 }

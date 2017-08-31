@@ -69,6 +69,7 @@
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ContainedComp.h"
 #include "DiskLayerMod.h"
 
@@ -79,7 +80,7 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
   attachSystem::FixedComp(Key,9),
-  attachSystem::CellMap(),  
+  attachSystem::CellMap(),attachSystem::SurfMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1)
   /*!
@@ -91,6 +92,7 @@ DiskLayerMod::DiskLayerMod(const std::string& Key) :
 DiskLayerMod::DiskLayerMod(const DiskLayerMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),
   midIndex(A.midIndex),midZ(A.midZ),zStep(A.zStep),
   outerRadius(A.outerRadius),thick(A.thick),radius(A.radius),
@@ -115,6 +117,7 @@ DiskLayerMod::operator=(const DiskLayerMod& A)
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       
       cellIndex=A.cellIndex;
       midIndex=A.midIndex;
@@ -241,10 +244,13 @@ DiskLayerMod::createSurfaces()
 {
   ELog::RegMethod RegA("DiskLayerMod","createSurfaces");
 
+  ModelSupport::buildPlane(SMap,modIndex+5,Origin,Z);
+  SurfMap::setSurf("Layer0",SMap.realSurf(modIndex+5));
   int SI(modIndex+200);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildPlane(SMap,SI+5,Origin+Z*thick[i],Z);
+      SurfMap::setSurf("Layer"+std::to_string(i+1),SMap.realSurf(SI+5));
       // builds inner  cylinders:
       int TI(SI);
       for(size_t j=0;j<radius[i].size();j++)
@@ -254,9 +260,8 @@ DiskLayerMod::createSurfaces()
         }
       SI+=200;
     }
-  ModelSupport::buildPlane(SMap,modIndex+5,Origin,Z);
-
   ModelSupport::buildCylinder(SMap,modIndex+7,Origin,Z,outerRadius);
+  SurfMap::setSurf("OuterRad",SMap.realSurf(modIndex+7));
   return; 
 }
 
@@ -282,16 +287,22 @@ DiskLayerMod::createObjects(Simulation& System)
       for(j=0;j<radius[i].size();j++)
 	{
 	  outerOut=ModelSupport::getComposite(SMap,TI," -207 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
-                                           layerStr+innerOut+outerOut));
-	  
+          if (mat[i][j]!=-1)
+            {
+              System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
+                                               layerStr+innerOut+outerOut));
+              CellMap::addCell("Layer"+std::to_string(i),cellIndex-1);
+            }
 	  innerOut=ModelSupport::getComposite(SMap,TI," 207 ");
 	  TI+=10;
 	}
       outerOut=ModelSupport::getComposite(SMap,modIndex," -7 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
-                                       layerStr+innerOut+outerOut));
-      
+      if (mat[i][j]!=-1)
+        {
+          System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i][j],temp[i][j],
+                                           layerStr+innerOut+outerOut));
+          CellMap::addCell("Layer"+std::to_string(i),cellIndex-1);
+        }
       SI+=200;
     }
   //  int SI(modIndex);
@@ -305,7 +316,7 @@ DiskLayerMod::createObjects(Simulation& System)
 void
 DiskLayerMod::createLinks()
   /*!
-    Creates a full attachment set
+    Creates a full attachment setx
     First two are in the -/+Y direction and have a divider
     Last two are in the -/+X direction and have a divider
     The mid two are -/+Z direction
@@ -441,6 +452,17 @@ DiskLayerMod::getLayerString(const size_t layerIndex,
   return Out;
 }
 
+
+double
+DiskLayerMod::getHeight() const
+  /*!
+    Special calculation for the distance between two
+    link point for the effective vertical height
+    \return Full-Height [linkPoint 5-6]
+  */
+{
+  return getLinkDistance(5,6);
+}
 
 void
 DiskLayerMod::createAll(Simulation& System,

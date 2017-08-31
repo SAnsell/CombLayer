@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/GuideBay.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,9 +78,7 @@ class GuideBay : public attachSystem::ContainedGroup,
   GuideBay& operator=(const GuideBay&);
   virtual ~GuideBay();
 
-  /// access to cylinder
-  void setCylBoundary(const int A,const int B) 
-    { innerCyl=abs(A); outerCyl=abs(B); } 
+  void setCylBoundary(const int,const int);
 
   void outerMerge(Simulation&,GuideBay&);
   void createGuideItems(Simulation&,const std::string&);

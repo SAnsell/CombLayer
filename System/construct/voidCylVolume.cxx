@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   t1Upgrade/voidCylVolume.cxx
+ * File:   construct/voidCylVolume.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,7 +161,7 @@ voidCylVolume::createUnitVector(const attachSystem::FixedComp& FC,
 void
 voidCylVolume::createSurfaces()
   /*!
-    Create planes for the silicon and Polyethene layers
+    Create the surfaces [cylinder divided into segments]
   */
 {
   ELog::RegMethod RegA("voidCylVolume","createSurfaces");
@@ -170,7 +170,7 @@ voidCylVolume::createSurfaces()
   ModelSupport::buildPlane(SMap,voidIndex+5,Origin-Z*(height/2.0),Z);  
   ModelSupport::buildPlane(SMap,voidIndex+6,Origin+Z*(height/2.0),Z);  
 
-  const double angleStep(2.0*M_PI/nSegment);  
+  const double angleStep(2.0*M_PI/static_cast<double>(nSegment));  
   int SI(voidIndex+11);
   int PI(voidIndex+111);
   double angle(0.0);
@@ -194,7 +194,7 @@ voidCylVolume::createSurfaces()
 void
 voidCylVolume::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
+    Create the volume [cylinder divided into segments]
     \param System :: Simulation to add results
   */
 {

@@ -43,7 +43,7 @@ namespace tallySystem
   Provides linkage to its outside on FixedComp[0]
 */
 
-class surfaceConstruct : virtual public basicConstruct
+class surfaceConstruct 
 {
  private:
 

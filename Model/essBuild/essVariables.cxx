@@ -244,18 +244,23 @@ EssVariables(FuncDataBase& Control,
 
 
   // SHUTTER BAY
-  Control.addVariable("ShutterBayXStep",0.0);  
-  Control.addVariable("ShutterBayYStep",0.0);  
-  Control.addVariable("ShutterBayZStep",0.0);
-  Control.addVariable("ShutterBayXYAngle",0.0); 
-  Control.addVariable("ShutterBayZAngle",0.0);
   Control.addVariable("ShutterBayRadius",550.0);
+  Control.addVariable("ShutterBayTopRadius",500.0);
+  Control.addVariable("ShutterBayTopCut",186.0);
   Control.addVariable("ShutterBayHeight",400.0);
   Control.addVariable("ShutterBayDepth",400.0);
   Control.addVariable("ShutterBaySkin",6.0);
   Control.addVariable("ShutterBayTopSkin",6.0);
+  Control.addVariable("ShutterBayCutSkin",6.0);
   Control.addVariable("ShutterBayMat","CastIron");
+
   Control.addVariable("ShutterBaySkinMat","Void");
+  Control.addVariable("ShutterBayNCurtain",3);
+  Control.addVariable("ShutterBayCurtainMat0","Stainless304");
+  Control.addVariable("ShutterBayCurtainMat1","Void");
+  Control.addVariable("ShutterBayCurtainMat2","Concrete");
+  Control.addVariable("ShutterBayCurtainThick0",70.0);
+  Control.addVariable("ShutterBayCurtainThick1",6.0);
 
   // Guide BAY [ All 4 same ]
   Control.addVariable("GuideBayXStep",0.0);  
@@ -263,8 +268,8 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("GuideBayZStep",0.0);
   Control.addVariable("GuideBayZAngle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
-  Control.addVariable("GuideBayInnerHeight",30.0);
-  Control.addVariable("GuideBayInnerDepth",30.0);
+  Control.addVariable("GuideBayInnerHeight",40.0);
+  Control.addVariable("GuideBayInnerDepth",40.0);
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",50.0);
   Control.addVariable("GuideBayDepth",50.0);
@@ -399,8 +404,6 @@ EssBeamLinesVariables(FuncDataBase& Control)
   return;
 }
 
-
-
 void
 EssFlightLineVariables(FuncDataBase& Control)
   /*!
@@ -426,9 +429,9 @@ EssFlightLineVariables(FuncDataBase& Control)
   // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightHeight", 2.9);     
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
-  Control.addVariable("TopAFlightNLiner", 1);      // Liner
-  Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
-  Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
+  Control.addVariable("TopAFlightNLiner",1);      
+  Control.addVariable("TopAFlightLinerThick1",0.3);      
+  Control.addVariable("TopAFlightLinerMat1","Aluminium");      
 
   // LOWER flight lines
   // B FLIGHT CORRECTED
@@ -464,13 +467,13 @@ EssFlightLineVariables(FuncDataBase& Control)
   std::vector<double> TopAFlightWedgeTheta;
   TopAFlightWedgeTheta.push_back(t1);
   for (size_t i=1; i<=3; i++)
-    TopAFlightWedgeTheta.push_back(t1-dt1*i);
+    TopAFlightWedgeTheta.push_back(t1-dt1*static_cast<double>(i));
 
   // central wedge: Rickard Holmberg slide 14
   TopAFlightWedgeTheta.push_back(-2.8);
   TopAFlightWedgeTheta.push_back(t2);
   for (size_t i=1; i<=8; i++)
-    TopAFlightWedgeTheta.push_back(t2-dt2*i);
+    TopAFlightWedgeTheta.push_back(t2-dt2*static_cast<double>(i));
 
   double xstep(0);
   double ystep(0);
@@ -515,13 +518,14 @@ EssFlightLineVariables(FuncDataBase& Control)
   const double t3 = (9.1+dt2*8.0)-180.0; 
   TopBFlightWedgeTheta.push_back(t3);
   for (size_t i=1;i<=8;i++)
-    TopBFlightWedgeTheta.push_back(t3-dt2*i);
+    TopBFlightWedgeTheta.push_back(t3-dt2*static_cast<double>(i));
 
   // email from Rickard Holmberg 15 Sep, slide 6
-  const double t4 = -15.45-180; 
+  const double t4 = -15.45-180.0; 
   TopBFlightWedgeTheta.push_back(t4);
-  for (size_t i=1; i<=2; i++)
-    TopBFlightWedgeTheta.push_back(t4-dt1*i);
+
+  TopBFlightWedgeTheta.push_back(t4-dt1);
+  TopBFlightWedgeTheta.push_back(t4-2.0*dt1);
 
   if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
     throw ColErr::RangeError<int>(TopBFlightNWedges,0,
@@ -603,7 +607,7 @@ EssInstrumentVariables(const std::set<std::string>& BL,
                        "EssInstrumentVariables");
 
   typedef void (*VariableFunction)(FuncDataBase&);
-  typedef std::map<std::string,VariableFunction> VMap;
+  typedef std::multimap<std::string,VariableFunction> VMap;
   
   const VMap VarInit({
      {"BEER",        &BEERvariables},
@@ -619,28 +623,35 @@ EssInstrumentVariables(const std::set<std::string>& BL,
      {"NMX",         &NMXvariables},
      {"NNBAR",       &NNBARvariables},
      {"ODIN",        &ODINvariables},
+     {"SKADI",       &SKADIvariables},
      {"TREX",        &TREXvariables},
      {"TESTBEAM",    &TESTBEAMvariables},
      {"VESPA",       &VESPAvariables},
-     {"VOR",         &VORvariables}
+     {"VOR",         &VORvariables},
+     {"SHORTNMX",     &NMXvariables},
+     {"SHORTNMX",     &shortNMXvariables},
+     {"SHORTDREAM",   &DREAMvariables},
+     {"SHORTDREAM",   &shortDREAMvariables},
+     {"SHORTDREAM2",  &DREAMvariables},
+     {"SHORTDREAM2",  &shortDREAM2variables},
+     {"SHORTODIN",    &ODINvariables},
+     {"SHORTODIN",    &shortODINvariables}
+
+       
    });
 
+  
   for(const std::string& beam : BL)
     {
-
-      VMap::const_iterator mc=VarInit.find(beam);
-      if (mc!=VarInit.end())
-        {
-          mc->second(Control);
-        }
+      // std::pair<VMap::const_iterator,VMap::const_iterator>
+      VMap::const_iterator mc;
+      decltype(VarInit.equal_range("")) rangePair
+	= VarInit.equal_range(beam);
+      for(mc=rangePair.first;mc!=rangePair.second;mc++)
+	mc->second(Control);
     }
-
+  
   simpleITEMvariables(Control);
-
-  shortDREAMvariables(Control);
-  shortDREAM2variables(Control);
-  shortNMXvariables(Control);
-  shortODINvariables(Control);
 
   return;
 }  

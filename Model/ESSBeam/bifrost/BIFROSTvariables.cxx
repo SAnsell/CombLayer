@@ -94,13 +94,13 @@ BIFROSTvariables(FuncDataBase& Control)
   Control.addVariable("bifrostAxisZAngle",0.0);   // rotation
   Control.addVariable("bifrostAxisZStep",2.0);   // +/- height
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"bifrostFA",350.0,8.0,5.0 ,10.0,5.0);
   
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"bifrostPipeB",8.0,46.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"bifrostFB",44.0, 5.0,4.0, 5.0,4.0);
 
@@ -128,7 +128,7 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.setThick({0.2,0.2});
   BGen.addPhase({95,275},{60.0,60.0});
   BGen.addPhase({95,275},{60.0,60.0});
-  BGen.generateBlades(Control,"bifrostDBlade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostDBlade",0.0,20.0,35.0);
 
   // VACUUM PIPE: SDisk to T0 (A)
   PipeGen.setPipe(12.0,0.5);
@@ -148,7 +148,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Singe Blade chopper FOC
   BGen.setThick({0.2});
   BGen.addPhase({95},{60.0});
-  BGen.generateBlades(Control,"bifrostFOC1Blade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostFOC1Blade",0.0,20.0,35.0);
 
   // VACUUM PIPE: from ChoperB to 6m holding point
   PipeGen.setPipe(12.0,0.5);
@@ -175,7 +175,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Singe Blade chopper FOC
   BGen.setThick({0.2});
   BGen.addPhase({95},{60.0});
-  BGen.generateBlades(Control,"bifrostFOC2Blade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostFOC2Blade",0.0,20.0,35.0);
 
   // VACUUM PIPE: from ChoperC with 4m
   PipeGen.setPipe(12.0,0.5);
@@ -231,7 +231,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Guide in wall
   FGen.generateTaper(Control,"bifrostFWall",344.0,4.0,5.232, 4.0,5.232);
 
-  FGen.setGuideMat("Glass");
+  FGen.setLayer(1,0.5,"Glass");
   PipeGen.setMat("Stainless304");
   
   // Shield: leaving bunker
@@ -293,7 +293,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Singe Blade chopper FOC
   BGen.setThick({0.2});
   BGen.addPhase({95},{60.0});
-  BGen.generateBlades(Control,"bifrostFOCOutABlade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostFOCOutABlade",0.0,20.0,35.0);
 
   // Shield: leaving chopper pit A
   SGen.generateShield(Control,"bifrostShieldB",6275.0,40.0,40.0,40.0,4,8);
@@ -308,7 +308,7 @@ BIFROSTvariables(FuncDataBase& Control)
       yStep=4.0;
     }
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   double gap(8.0);
   for(size_t i=0;i<4;i++)
     {

@@ -3,7 +3,7 @@
  
  * File:   supportInc/permSort.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,18 @@ sortPermutation(const std::vector<T>& mainVec,
     Uses the trick of sorting the index vector and leaving
     the main vector untouched(!)
     \param mainVec :: main vector of components to sort
+    \param compare :: comparison operator
     \return index list
   */
 {
   std::vector<size_t> index(mainVec.size());
-  
-  for(size_t i=0;i<index.size();i++)
-    index.push_back(i);
-// std::iota(index.begin(),index.end(),0);
+  for(size_t i=0;i<mainVec.size();i++)
+    index[i]=i;
   std::sort(index.begin(),index.end(),
             [&](const size_t i, const size_t j)
-	    { return compare(mainVec[i],mainVec[j]); });
+	    { 
+	      return compare(mainVec[i],mainVec[j]);
+	    });
   return index;
 }
 
@@ -58,11 +59,10 @@ applyPermutation(std::vector<T>& mainVec,
     [Taken from stackoverflow: 17074324 - Timothy Shields =>
     Modifed to process mainVec in place.
     Process the vector file
-    \param mainVec :: main vector of components to sort
-    \return index list
+    \param mainVec :: main vector of components to return sorted
+    \param index :: list of positions
   */
 {
-
   std::vector<T> outVec;
   outVec.reserve(mainVec.size());
 
@@ -72,9 +72,6 @@ applyPermutation(std::vector<T>& mainVec,
   // move back to original container [ care as need to set size]
   for(size_t i=0;i<index.size();i++)
     mainVec[i]=std::move(outVec[i]);
-
-  //  mainVec.resize(index.size());
-  //  mainVec=std::move(outVec);
   
   return;
 }

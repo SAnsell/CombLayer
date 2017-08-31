@@ -59,6 +59,7 @@ namespace setVariable
   void NMXvariables(FuncDataBase&);
   void NNBARvariables(FuncDataBase&);
   void ODINvariables(FuncDataBase&);
+  void SKADIvariables(FuncDataBase&);
   void TESTBEAMvariables(FuncDataBase&);
   void TREXvariables(FuncDataBase&);
   void VORvariables(FuncDataBase&);

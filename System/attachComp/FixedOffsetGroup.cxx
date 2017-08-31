@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffsetGroup.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -205,6 +205,8 @@ void
 FixedOffsetGroup::populate(const FuncDataBase& Control)
   /*!
     Populate the variables
+    The structure sets global variables based on 
+    keyName and FixedGroup based on keyaName+GroupKey
     \param Control :: Control data base
    */
 {
@@ -233,6 +235,7 @@ void
 FixedOffsetGroup::applyOffset()
   /*!
     Apply the rotation/step offset
+    Note the rotation/step is apply ON TOP of the full R/Step combination
   */
 {
   ELog::RegMethod RegA("FixedOffsetGroup","applyOffset");

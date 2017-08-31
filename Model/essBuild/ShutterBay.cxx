@@ -3,7 +3,7 @@
  
  * File:   essBuild/ShutterBay.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,7 @@ ShutterBay::ShutterBay(const std::string& Key)  :
 
 ShutterBay::ShutterBay(const ShutterBay& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   radius(A.radius),height(A.height),depth(A.depth),
   skin(A.skin),topSkin(A.topSkin),
@@ -114,6 +115,7 @@ ShutterBay::operator=(const ShutterBay& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A),
       cellIndex=A.cellIndex;
       radius=A.radius;
       height=A.height;
@@ -147,6 +149,31 @@ ShutterBay::populate(const FuncDataBase& Control)
   depth=Control.EvalVar<double>(keyName+"Depth");
   skin=Control.EvalVar<double>(keyName+"Skin");
   topSkin=Control.EvalVar<double>(keyName+"TopSkin");
+  cutSkin=Control.EvalVar<double>(keyName+"CutSkin");
+  topCut=Control.EvalVar<double>(keyName+"TopCut");
+  topRadius=Control.EvalVar<double>(keyName+"TopRadius");
+
+  NCurtain=Control.EvalVar<size_t>(keyName+"NCurtain");
+  NCurtain=std::max<size_t>(1,NCurtain);
+  double thick(0.0);
+  curLayer.push_back(topCut);
+  for(size_t i=0;i<NCurtain;i++)
+    {
+      const std::string NStr=std::to_string(i);
+      if (i+1!=NCurtain)
+        {
+          const double T=Control.EvalVar<double>(keyName+"CurtainThick"+NStr);
+          thick+=T;
+          if (thick>=topCut)
+            throw ColErr::SizeError<double>
+              (thick,topCut,"TopCut < thickness at layer:"+NStr);
+          curLayer.push_back(topCut-thick);
+        }
+      const int cMat=
+        ModelSupport::EvalMat<int>(Control,keyName+"CurtainMat"+NStr);
+      curMat.push_back(cMat);
+    }
+  
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
 
@@ -185,9 +212,21 @@ ShutterBay::createSurfaces()
   ModelSupport::buildPlane(SMap,bulkIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,bulkIndex+6,Origin+Z*height,Z);
   ModelSupport::buildPlane(SMap,bulkIndex+16,Origin+Z*(topSkin+height),Z);
+  ModelSupport::buildPlane(SMap,bulkIndex+106,Origin+Z*(height-topCut),Z);
+
+
+  int CL(bulkIndex+200);
+  for(size_t i=0;i<NCurtain;i++)
+    {
+      ModelSupport::buildPlane
+        (SMap,CL+6,Origin+Z*(height+cutSkin-curLayer[i]),Z);
+      CL+=10;
+    }
   
   ModelSupport::buildCylinder(SMap,bulkIndex+7,Origin,Z,radius);
   ModelSupport::buildCylinder(SMap,bulkIndex+17,Origin,Z,radius+skin);
+  ModelSupport::buildCylinder(SMap,bulkIndex+107,Origin,Z,topRadius);
+  ModelSupport::buildCylinder(SMap,bulkIndex+117,Origin,Z,topRadius+skin);
   
   return;
 }
@@ -204,21 +243,48 @@ ShutterBay::createObjects(Simulation& System,
   ELog::RegMethod RegA("ShutterBay","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 -7 ");
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -106 -7 ");
   Out+=CC.getExclude();  
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   addCell("MainCell",cellIndex-1);
-  
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -6 7 -17 ");
+
+  Out=ModelSupport::getComposite(SMap,bulkIndex," 106 -107 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  addCell("TopCell",cellIndex-1);
+
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -106 7 -17 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"6 -16 -17 ");
+  Out=ModelSupport::getComposite(SMap,bulkIndex," 106 -206 107 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  addCell("Skin",cellIndex-1);
+  
+  Out=ModelSupport::getComposite(SMap,bulkIndex,"206 -6 107 -117 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
   addCell("Skin",cellIndex-1);
 
+  Out=ModelSupport::getComposite(SMap,bulkIndex," 6 -16 -117 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,skinMat,0.0,Out));
+  addCell("Skin",cellIndex-1);
+
+  int CL(bulkIndex+200);
+  for(size_t i=1;i<NCurtain;i++)
+    {
+      Out=ModelSupport::getComposite
+        (SMap,bulkIndex,CL," 117 -17 6M -16M ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,curMat[i-1],0.0,Out));
+      addCell("Curtain",cellIndex-1);
+      CL+=10;
+    }
+  Out=ModelSupport::getComposite(SMap,bulkIndex,CL," 117 -17 6M -16 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,curMat.back(),0.0,Out));
+  addCell("Curtain",cellIndex-1);
+
   
-  Out=ModelSupport::getComposite(SMap,bulkIndex,"5 -16 -17 ");
+
+  
+  Out=ModelSupport::getComposite(SMap,bulkIndex," 5 -16 -17 ");
   addOuterSurf(Out);
 
   return;

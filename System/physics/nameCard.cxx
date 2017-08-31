@@ -3,7 +3,7 @@
  
  * File:   physics/nameCard.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,7 @@ nameCard::nameCard(const std::string& KN,
   /*!
     Constructor
     \param KN :: Name
+    \param wT :: write Type with name[0] / without name [1]
   */
 {
   reset();
@@ -199,7 +200,7 @@ void
 nameCard::setItem(const std::string& kN,const long int& Value) 
   /*!
     Get an item based on the type
-    \param keyName :: Index number to return
+    \param kN :: keyname string
     \param Value :: vale to set
    */
 {
@@ -257,7 +258,7 @@ nameCard::setRegItem(const std::string& kN,
 		     const std::string& Item)
   /*!
     Turn a registered item into a real item
-    \param kN :: KeyNmae
+    \param kN :: Keyname
     \param Item :: value [convertable]
    */
 {
@@ -302,7 +303,7 @@ nameCard::setRegItem(const std::string& kN,
 		     const long int& Item)
   /*!
     Turn a registered item into a real item
-    \param kN :: KeyNmae
+    \param kN :: Keyname
     \param Item :: value [convertable]
    */
 {
@@ -340,7 +341,7 @@ nameCard::setRegItem(const std::string& kN,
 		     const double& Item)
   /*!
     Turn a registered item into a real item
-    \param kN :: KeyNmae
+    \param kN :: Keyname
     \param Item :: value [convertable]
    */
 {
@@ -396,6 +397,7 @@ nameCard::getItem<double>(const std::string& kN) const
   /*!
     Set an item based on the type
     \param kN :: Index number to return
+    \return value as double [or throw]
    */
 {
   ELog::RegMethod RegA("nameCard","getItem<double>");
@@ -414,6 +416,7 @@ nameCard::getItem<long int>(const std::string& kN)  const
   /*!
     Set an item based on the type
     \param kN :: Index number to return
+    \return value as long int [or throw]
    */
 {
   ELog::RegMethod RegA("nameCard","getItem<long int>");
@@ -432,6 +435,7 @@ nameCard::getItem<std::string>(const std::string& kN) const
   /*!
     Set an item based on the type
     \param kN :: Index number to return
+    \return value as string [or throw]
    */
 {
   ELog::RegMethod RegA("nameCard","getItem<string>");

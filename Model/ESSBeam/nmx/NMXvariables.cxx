@@ -81,18 +81,19 @@ NMXvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
+  Control.addVariable("nmxStopPoint",4);
   Control.addVariable("nmxAxisXStep",0.0);
   Control.addVariable("nmxAxisYStep",0.0);
   Control.addVariable("nmxAxisZStep",0.0);
   Control.addVariable("nmxAxisXYAngle",0.0);   // rotation 
   Control.addVariable("nmxAxisZAngle",1.0);
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   FGen.setYOffset(0.1);
   FGen.generateTaper(Control,"nmxFA",350.0,3.0,3.0,3.0,4.5);
   Control.addVariable("nmxGABeamZAngle",0.0);         // -1.0 [BEND]
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   
   const double bendAngle(90.0);

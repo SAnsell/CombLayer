@@ -158,10 +158,9 @@ BunkerQUnit::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("BunkerQUnit","populate");
 
   attachSystem::FixedOffset::populate(Control);
-  
+
   xGap=Control.EvalVar<double>(keyName+"XGap");
   zGap=Control.EvalVar<double>(keyName+"ZGap");
-
 
   Geometry::Vec3D APt,BPt;
   const size_t NPt=Control.EvalVar<size_t>(keyName+"NPoint");
@@ -215,6 +214,7 @@ BunkerQUnit::modifyPoints()
       if (PFlag[index]==1)
         {
           cPts[index]+=Z*Origin.Z();
+	  cPts[index]+=X*xStep+Y*yStep;   // add step from offset
         }
       else if (PFlag[index]==2)
         {

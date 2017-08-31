@@ -142,6 +142,12 @@ namespace mathFunc
   template<typename T>
   T mean(const std::vector<T>&);
 
+  double logAdd(const double&,const double&);
+  double logSubtract(const double&,const double&);
+
+  double logFromLinear(const double,const double,const size_t,
+		      const size_t);
+  
 }
 
 
@@ -159,8 +165,6 @@ namespace mathFunc
 namespace mathSupport
 {
 
-double logFromLinear(const double,const double,const size_t,
-		      const size_t);
   /*!
     \struct Rsol
     \brief A simple imagenary class (replace by complex)

@@ -67,6 +67,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "ReactorGrid.h"
@@ -154,7 +156,8 @@ FuelElement::plateCentre(const size_t Index) const
    */
 {
   const double plateDepth(fuelDepth+cladDepth*2.0+waterDepth);
-  return Origin+Y*plateDepth*(Index-(nElement-1.0)/2.0);
+  return Origin+Y*plateDepth*
+    (static_cast<double>(Index)-(static_cast<double>(nElement)-1.0)/2.0);
 }
 
 void
@@ -227,7 +230,7 @@ FuelElement::makeFuelDivider()
   
   for(size_t i=1;i<nFuel;i++)
     {
-      fuelFrac.push_back(static_cast<double>(i+1)/
+      fuelFrac.push_back(static_cast<double>(i)/
 			 static_cast<double>(nFuel));
     }
 
@@ -528,19 +531,19 @@ FuelElement::layerProcess(Simulation& System,const FuelLoad& FuelSystem)
   */
 {
   ELog::RegMethod RegA("FuelElement","layerProcess");
-  
+
   if (nFuel<2) return;
   // All fuel cells
   int SI(surfIndex+4001);
   for(size_t i=0;i<fuelCells.size();i++)
     {
       ModelSupport::surfDivide DA;
-      for(size_t j=0;j<nFuel-1;j++)
+      for(size_t j=1;j<nFuel;j++)
 	{
-	  DA.addFrac(fuelFrac[j]);
+	  DA.addFrac(fuelFrac[j-1]);
 	  
 	  DA.addMaterial
-	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j+1,fuelMat));
+	    (FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,j,fuelMat));
 	}
       DA.addMaterial(FuelSystem.getMaterial(XIndex+1,YIndex+1,i+1,
 					    nFuel,fuelMat));

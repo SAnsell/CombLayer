@@ -3,7 +3,7 @@
  
  * File:   processInc/ObjectTrackPoint.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ class ObjectTrackPoint : public ObjectTrackAct
   ObjectTrackPoint(const Geometry::Vec3D&);
   ObjectTrackPoint(const ObjectTrackPoint&);
   ObjectTrackPoint& operator=(const ObjectTrackPoint&);  
-  ~ObjectTrackPoint() {}
+  ~ObjectTrackPoint() {}   ///< Destructor
 
   /// Set target point
   void setTarget(const Geometry::Vec3D& Pt) { TargetPt=Pt; }

@@ -136,7 +136,11 @@ createOuterObjects(Simulation& System)
   PX=SurI.createUniqSurf<Geometry::Plane>(50000);   
   PX->setPlane(Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
   SurI.insertSurface(PX);                        // Force onto stack
-    
+
+  PX=SurI.createUniqSurf<Geometry::Plane>(60000);   
+  PX->setPlane(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  SurI.insertSurface(PX);                        // Force onto stack
+
   //   Create object 74123
   System.addCell(MonteCarlo::Qhull(74123,0,0.0," -1 "));
 

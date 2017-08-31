@@ -101,8 +101,6 @@ class TESTBEAM : public attachSystem::CopiedComp
   /// Test item [Crysotat]
   std::shared_ptr<constructSystem::Cryostat> CryoA;
 
-  void setBeamAxis(const GuideItem&,const bool);
-
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   

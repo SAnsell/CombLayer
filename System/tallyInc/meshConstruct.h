@@ -27,6 +27,11 @@ namespace attachSystem
   class FixedComp;
 }
 
+namespace mainSystem
+{
+  class inputParam;
+}
+
 class Simulation;
 
 namespace tallySystem
@@ -40,7 +45,7 @@ namespace tallySystem
   \brief Constructs a mesh tally from inputParam
 */
 
-class meshConstruct : virtual public basicConstruct
+class meshConstruct 
 {
  private:
 

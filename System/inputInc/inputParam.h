@@ -3,7 +3,7 @@
  
  * File:   inputInc/inputParam.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,6 +121,11 @@ class inputParam
   template<typename T>
   T outputItem(const std::string&,const size_t,
 	 const size_t,const std::string&) const;
+
+  template<typename T>
+  T outputDefItem(const std::string&,const size_t,
+		  size_t&,const T&) const;
+  
   template<typename T>
   int checkItem(const std::string&,const size_t,const size_t,T&) const;
   int checkCntVec3D(const std::string&,const size_t,

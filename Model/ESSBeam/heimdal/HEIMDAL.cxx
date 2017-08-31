@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -193,36 +194,6 @@ HEIMDAL::~HEIMDAL()
   */
 {}
 
-void
-HEIMDAL::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database for variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("HEIMDAL","setBeamAxis");
-
-  heimdalAxis->populate(Control);
-  heimdalAxis->createUnitVector(GItem);
-  heimdalAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  heimdalAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  heimdalAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  heimdalAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  heimdalAxis->linkShift(3);
-  heimdalAxis->linkShift(4);
-  heimdalAxis->linkAngleRotate(3);
-  heimdalAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    heimdalAxis->reverseZ();
-  return;
-}
 
 void
 HEIMDAL::buildBunkerUnits(Simulation& System,
@@ -277,10 +248,13 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   ADiskOne->addInsertCell(TChopA->getCell("Void"));
   ADiskOne->createAll(System,TChopA->getKey("Main"),0);
-
+  TChopA->insertAxle(System,*ADiskOne);
+  
   ADiskTwo->addInsertCell(TChopA->getCell("Void"));
   ADiskTwo->createAll(System,TChopA->getKey("Main"),0);
-
+  TChopA->insertAxle(System,*ADiskOne);
+  TChopA->insertAxle(System,*ADiskTwo);
+  
   VPipeTD->addInsertCell(bunkerVoid);
   VPipeTD->createAll(System,TChopA->getKey("Beam"),2);
 
@@ -303,7 +277,8 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   // Double disk chopper
   BDisk->addInsertCell(TChopB->getCell("Void"));
   BDisk->createAll(System,TChopB->getKey("Main"),0);
-
+  TChopB->insertAxle(System,*BDisk);
+  
   VPipeTE->addInsertCell(bunkerVoid);
   VPipeTE->createAll(System,TChopB->getKey("Beam"),2);
 
@@ -316,9 +291,9 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   T0Disk->addInsertCell(ChopperT0->getCell("Void"));
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
                     ChopperT0->getKey("BuildBeam"),0);
-
-  T0Motor->addInsertCell(bunkerVoid);
-  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
+  ChopperT0->insertAxle(System,*T0Disk);
+  //  T0Motor->addInsertCell(bunkerVoid);
+  //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
 
   VPipeTF->addInsertCell(bunkerVoid);
   VPipeTF->createAll(System,ChopperT0->getKey("Beam"),2);
@@ -401,7 +376,7 @@ HEIMDAL::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
 
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*heimdalAxis,Control,GItem,1);
     
   FocusTA->addInsertCell(GItem.getCells("Void"));
   FocusTA->setFront(GItem.getKey("Beam"),-1);

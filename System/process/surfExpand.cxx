@@ -3,7 +3,7 @@
  
  * File:   process/surfExpand.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,6 @@ createExpand<Geometry::Cylinder>(const Geometry::Surface* SPtr,
   return OutPtr;
 }
 
-
 /*!
   \struct unknownSurface
   \author S. Ansell
@@ -174,7 +173,7 @@ struct surfExpand
       \param I :: Index of runtime value (check with Index)
       \param SPtr :: Surface pointer      
       \param Dist :: Distance to move surface by
-      \retval Ptr :: success
+      \retval Ptr to new surface  /  next dispatch
     */
     {
       if (I==Index())

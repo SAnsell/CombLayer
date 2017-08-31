@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testXML.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -189,6 +189,8 @@ testXML::buildXML()
     the master system
   */
 {
+  ELog::RegMethod RegA("testXML","buildXML");
+  
   XOut.clear();
   XOut.addGrp("test");
   XOut.addNumGrp("Beta");
@@ -339,23 +341,20 @@ testXML::testGetObj()
   XMLgroup* GPtr=dynamic_cast<XMLgroup*>(AR);
   if (!GPtr)  return -1;  // both AR and GPtr must have worked
 
-  AR=XOut.findObj("Beta.*/Alpha3");
-  if (!AR)
-    return -1;
 
   AR=XOut.findObj("test/Beta3/Alpha3");
   if (!AR)
-    return -1;
+    return -3;
 
   XMLobject* AD=XOut.getObj("test/Beta3/Alpha3");
   if (!AD && AD!=AR)
-    return -2;
+    return -4;
 
   // Test of the numbering system
   XMLobject* GA=XOut.findObj("Gamma",0);
   XMLobject* GB=XOut.findObj("Gamma",2);
   if (!GA || !GB || GA==GB)
-    return -3;
+    return -5;
 
   return 0;
 }

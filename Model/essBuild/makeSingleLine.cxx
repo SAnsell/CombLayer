@@ -110,8 +110,6 @@ namespace essSystem
 makeSingleLine::makeSingleLine() 
  /*!
     Constructor
-    \param SN :: Shutter name
-    \param BName :: Beamline
  */
 {
 }
@@ -153,7 +151,7 @@ makeSingleLine::build(Simulation& System,
 		      const mainSystem::inputParam& IParam)
   /*!
     Carry out the build of a single beamline
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: name of beamline
    */
 {
@@ -163,11 +161,30 @@ makeSingleLine::build(Simulation& System,
   const int voidCell(74123);
   beamName=IParam.getValueError<std::string>
     ("beamlines",0,0,"Single beamline not defined");
-  
-  if (beamName=="HEIMDAL")
+  // GXBLineTop7 for example
+  if (beamName.find("BLine")!=std::string::npos) 
+    beamName=IParam.getValueError<std::string>
+      ("beamlines",0,1,"Single beamline not defined");
+    
+  if (beamName=="BEER")
+    {
+      BEER beerBL("beer");
+      beerBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="FREIA")
+    {
+      FREIA freiaBL("freia");
+      freiaBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="HEIMDAL")
     {
       HEIMDAL heimdalBL("heimdal");
       heimdalBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="LOKI")
+    {
+      LOKI lokiBL("loki");
+      lokiBL.buildIsolated(System,voidCell);      
     }
   else if (beamName=="MAGIC")
     {

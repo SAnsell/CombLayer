@@ -1517,35 +1517,37 @@ HeadRule::displayVec(std::vector<Token>& TK) const
   return;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const int SN) 
   /*!
     Add a rule in addition
     \param SN :: surface number
-   */
+    \return Joined HeadRule
+  */
 {
-  addIntersection(StrFunc::makeString(SN));
-  return;
+  return addIntersection(StrFunc::makeString(SN));
 }
 
 
-void
+HeadRule&
 HeadRule::addUnion(const int SN) 
   /*!
     Add a rule in additional 
     \param SN :: Surface number
+    \return Joined HeadRule
    */
 {
   addUnion(StrFunc::makeString(SN));
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const std::string& RStr) 
   /*!
     Add a rule in addition
     \param RStr :: Rule string
-   */
+    \return HeadRule item
+  */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection(string)");
   if (!RStr.empty())
@@ -1556,14 +1558,15 @@ HeadRule::addIntersection(const std::string& RStr)
       else
 	ELog::EM<<"Failed on string :"<<RStr<<ELog::endErr;
     }
-  return;
+  return *this; 
 }
 
-void
+HeadRule&
 HeadRule::addUnion(const std::string& RStr) 
   /*!
     Add a rule in addition [unio]
     \param RStr :: Rule string
+    \return Joined HeadRule
    */
 {
   ELog::RegMethod RegA("HeadRule","addUnion(string)");
@@ -1572,88 +1575,86 @@ HeadRule::addUnion(const std::string& RStr)
     addUnion(A.getTopRule());
   else
     ELog::EM<<"Failed on string :"<<RStr<<ELog::endErr;
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const HeadRule& AHead) 
   /*!
     Add a rule in addition
     \param AHead :: Otehr head rule
-   */
+    \return Joined HeadRule
+  */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection<HeadRule>");
-  if (!AHead.HeadNode) return;
 
-  // This is empty
-  if (!HeadNode)
+  if (AHead.HeadNode)
     {
-      HeadNode=AHead.HeadNode->clone();
-      return;
+      if (!HeadNode)  // Special case: if this => empty
+	HeadNode=AHead.HeadNode->clone();
+      else
+	createAddition(1,AHead.getTopRule());
     }
-  createAddition(1,AHead.getTopRule());
-  return;
+  
+  return *this;
 }
 
-
-void
+HeadRule&
 HeadRule::addUnion(const HeadRule& AHead) 
   /*!
     Add a rule in addition
     \param AHead :: Other head rule
-   */
+    \return HeadRule item
+  */
 {
   ELog::RegMethod RegA("HeadRule","addUnion<HeadRule>");
-  if (!AHead.HeadNode) return;
-
-  // This is empty
-  if (!HeadNode)
+  
+  if (AHead.HeadNode)
     {
-      HeadNode=AHead.HeadNode->clone();
-      return;
+      if (!HeadNode)
+	HeadNode=AHead.HeadNode->clone();
+      else
+	createAddition(-1,AHead.getTopRule());
     }
-  createAddition(-1,AHead.getTopRule());
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const Rule* RPtr) 
   /*!
     Add a rule in addition
     \param RPtr :: Rule pointer
+    \return HeadRule item
    */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection<Rule>");
-  if (!RPtr) return;
-
-  // This is empty
-  if (!HeadNode)
+  if (RPtr)
     {
-      HeadNode=RPtr->clone();
-      return;
+      if (!HeadNode)
+	HeadNode=RPtr->clone();
+      else
+	createAddition(1,RPtr);
     }
-  createAddition(1,RPtr);
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addUnion(const Rule* RPtr) 
   /*!
     Add a rule in addition
     \param RPtr :: Rule pointer
+    \return HeadRule item
    */
 {
   ELog::RegMethod RegA("HeadRule","addUnion");
-  if (!RPtr) return;
-
-  // This is empty
-  if (!HeadNode)
+  if (RPtr)
     {
-      HeadNode=RPtr->clone();
-      return;
+      if (!HeadNode)
+	HeadNode=RPtr->clone();
+      else
+	createAddition(-1,RPtr);
     }
-  createAddition(-1,RPtr);
-  return;
+  return *this;
 }
 
 void

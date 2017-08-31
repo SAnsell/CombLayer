@@ -3,7 +3,7 @@
  
  * File:   workInc/WorkData.h
 *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,8 @@ class WorkData
   WorkData(const WorkData&);
   WorkData& operator=(const WorkData&);
   virtual ~WorkData();
-  /// Effective typeid
+
+  /// Effective typeid 
   virtual std::string className() const { return "WorkData"; }
   
   WorkData& operator+=(const WorkData&);
@@ -77,6 +78,7 @@ class WorkData
 
   WorkData& rebin(const std::vector<double>&);
   WorkData& rebin(const WorkData&);
+  WorkData& sort();
   WorkData& binDivide(const double);
   WorkData& xScale(const double);
   double XInverse(const double) const;
@@ -86,6 +88,8 @@ class WorkData
   void setSize(const size_t);
   void setX(const std::vector<double>&);
   void setX(const size_t,const double);
+  void setLogX(const double,const double,const size_t);
+
   void setData(const size_t,const double,const double);
   void setData(const size_t,const double,const double,const double);
   void setData(const std::vector<double>&,const std::vector<double>&);
@@ -106,6 +110,7 @@ class WorkData
   size_t getSize() const { return Yvec.size(); }   
   /// Access the weight
   double getWeight() const { return weight; }   
+  size_t getXIndex(const double) const;
   size_t getIndex(const double,const double) const;
   size_t getMaxPoint() const;
 
@@ -114,6 +119,11 @@ class WorkData
   void pushData(const DError::doubleErr&);
   void pushData(const double,const DError::doubleErr&);
 
+  void addPoint(const double,const double);
+  void addPoint(const double,const DError::doubleErr&);
+
+  void normalize(const size_t);
+  
   int load(const std::string&,const int,const int,const int=0);
 
   DError::doubleErr integrate(const double,const double) const;

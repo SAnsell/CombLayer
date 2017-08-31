@@ -232,10 +232,6 @@ addToInsertLineCtrl(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // Determin cells to scan
-  const int cellN=OR.getCell(OuterFC.getKeyName());
-  const int cellL=OR.getLast(OuterFC.getKeyName());
-
   const std::vector<int> CNum=
     OR.getObjectRange(OuterFC.getKeyName());
   for(const int CN : CNum)
@@ -320,7 +316,7 @@ lineIntersect(Simulation& System,
     in the model and add them to cells
     \param System :: Simualation to use
     \param APt :: Start Point
-    \param BPt :: Start Point
+    \param BPt :: End Point
     \param OMap :: Object map to add extra units to
   */
 {
