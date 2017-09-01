@@ -309,6 +309,9 @@ Linac::createDTL(Simulation& System, const long int lp)
    */
   ELog::RegMethod RegA("Linac","createDTL");
 
+  if (nDTL<1)
+    return;
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
