@@ -311,19 +311,22 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   std::string Out = FC.getLinkString(static_cast<size_t>(wall1)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ") + tb;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out));
-  //  if (wmat==wallMat)
-  setCell("wall",cellIndex-1);
 
   Out=FC.getLinkString(static_cast<size_t>(wall2)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 ") + tb;
   System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out));
 
-  Out=FC.getLinkString(static_cast<size_t>(wall1)) +
-    FC.getLinkString(static_cast<size_t>(wall2)) +
-    ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
+  if (wmat==wallMat)
+    setCell("wall",cellIndex-2);
+  else
+    setCell("wall",cellIndex-1);
 
   layerProcess(System, "wall", 2, 6, 10, wallMat);
   ELog::EM << "add nLayers"  << ELog::endCrit;
+
+  Out=FC.getLinkString(static_cast<size_t>(wall1)) +
+    FC.getLinkString(static_cast<size_t>(wall2)) +
+    ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
 
   addOuterSurf(Out);
 
