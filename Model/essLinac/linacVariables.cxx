@@ -106,10 +106,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacTSWMat", "SkanskaConcrete");
   Control.addVariable("LinacTSWNLayers", 1); // for biasing
 
-  Control.addVariable("LinacNTSW", 2);
+  Control.addVariable("LinacNTSW", 3);
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
   Control.addVariable("LinacTSW0Width", 100.0); // Lali said
-  Control.addVariable("LinacTSW0XStep", 300.0);
+  Control.addVariable("LinacTSW0XStep", 200.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   //  Control.addVariable("LinacTSW0OffsetY", 5300.0); // some location (must be 20 cm off the beam dump)
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
@@ -117,6 +117,8 @@ EssLinacVariables(FuncDataBase& Control)
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
   Control.addVariable("LinacTSW1XStep", 600.0);
+  Control.copyVarSet("LinacTSW0", "LinacTSW2");
+  Control.addVariable("LinacTSW2XStep", 900.0);
   
   // Beam dump
   Control.addVariable("LinacBeamDumpActive", 0);

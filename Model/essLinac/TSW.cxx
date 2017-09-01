@@ -201,8 +201,8 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+1,Origin-X*(width),X);
-  ModelSupport::buildPlane(SMap,surfIndex+2,Origin,X);
+  ModelSupport::buildPlane(SMap,surfIndex+1,Origin,X);
+  ModelSupport::buildPlane(SMap,surfIndex+2,Origin+X*(width),X);
 
   const double linacWidth = FC.getLinkDistance(wall1+1, wall2+1);
   const double L = (Index%2) ? length : linacWidth-length;
@@ -298,7 +298,7 @@ TSW::createAll(Simulation& System,
   ELog::RegMethod RegA("TSW","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC,wall1+1);
+  createUnitVector(FC,-(wall1+1));
   createSurfaces(FC,wall1,wall2);
   createObjects(System,FC,wall1,wall2,floor,roof);
   createLinks(FC,wall1,wall2,floor,roof);
