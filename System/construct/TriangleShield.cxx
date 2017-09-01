@@ -241,6 +241,7 @@ TriangleShield::createSurfaces()
       SI+=10;
     }
 
+  ELog::EM<<"Left/RIGHT "<<leftAngle<<" "<<rightAngle<<ELog::endDiag;
   // wall rotation
   const Geometry::Quaternion QLeft=
     Geometry::Quaternion::calcQRotDeg(leftAngle,Z);
