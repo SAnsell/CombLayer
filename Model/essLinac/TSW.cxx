@@ -90,7 +90,7 @@ namespace essSystem
   TSW::TSW(const std::string& baseKey,const std::string& extraKey,
 	   const size_t& index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),6),
+  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),7),
   attachSystem::CellMap(),
   baseName(baseKey),
   Index(index),
@@ -311,6 +311,8 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   std::string Out = FC.getLinkString(static_cast<size_t>(wall1)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ") + tb;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out));
+  //  if (wmat==wallMat)
+  setCell("wall",cellIndex-1);
 
   Out=FC.getLinkString(static_cast<size_t>(wall2)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 ") + tb;
@@ -319,6 +321,9 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   Out=FC.getLinkString(static_cast<size_t>(wall1)) +
     FC.getLinkString(static_cast<size_t>(wall2)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
+
+  layerProcess(System, "wall", 2, 6, 10, wallMat);
+  ELog::EM << "add nLayers"  << ELog::endCrit;
 
   addOuterSurf(Out);
 
@@ -339,14 +344,22 @@ TSW::createLinks(const attachSystem::FixedComp& FC,
   FixedComp::setLinkSignedCopy(0,FC,-(wall1+1));
   FixedComp::setLinkSignedCopy(1,FC,-(wall2+1));
 
-  FixedComp::setConnect(2,Origin-X*(width)+Y*(length/2.0),-X);
+  FixedComp::setConnect(2,Origin-Y*(length/2.0),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+1));
 
-  FixedComp::setConnect(3,Origin+Y*(length/2.0),X);
+  FixedComp::setConnect(3,Origin-Y*(length/2.0)+X*(width),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+2));
 
   FixedComp::setLinkSignedCopy(4,FC,-(floor+1));
   FixedComp::setLinkSignedCopy(5,FC,-(roof+1));
+
+  FixedComp::setConnect(6,Origin-Y*(length/2.0)+X*(width),X);
+  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+2));
+
+  ELog::EM << "check the links" << ELog::endCrit;
+
+  for (int i=0; i<=6; i++)
+    ELog::EM << i << ":\t" << getLinkSurf(i) << " " << getLinkPt(i) << ELog::endDiag;
 
   return;
 }
@@ -376,8 +389,8 @@ TSW::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,-(wall1+1));
   createSurfaces(FC,wall1,wall2);
-  createObjects(System,FC,wall1,wall2,floor,roof);
   createLinks(FC,wall1,wall2,floor,roof);
+  createObjects(System,FC,wall1,wall2,floor,roof);
   insertObjects(System);
 
   ELog::EM << "Origin: " << Origin << ELog::endCrit;
