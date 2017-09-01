@@ -205,7 +205,7 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+X*(width),X);
 
   const double linacWidth = FC.getLinkDistance(wall1+1, wall2+1);
-  const double L = (Index%2) ? length : linacWidth-length;
+  const double L = (Index%2) ? linacWidth-length : length;
 
   const int w1 = FC.getLinkSurf(static_cast<size_t>(wall1));
   ModelSupport::buildShiftedPlane(SMap,surfIndex+4,
@@ -229,8 +229,8 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createObjects");
 
-  const int wmat = (Index%2) ? mat : airMat;
-  const int amat = (Index%2) ? airMat : mat;
+  const int wmat = (Index%2) ? airMat : mat;
+  const int amat = (Index%2) ? mat : airMat;
 
   const std::string tb =  FC.getLinkString(floor) +  FC.getLinkString(roof);
   std::string Out = FC.getLinkString(wall1) +
