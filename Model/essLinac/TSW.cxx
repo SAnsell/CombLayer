@@ -86,10 +86,11 @@ namespace essSystem
 {
 
   TSW::TSW(const std::string& baseKey,const std::string& extraKey,
-	   const size_t& Index)  :
+	   const size_t& index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(Index),6),
+  attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),6),
   baseName(baseKey),
+  Index(index),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
   /*!
@@ -102,6 +103,7 @@ TSW::TSW(const TSW& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
+  Index(A.Index),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),nLayers(A.nLayers),
   mat(A.mat),
@@ -187,11 +189,14 @@ TSW::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-TSW::createSurfaces(const attachSystem::FixedComp& FC,const long int wall1)
+TSW::createSurfaces(const attachSystem::FixedComp& FC,
+		    const long int wall1,
+		    const long int wall2)
   /*!
     Create All the surfaces
     \param FC :: Central origin
     \param wall1 :: link point for origin
+    \param wall1 :: link point for the opposite wall
   */
 {
   ELog::RegMethod RegA("TSW","createSurfaces");
@@ -199,10 +204,13 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,const long int wall1)
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-X*(width),X);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin,X);
 
+  const double linacWidth = FC.getLinkDistance(wall1+1, wall2+1);
+  const double L = (Index%2) ? length : linacWidth-length;
+
   const int w1 = FC.getLinkSurf(static_cast<size_t>(wall1));
   ModelSupport::buildShiftedPlane(SMap,surfIndex+4,
 				  SMap.realPtr<Geometry::Plane>(w1),
-				  length);
+				  L);
   return;
 }
 
@@ -221,14 +229,17 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createObjects");
 
+  const int wmat = (Index%2) ? mat : airMat;
+  const int amat = (Index%2) ? airMat : mat;
+
   const std::string tb =  FC.getLinkString(floor) +  FC.getLinkString(roof);
   std::string Out = FC.getLinkString(wall1) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ") + tb;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out));
 
   Out=FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 ") + tb;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out));
 
   Out=FC.getLinkString(wall1)+FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
@@ -288,7 +299,7 @@ TSW::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,wall1+1);
-  createSurfaces(FC,wall1);
+  createSurfaces(FC,wall1,wall2);
   createObjects(System,FC,wall1,wall2,floor,roof);
   createLinks(FC,wall1,wall2,floor,roof);
   insertObjects(System);

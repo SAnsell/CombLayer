@@ -40,8 +40,9 @@ class TSW : public attachSystem::ContainedComp,
 {
  private:
 
-  const std::string baseName;   ///< base name
-  const int surfIndex;             ///< Index of surface offset
+  const std::string baseName;   ///< Base name
+  const size_t Index;           ///< Wall index
+  const int surfIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
   double length;                ///< Total length including void
@@ -55,9 +56,11 @@ class TSW : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
-  void createSurfaces(const attachSystem::FixedComp&,const long int);
+  void createSurfaces(const attachSystem::FixedComp&,
+		      const long int,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const long int,const long int,const long int,const long int);
+		     const long int,const long int,
+		     const long int,const long int);
   void createLinks(const attachSystem::FixedComp&,
 		   const long int,const long int,
 		   const long int,const long int);
