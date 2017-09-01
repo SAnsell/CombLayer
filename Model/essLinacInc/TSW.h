@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/TSW.h
  *
  * Copyright (c) 2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_TSW_h
@@ -49,18 +49,19 @@ class TSW : public attachSystem::ContainedComp,
   size_t nLayers;               ///< Number of layers for variance reduction
 
   int mat;                      ///< material
-  
+  int airMat;                   ///< Air material
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-  
+
   void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,const long int,const long int);
   void createLinks(const attachSystem::FixedComp&,
 		   const long int,const long int,
 		   const long int,const long int);
-  
+
  public:
 
   TSW(const std::string&,const std::string&,const size_t&);
@@ -68,7 +69,7 @@ class TSW : public attachSystem::ContainedComp,
   TSW& operator=(const TSW&);
   virtual TSW* clone() const;
   virtual ~TSW();
-  
+
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const long int,
 		 const long int,const long int);
@@ -78,5 +79,5 @@ class TSW : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+
 

@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/TSW.cxx
  *
  * Copyright (c) 2017 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -98,13 +98,14 @@ namespace essSystem
   */
 {}
 
-TSW::TSW(const TSW& A) : 
+TSW::TSW(const TSW& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
   baseName(A.baseName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),nLayers(A.nLayers),
-  mat(A.mat)
+  mat(A.mat),
+  airMat(A.airMat)
   /*!
     Copy constructor
     \param A :: TSW to copy
@@ -128,6 +129,7 @@ TSW::operator=(const TSW& A)
       width=A.width;
       nLayers=A.nLayers;
       mat=A.mat;
+      airMat=A.airMat;
     }
   return *this;
 }
@@ -141,8 +143,8 @@ TSW::clone() const
 {
     return new TSW(*this);
 }
-  
-TSW::~TSW() 
+
+TSW::~TSW()
   /*!
     Destructor
   */
@@ -162,10 +164,11 @@ TSW::populate(const FuncDataBase& Control)
   width=Control.EvalVar<double>(keyName+"Width");
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
 
   return;
 }
-  
+
 void
 TSW::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
@@ -182,7 +185,7 @@ TSW::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
 void
 TSW::createSurfaces(const attachSystem::FixedComp& FC,const long int wall1)
   /*!
@@ -202,7 +205,7 @@ TSW::createSurfaces(const attachSystem::FixedComp& FC,const long int wall1)
 				  length);
   return;
 }
-  
+
 void
 TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 		   const long int wall1,const long int wall2,
@@ -225,7 +228,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   Out=FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 ") + tb;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
 
   Out=FC.getLinkString(wall1)+FC.getLinkString(wall2) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
@@ -235,7 +238,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   return;
 }
 
-  
+
 void
 TSW::createLinks(const attachSystem::FixedComp& FC,
 		 const long int wall1,const long int wall2,
@@ -248,22 +251,22 @@ TSW::createLinks(const attachSystem::FixedComp& FC,
 
   FixedComp::setLinkSignedCopy(0,FC,-(wall1+1));
   FixedComp::setLinkSignedCopy(1,FC,-(wall2+1));
-  
+
   FixedComp::setConnect(2,Origin-X*(width)+Y*(length/2.0),-X);
   FixedComp::setLinkSurf(2,SMap.realSurf(surfIndex+1));
 
   FixedComp::setConnect(3,Origin+Y*(length/2.0),X);
   FixedComp::setLinkSurf(3,-SMap.realSurf(surfIndex+2));
-  
+
   FixedComp::setLinkSignedCopy(4,FC,-(floor+1));
   FixedComp::setLinkSignedCopy(5,FC,-(roof+1));
 
   return;
 }
-  
-  
 
-  
+
+
+
 void
 TSW::createAll(Simulation& System,
 	       const attachSystem::FixedComp& FC,
@@ -288,10 +291,10 @@ TSW::createAll(Simulation& System,
   createSurfaces(FC,wall1);
   createObjects(System,FC,wall1,wall2,floor,roof);
   createLinks(FC,wall1,wall2,floor,roof);
-  insertObjects(System);              
+  insertObjects(System);
 
   ELog::EM << "Origin: " << Origin << ELog::endCrit;
-  
+
   return;
 }
 
