@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class TSW : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
@@ -49,8 +50,11 @@ class TSW : public attachSystem::ContainedComp,
   double width;                 ///< Width
   size_t nLayers;               ///< Number of layers for variance reduction
 
-  int mat;                      ///< material
+  int wallMat;                  ///< Wall material
   int airMat;                   ///< Air material
+
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS, const int&, const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -80,6 +80,8 @@
 #include "SurInter.h"
 #include "mergeTemplate.h"
 
+#include "CellMap.h"
+
 #include "TSW.h"
 
 namespace essSystem
@@ -89,6 +91,7 @@ namespace essSystem
 	   const size_t& index)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(baseKey+extraKey+std::to_string(index),6),
+  attachSystem::CellMap(),
   baseName(baseKey),
   Index(index),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -102,11 +105,12 @@ namespace essSystem
 TSW::TSW(const TSW& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   baseName(A.baseName),
   Index(A.Index),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   length(A.length),width(A.width),nLayers(A.nLayers),
-  mat(A.mat),
+  wallMat(A.wallMat),
   airMat(A.airMat)
   /*!
     Copy constructor
@@ -126,11 +130,12 @@ TSW::operator=(const TSW& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       length=A.length;
       width=A.width;
       nLayers=A.nLayers;
-      mat=A.mat;
+      wallMat=A.wallMat;
       airMat=A.airMat;
     }
   return *this;
@@ -153,6 +158,75 @@ TSW::~TSW()
 {}
 
 void
+TSW::layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS,
+		    const int& nLayers, const int& mat)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: TSW wall cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+    \param nLayers :: number of layers to divide to
+    \param mat :: material
+  */
+{
+    ELog::RegMethod RegA("TSW","layerProcess");
+
+    if (nLayers<=1)
+      return;
+
+    const int pS = getLinkSurf(lpS);
+    const int sS = getLinkSurf(lsS);
+
+    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+    MonteCarlo::Object* wallObj(0);
+    int wallCell(0);
+
+    if (CM)
+      {
+	wallCell=CM->getCell(cellName);
+	wallObj=System.findQhull(wallCell);
+      }
+
+    if (!wallObj)
+      throw ColErr::InContainerError<int>(wallCell,
+					  "Cell '" + cellName + "' not found");
+
+    double baseFrac = 1.0/nLayers;
+    ModelSupport::surfDivide DA;
+    for(int i=1;i<nLayers;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/nLayers;
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    DA.setOutNum(cellIndex, surfIndex+10000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(SMap.realSurf(pS),
+			     SMap.realSurf(sS));
+
+    std::string OutA = getLinkString(lpS);
+    std::string OutB = getLinkComplement(lsS);
+
+    surroundRule.setInnerRule(OutA);
+    surroundRule.setOuterRule(OutB);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System);
+
+    cellIndex=DA.getCellNum();
+
+    return;
+}
+
+void
 TSW::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
@@ -165,7 +239,7 @@ TSW::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   width=Control.EvalVar<double>(keyName+"Width");
   nLayers=Control.EvalDefVar<size_t>(keyName+"NLayers",1);
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
   airMat=ModelSupport::EvalMat<int>(Control,baseName+"AirMat");
 
   return;
@@ -229,19 +303,21 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("TSW","createObjects");
 
-  const int wmat = (Index%2) ? airMat : mat;
-  const int amat = (Index%2) ? mat : airMat;
+  const int wmat = (Index%2) ? airMat : wallMat;
+  const int amat = (Index%2) ? wallMat : airMat;
 
-  const std::string tb =  FC.getLinkString(floor) +  FC.getLinkString(roof);
-  std::string Out = FC.getLinkString(wall1) +
+  const std::string tb =  FC.getLinkString(static_cast<size_t>(floor)) +
+    FC.getLinkString(static_cast<size_t>(roof));
+  std::string Out = FC.getLinkString(static_cast<size_t>(wall1)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 -4 ") + tb;
   System.addCell(MonteCarlo::Qhull(cellIndex++,wmat,0.0,Out));
 
-  Out=FC.getLinkString(wall2) +
+  Out=FC.getLinkString(static_cast<size_t>(wall2)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 4 ") + tb;
   System.addCell(MonteCarlo::Qhull(cellIndex++,amat,0.0,Out));
 
-  Out=FC.getLinkString(wall1)+FC.getLinkString(wall2) +
+  Out=FC.getLinkString(static_cast<size_t>(wall1)) +
+    FC.getLinkString(static_cast<size_t>(wall2)) +
     ModelSupport::getComposite(SMap,surfIndex," 1 -2 ") + tb;
 
   addOuterSurf(Out);
