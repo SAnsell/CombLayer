@@ -68,13 +68,7 @@ class Linac : public attachSystem::ContainedComp,
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
 
-  size_t nTSW; ///< Number of TSWs
-  double tswLength; ///< Temporary shielding wall length
-  double tswWidth; ///< Temporary shielding wall width
-  double tswGap; ///< Distance between Temporary shielding walls
-  double tswOffsetY; ///< TSW location on the Y-axis
-  int tswMat; ///< TSW material
-  int tswNLayers; ///< number of layers in a TSW wall
+  size_t nTSW;                   ///< Number of TSWs
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
   std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup

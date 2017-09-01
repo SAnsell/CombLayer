@@ -98,27 +98,21 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacCopperMat","Copper");
   Control.addVariable("LinacGraphiteMat","Graphite");
 
-  ELog::EM << "remove" << ELog::endDiag;
-  Control.addParse<double>("LinacTSWLength", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
-  Control.addVariable("LinacTSWWidth", 100.0); // Lali said
-  Control.addVariable("LinacTSWGap", 120.0); // Lali said
-  Control.addVariable("LinacTSWOffsetY", 5300.0); // some location (must be 20 cm off the beam dump)
-  Control.addVariable("LinacTSWMat", "SkanskaConcrete");
-  Control.addVariable("LinacTSWNLayers", 1); // for biasing
-
   Control.addVariable("LinacNTSW", 3);
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
   Control.addVariable("LinacTSW0Width", 100.0); // Lali said
-  Control.addVariable("LinacTSW0XStep", 200.0);
+  Control.addVariable("LinacTSW0XStep", 5300.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   //  Control.addVariable("LinacTSW0OffsetY", 5300.0); // some location (must be 20 cm off the beam dump)
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0NLayers", 1); // for biasing
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
-  Control.addVariable("LinacTSW1XStep", 600.0);
+  Control.addVariable("LinacTSW1XStep", 5520.0);
   Control.copyVarSet("LinacTSW0", "LinacTSW2");
-  Control.addVariable("LinacTSW2XStep", 900.0);
+  Control.addVariable("LinacTSW2XStep", 5740.0);
+  Control.copyVarSet("LinacTSW0", "LinacTSW3");
+  Control.addVariable("LinacTSW3XStep", 5960.0);
   
   // Beam dump
   Control.addVariable("LinacBeamDumpActive", 0);

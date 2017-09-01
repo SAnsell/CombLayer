@@ -130,12 +130,6 @@ Linac::Linac(const Linac& A) :
   nAirLayers(A.nAirLayers),
   airMat(A.airMat),wallMat(A.wallMat),
   nTSW(A.nTSW),
-  tswLength(A.tswLength),
-  tswWidth(A.tswWidth),
-  tswGap(A.tswGap),
-  tswOffsetY(A.tswOffsetY),
-  tswMat(A.tswMat),
-  tswNLayers(A.tswNLayers),
   beamDump(new BeamDump(*A.beamDump)),
   faradayCup(new FaradayCup(*A.faradayCup)),
   nDTL(A.nDTL),
@@ -175,12 +169,6 @@ Linac::operator=(const Linac& A)
       airMat=A.airMat;
       wallMat=A.wallMat;
       nTSW=A.nTSW;
-      tswLength=A.tswLength;
-      tswWidth=A.tswWidth;
-      tswGap=A.tswGap;
-      tswOffsetY=A.tswOffsetY;
-      tswMat=A.tswMat;
-      tswNLayers=A.tswNLayers;
       *beamDump=*A.beamDump;
       *faradayCup=*A.faradayCup;
       nDTL=A.nDTL;
@@ -223,14 +211,6 @@ Linac::populate(const FuncDataBase& Control)
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
   nTSW=Control.EvalVar<size_t>(keyName+"NTSW");
-
-  tswLength=Control.EvalVar<double>(keyName+"TSWLength");
-  tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
-  tswGap=Control.EvalVar<double>(keyName+"TSWGap");
-  tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
-  tswMat=ModelSupport::EvalMat<int>(Control,keyName+"TSWMat");
-  tswNLayers=Control.EvalDefVar<int>(keyName+"TSWNLayers", 1);
-
   nDTL=Control.EvalDefVar<size_t>(keyName+"NDTLTanks", 5);
 
   return;
@@ -409,18 +389,6 @@ Linac::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+15,Origin-Z*(depth+floorThick),Z);
   ModelSupport::buildPlane(SMap,surfIndex+16,Origin+Z*(height+roofThick),Z);
 
-  // Temporary shielding walls
-  double tswY(tswOffsetY);
-  ModelSupport::buildPlane(SMap,surfIndex+101,Origin+Y*(tswY),Y);
-  ModelSupport::buildPlane(SMap,surfIndex+103,Origin-X*(widthRight-tswLength),X);
-  ModelSupport::buildPlane(SMap,surfIndex+104,Origin+X*(widthLeft-tswLength),X);
-  tswY += tswWidth;
-  ModelSupport::buildPlane(SMap,surfIndex+102,Origin+Y*(tswY),Y);
-  tswY += tswGap;
-  ModelSupport::buildPlane(SMap,surfIndex+111,Origin+Y*(tswY),Y);
-  tswY += tswWidth;
-  ModelSupport::buildPlane(SMap,surfIndex+112,Origin+Y*(tswY),Y);
-
   return;
 }
 
@@ -434,14 +402,9 @@ Linac::createObjects(Simulation& System)
   ELog::RegMethod RegA("Linac","createObjects");
 
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -101 3 -4 5 -6 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 1 -2 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-  setCell("airBefore", cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,surfIndex," 102 -111 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 112 -2 3 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-  setCell("airAfter", cellIndex-1);
+  setCell("air", cellIndex-1);
 
   // side walls and roof
   Out=ModelSupport::getComposite(SMap,surfIndex,
@@ -455,28 +418,7 @@ Linac::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 14 -24 5 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  // temporary shielding walls
-  // 1st wall
-  Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 3 -103 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,tswMat,0.0,Out));
-  setCell("tsw1", cellIndex-1);
-  Out=ModelSupport::getComposite(SMap,surfIndex," 101 -102 103 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-
-  // 2nd wall
-  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 3 -104 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,airMat,0.0,Out));
-  Out=ModelSupport::getComposite(SMap,surfIndex," 111 -112 104 -4 5 -6 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,tswMat,0.0,Out));
-  setCell("tsw2", cellIndex-1);
-
-  // divide TSW walls
-  layerProcess(System, "tsw1", 6, 7, tswNLayers, wallMat);
-  layerProcess(System, "tsw2", 8, 9, tswNLayers, wallMat);
-
-  // divide air before TSW
-  layerProcess(System, "airBefore", 10, 6, nAirLayers, airMat);
-  layerProcess(System, "airAfter", 9, 11, nAirLayers, airMat);
+  layerProcess(System, "air", 10, 11, nAirLayers, airMat);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
@@ -511,20 +453,6 @@ Linac::createLinks()
 
   FixedComp::setConnect(5,Origin+Z*(height+roofThick),Z);
   FixedComp::setLinkSurf(5,SMap.realSurf(surfIndex+16));
-
-  // TSW
-  double tswY(tswOffsetY);
-  FixedComp::setConnect(6,Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
-  FixedComp::setLinkSurf(6,SMap.realSurf(surfIndex+101));
-  tswY += tswWidth;
-  FixedComp::setConnect(7,Origin+Y*(tswY),Y);
-  FixedComp::setLinkSurf(7,SMap.realSurf(surfIndex+102));
-  tswY += tswGap;
-  FixedComp::setConnect(8,Origin+Y*(tswY),Y); //should be negative, but layerProcess needs positive
-  FixedComp::setLinkSurf(8,SMap.realSurf(surfIndex+111));
-  tswY += tswWidth;
-  FixedComp::setConnect(9,Origin+Y*(tswY),Y);
-  FixedComp::setLinkSurf(9,SMap.realSurf(surfIndex+112));
 
   // walls
   FixedComp::setConnect(10,Origin-Y*(lengthBack),Y);
