@@ -301,6 +301,12 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
       MT.setKeyWords("DOSE 1");
       MT.setResponse(getPhotonDoseConversion());
     }
+  else if (KeyWords=="DOSEPROTON")
+    {
+      MT.setParticles("h");
+      MT.setKeyWords("DOSE 1");
+      MT.setResponse(getProtonDoseConversion());
+    }
   else if (KeyWords=="InternalDOSE")
     {
       MT.setKeyWords("DOSE");
@@ -313,9 +319,10 @@ meshConstruct::rectangleMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
+	      <<"  DOSE :: neutrons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: photons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPROTON :: protons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  InternalDOSE :: neutrons - ICRP-74 1996 ambient dose equivalent (uSv/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
@@ -348,7 +355,7 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
     \param MPts :: Points ot use
   */
 {
-  ELog::RegMethod RegA("meshConstruct","rectangleMesh");
+  ELog::RegMethod RegA("meshConstruct","rectangleFMesh");
 
   // Find next available number
   int tallyN(type);
@@ -373,6 +380,12 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
       MT.setKeyWords("DOSE 1");
       MT.setResponse(getPhotonDoseConversion());
     }
+  else if (KeyWords=="DOSEPROTON")
+    {
+      MT.setParticles("h");
+      MT.setKeyWords("DOSE 1");
+      MT.setResponse(getProtonDoseConversion());
+    }
   else if (KeyWords=="InternalDOSE")
     {
       MT.setKeyWords("DOSE");
@@ -385,9 +398,10 @@ meshConstruct::rectangleFMesh(Simulation& System,const int type,
   else 
     {
       ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
+	      <<"  DOSE :: neutrons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPHOTON :: photons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  DOSEPROTON :: protons - ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
+	      <<"  InternalDOSE :: neutrons - ICRP-74 1996 ambient dose equivalent (uSv/hour)\n"
 	      <<"  void ::  Flux \n"
 	      <<ELog::endDiag;
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
@@ -460,6 +474,29 @@ meshConstruct::getPhotonDoseConversion()
     "6.00E+02  6.70E-01 8.00E+02  7.02E-01 1.00E+03  7.24E-01 1.50E+03  7.63E-01 "
     "2.00E+03  7.92E-01 3.00E+03  8.35E-01 4.00E+03  8.75E-01 5.00E+03  9.04E-01 "
     "6.00E+03  9.29E-01 8.00E+03  9.65E-01 1.00E+04  9.94E-01 ";
+
+  return fcdString;
+}
+
+const std::string&
+meshConstruct::getProtonDoseConversion()
+  /*!
+    Return the flux-to-dose proton ICRP-116 conversion factors
+    in uSv/hour from proton/cm2/sec
+    Reference: ESS-0019931, Table 3.
+    \return FCD string
+  */
+{
+  static std::string fcdString=
+    "1.00E+00 1.97E-02 1.50E+00 2.96E-02 2.00E+00 3.92E-02 3.00E+00 5.90E-02 "
+    "4.00E+00 7.88E-02 5.00E+00 9.83E-02 6.00E+00 1.18E-01 8.00E+00 1.57E-01 "
+    "1.00E+01 1.98E-01 1.50E+01 6.80E-01 2.00E+01 1.54E+00 3.00E+01 2.70E+00 "
+    "4.00E+01 3.67E+00 5.00E+01 4.25E+00 6.00E+01 5.33E+00 8.00E+01 7.78E+00 "
+    "1.00E+02 9.04E+00 1.50E+02 1.02E+01 2.00E+02 7.85E+00 3.00E+02 5.22E+00 "
+    "4.00E+02 4.68E+00 5.00E+02 4.46E+00 6.00E+02 4.43E+00 8.00E+02 4.43E+00 "
+    "1.00E+03 4.43E+00 1.50E+03 4.50E+00 2.00E+03 4.61E+00 3.00E+03 4.82E+00 "
+    "4.00E+03 5.04E+00 5.00E+03 5.22E+00 6.00E+03 5.65E+00 8.00E+03 6.16E+00 "
+    "1.00E+04 6.41E+00 ";
 
   return fcdString;
 }

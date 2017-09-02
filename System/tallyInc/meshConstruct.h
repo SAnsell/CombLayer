@@ -51,6 +51,7 @@ class meshConstruct
 
   static const std::string& getDoseConversion();
   static const std::string& getPhotonDoseConversion();
+  static const std::string& getProtonDoseConversion();
   static void calcXYZ(const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
 
