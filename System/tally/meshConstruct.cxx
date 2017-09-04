@@ -67,8 +67,6 @@
 #include "TallyCreate.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "meshTally.h"
-#include "fmeshTally.h"
 
 #include "TallySelector.h" 
 #include "meshConstruct.h" 
@@ -78,12 +76,11 @@
 namespace tallySystem
 {
 
-meshConstruct::meshConstruct() :fmeshFlag(0)
+meshConstruct::meshConstruct() 
   /// Constructor
 {}
 
-meshConstruct::meshConstruct(const meshConstruct& A) :
-  fmeshFlag(A.fmeshFlag)
+meshConstruct::meshConstruct(const meshConstruct&) 
   /*!
     Copy Constructor
     \param A :: meshConstruct
@@ -91,19 +88,13 @@ meshConstruct::meshConstruct(const meshConstruct& A) :
 {}
 
 meshConstruct&
-meshConstruct::operator=(const meshConstruct& A) 
+meshConstruct::operator=(const meshConstruct&) 
   /*!
     Copy Constructor
     \param A :: meshConstruct
     \return *this
   */
-
 {
-  if (this!=&A)
-    {
-      fmeshFlag=A.fmeshFlag;
-    }
-    
   return *this;
 }
 
@@ -169,237 +160,84 @@ meshConstruct::calcXYZ(const std::string& object,const std::string& linkPos,
   return;
 }
 
-  
+
 void
-meshConstruct::processMesh(Simulation& System,
-			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
+			     const size_t Index,
+			     const size_t offset,
+			     Geometry::Vec3D& APt,
+			     Geometry::Vec3D& BPt,
+			     std::array<size_t,3>& Nxyz)
+			     
   /*!
-    Add mesh tally (s) as needed
-    \param System :: Simulation to add tallies
+    Get mesh grid for the tally
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
-   */
+    \param APt :: Low box coorner
+    \param BPt :: Upper box coorner
+    \param Nxyz :: number of points
+  */
 {
-  ELog::RegMethod RegA("meshConstruct","processMesh");
+  ELog::RegMethod RegA("meshConstruct","getObjectMesh");
 
-  const size_t NItems=IParam.itemCnt("tally",Index);
-  if (NItems<4)
-    throw ColErr::IndexError<size_t>(NItems,4,
-				     "Insufficient items for tally");
+  size_t itemIndex(offset+2);   
+  const std::string place=
+    IParam.getValueError<std::string>("tally",Index,offset,"position not given");
+  const std::string linkName=
+    IParam.getValueError<std::string>("tally",Index,offset+1,"front/back/side not given");      
 
-  const std::string PType(IParam.getValue<std::string>("tally",Index,1)); 
+  APt=IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
+  BPt=IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
+  
+  Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
+  Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
+  Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
+  
+  calcXYZ(place,linkName,APt,BPt);
+  
+  return;
+}
+
+void
+meshConstruct::getFreeMesh(const mainSystem::inputParam& IParam,
+			   const size_t Index,
+			   const size_t Offset,
+			   Geometry::Vec3D& APt,
+			   Geometry::Vec3D& BPt,
+			   std::array<size_t,3>& Nxyz)
+  /*!
+    Get mesh grid for the tally
+    \param IParam :: Main input parameters
+    \param Index :: index of the -T card
+    \param Offset :: Item on the -T card list
+    \param APt :: Low box coorner
+    \param BPt :: Upper box coorner
+    \param Nxyz :: number of points
+  */
+{
+  ELog::RegMethod RegA("meshConstruct","getFreeMesh");
 
   const masterRotate& MR=masterRotate::Instance();
+
+  size_t itemIndex(Offset);
+
+  APt=IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
+  BPt=IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
   
-  if (PType=="object" || PType=="heatObject")
+  // Rotation:
+  const std::string revStr=
+    IParam.getDefValue<std::string>("","tally",Index,itemIndex);
+  if (revStr=="r") 
     {
-      size_t itemIndex(5);
-      const std::string place=
-	IParam.getValueError<std::string>("tally",Index,2,"position not given");
-      const std::string linkName=
-	IParam.getValueError<std::string>("tally",Index,3,"front/back/side not given");      
-      const std::string doseType=
-	IParam.getValueError<std::string>("tally",Index,4,"Dose type");
-      Geometry::Vec3D APt=
-	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
-      Geometry::Vec3D BPt=
-	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
-
-      size_t Nxyz[3];
-      Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
-      Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
-      Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
-
-      calcXYZ(place,linkName,APt,BPt);
-      
-      if (PType=="heatObject" || PType=="heatObjectRotated")
-        rectangleMesh(System,3,"void",APt,BPt,Nxyz);
-      else
-	rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
-      return;      
-    }      
-  else if (PType=="free" || PType=="heat" ||
-      PType=="freeRotated" || PType=="heatRotated")
-    {
-      size_t itemIndex(2);
-      const std::string doseType=
-	IParam.getValueError<std::string>
-	("tally",Index,itemIndex++,"Dose type");
-
-      Geometry::Vec3D APt=
-	IParam.getCntVec3D("tally",Index,itemIndex,"Low Corner");
-      Geometry::Vec3D BPt=
-	IParam.getCntVec3D("tally",Index,itemIndex,"High Corner");
-      
-      // Rotation:
-      const std::string revStr=
-	IParam.getDefValue<std::string>("","tally",Index,itemIndex);
-      if (revStr!="r" &&
-	  PType!="freeRotated" && PType!="heatRotated")
-	{
-	  ELog::EM<<"Reverse rotating"<<ELog::endDiag;
-	  APt=MR.reverseRotate(APt);
-	  BPt=MR.reverseRotate(BPt);
-	  //	  nxyzIndex+=(flag && revStr=="r") ? 1 : 0;
-	}
-      
-      size_t Nxyz[3];
-      Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
-      Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
-      Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
-      if (PType=="heat" || PType=="heatRotated")
-	rectangleMesh(System,3,"void",APt,BPt,Nxyz);
-      else
-	rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
-      return;
+      ELog::EM<<"Reverse rotating"<<ELog::endDiag;
+      APt=MR.reverseRotate(APt);
+      BPt=MR.reverseRotate(BPt);
     }
+      
+  Nxyz[0]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NXpts");
+  Nxyz[1]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NYpts");
+  Nxyz[2]=IParam.getValueError<size_t>("tally",Index,itemIndex++,"NZpts");
   
-  ELog::EM<<"Unknown Mesh type :"<<PType<<ELog::endWarn;
-  return;
-}
-
-void 
-meshConstruct::rectangleMesh(Simulation& System,const int type,
-			     const std::string& KeyWords,
-			     const Geometry::Vec3D& APt,
-			     const Geometry::Vec3D& BPt,
-			     const size_t* MPts) const
-  /*!
-    An amalgamation of values to determine what sort of mesh to put
-    in the system.
-    \param System :: Simulation to add tallies
-    \param type :: type of tally[1,2,3]
-    \param KeyWords :: KeyWords to add to the tally
-    \param APt :: Lower point 
-    \param BPt :: Upper point 
-    \param MPts :: Points ot use
-  */
-{
-  ELog::RegMethod RegA("meshConstruct","rectangleMesh");
-
-  // Find next available number
-  int tallyN(type);
-  while(System.getTally(tallyN))
-    tallyN+=10;
-
-  // Create tally:
-  meshTally MT(tallyN);
-  if (type==1)
-    MT.setParticles("n");
-  MT.setCoordinates(APt,BPt);
-  MT.setIndex(MPts);
-  MT.setActive(1);
-  if (KeyWords=="DOSE")
-    {
-      MT.setKeyWords("DOSE 1");
-      MT.setResponse(getDoseConversion());
-    }
-  else if (KeyWords=="DOSEPHOTON")
-    {
-      MT.setParticles("p");
-      MT.setKeyWords("DOSE 1");
-      MT.setResponse(getPhotonDoseConversion());
-    }
-  else if (KeyWords=="InternalDOSE")
-    {
-      MT.setKeyWords("DOSE");
-      MT.setIndexLine("40 1 2 1e6");
-    }
-  else if (KeyWords=="void")
-    {
-      MT.setKeyWords("");
-    }
-  else 
-    {
-      ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
-	      <<"  void ::  Flux \n"
-	      <<ELog::endDiag;
-      ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
-    }
-
-  ELog::EM<<"Adding tally "<<ELog::endTrace;
-  ELog::EM<<"Coordinates  : "<<ELog::endTrace;
-  MT.writeCoordinates(ELog::EM.Estream());
-  ELog::EM<<ELog::endTrace;
-
-  System.addTally(MT);
-
-  return;
-}
-
-void 
-meshConstruct::rectangleFMesh(Simulation& System,const int type,
-                              const std::string& KeyWords,
-                              const Geometry::Vec3D& APt,
-                              const Geometry::Vec3D& BPt,
-                              const size_t* MPts) const
-  /*!
-    An amalgamation of values to determine what sort of mesh to put
-    in the system.
-    \param System :: Simulation to add tallies
-    \param type :: type of tally [1,2,3]
-    \param KeyWords :: KeyWords to add to the tally
-    \param APt :: Lower point 
-    \param BPt :: Upper point 
-    \param MPts :: Points ot use
-  */
-{
-  ELog::RegMethod RegA("meshConstruct","rectangleMesh");
-
-  // Find next available number
-  int tallyN(type);
-  while(System.getTally(tallyN))
-    tallyN+=10;
-
-  // Create tally:
-  fmeshTally MT(tallyN);
-  if (type==1)
-    MT.setParticles("n");
-  MT.setCoordinates(APt,BPt);
-  MT.setIndex(MPts);
-  MT.setActive(1);
-  if (KeyWords=="DOSE")
-    {
-      MT.setKeyWords("DOSE 1");
-      MT.setResponse(getDoseConversion());
-    }
-  else if (KeyWords=="DOSEPHOTON")
-    {
-      MT.setParticles("p");
-      MT.setKeyWords("DOSE 1");
-      MT.setResponse(getPhotonDoseConversion());
-    }
-  else if (KeyWords=="InternalDOSE")
-    {
-      MT.setKeyWords("DOSE");
-      MT.setIndexLine("40 1 2 1e6");
-    }
-  else if (KeyWords=="void")
-    {
-      MT.setKeyWords("");
-    }
-  else 
-    {
-      ELog::EM<<"Mesh keyword options:\n"
-	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
-	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
-	      <<"  void ::  Flux \n"
-	      <<ELog::endDiag;
-      ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
-    }
-
-  ELog::EM<<"Adding tally "<<ELog::endTrace;
-  ELog::EM<<"Coordinates  : "<<ELog::endTrace;
-  MT.writeCoordinates(ELog::EM.Estream());
-  ELog::EM<<ELog::endTrace;
-
-  System.addTally(MT);
-
   return;
 }
 
@@ -464,6 +302,53 @@ meshConstruct::getPhotonDoseConversion()
   return fcdString;
 }
 
+
+void
+meshConstruct::processMesh(Simulation& System,
+			   const mainSystem::inputParam& IParam,
+			   const size_t Index) const
+  /*!
+    Add mesh tally (s) as needed
+    \param System :: Simulation to add tallies
+    \param IParam :: Main input parameters
+    \param Index :: index of the -T card
+   */
+{
+  ELog::RegMethod RegA("meshConstruct","processMesh");
+
+  const size_t NItems=IParam.itemCnt("tally",Index);
+  if (NItems<4)
+    throw ColErr::IndexError<size_t>(NItems,4,
+				     "Insufficient items for tally");
+
+  const std::string doseType=
+    IParam.getValueError<std::string>("tally",Index,1,"Dose type");
+
+  const std::string PType=
+    IParam.getValueError<std::string>("tally",Index,2,"object/free"); 
+
+  Geometry::Vec3D APt,BPt;
+  std::array<size_t,3> Nxyz;
+  
+  if (PType=="object" || PType=="heatObject")
+    getObjectMesh(IParam,Index,3,APt,BPt,Nxyz);
+  else if (PType=="free" || PType=="heat")
+    getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
+
+  if (PType=="heatObject" || PType=="heat")
+    rectangleMesh(System,3,"void",APt,BPt,Nxyz);
+  else if (PType=="free" || PType=="flux" ||
+	   PType=="object")
+    rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
+  else
+    throw ColErr::InContainerError<std::string>
+      (PType,"Unknown Mesh type :");
+  
+  return;      
+}
+
+
+  
 void
 meshConstruct::writeHelp(std::ostream& OX) const
   /*!

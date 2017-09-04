@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/meshTally.h
+ * File:   tallyInc/tmeshTally.h
  *
  * Copyright (c) 2004-2015 by Stuart Ansell
  *
@@ -19,20 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_meshTally_h
-#define tallySystem_meshTally_h
+#ifndef tallySystem_tmeshTally_h
+#define tallySystem_tmeshTally_h
 
 namespace tallySystem
 {
 /*!
-  \class meshTally
+  \class tmeshTally
   \version 1.0
   \date July 2010
   \author S. Ansell
   \brief Mesh tally 
 */
 
-class meshTally : public Tally
+class tmeshTally : public Tally
 {
  private:
   
@@ -43,23 +43,23 @@ class meshTally : public Tally
 
   int requireRotation;           ///< rotation to the mesh
   
-  Triple<size_t> Pts;               ///< Points
+  std::array<size_t,3> Pts;      ///< Points
   Geometry::Vec3D minCoord;      ///< Min coordinate
   Geometry::Vec3D maxCoord;      ///< Max coordinate
   
  public:
 
-  explicit meshTally(const int);
-  meshTally(const meshTally&);
-  virtual meshTally* clone() const; 
-  meshTally& operator=(const meshTally&);
-  virtual ~meshTally();
+  explicit tmeshTally(const int);
+  tmeshTally(const tmeshTally&);
+  virtual tmeshTally* clone() const; 
+  tmeshTally& operator=(const tmeshTally&);
+  virtual ~tmeshTally();
   
   void setType(const int);
   void setKeyWords(const std::string&);
   void setIndexLine(std::string);
   void setRot() { requireRotation=1; }   ///< Set rotations
-  void setIndex(const size_t*);
+  void setIndex(const std::array<size_t,3>&);
   void setCoordinates(const Geometry::Vec3D&,const Geometry::Vec3D&);
   void setResponse(const std::string&);
 
@@ -70,7 +70,7 @@ class meshTally : public Tally
   /// access min/max point
   const Geometry::Vec3D& getMaxPt() const { return maxCoord; }
   /// access min/max point
-  const Triple<size_t>& getNPt() const { return Pts; }
+  const std::array<size_t,3>& getNPt() const { return Pts; }
  
   virtual void rotateMaster();
   int addLine(const std::string&);

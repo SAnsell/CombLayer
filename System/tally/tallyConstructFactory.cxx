@@ -55,7 +55,9 @@
 
 #include "pointConstruct.h" 
 #include "gridConstruct.h"
-#include "meshConstruct.h" 
+#include "meshConstruct.h"
+#include "tmeshConstruct.h"
+#include "fmeshConstruct.h" 
 #include "fluxConstruct.h" 
 #include "heatConstruct.h" 
 #include "itemConstruct.h" 
@@ -87,14 +89,24 @@ tallyConstructFactory::makeGrid() const
   return new gridConstruct();
 }
 
-meshConstruct*
-tallyConstructFactory::makeMesh() const
+tmeshConstruct*
+tallyConstructFactory::makeTMesh() const
   /*!
-    Return mesh tally
-    \return meshConstruct
+    Return tmesh tally
+    \return tmeshConstruct
   */
 {
-  return new meshConstruct();
+  return new tmeshConstruct();
+}
+
+fmeshConstruct*
+tallyConstructFactory::makeFMesh() const
+  /*!
+    Return tmesh tally
+    \return tmeshConstruct
+  */
+{
+  return new fmeshConstruct();
 }
 
 fluxConstruct*

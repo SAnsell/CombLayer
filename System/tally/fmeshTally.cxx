@@ -3,7 +3,7 @@
  
  * File:   tally/fmeshTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,32 +129,30 @@ fmeshTally::setKeyWords(const std::string&)
 {
   return;
 }
-
-void
-fmeshTally::setIndexLine(std::string)
-{
-  return;
-}
   
 void
-fmeshTally::setIndex(const size_t* IDX)
+fmeshTally::setIndex(const std::array<size_t,3>& IDX)
   /*!
     Sets the individual index for each x,y,z
     \param IDX :: array of three object
   */
 {
   ELog::RegMethod RegA("fmeshTally","setIndex");
-
   for(size_t i=0;i<3;i++)
     {
       if (!IDX[i])
 	throw ColErr::IndexError<size_t>(IDX[i],i,"IDX[index] zero");
+      Pts[i]=IDX[i];
     }
+  
   return;
 }
 
 int
 fmeshTally::addLine(const std::string& LX)
+  /*!
+    Add a line
+   */
 {
   return Tally::addLine(LX);
 }
@@ -199,8 +197,9 @@ fmeshTally::rotateMaster()
   if (requireRotation)
     {
       const masterRotate& MR=masterRotate::Instance(); 
-      //      MR.applyFull(minCoord);
-      //      MR.applyFull(maxCoord);
+      MR.applyFull(minCoord);
+      MR.applyFull(maxCoord);
+      requireRotation=0;
     }
   return;
 }
@@ -235,8 +234,8 @@ fmeshTally::write(std::ostream& OX) const
       cx<<"fmesh"<<IDnum;
       writeParticles(cx);
       //GEOMETRY:
-      cx<<"GEOM="<<geomType<<" ";
-      cx<<"ORIGIN="<<MW.Num(Origin)<<" ";
+      //      cx<<"GEOM="<<geomType<<" ";
+      //      cx<<"ORIGIN="<<MW.Num(Origin)<<" ";
       
       //      std::vector<double>::const_iterator vc;
       //      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
