@@ -35,8 +35,6 @@
 #include <boost/format.hpp>
 
 #include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"

@@ -465,6 +465,8 @@ LOKI::build(Simulation& System,
   buildBunkerUnits(System,BendA->getKey("Guide0"),2,
                    bunkerObj.getCell("MainVoid"));
 
+  if (stopPoint==2) return;                // STOP At Bunker Wall
+  
   // WALL
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->setFront(bunkerObj,-1);
@@ -477,6 +479,8 @@ LOKI::build(Simulation& System,
   FocusWall->setBack(*BInsert,-2);
   FocusWall->createAll(System,*BInsert,7,*BInsert,7); 
 
+  if (stopPoint==3) return;                // STOP At Outer-Bunker Wall
+  
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
   

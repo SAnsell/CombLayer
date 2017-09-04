@@ -242,10 +242,9 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
   SGen.addFloor(1,20.0,"CastIron");
-  // SGen.addFloor(5,30.0,"Concrete");
-  // SGen.addRoof(5,30.0,"Concrete");
-  // SGen.addWall(5,30.0,"Concrete");
-
+  SGen.addFloorMat(3,"Concrete");
+  SGen.addRoofMat(3,"Concrete");
+  SGen.addWallMat(3,"Concrete");
   SGen.generateShield(Control,"vespaShieldB",770.0,80.0,80.0,80.0,4,8);
 
   const double slen(595.0);

@@ -152,7 +152,7 @@ Visit::getResult(const MonteCarlo::Object* ObjPtr) const
     Determine what to calculate for an object 
     based on the mesh form
     \param ObjPtr :: object to calculate for
-    \return result
+    \return determined value from the object
   */
 {
   if (!ObjPtr) return 0.0;
@@ -176,10 +176,11 @@ Visit::populate(const Simulation* SimPtr,
   /*!
     The big population call
     \param SimPtr :: Simulation system
-    \param Active :: Active set
+    \param Active :: Active set of cells to use (ranged)
    */
 {
-  ELog::RegMethod RegA("Visit","populate");
+  ELog::RegMethod RegA("Visit","populate(set)");
+
   MonteCarlo::Object* ObjPtr(0);
   Geometry::Vec3D aVec;
 
@@ -204,14 +205,14 @@ Visit::populate(const Simulation* SimPtr,
 	      aVec[2]=stepXYZ[2]*(0.5+static_cast<double>(k));
 	      const Geometry::Vec3D Pt=Origin+aVec;
 	      ObjPtr=SimPtr->findCell(Pt,ObjPtr);
+
 	      // Active Set Code:
 	      if (!aEmptyFlag)
 		{
+
 		  const std::string rangeStr=OR.inRange(ObjPtr->getName());
 		  if (Active.find(rangeStr)!=Active.end())
-		    {
-		      mesh[i][j][k]=getResult(ObjPtr);
-		    }
+		    mesh[i][j][k]=getResult(ObjPtr);
 		  else
 		    mesh[i][j][k]=0.0;
 		}
@@ -219,9 +220,6 @@ Visit::populate(const Simulation* SimPtr,
 	      else
 		{
 		  mesh[i][j][k]=getResult(ObjPtr);
-		  if (outType==VISITenum::material && 
-		      std::abs(mesh[i][j][k]-37)<1e-4)
-		    beCnt++;
 		}
 
 	    }
@@ -237,6 +235,8 @@ Visit::populate(const Simulation* SimPtr)
     \param SimPtr :: Simulation system
    */
 {
+  ELog::RegMethod RegA("Visit","populate(sim)");
+
   std::set<std::string> Empty;
   populate(SimPtr,Empty);
   return;
@@ -254,7 +254,7 @@ Visit::writeVTK(const std::string& FName) const
   std::ofstream OX(FName.c_str());
   std::ostringstream cx;
   boost::format fFMT("%1$11.6g%|14t|");
-
+  
   double stepXYZ[3];
   for(size_t i=0;i<3;i++)
     stepXYZ[i]=XYZ[i]/static_cast<double>(nPts[i]);
