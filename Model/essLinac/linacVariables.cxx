@@ -98,21 +98,21 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacCopperMat","Copper");
   Control.addVariable("LinacGraphiteMat","Graphite");
 
+
+  // Temporary shielding walls
   Control.addVariable("LinacNTSW", 3);
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
-  Control.addVariable("LinacTSW0Width", 100.0); // Lali said
+  Control.addVariable("LinacTSW0Width", 30.0); // Lali said
   Control.addVariable("LinacTSW0XStep", 5300.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
-  //  Control.addVariable("LinacTSW0OffsetY", 5300.0); // some location (must be 20 cm off the beam dump)
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
-  Control.addVariable("LinacTSW0NLayers", 1); // for biasing
+  Control.addVariable("LinacTSW0NLayers", 10); // for biasing
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
-  Control.addVariable("LinacTSW1XStep", 5520.0);
+  Control.addVariable("LinacTSW1XStep", 5450.0);
   Control.copyVarSet("LinacTSW0", "LinacTSW2");
-  Control.addVariable("LinacTSW2XStep", 5740.0);
-  Control.copyVarSet("LinacTSW0", "LinacTSW3");
-  Control.addVariable("LinacTSW3XStep", 5960.0);
+  Control.addVariable("LinacTSW2XStep", 5600.0);
+
   
   // Beam dump
   Control.addVariable("LinacBeamDumpActive", 0);
@@ -133,7 +133,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpFrontInnerWallLength",2*5.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpFrontInnerWallHoleRad",10.4/2.0); // doc SPLTDISH0001
   Control.addVariable("LinacBeamDumpBackInnerWallLength",2*5.0+3.0); // doc SPLTDISH0001
-  ELog::EM << "measure LinacBeamDumpBackInnerWallGapLength" << ELog::endCrit;
+  //ELog::EM << "measure LinacBeamDumpBackInnerWallGapLength" << ELog::endCrit;
   Control.addVariable("LinacBeamDumpBackInnerWallGapLength",1.0); // measure!
 
   Control.addVariable("LinacBeamDumpSideInnerWallThick", 2*5.0); // doc SPLTDISH0001
@@ -158,8 +158,8 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpRoofOverhangLength", 20.0); // guess based on SPLTDISH0001
   Control.addVariable("LinacBeamDumpInnerRoofThick",2*5.0); // doc SPLTDISH0001
   
-  ELog::EM << "measure LinacBeamDumpVacPipeFrontInnerWallDist" << ELog::endCrit;
-    Control.addVariable("LinacBeamDumpVacPipeFrontInnerWallDist",5.0); // measure !!!
+  //ELog::EM << "measure LinacBeamDumpVacPipeFrontInnerWallDist" << ELog::endCrit;
+  Control.addVariable("LinacBeamDumpVacPipeFrontInnerWallDist",5.0); // measure !!!
   Control.addVariable("LinacBeamDumpVacPipeLength",63.97); // SPLTDISH0052
   Control.addVariable("LinacBeamDumpVacPipeRad",6.85*SCALE52bl/2.0); // measured on SPLTDISH0052
   Control.addVariable("LinacBeamDumpVacPipeSideWallThick",(7.55-6.85)*SCALE52bl/2.0);  // measured on SPLTDISH0052
@@ -179,8 +179,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacBeamDumpWaterPipeOffsetZ", 10.4); // measured on SPLTDISH005
   Control.addVariable("LinacBeamDumpWaterPipeDist", 0.05*SCALE52tr); // measured on SPLTDISH005
 
+  
   // Faraday cup
-  Control.addVariable("LinacFaradayCupYStep", -50.0); // don't start it in the origin
+  Control.addVariable("LinacFaradayCupActive", 1.0);
+  Control.addVariable("LinacFaradayCupYStep", 5120.0); // don't start it in the origin
   // Dimensions are based on email from LT 13 Mar 2017 (Fc_design.pdf)
   Control.addVariable("LinacFaradayCupEngineeringActive", 1);
   Control.addVariable("LinacFaradayCupLength", 3.2);
