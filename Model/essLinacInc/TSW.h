@@ -54,7 +54,7 @@ class TSW : public attachSystem::ContainedComp,
   int airMat;                   ///< Air material
 
   void layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS, const int&, const int&);
+		    const size_t& lpS, const size_t& lsS, const size_t&, const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

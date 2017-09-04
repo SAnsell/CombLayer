@@ -160,20 +160,20 @@ TSW::~TSW()
 void
 TSW::layerProcess(Simulation& System, const std::string& cellName,
 		    const size_t& lpS, const size_t& lsS,
-		    const int& nLayers, const int& mat)
+		    const size_t& N, const int& mat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
     \param cellName :: TSW wall cell name
     \param lpS :: link pont of primary surface
     \param lsS :: link point of secondary surface
-    \param nLayers :: number of layers to divide to
+    \param N :: number of layers to divide to
     \param mat :: material
   */
 {
     ELog::RegMethod RegA("TSW","layerProcess");
 
-    if (nLayers<=1)
+    if (N<=1)
       return;
 
     const int pS = getLinkSurf(lpS);
@@ -193,13 +193,13 @@ TSW::layerProcess(Simulation& System, const std::string& cellName,
       throw ColErr::InContainerError<int>(wallCell,
 					  "Cell '" + cellName + "' not found");
 
-    double baseFrac = 1.0/nLayers;
+    double baseFrac = 1.0/N;
     ModelSupport::surfDivide DA;
-    for(int i=1;i<nLayers;i++)
+    for(size_t i=1;i<N;i++)
       {
 	DA.addFrac(baseFrac);
 	DA.addMaterial(mat);
-	baseFrac += 1.0/nLayers;
+	baseFrac += 1.0/N;
       }
     DA.addMaterial(mat);
 
@@ -321,8 +321,7 @@ TSW::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
   else
     setCell("wall",cellIndex-1);
 
-  layerProcess(System, "wall", 2, 6, 10, wallMat);
-  ELog::EM << "add nLayers"  << ELog::endCrit;
+  layerProcess(System, "wall", 2, 6, nLayers, wallMat);
 
   Out=FC.getLinkString(static_cast<size_t>(wall1)) +
     FC.getLinkString(static_cast<size_t>(wall2)) +
