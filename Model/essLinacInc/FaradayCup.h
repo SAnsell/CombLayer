@@ -65,7 +65,8 @@ class FaradayCup : public attachSystem::ContainedComp,
   int airMat; ///< air material
 
   size_t nShieldLayers; ///< Number of shield layers. No shielding if zero.
-  std::vector<double> shieldWidth; ///< shield width
+  std::vector<double> shieldWidthLeft; ///< shield width towards x+
+  std::vector<double> shieldWidthRight; ///< Shield width towards x-
   std::vector<double> shieldHeight; ///< Shield height
   std::vector<double> shieldDepth; ///< Shield depth
   std::vector<double> shieldForwardLength; ///< shield length

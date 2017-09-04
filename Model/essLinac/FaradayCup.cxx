@@ -115,7 +115,8 @@ FaradayCup::FaradayCup(const FaradayCup& A) :
   colMat(A.colMat),wallMat(A.wallMat),
   airMat(A.airMat),
   nShieldLayers(A.nShieldLayers),
-  shieldWidth(A.shieldWidth),
+  shieldWidthLeft(A.shieldWidthLeft),
+  shieldWidthRight(A.shieldWidthRight),
   shieldHeight(A.shieldHeight),
   shieldDepth(A.shieldDepth),
   shieldForwardLength(A.shieldForwardLength),
@@ -155,7 +156,8 @@ FaradayCup::operator=(const FaradayCup& A)
       wallMat=A.wallMat;
       airMat=A.airMat;
       nShieldLayers=A.nShieldLayers;
-      shieldWidth=A.shieldWidth;
+      shieldWidthLeft=A.shieldWidthLeft;
+      shieldWidthRight=A.shieldWidthRight;
       shieldHeight=A.shieldHeight;
       shieldDepth=A.shieldDepth;
       shieldForwardLength=A.shieldForwardLength;
@@ -212,17 +214,19 @@ FaradayCup::populate(const FuncDataBase& Control)
 
   for (size_t i=0; i<nShieldLayers; i++)
     {
-      double W,H,D,FL,BL;
+      double WL,WR,H,D,FL,BL;
       int mat;
       const std::string Num=std::to_string(i+1);
-      W = Control.EvalVar<double>(keyName+"ShieldWidth"+Num);
+      WL = Control.EvalVar<double>(keyName+"ShieldWidthLeft"+Num);
+      WR = Control.EvalVar<double>(keyName+"ShieldWidthRight"+Num);
       H = Control.EvalVar<double>(keyName+"ShieldHeight"+Num);
       D = Control.EvalVar<double>(keyName+"ShieldDepth"+Num);
       FL = Control.EvalVar<double>(keyName+"ShieldForwardLength"+Num);
       BL = Control.EvalVar<double>(keyName+"ShieldBackLength"+Num);
       mat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat"+Num);
 
-      shieldWidth.push_back(W);
+      shieldWidthLeft.push_back(WL);
+      shieldWidthRight.push_back(WR);
       shieldHeight.push_back(H);
       shieldDepth.push_back(D);
       shieldForwardLength.push_back(FL);
@@ -231,7 +235,7 @@ FaradayCup::populate(const FuncDataBase& Control)
     }
 
   // check if the variables are sorted
-  //std::is_sorted(shieldWidth.begin(),shieldWidth.end());
+  //std::is_sorted(shieldWidthLeft.begin(),shieldWidthLeft.end());
 
   return;
 }
@@ -288,8 +292,8 @@ FaradayCup::createSurfaces()
       ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength[i]),Y);
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(shieldForwardLength[i]),Y);
 
-      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidth[i]/2.0),X);
-      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(shieldWidth[i]/2.0),X);
+      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidthRight[i]),X);
+      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(shieldWidthLeft[i]),X);
 
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*(shieldDepth[i]),Z);
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*(shieldHeight[i]),Z);
@@ -395,10 +399,10 @@ FaradayCup::createLinks()
       FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[n]),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
 
-      FixedComp::setConnect(2,Origin-X*(shieldWidth[n]/2.0),-X);
+      FixedComp::setConnect(2,Origin-X*(shieldWidthRight[n]),-X);
       FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
 
-      FixedComp::setConnect(3,Origin+X*(shieldWidth[n]/2.0),X);
+      FixedComp::setConnect(3,Origin+X*(shieldWidthLeft[n]),X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
 
       FixedComp::setConnect(4,Origin-Z*(shieldDepth[n]),-Z);
