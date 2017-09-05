@@ -215,7 +215,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldHeight3",100.0);
   Control.addVariable("LinacFaradayCupShieldDepth1",10.0);
   Control.addVariable("LinacFaradayCupShieldDepth2",30.0);
-  Control.addVariable("LinacFaradayCupShieldDepth3",100.0);
+  Control.addVariable("LinacFaradayCupShieldDepth3",120.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength1",10.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength2",30.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength3",100.0);
