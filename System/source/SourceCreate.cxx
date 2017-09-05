@@ -253,9 +253,9 @@ createESSLinacSource(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
 
-  const double E=Control.EvalDefVar<double>("sdefEnergy",     2000.0);
+  const double E=Control.EvalDefVar<double>("sdefEnergy",       74.0);
   const double xStart=Control.EvalDefVar<double>("sdefXPos",     0.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",   400.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",  4700.0);
   const double zStart=Control.EvalDefVar<double>("sdefZPos",     0.0);
 
   sourceCard.setActive();
