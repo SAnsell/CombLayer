@@ -41,6 +41,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -158,15 +159,30 @@ fmeshTally::addLine(const std::string& LX)
 }
 
 void
-fmeshTally::setCoordinates(const Geometry::Vec3D&,
-                           const Geometry::Vec3D&)
+fmeshTally::setCoordinates(const Geometry::Vec3D& A,
+                           const Geometry::Vec3D& B)
   /*!
     Sets the min/max coordinates
     \param A :: First coordinate
     \param B :: Second coordinate
   */
 {
+  ELog::RegMethod RegA("fmeshTally","setCoordinates");
+  
+  minCoord=A;
+  maxCoord=B;
   // Add some checking here
+  for(size_t i=0;i<3;i++)
+    {
+      if (std::abs(minCoord[i]-maxCoord[i])<Geometry::zeroTol)
+	throw ColErr::NumericalAbort(StrFunc::makeString(minCoord)+" ::: "+
+				     StrFunc::makeString(maxCoord)+
+				     " Equal components");
+      if (minCoord[i]>maxCoord[i])
+	std::swap(minCoord[i],maxCoord[i]);
+    }
+
+
   return;
 }
 
@@ -196,6 +212,7 @@ fmeshTally::rotateMaster()
   
   if (requireRotation)
     {
+      ELog::EM<<"Rotation required"<<ELog::endDiag;
       const masterRotate& MR=masterRotate::Instance(); 
       MR.applyFull(minCoord);
       MR.applyFull(maxCoord);
@@ -211,11 +228,17 @@ fmeshTally::writeCoordinates(std::ostream& OX) const
     \param OX :: Oupt stream
   */
 {
-  static char abc[]="abc";
+  static char abc[]="ijk";
+  std::ostringstream cx;
+  for(size_t i=0;i<3;i++)
+    {
+      cx.str("");
+      cx<<abc[i]<<"mesh "<<maxCoord[i]<<" "
+	<<abc[i]<<"ints "<<Pts[i];
+      StrFunc::writeMCNPXcont(cx.str(),OX);
+    }
+
   
-  //  for(size_t i=0;i<3;i++)
-    //    OX<<"cor"<<abc[i]<<IDnum<<" "<<minCoord[i]<<" "
-    //      <<(Pts[i]-1)<<"i "<<maxCoord[i]<<std::endl;
   return;
 }
   
@@ -229,18 +252,13 @@ fmeshTally::write(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
   if (isActive())
     {
-
       std::ostringstream cx;
       cx<<"fmesh"<<IDnum;
       writeParticles(cx);
       //GEOMETRY:
-      //      cx<<"GEOM="<<geomType<<" ";
-      //      cx<<"ORIGIN="<<MW.Num(Origin)<<" ";
-      
-      //      std::vector<double>::const_iterator vc;
-      //      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
-      //	cx<<MW.Num(*vc)<<" ";
-      
+      cx<<"GEOM="<<"xyz"<<" ";
+      cx<<"ORIGIN="<<MW.Num(minCoord)<<" ";
+            
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
 	{

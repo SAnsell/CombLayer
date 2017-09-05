@@ -146,7 +146,7 @@ tmeshTally::setKeyWords(const std::string& K)
 void
 tmeshTally::setIndexLine(std::string K)
   /*!
-    Set the mesh keyworkds
+    Set the mesh index items [?]
     \param K :: Line to process
   */
 {

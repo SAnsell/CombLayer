@@ -62,11 +62,7 @@
 #include "inputParam.h"
 #include "NList.h"
 #include "NRange.h"
-#include "pairRange.h"
 #include "Tally.h"
-#include "TallyCreate.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "fmeshTally.h"
 
 #include "TallySelector.h" 
@@ -135,8 +131,7 @@ fmeshConstruct::rectangleMesh(Simulation& System,const int type,
   fmeshTally MT(tallyN);
   if (type==1)
     MT.setParticles("n");
-  MT.setCoordinates(APt,BPt);
-
+  MT.setCoordinates(APt,BPt);  
   MT.setIndex(MPts);
   MT.setActive(1);
   if (KeyWords=="DOSE")
