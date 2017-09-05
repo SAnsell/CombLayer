@@ -100,6 +100,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
+  IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
@@ -220,6 +221,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("offset","Displace to component [name]");
+  IParam.setDesc("ObjAdd","Add a component (cell)");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
@@ -239,7 +241,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
-  IParam.setDesc("TAdd","Add a tally component (cell)");
+  IParam.setDesc("TAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");

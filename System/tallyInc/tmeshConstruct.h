@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/meshConstruct.h
+ * File:   tallyInc/tmeshConstruct.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_meshConstruct_h
-#define tallySystem_meshConstruct_h
+#ifndef tallySystem_tmeshConstruct_h
+#define tallySystem_tmeshConstruct_h
 
 namespace attachSystem
 {
@@ -38,52 +38,31 @@ namespace tallySystem
 {
 
 /*!
-  \class meshConstruct
+  \class tmeshConstruct
   \version 1.0
   \author S. Ansell
   \date July 2012
-  \brief Constructs a mesh tally from inputParam
+  \brief Constructs a tmesh tally from inputParam
 */
 
-class meshConstruct 
+class tmeshConstruct : public meshConstruct
 {
- protected:
+ private:
 
-  static const std::string& getDoseConversion();
-  static const std::string& getPhotonDoseConversion();
-  static const std::string& getProtonDoseConversion();
-  static void calcXYZ(const std::string&,const std::string&,
-		      Geometry::Vec3D&,Geometry::Vec3D&) ;
-
-  static void getObjectMesh(const mainSystem::inputParam&,
-			    const size_t,const size_t,
-			    Geometry::Vec3D&,
-			    Geometry::Vec3D&,
-			    std::array<size_t,3>&);
-
-  static void getFreeMesh(const mainSystem::inputParam&,
-			    const size_t,const size_t,
-			    Geometry::Vec3D&,
-			    Geometry::Vec3D&,
-			    std::array<size_t,3>&);
-
+	         
  public:
 
-  meshConstruct();
-  meshConstruct(const meshConstruct&);
-  meshConstruct& operator=(const meshConstruct&);
-  virtual ~meshConstruct() {}  ///< Destructor
-
-  void processMesh(Simulation&,const mainSystem::inputParam&,
-		   const size_t) const;
+  tmeshConstruct();
+  tmeshConstruct(const tmeshConstruct&);
+  tmeshConstruct& operator=(const tmeshConstruct&);
+  virtual ~tmeshConstruct() {}  ///< Destructor
 
   virtual void rectangleMesh(Simulation&,const int,
 			     const std::string&,
 			     const Geometry::Vec3D&,
 			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&) const =0;
+			     const std::array<size_t,3>&) const;
 
-  
   virtual void writeHelp(std::ostream&) const;
 };
 

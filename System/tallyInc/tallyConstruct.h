@@ -32,6 +32,8 @@ class Simulation;
 
 namespace tallySystem
 {
+  class tmeshConstruct;
+  class fmeshConstruct;
   class fissionConstruct;
 
 /*!
@@ -52,7 +54,8 @@ class tallyConstruct
 
   pointConstruct* pointPtr;           ///< Point construct
   gridConstruct* gridPtr;             ///< Point Grid construct
-  meshConstruct* meshPtr;             ///< Mesh point 
+  tmeshConstruct* tmeshPtr;           ///< TMesh point
+  fmeshConstruct* fmeshPtr;           ///< FMesh point 
   fluxConstruct* fluxPtr;             ///< Flux [f4] 
   heatConstruct* heatPtr;             ///< Heat [f6]
   itemConstruct* itemPtr;             ///< Items : Beamline/named system
@@ -81,6 +84,7 @@ class tallyConstruct
   tallyConstruct& operator=(const tallyConstruct&);
 
   static tallyConstruct& buildInstance(const tallyConstructFactory&);
+  
  public:
 
   ~tallyConstruct();
