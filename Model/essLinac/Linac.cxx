@@ -366,10 +366,10 @@ Linac::createSurfaces()
 {
   ELog::RegMethod RegA("Linac","createSurfaces");
 
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  //  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
 
   // Redefine the outer void boundary sphere since the default one is too small
-  SurI.createSurface(1,"so 60000");
+  //  SurI.createSurface(1,"so 60000"); use updateSurface when SA has it implemented. Now change World.cxx
 
   ModelSupport::buildPlane(SMap,surfIndex+1,Origin-Y*(lengthBack),Y);
   ModelSupport::buildPlane(SMap,surfIndex+2,Origin+Y*(lengthFront),Y);
