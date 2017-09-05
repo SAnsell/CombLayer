@@ -102,16 +102,17 @@ EssLinacVariables(FuncDataBase& Control)
   // Temporary shielding walls
   Control.addVariable("LinacNTSW", 3);
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
-  Control.addVariable("LinacTSW0Width", 30.0); // Lali said
+  Control.addVariable("LinacTSW0Width", 50.0);
   Control.addVariable("LinacTSW0XStep", 5300.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0NLayers", 10); // for biasing
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
-  Control.addVariable("LinacTSW1XStep", 5450.0);
+  Control.addVariable("LinacTSW1XStep", 5470.0);
+  Control.addVariable("LinacTSW1Width", 100.0);
   Control.copyVarSet("LinacTSW0", "LinacTSW2");
-  Control.addVariable("LinacTSW2XStep", 5600.0);
+  Control.addVariable("LinacTSW2XStep", 5690.0);
 
   
   // Beam dump
