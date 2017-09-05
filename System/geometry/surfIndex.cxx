@@ -217,7 +217,7 @@ surfIndex::removeOpposite(const int SN)
    */
 {
   ELog::RegMethod RegA("surfIndex","removeOpposite");
-  ELog::EM<<"RevOPP"<<ELog::endDebug;
+
   STYPE::iterator sc=SMap.find(SN);
   if (sc!=SMap.end())
     {
@@ -338,52 +338,38 @@ surfIndex::createNewSurf(int& surfN)
   return outPtr;
 }
 
-int
+void
 surfIndex::createSurface(const int SN,const std::string& SLine)
   /*!
     Given a surface adds the line
     \param SN :: Surface Number
     \param SLine :: Line to use.
-    \return -ve errorFlag  (0 on success)
   */
 {
-  return createSurface(SN,0,SLine);
+  createSurface(SN,0,SLine);
+  return;
 }
 
-int
+void
 surfIndex::createSurface(const int SN,const int TN,const std::string& SLine)
   /*!
     Given a surface adds the line
     \param SN :: Surface Number
     \param TN :: Transform number
     \param SLine :: Line to use.
-    \return -ve errorFlag  (0 on success)
   */
 {
   ELog::RegMethod RegA("surfIndex","createSurface");
-  try
-    {
-      Geometry::Surface* SPtr=
-	Geometry::surfaceFactory::Instance().processLine(SLine);
-      SPtr->setName(SN);
-      SPtr->setTrans(TN);
-      STYPE::iterator mc=SMap.find(SN);
-      if (mc!=SMap.end())
-        {
-	  delete mc->second;
-	  mc->second=SPtr;
-	}
-      else
-        {
-	  SMap.insert(STYPE::value_type(SN,SPtr));
-	}
-    }
-  catch (const ColErr::ExBase& A)
-    {
-      // Message is written by surfaceFactory::procLine
-      return -1;
-    }
-  return 0; 
+
+  Geometry::Surface* SPtr=
+    Geometry::surfaceFactory::Instance().processLine(SLine);
+  SPtr->setName(SN);
+  SPtr->setTrans(TN);
+  STYPE::iterator mc=SMap.find(SN);
+  if (mc!=SMap.end())
+    throw ColErr::InContainerError<int>(SN,"Surface in use");
+  SMap.emplace(SN,SPtr);
+  return; 
 }
 
 void
@@ -785,11 +771,9 @@ surfIndex::processSurfaces(const std::string& InputLine)
   int transN(0);
   StrFunc::section(Line,transN);
 
-  int retNum=createSurface(name,transN,Line);
-  if (!retNum) return 1;
+  createSurface(name,transN,Line);
 
-  // Incomplete here:
-  return 0;
+  return 1;
 }
 
 int

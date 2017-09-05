@@ -204,8 +204,9 @@ surfRegister::addToIndex(const int addSurfIndex,const int realSurfIndex)
   ELog::RegMethod RegA("surfRegister","addToIndex");
 
   if (Index.find(addSurfIndex)!=Index.end())
-    ELog::EM<<"Replacement of surface "<<addSurfIndex<<" "<<realSurfIndex
-	    <<ELog::endErr;
+    throw ColErr::InContainerError<int>(addSurfIndex," from realSurf:"+
+					std::to_string(realSurfIndex));
+
   Index.insert(MTYPE::value_type(addSurfIndex,realSurfIndex));  
   Index.insert(MTYPE::value_type(-addSurfIndex,-realSurfIndex));  
   return;

@@ -217,7 +217,7 @@ class Simulation
   int removeAllSurface(const int);
   int substituteAllSurface(const int,const int);
   void voidObject(const std::string&);
-
+  void updateSurface(const int,const std::string&);
 
   void createObjSurfMap();
   void validateObjSurfMap();

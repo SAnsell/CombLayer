@@ -228,7 +228,8 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlane(SMap,surfIndex+14,
   			   Origin+X*(xSize/2.0-endThick),X);
 
-  const double gap=(zSize-(NChannels+1.0)*divideThick)/NChannels;
+  const double gap=(zSize-static_cast<double>(NChannels+1)*divideThick)/
+    static_cast<double>(NChannels);
   double zPoint(-zSize/2.0);
   int surfOffset(surfIndex+10);
   for(size_t i=0;i<NChannels;i++)

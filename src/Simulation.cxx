@@ -1238,6 +1238,32 @@ Simulation::calcAllVertex()
 }
 
 void
+Simulation::updateSurface(const int SN,const std::string& SLine)
+  /*!
+    Update a surface that has already been assigned:
+    \param SN :: Surface number
+    \param SLine :: Surface string
+   */
+{
+  ELog::RegMethod RegA("Simulation","updateSurface");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  if (SurI.getSurf(SN))
+    SurI.deleteSurface(SN);
+  SurI.createSurface(SN,0,SLine);
+  //
+  OTYPE::iterator oc;
+  for(oc=OList.begin();oc!=OList.end();oc++)
+    {
+      if (oc->second->hasSurface(SN))
+	{
+	  oc->second->rePopulate();
+	}
+    }
+  return;
+}
+
+void
 Simulation::addObjSurfMap(MonteCarlo::Qhull* QPtr)
   /*! 
     Add an object surface mappings.
