@@ -302,16 +302,15 @@ tmeshTally::write(std::ostream& OX) const
   if (isActive())
     {
       const char typeLetter[]="rcs";
-      OX<<"tmesh"<<std::endl;
 
       std::ostringstream cx;
       
       cx<<typeLetter[typeID-1]<<"mesh"<<IDnum;
       writeParticles(cx);
+      // THIS IS JUNK as maybe two keywords and two value sets
       cx<<keyWords<<" ";
-      std::vector<double>::const_iterator vc;
-      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
-	cx<<MW.Num(*vc)<<" ";
+      for(const double V : kIndex)
+	cx<<MW.Num(V)<<" ";
       
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
@@ -327,7 +326,6 @@ tmeshTally::write(std::ostream& OX) const
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}
       writeCoordinates(OX);
-      OX<<"endmd"<<std::endl;
     }
   return;
 }

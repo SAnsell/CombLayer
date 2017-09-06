@@ -54,6 +54,9 @@ class tmeshTally : public Tally
   virtual tmeshTally* clone() const; 
   tmeshTally& operator=(const tmeshTally&);
   virtual ~tmeshTally();
+
+  virtual std::string className() const
+    { return "TMeshTally"; }
   
   void setType(const int);
   void setKeyWords(const std::string&);

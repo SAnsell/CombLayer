@@ -1571,9 +1571,22 @@ Simulation::writeTally(std::ostream& OX) const
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
   // _1 refers back to the TItem pair<int,tally*>
+  std::vector<TallyTYPE::mapped_type> TMeshVec;
   for(const TallyTYPE::value_type& TM : TItem)
-    TM.second->write(OX);
-
+    {
+      if (TM.second->className()!="TMeshTally")
+	TM.second->write(OX);
+      else
+	TMeshVec.push_back(TM.second);
+    }
+  if (!TMeshVec.empty())
+    {
+      OX<<"tmesh"<<std::endl;
+      for(const TallyTYPE::mapped_type& TM : TMeshVec)
+	TM->write(OX);
+      OX<<"endmd"<<std::endl;
+    }
+  
   return;
 }
 
@@ -2010,7 +2023,7 @@ Simulation::getCellWithMaterial(const int matN) const
 }
 
 std::vector<int>
-Simulation::getCellWithZaid(const int zaidNum) const
+Simulation::getCellWithZaid(const size_t zaidNum) const
   /*!
     Ugly function to return the current
     vector of cells with a particular zaid type

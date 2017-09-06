@@ -82,7 +82,7 @@ namespace setVariable
 {
 
 ShieldGenerator::ShieldGenerator() :
-  leftAngle(0.0),rightAngle(0.0),
+  leftAngle(0.0),rightAngle(0.0),endThick(0.0),
   nWall(0),nRoof(0),nFloor(0),
   defMat("Stainless304")
   /*!
@@ -92,7 +92,7 @@ ShieldGenerator::ShieldGenerator() :
 
 ShieldGenerator::ShieldGenerator(const ShieldGenerator& A) :
   leftAngle(A.leftAngle),rightAngle(A.rightAngle),
-  nWall(A.nWall),nRoof(A.nRoof),nFloor(A.nFloor),
+  endThick(A.endThick),nWall(A.nWall),nRoof(A.nRoof),nFloor(A.nFloor),
   defMat(A.defMat),wallLen(A.wallLen),roofLen(A.roofLen),
   floorLen(A.floorLen),wallMat(A.wallMat),roofMat(A.roofMat),
   floorMat(A.floorMat)
@@ -144,6 +144,18 @@ ShieldGenerator::setAngle(const double LA,const double RA)
   ELog::RegMethod RegA("ShieldGenerator","setAngle");
   leftAngle=LA;
   rightAngle=RA;
+  return;
+}
+
+void
+ShieldGenerator::setEndWall(const double T)
+  /*!
+    Set the end wall 
+    \param T :: Thickness of end wall
+    \todo add additional features for mat/layers etc
+  */
+{
+  endThick=T;
   return;
 }
 
@@ -473,9 +485,10 @@ ShieldGenerator::generateTriShield
   const size_t NRoof(nRoof ? nRoof : NLayer);
   const size_t NFloor(nFloor ? nFloor : NLayer);
   
-  Control.addVariable(keyName+"Length",length);
+  Control.addVariable(keyName+"Length",length);  
   Control.addVariable(keyName+"LeftAngle",leftAngle);
   Control.addVariable(keyName+"RightAngle",rightAngle);
+  Control.addVariable(keyName+"EndWall",endThick);
   Control.addVariable(keyName+"Left",side);
   Control.addVariable(keyName+"Right",side);
   Control.addVariable(keyName+"Height",height);

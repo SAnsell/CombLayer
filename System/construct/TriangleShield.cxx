@@ -377,7 +377,7 @@ TriangleShield::createObjects(Simulation& System)
     {
       Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
       Out+=ModelSupport::getComposite(SMap,shieldIndex," 1002 " );
-      Out+=BackStr;
+      Out+=backStr;
       System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out+FBStr));
     }
   
