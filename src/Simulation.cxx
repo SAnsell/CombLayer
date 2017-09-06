@@ -61,10 +61,12 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
+#include "pairRange.h"
 #include "Tally.h"
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
+#include "tmeshTally.h"
 #include "sswTally.h"
 #include "tallyFactory.h"
 #include "Transform.h"
@@ -1567,23 +1569,28 @@ Simulation::writeTally(std::ostream& OX) const
   OX<<"c -----------------------------------------------------------"<<std::endl;
   OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
-  std::vector<TallyTYPE::mapped_type> TMeshVec;
+  std::vector<tallySystem::tmeshTally*> TMeshVec;
   for(const TallyTYPE::value_type& TM : TItem)
     {
-      if (TM.second->className()!="TMeshTally")
+      tallySystem::tmeshTally* TMPtr=
+	dynamic_cast<tallySystem::tmeshTally*>(TM.second);
+      if (!TMPtr)
 	TM.second->write(OX);
       else
-	TMeshVec.push_back(TM.second);
+	TMeshVec.push_back(TMPtr);
     }
+  int index(1);
   if (!TMeshVec.empty())
     {
       OX<<"tmesh"<<std::endl;
-      for(const TallyTYPE::mapped_type& TM : TMeshVec)
-	TM->write(OX);
+      for(tallySystem::tmeshTally* TMPtr : TMeshVec)
+	{
+	  if (TMPtr->hasActiveMSHMF())
+	    {
+	      TMPtr->setActiveMSHMF(index++);
+	      TMPtr->write(OX);
+	    }
+	}
       OX<<"endmd"<<std::endl;
     }
   

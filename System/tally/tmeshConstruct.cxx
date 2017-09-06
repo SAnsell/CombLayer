@@ -137,15 +137,15 @@ tmeshConstruct::rectangleMesh(Simulation& System,const int type,
   MT.setCoordinates(APt,BPt);
   MT.setIndex(MPts);
   MT.setActive(1);
+  MT.setKeyWords("");
+      
   if (KeyWords=="DOSE")
     {
-      MT.setKeyWords("DOSE 1");
       MT.setResponse(getDoseConversion());
     }
   else if (KeyWords=="DOSEPHOTON")
     {
       MT.setParticles("p");
-      MT.setKeyWords("DOSE 1");
       MT.setResponse(getPhotonDoseConversion());
     }
   else if (KeyWords=="InternalDOSE")
@@ -153,17 +153,17 @@ tmeshConstruct::rectangleMesh(Simulation& System,const int type,
       MT.setKeyWords("DOSE");
       MT.setIndexLine("40 1 2 1e6");
     }
-  else if (KeyWords=="void" || KeyWords=="VOID")
-    {
-      MT.setKeyWords("");
-    }
+  else if (KeyWords=="void" || KeyWords=="VOID" ||
+	   KeyWords=="flux" || KeyWords=="FLUX")
+    { }
   else 
     {
       ELog::EM<<"TMesh keyword options:\n"
 	      <<"  DOSE :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
 	      <<"  DOSEPHOTON :: ICRP-116 Flux to Dose conversion (uSv/hour per n/cm2/sec)\n"
 	      <<"  InternalDOSE :: MCNPX Flux to Dose conversion (mrem/hour)\n"
-	      <<"  void ::  Flux \n"
+	      <<"  void  ::  flux \n"
+	      <<"  flux  ::  flux \n"
 	      <<ELog::endDiag;
       ELog::EM<<"Using unknown keyword :"<<KeyWords<<ELog::endErr;
     }
