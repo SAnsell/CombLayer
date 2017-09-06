@@ -156,7 +156,7 @@ VESPA::VESPA(const std::string& keyName) :
   PitBPortB(new constructSystem::HoleShape(newName+"PitBPortB")),
   
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOCBladeB")),
-  ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
+  ShieldB(new constructSystem::TriangleShield(newName+"ShieldB")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
   
@@ -208,35 +208,34 @@ VESPA::VESPA(const std::string& keyName) :
 
   OR.addObject(ChopperD);
   OR.addObject(FOCDiskA);
-  
+
   OR.addObject(VPipeF);
   OR.addObject(FocusF);
   
   OR.addObject(BInsert);
+  OR.addObject(VPipeWall);
   OR.addObject(FocusWall);
   
   OR.addObject(OutPitT0);
   OR.addObject(ChopperT0);
   OR.addObject(T0Disk);
   OR.addObject(T0ExitPort);
-  
+
+  OR.addObject(OutPitA);
   OR.addObject(ShieldA);
   OR.addObject(VPipeOutA);
   OR.addObject(FocusOutA);
 
-  OR.addObject(OutPitA);
   OR.addObject(ChopperOutA);
-  
-  OR.addObject(FOCDiskB);
-
-  OR.addObject(ShieldB);
-  OR.addObject(VPipeOutB);
-  OR.addObject(FocusOutB);
-
   OR.addObject(OutPitB);
   OR.addObject(PitBPortA);
   OR.addObject(PitBPortB);
   
+  OR.addObject(FOCDiskB);
+  OR.addObject(ShieldB);
+  OR.addObject(VPipeOutB);
+  OR.addObject(FocusOutB);
+
   for(size_t i=0;i<4;i++)
     {
       typedef std::shared_ptr<constructSystem::LineShield> STYPE;
@@ -259,6 +258,11 @@ VESPA::VESPA(const std::string& keyName) :
   
   OR.addObject(ChopperOutB);
   OR.addObject(FOCDiskOutB);
+
+  OR.addObject(ShieldC);
+  OR.addObject(VPipeOutC);
+  OR.addObject(FocusOutC);
+  
   OR.addObject(Cave);
   OR.addObject(VJaws);
   OR.addObject(Sample);
@@ -728,6 +732,7 @@ VESPA::build(Simulation& System,
   
   if (stopPoint==3) return;                      // STOP At bunker exit
   buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
+
 
   if (stopPoint==4) return;                      // STOP At hutch
   buildHut(System,ChopperOutB->getKey("Beam"),2,voidCell);

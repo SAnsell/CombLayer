@@ -97,8 +97,6 @@ class ShieldGenerator
 
   void setRFLayers(const size_t,const size_t);
 
-	       
-	       
   void generateShield(FuncDataBase&,const std::string&,
 		      const double,const double,const double,const double,
 		      const size_t,const size_t)  const;

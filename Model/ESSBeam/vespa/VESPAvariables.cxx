@@ -103,7 +103,7 @@ VESPAvariables(FuncDataBase& Control)
   FGen.setYOffset(2.0);
   FGen.generateTaper(Control,"vespaFA",350.0,3.5,4.0, 3.5,4.0);
 
-  PipeGen.generatePipe(Control,"vespaPipeA",6.0,46.0);
+  PipeGen.generatePipe(Control,"vespaPipeA",6.5,46.0);
 
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
@@ -210,7 +210,9 @@ VESPAvariables(FuncDataBase& Control)
   PGen.setConcLayer(40.0);
   PGen.generatePit(Control,"vespaOutPitA",440.0,25.0,130.0,110.0,40.0);
 
+  SGen.setAngle(10.0,10.0);
   SGen.generateTriShield(Control,"vespaShieldA",350.0,100.0,100.0,100.0,4,9);
+  
 
   PipeGen.setPipe(9.0,0.5);  // R/T
   PipeGen.generatePipe(Control,"vespaPipeOutA",55.0,395.0);  
@@ -245,7 +247,7 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addFloorMat(3,"Concrete");
   SGen.addRoofMat(3,"Concrete");
   SGen.addWallMat(3,"Concrete");
-  SGen.generateShield(Control,"vespaShieldB",770.0,80.0,80.0,80.0,4,8);
+  SGen.generateTriShield(Control,"vespaShieldB",770.0,80.0,80.0,80.0,4,8);
 
   const double slen(595.0);
   for(size_t i=0;i<4;i++)

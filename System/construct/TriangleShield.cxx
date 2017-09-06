@@ -222,15 +222,15 @@ TriangleShield::createSurfaces()
   if (!FrontBackCut::backActive())
     {
       ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
-      setBack(SMap.realSurf(shieldIndex+2));      
+      setBack(-SMap.realSurf(shieldIndex+2));
+      if (endWall>Geometry::zeroTol)
+	ModelSupport::buildPlane(SMap,shieldIndex+1002,
+				 Origin+Y*(length/2.0-endWall),Y);
     }
   //create back cut for wall
   const int BSurf=getBackRule().getPrimarySurface();
   Geometry::Surface* SPtr=SMap.realSurfPtr(BSurf);
   
-  ELog::EM<<"BSurf = "<<BSurf<<ELog::endDiag;
-  ELog::EM<<"BSurfS = "<<*SPtr<<ELog::endDiag;
-
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
   int SI(shieldIndex+10);
@@ -294,11 +294,14 @@ TriangleShield::createObjects(Simulation& System)
   
   const std::string frontStr=frontRule();
   const std::string backStr=backRule();
-
+  const std::string backEndStr=
+    (endWall<Geometry::zeroTol) ? backStr : 
+    ModelSupport::getComposite(SMap,shieldIndex," -1002 " );
+  
   // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
-				   frontStr+backStr));
+				   frontStr+backEndStr));
   addCell("Void",cellIndex-1);
 
   // Loop over all segments:
@@ -312,7 +315,7 @@ TriangleShield::createObjects(Simulation& System)
 	     frontStr);
       FBStr+= ((index+1!=nSeg) ?
 	       ModelSupport::getComposite(SMap,SI," -12 ") :
-	       backStr);
+	       backEndStr);
       SI+=10; 
 
       // Inner is a single component
@@ -369,6 +372,15 @@ TriangleShield::createObjects(Simulation& System)
 	  RI+=10;
 	}
     }
+
+  if (Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
+      Out+=ModelSupport::getComposite(SMap,shieldIndex," 1002 " );
+      Out+=BackStr;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out+FBStr));
+    }
+  
   // Outer
   Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
   addOuterSurf(Out+frontStr+backStr);
