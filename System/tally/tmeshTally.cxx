@@ -302,6 +302,7 @@ tmeshTally::write(std::ostream& OX) const
   */
 {
   masterWrite& MW=masterWrite::Instance();
+  ELog::EM<<"ASDFASDF:"<<isActive()<<ELog::endDiag;
   if (isActive())
     {
       const char typeLetter[]="rcs";

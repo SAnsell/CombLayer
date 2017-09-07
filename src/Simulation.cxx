@@ -1586,10 +1586,8 @@ Simulation::writeTally(std::ostream& OX) const
       for(tallySystem::tmeshTally* TMPtr : TMeshVec)
 	{
 	  if (TMPtr->hasActiveMSHMF())
-	    {
-	      TMPtr->setActiveMSHMF(index++);
-	      TMPtr->write(OX);
-	    }
+	    TMPtr->setActiveMSHMF(index++);
+	  TMPtr->write(OX);
 	}
       OX<<"endmd"<<std::endl;
     }
