@@ -58,8 +58,8 @@ namespace tallySystem
 {
 
 tmeshTally::tmeshTally(const int ID) :
-  Tally(ID),typeID(1),keyWords("flux"),
-  requireRotation(0)
+  Tally(ID),typeID(1),keyWords(""),
+  activeMSHMF(0),requireRotation(0)
   /*!
     Constructor
     \param ID :: Identity number of tally
@@ -69,7 +69,8 @@ tmeshTally::tmeshTally(const int ID) :
 tmeshTally::tmeshTally(const tmeshTally& A) : 
   Tally(A),
   typeID(A.typeID),keyWords(A.keyWords),kIndex(A.kIndex),
-  mshmf(A.mshmf),requireRotation(A.requireRotation),
+  activeMSHMF(A.activeMSHMF),mshmf(A.mshmf),
+  requireRotation(A.requireRotation),
   Pts(A.Pts),minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
@@ -91,6 +92,7 @@ tmeshTally::operator=(const tmeshTally& A)
       typeID=A.typeID;
       keyWords=A.keyWords;
       kIndex=A.kIndex;
+      activeMSHMF=A.activeMSHMF;
       mshmf=A.mshmf;
       requireRotation=A.requireRotation;
       Pts=A.Pts;
@@ -179,7 +181,7 @@ tmeshTally::setIndex(const std::array<size_t,3>& IDX)
 
 void
 tmeshTally::setCoordinates(const Geometry::Vec3D& A,
-			  const Geometry::Vec3D& B)
+			   const Geometry::Vec3D& B)
   /*!
     Sets the min/max coordinates
     \param A :: First coordinate
@@ -203,8 +205,9 @@ tmeshTally::setResponse(const std::string& Line)
   if (mshmf.processString(Line))
     {
       ELog::EM<<"Failed to set response line :"<<ELog::endCrit;
-      ELog::EM<<Line<<ELog::endErr;
+      throw ColErr::InvalidLine("mshmf reponse: ",Line,0);
     }
+  activeMSHMF=1;
   return;
 }
 
@@ -296,23 +299,28 @@ tmeshTally::write(std::ostream& OX) const
   /*!
     Write out the mesh tally into the tally region
     \param OX :: Output stream
-   */
+  */
 {
   masterWrite& MW=masterWrite::Instance();
+  ELog::EM<<"ASDFASDF:"<<isActive()<<ELog::endDiag;
   if (isActive())
     {
       const char typeLetter[]="rcs";
-      OX<<"tmesh"<<std::endl;
 
       std::ostringstream cx;
       
       cx<<typeLetter[typeID-1]<<"mesh"<<IDnum;
       writeParticles(cx);
-      cx<<keyWords<<" ";
-      std::vector<double>::const_iterator vc;
-      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
-	cx<<MW.Num(*vc)<<" ";
-      
+      if (!activeMSHMF)
+	{
+	  // THIS IS JUNK as maybe two keywords and two value sets
+	  cx<<keyWords<<" ";
+	  for(const double V : kIndex)
+	    cx<<MW.Num(V)<<" ";
+	}
+      else
+	cx<<"DOSE "<<activeMSHMF;
+
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
 	{
@@ -323,11 +331,10 @@ tmeshTally::write(std::ostream& OX) const
       if (!mshmf.empty())
 	{
 	  cx.str("");
-	  cx<<"mshmf"<<IDnum<<" "<<mshmf;
+	  cx<<"mshmf"<<activeMSHMF<<" "<<mshmf;
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}
       writeCoordinates(OX);
-      OX<<"endmd"<<std::endl;
     }
   return;
 }

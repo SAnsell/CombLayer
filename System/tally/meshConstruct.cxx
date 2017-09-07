@@ -339,6 +339,7 @@ meshConstruct::processMesh(Simulation& System,
     rectangleMesh(System,3,"void",APt,BPt,Nxyz);
   else if (PType=="free" || PType=="flux" ||
 	   PType=="object")
+    
     rectangleMesh(System,1,doseType,APt,BPt,Nxyz);
   else
     throw ColErr::InContainerError<std::string>

@@ -451,14 +451,12 @@ Object::setObject(const int N,const int matNum,
   return 0;
 }
 
-int 
+void
 Object::populate()
   /*! 
      Goes through the cell objects and adds the pointers
      to the SurfPoint keys (using their keyN).
      Addition ot remove NullSurface
-     \retval 1000+ keyNumber :: Error with keyNumber
-     \retval 0 :: successfully populated all the whole OSbject.
   */
 {
   ELog::RegMethod RegA("Object","populate");
@@ -468,7 +466,23 @@ Object::populate()
       HRule.populateSurf();
       populated=1;
     }
-  return 0;
+  return;
+}
+
+void
+Object::rePopulate()
+  /*! 
+     Goes through the cell objects and adds the pointers
+     to the SurfPoint keys (using their keyN).
+     Addition ot remove NullSurface
+     \retval 1000+ keyNumber :: Error with keyNumber
+     \retval 0 :: successfully populated all the whole OSbject.
+  */
+{
+  ELog::RegMethod RegA("Object","rePopulate");
+  HRule.populateSurf();
+  populated=1;
+  return;
 }
 
 int

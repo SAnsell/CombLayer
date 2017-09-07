@@ -154,7 +154,20 @@ TriangleShield::populate(const FuncDataBase& Control)
   right=Control.EvalVar<double>(keyName+"Right");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
-  endWall=Control.EvalDefVar<double>(keyName+"EndWall",0.0);
+  if (!FrontBackCut::backActive())
+    {
+      endWall=Control.EvalDefVar<double>(keyName+"EndWall",0.0);
+      endVoid=Control.EvalDefVar<double>(keyName+"EndVoid",0.0);
+      if (endWall>Geometry::zeroTol)
+	{
+	  nEndLayers=Control.EvalDefVar<size_t>(keyName+"NEndLayers",0);
+	  ModelSupport::populateDivide(Control,nRoofLayers,keyName+"EndMat",
+				       defMat,endMat);
+	  ModelSupport::populateDivideLen(Control,nRoofLayers,keyName+"EndLen",
+					  endWall,endFrac);
+	  endFrac.push_back(1.0);
+	}
+    }
   
   defMat=ModelSupport::EvalDefMat<int>(Control,keyName+"DefMat",0);
 
@@ -222,15 +235,20 @@ TriangleShield::createSurfaces()
   if (!FrontBackCut::backActive())
     {
       ModelSupport::buildPlane(SMap,shieldIndex+2,Origin+Y*(length/2.0),Y);
-      setBack(SMap.realSurf(shieldIndex+2));      
+      setBack(-SMap.realSurf(shieldIndex+2));
+      if (endWall>Geometry::zeroTol)
+	{
+	  ModelSupport::buildPlane(SMap,shieldIndex+1002,
+				   Origin+Y*(length/2.0-endWall),Y);
+	  if (endVoid>Geometry::zeroTol)
+	    ModelSupport::buildCylinder(SMap,shieldIndex+1007,
+					Origin,Y,endVoid);
+	}
+	    
     }
   //create back cut for wall
-  const int BSurf=getBackRule().getPrimarySurface();
-  Geometry::Surface* SPtr=SMap.realSurfPtr(BSurf);
+  //  const int BSurf=getBackRule().getPrimarySurface();
   
-  ELog::EM<<"BSurf = "<<BSurf<<ELog::endDiag;
-  ELog::EM<<"BSurfS = "<<*SPtr<<ELog::endDiag;
-
   const double segStep(length/static_cast<double>(nSeg));
   double segLen(-length/2.0);
   int SI(shieldIndex+10);
@@ -241,7 +259,9 @@ TriangleShield::createSurfaces()
       SI+=10;
     }
 
-  ELog::EM<<"Left/RIGHT "<<leftAngle<<" "<<rightAngle<<ELog::endDiag;
+  ELog::EM<<"Left/RIGHT "<<leftAngle<<" "<<rightAngle<<" EW="
+	  <<endWall<<ELog::endDiag;
+
   // wall rotation
   const Geometry::Quaternion QLeft=
     Geometry::Quaternion::calcQRotDeg(leftAngle,Z);
@@ -255,7 +275,7 @@ TriangleShield::createSurfaces()
   const Geometry::Vec3D RotOrigin=Origin-Y*(length/2.0);
   int WI(shieldIndex);
   for(size_t i=0;i<nWallLayers;i++)
-    {
+    { 
       ModelSupport::buildPlane(SMap,WI+3,
 			       RotOrigin-XL*(left*wallFrac[i]),XL);
       ModelSupport::buildPlane(SMap,WI+4,
@@ -294,11 +314,14 @@ TriangleShield::createObjects(Simulation& System)
   
   const std::string frontStr=frontRule();
   const std::string backStr=backRule();
-
+  const std::string backEndStr=(endWall>Geometry::zeroTol) ?
+    ModelSupport::getComposite(SMap,shieldIndex," -1002 " ) :
+    backStr;
+  
   // Inner void is a single segment
   Out=ModelSupport::getComposite(SMap,shieldIndex," 3 -4 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+
-				   frontStr+backStr));
+				   frontStr+backEndStr));
   addCell("Void",cellIndex-1);
 
   // Loop over all segments:
@@ -312,7 +335,7 @@ TriangleShield::createObjects(Simulation& System)
 	     frontStr);
       FBStr+= ((index+1!=nSeg) ?
 	       ModelSupport::getComposite(SMap,SI," -12 ") :
-	       backStr);
+	       backEndStr);
       SI+=10; 
 
       // Inner is a single component
@@ -369,6 +392,22 @@ TriangleShield::createObjects(Simulation& System)
 	  RI+=10;
 	}
     }
+
+  if (endWall>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
+      Out+=ModelSupport::getSetComposite(SMap,shieldIndex," 1002 1007 " );
+      Out+=backStr;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
+      if (endVoid>Geometry::zeroTol)
+	{
+	  Out=ModelSupport::getComposite(SMap,shieldIndex," 1002 -1007 " );
+	  Out+=backStr;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+	  addCell("Void",cellIndex-1);	  
+	}
+    }
+  
   // Outer
   Out=ModelSupport::getComposite(SMap,WI,FI,RI," 3 -4 5M -6N ");
   addOuterSurf(Out+frontStr+backStr);

@@ -39,6 +39,8 @@ class tmeshTally : public Tally
   int typeID;                    ///< type of tally [1/2/3]
   std::string keyWords;          ///< KeyWord list
   std::vector<double> kIndex;    ///< KeyIndex values
+
+  int activeMSHMF;               ///< Flag for active mshmf
   pairRange mshmf;               ///< Mesh MF card
 
   int requireRotation;           ///< rotation to the mesh
@@ -54,7 +56,10 @@ class tmeshTally : public Tally
   virtual tmeshTally* clone() const; 
   tmeshTally& operator=(const tmeshTally&);
   virtual ~tmeshTally();
-  
+
+  virtual std::string className() const
+    { return "TMeshTally"; }
+
   void setType(const int);
   void setKeyWords(const std::string&);
   void setIndexLine(std::string);
@@ -71,6 +76,8 @@ class tmeshTally : public Tally
   const Geometry::Vec3D& getMaxPt() const { return maxCoord; }
   /// access min/max point
   const std::array<size_t,3>& getNPt() const { return Pts; }
+  int hasActiveMSHMF() { return activeMSHMF; }
+  void setActiveMSHMF(const int A) { activeMSHMF=A; }
  
   virtual void rotateMaster();
   int addLine(const std::string&);

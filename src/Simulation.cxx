@@ -61,10 +61,12 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
+#include "pairRange.h"
 #include "Tally.h"
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
+#include "tmeshTally.h"
 #include "sswTally.h"
 #include "tallyFactory.h"
 #include "Transform.h"
@@ -1238,6 +1240,32 @@ Simulation::calcAllVertex()
 }
 
 void
+Simulation::updateSurface(const int SN,const std::string& SLine)
+  /*!
+    Update a surface that has already been assigned:
+    \param SN :: Surface number
+    \param SLine :: Surface string
+   */
+{
+  ELog::RegMethod RegA("Simulation","updateSurface");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  if (SurI.getSurf(SN))
+    SurI.deleteSurface(SN);
+  SurI.createSurface(SN,0,SLine);
+  //
+  OTYPE::iterator oc;
+  for(oc=OList.begin();oc!=OList.end();oc++)
+    {
+      if (oc->second->hasSurface(SN))
+	{
+	  oc->second->rePopulate();
+	}
+    }
+  return;
+}
+
+void
 Simulation::addObjSurfMap(MonteCarlo::Qhull* QPtr)
   /*! 
     Add an object surface mappings.
@@ -1541,13 +1569,29 @@ Simulation::writeTally(std::ostream& OX) const
   OX<<"c -----------------------------------------------------------"<<std::endl;
   OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
+  std::vector<tallySystem::tmeshTally*> TMeshVec;
   for(const TallyTYPE::value_type& TM : TItem)
-    TM.second->write(OX);
-
+    {
+      tallySystem::tmeshTally* TMPtr=
+	dynamic_cast<tallySystem::tmeshTally*>(TM.second);
+      if (!TMPtr)
+	TM.second->write(OX);
+      else
+	TMeshVec.push_back(TMPtr);
+    }
+  int index(1);
+  if (!TMeshVec.empty())
+    {
+      OX<<"tmesh"<<std::endl;
+      for(tallySystem::tmeshTally* TMPtr : TMeshVec)
+	{
+	  if (TMPtr->hasActiveMSHMF())
+	    TMPtr->setActiveMSHMF(index++);
+	  TMPtr->write(OX);
+	}
+      OX<<"endmd"<<std::endl;
+    }
+  
   return;
 }
 
@@ -1984,7 +2028,7 @@ Simulation::getCellWithMaterial(const int matN) const
 }
 
 std::vector<int>
-Simulation::getCellWithZaid(const int zaidNum) const
+Simulation::getCellWithZaid(const size_t zaidNum) const
   /*!
     Ugly function to return the current
     vector of cells with a particular zaid type

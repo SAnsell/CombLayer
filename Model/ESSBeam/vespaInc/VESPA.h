@@ -143,8 +143,6 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> T0ExitPort;
-
-
   
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
@@ -169,14 +167,14 @@ class VESPA : public attachSystem::CopiedComp
   /// Double disk chopper [Frame overlap chopper]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
   /// Shield out of PitA
-  std::shared_ptr<constructSystem::LineShield> ShieldB;
+  std::shared_ptr<constructSystem::TriangleShield> ShieldB;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Tapered guide out of PitA
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
 
   /// Shield from PitA to PitC
-  std::vector<std::shared_ptr<constructSystem::LineShield>> ShieldArray;
+  std::vector<std::shared_ptr<constructSystem::TriangleShield>> ShieldArray;
   /// Vac pipe out of PitB to PitC
   std::vector<std::shared_ptr<constructSystem::VacuumPipe>> VPipeArray;
   /// Segment from PitB to Pit C
