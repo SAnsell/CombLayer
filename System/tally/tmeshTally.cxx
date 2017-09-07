@@ -319,7 +319,7 @@ tmeshTally::write(std::ostream& OX) const
 	}
       else
 	cx<<"DOSE "<<activeMSHMF;
-      ELog::EM<<"Active == "<<activeMSHMF<<ELog::endDiag;
+
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
 	{

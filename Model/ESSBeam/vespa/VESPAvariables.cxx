@@ -93,10 +93,9 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
   SGen.addFloor(1,20.0,"CastIron");
-  SGen.addFloorMat(4,"Concrete");
-  SGen.addRoofMat(4,"Concrete");
-  SGen.addWallMat(4,"Concrete");
-  //  SGen.setAngle(10.0,10.0);
+  SGen.addFloorMat(3,"Concrete");
+  SGen.addRoofMat(3,"Concrete");
+  SGen.addWallMat(3,"Concrete");
   
   FGen.setLayer(1,0.5,"Copper");
   FGen.setLayer(2,0.5,"Void");  
@@ -210,10 +209,10 @@ VESPAvariables(FuncDataBase& Control)
   PGen.setConcLayer(40.0);
   PGen.generatePit(Control,"vespaOutPitA",440.0,25.0,130.0,110.0,40.0);
 
-  SGen.setAngle(10.0,10.0);
-  SGen.generateTriShield(Control,"vespaShieldA",350.0,100.0,100.0,100.0,4,9);
+  SGen.setAngle(3.0,3.0);
+  SGen.setEndWall(20.0,20.0);
+  SGen.generateTriShield(Control,"vespaShieldA",350.0,80.0,80.0,80.0,1,9);
   
-
   PipeGen.setPipe(9.0,0.5);  // R/T
   PipeGen.generatePipe(Control,"vespaPipeOutA",55.0,395.0);  
 
@@ -247,7 +246,7 @@ VESPAvariables(FuncDataBase& Control)
   SGen.addFloorMat(3,"Concrete");
   SGen.addRoofMat(3,"Concrete");
   SGen.addWallMat(3,"Concrete");
-  SGen.generateTriShield(Control,"vespaShieldB",770.0,80.0,80.0,80.0,4,8);
+  SGen.generateTriShield(Control,"vespaShieldB",770.0,60.0,60.0,60.0,1,8);
 
   const double slen(595.0);
   for(size_t i=0;i<4;i++)
@@ -259,7 +258,7 @@ VESPAvariables(FuncDataBase& Control)
       const std::string
         focusName("vespaFocusArray"+StrFunc::makeString(i));
 
-      SGen.generateShield(Control,shieldName,slen,40.0,40.0,40.0,4,8);
+      SGen.generateTriShield(Control,shieldName,slen,40.0,40.0,40.0,1,8);
       PipeGen.generatePipe(Control,vacName,2.0,slen-2.0);  //
       FGen.clearYOffset();
       FGen.generateRectangle(Control,focusName,slen-6.0,8.0,8.0);
@@ -282,7 +281,7 @@ VESPAvariables(FuncDataBase& Control)
   BGen.addPhase({30.0},{320.0});
   BGen.generateBlades(Control,"vespaFOCBladeOutB",0.0,25.0,35.5);
 
-  SGen.generateShield(Control,"vespaShieldC",200.0,40.0,40.0,40.0,4,8);  
+  SGen.generateShield(Control,"vespaShieldC",200.0,40.0,40.0,40.0,1,8);  
 
   PipeGen.generatePipe(Control,"vespaPipeOutC",26.0,225.0);  //
   Control.addVariable("vespaPipeOutCRadius",9.0);
@@ -352,11 +351,20 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaDBoxWallMat","Aluminium");
   Control.addVariable("vespaDBoxDetMat","He3_10Bar");
 
+  Control.addVariable("vespaXStal5Active",0);
   Control.addVariable("vespaXStal6Active",0);
+  Control.addVariable("vespaXStal7Active",0);
+  Control.addVariable("vespaXStal21Active",0);
   Control.addVariable("vespaXStal22Active",0);
+  Control.addVariable("vespaXStal23Active",0);
 
+  Control.addVariable("vespaDBox5Active",0);
   Control.addVariable("vespaDBox6Active",0);
+  Control.addVariable("vespaDBox7Active",0);
+
+  Control.addVariable("vespaDBox21Active",0);
   Control.addVariable("vespaDBox22Active",0);
+  Control.addVariable("vespaDBox23Active",0);
 
   
   const double braggAngle[]={-50,-30,-50,-30};

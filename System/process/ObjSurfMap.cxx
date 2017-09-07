@@ -3,7 +3,7 @@
  
  * File:   process/ObjSurfMap.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -293,7 +293,7 @@ ObjSurfMap::findNextObject(const int SN,
 
   for(mc=MVec.begin();mc!=MVec.end();mc++)
     ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
-  ELog::EM<<"Quit == "<<ELog::endErr;
+
   return 0;
 }
 

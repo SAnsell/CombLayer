@@ -174,7 +174,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
 
   /// Shield from PitA to PitC
-  std::vector<std::shared_ptr<constructSystem::LineShield>> ShieldArray;
+  std::vector<std::shared_ptr<constructSystem::TriangleShield>> ShieldArray;
   /// Vac pipe out of PitB to PitC
   std::vector<std::shared_ptr<constructSystem::VacuumPipe>> VPipeArray;
   /// Segment from PitB to Pit C

@@ -47,6 +47,7 @@ class ShieldGenerator
   double leftAngle;             ///< Left wall angle 
   double rightAngle;            ///< Right wall angle
   double endThick;              ///< End wall thick
+  double endRadius;              ///< End wall thick
   
   size_t nWall;                 ///< number of wall layers
   size_t nRoof;                 ///< number of roof layers
@@ -82,7 +83,7 @@ class ShieldGenerator
   ~ShieldGenerator();  
 
   void setAngle(const double,const double);
-  void setEndWall(const double);
+  void setEndWall(const double,const double);
     
   void clearLayers();
   void addFloor(const size_t,const double,const std::string&);
