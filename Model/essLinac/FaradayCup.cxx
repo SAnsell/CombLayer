@@ -89,7 +89,7 @@ namespace essSystem
 
 FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key,6),
+  attachSystem::FixedOffset(Base+Key,7),
   attachSystem::CellMap(),
   baseName(Base),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -436,9 +436,11 @@ FaradayCup::createObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,SI,SI-10,
 					 " 1 -2M 3 -4 5 -6 (-3M:4M:-5M:6M)");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[i],0.0,Out));
+	  setCell("LateralShield" + std::to_string(i),cellIndex-1);
 
 	  Out=ModelSupport::getComposite(SMap,SI,SI-10," 2M -2 3 -4 5 -6 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,shieldMat[i],0.0,Out));
+	  setCell("ForwardShield" + std::to_string(i),cellIndex-1);
 	}
       SI += 10;
     }
@@ -484,6 +486,12 @@ FaradayCup::createLinks()
 
       FixedComp::setConnect(5,Origin+Z*(shieldHeight[n]),Z);
       FixedComp::setLinkSurf(5,SMap.realSurf(SI+6));
+
+      // for layerProccess
+      FixedComp::setConnect(6,Origin+Y*(shieldForwardLength[n-1]),Y);
+      FixedComp::setLinkSurf(6,SMap.realSurf(SI-10+2));
+
+      ELog::EM << getLinkPt(6) << " " << getLinkSurf(6) << ELog::endDiag;
     } else
     {
       FixedComp::setConnect(0,Origin,-Y);
@@ -534,6 +542,9 @@ FaradayCup::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);
+
+  const size_t j=nShieldLayers-1;
+  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
 
   return;
 }
