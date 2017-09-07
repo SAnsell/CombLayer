@@ -7,5 +7,5 @@
     --weightPlane  'Vec3D(1600,0,0)' 'Vec3D(1,1,0)' \
     --weightObject BBunkerWallMainWall1 TP1 1.0 0.15 1e-20 \
     --weightObject LinacTSW2            SS0 0.0 1.0  0.9   1.0 2.0 \
-    -T mesh free DOSE 'Vec3D(1465,-600,10)' 'Vec3D(3660,360,20)' 30 60 50 \
+    -T tmesh free DOSE 'Vec3D(1465,-600,10)' 'Vec3D(3660,360,20)' 30 60 50 \
     --voidUnMask TA
