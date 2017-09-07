@@ -218,11 +218,11 @@ ess -r -w -wWWG \
  --weightPlane 'Vec3D(1500.0, 0.0, 14.0)' 'Vec3D(-1, 0, 0)' \
  --wwgCalc SS0 1.0 \
  --wwgCalc TP0 -2 1 2 -4\
- --wwgCADIS 'Vec3D(1000.0, 0.0, 14.0)' \
+ --wwgCADIS SS1 \
  --wwgXMesh 1000 40 1600 \
  --wwgYMesh -50 10 50 \
  --wwgZMesh -100 20 100 \
- --wwgE 1.0 \
+ --weightEnergyType 1.0 \
  --wwgVTK testWWG.vtk \
    a
 \end{bash}
@@ -233,8 +233,9 @@ ess -r -w -wWWG \
 \item[--weightSource] defines a (source or adjoint) {\em single point} in space. It's possible to define as many as necessary, and not all of them should be used.
   Here we defined two point sources.
 \item[--wwg{[XYZ]}Mesh] defines a mesh (if we need it). Format: min nbins max.
-\item[--wwgE] defines energy grid with MCNP notation (below \SI{1}{\mega\electronvolt}). There is no variance reduction above last energy bin.
-  It is also possible to use the {\tt --weightEnergyType} argument as shown in \secref{sec:vr:cadis:cell}.
+\item[--weightEnergyType] energy + list of values; just list of values; high|low|mid\todo{describe} \
+%\item[--wwgE] defines energy grid with MCNP notation (below \SI{1}{\mega\electronvolt}). There is no variance reduction above last energy bin.
+%  It is also possible to use the {\tt --weightEnergyType} argument as shown in \secref{sec:vr:cadis:cell}.
 \item[--wwgVTK] optionally you can output the mesh file into a VTK file for plotting.
 \item[--wwgCalc] define source and adjoint points. We must define at least one source and {\em at least} one adjoint point.
   Syntax:
@@ -313,14 +314,35 @@ Cell-based variance reduction is the old method implemented in CombLayer.
 \lstinputlisting[language=bash,numbers=none,backgroundcolor=\color{yellow!20},frame=tb]{UserGuide/cell-biasing.sh}
 
 \begin{description}
-\item[-C] defines energy cut
+%\item[-C] defines energy cut
+\item[-w] should precede all weight-related arguments. 
 \item[--weightEnergyType] defines energy grid. With the {\tt wwg} card you can either use this expression or {\tt --wwgE}.
-  If use use the word ``energy'' then the format is energy (0.1), default weight for that bin (0.95). If you drop the word ``energy'' then you just set the energy grid.
-  In the given example for energies below \SI{0.1}{\mega\electronvolt} the default weight is 0.95 etc.
-\item[--weightPlane] Here we can set two planes
-\item[--weightObject] {\tt BBunkerWallMainWall1}: object we are interested in calculating; {\tt TP1}: tally plane 1;
-  \mbox{\tt 1.0 0.15 1e-20}: energy above \SI{1}{\mega\electronvolt} (below it we are not interested~--- use default values);
-  {\tt 0.15}: density factor; {\tt 1e-20}: minimum \alert{???} % 41:12
+  If use use the word ``energy'' then the format is energy (below \SI{0.1}{\mega\electronvolt}) followed by default weight for that bin (0.95) etc.
+  If you drop the word ``energy'' then you just set the energy grid.
+  In the given example for energies below  the default weight is 0.95 etc.
+  Alternatively you can use pre-defined keywords:
+  {\tt basic}, {\tt high}, {\tt mid} and {\tt flat}\footnote{Energy-weight binning for these keywords are defined in System/weights/WeightControl.cxx}.
+\item[--weightSource] This argument defines points in space. We can define as many as we want, but only those used with {\tt weightObject} will be used.
+\item[--weightPlane] This argument defines planes. We can define as many as we want, but only those used with {\tt weightObject} will be used.
+\item[--weightObject] {\tt BBunkerWallMainWall1 TP1 1.0 0.15 1e-20 }: object we are interested in calculating; {\tt TP1}: tally plane 1;
+  \mbox{\tt 1.0 1.0 0.15 1e-20}: energy above \SI{1}{\mega\electronvolt} (below it we are not interested~--- use default values);
+  {\tt 1.0}: scale factor; 
+  {\tt 0.15}: density factor; {\tt 1e-20}: minimum weight % 41:12
+\item[--voidUnMask] By default (without this argument) the importance of the surrounding void cell is zero. This argument sets it to one.
+  It can be useful if we believe that particles travelling through the void cell can contribute into the tally.
+
+\item[--weightObject] 
+$\underset{
+  \begin{tikzpicture}
+    \node[below left] at (-1,0) {object we calculate};  \draw[->](-1.0, -0.3) to[bend right=20] ++(0.3,2ex);
+    \node[below left] at (0,-0.5) {tally plane 1};      \draw[->](-0.5, -0.5) to[bend right=20] ++(0.3,3ex);
+    \node[below right] at (1.2,0.0) {\footnotesize{Min energy}};      \draw[->](1.2, -0.3) to[bend left=20] ++(-0.3,3ex);
+    \node[below right] at (1.2,-0.3) {\footnotesize{(below it we are not interested~---}};
+    \node[below right] at (1.2,-0.6) {\footnotesize{use default values)}};
+  \end{tikzpicture}
+}{\text{BBunkerWallMainWall1 TP1 1.0 0.15 1e-20}}$
+
+
 
 \end{description}
 
