@@ -36,7 +36,8 @@ namespace essSystem
 */
 
 class FaradayCup : public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
 
@@ -72,6 +73,9 @@ class FaradayCup : public attachSystem::ContainedComp,
   std::vector<double> shieldForwardLength; ///< shield length
   std::vector<double> shieldBackLength; ///< shield length towards the proton beam origin
   std::vector<int>    shieldMat; ///< shielding material
+
+  void layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS, const size_t&, const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

@@ -80,6 +80,7 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
+#include "CellMap.h"
 
 #include "FaradayCup.h"
 
@@ -89,6 +90,7 @@ namespace essSystem
 FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(Base+Key,6),
+  attachSystem::CellMap(),
   baseName(Base),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(surfIndex+1)
@@ -101,6 +103,7 @@ FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
 FaradayCup::FaradayCup(const FaradayCup& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::CellMap(),
   baseName(A.baseName),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   active(A.active),
@@ -140,6 +143,7 @@ FaradayCup::operator=(const FaradayCup& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       active=A.active;
       engActive=A.engActive;
@@ -182,6 +186,76 @@ FaradayCup::~FaradayCup()
     Destructor
   */
 {}
+
+void
+FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
+		    const size_t& lpS, const size_t& lsS,
+		    const size_t& N, const int& mat)
+  /*!
+    Processes the splitting of the surfaces into a multilayer system
+    \param System :: Simulation to work on
+    \param cellName :: TSW wall cell name
+    \param lpS :: link pont of primary surface
+    \param lsS :: link point of secondary surface
+    \param N :: number of layers to divide to
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("TSW","layerProcess");
+
+    if (N<=1)
+      return;
+
+    const int pS = getLinkSurf(lpS);
+    const int sS = getLinkSurf(lsS);
+
+    const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
+    MonteCarlo::Object* wallObj(0);
+    int wallCell(0);
+
+    if (CM)
+      {
+	wallCell=CM->getCell(cellName);
+	wallObj=System.findQhull(wallCell);
+      }
+
+    if (!wallObj)
+      throw ColErr::InContainerError<int>(wallCell,
+					  "Cell '" + cellName + "' not found");
+
+    double baseFrac = 1.0/N;
+    ModelSupport::surfDivide DA;
+    for(size_t i=1;i<N;i++)
+      {
+	DA.addFrac(baseFrac);
+	DA.addMaterial(mat);
+	baseFrac += 1.0/N;
+      }
+    DA.addMaterial(mat);
+
+    DA.setCellN(wallCell);
+    DA.setOutNum(cellIndex, surfIndex+10000);
+
+    ModelSupport::mergeTemplate<Geometry::Plane,
+				Geometry::Plane> surroundRule;
+
+    surroundRule.setSurfPair(SMap.realSurf(pS),
+			     SMap.realSurf(sS));
+
+    std::string OutA = getLinkString(lpS);
+    std::string OutB = getLinkComplement(lsS);
+
+    surroundRule.setInnerRule(OutA);
+    surroundRule.setOuterRule(OutB);
+
+    DA.addRule(&surroundRule);
+    DA.activeDivideTemplate(System);
+
+    cellIndex=DA.getCellNum();
+
+    return;
+}
+
 
 void
 FaradayCup::populate(const FuncDataBase& Control)
