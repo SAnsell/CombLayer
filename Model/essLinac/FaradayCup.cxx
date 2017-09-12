@@ -543,9 +543,9 @@ FaradayCup::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  //  const size_t j=nShieldLayers-1;
-  //  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
-  //  layerProcess(System, "LateralShield" + std::to_string(j), 7, 5, 20, shieldMat[j]);
+  const size_t j=nShieldLayers-1;
+  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
+  layerProcess(System, "LateralShield" + std::to_string(j), 7, 5, 20, shieldMat[j]);
 
   return;
 }
