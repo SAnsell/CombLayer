@@ -101,18 +101,18 @@ EssLinacVariables(FuncDataBase& Control)
 
   // Temporary shielding walls
   Control.addVariable("LinacNTSW", 3);
-  Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
-  Control.addVariable("LinacTSW0Width", 50.0);
-  Control.addVariable("LinacTSW0XStep", 3890.0);
+  Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-80.0"); // Lali said
+  Control.addVariable("LinacTSW0Width", 70.0);
+  Control.addVariable("LinacTSW0XStep", 3960.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0NLayers", 10); // for biasing
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
-  Control.addVariable("LinacTSW1XStep", 4040.0);
-  Control.addVariable("LinacTSW1Width", 100.0);
+  Control.addVariable("LinacTSW1XStep", 4110.0);
+  Control.addVariable("LinacTSW1Width", 140.0);
   Control.copyVarSet("LinacTSW0", "LinacTSW2");
-  Control.addVariable("LinacTSW2XStep", 4260.0);
+  Control.addVariable("LinacTSW2XStep", 4330.0);
 
   
   // Beam dump
@@ -183,7 +183,7 @@ EssLinacVariables(FuncDataBase& Control)
   
   // Faraday cup
   Control.addVariable("LinacFaradayCupActive", 1.0);
-  Control.addVariable("LinacFaradayCupYStep", 3710.0); // after DTL4
+  Control.addVariable("LinacFaradayCupYStep", 3770.0); // after DTL4
   // Dimensions are based on email from LT 13 Mar 2017 (Fc_design.pdf)
   Control.addVariable("LinacFaradayCupEngineeringActive", 1);
   Control.addVariable("LinacFaradayCupLength", 3.2);
@@ -206,10 +206,10 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldMat3","SkanskaConcrete%Boron%99");
   Control.addVariable("LinacFaradayCupShieldWidthLeft1",10.0);
   Control.addVariable("LinacFaradayCupShieldWidthLeft2",30.0);
-  Control.addVariable("LinacFaradayCupShieldWidthLeft3",100.0);
+  Control.addVariable("LinacFaradayCupShieldWidthLeft3",110.0); // 100+10 to account for LinacFaradayCupShieldWidthLeft1
   Control.addVariable("LinacFaradayCupShieldWidthRight1",10.0);
   Control.addVariable("LinacFaradayCupShieldWidthRight2",30.0);
-  Control.addVariable("LinacFaradayCupShieldWidthRight3",100.0);
+  Control.addVariable("LinacFaradayCupShieldWidthRight3",110.0); // 100+10 to account for LinacFaradayCupShieldWidthRight1
   Control.addVariable("LinacFaradayCupShieldHeight1",10.0);
   Control.addVariable("LinacFaradayCupShieldHeight2",30.0);
   Control.addVariable("LinacFaradayCupShieldHeight3",100.0);
@@ -218,13 +218,13 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldDepth3",120.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength1",10.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength2",30.0);
-  Control.addVariable("LinacFaradayCupShieldForwardLength3",100.0);
+  Control.addVariable("LinacFaradayCupShieldForwardLength3",110.0); // 100+10 to account for air layer thick
   Control.addVariable("LinacFaradayCupShieldBackLength1",100.0);
   Control.addVariable("LinacFaradayCupShieldBackLength2",100.0);
   Control.addVariable("LinacFaradayCupShieldBackLength3",100.0);
 
   // DTL
-  const size_t nDTL = 5;
+  const size_t nDTL = 4;
   Control.addVariable("LinacNDTLTanks", nDTL);
   // DTL lengths are from Google drive / ESS DTL
   // 02 - Mechanical development and prototype construction.pdf
