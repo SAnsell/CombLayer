@@ -103,16 +103,16 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacNTSW", 3);
   Control.addParse<double>("LinacTSW0Length", "LinacWidthLeft+LinacWidthRight-120.0"); // Lali said
   Control.addVariable("LinacTSW0Width", 50.0);
-  Control.addVariable("LinacTSW0XStep", 5300.0);
+  Control.addVariable("LinacTSW0XStep", 3890.0);
   Control.addVariable("LinacTSW0XYAngle", 0.0);
   Control.addVariable("LinacTSW0Mat", "SkanskaConcrete");
   Control.addVariable("LinacTSW0NLayers", 10); // for biasing
 
   Control.copyVarSet("LinacTSW0", "LinacTSW1");
-  Control.addVariable("LinacTSW1XStep", 5470.0);
+  Control.addVariable("LinacTSW1XStep", 4040.0);
   Control.addVariable("LinacTSW1Width", 100.0);
   Control.copyVarSet("LinacTSW0", "LinacTSW2");
-  Control.addVariable("LinacTSW2XStep", 5690.0);
+  Control.addVariable("LinacTSW2XStep", 4260.0);
 
   
   // Beam dump
@@ -183,7 +183,7 @@ EssLinacVariables(FuncDataBase& Control)
   
   // Faraday cup
   Control.addVariable("LinacFaradayCupActive", 1.0);
-  Control.addVariable("LinacFaradayCupYStep", 5120.0); // don't start it in the origin
+  Control.addVariable("LinacFaradayCupYStep", 3710.0); // after DTL4
   // Dimensions are based on email from LT 13 Mar 2017 (Fc_design.pdf)
   Control.addVariable("LinacFaradayCupEngineeringActive", 1);
   Control.addVariable("LinacFaradayCupLength", 3.2);
