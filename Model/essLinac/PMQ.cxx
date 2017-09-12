@@ -351,20 +351,19 @@ PMQ::createLinks()
 
   FixedComp::setConnect(2,Origin+Y*(hl)-Z*radius.back(),-Z);
   FixedComp::setLinkSurf(2,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(2,-SMap.realSurf(surfIndex+5));
-  ELog::EM << "addLinkSurf or addBridgeSurf ?" << ELog::endDiag;
+  FixedComp::addBridgeSurf(2,-SMap.realSurf(surfIndex+5));
 
   FixedComp::setConnect(3,Origin+Y*(hl)+Z*radius.back(),Z);
   FixedComp::setLinkSurf(3,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(3,SMap.realSurf(surfIndex+5));
+  FixedComp::addBridgeSurf(3,SMap.realSurf(surfIndex+5));
 
   FixedComp::setConnect(4,Origin+Y*(hl)-X*radius.back(),-X);
   FixedComp::setLinkSurf(4,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(4,-SMap.realSurf(surfIndex+3));
+  FixedComp::addBridgeSurf(4,-SMap.realSurf(surfIndex+3));
 
   FixedComp::setConnect(5,Origin+Y*(hl)+X*radius.back(),X);
   FixedComp::setLinkSurf(5,SMap.realSurf(SI+7));
-  FixedComp::addLinkSurf(5,SMap.realSurf(surfIndex+3));
+  FixedComp::addBridgeSurf(5,SMap.realSurf(surfIndex+3));
 
   // for (int i=6; i<8; i++)
   //   ELog::EM << keyName << " " << i << "\t" << getLinkSurf(i) << "\t" << getLinkPt(i) << "\t\t" << getLinkAxis(i) << ELog::endDiag;
