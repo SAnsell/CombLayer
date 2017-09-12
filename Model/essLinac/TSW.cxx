@@ -395,8 +395,6 @@ TSW::createAll(Simulation& System,
   createObjects(System,FC,wall1,wall2,floor,roof);
   insertObjects(System);
 
-  ELog::EM << "Origin: " << Origin << ELog::endCrit;
-
   return;
 }
 

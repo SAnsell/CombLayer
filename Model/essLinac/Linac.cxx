@@ -321,11 +321,9 @@ Linac::createDTL(Simulation& System, const long int lp)
       OR.addObject(d);
       if (i==0)
       	{
-      	  ELog::EM << "Why +1?" << ELog::endDiag;
       	  d->createAll(System, *this, lp+1);
       	} else
       	{
-      	  ELog::EM << "Why +1?" << ELog::endDiag;
       	  d->createAll(System, *dtl[i-1],1+1);
       	}
 

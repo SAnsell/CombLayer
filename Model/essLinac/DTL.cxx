@@ -185,11 +185,9 @@ DTL::createPMQ(Simulation& System, const long int lp)
       OR.addObject(p);
       if (i==0)
 	{
-	  ELog::EM << "Why +1?" << ELog::endDiag;
 	  p->createAll(System, *this, lp+1);
 	} else
 	{
-      	  ELog::EM << "Why +1?" << ELog::endDiag;
       	  p->createAll(System, *pmq[i-1],1+1);
 	}
       
