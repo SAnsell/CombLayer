@@ -366,8 +366,8 @@ FaradayCup::createSurfaces()
       ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength[i]),Y);
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(shieldForwardLength[i]),Y);
 
-      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidthRight[i]),X);
-      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(shieldWidthLeft[i]),X);
+      ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidthLeft[i]),X);
+      ModelSupport::buildPlane(SMap,SI+4,Origin+X*(shieldWidthRight[i]),X);
 
       ModelSupport::buildPlane(SMap,SI+5,Origin-Z*(shieldDepth[i]),Z);
       ModelSupport::buildPlane(SMap,SI+6,Origin+Z*(shieldHeight[i]),Z);
@@ -475,10 +475,10 @@ FaradayCup::createLinks()
       FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[n]),Y);
       FixedComp::setLinkSurf(1,SMap.realSurf(SI+2));
 
-      FixedComp::setConnect(2,Origin-X*(shieldWidthRight[n]),-X);
+      FixedComp::setConnect(2,Origin-X*(shieldWidthLeft[n]),-X);
       FixedComp::setLinkSurf(2,-SMap.realSurf(SI+3));
 
-      FixedComp::setConnect(3,Origin+X*(shieldWidthLeft[n]),X);
+      FixedComp::setConnect(3,Origin+X*(shieldWidthRight[n]),X);
       FixedComp::setLinkSurf(3,SMap.realSurf(SI+4));
 
       FixedComp::setConnect(4,Origin-Z*(shieldDepth[n]),-Z);
