@@ -3,7 +3,7 @@
  
  * File:   construct/FlightLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -218,8 +218,8 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 
 void
 FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
-				    const size_t origIndex,
-				    const size_t sideIndex)
+				    const long int origIndex,
+				    const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points towards the beamline
@@ -231,17 +231,10 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FlightLine","createRotatedUnitVector");
-  const Geometry::Vec3D CentPt=
-    (!origIndex) ? FC.getCentre() : FC.getLinkPt(origIndex-1);
+  const Geometry::Vec3D CentPt=FC.getSignedLinkPt(origIndex);
 
-  const attachSystem::LinkUnit& LU=FC.getLU(sideIndex);
-  //  createUnitVector(LU.getConnectPt(),LU.getAxis(),FC.getZ());
-
-  Z= FC.getZ().unit();
-  Y= LU.getAxis().unit();
-  X= Y*Z;
-
-  Origin=FC.getLinkPt(sideIndex);
+  createUnitVector(FC,sideIndex); 
+  
   applyFullRotate(masterXY,masterZ,CentPt);
   applyShift(xStep,0,zStep);
   return;
@@ -249,7 +242,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
 
 void
 FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t origIndex,
+			     const long int origIndex,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
@@ -264,13 +257,9 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("FlightLine","createUnitVector(FC,orig,side)");
   createUnitVector(FC,sideIndex);
 
-  
-  if (!origIndex)
-    Origin=FC.getCentre();
-  else
-    Origin=FC.getLinkPt(origIndex-1);
-
+  Origin=FC.getSignedLinkPt(origIndex);
   applyShift(xStep,0,zStep);
+  
   return;
 }
 
@@ -363,7 +352,7 @@ FlightLine::removeObjects(Simulation& System)
 
 std::string
 FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
-			      const size_t sideIndex)
+			      const long int sideIndex)
   /*!
     Control divider planes if a masterXY / Z rotation has happened.
     \param FC :: FixedComp
@@ -373,21 +362,19 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FlightLine","getRotatedDivider");
+
   static int offset(750);
-  std::string commonRule=FC.getCommonString(sideIndex);
 
-  const std::string primary=FC.getMasterString(sideIndex);
+  const HeadRule primary=FC.getSignedMainRule(sideIndex);
 
-  attachRule=" "+primary+" ";
-  if (fabs(masterXY)<45.0) 
+  attachRule=" "+primary.display()+" ";
+  if (std::abs(masterXY)<45.0) 
     return attachRule;
 
-  HeadRule rotHead;
-  if (!rotHead.procString(commonRule))
-    return attachRule;
+  HeadRule rotHead(FC.getSignedCommonRule(sideIndex));
+  const std::set<int> commonSN(rotHead.getSurfSet());
 
-  int SN;
-  while(StrFunc::section(commonRule,SN))
+  for(const int SN : commonSN)
     {
       const Geometry::Plane* PN=
 	SMap.realPtr<Geometry::Plane>(abs(SN));
@@ -409,13 +396,13 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 	  rotHead.substituteSurf(abs(SN),signV*PXNum,PX);
 	}
     }
-  attachRule=" "+primary+" "+rotHead.display()+" ";
+  attachRule=" "+primary.display()+" "+rotHead.display()+" ";
   return attachRule;
 }
 
 void
 FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
-			      const size_t sideIndex)
+			      const long int sideIndex)
   /*!
     Create the surfaces needed for the capping object
     \param FC :: FixedComp 
@@ -424,7 +411,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FlightLine","createCapSurfaces");
 
-  const HeadRule& MainUnit=FC.getMainRule(sideIndex);
+  const HeadRule& MainUnit=FC.getSignedMainRule(sideIndex);
   const std::vector<int> SurNum(MainUnit.getSurfaceNumbers());
   
   int surfN(501+flightIndex);
@@ -481,7 +468,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 void
 FlightLine::createObjects(Simulation& System,
 			  const attachSystem::FixedComp& FC,
-			  const size_t sideIndex)
+			  const long int sideIndex)
   /*!
     Creates the objects for the flightline
     \param System :: Simulation to create objects in
@@ -495,7 +482,7 @@ FlightLine::createObjects(Simulation& System,
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
-  attachRule+=divider+FC.getMasterString(sideIndex);
+  attachRule+=divider+FC.getSignedMainRule(sideIndex).display();
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
@@ -542,15 +529,13 @@ FlightLine::createObjects(Simulation& System,
 void
 FlightLine::createObjects(Simulation& System,
 			  const attachSystem::FixedComp& FC,
-			  const int surfSign,
-			  const size_t sideIndex,
+			  const long int sideIndex,
 			  const attachSystem::ContainedComp& CC)
   /*!
     Creates the objects for a flightline signed relative to the 
     surface FC and exluding the object give by CC.
     \param System :: Simulation to create objects in
     \param FC :: Surface linked object
-    \param surfSign :: Sign of the surface
     \param sideIndex :: side index
     \param CC :: Inner Object
   */
@@ -561,11 +546,9 @@ FlightLine::createObjects(Simulation& System,
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
-  attachRule+=divider+FC.getMasterString(sideIndex);
+  attachRule+=divider+FC.getSignedMainRule(sideIndex).display();
   // Note this is negative
-  const std::string baseSurf( (surfSign>0) ? 
-			      FC.getMasterString(sideIndex) : 
-			      FC.getMasterComplement(sideIndex) );
+  const std::string baseSurf(FC.getSignedMainRule(sideIndex).display());
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
@@ -679,7 +662,7 @@ FlightLine::getInnerVec(std::vector<int>& ISurf) const
 
 void
 FlightLine::reBoundary(Simulation& System,
-		       const size_t sideIndex,
+		       const long int sideIndex,
 		       const attachSystem::FixedComp& FC)
   /*!
     Reposition a flightline after initial construction
@@ -691,7 +674,6 @@ FlightLine::reBoundary(Simulation& System,
   ELog::RegMethod RegA("FlightLine","reboundary");
 
   removeObjects(System);
-  //  createObjects(System,FC,sideSign,sideIndex,CC);
   createObjects(System,FC,sideIndex);
   insertObjects(System);       
 
@@ -720,14 +702,12 @@ FlightLine::createAll(Simulation& System,
       (0,0,"sideIndex == 0 no long possible"
        " as flightline cannot current track from centre origin");
 
-  const size_t SI=static_cast<size_t>
-    ((sideIndex>0) ? sideIndex-1 : 1-sideIndex);
 
-  createCapSurfaces(FC,SI);
-  FixedComp::setLinkSurf(0,FC,SI);
-  FixedComp::setLinkSurf(6,FC,SI);
+  createCapSurfaces(FC,sideIndex);
+  FixedComp::setLinkSignedCopy(0,FC,sideIndex);
+  FixedComp::setLinkSignedCopy(6,FC,sideIndex);
 
-  createObjects(System,FC,SI);
+  createObjects(System,FC,sideIndex);
   insertObjects(System);       
 
   return;
@@ -735,8 +715,8 @@ FlightLine::createAll(Simulation& System,
 
 void
 FlightLine::createAll(Simulation& System,
-		      const size_t orgIndex,
-		      const size_t sideIndex,
+		      const long int orgIndex,
+		      const long int sideIndex,
 		      const attachSystem::FixedComp& FC)
   /*!
     Global creation of the vac-vessel
@@ -751,8 +731,8 @@ FlightLine::createAll(Simulation& System,
 
   createRotatedUnitVector(FC,orgIndex,sideIndex);
   createSurfaces();
-  FixedComp::setLinkSurf(0,FC,sideIndex);
-  FixedComp::setLinkSurf(6,FC,sideIndex);
+  FixedComp::setLinkSignedCopy(0,FC,sideIndex);
+  FixedComp::setLinkSignedCopy(6,FC,sideIndex);
   createObjects(System,FC,sideIndex);
   insertObjects(System);       
 
@@ -781,13 +761,14 @@ FlightLine::createAll(Simulation& System,
   if (plateIndex==0)
     ELog::EM<<"Plate Index for FlightLine not set "<<ELog::endErr;
 
+  
   const int sideSign=(plateIndex>0) ? 1 : -1;
   const size_t sideIndex=static_cast<size_t>
     ((plateIndex>0) ? plateIndex-1 : 1-plateIndex);
 
   createUnitVector(FC,plateIndex);
   createSurfaces();
-  createObjects(System,FC,sideSign,sideIndex,CC);
+  createObjects(System,FC,sideIndex,CC);
   insertObjects(System);       
 
   return;

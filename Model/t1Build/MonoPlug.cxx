@@ -234,12 +234,11 @@ MonoPlug::createObjects(Simulation& System,
   std::string Out;
 
   // The outside stuff
-  const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
-  const std::string outSurf=StrFunc::makeString(-VoidFC.getLinkSurf(0));
+  const std::string voidSurf=VoidFC.getSignedLinkString(vLCIndex+1);
+  const std::string outSurf=VoidFC.getSignedLinkString(-1);
   
 
-  const std::string bulkSurf= 
-    StrFunc::makeString(-BulkFC.getLinkSurf(vLCIndex));
+  const std::string bulkSurf=BulkFC.getSignedLinkString(-(vLCIndex+1));
 
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)

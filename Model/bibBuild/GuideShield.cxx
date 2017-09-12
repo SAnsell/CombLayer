@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/GuideShield.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,9 +73,8 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "World.h"
 
 #include "GuideShield.h"
 
@@ -84,7 +83,7 @@ namespace bibSystem
 
 GuideShield::GuideShield(const std::string& Key,const size_t Index)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(StrFunc::makeString(Key,Index),4),
+  attachSystem::FixedComp(Key+std::to_string(Index),4),
   baseName(Key),
   shieldIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(shieldIndex+1),innerWidth(0.0),innerHeight(0.0)
@@ -208,9 +207,9 @@ void
 GuideShield::createObjects(Simulation& System,
 			   const attachSystem::ContainedComp* CC,
 			   const attachSystem::FixedComp& InnerFC,
-			   const size_t innerSide,
+			   const long int innerSide,
 			   const attachSystem::FixedComp& OuterFC,
-			   const size_t outerSide)
+			   const long int outerSide)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -235,8 +234,8 @@ GuideShield::createObjects(Simulation& System,
       else if (CC)
 	Out+=CC->getExclude();
 
-      Out+=InnerFC.getLinkString(innerSide);
-      Out+=OuterFC.getLinkString(outerSide);
+      Out+=InnerFC.getSignedLinkString(innerSide);
+      Out+=OuterFC.getSignedLinkString(outerSide);
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
       SI+=10;
@@ -297,9 +296,9 @@ void
 GuideShield::createAll(Simulation& System,
 		       const attachSystem::FixedComp& GO,
 		       const attachSystem::FixedComp& InnerFC,
-		       const size_t innerIndex,
+		       const long int innerIndex,
 		       const attachSystem::FixedComp& OuterFC,
-		       const size_t outerIndex)
+		       const long int outerIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation

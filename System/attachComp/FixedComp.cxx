@@ -1286,7 +1286,7 @@ FixedComp::getMasterComplement(const size_t Index) const
     \return String of link
   */
 {
-  ELog::RegMethod RegA("FixedComp","getMasterString");
+  ELog::RegMethod RegA("FixedComp","getMasterComplement");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
 

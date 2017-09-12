@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1EngineerInc/BulletDivider.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,11 +60,11 @@ class BulletDivider : public attachSystem::ContainedComp,
   void createUnitVector(const attachSystem::FixedComp&);
   void createSurfaces();
   void createObjects(Simulation&,
-		     const attachSystem::FixedComp&,const size_t,
-		     const attachSystem::FixedComp&,const size_t,
-		     const size_t);
+		     const attachSystem::FixedComp&,const long int,
+		     const attachSystem::FixedComp&,const long int,
+		     const long int);
   void createLinks();
-  void setInnerRadius(const attachSystem::FixedComp&,const size_t);
+  void setInnerRadius(const attachSystem::FixedComp&,const long int);
   void excludeInsertCells(Simulation& System);
   
  public:

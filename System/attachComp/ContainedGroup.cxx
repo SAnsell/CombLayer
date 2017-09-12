@@ -71,6 +71,15 @@ ContainedGroup::ContainedGroup()
   */
 {}
 
+ContainedGroup::ContainedGroup(const std::string& A)
+  /*!
+    Constructor 
+    \param A :: Key one
+  */
+{
+  CMap.insert(CTYPE::value_type(A,ContainedComp()));  
+}
+
 ContainedGroup::ContainedGroup(const std::string& A,
 			       const std::string& B)
   /*!

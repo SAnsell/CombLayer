@@ -45,11 +45,25 @@ namespace attachSystem
 
 class FixedComp  
 {
+ private:
+
+  std::string getLinkString(const size_t) const;
+  std::string getLinkComplement(const size_t) const;
+  std::string getBridgeComplement(const size_t) const;
+
+  std::string getCommonString(const size_t) const;
+  std::string getCommonComplement(const size_t) const;
+
+  std::string getMasterString(const size_t) const;
+  std::string getMasterComplement(const size_t) const;
+  
  protected:
   
   const std::string keyName;       ///< Key Name
   ModelSupport::surfRegister SMap; ///< Surface register
 
+  std::map<std::string,int> keyMap; ///< Keynames to index
+  
   Geometry::Vec3D X;            ///< X-coordinate [shutter x]
   Geometry::Vec3D Y;            ///< Y-coordinate [shutter y]
   Geometry::Vec3D Z;            ///< Z-coordinate 
@@ -180,6 +194,7 @@ class FixedComp
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;
 
+  /*
   virtual std::string getLinkString(const size_t) const;
   virtual std::string getLinkComplement(const size_t) const;
   virtual std::string getBridgeComplement(const size_t) const;
@@ -189,7 +204,8 @@ class FixedComp
 
   virtual std::string getMasterString(const size_t) const;
   virtual std::string getMasterComplement(const size_t) const;
-
+  */
+  
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 
 

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/shortOdin/shortODIN.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -406,8 +406,8 @@ shortODIN::build(Simulation& System,const attachSystem::FixedGroup& GItem,
   //
   const attachSystem::FixedComp& GOuterC=GuideF->getKey("Shield");
   GuideCut.reset();
-  for(size_t i=1;i<6;i++)
-    GuideCut.addUnion(GOuterC.getLinkString(i));
+  for(long int i=2;i<7;i++)
+    GuideCut.addUnion(GOuterC.getSignedLinkString(i));
   PitC->addInsertCell(voidCell);
   PitC->createAll(System,GuideF->getKey("Guide0"),2);
 

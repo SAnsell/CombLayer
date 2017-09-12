@@ -104,7 +104,10 @@ Linac::Linac(const std::string& Key)  :
   */
 {
   ELog::RegMethod RegA("Linac","Linac(const std::string&)");
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  
+  ModelSupport::objectRegister& OR =
+    ModelSupport::objectRegister::Instance();
+  
   OR.addObject(beamDump);
   OR.addObject(faradayCup);
 }
@@ -112,6 +115,7 @@ Linac::Linac(const std::string& Key)  :
 Linac::Linac(const Linac& A) :
   attachSystem::ContainedComp(A),
   attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
   length(A.length),widthLeft(A.widthLeft),
@@ -150,6 +154,7 @@ Linac::operator=(const Linac& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       engActive=A.engActive;
       length=A.length;
@@ -192,6 +197,8 @@ Linac::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("Linac","populate");
 
   FixedOffset::populate(Control);
+
+  // This is to be replaces with -tEng IParam
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   length=Control.EvalVar<double>(keyName+"Length");
@@ -204,7 +211,7 @@ Linac::populate(const FuncDataBase& Control)
   floorThick=Control.EvalVar<double>(keyName+"FloorThick");
   floorWidthLeft=Control.EvalVar<double>(keyName+"FloorWidthLeft");
   floorWidthRight=Control.EvalVar<double>(keyName+"FloorWidthRight");
-  nAirLayers=Control.EvalDefVar<int>(keyName+"NAirLayers", 1);
+  nAirLayers=Control.EvalDefVar<size_t>(keyName+"NAirLayers", 1);
 
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat");
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -213,7 +220,7 @@ Linac::populate(const FuncDataBase& Control)
   tswWidth=Control.EvalVar<double>(keyName+"TSWWidth");
   tswGap=Control.EvalVar<double>(keyName+"TSWGap");
   tswOffsetY=Control.EvalVar<double>(keyName+"TSWOffsetY");
-  tswNLayers=Control.EvalDefVar<int>(keyName+"TSWNLayers", 1);
+  tswNLayers=Control.EvalDefVar<size_t>(keyName+"TSWNLayers", 1);
 
   return;
 }
@@ -237,69 +244,58 @@ Linac::createUnitVector(const attachSystem::FixedComp& FC,
 
 void
 Linac::layerProcess(Simulation& System, const std::string& cellName,
-		    const size_t& lpS, const size_t& lsS,
-		    const int& nLayers, const int& mat)
+		    const long int linkPrimSurf,const long int linkSndSurf,
+		    const size_t nLayers, const int mat)
   /*!
     Processes the splitting of the surfaces into a multilayer system
     \param System :: Simulation to work on
     \param cellName :: TSW wall cell name
-    \param lpS :: link pont of primary surface
-    \param lsS :: link point of secondary surface
+    \param linkPrimSurf :: link pont of primary surface
+    \param linkSndSurf :: link point of secondary surface
     \param nLayers :: number of layers to divide to
     \param mat :: material
   */
-  {
-    ELog::RegMethod RegA("Linac","layerProcess");
-    if (nLayers>1)
-      {
-	const int pS = getLinkSurf(lpS);
-	const int sS = getLinkSurf(lsS);
-
-	const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(this);
-	MonteCarlo::Object* wallObj(0);
-	int wallCell(0);
-
-	if (CM)
-	  {
-	    wallCell=CM->getCell(cellName);
-	    wallObj=System.findQhull(wallCell);
-	  }
-
-	if (!wallObj)
-	  throw ColErr::InContainerError<int>
-            (wallCell,"Cell '"+cellName+"' not found");
-
-	double baseFrac = 1.0/nLayers;
-	ModelSupport::surfDivide DA;
-	for(int i=1;i<nLayers;i++)
-	  {
-	    DA.addFrac(baseFrac);
-	    DA.addMaterial(mat);
-	    baseFrac += 1.0/nLayers;
-	  }
-	DA.addMaterial(mat);
-
-	DA.setCellN(wallCell);
-	DA.setOutNum(cellIndex, surfIndex+10000);
-
-	ModelSupport::mergeTemplate<Geometry::Plane,
-				    Geometry::Plane> surroundRule;
-
-	surroundRule.setSurfPair(SMap.realSurf(pS),
-				 SMap.realSurf(sS));
-
-	std::string OutA = getLinkString(lpS);
-	std::string OutB = getLinkComplement(lsS);
-
-	surroundRule.setInnerRule(OutA);
-	surroundRule.setOuterRule(OutB);
-
-	DA.addRule(&surroundRule);
-	DA.activeDivideTemplate(System);
-
-	cellIndex=DA.getCellNum();
-      }
-  }
+{
+  ELog::RegMethod RegA("Linac","layerProcess");
+  if (nLayers>1 && linkPrimSurf && linkSndSurf)
+    {
+      const int pS = getSignedLinkSurf(linkPrimSurf);
+      const int sS = getSignedLinkSurf(linkSndSurf);
+      
+      const int wallCell=getCell(cellName);
+      
+      double baseFrac = 1.0/static_cast<double>(nLayers);
+      ModelSupport::surfDivide DA;
+      for(size_t i=1;i<nLayers;i++)
+	{
+	  DA.addFrac(baseFrac);
+	  DA.addMaterial(mat);
+	  baseFrac += 1.0/static_cast<double>(nLayers);
+	}
+      DA.addMaterial(mat);
+      
+      DA.setCellN(wallCell);
+      DA.setOutNum(cellIndex, surfIndex+10000);
+      
+      ModelSupport::mergeTemplate<Geometry::Plane,
+				  Geometry::Plane> surroundRule;
+      
+      surroundRule.setSurfPair(SMap.realSurf(pS),
+			       SMap.realSurf(sS));
+      
+      const std::string OutA = getSignedLinkString(linkPrimSurf);
+      const std::string OutB = getSignedLinkString(-linkSndSurf);
+      
+      surroundRule.setInnerRule(OutA);
+      surroundRule.setOuterRule(OutB);
+      
+      DA.addRule(&surroundRule);
+      DA.activeDivideTemplate(System);
+      
+      cellIndex=DA.getCellNum();
+    }
+  return;
+}
 
 
 void
@@ -393,17 +389,17 @@ Linac::createObjects(Simulation& System)
   setCell("tsw2", cellIndex-1);
 
   // divide TSW walls
-  layerProcess(System, "tsw1", 6, 7, tswNLayers, wallMat);
-  layerProcess(System, "tsw2", 8, 9, tswNLayers, wallMat);
+  layerProcess(System, "tsw1", 7, 8, tswNLayers, wallMat);
+  layerProcess(System, "tsw2", 9, 10, tswNLayers, wallMat);
 
   // divide air before TSW
-  layerProcess(System, "airBefore", 10, 6, nAirLayers, airMat);
-  layerProcess(System, "airAfter", 9, 11, nAirLayers, airMat);
+  layerProcess(System, "airBefore", 11, 7, nAirLayers, airMat);
+  layerProcess(System, "airAfter", 10, 12, nAirLayers, airMat);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -12 23 -24 15 -16 ");
   addOuterSurf(Out);
 
-  return;
+  return; 
 }
 
 

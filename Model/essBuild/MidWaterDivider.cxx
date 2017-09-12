@@ -425,8 +425,8 @@ MidWaterDivider::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=leftWing.getLinkComplement(4);
-  const std::string Top=leftWing.getLinkComplement(5);
+  const std::string Base=leftWing.getSignedLinkString(-5);
+  const std::string Top=leftWing.getSignedLinkString(-6);
   
   HeadRule LCut(leftWing.getLayerString(cutLayer,7));
   HeadRule RCut(rightWing.getLayerString(cutLayer,7));
@@ -548,9 +548,9 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   const size_t rWing=rightWing.getNLayers();
 
   const std::string LBase=
-    leftWing.getLinkComplement(4)+leftWing.getLinkComplement(5);
+    leftWing.getSignedLinkString(-5)+leftWing.getSignedLinkString(-6);
   const std::string RBase=
-    rightWing.getLinkComplement(4)+rightWing.getLinkComplement(5);
+    rightWing.getSignedLinkString(-5)+rightWing.getSignedLinkString(-6);
 
   HeadRule cutRule;
   std::string Out;

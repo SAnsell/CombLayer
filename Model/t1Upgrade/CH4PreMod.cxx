@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4PreMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -316,20 +316,20 @@ CH4PreMod::createObjects(Simulation& System,
   std::string compTouch;
   std::string Inner(" (");
   std::string FullInner(" (");
-  for(size_t i=0;i<6;i++)
+  for(size_t i=1;i<7;i++)
     {
-      if (i==touchSurf)
+      if (i==touchSurf+1)
 	{
-	  touch=FC.getLinkComplement(i);
-	  compTouch=FC.getLinkString(i);
+	  touch=FC.getSignedLinkString(i);
+	  compTouch=FC.getSignedLinkString(i);
 	}
-      else if (i!=frontIndex && i!=backIndex)
+      else if (i!=frontIndex+1 && i!=backIndex+1)
 	{
 	  if (addFlag) Inner+=":";
 	  addFlag=1;
-	  Inner+=FC.getLinkString(i);
+	  Inner+=FC.getSignedLinkString(i);
 	}
-      FullInner+=FC.getLinkString(i)+":";
+      FullInner+=FC.getSignedLinkString(i)+":";
     }
   Inner+=") ";
   FullInner[FullInner.size()-1]=')';
@@ -362,8 +362,8 @@ CH4PreMod::createObjects(Simulation& System,
   Out+=touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
-  const std::string FFace=FC.getLinkComplement(frontIndex);
-  const std::string BFace=FC.getLinkComplement(backIndex);
+  const std::string FFace=FC.getSignedLinkString(-(frontIndex+1));
+  const std::string BFace=FC.getSignedLinkString(-(backIndex+1));
 
   // VAC Outer:
   std::string IOut;

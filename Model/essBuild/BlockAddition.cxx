@@ -133,7 +133,7 @@ BlockAddition::~BlockAddition()
 {}
 
 std::string
-BlockAddition::getLinkComplement(const size_t sideIndex) const
+BlockAddition::getLinkComplementX(const size_t sideIndex) const
   /*!
     Accessor to the link surface string [negative]
     \param Index :: Link number
@@ -141,12 +141,12 @@ BlockAddition::getLinkComplement(const size_t sideIndex) const
   */
 {
   if (active)
-    return FixedComp::getLinkComplement(sideIndex);
+    return FixedComp::getSignedLinkString(-(sideIndex+1));
   return std::string("");
 }
 
 std::string
-BlockAddition::getLinkString(const size_t sideIndex) const
+BlockAddition::getLinkStringX(const size_t sideIndex) const
   /*!
     Accessor to the link surface string [negative]
     \param sideIndex :: Link number
@@ -154,7 +154,7 @@ BlockAddition::getLinkString(const size_t sideIndex) const
   */
 {
   if (active)
-    return FixedComp::getLinkString(sideIndex);
+    return FixedComp::getSignedLinkString(sideIndex+1);
   return std::string("");
 }
 

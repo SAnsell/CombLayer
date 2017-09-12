@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/WedgeFlightLine.h
  *
- * Copyright (c) 2016 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ class WedgeFlightLine : public moderatorSystem::BasicFlightLine
 
   void populate(const FuncDataBase&);
   void buildWedges(Simulation&,
-		   const attachSystem::FixedComp&,const long int,
 		   const attachSystem::FixedComp&,const long int,
 		   const attachSystem::FixedComp&,const long int);
   

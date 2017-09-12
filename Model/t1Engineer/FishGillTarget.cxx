@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/FishGillTarget.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -200,7 +200,7 @@ FishGillTarget::createAll(Simulation& System,
   
   PressVObj->setMainRadius(PlateTarObj->getMainRadius());
   PressVObj->setInsertCell(this->getInsertCells());
-  PressVObj->createAll(System,FC,*PlateTarObj,0);
+  PressVObj->createAll(System,FC,*PlateTarObj,1);
   
   for(std::shared_ptr<BulletDivider> DPtr : DObj)
     {

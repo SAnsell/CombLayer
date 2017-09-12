@@ -190,9 +190,10 @@ BeRefInnerStructure::createSurfaces(const attachSystem::FixedComp& Reflector)
   */
 {
   ELog::RegMethod RegA("BeRefInnerStructure","createSurfaces");
-  
-  const double BeRefZBottom = Reflector.getLinkPt(6)[2];
-  const double BeRefZTop = Reflector.getLinkPt(7)[2];
+
+  // This is EVIL !!!
+  const double BeRefZBottom = Reflector.getSignedLinkPt(7)[2];
+  const double BeRefZTop = Reflector.getSignedLinkPt(8)[2];
   
   ModelSupport::buildPlane(SMap,insIndex+5,
                            Origin+Z*(BeRefZBottom+waterDiscThick),Z);
@@ -242,9 +243,9 @@ BeRefInnerStructure::createObjects(Simulation& System,
     throw ColErr::InContainerError<int>(topBeCell,"Reflector topBe cell not found");
   
   std::string Out;
-  const std::string lowBeStr = Reflector.getLinkString(6);
-  const std::string topBeStr = Reflector.getLinkString(7);
-  const std::string sideBeStr = Reflector.getLinkString(8);
+  const std::string lowBeStr = Reflector.getSignedLinkString(7);
+  const std::string topBeStr = Reflector.getSignedLinkString(8);
+  const std::string sideBeStr = Reflector.getSignedLinkString(9);
   HeadRule HR, LowBeExclude, TopBeExclude;
   
   // Bottom Be cell
@@ -260,11 +261,11 @@ BeRefInnerStructure::createObjects(Simulation& System,
 
   Out = ModelSupport::getComposite(SMap, insIndex, " -7 15");
   System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat, 0,
-                                   Out+Reflector.getLinkString(9)));
+                                   Out+Reflector.getSignedLinkString(10)));
   
   Out = ModelSupport::getComposite(SMap,insIndex," -17 7 15 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,BeWallMat,0,
-                                   Out+Reflector.getLinkString(9)));
+                                   Out+Reflector.getSignedLinkString(10)));
   
   Out = ModelSupport::getComposite(SMap,insIndex," -17 15 ");
   LowBeExclude.procString(Out);
@@ -287,11 +288,11 @@ BeRefInnerStructure::createObjects(Simulation& System,
   
   Out = ModelSupport::getComposite(SMap,insIndex," -7 -16");
   System.addCell(MonteCarlo::Qhull(cellIndex++, BeMat,0,
-                                   Out+Reflector.getLinkString(10)));
+                                   Out+Reflector.getSignedLinkString(11)));
   
   Out = ModelSupport::getComposite(SMap, insIndex, " -17 7 -16 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,BeWallMat,0,
-                                   Out+Reflector.getLinkString(10)));
+                                   Out+Reflector.getSignedLinkString(11)));
   
   Out = ModelSupport::getComposite(SMap,insIndex," -17 -16 ");
   TopBeExclude.procString(Out);

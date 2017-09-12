@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/HPreMod.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -318,12 +318,12 @@ HPreMod::createObjects(Simulation& System,
 	{
 	  if (addFlag) Inner+=":";
 	  addFlag=1;
-	  Inner+=FC.getLinkString(i);
+	  Inner+=FC.getSignedLinkString(i+1);
 	}
     }
   Inner+=")";
 
-  const std::string FFace=FC.getLinkComplement(frontIndex);
+  const std::string FFace=FC.getSignedLinkString(-(frontIndex+1));
   // Set first link Point:
   FixedComp::setConnect(0,FC.getLinkPt(frontIndex),Y);
   FixedComp::setLinkSurf(0,FC,frontIndex);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylFlowGuide.cxx
  *
- * Copyright (c) 2004-2015 by Konstantin Batkov
+ * Copyright (c) 2004-2017 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,7 +161,7 @@ CylFlowGuide::populate(const FuncDataBase& Control)
 
 void
 CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
-				      const size_t sideIndex)
+				      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Centre for object
@@ -172,7 +172,7 @@ CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp::createUnitVector(FC);
 
   // Take data from containing object
-  const int CN=FC.getLinkSurf(sideIndex);
+  const int CN=std::abs(FC.getSignedLinkSurf(sideIndex));
   const Geometry::Cylinder* CPtr=SMap.realPtr<Geometry::Cylinder>(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Unable to convert to cylinder");
@@ -238,9 +238,11 @@ CylFlowGuide::createObjects(Simulation& System,
   const int innerMat=MatInfo.first;
   const double innerTemp=MatInfo.second;
   std::string Out;
-  const std::string vertStr = FC.getLinkString(sideIndex+1)+
-    FC.getLinkString(sideIndex+2);
-  const std::string sideStr = FC.getLinkString(sideIndex);
+  const std::string vertStr =
+    FC.getSignedLinkString(static_cast<long int>(sideIndex+2))+
+    FC.getSignedLinkString(static_cast<long int>(sideIndex+3));
+  const std::string sideStr =
+    FC.getSignedLinkString(static_cast<long int>(sideIndex+1));
 
   const int initCellIndex(cellIndex);
   // central plate

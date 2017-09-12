@@ -323,7 +323,6 @@ TREX::buildBunkerUnits(Simulation& System,
    */
 {
   ELog::RegMethod RegA("TREX","buildBunkerUnits");
-  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());  
 
   /// Brigde Guide 
   VPipeBridge->addInsertCell(bunkerVoid); 

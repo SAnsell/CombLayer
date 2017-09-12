@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/makeT1Eng.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -354,6 +354,7 @@ makeT1Eng::build(Simulation* SimPtr,
   RefObj->createAll(*SimPtr,World::masterOrigin());
 
   RefObj->addToInsertChain(*TarObj);
+  //asfasdf
   TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
   TarObj->createAll(*SimPtr,World::masterOrigin());
   //  TarObjModify->createAll(*SimPtr,*TarObj);
@@ -394,7 +395,7 @@ makeT1Eng::build(Simulation* SimPtr,
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2Mod);
   
   // FLIGHTLINES:
-  const std::string Out=RefObj->getLinkComplement(2);
+  const std::string Out=RefObj->getSignedLinkString(3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
   RefObj->addToInsertChain(TriFLA->getCC("outer"));

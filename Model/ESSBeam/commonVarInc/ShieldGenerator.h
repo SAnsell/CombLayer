@@ -52,10 +52,6 @@ class ShieldGenerator
   size_t nWall;                 ///< number of wall layers
   size_t nRoof;                 ///< number of roof layers
   size_t nFloor;                ///< number of floor layers  
-
-  double wallThick;             ///< wall thickness [if set]
-  double roofThick;             ///< roof thickness [if set]
-  double floorThick;            ///< floor thickness [if set]
   
   std::string defMat;                         ///< Primary default mat
 

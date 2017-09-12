@@ -181,9 +181,9 @@ CylPreMod::getBoxCut(const char F) const
    */
 {
   if (F=='A' && blockActiveA)
-    return ExtAObj->getLinkComplement(3); 
+    return ExtAObj->getSignedLinkString(-4); 
   if (F=='B' && blockActiveB)
-    return ExtBObj->getLinkComplement(3); 
+    return ExtBObj->getSignedLinkString(-4); 
   return "";
 }
 

@@ -3,7 +3,7 @@
  
  * File:   chip/Hutch.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1125,7 +1125,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
       
       Out=ModelSupport::getComposite(SMap,hutchIndex,
 				     "-1004 1011 (4:-11) -8 15 -6 ");
-      Out+=Guide.getLinkString(8);
+      Out+=Guide.getSignedLinkString(9);
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addOuterUnionSurf(Out);
       
@@ -1152,8 +1152,6 @@ ChipIRHutch::addCollimators(Simulation& System,
 {
   ELog::RegMethod RegA("ChipIRHutch","addCollimators");
 
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  
   PreColObj->addInsertCell(collimatorVoid);
   PreColObj->addBoundarySurf(SMap.realSurf(hutchIndex+33));
   PreColObj->addBoundarySurf(-SMap.realSurf(hutchIndex+34));

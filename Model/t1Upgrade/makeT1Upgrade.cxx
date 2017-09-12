@@ -783,7 +783,7 @@ makeT1Upgrade::build(Simulation* SimPtr,
     attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2PMod);  
 
   // FLIGHTLINES:
-  const std::string Out=RefObj->getLinkComplement(2);
+  const std::string Out=RefObj->getSignedLinkString(-3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
   RefObj->addToInsertChain(TriFLA->getCC("outer"));

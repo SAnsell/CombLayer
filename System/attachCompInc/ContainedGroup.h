@@ -55,6 +55,7 @@ class ContainedGroup
  public:
 
   ContainedGroup();
+  explicit ContainedGroup(const std::string&);
   ContainedGroup(const std::string&,const std::string&);
   ContainedGroup(const std::string&,const std::string&,
 		 const std::string&);
