@@ -47,6 +47,7 @@ class pairRange
   pairRange(const std::string&);         ///< Initialise with a string
   pairRange(const pairRange&);  
   pairRange& operator=(const pairRange&);
+  bool operator==(const pairRange&) const;
   ~pairRange();
 
   const std::pair<double,double>& operator[](const size_t) const;

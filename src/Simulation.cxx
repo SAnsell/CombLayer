@@ -1580,14 +1580,36 @@ Simulation::writeTally(std::ostream& OX) const
 	TMeshVec.push_back(TMPtr);
     }
   int index(1);
+
+  typedef std::vector<tallySystem::tmeshTally*> doseTYPE;
+
+  doseTYPE doseMesh;
   if (!TMeshVec.empty())
     {
       OX<<"tmesh"<<std::endl;
       for(tallySystem::tmeshTally* TMPtr : TMeshVec)
 	{
 	  if (TMPtr->hasActiveMSHMF())
-	    TMPtr->setActiveMSHMF(index++);
-	  TMPtr->write(OX);
+            {
+              // check if mesh currently exists:
+              const pairRange& mshValue=TMPtr->getMSHMF();
+              doseTYPE::const_iterator mc=
+                std::find_if(doseMesh.begin(),doseMesh.end(),
+                             [&mshValue](const doseTYPE::value_type& A) -> bool
+                             {
+                               return (A->getMSHMF() == mshValue);
+                             });
+              if (mc==doseMesh.end())
+                {
+                  TMPtr->setActiveMSHMF(index++);
+                  doseMesh.push_back(TMPtr);
+                }
+              else
+                {
+                  TMPtr->setActiveMSHMF(-(*mc)->hasActiveMSHMF());
+                }
+            }
+          TMPtr->write(OX);
 	}
       OX<<"endmd"<<std::endl;
     }

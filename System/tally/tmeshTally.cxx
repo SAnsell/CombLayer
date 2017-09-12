@@ -302,7 +302,7 @@ tmeshTally::write(std::ostream& OX) const
   */
 {
   masterWrite& MW=masterWrite::Instance();
-  ELog::EM<<"ASDFASDF:"<<isActive()<<ELog::endDiag;
+
   if (isActive())
     {
       const char typeLetter[]="rcs";
@@ -319,7 +319,7 @@ tmeshTally::write(std::ostream& OX) const
 	    cx<<MW.Num(V)<<" ";
 	}
       else
-	cx<<"DOSE "<<activeMSHMF;
+	cx<<"DOSE "<<std::abs(activeMSHMF);
 
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
@@ -328,7 +328,7 @@ tmeshTally::write(std::ostream& OX) const
 	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}					 
-      if (!mshmf.empty())
+      if (!mshmf.empty() && activeMSHMF>0)
 	{
 	  cx.str("");
 	  cx<<"mshmf"<<activeMSHMF<<" "<<mshmf;

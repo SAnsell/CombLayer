@@ -22,8 +22,13 @@
 #ifndef tallySystem_tmeshTally_h
 #define tallySystem_tmeshTally_h
 
+
+class pairRange;
+
 namespace tallySystem
 {
+
+  
 /*!
   \class tmeshTally
   \version 1.0
@@ -78,7 +83,9 @@ class tmeshTally : public Tally
   const std::array<size_t,3>& getNPt() const { return Pts; }
   int hasActiveMSHMF() { return activeMSHMF; }
   void setActiveMSHMF(const int A) { activeMSHMF=A; }
- 
+  /// accessor to pairRange
+  const pairRange& getMSHMF() const { return mshmf; }
+  
   virtual void rotateMaster();
   int addLine(const std::string&);
   void writeCoordinates(std::ostream&) const;
