@@ -349,8 +349,11 @@ Linac::buildTSW(Simulation& System) const
       std::shared_ptr<TSW>
         wall(new TSW(keyName,"TSW",i));
       OR.addObject(wall);
-      wall->addInsertCell(this->getCells("air"));
+      // addInsertCell would not work since sometimes we split the air cell by layerProccess
+      // wall->addInsertCell(this->getCells("air"));
+      // instead, we call addToInsertControl
       wall->createAll(System,*this,12,13,14,15);
+      attachSystem::addToInsertControl(System,*this,*wall);
     }
   return;
 }
