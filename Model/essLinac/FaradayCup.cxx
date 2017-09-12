@@ -89,7 +89,7 @@ namespace essSystem
 
 FaradayCup::FaradayCup(const std::string &Base,const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Base+Key,7),
+  attachSystem::FixedOffset(Base+Key,8),
   attachSystem::CellMap(),
   baseName(Base),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
@@ -201,7 +201,7 @@ FaradayCup::layerProcess(Simulation& System, const std::string& cellName,
     \param mat :: material
   */
 {
-  ELog::RegMethod RegA("TSW","layerProcess");
+  ELog::RegMethod RegA("FaradayCup","layerProcess");
 
     if (N<=1)
       return;
@@ -490,8 +490,9 @@ FaradayCup::createLinks()
       // for layerProccess
       FixedComp::setConnect(6,Origin+Y*(shieldForwardLength[n-1]),Y);
       FixedComp::setLinkSurf(6,SMap.realSurf(SI-10+2));
-
-      ELog::EM << getLinkPt(6) << " " << getLinkSurf(6) << ELog::endDiag;
+      FixedComp::setConnect(7,Origin-Z*(shieldDepth[n]),Z);
+      FixedComp::setLinkSurf(7,SMap.realSurf(SI+5));
+      ELog::EM << "Why instead of lp7 can't layerProccess use link point 4 with reverse direction?" << ELog::endDiag;
     } else
     {
       FixedComp::setConnect(0,Origin,-Y);
@@ -544,7 +545,8 @@ FaradayCup::createAll(Simulation& System,
   insertObjects(System);
 
   const size_t j=nShieldLayers-1;
-  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
+  //  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
+  //  layerProcess(System, "LateralShield" + std::to_string(j), 7, 5, 20, shieldMat[j]);
 
   return;
 }
