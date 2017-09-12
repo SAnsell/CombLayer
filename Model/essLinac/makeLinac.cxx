@@ -66,7 +66,6 @@
 #include "FixedGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
