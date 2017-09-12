@@ -285,10 +285,11 @@ FaradayCup::populate(const FuncDataBase& Control)
   airMat=ModelSupport::EvalMat<int>(Control,keyName+"AirMat",baseName+"AirMat");
 
   nShieldLayers=Control.EvalVar<size_t>(keyName+"NShieldLayers");
+  shieldBackLength = Control.EvalVar<double>(keyName+"ShieldBackLength");
 
   for (size_t i=0; i<nShieldLayers; i++)
     {
-      double WL,WR,H,D,FL,BL;
+      double WL,WR,H,D,FL;
       int mat;
       const std::string Num=std::to_string(i+1);
       WL = Control.EvalVar<double>(keyName+"ShieldWidthLeft"+Num);
@@ -296,7 +297,6 @@ FaradayCup::populate(const FuncDataBase& Control)
       H = Control.EvalVar<double>(keyName+"ShieldHeight"+Num);
       D = Control.EvalVar<double>(keyName+"ShieldDepth"+Num);
       FL = Control.EvalVar<double>(keyName+"ShieldForwardLength"+Num);
-      BL = Control.EvalVar<double>(keyName+"ShieldBackLength"+Num);
       mat=ModelSupport::EvalMat<int>(Control,keyName+"ShieldMat"+Num);
 
       shieldWidthLeft.push_back(WL);
@@ -304,7 +304,6 @@ FaradayCup::populate(const FuncDataBase& Control)
       shieldHeight.push_back(H);
       shieldDepth.push_back(D);
       shieldForwardLength.push_back(FL);
-      shieldBackLength.push_back(BL);
       shieldMat.push_back(mat);
     }
 
@@ -363,7 +362,7 @@ FaradayCup::createSurfaces()
   int SI(surfIndex+100);
   for (size_t i=0; i<nShieldLayers; i++)
     {
-      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength[i]),Y);
+      ModelSupport::buildPlane(SMap,SI+1,Origin-Y*(shieldBackLength),Y);
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*(shieldForwardLength[i]),Y);
 
       ModelSupport::buildPlane(SMap,SI+3,Origin-X*(shieldWidthLeft[i]),X);
@@ -469,7 +468,7 @@ FaradayCup::createLinks()
       const size_t n = nShieldLayers-1;
       const int SI(surfIndex+100+static_cast<int>(n)*10);
 
-      FixedComp::setConnect(0,Origin-Y*shieldBackLength[n],-Y);
+      FixedComp::setConnect(0,Origin-Y*shieldBackLength,-Y);
       FixedComp::setLinkSurf(0,-SMap.realSurf(SI+1));
 
       FixedComp::setConnect(1,Origin+Y*(shieldForwardLength[n]),Y);
@@ -544,7 +543,7 @@ FaradayCup::createAll(Simulation& System,
   createLinks();
   insertObjects(System);
 
-  const size_t j=nShieldLayers-1;
+  //  const size_t j=nShieldLayers-1;
   //  layerProcess(System, "ForwardShield" + std::to_string(j), 6, 1, 10, shieldMat[j]);
   //  layerProcess(System, "LateralShield" + std::to_string(j), 7, 5, 20, shieldMat[j]);
 

@@ -71,8 +71,8 @@ class FaradayCup : public attachSystem::ContainedComp,
   std::vector<double> shieldHeight; ///< Shield height
   std::vector<double> shieldDepth; ///< Shield depth
   std::vector<double> shieldForwardLength; ///< shield length
-  std::vector<double> shieldBackLength; ///< shield length towards the proton beam origin
-  std::vector<int>    shieldMat; ///< shielding material
+  double shieldBackLength;         ///< shield length towards the proton beam origin
+  std::vector<int>    shieldMat;   ///< shielding material
 
   void layerProcess(Simulation& System, const std::string& cellName,
 		    const size_t& lpS, const size_t& lsS, const size_t&, const int&);

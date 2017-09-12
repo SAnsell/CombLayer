@@ -219,9 +219,7 @@ EssLinacVariables(FuncDataBase& Control)
   Control.addVariable("LinacFaradayCupShieldForwardLength1",10.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength2",30.0);
   Control.addVariable("LinacFaradayCupShieldForwardLength3",110.0); // 100+10 to account for air layer thick
-  Control.addVariable("LinacFaradayCupShieldBackLength1",170.0);
-  Control.addVariable("LinacFaradayCupShieldBackLength2",170.0);
-  Control.addVariable("LinacFaradayCupShieldBackLength3",170.0);
+  Control.addVariable("LinacFaradayCupShieldBackLength",170.0);
 
   // DTL
   const size_t nDTL = 4;
