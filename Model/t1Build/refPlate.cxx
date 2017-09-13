@@ -119,8 +119,7 @@ refPlate::dirOppositeType(const std::string& DN)
 }
 
 void
-refPlate::setOrigin(const std::string& Name,const long int Index,
-		    const long int brokenValue)
+refPlate::setOrigin(const std::string& Name,const long int Index)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
@@ -137,15 +136,14 @@ refPlate::setOrigin(const std::string& Name,const long int Index,
   const attachSystem::FixedComp* OPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(Name,"FixedComp");
   
-  setOrigin(*OPtr,Index,brokenValue);
+  setOrigin(*OPtr,Index);
 
   return;
 }
 
 void
 refPlate::setOrigin(const attachSystem::FixedComp& FC,
-		    const long int Index,
-		    const long int brokenValue)
+		    const long int Index)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is

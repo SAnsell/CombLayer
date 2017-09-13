@@ -77,10 +77,8 @@ class ExcludedComp
   void setExcludeCell(const int);
 
 
-  void addExcludeSurf(const attachSystem::FixedComp& ,
-		      const int,const size_t);
-  void addExcludeSurf(const std::string&,
-		      const int,const size_t);
+  void addExcludeSurf(const attachSystem::FixedComp&,const long int);
+  void addExcludeSurf(const std::string&,const long int);
 
   void addExcludeSurf(const int);
   void addExcludeSurf(const std::string&);

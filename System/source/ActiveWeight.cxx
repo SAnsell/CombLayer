@@ -187,8 +187,8 @@ ActiveWeight::addMaterial(const std::string& matName,
   
 
 void
-ActiveWeight::createSource(Simulation& System,
-                           const std::string& outputName)
+ActiveWeight::createSource(Simulation& ,
+                           const std::string&)
   /*!
     Create all the source
     \param System :: Simulation to use

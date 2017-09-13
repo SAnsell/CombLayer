@@ -295,7 +295,7 @@ makeDelft::setSource(Simulation& System,
 
       if (IParam.flag("ksrcMat"))
 	{
-	  const int fissileZaid=IParam.getDefValue<int>(0,"ksrcMat",0,0);
+	  const size_t fissileZaid=IParam.getDefValue<size_t>(0,"ksrcMat",0,0);
 	  std::vector<int> fuelCells=
 	    GridPlate->getFuelCells(System,fissileZaid);
 

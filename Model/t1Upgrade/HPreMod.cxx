@@ -159,27 +159,26 @@ HPreMod::getConnectPoints(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("HPreMod","getConnectPoints");
 
-  const size_t sequence[6][6]={ {0,1,2,3,4,5},
-				{1,0,3,2,4,5},
-				{2,3,0,1,4,5},
-				{3,2,1,0,4,5},
-				{4,5,2,3,0,1}, 
-				{5,4,3,2,1,0} };
+  const long int sequence[6][6]={ {1,2,3,4,5,6},
+				  {2,1,4,3,5,6},
+				  {3,4,1,2,5,6},
+				  {4,3,2,1,5,6},
+				  {5,6,3,4,1,2}, 
+				  {6,5,4,3,2,1} };
 
-  const size_t index(std::abs(sideIndex)-1);
+  const size_t index(static_cast<size_t>(std::abs(sideIndex)-1));
+  
   if (FC.NConnect()<6)
     throw ColErr::RangeError<size_t>(0,6,FC.NConnect(),"Number of connects");
-  if (index>=6)
-    throw ColErr::IndexError<size_t>(index,6,"Index");
-  
-  
+  if (index>5)
+    throw ColErr::RangeError<long int>(sideIndex,1,6,"sideIndex");
   
   sidePts.clear();
   sideAxis.clear();
   for(size_t i=0;i<6;i++)
     {
-      sidePts.push_back(FC.getLinkPt(sequence[index][i]));
-      sideAxis.push_back(FC.getLinkAxis(sequence[index][i]));
+      sidePts.push_back(FC.getSignedLinkPt(sequence[index][i]));
+      sideAxis.push_back(FC.getSignedLinkAxis(sequence[index][i]));
     }
   Y=sideAxis[0];
   Z=sideAxis[5];
@@ -304,7 +303,7 @@ HPreMod::createObjects(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int frontIndex)
   /*!
-    Adds the Chip guide components
+    Adds the main object components
     \param System :: Simulation to create objects in
     \param FC :: FixedComp Attached
     \param frontIndex :: Index of the front face

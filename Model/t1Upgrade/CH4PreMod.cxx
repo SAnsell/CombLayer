@@ -71,6 +71,7 @@
 #include "surfExpand.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "CH4PreModBase.h"
@@ -146,34 +147,33 @@ CH4PreMod::clone()  const
 
 void
 CH4PreMod::getConnectPoints(const attachSystem::FixedComp& FC,
-			  const size_t index)
+			    const long int sideIndex)
   /*!
     Get connection points
     \param FC :: FixedComponent
-    \param index :: Index points
+    \param sideIndex :: Signed surface point [not zero]
    */
 {
   ELog::RegMethod RegA("CH4PreMod","getConnectPoints");
-
-  const size_t sequence[6][6]={ {0,1,2,3,4,5},
-				{1,0,3,2,4,5},
-				{2,3,0,1,4,5},
-				{3,2,1,0,4,5},
-				{4,5,2,3,0,1}, 
-				{5,4,3,2,1,0} };
-
+  const long int sequence[6][6]={ {1,2,3,4,5,6},
+				  {2,1,4,3,5,6},
+				  {3,4,1,2,5,6},
+				  {4,3,2,1,5,6},
+				  {5,6,3,4,1,2}, 
+				  {6,5,4,3,2,1} };
+  const size_t index(static_cast<size_t>(std::abs(sideIndex)-1));
+  
   if (FC.NConnect()<6)
     throw ColErr::RangeError<size_t>(0,6,FC.NConnect(),"Number of connects");
-  if (FC.NConnect()<6)
-    throw ColErr::IndexError<size_t>(index,6,"Index");
-
+  if (index>5)
+    throw ColErr::RangeError<long int>(sideIndex,1,6,"sideIndex");
   
   sidePts.clear();
   sideAxis.clear();
   for(size_t i=0;i<6;i++)
     {
-      sidePts.push_back(FC.getLinkPt(sequence[index][i]));
-      sideAxis.push_back(FC.getLinkAxis(sequence[index][i]));
+      sidePts.push_back(FC.getSignedLinkPt(sequence[index][i]));
+      sideAxis.push_back(FC.getSignedLinkAxis(sequence[index][i]));
     }
   Y=sideAxis[0];
   Z=sideAxis[5];
@@ -183,15 +183,15 @@ CH4PreMod::getConnectPoints(const attachSystem::FixedComp& FC,
 }
 
 void
-CH4PreMod::populate(const Simulation& System)
+CH4PreMod::populate(const FuncDataBase& Control)
   /*!
-    Populate all the variables
-    \param System :: Simulation to use
+    Populate all the variables.
+    Note that we don't allow this object to move of the FC centre point
+    as is wraps an object
+    \param Control :: Database to use
   */
 {
   ELog::RegMethod RegA("CH4PreMod","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   sideThick=Control.EvalVar<double>(keyName+"SideThick");
   topThick=Control.EvalVar<double>(keyName+"TopThick");
@@ -219,13 +219,13 @@ CH4PreMod::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("CH4PreMod","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-
+  
   return;
 }
   
 void
 CH4PreMod::createSurfaces(const attachSystem::FixedComp& FC,
-			  const size_t frontIndex)
+			  const long int frontIndex)
   /*!
     Create All the surfaces
     \param FC :: Fixed unit that connects to this moderator
@@ -233,7 +233,6 @@ CH4PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("CH4PreMod","createSurface");
-
 
   // 1-6 are effectively controlled:
   getConnectPoints(FC,frontIndex);
@@ -300,7 +299,7 @@ CH4PreMod::createSurfaces(const attachSystem::FixedComp& FC,
 void
 CH4PreMod::createObjects(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const size_t frontIndex)
+		       const long int frontIndex)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -310,20 +309,20 @@ CH4PreMod::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("CH4PreMod","createObjects");
 
-  const size_t backIndex((frontIndex % 2) ? frontIndex-1 : frontIndex+1);
+  const long int backIndex((frontIndex % 2) ? frontIndex-1 : frontIndex+1);
   int addFlag(0);
   std::string touch;
   std::string compTouch;
   std::string Inner(" (");
   std::string FullInner(" (");
-  for(size_t i=1;i<7;i++)
+  for(long int i=1;i<7;i++)
     {
-      if (i==touchSurf+1)
+      if (i==touchSurf)
 	{
 	  touch=FC.getSignedLinkString(i);
 	  compTouch=FC.getSignedLinkString(i);
 	}
-      else if (i!=frontIndex+1 && i!=backIndex+1)
+      else if (i!=frontIndex && i!=backIndex)
 	{
 	  if (addFlag) Inner+=":";
 	  addFlag=1;
@@ -381,7 +380,7 @@ CH4PreMod::createObjects(Simulation& System,
     BFace;
   Out+=(frontExt+alThick+vacThick>Geometry::zeroTol) ? 
     ModelSupport::getSetComposite(SMap,preIndex,"-141 ") : 
-    FFace;
+    FFace; 
   addOuterSurf(Out);
   return;
 }
@@ -509,8 +508,8 @@ CH4PreMod::createLinks()
 void
 CH4PreMod::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
-		     const size_t frontIndex,
-		     const size_t touchIndex)
+		     const long int frontIndex,
+		     const long int touchIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -520,8 +519,8 @@ CH4PreMod::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("CH4PreMod","createAll");
-  populate(System);
 
+  populate(System.getDataBase());
   touchSurf=touchIndex;
   createUnitVector(FC);
   createSurfaces(FC,frontIndex);

@@ -109,7 +109,7 @@ class ReactorGrid : public attachSystem::FixedOffset,
 
   std::vector<Geometry::Vec3D> fuelCentres() const;
   std::vector<int> getAllCells(const Simulation&) const;
-  std::vector<int> getFuelCells(const Simulation&,const int) const;
+  std::vector<int> getFuelCells(const Simulation&,const size_t) const;
   
 
   void loadFuelXML(const std::string&);

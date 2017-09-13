@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,7 +160,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
     \param pointZRot :: Z axis rotation of the beamline
   */
 {
-  ELog::RegMethod RegA("itemConstruct","addBeamLineTally");
+  ELog::RegMethod RegA("itemConstruct","addBeamLineItem");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

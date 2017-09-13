@@ -217,7 +217,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 				 const int beamNum,
 				 const double beamDist,
 				 const std::string& modName,
-				 const int viewSurface,
+				 const long int viewIndex,
 				 const double windowOffset,
 				 const double pointZRot) const
   /*!
@@ -226,7 +226,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
-    \param viewSurface :: Surface index
+    \param viewIndex :: Surface index
     \param windowOffset :: Distance to move window towards tally point
     \param pointZRot :: Z axis rotation of the beamline
   */
@@ -242,48 +242,49 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 
   int masterPlane(0);
 
-  long int vSurface(viewSurface);
+  long int vSurface(viewIndex);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
 
   // Do something if using old TS2 style point tally
+  const std::string errModStr("No Moderator in simulation");
   if (modName.empty())
     {
       if (beamNum<4)
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("decoupled",errModStr);
 	  vSurface=1;
 	}
       else if (beamNum<9)
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("hydrogen");
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("hydrogen",errModStr);
 	  vSurface=1;
 	}
       else if (beamNum<14)
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("groove");
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("groove",errModStr);
 	  vSurface=1;
 	}
       else
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("decoupled",errModStr);
 	  vSurface=2;
 	}
     }
   else
     {
-      ModPtr=OR.getObject<attachSystem::FixedComp>(modName);
+      ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	(modName,errModStr);
     }
   
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
-    (StrFunc::makeString(std::string("shutter"),beamNum));
-
-  if (!ShutterPtr)    
-    throw ColErr::InContainerError<int>(beamNum,"Shutter Object not found");
-  if (!ModPtr)    
-    throw ColErr::InContainerError<std::string>
-      (modName,"Moderator Object not found");
+  ShutterPtr=OR.getObjectThrow<attachSystem::FixedComp>
+    ("shutter"+std::to_string(beamNum),"Shutter Object");
+  
 
   // MODERATOR PLANE
   masterPlane=ModPtr->getExitWindow(vSurface,Planes);
@@ -292,10 +293,10 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getSignedLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getSignedLinkPt(1); 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -313,13 +314,15 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
   std::transform(Window.begin(),Window.end(),Window.begin(),
 		 std::bind(std::minus<Geometry::Vec3D>(),
 			   std::placeholders::_1,BAxis*windowOffset));
-  std::vector<Geometry::Vec3D>::iterator vc;
+
+
   ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDiag;
-  for(vc=Window.begin();vc!=Window.end();vc++)
-    ELog::EM<<"Window == "<<*vc<<ELog::endDiag;
+
+  for(const Geometry::Vec3D& Pt : Window)
+    ELog::EM<<"Window == "<<Pt<<ELog::endDiag;
 
   // Apply rotation
-  if (fabs(pointZRot)>Geometry::zeroTol)
+  if (std::abs(pointZRot)>Geometry::zeroTol)
     {
       const Geometry::Vec3D Z=ShutterPtr->getZ();
       const Geometry::Quaternion Qxy=
@@ -328,6 +331,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
     }
   
   addF5Tally(System,tNum,MidPt-BAxis*beamDist,Window);
+
   ELog::EM<<"Tally: "<<tNum<<" "<<MidPt-BAxis*beamDist<<ELog::endTrace;
   // (NORMAL VIEW):
   // tallySystem::setF5Position(System,tNum,RefPtr->getViewOrigin(beamNum),
@@ -340,7 +344,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 				const int beamNum,
 				const double beamDist,
 				const std::string& modName,
-				const int viewSurface,
+				const long int viewIndex,
 				const double windowOffset,
 				const double pointZRot) const
   /*!
@@ -349,7 +353,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
-    \param viewSurface :: Surface index
+    \param viewIndex :: Surface link index
     \param windowOffset :: Distance to move window towards tally point
     \param pointZRot :: Z axis rotation of the beamline
   */
@@ -365,9 +369,8 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 
   int masterPlane(0);
 
-  size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
-	     static_cast<size_t>(-viewSurface-1));
-  //  int VSign((viewSurface<0) ? -1 : 1);
+  size_t iLP((viewIndex>=0) ? static_cast<size_t>(viewIndex) : 
+	     static_cast<size_t>(-viewIndex-1));
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;

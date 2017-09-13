@@ -630,7 +630,7 @@ ReactorGrid::fuelCentres() const
 
 std::vector<int>
 ReactorGrid::getFuelCells(const Simulation& System,
-			  const int zaid) const
+			  const size_t zaid) const
   /*!
     Get a comprehensive list of all cells
     \param System :: Simualation to check cell existance

@@ -61,8 +61,8 @@ class refPlate  : public attachSystem::ContainedComp,
 
 
   /// Name : Index 
-  void setOrigin(const std::string&,const long int,const long int);
-  void setOrigin(const attachSystem::FixedComp&,const long int,const long int);
+  void setOrigin(const std::string&,const long int);
+  void setOrigin(const attachSystem::FixedComp&,const long int);
   // +/-X/Y/Z/  : Name : Index
   void setPlane(const std::string&,const std::string&,const int,const size_t);
   void setPlane(const std::string&,const FixedComp&,const int,const size_t);

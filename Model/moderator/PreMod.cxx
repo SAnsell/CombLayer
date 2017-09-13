@@ -316,7 +316,7 @@ PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
     \param System :: Simulation item
     \param baseIndex :: base number
     \param FC :: Fixed unit that connects to this moderator
-    \param rFlag :: Decide if to rotate
+    \param rFlag :: Decide if to rotate 180 about Z axis
   */
 {
   ELog::RegMethod RegA("PreMod","createAll");
