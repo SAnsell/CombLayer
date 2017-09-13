@@ -119,7 +119,8 @@ refPlate::dirOppositeType(const std::string& DN)
 }
 
 void
-refPlate::setOrigin(const std::string& Name,const size_t Index)
+refPlate::setOrigin(const std::string& Name,const long int Index,
+		    const long int brokenValue)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
@@ -134,17 +135,17 @@ refPlate::setOrigin(const std::string& Name,const size_t Index)
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* OPtr=
-    OR.getObject<attachSystem::FixedComp>(Name);
+    OR.getObjectThrow<attachSystem::FixedComp>(Name,"FixedComp");
   
-  if (OPtr)
-    setOrigin(*OPtr,Index);
+  setOrigin(*OPtr,Index,brokenValue);
 
   return;
 }
 
 void
 refPlate::setOrigin(const attachSystem::FixedComp& FC,
-		    const size_t Index)
+		    const long int Index,
+		    const long int brokenValue)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
@@ -155,9 +156,9 @@ refPlate::setOrigin(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("refPlate","setOrigin(FC,size_t)");
   
-  Origin=FC.getLinkPt(Index);
-  Y= -FC.getLinkAxis(Index);
-  SN[2]= -FC.getLinkSurf(Index);
+  Origin=FC.getSignedLinkPt(Index);
+  Y= -FC.getSignedLinkAxis(Index);
+  SN[2]= -FC.getSignedLinkSurf(-Index);
 
   FixedComp::setLinkSurf(2,-SN[2]);
   FixedComp::setConnect(2,Origin,-Y);
@@ -219,7 +220,7 @@ refPlate::setPlane(const std::string& dirName,
   const size_t DIndex=dirType(dirName);
   const int surfSwap((dirFlag<0) ? -1 : 1);
 
-  SN[DIndex]=FC.getLinkSurf(LIndex)*surfSwap;
+  SN[DIndex]=FC.getSignedLinkSurf(LIndex+1)*surfSwap;
 
   FixedComp::setConnect(DIndex,FC.getLinkPt(LIndex),
 			-FC.getLinkAxis(LIndex)*surfSwap);

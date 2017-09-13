@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/refPlate.h
  *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,8 @@ class refPlate  : public attachSystem::ContainedComp,
 
 
   /// Name : Index 
-  void setOrigin(const std::string&,const size_t);
-  void setOrigin(const attachSystem::FixedComp&,const size_t);
+  void setOrigin(const std::string&,const long int,const long int);
+  void setOrigin(const attachSystem::FixedComp&,const long int,const long int);
   // +/-X/Y/Z/  : Name : Index
   void setPlane(const std::string&,const std::string&,const int,const size_t);
   void setPlane(const std::string&,const FixedComp&,const int,const size_t);

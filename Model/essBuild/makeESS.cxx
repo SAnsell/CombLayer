@@ -256,7 +256,7 @@ makeESS::createGuides(Simulation& System)
       OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
       GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
-      GB->setCylBoundary(Bulk->getLinkSurf(2),
+      GB->setCylBoundary(Bulk->getSignedLinkSurf(3),
 			 ShutterBayObj->getSignedLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);  

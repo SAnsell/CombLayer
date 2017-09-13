@@ -95,7 +95,8 @@ LinkWrapper::LinkWrapper(const std::string& Key)  :
 {}
 
 LinkWrapper::LinkWrapper(const LinkWrapper& A) : 
-  attachSystem::ContainedComp(A),attachSystem::ExcludedComp(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::ExcludedComp(A),
   attachSystem::FixedComp(A),InOutLinkB(A.InOutLinkB),
   refIndex(A.refIndex),cellIndex(A.cellIndex),surfNum(A.surfNum),
   surfCent(A.surfCent),surfAxis(A.surfAxis),flag(A.flag),
@@ -203,11 +204,11 @@ LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
 	(LX=="-0" || StrFunc::convert(LX,NX)))
     {
       if (LX=="-0")
-	addSurface(FC,-1,0);
+	addSurface(FC,-1);
       else if (NX<0)
-	addSurface(FC,-1,static_cast<size_t>(-NX));
+	addSurface(FC,-NX-1);
       else
-	addSurface(FC,1,static_cast<size_t>(NX));
+	addSurface(FC,NX+1);
       exitFlag++;
     }
   if (!exitFlag)
@@ -218,13 +219,11 @@ LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
 
 void
 LinkWrapper::addSurface(const std::string& FCName,
-			const int dirFlag,
-			const size_t LIndex)
+			const long int linkIndex)
 /*!
   Add a boundary surface
   \param FCName :: Fixed object to use
-  \param dirFlag :: Direction flag
-  \param LIndex :: Link surface index 
+  \param linkIndex :: Link surface index 
 */
 {
   ELog::RegMethod RegA("LinkWrapper","addSurface(string,Index)");
@@ -235,7 +234,7 @@ LinkWrapper::addSurface(const std::string& FCName,
   const attachSystem::FixedComp* FCptr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
 
-  addSurface(*FCptr,dirFlag,LIndex);
+  addSurface(*FCptr,linkIndex);
   return;
 }
 
@@ -262,27 +261,25 @@ LinkWrapper::addSurface(const std::string& FCName,
 
 void
 LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
-		   const int dirFlag,const size_t LIndex)
+			const long int LIndex)
 /*!
   Add a boundary surface
   \param FC :: Fixed object to use
-  \param dirFlag :: Direction flag
   \param LIndex :: Link surface index 
 */
 {
   ELog::RegMethod RegA("LinkWrapper","addSurface(FC,Index)");
 
   // Surfaces on links point outwards (hence swap of sign)
-  const int surfSwap((dirFlag<0) ? 1 : -1);
-  surfNum.push_back(FC.getLinkSurf(LIndex)*surfSwap);
+  surfNum.push_back(FC.getSignedLinkSurf(LIndex));
   surfEntryOrder.push_back(static_cast<int>(surfNum.size()));
   return;
 }
 
 void
 LinkWrapper::addSurface(const Geometry::Vec3D& Cent,
-		   const Geometry::Vec3D& Axis)
-  /*!
+			const Geometry::Vec3D& Axis)
+/*!
     Add a boundary surface
     \param Cent :: Centre Point
     \param Axis :: Axis point

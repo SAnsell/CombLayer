@@ -700,19 +700,18 @@ TriangleMod::getExitWindow(const long int sideIndex,
     throw ColErr::IndexError<size_t>(LU.size(),5,"Link size too small");
 
 
-  const size_t outIndex((sideIndex>0) ?
-			static_cast<size_t>(sideIndex)-1 :
-			static_cast<size_t>(-sideIndex)-1);
-  if (outIndex>LU.size())
-    throw ColErr::IndexError<size_t>(outIndex,5,"outIndex too big");
+  const long int outIndex(std::abs(sideIndex));
+  if (outIndex>6)
+    throw ColErr::IndexError<long int>(outIndex,6,"outIndex too big");
 
+  // 5: to get front + 4 on side
   window.clear();
-  for(size_t i=0;i<5;i++)
+  for(long int i=1;i<6;i++)
     if (i!=outIndex)
-      window.push_back(std::abs(getLinkSurf(i)));
+      window.push_back(std::abs(getSignedLinkSurf(i)));
 
   window.push_back(0);
-  return std::abs(SMap.realSurf(getLinkSurf(outIndex)));
+  return std::abs(SMap.realSurf(getSignedLinkSurf(sideIndex)));
 }
 
 Geometry::Vec3D

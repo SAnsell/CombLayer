@@ -3,7 +3,7 @@
  
  * File:   construct/LWInner.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ LWInner::~LWInner()
 void
 LWInner::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Creates the inner view Wrapping object
     \param System :: Simulation to create objects in
   */
 {

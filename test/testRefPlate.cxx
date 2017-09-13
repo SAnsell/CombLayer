@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testRefPlate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ testRefPlate::testAddBlock()
 
   ts1System::refPlate RP("testPlate1");
   
-  RP.setOrigin(*SObj,1);
+  RP.setOrigin(*SObj,2,0);
   RP.setPlane("X",*SObj,-1,3);
   RP.setPlane("-X",*SObj,-1,2);
   RP.setPlane("-Z",*SObj,-1,4);
@@ -200,7 +200,7 @@ testRefPlate::testAddTwoBlocks()
     RA(new ts1System::refPlate("testPlate1"));  
   OR.addObject(RA);
 
-  RA->setOrigin(*SObj,1);
+  RA->setOrigin(*SObj,2,0);
   RA->setPlane("X",*SObj,-1,3);
   RA->setPlane("-X",*SObj,-1,2);
   RA->setPlane("-Z",*SObj,-1,4);
@@ -216,7 +216,7 @@ testRefPlate::testAddTwoBlocks()
     RB(new ts1System::refPlate("testPlate2"));  
   OR.addObject(RB);
   
-  RB->setOrigin(*SObj,3);
+  RB->setOrigin(*SObj,4,0);
   RB->setPlane("X",*RA,1,3);
   RB->setPlane("-X",*SObj,-1,0);
   RB->setPlane("-Z",*SObj,-1,4);
@@ -232,7 +232,7 @@ testRefPlate::testAddTwoBlocks()
     RC(new ts1System::refPlate("testPlate3"));  
   OR.addObject(RC);
   
-  RC->setOrigin(*SObj,0);
+  RC->setOrigin(*SObj,1,0);
   RC->setPlane("X",*RB,1,3);
   RC->setPlane("-X",*SObj,-1,2);
   RC->setPlane("-Z",*SObj,-1,4);
@@ -270,22 +270,22 @@ testRefPlate::testArrayBlocks()
       OR.addObject(RVec.back());
     }
  
-  RVec[0]->setOrigin(*SObj,1);
+  RVec[0]->setOrigin(*SObj,2,0);
   RVec[0]->setPlane("-X",*SObj,-1,2);
   RVec[0]->setPlane("X",*SObj,-1,3);
   RVec[0]->setPlane("Y",2.3);
 
-  RVec[1]->setOrigin(*SObj,3);
+  RVec[1]->setOrigin(*SObj,4,0);
   RVec[1]->setPlane("-X",*SObj,-1,0);
   RVec[1]->setPlane("X",*RVec[0],1,3);
   RVec[1]->setPlane("Y",2.3);
 
-  RVec[2]->setOrigin(*SObj,0);
+  RVec[2]->setOrigin(*SObj,1,0);
   RVec[2]->setPlane("-X",*SObj,-1,2);
   RVec[2]->setPlane("X",*RVec[1],1,3);
   RVec[2]->setPlane("Y",2.3);
 
-  RVec[3]->setOrigin(*SObj,2);
+  RVec[3]->setOrigin(*SObj,3,0);
   RVec[3]->setPlane("-X",*RVec[0],1,3);
   RVec[3]->setPlane("X",*RVec[2],1,3);
   RVec[3]->setPlane("Y",2.3);
@@ -296,9 +296,9 @@ testRefPlate::testArrayBlocks()
       RVec[i]->setPlane("Z",*SObj,-1,5);
 
     }
-  for(size_t i=4;i<6;i++)
+  for(long int i=5;i<7;i++)
     {
-      RVec[i]->setOrigin(*SObj,i);
+      RVec[i]->setOrigin(*SObj,i,0);
       RVec[i]->setPlane("-X",*RVec[0],1,3);
       RVec[i]->setPlane("X",*RVec[2],1,3);
       RVec[i]->setPlane("-Z",*RVec[1],1,3);

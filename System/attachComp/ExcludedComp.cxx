@@ -246,7 +246,7 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
 
   // Surfaces on links point outwards (hence swap of sign)
   const int surfSwap((dirFlag<0) ? 1 : -1);
-  addExcludeSurf(FC.getLinkSurf(LIndex)*surfSwap);
+  addExcludeSurf(FC.getSignedLinkSurf(LIndex+1)*surfSwap);
   
   return;
 }
@@ -307,20 +307,16 @@ ExcludedComp::addExcludeObj(const std::string& ObjName)
     ModelSupport::objectRegister::Instance();
   
   const ContainedComp* CCPtr=
-    OR.getObject<ContainedComp>(ObjName);
+    OR.getObjectThrow<ContainedComp>(ObjName,"CC-Object Not found");
 
-  if (CCPtr)
-    {
-      const std::string OutStr=CCPtr->getCompExclude();
-      if (!OutStr.empty())
-	{
-	  MonteCarlo::Object Obj(1,0,0.0,OutStr);
-	  if (Obj.topRule())
-	    addUnion(Obj,boundary);
-	}
-      return;
-    }
   
+  const std::string OutStr=CCPtr->getCompExclude();
+  if (!OutStr.empty())
+    {
+      MonteCarlo::Object Obj(1,0,0.0,OutStr);
+      if (Obj.topRule())
+	addUnion(Obj,boundary);
+    }
   return;
 }
 

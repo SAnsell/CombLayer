@@ -194,7 +194,7 @@ ContainedComp::getConstSurfaces() const
     }
   return outerSurf.getTopRule()->getConstSurfVector();
 }
-
+  
 void
 ContainedComp::addOuterSurf(const int SN) 
   /*!

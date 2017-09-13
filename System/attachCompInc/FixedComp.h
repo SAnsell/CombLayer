@@ -49,7 +49,8 @@ class FixedComp
 
   std::string getLinkString(const size_t) const;
   std::string getLinkComplement(const size_t) const;
-
+  virtual int getLinkSurf(const size_t) const;
+  
  protected:
   
   const std::string keyName;       ///< Key Name
@@ -169,7 +170,6 @@ class FixedComp
   const LinkUnit& getSignedLU(const long int)  const; 
 
 
-  virtual int getLinkSurf(const size_t) const;
   virtual const Geometry::Vec3D& getLinkPt(const size_t) const;
   virtual const Geometry::Vec3D& getLinkAxis(const size_t) const;
   
@@ -185,18 +185,6 @@ class FixedComp
   
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;
-
-  /*
-  virtual std::string getLinkString(const size_t) const;
-  virtual std::string getLinkComplement(const size_t) const;
-  virtual std::string getBridgeComplement(const size_t) const;
-
-  virtual std::string getCommonString(const size_t) const;
-  virtual std::string getCommonComplement(const size_t) const;
-
-  virtual std::string getMasterString(const size_t) const;
-  virtual std::string getMasterComplement(const size_t) const;
-  */
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 

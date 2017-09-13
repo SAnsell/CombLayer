@@ -3,7 +3,7 @@
  
  * File:   build/collInsertBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -332,7 +332,7 @@ collInsertBase::createAll(Simulation& System,
   populate(System,&ZB);
 
   createUnitVector(ZB);
-  createSurfaces(ZB.getLinkSurf(1));
+  createSurfaces(ZB.getSignedLinkSurf(2));
   createObjects(System,"","");
   createLinks();
   insertObjects(System);       

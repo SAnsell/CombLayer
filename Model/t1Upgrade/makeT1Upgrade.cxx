@@ -287,7 +287,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1CylTarget";
     }    
@@ -297,7 +297,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
       OR.addObject("t1CylTarget",TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(3),0);
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -312,7 +312,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Inner";
     }    
@@ -324,7 +324,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       /// Target
 
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<ts1System::targCoolant> 
@@ -341,7 +341,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1BlockTarget";
     }    
@@ -351,7 +351,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Cannelloni";
     }    

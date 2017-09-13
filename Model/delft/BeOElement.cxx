@@ -170,7 +170,7 @@ BeOElement::createSurfaces(const attachSystem::FixedComp& RG)
   ModelSupport::buildPlane(SMap,surfIndex+24,Origin+X*(Width/2.0-T),X);
   ModelSupport::buildPlane(SMap,surfIndex+25,RG.getLinkPt(4)+Z*T,Z);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getSignedLinkSurf(5));
 
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BulkShield.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ t1BulkShield::createSurfaces(const attachSystem::FixedComp& FC)
 			      Origin,Z,outerRadius);
 
   // INNER LAYER:
-  SMap.addMatch(bulkIndex+7,FC.getLinkSurf(0));
+  SMap.addMatch(bulkIndex+7,FC.getSignedLinkSurf(1));
   return;
 }
 

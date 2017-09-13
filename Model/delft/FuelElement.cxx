@@ -289,7 +289,7 @@ FuelElement::createSurfaces(const attachSystem::FixedComp& RG)
 			   Origin+X*width/2.0,X);
   const double tHeight(fuelHeight/2.0+cladHeight+topHeight);
 
-  SMap.addMatch(surfIndex+5,RG.getLinkSurf(4));
+  SMap.addMatch(surfIndex+5,RG.getSignedLinkSurf(5));
   ModelSupport::buildPlane(SMap,surfIndex+6,
    			   Origin+Z*tHeight,Z);
   // Width numbers:

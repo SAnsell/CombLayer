@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/OrthoInsert.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,10 +190,9 @@ OrthoInsert::createSurfaces(const Hydrogen& HC)
 
   // NOTE: Surfaces can be used in the noraml +/- manor
   int signVal(-1);
-  for(size_t i=0;i<6;i++)
+  for(int i=1;i<7;i++)
     {
-      SMap.addMatch(hydIndex+1+static_cast<int>(i),
-		    signVal*HC.getLinkSurf(i));
+      SMap.addMatch(hydIndex+i,signVal*HC.getSignedLinkSurf(i));
       signVal*=-1;
     }
 

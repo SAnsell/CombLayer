@@ -490,15 +490,15 @@ Reflector::createInternalObjects(Simulation& System,
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
 
-  PMgroove->setTargetSurf(TarObj->getLinkSurf(0));
+  PMgroove->setTargetSurf(TarObj->getSignedLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
   PMgroove->setEdge();
-  PMgroove->createAll(System,5,*VacObj,0);
+  PMgroove->createAll(System,*VacObj,6,0);
 
-  PMhydro->setTargetSurf(TarObj->getLinkSurf(0));
+  PMhydro->setTargetSurf(TarObj->getSignedLinkSurf(1));
   PMhydro->setDivideSurf(-VacObj->getDivideSurf());
   PMhydro->setEdge();
-  PMhydro->createAll(System,5,*VacObj,1);
+  PMhydro->createAll(System,*VacObj,6,1);
 
   Horn->setDivideSurf(-VacObj->getDivideSurf());
   Horn->createAll(System,*VacObj,*FLhydro,*PMhydro);
@@ -522,8 +522,8 @@ Reflector::createInternalObjects(Simulation& System,
       FLwish->addBoundarySurf("outer",Out);  
       FLwish->createAll(System,*DVacObj,2);
       
-      PMdec->setTargetSurf(TarObj->getLinkSurf(0));
-      PMdec->createAll(System,4,*DVacObj,1);
+      PMdec->setTargetSurf(TarObj->getSignedLinkSurf(1));
+      PMdec->createAll(System,*DVacObj,5,1);
     }
   else
     {
@@ -537,8 +537,8 @@ Reflector::createInternalObjects(Simulation& System,
       FLwish->addBoundarySurf("outer",Out);  
       FLwish->createAll(System,*DMod,2);
       
-      PMdec->setTargetSurf(TarObj->getLinkSurf(0));
-      PMdec->createAll(System,5,*DMod,1);
+      PMdec->setTargetSurf(TarObj->getSignedLinkSurf(1));
+      PMdec->createAll(System,*DMod,6,1);
     }  
   Out=ModelSupport::getComposite(SMap,refIndex,"-2");
   IRcut->addBoundarySurf(Out);  
@@ -606,25 +606,23 @@ Reflector::calcModeratorPlanes(const int BeamLine,
   if (BeamLine<4)       // NARROW
     {
       FLnarrow->getInnerVec(Window);
-      //      dSurf=DMod->getDividePlane(1);
-      return DVacObj->getLinkSurf(0);
+      return DVacObj->getSignedLinkSurf(2);
     }
   if (BeamLine<9)      // H2
     {
       FLhydro->getInnerVec(Window);
-      //      dSurf=HydObj->getDividePlane();
-      return VacObj->getLinkSurf(1);
+      return VacObj->getSignedLinkSurf(2);
     }
   if (BeamLine<14)      // Groove
     {
       FLgroove->getInnerVec(Window);
       dSurf=GrooveObj->getDividePlane();
-      return VacObj->getLinkSurf(0);
+      return VacObj->getSignedLinkSurf(1);
     }
   // WISH
       FLwish->getInnerVec(Window);
       //      dSurf=DMod->getDividePlane(0);
-      return DVacObj->getLinkSurf(1);
+      return DVacObj->getSignedLinkSurf(2);
 }
 
 Geometry::Vec3D

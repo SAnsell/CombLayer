@@ -92,7 +92,7 @@ DiskChopper::DiskChopper(const std::string& Key) :
 
 DiskChopper::DiskChopper(const DiskChopper& A) : 
   attachSystem::FixedOffsetGroup(A),
-  attachSystem::ContainedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::CellMap(A),
   chpIndex(A.chpIndex),cellIndex(A.cellIndex),
   centreFlag(A.centreFlag),offsetFlag(A.offsetFlag),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
@@ -115,6 +115,7 @@ DiskChopper::operator=(const DiskChopper& A)
     {
       attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       centreFlag=A.centreFlag;
       offsetFlag=A.offsetFlag;

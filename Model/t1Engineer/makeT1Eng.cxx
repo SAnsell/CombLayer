@@ -355,7 +355,7 @@ makeT1Eng::build(Simulation* SimPtr,
 
   RefObj->addToInsertChain(*TarObj);
   //asfasdf
-  TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+  TarObj->setRefPlates(-RefObj->getSignedLinkSurf(3),0);
   TarObj->createAll(*SimPtr,World::masterOrigin());
   //  TarObjModify->createAll(*SimPtr,*TarObj);
 

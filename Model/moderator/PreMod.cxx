@@ -174,22 +174,21 @@ PreMod::createUnitVector(const size_t baseIndex,
 }
   
 void
-PreMod::createSurfaces(const size_t baseIndex,
-		       const attachSystem::FixedComp& FC)
+PreMod::createSurfaces(const attachSystem::FixedComp& FC,
+		       const long int baseIndex)
   /*!
     Create All the surfaces
-    \param baseIndex :: base number
     \param FC :: Fixed unit that connects to this moderator
+    \param baseIndex :: base number
   */
 {
   ELog::RegMethod RegA("PreMod","createSurface");
 
-  const Geometry::Vec3D& cAxis=FC[baseIndex].getAxis(); 
+  const Geometry::Vec3D& cAxis=FC.getSignedLinkAxis(baseIndex);
   const int cFlag=(cAxis.dotProd(Z)<-0.8) ? -1 : 1;
 
-
   if (centOrgFlag)
-    Origin-=Y*depth/2.0;
+    Origin-=Y*(depth/2.0);
 
   // Outer DIVIDE PLANE/Cylinder
   if (divideSurf)
@@ -197,7 +196,7 @@ PreMod::createSurfaces(const size_t baseIndex,
   else
     ModelSupport::buildPlane(SMap,preIndex+1,Origin,Y);
 
-  SMap.addMatch(preIndex+5,cFlag*FC.getLinkSurf(baseIndex));
+  SMap.addMatch(preIndex+5,cFlag*FC.getSignedLinkSurf(baseIndex));
   if (targetSurf)
     SMap.addMatch(preIndex+7,targetSurf);  // This is a cylinder [hopefully]
 
@@ -309,9 +308,9 @@ PreMod::createLinks()
 }
   
 void
-PreMod::createAll(Simulation& System,const size_t baseIndex,
-		  const attachSystem::FixedComp& FC,
-		  const int rFlag)
+PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+		  const long int baseIndex,
+		  const bool rFlag)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -325,7 +324,7 @@ PreMod::createAll(Simulation& System,const size_t baseIndex,
 
   createUnitVector(baseIndex,FC);
   if (rFlag) FixedComp::applyRotation(Z,180.0);
-  createSurfaces(baseIndex,FC);
+  createSurfaces(FC,baseIndex);
   createObjects(System);
   createLinks();
   insertObjects(System);       

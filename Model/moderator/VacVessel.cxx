@@ -241,7 +241,7 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit)
   for(size_t i=0;i<6;i++)
     BVec[i]=FUnit[i].getConnectPt();
   
-  divideSurf= FUnit.getLinkSurf(0);
+  divideSurf= FUnit.getSignedLinkSurf(1);
   ELog::EM<<"Divide surface == "<<keyName<<" "<<divideSurf<<ELog::endDiag;
   return;
 }
@@ -277,7 +277,7 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit,
   BVec[0]=FUnit[1].getConnectPt();
   BVec[1]=GUnit[1].getConnectPt();
   
-  divideSurf= -FUnit.getLinkSurf(0);
+  divideSurf= FUnit.getSignedLinkSurf(-1);
   return;
 }
 
@@ -416,7 +416,7 @@ VacVessel::createLinks()
     FixedComp::setConnect(i,getSurfacePoint(4,i+1),getDirection(i));
 
   // Set Connect surfaces:
-  for(int i=2;i<6;i++)
+  for(int i=3;i<6;i++)
     FixedComp::setLinkSurf(static_cast<size_t>(i),
 			   SMap.realSurf(vacIndex+41+i));
 
