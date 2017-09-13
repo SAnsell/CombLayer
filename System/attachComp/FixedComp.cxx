@@ -848,7 +848,7 @@ FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR)
     \param HR :: HeadRule for bridge
   */
 {
-  ELog::RegMethod RegA("FixedComp","setBridgeSurf");
+  ELog::RegMethod RegA("FixedComp","setBridgeSurf(HR)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
 
@@ -856,25 +856,6 @@ FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR)
   return;
 }
 
-void
-FixedComp::setBridgeSurf(const size_t Index,
-		       const attachSystem::FixedComp& FC,
-		       const size_t otherIndex) 
-  /*!
-    Set  a surface to bridge
-    \param Index :: Link number
-    \param FC :: Fixed component to use as connection
-    \param otherIndex :: Connecting surface on the FC
-  */
-{
-  ELog::RegMethod RegA("FixedComp","setBridgeSurf<FC>");
-  if (otherIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>(otherIndex,FC.LU.size(),
-				  "otherIndex/LU.size");
-
-  setBridgeSurf(Index,-FC.getLinkSurf(otherIndex));
-  return;
-}
 void
 FixedComp::addBridgeSurf(const size_t Index,const int SN) 
   /*!
@@ -902,7 +883,7 @@ FixedComp::addBridgeSurf(const size_t Index,
     \param SList :: String to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","addBridgeSurf");
+  ELog::RegMethod RegA("FixedComp","addBridgeSurf(string)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
