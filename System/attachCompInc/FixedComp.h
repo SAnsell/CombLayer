@@ -49,7 +49,7 @@ class FixedComp
 
   std::string getLinkString(const size_t) const;
   std::string getLinkComplement(const size_t) const;
-  virtual int getLinkSurf(const size_t) const;
+  int getLinkSurf(const size_t) const;
   
  protected:
   
@@ -158,7 +158,6 @@ class FixedComp
   virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
 
   virtual int getExitWindow(const long int,std::vector<int>&) const;
-  virtual int getMasterSurf(const size_t) const;
 			 
   void copyLinkObjects(const FixedComp&);
   /// How many connections

@@ -1556,17 +1556,6 @@ FixedComp::applyRotation(const localRotate& LR)
   return;
 }
   
-int
-FixedComp::getMasterSurf(const size_t outIndex) const
-  /*!
-    Calculate the unsigned exit surface
-    \param outIndex :: Out surface direction
-    \return surfNum
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getMasterSurf");
-  return std::abs(SMap.realSurf(getLinkSurf(outIndex)));
-}
 
 int
 FixedComp::getExitWindow(const long int sideIndex,
