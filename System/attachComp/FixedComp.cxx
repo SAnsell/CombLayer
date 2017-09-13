@@ -748,7 +748,7 @@ FixedComp::setLinkSurf(const size_t Index,
     \param SList :: String to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(string)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
@@ -823,24 +823,6 @@ FixedComp::setLinkSurf(const size_t Index,const int SN)
   return;
 }
 
-void
-FixedComp::setLinkSurf(const size_t Index,
-		       const attachSystem::FixedComp& FC,
-		       const size_t otherIndex) 
-  /*!
-    Set  a surface to output
-    \param Index :: Link number
-    \param FC :: Fixed component to use as connection
-    \param otherIndex :: Connecting surface on the FC
-  */
-{
-  ELog::RegMethod RegA("FixedComp","setLinkSurf<FC>");
-  if (otherIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>(otherIndex,FC.LU.size(),
-				  "otherIndex/LU.size");
-  setLinkSurf(Index,FC.getMainRule(otherIndex).complement());
-  return;
-}
 
 void
 FixedComp::setBridgeSurf(const size_t Index,const int SN) 
@@ -1264,40 +1246,6 @@ FixedComp::getSignedLinkAxis(const long int sideIndex) const
 }
 
 std::string
-FixedComp::getMasterString(const size_t Index) const
-  /*!
-    Accessor to the master link surface string
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getMasterString:"+keyName);
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-  
-  return LU[Index].getMain();
-}
-
-std::string
-FixedComp::getMasterComplement(const size_t Index) const
-  /*!
-    Accessor to the master link surface string
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getMasterComplement");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  HeadRule RP;
-  RP.procString(LU[Index].getMain());
-  RP.makeComplement();
-  return RP.display();
-}
-
-
-std::string
 FixedComp::getSignedLinkString(const long int sideIndex) const
   /*!
     Accessor to the link string
@@ -1349,64 +1297,6 @@ FixedComp::getLinkComplement(const size_t Index) const
   RP.makeComplement();
   
   RP.addIntersection(LU[Index].getCommon());
-  return RP.display();
-}
-
-std::string
-FixedComp::getCommonString(const size_t Index) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getBridgeString");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  return (LU[Index].hasCommon()) ? LU[Index].getCommon() : ""; 
-}
-
-std::string
-FixedComp::getCommonComplement(const size_t Index) const
-  /*!
-    Accessor to the common surfaces [in complement]
-    \param Index :: Link number
-    \return String of common link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getBridgeString");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  if (LU[Index].hasCommon())
-    {
-      HeadRule RP;
-      RP.procString(LU[Index].getCommon());
-      RP.makeComplement();
-      return RP.display();
-    }
-  return "";
-}
-
-std::string
-FixedComp::getBridgeComplement(const size_t Index) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getBridgeComplement");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  HeadRule RP;
-  RP.procString(LU[Index].getMain());
-  RP.makeComplement();
-  if (LU[Index].hasCommon())
-    RP.addIntersection(LU[Index].getCommon());
-
   return RP.display();
 }
 

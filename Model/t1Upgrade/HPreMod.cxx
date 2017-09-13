@@ -150,11 +150,11 @@ HPreMod::clone() const
 
 void
 HPreMod::getConnectPoints(const attachSystem::FixedComp& FC,
-			  const size_t index)
+			  const long int sideIndex)
   /*!
     Get connection points
     \param FC :: FixedComponent
-    \param index :: Index points
+    \param sideIndex :: Index points
    */
 {
   ELog::RegMethod RegA("HPreMod","getConnectPoints");
@@ -166,11 +166,13 @@ HPreMod::getConnectPoints(const attachSystem::FixedComp& FC,
 				{4,5,2,3,0,1}, 
 				{5,4,3,2,1,0} };
 
+  const size_t index(std::abs(sideIndex)-1);
   if (FC.NConnect()<6)
     throw ColErr::RangeError<size_t>(0,6,FC.NConnect(),"Number of connects");
-  if (FC.NConnect()<6)
+  if (index>=6)
     throw ColErr::IndexError<size_t>(index,6,"Index");
-
+  
+  
   
   sidePts.clear();
   sideAxis.clear();
@@ -230,7 +232,7 @@ HPreMod::createUnitVector(const attachSystem::FixedComp& FC)
   
 void
 HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
-			const size_t frontIndex)
+			const long int frontIndex)
   /*!
     Create All the surfaces
     \param FC :: Fixed unit that connects to this moderator
@@ -300,7 +302,7 @@ HPreMod::createSurfaces(const attachSystem::FixedComp& FC,
 void
 HPreMod::createObjects(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const size_t frontIndex)
+		       const long int frontIndex)
   /*!
     Adds the Chip guide components
     \param System :: Simulation to create objects in
@@ -312,21 +314,20 @@ HPreMod::createObjects(Simulation& System,
 
   int addFlag(0);
   std::string Inner(" (");
-  for(size_t i=0;i<6;i++)
+  for(long int i=1;i<7;i++)
     {
       if (i!=frontIndex)
 	{
 	  if (addFlag) Inner+=":";
 	  addFlag=1;
-	  Inner+=FC.getSignedLinkString(i+1);
+	  Inner+=FC.getSignedLinkString(i);
 	}
     }
   Inner+=")";
 
-  const std::string FFace=FC.getSignedLinkString(-(frontIndex+1));
+  const std::string FFace=FC.getSignedLinkString(-frontIndex);
   // Set first link Point:
-  FixedComp::setConnect(0,FC.getLinkPt(frontIndex),Y);
-  FixedComp::setLinkSurf(0,FC,frontIndex);
+  FixedComp::setLinkSignedCopy(0,FC,frontIndex);
 
   // Wrap AL:
   std::string Out;
@@ -384,7 +385,7 @@ HPreMod::createLinks()
 void
 HPreMod::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
-		   const size_t frontIndex)
+		   const long int frontIndex)
    /*!
     Generic function to create everything
     \param System :: Simulation item

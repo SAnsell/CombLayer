@@ -49,14 +49,7 @@ class FixedComp
 
   std::string getLinkString(const size_t) const;
   std::string getLinkComplement(const size_t) const;
-  std::string getBridgeComplement(const size_t) const;
 
-  std::string getCommonString(const size_t) const;
-  std::string getCommonComplement(const size_t) const;
-
-  std::string getMasterString(const size_t) const;
-  std::string getMasterComplement(const size_t) const;
-  
  protected:
   
   const std::string keyName;       ///< Key Name
@@ -64,8 +57,8 @@ class FixedComp
 
   std::map<std::string,int> keyMap; ///< Keynames to index
   
-  Geometry::Vec3D X;            ///< X-coordinate [shutter x]
-  Geometry::Vec3D Y;            ///< Y-coordinate [shutter y]
+  Geometry::Vec3D X;            ///< X-coordinate 
+  Geometry::Vec3D Y;            ///< Y-coordinate 
   Geometry::Vec3D Z;            ///< Z-coordinate 
   Geometry::Vec3D Origin;       ///< Origin  
 
@@ -125,7 +118,7 @@ class FixedComp
 		      const Geometry::Vec3D&);
   void setBasicExtent(const double,const double,const double);
 
-  void setLinkSurf(const size_t,const FixedComp&,const size_t);
+
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const std::string&);
   void setLinkSurf(const size_t,const HeadRule&);

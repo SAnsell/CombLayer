@@ -636,7 +636,7 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
 
 	H2PMod=std::shared_ptr<ts1System::HPreMod>
 	  (new HPreMod("HPreMod"));      
-	H2PMod->createAll(System,*H2Mod,1);
+	H2PMod->createAll(System,*H2Mod,2);
 	RefObj->addToInsertControl(System,*H2PMod,*H2PMod);
 
 	return "H2Mod";
