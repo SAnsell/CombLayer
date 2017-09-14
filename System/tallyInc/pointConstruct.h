@@ -70,8 +70,6 @@ class pointConstruct
 			  long int,const double,
 			  const double,const double) const;
 
-  void addBasicPointTally(Simulation&,const attachSystem::FixedComp&,
-			  const size_t,const double) const;
 
   virtual void writeHelp(std::ostream&) const;
   

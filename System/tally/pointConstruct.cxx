@@ -411,35 +411,6 @@ pointConstruct::calcWindowIntercept(const int bPlane,
 }
 
 
-void 
-pointConstruct::addBasicPointTally(Simulation& System,
-				   const attachSystem::FixedComp& FC,
-				   const size_t FCpoint,
-				   const double YStep) const
-  /*!
-    Adds a beamline tally to the system
-    \param System :: Simulation system
-    \param FC :: Guide unit to create tally after
-    \param FCpoint :: Point surface
-    \param YStep :: distance to step
-  */
-{
-  ELog::RegMethod RegA("pointConstruct","addBasicPointTally");
-
-  const masterRotate& MR=masterRotate::Instance();
-
-  const int tNum=System.nextTallyNum(5);
-  // Guide back point
-  Geometry::Vec3D Pt=FC.getLinkPt(FCpoint);
-  const Geometry::Vec3D TVec=FC.getLinkAxis(FCpoint);
-  Pt+=TVec*YStep;      // Add so not on boundary
-  ELog::EM<<"Tally "<<tNum<<" (point) = "
-	  <<MR.calcRotate(Pt)<<ELog::endDiag;
-  tallySystem::addF5Tally(System,tNum,Pt,			      
-			  std::vector<Geometry::Vec3D>());
-  return;
-}
-
 void
 pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
 				  Geometry::Vec3D& BOrigin,
