@@ -47,6 +47,7 @@ class FixedComp
 {
  private:
 
+
   std::string getLinkString(const size_t) const;
   std::string getLinkComplement(const size_t) const;
   int getLinkSurf(const size_t) const;
@@ -158,7 +159,10 @@ class FixedComp
   virtual const Geometry::Vec3D& getBeamOrigin() const { return beamOrigin; }  
 
   virtual int getExitWindow(const long int,std::vector<int>&) const;
-			 
+
+  const Geometry::Vec3D& getLinkPt(const size_t) const;
+  const Geometry::Vec3D& getLinkAxis(const size_t) const;
+
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }
@@ -167,10 +171,6 @@ class FixedComp
 
   LinkUnit& getSignedLU(const long int);
   const LinkUnit& getSignedLU(const long int)  const; 
-
-
-  virtual const Geometry::Vec3D& getLinkPt(const size_t) const;
-  virtual const Geometry::Vec3D& getLinkAxis(const size_t) const;
   
   virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
   virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
