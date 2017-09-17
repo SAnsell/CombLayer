@@ -406,8 +406,8 @@ makeT1Real::build(Simulation* SimPtr,
       BulkObj->addInsertCell(voidCell);  
       BulkObj->createAll(*SimPtr,IParam,*VoidObj);
 
-      MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-      MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+      MonoTopObj->createAll(*SimPtr,3,*VoidObj,*BulkObj);
+      MonoBaseObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
       voidCell=VoidObj->getVoidCell();
     }
   else

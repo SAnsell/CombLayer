@@ -172,7 +172,6 @@ MonoPlug::createUnitVector(const attachSystem::FixedComp& VoidFC,
 
   attachSystem::FixedComp::createUnitVector(VoidFC);
   Origin=VoidFC.getSignedLinkPt(sideIndex);
-  
   return;
 }
 

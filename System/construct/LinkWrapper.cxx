@@ -192,23 +192,14 @@ LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
     \param LList :: Link surface index (as a deliminated string)
   */
 {
-  ELog::RegMethod RegA("LinkWrapper","addSurface");
+  ELog::RegMethod RegA("LinkWrapper","addSurface(FC,string)");
 
-  // Decompose into strings to deal with  -0
   int exitFlag(0);
-
   std::string LX;  // Item 
-  int NX;
-  std::replace(LList.begin(),LList.end(),',',' ');
-  while(StrFunc::section(LList,LX) && 
-	(LX=="-0" || StrFunc::convert(LX,NX)))
+  long int NX;
+  while( StrFunc::section(LList,NX) )
     {
-      if (LX=="-0")
-	addSurface(FC,-1);
-      else if (NX<0)
-	addSurface(FC,-NX-1);
-      else
-	addSurface(FC,NX+1);
+      addSurface(FC,NX);
       exitFlag++;
     }
   if (!exitFlag)
@@ -273,6 +264,9 @@ LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
   // Surfaces on links point outwards (hence swap of sign)
   surfNum.push_back(FC.getSignedLinkSurf(LIndex));
   surfEntryOrder.push_back(static_cast<int>(surfNum.size()));
+  long int INumber(0);
+  if (LIndex>0) INumber= -(LIndex-1);
+  if (LIndex<0) INumber= -(LIndex+1);
   return;
 }
 
