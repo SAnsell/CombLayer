@@ -114,7 +114,7 @@ class PressVessel : public attachSystem::ContainedComp,
   PressVessel(const std::string&);
   PressVessel(const PressVessel&);
   PressVessel& operator=(const PressVessel&);
-  ~PressVessel();
+  ~PressVessel(); 
 
   /// set target length
   void setTargetLength(const double T) { targetLen=T; }
