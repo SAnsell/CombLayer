@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1BaseVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -425,9 +425,9 @@ TS1CylTarget(FuncDataBase& Control)
   Control.addVariable("t1CylTargetBoreRadius",5.70);  // Master bore  
   Control.addVariable("t1CylTargetVoidFront",0.3);  // Master gap
   // TARGET of TS2
-  Control.addVariable("t1CylTargetXOffset",0.0);           // Offset ref centre
-  Control.addVariable("t1CylTargetYOffset",-2.95);         // Offset ref centre
-  Control.addVariable("t1CylTargetZOffset",0.0);           // Offset ref centre
+  Control.addVariable("t1CylTargetXStep",0.0);           // Offset ref centre
+  Control.addVariable("t1CylTargetYStep",-2.95);         // Offset ref centre
+  Control.addVariable("t1CylTargetZStep",0.0);           // Offset ref centre
   Control.addVariable("t1CylTargetMainLength",33.0);       // Length from 
   Control.addVariable("t1CylTargetCoreRadius",4.9);       // W radius 
   Control.addVariable("t1CylTargetSurfThick",0.2);        // skin layer

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   buildInc/targetOuter.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,6 @@ class targetOuter : public constructSystem::TargetBase
   const int protonIndex;        ///< Index of surface offset
 
   int cellIndex;                ///< Cell index
-  int populated;                ///< populated or not
-
-  double xOffset;               ///< Master offset distance 
-  double yOffset;               ///< Master offset distance 
-  double zOffset;               ///< Master offset distance 
   
   double totalLength;            ///< Straight length
 
@@ -98,7 +93,7 @@ class targetOuter : public constructSystem::TargetBase
 
   int mainCell;                 ///< Main tungsten cylinder
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
   
   void createSurfaces();  
@@ -116,12 +111,10 @@ class targetOuter : public constructSystem::TargetBase
   /// Main mercury cell body
   int getMainBody() const  { return mainCell; }
 
-  void addProtonLine(Simulation&,	 
-		     const attachSystem::FixedComp& refFC,
-		     const long int index);
-  virtual void createBeamWindow(Simulation&);
-  virtual void createAll(Simulation&,
-			 const attachSystem::FixedComp&);
+  void addProtonLine(Simulation&,const attachSystem::FixedComp&,
+		     const long int);
+
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
   
 
 };

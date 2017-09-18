@@ -537,9 +537,9 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("t2TargetBoreRadius",3.70);  // Master bore  
   // TARGET of TS2
-  Control.addVariable("t2TargetXOffset",0.0);           // Offset ref centre
-  Control.addVariable("t2TargetYOffset",4.2);           // Offset ref centre
-  Control.addVariable("t2TargetZOffset",0.0);           // Offset ref centre
+  Control.addVariable("t2TargetXStep",0.0);           // Step ref centre
+  Control.addVariable("t2TargetYtep",4.2);           // Step ref centre
+  Control.addVariable("t2TargetZStep",0.0);           // Step ref centre
   Control.addVariable("t2TargetMainLength",33.0);       // Length from 
   Control.addVariable("t2TargetCoreRadius",2.814);      // W radius 
   Control.addVariable("t2TargetSurfThick",0.3);         // skin layer
@@ -796,7 +796,7 @@ TS2layout(FuncDataBase& Control)
 
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("ProtonVoidViewRadius",3.4);  // Radius [guesses]
-  Control.addVariable("BWindowYStep",6.0);  // Y step
+  Control.addVariable("BWindowYStep",-6.0);  // Y step
   Control.addVariable("BWindowIncThick1",0.3);  // Inconel Thickness 1
   Control.addVariable("BWindowWaterThick",0.1); // Light water Thickness
   Control.addVariable("BWindowIncThick2",0.3); // Inconel Thickness 2

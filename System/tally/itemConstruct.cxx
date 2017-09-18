@@ -185,15 +185,15 @@ itemConstruct::addBeamLineItem(Simulation& System,
   // MODERATOR PLANE
 
   const int masterPlane=ModPtr->getExitWindow(viewSurface,Planes);
-
+  
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getSignedLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getSignedLinkPt(1); 
 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=

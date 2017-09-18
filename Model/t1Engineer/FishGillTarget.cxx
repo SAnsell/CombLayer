@@ -139,31 +139,6 @@ FishGillTarget::~FishGillTarget()
  */
 {}
   
-void
-FishGillTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("FishGillTarget","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();     
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	    (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,6);   // realtive front face
-    }
-  
-  return;
-}
 
 void
 FishGillTarget::addProtonLine(Simulation& ,
@@ -179,7 +154,7 @@ FishGillTarget::addProtonLine(Simulation& ,
   ELog::RegMethod RegA("FishGillTarget","addProtonLine");
 
   //  PLine->createAll(System,*PressVObj,-7,refFC,index);
-  //  createBeamWindow(System);
+  //  createBeamWindow(System,7);
   
   return;
 }

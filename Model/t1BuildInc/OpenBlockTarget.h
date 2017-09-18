@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/OpenBlockTarget.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,10 +44,6 @@ class OpenBlockTarget : public constructSystem::TargetBase
 
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
-
-  double xStep;               ///< Master offset distance 
-  double yStep;               ///< Master offset distance 
-  double zStep;               ///< Master offset distance 
   
   double height;                ///< Height inner pressure tank
   double width;                 ///< Width inner presure tank  
@@ -71,7 +67,8 @@ class OpenBlockTarget : public constructSystem::TargetBase
   int waterMat;                 ///< Water material
   int pressMat;                 ///< Pressure mat
 
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&);
@@ -89,7 +86,6 @@ class OpenBlockTarget : public constructSystem::TargetBase
   double getTargetLength() const;
   void createAll(Simulation&,const attachSystem::FixedComp&);
 
-  virtual void createBeamWindow(Simulation&); 
   virtual void addProtonLine(Simulation&,const attachSystem::FixedComp&,
 			     const long int); 
   

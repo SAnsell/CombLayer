@@ -72,11 +72,6 @@ class pointConstruct
 
 
   virtual void writeHelp(std::ostream&) const;
-  
-  static void 
-    calcBeamDirection(const attachSystem::FixedComp&,
-		      Geometry::Vec3D&,Geometry::Vec3D&);
-
 
   static std::vector<Geometry::Vec3D> 
     calcWindowIntercept(const int,const std::vector<int>,

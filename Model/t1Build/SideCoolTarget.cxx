@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/SideCoolTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -94,8 +95,8 @@ SideCoolTarget::SideCoolTarget(const std::string& Key) :
 
 SideCoolTarget::SideCoolTarget(const SideCoolTarget& A) : 
   constructSystem::TargetBase(A),
-  tarIndex(A.tarIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),mainLength(A.mainLength),
+  tarIndex(A.tarIndex),cellIndex(A.cellIndex),
+  mainLength(A.mainLength),
   xRadius(A.xRadius),zRadius(A.zRadius),
   cladThick(A.cladThick),waterThick(A.waterThick),
   pressThick(A.pressThick),voidThick(A.voidThick),
@@ -164,18 +165,16 @@ SideCoolTarget::~SideCoolTarget()
 {}
 
 void
-SideCoolTarget::populate(const Simulation& System)
+SideCoolTarget::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  ELog::RegMethod RegA("SideCoolTarget","populate");
+  
+  attachSystem::FixedOffset::populate(Control);
+  
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   xRadius=Control.EvalVar<double>(keyName+"XRadius");
   zRadius=Control.EvalVar<double>(keyName+"ZRadius");
@@ -199,16 +198,18 @@ SideCoolTarget::populate(const Simulation& System)
 }
 
 void
-SideCoolTarget::createUnitVector(const attachSystem::FixedComp& FC)
+SideCoolTarget::createUnitVector(const attachSystem::FixedComp& FC,
+				 const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed unit for origin + xyz
+    \param sideIndex :: offset side
   */
 {
   ELog::RegMethod RegA("SideCoolTarget","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -376,31 +377,6 @@ SideCoolTarget::createLinks()
   return;
 }
 
-void
-SideCoolTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("SideCoolTarget","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();
-      
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	  (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,0);  // 2 => front face of target
-    }
-  return;
-}
 
 
 void
@@ -418,7 +394,7 @@ SideCoolTarget::addProtonLine(Simulation& System,
 
   // 0 ::  front face of target
   PLine->createAll(System,*this,0,refFC,index);
-  createBeamWindow(System);
+  createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
   return;
@@ -448,12 +424,11 @@ SideCoolTarget::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("SideCoolTarget","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,0);
   createSurfaces();
   createObjects(System);
   createLinks();
-  createBeamWindow(System);
   insertObjects(System);
 
 

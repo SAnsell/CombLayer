@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1EngineerInc/bulletTarget.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,6 @@ class BulletTarget :
   std::shared_ptr<BulletPlates> PlateTarObj;          ///< Plate Target
   std::shared_ptr<BulletVessel> PressVObj;            ///< Pressure vessel
   std::vector<std::shared_ptr<BulletDivider> > DObj;  ///< Internal dividers
-
-  void createBeamWindow(Simulation&);
 
  public:
 

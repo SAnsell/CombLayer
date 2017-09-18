@@ -45,6 +45,12 @@ namespace tallySystem
 
 class beamTallyConstruct : virtual public pointConstruct
 {
+ private:
+  
+  static void calcBeamDirection(const attachSystem::FixedComp&,
+				Geometry::Vec3D&,
+				Geometry::Vec3D&);
+			  
  public:
 
   beamTallyConstruct();

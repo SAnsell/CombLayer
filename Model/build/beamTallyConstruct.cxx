@@ -119,6 +119,31 @@ beamTallyConstruct::operator=(const beamTallyConstruct& A)
   return *this;
 }
 
+
+void
+beamTallyConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
+				      Geometry::Vec3D& BOrigin,
+				      Geometry::Vec3D& BAxis)
+  /*!
+    Calculate the beam direction and origin given a shutter component
+    \param FC :: Component that might be TwinComp
+    \param BOrigin :: Output for Origin
+    \param BAxis :: Output for Axis
+   */
+{
+  ELog::RegMethod RegA("beamTallyConstruct","calcBeamDirection");
+
+  const attachSystem::TwinComp* TwinPtr=
+    dynamic_cast<const attachSystem::TwinComp*>(&FC);
+  BAxis=(TwinPtr) ?  -TwinPtr->getBY() :
+    FC.getSignedLinkAxis(0);
+  
+  BOrigin=(TwinPtr) ? TwinPtr->getBeamStart() :
+    FC.getSignedLinkPt(0); 
+  
+  return;
+}
+
 void
 beamTallyConstruct::processPoint(Simulation& System,
 			     const mainSystem::inputParam& IParam,
@@ -574,7 +599,7 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
       ELog::EM<<"Failed to find B4C in the viewAxis "<<ELog::endErr;
       return;
     }
-  Geometry::Vec3D BAxis;
+  Geometry::Vec3D BAxis=ShutterPtr->getSignedLinkAxis(0);
   Geometry::Vec3D BOrigin;
   calcBeamDirection(*ShutterPtr,BOrigin,BAxis);
 

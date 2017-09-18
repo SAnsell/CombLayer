@@ -71,7 +71,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
 #include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
@@ -408,30 +407,6 @@ pointConstruct::calcWindowIntercept(const int bPlane,
   VList.resize(4);
   
   return VList;
-}
-
-
-void
-pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
-				  Geometry::Vec3D& BOrigin,
-				  Geometry::Vec3D& BAxis)
-  /*!
-    Calculate the beam direction and origin given a shutter component
-    \param FC :: Component that might be TwinComp
-    \param BOrigin :: Output for Origin
-    \param BAxis :: Output for Axis
-   */
-{
-  ELog::RegMethod RegA("pointConstruct","calcBeamDirection");
-
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(&FC);
-  BAxis=(TwinPtr) ?  -TwinPtr->getBY() : FC.getLinkAxis(0);
-  
-  BOrigin=(TwinPtr) ?
-    TwinPtr->getBeamStart() : FC.getLinkPt(0); 
-  
-  return;
 }
 
 void
