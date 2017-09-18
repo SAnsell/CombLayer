@@ -127,7 +127,6 @@ LWInner::createObjects(Simulation& System)
 	    std::ostream_iterator<int>(cx," "));
   
   addOuterSurf(cx.str());
-
   std::string Outer=cx.str();
   std::string Inner=cx.str();
   for(size_t i=0;i<nLayers;i++)

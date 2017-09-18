@@ -368,7 +368,7 @@ t1BulkShield::createBulkInserts(Simulation& System,
 				SMap.realSurf(bulkIndex+27),
 				SMap.realSurf(bulkIndex+37) );
       BData.back()->setGlobalVariables(shutterRadius,innerRadius,outerRadius);
-      BData.back()->createAll(System,*GData[static_cast<size_t>(i)]);    
+      BData.back()->createAll(System,*GData[i]);    
     }
   return;
 }
