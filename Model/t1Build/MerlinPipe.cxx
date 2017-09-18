@@ -3,7 +3,7 @@
  
  * File:   t1Build/MerlinPipe.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,17 +155,14 @@ MerlinPipe::~MerlinPipe()
 {}
 
 void
-MerlinPipe::populate(const Simulation& System)
+MerlinPipe::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod RegA("MerlinPipe","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-  
-
   Xoffset=Control.EvalVar<double>(keyName+"XOffset"); 
   Yoffset=Control.EvalVar<double>(keyName+"YOffset"); 
   
@@ -196,7 +193,7 @@ MerlinPipe::populate(const Simulation& System)
 
 void
 MerlinPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
-			     const size_t sideIndex)
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     - X Across the moderator
@@ -207,29 +204,27 @@ MerlinPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
 {
   ELog::RegMethod RegA("MerlinPipe","createUnitVector");
 
-  FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getLinkPt(sideIndex);
-  //  Z=CUnit.getLinkAxis(sideIndex);
-
+  FixedComp::createUnitVector(CUnit,sideIndex);
+  
   return;
 }
 
 void 
 MerlinPipe::insertOuter(Simulation& System,
 			const attachSystem::FixedComp& FC,
-			const size_t side)
+			const long int side)
   /*!
     Add a pipe to the hydrogen system:
     \param System :: Simulation to add pipe to
     \param FC :: 
-    \param side :: index fo sid
+    \param side :: index fo side
   */
 {
   ELog::RegMethod RegA("MerlinPipe","insertOuter");
 
   // Inner Points
-  Central.addPoint(FC.getLinkPt(side)+X*Xoffset+Y*Yoffset);
-  Central.addPoint(FC.getLinkPt(side)+X*Xoffset+Y*Yoffset+Z*fullLen);
+  Central.addPoint(FC.getSignedLinkPt(side)+X*Xoffset+Y*Yoffset);
+  Central.addPoint(FC.getSignedLinkPt(side)+X*Xoffset+Y*Yoffset+Z*fullLen);
 
   // Smallest to largest radius.
   Central.addRadius(midVacRadius,midVacMat,0.0);
@@ -270,7 +265,8 @@ MerlinPipe::insertPipes(Simulation& System)
 void
 MerlinPipe::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FUnit,
-		      const size_t sideIndex)
+		      const long int sideIndex,
+		      const int defaultItem)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
@@ -279,11 +275,12 @@ MerlinPipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("MerlinPipe","createAll");
+
   // First job is to re-create the OSM and populate cells
   System.populateCells();
   System.validateObjSurfMap();
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FUnit,sideIndex);
   insertOuter(System,FUnit,sideIndex);
   insertPipes(System);       

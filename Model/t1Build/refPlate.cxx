@@ -119,7 +119,8 @@ refPlate::dirOppositeType(const std::string& DN)
 }
 
 void
-refPlate::setOrigin(const std::string& Name,const long int Index)
+refPlate::setOrigin(const std::string& Name,
+		    const long int Index)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
@@ -154,9 +155,9 @@ refPlate::setOrigin(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("refPlate","setOrigin(FC,size_t)");
   
-  Origin=FC.getSignedLinkPt(Index);
-  Y= -FC.getSignedLinkAxis(Index);
-  SN[2]= -FC.getSignedLinkSurf(-Index);
+  Origin= FC.getSignedLinkPt(Index);
+  Y= FC.getSignedLinkAxis(-Index);
+  SN[2]= FC.getSignedLinkSurf(Index);
 
   FixedComp::setLinkSurf(2,-SN[2]);
   FixedComp::setConnect(2,Origin,-Y);
@@ -208,12 +209,10 @@ refPlate::setPlane(const std::string& dirName,
 
   // Calculate the sense of the surface:
   const size_t DIndex=dirType(dirName);
+
   SN[DIndex]=FC.getSignedLinkSurf(LIndex);
   FixedComp::setLinkSignedCopy(DIndex,FC,LIndex);
 
-  ELog::EM<<"Calling with "<<getSignedLinkString(DIndex)<<" :: "
-	  <<getSignedLinkAxis(DIndex)<<" Pt ="
-	  <<getSignedLinkPt(DIndex)<<ELog::endDiag;
   planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
     
   return;

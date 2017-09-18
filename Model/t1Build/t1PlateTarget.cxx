@@ -175,7 +175,7 @@ t1PlateTarget::createAll(Simulation& System,
 
   PlateTarObj->populate(System);
   PressVObj->setTargetLength(PlateTarObj->getTargetLength());
-  PressVObj->createAll(System,FC);
+  PressVObj->createAll(System,FC,0);
 
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);

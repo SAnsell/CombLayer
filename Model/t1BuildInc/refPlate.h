@@ -41,7 +41,7 @@ class refPlate  : public attachSystem::ContainedComp,
 {
  private:
 
-  const int pIndex;    ///< Actual surface offset
+  const int pIndex;     ///< Actual surface offset
   int cellIndex;        ///< Cell index
   int planeFlag;        ///< Plane flag [0-empty/63 all set]
 
@@ -52,14 +52,6 @@ class refPlate  : public attachSystem::ContainedComp,
   static size_t dirType(const std::string&);
   static size_t dirOppositeType(const std::string&);
 
-    // +/-X/Y/Z/  : Name : Index
-  void setPlane(const std::string&,const std::string&,const long int);
-  void setPlane(const std::string&,const FixedComp&,const long int);
-  void setPlane(const std::string&,const Geometry::Vec3D&,
-		const Geometry::Vec3D&);
-  void setPlane(const std::string&,const double);
-  void setPlane(const std::string&,const std::string&,const size_t,
-		const double);
 
  public:
 
@@ -72,6 +64,15 @@ class refPlate  : public attachSystem::ContainedComp,
   /// Name : Index 
   void setOrigin(const std::string&,const long int);
   void setOrigin(const attachSystem::FixedComp&,const long int);
+
+      // +/-X/Y/Z/  : Name : Index
+  void setPlane(const std::string&,const std::string&,const long int);
+  void setPlane(const std::string&,const FixedComp&,const long int);
+  void setPlane(const std::string&,const Geometry::Vec3D&,
+		const Geometry::Vec3D&);
+  void setPlane(const std::string&,const double);
+  void setPlane(const std::string&,const std::string&,const size_t,
+		const double);
 
 
   void createAll(Simulation&);
