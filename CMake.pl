@@ -7,7 +7,7 @@ use strict;
 
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
-		"sns","reactor","t1MarkII","essBeamline",
+		"sns","reactor","t1MarkII","essBeamline","bilbau",
 		"filter","singleItem","testMain"); 
 
 
@@ -125,7 +125,7 @@ $gM->addDepUnit("bilbau", ["bibBuild","visit","chip","t1Upgrade",
 			   "src","physics","input","process","source",
 			   "monte","funcBase","log","geometry","tally",
 			   "mersenne","src","work","xml","poly","support",
-			   "world","weights","insertUnit",
+			   "world","weights","insertUnit","simMC",
 			   "md5","global","attachComp",
 			   "visit","poly"]);
 

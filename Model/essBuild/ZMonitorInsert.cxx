@@ -132,6 +132,7 @@ ZMonitorInsert::populate(const FuncDataBase& Control)
       innerRadii.push_back(IR);
       outerRadii.push_back(OR);
       arcAngle.push_back(AA);
+      mat.push_back(M);
     }
   return;
 }
@@ -193,6 +194,7 @@ ZMonitorInsert::createObjects(Simulation& System)
   for(size_t i=0;i<nSegments;i++)
     {
       Out=ModelSupport::getComposite(SMap,monIndex,GI," 7 -17 3 -4 5 -25 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],0,Out));
       addOuterUnionSurf("Full",Out);
       GI+=20;
     }      

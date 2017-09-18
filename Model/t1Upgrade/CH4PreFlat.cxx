@@ -184,8 +184,6 @@ CH4PreFlat::createSurfaces()
 
   // NOTE Origin is moved from moderator base:
 
-  //  const int LN=FC.getLinkSurf(linkPt);
-  
   ModelSupport::buildPlane(SMap,preIndex+1,Origin-Y*(depth/2.0),Y);
   ModelSupport::buildPlane(SMap,preIndex+2,Origin+Y*(depth/2.0),Y);
   ModelSupport::buildPlane(SMap,preIndex+3,Origin-X*(width/2.0),X);

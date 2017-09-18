@@ -77,7 +77,6 @@
 #include "LinkWrapper.h"
 #include "LWOuter.h"
 #include "LWInner.h"
-#include "refPlate.h"
 #include "ReflectRods.h"
 #include "t1Reflector.h"
 

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef moderatorSystem_refPlate_h
-#define moderatorSystem_refPlate_h
+#ifndef ts1System_refPlate_h
+#define ts1System_refPlate_h
 
 class Simulation;
 
@@ -52,6 +52,15 @@ class refPlate  : public attachSystem::ContainedComp,
   static size_t dirType(const std::string&);
   static size_t dirOppositeType(const std::string&);
 
+    // +/-X/Y/Z/  : Name : Index
+  void setPlane(const std::string&,const std::string&,const long int);
+  void setPlane(const std::string&,const FixedComp&,const long int);
+  void setPlane(const std::string&,const Geometry::Vec3D&,
+		const Geometry::Vec3D&);
+  void setPlane(const std::string&,const double);
+  void setPlane(const std::string&,const std::string&,const size_t,
+		const double);
+
  public:
 
   refPlate(const std::string&);
@@ -63,14 +72,7 @@ class refPlate  : public attachSystem::ContainedComp,
   /// Name : Index 
   void setOrigin(const std::string&,const long int);
   void setOrigin(const attachSystem::FixedComp&,const long int);
-  // +/-X/Y/Z/  : Name : Index
-  void setPlane(const std::string&,const std::string&,const int,const size_t);
-  void setPlane(const std::string&,const FixedComp&,const int,const size_t);
-  void setPlane(const std::string&,const Geometry::Vec3D&,
-		const Geometry::Vec3D&);
-  void setPlane(const std::string&,const double);
-  void setPlane(const std::string&,const std::string&,const size_t,
-		const double);
+
 
   void createAll(Simulation&);
 

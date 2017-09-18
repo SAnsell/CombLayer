@@ -79,8 +79,6 @@ class BlockAddition :  public attachSystem::ContainedComp,
   BlockAddition& operator=(const BlockAddition&);
   virtual ~BlockAddition();
 
-  virtual std::string getLinkComplementX(const size_t) const;
-  virtual std::string getLinkStringX(const size_t) const;
 
   /// Set/unset active
   void setActive(const int A) { active=A; }
