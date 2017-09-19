@@ -268,14 +268,15 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   std::string Out;
   HeadRule HR;
 
-  Out=ModelSupport::getComposite(SMap,divIndex,"(-123 : 124) -131 -132 ");
+
+  Out=ModelSupport::getComposite(SMap,divIndex," ( (-123 (-137:138)) : (124 (-127:128)) ) -131 -132 ");
   HR.procString(Out);
   HR.makeComplement();
   FixedComp::setLinkSurf(10,HR);
   FixedComp::setBridgeSurf(10,-SMap.realSurf(divIndex+100));
 
   // +ve Y
-  Out=ModelSupport::getComposite(SMap,divIndex,"(-103 : 104)  -111 -112 ");
+  Out=ModelSupport::getComposite(SMap,divIndex," ( (-103 (-117:118)) : (104  (-107:108)) )  -111 -112 ");
   HR.procString(Out);
   HR.makeComplement();  
   FixedComp::setLinkSurf(11,HR);

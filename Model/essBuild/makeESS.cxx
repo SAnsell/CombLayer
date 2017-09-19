@@ -779,8 +779,8 @@ makeESS::buildPreWings(Simulation& System)
 
       TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
       TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
-      TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->createAll(System,*TMod,0);
 
       TopPreWingB =
@@ -882,17 +882,17 @@ makeESS::build(Simulation& System,
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);
 
-  // lower moderator
-  LowPreMod->createAll(System,World::masterOrigin(),0,true,
-		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
+  // lower moderator
+  LowPreMod->createAll(System,World::masterOrigin(),0,true,
+		       Target->wheelHeight()/2.0,
+		       Reflector->getRadius());
   
-  buildLowButterfly(System);
   buildTopButterfly(System);
+  buildLowButterfly(System);
   const double LMHeight=attachSystem::calcLinkDistance(*LowMod,5,6);
   const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
   
