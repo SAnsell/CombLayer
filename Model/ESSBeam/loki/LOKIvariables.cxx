@@ -97,8 +97,7 @@ LOKIvariables(FuncDataBase& Control)
   FGen.setLayer(1,0.5,"Aluminium");
   FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
-  FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0);
-
+  FGen.generateBender(Control,"lokiBA",350.0,3.0,3.0,2.5,2.5,6125.0,90.0);
 
   Control.addVariable("lokiBlockShutterHeight",66.3);
   Control.addVariable("lokiBlockShutterWidth",38.8);
