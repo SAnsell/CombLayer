@@ -207,7 +207,8 @@ LineTrack::calculateError(const Simulation& ASim)
     \param ASim :: Simulation to use						
   */
 {
-  ELog::RegMethod RegA("LineTrack","calculate");
+  ELog::RegMethod RegA("LineTrack","calculateError");
+  
   ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"-------------------"<<ELog::endDiag;
   
@@ -227,13 +228,14 @@ LineTrack::calculateError(const Simulation& ASim)
   
   while(OPtr)
     {
-      ELog::EM<<"== Tracking cell == "<<*OPtr;
+      ELog::EM<<std::setprecision(12)<<ELog::endDiag;
+      ELog::EM<<"== Tracking in cell == "<<*OPtr;
       ELog::EM<<"Neutron == "<<nOut<<" "<<aDist<<ELog::endDiag;
-      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
+      ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
 
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
-      ELog::EM<<"Found Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
+      ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
 
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,aDist))
@@ -243,10 +245,6 @@ LineTrack::calculateError(const Simulation& ASim)
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 
-	  if (OPtr)
-	    ELog::EM<<"Tracking cell == "<<*OPtr<<ELog::endDiag;
-	  else
-	    ELog::EM<<"void cell"<<ELog::endDiag;
 	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
 	  ELog::EM<<" ============== "<<ELog::endDiag;
 
@@ -259,7 +257,8 @@ LineTrack::calculateError(const Simulation& ASim)
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
 	      if (OPtr)
 		ELog::EM<<"Found CEll: "<<*OPtr<<ELog::endDiag;
-	      ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+
+	      ELog::EM<<"Initial point of line error:"<<InitPt<<ELog::endErr;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
@@ -283,12 +282,16 @@ LineTrack::calculateError(const Simulation& ASim)
 	    }
 
 	  if (aDist<Geometry::zeroTol)
-	    OPtr=ASim.findCell(nOut.Pos,0);
+	    {
+	      ELog::EM<<"ZERO CELL "<<ELog::endErr;
+	      OPtr=ASim.findCell(nOut.Pos,0);
+	    }
 	}
       else
 	OPtr=0;
 	
     }
+  ELog::EM<<"Finished "<<ELog::endDiag;
   ELog::EM<<ELog::endErr;
   return;
 }

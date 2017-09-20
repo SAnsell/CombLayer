@@ -128,6 +128,7 @@ surfaceConstruct::processSurface(Simulation& System,
   const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
   ELog::EM<<"Surface Tally Type == "<<pType<<ELog::endDiag;
   std::vector<std::string> excludeSurf;
+  // Process a surface extracted from a linkPt of an object(FC)
   if (pType=="object")
     {
       const std::string place=
@@ -139,6 +140,8 @@ surfaceConstruct::processSurface(Simulation& System,
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
+
+  // Process a surface extracted from a surfMap
   if (pType=="surfMap")
     {
       const std::string object=IParam.getValueError<std::string>

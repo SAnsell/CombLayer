@@ -595,7 +595,8 @@ makeESS::buildPillars(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makeESS","buildPillars");
-  ABunkerPillars->createAll(System,*ABunker);
+  //  ABunkerPillars->createAll(System,*ABunker);
+  BBunkerPillars->createAll(System,*BBunker);
   return;
 }
   

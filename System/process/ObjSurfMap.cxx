@@ -266,7 +266,6 @@ ObjSurfMap::findNextObject(const int SN,
 {
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
-
   const STYPE& MVec=getObjects(SN);
   STYPE::const_iterator mc;
 
@@ -285,12 +284,22 @@ ObjSurfMap::findNextObject(const int SN,
 	  <<MR.calcRotate(Pos)<<ELog::endCrit;
 
   ELog::EM<<"EXCLUDE  "<<objExclude<<" "
-	  <<MR.calcRotate(Pos)<<" "<<SN<<ELog::endDiag;
+	  <<MR.calcRotate(Pos)<<" :: "<<SN<<ELog::endDiag;
   if (SurI.getSurf(abs(SN)))
-    ELog::EM<<"Surface == "<<*SurI.getSurf(abs(SN))<<ELog::endWarn;
-  else 
-    ELog::EM<<"Failed to get == "<<SN<<ELog::endWarn;
+    {
+      Geometry::Surface* SPtr=SurI.getSurf(abs(SN));
+      ELog::EM<<"Surface == "<<*SPtr<<ELog::endWarn;
+      ELog::EM<<"Distance == "<<SPtr->distance(Pos)<<ELog::endDiag;
+      Geometry::Vec3D N = SPtr->surfaceNormal(Pos);
+      ELog::EM<<"SurfaceNormal == "<<N<<ELog::endDiag;
+    }
+  else
+    {
+      ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
+    }
 
+
+  
   for(mc=MVec.begin();mc!=MVec.end();mc++)
     ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
 

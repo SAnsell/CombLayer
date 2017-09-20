@@ -89,7 +89,9 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setPipe(4.5,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
-  
+
+  Control.addVariable("lokiStopPoint",0);  
+  Control.addVariable("lokiStartPoint",0);  
   Control.addVariable("lokiAxisXStep",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisXYAngle",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisZAngle",0.0);

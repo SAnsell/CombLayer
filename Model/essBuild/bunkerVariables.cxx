@@ -248,6 +248,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   //
   // RIGHT BUNKER : B PART
   //
+  ELog::EM<<"Bkey -= "<<BKey<<ELog::endDiag;
   Control.addVariable(BKey+"BunkerLeftPhase",-12.0);
   Control.addVariable(BKey+"BunkerRightPhase",65.0);
   Control.addVariable(BKey+"BunkerLeftAngle",0.0);
@@ -262,6 +263,81 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(BKey+"BunkerLoadFile","BBunkerDef.xml");
   Control.addVariable(BKey+"BunkerOutFile","BBunker.xml");
+
+
+  Control.addVariable(BKey+"BunkerPillarsWidth",18.0);
+  Control.addVariable(BKey+"BunkerPillarsDepth",18.0);
+  Control.addVariable(BKey+"BunkerPillarsThick",1.0);
+  Control.addVariable(BKey+"BunkerPillarsMat","Stainless304");
+  Control.addVariable(BKey+"BunkerPillarsInnerMat","Poly%Void%50.0");
+  Control.addVariable(BKey+"BunkerPillarsNRadius",2);
+  Control.addVariable(BKey+"BunkerPillarsNSector",9); // default
+
+  Control.addVariable(BKey+"BunkerPillarsTopFootWidth",35.0);
+  Control.addVariable(BKey+"BunkerPillarsTopFootDepth",35.0);
+  Control.addVariable(BKey+"BunkerPillarsTopFootHeight",29.9);  // vertical
+  Control.addVariable(BKey+"BunkerPillarsTopFootThick",11.0);  // vertical
+  Control.addVariable(BKey+"BunkerPillarsTopFootGap",3.0);
+
+  Control.addVariable(BKey+"BunkerPillarsBeamWidth",12.0);
+  Control.addVariable(BKey+"BunkerPillarsBeamWallThick",2.0);
+  Control.addVariable(BKey+"BunkerPillarsBeamRoofThick",10.0);
+  Control.addVariable(BKey+"BunkerPillarsBeamWallGap",5.0);
+  
+
+  Control.addVariable(BKey+"BunkerPillarsR0",600.0);
+  Control.addVariable(BKey+"BunkerPillarsR1",900.0);
+  
+  Control.addVariable(BKey+"BunkerPillarsRS_0",3.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_1",9.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_2",15.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_3",21.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_4",27.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_5",34.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_6",39.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_7",46.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_8",52.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_9",57.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_10",63.0);
+
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_1Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_2Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_5Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_6Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
+
+
+  Control.addVariable(BKey+"BunkerPillarsNXBeam",0);
+  Control.addVariable(BKey+"BunkerPillarsXBeam0A","R_1S_0");
+  Control.addVariable(BKey+"BunkerPillarsXBeam1A","R_1S_1");
+  Control.addVariable(BKey+"BunkerPillarsXBeam2A","R_1S_2");
+  Control.addVariable(BKey+"BunkerPillarsXBeam3A","R_2S_3");
+  Control.addVariable(BKey+"BunkerPillarsXBeam4A","R_2S_4");
+  Control.addVariable(BKey+"BunkerPillarsXBeam5A","R_3S_5");
+  Control.addVariable(BKey+"BunkerPillarsXBeam6A","R_4S_6");
+  Control.addVariable(BKey+"BunkerPillarsXBeam7A","R_5S_7");
+
+
+  Control.addVariable(BKey+"BunkerPillarsNLBeam",0);
+
+  // R0 BLOCK
+  Control.addVariable(BKey+"BunkerPillarsLBeam0A","R_0S_0");
+  Control.addVariable(BKey+"BunkerPillarsLBeam1A","R_0S_1");
+  Control.addVariable(BKey+"BunkerPillarsLBeam2A","R_0S_2");
+  Control.addVariable(BKey+"BunkerPillarsLBeam3A","R_1S_2");
+  Control.addVariable(BKey+"BunkerPillarsLBeam4A","R_1S_3");
+  Control.addVariable(BKey+"BunkerPillarsLBeam5A","R_1S_4");
+  Control.addVariable(BKey+"BunkerPillarsLBeam6A","R_2S_5");
+  Control.addVariable(BKey+"BunkerPillarsLBeam7A","R_3S_6");
+  Control.addVariable(BKey+"BunkerPillarsLBeam8A","R_4S_7");
+
+  Control.addVariable(BKey+"BunkerPillarsLBeam9A","R_0S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam10A","R_1S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam11A","R_2S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam12A","R_3S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam13A","R_4S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam14A","R_5S_8");
+
   
   return;
 }
