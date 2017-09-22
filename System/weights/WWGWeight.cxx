@@ -539,20 +539,21 @@ WWGWeight::distTrack(const Simulation& System,
 }
 
 
-template<typename T>
+template<typename T,typename U>
 void
 WWGWeight::CADISnorm(const Simulation& System,
 		     const WWGWeight& Adjoint,
 		     const std::vector<Geometry::Vec3D>& gridPts,
-		     const T& sourcePt)
+		     const T& sourcePt,
+                     const U& tallyPt)
   /*!
     Normalize this relative to an adjoint based on 
     the cadis formalism [M. Munk et al : Nucl Sci Eng (2017)]
     Sets the sourceFlux to to R/adjoint[i] flux
     \param System :: Simulation for tracking
     \param Adjoint :: Adjoint WWGWeight
-    \param gridPts :: Grid points
-    \param sourcePt :: source Point / plane
+    \param sourcePt :: Source point 
+    \param tallyPt :: tally point
   */
 {
   ELog::RegMethod RegA("WWGWeight","CADISnorm");
@@ -579,6 +580,7 @@ WWGWeight::CADISnorm(const Simulation& System,
   if (!zeroFlag && !Adjoint.zeroFlag)
     {
       const size_t tenthValue(gridPts.size()/10);
+      ELog::EM<<"Source Point == "<<sourcePt<<ELog::endDiag;
       // STILL in log space
       for(size_t i=0;i<gridPts.size();i++)
 	{
@@ -704,13 +706,13 @@ void WWGWeight::wTrack(const Simulation&,const Geometry::Plane&,
 
 template 
 void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
-	       const std::vector<Geometry::Vec3D>&,
-	       const Geometry::Vec3D&);
+                          const std::vector<Geometry::Vec3D>&,
+                          const Geometry::Vec3D&,const Geometry::Vec3D&);
 
 template 
 void WWGWeight::CADISnorm(const Simulation&,const WWGWeight&,
-	       const std::vector<Geometry::Vec3D>&,
-	       const Geometry::Plane&);
+                          const std::vector<Geometry::Vec3D>&,
+                          const Geometry::Plane&,const Geometry::Plane&);
 
 ///\endcond TEMPLATE
 

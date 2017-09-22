@@ -429,12 +429,14 @@ WWGControl::wwgCombine(const Simulation& System,
       if (ptType=="Plane")
 	{
 	  sourceFlux->CADISnorm(System,*adjointFlux,
-				GridMidPt,planePt[ptIndex]);      
+				GridMidPt,planePt[ptIndex],
+                                planePt[ptIndex]);      
 	}
       else if (ptType=="Source")
 	{
 	  sourceFlux->CADISnorm(System,*adjointFlux,
-				GridMidPt,sourcePt[ptIndex]);
+				GridMidPt,sourcePt[ptIndex],
+                                sourcePt[ptIndex]);
 	}
     }
   else
