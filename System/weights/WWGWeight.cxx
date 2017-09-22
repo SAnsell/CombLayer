@@ -430,23 +430,21 @@ WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
 	      if (TData[i]>maxValue)
 		{
 		  maxValue=TData[i];
-		  ELog::EM<<"Max == "<<i<<" "<<maxValue<<ELog::endDiag;
 		}
 	      if (TData[i]<minValue)
 		{
 		  minValue=TData[i];
-		  ELog::EM<<"Min == "<<i<<" "<<minValue<<ELog::endDiag;
 		}
 	      // F is +ve
 	      const double F=(TData[i]-AValue)/ABRange;
 	      TData[i]= -(1.0-F)*fullRange;
-
 	    }
 	}
     }
 
   ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
-	  <<ELog::endDiag;
+	  <<"Scaled from "<<log10(minValue)<<" "
+	  <<log10(maxValue)<<ELog::endDiag;
 
   
   return;
@@ -476,12 +474,13 @@ WWGWeight::wTrack(const Simulation& System,
   long int cN(1);
   ELog::EM<<"Processing  "<<MidPt.size()<<" for WWG"<<ELog::endDiag;
 
+  const long int NCut(static_cast<long int>(MidPt.size())/10);
   for(const Geometry::Vec3D& Pt : MidPt)
     {
       const double DT=
 	distTrack(System,initPt,Pt,densityFactor,r2Length,r2Power);
                                                 // energy
-      if (!((cN-1) % 1000))
+      if (!((cN-1) % NCut))
 	ELog::EM<<"WTRAC["<<cN<<"] "<<DT<<ELog::endDiag;
       
       if (!zeroFlag)
@@ -491,7 +490,7 @@ WWGWeight::wTrack(const Simulation& System,
 	for(long int index=0;index<WE;index++)
 	  setLogPoint(cN-1,index,DT);
 	
-      if (!(cN % 10000))
+      if (!(cN % NCut))
 	ELog::EM<<"Item "<<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
 		<<r2Length<<ELog::endDiag;
       cN++;

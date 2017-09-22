@@ -158,6 +158,7 @@ DXTConstructor::processUnit(Simulation& System,
       const std::string linkPt=
 	IParam.outputItem<std::string>("wDXT",Index,2,"position not given");
       Geometry::Vec3D PPoint,XAxis,YAxis,ZAxis;
+
       if (!attachSystem::getAttachPointWithXYZ
              (place,linkPt,PPoint,XAxis,YAxis,ZAxis) )        
 	throw ColErr::InContainerError<std::string>

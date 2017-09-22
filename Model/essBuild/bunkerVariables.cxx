@@ -248,7 +248,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
   //
   // RIGHT BUNKER : B PART
   //
-  ELog::EM<<"Bkey -= "<<BKey<<ELog::endDiag;
   Control.addVariable(BKey+"BunkerLeftPhase",-12.0);
   Control.addVariable(BKey+"BunkerRightPhase",65.0);
   Control.addVariable(BKey+"BunkerLeftAngle",0.0);

@@ -421,8 +421,7 @@ WeightControl::normWeights(Simulation& System,
     Normalize the weights after the main processing event
     \param System :: simulation to use
     \param IParam :: Parameter
-  */
-    
+  */   
 {
   ELog::RegMethod RegA("WeightControl","normWeights");
   
