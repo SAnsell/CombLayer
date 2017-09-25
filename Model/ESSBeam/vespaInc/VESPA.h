@@ -207,8 +207,6 @@ class VESPA : public attachSystem::CopiedComp
   /// Array of detectors
   std::vector<std::shared_ptr<constructSystem::TubeDetBox>> ADetArray;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,

@@ -3,7 +3,7 @@
  
  * File:   attachComp/CellMap.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,33 @@ CellMap::operator=(const CellMap& A)
   return *this;
 }
   
+void
+CellMap::insertComponent(Simulation& System,
+			 const std::string& cutKey,
+			 const CellMap& CM,
+			 const std::string& holdKey) const
+  /*!
+    Insert a component into a cell
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param CC :: CM object to be inserted
+   */
+{
+  ELog::RegMethod RegA("CellMap","insertComponent(CellMap)");
+
+  for(const int cn : CM->getCells(holdKey))
+    {
+      const MonteCarlo::Object* OPtr=
+	System.findQhull(cn);
+      if (OPtr)
+	{
+	  const HeadRule compObj=OPtr->getHeadRule.complement();
+	  insertComponent(System,cutKey,compObj);	  
+	}
+    }
+  return;
+}
+
 void
 CellMap::insertComponent(Simulation& System,
 			  const std::string& Key,

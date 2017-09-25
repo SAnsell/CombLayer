@@ -427,7 +427,7 @@ Wheel::createObjects(Simulation& System)
 				 "7 35 -36 -537 (-25:26:1027) (-125:126:527)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 35 -36");
   addOuterSurf("Wheel",Out);
 
   return; 

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/estia/ESTIAvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,14 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
-#include "variableSetup.h"
+#include "essVariables.h"
+#include "ShieldGenerator.h"
+#include "FocusGenerator.h"
+#include "ChopperGenerator.h"
+#include "PitGenerator.h"
+#include "PipeGenerator.h"
+#include "JawGenerator.h"
+#include "BladeGenerator.h"
 
 namespace setVariable
 {
@@ -61,73 +68,36 @@ ESTIAvariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ESTIAvariables[F]","ESTIAvariables");
-  
-  Control.addVariable("estiaAxisXStep",0.0);
-  Control.addVariable("estiaAxisYStep",0.0);
-  Control.addVariable("estiaAxisZStep",0.0);
-  Control.addVariable("estiaAxisXYAngle",0.0);   // rotation 
+
+
+  setVariable::ChopperGenerator CGen;
+  setVariable::FocusGenerator FGen;
+  setVariable::ShieldGenerator SGen;
+  setVariable::PitGenerator PGen;
+  setVariable::PipeGenerator PipeGen;
+  setVariable::BladeGenerator BGen;
+  setVariable::JawGenerator JawGen;
+
+  Control.addVariable("vespaStartPoint",0);
+  Control.addVariable("vespaStopPoint",0);
+
   Control.addVariable("estiaAxisZAngle",1.0);
 
+  PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setWindow(-2.0,0.5); 
+  PipeGen.setFlange(-4.0,1.0);
 
-  Control.addVariable("estiaFMonoLength",350.0);       
-  Control.addVariable("estiaFMonoNShapes",1);       
-  Control.addVariable("estiaFMonoNShapeLayers",3);
-  Control.addVariable("estiaFMonoActiveShield",0);
-
-  Control.addVariable("estiaFMonoLayerThick1",0.4);  // glass thick
-  Control.addVariable("estiaFMonoLayerThick2",1.5);
-
-  Control.addVariable("estiaFMonoLayerMat0","Void");
-  Control.addVariable("estiaFMonoLayerMat1","Glass");
-  Control.addVariable("estiaFMonoLayerMat2","Void");       
-
-  Control.addVariable("estiaFMono0TypeID","Taper");
-  Control.addVariable("estiaFMono0HeightStart",2.0); // guess
-  Control.addVariable("estiaFMono0HeightEnd",5.2);
-  Control.addVariable("estiaFMono0WidthStart",8.0); // NOT Centred
-  Control.addVariable("estiaFMono0WidthEnd",10.5);
-  Control.addVariable("estiaFMono0Length",350.0);
-
-  // VACUUM PIPES for Shutter:
-  Control.addVariable("estiaPipeAYStep",2.0);
-  Control.addVariable("estiaPipeARadius",9.0);
-  Control.addVariable("estiaPipeALength",46.0);
-  Control.addVariable("estiaPipeAFeThick",1.0);
-  Control.addVariable("estiaPipeAFlangeRadius",12.0);
-  Control.addVariable("estiaPipeAFlangeLength",1.0);
-  Control.addVariable("estiaPipeAFeMat","Aluminium");
-  Control.addVariable("estiaPipeAVoidMat","Void");
-
-  // Shutter section
-  Control.addVariable("estiaFAYStep",3.0);       
-  Control.addVariable("estiaFALength",45.0);       
-  Control.addVariable("estiaFANShapes",1);       
-  Control.addVariable("estiaFANShapeLayers",3);
-  Control.addVariable("estiaFAActiveShield",0);
-
-  Control.addVariable("estiaFALayerThick1",0.4);  // glass thick
-  Control.addVariable("estiaFALayerThick2",1.5);
-
-  Control.addVariable("estiaFALayerMat0","Void");
-  Control.addVariable("estiaFALayerMat1","Glass");
-  Control.addVariable("estiaFALayerMat2","Void");       
-
-  Control.addVariable("estiaFA0TypeID","Taper");
-  Control.addVariable("estiaFA0HeightStart",4.8); // guess
-  Control.addVariable("estiaFA0HeightEnd",5.2);
-  Control.addVariable("estiaFA0WidthStart",10.15); // NOT Centred
-  Control.addVariable("estiaFA0WidthEnd",10.5);
-  Control.addVariable("estiaFA0Length",47.0);
-
-  // VACUUM PIPES for Light Shutter:
-  Control.addVariable("estiaPipeBYStep",2.0);
-  Control.addVariable("estiaPipeBRadius",9.0);
-  Control.addVariable("estiaPipeBLength",450.0);
-  Control.addVariable("estiaPipeBFeThick",1.0);
-  Control.addVariable("estiaPipeBFlangeRadius",12.0);
-  Control.addVariable("estiaPipeBFlangeLength",1.0);
-  Control.addVariable("estiaPipeBFeMat","Aluminium");
-  Control.addVariable("estiaPipeBVoidMat","Void");
+  SGen.addWall(1,20.0,"CastIron");
+  SGen.addRoof(1,20.0,"CastIron");
+  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addFloorMat(3,"Concrete");
+  SGen.addRoofMat(3,"Concrete");
+  SGen.addWallMat(3,"Concrete");
+  
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.5,"Void");  
+  FGen.setYOffset(2.0);
+  FGen.generateTaper(Control,"estiaFA",350.0, 6.713,9.60, 13.428,19.1);
 
   
   return;

@@ -406,14 +406,6 @@ WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
   if (BValue > 1e-10)
     BValue= *std::max_element(TData,TData+NData-1);
 
-
-  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
-	  <<ELog::endDiag;
-    
-
-  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
-	  <<ELog::endDiag;
-
   double maxValue(-1e30);
   double minValue(1e30);
   if (AValue<BValue)
@@ -443,8 +435,9 @@ WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
     }
 
   ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
-	  <<"Scaled from "<<log10(minValue)<<" "
-	  <<log10(maxValue)<<ELog::endDiag;
+	  <<"\n"
+	  <<"Scaled from ["<<minValue<<"]"<<exp(minValue)<<" ["
+	  <<maxValue<<"] "<<exp(maxValue)<<ELog::endDiag;
 
   
   return;
@@ -601,7 +594,7 @@ WWGWeight::CADISnorm(const Simulation& System,
       ELog::EM<<"sumRA == "<<sumRA<<" "<<exp(sumRA)<<ELog::endDiag;
       // SETS THIS
       for(size_t i=0;i<NData;i++)  
-	SData[i]+=sumR-AData[i];
+	SData[i]=sumR-AData[i];
       //      for(size_t i=0;i<NData;i++)  
       //	SData[i]+=sumR;
     }

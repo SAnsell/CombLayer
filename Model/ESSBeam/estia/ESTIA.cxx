@@ -97,14 +97,11 @@ namespace essSystem
 
 ESTIA::ESTIA(const std::string& keyName) :
   attachSystem::CopiedComp("estia",keyName),
-  stopPoint(0),
+  startPoint(0),stopPoint(0),
   estiaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
-  FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
-  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  VacBoxA(new constructSystem::VacuumBox(newName+"VBoxA")),
+  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB"))
   /*! 
     Constructor
@@ -120,12 +117,9 @@ ESTIA::ESTIA(const std::string& keyName) :
   OR.cell(newName+"Axis");
   OR.addObject(estiaAxis);
 
-  OR.addObject(FocusMono);
   OR.addObject(FocusA);
   OR.addObject(VPipeA);
-
   OR.addObject(FocusB);
-  OR.addObject(VPipeB);
 }
 
 ESTIA::~ESTIA()
@@ -136,54 +130,29 @@ ESTIA::~ESTIA()
 
 
 void
-ESTIA::buildChopperBlock(Simulation& System,
-			 const Bunker& bunkerObj,
-			 const attachSystem::FixedComp& prevFC,
-			 const constructSystem::VacuumBox& prevVacBox,
-			 constructSystem::VacuumBox& VacBox,
-			 beamlineSystem::GuideLine& GL,
-			 constructSystem::DiskChopper& Disk,
-			 constructSystem::ChopperHousing& House,
-			 constructSystem::VacuumPipe& Pipe)
+ESTIA::buildBunkerUnits(Simulation& System,
+                        const attachSystem::FixedComp& FA,
+                        const long int startIndex,
+                        const int bunkerVoid)
   /*!
-    Build a chopper block [about to move to some higher level]
-    \param System :: Simulation 
-    \param bunkerObj :: Object
-    \param prevFC :: FixedComponent for like point [uses side 2]
-    \param GL :: Guide Line 
-  */
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
+   */
 {
-  ELog::RegMethod RegA("ESTIA","buildChopperBlock");
-  
-  // Box for BandA Disk
-  VacBox.addInsertCell(bunkerObj.getCell("MainVoid"));
-  VacBox.createAll(System,prevFC,2);
+  ELog::RegMethod RegA("ESTIA","buildBunkerUnits");
 
-  // Double disk T0 chopper
-  Disk.addInsertCell(VacBox.getCell("Void",0));
-  Disk.setCentreFlag(3);  // Z direction
-  Disk.createAll(System,VacBox,0);
-
-  // Double disk chopper housing
-  House.addInsertCell(VacBox.getCells("Void"));
-  House.addInsertCell(VacBox.getCells("Box"));  // soon to become lid
-  House.addInsertCell(bunkerObj.getCell("MainVoid"));
-  House.createAll(System,Disk.getKey("Main"),0);
-  House.insertComponent(System,"Void",Disk);
-
-  Pipe.addInsertCell(bunkerObj.getCell("MainVoid"));
-  Pipe.setFront(prevVacBox,2);
-  Pipe.setBack(VacBox,1);
-  Pipe.createAll(System,prevVacBox,2);
-  
-  GL.addInsertCell(Pipe.getCells("Void"));
-  GL.addInsertCell(prevVacBox.getCells("Void"));
-  GL.addInsertCell(VacBox.getCells("Void"));
-  GL.createAll(System,prevFC,2,prevFC,2);
   return;
-} 
+  VPipeA->addInsertCell(bunkerVoid);
+  VPipeA->createAll(System,FA,startIndex);
 
+  FocusB->addInsertCell(VPipeA->getCells("Void"));
+  FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
+  return;
 
+}
   
 void 
 ESTIA::build(Simulation& System,
@@ -206,29 +175,20 @@ ESTIA::build(Simulation& System,
 
   ELog::EM<<"\nBuilding ESTIA on : "<<GItem.getKeyName()<<ELog::endDiag;
 
+  startPoint=Control.EvalDefVar<int>(newName+"StartPoint",0);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   essBeamSystem::setBeamAxis(*estiaAxis,System.getDataBase(),GItem,1);
 
-  FocusMono->addInsertCell(GItem.getCells("Void"));
-  FocusMono->setBack(GItem.getKey("Beam").getSignedLinkString(-2));
-  FocusMono->createAll(System,*estiaAxis,-3,*estiaAxis,-3);
+  FocusA->addInsertCell(GItem.getCells("Void"));
+  FocusA->setFront(GItem.getKey("Beam"),-1);
+  FocusA->setBack(GItem.getKey("Beam"),-2);
+  FocusA->createAll(System,*estiaAxis,-3,*estiaAxis,-3);
 
-  // Shutter pipe [note gap front/back]
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,FocusMono->getKey("Guide0"),2);
+  if (stopPoint==1) return;
+  buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
 
-  FocusA->addInsertCell(VPipeA->getCells("Void"));
-  FocusA->createAll(System,FocusMono->getKey("Guide0"),2,
-		    FocusMono->getKey("Guide0"),2);
-
-  // pipe for first section
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
-
-  return;
-  FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,FocusA->getKey("Guide0"),2,
-		    FocusA->getKey("Guide0"),2);
+  if (stopPoint==2) return;                      // STOP At bunker edge
 
   return;
 }
