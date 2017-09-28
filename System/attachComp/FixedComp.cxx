@@ -213,14 +213,33 @@ FixedComp::createUnitVector(const FixedComp& FC,
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
 
-  if (sideIndex==0)
+  createUnitVector(FC,sideIndex,sideIndex);
+  return;
+}
+
+void
+FixedComp::createUnitVector(const FixedComp& FC,
+			    const long int orgIndex,
+			    const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit for link points
+    \param orgIndex :: SIGNED +1 side index
+    \param basisIndex :: SIGNED +1 side index
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
+
+  if (basisIndex==0)
     {
       createUnitVector(FC);
+      Origin=FC.getSignedLinkPt(orgIndex);
       return;
     }
+	  
   const size_t linkIndex=
-    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
-    static_cast<size_t>(-sideIndex-1) ;
+    (basisIndex>0) ? static_cast<size_t>(basisIndex-1) :
+    static_cast<size_t>(-basisIndex-1) ;
   if (linkIndex>=FC.LU.size())
     throw ColErr::IndexError<size_t>
       (linkIndex,FC.LU.size(),
@@ -228,20 +247,21 @@ FixedComp::createUnitVector(const FixedComp& FC,
        keyName);
      
   const LinkUnit& LU=FC.getLU(linkIndex);
-  const double signV((sideIndex>0) ? 1.0 : -1.0);
+  const double signV((basisIndex>0) ? 1.0 : -1.0);
 
   const Geometry::Vec3D yTest=LU.getAxis()*signV;
       
   Geometry::Vec3D zTest=FC.getZ();
   Geometry::Vec3D xTest=FC.getX();
-  if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+  if (std::abs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     zTest=FC.getY();
-  else if (fabs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+  else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     xTest=FC.getY();
 
   computeZOffPlane(xTest,yTest,zTest);
 
-  createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
+  createUnitVector(FC.getSignedLinkPt(orgIndex),
+		   yTest*zTest,yTest,zTest);
   
   return;
 }

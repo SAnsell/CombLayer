@@ -54,6 +54,7 @@
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
 #include "TwinGenerator.h"
+#include "TwinGeneratorU.h"
 
 namespace setVariable
 {
@@ -70,14 +71,13 @@ SingleItemVariables(FuncDataBase& Control)
 // -----------
 // GLOBAL stuff
 // -----------
-
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
   setVariable::CryoGenerator CryGen;
   CryGen.generateFridge(Control,"singleCryo",3.0,-10,4.5);
 
-  setVariable::TwinGenerator TGen;
+  setVariable::TwinGeneratorU TGen;
   TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);  
 
   setVariable::BladeGenerator BGen;

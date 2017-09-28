@@ -93,7 +93,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("beamDY",0.0);        // Shift in beam horrizontal
 
   // REFLECTOR
-  Control.addVariable("reflectXYAngle",0.0);   // x-y angle
+  Control.addVariable("reflectXYAngle",-45.0);   // x-y angle
   Control.addVariable("reflectXStep",0);      // x shift of reflector
   Control.addVariable("reflectYStep",10.0);     // y shift of reflector
   Control.addVariable("reflectZStep",0);      // z shift of reflector
@@ -361,14 +361,14 @@ TS2layout(FuncDataBase& Control)
   
   // Poisoning:
   Control.addVariable("decPoisonNBlades",7);        // Number of blades
-  Control.addVariable("decPoisonBladeWidth",1.0);    // Thickness [total]
-  Control.addVariable("decPoisonBladeGap",1.2);       // Space of blade
-  Control.addVariable("decPoisonAbsThick",0.5);      // Space in blade
-  Control.addVariable("decPoisonYLength",6.0);       // Planeare
+  Control.addVariable("decPoisonBladeWidth",0.15);    // Thickness [total]
+  Control.addVariable("decPoisonBladeGap",0.7);       // Space of blade
+  Control.addVariable("decPoisonAbsThick",0.05);      // Space in blade
+  Control.addVariable("decPoisonYLength",1.0);       // Planeare
   Control.addVariable("decPoisonZLength",-1.0);       // -ve : to to bottom
-  Control.addVariable("decPoisonXOffset",0.0);       
-  Control.addVariable("decPoisonYOffset",0.0);       
-  Control.addVariable("decPoisonZOffset",0.0);       
+  Control.addVariable("decPoisonXStep",0.0);       
+  Control.addVariable("decPoisonYStep",0.0);       
+  Control.addVariable("decPoisonZStep",0.0);       
 
   Control.addVariable("decPoisonModTemp",26.0);           // CH4 + 10% Al [+Ar]
 
@@ -459,7 +459,7 @@ TS2layout(FuncDataBase& Control)
 
   // REFLECTOR COOL PADS:
   Control.addVariable("reflectNPads",1);      // Number of cooling pads
-  Control.addVariable("coolPad1FixIndex",1);   // Index
+  Control.addVariable("coolPad1FixIndex",2);   // Index
   Control.addVariable("coolPadXStep",0.0);   
   Control.addVariable("coolPad1ZStep",-17.5);   
   Control.addVariable("coolPad1Thick",3.75);   
@@ -538,7 +538,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("t2TargetBoreRadius",3.70);  // Master bore  
   // TARGET of TS2
   Control.addVariable("t2TargetXStep",0.0);           // Step ref centre
-  Control.addVariable("t2TargetYtep",4.2);           // Step ref centre
+  Control.addVariable("t2TargetYStep",4.2);           // Step ref centre
   Control.addVariable("t2TargetZStep",0.0);           // Step ref centre
   Control.addVariable("t2TargetMainLength",33.0);       // Length from 
   Control.addVariable("t2TargetCoreRadius",2.814);      // W radius 

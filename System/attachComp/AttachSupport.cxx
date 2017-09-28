@@ -507,7 +507,6 @@ addToInsertSurfCtrl(Simulation& System,
   
   CRPtr->populate();
   CRPtr->createSurfaceList();
-  
   const std::vector<const Geometry::Surface*>&
     CellSVec=CRPtr->getSurList();
   

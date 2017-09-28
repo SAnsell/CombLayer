@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "surfExpand.h"
@@ -81,7 +82,7 @@ namespace moderatorSystem
 
 FlightLine::FlightLine(const std::string& Key)  :
   attachSystem::ContainedGroup("inner","outer"),
-  attachSystem::FixedComp(Key,12),
+  attachSystem::FixedOffset(Key,12),
   flightIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flightIndex+1),plateIndex(0),nLayer(0)
   /*!
@@ -91,10 +92,9 @@ FlightLine::FlightLine(const std::string& Key)  :
 {}
 
 FlightLine::FlightLine(const FlightLine& A) : 
-  attachSystem::ContainedGroup(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedGroup(A),attachSystem::FixedOffset(A),
   flightIndex(A.flightIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),zStep(A.zStep),masterXY(A.masterXY),
-  masterZ(A.masterZ),height(A.height),width(A.width),
+  height(A.height),width(A.width),
   plateIndex(A.plateIndex),nLayer(A.nLayer),lThick(A.lThick),
   lMat(A.lMat),capActive(A.capActive),capLayer(A.capLayer),
   capRule(A.capRule),attachRule(A.attachRule)
@@ -120,12 +120,8 @@ FlightLine::operator=(const FlightLine& A)
   if (this!=&A)
     {
       attachSystem::ContainedGroup::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      zStep=A.zStep;
-      masterXY=A.masterXY;
-      masterZ=A.masterZ;
       anglesXY[0]=A.anglesXY[0];
       anglesXY[1]=A.anglesXY[1];
       anglesZ[0]=A.anglesZ[0];
@@ -158,13 +154,9 @@ FlightLine::populate(const FuncDataBase& Control)
  */
 {
   ELog::RegMethod RegA("FlightLine","populate");
-  
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
 
-  masterXY=Control.EvalDefVar<double>(keyName+"MasterXY",0.0);
-  masterZ=Control.EvalDefVar<double>(keyName+"MasterZ",0.0);
+  FixedOffset::populate(Control);
+  // First get inner widths:
 
   anglesXY[0]=Control.EvalVar<double>(keyName+"AngleXY1");
   anglesXY[1]=Control.EvalVar<double>(keyName+"AngleXY2");
@@ -213,6 +205,8 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   // PROCESS Origin of a point
 
   FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+  ELog::EM<<"["<<keyName<<"] "<<Origin<<" Y == "<<Y<<":"<<Z<<ELog::endDiag;
   return;
 }
 
@@ -235,7 +229,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
 
   createUnitVector(FC,sideIndex); 
   
-  applyFullRotate(masterXY,masterZ,CentPt);
+  applyFullRotate(xyAngle,zAngle,CentPt);
   applyShift(xStep,0,zStep);
   return;
 }
@@ -255,10 +249,8 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FlightLine","createUnitVector(FC,orig,side)");
-  createUnitVector(FC,sideIndex);
-
-  Origin=FC.getSignedLinkPt(origIndex);
-  applyShift(xStep,0,zStep);
+  createUnitVector(FC,origIndex,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -368,7 +360,7 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
   const HeadRule primary=FC.getSignedMainRule(sideIndex);
 
   attachRule=" "+primary.display()+" ";
-  if (std::abs(masterXY)<45.0) 
+  if (std::abs(xyAngle)<45.0) 
     return attachRule;
 
   HeadRule rotHead(FC.getSignedCommonRule(sideIndex));
@@ -382,9 +374,9 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
       if (PN)
 	{
 	  const Geometry::Quaternion QrotXY=
-	    Geometry::Quaternion::calcQRotDeg(masterXY,Z);
+	    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
 	  const Geometry::Quaternion QrotZ=
-	    Geometry::Quaternion::calcQRotDeg(masterZ,X);
+	    Geometry::Quaternion::calcQRotDeg(zAngle,X);
 	  Geometry::Vec3D PAxis=PN->getNormal();
 	  QrotZ.rotate(PAxis);
 	  QrotXY.rotate(PAxis);

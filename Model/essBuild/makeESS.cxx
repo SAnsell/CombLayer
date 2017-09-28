@@ -212,11 +212,8 @@ makeESS::makeTarget(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeTarget");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   const int voidCell(74123);  
 
-  
   // Best place to put this to allow simple call
   if (targetType=="help")
     {
@@ -234,12 +231,11 @@ makeESS::makeTarget(Simulation& System,
   else
     throw ColErr::InContainerError<std::string>
       (targetType,"Unknown target type");
-  
+
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
-  OR.addObject(Target);
   return;
 }
 
@@ -266,13 +262,13 @@ makeESS::createGuides(Simulation& System)
       GB->createAll(System,*ShutterBayObj,0);  
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
+      attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
     }
   
-  GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[0]->createGuideItems(System,"Low",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Low",Target->getKeyName());
+  GBArray[0]->createGuideItems(System,"Top");
+  GBArray[0]->createGuideItems(System,"Low");
+  GBArray[1]->createGuideItems(System,"Top");
+  GBArray[1]->createGuideItems(System,"Low");
 
   return;
 }

@@ -45,18 +45,13 @@ namespace moderatorSystem
 */
 
 class FlightLine : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double zStep;                 ///< Offset on Z top Target
-
-  double masterXY;              ///< Master rotation of general axis(XY)
-  double masterZ;               ///< Master rotation of general axis(Z)
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane
   

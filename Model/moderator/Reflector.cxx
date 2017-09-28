@@ -241,7 +241,6 @@ Reflector::populate(const FuncDataBase& Control)
   defMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
 
   const size_t nPads=Control.EvalVar<size_t>(keyName+"NPads");
-  ELog::EM<<"NPADS == "<<nPads<<ELog::endDiag;
   for(size_t i=0;i<nPads;i++)
     Pads.push_back(CoolPad("coolPad",i+1));
 
@@ -261,7 +260,6 @@ Reflector::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  
   return;
 }
   
@@ -457,6 +455,9 @@ Reflector::createInternalObjects(Simulation& System,
 
   TarObj->setRefPlates(-SMap.realSurf(refIndex+12),
 		       -SMap.realSurf(refIndex+11));
+  ELog::EM<<"Ref plate == "<<SMap.realSurf(refIndex+12)<<" "<<
+    SMap.realSurf(refIndex+11)<<ELog::endDiag;
+
   TarObj->createAll(System,World::masterTS2Origin());
 
 
@@ -480,12 +481,12 @@ Reflector::createInternalObjects(Simulation& System,
     }
   VacObj->createAllPair(System,*GrooveObj,*HydObj);
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,refIndex,"1 -14 -4");
+  Out=ModelSupport::getComposite(SMap,refIndex,"-14 -2 -4");
   FLgroove->addBoundarySurf("inner",Out);  
   FLgroove->addBoundarySurf("outer",Out);  
   FLgroove->createAll(System,*VacObj,1);
   
-  Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
+  Out=ModelSupport::getComposite(SMap,refIndex,"1 13");
   FLhydro->addBoundarySurf("inner",Out);  
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
@@ -511,15 +512,15 @@ Reflector::createInternalObjects(Simulation& System,
   if (DT!="plate")
     {
       DVacObj->createAll(System,*DMod,*CMod);
-  
+
       Out=ModelSupport::getComposite(SMap,refIndex,"-2 13 3");
       FLnarrow->addBoundarySurf("inner",Out);  
       FLnarrow->addBoundarySurf("outer",Out);  
       FLnarrow->createAll(System,*DVacObj,1);
       
-      Out=ModelSupport::getComposite(SMap,refIndex,"11 1 -14");
+      Out=ModelSupport::getComposite(SMap,refIndex,"11 -4 -14");
       FLwish->addBoundarySurf("inner",Out);  
-      FLwish->addBoundarySurf("outer",Out);  
+      FLwish->addBoundarySurf("outer",Out);
       FLwish->createAll(System,*DVacObj,2);
       
       PMdec->setTargetSurf(TarObj->getSignedLinkSurf(1));
@@ -540,7 +541,7 @@ Reflector::createInternalObjects(Simulation& System,
       PMdec->setTargetSurf(TarObj->getSignedLinkSurf(1));
       PMdec->createAll(System,*DMod,6,1);
     }  
-  Out=ModelSupport::getComposite(SMap,refIndex,"-2");
+  Out=ModelSupport::getComposite(SMap,refIndex," 3 ");
   IRcut->addBoundarySurf(Out);  
   IRcut->createAll(System,*TarObj);
   
@@ -548,9 +549,9 @@ Reflector::createInternalObjects(Simulation& System,
   CdBucket->addBoundarySurf(FLnarrow->getExclude("outer"));
   CdBucket->addBoundarySurf(TarObj->getExclude());
   CdBucket->createAll(System,*this,0);
-  
+
   for(CoolPad& PD : Pads)
-    PD.createAll(System,*this,2);
+    PD.createAll(System,*this,3);
       
   return;
 }

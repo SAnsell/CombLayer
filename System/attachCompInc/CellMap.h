@@ -92,10 +92,6 @@ class CellMap  : public BaseMap
 
 
   void insertComponent(Simulation&,const std::string&,
-		       const CellMap&,const std::string&) const;
-  void insertComponent(Simulation&,const std::string&,const size_t,
-		       const CellMap&,const std::string&,const size_t) const;
-  void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,
 		       const ContainedComp&) const;

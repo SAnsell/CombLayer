@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/VanePoison.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace moderatorSystem
 */
 
 class VanePoison : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset
 {
   private:
   
@@ -50,16 +50,13 @@ class VanePoison : public attachSystem::ContainedComp,
   double yLength;           ///< Length into the moderator
   double zLength;           ///< Height of a blade
   
-  double xOffset;           ///< Offset relative to origin 
-  double yOffset;           ///< Offset relative to origin 
-  double zOffset;           ///< Offset relative to origin 
 
   double modTemp;           ///< Moderator material
   int modMat;               ///< Moderator material
   int bladeMat;               ///< Moderator material
   int absMat;               ///< Moderator material
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 

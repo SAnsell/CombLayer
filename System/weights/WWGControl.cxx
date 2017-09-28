@@ -416,35 +416,27 @@ WWGControl::wwgCombine(const Simulation& System,
       WWG& wwg=WM.getWWG();
 	
       size_t itemCnt(0);
-      const std::string SUnit=
-      	IParam.getValueError<std::string>("wwgCADIS",0,itemCnt++,
-					  "CADIS Source Point");
-      const std::string TUnit=
-      	IParam.getDefValue<std::string>(SUnit,"wwgCADIS",0,itemCnt);
-      
-      std::string ptType,sndPtType;
-      size_t ptIndex,sndPtIndex;
-      bool adjointFlag,sndAdjointFlag;
-      WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
-      WeightControl::processPtString(SUnit,sndPtType,sndPtIndex,sndAdjointFlag);
-      const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
 
-      if (ptType=="Plane" && sndPtType=="Plane")
+      const std::string SUnit=
+      	IParam.getValueError<std::string>("wwgCADIS",0,itemCnt,
+					  "CADIS Source Point");
+      std::string ptType;
+      size_t ptIndex;
+      bool adjointFlag;
+      WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
+      const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
+      
+      if (ptType=="Plane")
 	{
 	  sourceFlux->CADISnorm(System,*adjointFlux,
 				GridMidPt,planePt[ptIndex],
-                                planePt[sndPtIndex]);      
+                                planePt[ptIndex]);      
 	}
-      else if (ptType=="Source" && sndPtType=="Source")
+      else if (ptType=="Source")
 	{
 	  sourceFlux->CADISnorm(System,*adjointFlux,
 				GridMidPt,sourcePt[ptIndex],
-                                sourcePt[sndPtIndex]);
-	}
-      else
-	{
-	  ELog::EM<<"Mixed source/plane cadis not currently supported"
-		  <<ELog::endErr;
+                                sourcePt[ptIndex]);
 	}
     }
   else

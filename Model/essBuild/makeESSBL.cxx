@@ -163,9 +163,7 @@ makeESSBL::getBeamNum(const std::string& Name)
   ELog::RegMethod RegA("makeESSBL","getBeamNum");
   
   if (Name.length()<11)
-    throw ColErr::InvalidLine(Name,
-			      "Name not in form : GxBLineTopjj/GxBLineLowjj");
-  
+    throw ColErr::InvalidLine(Name,"Name not in form : GxBLineTopjj/GxBLineLowjj");
   std::pair<int,int> Out(0,0);
   std::string BN(Name);
   BN[0]=' ';
@@ -212,11 +210,13 @@ makeESSBL::build(Simulation& System,const Bunker& bunkerObj)
     }  
   else if (beamName=="CSPEC")
     {
+      // DREAM beamline
       CSPEC cspecBL("cspec");
       cspecBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }
   else if (beamName=="DREAM")
     {
+      // DREAM beamline
       DREAM dreamBL("dream");
       dreamBL.build(System,*mainGIPtr,bunkerObj,voidCell);
     }

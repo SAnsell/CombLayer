@@ -97,6 +97,7 @@ class FixedComp
   void createUnitVector(const FixedComp&);
   void createUnitVector(const FixedComp&,const Geometry::Vec3D&);
   void createUnitVector(const FixedComp&,const long int);
+  void createUnitVector(const FixedComp&,const long int,const long int);
   void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
 			const Geometry::Vec3D&,const Geometry::Vec3D&);
 

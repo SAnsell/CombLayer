@@ -75,6 +75,7 @@
 
 #include "Cryostat.h"
 #include "TwinChopper.h"
+#include "TwinChopperUpgrade.h"
 #include "DiskChopper.h"
 #include "makeSingleItem.h"
 
@@ -108,13 +109,14 @@ makeSingleItem::build(Simulation& System,
 
   int voidCell(74123);
 
-  constructSystem::TwinChopper TwinB("singleTwinB");
+  constructSystem::TwinChopperU TwinB("singleTwinB");
   constructSystem::DiskChopper BDiskTop("singleBBladeTop");
   constructSystem::DiskChopper BDiskLow("singleBBladeLow");
 
   TwinB.addInsertCell(voidCell);
   TwinB.createAll(System,World::masterOrigin(),0);
 
+  return;
   BDiskLow.addInsertCell(TwinB.getCell("Void"));
   BDiskLow.createAll(System,TwinB.getKey("Motor"),6,
                       TwinB.getKey("BuildBeam"),-1);

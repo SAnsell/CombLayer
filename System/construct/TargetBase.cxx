@@ -141,7 +141,7 @@ TargetBase::createBeamWindow(Simulation& System,
     \param System :: Simulation to build into
   */
 {
-  ELog::RegMethod RegA("Cannelloni","createBeamWindow");
+  ELog::RegMethod RegA("TargetBase","createBeamWindow");
   if (PLine->getVoidCell())
     {
       ModelSupport::objectRegister& OR=
@@ -155,7 +155,7 @@ TargetBase::createBeamWindow(Simulation& System,
 	}      
       BWPtr->addBoundarySurf(PLine->getCompContainer());
       BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,sideIndex); 
+      BWPtr->createAll(System,*this,sideIndex);
     }
   return;
 }

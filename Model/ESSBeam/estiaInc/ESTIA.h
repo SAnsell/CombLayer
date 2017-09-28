@@ -62,25 +62,36 @@ class ESTIA : public attachSystem::CopiedComp
  private:
 
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
-  int startPoint;  
-  /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
   /// Main Beam Axis [for construction]
   std::shared_ptr<attachSystem::FixedOffset> estiaAxis;
 
-
-  /// Elliptic focus in bulkshield [m5]
-  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+  /// mirror to end of monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusMono;
 
   /// Pipe between bunker and the wall
   std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
   /// mirror to end of monolith
+  std::shared_ptr<beamlineSystem::GuideLine> FocusA;
+
+  /// Pipe between bunker and the wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Vac box for 
+  std::shared_ptr<constructSystem::VacuumBox> VacBoxA;
+  /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
-  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
-			const long int,const int);
-  
+
+  static void
+    buildChopperBlock(Simulation&,const Bunker&,
+		      const attachSystem::FixedComp&,
+		      const constructSystem::VacuumBox&,
+		      constructSystem::VacuumBox&,
+		      beamlineSystem::GuideLine&,
+		      constructSystem::DiskChopper&,
+		      constructSystem::ChopperHousing&,
+		      constructSystem::VacuumPipe&);
   
  public:
   

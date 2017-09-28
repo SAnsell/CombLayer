@@ -406,6 +406,14 @@ WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
   if (BValue > 1e-10)
     BValue= *std::max_element(TData,TData+NData-1);
 
+
+  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+	  <<ELog::endDiag;
+    
+
+  ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
+	  <<ELog::endDiag;
+
   double maxValue(-1e30);
   double minValue(1e30);
   if (AValue<BValue)
@@ -422,22 +430,23 @@ WWGWeight::scaleRange(double AValue,double BValue,const double fullRange)
 	      if (TData[i]>maxValue)
 		{
 		  maxValue=TData[i];
+		  ELog::EM<<"Max == "<<i<<" "<<maxValue<<ELog::endDiag;
 		}
 	      if (TData[i]<minValue)
 		{
 		  minValue=TData[i];
+		  ELog::EM<<"Min == "<<i<<" "<<minValue<<ELog::endDiag;
 		}
 	      // F is +ve
 	      const double F=(TData[i]-AValue)/ABRange;
 	      TData[i]= -(1.0-F)*fullRange;
+
 	    }
 	}
     }
 
   ELog::EM<<"Full range == "<<fullRange<<" "<<AValue<<" "<<BValue
-	  <<"\n"
-	  <<"Scaled from ["<<minValue<<"]"<<exp(minValue)<<" ["
-	  <<maxValue<<"] "<<exp(maxValue)<<ELog::endDiag;
+	  <<ELog::endDiag;
 
   
   return;
@@ -467,13 +476,12 @@ WWGWeight::wTrack(const Simulation& System,
   long int cN(1);
   ELog::EM<<"Processing  "<<MidPt.size()<<" for WWG"<<ELog::endDiag;
 
-  const long int NCut(static_cast<long int>(MidPt.size())/10);
   for(const Geometry::Vec3D& Pt : MidPt)
     {
       const double DT=
 	distTrack(System,initPt,Pt,densityFactor,r2Length,r2Power);
                                                 // energy
-      if (!((cN-1) % NCut))
+      if (!((cN-1) % 1000))
 	ELog::EM<<"WTRAC["<<cN<<"] "<<DT<<ELog::endDiag;
       
       if (!zeroFlag)
@@ -483,7 +491,7 @@ WWGWeight::wTrack(const Simulation& System,
 	for(long int index=0;index<WE;index++)
 	  setLogPoint(cN-1,index,DT);
 	
-      if (!(cN % NCut))
+      if (!(cN % 10000))
 	ELog::EM<<"Item "<<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
 		<<r2Length<<ELog::endDiag;
       cN++;
@@ -594,7 +602,7 @@ WWGWeight::CADISnorm(const Simulation& System,
       ELog::EM<<"sumRA == "<<sumRA<<" "<<exp(sumRA)<<ELog::endDiag;
       // SETS THIS
       for(size_t i=0;i<NData;i++)  
-	SData[i]=sumR-AData[i];
+	SData[i]+=sumR-AData[i];
       //      for(size_t i=0;i<NData;i++)  
       //	SData[i]+=sumR;
     }

@@ -238,11 +238,10 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
 
   // Note can use the divide surface as a real surface.
   SMap.addMatch(preIndex+1,divideSurf);
-
   SMap.addMatch(preIndex+2,VacFC.getSignedLinkSurf(2));  // front
-  SMap.addMatch(preIndex+3,VacFC.getSignedLinkSurf(3));  // side 
+  SMap.addMatch(preIndex+3,VacFC.getSignedLinkSurf(3));  // side
   SMap.addMatch(preIndex+4,VacFC.getSignedLinkSurf(4));  // side
-  SMap.addMatch(preIndex+5,VacFC.getSignedLinkSurf(5));  // base [outer]
+  SMap.addMatch(preIndex+5,VacFC.getSignedLinkSurf(5));  // base
   SMap.addMatch(preIndex+6,VacFC.getSignedLinkSurf(6));  // top  [target]
 
   // FLight line

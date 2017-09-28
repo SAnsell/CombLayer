@@ -76,7 +76,7 @@ namespace moderatorSystem
 PreMod::PreMod(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
   preIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(preIndex+1),populated(0),centOrgFlag(1),
+  cellIndex(preIndex+1),centOrgFlag(1),
   divideSurf(0),targetSurf(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -86,7 +86,7 @@ PreMod::PreMod(const std::string& Key)  :
 
 PreMod::PreMod(const PreMod& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  preIndex(A.preIndex),cellIndex(A.cellIndex),populated(A.populated),
+  preIndex(A.preIndex),cellIndex(A.cellIndex),
   centOrgFlag(A.centOrgFlag),width(A.width),height(A.height),
   depth(A.depth),alThickness(A.alThickness),modTemp(A.modTemp),
   modMat(A.modMat),alMat(A.alMat),divideSurf(A.divideSurf),
@@ -110,7 +110,6 @@ PreMod::operator=(const PreMod& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       centOrgFlag=A.centOrgFlag;
       width=A.width;
       height=A.height;
@@ -132,15 +131,13 @@ PreMod::~PreMod()
 {}
 
 void
-PreMod::populate(const Simulation& System)
+PreMod::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Function dataase
   */
 {
   ELog::RegMethod RegA("PreMod","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
   
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -152,24 +149,23 @@ PreMod::populate(const Simulation& System)
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
   
-  populated |= 1;
   return;
 }
   
 void
-PreMod::createUnitVector(const size_t baseIndex,
-			 const attachSystem::FixedComp& FC)
+PreMod::createUnitVector(const attachSystem::FixedComp& FC,
+                         const long int orgIndex,
+			 const long int basisIndex)
   /*!
     Create the unit vectors
-    \param baseIndex :: side to connect 
     \param FC :: Component to connect to
+    \param orgIndex :: side to connect 
+    \param basisIndex :: basis index
   */
 {
   ELog::RegMethod RegA("PreMod","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  Origin=FC[baseIndex].getConnectPt();
-
+  FixedComp::createUnitVector(FC,orgIndex,basisIndex);
   return;
 }
   
@@ -320,9 +316,9 @@ PreMod::createAll(Simulation& System,const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("PreMod","createAll");
-  populate(System);
-
-  createUnitVector(baseIndex,FC);
+  populate(System.getDataBase());  
+  createUnitVector(FC,baseIndex,0);
+  
   if (rFlag) FixedComp::applyRotation(Z,180.0);
   createSurfaces(FC,baseIndex);
   createObjects(System);
