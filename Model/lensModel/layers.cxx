@@ -75,6 +75,7 @@
 #include "ContainedGroup.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "siModerator.h"
 #include "surfDIter.h"
 #include "ProtonFlight.h"

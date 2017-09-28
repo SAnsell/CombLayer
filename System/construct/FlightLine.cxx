@@ -206,7 +206,6 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  ELog::EM<<"["<<keyName<<"] "<<Origin<<" Y == "<<Y<<":"<<Z<<ELog::endDiag;
   return;
 }
 
@@ -249,7 +248,7 @@ FlightLine::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FlightLine","createUnitVector(FC,orig,side)");
-  createUnitVector(FC,origIndex,sideIndex);
+  FixedComp::createUnitVector(FC,origIndex,sideIndex);
   applyOffset();
   
   return;
@@ -753,14 +752,9 @@ FlightLine::createAll(Simulation& System,
   if (plateIndex==0)
     ELog::EM<<"Plate Index for FlightLine not set "<<ELog::endErr;
 
-  
-  const int sideSign=(plateIndex>0) ? 1 : -1;
-  const size_t sideIndex=static_cast<size_t>
-    ((plateIndex>0) ? plateIndex-1 : 1-plateIndex);
-
   createUnitVector(FC,plateIndex);
   createSurfaces();
-  createObjects(System,FC,sideIndex,CC);
+  createObjects(System,FC,plateIndex,CC);
   insertObjects(System);       
 
   return;
