@@ -400,6 +400,29 @@ ChopperUnit::insertAxle(Simulation& System,
   return;
 }
 
+void
+ChopperUnit::createMotor(Simulation& System)
+  /*!
+    Create the motor
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("ChopperUnit","procMotor");
+
+  RS->createAll(System,FixedGroup::getKey("Main"),0);
+  
+  
+  motor->addInsertCell("Plate",getCell("MainBlock"));
+  motor->addInsertCell("Axle",getCell("Void"));
+
+  motor->setInnerPlanes(SMap.realSurf(houseIndex+11),
+			-SMap.realSurf(houseIndex+12));
+  motor->setYSteps(mainThick/2.0,mainThick/2.0);
+  motor->createAll(System,FixedGroup::getKey("Main"),0);
+
+  addSurf("MotorAxle",motor->getSurf("axle"));
+  return;
+}
 
 
 void
@@ -424,20 +447,9 @@ ChopperUnit::createAll(Simulation& System,
 
   // LOTS of care here because insertObjects removes insert cells
   motor->addInsertCell("Outer",*this);
-
   insertObjects(System);
-  RS->createAll(System,FixedGroup::getKey("Main"),0);
 
-  
-  motor->addInsertCell("Plate",getCell("MainBlock"));
-  motor->addInsertCell("Axle",getCell("Void"));
-
-  motor->setInnerPlanes(SMap.realSurf(houseIndex+11),
-			-SMap.realSurf(houseIndex+12));
-  motor->setYSteps(mainThick/2.0,mainThick/2.0);
-  motor->createAll(System,FixedGroup::getKey("Main"),0);
-
-  addSurf("MotorAxle",motor->getSurf("axle"));
+  createMotor(System);
   return;
 }
   

@@ -87,16 +87,18 @@ namespace constructSystem
 {
 
 TwinChopperU::TwinChopperU(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"BuildBeam",2,"Motor",6),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,
+				 "MotorTop",3,"MotorBase",3),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
   motorA(new constructSystem::Motor(Key+"MotorA")),
   motorB(new constructSystem::Motor(Key+"MotorB")),
+  RSA(new constructSystem::RingSeal(Key+"RingA")),
+  RSB(new constructSystem::RingSeal(Key+"RingB")),
   frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
   backFlange(new constructSystem::boltRing(Key,"BackFlange")),
-  RS(new constructSystem::RingSeal(Key+"Ring")),
   IPA(new constructSystem::InnerPort(Key+"IPortA")),
   IPB(new constructSystem::InnerPort(Key+"IPortB"))
   /*!
@@ -109,9 +111,10 @@ TwinChopperU::TwinChopperU(const std::string& Key) :
 
   OR.addObject(motorA);
   OR.addObject(motorB);
+  OR.addObject(RSA);
+  OR.addObject(RSB);
   OR.addObject(frontFlange);
   OR.addObject(backFlange);
-  OR.addObject(RS);
   OR.addObject(IPA);
   OR.addObject(IPB);
 }
@@ -147,7 +150,7 @@ TwinChopperU::populate(const FuncDataBase& Control)
   outerLineNBolt=Control.EvalVar<size_t>(keyName+"OuterLineNBolt");  
   outerBoltStep=Control.EvalVar<double>(keyName+"OuterBoltStep");
   outerBoltRadius=Control.EvalVar<double>(keyName+"OuterBoltRadius");
-  outerBoltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorBMat",0);
+  outerBoltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterBoltMat",0);
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
 
@@ -168,20 +171,22 @@ TwinChopperU::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("TwinChopperU","createUnitVector");
 
   attachSystem::FixedComp& Main=getKey("Main");
-  attachSystem::FixedComp& Beam=getKey("BuildBeam");
-  attachSystem::FixedComp& Motor=getKey("Motor");
+  attachSystem::FixedComp& Beam=getKey("Beam");
+  attachSystem::FixedComp& MotorA=getKey("MotorTop");
+  attachSystem::FixedComp& MotorB=getKey("MotorBase");
 
   Beam.createUnitVector(FC,sideIndex);
   Main.createUnitVector(FC,sideIndex);
-  Motor.createUnitVector(FC,sideIndex);
+  MotorA.createUnitVector(FC,sideIndex);
+  MotorB.createUnitVector(FC,sideIndex);
 
   //  Main.applyShift(0.0,0,0,beamZStep);
 
   applyOffset();  
   setDefault("Main");
 
-  lowCentre=Origin-Z*innerLowStep;
-  topCentre=Origin+Z*innerTopStep;
+  MotorA.applyShift(0,0,-innerLowStep);
+  MotorB.applyShift(0,0,innerTopStep);
 
   lowOutCent=Origin-Z*(stepHeight/2.0);
   topOutCent=Origin+Z*(stepHeight/2.0);
@@ -197,6 +202,9 @@ TwinChopperU::createSurfaces()
   */
 {
   ELog::RegMethod RegA("TwinChopperU","createSurfaces");
+
+  const attachSystem::FixedComp& MotorA=getKey("MotorTop");
+  const attachSystem::FixedComp& MotorB=getKey("MotorBase");
 
   ModelSupport::buildPlane(SMap,houseIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,houseIndex+2,Origin+Y*(length/2.0),Y);
@@ -223,8 +231,10 @@ TwinChopperU::createSurfaces()
   ModelSupport::buildPlane(SMap,houseIndex+11,Origin-Y*(innerVoid/2.0),Y);
   ModelSupport::buildPlane(SMap,houseIndex+12,Origin+Y*(innerVoid/2.0),Y);
 
-  ModelSupport::buildCylinder(SMap,houseIndex+17,lowCentre,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+18,topCentre,Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+17,MotorA.getCentre(),
+			      Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+18,MotorB.getCentre(),
+			      Y,innerRadius);
 
   return;
 }
@@ -417,8 +427,8 @@ TwinChopperU::createObjects(Simulation& System)
   ELog::RegMethod RegA("TwinChopperU","createObjects");
 
   const attachSystem::FixedComp& Main=getKey("Main");
-  const attachSystem::FixedComp& Beam=getKey("BuildBeam");
-  const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
+  const attachSystem::FixedComp& Beam=getKey("Beam");
+  //  const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
   
   std::string Out,FBStr,EdgeStr,SealStr;
 
@@ -443,7 +453,7 @@ TwinChopperU::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,houseIndex,
                                  "11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  addCell("Case",cellIndex-1);
+  addCell("EdgeCase",cellIndex-1);
 
 
   // Front ring seal
@@ -462,6 +472,29 @@ TwinChopperU::createObjects(Simulation& System)
   backFlange->createAll(System,Main,0);
 
 
+  // Ports in front/back seal void
+  // -----------------------------
+  const std::string innerFSurf=
+    std::to_string(-frontFlange->getSurf("innerRing"));
+  const std::string innerBSurf=
+    std::to_string(-backFlange->getSurf("innerRing"));
+  
+  Out=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
+  addCell("PortVoid",cellIndex-1);
+  IPA->addInnerCell(getCell("PortVoid",0));
+  IPA->createAll(System,Beam,0,Out+innerFSurf);
+
+  
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
+  addCell("PortVoid",cellIndex-1);
+
+  IPB->addInnerCell(getCell("PortVoid",1));
+  IPB->createAll(System,Beam,0,Out+innerBSurf);
+
+
+  
   
 
   // OUTER RING :
@@ -512,8 +545,9 @@ TwinChopperU::createLinks()
   ELog::RegMethod RegA("TwinChopperU","createLinks");
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("BuildBeam");
-  attachSystem::FixedComp& motorFC=FixedGroup::getKey("Motor");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& motorAFC=FixedGroup::getKey("MotorTop");
+  attachSystem::FixedComp& motorBFC=FixedGroup::getKey("MotorBase");
 
   mainFC.setConnect(0,Origin-Y*(length/2.0),-Y);
   mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
@@ -539,23 +573,84 @@ TwinChopperU::createLinks()
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
 
-  motorFC.setConnect(0,lowCentre-Y*(length/2.0),-Y);
-  motorFC.setConnect(1,lowCentre+Y*(length/2.0),Y);
-  motorFC.setConnect(2,lowCentre,Y);
-  motorFC.setConnect(3,topCentre+Y*(length/2.0),Y);
-  motorFC.setConnect(4,topCentre-Y*(length/2.0),-Y);
-  motorFC.setConnect(5,topCentre,Y);
+  const Geometry::Vec3D& LC=motorAFC.getCentre();
+  motorAFC.setConnect(0,LC-Y*(length/2.0),-Y);
+  motorAFC.setConnect(1,LC+Y*(length/2.0),Y);
+  motorAFC.setConnect(2,LC,Y);
   
-  motorFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  motorFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-  motorFC.setLinkSurf(3,-SMap.realSurf(houseIndex+1));
-  motorFC.setLinkSurf(4,SMap.realSurf(houseIndex+2));
+  motorAFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
+  motorAFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  motorAFC.setLinkSurf(2,SMap.realSurf(houseIndex+2));
+
+  const Geometry::Vec3D& TC=motorAFC.getCentre();
+  motorBFC.setConnect(0,TC-Y*(length/2.0),-Y);
+  motorBFC.setConnect(1,TC+Y*(length/2.0),Y);
+  motorBFC.setConnect(2,TC,Y);
+  
+  motorBFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
+  motorBFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  motorBFC.setLinkSurf(2,SMap.realSurf(houseIndex+2));
+
 
 
 
   return;
 }
 
+void
+TwinChopperU::insertAxle(Simulation& System,
+			 const attachSystem::CellMap& CMlow,
+			 const attachSystem::CellMap& CMtop) const
+  /*!
+    Accessor function to allow the axle to be put in the 
+    disks
+    \param System :: Simulation to use
+    \param CMlow :: lower Cell Map to get disks from -- requires
+    named cells (Inner).
+    \param CMtop :: upper Cell Map to get disks from -- requires
+    named cells (Inner).
+  */
+{
+  ELog::RegMethod RegA("TwinChopper","insertAxle");
+
+  motorA->insertInCell("Axle",System,CMlow.getCells("Inner"));
+  motorB->insertInCell("Axle",System,CMtop.getCells("Inner"));
+
+  return;
+}
+
+void
+TwinChopperU::createMotor(Simulation& System,
+			  const std::string& posName,
+			  std::shared_ptr<RingSeal>& RS,
+			  std::shared_ptr<Motor>& motor)
+
+  /*!
+    Create the motor
+    \param System :: Simulation to use
+    \param posName :: Motor key side
+    \param RS :: Ring seal on motor
+    \param motor :: motor pointer
+  */
+{
+  ELog::RegMethod RegA("TwinChopper","createMotor");
+
+  RS->createAll(System,FixedGroup::getKey(posName),0);
+  
+  motor->addInsertCell("Plate",getCells("Case"));
+  motor->addInsertCell("Axle",getCell("Void"));
+
+  motor->setInnerPlanes(SMap.realSurf(houseIndex+11),
+			-SMap.realSurf(houseIndex+12));
+  motor->setYSteps(length/2.0,length/2.0);
+  motor->createAll(System,FixedGroup::getKey(posName),0);
+
+  addSurf(posName+"Axle",motor->getSurf("axle"));
+  return;
+}
+
+
+  
 void
 TwinChopperU::createAll(Simulation& System,
                        const attachSystem::FixedComp& beamFC,
@@ -575,8 +670,16 @@ TwinChopperU::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
+
+  
+  motorA->addInsertCell("Outer",*this);
+  motorB->addInsertCell("Outer",*this);
+  
+
   insertObjects(System);   
-  //  RS->createAll(System,FixedGroup::getKey("Main"),0);
+
+  createMotor(System,"MotorTop",RSA,motorA);
+  createMotor(System,"MotorBase",RSB,motorB); 
 
   return;
 }

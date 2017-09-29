@@ -50,22 +50,19 @@ class TwinChopperU :
 {
  private:
   
-  const int houseIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
+  const int houseIndex;          ///< Index of surface offset
+  int cellIndex;                 ///< Cell index  
 
-  Geometry::Vec3D lowCentre;      ///< Low centre of disks
-  Geometry::Vec3D topCentre;      ///< Top centre of disks
-
-  Geometry::Vec3D lowOutCent;      ///< Low centre of outer
-  Geometry::Vec3D topOutCent;      ///< Top centre of outer
+  Geometry::Vec3D lowOutCent;    ///< Low centre of outer metal
+  Geometry::Vec3D topOutCent;    ///< Top centre of outer metal
   
-  double stepHeight;            ///< height from chopper rotor centre
-  double length;                ///< total thickness
-  double mainRadius;            ///< main innner radius
-  double innerRadius;           ///< inner radius 
-  double innerTopStep;          ///< Step of the top disk
-  double innerLowStep;          ///< Step of the lower disk 
-  double innerVoid;             ///< main inner thickness
+  double stepHeight;             ///< height from chopper rotor centre
+  double length;                 ///< total thickness
+  double mainRadius;             ///< main innner radius
+  double innerRadius;            ///< inner radius 
+  double innerTopStep;           ///< Step of the top disk
+  double innerLowStep;           ///< Step of the lower disk 
+  double innerVoid;              ///< main inner thickness
   
   size_t outerRingNBolt;         ///< Outer bolts in half ring
   size_t outerLineNBolt;         ///< Outer bolts in innerHeight
@@ -73,16 +70,17 @@ class TwinChopperU :
   double outerBoltRadius;        ///< Bolt radius
   int outerBoltMat;              ///< Outer Bolt material
   
-  int boltMat;                  ///< Bolt material
-  int wallMat;                  ///< Wall material layer
+  int boltMat;                   ///< Bolt material
+  int wallMat;                   ///< Wall material layer
 
   std::shared_ptr<Motor> motorA;           ///< Motor A
   std::shared_ptr<Motor> motorB;           ///< Motor B
+  std::shared_ptr<RingSeal> RSA;           ///< Motor ring seal A
+  std::shared_ptr<RingSeal> RSB;           ///< Motor ring seal B
   std::shared_ptr<boltRing> frontFlange;   ///< Front flange
   std::shared_ptr<boltRing> backFlange;    ///< Back flange
-  std::shared_ptr<RingSeal> RS;   ///< ringseal for main system
-  std::shared_ptr<InnerPort> IPA; ///< inner port
-  std::shared_ptr<InnerPort> IPB; ///< inner port
+  std::shared_ptr<InnerPort> IPA;          ///< inner port
+  std::shared_ptr<InnerPort> IPB;          ///< inner port
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -105,6 +103,13 @@ class TwinChopperU :
 		       const double,const size_t,
 		       const double,const int,const int);
 
+  void insertAxle(Simulation&,const attachSystem::CellMap&,
+		  const attachSystem::CellMap&) const;
+
+  void createMotor(Simulation&,const std::string&,
+		   std::shared_ptr<RingSeal>&,
+		   std::shared_ptr<Motor>&);
+  
  public:
 
   TwinChopperU(const std::string&);

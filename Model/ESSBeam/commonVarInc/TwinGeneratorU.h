@@ -61,7 +61,8 @@ class TwinGeneratorU
   std::string viewMat;        ///< Main port window
   std::string viewBoltMat;    ///< viewi bolt mater
 
-  
+  double ringRadius;          ///< Ring radius
+	
   double motorRadius;        ///< Motor radius
   double motorOuter;         ///< Motor outer
   size_t motorNBolt;         ///< Number of bolts

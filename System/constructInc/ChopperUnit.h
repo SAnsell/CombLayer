@@ -80,6 +80,8 @@ class ChopperUnit :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
+
+  void createMotor(Simulation&);
   
  public:
 

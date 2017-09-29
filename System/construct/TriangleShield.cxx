@@ -126,7 +126,7 @@ TriangleShield::removeFrontOverLap()
         {
           length-=segStep*static_cast<double>(index);
           nSeg-=index;
-          Origin+=Y*(index*segStep/2.0);
+          Origin+=Y*(static_cast<double>(index)*segStep/2.0);
           ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
                   <<index<<ELog::endDiag;
         }
@@ -258,9 +258,6 @@ TriangleShield::createSurfaces()
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*segLen,Y);
       SI+=10;
     }
-
-  ELog::EM<<"Left/RIGHT "<<leftAngle<<" "<<rightAngle<<" EW="
-	  <<endWall<<ELog::endDiag;
 
   // wall rotation
   const Geometry::Quaternion QLeft=

@@ -70,10 +70,12 @@ TwinGeneratorU::TwinGeneratorU() :
   viewBoltRadius(0.3),
   viewWindowMat("SiCrystal"),viewMat("Aluminium"),
   viewBoltMat("ChipIRSteel"),
-  
+
+  ringRadius(40.0),
   motorRadius(8.0),motorOuter(10.20),
   motorNBolt(24),motorBoltRadius(0.5),
   motorSealThick(0.2),motorSealMat("Poly"),
+
   ringNBolt(12),lineNBolt(8),outerStep(0.5),
   outerBoltRadius(0.8),outerBoltMat("ChipIRSteel"),
   wallMat("Aluminium")
@@ -98,6 +100,7 @@ TwinGeneratorU::setMainRadius(const double R)
     \param R :: Radius
   */
 {
+  ringRadius*=R/mainRadius;
   stepHeight*=R/mainRadius;
   motorRadius*=R/mainRadius;
   motorOuter*=R/mainRadius;
@@ -140,6 +143,7 @@ TwinGeneratorU::generateChopper(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("TwinGeneratorU","generateChopper");
+
 
   Control.addVariable(keyName+"YStep",yStep);
 
@@ -232,25 +236,36 @@ TwinGeneratorU::generateChopper(FuncDataBase& Control,
 
 
   // MOTOR
-  
-  Control.addVariable(keyName+"MotorAFlag",2);
-  Control.addVariable(keyName+"MotorARadius",motorRadius); 
-  Control.addVariable(keyName+"MotorAOuter",motorOuter); 
-  Control.addVariable(keyName+"MotorAStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorANBolt",motorNBolt); 
-  Control.addVariable(keyName+"MotorABoltRadius",motorBoltRadius); //M10 inc thread
-  Control.addVariable(keyName+"MotorASealThick",motorSealThick);  
-  Control.addVariable(keyName+"MotorASealMat",motorSealMat);
+  const double wallThick((length-voidLength)/2.0);
+  for(const std::string itemName : {"MotorA","MotorB"})
+    {
+      Control.addVariable(keyName+itemName+"BodyLength",5.0);
+      Control.addVariable(keyName+itemName+"PlateThick",wallThick*1.2);
+      Control.addVariable(keyName+itemName+"AxleRadius",0.5);
+      Control.addVariable(keyName+itemName+"BodyRadius",3.0);
+      Control.addVariable(keyName+itemName+"AxleMat","Nickel");
+      Control.addVariable(keyName+itemName+"BodyMat","Copper");
+      Control.addVariable(keyName+itemName+"PlateMat",wallMat);    
+      Control.addVariable(keyName+itemName+"InnerRadius",motorRadius); // [5691.2]
+      Control.addVariable(keyName+itemName+"OuterRadius",motorOuter); // [5691.2]
+      Control.addVariable(keyName+itemName+"BoltRadius",0.50);       //M10 inc thread
+      Control.addVariable(keyName+itemName+"MainMat",wallMat);
+      Control.addVariable(keyName+itemName+"BoltMat","ChipIRSteel");  
+      Control.addVariable(keyName+itemName+"SealMat","Poly");
+      Control.addVariable(keyName+itemName+"NBolts",24);
+      Control.addVariable(keyName+itemName+"SealRadius",(motorRadius+motorOuter)/2.0);
+      Control.addVariable(keyName+itemName+"SealThick",0.2);  
+      Control.addVariable(keyName+itemName+"SealMat",motorSealMat);
+    }
 
-  Control.addVariable(keyName+"MotorBFlag",2);
-  Control.addVariable(keyName+"MotorBRadius",motorRadius); 
-  Control.addVariable(keyName+"MotorBOuter",motorOuter); 
-  Control.addVariable(keyName+"MotorBStep",0.0); // estimate
-  Control.addVariable(keyName+"MotorBNBolt",motorNBolt); 
-  Control.addVariable(keyName+"MotorBBoltRadius",motorBoltRadius); //M10 inc thread
-  Control.addVariable(keyName+"MotorBSealThick",motorSealThick);  
-  Control.addVariable(keyName+"MotorBSealMat",motorSealMat);
-
+  for(const std::string itemName : {"RingA","RingB"})
+    {
+      Control.addVariable(keyName+itemName+"NSection",12);
+      Control.addVariable(keyName+itemName+"NTrack",12);
+      Control.addVariable(keyName+itemName+"Thick",0.4);
+      Control.addVariable(keyName+itemName+"Radius",ringRadius);  
+      Control.addVariable(keyName+itemName+"Mat",motorSealMat);
+    }
 
   Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);
   Control.addVariable(keyName+"OuterLineNBolt",lineNBolt);
