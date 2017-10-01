@@ -50,24 +50,25 @@ class TwinGenerator
   size_t portNBolt;        ///< Number of bolts
   double portBoltRadius;   ///< Port bolt size [M8 currently]
 
-  double viewWidth;         ///< View square width
-  double viewHeight;        ///< View square height
-  double viewLength;        ///< View thickness
-  double viewWindowThick;   ///< View thickness
-  double viewBoltStep;      ///< View port bolt step
-  size_t viewNBolt;         ///< Number of bolts in view port
-  double viewBoltRadius;    ///< View bolt radius
+  double viewWidth;           ///< View square width
+  double viewHeight;          ///< View square height
+  double viewLength;          ///< View thickness
+  double viewWindowThick;     ///< View thickness
+  double viewBoltStep;        ///< View port bolt step
+  size_t viewNBolt;           ///< Number of bolts in view port
+  double viewBoltRadius;      ///< View bolt radius
   std::string viewWindowMat;  ///< Neutron beam window
-  std::string viewMat;       ///< Main port window
+  std::string viewMat;        ///< Main port window
   std::string viewBoltMat;    ///< viewi bolt mater
 
-  
-  double motorRadius;      ///< Motor radius
-  double motorOuter;       ///< Motor outer
-  size_t motorNBolt;       ///< Number of bolts
-  double motorBoltRadius;  ///< Number of bolts
-  double motorSealThick;   ///< Seal thickness
-  std::string motorSealMat;     ///< Seal material
+  double ringRadius;          ///< Ring radius
+	
+  double motorRadius;        ///< Motor radius
+  double motorOuter;         ///< Motor outer
+  size_t motorNBolt;         ///< Number of bolts
+  double motorBoltRadius;    ///< Number of bolts
+  double motorSealThick;     ///< Seal thickness
+  std::string motorSealMat;  ///< Seal material
 
   size_t ringNBolt;         ///< Bolts in outer ring
   size_t lineNBolt;         ///< Bolts in outer line

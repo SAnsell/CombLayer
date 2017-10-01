@@ -72,22 +72,31 @@
 #include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedGroup.h"
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "RingSeal.h"
 #include "InnerPort.h"
+#include "boltRing.h"
+#include "Motor.h"
 #include "TwinChopper.h"
 
 namespace constructSystem
 {
 
 TwinChopper::TwinChopper(const std::string& Key) : 
-  attachSystem::FixedOffsetGroup(Key,"Main",6,"BuildBeam",2,"Motor",6),
+  attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,
+				 "MotorTop",3,"MotorBase",3),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::SurfMap(),
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
-  RS(new constructSystem::RingSeal(Key+"Ring")),
+  motorA(new constructSystem::Motor(Key+"MotorA")),
+  motorB(new constructSystem::Motor(Key+"MotorB")),
+  frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
+  backFlange(new constructSystem::boltRing(Key,"BackFlange")),
   IPA(new constructSystem::InnerPort(Key+"IPortA")),
   IPB(new constructSystem::InnerPort(Key+"IPortB"))
   /*!
@@ -98,116 +107,12 @@ TwinChopper::TwinChopper(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  OR.addObject(RS);
+  OR.addObject(motorA);
+  OR.addObject(motorB);
+  OR.addObject(frontFlange);
+  OR.addObject(backFlange);
   OR.addObject(IPA);
   OR.addObject(IPB);
-}
-
-TwinChopper::TwinChopper(const TwinChopper& A) : 
-  attachSystem::FixedOffsetGroup(A),
-  attachSystem::ContainedComp(A),attachSystem::CellMap(A),
-  houseIndex(A.houseIndex),cellIndex(A.cellIndex),
-  lowCentre(A.lowCentre),topCentre(A.topCentre),
-  lowOutCent(A.lowOutCent),topOutCent(A.topOutCent),
-  stepHeight(A.stepHeight),length(A.length),
-  mainRadius(A.mainRadius),innerRadius(A.innerRadius),
-  innerTopStep(A.innerTopStep),innerLowStep(A.innerLowStep),
-  innerVoid(A.innerVoid),portRadius(A.portRadius),
-  portOuter(A.portOuter),portStep(A.portStep),
-  portWindow(A.portWindow),portNBolt(A.portNBolt),
-  portBoltRad(A.portBoltRad),portBoltAngOff(A.portBoltAngOff),
-  portSeal(A.portSeal),portSealMat(A.portSealMat),
-  portWindowMat(A.portWindowMat),motorAFlag(A.motorAFlag),
-  motorARadius(A.motorARadius),motorAOuter(A.motorAOuter),
-  motorAStep(A.motorAStep),motorANBolt(A.motorANBolt),
-  motorABoltRad(A.motorABoltRad),
-  motorABoltAngOff(A.motorABoltAngOff),
-  motorASeal(A.motorASeal),motorASealMat(A.motorASealMat),
-  motorAMat(A.motorAMat),motorBFlag(A.motorBFlag),
-  motorBRadius(A.motorBRadius),motorBOuter(A.motorBOuter),
-  motorBStep(A.motorBStep),motorBNBolt(A.motorBNBolt),
-  motorBBoltRad(A.motorBBoltRad),
-  motorBBoltAngOff(A.motorBBoltAngOff),
-  motorBSeal(A.motorBSeal),motorBSealMat(A.motorBSealMat),
-  motorBMat(A.motorBMat),outerRingNBolt(A.outerRingNBolt),
-  outerLineNBolt(A.outerLineNBolt),
-  outerBoltStep(A.outerBoltStep),
-  outerBoltRadius(A.outerBoltRadius),
-  outerBoltMat(A.outerBoltMat),boltMat(A.boltMat),
-  wallMat(A.wallMat),RS(A.RS),IPA(A.IPA),IPB(A.IPB)
-  /*!
-    Copy constructor
-    \param A :: TwinChopper to copy
-  */
-{}
-
-TwinChopper&
-TwinChopper::operator=(const TwinChopper& A)
-  /*!
-    Assignment operator
-    \param A :: TwinChopper to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedOffsetGroup::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      cellIndex=A.cellIndex;
-      lowCentre=A.lowCentre;
-      topCentre=A.topCentre;
-      lowOutCent=A.lowOutCent;
-      topOutCent=A.topOutCent;
-      stepHeight=A.stepHeight;
-      length=A.length;
-      mainRadius=A.mainRadius;
-      innerRadius=A.innerRadius;
-      innerTopStep=A.innerTopStep;
-      innerLowStep=A.innerLowStep;
-      innerVoid=A.innerVoid;
-      portRadius=A.portRadius;
-      portOuter=A.portOuter;
-      portStep=A.portStep;
-      portWindow=A.portWindow;
-      portNBolt=A.portNBolt;
-      portBoltRad=A.portBoltRad;
-      portBoltAngOff=A.portBoltAngOff;
-      portSeal=A.portSeal;
-      portSealMat=A.portSealMat;
-      portWindowMat=A.portWindowMat;
-      motorAFlag=A.motorAFlag;
-      motorARadius=A.motorARadius;
-      motorAOuter=A.motorAOuter;
-      motorAStep=A.motorAStep;
-      motorANBolt=A.motorANBolt;
-      motorABoltRad=A.motorABoltRad;
-      motorABoltAngOff=A.motorABoltAngOff;
-      motorASeal=A.motorASeal;
-      motorASealMat=A.motorASealMat;
-      motorAMat=A.motorAMat;
-      motorBFlag=A.motorBFlag;
-      motorBRadius=A.motorBRadius;
-      motorBOuter=A.motorBOuter;
-      motorBStep=A.motorBStep;
-      motorBNBolt=A.motorBNBolt;
-      motorBBoltRad=A.motorBBoltRad;
-      motorBBoltAngOff=A.motorBBoltAngOff;
-      motorBSeal=A.motorBSeal;
-      motorBSealMat=A.motorBSealMat;
-      motorBMat=A.motorBMat;
-      outerRingNBolt=A.outerRingNBolt;
-      outerLineNBolt=A.outerLineNBolt;
-      outerBoltStep=A.outerBoltStep;
-      outerBoltRadius=A.outerBoltRadius;
-      outerBoltMat=A.outerBoltMat;
-      boltMat=A.boltMat;
-      wallMat=A.wallMat;
-      RS=A.RS;
-      IPA=A.IPA;
-      IPB=A.IPB;
-    }
-  return *this;
 }
 
 TwinChopper::~TwinChopper() 
@@ -236,44 +141,12 @@ TwinChopper::populate(const FuncDataBase& Control)
   innerTopStep=Control.EvalVar<double>(keyName+"InnerTopStep");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-
-  portRadius=Control.EvalVar<double>(keyName+"PortRadius");
-  portOuter=Control.EvalVar<double>(keyName+"PortOuter");
-  portStep=Control.EvalVar<double>(keyName+"PortStep");
-  portBoltRad=Control.EvalVar<double>(keyName+"PortBoltRadius");
-  portNBolt=Control.EvalVar<size_t>(keyName+"PortNBolt");
-  portBoltAngOff=Control.EvalDefVar<double>(keyName+"PortBoltAngOff",0.0);
-  portSeal=Control.EvalDefVar<double>(keyName+"PortSealThick",0.0);
-  portSealMat=ModelSupport::EvalMat<int>(Control,keyName+"PortSealMat");
-
-  motorAFlag=Control.EvalVar<int>(keyName+"MotorAFlag");
-  motorARadius=Control.EvalVar<double>(keyName+"MotorARadius");
-  motorAOuter=Control.EvalVar<double>(keyName+"MotorAOuter");
-  motorAStep=Control.EvalVar<double>(keyName+"MotorAStep");
-  motorANBolt=Control.EvalVar<size_t>(keyName+"MotorANBolt");
-  motorABoltRad=Control.EvalVar<double>(keyName+"MotorABoltRadius");
-  motorABoltAngOff=Control.EvalDefVar<double>(keyName+"MotorABoltAngOff",0.0);
-  motorASeal=Control.EvalDefVar<double>(keyName+"MotorASealThick",0.0);
-  motorASealMat=ModelSupport::EvalMat<int>(Control,keyName+"MotorASealMat");
-  motorAMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorAMat",0);
-
-  motorBFlag=Control.EvalVar<int>(keyName+"MotorBFlag");  
-  motorBRadius=Control.EvalVar<double>(keyName+"MotorBRadius");
-  motorBOuter=Control.EvalVar<double>(keyName+"MotorBOuter");
-  motorBStep=Control.EvalVar<double>(keyName+"MotorBStep");
-  motorBNBolt=Control.EvalVar<size_t>(keyName+"MotorBNBolt");
-  motorBBoltRad=Control.EvalVar<double>(keyName+"MotorBBoltRadius");
-  motorBBoltAngOff=Control.EvalDefVar<double>(keyName+"MotorBBoltAngOff",0.0);
-  motorBSeal=Control.EvalDefVar<double>(keyName+"MotorBSealThick",0.0);
-  motorBSealMat=ModelSupport::EvalMat<int>(Control,keyName+"MotorBSealMat");
-  motorBMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorBMat",0);
-
   
   outerRingNBolt=Control.EvalVar<size_t>(keyName+"OuterRingNBolt");
   outerLineNBolt=Control.EvalVar<size_t>(keyName+"OuterLineNBolt");  
   outerBoltStep=Control.EvalVar<double>(keyName+"OuterBoltStep");
   outerBoltRadius=Control.EvalVar<double>(keyName+"OuterBoltRadius");
-  outerBoltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"MotorBMat",0);
+  outerBoltMat=ModelSupport::EvalDefMat<int>(Control,keyName+"OuterBoltMat",0);
   
   boltMat=ModelSupport::EvalMat<int>(Control,keyName+"BoltMat");
 
@@ -294,20 +167,22 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("TwinChopper","createUnitVector");
 
   attachSystem::FixedComp& Main=getKey("Main");
-  attachSystem::FixedComp& Beam=getKey("BuildBeam");
-  attachSystem::FixedComp& Motor=getKey("Motor");
+  attachSystem::FixedComp& Beam=getKey("Beam");
+  attachSystem::FixedComp& MotorA=getKey("MotorTop");
+  attachSystem::FixedComp& MotorB=getKey("MotorBase");
 
   Beam.createUnitVector(FC,sideIndex);
   Main.createUnitVector(FC,sideIndex);
-  Motor.createUnitVector(FC,sideIndex);
+  MotorA.createUnitVector(FC,sideIndex);
+  MotorB.createUnitVector(FC,sideIndex);
 
   //  Main.applyShift(0.0,0,0,beamZStep);
 
   applyOffset();  
   setDefault("Main");
 
-  lowCentre=Origin-Z*innerLowStep;
-  topCentre=Origin+Z*innerTopStep;
+  MotorA.applyShift(0,0,-innerLowStep);
+  MotorB.applyShift(0,0,innerTopStep);
 
   lowOutCent=Origin-Z*(stepHeight/2.0);
   topOutCent=Origin+Z*(stepHeight/2.0);
@@ -323,6 +198,9 @@ TwinChopper::createSurfaces()
   */
 {
   ELog::RegMethod RegA("TwinChopper","createSurfaces");
+
+  const attachSystem::FixedComp& MotorA=getKey("MotorTop");
+  const attachSystem::FixedComp& MotorB=getKey("MotorBase");
 
   ModelSupport::buildPlane(SMap,houseIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,houseIndex+2,Origin+Y*(length/2.0),Y);
@@ -349,171 +227,12 @@ TwinChopper::createSurfaces()
   ModelSupport::buildPlane(SMap,houseIndex+11,Origin-Y*(innerVoid/2.0),Y);
   ModelSupport::buildPlane(SMap,houseIndex+12,Origin+Y*(innerVoid/2.0),Y);
 
-  ModelSupport::buildCylinder(SMap,houseIndex+17,lowCentre,Y,innerRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+18,topCentre,Y,innerRadius);
-  
-  // MOTORS [3000/4000]
-  ModelSupport::buildCylinder(SMap,houseIndex+3007,lowCentre,Y,motorARadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+3017,lowCentre,Y,motorAOuter);
-
-  ModelSupport::buildCylinder(SMap,houseIndex+4007,topCentre,Y,motorBRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+4017,topCentre,Y,motorBOuter);
-
-
-  
-  // Construct beamport:
-  setDefault("BuildBeam");
-  ModelSupport::buildCylinder(SMap,houseIndex+2007,Origin,Y,portRadius);
-  ModelSupport::buildCylinder(SMap,houseIndex+2017,Origin,Y,portOuter);
-
-  if (portSeal>Geometry::zeroTol)
-    {
-      const double sealYDist((innerVoid+length)/4.0);
-      
-      ModelSupport::buildCylinder(SMap,houseIndex+2008,
-                                  Origin,Y,portOuter-2.0*portSeal);
-      ModelSupport::buildCylinder(SMap,houseIndex+2018,
-                                  Origin,Y,portOuter-portSeal);
-      
-      ModelSupport::buildPlane(SMap,houseIndex+2001,
-                               Origin-Y*(sealYDist+portSeal/2.0),Y);
-      ModelSupport::buildPlane(SMap,houseIndex+2002,
-                               Origin-Y*(sealYDist-portSeal/2.0),Y);
-      ModelSupport::buildPlane(SMap,houseIndex+2011,
-                               Origin+Y*(sealYDist-portSeal/2.0),Y);
-      ModelSupport::buildPlane(SMap,houseIndex+2012,
-                               Origin+Y*(sealYDist+portSeal/2.0),Y);
-    }
+  ModelSupport::buildCylinder(SMap,houseIndex+17,MotorA.getCentre(),
+			      Y,innerRadius);
+  ModelSupport::buildCylinder(SMap,houseIndex+18,MotorB.getCentre(),
+			      Y,innerRadius);
 
   return;
-}
-
-void
-TwinChopper::createRing(Simulation& System,const int surfOffset,
-                        const Geometry::Vec3D& Centre,
-                        const std::string& FBStr,
-                        const std::string& EdgeStr,
-                        const double BRad,const size_t NBolts,
-                        const double radius,const double angOff,
-			const std::string& sealUnit,const int sealMat)
-  /*!
-    Create the ring of bolts : 
-    Only works if NBolts != 1.
-    Assumes that surface surfOffset+7/17 have been created
-    
-    \param System :: Simulation
-    \param surfOffset :: Start of surface offset
-    \param Centre :: Centre of dist
-    \param FBStr :: Front/Back plates
-    \param EdgeStr :: Edges of ring/area
-    \param BRad :: Radius of bolt from Centre
-    \param NBolts :: Number of bolts
-    \param radius :: radius of bolt
-    \param angOff :: angle offset
-    \param sealUnit :: string for the seal unit
-    \param sealMat :: material for the seal
-  */
-{
-  ELog::RegMethod RegA("TwinChopper","createRing");
-   // Construct surfaces:
-
-  const bool sealFlag(!sealUnit.empty());
-  std::string sealUnitComp;
-  if (sealFlag)
-    {
-      HeadRule SComp(sealUnit);
-      SComp.makeComplement();
-      sealUnitComp=SComp.display();
-    }  
-  std::string Out;
-  if (NBolts>1)
-    {
-      const double angleR=360.0/static_cast<double>(NBolts);
-      Geometry::Vec3D DPAxis(X);
-      Geometry::Vec3D BAxis(Z*BRad);
-      const Geometry::Quaternion QStartSeg=
-        Geometry::Quaternion::calcQRotDeg(angOff,Y);
-      const Geometry::Quaternion QHalfSeg=
-        Geometry::Quaternion::calcQRotDeg(angleR/2.0,Y);
-      const Geometry::Quaternion QSeg=
-        Geometry::Quaternion::calcQRotDeg(angleR,Y);
-      
-      // half a segment rotation to start:
-      QStartSeg.rotate(DPAxis);
-      QStartSeg.rotate(BAxis);
-      QHalfSeg.rotate(DPAxis);
-      
-      int boltIndex(surfOffset+100);
-      for(size_t i=0;i<NBolts;i++)
-        {
-          const Geometry::Vec3D boltC(Centre+BAxis);
-          
-          ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,radius);
-          ModelSupport::buildPlane(SMap,boltIndex+3,Centre,DPAxis);
-          QSeg.rotate(DPAxis);
-          QSeg.rotate(BAxis);
-          boltIndex+=10;
-        }
-      
-      // reset
-      int prevBoltIndex(boltIndex-10);
-      boltIndex=surfOffset+100;
-      for(size_t i=0;i<NBolts;i++)
-        {
-          Out=ModelSupport::getComposite(SMap,boltIndex," -7 ");
-          System.addCell(MonteCarlo::Qhull(cellIndex++,boltMat,0.0,Out+FBStr));
-          addCell("Bolts",cellIndex-1);
-          
-          Out=ModelSupport::getComposite(SMap,prevBoltIndex,boltIndex,
-                                         " 3  -3M 7M ");
-          
-          System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,
-                                           Out+FBStr+EdgeStr+sealUnitComp));
-	  addCell("Wall",cellIndex-1);
-	  if (sealFlag)
-	    {
-	      Out=ModelSupport::getComposite(SMap,prevBoltIndex,boltIndex,
-					     " 3 -3M ");
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,sealMat,0.0,
-					       Out+sealUnit));
-	      addCell("Seal",cellIndex-1);
-	    }
-	  prevBoltIndex=boltIndex;
-          boltIndex+=10;
-       }
-    }
-  else
-    {
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,FBStr+EdgeStr));
-      addCell("Wall",cellIndex-1);
-    }
-  return;
-}
-
-std::string
-TwinChopper::motorFrontExclude() const
-  /*!
-    Simple function to get motor cut flag if motor is front/back
-    \return exlude string [not corrected]
-  */
-{
-  std::string Out;
-  if (motorAFlag & 1) Out+=" 3017 ";
-  if (motorBFlag & 1) Out+=" 4017 ";
-  return Out;
-}
-
-std::string
-TwinChopper::motorBackExclude() const
-  /*!
-    Simple function to get motor cut flag if motor is back
-    \return exlude string [not corrected]
-  */
-{
-  std::string Out;
-  if (motorAFlag & 2) Out+=" 3017 ";
-  if (motorBFlag & 2) Out+=" 4017 ";
-  return Out;
 }
 
 
@@ -704,8 +423,8 @@ TwinChopper::createObjects(Simulation& System)
   ELog::RegMethod RegA("TwinChopper","createObjects");
 
   const attachSystem::FixedComp& Main=getKey("Main");
-  const attachSystem::FixedComp& Beam=getKey("BuildBeam");
-  const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
+  const attachSystem::FixedComp& Beam=getKey("Beam");
+  //  const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
   
   std::string Out,FBStr,EdgeStr,SealStr;
 
@@ -713,123 +432,66 @@ TwinChopper::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 (-17:-18)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("Void",cellIndex-1);
-
-  // Port [Front/back]
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("PortVoid",cellIndex-1);
-
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  addCell("PortVoid",cellIndex-1);
-
   
   // Main casing [inside bolt layer]
-  Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "1 -11 23 -24 (5:-27) (-6:-28) 2017 "+
-				 motorFrontExclude());
+  Out=ModelSupport::getComposite
+    (SMap,houseIndex,"1 -11 23 -24 (5:-27) (-6:-28) ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  addCell("FrontCase",cellIndex-1);
   addCell("Case",cellIndex-1);
 
-  Out=ModelSupport::getComposite(SMap,houseIndex,
-                                 "12 -2 23 -24 (5:-27) (-6:-28) 2017 "+
-				 motorBackExclude());
+  Out=ModelSupport::getComposite
+    (SMap,houseIndex,"12 -2 23 -24 (5:-27) (-6:-28)");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
+  addCell("BackCase",cellIndex-1);
   addCell("Case",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,houseIndex,
                                  "11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-  addCell("Case",cellIndex-1);
+  addCell("EdgeCase",cellIndex-1);
 
-  
-  Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -2007");
-  IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->createAll(System,Beam,0,Out);
-
-    // Add inner system
-
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -2007");
-  IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->createAll(System,Beam,0,Out);
 
   // Front ring seal
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
-  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+2000," 7 -17 ");
-  SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 1 -2 ");
-  createRing(System,houseIndex+2000,Beam.getCentre(),FBStr,EdgeStr,
-             (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
-             portBoltAngOff,SealStr,portSealMat);
   
-  // back ring seal
-  FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
-  SealStr=ModelSupport::getComposite(SMap,houseIndex+2000," 8 -18 11 -12 ");
-  createRing(System,houseIndex+2500,Beam.getCentre(),FBStr,EdgeStr,
-             (portRadius+portOuter)/2.0,portNBolt,portBoltRad,
-             portBoltAngOff,SealStr,portSealMat);
-  
-  // Extra wall for bolts
-  if (CentreDist+portOuter>mainRadius)
-    {
-      ELog::EM<<"Extension material: "<<cellIndex<<ELog::endDiag;
-      Out=ModelSupport::getComposite(SMap,houseIndex,"11 -12 17 -2017");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
-      addCell("Wall",cellIndex-1);
-    }
-  
-  // MOTOR:
-  // [front/back] of LOWER
-  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+3000," 7 -17 ");
-  if (motorAFlag & 1)
-    {
-      Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -3007");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,motorAMat,0.0,Out));
-      addCell("MotorVoid",cellIndex-1);
-      // Divide surfaces and bolts
-      FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
-      createRing(System,houseIndex+3000,lowCentre,FBStr,EdgeStr,
-		 (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
-		 motorABoltAngOff,"",0);
-    }
-  
-  if (motorAFlag & 2)
-    {
-      Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -3007"); 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,motorAMat,0.0,Out));
-      addCell("MotorVoid",cellIndex-1);
-      FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
-      createRing(System,houseIndex+3500,lowCentre,FBStr,EdgeStr,
-		 (motorARadius+motorAOuter)/2.0,motorANBolt,motorABoltRad,
-		 motorABoltAngOff,"",0);
-    }
+  frontFlange->setInnerExclude();
+  frontFlange->addInsertCell(getCell("FrontCase"));
+  frontFlange->setFront(SMap.realSurf(houseIndex+1));
+  frontFlange->setBack(-SMap.realSurf(houseIndex+11));
+  frontFlange->createAll(System,Main,0);
 
-  // MOTOR:
-  // [front/back] of TOP
-  EdgeStr=ModelSupport::getComposite(SMap,houseIndex+4000," 7 -17 ");
-  if (motorBFlag & 1)
-    {
-      Out=ModelSupport::getComposite(SMap,houseIndex,"1 -11 -4007");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,motorBMat,0.0,Out));
-      addCell("MotorVoid",cellIndex-1);
-      // Divide surfaces and bolts
-      FBStr=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
-      
-      createRing(System,houseIndex+4000,topCentre,FBStr,EdgeStr,
-		 (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
-		 motorBBoltAngOff,"",0);
-    }
-  if (motorBFlag & 2)
-    {
-      Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 -4007"); 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,motorBMat,0.0,Out));
-      addCell("MotorVoid",cellIndex-1);
+  // Back ring seal
+  backFlange->setInnerExclude();
+  backFlange->addInsertCell(getCell("BackCase"));
+  backFlange->setFront(SMap.realSurf(houseIndex+12));
+  backFlange->setBack(-SMap.realSurf(houseIndex+2));
+  backFlange->createAll(System,Main,0);
+
+
+  // Ports in front/back seal void
+  // -----------------------------
+  const std::string innerFSurf=
+    std::to_string(-frontFlange->getSurf("innerRing"));
+  const std::string innerBSurf=
+    std::to_string(-backFlange->getSurf("innerRing"));
+  
+  Out=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
+  addCell("PortVoid",cellIndex-1);
+  IPA->addInnerCell(getCell("PortVoid",0));
+  IPA->createAll(System,Beam,0,Out+innerFSurf);
 
   
-      FBStr=ModelSupport::getComposite(SMap,houseIndex," 12 -2 ");
-      createRing(System,houseIndex+4500,topCentre,FBStr,EdgeStr,
-		 (motorBRadius+motorBOuter)/2.0,motorBNBolt,motorBBoltRad,
-             motorBBoltAngOff,"",0);
-    }
+  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
+  addCell("PortVoid",cellIndex-1);
+
+  IPB->addInnerCell(getCell("PortVoid",1));
+  IPB->createAll(System,Beam,0,Out+innerBSurf);
+
+
+  
+  
 
   // OUTER RING :
   // NECESSARY because segment cut
@@ -861,6 +523,7 @@ TwinChopper::createObjects(Simulation& System)
                   outerBoltRadius,
                   lowCutSurf,topCutSurf);
 
+  
   // Outer
   Out=ModelSupport::getComposite(SMap,houseIndex,"1 -2 3 -4 (5:-7) (-6:-8) ");
   addOuterSurf(Out);  
@@ -878,8 +541,9 @@ TwinChopper::createLinks()
   ELog::RegMethod RegA("TwinChopper","createLinks");
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
-  attachSystem::FixedComp& beamFC=FixedGroup::getKey("BuildBeam");
-  attachSystem::FixedComp& motorFC=FixedGroup::getKey("Motor");
+  attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
+  attachSystem::FixedComp& motorAFC=FixedGroup::getKey("MotorTop");
+  attachSystem::FixedComp& motorBFC=FixedGroup::getKey("MotorBase");
 
   mainFC.setConnect(0,Origin-Y*(length/2.0),-Y);
   mainFC.setConnect(1,Origin+Y*(length/2.0),Y);
@@ -905,23 +569,82 @@ TwinChopper::createLinks()
   beamFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
   beamFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
 
-  motorFC.setConnect(0,lowCentre-Y*(length/2.0),-Y);
-  motorFC.setConnect(1,lowCentre+Y*(length/2.0),Y);
-  motorFC.setConnect(2,lowCentre,Y);
-  motorFC.setConnect(3,topCentre+Y*(length/2.0),Y);
-  motorFC.setConnect(4,topCentre-Y*(length/2.0),-Y);
-  motorFC.setConnect(5,topCentre,Y);
+  const Geometry::Vec3D& LC=motorAFC.getCentre();
+  motorAFC.setConnect(0,LC-Y*(length/2.0),-Y);
+  motorAFC.setConnect(1,LC+Y*(length/2.0),Y);
+  motorAFC.setConnect(2,LC,Y);
   
-  motorFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
-  motorFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
-  motorFC.setLinkSurf(3,-SMap.realSurf(houseIndex+1));
-  motorFC.setLinkSurf(4,SMap.realSurf(houseIndex+2));
+  motorAFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
+  motorAFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  motorAFC.setLinkSurf(2,SMap.realSurf(houseIndex+2));
+
+  const Geometry::Vec3D& TC=motorAFC.getCentre();
+  motorBFC.setConnect(0,TC-Y*(length/2.0),-Y);
+  motorBFC.setConnect(1,TC+Y*(length/2.0),Y);
+  motorBFC.setConnect(2,TC,Y);
+  
+  motorBFC.setLinkSurf(0,-SMap.realSurf(houseIndex+1));
+  motorBFC.setLinkSurf(1,SMap.realSurf(houseIndex+2));
+  motorBFC.setLinkSurf(2,SMap.realSurf(houseIndex+2));
+
 
 
 
   return;
 }
 
+void
+TwinChopper::insertAxle(Simulation& System,
+			 const attachSystem::CellMap& CMlow,
+			 const attachSystem::CellMap& CMtop) const
+  /*!
+    Accessor function to allow the axle to be put in the 
+    disks
+    \param System :: Simulation to use
+    \param CMlow :: lower Cell Map to get disks from -- requires
+    named cells (Inner).
+    \param CMtop :: upper Cell Map to get disks from -- requires
+    named cells (Inner).
+  */
+{
+  ELog::RegMethod RegA("TwinChopper","insertAxle");
+
+  motorA->insertInCell("Axle",System,CMtop.getCells("Inner"));
+  motorB->insertInCell("Axle",System,CMlow.getCells("Inner"));
+
+
+  return;
+}
+
+void
+TwinChopper::createMotor(Simulation& System,
+			  const std::string& posName,
+			  std::shared_ptr<Motor>& motor)
+
+  /*!
+    Create the motor
+    \param System :: Simulation to use
+    \param posName :: Motor key side
+    \param motor :: motor pointer
+  */
+{
+  ELog::RegMethod RegA("TwinChopper","createMotor");
+
+  
+  motor->addInsertCell("Plate",getCells("Case"));
+  motor->addInsertCell("Axle",getCell("Void"));
+
+  motor->setInnerPlanes(SMap.realSurf(houseIndex+11),
+			-SMap.realSurf(houseIndex+12));
+  motor->setYSteps(length/2.0,length/2.0);
+  motor->createAll(System,FixedGroup::getKey(posName),0);
+
+  addSurf(posName+"Axle",motor->getSurf("axle"));
+  return;
+}
+
+
+  
 void
 TwinChopper::createAll(Simulation& System,
                        const attachSystem::FixedComp& beamFC,
@@ -941,8 +664,16 @@ TwinChopper::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
+
+  
+  motorA->addInsertCell("Outer",*this);
+  motorB->addInsertCell("Outer",*this);
+  
+
   insertObjects(System);   
-  //  RS->createAll(System,FixedGroup::getKey("Main"),0);
+
+  createMotor(System,"MotorTop",motorA);
+  createMotor(System,"MotorBase",motorB); 
 
   return;
 }

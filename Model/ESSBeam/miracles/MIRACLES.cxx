@@ -248,13 +248,14 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinB->createAll(System,*AppA,2);
 
   BDiskLow->addInsertCell(TwinB->getCell("Void"));
-  BDiskLow->createAll(System,TwinB->getKey("Motor"),6,
-                      TwinB->getKey("BuildBeam"),-1);
-
+  BDiskLow->createAll(System,TwinB->getKey("MotorBase"),0,
+                      TwinB->getKey("Beam"),-1);
+  
   BDiskTop->addInsertCell(TwinB->getCell("Void"));
-  BDiskTop->createAll(System,TwinB->getKey("Motor"),3,
-                      TwinB->getKey("BuildBeam"),-1);
-
+  BDiskTop->createAll(System,TwinB->getKey("MotorTop"),0,
+                      TwinB->getKey("Beam"),-1);
+  TwinB->insertAxle(System,*BDiskLow,*BDiskTop);
+  
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,TwinB->getKey("BuildBeam"),2);
 
@@ -265,13 +266,14 @@ MIRACLES::buildBunkerUnits(Simulation& System,
   TwinC->createAll(System,FocusD->getKey("Guide0"),2);
 
   CDiskLow->addInsertCell(TwinC->getCell("Void"));
-  CDiskLow->createAll(System,TwinC->getKey("Motor"),6,
-                      TwinC->getKey("BuildBeam"),-1);
+  CDiskLow->createAll(System,TwinC->getKey("MotorBase"),0,
+                      TwinC->getKey("Beam"),-1);
 
   CDiskTop->addInsertCell(TwinC->getCell("Void"));
-  CDiskTop->createAll(System,TwinC->getKey("Motor"),3,
-                      TwinC->getKey("BuildBeam"),-1);
-
+  CDiskTop->createAll(System,TwinC->getKey("MotorTop"),0,
+                      TwinC->getKey("Beam"),-1);
+  TwinC->insertAxle(System,*CDiskLow,*CDiskTop);
+  
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,TwinC->getKey("BuildBeam"),2);
 
