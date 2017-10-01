@@ -75,8 +75,6 @@ class TwinChopperU :
 
   std::shared_ptr<Motor> motorA;           ///< Motor A
   std::shared_ptr<Motor> motorB;           ///< Motor B
-  std::shared_ptr<RingSeal> RSA;           ///< Motor ring seal A
-  std::shared_ptr<RingSeal> RSB;           ///< Motor ring seal B
   std::shared_ptr<boltRing> frontFlange;   ///< Front flange
   std::shared_ptr<boltRing> backFlange;    ///< Back flange
   std::shared_ptr<InnerPort> IPA;          ///< inner port
@@ -103,11 +101,8 @@ class TwinChopperU :
 		       const double,const size_t,
 		       const double,const int,const int);
 
-  void insertAxle(Simulation&,const attachSystem::CellMap&,
-		  const attachSystem::CellMap&) const;
 
   void createMotor(Simulation&,const std::string&,
-		   std::shared_ptr<RingSeal>&,
 		   std::shared_ptr<Motor>&);
   
  public:
@@ -116,6 +111,9 @@ class TwinChopperU :
   TwinChopperU(const TwinChopperU&);
   TwinChopperU& operator=(const TwinChopperU&);
   virtual ~TwinChopperU();
+
+  void insertAxle(Simulation&,const attachSystem::CellMap&,
+		  const attachSystem::CellMap&) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

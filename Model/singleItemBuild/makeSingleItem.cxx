@@ -116,16 +116,17 @@ makeSingleItem::build(Simulation& System,
   TwinB.addInsertCell(voidCell);
   TwinB.createAll(System,World::masterOrigin(),0);
 
-  return;
+
   BDiskLow.addInsertCell(TwinB.getCell("Void"));
-  BDiskLow.createAll(System,TwinB.getKey("Motor"),6,
-                      TwinB.getKey("BuildBeam"),-1);
+  BDiskLow.createAll(System,TwinB.getKey("MotorBase"),0,
+		     TwinB.getKey("Beam"),2);
 
   BDiskTop.addInsertCell(TwinB.getCell("Void"));
-  BDiskTop.createAll(System,TwinB.getKey("Motor"),3,
-                      TwinB.getKey("BuildBeam"),-1);
-  
+  BDiskTop.createAll(System,TwinB.getKey("MotorTop"),0,
+                      TwinB.getKey("Beam"),2);
 
+  TwinB.insertAxle(System,BDiskLow,BDiskTop);
+  
   return;
   constructSystem::Cryostat A("singleCryo");  
   A.addInsertCell(voidCell);

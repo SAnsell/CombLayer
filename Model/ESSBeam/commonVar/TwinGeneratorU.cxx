@@ -178,12 +178,6 @@ TwinGeneratorU::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"BackFlangeBoltMat","ChipIRSteel");  
   Control.addVariable(keyName+"BackFlangeSealMat","Poly");
 
-  // Control.addVariable(keyName+"RingNSection",12);
-  // Control.addVariable(keyName+"RingNTrack",12);
-  // Control.addVariable(keyName+"RingThick",0.4);
-  // Control.addVariable(keyName+"RingRadius",ringRadius);  
-  // Control.addVariable(keyName+"RingMat",sealMat); 
-
   
   Control.addVariable(keyName+"PortRadius",portRadius); 
   Control.addVariable(keyName+"PortOuter",portOuter); // [5691.2]
@@ -241,7 +235,7 @@ TwinGeneratorU::generateChopper(FuncDataBase& Control,
     {
       Control.addVariable(keyName+itemName+"BodyLength",5.0);
       Control.addVariable(keyName+itemName+"PlateThick",wallThick*1.2);
-      Control.addVariable(keyName+itemName+"AxleRadius",0.5);
+      Control.addVariable(keyName+itemName+"AxleRadius",2.0);
       Control.addVariable(keyName+itemName+"BodyRadius",3.0);
       Control.addVariable(keyName+itemName+"AxleMat","Nickel");
       Control.addVariable(keyName+itemName+"BodyMat","Copper");
@@ -253,18 +247,10 @@ TwinGeneratorU::generateChopper(FuncDataBase& Control,
       Control.addVariable(keyName+itemName+"BoltMat","ChipIRSteel");  
       Control.addVariable(keyName+itemName+"SealMat","Poly");
       Control.addVariable(keyName+itemName+"NBolts",24);
-      Control.addVariable(keyName+itemName+"SealRadius",(motorRadius+motorOuter)/2.0);
+      Control.addVariable(keyName+itemName+"SealRadius",
+			  (motorRadius+motorOuter)/2.0);
       Control.addVariable(keyName+itemName+"SealThick",0.2);  
       Control.addVariable(keyName+itemName+"SealMat",motorSealMat);
-    }
-
-  for(const std::string itemName : {"RingA","RingB"})
-    {
-      Control.addVariable(keyName+itemName+"NSection",12);
-      Control.addVariable(keyName+itemName+"NTrack",12);
-      Control.addVariable(keyName+itemName+"Thick",0.4);
-      Control.addVariable(keyName+itemName+"Radius",ringRadius);  
-      Control.addVariable(keyName+itemName+"Mat",motorSealMat);
     }
 
   Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);

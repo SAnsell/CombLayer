@@ -95,8 +95,6 @@ TwinChopperU::TwinChopperU(const std::string& Key) :
   cellIndex(houseIndex+1),
   motorA(new constructSystem::Motor(Key+"MotorA")),
   motorB(new constructSystem::Motor(Key+"MotorB")),
-  RSA(new constructSystem::RingSeal(Key+"RingA")),
-  RSB(new constructSystem::RingSeal(Key+"RingB")),
   frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
   backFlange(new constructSystem::boltRing(Key,"BackFlange")),
   IPA(new constructSystem::InnerPort(Key+"IPortA")),
@@ -111,8 +109,6 @@ TwinChopperU::TwinChopperU(const std::string& Key) :
 
   OR.addObject(motorA);
   OR.addObject(motorB);
-  OR.addObject(RSA);
-  OR.addObject(RSB);
   OR.addObject(frontFlange);
   OR.addObject(backFlange);
   OR.addObject(IPA);
@@ -613,8 +609,9 @@ TwinChopperU::insertAxle(Simulation& System,
 {
   ELog::RegMethod RegA("TwinChopper","insertAxle");
 
-  motorA->insertInCell("Axle",System,CMlow.getCells("Inner"));
-  motorB->insertInCell("Axle",System,CMtop.getCells("Inner"));
+  motorA->insertInCell("Axle",System,CMtop.getCells("Inner"));
+  motorB->insertInCell("Axle",System,CMlow.getCells("Inner"));
+
 
   return;
 }
@@ -622,20 +619,17 @@ TwinChopperU::insertAxle(Simulation& System,
 void
 TwinChopperU::createMotor(Simulation& System,
 			  const std::string& posName,
-			  std::shared_ptr<RingSeal>& RS,
 			  std::shared_ptr<Motor>& motor)
 
   /*!
     Create the motor
     \param System :: Simulation to use
     \param posName :: Motor key side
-    \param RS :: Ring seal on motor
     \param motor :: motor pointer
   */
 {
   ELog::RegMethod RegA("TwinChopper","createMotor");
 
-  RS->createAll(System,FixedGroup::getKey(posName),0);
   
   motor->addInsertCell("Plate",getCells("Case"));
   motor->addInsertCell("Axle",getCell("Void"));
@@ -678,8 +672,8 @@ TwinChopperU::createAll(Simulation& System,
 
   insertObjects(System);   
 
-  createMotor(System,"MotorTop",RSA,motorA);
-  createMotor(System,"MotorBase",RSB,motorB); 
+  createMotor(System,"MotorTop",motorA);
+  createMotor(System,"MotorBase",motorB); 
 
   return;
 }
