@@ -311,7 +311,7 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   endMidPt.push_back(Pts[indexA]);
   
   // Outer point
-  HM=BUnit.getMainRule(1);
+  HM=BUnit.getSignedMainRule(2);
   HM.addIntersection(BUnit.getSignedCommonRule(2));
   HM.populateSurf();
   HM.calcSurfIntersection(Origin,Y,Pts,SNum);

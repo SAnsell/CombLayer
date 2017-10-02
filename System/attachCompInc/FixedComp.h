@@ -72,6 +72,9 @@ class FixedComp
   std::vector<LinkUnit> LU;     ///< Linked unit items
   
   void makeOrthogonal();
+
+  const HeadRule& getMainRule(const size_t) const;
+  const HeadRule& getCommonRule(const size_t) const;
   
  public:
 
@@ -183,8 +186,6 @@ class FixedComp
   HeadRule getSignedMainRule(const long int) const;
   HeadRule getSignedCommonRule(const long int) const;
   
-  const HeadRule& getMainRule(const size_t) const;
-  const HeadRule& getCommonRule(const size_t) const;
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 

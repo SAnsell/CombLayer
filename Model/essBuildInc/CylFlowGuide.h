@@ -46,16 +46,16 @@ class CylFlowGuide : public attachSystem::ContainedComp,
   double radius;                  ///< Main radius [from built object]
   double wallThick;               ///< Wall thickness
   int wallMat;                    ///< Wall material
-
-  double gapWidth;        ///< Gap to allow water to flow
-  size_t nBaffles;        ///< Number of baffles
+ 
+  double gapWidth;                ///< Gap to allow water to flow
+  size_t nBaffles;                ///< Number of baffles
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createLinks();
 
  public:
