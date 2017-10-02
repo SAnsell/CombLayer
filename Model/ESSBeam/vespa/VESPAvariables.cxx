@@ -90,6 +90,8 @@ VESPAvariables(FuncDataBase& Control)
   PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
   PipeGen.setWindow(-2.0,0.5); 
   PipeGen.setFlange(-4.0,1.0);
+  
+  PipeGen.setCladding(0.5,"B4C");
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");

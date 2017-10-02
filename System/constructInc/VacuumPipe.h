@@ -78,6 +78,7 @@ class VacuumPipe :
   double length;                ///< void length [total]
 
   double feThick;               ///< pipe thickness
+  double claddingThick;         ///< cladding thickness
 
   double flangeRadius;          ///< Joining Flange radius [-ve for rect]
   double flangeHeight;          ///< Joining Flange height
@@ -85,11 +86,12 @@ class VacuumPipe :
   double flangeLength;          ///< Joining Flange length
 
   int activeWindow;             ///< Flag on window activity
-  windowInfo windowFront;          ///< Front window info
-  windowInfo windowBack;           ///< Back window info
+  windowInfo windowFront;       ///< Front window info
+  windowInfo windowBack;        ///< Back window info
     
   int voidMat;                  ///< Void material
-  int feMat;                    ///< Pipe material 
+  int feMat;                    ///< Pipe material
+  int claddingMat;              ///< Pipe cladding material 
   
   size_t nDivision;             ///< Number divisions
   

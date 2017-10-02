@@ -39,20 +39,22 @@ class PipeGenerator
 {
  private:
 
-  int pipeType;                  ///< type [0 for round / 1 for square]
-  double pipeRadius;             ///< main radius
-  double pipeHeight;             ///< main height
+  int pipeType;                 ///< type [0 for round / 1 for square]
+  double pipeRadius;            ///< main radius
+  double pipeHeight;            ///< main height
   double pipeWidth;             ///< main width
-  double pipeThick;             ///< main radius
-  double flangeRadius;       ///< flange Radius (>radius)
-  double flangeLen;          ///< flange Length
-  double windowRadius;       ///< window radius (radius > WR > flangeR)
-  double windowThick;        ///< window thickness
+  double pipeThick;             ///< metal thickness
+  double claddingThick;         ///< cladding radius
+  double flangeRadius;          ///< flange Radius (>radius)
+  double flangeLen;             ///< flange Length
+  double windowRadius;          ///< window radius (radius > WR > flangeR)
+  double windowThick;           ///< window thickness
   
-  std::string pipeMat;        ///< Primary default mat
-  std::string frontWindowMat;      ///< window mat
-  std::string backWindowMat;      ///< window mat
-  std::string voidMat;        ///< void mat
+  std::string pipeMat;          ///< Primary default mat
+  std::string frontWindowMat;   ///< window mat
+  std::string backWindowMat;    ///< window mat
+  std::string voidMat;          ///< void mat
+  std::string claddingMat;      ///< Primary default mat
     
  public:
 
@@ -69,6 +71,7 @@ class PipeGenerator
   void setMat(const std::string& M) { pipeMat=M; }
   void setWindowMat(const std::string&);
   void setWindowMat(const std::string&,const std::string&);
+  void setCladding(const double,const std::string&);
   
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double,const double) const;

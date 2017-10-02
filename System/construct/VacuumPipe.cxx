@@ -141,6 +141,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
       width=A.width;
       length=A.length;
       feThick=A.feThick;
+      claddingThick=A.claddingThick;
       flangeRadius=A.flangeRadius;
       flangeHeight=A.flangeHeight;
       flangeWidth=A.flangeWidth;
@@ -150,6 +151,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
       windowBack=A.windowBack;
       voidMat=A.voidMat;
       feMat=A.feMat;
+      claddingMat=A.claddingMat;
       nDivision=A.nDivision;
     }
   return *this;
@@ -184,6 +186,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
+  claddingThick=Control.EvalDefVar<double>(keyName+"CladdingThick",0.0);
   flangeRadius=Control.EvalDefVar<double>(keyName+"FlangeRadius",-1.0);
   flangeHeight=Control.EvalDefVar<double>(keyName+"FlangeHeight",-1.0);
   flangeWidth=Control.EvalDefVar<double>(keyName+"FlangeWidth",-1.0);
@@ -234,6 +237,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
+  claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
 
   nDivision=Control.EvalDefVar<size_t>(keyName+"NDivision",0);
   return;
@@ -419,22 +423,35 @@ VacuumPipe::createSurfaces()
 
   
   // MAIN SURFACES:
-  if (radius>0.0)
+  if (radius>Geometry::zeroTol)
     {
       ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
       ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+feThick);
+      ModelSupport::buildCylinder(SMap,vacIndex+27,Origin,Y,radius+feThick+claddingThick);
     }
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+3,Origin-X*(width/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+4,Origin+X*(width/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+5,Origin-Z*(height/2.0),Z);
-      ModelSupport::buildPlane(SMap,vacIndex+6,Origin+Z*(height/2.0),Z);
+      double H(height/2.0);
+      double W(width/2.0);
+      ModelSupport::buildPlane(SMap,vacIndex+3,Origin-X*W,X);
+      ModelSupport::buildPlane(SMap,vacIndex+4,Origin+X*W,X);
+      ModelSupport::buildPlane(SMap,vacIndex+5,Origin-Z*H,Z);
+      ModelSupport::buildPlane(SMap,vacIndex+6,Origin+Z*H,Z);
 
-      ModelSupport::buildPlane(SMap,vacIndex+13,Origin-X*(feThick+width/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+14,Origin+X*(feThick+width/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+15,Origin-Z*(feThick+height/2.0),Z);
-      ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*(feThick+height/2.0),Z);
+      H+=feThick;
+      W+=feThick;
+      ModelSupport::buildPlane(SMap,vacIndex+13,Origin-X*W,X);
+      ModelSupport::buildPlane(SMap,vacIndex+14,Origin+X*W,X);
+      ModelSupport::buildPlane(SMap,vacIndex+15,Origin-Z*H,Z);
+      ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*H,Z);
+
+      H+=claddingThick;
+      W+=claddingThick;
+      ModelSupport::buildPlane(SMap,vacIndex+23,Origin-X*W,X);
+      ModelSupport::buildPlane(SMap,vacIndex+24,Origin+X*W,X);
+      ModelSupport::buildPlane(SMap,vacIndex+25,Origin-Z*H,Z);
+      ModelSupport::buildPlane(SMap,vacIndex+26,Origin+Z*H,Z);
+
     }
 
   // FLANGE SURFACES:
@@ -544,11 +561,23 @@ VacuumPipe::createObjects(Simulation& System)
   Out=ModelSupport::getSetComposite(SMap,vacIndex," -17 13 -14 15 -16");
   HeadRule WallLayer(Out);
   
+  Out=ModelSupport::getSetComposite(SMap,vacIndex," -27 23 -24 25 -26");
+  HeadRule CladdingLayer(Out);
+
   Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 ");
   Out+=WallLayer.display()+InnerVoid.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
   addCell("MainSteel",cellIndex-1);
+
+  // cladding
+  if (claddingThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 ");
+      Out+=WallLayer.complement().display()+CladdingLayer.display();
+      System.addCell(MonteCarlo::Qhull(cellIndex++,claddingMat,0.0,Out));
+      addCell("Cladding",cellIndex-1);
+    }
 
   // FLANGE: 107 OR 103-106 valid 
   Out=ModelSupport::getSetComposite(SMap,vacIndex," -101 -107 103 -104 105 -106 ");
@@ -565,9 +594,8 @@ VacuumPipe::createObjects(Simulation& System)
 
   
   // outer void:
-  WallLayer.makeComplement();
   Out=ModelSupport::getSetComposite(SMap,vacIndex,"101 -102 -107 103 -104 105 -106 ");
-  Out+=WallLayer.display();
+  Out+=CladdingLayer.complement().display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   addCell("OutVoid",cellIndex-1);
 
