@@ -84,6 +84,7 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaStartPoint",0);
   Control.addVariable("vespaStopPoint",0);
 
+  Control.addVariable("vespaAxisXStep",1.523);
   Control.addVariable("vespaAxisZStep",0.0);
   
   PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall

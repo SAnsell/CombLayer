@@ -73,14 +73,14 @@ EssVariables(FuncDataBase& Control,
 
   Control.addVariable("EngineeringActive",0);      // NO engineering
 
-  Control.addVariable("TopFocusDistance",8.60);
-  Control.addVariable("TopFocusWidth",7.20);
+  Control.addVariable("TopFocusDistance",8.90);
+  Control.addVariable("TopFocusWidth",5.40);
   Control.addVariable("TopFocusXYAngle",90.0);
   Control.addVariable("TopFocusZStep",13.70);
 
   Control.addVariable("LowFocusXYAngle",90.0);
-  Control.addVariable("LowFocusWidth",7.20);
-  Control.addVariable("LowFocusDistance",8.6);
+  Control.addVariable("LowFocusWidth",5.40);
+  Control.addVariable("LowFocusDistance",8.90);
   Control.addVariable("LowFocusZStep",-15.20);
 
   // TOP A FLIGHT

@@ -557,7 +557,6 @@ VESPA::buildHut(Simulation& System,
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));
   ShieldC->insertObjects(System);
 
-
   VPipeOutC->addInsertCell(Cave->getCells("FrontWall"));
   VPipeOutC->addInsertCell(Cave->getCells("Void"));
   VPipeOutC->addInsertCell(ShieldC->getCells("Void"));
@@ -685,9 +684,9 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
   
 void 
 VESPA::build(Simulation& System,
-	    const GuideItem& GItem,
-	    const Bunker& bunkerObj,
-	    const int voidCell)
+	     const GuideItem& GItem,
+	     const Bunker& bunkerObj,
+	     const int voidCell)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -712,7 +711,7 @@ VESPA::build(Simulation& System,
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*vespaAxis,-3,*vespaAxis,-3);
-
+  
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge  
   buildBunkerUnits(System,FocusA->getKey("Guide0"),2,
@@ -739,7 +738,6 @@ VESPA::build(Simulation& System,
   buildDetectorArray(System,*Sample,0,Cave->getCell("Void"));
   return;
 }
-
 
 }   // NAMESPACE essSystem
 
