@@ -114,13 +114,13 @@ CellMap::insertComponent(Simulation& System,
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CellMap)");
 
-  for(const int cn : CM->getCells(holdKey))
+  for(const int cn : CM.getCells(holdKey))
     {
       const MonteCarlo::Object* OPtr=
 	System.findQhull(cn);
       if (OPtr)
 	{
-	  const HeadRule compObj=OPtr->getHeadRule.complement();
+	  const HeadRule compObj=OPtr->getHeadRule().complement();
 	  insertComponent(System,cutKey,compObj);	  
 	}
     }
