@@ -811,10 +811,12 @@ PhysicsCards::setRND(const long int N,
     \param H :: History
   */
 {
-
+  ELog::RegMethod RegA("PhysicsCards","setRND");
+  
   if (N)
     {
-      if (mcnpVersion==10) dbCard->setRegItem("rndSeed",N);
+      if (mcnpVersion==10)
+	dbCard->setRegItem("rndSeed",N);
       RAND->setRegItem("SEED",N);
     }
   if (H) RAND->setRegItem("HIST",H);
@@ -871,9 +873,6 @@ PhysicsCards::setDBCN(const std::string& kY,
   dbCard->setRegItem(kY,Val);
   return;
 }
-
-
-  
   
 long int
 PhysicsCards::getRNDseed() const

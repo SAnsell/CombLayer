@@ -1864,7 +1864,6 @@ Simulation::writeCinder() const
   ELog::RegMethod RegA("Simulation","writeCinder");
 
   writeCinderMat();
-  writeHTape();
   return;
 }
 
@@ -1889,45 +1888,6 @@ Simulation::write(const std::string& Fname) const
   writeTally(OX);
   writePhysics(OX);
   OX.close();
-  return;
-}
-
-void
-Simulation::writeHTape() const
-  /*!
-    Write out the all the f4 tallys 
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeHTape");
-
-  unsigned int index(0);
-  std::string tail="a"; 
-  TallyTYPE::const_iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::cellFluxTally* CPtr=
-	dynamic_cast<const tallySystem::cellFluxTally*>(mc->second);
-      if (CPtr)
-	{
-	  CPtr->writeHTape("inth",tail);
-	  if (tail[index]=='z')
-	    {
-	      if (index==0)
-		{
-		  tail[index]='a';
-		  tail+='a';
-		  index=1;
-		}
-	      else
-		{
-		  tail[0]++;
-		  tail[1]='a';
-		}
-	    }
-	  else
-	    tail[index]++;
-	}
-    }
   return;
 }
 

@@ -145,6 +145,7 @@ nameCard::reset()
 {
   ELog::RegMethod RegA("nameCard","reset");
 
+  active=0;
   JUnit.erase(JUnit.begin(),JUnit.end());
   DUnit.erase(DUnit.begin(),DUnit.end());
   IUnit.erase(IUnit.begin(),IUnit.end());
@@ -205,6 +206,8 @@ nameCard::setItem(const std::string& kN,const long int& Value)
    */
 {
   ELog::RegMethod RegA("nameCard","setItem<long int>");
+
+  ELog::EM<<"Item["<<keyName<<"] == "<<kN<<" "<<Value<<ELog::endDiag;
 
   active=1;
   std::map<std::string,long int>::iterator iIter;

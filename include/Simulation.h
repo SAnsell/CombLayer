@@ -126,7 +126,6 @@ class Simulation
 
   // The Cinder Write stuff
   void writeCinderMat() const;
-  void writeHTape() const;
 
   int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
