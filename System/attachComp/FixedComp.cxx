@@ -252,7 +252,7 @@ FixedComp::createUnitVector(const FixedComp& FC,
   const Geometry::Vec3D yTest=LU.getAxis()*signV;
       
   Geometry::Vec3D zTest=FC.getZ();
-  Geometry::Vec3D xTest=FC.getX();c
+  Geometry::Vec3D xTest=FC.getX();
   if (std::abs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     zTest=FC.getY();
   else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
