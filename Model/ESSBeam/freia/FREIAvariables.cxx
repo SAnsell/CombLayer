@@ -98,7 +98,7 @@ FREIAvariables(FuncDataBase& Control)
   FGen.setLayer(2,0.4,"Void");
   FGen.setYOffset(0.0);
   // was 10.593 to 17.566 
-  FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0,10.593,15.566,
+  FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0, 13.8,21.24,
                       7000.0,90.0);
 
   // Pipe in gamma shield
