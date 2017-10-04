@@ -45,8 +45,7 @@
 namespace physicsSystem
 {
   
-nameCard::nameCard(const std::string& KN,
-                     const int wT) :
+nameCard::nameCard(const std::string& KN,const int wT) :
   keyName(KN),writeType(wT),active(0)
   /*!
     Constructor
@@ -164,12 +163,7 @@ nameCard::setDefItem(const std::string& kN)
 {
   ELog::RegMethod RegA("nameCard","setDefItem");
 
-  std::set<std::string>::const_iterator jIter;
-
-  jIter=JUnit.find(kN);
-  if (jIter==JUnit.end())
-    JUnit.insert(kN);
-
+  JUnit.insert(kN);
   return;
 }
 
@@ -207,7 +201,8 @@ nameCard::setItem(const std::string& kN,const long int& Value)
 {
   ELog::RegMethod RegA("nameCard","setItem<long int>");
 
-  ELog::EM<<"Item["<<keyName<<"] == "<<kN<<" "<<Value<<ELog::endDiag;
+  // if (keyName=="dbcn")
+  //   ELog::EM<<"Item["<<keyName<<"] == "<<kN<<" "<<Value<<ELog::endErr;
 
   active=1;
   std::map<std::string,long int>::iterator iIter;
@@ -450,6 +445,7 @@ nameCard::getItem<std::string>(const std::string& kN) const
 
   return sIter->second;
 }
+
 void
 nameCard::registerItems(const std::vector<std::string>& Items)
   /*!
@@ -457,6 +453,8 @@ nameCard::registerItems(const std::vector<std::string>& Items)
     \param Items :: list of items and maybe defaults
   */
 {
+  ELog::RegMethod RegA("nameCard","registerItems");
+  
   std::string K,Type;
   for(std::string full : Items)
     {
@@ -514,7 +512,6 @@ nameCard::writeFlat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","writeFlat");
 
-  std::set<std::string>::const_iterator jIter;
   std::map<std::string,double>::const_iterator dIter;
   std::map<std::string,long int>::const_iterator iIter;
   std::map<std::string,std::string>::const_iterator sIter;
@@ -525,7 +522,10 @@ nameCard::writeFlat(std::ostream& OX) const
   size_t jCnt(0);
   for(const std::string& K : nameOrder)
     {
-      
+      // A set J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
       iIter=IUnit.find(K);
       if (iIter!=IUnit.end())
         {
@@ -569,10 +569,14 @@ nameCard::writeWithName(std::ostream& OX) const
   std::map<std::string,std::string>::const_iterator sIter;
 
   std::ostringstream cx;
-  
+
   cx<<keyName<<" ";
   for(const std::string& K : nameOrder)
     {
+      // SET J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
       cx<<" "<<K<<"=";
       iIter=IUnit.find(K);
       if (iIter!=IUnit.end())
