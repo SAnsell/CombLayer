@@ -226,7 +226,7 @@ nameCard::setItem(const std::string& kN,
   /*!
     Set an item based on the type
     \param kN :: Index number to return
-    \param Value :: vale to set
+    \param Value :: value to set
    */
 {
   ELog::RegMethod RegA("nameCard","setItem<string>");

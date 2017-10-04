@@ -57,13 +57,14 @@ class TwinGenerator
   double viewBoltStep;        ///< View port bolt step
   size_t viewNBolt;           ///< Number of bolts in view port
   double viewBoltRadius;      ///< View bolt radius
+
   std::string viewWindowMat;  ///< Neutron beam window
   std::string viewMat;        ///< Main port window
-  std::string viewBoltMat;    ///< viewi bolt mater
+  std::string viewBoltMat;    ///< view bolt mater
 
-  double ringRadius;          ///< Ring radius
-	
-  double motorRadius;        ///< Motor radius
+  double motorRadius;   ///< Flange Inner radius
+  double motorFlangeInner;   ///< Flange Inner radius
+  double motorFlangeOuter;   ///< Flange Outer radius
   double motorOuter;         ///< Motor outer
   size_t motorNBolt;         ///< Number of bolts
   double motorBoltRadius;    ///< Number of bolts

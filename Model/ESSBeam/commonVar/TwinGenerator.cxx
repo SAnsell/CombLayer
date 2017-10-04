@@ -71,8 +71,8 @@ TwinGenerator::TwinGenerator() :
   viewWindowMat("SiCrystal"),viewMat("Aluminium"),
   viewBoltMat("ChipIRSteel"),
 
-  ringRadius(40.0),
-  motorRadius(8.0),motorOuter(10.20),
+  motorRadius(10.0),
+  motorFlangeInner(10.20),motorFlangeOuter(12.20),
   motorNBolt(24),motorBoltRadius(0.5),
   motorSealThick(0.2),motorSealMat("Poly"),
 
@@ -100,10 +100,10 @@ TwinGenerator::setMainRadius(const double R)
     \param R :: Radius
   */
 {
-  ringRadius*=R/mainRadius;
   stepHeight*=R/mainRadius;
+  motorFlangeInner*=R/mainRadius;
+  motorFlangeOuter*=R/mainRadius;
   motorRadius*=R/mainRadius;
-  motorOuter*=R/mainRadius;
   portRadius*=R/mainRadius;
   portOuter*=R/mainRadius;
   viewWidth*=R/mainRadius;
@@ -233,15 +233,15 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   const double wallThick((length-voidLength)/2.0);
   for(const std::string itemName : {"MotorA","MotorB"})
     {
-      Control.addVariable(keyName+itemName+"BodyLength",5.0);
+      Control.addVariable(keyName+itemName+"BodyLength",32.0);
       Control.addVariable(keyName+itemName+"PlateThick",wallThick*1.2);
       Control.addVariable(keyName+itemName+"AxleRadius",2.0);
-      Control.addVariable(keyName+itemName+"BodyRadius",3.0);
+      Control.addVariable(keyName+itemName+"BodyRadius",motorRadius);
       Control.addVariable(keyName+itemName+"AxleMat","Nickel");
       Control.addVariable(keyName+itemName+"BodyMat","Copper");
       Control.addVariable(keyName+itemName+"PlateMat",wallMat);    
-      Control.addVariable(keyName+itemName+"InnerRadius",motorRadius); // [5691.2]
-      Control.addVariable(keyName+itemName+"OuterRadius",motorOuter); // [5691.2]
+      Control.addVariable(keyName+itemName+"InnerRadius",motorFlangeInner); // [5691.2]
+      Control.addVariable(keyName+itemName+"OuterRadius",motorFlangeOuter); // [5691.2]
       Control.addVariable(keyName+itemName+"BoltRadius",0.50);       //M10 inc thread
       Control.addVariable(keyName+itemName+"MainMat",wallMat);
       Control.addVariable(keyName+itemName+"BoltMat","ChipIRSteel");  

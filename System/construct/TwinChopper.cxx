@@ -168,8 +168,8 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp& Main=getKey("Main");
   attachSystem::FixedComp& Beam=getKey("Beam");
-  attachSystem::FixedComp& MotorA=getKey("MotorTop");
-  attachSystem::FixedComp& MotorB=getKey("MotorBase");
+  attachSystem::FixedComp& MotorA=getKey("MotorBase");
+  attachSystem::FixedComp& MotorB=getKey("MotorTop");
 
   Beam.createUnitVector(FC,sideIndex);
   Main.createUnitVector(FC,sideIndex);
@@ -199,8 +199,8 @@ TwinChopper::createSurfaces()
 {
   ELog::RegMethod RegA("TwinChopper","createSurfaces");
 
-  const attachSystem::FixedComp& MotorA=getKey("MotorTop");
-  const attachSystem::FixedComp& MotorB=getKey("MotorBase");
+  const attachSystem::FixedComp& MotorA=getKey("MotorBase");
+  const attachSystem::FixedComp& MotorB=getKey("MotorTop");
 
   ModelSupport::buildPlane(SMap,houseIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,houseIndex+2,Origin+Y*(length/2.0),Y);
