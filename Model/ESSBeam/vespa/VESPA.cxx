@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -275,37 +276,6 @@ VESPA::~VESPA()
     Destructor
   */
 {}
-
-void
-VESPA::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database for variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("VESPA","setBeamAxis");
-
-  vespaAxis->populate(Control);
-  vespaAxis->createUnitVector(GItem);
-  vespaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  vespaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  vespaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  vespaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  vespaAxis->linkShift(3);
-  vespaAxis->linkShift(4);
-  vespaAxis->linkAngleRotate(3);
-  vespaAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    vespaAxis->reverseZ();
-  return;
-}
 
 void
 VESPA::buildBunkerUnits(Simulation& System,
@@ -705,7 +675,10 @@ VESPA::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
 
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*vespaAxis,Control,GItem,0);
+  ELog::EM<<"vespaAxis == "<<vespaAxis->getCentre()<<ELog::endDiag;
+  ELog::EM<<"vespaAxis == "<<vespaAxis->getSignedLinkPt(3)<<ELog::endDiag;
+    
     
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
