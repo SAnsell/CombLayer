@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVarInc/TwinGenerator.h
+ * File:   commonVarInc/TwinFlatGenerator.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef essSystem_TwinGenerator_h
-#define essSystem_TwinGenerator_h
+#ifndef essSystem_TwinFlatGenerator_h
+#define essSystem_TwinFlatGenerator_h
 
 class Simulation;
 
@@ -28,40 +28,31 @@ namespace setVariable
 {
 
 /*!
-  \class TwinGenerator
+  \class TwinFlatGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief TwinGenerator for variables
+  \brief TwinFlatGenerator for variables
 */
 
-class TwinGenerator : public TwinBaseGenerator
+class TwinFlatGenerator :
+  public TwinBaseGenerator
 {
  private:
 
-  double portRadius;       ///< Main Port radius
-  double portOuter;        ///< Port outer boundary
+  double portIW;           ///< Main Port inner width
+  double portIH;           ///< Main Port inner height
+  double portOW;           ///< Main Port outer width
+  double portOH;           ///< Main Port outer height
   size_t portNBolt;        ///< Number of bolts
   double portBoltRadius;   ///< Port bolt size [M8 currently]
-
-  double viewWidth;           ///< View square width
-  double viewHeight;          ///< View square height
-  double viewLength;          ///< View thickness
-  double viewWindowThick;     ///< View thickness
-  double viewBoltStep;        ///< View port bolt step
-  size_t viewNBolt;           ///< Number of bolts in view port
-  double viewBoltRadius;      ///< View bolt radius
-
-  std::string viewWindowMat;  ///< Neutron beam window
-  std::string viewMat;        ///< Main port window
-  std::string viewBoltMat;    ///< view bolt mater
   
  public:
 
-  TwinGenerator();
-  TwinGenerator(const TwinGenerator&);
-  TwinGenerator& operator=(const TwinGenerator&);
-  ~TwinGenerator();
+  TwinFlatGenerator();
+  TwinFlatGenerator(const TwinFlatGenerator&);
+  TwinFlatGenerator& operator=(const TwinFlatGenerator&);
+  ~TwinFlatGenerator();
 
 
   void setMaterial(const std::string&,const std::string&);

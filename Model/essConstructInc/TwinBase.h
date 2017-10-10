@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/TwinChopper.h
+ * File:   constructInc/TwinBase.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_TwinChopper_h
-#define constructSystem_TwinChopper_h
+#ifndef constructSystem_TwinBase_h
+#define constructSystem_TwinBase_h
 
 class Simulation;
 
@@ -32,23 +32,23 @@ namespace constructSystem
   class InnerPort;
   
 /*!
-  \class TwinChopper
+  \class TwinBase
   \version 1.0
   \author S. Ansell
   \date January 2017
-  \brief TwinChopper unit  
+  \brief TwinBase unit  
   
   This piece aligns away from the chopper axis. Using
   the chopper origin [bearing position]
 */
 
-class TwinChopper :
+class TwinBase :
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
- private:
+ protected:
   
   const int houseIndex;          ///< Index of surface offset
   int cellIndex;                 ///< Cell index  
@@ -75,19 +75,7 @@ class TwinChopper :
 
   std::shared_ptr<Motor> motorA;           ///< Motor A
   std::shared_ptr<Motor> motorB;           ///< Motor B
-  std::shared_ptr<boltRing> frontFlange;   ///< Front flange
-  std::shared_ptr<boltRing> backFlange;    ///< Back flange
-  std::shared_ptr<InnerPort> IPA;          ///< inner port
-  std::shared_ptr<InnerPort> IPB;          ///< inner port
   
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-
-  std::string motorFrontExclude() const;
-  std::string motorBackExclude() const;
 
   void createOuterBolts(Simulation&,const int,const Geometry::Vec3D&,
 			const std::string&,const std::string&,
@@ -104,19 +92,32 @@ class TwinChopper :
 
   void createMotor(Simulation&,const std::string&,
 		   std::shared_ptr<Motor>&);
+
+
+  
+  // protected:
+
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+				const long int);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
+
+  void processInsert(Simulation&);
+  void buildMotors(Simulation&);
+  void buildPorts(Simulation&);
   
  public:
 
-  TwinChopper(const std::string&);
-  TwinChopper(const TwinChopper&);
-  TwinChopper& operator=(const TwinChopper&);
-  virtual ~TwinChopper();
+  TwinBase(const std::string&);
+  TwinBase(const TwinBase&);
+  TwinBase& operator=(const TwinBase&);
+  virtual ~TwinBase();
 
   void insertAxle(Simulation&,const attachSystem::CellMap&,
 		  const attachSystem::CellMap&) const;
-
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+  
 
 };
 

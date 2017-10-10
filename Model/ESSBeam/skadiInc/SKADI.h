@@ -38,7 +38,7 @@ namespace constuctSystem
   class DiskChopper;
   class ChopperPit;
   class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -124,7 +124,7 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitA;
   std::shared_ptr<constructSystem::HoleShape> PitACutFront;
   std::shared_ptr<constructSystem::HoleShape> PitACutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   std::shared_ptr<constructSystem::Motor> ChopAMotor;
   std::shared_ptr<constructSystem::DiskChopper> DiskA;
 
@@ -138,7 +138,7 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitB;
   std::shared_ptr<constructSystem::HoleShape> PitBCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitBCutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   std::shared_ptr<constructSystem::DiskChopper> DiskB;
 
   /// Structure Up to the First Chopper III  Pit
@@ -150,9 +150,9 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitC;
   std::shared_ptr<constructSystem::HoleShape> PitCCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitCCutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC1;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC1;
   std::shared_ptr<constructSystem::DiskChopper> DiskC1;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC2;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC2;
   std::shared_ptr<constructSystem::DiskChopper> DiskC2;
 
   std::shared_ptr<constructSystem::LineShield> ShieldD;

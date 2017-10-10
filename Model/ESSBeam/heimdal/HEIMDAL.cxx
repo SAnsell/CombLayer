@@ -85,8 +85,9 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Motor.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "DetectorTank.h"
 #include "LineShield.h"
@@ -119,7 +120,7 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusTC(new beamlineSystem::GuideLine(newName+"FTC")),
   FocusCC(new beamlineSystem::GuideLine(newName+"FCC")),
 
-  TChopA(new constructSystem::ChopperUnit(newName+"TChopA")),
+  TChopA(new constructSystem::SingleChopper(newName+"TChopA")),
   ADiskOne(new constructSystem::DiskChopper(newName+"ADiskOne")),
   ADiskTwo(new constructSystem::DiskChopper(newName+"ADiskTwo")),
 
@@ -130,15 +131,14 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
   FocusCD(new beamlineSystem::GuideLine(newName+"FCD")),
   BendCD(new beamlineSystem::GuideLine(newName+"BCD")),
 
-  TChopB(new constructSystem::ChopperUnit(newName+"TChopB")),
+  TChopB(new constructSystem::SingleChopper(newName+"TChopB")),
   BDisk(new constructSystem::DiskChopper(newName+"BDisk")),
 
   VPipeTE(new constructSystem::VacuumPipe(newName+"PipeTE")),
   FocusTE(new beamlineSystem::GuideLine(newName+"FTE")),
 
-  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")), 
+  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")), 
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
-  T0Motor(new constructSystem::Motor(newName+"T0Motor")),
 
   VPipeTF(new constructSystem::VacuumPipe(newName+"PipeTF")),
   FocusTF(new beamlineSystem::GuideLine(newName+"FTF"))
@@ -180,7 +180,6 @@ HEIMDAL::HEIMDAL(const std::string& keyName) :
 
   OR.addObject(ChopperT0);  
   OR.addObject(T0Disk);
-  OR.addObject(T0Motor);
 
   OR.addObject(VPipeTF);
   OR.addObject(FocusTF);
@@ -292,8 +291,6 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   T0Disk->createAll(System,ChopperT0->getKey("Main"),0,
                     ChopperT0->getKey("BuildBeam"),0);
   ChopperT0->insertAxle(System,*T0Disk);
-  //  T0Motor->addInsertCell(bunkerVoid);
-  //  T0Motor->createAll(System,ChopperT0->getKey("Main"),1);
 
   VPipeTF->addInsertCell(bunkerVoid);
   VPipeTF->createAll(System,ChopperT0->getKey("Beam"),2);
@@ -322,15 +319,22 @@ HEIMDAL::buildIsolated(Simulation& System,const int voidCell)
 
   ELog::EM<<"BUILD ISOLATED Start/Stop:"
           <<startPoint<<" "<<stopPoint<<ELog::endDiag;
-  const attachSystem::FixedComp* FStart(&(World::masterOrigin()));
-  long int startIndex(0);
+  const attachSystem::FixedComp* FTA(&(World::masterOrigin()));
+  const attachSystem::FixedComp* FCA(&(World::masterOrigin()));
+
+  long int FCindex(0);
+  long int FTindex(0);
+  
   
   if (startPoint<1)
     {
-      //      buildBunkerUnits(System,*FStart,startIndex,voidCell);
-      // Set the start point fo rb
-      //      FStart= &(FocusF->getKey("Guide0"));
-      startIndex= 2;
+      buildBunkerUnits(System,*FTA,FTindex,*FCA,FCindex,voidCell);
+
+
+      //      FTA= &(FocusF->getKey("Guide0"));
+      //      FTA= &(FocusF->getKey("Guide0"));
+      FCindex= 2;
+      FTindex= 2;
     }
   if (stopPoint==2 || stopPoint==1) return;
 

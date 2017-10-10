@@ -72,6 +72,7 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "process","world","monte","geometry",
                              "mersenne","src","xml","poly",
 			     "weights","global","attachComp","visit",
+			     "essConstruct",
                              "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
 			     "nmx","nnbar","odin","skadi","testBeam",
@@ -101,7 +102,8 @@ $gM->addDepUnit("essBeamline",
 			     "crystal","transport","scatMat","md5",
 			     "endf","process","world","work","insertUnit",
 			     "monte","geometry","mersenne","src","xml","poly",
-			     "weights","global","attachComp","visit",
+     		             "weights","global","attachComp","visit",
+			      "essConstruct",
 			     "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
 			     "nmx","nnbar","odin","skadi","testBeam","trex",
@@ -249,7 +251,7 @@ $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src","simMC",
 			       "tally","geometry","mersenne","src","world",
 			       "work","xml","poly","support","weights",
 			       "md5","global","attachComp","visit","poly",
-			       "insertUnit","commonVar"]);
+			       "essConstruct","insertUnit","commonVar"]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",
@@ -350,7 +352,7 @@ $gM->addDepUnit("testMain", ["test","build","visit","chip","t1Upgrade",
 			     "monte","funcBase","log","geometry","tally",
 			     "mersenne","src","work","xml","poly","support",
 			     "world","weights","md5","global","attachComp",
-			     "insertUnit","visit","poly"]);
+			     "insertUnit","visit","poly","essConstruct"]);
 
 $gM->writeCMake();
 

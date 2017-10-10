@@ -84,7 +84,8 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "DetectorTank.h"
 #include "LineShield.h"
@@ -113,25 +114,25 @@ VESPA::VESPA(const std::string& keyName) :
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
   
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   WFMDiskA(new constructSystem::DiskChopper(newName+"WFMBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")), 
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")), 
   WFMDiskB(new constructSystem::DiskChopper(newName+"WFMBladeB")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
   WFMDiskC(new constructSystem::DiskChopper(newName+"WFMBladeC")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
+  ChopperD(new constructSystem::SingleChopper(newName+"ChopperD")),
   FOCDiskA(new constructSystem::DiskChopper(newName+"FOCBladeA")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
@@ -142,7 +143,7 @@ VESPA::VESPA(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitT0(new constructSystem::ChopperPit(newName+"OutPitT0")),
-  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")),
+  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")),
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
   T0ExitPort(new constructSystem::HoleShape(newName+"T0ExitPort")),
   
@@ -150,7 +151,7 @@ VESPA::VESPA(const std::string& keyName) :
   ShieldA(new constructSystem::TriangleShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
   PitBPortA(new constructSystem::HoleShape(newName+"PitBPortA")),
@@ -161,7 +162,7 @@ VESPA::VESPA(const std::string& keyName) :
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   FocusOutB(new beamlineSystem::GuideLine(newName+"FOutB")),
   
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOCDiskOutB(new constructSystem::DiskChopper(newName+"FOCBladeOutB")),
   
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
@@ -676,9 +677,6 @@ VESPA::build(Simulation& System,
 	  <<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*vespaAxis,Control,GItem,0);
-  ELog::EM<<"vespaAxis == "<<vespaAxis->getCentre()<<ELog::endDiag;
-  ELog::EM<<"vespaAxis == "<<vespaAxis->getSignedLinkPt(3)<<ELog::endDiag;
-    
     
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

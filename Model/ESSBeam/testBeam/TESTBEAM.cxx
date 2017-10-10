@@ -82,8 +82,9 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Motor.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Cryostat.h"
 
@@ -103,7 +104,7 @@ TESTBEAM::TESTBEAM(const std::string& keyName) :
   ADisk(new constructSystem::DiskChopper(newName+"BladeA")),
   BDisk(new constructSystem::DiskChopper(newName+"BladeB")),
 
-  ChopperT0(new constructSystem::ChopperUnit(newName+"ChopperT0")), 
+  ChopperT0(new constructSystem::SingleChopper(newName+"ChopperT0")), 
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
   T0Motor(new constructSystem::Motor(newName+"T0Motor")),
   CryoA(new constructSystem::Cryostat(newName+"CryoA"))

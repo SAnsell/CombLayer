@@ -46,7 +46,7 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class ChopperUnit;
+  class SingleChopper;
   class TwinChopper;
   class HoleShape;
   class CrystalMount;
@@ -88,7 +88,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> WFMDiskA;
   
@@ -98,7 +98,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> WFMDiskB;
 
@@ -108,7 +108,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> WFMDiskC;
 
@@ -118,7 +118,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskA;
 
@@ -138,7 +138,7 @@ class VESPA : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitT0;
   /// Quad chopper housing 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
   /// T0 chopper [15.5m]
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
   /// Collimator hole 
@@ -154,7 +154,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
   /// Vac box for First Out-of-bunker chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
 
   /// Shield for Chopper Out-B
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
@@ -181,7 +181,7 @@ class VESPA : public attachSystem::CopiedComp
   std::vector<std::shared_ptr<beamlineSystem::GuideLine>> FocusArray;
   
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutB;
 

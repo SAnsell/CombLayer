@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/TwinChopper.cxx
+ * File:   construct/TwinBase.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -81,12 +81,12 @@
 #include "InnerPort.h"
 #include "boltRing.h"
 #include "Motor.h"
-#include "TwinChopper.h"
+#include "TwinBase.h"
 
 namespace constructSystem
 {
 
-TwinChopper::TwinChopper(const std::string& Key) : 
+TwinBase::TwinBase(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,
 				 "MotorTop",3,"MotorBase",3),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
@@ -94,11 +94,7 @@ TwinChopper::TwinChopper(const std::string& Key) :
   houseIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(houseIndex+1),
   motorA(new constructSystem::Motor(Key+"MotorA")),
-  motorB(new constructSystem::Motor(Key+"MotorB")),
-  frontFlange(new constructSystem::boltRing(Key,"FrontFlange")),
-  backFlange(new constructSystem::boltRing(Key,"BackFlange")),
-  IPA(new constructSystem::InnerPort(Key+"IPortA")),
-  IPB(new constructSystem::InnerPort(Key+"IPortB"))
+  motorB(new constructSystem::Motor(Key+"MotorB"))
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -109,26 +105,22 @@ TwinChopper::TwinChopper(const std::string& Key) :
 
   OR.addObject(motorA);
   OR.addObject(motorB);
-  OR.addObject(frontFlange);
-  OR.addObject(backFlange);
-  OR.addObject(IPA);
-  OR.addObject(IPB);
 }
 
-TwinChopper::~TwinChopper() 
+TwinBase::~TwinBase() 
   /*!
     Destructor
   */
 {}
 
 void
-TwinChopper::populate(const FuncDataBase& Control)
+TwinBase::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("TwinChopper","populate");
+  ELog::RegMethod RegA("TwinBase","populate");
 
   FixedOffsetGroup::populate(Control);
   //  + Fe special:
@@ -154,7 +146,7 @@ TwinChopper::populate(const FuncDataBase& Control)
 }
 
 void
-TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
+TwinBase::createUnitVector(const attachSystem::FixedComp& FC,
                               const long int sideIndex)
   /*!
     Create the unit vectors.
@@ -164,7 +156,7 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("TwinChopper","createUnitVector");
+  ELog::RegMethod RegA("TwinBase","createUnitVector");
 
   attachSystem::FixedComp& Main=getKey("Main");
   attachSystem::FixedComp& Beam=getKey("Beam");
@@ -192,12 +184,12 @@ TwinChopper::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-TwinChopper::createSurfaces()
+TwinBase::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("TwinChopper","createSurfaces");
+  ELog::RegMethod RegA("TwinBase","createSurfaces");
 
   const attachSystem::FixedComp& MotorA=getKey("MotorBase");
   const attachSystem::FixedComp& MotorB=getKey("MotorTop");
@@ -237,7 +229,7 @@ TwinChopper::createSurfaces()
 
 
 void
-TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
+TwinBase::createOuterBolts(Simulation& System,const int surfOffset,
 			      const Geometry::Vec3D& Centre,
 			      const std::string& FBStr,
 			      const std::string& EdgeStr,
@@ -260,7 +252,7 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
     \param endSurf :: end surface [signed]
    */
 {
-  ELog::RegMethod RegA("TwinChopper","createOuterBolts");
+  ELog::RegMethod RegA("TwinBase","createOuterBolts");
 
 
   std::string Out;
@@ -326,7 +318,7 @@ TwinChopper::createOuterBolts(Simulation& System,const int surfOffset,
 }
 
 void
-TwinChopper::createLineBolts(Simulation& System,const int surfOffset,
+TwinBase::createLineBolts(Simulation& System,const int surfOffset,
                              const std::string& FBStr,
                              const std::string& leftEdgeStr,
                              const std::string& rightEdgeStr,
@@ -346,7 +338,7 @@ TwinChopper::createLineBolts(Simulation& System,const int surfOffset,
     \param endSurf :: end surface [signed]
    */
 {
-  ELog::RegMethod RegA("TwinChopper","createLineBolts");
+  ELog::RegMethod RegA("TwinBase","createLineBolts");
 
   std::string Out;
 
@@ -414,18 +406,14 @@ TwinChopper::createLineBolts(Simulation& System,const int surfOffset,
   
   
 void
-TwinChopper::createObjects(Simulation& System)
+TwinBase::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("TwinChopper","createObjects");
+  ELog::RegMethod RegA("TwinBase","createObjects");
 
-  const attachSystem::FixedComp& Main=getKey("Main");
-  const attachSystem::FixedComp& Beam=getKey("Beam");
-  //  const double CentreDist=Main.getCentre().Distance(Beam.getCentre());
-  
   std::string Out,FBStr,EdgeStr,SealStr;
 
   // Main void
@@ -450,48 +438,6 @@ TwinChopper::createObjects(Simulation& System)
                                  "11 -12 23 -24 (5:-27) (-6:-28) 17 18 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
   addCell("EdgeCase",cellIndex-1);
-
-
-  // Front ring seal
-  
-  frontFlange->setInnerExclude();
-  frontFlange->addInsertCell(getCell("FrontCase"));
-  frontFlange->setFront(SMap.realSurf(houseIndex+1));
-  frontFlange->setBack(-SMap.realSurf(houseIndex+11));
-  frontFlange->createAll(System,Main,0);
-
-  // Back ring seal
-  backFlange->setInnerExclude();
-  backFlange->addInsertCell(getCell("BackCase"));
-  backFlange->setFront(SMap.realSurf(houseIndex+12));
-  backFlange->setBack(-SMap.realSurf(houseIndex+2));
-  backFlange->createAll(System,Main,0);
-
-
-  // Ports in front/back seal void
-  // -----------------------------
-  const std::string innerFSurf=
-    std::to_string(-frontFlange->getSurf("innerRing"));
-  const std::string innerBSurf=
-    std::to_string(-backFlange->getSurf("innerRing"));
-  
-  Out=ModelSupport::getComposite(SMap,houseIndex," 1 -11 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerFSurf));
-  addCell("PortVoid",cellIndex-1);
-  IPA->addInnerCell(getCell("PortVoid",0));
-  IPA->createAll(System,Beam,0,Out+innerFSurf);
-
-  
-  Out=ModelSupport::getComposite(SMap,houseIndex,"12 -2 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+innerBSurf));
-  addCell("PortVoid",cellIndex-1);
-
-  IPB->addInnerCell(getCell("PortVoid",1));
-  IPB->createAll(System,Beam,0,Out+innerBSurf);
-
-
-  
-  
 
   // OUTER RING :
   // NECESSARY because segment cut
@@ -532,13 +478,13 @@ TwinChopper::createObjects(Simulation& System)
 }
 
 void
-TwinChopper::createLinks()
+TwinBase::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("TwinChopper","createLinks");
+  ELog::RegMethod RegA("TwinBase","createLinks");
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
@@ -594,7 +540,7 @@ TwinChopper::createLinks()
 }
 
 void
-TwinChopper::insertAxle(Simulation& System,
+TwinBase::insertAxle(Simulation& System,
 			 const attachSystem::CellMap& CMlow,
 			 const attachSystem::CellMap& CMtop) const
   /*!
@@ -607,7 +553,7 @@ TwinChopper::insertAxle(Simulation& System,
     named cells (Inner).
   */
 {
-  ELog::RegMethod RegA("TwinChopper","insertAxle");
+  ELog::RegMethod RegA("TwinBase","insertAxle");
 
   motorA->insertInCell("Axle",System,CMtop.getCells("Inner"));
   motorB->insertInCell("Axle",System,CMlow.getCells("Inner"));
@@ -617,7 +563,7 @@ TwinChopper::insertAxle(Simulation& System,
 }
 
 void
-TwinChopper::createMotor(Simulation& System,
+TwinBase::createMotor(Simulation& System,
 			  const std::string& posName,
 			  std::shared_ptr<Motor>& motor)
 
@@ -628,7 +574,7 @@ TwinChopper::createMotor(Simulation& System,
     \param motor :: motor pointer
   */
 {
-  ELog::RegMethod RegA("TwinChopper","createMotor");
+  ELog::RegMethod RegA("TwinBase","createMotor");
 
   
   motor->addInsertCell("Plate",getCells("Case"));
@@ -643,39 +589,39 @@ TwinChopper::createMotor(Simulation& System,
   return;
 }
 
-
-  
 void
-TwinChopper::createAll(Simulation& System,
-                       const attachSystem::FixedComp& beamFC,
-                       const long int FIndex)
+TwinBase::processInsert(Simulation& System)
   /*!
-    Generic function to create everything
-    \param System :: Simulation item
-    \param beamFC :: FixedComp at the beam centre
-    \param FIndex :: side index
+    Insert motor and do the FULL insertion of the Twinchopper
+    \param System :: simulation to use
   */
 {
-  ELog::RegMethod RegA("TwinChopper","createAll(FC)");
-
-  populate(System.getDataBase());
-  createUnitVector(beamFC,FIndex);
-  createSurfaces();    
-  createObjects(System);
-  
-  createLinks();
-
+  ELog::RegMethod RegA("TwinBase","processInsert");
   
   motorA->addInsertCell("Outer",*this);
   motorB->addInsertCell("Outer",*this);
   
-
   insertObjects(System);   
 
+  return;
+}
+
+
+void
+TwinBase::buildMotors(Simulation& System)
+  /*!
+    Build the motors
+    \param System :: simulation to use
+  */
+{
+  ELog::RegMethod RegA("TwinBase","buildMotor");
+  
   createMotor(System,"MotorTop",motorA);
   createMotor(System,"MotorBase",motorB); 
 
   return;
 }
+  
+  
   
 }  // NAMESPACE constructSystem

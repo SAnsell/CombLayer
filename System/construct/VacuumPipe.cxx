@@ -602,7 +602,7 @@ VacuumPipe::createObjects(Simulation& System)
   // Outer
   Out=ModelSupport::getSetComposite(SMap,vacIndex,"-107 103 -104 105 -106 ");
   addOuterSurf(Out+frontStr+backStr);
-  
+
   return;
 }
 

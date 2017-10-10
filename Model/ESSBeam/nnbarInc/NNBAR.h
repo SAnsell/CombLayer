@@ -46,7 +46,7 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class ChopperUnit;
+  class SingleChopper;
   class HoleShape;
   class TubeDetBox;  
 }
