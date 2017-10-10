@@ -7,12 +7,13 @@ Cell-based weight window can be generated with the following arguments:
 \lstinputlisting[language=bash,numbers=none,backgroundcolor=\color{yellow!20},frame=tb]{UserGuide/cell-biasing.sh}
 
 \begin{description}
-\item[-defaultConfig Single NMX -angle free 60] These optional arguments build the NMX beam line and rotate geometry around the $z$ axis
-  in such a way that the NMX beam line is oriented along the $x$ axis.
-  This rotation simplifies the weight window setup for the current example. 
+\item[-defaultConfig Single ODIN -angle objAxis odinAxis 0] These optional arguments build the ODIN beam line
+  and rotate geometry around the $z$ axis in such a way that the ODIN beam line is collinear to the $x$ axis.
+  This rotation simplifies the weight window source plane setup for the current example and used here for
+  illustration purpose~(see \figref{fig:vr:cell}).
 \item[-w] should precede all weight-related arguments.
-\item[--weightSource] This argument defines points in space. We can define as many as we want, but only those used with {\tt weightObject} will be used.
-\item[--weightPlane] This argument defines planes. We can define as many as we want, but only those used with {\tt weightObject} will be used.
+\item[--weightSource] This argument defines points in space. We can define as many as we want, but only those used with {\tt weightObject} will be used. This particular point is shown by a circle in \figref{fig:vr:cell:labels}.
+\item[--weightPlane] This argument defines planes. We can define as many as we want, but only those used with {\tt weightObject} will be used. This particular plane is shown by a dashed vertical line in \figref{fig:vr:cell:labels}.
 \item[--weightObject] {\tt BBunkerWallMainWall1 TP1 1.0 0.15 1e-20 }: object we are interested in calculating; {\tt TP1}: tally plane 1;
   \mbox{\tt 1.0 1.0 0.15 1e-20}: energy above \SI{1}{\mega\electronvolt} (below it we are not interested~--- use default values);
   {\tt 1.0}: scale factor; 
@@ -43,14 +44,38 @@ $\underset{
 \begin{landscape}
 \begin{figure}
   \centering
-  \subfloat[Horizontal view: geometry]{
-    \includegraphics[width=0.5\linewidth,page=1,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}
+  \subfloat[Horizontal view: geometry \label{fig:vr:cell:labels} ]{
+  \begin{tikzpicture}
+    \node[anchor=south west,inner sep=0] (image) at (0,0) {\includegraphics[width=0.5\linewidth,page=1,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}};
+    \begin{scope}[x={(image.south east)},y={(image.north west)}]
+      % \draw[help lines, xstep=.1, ystep=.1] (0,0) grid (1,1);
+      % \foreach \x in {0,1,...,9} {\node [anchor=north] at (\x/10, 0) {0.\x}; }
+      % \foreach \y in {0,1,...,9} {\node [anchor=east]  at (0, \y/10) {0.\y}; }
+
+      \draw[red,thick] (0.07, 0.367) circle (0.5mm);
+      \draw[arrow] (0.11,0.46) -- (0.077,0.38);
+      \node[legend, anchor=west] at (0.1,0.5) {weightSource};
+
+      \draw[red,dashed] (0.79,0) -- (0.79,1);
+      \draw[arrow] (0.85,0.8) -- (0.79,0.8);
+      \node[legend, anchor=west] at (0.85,0.8) {weightPlane};
+
+      \draw[arrow]     (0.14,0.2) -- (0.14,0.36);
+      \node[legend] at (0.14,0.2) {G2BLineTop20};
+
+      \draw[arrow]                 (0.65,0.25) -- (0.69,0.25);
+      \node[legend,anchor=east] at (0.65,0.25) {CBunkerWallMainWall1};
+
+      \draw[arrow]                 (0.65,0.45) -- (0.69,0.45);
+      \node[legend,anchor=east] at (0.65,0.45) {CBunkerWallMainWall2};
+    \end{scope}
+  \end{tikzpicture}
   }
   \subfloat[Horizontal view: wwn]{
-    \includegraphics[width=0.5\linewidth,page=3,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}
+    \includegraphics[width=0.5\linewidth,page=2,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}
   } \\
   \subfloat[Vertical view: geometry]{
-    \includegraphics[width=0.5\linewidth,page=2,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}
+    \includegraphics[width=0.5\linewidth,page=3,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}
   }
   \subfloat[Vertical view: wwn]{
     \includegraphics[width=0.5\linewidth,page=4,clip=true, trim=10cm 8cm 4cm 7cm]{UserGuide/cell-biasing.pdf}
