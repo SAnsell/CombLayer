@@ -450,7 +450,7 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("TwisterPlugFrameRadius",105.0);
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameHeight",57.6);
-  Control.addVariable("TwisterPlugFrameDepth",60.6);
+  Control.addVariable("TwisterPlugFrameDepth",73); // to fit LowBeRef with dimensions communicated by LZ 10.10.2017
   Control.addVariable("TwisterPlugFrameAngle",38.0);
   Control.addVariable("TwisterPlugFrameMat","SS316L_10H2O");
   Control.addVariable("TwisterPlugFrameWallThick",3.0);

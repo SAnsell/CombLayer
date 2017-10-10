@@ -578,23 +578,37 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowRefMat", "SS316L");
       A.setVar("BeRefLowWallMat", "AluminiumBe");
       A.setVar("BeRefLowInnerStructureActive", 1);
-      // The following numbers are from Yannick's email 31 Jan 2017:
-      A.setVar("BeRefDepth", 50.3); // (157.5+17.5 + 120 + 30 + 50 +30 +20)/10.0+7.8
-      A.setVar("BulkDepth1", 51); // a bit bigger to make some clearance
-      A.setVar("BeRefLowInnerStructureNLayers", 7);
-      A.setVar("BeRefLowInnerStructureBaseLen1", 0.0470589); // 2 cm
-      A.setVar("BeRefLowInnerStructureBaseLen2", 0.0705882); // 3
-      A.setVar("BeRefLowInnerStructureBaseLen3", 0.117647); // 5
-      A.setVar("BeRefLowInnerStructureBaseLen4", 0.0705882); // 3
-      A.setVar("BeRefLowInnerStructureBaseLen5", 0.282353); // 12
-      A.setVar("BeRefLowInnerStructureBaseLen6", 0.0411765); // 1.75
-      A.setVar("BeRefLowInnerStructureMat0", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat1", "H2O");
-      A.setVar("BeRefLowInnerStructureMat2", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat3", "H2O");
-      A.setVar("BeRefLowInnerStructureMat4", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat5", "H2O");
-      A.setVar("BeRefLowInnerStructureMat6", "SS316L");
+      // The following numbers are from LZ drawing 10.10.2017
+      const double BeRefDepth(57.7); // 30+51+30+9+30+30+30+90+30+90+30+127
+      const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
+      A.setVar("BeRefDepth", BeRefDepth+Ztop);
+      A.setVar("BulkDepth1", BeRefDepth+Ztop+1); // a bit bigger to make some clearance
+      A.setVar("BeRefLowInnerStructureNLayers", 12);
+      A.setVar("BeRefLowInnerStructureBaseLen1", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen2", 5.1/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen3", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen4", 0.9/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen5", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen6", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen7", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen8", 9.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen9", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen10", 9.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen11", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen12", 12.7/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureMat0", "H2O");
+      A.setVar("BeRefLowInnerStructureMat1", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat2", "H2O");
+      A.setVar("BeRefLowInnerStructureMat3", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat4", "H2O");
+      A.setVar("BeRefLowInnerStructureMat5", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat6", "H2O");
+      A.setVar("BeRefLowInnerStructureMat7", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat8", "H2O");
+      A.setVar("BeRefLowInnerStructureMat9", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat10", "H2O");
+      A.setVar("BeRefLowInnerStructureMat11", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat12", "H2O");
       // Since there is no bunkers, we have to 
       // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
       A.setVar("F5DefaultLength", 440.0);
