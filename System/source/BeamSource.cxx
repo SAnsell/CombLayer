@@ -123,12 +123,14 @@ BeamSource::populateEFile(const std::string& FName,
   /*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
-    weight onto the table since we are using a
+    - Scale weight  onto sum 1.0 in the table 
     \param FName :: filename 
-    return 0 on failure / 1 on success
+    \param colE :: Energy column from data file
+    \param colP :: Prob/Weight column from data file
+    \return 0 on failure / 1 on success
   */
 {
-  ELog::RegMethod RegA("BeamSource","loadEnergy");
+  ELog::RegMethod RegA("BeamSource","populateEFile");
 
   const int eCol(colE);
   const int iCol(colP);
@@ -347,8 +349,9 @@ BeamSource::createAll(const FuncDataBase& Control,
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-    \param linkIndex :: link Index						
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
+    \param sourceCard :: Source Term
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");

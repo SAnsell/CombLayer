@@ -343,7 +343,7 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
     Set the global constants based on a unit and the offset numbers
     Numbers are in log space [nat log]
     \param IParam :: Input parameters
-    \param unit :: unit string
+    \param unitName :: unit string
     \param iSet :: group number [normally 0]
     \param iOffset :: offset number 
    */

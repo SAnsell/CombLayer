@@ -131,10 +131,10 @@ WWGWeight::isSized(const long int LX,const long int LY,
 		   const long int LZ,const long int LE) const
   /*!
     Check the mesh value
-    \parma LX :: X coorindate size
-    \parma LY :: Y coorindate size
-    \parma LZ :: Z coorindate size
-    \parma LE :: Energy coorindate size
+    \param LX :: X coorindate size
+    \param LY :: Y coorindate size
+    \param LZ :: Z coorindate size
+    \param LE :: Energy coorindate size
     \return true if properly sized
    */
 {
@@ -146,10 +146,10 @@ WWGWeight::resize(const long int LX,const long int LY,
 		  const long int LZ,const long int LE)
   /*!
     Resize the mesh value
-    \parma LX :: X coorindate size
-    \parma LY :: Y coorindate size
-    \parma LZ :: Z coorindate size
-    \parma LE :: Energy coorindate size
+    \param LX :: X coorindate size
+    \param LY :: Y coorindate size
+    \param LZ :: Z coorindate size
+    \param LE :: Energy coorindate size
    */
 {
   WGrid.resize(boost::extents[LX][LY][LZ][LE]);

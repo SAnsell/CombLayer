@@ -56,7 +56,6 @@ class TwinFlatGenerator :
 
 
   void setMaterial(const std::string&,const std::string&);
-  void setFrame(const double,const double);  
   void setMainRadius(const double);
 
 

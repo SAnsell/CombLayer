@@ -89,6 +89,103 @@ Cryostat::Cryostat(const std::string& Key) :
   */
 {}
 
+Cryostat::Cryostat(const Cryostat& A) : 
+  attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
+  cryIndex(A.cryIndex),cellIndex(A.cellIndex),
+  active(A.active),sampleZOffset(A.sampleZOffset),
+  sampleRadius(A.sampleRadius),sampleHeight(A.sampleHeight),
+  voidRadius(A.voidRadius),voidDepth(A.voidDepth),
+  voidHeight(A.voidHeight),voidWallThick(A.voidWallThick),
+  stickLen(A.stickLen),stickRadius(A.stickRadius),
+  stickBoreRadius(A.stickBoreRadius),
+  stickBoreHeight(A.stickBoreHeight),
+  stickBoreThick(A.stickBoreThick),heatRadius(A.heatRadius),
+  heatDepth(A.heatDepth),heatHeight(A.heatHeight),
+  heatThick(A.heatThick),heatOuterRadius(A.heatOuterRadius),
+  heatOuterLift(A.heatOuterLift),
+  liqHeInnerRadius(A.liqHeInnerRadius),
+  liqHeOuterRadius(A.liqHeOuterRadius),
+  liqHeWallThick(A.liqHeWallThick),liqHeHeight(A.liqHeHeight),
+  liqHeExtra(A.liqHeExtra),
+  liqN2InnerRadius(A.liqN2InnerRadius),
+  liqN2OuterRadius(A.liqN2OuterRadius),
+  liqN2WallThick(A.liqN2WallThick),liqN2Height(A.liqN2Height),
+  tailRadius(A.tailRadius),tailDepth(A.tailDepth),
+  tailHeight(A.tailHeight),tailThick(A.tailThick),
+  tailOuterRadius(A.tailOuterRadius),
+  tailOuterHeight(A.tailOuterHeight),
+  tailOuterLift(A.tailOuterLift),mainThick(A.mainThick),
+  roofThick(A.roofThick),sampleMat(A.sampleMat),
+  liqN2Mat(A.liqN2Mat),liqHeMat(A.liqHeMat),
+  wallMat(A.wallMat),stickMat(A.stickMat)
+  /*!
+    Copy constructor
+    \param A :: Cryostat to copy
+  */
+{}
+
+Cryostat&
+Cryostat::operator=(const Cryostat& A)
+  /*!
+    Assignment operator
+    \param A :: Cryostat to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      cellIndex=A.cellIndex;
+      active=A.active;
+      sampleZOffset=A.sampleZOffset;
+      sampleRadius=A.sampleRadius;
+      sampleHeight=A.sampleHeight;
+      voidRadius=A.voidRadius;
+      voidDepth=A.voidDepth;
+      voidHeight=A.voidHeight;
+      voidWallThick=A.voidWallThick;
+      stickLen=A.stickLen;
+      stickRadius=A.stickRadius;
+      stickBoreRadius=A.stickBoreRadius;
+      stickBoreHeight=A.stickBoreHeight;
+      stickBoreThick=A.stickBoreThick;
+      heatRadius=A.heatRadius;
+      heatDepth=A.heatDepth;
+      heatHeight=A.heatHeight;
+      heatThick=A.heatThick;
+      heatOuterRadius=A.heatOuterRadius;
+      heatOuterLift=A.heatOuterLift;
+      liqHeInnerRadius=A.liqHeInnerRadius;
+      liqHeOuterRadius=A.liqHeOuterRadius;
+      liqHeWallThick=A.liqHeWallThick;
+      liqHeHeight=A.liqHeHeight;
+      liqHeExtra=A.liqHeExtra;
+      liqN2InnerRadius=A.liqN2InnerRadius;
+      liqN2OuterRadius=A.liqN2OuterRadius;
+      liqN2WallThick=A.liqN2WallThick;
+      liqN2Height=A.liqN2Height;
+      tailRadius=A.tailRadius;
+      tailDepth=A.tailDepth;
+      tailHeight=A.tailHeight;
+      tailThick=A.tailThick;
+      tailOuterRadius=A.tailOuterRadius;
+      tailOuterHeight=A.tailOuterHeight;
+      tailOuterLift=A.tailOuterLift;
+      mainThick=A.mainThick;
+      roofThick=A.roofThick;
+      sampleMat=A.sampleMat;
+      liqN2Mat=A.liqN2Mat;
+      liqHeMat=A.liqHeMat;
+      wallMat=A.wallMat;
+      stickMat=A.stickMat;
+    }
+  return *this;
+}
+
 
 Cryostat::~Cryostat() 
   /*!

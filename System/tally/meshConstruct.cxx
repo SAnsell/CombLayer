@@ -173,6 +173,7 @@ meshConstruct::getObjectMesh(const mainSystem::inputParam& IParam,
     Get mesh grid for the tally
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
+    \param offset :: start point in T card to take position from
     \param APt :: Low box coorner
     \param BPt :: Upper box coorner
     \param Nxyz :: number of points

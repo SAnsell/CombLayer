@@ -217,7 +217,7 @@ StrParts(std::string Text,const std::regex& Re)
   /*! 
     Find the match, return the disected items.
     Note it is complementary to support.h StrParts(Sdx)
-    \param Sdx :: Input string (note implicit copy since altered)
+    \param Text :: Input string (note implicit copy since altered)
     \param Re :: Regular expression for separator component
     \returns vector of string components
   */

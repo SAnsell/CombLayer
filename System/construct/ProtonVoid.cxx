@@ -211,9 +211,9 @@ ProtonVoid::createAll(Simulation& System,
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param FC :: FixedComp for origin
+    \param TargetFC :: FixedComp for origin and target value
     \param tIndex :: Target plate surface
-    \param RefFC :: FixedComp for origin
+    \param RefFC :: FixedComp for reflector (bounding surf)
     \param rIndex :: Reflector outer surf
   */
 {

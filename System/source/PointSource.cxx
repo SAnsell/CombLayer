@@ -118,16 +118,19 @@ PointSource::~PointSource()
 
 int
 PointSource::populateEFile(const std::string& FName,
-			   const int colE,const int colP)
+			   const int colE,
+			   const int colP)
   /*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
     weight onto the table since we are using a
     \param FName :: filename 
+    \param colE :: column for energy points
+    \param colP :: column for weight/prob points
     return 0 on failure / 1 on success
   */
 {
-  ELog::RegMethod RegA("PointSource","loadEnergy");
+  ELog::RegMethod RegA("PointSource","populateEFile");
 
   const int eCol(colE);
   const int iCol(colP);
@@ -332,8 +335,9 @@ PointSource::createAll(const FuncDataBase& Control,
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param souceCard :: Source Term
+    \param FC :: Fixed point to get orientation from
     \param linkIndex :: link Index						
+    \param souceCard :: Source Term
    */
 {
   ELog::RegMethod RegA("PointSource","createAll<FC,linkIndex>");

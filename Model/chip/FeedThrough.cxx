@@ -85,12 +85,6 @@
 #include "boxUnit.h"
 #include "BoxLine.h"
 #include "HoleUnit.h"
-#include "InnerWall.h"
-#include "PreCollimator.h"
-#include "ColBox.h"
-#include "Table.h"
-#include "beamBlock.h"
-#include "BeamStop.h"
 #include "Hutch.h"
 #include "FeedThrough.h"
 

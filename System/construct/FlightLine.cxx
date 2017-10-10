@@ -150,7 +150,7 @@ void
 FlightLine::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param Contro :: Database to use
+   \param Control :: Database to use
  */
 {
   ELog::RegMethod RegA("FlightLine","populate");

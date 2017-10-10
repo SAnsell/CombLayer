@@ -527,8 +527,9 @@ ChipVariables(FuncDataBase& Control)
   // Hutch inner stuff:
   Control.addVariable("chipHutTrimMat","Stainless304");        // Steel
   Control.addVariable("chipHutTrimXStep",12.0);   // Shift of the x positoin
+  Control.addVariable("chipHutTrimYStep",231.1);  // Distance from hutch start [Y]
   Control.addVariable("chipHutTrimZStep",19.0);   // up shift of the hole
-  Control.addVariable("chipHutTrimFStep",231.1);  // Distance from hutch start [Y]
+
   Control.addVariable("chipHutTrimWidth",40.0);  // Horr half-beam width [hole]
   Control.addVariable("chipHutTrimHeight",40.0);  // Vertial half-height [hole]
   Control.addVariable("chipHutTrimDepth",35.0);   // Thickness in beam
