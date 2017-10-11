@@ -578,11 +578,16 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowRefMat", "SS316L");
       A.setVar("BeRefLowWallMat", "AluminiumBe");
       A.setVar("BeRefLowInnerStructureActive", 1);
-      // The following numbers are from LZ drawing 10.10.2017
+      // The following numbers are from LZ drawing 2017-10-10
+      // and discussions with Marc 2017-10-11
       const double BeRefDepth(57.7); // 30+51+30+9+30+30+30+90+30+90+30+127
       const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
       A.setVar("BeRefDepth", BeRefDepth+Ztop);
       A.setVar("BulkDepth1", BeRefDepth+Ztop+1); // a bit bigger to make some clearance
+
+      A.setVar("BeRefVoidCylRadius", 15.0);
+      A.setVar("BeRefVoidCylDepth", 3.0+5.1+3.0); // first 3 InnerStructure layers
+
       A.setVar("BeRefLowInnerStructureNLayers", 12);
       A.setVar("BeRefLowInnerStructureBaseLen1", 3.0/BeRefDepth);
       A.setVar("BeRefLowInnerStructureBaseLen2", 5.1/BeRefDepth);
