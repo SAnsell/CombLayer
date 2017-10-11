@@ -23,5 +23,7 @@ script:
   - ./CMake.pl -O -g++=g++
   - cmake ./
   - make -j6
-  - fullBuild -r fbtest.o 
+  - ./fullBuild -r fbtest.o 
+  - ./testMain -1 -1 -1
+
   
