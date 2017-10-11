@@ -1,0 +1,27 @@
+# test of travis ci for comblayer
+language: c
+os:
+  - linux
+compiler:
+  - gcc
+addons:
+  apt:
+    sources:
+      - george-edison55-backports
+    packages:
+      - cmake
+      - cmake-data
+      - gcc
+      - build-essential
+      - libboost-regex-dev
+      - libgsl-dev
+      - libboost-dev
+      - libboost-filesystem-dev
+before_install:
+  - cmake -version
+script:
+  - ./CMake.pl -O -g++=g++
+  - cmake ./
+  - make -j6
+  - fullBuild -r fbtest.o 
+  
