@@ -96,8 +96,8 @@ matrix:
              - llvm-toolchain-precise-3.8
              - george-edison55-precise-backports
            packages:
-             - clang-3.8
              - g++-7
+             - clang-3.8
              - cmake
              - cmake-data
              - build-essential
@@ -115,8 +115,8 @@ matrix:
              - llvm-toolchain-trusty-3.9
              - george-edison55-precise-backports
            packages:
-             - clang-3.9
              - g++-7
+             - clang-3.9
              - cmake
              - cmake-data
              - build-essential
@@ -134,8 +134,8 @@ matrix:
              - llvm-toolchain-trusty-4.0
              - george-edison55-precise-backports
            packages:
-             - clang-4.0
              - g++-7
+             - clang-4.0
              - cmake
              - cmake-data
              - build-essential
@@ -153,8 +153,8 @@ matrix:
              - llvm-toolchain-trusty-5.0
              - george-edison55-precise-backports
            packages:
-             - clang-5.0
              - g++-7
+             - clang-5.0
              - cmake
              - cmake-data
              - build-essential
