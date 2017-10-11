@@ -97,6 +97,7 @@ matrix:
              - george-edison55-precise-backports
            packages:
              - clang-3.8
+             - g++-7
              - cmake
              - cmake-data
              - build-essential
@@ -110,10 +111,12 @@ matrix:
        addons:
          apt:
            sources:
+             - ubuntu-toolchain-r-test
              - llvm-toolchain-trusty-3.9
              - george-edison55-precise-backports
            packages:
              - clang-3.9
+             - g++-7
              - cmake
              - cmake-data
              - build-essential
@@ -127,10 +130,12 @@ matrix:
        addons:
          apt:
            sources:
+             - ubuntu-toolchain-r-test
              - llvm-toolchain-trusty-4.0
              - george-edison55-precise-backports
            packages:
              - clang-4.0
+             - g++-7
              - cmake
              - cmake-data
              - build-essential
@@ -144,10 +149,12 @@ matrix:
        addons:
          apt:
            sources:
+             - ubuntu-toolchain-r-test
              - llvm-toolchain-trusty-5.0
              - george-edison55-precise-backports
            packages:
              - clang-5.0
+             - g++-7
              - cmake
              - cmake-data
              - build-essential
