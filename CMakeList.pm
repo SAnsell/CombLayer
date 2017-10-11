@@ -311,7 +311,7 @@ sub writeExcutables
         }
       if (!$self->{noregex})
         {
-          print $DX "target_link_libraries(",$item," boost_regex)\n";
+#          print $DX "target_link_libraries(",$item," boost_regex)\n";
           print $DX "target_link_libraries(",$item," boost_filesystem)\n";
 	}
       print $DX "target_link_libraries(",$item," stdc++)\n";
