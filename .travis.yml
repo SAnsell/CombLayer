@@ -1,5 +1,4 @@
 # test of travis ci for comblayer
-language: cpp
 matrix:
    include:
      - os: linux
