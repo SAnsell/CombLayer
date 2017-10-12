@@ -2,6 +2,7 @@
 language: cpp
 matrix:
    include:
+     # linux - g++ 4.9
      - os: linux
        addons:
          apt:
@@ -12,13 +13,12 @@ matrix:
              - g++-4.9
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+     # linux - g++ 5
      - os: linux
        addons:
          apt:
@@ -29,13 +29,12 @@ matrix:
              - g++-5
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+     # linux - g++ 6
      - os: linux
        addons:
          apt:
@@ -46,13 +45,12 @@ matrix:
              - g++-6
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+     # linux - g++ 7
      - os: linux
        addons:
          apt:
@@ -63,13 +61,12 @@ matrix:
              - g++-7
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+     # linux - clang 3.7 with default g++
      - os: linux
        addons:
          apt:
@@ -81,13 +78,12 @@ matrix:
              - clang-3.7
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+     # linux - clang 3.8 with g++6
      - os: linux
        addons:
          apt:
@@ -100,13 +96,12 @@ matrix:
              - clang-3.8
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+     # linux - clang 3.9 with g++6
      - os: linux
        addons:
          apt:
@@ -119,13 +114,12 @@ matrix:
              - clang-3.9
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+     # linux - clang 4.0 with g++6
      - os: linux
        addons:
          apt:
@@ -138,13 +132,12 @@ matrix:
              - clang-4.0
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+     # linux - clang 5.0 with g++6
      - os: linux
        addons:
          apt:
@@ -157,8 +150,6 @@ matrix:
              - clang-5.0
              - cmake
              - cmake-data
-             - build-essential
-             - libboost-regex-dev
              - libgsl0-dev
              - libboost-dev
              - libboost-filesystem-dev
@@ -167,8 +158,6 @@ matrix:
 before_install:
   - eval "${MATRIX_EVAL}" 
   - cmake -version
-  - gcc --version
-  - clang --version
   - echo $CC
   - echo $CXX 
 script:
