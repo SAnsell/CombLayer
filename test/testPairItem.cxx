@@ -99,7 +99,8 @@ testPairItem::createSurfaces()
   ELog::RegMethod RegA("testPairItem","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
+  SurI.reset();
+	     
   // First box :
   SurI.createSurface(1,"px -1");
   SurI.createSurface(2,"px 1");

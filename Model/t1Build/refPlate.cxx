@@ -210,6 +210,7 @@ refPlate::setPlane(const std::string& dirName,
   // Calculate the sense of the surface:
   const size_t DIndex=dirType(dirName);
 
+
   SN[DIndex]=FC.getSignedLinkSurf(LIndex);
   FixedComp::setLinkSignedCopy(DIndex,FC,LIndex);
 
@@ -271,9 +272,10 @@ refPlate::setPlane(const std::string& dirName,
   ModelSupport::buildPlane(SMap,pIndex+static_cast<int>(DIndex),
 			   Pt-Axis*D,-Axis);
 
-  SN[DIndex]= -(pIndex+static_cast<int>(DIndex));
+  SN[DIndex]= -SMap.realSurf(pIndex+static_cast<int>(DIndex));
   FixedComp::setLinkSurf(DIndex,pIndex+static_cast<int>(DIndex));
-  planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
+
+  planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;
   return;
 }
 
