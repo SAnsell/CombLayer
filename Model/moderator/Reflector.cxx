@@ -455,9 +455,6 @@ Reflector::createInternalObjects(Simulation& System,
 
   TarObj->setRefPlates(-SMap.realSurf(refIndex+12),
 		       -SMap.realSurf(refIndex+11));
-  ELog::EM<<"Ref plate == "<<SMap.realSurf(refIndex+12)<<" "<<
-    SMap.realSurf(refIndex+11)<<ELog::endDiag;
-
   TarObj->createAll(System,World::masterTS2Origin());
 
 

@@ -3,7 +3,7 @@
  
  * File:   chip/ChipVariables.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -765,35 +765,35 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSourceRadial",12.0);        // Width
 
 
-  Control.addVariable("CGSlice0Centre",Geometry::Vec3D(95.0,212.5,0.0));
+  Control.addVariable("CGSlice0CentOffset",Geometry::Vec3D(95.0,212.5,0.0));
   Control.addVariable("CGSlice0Length",30.0);
   Control.addVariable("CGSlice0Height",-1.0);
   Control.addVariable("CGSlice0InsertKey","SteelRightVertical");
   Control.addVariable("CGSliceWidth",5.0);
-  Control.addVariable("CGSliceRotXYangle",90.0);
+  Control.addVariable("CGSliceXYAngle",90.0);
   
   Control.addVariable("chipGuideCutsActive",1);    // Number of cuts
   Control.addVariable("chipGuideNCuts",16);    // Number of cuts
     
-  Control.addVariable("CGCut0Centre",Geometry::Vec3D(55.0,10.0,50.0));
-  Control.addVariable("CGCut1Centre",Geometry::Vec3D(60.0,126.0,50.0));
-  Control.addVariable("CGCut2Centre",Geometry::Vec3D(60.0,253.0,50.0));
-  Control.addVariable("CGCut3Centre",Geometry::Vec3D(60.0,378.0,50.0));
-  Control.addVariable("CGCut4Centre",Geometry::Vec3D(75.0,558.0,50.0));
+  Control.addVariable("CGCut0CentOffset",Geometry::Vec3D(55.0,10.0,50.0));
+  Control.addVariable("CGCut1CentOffset",Geometry::Vec3D(60.0,126.0,50.0));
+  Control.addVariable("CGCut2CentOffset",Geometry::Vec3D(60.0,253.0,50.0));
+  Control.addVariable("CGCut3CentOffset",Geometry::Vec3D(60.0,378.0,50.0));
+  Control.addVariable("CGCut4CentOffset",Geometry::Vec3D(75.0,558.0,50.0));
 
-  Control.addVariable("CGCut5Centre",Geometry::Vec3D(85.0,276.0,50.0));
-  Control.addVariable("CGCut6Centre",Geometry::Vec3D(85.0,427.0,50.0));
+  Control.addVariable("CGCut5CentOffset",Geometry::Vec3D(85.0,276.0,50.0));
+  Control.addVariable("CGCut6CentOffset",Geometry::Vec3D(85.0,427.0,50.0));
 
   // left side
-  Control.addVariable("CGCut7Centre",Geometry::Vec3D(-28.0,10.0,50.0));
-  Control.addVariable("CGCut8Centre",Geometry::Vec3D(-40.0,90.0,50.0));
-  Control.addVariable("CGCut9Centre",Geometry::Vec3D(-28.0,129.0,50.0));
-  Control.addVariable("CGCut10Centre",Geometry::Vec3D(-28.0,253.0,50.0));
-  Control.addVariable("CGCut11Centre",Geometry::Vec3D(-60.0,273.0,50.0));
-  Control.addVariable("CGCut12Centre",Geometry::Vec3D(-28.0,378.0,50.0));
-  Control.addVariable("CGCut13Centre",Geometry::Vec3D(-60.0,427.0,50.0));
-  Control.addVariable("CGCut14Centre",Geometry::Vec3D(-70.0,520.0,50.0));
-  Control.addVariable("CGCut15Centre",Geometry::Vec3D(-60.0,535.5,50.0));
+  Control.addVariable("CGCut7CentOffset",Geometry::Vec3D(-28.0,12.0,50.0));
+  Control.addVariable("CGCut8CentOffset",Geometry::Vec3D(-40.0,90.0,50.0));
+  Control.addVariable("CGCut9CentOffset",Geometry::Vec3D(-28.0,129.0,50.0));
+  Control.addVariable("CGCut10CentOffset",Geometry::Vec3D(-28.0,253.0,50.0));
+  Control.addVariable("CGCut11CentOffset",Geometry::Vec3D(-60.0,273.0,50.0));
+  Control.addVariable("CGCut12CentOffset",Geometry::Vec3D(-28.0,378.0,50.0));
+  Control.addVariable("CGCut13CentOffset",Geometry::Vec3D(-60.0,427.0,50.0));
+  Control.addVariable("CGCut14CentOffset",Geometry::Vec3D(-70.0,520.0,50.0));
+  Control.addVariable("CGCut15CentOffset",Geometry::Vec3D(-60.0,535.5,50.0));
   
   Control.addVariable("CGCut0Length",30.0);
   Control.addVariable("CGCut1Length",40.0);
@@ -833,7 +833,7 @@ ChipVariables(FuncDataBase& Control)
 
   Control.addVariable("CGCutWidth",15.0);
   Control.addVariable("CGCutHeight",3.5);
-  Control.addVariable("CGCutRotXYangle",90.0);
+  Control.addVariable("CGCutXYAngle",90.0);
 
   
   

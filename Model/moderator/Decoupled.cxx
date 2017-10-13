@@ -209,8 +209,6 @@ Decoupled::createUnitVector(const attachSystem::FixedComp& FC,
 
   westCentre=Origin-Y*(westRadius-westDepth);
   eastCentre=Origin+Y*(eastRadius-eastDepth);
-  ELog::EM<<"Origin["<<keyName<<"] == "
-          <<Origin<<":"<<Y<<" :: "<<Z<<ELog::endDiag;
   return;
 }
 

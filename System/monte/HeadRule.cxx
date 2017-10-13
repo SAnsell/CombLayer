@@ -86,10 +86,11 @@ HeadRule::HeadRule(const std::string& RuleStr) :
   HeadNode(0)
   /*!
     Creates a new rule
+    \param RuleStr :: rule in MCNP format
   */
 {
   ELog::RegMethod RegA("HeadRule","HeadRule(string)");
-  if (!procString(RuleStr))
+  if (!RuleStr.empty() && !procString(RuleStr))
     throw ColErr::InvalidLine(RuleStr,"RuleStr",0);
 }
 
@@ -97,6 +98,7 @@ HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : 0)
   /*!
     Creates a new rule
+    \param RPtr :: Rule to clone as a top rule
   */
 {}
 
@@ -613,7 +615,7 @@ HeadRule::isValid(const std::map<int,int>& M)const
 }
 
 bool
-HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S)const
+HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S) const
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
@@ -1094,7 +1096,7 @@ HeadRule::findNodes(const size_t NL) const
   /*!
     Return a head rule nodes at NL level
     \param NL :: Level
-    \return nodex
+    \return vector of nodes at level NL
   */
 {
   ELog::RegMethod RegA("HeadRule","findNodes");
@@ -1152,7 +1154,7 @@ std::vector<const Rule*>
 HeadRule::findTopNodes() const
   /*!
     Return a head rule nodes at first level
-    \return headnotes
+    \return head-nodes
   */
 {
   ELog::RegMethod RegA("HeadRule","findTopNodes");
@@ -1899,7 +1901,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \param D :: Distance
+    \param D :: Distance travelled to surface
     \return exit surface
   */
 {
@@ -1910,10 +1912,10 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurfList.begin();vc!=SurfList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-    const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  for(const Geometry::Surface* SPtr : SurfList)
+    SPtr->acceptVisitor(LI);
+  
+  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 

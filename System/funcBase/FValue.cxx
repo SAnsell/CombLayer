@@ -398,7 +398,7 @@ FValue<T>::getValue(size_t& V) const
     \return 1 (always possible)
   */
 {
-  if (Value<0.0)
+  if (Value<0)
     V=ULONG_MAX;
   else
     V=static_cast<size_t>(Value);
