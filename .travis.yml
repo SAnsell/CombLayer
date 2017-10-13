@@ -1,7 +1,25 @@
 # test of travis ci for comblayer
 language: cpp
 matrix:
-    # linux - g++ 5
+   include:
+     # linux - g++ 4.9
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - george-edison55-precise-backports
+           packages:
+             - g++-4.9
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+     # linux - g++ 5
      - os: linux
        addons:
          apt:
@@ -52,7 +70,25 @@ matrix:
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-    # linux - clang 3.8 with g++6
+     # linux - clang 3.7 with default g++
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - llvm-toolchain-precise-3.7
+             - george-edison55-precise-backports
+           packages:
+             - clang-3.7
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+     # linux - clang 3.8 with g++6
      - os: linux
        addons:
          apt:
