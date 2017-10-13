@@ -602,17 +602,17 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowInnerStructureBaseLen11", 3.0/BeRefDepth);
       A.setVar("BeRefLowInnerStructureBaseLen12", 12.7/BeRefDepth);
       A.setVar("BeRefLowInnerStructureMat0", "H2O");
-      A.setVar("BeRefLowInnerStructureMat1", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat1", "SS316L_40H2O"); // email from Marc 13 Oct 2017
       A.setVar("BeRefLowInnerStructureMat2", "H2O");
-      A.setVar("BeRefLowInnerStructureMat3", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat3", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat4", "H2O");
-      A.setVar("BeRefLowInnerStructureMat5", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat5", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat6", "H2O");
-      A.setVar("BeRefLowInnerStructureMat7", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat7", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat8", "H2O");
-      A.setVar("BeRefLowInnerStructureMat9", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat9", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat10", "H2O");
-      A.setVar("BeRefLowInnerStructureMat11", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat11", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat12", "H2O");
       // Since there is no bunkers, we have to 
       // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
