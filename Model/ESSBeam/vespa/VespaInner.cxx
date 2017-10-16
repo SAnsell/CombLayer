@@ -1,7 +1,7 @@
-/********************************************************************* 
+/********************************************************************** 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/VespaHut.cxx
+ * File:   essModel/VespaInner.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -71,17 +71,20 @@
 #include "FixedOffset.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "FrontBackCut.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 
-#include "VespaHut.h"
+#include "VespaInner.h"
 
 namespace essSystem
 {
 
-VespaHut::VespaHut(const std::string& Key) : 
+VespaInner::VespaInner(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Inner",6,"Mid",6,"Outer",6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedComp(),attachSystem::FrontBackCut(),
+  attachSystem::CellMap(),attachSystem::SurfMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(hutIndex+1)
   /*!
@@ -90,23 +93,26 @@ VespaHut::VespaHut(const std::string& Key) :
   */
 {}
 
-VespaHut::~VespaHut() 
+VespaInner::~VespaInner() 
   /*!
     Destructor
   */
 {}
 
 void
-VespaHut::populate(const FuncDataBase& Control)
+VespaInner::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("VespaHut","populate");
+  ELog::RegMethod RegA("VespaInner","populate");
   
   FixedOffsetGroup::populate(Control);
 
+  backAngle=Control.EvalVar<double>(keyName+"BackAngle");
+  backCutStep=Control.EvalVar<double>(keyName+"BackCutStep");
+  
   // Void + Fe special:
   voidHeight=Control.EvalVar<double>(keyName+"VoidHeight");
   voidWidth=Control.EvalVar<double>(keyName+"VoidWidth");
@@ -117,13 +123,11 @@ VespaHut::populate(const FuncDataBase& Control)
   feLeftWall=Control.EvalVar<double>(keyName+"FeLeftWall");
   feRightWall=Control.EvalVar<double>(keyName+"FeRightWall");
   feRoof=Control.EvalVar<double>(keyName+"FeRoof");
-  feBack=Control.EvalVar<double>(keyName+"FeBack");
 
   concFront=Control.EvalVar<double>(keyName+"ConcFront");
   concLeftWall=Control.EvalVar<double>(keyName+"ConcLeftWall");
   concRightWall=Control.EvalVar<double>(keyName+"ConcRightWall");
   concRoof=Control.EvalVar<double>(keyName+"ConcRoof");
-  concBack=Control.EvalVar<double>(keyName+"ConcBack");
 
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   concMat=ModelSupport::EvalMat<int>(Control,keyName+"ConcMat");
@@ -132,15 +136,15 @@ VespaHut::populate(const FuncDataBase& Control)
 }
 
 void
-VespaHut::createUnitVector(const attachSystem::FixedComp& FC,
-			   const long int sideIndex)
+VespaInner::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("VespaHut","createUnitVector");
+  ELog::RegMethod RegA("VespaInner","createUnitVector");
 
   // add nosecone + half centre
   yStep+=voidLength/2.0;
@@ -156,148 +160,147 @@ VespaHut::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-VespaHut::createSurfaces()
+VespaInner::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("VespaHut","createSurfaces");
+  ELog::RegMethod RegA("VespaInner","createSurfaces");
 
   // Inner void
-  ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
+  if (!FrontBackCut::frontActive())
+    {
+      ModelSupport::buildPlane(SMap,hutIndex+1,Origin-Y*(voidLength/2.0),Y);
+      setFront(SMap.realSurf(hutIndex+1));
+    }
+
   ModelSupport::buildPlane(SMap,hutIndex+2,Origin+Y*(voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,hutIndex+3,Origin-X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z);  
-  
 
-  ELog::EM<<"Origin  == "<<Origin.abs()<<ELog::endDiag;
-  ELog::EM<<"Wall A  == "<<(Origin-Y*(voidLength/2.0)).abs()<<ELog::endDiag;
-  ELog::EM<<"Wall B  == "<<(Origin+Y*(voidLength/2.0)).abs()<<ELog::endDiag;
+  Geometry::Vec3D APt=
+    Origin-X*(voidWidth/2.0)+Y*(voidLength/2.0-backCutStep);
+  Geometry::Vec3D BPt=
+    Origin+X*(voidWidth/2.0)+Y*(voidLength/2.0-backCutStep);
 
+  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+7,APt,-X,-Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+8,BPt,X,Z,backAngle);
 
-  // FE WALLS:
-  ModelSupport::buildPlane(SMap,hutIndex+11,
-			   Origin-Y*(feFront+voidLength/2.0),Y);
+  // FE Layer
   ModelSupport::buildPlane(SMap,hutIndex+12,
-			   Origin+Y*(feBack+voidLength/2.0),Y);
+			   Origin+Y*(feFront+voidLength/2.0),Y);
   ModelSupport::buildPlane(SMap,hutIndex+13,
 			   Origin-X*(feLeftWall+voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+14,
 			   Origin+X*(feRightWall+voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+15,
-			   Origin-Z*(feFloor+voidDepth),Z);  
+			   Origin-Z*(voidDepth+feFloor),Z);
   ModelSupport::buildPlane(SMap,hutIndex+16,
 			   Origin+Z*(feRoof+voidHeight),Z);  
 
+  APt-=X*feLeftWall;
+  BPt+=X*feRightWall;
+  
+  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+17,APt,-X,-Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+18,BPt,X,Z,backAngle);
 
-  // CONC WALLS:
-  ModelSupport::buildPlane(SMap,hutIndex+21,
-			   Origin-Y*(concFront+feFront+voidLength/2.0),Y);
+
+  // Outer Layer
   ModelSupport::buildPlane(SMap,hutIndex+22,
-			   Origin+Y*(concBack+feBack+voidLength/2.0),Y);
-  ModelSupport::buildPlane
-    (SMap,hutIndex+23,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,hutIndex+24,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
-  ModelSupport::buildPlane
-    (SMap,hutIndex+25,Origin-Z*(concFloor+feFloor+voidDepth),Z);  
-  ModelSupport::buildPlane
-    (SMap,hutIndex+26,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
+			   Origin+Y*(concFront+feFront+voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,hutIndex+23,
+		   Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,hutIndex+24,
+		   Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,hutIndex+25,
+		   Origin-Z*(concFloor+feFloor+voidDepth),Z);
+  ModelSupport::buildPlane(SMap,hutIndex+26,
+			   Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
+  APt-=X*concLeftWall;
+  BPt+=X*concRightWall;
+  
+  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+27,APt,-X,-Z,backAngle);
+  ModelSupport::buildPlaneRotAxis(SMap,hutIndex+28,BPt,X,Z,backAngle);
 
+  
   return;
 }
 
 void
-VespaHut::createObjects(Simulation& System)
+VespaInner::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
    */
 {
-  ELog::RegMethod RegA("VespaHut","createObjects");
+  ELog::RegMethod RegA("VespaInner","createObjects");
 
+  const std::string frontStr=FrontBackCut::frontRule();
   std::string Out;
 
-  Out=ModelSupport::getComposite(SMap,hutIndex,"1 -2 3 -4 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,hutIndex," -2 3 -4 5 -6 -7 -8 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+frontStr));
   setCell("Void",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,hutIndex,
-				 "1 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
-  setCell("Iron",cellIndex-1);
+				 " -12 13 -14 15 -16 -17 -18 "
+				 " ( 2 : -3 : 4 : -5 : 6 : 7 : 8 ) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
+  setCell("FeLayer",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,hutIndex,
-		 "1 -22 23 -24 25 -26 (12:-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-  setCell("Conc",cellIndex-1);
+				 " -22 23 -24 25 -26 -27 -28 "
+				 " ( 12 : -13 : 14 : -15 : 16 : 17 : 18 ) ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out+frontStr));
+  setCell("ConcLayer",cellIndex-1);
 
-  // Front wall:
-  Out=ModelSupport::getComposite(SMap,hutIndex,"11 -1 13 -14 15 -16 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
-  setCell("FrontWall",cellIndex-1);
-  setCell("IronFront",cellIndex-1);
-
-  // Ring of concrete
-  Out=ModelSupport::getComposite(SMap,hutIndex,
-				 "11 -1 23 -24 25 -26 (-13:14:-15:16) ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-
-  // Front concrete face
-  Out=ModelSupport::getComposite(SMap,hutIndex,"21 -11 23 -24 25 -26 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,concMat,0.0,Out));
-  addCell("FrontWall",cellIndex-1);
-  setCell("ConcFront",cellIndex-1);
-  
   // Exclude:
-  Out=ModelSupport::getComposite
-    (SMap,hutIndex," 21 -22 23 -24  25 -26 ");
+  Out=ModelSupport::getComposite(SMap,hutIndex," -22 23 -24 25 -26 -27 -28 ");
   addOuterSurf(Out);      
 
   return;
 }
 
 void
-VespaHut::createLinks()
+VespaInner::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("VespaHut","createLinks");
+  ELog::RegMethod RegA("VespaInner","createLinks");
 
   attachSystem::FixedComp& innerFC=FixedGroup::getKey("Inner");
   attachSystem::FixedComp& midFC=FixedGroup::getKey("Mid");
   attachSystem::FixedComp& outerFC=FixedGroup::getKey("Outer");
 
   // INNER VOID
-  innerFC.setConnect(0,Origin-Y*(voidLength/2.0),-Y);
+  createFrontLinks(innerFC,Origin,Y);
   innerFC.setConnect(1,Origin+Y*(voidLength/2.0),Y);
   innerFC.setConnect(2,Origin-X*(voidWidth/2.0),-X);
   innerFC.setConnect(3,Origin+X*(voidWidth/2.0),X);
   innerFC.setConnect(4,Origin-Z*voidDepth,-Z);
   innerFC.setConnect(5,Origin+Z*voidHeight,Z);  
 
-  innerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+1));
+
   innerFC.setLinkSurf(1,SMap.realSurf(hutIndex+2));
   innerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+3));
   innerFC.setLinkSurf(3,SMap.realSurf(hutIndex+4));
   innerFC.setLinkSurf(4,-SMap.realSurf(hutIndex+5));
   innerFC.setLinkSurf(5,SMap.realSurf(hutIndex+6));
-
   
-  // MID Fe Layer
-  midFC.setConnect(0,Origin-Y*(feFront+voidLength/2.0),-Y);
-  midFC.setConnect(1,Origin+Y*(feBack+voidLength/2.0),Y);
+  
+  // INNER VOID
+  createFrontLinks(midFC,Origin,Y);
+  midFC.setConnect(1,Origin+Y*(feFront+voidLength/2.0),Y);
   midFC.setConnect(2,Origin-X*(feLeftWall+voidWidth/2.0),-X);
   midFC.setConnect(3,Origin+X*(feRightWall+voidWidth/2.0),X);
   midFC.setConnect(4,Origin-Z*(feFloor+voidDepth),-Z);
   midFC.setConnect(5,Origin+Z*(feRoof+voidHeight),Z);  
 
-  midFC.setLinkSurf(0,-SMap.realSurf(hutIndex+11));
   midFC.setLinkSurf(1,SMap.realSurf(hutIndex+12));
   midFC.setLinkSurf(2,-SMap.realSurf(hutIndex+13));
   midFC.setLinkSurf(3,SMap.realSurf(hutIndex+14));
@@ -306,14 +309,13 @@ VespaHut::createLinks()
 
   
     // OUTER VOID
-  outerFC.setConnect(0,Origin-Y*(feFront+concFront+voidLength/2.0),-Y);
-  outerFC.setConnect(1,Origin+Y*(concBack+feBack+voidLength/2.0),Y);
+  createFrontLinks(outerFC,Origin,Y);
+  outerFC.setConnect(1,Origin+Y*(feFront+concFront+voidLength/2.0),Y);
   outerFC.setConnect(2,Origin-X*(concLeftWall+feLeftWall+voidWidth/2.0),-X);
   outerFC.setConnect(3,Origin+X*(concRightWall+feRightWall+voidWidth/2.0),X);
   outerFC.setConnect(4,Origin-Z*(concFloor+feFloor+voidDepth),-Z);
   outerFC.setConnect(5,Origin+Z*(concRoof+feRoof+voidHeight),Z);  
 
-  outerFC.setLinkSurf(0,-SMap.realSurf(hutIndex+21));
   outerFC.setLinkSurf(1,SMap.realSurf(hutIndex+22));
   outerFC.setLinkSurf(2,-SMap.realSurf(hutIndex+23));
   outerFC.setLinkSurf(3,SMap.realSurf(hutIndex+24));
@@ -325,7 +327,7 @@ VespaHut::createLinks()
 }
 
 void
-VespaHut::createAll(Simulation& System,
+VespaInner::createAll(Simulation& System,
 		   const attachSystem::FixedComp& FC,
 		   const long int FIndex)
   /*!
@@ -335,17 +337,16 @@ VespaHut::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("VespaHut","createAll(FC)");
+  ELog::RegMethod RegA("VespaInner","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);
   
   createSurfaces();    
   createObjects(System);
-  
+
   createLinks();
   insertObjects(System);   
-  
   return;
 }
   

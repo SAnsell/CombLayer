@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.or g/licenses/>. 
  *
  ****************************************************************************/
 #include <fstream>
@@ -94,6 +94,7 @@
 #include "HoleShape.h"
 #include "JawSet.h"
 #include "VespaHut.h"
+#include "VespaInner.h"
 #include "CylSample.h"
 #include "CrystalMount.h"
 #include "TubeDetBox.h"
@@ -169,12 +170,15 @@ VESPA::VESPA(const std::string& keyName) :
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
   FocusOutC(new beamlineSystem::GuideLine(newName+"FOutC")),
   Cave(new VespaHut(newName+"Cave")),
-
+  VInner(new VespaInner(newName+"Inner")),
+  VInnerExit(new constructSystem::HoleShape(newName+"InnerExit")),
+  
   VJaws(new constructSystem::JawSet(newName+"VJaws")),
   Sample(new instrumentSystem::CylSample(newName+"Sample")),
   Cryo(new constructSystem::Cryostat(newName+"Cryo"))
  /*!
     Constructor
+    \param keyName :: Head name for the instrument
  */
 {
   ELog::RegMethod RegA("VESPA","VESPA");
@@ -266,6 +270,8 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(FocusOutC);
   
   OR.addObject(Cave);
+  OR.addObject(VInner);
+  OR.addObject(VInnerExit);
   OR.addObject(VJaws);
   OR.addObject(Sample);
   OR.addObject(Cryo);
@@ -525,18 +531,30 @@ VESPA::buildHut(Simulation& System,
   Cave->addInsertCell(voidCell);
   Cave->createAll(System,*ShieldC,2);
 
+  VInner->setInsertCell(Cave->getCell("Void"));
+  VInner->setFront(Cave->getKey("Inner"),-1);
+  VInner->createAll(System,Cave->getKey("Inner"),-1);
+
+  VInnerExit->addInsertCell(VInner->getCells("FeLayer"));
+  VInnerExit->addInsertCell(VInner->getCells("ConcLayer"));
+  VInnerExit->setFaces(VInner->getKey("Inner").getSignedFullRule(2),
+                       VInner->getKey("Outer").getSignedFullRule(-2));
+  VInnerExit->createAll(System,VInner->getKey("Inner"),2);
+
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));
   ShieldC->insertObjects(System);
 
   VPipeOutC->addInsertCell(Cave->getCells("FrontWall"));
   VPipeOutC->addInsertCell(Cave->getCells("Void"));
+  VPipeOutC->addInsertCell(VInner->getCells("Void"));
   VPipeOutC->addInsertCell(ShieldC->getCells("Void"));
   VPipeOutC->createAll(System,connectFC,connectIndex);
 
   FocusOutC->addInsertCell(VPipeOutC->getCell("Void"));
   FocusOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
 
-  VJaws->setInsertCell(Cave->getCell("Void"));
+  
+  VJaws->setInsertCell(VInner->getCell("Void"));
   VJaws->createAll(System,*ShieldC,2);
   
   Cryo->setInsertCell(Cave->getCell("Void"));

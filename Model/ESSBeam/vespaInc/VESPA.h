@@ -57,6 +57,7 @@ namespace essSystem
 {  
   class GuideItem;
   class VespaHut;
+  class VespaInner;
   class DetectorTank;
 
   /*!
@@ -194,6 +195,10 @@ class VESPA : public attachSystem::CopiedComp
 
   /// Vespa hut
   std::shared_ptr<VespaHut> Cave;
+  /// Vespa Inner cave
+  std::shared_ptr<VespaInner> VInner;
+  /// Vespa Inner cave exit
+  std::shared_ptr<constructSystem::HoleShape> VInnerExit;
 
   /// Jaws in cave
   std::shared_ptr<constructSystem::JawSet> VJaws;

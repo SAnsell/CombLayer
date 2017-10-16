@@ -251,6 +251,13 @@ sub writeHeader
   print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
   print $DX "-undefined dynamic_lookup\")\n";
   print $DX "endif()\n";
+
+  print $DX "if(\"\${CMAKE_CXX_COMPILER_ID}\" STREQUAL \"GNU\")\n";
+  print $DX "set(CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS \"";
+  print $DX "\${CMAKE_SHARED_LIBRARY_CREATE_CXX_FLAGS} ";
+  print $DX "-Wl,--start-group\")\n";
+  print $DX "endif()\n";
+  
   return;
 }
  
