@@ -71,7 +71,10 @@ fmeshTally::fmeshTally(const int ID) :
 {}
 
 fmeshTally::fmeshTally(const fmeshTally& A) : 
-  Tally(A)
+  Tally(A),
+  typeID(A.typeID),keyWords(A.keyWords),
+  requireRotation(A.requireRotation),Pts(A.Pts),
+  minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
     \param A :: fmeshTally to copy
@@ -89,6 +92,12 @@ fmeshTally::operator=(const fmeshTally& A)
   if (this!=&A)
     {
       Tally::operator=(A);
+      typeID=A.typeID;
+      keyWords=A.keyWords;
+      requireRotation=A.requireRotation;
+      Pts=A.Pts;
+      minCoord=A.minCoord;
+      maxCoord=A.maxCoord;
     }
   return *this;
 }
@@ -228,7 +237,8 @@ fmeshTally::writeCoordinates(std::ostream& OX) const
     \param OX :: Oupt stream
   */
 {
-  static char abc[]="ijk";
+  const static char abc[]="ijk";
+  
   std::ostringstream cx;
   for(size_t i=0;i<3;i++)
     {

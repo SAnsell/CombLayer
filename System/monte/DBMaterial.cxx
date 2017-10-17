@@ -1807,6 +1807,31 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 }
 
 void
+DBMaterial::writePHITS(std::ostream& OX) const
+  /*!
+    Write everything out to the stream
+    for the phits output
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writePHITS");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+              (sActive,"MStore find(active item)");
+          
+	  mp->second.writePHITS(OX);
+	}
+    }
+  return;
+}
+
+void
 DBMaterial::writeFLUKA(std::ostream& OX) const
   /*!
     Write everything out to the fluka system

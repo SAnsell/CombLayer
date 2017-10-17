@@ -804,6 +804,65 @@ Material::writeZaid(std::ostream& OX,const double F,const size_t ZD)
 }
 
 void 
+Material::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in PHITS files format
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writeFLUKA");
+  
+  typedef std::map<std::string,MXcards> MXTYPE;
+
+  std::ostringstream cx;
+  cx<<"c Material : "<<Name<<" rho="<<atomDensity;
+  StrFunc::writeMCNPX(cx.str(),OX);
+  cx.str("");
+
+  cx<<"mat["<<Mnum<<"]\n";
+  StrFunc::writeMCNPX(cx.str(),OX);
+  cx.str("");
+  
+  
+  cx.precision(10);
+
+  std::vector<Zaid>::const_iterator zc;
+  std::vector<std::string>::const_iterator vc;
+  for(const Zaid& ZItem: zaidVec)
+    cx<<ZItem<<"\n";
+  StrFunc::writeMCNPX(cx.str(),OX);
+  
+  for(const std::string& libItem : Libs)
+    cx<<libItem<<"  ";
+  StrFunc::writeMCNPX(cx.str(),OX);
+  
+  /*
+  cx.str("");
+  MXTYPE::const_iterator mc;
+  for(mc=mxCards.begin();mc!=mxCards.end();mc++)
+    {
+      cx<<"mx"<<Mnum;
+      mc->second.write(cx,zaidVec);
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  */
+  // avoid having to reset flags/precision in cx
+  std::ostringstream rx;
+  if (!SQW.empty())
+    {
+      rx.str("");
+      rx<<"mt"<<Mnum<<"    ";
+      if (Mnum<10) rx<<" ";
+      std::copy(SQW.begin(),SQW.end(),
+		std::ostream_iterator<std::string>(rx," "));
+      StrFunc::writeMCNPX(rx.str(),OX);
+    }
+
+  return;
+} 
+
+void 
 Material::writeFLUKA(std::ostream& OX) const
   /*!
     Write out the information about the material

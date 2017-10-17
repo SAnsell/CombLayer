@@ -236,8 +236,8 @@ SimPHITS::writeMaterial(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"    [material]"<<std::endl;
-  ModelSupport::DBMaterial::Instance().writeMCNPX(OX);
+  OX<<"[material]"<<std::endl;
+  ModelSupport::DBMaterial::Instance().writePHITS(OX);
   return;
 }
 
@@ -312,7 +312,10 @@ SimPHITS::write(const std::string& Fname) const
   */
 {
   std::ofstream OX(Fname.c_str());
+  OX<<"[Title]"<<std::endl;
   Simulation::writeVariables(OX);
+  OX<<std::endl;
+  
   writeCells(OX);
   writeSurfaces(OX);
   writeMaterial(OX);

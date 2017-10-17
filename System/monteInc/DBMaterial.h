@@ -113,6 +113,7 @@ class DBMaterial
   void writeCinder(std::ostream&) const;
   void writeMCNPX(std::ostream&) const;
   void writeFLUKA(std::ostream&) const;
+  void writePHITS(std::ostream&) const;
   void writePOVRay(std::ostream&) const;
 };
 
