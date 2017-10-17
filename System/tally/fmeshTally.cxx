@@ -268,13 +268,15 @@ fmeshTally::write(std::ostream& OX) const
       //GEOMETRY:
       cx<<"GEOM="<<"xyz"<<" ";
       cx<<"ORIGIN="<<MW.Num(minCoord)<<" ";
-            
       StrFunc::writeMCNPX(cx.str(),OX);
-      if (!getEnergy().empty())
+      cx.str("");
+
+      std::vector<double> EPts;
+      const size_t EN=getEnergy().writeVector(EPts);
+      if (EN)
 	{
-	  cx.str("");
-	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
+	  cx.str("");
 	}					 
       // if (!mshmf.empty())
       //   {
@@ -290,5 +292,4 @@ fmeshTally::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE tallySystem
-
 

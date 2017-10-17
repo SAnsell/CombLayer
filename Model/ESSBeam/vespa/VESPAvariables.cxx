@@ -316,8 +316,6 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaCaveFeMat","Stainless304");
   Control.addVariable("vespaCaveConcMat","Concrete");
 
-  
-
   // INNER Comp:  
   Control.addVariable("vespaInnerVoidHeight",100.0);
   Control.addVariable("vespaInnerVoidDepth",105.0);
