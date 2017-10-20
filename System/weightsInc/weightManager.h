@@ -66,6 +66,8 @@ class weightManager
   void renumberCell(const int,const int);  
   void maskCell(const int);
   bool isMasked(const int) const;
+
+  void writePHITS(std::ostream&) const;
   void write(std::ostream&) const;
 
 };

@@ -203,6 +203,27 @@ weightManager::isMasked(const int cellN) const
 }
   
 void
+weightManager::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the weight system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("weightManager","writePHITS");
+  
+  for(const CtrlTYPE::value_type& wf : WMap)
+    wf.second->write(OX);
+
+  if (WWGPtr)
+    {
+      WWGPtr->writeWWINP("wwinp");
+      WWGPtr->write(OX);
+    }
+  
+  return;
+}
+
+void
 weightManager::write(std::ostream& OX) const
   /*!
     Write out the weight system

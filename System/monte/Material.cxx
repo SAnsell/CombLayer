@@ -813,50 +813,42 @@ Material::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Material","writeFLUKA");
   
-  typedef std::map<std::string,MXcards> MXTYPE;
+
+  const Element& EL(Element::Instance());
 
   std::ostringstream cx;
-  cx<<"c Material : "<<Name<<" rho="<<atomDensity;
-  StrFunc::writeMCNPX(cx.str(),OX);
-  cx.str("");
+  OX<<"c Material : "<<Name<<" rho="<<atomDensity<<std::endl;
+  OX<<"mat["<<Mnum<<"]\n";
 
-  cx<<"mat["<<Mnum<<"]\n";
-  StrFunc::writeMCNPX(cx.str(),OX);
-  cx.str("");
-  
   
   cx.precision(10);
-
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
   for(const Zaid& ZItem: zaidVec)
-    cx<<ZItem<<"\n";
-  StrFunc::writeMCNPX(cx.str(),OX);
-  
-  for(const std::string& libItem : Libs)
-    cx<<libItem<<"  ";
-  StrFunc::writeMCNPX(cx.str(),OX);
-  
-  /*
-  cx.str("");
-  MXTYPE::const_iterator mc;
-  for(mc=mxCards.begin();mc!=mxCards.end();mc++)
     {
-      cx<<"mx"<<Mnum;
-      mc->second.write(cx,zaidVec);
-      StrFunc::writeMCNPX(cx.str(),OX);
+      cx.str("");
+      if (ZItem.getIso())
+	{
+	  cx<<"  "<<ZItem.getIso()<<EL.elmSym(ZItem.getZ())
+	    <<"       "<<ZItem.getDensity();
+	}
+      else
+	{
+	  cx<<"    "<<EL.elmSym(ZItem.getZ())
+	    <<"       "<<ZItem.getDensity();
+	}
+		  
+      OX<<cx.str()<<std::endl;
     }
-  */
-  // avoid having to reset flags/precision in cx
-  std::ostringstream rx;
+  
   if (!SQW.empty())
     {
-      rx.str("");
-      rx<<"mt"<<Mnum<<"    ";
-      if (Mnum<10) rx<<" ";
+      cx.str("");
+      cx<<"mt"<<Mnum<<"    ";
+      if (Mnum<10) cx<<" ";
       std::copy(SQW.begin(),SQW.end(),
-		std::ostream_iterator<std::string>(rx," "));
-      StrFunc::writeMCNPX(rx.str(),OX);
+		std::ostream_iterator<std::string>(cx," "));
+      StrFunc::writeMCNPX(cx.str(),OX);
     }
 
   return;

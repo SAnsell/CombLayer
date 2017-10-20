@@ -236,8 +236,21 @@ SimPHITS::writeMaterial(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"[material]"<<std::endl;
+  OX<<"[ Material ]"<<std::endl;
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+
+  if (!PhysPtr->getMode().hasElm("h"))
+    DB.deactivateParticle("h");
+  
+  OTYPE::const_iterator mp;
+  for(mp=OList.begin();mp!=OList.end();mp++)
+    DB.setActive(mp->second->getMat());
+  
   ModelSupport::DBMaterial::Instance().writePHITS(OX);
+
+  
   return;
 }
 
@@ -254,7 +267,6 @@ SimPHITS::writeWeights(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"[weight]"<<std::endl;
   WM.write(OX);
   return;
 }
