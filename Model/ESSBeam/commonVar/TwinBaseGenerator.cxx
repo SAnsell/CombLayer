@@ -63,6 +63,8 @@ TwinBaseGenerator::TwinBaseGenerator() :
   
   motorRadius(10.0),
   motorFlangeInner(10.20),motorFlangeOuter(12.20),
+  motorOuter((motorFlangeInner+motorFlangeOuter)/2.0),
+  motorLength(32.0),
   motorNBolt(24),motorBoltRadius(0.5),
   motorSealThick(0.2),motorSealMat("Poly"),
 
@@ -94,10 +96,22 @@ TwinBaseGenerator::setMainRadius(const double R)
   motorFlangeInner*=R/mainRadius;
   motorFlangeOuter*=R/mainRadius;
   motorRadius*=R/mainRadius;
+  motorLength*=R/mainRadius;
   mainRadius=R;
   return;
 }
 
+void
+TwinBaseGenerator::setMotorLength(const double L)
+  /*!
+    Set motor length
+    \param L :: Motor length
+   */
+{
+  motorLength=L;
+  return;
+}
+  
 void
 TwinBaseGenerator::setWallMaterial(const std::string& wMat)
   /*!
@@ -142,7 +156,7 @@ TwinBaseGenerator::generateChopper(FuncDataBase& Control,
   const double wallThick((length-voidLength)/2.0);
   for(const std::string itemName : {"MotorA","MotorB"})
     {
-      Control.addVariable(keyName+itemName+"BodyLength",32.0);
+      Control.addVariable(keyName+itemName+"BodyLength",motorLength);
       Control.addVariable(keyName+itemName+"PlateThick",wallThick*1.2);
       Control.addVariable(keyName+itemName+"AxleRadius",2.0);
       Control.addVariable(keyName+itemName+"BodyRadius",motorRadius);

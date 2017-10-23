@@ -49,8 +49,9 @@ class TwinBaseGenerator
   double motorFlangeInner;   ///< Flange Inner radius
   double motorFlangeOuter;   ///< Flange Outer radius
   double motorOuter;         ///< Motor outer
+  double motorLength;        ///< Motor body length
   size_t motorNBolt;         ///< Number of bolts
-  double motorBoltRadius;    ///< Number of bolts
+  double motorBoltRadius;    ///< Radius of bolts
   double motorSealThick;     ///< Seal thickness
   std::string motorSealMat;  ///< Seal material
 
@@ -73,6 +74,7 @@ class TwinBaseGenerator
   void setWallMaterial(const std::string&);
   void setFrame(const double,const double);  
   void setMainRadius(const double);
+  void setMotorLength(const double);
 
 
   void generateChopper(FuncDataBase&,

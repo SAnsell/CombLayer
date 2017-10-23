@@ -220,17 +220,17 @@ setESSSingle(defaultConfig& A,
     { 
      {"HEIMDAL","G1BLineTop18"},       // S2
      {"SLEIPNIR","G1BLineLow13"},      // N9
-     {"ANNI","G2BLineTop3"},           // E3
+     {"ANNI","G2BLineTop4"},           // E4
      {"SURFSCATTER","G2BLineTop8"},    // E8
      {"SKADI","G2BLineTop5"}           // E5
     };     
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G1BLineTop1"},        // W1
-     {"BEER","G1BLineTop2"},       // W2
+    {{"NMX","G1BLineTop1"},               // W1
+     {"BEER","G1BLineTop2"},              // W2
      //     {"CSPEC","G1BLineTop3"},      // W3
-     {"CSPEC","G2BLineTop18"},      // W3
+     {"CSPEC","G2BLineTop18"},            // W3
      //     {"BIFROST","G1BLineTop4"},    // W4
-     {"BIFROST","G2BLineTop4"},    // W4
+     {"BIFROST","G2BLineTop4"},           // W4
      
 
      {"MIRACLES","G1BLineTop5"},   // W5
@@ -248,11 +248,11 @@ setESSSingle(defaultConfig& A,
      {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
      {"DREAM","G2BLineTop19"},     // S3
 
-     {"SKADI","G2BLineTop3"},       // E3
+     {"SKADI","G2BLineTop3"},      // E3
      
      
      {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
-     {"VESPA","G2BLineTop7"},     // E7
+     {"VESPA","G2BLineTop7"},      // E7
 
 
      {"ESTIA","G2BLineTop2"},     // E2
