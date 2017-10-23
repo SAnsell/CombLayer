@@ -216,10 +216,10 @@ weightManager::writePHITS(std::ostream& OX) const
       OX<<"[weight window]\n";
       for(const CtrlTYPE::value_type& wf : WMap)
         {
-          const std::vector<double>& Evec=wf.getEnergy();
+          const std::vector<double>& Evec=wf.second->getEnergy();
 
           OX<<"  part = ";
-          if ( wf.getParticle() == 'n' )
+          if ( wf.second->getParticle() == 'n' )
             OX<<"neutron";
           OX<<std::endl;
 

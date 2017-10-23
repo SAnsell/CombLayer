@@ -503,8 +503,7 @@ WCells::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  writeHead(OX);
-  writeTable(OX);
+
   return;
 }
 

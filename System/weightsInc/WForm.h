@@ -95,6 +95,7 @@ class WForm
   virtual void populateCells(const std::map<int,MonteCarlo::Qhull*>&) =0;
   virtual void renumberCell(const int,const int) =0;
   virtual void balanceScale(const std::vector<double>&) =0;
+  virtual void writePHITS(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;
 
   ///\endcond ABSTRACT
