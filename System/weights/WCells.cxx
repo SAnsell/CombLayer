@@ -497,6 +497,18 @@ WCells::writeHead(std::ostream& OX) const
 
 
 void
+WCells::writePHITS(std::ostream& OX) const
+  /*!
+    Generic write output
+    \param OX :: Output stream
+  */
+{
+  writeHead(OX);
+  writeTable(OX);
+  return;
+}
+
+void
 WCells::write(std::ostream& OX) const
   /*!
     Generic write output

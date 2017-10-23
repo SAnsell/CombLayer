@@ -210,14 +210,30 @@ weightManager::writePHITS(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("weightManager","writePHITS");
-  
-  for(const CtrlTYPE::value_type& wf : WMap)
-    wf.second->write(OX);
 
-  if (WWGPtr)
+  if (!WMap.empty())
     {
-      WWGPtr->writeWWINP("wwinp");
-      WWGPtr->write(OX);
+      OX<<"[weight window]\n";
+      for(const CtrlTYPE::value_type& wf : WMap)
+        {
+          const std::vector<double>& Evec=wf.getEnergy();
+
+          OX<<"  part = ";
+          if ( wf.getParticle() == 'n' )
+            OX<<"neutron";
+          OX<<std::endl;
+
+          OX<<"  eng = "<<Evec.size()<<std::endl;
+          for( const double& E : Evec )
+            OX<<"  "<<E;
+          OX<<std::endl;
+
+          OX<<"reg  ";
+          for(size_t i=1;i<=Evec.size();i++)
+            OX<<"    ww"<<i;
+          OX<<std::endl;
+          wf.second->writePHITS(OX);
+        }
     }
   
   return;
