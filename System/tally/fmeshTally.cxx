@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <iterator>
+#include <array>
 #include <memory>
 #include <boost/format.hpp>
 

@@ -227,10 +227,8 @@ setESSSingle(defaultConfig& A,
   const std::map<std::string,std::string> beamDef=
     {{"NMX","G1BLineTop1"},               // W1
      {"BEER","G1BLineTop2"},              // W2
-     //     {"CSPEC","G1BLineTop3"},      // W3
-     {"CSPEC","G2BLineTop18"},            // W3
-     //     {"BIFROST","G1BLineTop4"},    // W4
-     {"BIFROST","G2BLineTop4"},           // W4
+     {"CSPEC","G1BLineTop3"},             // W3
+     {"BIFROST","G1BLineTop4"},           // W4
      
 
      {"MIRACLES","G1BLineTop5"},   // W5
