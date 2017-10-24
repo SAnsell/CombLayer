@@ -33,13 +33,15 @@
 struct pName
 {
   const std::string mcnpName;         ///< MCNP [single charactor]
-  int mcnpITYP;                       ///< MCNP particle number
+  const int mcnpITYP;                 ///< MCNP particle number
   const std::string phitsName;        ///< PHITS word name
-  int phitsITYP;                      ///< iTyp number from phits
-  int mcplNumber;                     ///< MCPL number
+  const int phitsITYP;                ///< iTyp number from phits
+  const int mcplNumber;               ///< MCPL number
+  const int nucleon;                  ///< number of nucleons
   
   pName(const std::string&,const int,
-	const std::string&,const int,const int);
+	const std::string&,const int,const int,
+	const int );
 
   pName(const pName&);
   ~pName() {}          ///< Destructor
@@ -64,13 +66,19 @@ class particleConv
   particleConv(const particleConv&);
   particleConv& operator=(const particleConv&);
 
+  const pName& getPItem(const std::string&) const;
+  
  public:
 
   static const particleConv& Instance();
   
   const std::string& phitsType(const char) const;
+  int phitsITYP(const char) const;
+  int nucleon(const char) const;
+    
   const std::string& phitsType(const std::string&) const;
-  
+  int phitsITYP(const std::string&) const;
+  int nucleon(const std::string&) const;
 };
 
 

@@ -41,14 +41,30 @@
 #include "OutputLog.h"
 #include "particleConv.h"
 
-
-
 particleConv::particleConv() : 
   indexLookup{
-  {"n",{"n",1,"neutron",2,2112}},   
-    {"h",{"h",9,"proton",1,2212}},
-      {"p",{"p",2,"photon",14,22}}
-  }
+  {"h",{"h", 9,  "proton",   1,  2212,     1}},
+  {"n",{"n", 1,  "neutron",  2,  2112,     1}},   
+  {"/",{"/", 20, "pion+",    3,  211,      1}},
+  {"z",{"z", 21, "pion0",    4,  111,      1}},
+  {"*",{"*", 1,  "pion-",    5,  -211,     1}},
+  {"!",{"!", 16, "muon+",    6,  -13,      1}},
+  {"|",{"|", 4,  "muon-",    7,  13,       1}},
+  {"k",{"k", 22, "kaon+",    8,  321,      1}},
+  {"%",{"%", 23, "kaon0",    9,  311,      1}},  // short version
+  {"^",{"^", 24, "kaon0",    9,  311,      1}},  // long version
+  {"?",{"?", 36, "kaon-",    10, -321,     1}},
+  {"e",{"e", 3,  "electron", 11, 11,       1}},
+  {"f",{"f", 8,  "positron", 13, -11,      1}},
+  {"p",{"p", 2,  "photon",   14, 22,       1}},
+  {"d",{"d", 31, "deuteron", 15, 1000002,  2}},
+  {"t",{"t", 32, "triton",   16, 1000003,  3}},
+  {"s",{"s", 33, "3he",      17, 2000003,  3}},
+  {"a",{"a", 34, "alpha",    18, 2000004,  4}},
+
+  {"g",{"g",19,"antiproton",11,-2212,1}}       // no direct phits
+
+}
   /*!
     Constructor
   */
@@ -65,6 +81,54 @@ particleConv::Instance()
   return MR;
 }
 
+const pName&
+particleConv::getPItem(const std::string& MC) const
+  /*!
+    Get  the PName item from the system
+    \param MC :: Particle name [mcnp]
+    \return pName found
+  */
+{
+  std::map<std::string,pName>::const_iterator mc;
+  mc=indexLookup.find(MC);
+  if (mc == indexLookup.end())
+    throw ColErr::InContainerError<std::string>
+      (MC,"MCNPname not in particleDataBase");
+  return mc->second;
+}
+
+const std::string&
+particleConv::phitsType(const char MChar) const
+  /*
+    Accessor to phitsType 
+    \param MChar :: MCNP Name
+    \return phits named particle
+  */
+{
+  return phitsType(std::string(1,MChar));
+}
+
+int 
+particleConv::phitsITYP(const char MChar) const
+  /*
+    Accessor to physIType
+    \param MChar :: MCNP Name
+    \return phits ityp number
+  */
+{
+  return phitsITYP(std::string(1,MChar));
+}
+
+int 
+particleConv::nucleon(const char MChar) const
+  /*
+    Accessor to physIType
+    \param MChar :: MCNP Name
+    \return phits ityp number
+  */
+{
+  return nucleon(std::string(1,MChar));
+}
 
 const std::string&
 particleConv::phitsType(const std::string& MC) const
@@ -74,21 +138,40 @@ particleConv::phitsType(const std::string& MC) const
     
   */
 {
-  std::map<std::string,pName>::const_iterator mc;
-  mc=indexLookup.find(MC);
-  if (mc == indexLookup.end())
-    throw ColErr::InContainerError<std::string>
-      (MC,"MCNPname not in particleDataBase");
+  const pName& PItem=getPItem(MC);
+  return PItem.phitsName;
+}
 
-  return mc->second.phitsName;
+int 
+particleConv::phitsITYP(const std::string& MC) const
+  /*
+    Accessor to phits ITYP
+    \param MC :: MCNP Name
+    \return ITYP
+  */
+{ 
+  const pName& PItem=getPItem(MC);
+  return PItem.phitsITYP;
+}
+
+int 
+particleConv::nucleon(const std::string& MC) const
+  /*
+    Accessor to nucleon number
+    \param MC :: MCNP Name
+    \return nucleon number
+  */
+{
+  const pName& PN = getPItem(MC);
+  return PN.nucleon;
 }
 
 pName::pName(const std::string& MChar,const int mcnpN,
 	     const std::string& PhitsN,const int pI,
-	     const int mcplN) :
+	     const int mcplN,const int N) :
       mcnpName(MChar),mcnpITYP(mcnpN),
       phitsName(PhitsN),phitsITYP(pI),
-      mcplNumber(mcplN)
+      mcplNumber(mcplN),nucleon(N)
   /*
     Constructor 
     \param MChar :: MCNP Name
@@ -96,13 +179,14 @@ pName::pName(const std::string& MChar,const int mcnpN,
     \param PhitsN :: Phits name
     \param pI :: phits ityp number
     \param mcplN :: kf/mcpl number
+    \param N :: nucleon number
   */
 {}
 
 pName::pName(const pName& A) :
       mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
       phitsName(A.phitsName),phitsITYP(A.phitsITYP),
-      mcplNumber(A.mcplNumber)
+      mcplNumber(A.mcplNumber),nucleon(A.nucleon)
   /*
     Copy Constructor 
     \param A :: Object to copy

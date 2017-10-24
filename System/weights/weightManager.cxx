@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "particleConv.h"
 #include "Transform.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -211,6 +212,7 @@ weightManager::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("weightManager","writePHITS");
 
+  const particleConv& PConv=particleConv::Instance();
   if (!WMap.empty())
     {
       OX<<"[weight window]\n";
@@ -218,10 +220,9 @@ weightManager::writePHITS(std::ostream& OX) const
         {
           const std::vector<double>& Evec=wf.second->getEnergy();
 
-          OX<<"  part = ";
-          if ( wf.second->getParticle() == 'n' )
-            OX<<"neutron";
-          OX<<std::endl;
+          OX<<"  part = "
+	    <<PConv.phitsType(wf.second->getParticle())
+	    <<std::endl;
 
           OX<<"  eng = "<<Evec.size()<<std::endl;
           for( const double& E : Evec )
@@ -232,6 +233,7 @@ weightManager::writePHITS(std::ostream& OX) const
           for(size_t i=1;i<=Evec.size();i++)
             OX<<"    ww"<<i;
           OX<<std::endl;
+
           wf.second->writePHITS(OX);
         }
     }

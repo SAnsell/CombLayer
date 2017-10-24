@@ -175,6 +175,7 @@ class PhysicsCards
 
   void writeHelp(const std::string&) const;
   
+  void writePHITS(std::ostream&);
   void write(std::ostream&,const std::vector<int>&,
 	     const std::set<int>&) const;   
 };

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WCells_h
-#define WCells_h
+#ifndef WeightSystem_WCells_h
+#define WeightSystem_WCells_h
 
 
 namespace WeightSystem

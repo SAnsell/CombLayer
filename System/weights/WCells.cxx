@@ -460,6 +460,7 @@ WCells::writeTable(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   // This line avoids a stupid bug.
   cx.str("");   // THIS IS A GCC BUG since cx.str("c ") DOES NOT WORK
+  
   cx<<"c   ";
   for(int i=0;i<static_cast<int>(Energy.size());i++)
     cx<<"c        ";
@@ -503,6 +504,10 @@ WCells::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
+  ELog::RegMethod RegA("WCells","writePHITS");
+
+  for(const ItemTYPE::value_type& wf : WVal)
+    wf.second.write(OX);
 
   return;
 }

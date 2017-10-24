@@ -438,7 +438,7 @@ setDefaultPhysics(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   
   std::string PList=
-    IParam.getDefValue<std::string>("h / d t s a","mode",0);
+    IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
   if (PList=="empty" || PList=="Empty")
     PList=" ";
   

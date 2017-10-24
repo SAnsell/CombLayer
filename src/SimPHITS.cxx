@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -249,7 +249,6 @@ SimPHITS::writeMaterial(std::ostream& OX) const
     DB.setActive(mp->second->getMat());
   
   ModelSupport::DBMaterial::Instance().writePHITS(OX);
-
   
   return;
 }
@@ -267,7 +266,7 @@ SimPHITS::writeWeights(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  WM.write(OX);
+  WM.writePHITS(OX);
   return;
 }
 
@@ -284,33 +283,19 @@ SimPHITS::writePhysics(std::ostream& OX) const
 {  
   ELog::RegMethod RegA("SimPHITS","writePhysics");
   // Processing for point tallies
-  std::map<int,tallySystem::Tally*>::const_iterator mc;
-  std::vector<int> Idum;
-  std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::pointTally* Ptr=
-	dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-	  Idum.push_back(Ptr->getKey());
-	  for(size_t i=0;i<4;i++)
-	    Rdum.push_back(Ptr->getWindowPt(i));
-	}
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-	OX<<"           "<< *vc<<std::endl;
-    }
 
-  // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder,voidCells);
+  boost::format FMT("%1$8.0d ");
+  OX<<"[Parameters]"<<std::endl;
+
+  OX<<" icntl       =        "<<(FMT % 0)<<std::endl;
+  OX<<" maxcas      =        "<<(FMT % (PhysPtr->getNPS()/10))<<std::endl;
+  OX<<" maxbch      =        "<<(FMT % 10)<<std::endl;
+  OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
+  OX<<" file(1)     = /home/stuartansell/phits"<<std::endl;  
+  OX<<" file(6)     = phits.out"<<std::endl;
+  OX<<" rseed       =        "<<(FMT % PhysPtr->getRNDseed())<<std::endl;  
+
+  PhysPtr->writePHITS(OX);
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
@@ -325,16 +310,16 @@ SimPHITS::write(const std::string& Fname) const
 {
   std::ofstream OX(Fname.c_str());
   OX<<"[Title]"<<std::endl;
-  Simulation::writeVariables(OX);
+  writePhysics(OX);
+  //  Simulation::writeVariables(OX);
   OX<<std::endl;
   
   writeCells(OX);
   writeSurfaces(OX);
   writeMaterial(OX);
-  writeTransform(OX);
   writeWeights(OX);
   writeTally(OX);
-  writePhysics(OX);
+
   OX.close();
   return;
 }
