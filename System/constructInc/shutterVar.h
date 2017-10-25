@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/shutterVar.h
 *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ class shutterVar
   std::string colletMat;         ///< Collet material
 
   double b4cThick;       ///< Total b4c thick
-  double b4cSpace;       ///< Total b4c space
+  double b4cSpace;       ///< Total b4c spacer
 
   /// Steel Size [width:height]
   std::vector< std::pair<double,double> > steelSize;
@@ -60,16 +60,16 @@ class shutterVar
 
   /// set steel number [cant be zero]
   void setSteelNumber(const size_t I) { steelNumber=(I) ? I : 4; } 
-  double B4Cspacer(FuncDataBase&,const int,
+  double B4Cspacer(FuncDataBase&,const size_t,
 		   const double,const double,
 		   const double,const double) const;
 
-  double B4Cspacer(FuncDataBase&,const int,
+  double B4Cspacer(FuncDataBase&,const size_t,
 		   const double,const double,
 		   const double) const;
 
   
-  double SteelBlock(FuncDataBase&,const int ,const double,
+  double SteelBlock(FuncDataBase&,const size_t,const double,
 		    const double,const double,const double,
 		    const double,const double,const std::string&,
 		    const size_t) const;

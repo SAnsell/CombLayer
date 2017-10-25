@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,6 +102,19 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
   */
 {}
 
+LineTrack::LineTrack(const Geometry::Vec3D& IP,
+		     const Geometry::Vec3D& UVec,
+		     const double ADist) :
+  InitPt(IP),EndPt(IP+UVec),aimDist(ADist),
+  TDist(0.0)
+  /*! 
+    Constructor 
+    \param IP :: Initial point
+    \param EP :: End point
+    \param ADist :: Aim dist 
+  */
+{}
+
 LineTrack::LineTrack(const LineTrack& A) : 
   InitPt(A.InitPt),EndPt(A.EndPt),aimDist(A.aimDist),TDist(A.TDist),
   Cells(A.Cells),ObjVec(A.ObjVec),Track(A.Track)
@@ -163,7 +176,6 @@ LineTrack::calculate(const Simulation& ASim)
     ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
   int SN=OPtr->isOnSide(InitPt);
   
-  const MonteCarlo::Object* prevOPtr(0);
   while(OPtr)
     {
       // Note: Need OPPOSITE Sign on exiting surface
@@ -171,7 +183,6 @@ LineTrack::calculate(const Simulation& ASim)
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,aDist))
 	{
-	  prevOPtr=OPtr;
 	  nOut.moveForward(aDist);
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
@@ -196,7 +207,8 @@ LineTrack::calculateError(const Simulation& ASim)
     \param ASim :: Simulation to use						
   */
 {
-  ELog::RegMethod RegA("LineTrack","calculate");
+  ELog::RegMethod RegA("LineTrack","calculateError");
+  
   ELog::EM<<"START OF ERROR CODE"<<ELog::endDiag;
   ELog::EM<<"-------------------"<<ELog::endDiag;
   
@@ -216,13 +228,14 @@ LineTrack::calculateError(const Simulation& ASim)
   
   while(OPtr)
     {
-      ELog::EM<<"== Tracking cell == "<<*OPtr;
+      ELog::EM<<std::setprecision(12)<<ELog::endDiag;
+      ELog::EM<<"== Tracking in cell == "<<*OPtr;
       ELog::EM<<"Neutron == "<<nOut<<" "<<aDist<<ELog::endDiag;
-      ELog::EM<<"SN == "<<SN<<ELog::endDiag;
+      ELog::EM<<"SN at start== "<<SN<<ELog::endDiag;
 
       // Note: Need OPPOSITE Sign on exiting surface
       SN= OPtr->trackOutCell(nOut,aDist,SPtr,abs(SN));
-      ELog::EM<<"Found Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
+      ELog::EM<<"Found exit Surf == "<<SN<<" "<<aDist<<ELog::endDiag;
 
       // Update Track : returns 1 on excess of distance
       if (SN && updateDistance(OPtr,aDist))
@@ -232,10 +245,6 @@ LineTrack::calculateError(const Simulation& ASim)
 	  
 	  OPtr=OSMPtr->findNextObject(SN,nOut.Pos,OPtr->getName());
 
-	  if (OPtr)
-	    ELog::EM<<"Tracking cell == "<<*OPtr<<ELog::endDiag;
-	  else
-	    ELog::EM<<"void cell"<<ELog::endDiag;
 	  ELog::EM<<"Neutron == "<<nOut<<" "<<ELog::endDiag;
 	  ELog::EM<<" ============== "<<ELog::endDiag;
 
@@ -248,7 +257,8 @@ LineTrack::calculateError(const Simulation& ASim)
 	      ELog::EM<<"Common surf "<<SN<<ELog::endDiag;
 	      if (OPtr)
 		ELog::EM<<"Found CEll: "<<*OPtr<<ELog::endDiag;
-	      ELog::EM<<"Initial point not in model:"<<InitPt<<ELog::endErr;
+
+	      ELog::EM<<"Initial point of line error:"<<InitPt<<ELog::endErr;
 	      OPtr=OSMPtr->findNextObject(SN,nOut.Pos,prevOPtr->getName());
 	      if (OPtr)
 		{
@@ -272,12 +282,17 @@ LineTrack::calculateError(const Simulation& ASim)
 	    }
 
 	  if (aDist<Geometry::zeroTol)
-	    OPtr=ASim.findCell(nOut.Pos,0);
+	    {
+	      ELog::EM<<"ZERO CELL "<<ELog::endErr;
+	      OPtr=ASim.findCell(nOut.Pos,0);
+	    }
 	}
       else
 	OPtr=0;
 	
     }
+  ELog::EM<<"Finished "<<ELog::endDiag;
+  ELog::EM<<ELog::endErr;
   return;
 }
 
@@ -300,7 +315,6 @@ LineTrack::updateDistance(MonteCarlo::Object* OPtr,const double D)
       Track.push_back(D-TDist+aimDist);
       return 0;
     }
-
   Track.push_back(D);
   return 1;
 }

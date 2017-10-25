@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/BeamTube.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,26 +34,21 @@ namespace delftSystem
   \date June 2012
   \brief BeamTube for reactor
   
-  This is a twin object Fixed for the primary build
+  This is a Fixed for the primary build
   and Beamline to take acount of the track (inner build)
 */
 
 class BeamTube : public attachSystem::ContainedComp,
-    public attachSystem::TwinComp
+  public attachSystem::FixedOffsetGroup,
+  public attachSystem::CellMap
 {
  private:
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on X to Target
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< xyRotation angle
-  double zAngle;                ///< zRotation angle
-
   double waterStep;             ///< Forward water step
+  double innerStep;             ///< Forward inner linder
   double length;                ///< Total length
   double capRadius;             ///< Radius of cap [zero for flat]
   double innerRadius;           ///< Outer radius [minus wall]
@@ -73,6 +68,7 @@ class BeamTube : public attachSystem::ContainedComp,
   double portalRadius;          ///< Portal radius
   double portalThick;           ///< Portal thickness
 
+  int innerMat;                 ///< Inner Material number in main void
   int interMat;                 ///< Inter Material number
   int wallMat;                  ///< Wall Material number
   int gapMat;                   ///< Material in the gap
@@ -85,7 +81,7 @@ class BeamTube : public attachSystem::ContainedComp,
   void populate(const FuncDataBase&);
   void populatePortals(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const Geometry::Vec3D&);
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -103,7 +99,7 @@ class BeamTube : public attachSystem::ContainedComp,
   int getInnerVoid() const { return innerVoid; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const Geometry::Vec3D&);
+		 const long int);
 
 };
 

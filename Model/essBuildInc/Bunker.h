@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Bunker.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ class Bunker : public attachSystem::ContainedComp,
 			const long int,const bool);
 
   void createSurfaces(const bool);
-  void createLinks();
+  void createLinks(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 

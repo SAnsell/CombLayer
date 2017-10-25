@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/DecFileMod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Decoupled.h"
 #include "DecFileMod.h"
@@ -125,22 +126,16 @@ DecFileMod::~DecFileMod()
 {}
 
 void
-DecFileMod::populate(const Simulation& System)
+DecFileMod::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to used
   */
 {
   ELog::RegMethod RegA("DecFileMod","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
+  FixedOffset::populate(Control);
   // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
   
   populated |= 1;  
   return;
@@ -148,7 +143,8 @@ DecFileMod::populate(const Simulation& System)
 
 
 void
-DecFileMod::createUnitVector(const attachSystem::FixedComp&)
+DecFileMod::createUnitVector(const attachSystem::FixedComp&,
+			     const long int)
   /*!
     Create the unit vectors: 
     Note that this is a modification since Decoupled::createUnitVector
@@ -247,6 +243,7 @@ DecFileMod::reMapSurf(ReadFunc::OTYPE& ObjMap) const
 void
 DecFileMod::createAllFromFile(Simulation& System,
 			      const attachSystem::FixedComp& FC,
+			      const long int sideIndex,
 			      const std::string& FName)
   /*!
     Generic function to create everything
@@ -257,8 +254,8 @@ DecFileMod::createAllFromFile(Simulation& System,
   ELog::RegMethod RegA("DecFileMod","createAll");
 
   // Check that everything from here is called in Decoupled:
-  Decoupled::createAll(System,FC);
-  createUnitVector(FC);
+  Decoupled::createAll(System,FC,sideIndex);
+  createUnitVector(FC,sideIndex);
   readFile(System,FName);
 
   insertObjects(System);

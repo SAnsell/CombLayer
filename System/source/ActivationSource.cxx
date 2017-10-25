@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,8 +67,8 @@
 #include "FixedComp.h"
 #include "Object.h"
 #include "WorkData.h"
-#include "MXcards.h"
 #include "Zaid.h"
+#include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "ModeCard.h"

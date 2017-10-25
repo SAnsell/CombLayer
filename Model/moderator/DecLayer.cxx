@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/DecLayer.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Decoupled.h"
 #include "DecLayer.h"
@@ -124,15 +125,13 @@ DecLayer::~DecLayer()
 {}
 
 void
-DecLayer::populate(const Simulation& System)
+DecLayer::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase
   */
 {
   ELog::RegMethod RegA("DecLayer","populate");
-
-  const FuncDataBase& Control=System.getDataBase();
 
   const int nLayers=Control.EvalVar<int>(lkeyName+"NLayers");
   ELog::EM<<"Number of layers == "<<nLayers<<ELog::endTrace;
@@ -144,7 +143,8 @@ DecLayer::populate(const Simulation& System)
 	 {
 	   lThick.push_back(T);
 	   lMat.push_back
-	     (Control.EvalPair<int>(keyIndex,lkeyName,"Mat"));
+	     (ModelSupport::EvalMat<int>(Control,keyIndex+"Mat",
+					 lkeyName+"Mat"));
 	   lTemp.push_back
 	     (Control.EvalPair<double>(keyIndex,lkeyName,"Temp"));
 	 }	 
@@ -185,7 +185,6 @@ DecLayer::createObjects(Simulation& System)
    */
 {
   ELog::RegMethod RegA("DecLayer","createObjects");
-
   // Outer layer is 7, 8 of old system:
   // WEST SIDE:
   const std::string WWall=ModelSupport::getComposite(SMap,decIndex," 1 3 -4 5 -6 ");
@@ -224,19 +223,21 @@ DecLayer::createObjects(Simulation& System)
 
 void
 DecLayer::createAll(Simulation& System,
-		    const attachSystem::FixedComp& FC)
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp for axis/origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("DecLayer","createAll");
 
   // Check that everything from here is called in Decoupled:
   ELog::EM<<"Calling createAll"<<ELog::endTrace;
-  Decoupled::createAll(System,FC);
-  populate(System);
+  Decoupled::createAll(System,FC,sideIndex);
+  populate(System.getDataBase());
   createSurfaces();
   createObjects(System);
   System.removeCell(methCell);
@@ -245,4 +246,4 @@ DecLayer::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE moderatorSystem

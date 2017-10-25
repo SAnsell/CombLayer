@@ -3,7 +3,7 @@
  
  * File:   construct/BlockMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -151,12 +152,7 @@ BlockMod::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("BlockMod","populate");
 
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
 
   double D,W,H,T;
   int M;
@@ -401,7 +397,7 @@ int
 BlockMod::getCommonSurf(const long int) const
   /*!
     Given a side calculate the boundary surface
-    \param sideIndex :: Side [1-6]
+    \param  :: Side [1-6]
     \return Common dividing surface [outward pointing]
   */
 {
@@ -446,7 +442,7 @@ BlockMod::getLayerSurf(const size_t layerIndex,
     throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex");
 
   int SI(modIndex+static_cast<int>(layerIndex)*10);
-  SI+=std::abs(sideIndex);
+  SI+=static_cast<int>(std::abs(sideIndex));
   
   int signValue((sideIndex<0) ? -1 : 1);
   signValue *= (sideIndex % 2) ? -1 : 1;

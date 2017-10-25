@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   testInclude/testBoost.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,7 +79,7 @@ class ReportRef : public Report
 {
  private:
 
-  const double& Param;  ///< Reference parameter
+  const double&  Param;  ///< Parametr
 
  public:
 
@@ -91,7 +91,7 @@ class ReportRef : public Report
   virtual ReportRef* clone() const  { return new ReportRef(*this); }
   virtual ~ReportRef();
 
-  double getParam() const { return Param; }  ///< number of param 
+  double getParam() const { return Param; }  ///< value of param
   virtual void write(std::ostream&) const;
 
 };

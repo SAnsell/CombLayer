@@ -3,7 +3,7 @@
  
  * File:   tallyInc/TallySelector.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,10 @@ class Simulation;
 int tallySelection(Simulation&,const mainSystem::inputParam&);
 void tallyModification(Simulation&,const mainSystem::inputParam&);
 void tallyAddition(Simulation&,const mainSystem::inputParam&);
-void tallyRenumberWork(Simulation&,const mainSystem::inputParam&);
 
 int beamTallySelection(Simulation&,const mainSystem::inputParam&);
-void beamTallyRenumberWork(Simulation&,const mainSystem::inputParam&);
 
 int reactorTallySelection(Simulation&,const mainSystem::inputParam&);
-void reactorTallyRenumberWork(Simulation&,const mainSystem::inputParam&);
 
 #endif
  

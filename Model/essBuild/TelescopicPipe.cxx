@@ -353,8 +353,8 @@ TelescopicPipe::createAll(Simulation& System,
   if (tIndex)
     {
       TSurf=(tIndex>0) ?
-	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) :
-	TargetFC.getBridgeComplement(static_cast<size_t>(-(tIndex+1)));
+	TargetFC.getSignedLinkString(static_cast<size_t>(tIndex-1)) :
+	TargetFC.getSignedLinkString(static_cast<size_t>(-(tIndex+1))); ELog::EM << "getBridgeComplement -> getSignedLinkString" << ELog::endCrit;
       if (tIndex<0)
 	FixedComp::setLinkComponent(0,TargetFC,
 				    static_cast<size_t>(-(tIndex-1)));
@@ -365,7 +365,7 @@ TelescopicPipe::createAll(Simulation& System,
     {
       const size_t lIndex(static_cast<size_t>(std::abs(bIndex))-1);
       BSurf=(bIndex>0) ?
-	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
+	BulkFC.getSignedLinkString(lIndex) : BulkFC.getSignedLinkString(lIndex) ; ELog::EM << "getBridgeComplement -> getSignedLinkString" << ELog::endCrit; // and getLinkString -> getSignedLinkString
       FixedComp::setLinkComponent(1,BulkFC,lIndex);
     }
   createObjects(System,TSurf,BSurf);

@@ -3,7 +3,7 @@
  
  * File:   construct/WallCut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,9 @@
 #include "SimProcess.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "LinkSupport.h"
 #include "WallCut.h"
 
 
@@ -79,7 +81,7 @@ namespace constructSystem
 {
 
 WallCut::WallCut(const std::string& Key,const size_t ID)  :
-  attachSystem::FixedComp(StrFunc::makeString(Key,ID),0),
+  attachSystem::FixedOffset(Key+std::to_string(ID),6),
   attachSystem::ContainedComp(),
   cutIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(cutIndex+1),baseName(Key)
@@ -91,12 +93,10 @@ WallCut::WallCut(const std::string& Key,const size_t ID)  :
 {}
 
 WallCut::WallCut(const WallCut& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   cutIndex(A.cutIndex),cellIndex(A.cellIndex),
   baseName(A.baseName),insertKey(A.insertKey),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),height(A.height),
-  width(A.width),length(A.length),CPt(A.CPt),rotXY(A.rotXY),
-  rotZ(A.rotZ)
+  height(A.height),width(A.width),length(A.length)
   /*!
     Copy constructor
     \param A :: WallCut to copy
@@ -113,18 +113,13 @@ WallCut::operator=(const WallCut& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
       insertKey=A.insertKey;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       height=A.height;
       width=A.width;
       length=A.length;
-      CPt=A.CPt;
-      rotXY=A.rotXY;
-      rotZ=A.rotZ;
     }
   return *this;
 }
@@ -156,27 +151,19 @@ WallCut::populate(const FuncDataBase& Control)
     \param Control :: DataBase to copy
   */
 {
-
   ELog::RegMethod RegA("WallCut","populate");
 
-  // rotation of origin
-  xyAngle=Control.EvalDefPair<double>(baseName,keyName,"XYangle",0.0);
-  zAngle=Control.EvalDefPair<double>(baseName,keyName,"Zangle",0.0);
-
-  CPt=Control.EvalPair<Geometry::Vec3D>(keyName,baseName,"Centre");
+  FixedOffset::populate(baseName,Control);
 
   height=Control.EvalPair<double>(keyName,baseName,"Height");
   width=Control.EvalPair<double>(keyName,baseName,"Width");
   length=Control.EvalPair<double>(keyName,baseName,"Length");
 
-  // rotation of X/Y/Z in the build
-  rotXY=Control.EvalDefPair<double>(keyName,baseName,"RotXYangle",0.0);
-  rotZ=Control.EvalDefPair<double>(keyName,baseName,"RotZangle",0.0);
 
-  mat=ModelSupport::EvalDefMat<int>(Control,baseName+"Mat",0);
-  mat=ModelSupport::EvalDefMat<int>(Control,keyName+"Mat",mat);
-
-  matTemp=Control.EvalDefPair<double>(keyName,baseName,"MatTemp",0.0);
+  mat=ModelSupport::EvalDefMat<int>(Control,keyName+"Mat",
+				    baseName+"Mat",0);
+  matTemp=Control.EvalDefPair<double>
+    (keyName,baseName,"MatTemp",0.0);
   
   return;
 }
@@ -193,8 +180,7 @@ WallCut::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("WallCut","createUnitVector");
   
   FixedComp::createUnitVector(FC,sideIndex);
-  applyAngleRotate(xyAngle,zAngle);
-  CPt=Origin+X*CPt.X()+Y*CPt.Y()+Z*CPt.Z();
+  FixedOffset::applyOffset();
 
   return;
 }
@@ -207,42 +193,27 @@ WallCut::createSurfaces()
 {
   ELog::RegMethod RegA("WallCut","createSurfaces");
     
-  Geometry::Vec3D XPrime(X);
-  Geometry::Vec3D YPrime(Y);
-  Geometry::Vec3D ZPrime(Z);
 
-  // TAKEN FROM FixedComp::applyAngleRotate
-  // consider transfer to a static method.
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(rotZ,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(rotXY,Z);
-  Qz.rotate(YPrime);
-  Qz.rotate(ZPrime);
-  Qxy.rotate(YPrime);
-  Qxy.rotate(XPrime);
-  Qxy.rotate(ZPrime);
- 
   if (length>Geometry::zeroTol)
     {
       ModelSupport::buildPlane(SMap,cutIndex+1,
-			       CPt-YPrime*(length/2.0),YPrime);  
+			       Origin-Y*(length/2.0),Y);  
       ModelSupport::buildPlane(SMap,cutIndex+2,
-			       CPt+YPrime*(length/2.0),YPrime);
+			       Origin+Y*(length/2.0),Y);
     }
   if (width>Geometry::zeroTol)
     {
       ModelSupport::buildPlane(SMap,cutIndex+3,
-			       CPt-XPrime*(width/2.0),XPrime);  
+			       Origin-X*(width/2.0),X);  
       ModelSupport::buildPlane(SMap,cutIndex+4,
-			       CPt+XPrime*(width/2.0),XPrime);
+			       Origin+X*(width/2.0),X);
     }
   if (height>Geometry::zeroTol)
     {
       ModelSupport::buildPlane(SMap,cutIndex+5,
-			       CPt-ZPrime*(height/2.0),ZPrime);  
+			       Origin-Z*(height/2.0),Z);  
       ModelSupport::buildPlane(SMap,cutIndex+6,
-			       CPt+ZPrime*(height/2.0),ZPrime);
+			       Origin+Z*(height/2.0),Z);
     }
 
  return;
@@ -269,6 +240,58 @@ WallCut::createObjects(Simulation& System,
   return;
 }
 
+void
+WallCut::createLinks(const HeadRule& wallBoundary)
+  /*!
+    Create linkes
+    \param wallBoundary :: Wall boundary rule
+  */
+{
+  ELog::RegMethod RegA("WallCut","createLinks");
+  
+  if (length>Geometry::zeroTol)
+    {
+      FixedComp::setLinkSurf(0,-SMap.realSurf(cutIndex+1));
+      FixedComp::setLinkSurf(1,SMap.realSurf(cutIndex+2));
+      FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
+      FixedComp::setConnect(1,Origin+Y*(length/2.0),Y); 
+    }
+  else
+    {
+      attachSystem::calcBoundaryLink(*this,0,wallBoundary,Origin,-Y);
+      attachSystem::calcBoundaryLink(*this,1,wallBoundary,Origin,Y);
+    }
+
+  if (width>Geometry::zeroTol)
+    {
+      FixedComp::setLinkSurf(2,-SMap.realSurf(cutIndex+3));
+      FixedComp::setLinkSurf(3,SMap.realSurf(cutIndex+4));
+      FixedComp::setConnect(2,Origin-X*(width/2.0),-X);
+      FixedComp::setConnect(3,Origin+X*(width/2.0),X); 
+    }
+  else
+    {
+      attachSystem::calcBoundaryLink(*this,2,wallBoundary,Origin,-X);
+      attachSystem::calcBoundaryLink(*this,3,wallBoundary,Origin,X);
+    }
+  
+  if (height>Geometry::zeroTol)
+    {
+      FixedComp::setLinkSurf(4,-SMap.realSurf(cutIndex+5));
+      FixedComp::setLinkSurf(5,SMap.realSurf(cutIndex+6));
+      FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
+      FixedComp::setConnect(5,Origin+Z*(height/2.0),Z); 
+    }
+  else
+    {
+      attachSystem::calcBoundaryLink(*this,4,wallBoundary,Origin,-Z);
+      attachSystem::calcBoundaryLink(*this,5,wallBoundary,Origin,Z);
+    }
+
+  
+  return;
+}
+
    
 void
 WallCut::createAll(Simulation& System,
@@ -289,6 +312,7 @@ WallCut::createAll(Simulation& System,
   createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System,wallBoundary);
+  createLinks(wallBoundary);
   insertObjects(System);
   
   return;

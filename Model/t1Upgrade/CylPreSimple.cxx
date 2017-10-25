@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CylPreSimple.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,8 +193,6 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   return;
 }
   
-
-
 void
 CylPreSimple::populate(const FuncDataBase& Control)
   /*!
@@ -486,7 +484,7 @@ CylPreSimple::getLayerSurf(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkSurf");
+  ELog::RegMethod RegA("CylPreSimple","getLayerSurf");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");
@@ -523,7 +521,7 @@ CylPreSimple::getLayerString(const size_t layerIndex,
     \return Surface string
   */
 {
-  ELog::RegMethod RegA("H2Moderator","getLinkString");
+  ELog::RegMethod RegA("CylPreSimple","getLayerString");
 
   if (layerIndex>nLayers) 
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layer");

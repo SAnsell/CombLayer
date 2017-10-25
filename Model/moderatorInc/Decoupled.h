@@ -37,7 +37,7 @@ namespace moderatorSystem
 */
 
 class Decoupled : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  protected:
   
@@ -46,12 +46,6 @@ class Decoupled : public attachSystem::ContainedComp,
   int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
   
   std::shared_ptr<VanePoison> VP;  ///< Vane poisoning
-
-  double xyAngle;           ///< Angle relative to Target
-  double zAngle;            ///< Angle relative Target
-  double xStep;             ///< Offset on X to Target
-  double yStep;             ///< Offset on Y to Target [+ve forward]
-  double zStep;             ///< Offset on Z top Target
 
   double width;             ///< Total Width
   double height;            ///< Total height
@@ -75,13 +69,14 @@ class Decoupled : public attachSystem::ContainedComp,
   int methCell;             ///< Methane cell
 
   Geometry::Vec3D getDirection(const size_t) const;
-  void populate(const Simulation&);
-  virtual void createUnitVector(const attachSystem::FixedComp&);
-
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  
   void createLinks();
   void createSurfaces();
   void createObjects(Simulation&);
-
+  
  public:
 
   Decoupled(const std::string&);
@@ -96,7 +91,8 @@ class Decoupled : public attachSystem::ContainedComp,
   int viewSurf(const int) const;
   /// Need internal pipe
   virtual int needsHePipe() const { return 1; }
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

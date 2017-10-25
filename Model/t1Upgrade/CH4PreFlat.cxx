@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/CH4PreFlat.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "CH4PreModBase.h"
@@ -83,9 +84,7 @@ CH4PreFlat::CH4PreFlat(const std::string& Key)  :
 
 CH4PreFlat::CH4PreFlat(const CH4PreFlat& A) : 
   CH4PreModBase(A),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),width(A.width),
-  height(A.height),depth(A.depth),alThick(A.alThick),
+  width(A.width),height(A.height),depth(A.depth),alThick(A.alThick),
   vacThick(A.vacThick),modTemp(A.modTemp),modMat(A.modMat),
   alMat(A.alMat)
   /*!
@@ -105,11 +104,6 @@ CH4PreFlat::operator=(const CH4PreFlat& A)
   if (this!=&A)
     {
       CH4PreModBase::operator=(A);
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -139,21 +133,15 @@ CH4PreFlat::clone()  const
 }
 
 void
-CH4PreFlat::populate(const Simulation& System)
+CH4PreFlat::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase for variables
   */
 {
   ELog::RegMethod RegA("CH4PreFlat","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -164,13 +152,14 @@ CH4PreFlat::populate(const Simulation& System)
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");
-  
+
+  zStep+=alThick+height/2.0;
   return;
 }
   
 void
 CH4PreFlat::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t linkPt)
+			     const long int linkPt)
   /*!
     Create the unit vectors
     \param FC :: Component to connect to
@@ -179,30 +168,22 @@ CH4PreFlat::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("CH4PreFlat","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(linkPt);
-  // Note shift to move it to the centre:
-  applyShift(xStep,yStep,zStep+alThick+height/2.0);
-  applyAngleRotate(xyAngle,zAngle);
+  FixedComp::createUnitVector(FC,linkPt);
+  applyOffset();
 
   return;
 }
   
 void
-CH4PreFlat::createSurfaces(const attachSystem::FixedComp&,
-			   const size_t )
+CH4PreFlat::createSurfaces()
   /*!
     Create All the surfaces
-    \param FC :: Fixed unit that connects to this moderator
-    \param linkPt :: Base of the moderator if connected
   */
 {
   ELog::RegMethod RegA("CH4PreFlat","createSurface");
 
   // NOTE Origin is moved from moderator base:
 
-  //  const int LN=FC.getLinkSurf(linkPt);
-  
   ModelSupport::buildPlane(SMap,preIndex+1,Origin-Y*(depth/2.0),Y);
   ModelSupport::buildPlane(SMap,preIndex+2,Origin+Y*(depth/2.0),Y);
   ModelSupport::buildPlane(SMap,preIndex+3,Origin-X*(width/2.0),X);
@@ -371,8 +352,8 @@ CH4PreFlat::createLinks()
 void
 CH4PreFlat::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const size_t linkPt,
-		      const size_t)
+		      const long int linkPt,
+		      const long int)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -381,10 +362,10 @@ CH4PreFlat::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("CH4PreFlat","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC,linkPt);
-  createSurfaces(FC,linkPt);
+  createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       

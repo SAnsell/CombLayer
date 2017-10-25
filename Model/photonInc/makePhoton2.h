@@ -22,12 +22,16 @@
 #ifndef photonSystem_makePhoton2_h
 #define photonSystem_makePhoton2_h
 
-namespace constructSystem
+namespace insertSystem
 {
-  class SupplyPipe;
   class insertPlate;
   class insertSphere;
   class insertCylinder;
+}
+
+namespace constructSystem
+{
+  class SupplyPipe;
   class RingFlange;
   class RingSeal;
   class TubeDetBox;
@@ -73,10 +77,10 @@ class makePhoton2
 
   std::shared_ptr<PlateMod> PModObj;        ///< Initial moderator
   /// catcher 
-  std::shared_ptr<constructSystem::insertCylinder> Catcher; 
+  std::shared_ptr<insertSystem::insertCylinder> Catcher; 
   std::shared_ptr<PlateMod> PModObj2;        ///< Initial moderator
   /// external wing plates
-  std::vector<std::shared_ptr<constructSystem::insertPlate>> SPlate;
+  std::vector<std::shared_ptr<insertSystem::insertPlate>> SPlate;
 
   std::shared_ptr<VacuumVessel> Chamber;        ///< Vacuum vesse
   std::shared_ptr<ModContainer> ModContObj;     ///< Container

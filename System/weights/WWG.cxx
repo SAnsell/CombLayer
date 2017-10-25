@@ -3,7 +3,7 @@
  
  * File:   weights/WWG.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ namespace WeightSystem
 WWG::WWG() :
   ptype('n'),wupn(8.0),wsurv(1.4),maxsp(5),
   mwhere(-1),mtime(0),switchn(-2),
-  EBin({1e8})
+  EBin({1e8}),WMesh(1,Grid)
   /*!
     Constructor : 
     set mwhere[-1] - collisions only 
@@ -125,7 +125,7 @@ WWG::calcGridMidPoints()
 }
   
 void
-WWG::resetMesh(const std::vector<double>& W)
+WWG::resetMesh(const std::vector<double>&)
   /*!
     Resize the mesh
     \param W :: Default Weight 
@@ -133,15 +133,14 @@ WWG::resetMesh(const std::vector<double>& W)
 {
   ELog::RegMethod RegA("WWG","resetMesh");
   
-  const long int WSize=static_cast<long int>(W.size());
 
   // boundaries need to be  2 or greater
-  const long int LX=static_cast<long int >(Grid.getXSize());
-  const long int LY=static_cast<long int >(Grid.getYSize());
-  const long int LZ=static_cast<long int >(Grid.getZSize());
-  const long int EBSize=static_cast<long int >(EBin.size());
+  const long int LX=static_cast<long int>(Grid.getXSize());
+  const long int LY=static_cast<long int>(Grid.getYSize());
+  const long int LZ=static_cast<long int>(Grid.getZSize());
+  const long int EBSize=static_cast<long int>(EBin.size());
 
-  if (LX<=0 && LY<=0 && LZ<=0 && EBSize<=0)
+  if (LX<=1 && LY<=1 && LZ<=1 && EBSize<=0)
     {
       const long int LPtr[]={LX,LY,LZ,EBSize};
       const long int BPtr[]={2,2,2,1};
@@ -149,19 +148,9 @@ WWG::resetMesh(const std::vector<double>& W)
 	(LPtr,BPtr,"WGrid size");
     }
   
-  
-  WMesh.resize(boost::extents[LX][LY][LZ][EBSize]);
-  for(long int i=0;i<LX;i++)
-    for(long int j=0;j<LY;j++)
-      for(long int k=0;k<LZ;k++)
-	for(long int e=0;e<EBSize;e++)
-	  {
-	    if (WSize>e)
-	      WMesh[i][j][k][e]=0.0;   // W[static_cast<size_t>(e)];
-	    else
-	      WMesh[i][j][k][e]=0.0;
-	  }
-
+  if (!WMesh.isSized(LX,LY,LZ,EBSize))
+    WMesh.resize(LX,LY,LZ,EBSize);
+  WMesh.zeroWGrid();
   
   return;
 }
@@ -196,46 +185,23 @@ WWG::setEnergyBin(const std::vector<double>& EB,
 
     
 void
-WWG::updateWM(const WWGWeight& UMesh,
-              const double scaleFactor)
+WWG::updateWM(const WWGWeight& UMesh,const double scaleFactor)
   /*!
     Mulitiply the wwg:master mesh by factors in WWGWeight
     It assumes that the mesh size and WWGWeight are compatable.
     \param UMesh :: Weight window mesh to update
-    \param scaleFactor :: Scale factor for track
+    \param scaleFactor :: Scale factor for track [exp(-scale)]
    */
 {
   ELog::RegMethod RegA("WWG","updateWM");
 
-  const boost::multi_array<double,4>& UGrid=
-    UMesh.getGrid();
-
-  // centre sizes - not 0:
-  const long int NX=UMesh.getXSize(); 
-  const long int NY=UMesh.getYSize();
-  const long int NZ=UMesh.getZSize();
-  const long int NE=UMesh.getESize();
-
-  double W;
-  for(long int i=0;i<NX;i++)
-    for(long int j=0;j<NY;j++)
-      for(long int k=0;k<NZ;k++)
-	for(long int e=0;e<NE;e++)
-	  {
-	    W=UGrid[i][j][k][e]*scaleFactor;
-	    if (W>-20)
-	      {
-		W=exp(W);
-		WMesh[i][j][k][e]+=W;
-
-	      }
-	  }
-  
+  WMesh=UMesh;
+  ELog::EM<<"Calling updateWM"<<ELog::endDiag;
+  WMesh.scaleGrid(scaleFactor);
   return;
 }
-
-
   
+
   
 void 
 WWG::writeHead(std::ostream& OX) const
@@ -275,56 +241,26 @@ WWG::powerRange(const double pR)
 {
   ELog::RegMethod RegA("WWG","powerRange");
 
-  double* TData=WMesh.data();
-
-  const size_t NData=WMesh.num_elements();
-  if (NData)
-    {
-      ELog::EM<<"power range == "<<pR<<ELog::endDiag;
-      for(size_t i=0;i<NData;i++)
-        TData[i]=std::pow(TData[i],pR);
-    }
+  WMesh.scalePower(pR);
   return;
 }
-  
+
 void
-WWG::scaleRange(const double minR,const double maxR)
+WWG::scaleRange(const double minR,const double maxR,
+		const double fullRange)
   /*!
     Normalize the mesh to have a max at 1.0
     \param minR :: Min value
     \param maxR :: Max value
+    \param fullRange :: range between 0 - fullRange [negative]
   */
 {
   ELog::RegMethod RegA("WWG","scaleRange");
 
-  double* TData=WMesh.data();
-
-  const size_t NData=WMesh.num_elements();
-  const double RScale=maxR-minR;
-  if (NData)
-    {
-      const double maxValue = *std::max_element(TData,TData+NData-1);
-      const double minValue = *std::min_element(TData,TData+NData-1);
-      const double TScale=maxValue-minValue;
-      if (TScale>1e-38)
-	{
-	  for(size_t i=0;i<NData;i++)
-	    TData[i]=(TData[i]-minValue)*(RScale/TScale)+minR;
-	}
-    }
+  WMesh.scaleRange(minR,maxR,fullRange);
   return;
 }
   
-void
-WWG::normalize()
-  /*!
-    Normalize the mesh to have a max at 1.0 to 0.0
-  */
-{
-  ELog::RegMethod RegA("WWG","normalize");
-  scaleRange(0,1.0);
-  return;
-}
   
 void
 WWG::scaleMeshItem(const size_t I,const size_t J,const size_t K,
@@ -340,18 +276,11 @@ WWG::scaleMeshItem(const size_t I,const size_t J,const size_t K,
 {
   ELog::RegMethod RegA("WWG","scaleMeshItem");
 
-  if (I>=Grid.getXSize())
-    throw ColErr::IndexError<size_t>(I,Grid.getXSize(),"Grid/X");
-  if (J>=Grid.getYSize())
-    throw ColErr::IndexError<size_t>(J,Grid.getYSize(),"Grid/Y");
-  if (K>=Grid.getZSize())
-    throw ColErr::IndexError<size_t>(K,Grid.getZSize(),"Grid/Z");
-  if (EI>=EBin.size())
-    throw ColErr::IndexError<size_t>(EI,EBin.size(),"EBin ");
-
-  WMesh[static_cast<long int>(I)][static_cast<long int>(J)]
-    [static_cast<long int>(K)][static_cast<long int>(EI)]*=W;
-  
+  WMesh.scaleMeshItem(static_cast<long int>(I),
+		      static_cast<long int>(J),
+		      static_cast<long int>(K),
+		      static_cast<long int>(EI),
+		      W);
   return;
 }
 
@@ -390,48 +319,38 @@ WWG::writeWWINP(const std::string& FName) const
     OX<<std::endl;
   itemCnt=0;
 
-  const long int XSize(static_cast<long int>(WMesh.shape()[0]));
-  const long int YSize(static_cast<long int>(WMesh.shape()[1]));
-  const long int ZSize(static_cast<long int>(WMesh.shape()[2]));
-  const long int ESize(static_cast<long int>(WMesh.shape()[3]));
-
-  for(long int EI=0;EI<ESize;EI++)
-    {
-      for(long int K=0;K<ZSize;K++)
-	for(long int J=0;J<YSize;J++)
-	  for(long int I=0;I<XSize;I++)
-	    StrFunc::writeLine(OX,WMesh[I][J][K][EI],itemCnt,6);
-    }
-  OX<<std::endl;
+  WMesh.writeWWINP(OX);
+  
   OX.close();
 		       
   return;
 }  
 
-
 void
-WWG::writeVTK(const std::string& FName) const
+WWG::writeVTK(const std::string& FName,
+	      const long int EIndex) const
   /*!
     Write out a VTK file
     \param FName :: filename 
+    \param EIndex :: energy index
   */
 {
   ELog::RegMethod RegA("WWG","writeVTK");
-  
+
+
   if (FName.empty()) return;
   std::ofstream OX(FName.c_str());
-  std::ostringstream cx;
-  boost::format fFMT("%1$11.6g%|14t|");
 
-  const long int XSize(static_cast<long int>(WMesh.shape()[0]));
-  const long int YSize(static_cast<long int>(WMesh.shape()[1]));
-  const long int ZSize(static_cast<long int>(WMesh.shape()[2]));
-  //  const long int ESize(static_cast<long int>(WMesh.shape()[3]));
-  
+  const long int XSize=WMesh.getXSize();
+  const long int YSize=WMesh.getYSize();
+  const long int ZSize=WMesh.getZSize();
+
+  boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;
   OX<<"ASCII"<<std::endl;
   OX<<"DATASET RECTILINEAR_GRID"<<std::endl;
+
   OX<<"DIMENSIONS "<<XSize<<" "<<YSize<<" "<<ZSize<<std::endl;
   OX<<"X_COORDINATES "<<XSize<<" float"<<std::endl;
   for(long int i=0;i<XSize;i++)
@@ -448,18 +367,12 @@ WWG::writeVTK(const std::string& FName) const
     OX<<(fFMT % Grid.getZCoordinate(static_cast<size_t>(i)));
   OX<<std::endl;
   
-
   OX<<"POINT_DATA "<<XSize*YSize*ZSize<<std::endl;
   OX<<"SCALARS cellID float 1.0"<<std::endl;
   OX<<"LOOKUP_TABLE default"<<std::endl;
 
-  for(long int K=0;K<ZSize;K++)
-    for(long int J=0;J<YSize;J++)
-      {
-	for(long int I=0;I<XSize;I++)
-	  OX<<(fFMT % WMesh[I][J][K][0]);
-	OX<<std::endl;
-      }
+  WMesh.writeVTK(OX,EIndex);
+  
   
   OX.close();
 

@@ -3,7 +3,7 @@
  
  * File:   physics/nameCard.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,12 +45,12 @@
 namespace physicsSystem
 {
   
-nameCard::nameCard(const std::string& KN,
-                     const int wT) :
+nameCard::nameCard(const std::string& KN,const int wT) :
   keyName(KN),writeType(wT),active(0)
   /*!
     Constructor
     \param KN :: Name
+    \param wT :: write Type with name[0] / without name [1]
   */
 {
   reset();
@@ -144,6 +144,7 @@ nameCard::reset()
 {
   ELog::RegMethod RegA("nameCard","reset");
 
+  active=0;
   JUnit.erase(JUnit.begin(),JUnit.end());
   DUnit.erase(DUnit.begin(),DUnit.end());
   IUnit.erase(IUnit.begin(),IUnit.end());
@@ -162,12 +163,7 @@ nameCard::setDefItem(const std::string& kN)
 {
   ELog::RegMethod RegA("nameCard","setDefItem");
 
-  std::set<std::string>::const_iterator jIter;
-
-  jIter=JUnit.find(kN);
-  if (jIter==JUnit.end())
-    JUnit.insert(kN);
-
+  JUnit.insert(kN);
   return;
 }
 
@@ -199,11 +195,14 @@ void
 nameCard::setItem(const std::string& kN,const long int& Value) 
   /*!
     Get an item based on the type
-    \param keyName :: Index number to return
+    \param kN :: keyname string
     \param Value :: vale to set
    */
 {
   ELog::RegMethod RegA("nameCard","setItem<long int>");
+
+  // if (keyName=="dbcn")
+  //   ELog::EM<<"Item["<<keyName<<"] == "<<kN<<" "<<Value<<ELog::endErr;
 
   active=1;
   std::map<std::string,long int>::iterator iIter;
@@ -227,7 +226,7 @@ nameCard::setItem(const std::string& kN,
   /*!
     Set an item based on the type
     \param kN :: Index number to return
-    \param Value :: vale to set
+    \param Value :: value to set
    */
 {
   ELog::RegMethod RegA("nameCard","setItem<string>");
@@ -257,7 +256,7 @@ nameCard::setRegItem(const std::string& kN,
 		     const std::string& Item)
   /*!
     Turn a registered item into a real item
-    \param kN :: KeyNmae
+    \param kN :: Keyname
     \param Item :: value [convertable]
    */
 {
@@ -302,7 +301,7 @@ nameCard::setRegItem(const std::string& kN,
 		     const long int& Item)
   /*!
     Turn a registered item into a real item
-    \param kN :: KeyNmae
+    \param kN :: Keyname
     \param Item :: value [convertable]
    */
 {
@@ -340,7 +339,7 @@ nameCard::setRegItem(const std::string& kN,
 		     const double& Item)
   /*!
     Turn a registered item into a real item
-    \param kN :: KeyNmae
+    \param kN :: Keyname
     \param Item :: value [convertable]
    */
 {
@@ -396,6 +395,7 @@ nameCard::getItem<double>(const std::string& kN) const
   /*!
     Set an item based on the type
     \param kN :: Index number to return
+    \return value as double [or throw]
    */
 {
   ELog::RegMethod RegA("nameCard","getItem<double>");
@@ -414,6 +414,7 @@ nameCard::getItem<long int>(const std::string& kN)  const
   /*!
     Set an item based on the type
     \param kN :: Index number to return
+    \return value as long int [or throw]
    */
 {
   ELog::RegMethod RegA("nameCard","getItem<long int>");
@@ -432,6 +433,7 @@ nameCard::getItem<std::string>(const std::string& kN) const
   /*!
     Set an item based on the type
     \param kN :: Index number to return
+    \return value as string [or throw]
    */
 {
   ELog::RegMethod RegA("nameCard","getItem<string>");
@@ -443,6 +445,7 @@ nameCard::getItem<std::string>(const std::string& kN) const
 
   return sIter->second;
 }
+
 void
 nameCard::registerItems(const std::vector<std::string>& Items)
   /*!
@@ -450,6 +453,8 @@ nameCard::registerItems(const std::vector<std::string>& Items)
     \param Items :: list of items and maybe defaults
   */
 {
+  ELog::RegMethod RegA("nameCard","registerItems");
+  
   std::string K,Type;
   for(std::string full : Items)
     {
@@ -507,7 +512,6 @@ nameCard::writeFlat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","writeFlat");
 
-  std::set<std::string>::const_iterator jIter;
   std::map<std::string,double>::const_iterator dIter;
   std::map<std::string,long int>::const_iterator iIter;
   std::map<std::string,std::string>::const_iterator sIter;
@@ -518,7 +522,10 @@ nameCard::writeFlat(std::ostream& OX) const
   size_t jCnt(0);
   for(const std::string& K : nameOrder)
     {
-      
+      // A set J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
       iIter=IUnit.find(K);
       if (iIter!=IUnit.end())
         {
@@ -562,10 +569,14 @@ nameCard::writeWithName(std::ostream& OX) const
   std::map<std::string,std::string>::const_iterator sIter;
 
   std::ostringstream cx;
-  
+
   cx<<keyName<<" ";
   for(const std::string& K : nameOrder)
     {
+      // SET J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
       cx<<" "<<K<<"=";
       iIter=IUnit.find(K);
       if (iIter!=IUnit.end())

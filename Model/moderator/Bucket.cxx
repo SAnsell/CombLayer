@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Bucket.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Bucket.h"
 
@@ -80,9 +81,9 @@ namespace moderatorSystem
 {
 
 Bucket::Bucket(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,1),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,1),
   cdIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(cdIndex+1),populated(0)
+  cellIndex(cdIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,10 +91,10 @@ Bucket::Bucket(const std::string& Key)  :
 {}
 
 Bucket::Bucket(const Bucket& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   cdIndex(A.cdIndex),cellIndex(A.cellIndex),
-  populated(A.populated),xStep(A.xStep),yStep(A.yStep),radius(A.radius),
-  thickness(A.thickness),openZ(A.openZ),topZ(A.topZ),matN(A.matN)
+  radius(A.radius),thickness(A.thickness),
+  openZ(A.openZ),topZ(A.topZ),matN(A.matN)
   /*!
     Copy constructor
     \param A :: Bucket to copy
@@ -111,11 +112,8 @@ Bucket::operator=(const Bucket& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
-      xStep=A.xStep;
-      yStep=A.yStep;
       radius=A.radius;
       thickness=A.thickness;
       openZ=A.openZ;
@@ -132,18 +130,16 @@ Bucket::~Bucket()
 {}
 
 void
-Bucket::populate(const Simulation& System)
+Bucket::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod RegA("Bucket","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep"); 
-  yStep=Control.EvalVar<double>(keyName+"YStep"); 
+  FixedOffset::populate(Control);
+  
   radius=Control.EvalVar<double>(keyName+"Radius"); 
   thickness=Control.EvalVar<double>(keyName+"Thick"); 
   openZ=Control.EvalVar<double>(keyName+"OpenZ"); 
@@ -151,27 +147,23 @@ Bucket::populate(const Simulation& System)
 
   matN=ModelSupport::EvalMat<int>(Control,keyName+"Mat"); 
   
-  populated |= 1;
   return;
 }
   
 
 void
-Bucket::createUnitVector(const attachSystem::FixedComp& CUnit)
+Bucket::createUnitVector(const attachSystem::FixedComp& CUnit,
+			 const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points down Target
-    - X Across the target
-    - Z up 
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex ::: link point
   */
 {
   ELog::RegMethod RegA("Bucket","createUnitVector");
 
-  FixedComp::createUnitVector(CUnit);
-
-  Origin+=X*xStep+Y*yStep;
-
+  FixedComp::createUnitVector(CUnit,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -217,17 +209,19 @@ Bucket::createObjects(Simulation& System)
   
 void
 Bucket::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FUnit)
+		  const attachSystem::FixedComp& FUnit,
+		  const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("Bucket","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
-  createUnitVector(FUnit);
+  createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);
   insertObjects(System);       

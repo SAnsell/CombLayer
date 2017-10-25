@@ -3,7 +3,7 @@
 
  * File:   essBuild/makeESS.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,10 +108,12 @@
 #include "DiskPreMod.h"
 #include "DiskLayerMod.h"
 #include "Bunker.h"
+#include "pillarInfo.h"
 #include "RoofPillars.h"
 #include "BunkerFeed.h"
 #include "BunkerQuake.h"
 #include "Curtain.h"
+#include "HighBay.h"
 #include "ConicModerator.h"
 #include "makeESSBL.h"
 #include "ESSPipes.h"
@@ -159,6 +161,8 @@ makeESS::makeESS() :
   TopCurtain(new Curtain("Curtain")),
   TSMainBuildingObj(new TSMainBuilding("TSMainBuilding"))
 
+  ABHighBay(new HighBay("ABHighBay")),
+  CDHighBay(new HighBay("CDHighBay"))
  /*!
     Constructor
  */
@@ -196,6 +200,8 @@ makeESS::makeESS() :
   OR.addObject(ABunkerPillars);
   OR.addObject(BBunkerPillars);
   OR.addObject(TopCurtain);
+  OR.addObject(ABHighBay);
+  OR.addObject(CDHighBay);
 }
 
 
@@ -204,6 +210,7 @@ makeESS::~makeESS()
     Destructor
   */
 {}
+
 
 void
 makeESS::makeTarget(Simulation& System,
@@ -216,8 +223,11 @@ makeESS::makeTarget(Simulation& System,
 {
   ELog::RegMethod RegA("makeESS","makeTarget");
 
-  const int voidCell(74123);
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  const int voidCell(74123);  
 
+  
   // Best place to put this to allow simple call
   if (targetType=="help")
     {
@@ -235,11 +245,12 @@ makeESS::makeTarget(Simulation& System,
   else
     throw ColErr::InContainerError<std::string>
       (targetType,"Unknown target type");
-
+  
   Target->addInsertCell("Shaft",voidCell);
   Target->addInsertCell("Wheel",voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
+  OR.addObject(Target);
   return;
 }
 
@@ -260,19 +271,19 @@ makeESS::createGuides(Simulation& System)
       OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
       GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
-      GB->setCylBoundary(Bulk->getLinkSurf(2),
+      GB->setCylBoundary(Bulk->getSignedLinkSurf(3),
 			 ShutterBayObj->getSignedLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB, Target->getCC("Wheel"));
+      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
     }
-
-  GBArray[0]->createGuideItems(System,"Top");
-  GBArray[0]->createGuideItems(System,"Low");
-  GBArray[1]->createGuideItems(System,"Top");
-  GBArray[1]->createGuideItems(System,"Low");
+  
+  GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
+  GBArray[0]->createGuideItems(System,"Low",Target->getKeyName());
+  GBArray[1]->createGuideItems(System,"Top",Target->getKeyName());
+  GBArray[1]->createGuideItems(System,"Low",Target->getKeyName());
 
   return;
 }
@@ -816,8 +827,7 @@ makeESS::buildBunkerQuake(Simulation& System,
 
   return;
 }
-
-
+  
 void
 makeESS::buildPillars(Simulation& System)
   /*!
@@ -826,7 +836,8 @@ makeESS::buildPillars(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makeESS","buildPillars");
-  ABunkerPillars->createAll(System,*ABunker);
+  //  ABunkerPillars->createAll(System,*ABunker);
+  BBunkerPillars->createAll(System,*BBunker);
   return;
 }
 
@@ -895,14 +906,14 @@ makeESS::makeBeamLine(Simulation& System,
 	  makeESSBL BLfactory(BL,Btype);
 	  std::pair<int,int> BLNum=makeESSBL::getBeamNum(BL);
           ELog::EM<<"BLNum == "<<BLNum.first<<" "<<BLNum.second<<ELog::endDiag;
-
-	  if (BLNum.first==1 && BLNum.second<=10)
+	  
+	  if (BLNum.first==1 && BLNum.second<=11)
 	    BLfactory.build(System,*ABunker);
-	  else if (BLNum.first==1 && BLNum.second>10)
+	  else if (BLNum.first==1 && BLNum.second>11)
 	    BLfactory.build(System,*BBunker);
-	  else if (BLNum.first==2 && BLNum.second<=10)
+	  else if (BLNum.first==2 && BLNum.second<=11)
 	    BLfactory.build(System,*DBunker);
-	  else if (BLNum.first==2 && BLNum.second>10)
+	  else if (BLNum.first==2 && BLNum.second>11)
 	    BLfactory.build(System,*CBunker);
 	}
     }
@@ -915,8 +926,8 @@ makeESS::makeBunker(Simulation& System,
                     const mainSystem::inputParam& IParam)
   /*!
     Make the bunker system
-    \param System :: Simulation
-    \param bunkerType :: different bunker to make
+    \param System :: Simulation 
+    \param IParam :: Input parameter
   */
 {
   ELog::RegMethod RegA("makeESS","makeBunker");
@@ -931,7 +942,6 @@ makeESS::makeBunker(Simulation& System,
   BBunker->addInsertCell(voidCell);
   BBunker->setCutWall(0,1);
   BBunker->createAll(System,*ShutterBayObj,4,false);
-  //  BBunker->createAll(System,*LowMod,*GBArray[0],2,true,true);
 
   ABunker->insertComponent(System,"rightWall",*BBunker);
   ABunker->insertComponent(System,"roofFarEdge",*BBunker);
@@ -942,7 +952,6 @@ makeESS::makeBunker(Simulation& System,
   CBunker->addInsertCell(voidCell);
   CBunker->createAll(System,*ShutterBayObj,3,true);
 
-
   DBunker->addInsertCell(voidCell);
   DBunker->setCutWall(0,1);
   DBunker->createAll(System,*ShutterBayObj,3,true);
@@ -951,25 +960,27 @@ makeESS::makeBunker(Simulation& System,
   CBunker->insertComponent(System,"roofFarEdge",*DBunker);
   CBunker->insertComponent(System,"floor",*DBunker);
 
-  if (bunkerType.find("noPillar")==std::string::npos)
-    buildPillars(System);
-
-
   if (bunkerType.find("noCurtain")==std::string::npos)
     {
-      // THIS IS HORIFFICALLY INEFFICENT :: FIX
-      TopCurtain->addInsertCell("Top",74123);
-      TopCurtain->addInsertCell("Lower",74123);
-      TopCurtain->addInsertCell("Mid",74123);
-      TopCurtain->addInsertCell("Lower",ABunker->getCells("roof"));
-      TopCurtain->addInsertCell("Lower",BBunker->getCells("roof"));
-      TopCurtain->addInsertCell("Top",ABunker->getCells("roof"));
-      TopCurtain->addInsertCell("Top",BBunker->getCells("roof"));
 
+      TopCurtain->addInsertCell("Top",voidCell);
+      TopCurtain->addInsertCell("Lower",voidCell);
+      TopCurtain->addInsertCell("Mid",voidCell);
+
+      // THIS IS HORRIFFICALLY INEFFICENT :: FIX
+      TopCurtain->addInsertCell("RoofCut",ABunker->getCells("roof"));
+      TopCurtain->addInsertCell("RoofCut",BBunker->getCells("roof"));
       TopCurtain->createAll(System,*ShutterBayObj,6,4);
 
-      //  TopCurtain->insertComponent(System,"topVoid",*ABunker);
-      //  TopCurtain->insertComponent(System,"topVoid",*BBunker);
+      ABHighBay->setCurtainCut
+	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+      ABHighBay->addInsertCell(voidCell);
+      ABHighBay->createAll(System,*ABunker,*BBunker);
+
+      //      CDHighBay->setCurtainCut
+      //	(TopCurtain->combine({"-OuterRadius","-OuterZStep"}));
+      CDHighBay->addInsertCell(voidCell);
+      CDHighBay->createAll(System,*CBunker,*DBunker);
     }
   if (bunkerType.find("help")!=std::string::npos)
     {
@@ -1009,8 +1020,8 @@ makeESS::buildPreWings(Simulation& System)
 
       TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
       TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
-      TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
+      TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->createAll(System,*TMod,0);
 
       TopPreWingB =
@@ -1106,6 +1117,9 @@ makeESS::build(Simulation& System,
   const int engActive=Control.EvalPair<int>
     ("BulkEngineeringActive","EngineeringActive");
 
+  // OR better set it to the flag value?
+  //  const int engActive=IParam.flag("eng");
+  
   if (StrFunc::checkKey("help",lowPipeType,lowModType,targetType) ||
       StrFunc::checkKey("help",iradLine,topModType,""))
     {
@@ -1148,6 +1162,7 @@ makeESS::build(Simulation& System,
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
 
+<<<<<<< HEAD
   if (lowModType != "None")
     LowCapMod->createAll(System,*LowMod,6,false,
 			 0.0,Reflector->getRadius());
@@ -1162,6 +1177,16 @@ makeESS::build(Simulation& System,
 			 Target->wheelHeight(),
 			 0.0,
 			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
+=======
+  LowCapMod->createAll(System,*LowMod,6,false,
+   		       0.0,Reflector->getRadius());
+  buildPreWings(System);
+  
+  Reflector->createAll(System,World::masterOrigin(),0,
+		       Target->wheelHeight(),
+		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
+		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
+>>>>>>> master
 
   buildPreWings(System);
 
@@ -1169,6 +1194,7 @@ makeESS::build(Simulation& System,
   Reflector->deleteCell(System,"lowVoid");
   Reflector->deleteCell(System,"topVoid");
   Bulk->createAll(System,*Reflector,*Reflector);
+
   // Build flightlines after bulk
   TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
   TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
@@ -1263,7 +1289,10 @@ makeESS::build(Simulation& System,
   if (IParam.flag("bunkerChicane"))
     buildBunkerChicane(System,IParam);
 
-  buildF5Collimator(System, nF5);
+  if (lowModType != "None")
+    ModPipes->buildLowPipes(System,lowPipeType);
+
+  makeBeamLine(System,IParam);
 
   if (IParam.flag("rotate")) // rotate to the Alan's coordinate system
     // SA says I need to use master rotation here - see his t2 model

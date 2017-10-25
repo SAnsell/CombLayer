@@ -39,20 +39,13 @@ namespace delftSystem
 */
 
 class BeamInsert : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int insertIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to front
-  double yStep;                 ///< Offset on Y to front
-  double zStep;                 ///< Offset on Z top front
-
-  double xyAngle;               ///< xyRotation angle
-  double zAngle;                ///< zRotation angle
-
   double length;                ///< Total length
   double radius;                ///< Outer radius [minus wall]
 
@@ -61,7 +54,7 @@ class BeamInsert : public attachSystem::ContainedComp,
 
   int mat;                      ///< Inter Material number
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 

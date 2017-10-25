@@ -3,7 +3,7 @@
  
  * File:   t1Build/t1variables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -484,7 +484,7 @@ TS1real(FuncDataBase& Control)
   Control.addVariable("BWindowRadius",4.0);          
 
 //  Control.addVariable("BWindowHeThick",11.725);   // He Thickness
-  Control.addVariable("BWindowYStep",15.0);   // Step from front target
+  Control.addVariable("BWindowYStep",-15.0);   // Step from front target
   Control.addVariable("BWindowIncThick1",0.3);   // Inconel Thickness 1
   Control.addVariable("BWindowWaterThick",0.1);   // Light water Thickness
   Control.addVariable("BWindowIncThick2",0.3);   // Inconel Thickness 2

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testVolumes.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,16 +155,6 @@ testVolumes::createObjects()
   Out=ModelSupport::getComposite(surIndex,"100");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
 
-  // Out=ModelSupport::getComposite(surIndex,"-102");
-  // ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));   
-  // Out=ModelSupport::getComposite(surIndex,"-101");
-  // ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));   
-  // Out=ModelSupport::getComposite(surIndex,"-100 101 102");
-  // ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));   
-
-  //  Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  //  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
-
   Out=ModelSupport::getComposite(surIndex,"-101");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,78,0.0,Out));      // steel object
 
@@ -179,8 +169,7 @@ testVolumes::createObjects()
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
-				 " #4");
+  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16) #4");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
@@ -248,20 +237,18 @@ testVolumes::testVolume()
   ELog::RegMethod RegA("testVolumes","testVolume");
   double V;
 
-
   VolSum VTallyX(Geometry::Vec3D(0,0,-4),Geometry::Vec3D(8.0,8.0,8.0));
-  //  VTally.populate(ASim);
+
   VTallyX.addTallyCell(4,2);
-  //  VTally.addTallyCell(14,3);
   VTallyX.trackRun(ASim,80000);
+  
   V=VTallyX.calcVolume(4);
   ELog::EM<<"CalcValue(4X) == "<<V<<ELog::endTrace;
-  ELog::EM<<" ========= "<<V<<ELog::endTrace<<
-    ELog::endTrace;
+  ELog::EM<<" ========= "<<V<<ELog::endTrace;
+  
   VolSum VTally(Geometry::Vec3D(0,0,0),Geometry::Vec3D(8.0,8.0,8.0));
-  //  VTally.populate(ASim);
   VTally.addTallyCell(4,2);
-  //  VTally.addTallyCell(14,3);
+
   VTally.trackRun(ASim,80000);
   V=VTally.calcVolume(4);
   ELog::EM<<"CalcValue(4) == "<<V<<ELog::endTrace;
@@ -279,7 +266,6 @@ testVolumes::testPointVolume()
   */
 {
   ELog::RegMethod RegA("testVolumes","testVolume");
-  double V;
 
 
   VolSum VTallyX(Geometry::Vec3D(0,0,0),Geometry::Vec3D(8.0,8,8));
@@ -288,16 +274,12 @@ testVolumes::testPointVolume()
   VTallyX.addTallyCell(5,3);
   //  VTally.addTallyCell(14,3);
   VTallyX.pointRun(ASim,800000);
-  V=VTallyX.calcVolume(4);
-  double Vx=VTallyX.calcVolume(5);
+
+  const double V=VTallyX.calcVolume(4);
+  const double Vx=VTallyX.calcVolume(5);
+  
   ELog::EM<<"CalcValue(4X) == "<<V<<ELog::endTrace;
   ELog::EM<<"CalcValue(5X) == "<<Vx<<ELog::endTrace;
-  ELog::EM<<" ========= "<<V<<ELog::endTrace<<
-    ELog::endTrace;
-
-
-
-
   
   return 0;
 }

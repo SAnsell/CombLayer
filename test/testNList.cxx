@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testNList.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@
 #include "OutputLog.h"
 #include "Triple.h"
 #include "NList.h"
+#include "support.h"
 
 #include "testFunc.h"
 #include "testNList.h"
@@ -100,8 +101,8 @@ testNList::testRange()
   */
 {
   ELog::RegMethod RegA("testNList","testRange");
-
-  std::string testString("1 2 -3 inp=45 out= 56 T");
+  const std::string testString("1 2 -3 inp=45 out= 56 T");
+  const std::string expectString("1 2 -3 inp= 45 out= 56 T");
   NList<int> NE;
   if (NE.processString(testString))
     {
@@ -109,16 +110,40 @@ testNList::testRange()
       return -1;
     }
 
-  NE.write(ELog::EM.Estream());
-  ELog::EM<< ELog::endTrace;
-  ELog::EM<<"Test of copy constructor"<<ELog::endTrace;
+  std::ostringstream cx;
+  NE.write(cx);
+
+  if (StrFunc::fullBlock(cx.str())!=expectString)
+    {
+      ELog::EM<<"Failed on process string"<<ELog::endDiag;
+      ELog::EM<<"Retvalue == "<<cx.str()<<" =="<<ELog::endDiag;
+      ELog::EM<<"Expected == "<<expectString<<" =="<<ELog::endDiag;
+      return -2;
+    }
+      
+  cx.str("");
   NList<int> NX(NE);
-  NX.write(ELog::EM.Estream());
-  ELog::EM<<"Test of assignment operator"<<ELog::endTrace;
+  NX.write(cx);
+  if (StrFunc::fullBlock(cx.str())!=expectString)
+    {
+      ELog::EM<<"Failed on constructor"<<ELog::endDiag;
+      ELog::EM<<"Retvalue == "<<cx.str()<<" =="<<ELog::endDiag;
+      ELog::EM<<"Expected == "<<expectString<<" =="<<ELog::endDiag;
+      return -2;
+    }
+  
+  cx.str("");
   NList<int> NY;
   NY=NX;
-  NY.write(ELog::EM.Estream());
-  ELog::EM<<ELog::endBasic;
- return 0;
+  NY.write(cx);
+  if (StrFunc::fullBlock(cx.str())!=expectString)
+    {
+      ELog::EM<<"Failed on assignment"<<ELog::endDiag;
+      ELog::EM<<"Retvalue == "<<cx.str()<<" =="<<ELog::endDiag;
+      ELog::EM<<"Expected == "<<expectString<<" =="<<ELog::endDiag;
+      return -3;
+    }
+
+  return 0;
 }
 

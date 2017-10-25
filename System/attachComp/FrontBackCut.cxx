@@ -3,7 +3,7 @@
  
  * File:   attach/FrontBackCut.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -171,7 +171,7 @@ void
 FrontBackCut::setBack(const std::string& FRule)
   /*!
     Set a back wall
-    \param BRule :: Back rule string
+    \param FRule :: Back rule string
   */
 {
   ELog::RegMethod RegA("FrontBackCut","setBack(string)");
@@ -224,7 +224,20 @@ FrontBackCut::setBack(const attachSystem::FixedComp& WFC,
   return;
 }
 
+void
+FrontBackCut::setFrontDivider(const std::string& FDRule)
+  /*!
+    Set the front divider
+    \param FDRule :: Front divider rule
+  */
+{
+  if (!frontDivider.procString(FDRule))
+    throw ColErr::InvalidLine(FDRule,"FDRule failed");
+  frontDivider.populateSurf();
+  return;
+}
 
+  
 void
 FrontBackCut::setFrontDivider(const HeadRule& HR)
   /*!
@@ -233,6 +246,19 @@ FrontBackCut::setFrontDivider(const HeadRule& HR)
    */
 {
   frontDivider=HR;
+  return;
+}
+
+void
+FrontBackCut::setBackDivider(const std::string& BDRule)
+  /*!
+    Set the back divider
+    \param BDRule :: Back divider rule
+  */
+{
+  if (!backDivider.procString(BDRule))
+    throw ColErr::InvalidLine(BDRule,"BDRule failed");
+  backDivider.populateSurf();
   return;
 }
 

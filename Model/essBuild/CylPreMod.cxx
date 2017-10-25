@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,9 +181,9 @@ CylPreMod::getBoxCut(const char F) const
    */
 {
   if (F=='A' && blockActiveA)
-    return ExtAObj->getLinkComplement(3); 
+    return ExtAObj->getSignedLinkString(-4); 
   if (F=='B' && blockActiveB)
-    return ExtBObj->getLinkComplement(3); 
+    return ExtBObj->getSignedLinkString(-4); 
   return "";
 }
 

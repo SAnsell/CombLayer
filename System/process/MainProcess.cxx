@@ -300,7 +300,7 @@ setVariables(Simulation& System,const inputParam& IParam,
     \param System :: Simulation
     \param IParam :: Parameter set
     \param Names :: Vector of Options and values
-    \todo Value/AddValues not set but used by setRunTimeVariables
+    \todo Value/AddValues not set bu-t used by setRunTimeVariables
   */
 {
   ELog::RegMethod RegA("MainProcess","setVariables");
@@ -458,8 +458,19 @@ setMaterialsDataBase(const inputParam& IParam)
       throw ColErr::ExitAbort("help");
     }	
   else
-    throw ColErr::InContainerError<std::string>(materials,
-						"Materials Data Base type");
+    throw ColErr::InContainerError<std::string>
+      (materials,"Materials Data Base type");
+
+  if (IParam.flag("matFile"))
+    {
+      const size_t NCnt(IParam.itemCnt("matFile",0));
+      for(size_t i=0;i<NCnt;i++)
+	{
+	  const std::string matFile=IParam.getValue<std::string>("matFile",i);
+	  ModelSupport::processMaterialFile(matFile);
+	}
+    }
+  return;
 }
   
 void
@@ -486,7 +497,6 @@ buildFullSimulation(Simulation* SimPtr,
     \param IParam :: input pararmeter
     \param OName :: output file name
    */
-  
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
 
@@ -502,15 +512,13 @@ buildFullSimulation(Simulation* SimPtr,
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
-  const int renumCellWork=tallySelection(*SimPtr,IParam);
+  tallySelection(*SimPtr,IParam);
   reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;
   // 
   SimProcess::importanceSim(*SimPtr,IParam);
   SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-  if (renumCellWork)
-    tallyRenumberWork(*SimPtr,IParam);
   tallyModification(*SimPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);

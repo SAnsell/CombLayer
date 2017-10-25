@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/vor/VORvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,12 @@ VORvariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::BladeGenerator BGen;
 
+  Control.addVariable("vorStopPoint",0);
+  Control.addVariable("vorStartPoint",0);
+  Control.addVariable("vorAxisXYAngle",0.0);   // rotation
+  Control.addVariable("vorAxisZAngle",0.0);   // rotation 
+
+  
   SGen.addWall(1,15.0,"CastIron");
   SGen.addRoof(1,15.0,"CastIron");
   SGen.addFloor(1,15.0,"CastIron");
@@ -82,26 +88,23 @@ VORvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
-  FGen.setGuideMat("Copper");
-  FGen.setYOffset(0.1);
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.5,"Void");
+  FGen.setYOffset(2.0);
 
   PipeGen.setPipe(12.0,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
 
     
-  Control.addVariable("vorStopPoint",0);
-  Control.addVariable("vorAxisXYAngle",0.0);   // rotation
-  Control.addVariable("vorAxisZAngle",0.0);   // rotation 
   
   //  Control.addVariable("vorGABeamXYAngle",1.0);
-  FGen.setGuideMat("Copper");
-  FGen.setYOffset(0.1);
+  FGen.setYOffset(.20);
   FGen.generateTaper(Control,"vorFA",350.0,2.114,3.2417,3.16,3.9228);
 
   // VACUUM PIPE in Gamma shield
   PipeGen.generatePipe(Control,"vorPipeB",8.0,46.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"vorFB",44.0,3.30,3.4028,4.0,4.2);
 

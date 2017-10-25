@@ -55,6 +55,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "essVariables.h"
 
@@ -80,8 +81,8 @@ MIRACLESvariables(FuncDataBase& Control)
   setVariable::TwinGenerator TGen;
 
   PipeGen.setPipe(8.0,0.5);
-  PipeGen.setWindow(-2.0,0.5);
-  PipeGen.setFlange(-2.0,1.0);
+  PipeGen.setWindow(-0.5,0.5);
+  PipeGen.setFlange(-1.0,1.0);
 
   SGen.addWall(1,20.0,"CastIron");
   SGen.addRoof(1,20.0,"CastIron");
@@ -96,14 +97,14 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAxisZAngle",0.0);  // rotation
   Control.addVariable("miraclesAxisZStep",0.0);   // offset
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.8,0.3);
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.3,"Void");  
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"miraclesFA",350.0, 6.0,5.0 ,5.0,9.5);
   
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"miraclesPipeB",8.0,44.0);
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.8,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFB",42.0, 5.0,4.857,  9.5,9.85714);
 
@@ -116,7 +117,7 @@ MIRACLESvariables(FuncDataBase& Control)
   Control.addVariable("miraclesAppAInnerHeight",4.0);
   Control.addVariable("miraclesAppAWidth",12.0);
   Control.addVariable("miraclesAppAHeight",12.0);
-  Control.addVariable("miraclesAppADepth",5.0);
+  Control.addVariable("miraclesAppAThick",5.0);
   Control.addVariable("miraclesAppAYStep",7.0);
   Control.addVariable("miraclesAppADefMat","Tungsten");
 
@@ -151,7 +152,6 @@ MIRACLESvariables(FuncDataBase& Control)
 
   // Pipe after second chopper unit [to 11.5m]
   PipeGen.setRectPipe(16.0,16.0,0.5);
-
   PipeGen.generatePipe(Control,"miraclesPipeE",2.0,359.0);
   FGen.clearYOffset();
   FGen.generateTaper(Control,"miraclesFE",355.0, 5.0,4.857,  9.5,9.85714);
@@ -165,6 +165,60 @@ MIRACLESvariables(FuncDataBase& Control)
   BGen.setThick({0.2});
   BGen.addPhase({95,275},{30.0,30.0});
   BGen.generateBlades(Control,"miraclesEBlade",0.0,22.5,35.0);
+
+
+  Control.addVariable("miraclesShutterAYStep",3.0);
+  Control.addVariable("miraclesShutterALiftZStep",-10.0);
+  Control.addVariable("miraclesShutterALength",30.0);
+  Control.addVariable("miraclesShutterAWidth",10.1);
+  Control.addVariable("miraclesShutterAHeight",11.1);
+  Control.addVariable("miraclesShutterANLayers",1);
+  Control.addVariable("miraclesShutterAMat0","Aluminium");
+  
+  Control.addVariable("miraclesShutterASurroundThick",3.0);
+  Control.addVariable("miraclesShutterASurroundMat","Stainless304");
+  Control.addVariable("miraclesShutterATopVoid",8.1);
+
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeF",2.0,520.0);
+  FGen.generateTaper(Control,"miraclesFF",516.0, 5.0,4.857,  9.5,9.85714);
+
+  PipeGen.setRectPipe(16.0,16.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeG",2.0,730.0);
+  FGen.generateBender(Control,"miraclesBG",724.0, 12.0,12.0,12.0,12.0,
+		    500000.0,0.0 );
+
+  
+  // BEAM INSERT:
+  Control.addVariable("miraclesBInsertHeight",20.0);
+  Control.addVariable("miraclesBInsertWidth",28.0);
+  Control.addVariable("miraclesBInsertTopWall",1.0);
+  Control.addVariable("miraclesBInsertLowWall",1.0);
+  Control.addVariable("miraclesBInsertLeftWall",1.0);
+  Control.addVariable("miraclesBInsertRightWall",1.0);
+  Control.addVariable("miraclesBInsertWallMat","Stainless304");       
+  
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"miraclesPipeWall",4.0,348.0);
+
+  FGen.generateBender(Control,"miraclesFWall",344.0, 12.0,12.0,12.0,12.0,
+		      500000.0,0.0);
+
+  // OUTER shielding
+  SGen.generateShield(Control,"miraclesShieldA",3000.0,40.0,40.0,40.0,4,8);  
+
+  PipeGen.setPipe(10.0,0.5);
+  PipeGen.generatePipe(Control,"miraclesPipeOutA",4.0,1495.0);  
+  FGen.generateBender(Control,"miraclesBOutA",1491.0,
+		      12.0,12.0,12.0,12.0,
+		      500000.0,0.0);
+
+  PipeGen.generatePipe(Control,"miraclesPipeOutB",1.0,1498.0);  
+  FGen.generateBender(Control,"miraclesBOutB",1494.0,
+		      12.0,12.0,12.0,12.0,
+		      500000.0,0.0);
+
+  
 
   return;
 }

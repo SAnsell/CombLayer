@@ -217,17 +217,18 @@ procAngle(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
-
+      
       const long int sideIndex=attachSystem::getLinkIndex(CItem);
-	  
+      
+      Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
+      GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
 
-      const Geometry::Vec3D AxisVec=
-        GIPtr->getSignedLinkAxis(sideIndex);
-	  
-      const Geometry::Quaternion QR=
-        Geometry::Quaternion::calcQVRot(Geometry::Vec3D(1,0,0),AxisVec);
-      MR.addRotation(QR.getAxis(),
-                     Geometry::Vec3D(0,0,0),-180.0*QR.getTheta()/M_PI);
+      
+      const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
+      
+      MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+		     -180.0*QR.getTheta()/M_PI);
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -341,7 +342,6 @@ setDefRotation(const mainSystem::inputParam& IParam)
   if (IParam.flag("angle"))
     {
       const size_t nP=IParam.setCnt("angle");
-      ELog::EM<<"NP == "<<nP<<ELog::endDiag;
       for(size_t i=0;i<nP;i++)
         procAngle(IParam,i);
     }
@@ -364,13 +364,26 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
   ELog::EM<<"Physics Model == "<<PModel<<ELog::endBasic;
 
   if (PModel=="CEM03")
-    lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");  // CEM
+    {
+      lea.setValues("lca","2 1 1 0023 1 1 0 1 1 0");  // CEM
+      lea.setValues("lea","1 4 1 0 1 0 0 1");
+    }
   else if (PModel=="IA")
-    lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
+    {
+      lea.setValues("lca","2 1 0 0023 1 1 2 1 2 0");  // INCL4 - ABLA
+      lea.setValues("lea","1 4 1 0 1 0 2 1");
+    }
   else if (PModel=="BD")
-    lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini - DrAnnesner   
+    {
+      lea.setValues("lca","2 1 1 0023 1 1 0 1 0 0");  // Bertini -
+                                                      // DrAnnesner
+      lea.setValues("lea","1 4 1 0 1 0 0 1");
+    }
   else if (PModel=="BA")
-    lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA  
+    {
+      lea.setValues("lca","2 1 1 0023 1 1 2 1 0 0");  // Bertini - ABLA
+      lea.setValues("lea","1 4 1 0 1 0 2 1");
+    }
   else
     {
       ELog::EM<<"physModel :\n"
@@ -380,7 +393,7 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
 	"BA :: Bertini - ABLA model"<<ELog::endBasic;
       throw ColErr::ExitAbort("No model");
     }
-  lea.setValues("lea","1 4 1 0 1 0 0 1");
+
   return;
 }
 
@@ -425,7 +438,7 @@ setDefaultPhysics(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   
   std::string PList=
-    IParam.getDefValue<std::string>("h / d t s a","mode",0);
+    IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
   if (PList=="empty" || PList=="Empty")
     PList=" ";
   

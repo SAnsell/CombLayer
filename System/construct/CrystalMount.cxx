@@ -92,6 +92,52 @@ CrystalMount::CrystalMount(const std::string& Key,
   */
 {}
 
+CrystalMount::CrystalMount(const CrystalMount& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  baseName(A.baseName),ID(A.ID),xtalIndex(A.xtalIndex),
+  cellIndex(A.cellIndex),active(A.active),width(A.width),
+  thick(A.thick),length(A.length),gap(A.gap),wallThick(A.wallThick),
+  baseThick(A.baseThick),xtalMat(A.xtalMat),wallMat(A.wallMat),
+  yRotation(A.yRotation),zRotation(A.zRotation),
+  viewPoint(A.viewPoint)
+  /*!
+    Copy constructor
+    \param A :: CrystalMount to copy
+  */
+{}
+
+CrystalMount&
+CrystalMount::operator=(const CrystalMount& A)
+  /*!
+    Assignment operator
+    \param A :: CrystalMount to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      active=A.active;
+      width=A.width;
+      thick=A.thick;
+      length=A.length;
+      gap=A.gap;
+      wallThick=A.wallThick;
+      baseThick=A.baseThick;
+      xtalMat=A.xtalMat;
+      wallMat=A.wallMat;
+      yRotation=A.yRotation;
+      zRotation=A.zRotation;
+      viewPoint=A.viewPoint;
+    }
+  return *this;
+}
+
 
 CrystalMount::~CrystalMount()
   /*!

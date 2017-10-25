@@ -3,7 +3,7 @@
  
  * File:   input/IItem.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,9 +254,13 @@ IItem::setObj(const size_t setIndex,const size_t itemIndex,
 
   const size_t IS(DItems[setIndex].size());
 
+
   if (itemIndex>=maxItems || itemIndex>IS+1)
+    {
+      ELog::EM<<"Max = "<<maxItems<<ELog::endDiag;
       throw ColErr::IndexError<size_t>(itemIndex,DItems[setIndex].size(),
 				     Key+"::itemIndex");
+    }
   if (itemIndex==IS)
     DItems[setIndex].push_back(V);
   else

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testMersenne.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <math.h>
+#include <cmath>
 #include <list>
 #include <vector>
 #include <map>
@@ -115,17 +115,30 @@ testMersenne::testRandom()
     \retval 0 :: All passed
   */
 {
+  ELog::RegMethod RegA("testMersenne","testRandom");
+  Rand.seed(123456L);
+
+    
   std::stringstream TX;
   Rand.write(TX);
-  std::cout<<"List == ";
+
+  std::ostringstream cxA;
+  std::ostringstream cxB;
+  
   for(int i=0;i<10;i++)
-    std::cout<<Rand.randInt(10)<<" ";
-  std::cout<<std::endl;
+    cxA<<Rand.randInt(10)<<" ";
 
   Rand.read(TX);
   for(int i=0;i<10;i++)
-    std::cout<<Rand.randInt(10)<<" ";
-  std::cout<<std::endl;
+    cxB<<Rand.randInt(10)<<" ";
+
+  if (cxA.str()!=cxB.str())
+    {
+      ELog::EM<<"Failed to match after read:"<<ELog::endDiag;
+      ELog::EM<<"CA == "<<cxA.str()<<ELog::endDiag;
+      ELog::EM<<"CB == "<<cxB.str()<<ELog::endDiag;
+      return -1;
+    }
 
   return 0;
 }
@@ -138,10 +151,15 @@ testMersenne::testRand()
     \retval 0 :: All passed
   */
 {
+  ELog::RegMethod RegA("testMersenne","testRandom");
+
+  Rand.seed(123456L);
+  const double expectAns(0.502612);
+  
   double sum(0.0);
   for(int i=0;i<50000;i++)
     {
-      double x=Rand.rand();
+      const double x=Rand.rand();
       if (x<0.0 || x>=1.0)
 	{
 	  ELog::EM<<"Failed on point "<<i<<" "<<x<<ELog::endDebug;
@@ -149,7 +167,12 @@ testMersenne::testRand()
 	}
       sum+=x;
     }
-  ELog::EM<<"Sum == "<<sum/50000.0<<ELog::endDebug;
+  if (std::abs(sum/50000.0-expectAns)>1e-5)
+    {
+      ELog::EM<<"Sum == "<<sum/50000.0<<ELog::endDiag;
+      return -1;
+    }
+      
   
   return 0;
 }

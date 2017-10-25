@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/BulletTarget.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,32 +142,6 @@ BulletTarget::~BulletTarget()
 {}
   
 void
-BulletTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("BulletTarget","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();     
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	    (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,6);   // realtive front face
-
-    }
-  return;
-}
-
-void
 BulletTarget::addProtonLine(Simulation& ,
 			     const attachSystem::FixedComp& ,
 			     const long int )
@@ -181,7 +155,7 @@ BulletTarget::addProtonLine(Simulation& ,
   ELog::RegMethod RegA("BulletTarget","addProtonLine");
 
   //  PLine->createAll(System,*PressVObj,-7,refFC,index);
-  //  createBeamWindow(System);
+  //  createBeamWindow(System,7);
   
   return;
 }

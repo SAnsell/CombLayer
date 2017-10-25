@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   weights/Mesh.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,10 +104,10 @@ Mesh::setMeshType(const GeomENUM& A)
 
 void 
 Mesh::setCylinder(const Geometry::Vec3D& Base,
-			const Geometry::Vec3D& Top,
-			const Geometry::Vec3D& uRVec,
-			const double Radius,const size_t NR,
-			const size_t NZ,const size_t NT)
+		  const Geometry::Vec3D& Top,
+		  const Geometry::Vec3D& uRVec,
+		  const double Radius,const size_t NR,
+		  const size_t NZ,const size_t NT)
   /*!
     Sets up a cyclindrical mesh
     \param Base :: Base point in Cylinder
@@ -133,17 +133,17 @@ Mesh::setCylinder(const Geometry::Vec3D& Base,
       throw ColErr::ExitAbort("NR/NZ/NT failure");
     }
 
-  const double dR=Radius/NR;
+  const double dR=Radius/static_cast<double>(NR);
   for(size_t i=0;i<=NR;i++)
-    X.push_back(dR*i);
+    X.push_back(static_cast<double>(i)*dR);
 
-  const double dL=((Top-Base).abs())/NZ;
+  const double dL=((Top-Base).abs())/static_cast<double>(NZ);
   for(size_t i=0;i<=NZ;i++)
-    Y.push_back(dL*i);
+    Y.push_back(dL*static_cast<double>(i));
 
-  const double dT=1.0/NT;
+  const double dT=1.0/static_cast<double>(NT);
   for(size_t i=0;i<=NT;i++)
-    Z.push_back(dT*i);
+    Z.push_back(dT*static_cast<double>(i));
   
   return;
 }
@@ -236,4 +236,4 @@ Mesh::write(std::ostream& OX) const
   return;
 }
 
-}   // NAMESPACE WeightSystem
+}   // NAMESPACE compSystem

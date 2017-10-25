@@ -3,7 +3,7 @@
  
  * File:   essBuild/SupplyBox.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,6 @@ SupplyBox::SupplyBox(const std::string& Key)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \param Opt :: optName
   */
 {}
 
@@ -286,7 +285,7 @@ SupplyBox::addExtraLayer(const attachSystem::LayerComp& LC,
   /*!
     Add extra Layer for a pre-mod or such
     \param LC :: LayerComp Point [pre-mod for example]
-    \parma lSideIndex :: Layer to track through
+    \param lSideIndex :: Layer to track through
    */
 {
   ELog::RegMethod RegA("SupplyBox","addExtraLayer");

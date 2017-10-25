@@ -2,8 +2,8 @@
   CombLayer : MCNP(X) Input builder
  
  * File:   test/testLog.cxx
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,18 +107,26 @@ testLog::testENDL()
   ELog::RegMethod RegA("testLog","testENDL");
 
   ELog::EM.setTypeFlag(1);
-  ELog::EM<<"THIS output is in diagnostic mode"<<ELog::endDiag;
-  ELog::EM<<"THIS output is in basic mode"<<ELog::endBasic;
+  try
+    {
+      ELog::EM<<"THIS output is in diagnostic mode"<<ELog::endDiag;
+      ELog::EM<<"THIS output is in basic mode"<<ELog::endBasic;
+      ELog::EM<<"THIS output is in debug mode"<<ELog::endDebug;
+      ELog::EM<<"THIS output is in crit mode"<<ELog::endCrit;
+      ELog::EM<<"THIS output is in warning mode"<<ELog::endWarn;
+      ELog::EM<<"THIS output is in trace mode"<<ELog::endTrace;
+      ELog::EM<<"THIS long output is in trace mode"<<ELog::endTrace;
+      //      ELog::EM<<"THIS output is in Error mode"<<ELog::endErr;
+    }	    
+  catch (ColErr::ExitAbort& EA)
+    {
+      ELog::EM<<"Success catching EA:"<<ELog::endDiag;
+    }
+  ELog::EM<<"NEW LINE\nSPLIT "<<std::endl;
+  ELog::EM.diagnostic();
+  
   ELog::EM<<"THIS output is in debug mode"<<ELog::endDebug;
-  ELog::EM<<"THIS output is in crit mode"<<ELog::endCrit;
-  ELog::EM<<"THIS output is in Error mode"<<ELog::endErr;
-  ELog::EM<<"THIS output is in warning mode"<<ELog::endWarn;
-  ELog::EM<<"THIS output is in trace mode"<<ELog::endTrace;
-  ELog::EM<<" NEW LINE "<<std::endl;
-  ELog::EM.error();
-  ELog::EM<<"THIS output is in debug mode ::3 EMPTY LINE:"<<ELog::endDebug;
-  ELog::EM<<ELog::endDebug<<ELog::endDebug;
   ELog::EM<<ELog::endDebug;
-  ELog::EM<<"END of  ::3 EMPTY LINE:"<<ELog::endDebug;
+  ELog::EM<<"END of EMPTY LINE:"<<ELog::endDebug;
   return 0;
 }

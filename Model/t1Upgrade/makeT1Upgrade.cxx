@@ -3,7 +3,7 @@
  
  * File:   t1Upgrade/makeT1Upgrade.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 
 #include <boost/format.hpp>
 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -66,6 +65,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "LayerComp.h"
@@ -287,7 +287,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1CylTarget";
     }    
@@ -297,7 +297,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
       OR.addObject("t1CylTarget",TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(3),0);
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -312,7 +312,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Inner";
     }    
@@ -324,7 +324,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       /// Target
 
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<ts1System::targCoolant> 
@@ -341,7 +341,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1BlockTarget";
     }    
@@ -351,7 +351,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Cannelloni";
     }    
@@ -538,7 +538,7 @@ makeT1Upgrade::buildWaterPipe(Simulation& System,
    */
 {
   ELog::RegMethod RegA("makeT1Upgrade","buildWaterPipe");
-
+  return;
   WaterPipeObj->setAngleSeg(12);
   WaterPipeObj->setOption("");   // no modifiecation to the variable name
   WaterReturnObj->setAngleSeg(12);
@@ -636,7 +636,7 @@ makeT1Upgrade::buildH2Mod(Simulation& System,
 
 	H2PMod=std::shared_ptr<ts1System::HPreMod>
 	  (new HPreMod("HPreMod"));      
-	H2PMod->createAll(System,*H2Mod,1);
+	H2PMod->createAll(System,*H2Mod,2);
 	RefObj->addToInsertControl(System,*H2PMod,*H2PMod);
 
 	return "H2Mod";
@@ -729,8 +729,8 @@ makeT1Upgrade::build(Simulation* SimPtr,
 	BulkObj->addInsertCell(voidCell);  
 	BulkObj->createAll(*SimPtr,IParam,*VoidObj);
 
-	MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-	MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+	MonoTopObj->createAll(*SimPtr,3,*VoidObj,*BulkObj);
+	MonoBaseObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
 	voidCell=VoidObj->getVoidCell();
     }
   else
@@ -783,7 +783,7 @@ makeT1Upgrade::build(Simulation* SimPtr,
     attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2PMod);  
 
   // FLIGHTLINES:
-  const std::string Out=RefObj->getLinkComplement(2);
+  const std::string Out=RefObj->getSignedLinkString(-3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
   RefObj->addToInsertChain(TriFLA->getCC("outer"));

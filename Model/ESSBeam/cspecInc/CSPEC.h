@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CSPEC.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
 }
 
 namespace essSystem
@@ -75,18 +75,25 @@ class CSPEC : public attachSystem::CopiedComp
   /// Elliptic focus in bulkshield [m5]
   std::shared_ptr<beamlineSystem::GuideLine> FocusA;
 
-  // Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeA;
+  // Vac pipe in gamma shield
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
   /// Elliptic guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
-  // Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
-  /// Elliptic guide from 5.5 to 6metre
-  std::shared_ptr<beamlineSystem::GuideLine> BendB;
+  /// Vac pipe to 18m
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
+  /// Direct beamguide to 18m
+  std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
+  /// First Chopper unit [BW1]
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  /// First BW blade
+  std::shared_ptr<constructSystem::DiskChopper> BWDiskA;
+
+  /// Vac pipe to bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  /// S-Bender first section [in bunker]
+  std::shared_ptr<beamlineSystem::GuideLine> BendD;
   
  public:
   

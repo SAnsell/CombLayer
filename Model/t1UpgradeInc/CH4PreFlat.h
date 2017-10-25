@@ -3,7 +3,7 @@
  
  * File:   t1UpgradeInc/CH4PreFlat.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,14 +39,6 @@ class CH4PreFlat : public CH4PreModBase
 {
  private:
   
-  
-  double xStep;           ///< Offset relative to origin 
-  double yStep;           ///< Offset relative to origin 
-  double zStep;           ///< Offset relative to origin 
-
-  double xyAngle;         ///< Offset relative to origin 
-  double zAngle;          ///< Offset relative to origin 
-
   double width;             ///< Side of water thickness
   double height;              ///< Total height
   double depth;             ///< Total height
@@ -61,9 +53,9 @@ class CH4PreFlat : public CH4PreModBase
   void getConnectPoints(const attachSystem::FixedComp&,
 			const size_t);
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
-  void createSurfaces(const attachSystem::FixedComp&,const size_t);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
   
@@ -84,7 +76,7 @@ class CH4PreFlat : public CH4PreModBase
 
   
   virtual void createAll(Simulation&,const attachSystem::FixedComp&,
-			 const size_t,const size_t);
+			 const long int,const long int);
 
 };
 

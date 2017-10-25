@@ -3,7 +3,7 @@
  
  * File:   source/PointSource.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -118,16 +118,19 @@ PointSource::~PointSource()
 
 int
 PointSource::populateEFile(const std::string& FName,
-			   const int colE,const int colP)
+			   const int colE,
+			   const int colP)
   /*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
     weight onto the table since we are using a
     \param FName :: filename 
+    \param colE :: column for energy points
+    \param colP :: column for weight/prob points
     return 0 on failure / 1 on success
   */
 {
-  ELog::RegMethod RegA("PointSource","loadEnergy");
+  ELog::RegMethod RegA("PointSource","populateEFile");
 
   const int eCol(colE);
   const int iCol(colP);
@@ -237,7 +240,7 @@ PointSource::populate(const FuncDataBase& Control)
       double E=Control.EvalDefVar<double>(keyName+"EStart",1.0); 
       const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",0); 
       const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",1.0); 
-      const double EStep((EEnd-E)/(nE+1));
+      const double EStep((EEnd-E)/static_cast<double>(nE+1));
       for(size_t i=0;i<nE;i++)
 	{
 	  Energy.push_back(E);
@@ -332,8 +335,9 @@ PointSource::createAll(const FuncDataBase& Control,
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param souceCard :: Source Term
+    \param FC :: Fixed point to get orientation from
     \param linkIndex :: link Index						
+    \param souceCard :: Source Term
    */
 {
   ELog::RegMethod RegA("PointSource","createAll<FC,linkIndex>");

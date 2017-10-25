@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   epbBuildInc/makeEPB.h
+ * File:   bnctBuildInc/makeBNCT.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
   \namespace bnctSystem
   \brief General BNCT stuff
   \version 1.0
-  \date September 2013
+  \date September 2015
   \author S. Ansell
 */
 
@@ -37,7 +37,7 @@ namespace bnctSystem
     \class makeBNCT
     \version 1.0
     \author S. Ansell
-    \date December 2013
+    \date December 2015
     \brief Top level builder for the whole BNCT model
   */
   
@@ -45,7 +45,7 @@ class makeBNCT
 {
  private:
 
-  std::shared_ptr<DiscTarget> targetObj;///< target object
+  std::shared_ptr<DiscTarget> targetObj;    ///< target object
   
  public:
   

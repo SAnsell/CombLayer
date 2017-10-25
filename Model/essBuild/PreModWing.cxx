@@ -3,7 +3,7 @@
  
  * File:   essBuild/PreModWing.cxx
  *
- * Copyright (c) 2015-2017 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,8 +98,9 @@ PreModWing::PreModWing(const std::string& Key) :
 {}
 
 PreModWing::PreModWing(const PreModWing& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),attachSystem::CellMap(A),
-  
+  attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),
   innerHeight(A.innerHeight),outerHeight(A.outerHeight),
   innerDepth(A.innerDepth),outerDepth(A.outerDepth),
@@ -366,7 +367,9 @@ PreModWing::createObjects(Simulation& System)
       Out=ModelSupport::getComposite(SMap,modIndex," -9 1006 ");
       Out+=midSurf.display();
       Out+=Zone;
+	    
       Out+=topSurf.display();
+	    
       Out+=getLayerZone(i);
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat[i],0.0,Out));
 

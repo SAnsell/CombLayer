@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/TS2target.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -84,8 +85,7 @@ namespace TMRSystem
 TS2target::TS2target(const std::string& Key) :
   constructSystem::TargetBase(Key,3),
   protonIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(protonIndex+1),populated(0),
-  frontPlate(0),backPlate(0)
+  cellIndex(protonIndex+1),frontPlate(0),backPlate(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -95,9 +95,8 @@ TS2target::TS2target(const std::string& Key) :
 TS2target::TS2target(const TS2target& A) : 
   constructSystem::TargetBase(A),
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
-  populated(A.populated),frontPlate(A.frontPlate),
-  backPlate(A.backPlate),xOffset(A.xOffset),yOffset(A.yOffset),
-  zOffset(A.zOffset),mainLength(A.mainLength),coreRadius(A.coreRadius),
+  frontPlate(A.frontPlate),
+  backPlate(A.backPlate),mainLength(A.mainLength),coreRadius(A.coreRadius),
   surfThick(A.surfThick),wSphDisplace(A.wSphDisplace),
   wSphRadius(A.wSphRadius),wPlaneCut(A.wPlaneCut),
   wPlaneAngle(A.wPlaneAngle),cladThick(A.cladThick),
@@ -135,12 +134,8 @@ TS2target::operator=(const TS2target& A)
     {
       constructSystem::TargetBase::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
-      xOffset=A.xOffset;
-      yOffset=A.yOffset;
-      zOffset=A.zOffset;
       mainLength=A.mainLength;
       coreRadius=A.coreRadius;
       surfThick=A.surfThick;
@@ -203,7 +198,7 @@ TS2target::~TS2target()
 {}
 
 void
-TS2target::populate(const Simulation& System)
+TS2target::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param System :: Simulation to use
@@ -211,11 +206,8 @@ TS2target::populate(const Simulation& System)
 {
   ELog::RegMethod RegA("TS2target","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  xOffset=Control.EvalVar<double>(keyName+"XOffset");
-  yOffset=Control.EvalVar<double>(keyName+"YOffset");
-  zOffset=Control.EvalVar<double>(keyName+"ZOffset");
+  attachSystem::FixedOffset::populate(Control);
+  
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
   surfThick=Control.EvalVar<double>(keyName+"SurfThick");
@@ -266,7 +258,6 @@ TS2target::populate(const Simulation& System)
   
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
 
-  populated=1;
   return;
 }
 
@@ -280,7 +271,7 @@ TS2target::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("TS2target","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xOffset,yOffset,zOffset);
+  applyOffset();
   
   return;
 }
@@ -696,32 +687,6 @@ TS2target::addInnerBoundary(attachSystem::ContainedComp& CC) const
   return;
 }
 
-void
-TS2target::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("TS2target","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();
-      
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	  (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,2);  // 2 => front face of target
-    }
-  return;
-}
 
 
 void
@@ -738,7 +703,7 @@ TS2target::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("TS2target","addProtonLine");
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
   PLine->createAll(System,*this,3,refFC,index);
-  createBeamWindow(System);
+  createBeamWindow(System,-3);
   System.populateCells();
   System.createObjSurfMap();
   return;
@@ -755,14 +720,13 @@ TS2target::createAll(Simulation& System,const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("TS2target","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System);
   createNoseConeObjects(System);
   layerProcess(System);
   createLinks();
-  createBeamWindow(System);
   insertObjects(System);
   //  addInnerBoundary()
 

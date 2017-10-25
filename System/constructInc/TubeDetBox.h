@@ -60,6 +60,7 @@ class TubeDetBox : public attachSystem::ContainedComp,
   int detMat;                   ///< Detector material
   int wallMat;                  ///< Wall material
   int outerMat;                 ///< Outer material
+  int filterMat;                 ///< Outer material
 
   size_t nDet;                  ///< Number of detectors
   std::vector<Geometry::Vec3D> DPoints;  ///< Centre points

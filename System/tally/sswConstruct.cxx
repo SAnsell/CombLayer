@@ -3,7 +3,7 @@
  
  * File:   tally/sswConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,14 +78,12 @@
 
 #include "sswTally.h" 
 #include "TallySelector.h" 
-#include "basicConstruct.h" 
 #include "sswConstruct.h" 
 
 namespace tallySystem
 {
 
-sswConstruct::sswConstruct() :
-  basicConstruct()
+sswConstruct::sswConstruct() 
   /// Constructor
 {}
 
@@ -150,10 +148,16 @@ sswConstruct::processSSW(Simulation& System,
         IParam.getValueError<std::string>("tally",Index,2,eMess);
       const std::string surfObj=
         IParam.getValueError<std::string>("tally",Index,3,eMess);
+      const size_t index=
+        IParam.getDefValue<size_t>(0,"tally",Index,4);
+
       const attachSystem::SurfMap* SMPtr=
         OR.getObjectThrow<attachSystem::SurfMap>(SMName,"SurfMap");
-      
-      SList=SMPtr->getSurfs(surfObj);
+
+      if (index)
+	SList.push_back(SMPtr->getSurf(surfObj,index-1));
+      else
+	SList=SMPtr->getSurfs(surfObj);
     }
   else
     throw ColErr::InContainerError<std::string>(PType,"PType not known");
@@ -174,8 +178,8 @@ sswConstruct::writeHelp(std::ostream& OX) const
 {
   OX<<"SSW tally :\n"
     "Format :: keyWord components \n"
-    " -- particle [particle string] \n"
-    " -- object FCname linkSurf \n";
+    " -- object ObjectName linkPt \n"
+    " -- surfMap ObjectName surfName [index] \n";
   
   return;
 }

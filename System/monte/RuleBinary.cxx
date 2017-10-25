@@ -3,7 +3,7 @@
  
  * File:   monte/RuleBinary.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -286,15 +286,14 @@ RuleBinary::createTree() const
   std::vector<Rule*> EPIrules;
   Rule* tRule; // Tempory Rule space
 
-  std::vector<BnId>::const_iterator vc;
-  for(vc=EPI.begin();vc!=EPI.end();vc++)
+  for(const BnId& epi : EPI)
     {
       // Loop over each rule to extract the 
       // intersection components
       std::vector<Rule*> Sitems;      // place for surface items
-      for(size_t i=0;i<vc->Size();i++)
+      for(size_t i=0;i<epi.Size();i++)
 	{
-	  int status= (*vc)[i];
+	  const int status= epi[i];
 	  if (status)
 	    {
 	      SurfPoint* sRule=new SurfPoint();
@@ -302,6 +301,7 @@ RuleBinary::createTree() const
 	      Sitems.push_back(sRule);
 	    }
 	}
+
       if (Sitems.size()==1)
 	EPIrules.push_back(Sitems.front());
       else if (Sitems.size()>1)
@@ -312,13 +312,15 @@ RuleBinary::createTree() const
 	  EPIrules.push_back(tRule);
 	}
     }
+
   // Join up all the EPI rule groups
   if (EPIrules.size()==0)       // No work/no rule
     return 0;
   if (EPIrules.size()==1)
     return EPIrules.front();
   tRule=new Union(EPIrules[0],EPIrules[1]);
-  for(unsigned si=2;si<EPIrules.size();si++)
+
+  for(size_t si=2;si<EPIrules.size();si++)
     tRule=new Union(tRule,EPIrules[si]);
   return tRule;
 }
@@ -357,6 +359,8 @@ RuleBinary::group()
     \returns number of PIs found.
   */
 {
+  ELog::RegMethod RegA("RuleBinary","group");
+  
   if (DNFobj.empty())   // no work to do return.
     return 0;
   // Note: need to store PI components separately
@@ -376,8 +380,8 @@ RuleBinary::group()
 
       Tmod.clear();                  // erase all at the start
       //set PI status to 1
-      for_each( Work.begin(),Work.end(),
-		std::bind2nd(std::mem_fun_ref(&BnId::setPI),1) );
+      for(BnId& wItem : Work)
+	wItem.setPI(1);
 
       //Collect into pairs
       std::vector<BnId>::iterator vc;
@@ -400,9 +404,13 @@ RuleBinary::group()
 	    }
 	}	
 
-      for(vc=Work.begin();vc!=Work.end();vc++)
-	if (vc->PIstatus()==1)
-	  Comp.push_back(*vc);
+      for(const BnId& wItem : Work)
+	if (wItem.PIstatus()==1)
+	  {
+	    ELog::EM<<"Comp == "<<wItem<<ELog::endDiag;
+	    Comp.push_back(wItem);
+	  }
+      
       // Now make unique:
       Work=Tmod;
     } while (!Tmod.empty());
@@ -421,7 +429,7 @@ RuleBinary::makeEPI(std::vector<BnId>& PIform)
   */
 {
   ELog::RegMethod RegA("RuleBinary","makeEPI");
-
+  ELog::EM<<"PIFormt == "<<PIform.size()<<"++"<<ELog::endDiag;
   const int debug(0);
   if (PIform.empty()) return 0;
   EPI.clear(); 
@@ -525,7 +533,8 @@ RuleBinary::makeEPI(std::vector<BnId>& PIform)
   // the remaining table.
   
   // First Make a new matrix for speed.  Useful ???
-  Geometry::MatrixBase<int> Cmat(PIactive.size(),DNFactive.size());  // corrolation matrix
+  Geometry::MatrixBase<int>
+    Cmat(PIactive.size(),DNFactive.size());  // corrolation matrix
   size_t cm(0);
   for(px=PIactive.begin();px!=PIactive.end();px++)
     {
@@ -588,27 +597,27 @@ RuleBinary::write(std::ostream& OX) const
   std::vector<BnId>::const_iterator vc;
   int cnt(0);
   OX<<"DNF: ";
-  for(vc=DNFobj.begin();vc!=DNFobj.end();vc++)
+  for(const BnId& id : DNFobj)
     {
       if (cnt)
 	{
 	  OX<<" ^ ";
 	  if (!(cnt%4)) OX<<std::endl<<"     ";
 	}
-      OX<<vc->display();
+      OX<<id.display();
       cnt++;
     }
   OX<<std::endl;
   cnt=0;
   OX<<"EPI: ";
-  for(vc=EPI.begin();vc!=EPI.end();vc++)
+  for(const BnId& epi : EPI)
     {
       if (cnt)
 	{
 	  OX<<" ^ ";
 	  if (!(cnt%4)) OX<<std::endl<<"     ";
 	}
-      OX<<vc->display();
+      OX<<epi.display();
       cnt++;
     }
   return;

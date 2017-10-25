@@ -3,7 +3,7 @@
  
  * File:   test/testHeadRule.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -182,14 +182,14 @@ testHeadRule::testAddInterUnion()
 
   createSurfaces();
 
-  typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 ","1 -2"));
-  Tests.push_back(TTYPE("3 -4 ","1 -2 3 4"));
-  Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
-  Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2 ","-2 1","-2 1"),
+      TTYPE("3 -4 ","-2 -4 3 1","(( -2 1 ) : ( -4 3 ))"),
+      TTYPE("5 -6 ","-2 -4 3 1 -6 5","(( -2 1 ) : ( -6 5 ) : ( -4 3 ))"), 
+    };
   
-  std::vector<TTYPE>::const_iterator tc;
   HeadRule A;
   HeadRule B;
 
@@ -201,9 +201,23 @@ testHeadRule::testAddInterUnion()
 	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)<<ELog::endDebug;
 	  return -1;
 	}
-      A.addIntersection(tmp.getTopRule());
-      B.addUnion(tmp.getTopRule());
-      ELog::EM<<"A == "<<A.display()<<ELog::endDebug;
+      A.addIntersection(tmp);
+      B.addUnion(tmp);
+
+      const std::string& IStr=std::get<1>(tc);
+      const std::string& UStr=std::get<2>(tc);
+      if (StrFunc::fullBlock(B.display())!=UStr ||
+	  StrFunc::fullBlock(A.display())!=IStr)
+	{
+	  ELog::EM<<"Failed on test:"<<ELog::endDiag;
+	  ELog::EM<<"A   == "<<A.display()<<ELog::endDiag;
+	  ELog::EM<<"AEX == "<<IStr<<"\n"<<ELog::endDiag;
+	  
+	  ELog::EM<<"B   == "<<B.display()<<ELog::endDiag;
+	  ELog::EM<<"BEX == "<<UStr<<ELog::endDiag;
+	  return -1;
+	}
+	    
     }
   return 0;
 }
@@ -263,16 +277,18 @@ testHeadRule::testEqual()
 
   // level : NItems : testItem
   typedef std::tuple<std::string,std::string,bool> TTYPE;
-  std::vector<TTYPE> Tests;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2 (8001:8002) -8003 -8004 5 -6",
+	    "-8004 -8003 -2 -6 ( 8001 : 8002 ) 5 1 ",1),
+      TTYPE("1 -2 3 -4 (5:-6) ","5 : -6",0),
+      TTYPE("1","4",0),
+      TTYPE("4","4",1),
+      TTYPE("3 4","4",0),
+      TTYPE("3 4","(3:4)",0)
+    };
 
-  Tests.push_back(TTYPE("1 -2 (8001:8002) -8003 -8004 5 -6",
-			"-8004 -8003 -2 -6 ( 8001 : 8002 ) 5 1 ",1));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ","5 : -6",0));
-  Tests.push_back(TTYPE("1","4",0));
-  Tests.push_back(TTYPE("4","4",1));
-  Tests.push_back(TTYPE("3 4","4",0));
-  Tests.push_back(TTYPE("3 4","(3:4)",0));
-  
+  int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       HeadRule tmpA;
@@ -289,7 +305,7 @@ testHeadRule::testEqual()
       const bool Res=(tmpA==tmpB);
       if (Res!=std::get<2>(tc))
 	{
-	  ELog::EM<<"Test Failed "<<ELog::endDiag;
+	  ELog::EM<<"Test Failed: "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"A == "<<tmpA.display()<<ELog::endDiag;
 	  ELog::EM<<"B == "<<tmpB.display()<<ELog::endDiag;
 
@@ -297,6 +313,7 @@ testHeadRule::testEqual()
 		  <<Res<<ELog::endDiag;
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -307,8 +324,9 @@ int
 testHeadRule::testFindNodes()
   /*!
     Check the validity of a head rule level 
+    to find nodes withing the system
     \return 0 :: success / -ve on error
-   */
+  */
 {
   ELog::RegMethod RegA("testHeadRule","testFindNodes");
 
@@ -316,13 +334,15 @@ testHeadRule::testFindNodes()
 
   // level : NItems : testItem
   typedef std::tuple<std::string,size_t,size_t,size_t,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,5,4,"5 : -6"));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",1,2,1,"5"));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,5,2,"-4"));
-  Tests.push_back(TTYPE("-4",0,1,0,"-4"));
-  
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2 3 -4 (5:-6) ",0,5,4,"5 : -6"),
+      TTYPE("1 -2 3 -4 (5:-6) ",1,2,1,"5"),
+      TTYPE("1 -2 3 -4 (5:-6) ",0,5,3,"-4"),
+      TTYPE("-4",0,1,0,"-4")
+    };
 
+  int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
@@ -332,19 +352,29 @@ testHeadRule::testFindNodes()
 		  <<ELog::endDebug;
 	  return -1;
 	}
-      std::vector<const Rule*> Res=
-	tmp.findNodes(std::get<1>(tc));
+      std::vector<const Rule*> Res=tmp.findNodes(std::get<1>(tc));
+      
       if (Res.size()!=std::get<2>(tc) ||
 	  Res[std::get<3>(tc)]->display()!=std::get<4>(tc))
 	{
-	  ELog::EM<<"Test Failed "<<ELog::endDiag;
-	  ELog::EM<<"A == "<<tmp.display()<<ELog::endDebug;
-	  ELog::EM<<"N == "<<Res.size()<<ELog::endDebug;
-	  for(const Rule* SPtr : Res)
-	    ELog::EM<<SPtr->display()<<ELog::endDebug;
+	  ELog::EM<<"Test Failed: "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Proc String == "<<tmp.display()<<ELog::endDiag;
+	  ELog::EM<<"NRes["<<std::get<2>(tc)<<"]  == "<<Res.size()<<ELog::endDiag;
+	  ELog::EM<<ELog::endDiag;
+
 	  ELog::EM<<"Res == "<<Res[std::get<3>(tc)]->display()<<ELog::endDiag;
+	  for(const Rule* SPtr : Res)
+	    ELog::EM<<SPtr->display()<<" ";
+	  ELog::EM<<ELog::endDiag;
+
+	  ELog::EM<<"RES["<<std::get<3>(tc)<<"] == "<<
+	    Res[std::get<3>(tc)]->display()<<" == "<<
+	    std::get<4>(tc)<<ELog::endDiag;
+	
+	  
 	  return -1;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -396,7 +426,8 @@ testHeadRule::testFindTopNodes()
 int
 testHeadRule::testGetComponent()
   /*!
-    Check the validity of a head rule level 
+    Check the extraction of an indexed compponnent at a given level within
+    a HeadRule.
     \return 0 :: success / -ve on error
    */
 {
@@ -405,16 +436,15 @@ testHeadRule::testGetComponent()
   createSurfaces();
 
   typedef std::tuple<std::string,size_t,size_t,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,5,"(5 : -6)"));
-  Tests.push_back(TTYPE("1 -2 3 -4 (5:-6) ",0,4,"-4"));
-  Tests.push_back(TTYPE("(-6 : 7 : 35 ) -208 207 "
-			"-206 -205 204 -203 202 201 ( -16 : -97 : 55 ) ",
-			0,1,"(-6 : 7 : 35)"));
-  Tests.push_back(TTYPE("(-6 : 7 : 35 ) -208 207 "
-			"-206 -205 204 -203 202 201 ( -16 : -97 : 55 ) ",
-			0,2,"-208"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2 3 -4 (5:-6) ",0,5,"(5 : -6)"),
+      TTYPE("1 -2 3 -4 (5:-6) ",0,4,"-4"),
+      TTYPE("(-6 : 7 : 35 ) -208 207 -206 -205 204 -203 202 201 ( -16 : -97 : 55 ) ", 0,1,"(-6 : 7 : 35)"),
+      TTYPE("(-6 : 7 : 35 ) -208 207 -206 -205 204 -203 202 201 ( -16 : -97 : 55 ) ",0,2,"-208")
+    };
 
+  int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       HeadRule tmp;
@@ -425,12 +455,17 @@ testHeadRule::testGetComponent()
 	  return -1;
 	}
       HeadRule ARes=tmp.getComponent(std::get<1>(tc),std::get<2>(tc));
-      const std::string AStr=ARes.display();
+      const std::string AStr=StrFunc::fullBlock(ARes.display());
       if (AStr!=std::get<3>(tc))
 	{
-	  ELog::EM<<"A == "<<ARes.display()<<ELog::endDebug;
-	  return -1;
+	  ELog::EM<<"Test Failed: "<<cnt<<ELog::endDiag;
+	
+	  ELog::EM<<"AResult == "<<AStr<<ELog::endDiag;
+	  ELog::EM<<"Expect  == "<<std::get<3>(tc)<<ELog::endDiag;
+	  
+	  return -2;
 	}
+      cnt++;
     }
   return 0;
 }
@@ -711,27 +746,39 @@ testHeadRule::testRemoveSurf()
 
   createSurfaces();
 
-  typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("1 -2 ","1 -2"));
-  Tests.push_back(TTYPE("3 -4 ","1 -2 3 4"));
-  Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
-  Tests.push_back(TTYPE("5 -6 ","1 -2 3 4"));
+  typedef std::tuple<std::string,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2 -3 4 -5 6",-5,"1 -2 -3 4 6"),
+      TTYPE("1 -2 -3 4 -5 6",5,"1 -2 -3 4 -5 6")
+    };
   
   HeadRule A;
   HeadRule B;
 
+  int cnt(1);
   for(const TTYPE& tc : Tests)
     {
-      HeadRule tmp;
-      if (!tmp.procString(std::get<0>(tc)))
+      if (!A.procString(std::get<0>(tc)))
 	{
-	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)<<ELog::endDebug;
+	  ELog::EM<<"Failed to set tmp :"<<std::get<0>(tc)<<ELog::endDiag;
 	  return -1;
 	}
-      A.addIntersection(tmp.getTopRule());
-      B.addUnion(tmp.getTopRule());
-      ELog::EM<<"A == "<<A.display()<<ELog::endDebug;
+
+      if (!B.procString(std::get<2>(tc)))
+	{
+	  ELog::EM<<"Failed to set B :"<<std::get<2>(tc)<<ELog::endDiag;
+	  return -2;
+	}
+      A.removeTopItem(std::get<1>(tc));
+      if (B!=A)
+	{
+	  ELog::EM<<"Test Failed:"<<cnt<<ELog::endDiag;
+	  ELog::EM<<"A:"<<A.display()<<ELog::endDiag;
+	  ELog::EM<<"B:"<<B.display()<<ELog::endDiag;
+	  return -3;
+	}
+      cnt++;
     }
   return 0;
 }

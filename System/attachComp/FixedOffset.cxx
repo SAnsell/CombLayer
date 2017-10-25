@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffset.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,11 +120,21 @@ FixedOffset::populate(const FuncDataBase& Control)
   // defaults used to fixedoffset can be used in a setting class.
   preXYAngle=Control.EvalDefVar<double>(keyName+"PreXYAngle",preXYAngle);
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
+
+  const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
+    (keyName+"CentOffset",Geometry::Vec3D(0,0,0));
+  
+  xStep=CentOffset.X();
+  yStep=CentOffset.Y();
+  zStep=CentOffset.Z();
+
   xStep=Control.EvalDefVar<double>(keyName+"XStep",xStep);
   yStep=Control.EvalDefVar<double>(keyName+"YStep",yStep);
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zStep);
+  
   xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",xyAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
+  
   return;
   
 }
@@ -141,8 +151,17 @@ FixedOffset::populate(const std::string& baseName,
   ELog::RegMethod RegA("FixedOffset","populate(baseName)");
 
   // defaults used to fixedoffset can be used in a setting class.
-  preXYAngle=Control.EvalDefPair<double>(keyName,baseName,"PreXYAngle",preXYAngle);
+  preXYAngle=Control.EvalDefPair<double>(keyName,baseName,
+					 "PreXYAngle",preXYAngle);
   preZAngle=Control.EvalDefPair<double>(keyName,baseName,"PreZAngle",preZAngle);
+
+  const Geometry::Vec3D CentOffset=Control.EvalDefPair<Geometry::Vec3D>
+    (keyName,baseName,"CentOffset",Geometry::Vec3D(0,0,0));
+  xStep=CentOffset.X();
+  yStep=CentOffset.Y();
+  zStep=CentOffset.Z();
+
+
   xStep=Control.EvalDefPair<double>(keyName,baseName,"XStep",xStep);
   yStep=Control.EvalDefPair<double>(keyName,baseName,"YStep",yStep);
   zStep=Control.EvalDefPair<double>(keyName,baseName,"ZStep",zStep);

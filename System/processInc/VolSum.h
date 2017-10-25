@@ -3,7 +3,7 @@
  
  * File:   processInc/VolSum.h
 *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class VolSum
   
   double fullVol;                           ///< Full volume  
   double totalDist;                         ///< Total distance
-  int nTracks;                              ///< Number of full tracks
+  size_t nTracks;                           ///< Number of full tracks
    
   tvTYPE tallyVols;                         ///< TallyNum:Volumes
 

@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/LinkSupport.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,11 @@ int getAttachPointWithXYZ(const std::string&,const std::string&,
 size_t getPoint(const std::vector<std::string>&,
 		const size_t,Geometry::Vec3D&);
  
+void
+calcBoundaryLink(attachSystem::FixedComp&,const size_t,
+		 const HeadRule&,const Geometry::Vec3D&,
+		 const Geometry::Vec3D&);
+
 }
 
 #endif

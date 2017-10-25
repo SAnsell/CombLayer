@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/varList.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class varList
 
   int varNum;                              ///< Current max var
 
-  varStore varName;    ///< Var by name
+  varStore varName;                        ///< Var by name
   std::map<int,FItem*> varItem;            ///< Var by number
 
   void deleteMem();

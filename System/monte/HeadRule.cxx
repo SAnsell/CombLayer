@@ -86,10 +86,11 @@ HeadRule::HeadRule(const std::string& RuleStr) :
   HeadNode(0)
   /*!
     Creates a new rule
+    \param RuleStr :: rule in MCNP format
   */
 {
   ELog::RegMethod RegA("HeadRule","HeadRule(string)");
-  if (!procString(RuleStr))
+  if (!RuleStr.empty() && !procString(RuleStr))
     throw ColErr::InvalidLine(RuleStr,"RuleStr",0);
 }
 
@@ -97,6 +98,7 @@ HeadRule::HeadRule(const Rule* RPtr) :
   HeadNode((RPtr) ? RPtr->clone() : 0)
   /*!
     Creates a new rule
+    \param RPtr :: Rule to clone as a top rule
   */
 {}
 
@@ -613,7 +615,7 @@ HeadRule::isValid(const std::map<int,int>& M)const
 }
 
 bool
-HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S)const
+HeadRule::isDirectionValid(const Geometry::Vec3D& Pt,const int S) const
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
@@ -1094,7 +1096,7 @@ HeadRule::findNodes(const size_t NL) const
   /*!
     Return a head rule nodes at NL level
     \param NL :: Level
-    \return nodex
+    \return vector of nodes at level NL
   */
 {
   ELog::RegMethod RegA("HeadRule","findNodes");
@@ -1152,7 +1154,7 @@ std::vector<const Rule*>
 HeadRule::findTopNodes() const
   /*!
     Return a head rule nodes at first level
-    \return headnotes
+    \return head-nodes
   */
 {
   ELog::RegMethod RegA("HeadRule","findTopNodes");
@@ -1517,35 +1519,37 @@ HeadRule::displayVec(std::vector<Token>& TK) const
   return;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const int SN) 
   /*!
     Add a rule in addition
     \param SN :: surface number
-   */
+    \return Joined HeadRule
+  */
 {
-  addIntersection(StrFunc::makeString(SN));
-  return;
+  return addIntersection(StrFunc::makeString(SN));
 }
 
 
-void
+HeadRule&
 HeadRule::addUnion(const int SN) 
   /*!
     Add a rule in additional 
     \param SN :: Surface number
+    \return Joined HeadRule
    */
 {
   addUnion(StrFunc::makeString(SN));
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const std::string& RStr) 
   /*!
     Add a rule in addition
     \param RStr :: Rule string
-   */
+    \return HeadRule item
+  */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection(string)");
   if (!RStr.empty())
@@ -1556,14 +1560,15 @@ HeadRule::addIntersection(const std::string& RStr)
       else
 	ELog::EM<<"Failed on string :"<<RStr<<ELog::endErr;
     }
-  return;
+  return *this; 
 }
 
-void
+HeadRule&
 HeadRule::addUnion(const std::string& RStr) 
   /*!
     Add a rule in addition [unio]
     \param RStr :: Rule string
+    \return Joined HeadRule
    */
 {
   ELog::RegMethod RegA("HeadRule","addUnion(string)");
@@ -1572,88 +1577,86 @@ HeadRule::addUnion(const std::string& RStr)
     addUnion(A.getTopRule());
   else
     ELog::EM<<"Failed on string :"<<RStr<<ELog::endErr;
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const HeadRule& AHead) 
   /*!
     Add a rule in addition
     \param AHead :: Otehr head rule
-   */
+    \return Joined HeadRule
+  */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection<HeadRule>");
-  if (!AHead.HeadNode) return;
 
-  // This is empty
-  if (!HeadNode)
+  if (AHead.HeadNode)
     {
-      HeadNode=AHead.HeadNode->clone();
-      return;
+      if (!HeadNode)  // Special case: if this => empty
+	HeadNode=AHead.HeadNode->clone();
+      else
+	createAddition(1,AHead.getTopRule());
     }
-  createAddition(1,AHead.getTopRule());
-  return;
+  
+  return *this;
 }
 
-
-void
+HeadRule&
 HeadRule::addUnion(const HeadRule& AHead) 
   /*!
     Add a rule in addition
     \param AHead :: Other head rule
-   */
+    \return HeadRule item
+  */
 {
   ELog::RegMethod RegA("HeadRule","addUnion<HeadRule>");
-  if (!AHead.HeadNode) return;
-
-  // This is empty
-  if (!HeadNode)
+  
+  if (AHead.HeadNode)
     {
-      HeadNode=AHead.HeadNode->clone();
-      return;
+      if (!HeadNode)
+	HeadNode=AHead.HeadNode->clone();
+      else
+	createAddition(-1,AHead.getTopRule());
     }
-  createAddition(-1,AHead.getTopRule());
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addIntersection(const Rule* RPtr) 
   /*!
     Add a rule in addition
     \param RPtr :: Rule pointer
+    \return HeadRule item
    */
 {
   ELog::RegMethod RegA("HeadRule","addIntersection<Rule>");
-  if (!RPtr) return;
-
-  // This is empty
-  if (!HeadNode)
+  if (RPtr)
     {
-      HeadNode=RPtr->clone();
-      return;
+      if (!HeadNode)
+	HeadNode=RPtr->clone();
+      else
+	createAddition(1,RPtr);
     }
-  createAddition(1,RPtr);
-  return;
+  return *this;
 }
 
-void
+HeadRule&
 HeadRule::addUnion(const Rule* RPtr) 
   /*!
     Add a rule in addition
     \param RPtr :: Rule pointer
+    \return HeadRule item
    */
 {
   ELog::RegMethod RegA("HeadRule","addUnion");
-  if (!RPtr) return;
-
-  // This is empty
-  if (!HeadNode)
+  if (RPtr)
     {
-      HeadNode=RPtr->clone();
-      return;
+      if (!HeadNode)
+	HeadNode=RPtr->clone();
+      else
+	createAddition(-1,RPtr);
     }
-  createAddition(-1,RPtr);
-  return;
+  return *this;
 }
 
 void
@@ -1708,12 +1711,11 @@ int
 HeadRule::procSurface(const Geometry::Surface* SPtr) 
   /*!
     Process a rule as a HeadRule
-    \param SPTr :: Surface rule
+    \param SPtr :: Surface rule
     \returns 1 on success
   */
 {
   ELog::RegMethod RegA("HeadRule","procSurface");
-
 
   delete HeadNode;
   HeadNode=0;
@@ -1730,7 +1732,7 @@ int
 HeadRule::procRule(const Rule* RPtr) 
   /*!
     Process a rule as a HeadRule
-    \para RPTr :: Rule to add
+    \param RPtr :: Rule to add
     \returns 1 on success
   */
 {
@@ -1899,7 +1901,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     Calculate a track of a line to a change in state surface
     \param Org :: Origin of line
     \param Unit :: Direction of line
-    \param D :: Distance
+    \param D :: Distance travelled to surface
     \return exit surface
   */
 {
@@ -1910,10 +1912,10 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 
   const std::vector<const Geometry::Surface*> SurfList=
     this->getSurfaces();
-  std::vector<const Geometry::Surface*>::const_iterator vc;
-  for(vc=SurfList.begin();vc!=SurfList.end();vc++)
-    (*vc)->acceptVisitor(LI);
-    const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
+  for(const Geometry::Surface* SPtr : SurfList)
+    SPtr->acceptVisitor(LI);
+  
+  const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
 
@@ -1948,7 +1950,10 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 size_t
 HeadRule::calcSurfSurfIntersection(std::vector<Geometry::Vec3D>& Pts) const
   /*!
-    Calculate the surf-surf-surf intersecitons
+    Calculate the surf-surf-surf intersecitons for the whole headrule
+    Assuming triplet binding.
+    \param Pts :: points found
+    \return Number of points found 
    */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfSurfIntersection");
@@ -1992,7 +1997,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
     \param Unit :: Direction of line
     \param Pts :: Points
     \param SNum :: Surface number 
-    \return Number found
+    \return Number of points found
   */
 {
   ELog::RegMethod RegA("HeadRule","calcSurfIntersection");

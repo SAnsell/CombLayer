@@ -45,6 +45,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "LayerPlate.h"
@@ -300,7 +301,7 @@ FissionPlate::createSurfaces()
 
 void
 FissionPlate::createObjects(Simulation& System,
-		      const attachSystem::FixedComp& FC,
+			    const attachSystem::FixedComp& FC,
 			    const long int sideIndex)
 /*!
     Create all the objects
@@ -354,16 +355,17 @@ FissionPlate::createAll(Simulation& System,
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Fixed Component for origin
+    \param sideIndex :: Link point
   */
-    {
+{
   ELog::RegMethod RegA("FissionPlate","createAll");
 
- populate(System.getDataBase());
-  // populate(System);
- createUnitVector(FC,sideIndex);
- createSurfaces();
- createObjects(System,FC,sideIndex);
- insertObjects(System);
+  populate(System.getDataBase());
+  
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
+  createObjects(System,FC,sideIndex);
+  insertObjects(System);
 
   return;
 }

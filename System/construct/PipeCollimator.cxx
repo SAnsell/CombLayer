@@ -144,7 +144,7 @@ PipeCollimator::populate(const FuncDataBase& Control)
 
 void
 PipeCollimator::createUnitVector(const attachSystem::FixedComp& FC,
-			    const long int sideIndex)
+				 const long int sideIndex)
   /*!
     Create the unit vectors: Note only to construct front/back surf
     \param FC :: Centre point

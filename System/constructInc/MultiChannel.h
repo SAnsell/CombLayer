@@ -30,8 +30,8 @@ namespace constructSystem
     \class MultiChannel
     \version 1.0
     \author S. Ansell
-    \date June 2015
-    \brief Variable detemine hole type
+    \date January 2017
+    \brief Multichannel reflector in a guide component
   */
   
 class MultiChannel : public attachSystem::ContainedComp,

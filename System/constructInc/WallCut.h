@@ -3,7 +3,7 @@
  
  * File:   constructInc/WallCut.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace constructSystem
   Designed as a cutout of a wall to do gaps etc
 */
 
-class WallCut : public attachSystem::FixedComp,
+class WallCut : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp
 {
  private:
@@ -47,17 +47,10 @@ class WallCut : public attachSystem::FixedComp,
   const std::string baseName;   ///< Base name
 
   std::string insertKey;        ///< Insert cell name
-  
-  double xyAngle;               ///< Angle for offset coordinate rotation
-  double zAngle;                ///< Angle for offset coordinate rotation
-  
+    
   double height;                  ///< Height of the cut
   double width;                   ///< Width of the basic cut
   double length;                  ///< Length of basic cut
-  Geometry::Vec3D CPt;            ///< Centre point
-
-  double rotXY;                   ///< Rotation of cut direction
-  double rotZ;                    ///< Rotation of cut direction
 
   int mat;                        ///< Material  [typcially void]
   double matTemp;                 ///< Material Temp
@@ -67,8 +60,8 @@ class WallCut : public attachSystem::FixedComp,
 			const long int);
   void createSurfaces();
   void createObjects(Simulation&,const HeadRule&);
-
-
+  void createLinks(const HeadRule&);
+  
  public:
 
   WallCut(const std::string&,const size_t);

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/VOR.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ namespace constructSystem
   class Jaws;
   class DiskChopper;
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -64,6 +64,8 @@ class VOR : public attachSystem::CopiedComp
 {
  private:
 
+  /// Start at [0:Complete / 1:Mono Wall / 2:Cave ]
+  int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -84,7 +86,7 @@ class VOR : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
 
@@ -104,7 +106,7 @@ class VOR : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// FOC disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDisk;
   /// Collimator hole 
@@ -121,7 +123,7 @@ class VOR : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// FOC disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
   /// Collimator hole [front]
@@ -148,14 +150,24 @@ class VOR : public attachSystem::CopiedComp
 
   
   void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
+  void buildDetectorArray(Simulation&,const attachSystem::FixedComp&,
+			  const long int,const int);
+
  public:
   
   VOR(const std::string&);
   VOR(const VOR&);
   VOR& operator=(const VOR&);
   ~VOR();
-  
+
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

@@ -3,7 +3,7 @@
  
  * File:   commonVar/ShieldGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,14 +82,18 @@ namespace setVariable
 {
 
 ShieldGenerator::ShieldGenerator() :
-  nRoof(0),nFloor(0),defMat("Stainless304")
+  leftAngle(0.0),rightAngle(0.0),endThick(0.0),
+  endRadius(0.0),nWall(0),nRoof(0),nFloor(0),
+  defMat("Stainless304")
   /*!
     Constructor and defaults
   */
 {}
 
 ShieldGenerator::ShieldGenerator(const ShieldGenerator& A) :
-  nRoof(A.nRoof),nFloor(A.nFloor),
+  leftAngle(A.leftAngle),rightAngle(A.rightAngle),
+  endThick(A.endThick),endRadius(A.endRadius),
+  nWall(A.nWall),nRoof(A.nRoof),nFloor(A.nFloor),
   defMat(A.defMat),wallLen(A.wallLen),roofLen(A.roofLen),
   floorLen(A.floorLen),wallMat(A.wallMat),roofMat(A.roofMat),
   floorMat(A.floorMat)
@@ -109,6 +113,7 @@ ShieldGenerator::operator=(const ShieldGenerator& A)
 {
   if (this!=&A)
     {
+      nWall=A.nWall;
       nRoof=A.nRoof;
       nFloor=A.nFloor;
       defMat=A.defMat;
@@ -129,6 +134,107 @@ ShieldGenerator::~ShieldGenerator()
  */
 {}
 
+void
+ShieldGenerator::setAngle(const double LA,const double RA)
+  /*!
+    Set the wall angles
+    \param LA :: Left angle
+    \param RA :: Right angle
+   */
+{
+  ELog::RegMethod RegA("ShieldGenerator","setAngle");
+  leftAngle=LA;
+  rightAngle=RA;
+  return;
+}
+
+void
+ShieldGenerator::setEndWall(const double T,const double R)
+  /*!
+    Set the end wall 
+    \param T :: Thickness of end wall
+    \param R :: Radius of end wall void
+    \todo add additional features for mat/layers etc
+  */
+{
+  endThick=T;
+  endRadius=R;
+  return;
+}
+
+  
+void
+ShieldGenerator::setLayers(MLTYPE& lenMap,MSTYPE& matMap,
+                           double& primThick,size_t& nLayer,
+                           const size_t NL,
+                           const double voidThick,
+                           const std::vector<double>& thick,
+                           const std::vector<std::string>& matName)
+ /*!
+   Given a set of values set the wall
+   \param NL :: Number of layers 
+   \param voidThick :: Thickness of inner void [half]
+   \param thick :: Layer thickness
+   \param matName :: layer materials
+ */
+{
+  ELog::RegMethod RegA("ShieldGenerator","setLayers");
+
+  if (thick.size()!=matName.size())
+    throw ColErr::MisMatch<size_t>(thick.size(),matName.size(),"thick/matName");
+  
+  primThick=std::accumulate(thick.begin(),thick.end(),0.0);
+  
+  lenMap.erase(lenMap.begin(),lenMap.end());
+  matMap.erase(matMap.begin(),matMap.end());
+
+  lenMap.emplace(1,voidThick);
+  matMap.emplace(1,"Void");
+
+  // set each layer to be approximately equal.
+  const double meanDist(primThick/static_cast<double>(NL));
+
+  size_t index(0);
+  double TNext(thick[index]);
+  double primDist(meanDist);
+  for(size_t i=0;i <NL;i++)
+    {
+      if (TNext>=primDist)
+	{
+	  lenMap.emplace(i+2,primDist+voidThick);
+	  matMap.emplace(i+2,matName[index]);
+	}
+      else
+	{
+	  lenMap.emplace(i+2,TNext);
+          matMap.emplace(i+2,matName[index]);
+	  if (index<thick.size()) index++;
+	  TNext+=thick[index];
+	}
+      primDist+=meanDist;
+    }
+  primThick+=voidThick;
+  nLayer=NL+1;
+  return;
+}
+
+void
+ShieldGenerator::clearLayers()
+  /*!
+    Clear layers
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","clearLayers");
+
+  wallLen.clear();
+  floorLen.clear();
+  roofLen.clear();
+  wallMat.clear();
+  floorMat.clear();
+  roofMat.clear();
+  return;
+}
+  
 void
 ShieldGenerator::addWall(const size_t index,const double Len,
                          const std::string& matName)
@@ -163,7 +269,7 @@ ShieldGenerator::addRoof(const size_t index,const double Len,
 
 void
 ShieldGenerator::addFloor(const size_t index,const double Len,
-                         const std::string& matName)
+			  const std::string& matName)
   /*!
     Add a layer to the floor
     \param index :: index values
@@ -318,7 +424,6 @@ ShieldGenerator::setRFLayers(const size_t nF,const size_t nR)
   nFloor=nF;
   return;
 }
-
   
 void
 ShieldGenerator::generateShield
@@ -339,6 +444,7 @@ ShieldGenerator::generateShield
 {
   ELog::RegMethod RegA("ShieldGenerator","generatorShield");
 
+  const size_t NWall(nWall ? nWall : NLayer);
   const size_t NRoof(nRoof ? nRoof : NLayer);
   const size_t NFloor(nFloor ? nFloor : NLayer);
   
@@ -349,7 +455,52 @@ ShieldGenerator::generateShield
   Control.addVariable(keyName+"Depth",depth);
   Control.addVariable(keyName+"DefMat",defMat);
   Control.addVariable(keyName+"NSeg",NSeg);
-  Control.addVariable(keyName+"NWallLayers",NLayer);
+  Control.addVariable(keyName+"NWallLayers",NWall);
+  Control.addVariable(keyName+"NFloorLayers",NFloor);
+  Control.addVariable(keyName+"NRoofLayers",NRoof);
+  
+  processLayers(Control,keyName);
+  
+  return;
+
+}
+
+void
+ShieldGenerator::generateTriShield
+( FuncDataBase& Control,const std::string& keyName,
+  const double length,const double side,const double height,
+  const double depth,const size_t NSeg,const size_t NLayer)  const
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+    \param length :: overall length
+    \param side :: full extent at sides
+    \param height :: Full height
+    \param depth :: Full depth
+    \param NSeg :: number of segments
+    \param NLayer :: number of layers
+  */
+{
+  ELog::RegMethod RegA("ShieldGenerator","generatorShield");
+
+  const size_t NWall(nWall ? nWall : NLayer);
+  const size_t NRoof(nRoof ? nRoof : NLayer);
+  const size_t NFloor(nFloor ? nFloor : NLayer);
+  
+  Control.addVariable(keyName+"Length",length);  
+  Control.addVariable(keyName+"LeftAngle",leftAngle);
+  Control.addVariable(keyName+"RightAngle",rightAngle);
+  Control.addVariable(keyName+"EndWall",endThick);
+  Control.addVariable(keyName+"EndVoid",endRadius);
+  Control.addVariable(keyName+"Left",side);
+  Control.addVariable(keyName+"Right",side);
+  Control.addVariable(keyName+"Height",height);
+  Control.addVariable(keyName+"Depth",depth);
+  
+  Control.addVariable(keyName+"DefMat",defMat);
+  Control.addVariable(keyName+"NSeg",NSeg);
+  Control.addVariable(keyName+"NWallLayers",NWall);
   Control.addVariable(keyName+"NFloorLayers",NFloor);
   Control.addVariable(keyName+"NRoofLayers",NRoof);
   

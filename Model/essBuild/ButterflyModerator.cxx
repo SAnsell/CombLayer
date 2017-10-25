@@ -362,6 +362,82 @@ ButterflyModerator::getComponent(const std::string& compName) const
 }
 
   
+
+std::string
+ButterflyModerator::getLeftFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftFarExclude");
+
+  std::string Out;
+  Out=LeftWater->getSignedLinkString(4);   
+  Out+=RightWater->getSignedLinkString(3);
+  return Out;
+}
+
+std::string
+ButterflyModerator::getRightFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getRightFarExclude");
+
+  std::string Out;
+  Out+=LeftWater->getSignedLinkString(3);   
+  Out+=RightWater->getSignedLinkString(4);
+
+  return Out;
+}
+
+std::string
+ButterflyModerator::getLeftExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points)
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
+  std::string Out;
+
+  Out+=LeftUnit->getSignedLinkString(8);
+  Out+=RightUnit->getSignedLinkString(9);
+  Out+=MidWater->getSignedLinkString(11);
+  Out+=LeftWater->getSignedLinkString(4);   
+  Out+=RightWater->getSignedLinkString(3);
+
+  return Out;
+}
+
+std::string
+ButterflyModerator::getRightExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points) [+ve Y]
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getRightExclude");
+  std::string Out;
+
+  Out+=LeftUnit->getSignedLinkString(9);
+  Out+=RightUnit->getSignedLinkString(8);
+  Out+=MidWater->getSignedLinkString(12);
+  
+  Out+=LeftWater->getSignedLinkString(3);
+  Out+=RightWater->getSignedLinkString(4);
+  
+  return Out;
+  
+}
+  
 void
 ButterflyModerator::createAll(Simulation& System,
 			      const attachSystem::FixedComp& axisFC,
@@ -398,82 +474,5 @@ ButterflyModerator::createAll(Simulation& System,
   createLinks();
   return;
 }
-
-std::string
-ButterflyModerator::getLeftFarExclude() const
-  /*!
-    Get the outer exclude surface without top/base
-    (uses the standard link points)
-    \return outer sidewards link exclude
-  */
-{
-  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
-
-  std::string Out;
-  Out+=LeftWater->getSignedLinkString(4);   
-  Out+=RightWater->getSignedLinkString(3);
-  return Out;
-}
-
-std::string
-ButterflyModerator::getRightFarExclude() const
-  /*!
-    Get the outer exclude surface without top/base
-    (uses the standard link points)
-    \return outer sidewards link exclude
-  */
-{
-  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
-
-  std::string Out;
-  Out+=LeftWater->getSignedLinkString(3);   
-  Out+=RightWater->getSignedLinkString(4);
-
-  return Out;
-}
-
-std::string
-ButterflyModerator::getLeftExclude() const
-  /*!
-    Get the complete exclude surface without top/base
-    (uses the standard link points)
-    \return full sidewards link exclude
-  */
-{
-  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
-  std::string Out;
-
-  Out+=LeftUnit->getSignedLinkString(8);
-  Out+=RightUnit->getSignedLinkString(9);
-  Out+=MidWater->getSignedLinkString(11);
-  
-  Out+=LeftWater->getSignedLinkString(4);   
-  Out+=RightWater->getSignedLinkString(3);
-  
-  return Out;
-}
-
-std::string
-ButterflyModerator::getRightExclude() const
-  /*!
-    Get the complete exclude surface without top/base
-    (uses the standard link points) [+ve Y]
-    \return full sidewards link exclude
-  */
-{
-  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
-  std::string Out;
-
-  Out+=LeftUnit->getSignedLinkString(9);
-  Out+=RightUnit->getSignedLinkString(8);
-  Out+=MidWater->getSignedLinkString(12);
-  
-  Out+=LeftWater->getSignedLinkString(3);
-  Out+=RightWater->getSignedLinkString(4);
-  
-  return Out;
-  
-}
-  
 
 }  // NAMESPACE essSystem

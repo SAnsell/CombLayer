@@ -3,7 +3,7 @@
  
  * File:   delft/FlatModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,22 +88,15 @@ FlatModerator::FlatModerator(const std::string& Key)  :
   */
 {}
 
-FlatModerator*
-FlatModerator::clone() const
-  /*!
-    Clone copy constructor
-    \return new this
-  */
-{
-  return new FlatModerator(*this); 
-}
-
 FlatModerator::FlatModerator(const FlatModerator& A) : 
   virtualMod(A),
   flatIndex(A.flatIndex),cellIndex(A.cellIndex),
-  backRad(A.backRad),frontRad(A.frontRad),depth(A.depth),
-  length(A.length),radius(A.radius),sideThick(A.sideThick),
-  wallThick(A.wallThick),modTemp(A.modTemp),gasTemp(A.gasTemp),
+  frontRadius(A.frontRadius),backRadius(A.backRadius),
+  frontRoundRadius(A.frontRoundRadius),backRoundRadius(A.backRoundRadius),
+  frontWallThick(A.frontWallThick),backWallThick(A.backWallThick),
+  wingAngle(A.wingAngle),viewExtent(A.viewExtent),
+  depth(A.depth),length(A.length),radius(A.radius),
+  sideThick(A.sideThick),modTemp(A.modTemp),gasTemp(A.gasTemp),
   modMat(A.modMat),gasMat(A.gasMat),alMat(A.alMat),
   HCell(A.HCell)
   /*!
@@ -124,13 +117,18 @@ FlatModerator::operator=(const FlatModerator& A)
     {
       virtualMod::operator=(A);
       cellIndex=A.cellIndex;
-      backRad=A.backRad;
-      frontRad=A.frontRad;
+      frontRadius=A.frontRadius;
+      backRadius=A.backRadius;
+      frontRoundRadius=A.frontRoundRadius;
+      backRoundRadius=A.backRoundRadius;
+      frontWallThick=A.frontWallThick;
+      backWallThick=A.backWallThick;
+      wingAngle=A.wingAngle;
+      viewExtent=A.viewExtent;
       depth=A.depth;
       length=A.length;
       radius=A.radius;
       sideThick=A.sideThick;
-      wallThick=A.wallThick;
       modTemp=A.modTemp;
       gasTemp=A.gasTemp;
       modMat=A.modMat;
@@ -141,6 +139,16 @@ FlatModerator::operator=(const FlatModerator& A)
   return *this;
 }
 
+
+FlatModerator*
+FlatModerator::clone() const
+  /*!
+    Clone copy constructor
+    \return new this
+  */
+{
+  return new FlatModerator(*this); 
+}
 
 
 FlatModerator::~FlatModerator() 
@@ -160,13 +168,19 @@ FlatModerator::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  depth=Control.EvalVar<double>(keyName+"Depth");
-  frontRad=Control.EvalVar<double>(keyName+"FrontRad");
-  backRad=Control.EvalVar<double>(keyName+"BackRad");
+  depth=Control.EvalVar<double>(keyName+"FocusDepth");
+  frontRadius=Control.EvalVar<double>(keyName+"FrontRadius");
+  backRadius=Control.EvalVar<double>(keyName+"BackRadius");
+  frontWallThick=Control.EvalVar<double>(keyName+"FrontWallThick");
+  backWallThick=Control.EvalVar<double>(keyName+"BackWallThick");
+
+  frontRoundRadius=Control.EvalVar<double>(keyName+"FrontRoundRadius");
+  backRoundRadius=Control.EvalVar<double>(keyName+"BackRoundRadius");
+  
+  wingAngle=Control.EvalVar<double>(keyName+"WingAngle");
+  viewExtent=Control.EvalVar<double>(keyName+"ViewExtent");
+  
   length=Control.EvalVar<double>(keyName+"Length");
-  radius=Control.EvalVar<double>(keyName+"Radius");
-  wallThick=Control.EvalVar<double>(keyName+"WallThick");
-  sideThick=Control.EvalVar<double>(keyName+"SideThick");
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   gasTemp=Control.EvalDefVar<double>(keyName+"GasTemp",modTemp);
@@ -180,23 +194,17 @@ FlatModerator::populate(const FuncDataBase& Control)
   
 
 void
-FlatModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
+FlatModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
+				const long int sideIndex)
   /*!
     Create the unit vectors
     Origin is the back point of the moderator
-    - Y Points down the FlatModerator direction
-    - X Across the FlatModerator
-    - Z up (towards the target)
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: link point						
   */
 {
   ELog::RegMethod RegA("FlatModerator","createUnitVector");
-  // Opposite since other face:
-  X=CUnit.getBX();
-  Y=CUnit.getBY();
-  Z=CUnit.getBZ();
-
-  Origin=CUnit.getBeamStart();
+  FixedComp::createUnitVector(CUnit,sideIndex);
   applyOffset();
   return;
 }
@@ -210,24 +218,59 @@ FlatModerator::createSurfaces()
 {
   ELog::RegMethod RegA("FlatModerator","createSurfaces");
 
-  ModelSupport::buildSphere(SMap,flatIndex+7,Origin+Y*(backRad-wallThick),
-			    backRad);
-  ModelSupport::buildSphere(SMap,flatIndex+17,Origin+Y*backRad,backRad);
-  // Al back layer
-  // Al back layer
-  ModelSupport::buildSphere(SMap,flatIndex+27,Origin+Y*(frontRad+depth),
-			    frontRad);
-  ModelSupport::buildSphere(SMap,flatIndex+37,
-			    Origin+Y*(frontRad+depth+wallThick),frontRad);
+  // Inner on origin:
+  const Geometry::Vec3D RCentre(Origin+Y*depth);
+  ModelSupport::buildSphere(SMap,flatIndex+7,RCentre,backRadius+backWallThick);
+  ModelSupport::buildSphere(SMap,flatIndex+17,RCentre,backRadius);
 
-  ModelSupport::buildCylinder(SMap,flatIndex+8,Origin,Y,wallThick+radius);
-  ModelSupport::buildCylinder(SMap,flatIndex+18,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,flatIndex+28,Origin,Y,radius-sideThick);
-  ModelSupport::buildCylinder(SMap,flatIndex+38,Origin,Y,
-			      radius-(sideThick+wallThick));
-     
+  // Outer on origin:
+  ModelSupport::buildSphere(SMap,flatIndex+27,RCentre,frontRadius+frontWallThick);
+  ModelSupport::buildSphere(SMap,flatIndex+37,RCentre,frontRadius);
+
+  // Cone Wings:
+  // calculate the distance from surface of sphere  to dividing plane
+
+  // vertical distance at cone impact
+  const double frontView(viewExtent/2.0+frontRoundRadius);
+  const double backView(viewExtent/2.0+backRoundRadius);
+
+  // dividing plane
+  if (wingAngle>0.1)
+    {
+      const double TA(tan(M_PI*wingAngle/180.0));
+      const double SA(sin(M_PI*wingAngle/180.0));
+
+      // step from circle centre
+      const double frontStep=
+	sqrt(frontRadius*frontRadius-frontView*frontView)+frontView/TA;
+      const double backStep=
+	sqrt(backRadius*backRadius-backView*backView)+backView/TA;
+      
+      const Geometry::Vec3D FConePt(RCentre-Y*frontStep);
+      const Geometry::Vec3D BConePt(RCentre-Y*backStep);
+
+      // wall shifts
+      const double frontWShift(frontWallThick/SA);
+      const double backWShift(backWallThick/SA);
+
+      
+      ModelSupport::buildCone(SMap,flatIndex+8,BConePt,Y,wingAngle);
+      ModelSupport::buildCone(SMap,flatIndex+18,BConePt+Y*backWShift,Y,wingAngle);
+      ModelSupport::buildCone(SMap,flatIndex+28,FConePt-Y*frontWShift,Y,wingAngle);
+      ModelSupport::buildCone(SMap,flatIndex+38,FConePt,Y,wingAngle);
+
+    }
+  else  // cylinder join
+    {
+      ModelSupport::buildCylinder(SMap,flatIndex+8,Origin,Y,backView+backWallThick);
+      ModelSupport::buildCylinder(SMap,flatIndex+18,Origin,Y,backView);
+      ModelSupport::buildCylinder(SMap,flatIndex+28,Origin,Y,frontView+frontWallThick);
+      ModelSupport::buildCylinder(SMap,flatIndex+38,Origin,Y,frontView);
+    }
+
+  // last planes
   ModelSupport::buildPlane(SMap,flatIndex+1,Origin+Y*length,Y);
-  ModelSupport::buildPlane(SMap,flatIndex+11,Origin+Y*(length+wallThick),Y);
+  ModelSupport::buildPlane(SMap,flatIndex+11,Origin+Y*(length+frontWallThick),Y);
 
   return;
 }
@@ -247,7 +290,7 @@ FlatModerator::createLinks()
 void
 FlatModerator::createObjects(Simulation& System)
   /*!
-    Adds the Chip guide components
+    Build the main components
     \param System :: Simulation to create objects in
   */
 {
@@ -255,17 +298,34 @@ FlatModerator::createObjects(Simulation& System)
 
   std::string Out;  
 
-  Out=ModelSupport::getComposite(SMap,flatIndex,"-7 -8 -11 ");
+  Out=ModelSupport::getComposite(SMap,flatIndex,"-7 -8 -1");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -7 -8 -1 (17 : 18 )");
+  Out=ModelSupport::getComposite(SMap,flatIndex," -7 -8 17 -1");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+  
+  Out=ModelSupport::getComposite(SMap,flatIndex," -17 -8 18 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -17 -18 -1 (27 : 28 )");
+  Out=ModelSupport::getComposite(SMap,flatIndex," -17 -18 27 -1 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,flatIndex," -27 -28 -1 (37 : 38 )");
+  Out=ModelSupport::getComposite(SMap,flatIndex," -27 -18 28 -1 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
+
+
+  Out=ModelSupport::getComposite(SMap,flatIndex," -27 -28 37 -1 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modMat,Out));
+
+  Out=ModelSupport::getComposite(SMap,flatIndex," -37 -28 38 -1 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,flatIndex," -37 -38 -1 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+  return;
+  // build Simple case [cylinder]:
+  
 
   Out=ModelSupport::getComposite(SMap,flatIndex," -37 -38 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,gasMat,gasTemp,Out));
@@ -288,17 +348,19 @@ FlatModerator::postCreateWork(Simulation&)
   
 void
 FlatModerator::createAll(Simulation& System,
-		       const attachSystem::TwinComp& FUnit)
+			 const attachSystem::FixedComp& FUnit,
+			 const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("FlatModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit);
+  createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

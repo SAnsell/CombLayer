@@ -3,7 +3,7 @@
  
  * File:   geomInc/Quaternion.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,8 @@ class Quaternion
   static Quaternion calcQRot(const double,Geometry::Vec3D);
   static Quaternion calcQRotDeg(const double,const double,const double,const double);
   static Quaternion calcQRotDeg(const double,Geometry::Vec3D);
-  static Quaternion calcQVRot(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  static Quaternion calcQVRot(const Geometry::Vec3D&,const Geometry::Vec3D&,
+			      const Geometry::Vec3D&);
   
   static Quaternion basisRotate
     (const Geometry::Vec3D&,const Geometry::Vec3D&,const Geometry::Vec3D&,

@@ -67,7 +67,7 @@ SurfMap::SurfMap(const SurfMap& A) :
     \param A :: SurfMap to copy
   */
 {}
-
+  
 SurfMap&
 SurfMap::operator=(const SurfMap& A)
   /*!
@@ -81,6 +81,25 @@ SurfMap::operator=(const SurfMap& A)
       BaseMap::operator=(A);
     }
   return *this;
+}
+
+int
+SurfMap::getSignedSurf(const std::string& K,const long int Index) const
+  /*!
+    Get the rule based on a surface
+    \param K :: Keyname
+    \param Index :: Offset number [signed]
+    \return Signed surface map
+   */
+{
+  ELog::RegMethod RegA("SurfMap","getSignedSurf");
+
+  if (!Index)
+    return BaseMap::getItem(K);
+  else if (Index>0)
+    return BaseMap::getItem(K,static_cast<size_t>(Index-1));
+  else
+    return -BaseMap::getItem(K,static_cast<size_t>(-Index-1));
 }
   
 HeadRule
@@ -124,10 +143,53 @@ SurfMap::getSurfRules(const std::string& Key) const
   else
     {
       const std::vector<int> sVec=getItems(Key);
-
       for(const int sn : sVec)
 	Out.addIntersection(sn);
     }
+  return Out;
+}
+
+std::string
+SurfMap::getSurfString(const std::string& Key) const
+  /*!
+    Output the rule string
+    \param Key :: Surf Keyname
+    \return surfaces
+  */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfString");
+
+  return getSurfRules(Key).display();
+}
+
+std::string
+SurfMap::getSurfComplement(const std::string& Key) const
+  /*!
+    Output the rule string [complement]
+    \param Key :: Surf Keyname
+    \return surfaces
+  */
+{
+  ELog::RegMethod RegA("SurfMap","getSurfComplement");
+
+  return getSurfRules(Key).complement().display();
+}
+
+  
+HeadRule
+SurfMap::combine(const std::set<std::string>& KeySet) const
+  /*!
+    Add the rules as intesection
+    \param KeySet :: Keynames
+    \return HeadRule
+   */
+{
+  ELog::RegMethod RegA("SurfMap","combine"); 
+  
+  HeadRule Out;
+  for(const std::string& KS : KeySet)
+    Out.addIntersection(getSurfRules(KS));
+
   return Out;
 }
 

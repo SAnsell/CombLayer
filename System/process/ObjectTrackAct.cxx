@@ -3,7 +3,7 @@
  
  * File:   process/ObjectTrackAct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,9 +96,9 @@ ObjectTrackAct&
 ObjectTrackAct::operator=(const ObjectTrackAct& A) 
    /*! 
      Assignment operator
-    \param A :: ObjectTrackAct to copy
-    \return *this
-  */
+     \param A :: ObjectTrackAct to copy
+     \return *this
+   */
 {
   if (this!=&A)
     {
@@ -143,9 +143,6 @@ ObjectTrackAct::getMatSum(const long int objN) const
       sum+=TVec[i];
   return sum;
 }
-
-
-
   
 double
 ObjectTrackAct::getAttnSum(const long int objN) const
@@ -167,8 +164,7 @@ ObjectTrackAct::getAttnSum(const long int objN) const
   // Get Two Paired Vectors
   const std::vector<MonteCarlo::Object*>& OVec=
     mc->second.getObjVec();
-  const std::vector<double>& TVec=
-    mc->second.getTrack();
+  const std::vector<double>& TVec=mc->second.getTrack();
   
   double sum(0.0);
   for(size_t i=0;i<TVec.size();i++)

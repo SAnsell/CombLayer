@@ -3,7 +3,7 @@
  
  * File:   source/ActiveWeight.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -141,8 +141,8 @@ ActiveWeight::setBox(const Geometry::Vec3D& APt,
 
 void
 ActiveWeight::setBiasConst(const Geometry::Vec3D& Cent,
-			       const Geometry::Vec3D& AVec,
-			       const double D,const double A)
+                           const Geometry::Vec3D& AVec,
+                           const double D,const double A)
   /*!
     Set the box coordinates
     \param Cent :: Origin Point
@@ -167,7 +167,8 @@ ActiveWeight::addMaterial(const std::string& matName,
 			      const std::string& matFile)
   /*!
     Add a material to the system
-    \parma matName :: material name 
+    \param matName :: material name 
+    \param matFile :: File to contain flux data
    */
 {
   ELog::RegMethod RegA("ActiveWeight","addMaterial");
@@ -186,12 +187,11 @@ ActiveWeight::addMaterial(const std::string& matName,
   
 
 void
-ActiveWeight::createSource(Simulation& System,
-                               const std::string& outputName)
+ActiveWeight::createSource(Simulation& ,
+                           const std::string&)
   /*!
     Create all the source
-    \param Simuation :: 
-    \param souceCard :: Source Term
+    \param System :: Simulation to use
     \param outputName :: Output file
    */
 {

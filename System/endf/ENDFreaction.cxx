@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   endf/ENDFreaction.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,9 +228,9 @@ void
 ENDFreaction::exportWork(const std::vector<double>& EVal,
 			 std::vector<DError::doubleErr>& OutY) const
   /*!
-    Given a workData set use the energy to integrate over the Y
-    band to get sigma values.
-    \parma XBand :: XBand to use
+    Create a Energy / Cross section table
+    \param EVal :: Energy Grid to use
+    \param OutY :: Value [error] values 
    */
 {
   ELog::RegMethod RegA("ENDFreaction","exportWork");

@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/CylPreMod.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,13 +44,13 @@ class CylPreMod : public attachSystem::ContainedGroup,
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  /// Extension object
-  std::shared_ptr<BlockAddition> ExtAObj; 
-  std::shared_ptr<BlockAddition> ExtBObj; 
-  int blockActiveA;
-  int blockActiveB;
-  size_t aSide;  
-  size_t bSide;
+
+  std::shared_ptr<BlockAddition> ExtAObj;     ///< Left Extension
+  std::shared_ptr<BlockAddition> ExtBObj;     ///< Right Extension
+  int blockActiveA;                           ///< Flag for left ext
+  int blockActiveB;                           ///< Flag for right ext
+  size_t aSide;                               ///< Link point
+  size_t bSide;                               ///< Link point
 
   double innerRadius;             ///< Radius from inner cell
   double innerHeight;             ///< height from inner cell

@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@
 #include "Debug.h"
 #include "debugMethod.h"
 
+///\file AttachSupportLine.cxx
 
 namespace attachSystem
 {
@@ -191,9 +192,11 @@ addToInsertLineCtrl(Simulation& System,
     the point is tested REGARDLESS of being in the CC, to 
     being in the BaseFC. If it is an insert is made
     \param System :: Simulation to use
-    \param OuterFC :: FixedComp for name
+    \param BaseCell :: CellMap to extract cells for testing
+    \param cellName :: Particular cells to use from BaseCell
     \param InsertFC :: FixedComp with a ContainedComp/containedGroup
     dynamics cast
+    \param CC :: Container for insersion
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
@@ -221,17 +224,13 @@ addToInsertLineCtrl(Simulation& System,
     \param System :: Simulation to use
     \param OuterFC :: FixedComp to get name for cells
     \param InsertFC :: FixedComp 
-    dynamics cast
+    \param CC :: Container for insersion
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","addtoInsectLineCtrl(FC,FC)");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
-  // Determin cells to scan
-  const int cellN=OR.getCell(OuterFC.getKeyName());
-  const int cellL=OR.getLast(OuterFC.getKeyName());
 
   const std::vector<int> CNum=
     OR.getObjectRange(OuterFC.getKeyName());
@@ -317,7 +316,7 @@ lineIntersect(Simulation& System,
     in the model and add them to cells
     \param System :: Simualation to use
     \param APt :: Start Point
-    \param BPt :: Start Point
+    \param BPt :: End Point
     \param OMap :: Object map to add extra units to
   */
 {

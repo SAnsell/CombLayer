@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/InnerWall.h
  *
- * Copyright (c) 2004-205 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,18 +37,13 @@ namespace hutchSystem
 
 class InnerWall : 
   public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int innerIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  double fStep;             ///< origin forward step
-  double xStep;             ///< Offset on XAxis of centre
-  double zStep;             ///< Offset on ZAxis of centre
-  Geometry::Vec3D Centre;   ///< Centre point 
-
+ 
   double height;            ///< Hole: Half Height
   double width;             ///< Hole: Half width
   double depth;             ///< Full depth
@@ -62,9 +57,9 @@ class InnerWall :
   std::vector<int> CDivideList;   ///< Cell divide List for 
 
 
-  void populate(const Simulation&);
-  void createUnitVector(const FixedComp&);
 
+  void populate(const FuncDataBase&);
+  void createUnitVector(const FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void layerProcess(Simulation&);
@@ -79,9 +74,13 @@ class InnerWall :
   int exitWindow(const double,std::vector<int>&,
 		 Geometry::Vec3D&) const;
 
-  void createSurf(Simulation&,const attachSystem::FixedComp&);
-  void createObj(Simulation&);
-
+  //  void createObj(Simulation&);
+  void createOnlySurfaces(Simulation&,const attachSystem::FixedComp&,
+			  const long int);
+  void createOnlyObjects(Simulation&);
+  //  void createObj(Simulation&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -142,6 +142,12 @@ namespace mathFunc
   template<typename T>
   T mean(const std::vector<T>&);
 
+  double logAdd(const double&,const double&);
+  double logSubtract(const double&,const double&);
+
+  double logFromLinear(const double,const double,const size_t,
+		      const size_t);
+  
 }
 
 
@@ -159,8 +165,6 @@ namespace mathFunc
 namespace mathSupport
 {
 
-double logFromLinear(const double,const double,const size_t,
-		      const size_t);
   /*!
     \struct Rsol
     \brief A simple imagenary class (replace by complex)

@@ -622,7 +622,7 @@ Code::Eval(varList* Vars)
       // UPDATE LOOP
       IP++;
     }
-  
+
   return (stackType[SP]) ? 
     typeConvert<T>(StackVec[SP]) : 
     typeConvert<T>(Stack[SP]);

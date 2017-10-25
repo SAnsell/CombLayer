@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   include/version.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ class version
  private:
 
   std::string VFile;                     ///< File Name
+  std::string buildTag;                  ///< github tag if found
   int vNum;                              ///< Number 
 
   version();
@@ -49,6 +50,7 @@ class version
 
   int setFile(const std::string&);
   int getVersion() const { return vNum; } ///< Access Vnum
+  std::string getBuildTag() const;
   int getIncrement();
 
   void write() const;

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   d4cModel/DetectorArray.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,12 +71,12 @@
 #include "inputParam.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "DetectorArray.h"
 
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h" 
 
 namespace d4cSystem
@@ -240,7 +240,7 @@ DetectorArray::createSurfaces()
   int SI(detIndex+20);
   for(size_t i=0;i<nDet;i++)
     {
-      const double A=initAngle+i*angleStep;
+      const double A=initAngle+static_cast<double>(i)*angleStep;
       const Geometry::Vec3D CPt=Origin+(X*sin(A)+Y*cos(A))*centRadius;
       DPoints.push_back(CPt);
       ModelSupport::buildCylinder(SMap,SI+7,CPt,Z,tubeRadius);  

@@ -36,7 +36,7 @@ namespace moderatorSystem
 */
 
 class BasicFlightLine : public attachSystem::ContainedGroup,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap
 {
  protected:
@@ -47,11 +47,6 @@ class BasicFlightLine : public attachSystem::ContainedGroup,
   
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X 
-  double zStep;                 ///< Offset on Z 
-  double xyAngle;               ///< XY plance rotation
-  double zAngle;                ///< Z axis rotation
-
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane
   

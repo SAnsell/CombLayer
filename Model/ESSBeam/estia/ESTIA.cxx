@@ -3,7 +3,7 @@
  
  * File:   essBuild/ESTIA.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,12 +67,14 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -93,17 +95,20 @@
 namespace essSystem
 {
 
-ESTIA::ESTIA() :
-  estiaAxis(new attachSystem::FixedOffset("estiaAxis",4)),
-  FocusMono(new beamlineSystem::GuideLine("estiaFMono")),
-  VPipeA(new constructSystem::VacuumPipe("estiaPipeA")),
-  FocusA(new beamlineSystem::GuideLine("estiaFA")),
+ESTIA::ESTIA(const std::string& keyName) :
+  attachSystem::CopiedComp("estia",keyName),
+  stopPoint(0),
+  estiaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
+  FocusMono(new beamlineSystem::GuideLine(newName+"FMono")),
+  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
-  VPipeB(new constructSystem::VacuumPipe("estiaPipeB")),
-  VacBoxA(new constructSystem::VacuumBox("estiaVBoxA")),
-  FocusB(new beamlineSystem::GuideLine("estiaFB"))
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
+  VacBoxA(new constructSystem::VacuumBox(newName+"VBoxA")),
+  FocusB(new beamlineSystem::GuideLine(newName+"FB"))
   /*! 
     Constructor
+    \param keyName :: main beamline name
   */
 {
   ELog::RegMethod RegA("ESTIA","ESTIA");
@@ -112,7 +117,7 @@ ESTIA::ESTIA() :
     ModelSupport::objectRegister::Instance();
 
   // This is necessary:
-  OR.cell("estiaAxis");
+  OR.cell(newName+"Axis");
   OR.addObject(estiaAxis);
 
   OR.addObject(FocusMono);
@@ -129,33 +134,6 @@ ESTIA::~ESTIA()
   */
 {}
 
-void
-ESTIA::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-		   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("ESTIA","setBeamAxis");
-
-  estiaAxis->populate(Control);
-  estiaAxis->createUnitVector(GItem);
-  estiaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  estiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  estiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  estiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  estiaAxis->linkAngleRotate(3);
-  estiaAxis->linkAngleRotate(4);
-
-  ELog::EM<<"YAXIS = "<<estiaAxis->getSignedLinkAxis(2)<<ELog::endDiag;
-  ELog::EM<<"YAXIS = "<<estiaAxis->getSignedLinkAxis(4)<<ELog::endDiag;
-
-  if (reverseZ)
-    estiaAxis->reverseZ();
-  return;
-}
 
 void
 ESTIA::buildChopperBlock(Simulation& System,
@@ -223,9 +201,13 @@ ESTIA::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("ESTIA","build");
 
+  const FuncDataBase& Control=System.getDataBase();
+  CopiedComp::process(System.getDataBase());  
+
   ELog::EM<<"\nBuilding ESTIA on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(System.getDataBase(),GItem,1);
+  stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
+  essBeamSystem::setBeamAxis(*estiaAxis,System.getDataBase(),GItem,1);
 
   FocusMono->addInsertCell(GItem.getCells("Void"));
   FocusMono->setBack(GItem.getKey("Beam").getSignedLinkString(-2));

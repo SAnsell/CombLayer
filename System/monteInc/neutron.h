@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/neutron.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,22 @@
 #ifndef MonteCarlo_neutron_h
 #define MonteCarlo_neutron_h
 
+
+/*!
+  \namespace moderatorSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2012
+  \brief CompLayer internal transport
+*/
+
 namespace MonteCarlo
 {
 
   class Object;
 /*!  
   \class neutron
-  \brief   Defines single point neutron
+  \brief Defines single point neutron
   \version 1.0
   \author S. Ansell
   \date December 2009

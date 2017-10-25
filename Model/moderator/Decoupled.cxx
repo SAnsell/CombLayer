@@ -3,7 +3,7 @@
  
  * File:   moderator/Decoupled.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Decoupled.h"
 #include "VanePoison.h"
@@ -81,7 +82,7 @@ namespace moderatorSystem
 {
 
 Decoupled::Decoupled(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,12),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,12),
   decIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(decIndex+1),populated(0),VP(new VanePoison("decPoison"))
   /*!
@@ -96,10 +97,9 @@ Decoupled::Decoupled(const std::string& Key)  :
 }
   
 Decoupled::Decoupled(const Decoupled& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   decIndex(A.decIndex),cellIndex(A.cellIndex),populated(A.populated),
-  VP(new VanePoison("decPoison")),xyAngle(A.xyAngle),zAngle(A.zAngle),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),width(A.width),
+  VP(new VanePoison("decPoison")),width(A.width),
   height(A.height),westCentre(A.westCentre),eastCentre(A.eastCentre),
   westRadius(A.westRadius),eastRadius(A.eastRadius),westDepth(A.westDepth),
   eastDepth(A.eastDepth),alCurve(A.alCurve),alSides(A.alSides),
@@ -131,11 +131,6 @@ Decoupled::operator=(const Decoupled& A)
       cellIndex=A.cellIndex;
       populated=A.populated;
       *VP = *A.VP;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       width=A.width;
       height=A.height;
       westCentre=A.westCentre;
@@ -162,21 +157,15 @@ Decoupled::~Decoupled()
 {}
 
 void
-Decoupled::populate(const Simulation& System)
+Decoupled::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBasex
   */
 {
   ELog::RegMethod RegA("Decoupled","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
+
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -200,7 +189,8 @@ Decoupled::populate(const Simulation& System)
   
 
 void
-Decoupled::createUnitVector(const attachSystem::FixedComp& FC)
+Decoupled::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     - Y Points down the Decoupled direction
@@ -211,11 +201,9 @@ Decoupled::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("Decoupled","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-
-  FixedComp::applyShift(xStep,yStep,zStep);
-  FixedComp::applyAngleRotate(xyAngle,zAngle);
-    
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+      
   // Decoupled Centre:
   // -- Step in by cut, and  
 
@@ -428,21 +416,24 @@ Decoupled::getSurfacePoint(const size_t layerIndex,
   
 void
 Decoupled::createAll(Simulation& System,
-		     const attachSystem::FixedComp& FC)
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp for origin/axis
+    \param sideIndex :: Link offset
   */
 {
   ELog::RegMethod RegA("Decoupled","createAll");
-  populate(System);
+  Decoupled::populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();
   insertObjects(System);       
+
   VP->addInsertCell(methCell);
   VP->createAll(System,*this,8);
 

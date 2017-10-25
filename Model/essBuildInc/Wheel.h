@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Wheel.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,13 +38,7 @@ namespace essSystem
 class Wheel : public WheelBase
 {
  private:
-  
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
-  
+    
   double targetHeight;           ///< Total height of target
   double coolantThickIn;         ///< Thickness of coolant (inner wheel)
   double coolantThickOut;        ///< Thickness of coolant (outer wheel)
@@ -80,8 +74,6 @@ class Wheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);

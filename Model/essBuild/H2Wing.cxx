@@ -186,9 +186,6 @@ H2Wing::populate(const FuncDataBase& Control)
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
 
-  bfDepth = Control.EvalDefVar<double>(baseName+"WallDepth",0.0);
-  bfHeight = Control.EvalDefVar<double>(baseName+"WallHeight",0.0);
-
   for(size_t i=0;i<3;i++)
     {
       Pts[i]=Control.EvalVar<Geometry::Vec3D>
@@ -254,8 +251,7 @@ H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
 
   FixedComp::createUnitVector(FC);
   const double dh = std::accumulate(layerDepth.begin(),layerDepth.end(),0.0) -
-    std::accumulate(layerHeight.begin(),layerHeight.end(),0.0)-
-    +bfDepth-bfHeight;
+    std::accumulate(layerHeight.begin(),layerHeight.end(),0.0);
 
   applyShift(xStep,yStep, dh/2.0);
   applyAngleRotate(xyOffset,0.0);
@@ -444,23 +440,19 @@ H2Wing::createSurfaces()
 				   NPts[i]);
 	  
 	  // corner centre
-	  const Geometry::Vec3D RCent=
-	    Geometry::cornerCircleTouch
+	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+	    RCircle=Geometry::findCornerCircle
 	    (CPts[i],CPts[(i+1)%3],CPts[(i+2)%3],radius[i]+PDepth);
-	  // Mid norm point INWARD!
-
-	  std::pair<Geometry::Vec3D,Geometry::Vec3D> CutPair=
-	    Geometry::cornerCircle
-	    (CPts[i],CPts[(i+1)%3],CPts[(i+2)%3],radius[i]+PDepth);
-
-	  // Positive inward
-	  ModelSupport::buildPlane(SMap,triOffset+ii+20,
-				   CutPair.first,CutPair.second,
-				   CutPair.first+Z,MD);
 
 	  
+	  // Positive inward
+	  ModelSupport::buildPlane(SMap,triOffset+ii+20,
+				   std::get<1>(RCircle),
+				   std::get<2>(RCircle),
+				   std::get<1>(RCircle)+Z,MD);
 	  ModelSupport::buildCylinder(SMap,triOffset+ii+6,
-				      RCent,Z,radius[i]+PDepth);
+				      std::get<0>(RCircle),
+				      Z,radius[i]+PDepth);
 	}
       
       ModelSupport::buildPlane(SMap,triOffset+5,Origin-

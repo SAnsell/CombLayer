@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "mathSupport.h"
@@ -342,6 +340,36 @@ inputParam::flag(const std::string& K) const
 }
 
 template<typename T>
+std::set<T>
+inputParam::getComponents(const std::string& K,
+                          const size_t index) const
+  /*!
+    Find all the values for a given key
+    \param K :: Key name
+    \param index :: index item
+    \return set of items [as string]
+  */
+{
+  ELog::RegMethod RegA("inputParam","getComponents");
+
+  std::set<T> Out;
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+
+  const size_t N=IPtr->getNSets();
+  
+  for(size_t i=0;i<N;i++)
+    {
+      const size_t NI=IPtr->getNItems(i);
+      if (NI>=index)
+        Out.insert(IPtr->getObj<T>(i,index));
+    }
+      
+  return Out;
+}
+  
+template<typename T>
 T
 inputParam::getFlagDef(const std::string& InpKey,
 		       const FuncDataBase& Control,
@@ -588,19 +616,51 @@ inputParam::outputItem(const std::string& K,
 }
 
 template<typename T>
+T
+inputParam::outputDefItem(const std::string& K,
+			  const size_t setIndex,
+			  size_t& itemIndex,
+			  const T& DefValue) const
+  /*!
+    Get a value based on key
+    \param K :: Key to seach
+    \param setIndex :: set Value
+    \param itemIndex :: Index value [updated]
+    \param DefValue :: Default Value
+    \return Value
+*/
+
+{
+  ELog::RegMethod RegA("inputParam","outputItem(setIndex,index)");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr) return DefValue;
+
+  try
+    {
+      const T Out=IPtr->getObj<T>(setIndex,itemIndex);
+      itemIndex++;
+      return Out;
+    }
+  catch(ColErr::IndexError<size_t>&)
+    { }
+  return DefValue;
+}
+
+template<typename T>
 int
 inputParam::checkItem(const std::string& K,
 		      const size_t setIndex,
 		      const size_t itemIndex,
 		      T& Out) const
-/*!
-  Get a value based on key
-  \param K :: Key to seach
-  \param setIndex :: set Value
-  \param itemIndex :: Index value
-  \param Out :: returned value if found
-  \return 1 on success / 0 on failure
-*/
+ /*!
+   Get a value based on key
+   \param K :: Key to seach
+   \param setIndex :: set Value
+   \param itemIndex :: Index value
+   \param Out :: returned value if found
+   \return 1 on success / 0 on failure
+ */
 
 {
   ELog::RegMethod RegA("inputParam","checkItem(setIndex,index)");
@@ -932,7 +992,7 @@ inputParam::regDefItem(const std::string& K,const std::string& LK,
   checkKeys(K,LK);
 
   IItem* IPtr=new IItem(K,LK);
-  IPtr->setMaxN(1,0,1);
+  IPtr->setMaxN(1,0,reqItem);
 
   Keys.insert(MTYPE::value_type(K,IPtr));
   if (!LK.empty())
@@ -1273,6 +1333,21 @@ template std::string
 inputParam::outputItem(const std::string&,const size_t,
 		       const size_t,const std::string&) const;
   
+
+template double
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const double&) const;
+template int
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const int&) const;
+template long int
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const long int&) const;
+template size_t
+inputParam::outputDefItem(const std::string&,const size_t,
+			  size_t&,const size_t&) const;
+
+
 template double
 inputParam::getFlagDef(const std::string&,const FuncDataBase& Control,
 		       const std::string&,const size_t) const;
@@ -1294,6 +1369,9 @@ inputParam::regDefItemList(const std::string&,
 			   const std::string&,const size_t,
 			   const std::vector<std::string>&);
 
+template std::set<std::string>
+inputParam::getComponents(const std::string&,const size_t) const;
+                           
 ///\endcond TEMPLATE
  
 }  // NAMESPACE mainSystem

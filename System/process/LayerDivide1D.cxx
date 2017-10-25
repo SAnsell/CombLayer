@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/LayerDivide3D.cxx
+ * File:   process/LayerDivide1D.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,8 +90,7 @@ namespace ModelSupport
 LayerDivide1D::LayerDivide1D(const std::string& Key)  :
   FixedComp(Key,0),
   divIndex(ModelSupport::objectRegister::Instance().cell(Key,20000)),
-  cellIndex(divIndex+1),
-  WallID("Split"),DGPtr(0)
+  cellIndex(divIndex+1),WallID("Split")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -104,7 +103,6 @@ LayerDivide1D::~LayerDivide1D()
     Destructor
   */
 {
-  delete DGPtr;
 }
 
 
@@ -212,7 +210,6 @@ void
 LayerDivide1D::setFractions(const size_t NF)
   /*!
     Set the fractions
-    \param index :: Type index 0 to 2
     \param NF :: linear fractions
    */
 {
@@ -275,10 +272,10 @@ LayerDivide1D::setMaterials(const std::string& DefMat)
   */
 {
   ELog::RegMethod Rega("LayerDivide1D","setMaterials");
-  
-  if (!DGPtr)
-    DGPtr=new DivideGrid(DefMat);
-  DGPtr->setMaterial(0,0,0,DefMat);
+
+  AMat.resize(AFrac.size()+1);
+  const int matN=ModelSupport::EvalMatName(DefMat);
+  std::fill(AMat.begin(),AMat.end(),matN);
   return;
 }
 
@@ -291,17 +288,32 @@ LayerDivide1D::setMaterials(const std::vector<std::string>& DefMatVec)
 {
   ELog::RegMethod Rega("LayerDivide1D","setMaterials(Vec)");
 
-
-  if (!DGPtr)
-    DGPtr=new DivideGrid(DefMatVec.front());
-
-  for(size_t i=0;i<DefMatVec.size();i++)
-    DGPtr->setMaterial(i+1,0,0,DefMatVec[i]);
+  AMat.resize(AFrac.size()+1);
+  for(size_t i=0;i<DefMatVec.size() && AMat.size();i++)
+    AMat[i]=ModelSupport::EvalMatName(DefMatVec[i]);
   
   return;
 }
 
 void
+LayerDivide1D::setMaterials(const std::vector<int>& DefMatVec)
+  /*!
+    Processes the material setting 
+    \param DefMatVec :: Default Material list
+  */
+{
+  ELog::RegMethod Rega("LayerDivide1D","setMaterials(Vec)");
+
+  AMat=DefMatVec;
+  const int matN=(AMat.empty()) ? 0 : AMat.back();
+  
+  for(size_t i=AMat.size();i<AFrac.size()+1;i++)
+    AMat.push_back(matN);
+	
+  return;
+}
+
+int
 LayerDivide1D::setMaterialXML(const std::string& LFile,
 			      const std::string& ObjName,
 			      const std::string& OutName,
@@ -309,6 +321,10 @@ LayerDivide1D::setMaterialXML(const std::string& LFile,
   /*!
     Processes the material setting 
     \param LFile :: Load file name
+    \param ObjName :: object to take value from
+    \param OutName :: Output file naem 
+    \param DefMat :: Default material if no file
+    \return 0 on no file and  1 on success
   */
 {
   ELog::RegMethod Rega("LayerDivide1D","setMaterials(XML)");
@@ -316,12 +332,11 @@ LayerDivide1D::setMaterialXML(const std::string& LFile,
   objName=ObjName;
   loadFile=LFile;
   outputFile=OutName;
-  
-  if (!DGPtr)
-    DGPtr=new DivideGrid(DefMat);
-  DGPtr->loadXML(loadFile,objName);
-  return;
+
+  ELog::EM<<"INCOMPLETE CODE"<<ELog::endErr;
+  return 0;
 }
+
 
   
 void
@@ -353,17 +368,11 @@ LayerDivide1D::divideCell(Simulation& System,const int cellN)
       const std::string ACut=
         ModelSupport::getComposite(SMap,aIndex,"1 -2");
       
-      const int Mat=DGPtr->getMaterial(i+1,0,0);
-      ELog::EM<<"ADD Cell"<<ACut<<ELog::endDiag;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
-                                       ACut+divider));
-      ELog::EM<<"Post Remove"<<ELog::endDiag;
+      const int Mat(AMat[i]);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,ACut+divider));
       attachSystem::CellMap::addCell("LD1:"+layerNum,cellIndex-1);
     }
   System.removeCell(cellN);
-  ELog::EM<<"Post Remove"<<ELog::endDiag;
-  if (DGPtr && !outputFile.empty())
-    DGPtr->writeXML(outputFile,objName,ALen,ALen,ALen);
 
   return;
 }

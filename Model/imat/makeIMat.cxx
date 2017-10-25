@@ -3,7 +3,7 @@
  
  * File:   imat/makeIMat.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,29 +109,21 @@ makeIMat::build(Simulation* SimPtr,
   // For output stream
   ELog::RegMethod RControl("makeIMat","build");
   
-  int isoFlag(0);
   // Exit if no work to do:
   if (IParam.flag("exclude") && 
       (IParam.compValue("E",std::string("IMat")) ||
        IParam.compValue("E",std::string("Imat"))) ) 
     return;
 
-  if (IParam.flag("isolate") && 
-      (IParam.compValue("I",std::string("IMat")) ||
-       IParam.compValue("I",std::string("Imat"))) )
-    isoFlag=1;
-
   const shutterSystem::BulkInsert* IS=
     dynamic_cast<const shutterSystem::BulkInsert*>
     (BulkObj.getInsert(shutterSystem::BulkShield::imatShutter));
   if (!IS)
-    ELog::EM<<"NO Insert "<<ELog::endErr;
-
-  if (IS)
-    {
-      G1Obj->addInsertCell("Wall",74123);
-      G1Obj->createAll(*SimPtr,*IS);
-    }
+    throw ColErr::DynamicConv("imatShutter","BulkInsert"," BI not found");
+  
+  G1Obj->addInsertCell("Wall",74123);
+  G1Obj->createAll(*SimPtr,*IS);
+  
  
   return;
 }

@@ -105,6 +105,7 @@ PipeVariables(FuncDataBase& Control)
   Control.addVariable("CTubeWLayerThick4",5.0);
   Control.addVariable("CTubeWLayerThick5",5.0);
   
+  Control.addVariable("pointSourceXStep",1.0);
   Control.addVariable("diskSourceXStep",0.0);
   Control.addVariable("diskSourceYStep",1.0);
   Control.addVariable("diskSourceZStep",0.0);

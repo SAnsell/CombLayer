@@ -47,9 +47,16 @@ public:
   explicit Range(const T&);
   Range(const T&,const T&);
 
-  bool
-  operator<(const Range<T>& A) const
+  /// Comparitor operator
+  bool  operator<(const Range<T>& A) const
     { return  (high < A.low) ? 1 : 0; }
+  /// Equal operator
+  bool operator==(const Range<T>& A) const
+    { return  (low==A.low && high==A.high) ? 1 : 0; }
+
+  /// Inequality operator
+  bool operator!=(const Range<T>& A) const
+  { return  !(this->operator==(A)); }
 
   bool valid(const T&) const;
   bool overlap(const Range<T>&,const T& =T(0)) const;

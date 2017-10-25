@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/InnerTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -94,7 +95,6 @@ InnerTarget::InnerTarget(const InnerTarget& A) :
   constructSystem::TargetBase(A),
   tarIndex(A.tarIndex),cellIndex(A.cellIndex),
   frontPlate(A.frontPlate),backPlate(A.backPlate),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   mainLength(A.mainLength),coreRadius(A.coreRadius),
   cladThick(A.cladThick),waterThick(A.waterThick),
   pressThick(A.pressThick),voidThick(A.voidThick),
@@ -126,9 +126,6 @@ InnerTarget::operator=(const InnerTarget& A)
       cellIndex=A.cellIndex;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       mainLength=A.mainLength;
       coreRadius=A.coreRadius;
       cladThick=A.cladThick;
@@ -174,18 +171,16 @@ InnerTarget::~InnerTarget()
 {}
 
 void
-InnerTarget::populate(const Simulation& System)
+InnerTarget::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
-  const FuncDataBase& Control=System.getDataBase();
+  ELog::RegMethod RegA("InnerTarget","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
+  attachSystem::FixedOffset::populate(Control);
+  
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   coreRadius=Control.EvalVar<double>(keyName+"CoreRadius");
   cladThick=Control.EvalVar<double>(keyName+"CladThick");
@@ -226,20 +221,22 @@ InnerTarget::populate(const Simulation& System)
 }
 
 void
-InnerTarget::createUnitVector(const attachSystem::FixedComp& FC)
+InnerTarget::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed unit for origin + xyz
+    \param sideIndex :: sideOffset
   */
 {
   ELog::RegMethod RegA("InnerTarget","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
-  std::vector<Geometry::Vec3D>::iterator vc;
-  for(vc=sCent.begin();vc!=sCent.end();vc++)
-    *vc= Origin+X*vc->X()+Y*(vc->Y()-sphRadius+sphYStep)+Z*vc->Z();
+  for(Geometry::Vec3D& sPt : sCent)
+    sPt= Origin+X* sPt.X()+ Y* (sPt.Y()-sphRadius+sphYStep)+Z*sPt.Z();
+
   return;
 }
 
@@ -476,32 +473,6 @@ InnerTarget::createLinks()
   return;
 }
 
-void
-InnerTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("InnerTarget","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();
-      
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	  (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,0);  // 2 => front face of target
-    }
-  return;
-}
 
 
 void
@@ -519,7 +490,7 @@ InnerTarget::addProtonLine(Simulation& System,
 
   // 0 ::  front fact of target
   PLine->createAll(System,*this,0,refFC,index);
-  createBeamWindow(System);
+  createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
   return;
@@ -537,12 +508,11 @@ InnerTarget::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("InnerTarget","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,0);
   createSurfaces();
   createObjects(System);
   createLinks();
-  createBeamWindow(System);
   insertObjects(System);
 
 
@@ -551,4 +521,4 @@ InnerTarget::createAll(Simulation& System,
 
 
   
-}  // NAMESPACE TMRsystem
+}  // NAMESPACE ts1System

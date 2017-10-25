@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/VESPA.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 namespace attachSystem
 {
   class FixedComp;
-  class TwinComp;
   class CellMap;
 }
 
@@ -42,12 +41,13 @@ namespace constructSystem
   class Jaws;
   class JawSet;
   class LineShield;
+  class TriangleShield;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
+  class TwinChopper;
   class HoleShape;
   class CrystalMount;
   class TubeDetBox;  
@@ -57,6 +57,7 @@ namespace essSystem
 {  
   class GuideItem;
   class VespaHut;
+  class VespaInner;
   class DetectorTank;
 
   /*!
@@ -88,7 +89,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> WFMDiskA;
   
@@ -98,7 +99,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> WFMDiskB;
 
@@ -108,7 +109,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> WFMDiskC;
 
@@ -118,7 +119,7 @@ class VESPA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskA;
 
@@ -138,25 +139,23 @@ class VESPA : public attachSystem::CopiedComp
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitT0;
   /// Quad chopper housing 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
   /// T0 chopper [15.5m]
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> T0ExitPort;
-
-
   
   /// Shield for Chopper Out-A
   std::shared_ptr<constructSystem::ChopperPit> OutPitA;
   /// First outer shield section
-  std::shared_ptr<constructSystem::LineShield> ShieldA;
+  std::shared_ptr<constructSystem::TriangleShield> ShieldA;
   /// First Vac pipe out of bunker
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
   /// Tapered guide out of bunker
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutA;
 
   /// Vac box for First Out-of-bunker chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
 
   /// Shield for Chopper Out-B
   std::shared_ptr<constructSystem::ChopperPit> OutPitB;
@@ -169,21 +168,21 @@ class VESPA : public attachSystem::CopiedComp
   /// Double disk chopper [Frame overlap chopper]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
   /// Shield out of PitA
-  std::shared_ptr<constructSystem::LineShield> ShieldB;
+  std::shared_ptr<constructSystem::TriangleShield> ShieldB;
   /// Vac pipe out of PitA
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
   /// Tapered guide out of PitA
   std::shared_ptr<beamlineSystem::GuideLine> FocusOutB;
 
   /// Shield from PitA to PitC
-  std::vector<std::shared_ptr<constructSystem::LineShield>> ShieldArray;
+  std::vector<std::shared_ptr<constructSystem::TriangleShield>> ShieldArray;
   /// Vac pipe out of PitB to PitC
   std::vector<std::shared_ptr<constructSystem::VacuumPipe>> VPipeArray;
   /// Segment from PitB to Pit C
   std::vector<std::shared_ptr<beamlineSystem::GuideLine>> FocusArray;
   
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// Double disk chopper [Wavelength Frame multiplication]
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutB;
 
@@ -196,20 +195,22 @@ class VESPA : public attachSystem::CopiedComp
 
   /// Vespa hut
   std::shared_ptr<VespaHut> Cave;
+  /// Vespa Inner cave
+  std::shared_ptr<VespaInner> VInner;
+  /// Vespa Inner cave exit
+  std::shared_ptr<constructSystem::HoleShape> VInnerExit;
 
   /// Jaws in cave
   std::shared_ptr<constructSystem::JawSet> VJaws;
-
   /// Sample
   std::shared_ptr<instrumentSystem::CylSample> Sample;
   /// Cryostat
   std::shared_ptr<constructSystem::Cryostat> Cryo;
 
-  /// Array of crystals and detectors
+  /// Array of crystals
   std::vector<std::shared_ptr<constructSystem::CrystalMount>> XStalArray;
+  /// Array of detectors
   std::vector<std::shared_ptr<constructSystem::TubeDetBox>> ADetArray;
-
-  void setBeamAxis(const GuideItem&,const bool);
 
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);

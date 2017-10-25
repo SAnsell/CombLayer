@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/pairRange.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "MatrixBase.h"
+#include "Vec3D.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "pairRange.h"
@@ -97,6 +99,29 @@ pairRange::operator=(const pairRange& A)
       Items=A.Items;
     }
   return *this;
+}
+
+bool
+pairRange::operator==(const pairRange& A) const
+  /*!
+    boolean equal operator
+    \param A :: Object to check
+    \return true if equal
+  */
+{
+  if(&A==this) return 1;
+  
+  if (Items.size()!=A.Items.size()) return 0; 
+  
+  for(size_t i=0;i<Items.size();i++)
+    {
+      const PTYPE::value_type& AValue=Items[i];
+      const PTYPE::value_type& BValue=A.Items[i];
+      if (std::abs(AValue.first-BValue.first)>Geometry::zeroTol ||
+          std::abs(AValue.second-BValue.second)>Geometry::zeroTol)
+        return 0;
+    }
+  return 1;
 }
 
 pairRange::~pairRange()

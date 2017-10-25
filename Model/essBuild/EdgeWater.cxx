@@ -195,34 +195,6 @@ EdgeWater::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
-void
-EdgeWater::createLinks()
-  /*!
-    Construct links for edge water unit
-    First 6 are the normal x,y,z 
-  */
-{
-  ELog::RegMethod RegA("EdgeWater","createLinks");
-
-  std::string Out;
-  HeadRule HR;
-
-  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 203 ");
-  HR.procString(Out);
-  HR.makeComplement();
-  FixedComp::setLinkSurf(2,HR);
-  FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
-  
-  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 -204 ");
-  HR.procString(Out);
-  HR.makeComplement();
-  FixedComp::setConnect(3,Origin+X*(wallThick+cutWidth/2.0),X);
-  FixedComp::setLinkSurf(3,HR);
-  
-  return;
-}
-  
-
 
 void
 EdgeWater::createSurfaces()
@@ -304,7 +276,32 @@ EdgeWater::createObjects(Simulation& System,
   return;
 }
 
+void
+EdgeWater::createLinks()
+  /*!
+    Construct links for edge water unit
+    First 6 are the normal x,y,z 
+  */
+{
+  ELog::RegMethod RegA("EdgeWater","createLinks");
 
+  std::string Out;
+  HeadRule HR;
+
+  Out=ModelSupport::getComposite(SMap,edgeIndex," 11 203 ");
+  HR.procString(Out);
+  HR.makeComplement();
+  FixedComp::setLinkSurf(2,HR);
+  FixedComp::setConnect(2,Origin-X*(wallThick+cutWidth/2.0),-X);
+  
+  Out=ModelSupport::getComposite(SMap,edgeIndex," -12 -204 ");
+  HR.procString(Out);
+  HR.makeComplement();
+  FixedComp::setConnect(3,Origin+X*(wallThick+cutWidth/2.0),X);
+  FixedComp::setLinkSurf(3,HR);
+  
+  return;
+}
   
 Geometry::Vec3D
 EdgeWater::getSurfacePoint(const size_t,

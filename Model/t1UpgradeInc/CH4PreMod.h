@@ -45,7 +45,7 @@ class CH4PreMod : public CH4PreModBase
   double frontExt;              ///< +ve beyond moderator
   double backExt;               ///< +ve beyond moderator
   
-  size_t touchSurf;             ///< Touching surfae [if exist]
+  long int touchSurf;             ///< Touching surfae [if exist]
 
   double alThick;        ///< Al wall thickness
   double vacThick;       ///< Vac wall thickness
@@ -60,13 +60,13 @@ class CH4PreMod : public CH4PreModBase
   std::vector<Geometry::Vec3D> sideAxis;
   
   void getConnectPoints(const attachSystem::FixedComp&,
-			const size_t);
+			const long int);
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-  void createSurfaces(const attachSystem::FixedComp&,const size_t);
+  void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createLinks();
   
  public:
@@ -86,7 +86,7 @@ class CH4PreMod : public CH4PreModBase
     getLayerString(const size_t,const long int) const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const size_t);
+		 const long int,const long int);
 
 };
 

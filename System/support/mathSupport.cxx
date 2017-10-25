@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,19 +39,20 @@
 */
 
 double
-logFromLinear(const double A,const double B,const size_t N,
-	      const size_t index)
+mathFunc::logFromLinear(const double A,const double B,const size_t N,
+                        const size_t index)
   /*!
     Calculate the log step in a range A-B
     \param A :: Low range 
     \param B :: High range 
-    \param N :: Numbero step [not checked]
+    \param N :: Number of steps [not checked]
     \param index :: value at step size [index between 0 - N] 
     \return value at log(Index)
   */
 {
-  const double step(log(fabs((B-A)/A))/N);
-  return (A>B) ? B*exp(index*step) : A*exp(index*step);
+  const double step(static_cast<double>(index)*
+		    log(fabs((B-A)/A))/static_cast<double>(N));
+  return (A>B) ? B*exp(step) : A*exp(step);
 }
   
 
@@ -547,6 +548,8 @@ d2dxQuadratic(const typename std::vector<T>::const_iterator& Xpts,
   return A*static_cast<T>(2.0);
 }
 
+
+
 template<typename T>
 long int
 mathFunc::binSearch(const typename std::vector<T>::const_iterator& pVecB,
@@ -730,6 +733,38 @@ mathFunc::Swap(T& A,T& B)
   return;
 }
 
+double
+mathFunc::logAdd(const double& A,const double& B)
+  /*!
+    Add up to value that are exp
+    Equivilent of log(exp(A)+exp(B))
+    \param A :: log value to add
+    \param B :: log value to add
+    \return log(exp(A)+exp(B))
+  */
+{
+  return std::max(A,B) +
+    std::log(1.0+exp(-std::abs(A-B)));
+}
+
+double
+mathFunc::logSubtract(const double& A,const double& B)
+  /*!
+    Add up to value that are exp
+    Equivilent of log(exp(A)+exp(B))
+    \param A :: log value to add
+    \param B :: log value to add
+    \return log(exp(A)+exp(B))
+  */
+{
+   if(A <= B)
+     {
+       throw ColErr::OrderError<double>
+         (A,B,"logSubtract:B > A:");
+     }
+   return A+std::log(1.0+exp(-(B-A)));
+ }
+
 ///\cond TEMPLATE 
 
 namespace Geometry
@@ -737,12 +772,6 @@ namespace Geometry
   class Surface;
 }
  
-// template
-// size_t solveQuadratic(const double*,
-//        std::pair<std::complex<double>,std::complex<double> >&);
-// template
-// size_t solveQuadratic(const std::vector<double>::const_iterator,
-//        std::pair<std::complex<double>,std::complex<double> >&);
 
 template std::complex<double> 
 polFit(const double&,const unsigned int,

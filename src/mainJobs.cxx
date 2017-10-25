@@ -62,7 +62,7 @@
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"
-#include "meshTally.h"
+#include "tmeshTally.h"
 #include "MatMD5.h"
 #include "MD5sum.h"
 #include "Visit.h"
@@ -87,10 +87,10 @@ createVTK(const mainSystem::inputParam& IParam,
 
   if (IParam.flag("md5") || IParam.flag("vtk"))
     {
-      const tallySystem::meshTally* MPtr=
-	dynamic_cast<const tallySystem::meshTally*>(SimPtr->getTally(1));
+      const tallySystem::tmeshTally* MPtr=
+	dynamic_cast<const tallySystem::tmeshTally*>(SimPtr->getTally(1));
       if (!MPtr)
-	MPtr=dynamic_cast<const tallySystem::meshTally*>(SimPtr->getTally(3));
+	MPtr=dynamic_cast<const tallySystem::tmeshTally*>(SimPtr->getTally(3));
       if (!MPtr)
 	{
 	  ELog::EM<<"Tally == "<<SimPtr->getTally(1)<<ELog::endCrit;
@@ -99,9 +99,10 @@ createVTK(const mainSystem::inputParam& IParam,
 	  return -1;
 	}
 
-      const Triple<size_t>& MPts=MPtr->getNPt();
+      const std::array<size_t,3>& MPts=MPtr->getNPt();
       const Geometry::Vec3D& MeshA=MPtr->getMinPt();
       const Geometry::Vec3D& MeshB=MPtr->getMaxPt();
+      
       if (IParam.flag("md5"))
 	{
 	  ELog::EM<<"Processing MD5:"<<ELog::endBasic;
