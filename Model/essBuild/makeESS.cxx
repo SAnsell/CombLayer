@@ -159,7 +159,7 @@ makeESS::makeESS() :
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain")),
-  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding"))
+  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
 
   ABHighBay(new HighBay("ABHighBay")),
   CDHighBay(new HighBay("CDHighBay"))
@@ -1012,7 +1012,7 @@ makeESS::buildPreWings(Simulation& System)
     {
       TopPreWingA = std::shared_ptr<PreModWing>
         (new PreModWing("TopLeftPreWing"));
-      
+    
       OR.addObject(TopPreWingA);
       TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
       TopPreWingA->setInnerExclude(TMod->getLeftExclude());
@@ -1162,10 +1162,11 @@ makeESS::build(Simulation& System,
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
 
-<<<<<<< HEAD
   if (lowModType != "None")
     LowCapMod->createAll(System,*LowMod,6,false,
 			 0.0,Reflector->getRadius());
+
+  buildPreWings(System);
 
   if (lowModType != "None")
     Reflector->createAll(System,World::masterOrigin(),
@@ -1177,18 +1178,7 @@ makeESS::build(Simulation& System,
 			 Target->wheelHeight(),
 			 0.0,
 			 TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
-=======
-  LowCapMod->createAll(System,*LowMod,6,false,
-   		       0.0,Reflector->getRadius());
-  buildPreWings(System);
-  
-  Reflector->createAll(System,World::masterOrigin(),0,
-		       Target->wheelHeight(),
-		       LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight(),
-		       TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight());
->>>>>>> master
 
-  buildPreWings(System);
 
   Reflector->insertComponent(System,"targetVoid",*Target,1);
   Reflector->deleteCell(System,"lowVoid");
@@ -1252,7 +1242,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
   
-  PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
+  /*  PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
@@ -1260,7 +1250,7 @@ makeESS::build(Simulation& System,
   // 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
 				    PBeam->getCC("Sector3"));
-
+  */
   if (engActive)
       buildTwister(System);
   else {
