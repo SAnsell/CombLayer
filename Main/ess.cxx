@@ -113,10 +113,10 @@ main(int argc,char* argv[])
       if (!SimPtr) return -1;
       
       // The big variable setting
-      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       const std::set<std::string> beamlines=
         IParam.getComponents<std::string>("beamlines",1);
       setVariable::EssVariables(SimPtr->getDataBase(),beamlines);
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam); // kbat: for me does not work if called before setVariable::EssVariables => had to move it here
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
