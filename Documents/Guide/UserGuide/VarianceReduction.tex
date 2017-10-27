@@ -8,24 +8,40 @@ Cell-based weight window can be generated with the following arguments:
 
 \begin{description}
 \item[-defaultConfig Single ODIN -angle objAxis odinAxis 0] These optional arguments build the ODIN beam line
-  and rotate geometry around the $z$ axis in such a way that the ODIN beam line is collinear to the $x$ axis.
+  and rotate geometry around the $z$ axis in such a way that ODIN is collinear to the $x$ axis.
   This rotation simplifies the weight window source plane setup for the current example and used here for
   illustration purpose~(see \figref{fig:vr:cell}).
 \item[-w] should precede all weight-related arguments.
+\item[--weightEnergyType] defines energy grid\footnote{With the {\tt wwg} card you can either use this expression or {\tt --wwgE}.}.
+  The following variants of syntax are possible:
+  \begin{enumerate}
+    \item If use use the word {\em energy} then the format is energy followed by default weight for that bin
+      (in our example: for energies below \SI{0.1}{\mega\electronvolt} the default weight is 0.95 etc).
+    \item If you drop the word {\em energy} then you just set the energy grid without specifying default weights.
+    \item Alternatively you can use pre-defined keywords:
+      {\tt basic}, {\tt high}, {\tt mid} and {\tt flat}\footnote{Energy-weight binnings for these keywords are defined in \tt{System/weights/WeightControl.cxx}}.
+    \end{enumerate}
 \item[--weightSource] This argument defines points in space. We can define as many as we want, but only those used with {\tt weightObject} will be used. This particular point is shown by a circle in \figref{fig:vr:cell:labels}.
 \item[--weightPlane] This argument defines planes. We can define as many as we want, but only those used with {\tt weightObject} will be used. This particular plane is shown by a dashed vertical line in \figref{fig:vr:cell:labels}.
-\item[--weightObject] {\tt BBunkerWallMainWall1 TP1 1.0 0.15 1e-20 }: object we are interested in calculating; {\tt TP1}: tally plane 1;
+\item[--weightObject] Define objects we would like to make cell-based variance reduction to.
+  \begin{description}
+  \item[G2BLineTop20] Object name.  It's also possible to specify range of objects within an object or cell name via {\tt CellMap}.
+    \item[SS0] Refer to the first simple source term (the point defined via {\bf weightSource} above)  % 00:10
+    \item[0.0] Energy cut. Defines min energy for variance reduction (i.e. no variance reduction below this energy will be made~--- default weight will be used \alert{The weight defined in weightEnergyType?}).
+    \item[scaleFactor=1.0] Linear scale factor. You are going to work out an exponent which is the scattering term into something. It's $\exp(-\sigma \rho / r^2)$.
+      It's transport to go from {\em a} cell to another cell. \alert{Scale factor is taken out in the mesh based variance reduction.}
+    \item[0.9] Density scale factor. Normally we set it a bit less than one to make it easier to transport through thick layers.
+    \item[1.0] Length scale factor \alert{Do not understand}
+    \item[2.0] Scale for the length exponent in $r^2$.
+  \end{description}
+
+ {\tt TP1}: tally plane 1;
   \mbox{\tt 1.0 1.0 0.15 1e-20}: energy above \SI{1}{\mega\electronvolt} (below it we are not interested~--- use default values);
   {\tt 1.0}: scale factor; 
   {\tt 0.15}: density factor; {\tt 1e-20}: minimum weight % 41:12
-\item[--weightEnergyType] defines energy grid. With the {\tt wwg} card you can either use this expression or {\tt --wwgE}.
-  If use use the word ``energy'' then the format is energy (below \SI{0.1}{\mega\electronvolt}) followed by default weight for that bin (0.95) etc.
-  If you drop the word ``energy'' then you just set the energy grid.
-  In the given example for energies below  the default weight is 0.95 etc.
-  Alternatively you can use pre-defined keywords:
-  {\tt basic}, {\tt high}, {\tt mid} and {\tt flat}\footnote{Energy-weight binnings for these keywords are defined in \tt{System/weights/WeightControl.cxx}}.
-\item[--voidUnMask] By default (without this argument) the importance of the surrounding void cell is zero. This argument sets it to one.
+\item[--voidUnMask] By default the importance of the surrounding void cell is 0. This argument sets it to 1.
   It can be useful if we believe that particles travelling through the void cell can contribute into the tally.
+  It's always recommended to put this flag unless you really understand what you are doing.
 
 \item[--weightObject] 
 $\underset{
@@ -39,6 +55,15 @@ $\underset{
 }{\text{BBunkerWallMainWall1 TP1 1.0 0.15 1e-20}}$
 
 \end{description}
+
+\paragraph{Notes}
+\begin{itemize}
+\item In order to set up biasing, you need at least one source and one tally. If several tallies are used, then the previous tally is called {\em joint} and servers as a source for the current one.
+\item Source can be defined either as a point (via {\bf --weightSource}) or a plane (via {\bf --weightPlane}). In the example above we defined point source.
+  However the defined sources and planes do nothing until you use them in {\bf --weightObject} or somewhere else.
+\item General rule to get the things into work: try different setups and compare results. Then you renormalise it back out again. It's just basically numerical level game.
+  Very often SA scales by this and then rescales by that.
+\end{itemize}
 
 
 \begin{landscape}
