@@ -104,6 +104,8 @@ class Simulation
 
   TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
+
+  std::string sourceName;                 ///< Source name
   
   // METHODS:
 
@@ -169,6 +171,8 @@ class Simulation
   /// Get PhysicsCards
   physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
 
+  /// set Source name
+  void setSourceName(const std::string& S) { sourceName=S; }
   
   const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells

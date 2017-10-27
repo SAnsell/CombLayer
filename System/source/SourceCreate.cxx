@@ -104,7 +104,8 @@ createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
 
   bilSource.createAll(World::masterOrigin(),0);
   bilSource.createSource(sourceCard);
-  
+
+  SDB.registerSource(bilSource.getKeyName(),bilSource);
   return;
 }
 
@@ -258,63 +259,28 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createTS1Source");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
   const double xShift=Control.EvalDefVar<double>("sdefXOffset",0.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
   const double zShift=Control.EvalDefVar<double>("sdefZOffset",0.0);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
-
   const double xRange=Control.EvalDefVar<double>("sdefWidth",4.5);
-  const double xStep(xRange/16.0);  
-  std::vector<double> XPts;
-  std::vector<double> XProb;
-  double XValue= -xRange-xStep;
-  do
-    {
-      XValue+=xStep;
-      XPts.push_back(XValue+xShift);
-      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-    } while (XValue<xRange);
-
   const double zRange=Control.EvalDefVar<double>("sdefHeight",4.5);
-  const double zStep(zRange/16.0);  
-  std::vector<double> ZPts;
-  std::vector<double> ZProb;
-  double ZValue= -zRange-zStep;
-  do
-    {
-      ZValue+=zStep;
-      ZPts.push_back(ZValue+zShift);
-      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-    } while (ZValue<zRange);
-
-  SrcData D1(1);  
-  SrcData D2(2);
   
-  SrcInfo SI1('A');
-  SrcInfo SI2('A');
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
+  ParabolicSource ts1Beam("TS1Source");
 
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(XProb);
-  SP2.setData(ZProb);
+  ts1Beam.setParticle(1);
+  ts1Beam.setEnergy(E);
+  ts1Beam.setOffset(xShift,yStart,zShift);
+  ts1Beam.setRectangle(xRange,zRange);
 
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
+  ts1Beam.createAll(World::masterOrigin(),0);
+  ts1Beam.createSource(sourceCard);
 
+  SDB.registerSource(ts1Beam.getKeyName(),ts1Beam);
+  
   return;
 }
 
@@ -337,9 +303,14 @@ createPointSource(const FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("SourceCreate","createPointSource(FC,link)");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
   PointSource GX(keyName);
-  GX.setDefaultStep(D);
-  GX.createAll(Control,FC,linkIndex,Card);
+
+  //  GX.setDefaultStep(D);
+  GX.createAll(Control,FC,linkIndex);
+  
   return;
 }
   
@@ -371,11 +342,11 @@ createPointSource(const FuncDataBase& Control,
       else
 	ELog::EM<<"DObj "<<DVec<<" not understood "<<ELog::endErr;
       
-      GX.setDefaultStep(DOffsetStep);
+      //      GX.setDefaultStep(DOffsetStep);
     }
 
 
-  GX.createAll(Control,Card);
+  GX.createAll(Control,World::masterOrigin(),0);
   return;
 }
 
@@ -489,7 +460,7 @@ createGaussianSource(Source& sourceCard,
 		     const double yStart,
 		     const double width)
   /*!
-    Creates a target 1 proton source [gaussian]
+    Creates a gausian type 1 proton source [gaussian]
     \param sourceCard :: Source system
     \param E :: Energy [meV]
     \param yStart :: y Position 

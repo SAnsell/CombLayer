@@ -1087,6 +1087,7 @@ PhysicsCards::write(std::ostream& OX,
   DXTCard->write(OX);
   
   LEA.write(OX);
+
   sdefCard.write(OX);
   kcodeCard.write(OX);
   
