@@ -496,6 +496,20 @@ WCells::writeHead(std::ostream& OX) const
   return;
 }
 
+void 
+WCells::writePHITSHead(std::ostream& OX) const
+  /*!
+    Write out the header section from the file
+    \param OX :: Output stream
+  */
+{
+  OX<<" mwhere      = "<<mwhere<<std::endl;
+  OX<<" wupn        = "<<wupn<<std::endl;
+  OX<<" wsurvn      = "<<wsurv<<std::endl;
+  OX<<" maxspln     = "<<maxsp<<std::endl;
+  return;
+}
+
 
 void
 WCells::writePHITS(std::ostream& OX) const

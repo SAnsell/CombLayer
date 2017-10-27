@@ -58,7 +58,8 @@ class weightManager
   static weightManager& Instance();
   ~weightManager();
   
-  WForm* getParticle(const char);
+  bool hasParticle(const char) const;
+  WForm* getParticle(const char) const;
   WWG& getWWG();
   const WWG& getWWG() const;
   template<typename T> void addParticle(const char);

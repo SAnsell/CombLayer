@@ -120,8 +120,20 @@ weightManager::getWWG() const
 }
 
   
+bool
+weightManager::hasParticle(const char c) const
+  /*!
+    Determine if a specific particle type exists
+    \param c :: Particle identifier
+    \return true if exists
+  */
+{
+  CtrlTYPE::const_iterator mc=WMap.find(c);
+  return (mc==WMap.end()) ? 0 : 1;
+}
+  
 WForm*
-weightManager::getParticle(const char c)
+weightManager::getParticle(const char c) const
   /*!
     Get a specific particle type
     \param c :: Particle identifier
@@ -129,7 +141,7 @@ weightManager::getParticle(const char c)
   */
 {
   ELog::RegMethod RegA("weightManager","getParticle");
-  CtrlTYPE::iterator mc=WMap.find(c);
+  CtrlTYPE::const_iterator mc=WMap.find(c);
   if (mc==WMap.end())
     throw ColErr::InContainerError<char>(c,"particle not found");
   return mc->second;

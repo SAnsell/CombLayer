@@ -170,6 +170,47 @@ FixedOffset::populate(const std::string& baseName,
   return;
   
 }
+
+void
+FixedOffset::setPreRotation(const double XYA,const double ZA)
+  /*!
+    Set the Pre-rotation values 
+    \param XYA :: xy angle rotation
+    \param ZA :: xy angle rotation
+   */
+{
+  preXYAngle=XYA;
+  preZAngle=ZA;
+  return;
+}
+
+void
+FixedOffset::setRotation(const double XYA,const double ZA)
+  /*!
+    Set the Potation values 
+    \param XYA :: xy angle rotation
+    \param ZA :: xy angle rotation
+   */
+{
+  xyAngle=XYA;
+  zAngle=ZA;
+  return;
+}
+
+void
+FixedOffset::setOffset(const double XS,const double YS,const double ZS)
+  /*!
+    Set the Potation values 
+    \param XS :: xStep
+    \param YS :: yStep
+    \param ZS :: zStep
+   */
+{
+  xStep=XS;
+  yStep=YS;
+  zStep=ZS;
+  return;
+}
   
 void
 FixedOffset::applyOffset()

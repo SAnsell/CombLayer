@@ -94,6 +94,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
+#include "WForm.h"
 #include "ModeCard.h"
 #include "LSwitchCard.h"
 #include "PhysCard.h"
@@ -138,9 +139,26 @@ SimPHITS::operator=(const SimPHITS& A)
 
 
 void
+SimPHITS::writeSource(std::ostream& OX) const
+  /*!
+    Writes out the sources 
+    construction.
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimPHITS","writeSource");
+
+  OX<<"[Source]"<<std::endl;
+  //  sdefCard.writePHITS(OX);
+  
+
+  return;
+}
+
+void
 SimPHITS::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
+    Writes out the tallies 
     construction.
     \param OX :: Output stream
    */
@@ -167,12 +185,12 @@ SimPHITS::writeTransform(std::ostream& OX) const
   */
 
 {
-  OX<<"[transform]"<<std::endl;
-
-  TransTYPE::const_iterator vt;
-  for(vt=TList.begin();vt!=TList.end();vt++)
+  if (!TList.empty())
     {
-      vt->second.write(OX);
+      OX<<"[transform]"<<std::endl;
+      TransTYPE::const_iterator vt;
+      for(vt=TList.begin();vt!=TList.end();vt++)
+	vt->second.write(OX);
     }
   return;
 }
@@ -198,7 +216,7 @@ SimPHITS::writeCells(std::ostream& OX) const
   for(mp=OList.begin();mp!=OList.end();mp++)
     {
       const double T=mp->second->getTemp();
-      if (fabs(T-300.0)>1.0)
+      if (std::abs(T-300.0)>1.0 || std::abs<double>(T)>1e-6)
 	{
 	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e11);
 	}
@@ -284,6 +302,9 @@ SimPHITS::writePhysics(std::ostream& OX) const
   ELog::RegMethod RegA("SimPHITS","writePhysics");
   // Processing for point tallies
 
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+
   boost::format FMT("%1$8.0d ");
   OX<<"[Parameters]"<<std::endl;
 
@@ -294,9 +315,19 @@ SimPHITS::writePhysics(std::ostream& OX) const
   OX<<" file(1)     = /home/stuartansell/phits"<<std::endl;  
   OX<<" file(6)     = phits.out"<<std::endl;
   OX<<" rseed       =        "<<(FMT % PhysPtr->getRNDseed())<<std::endl;  
-
+  
   PhysPtr->writePHITS(OX);
+
+
+  if (WM.hasParticle('n'))
+    {
+      const WeightSystem::WForm* NWForm=WM.getParticle('n');
+      NWForm->writePHITSHead(OX);
+    }
+  
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+
+  
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
 }
@@ -318,8 +349,10 @@ SimPHITS::write(const std::string& Fname) const
   writeSurfaces(OX);
   writeMaterial(OX);
   writeWeights(OX);
+  writeTransform(OX);
   writeTally(OX);
-
+  writeSource(OX);
+  
   OX.close();
   return;
 }

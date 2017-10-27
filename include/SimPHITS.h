@@ -36,6 +36,7 @@ class SimPHITS : public Simulation
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;

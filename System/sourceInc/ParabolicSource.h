@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   sourceInc/SurfNormSource.h
+ * File:   sourceInc/ParabolicSource.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,54 +19,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_SurfNormSource_h
-#define SDef_SurfNormSource_h
+#ifndef SDef_ParabolicSource_h
+#define SDef_ParabolicSource_h
 
 namespace SDef
 {
   class Source;
+  class SourceBase;
 }
 
 namespace SDef
 {
 
 /*!
-  \class SurfNormSource
+  \class ParabolicSource
   \version 1.0
   \author S. Ansell
-  \date September 2015
-  \brief Creat a source on the +/- of a surface
+  \date November 2014
+  \brief Adds gamma ray circular divergent source
 */
 
-class SurfNormSource :
-  public attachSystem::FixedOffset
+class ParabolicSource : 
+  public attachSystem::FixedOffset,
   public SourceBase
 {
  private:
     
-  double angleSpread;           ///< Angle from normal
-  int surfNum;                  ///< Surfacte number
-  double widht;                 ///< Width of source
-  double height;                ///< Height of source
-    
+  double width;                 ///< width
+  double height;                ///< height
+
   void populate(const FuncDataBase& Control);
-  void setSurf(const attachSystem::FixedComp&,
+  void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
  public:
 
-  SurfNormSource(const std::string&);
-  SurfNormSource(const SurfNormSource&);
-  SurfNormSource& operator=(const SurfNormSource&);
-  ~SurfNormSource();
+  ParabolicSource(const std::string&);
+  ParabolicSource(const ParabolicSource&);
+  ParabolicSource& operator=(const ParabolicSource&);
+  virtual ParabolicSource* clone() const;
+  virtual ~ParabolicSource();
 
-  void loadEnergy(const std::string&);
+  void setRectangle(const double,const double);
   
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
+  void createAll(const attachSystem::FixedComp&,const long int);
 
-  void createSource(Source&);
-  
+
+  virtual void createSource(SDef::Source&) const;
+  virtual void write(std::ostream&) const;
+  virtual void writePHITS(std::ostream&) const;
 };
 
 }

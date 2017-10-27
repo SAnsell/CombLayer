@@ -104,7 +104,6 @@ class Simulation
 
   TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
-  //  WeightSystem::WeightControl* WCtrlPtr;  ///< Weight control pointer
   
   // METHODS:
 

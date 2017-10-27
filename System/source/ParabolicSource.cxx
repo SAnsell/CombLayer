@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/BeamSource.cxx
+ * File:   source/ParabolicSource.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -63,36 +63,35 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
-
 #include "SourceBase.h"
-#include "BeamSource.h"
+#include "ParabolicSource.h"
 
 namespace SDef
 {
 
-BeamSource::BeamSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),SourceBase(),
-  radius(1.0),angleSpread(0)
+ParabolicSource::ParabolicSource(const std::string& keyName) : 
+  attachSystem::FixedOffset(keyName,0),
+  SourceBase()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
   */
 {}
 
-BeamSource::BeamSource(const BeamSource& A) : 
+ParabolicSource::ParabolicSource(const ParabolicSource& A) : 
   attachSystem::FixedOffset(A),SourceBase(A),
-  radius(A.radius),angleSpread(A.angleSpread)
+  width(A.width),height(A.height)
   /*!
     Copy constructor
-    \param A :: BeamSource to copy
+    \param A :: ParabolicSource to copy
   */
 {}
 
-BeamSource&
-BeamSource::operator=(const BeamSource& A)
+ParabolicSource&
+ParabolicSource::operator=(const ParabolicSource& A)
   /*!
     Assignment operator
-    \param A :: BeamSource to copy
+    \param A :: ParabolicSource to copy
     \return *this
   */
 {
@@ -100,121 +99,152 @@ BeamSource::operator=(const BeamSource& A)
     {
       attachSystem::FixedOffset::operator=(A);
       SourceBase::operator=(A);
-      radius=A.radius;
-      angleSpread=A.angleSpread;
+      width=A.width;
+      height=A.height;
     }
   return *this;
 }
 
-BeamSource::~BeamSource() 
+ParabolicSource::~ParabolicSource() 
   /*!
     Destructor
   */
 {}
 
-BeamSource*
-BeamSource::clone() const
+ParabolicSource*
+ParabolicSource::clone() const
   /*!
     Clone constructor
     \return copy of this
   */
 {
-  return new BeamSource(*this);
+  return new ParabolicSource(*this);
 }
   
   
-  
 void
-BeamSource::populate(const FuncDataBase& Control)
+ParabolicSource::populate(const FuncDataBase& Control)
   /*!
     Populate Varaibles
     \param Control :: Control variables
    */
 {
-  ELog::RegMethod RegA("BeamSource","populate");
+  ELog::RegMethod RegA("ParabolicSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
+  FixedOffset::populate(Control);
   SourceBase::populate(keyName,Control);
-  // default neutron
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
-
+  
+  
+  height=Control.EvalVar<double>(keyName+"Height");
+  width=Control.EvalVar<double>(keyName+"Width");
+  
   return;
 }
 
 void
-BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
+ParabolicSource::createUnitVector(const attachSystem::FixedComp& FC,
+				  const long int linkIndex)
   /*!
     Create the unit vector
     \param FC :: Fixed Componenet
     \param linkIndex :: Link index [signed for opposite side]
    */
 {
-  ELog::RegMethod RegA("BeamSource","createUnitVector");
+  ELog::RegMethod RegA("ParabolicSource","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
-
   return;
 }
   
 void
-BeamSource::createSource(SDef::Source& sourceCard) const
+ParabolicSource::setRectangle(const double W,const double H)
+  /*!
+    Set the width/height
+    \param W :: Width (full)
+    \param H :: Height (full)
+   */
+{
+  width=W;
+  height=H;
+  return;
+}
+  
+void
+ParabolicSource::createSource(SDef::Source& sourceCard) const
   /*!
     Creates a gamma bremstraual source
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("BeamSource","createSource");
-  
+  ELog::RegMethod RegA("ParabolicSource","createSource");
+
   sourceCard.setActive();
+  SourceBase::createEnergySource(sourceCard);    
 
+  sourceCard.setComp("dir",1.0);
   sourceCard.setComp("vec",Y);
-  sourceCard.setComp("axs",Y);
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
-  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
-  sourceCard.setComp("pos",Origin);
+  sourceCard.setComp("y",Origin.dotProd(Y));
+
+  const double xRange=width/2.0;
+  const double step(0.5);  
+  std::vector<double> XPts;
+  std::vector<double> XProb;
+  double XValue= -xRange-step;
+  do
+    {
+      XValue+=step;
+      XPts.push_back(XValue);
+      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
+    } while (XValue<xRange);
+
+  const double zRange=height/2.0;
+  std::vector<double> ZPts;
+  std::vector<double> ZProb;
+  double ZValue= -zRange-step;
+  do
+    {
+      ZValue+=step;
+      ZPts.push_back(ZValue);
+      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
+    } while (ZValue<zRange);
+    
+  SrcData D1(1);  
+  SrcData D2(2);
   
-  // RAD
-  SDef::SrcData D1(1);
-  SDef::SrcInfo SI1;
-  SDef::SrcProb SP1;
-  SI1.addData(0.0);
-  SI1.addData(radius);
-  SP1.setFminus(-21,1.0);
+  SrcInfo SI1('A');
+  SrcInfo SI2('A');
+  SI1.setData(XPts);
+  SI2.setData(ZPts);
+
+  SrcProb SP1;
+  SrcProb SP2;
+  SP1.setData(XProb);
+  SP2.setData(ZProb);
+
   D1.addUnit(SI1);
+  D2.addUnit(SI2);
   D1.addUnit(SP1);
-  sourceCard.setData("rad",D1);
+  D2.addUnit(SP2);
+  sourceCard.setData("x",D1);
+  sourceCard.setData("z",D2);
 
-  SourceBase::createEnergySource(sourceCard);
-
-  return;
-}  
-
-void
-BeamSource::createAll(const attachSystem::FixedComp& FC,
-		      const long int linkIndex)
-{
-  ELog::RegMethod RegA("BeamSource","createAll(FC)");
-  createUnitVector(FC,linkIndex);
   return;
 }
 
-  
 void
-BeamSource::createAll(const FuncDataBase& Control,
-		      const attachSystem::FixedComp& FC,
-		      const long int linkIndex)
-
+ParabolicSource::createAll(const FuncDataBase& Control,
+			   const attachSystem::FixedComp& FC,
+			   const long int linkIndex)
+  
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param FC :: Fixed Point for origin/axis of beam
-    \param linkIndex :: link Index				
+    \param FC :: FixedComp for origin
+    \param linkIndex :: link point
    */
 {
-  ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
+  ELog::RegMethod RegA("ParabolicSource","createAll<FC,linkIndex>");
   populate(Control);
   createUnitVector(FC,linkIndex);
 
@@ -222,34 +252,50 @@ BeamSource::createAll(const FuncDataBase& Control,
 }
 
 void
-BeamSource::write(std::ostream& OX) const
+ParabolicSource::createAll(const attachSystem::FixedComp& FC,
+			   const long int linkIndex)
+
+  /*!
+    Create all the source
+    \param Control :: DataBase for variables
+    \param FC :: FixedComp for origin
+    \param linkIndex :: link point
+   */
+{
+  ELog::RegMethod RegA("ParabolicSource","createAll<FC,linkIndex>");
+  createUnitVector(FC,linkIndex);
+
+  return;
+}
+
+
+void
+ParabolicSource::write(std::ostream& OX) const
   /*!
     Write out as a MCNP source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("BeamSource","write");
+  ELog::RegMethod RegA("ParabolicSource","write");
 
   Source sourceCard;
-  sourceCard.setActive();
   createSource(sourceCard);
   sourceCard.write(OX);
   return;
+
 }
 
 void
-BeamSource::writePHITS(std::ostream& OX) const
+ParabolicSource::writePHITS(std::ostream& OX) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("BeamSource","write");
+  ELog::RegMethod RegA("ParabolicSource","write");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
 }
-
-
 
 } // NAMESPACE SDef

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   sourceInc/BeamSource.h
+ * File:   processInc/sourceDataBase.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,59 +19,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_BeamSource_h
-#define SDef_BeamSource_h
+#ifndef SDef_sourceDataBase_h
+#define SDef_sourceDataBase_h
 
-namespace SDef
+namespace attachSystem
 {
-  class Source;
+  class FixedComp;
 }
 
 namespace SDef
 {
 
 /*!
-  \class BeamSource
+  \class sourceDataBase 
   \version 1.0
   \author S. Ansell
-  \date September 2015
-  \brief Circular Beam source
+  \date October 2017
+  \brief Holds a list of sources that are created
 */
 
-class BeamSource : 
-  public attachSystem::FixedOffset,
-  public SourceBase
+class sourceDataBase
 {
  private:
 
-  double radius;
-  double angleSpread;           ///< Angle spread
+  /// Storage of soures
+  typedef std::shared_ptr<SourceBase> STYPE;
+
+  /// Storage type : name : startPt : size 
+  typedef std::map<std::string,STYPE> SMAP;
+
+  SMAP Components;             ///< Pointer to real objects
+
+
+  sourceDataBase();
+  ///\cond SINGLETON
+  sourceDataBase(const sourceDataBase&);
+  sourceDataBase& operator=(const sourceDataBase&);	
+  ///\endcond SINGLETON
+
   
-  void populate(const FuncDataBase& Control);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const long int);
-
  public:
+  
+  ~sourceDataBase();
 
-  BeamSource(const std::string&);
-  BeamSource(const BeamSource&);
-  BeamSource& operator=(const BeamSource&);
-  virtual BeamSource* clone() const;
-  virtual ~BeamSource();
+  static sourceDataBase& Instance();
 
-  void setRadius(const double R) { radius=R; }
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(const attachSystem::FixedComp&,
-		 const long int);
-
-  virtual void createSource(SDef::Source&) const;
-  virtual void write(std::ostream&) const;
-  virtual void writePHITS(std::ostream&) const;
-    
+  void reset();
+  
+  bool hasSource(const std::string&) const;
+  void addSource(const std::string&,const SourceBase&);
+  
+  void writePHITS(const std::string&,
+		  std::ostream&) const;
+  
+  void write(const std::string&,
+	     std::ostream&) const;
+  
 };
 
 }
 
 #endif
- 
