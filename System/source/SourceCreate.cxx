@@ -134,7 +134,8 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
   PSource.setOffset(0,yStart,0);
   PSource.setRectangle(xRange,zRange);
   PSource.createSource(sourceCard);
-  
+
+  SDB.registerSource(PSource.getKeyName(),PSource);
   return;
 }
 
