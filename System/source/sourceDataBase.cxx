@@ -98,21 +98,21 @@ sourceDataBase::reset()
   /*!
     Delete all the references to the shared_ptr register
   */
-{  
+{
   Components.erase(Components.begin(),Components.end());
   return;
 }
 
 void
-sourceDataBase::addSource(const std::string& Name,
-			  const SourceBase& SObj)
+sourceDataBase::registerSource(const std::string& Name,
+			       const SourceBase& SObj)
   /*!
     Add a source and manage the memory
     \param Name :: Name of source
     \param SObj :: source Ptr
   */
 {
-  ELog::RegMethod RegA("sourceDataBase","addSource");
+  ELog::RegMethod RegA("sourceDataBase","registerSource");
   
   SMAP::iterator mc=Components.find(Name);
   if (mc != Components.end())
@@ -124,6 +124,77 @@ sourceDataBase::addSource(const std::string& Name,
   return;
 }
 
+const SourceBase*
+sourceDataBase::getInternalSource(const std::string& Name) const
+  /*!
+    Find a SourceBase [if it exists] 
+    \param Name :: Name of source
+    \return SourcePtr / 0 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getInternalSource(const)");
+
+  SMAP::const_iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
+template<typename T>
+const T*
+sourceDataBase::getSource(const std::string& Name) const
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \return SourcePtr / 0 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSource(const)");
+
+  const SourceBase* SPtr = getInternalSource(Name);
+  return dynamic_cast<const T*>(SPtr);
+}
+
+template<typename T>
+const T*
+sourceDataBase::getSourceThrow(const std::string& Name,
+                               const std::string& Err) const
+  /*!
+    Find a source 
+    Throws InContainerError if not present in correct type
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return SourcePtr 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSourceThrow(const)");
+  
+  const T* SPtr=getSource<T>(Name);
+  if (!SPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return SPtr;
+}
 
 
+  
+void
+sourceDataBase::write(const std::string& SName,std::ostream& OX) const
+  /*!
+    Write out the source for MCNP
+    \param SName :: source name
+    \param OX :: output stream
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","write");
+  
+  return;
+}
+
+///\cond TEMPLATE
+template const SourceBase* 
+sourceDataBase::getSource(const std::string&) const; 
+
+template const SourceBase* 
+sourceDataBase::getSourceThrow(const std::string&,const std::string&) const;
+
+///\endcond TEMPLATE
+  
 } // NAMESPACE SDef

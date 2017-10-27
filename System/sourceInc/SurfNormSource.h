@@ -35,18 +35,18 @@ namespace SDef
   \version 1.0
   \author S. Ansell
   \date September 2015
-  \brief Creat a source on the +/- of a surface
+  \brief Create a source on the +/- of a surface
 */
 
 class SurfNormSource :
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
   public SourceBase
 {
  private:
     
   double angleSpread;           ///< Angle from normal
   int surfNum;                  ///< Surfacte number
-  double widht;                 ///< Width of source
+  double width;                 ///< Width of source
   double height;                ///< Height of source
     
   void populate(const FuncDataBase& Control);
@@ -58,14 +58,17 @@ class SurfNormSource :
   SurfNormSource(const std::string&);
   SurfNormSource(const SurfNormSource&);
   SurfNormSource& operator=(const SurfNormSource&);
+  SurfNormSource* clone() const;
   ~SurfNormSource();
-
-  void loadEnergy(const std::string&);
   
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
+  void createAll(const attachSystem::FixedComp&,const long int);
 
-  void createSource(Source&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void writePHITS(std::ostream&) const;
+  virtual void write(std::ostream&) const;
+
   
 };
 

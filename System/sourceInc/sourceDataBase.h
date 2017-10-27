@@ -57,6 +57,7 @@ class sourceDataBase
   sourceDataBase& operator=(const sourceDataBase&);	
   ///\endcond SINGLETON
 
+  const SourceBase* getInternalSource(const std::string&) const;
   
  public:
   
@@ -64,10 +65,15 @@ class sourceDataBase
 
   static sourceDataBase& Instance();
 
+  template<typename T> const T*
+    getSource(const std::string&) const;
+  template<typename T> const T*
+    getSourceThrow(const std::string&,const std::string&) const;
+
   void reset();
   
   bool hasSource(const std::string&) const;
-  void addSource(const std::string&,const SourceBase&);
+  void registerSource(const std::string&,const SourceBase&);
   
   void writePHITS(const std::string&,
 		  std::ostream&) const;

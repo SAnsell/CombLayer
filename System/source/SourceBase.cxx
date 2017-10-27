@@ -65,7 +65,6 @@
 #include "World.h"
 
 #include "SourceBase.h"
-#include "SourceBase.h"
 
 namespace SDef
 {

@@ -61,6 +61,8 @@ class GaussBeamSource :
   virtual ~GaussBeamSource();
 
 
+  void setSize(const double,const double);
+  
   void createAll(const attachSystem::FixedComp&,const long int);
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);

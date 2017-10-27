@@ -89,33 +89,22 @@ createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createBilbauSource");
 
-  const sourceDataBase& SDB=sourceDataBase::Instance();
+  sourceDataBase& SDB=sourceDataBase::Instance();
 
-  GaussBeamSource BilSource("bilbauSDef");
-  
   const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(-1,1,0).unit());
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
+  GaussBeamSource bilSource("bilbauSDef");
+  
+  bilSource.setEnergy(E);
+  bilSource.setParticle(9);
+  bilSource.setOffset(0,yStart,0);
+  bilSource.setPreRotation(-45,0);
+  bilSource.setSize(5.887,8.326);
 
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,5.887,0);
-  D1.addUnit(SP1);
-
-  SrcData D2(2);
-  SrcProb SP2(1);
-  SP2.setFminus(-41,8.326,0);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
+  bilSource.createAll(World::masterOrigin(),0);
+  bilSource.createSource(sourceCard);
+  
   return;
 }
 
@@ -170,8 +159,10 @@ createESSPortSource(const FuncDataBase& Control,
 
   SurfNormSource SX("portSource");
   
-  SX.createAll(Control,*FCPtr,sideIndex,sourceCard);
-
+  SX.createAll(Control,*FCPtr,sideIndex);
+  SX.createSource(sourceCard);
+  
+  
   return;
 }
 

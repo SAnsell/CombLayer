@@ -124,7 +124,18 @@ GaussBeamSource::clone() const
   return new GaussBeamSource(*this);
 }
   
-  
+void
+GaussBeamSource::setSize(const double W,const double H)
+  /*!
+    Set the beam width/height
+    \param W :: FWHM [horrizontal]
+    \param H :: FWHM [vertical]
+   */
+{
+  xWidth=W;
+  zWidth=H;
+  return;
+}
   
 void
 GaussBeamSource::populate(const FuncDataBase& Control)
