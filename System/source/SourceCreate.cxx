@@ -102,7 +102,7 @@ createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
   bilSource.setPreRotation(-45,0);
   bilSource.setSize(5.887,8.326);
 
-  bilSource.createAll(World::masterOrigin(),0);
+  bilSource.createAll(Control,World::masterOrigin(),0);
   bilSource.createSource(sourceCard);
 
   SDB.registerSource(bilSource.getKeyName(),bilSource);
@@ -131,11 +131,13 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
   ParabolicSource PSource("essSDef");
   
   PSource.setEnergy(E);
-  PSource.setParticle(1);
+  PSource.setParticle(9);
   PSource.setOffset(0,yStart,0);
   PSource.setRectangle(xRange,zRange);
+  PSource.setPower(2.0);
+  PSource.createAll(Control,World::masterOrigin(),0);
   PSource.createSource(sourceCard);
-
+  
   SDB.registerSource(PSource.getKeyName(),PSource);
   return;
 }
@@ -177,20 +179,23 @@ createESSLinacSource(const FuncDataBase& Control,Source& sourceCard)
    */
 {
   ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
+  sourceDataBase& SDB=sourceDataBase::Instance();
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",      75.0);
   const double xStart=Control.EvalDefVar<double>("sdefXPos",  -15.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos", -100.0);
   const double zStart=Control.EvalDefVar<double>("sdefZPos",    0.0);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  sourceCard.setComp("x",xStart);
-  sourceCard.setComp("y",yStart);
-  sourceCard.setComp("z",zStart);
+
+  PointSource PSource("essLinac");
+    
+  PSource.setEnergy(E);
+  PSource.setParticle(9);
+  PSource.setOffset(xStart,yStart,zStart);
+  PSource.createAll(Control,World::masterOrigin(),0);
+  PSource.createSource(sourceCard);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
 
   return;
 }
@@ -206,44 +211,25 @@ createD4CSource(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","createD4CSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",175e-6);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+  const double xRange=Control.EvalDefVar<double>("sdefWidth",1.0);
+  const double zRange=Control.EvalDefVar<double>("sdefHeight",1.25);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",1);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
 
+  ParabolicSource PSource("D4CSource");
   
-
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",2.0);
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",2.5);
-  sourceCard.setComp("ara",xRange*zRange);
-    
-  SrcData D1(1);  
-  SrcData D2(2);
-  std::vector<double> XPts={-xRange/2.0,xRange/2.0};
-  std::vector<double> ZPts={-zRange/2.0,zRange/2.0};
-  std::vector<double> Prob={0,1.0};
-  SrcInfo SI1('H');
-  SrcInfo SI2('H');
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
-
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(Prob);
-  SP2.setData(Prob);
-
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
+  PSource.setEnergy(E);
+  PSource.setParticle(1);
+  PSource.setOffset(0,yStart,0);
+  PSource.setRectangle(xRange,zRange);
+  PSource.setPower(2.0);
+  PSource.createAll(Control,World::masterOrigin(),0);
+  PSource.createSource(sourceCard);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
 
   return;
 }
@@ -276,7 +262,7 @@ createTS1Source(const FuncDataBase& Control,Source& sourceCard)
   ts1Beam.setOffset(xShift,yStart,zShift);
   ts1Beam.setRectangle(xRange,zRange);
 
-  ts1Beam.createAll(World::masterOrigin(),0);
+  ts1Beam.createAll(Control,World::masterOrigin(),0);
   ts1Beam.createSource(sourceCard);
 
   SDB.registerSource(ts1Beam.getKeyName(),ts1Beam);
@@ -455,59 +441,31 @@ createLensSource(const FuncDataBase& Control,Source& Card,
 }
 
 void
-createGaussianSource(Source& sourceCard,
-		     const double E,
-		     const double yStart,
-		     const double width)
-  /*!
-    Creates a gausian type 1 proton source [gaussian]
-    \param sourceCard :: Source system
-    \param E :: Energy [meV]
-    \param yStart :: y Position 
-    \param width :: fwhm
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createGaussianSource");
-
-  GaussBeamSource GBeam("gaussSource");
-
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",2570);
-  sourceCard.setComp("y",yStart);
-
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,width,0);  
-  D1.addUnit(SP1);
-
-  SrcData D2(2);
-  D2.addUnit(SP1);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
-}
-
-void
 createTS1GaussianSource(const FuncDataBase& Control,
 			Source& sourceCard)
   /*!
     Creates a target 1 proton source [gaussian]
     FWHM == 1.5*2.35482 ==> 3.53223 <----------- "OLD" VALUE          
+    \param Control :: Database for variables
     \param sourceCard :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
-
-  createGaussianSource(sourceCard,E,yStart,3.5322);
+  
+  GaussBeamSource GBeam("TS1Gauss");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(3.5322,3.5322);
+  GBeam.createAll(Control,World::masterOrigin(),0);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(sourceCard);
+  
   return;
 }
 
@@ -517,17 +475,29 @@ createTS1GaussianNewSource(const FuncDataBase& Control,
   /*
     Creates a target 1 proton source [gaussian]
     FWHM == 1.8*2.35482 ==> 4.23868 <----------- "NEW" VALUE  // Goran
-    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
+    (see B. Jones, D.J. Adams, Design and operational 
+    experience of delivering beam to ISIS TS1, November 2013)          
     \param sourceCard :: Source system
    */
 
 {
-  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
+  ELog::RegMethod RegA("SourceCreate","createTS1GaussianNewSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
+  
+  GaussBeamSource GBeam("TS1NewGauss");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(4.23686,4.23868);
+  GBeam.createAll(Control,World::masterOrigin(),0);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(sourceCard);
 
-  createGaussianSource(sourceCard,E,yStart,4.23868);
   return;
 }
 
@@ -542,9 +512,20 @@ createTS1MuonSource(const FuncDataBase& Control,Source& sourceCard)
 {
   ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-15.0);
-  createGaussianSource(sourceCard,E,yStart,1.17741);
+  
+  GaussBeamSource GBeam("TS1Muon");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(1.17741,1.17741);
+  GBeam.createAll(Control,World::masterOrigin(),0);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(sourceCard);
 
   return;
 }
@@ -585,16 +566,28 @@ void
 createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
   /*!
     Creates a proton source [gaussian] for 3rd collimator in TS1 EPB
-     FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
-     \param Control :: Data base
+    FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
+    \param Control :: Data base
     \param sourceCard :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS1EpbCollSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",80.0);
-  createGaussianSource(sourceCard,E,yStart,2.35482);
+  
+  GaussBeamSource GBeam("TS1EPB");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(2.35482,2.35482);
+  GBeam.createAll(Control,World::masterOrigin(),0);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(sourceCard);
+
   return;
 }
 

@@ -231,9 +231,9 @@ sourceSelection(Simulation& System,
       IParam.flag("kcode"))
     sdefType="kcode";
   
-  if (sdefType=="TS1")
+  if (sdefType=="TS1")                            // parabolic source
     SDef::createTS1Source(Control,sourceCard);
-  else if (sdefType=="TS1Gauss") 
+  else if (sdefType=="TS1Gauss")                   // TS1Gauss
     SDef::createTS1GaussianSource(Control,sourceCard);
   else if (sdefType=="TS1GaussNew")
     SDef::createTS1GaussianNewSource(Control,sourceCard);     

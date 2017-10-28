@@ -71,7 +71,9 @@ namespace SDef
 
 ParabolicSource::ParabolicSource(const std::string& keyName) : 
   attachSystem::FixedOffset(keyName,0),
-  SourceBase()
+  SourceBase(),decayPower(2.0),
+  nWidth(5),nHeight(5),
+  width(1.0),height(1.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -80,6 +82,8 @@ ParabolicSource::ParabolicSource(const std::string& keyName) :
 
 ParabolicSource::ParabolicSource(const ParabolicSource& A) : 
   attachSystem::FixedOffset(A),SourceBase(A),
+  decayPower(A.decayPower),
+  nWidth(A.nWidth),nHeight(A.nHeight),
   width(A.width),height(A.height)
   /*!
     Copy constructor
@@ -99,6 +103,9 @@ ParabolicSource::operator=(const ParabolicSource& A)
     {
       attachSystem::FixedOffset::operator=(A);
       SourceBase::operator=(A);
+      decayPower=A.decayPower;
+      nWidth=A.nWidth;
+      nHeight=A.nHeight;
       width=A.width;
       height=A.height;
     }
@@ -134,9 +141,9 @@ ParabolicSource::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   SourceBase::populate(keyName,Control);
   
-  
-  height=Control.EvalVar<double>(keyName+"Height");
-  width=Control.EvalVar<double>(keyName+"Width");
+  decayPower=Control.EvalDefVar<double>(keyName+"DecayPower",decayPower);
+  height=Control.EvalDefVar<double>(keyName+"Height",height);
+  width=Control.EvalDefVar<double>(keyName+"Width",width);
   
   return;
 }
@@ -169,11 +176,25 @@ ParabolicSource::setRectangle(const double W,const double H)
   height=H;
   return;
 }
+
+void
+ParabolicSource::setNPts(const size_t NW,const size_t NH)
+  /*!
+    Set the width / height number of points
+    \param NW :: number of point in width
+    \param NH :: number of point in height
+   */
+{
+  nWidth=(NW) ? NW : 1;
+  nHeight=(NH) ? NH : 1;
+  return;
+}
   
 void
 ParabolicSource::createSource(SDef::Source& sourceCard) const
   /*!
-    Creates a gamma bremstraual source
+    Creates a parabolic source
+    - note that nWidth / nHeight are never 0
     \param sourceCard :: Source system
   */
 {
@@ -186,28 +207,42 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("y",Origin.dotProd(Y));
 
+  std::vector<double> XPts(nWidth+1);
+  std::vector<double> XProb(nWidth+1);
   const double xRange=width/2.0;
-  const double step(0.5);  
-  std::vector<double> XPts;
-  std::vector<double> XProb;
-  double XValue= -xRange-step;
-  do
+  const double xPower(std::pow(xRange,decayPower));
+  const double xStep=(2.0*xRange)/static_cast<double>(nWidth);
+  
+  double XValue= -xRange;
+  double pValue(0.0);
+  for(size_t i=0;i<=nWidth;i++)
     {
-      XValue+=step;
-      XPts.push_back(XValue);
-      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-    } while (XValue<xRange);
+      XPts[i]  = XValue;
+      XProb[i] = pValue;
+      XValue += xStep/2.0;
+      pValue = (std::abs(decayPower)>Geometry::zeroTol) ?
+	1.0-std::pow(std::abs<double>(XValue),decayPower)/xPower : 1.0;
+      XValue += xStep/2.0;
+    }
 
+  std::vector<double> ZPts(nHeight+1);
+  std::vector<double> ZProb(nHeight+1);
   const double zRange=height/2.0;
-  std::vector<double> ZPts;
-  std::vector<double> ZProb;
-  double ZValue= -zRange-step;
-  do
+  const double zPower(std::pow(zRange,decayPower));
+  const double zStep=(2.0*zRange)/static_cast<double>(nHeight);
+  
+  double ZValue= -zRange;
+  pValue=0.0;
+  for(size_t i=0;i<=nHeight;i++)
     {
-      ZValue+=step;
-      ZPts.push_back(ZValue);
-      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-    } while (ZValue<zRange);
+      ZPts[i]  = ZValue;
+      ZProb[i] = pValue;
+      ZValue += zStep/2.0;
+      pValue = (std::abs(decayPower)>Geometry::zeroTol) ?
+	1.0-std::pow(std::abs<double>(ZValue),decayPower)/zPower : 1.0;
+
+      ZValue += zStep/2.0;
+    }
     
   SrcData D1(1);  
   SrcData D2(2);
@@ -229,6 +264,8 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setData("x",D1);
   sourceCard.setData("z",D2);
 
+  sourceCard.setComp("ara",4.0*xRange*zRange);
+  
   return;
 }
 
@@ -250,24 +287,6 @@ ParabolicSource::createAll(const FuncDataBase& Control,
 
   return;
 }
-
-void
-ParabolicSource::createAll(const attachSystem::FixedComp& FC,
-			   const long int linkIndex)
-
-  /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param FC :: FixedComp for origin
-    \param linkIndex :: link point
-   */
-{
-  ELog::RegMethod RegA("ParabolicSource","createAll<FC,linkIndex>");
-  createUnitVector(FC,linkIndex);
-
-  return;
-}
-
 
 void
 ParabolicSource::write(std::ostream& OX) const

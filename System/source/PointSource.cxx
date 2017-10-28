@@ -197,24 +197,6 @@ PointSource::createAll(const FuncDataBase& Control,
   createUnitVector(FC,linkIndex);
   return;
 }
-
-void
-PointSource::createAll(const attachSystem::FixedComp& FC,
-		       const long int linkIndex)
-
-  /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param FC :: Fixed point to get orientation from
-    \param linkIndex :: link Index						
-   */
-{
-  ELog::RegMethod RegA("PointSource","createAll<FC,linkIndex>");
-
-  createUnitVector(FC,linkIndex);
-  return;
-}
-
   
 void
 PointSource::write(std::ostream& OX) const

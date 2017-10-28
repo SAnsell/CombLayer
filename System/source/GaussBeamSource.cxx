@@ -149,9 +149,8 @@ GaussBeamSource::populate(const FuncDataBase& Control)
   attachSystem::FixedOffset::populate(Control);
   SourceBase::populate(keyName,Control);
   
-
-  xWidth=Control.EvalVar<double>(keyName+"XWidth");
-  zWidth=Control.EvalVar<double>(keyName+"ZWidth");
+  xWidth=Control.EvalDefVar<double>(keyName+"XWidth",xWidth);
+  zWidth=Control.EvalDefVar<double>(keyName+"ZWidth",zWidth);
   angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
   return;
 }
@@ -206,21 +205,6 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
 
   return;
 }  
-
-void
-GaussBeamSource::createAll(const attachSystem::FixedComp& FC,
-			   const long int linkIndex)
-  /*!
-    Create all the source
-    \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-   */
-{
-  ELog::RegMethod RegA("GaussBeamSource","createAll");
-  
-  createUnitVector(FC,linkIndex);
-  return;
-}
 
 void
 GaussBeamSource::createAll(const FuncDataBase& Control,

@@ -64,7 +64,6 @@ class PointSource :
 
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(const attachSystem::FixedComp&,const long int);
 
 
   virtual void createSource(SDef::Source&) const;

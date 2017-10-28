@@ -215,10 +215,8 @@ SourceBase::populate(const std::string& keyName,
   ELog::RegMethod RegA("SourceBase","populate");
 
   // default neutron
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",1);
+  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",particleType);
 
-  Energy.clear();
-  EWeight.clear();
   
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
@@ -230,22 +228,25 @@ SourceBase::populate(const std::string& keyName,
   if (!populateEFile(EFile,1,11) &&
       !populateEnergy(EList,EPList))
     {
+
       double defEnergy(1.0);
-      StrFunc::convert(EList,defEnergy);
-      
-      double E=Control.EvalDefVar<double>(keyName+"EStart",defEnergy); 
-      ELog::EM<<"Default energy == "<<E<<ELog::endDiag;
-      const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
-      const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
-      const double EStep((EEnd-E)/static_cast<double>(nE+1));
-      for(size_t i=0;i<nE;i++)
+      if (Energy.empty() ||
+	  Control.hasVariable(keyName+"EStart") ||
+	  StrFunc::convert(EList,defEnergy))
 	{
-	  Energy.push_back(E);
-	  EWeight.push_back(1.0);
-	  E+=EStep;
+	  double E=Control.EvalDefVar<double>(keyName+"EStart",defEnergy); 
+	  const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
+	  const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
+	  const double EStep((EEnd-E)/static_cast<double>(nE+1));
+	  Energy.clear();
+	  EWeight.clear();
+	  for(size_t i=0;i<nE;i++)
+	    {
+	      Energy.push_back(E);
+	      EWeight.push_back(1.0);
+	      E+=EStep;
+	    }
 	}
-      if (Energy.empty())
-	Energy.push_back(E);
     }
   return;
 }
@@ -257,8 +258,8 @@ SourceBase::setEnergy(const double E)
   ELog::RegMethod RegA("SourceBase","setEnergy");
 
 
-  Energy={{E}};
-  EWeight={{1.0}};
+  Energy={E};
+  EWeight={1.0};
   
   return;
 }

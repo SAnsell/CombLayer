@@ -25,7 +25,6 @@
 namespace SDef
 {
   class Source;
-  void createGaussianSource(Source&,const double,const double,const double);  
 
   void createBeamSource(const FuncDataBase&,const std::string&,
 			const attachSystem::FixedComp&,const long int,

@@ -44,10 +44,14 @@ class ParabolicSource :
   public SourceBase
 {
  private:
-    
+
+  double decayPower;            ///< Fall off power
+  size_t nWidth;                ///< Number of widths
+  size_t nHeight;               ///< Number of heights
   double width;                 ///< width
   double height;                ///< height
 
+  
   void populate(const FuncDataBase& Control);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -60,12 +64,13 @@ class ParabolicSource :
   virtual ParabolicSource* clone() const;
   virtual ~ParabolicSource();
 
+  /// accessor to power
+  void setPower(const double P) { decayPower=P; }
   void setRectangle(const double,const double);
+  void setNPts(const size_t,const size_t);
   
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(const attachSystem::FixedComp&,const long int);
-
 
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
