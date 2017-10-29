@@ -76,6 +76,7 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "objectRegister.h"
+#include "SourceBase.h"
 #include "ChipIRSource.h"
 #include "WorkData.h"
 #include "activeUnit.h"
@@ -234,18 +235,18 @@ sourceSelection(Simulation& System,
   if (sdefType=="TS1")                            // parabolic source
     SDef::createTS1Source(Control,sourceCard);
   else if (sdefType=="TS1Gauss")                   // TS1Gauss
-    SDef::createTS1GaussianSource(Control,sourceCard);
-  else if (sdefType=="TS1GaussNew")
+    SDef::createTS1GaussianSource(Control,sourceCard); 
+  else if (sdefType=="TS1GaussNew")                // TS1NewGauss
     SDef::createTS1GaussianNewSource(Control,sourceCard);     
-  else if (sdefType=="TS1Muon")
-    SDef::createTS1MuonSource(Control,sourceCard); // Goran
-  else if (sdefType=="TS3Expt")
+  else if (sdefType=="TS1Muon")                    // TS1Muon
+    SDef::createTS1MuonSource(Control,sourceCard); 
+  else if (sdefType=="TS3Expt")                    
     SDef::createTS3ExptSource(Control,sourceCard); 
-  else if (sdefType=="TS1EpbColl")
-    SDef::createTS1EpbCollSource(Control,sourceCard); // Goran
-  else if (sdefType=="Bilbao")
+  else if (sdefType=="TS1EpbColl")                 // TS1EPB 
+    SDef::createTS1EpbCollSource(Control,sourceCard); 
+  else if (sdefType=="Bilbao")                    // bilbauSource
     SDef::createBilbaoSource(Control,sourceCard);
-  else if (sdefType=="ess")
+  else if (sdefType=="ess")                       
     SDef::createESSSource(Control,sourceCard);
   else if (sdefType=="essLinac")
     SDef::createESSLinacSource(Control,sourceCard);
@@ -346,8 +347,8 @@ sourceSelection(Simulation& System,
 
 void
 activationSelection(Simulation& System,
-                     const mainSystem::inputParam& IParam)
- /*!
+		    const mainSystem::inputParam& IParam)
+  /*!
     Select all the info for activation output from
     fluxes.
     \param System :: Simuation to use
@@ -355,7 +356,6 @@ activationSelection(Simulation& System,
    */
 {
   ELog::RegMethod RegA("SourceSelector","activationSelection");
-
 
   const size_t nP=IParam.setCnt("activation");
 
@@ -427,14 +427,12 @@ activationSelection(Simulation& System,
             (key,"Key not found for activation");
         }
     }
+
+  createActivationSource(timeSeg,APt,BPt,nVol,
+			 scale,weightPt,weightDist);
+
   
-  SDef::ActivationSource AS;
-  AS.setBox(APt,BPt);
-  AS.setTimeSegment(timeSeg);
-  AS.setNPoints(nVol);
-  AS.setWeightPoint(weightPt,weightDist);
-  AS.setScale(scale);
-  AS.createSource(System,cellDir,OName);
+  //  AS.createSource(System,cellDir,OName);
 
   return;
 }

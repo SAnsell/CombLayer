@@ -70,13 +70,50 @@
 #include "PointSource.h"
 #include "SurfNormSource.h"
 #include "LensSource.h"
+#include "doubleErr.h"
+#include "WorkData.h"
+#include "activeUnit.h"
+#include "activeFluxPt.h"
+#include "ActivationSource.h"
 #include "sourceDataBase.h"
 
-#include "SourceCreate.h"
+#include "SourceCreate.h" 
 
 
 namespace SDef
 {
+
+void
+createActivationSource(const size_t timeSeg,
+		       const Geometry::Vec3D& APt,const Geometry::Vec3D& BPt,
+		       const size_t nVol,const double scale,
+		       const Geometry::Vec3D& weightPt,const double weightDist)
+  /*!
+    Select all the info for activation output from
+    fluxes.
+    \param timeSeg :: Time segment
+    \param APt :: Box point
+    \param BPt :: Box point
+    \param scale :: scale value
+    \param weightPt :: scale based on distance to point
+    \param weightDist :: scale base on distance to point
+   */
+{
+  ELog::RegMethod RegA("SourceSelector","activationSelection");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
+  
+  SDef::ActivationSource AS;
+  AS.setBox(APt,BPt);
+  AS.setTimeSegment(timeSeg);
+  AS.setNPoints(nVol);
+  AS.setWeightPoint(weightPt,weightDist);
+  AS.setScale(scale);
+  
+  SDB.registerSource("ActivationSource",AS);
+  return;
+}
 
 void
 createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
@@ -94,7 +131,7 @@ createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
   const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
 
-  GaussBeamSource bilSource("bilbauSDef");
+  GaussBeamSource bilSource("bilbauSource");
   
   bilSource.setEnergy(E);
   bilSource.setParticle(9);
@@ -533,14 +570,16 @@ createTS1MuonSource(const FuncDataBase& Control,Source& sourceCard)
 void
 createTS3ExptSource(const FuncDataBase& Control,Source& sourceCard)
   /*!
-    Creates a field volume source for TS3 testing
+    Creates a uniform spherical source for TS3 testing
     \param sourceCard :: Source system
    */
 {
-  ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
+  ELog::RegMethod RegA("SourceCreate","createTS3ExptSource");
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",2.0);
   const double radius=Control.EvalDefVar<double>("sdefRadius",20.0);
+
+
   
   sourceCard.setActive();
   sourceCard.setComp("par",1);

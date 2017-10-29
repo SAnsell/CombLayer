@@ -26,6 +26,12 @@ namespace SDef
 {
   class Source;
 
+  void createActivationSource(const size_t,
+			      const Geometry::Vec3D&,const Geometry::Vec3D&,
+			      const size_t,
+			      const double,
+			      const Geometry::Vec3D&,const double);
+  
   void createBeamSource(const FuncDataBase&,const std::string&,
 			const attachSystem::FixedComp&,const long int,
 			Source&);
