@@ -1279,10 +1279,6 @@ makeESS::build(Simulation& System,
   if (IParam.flag("bunkerChicane"))
     buildBunkerChicane(System,IParam);
 
-  if (lowModType != "None")
-    ModPipes->buildLowPipes(System,lowPipeType);
-
-  makeBeamLine(System,IParam);
 
   if (IParam.flag("rotate")) // rotate to the Alan's coordinate system
     // SA says I need to use master rotation here - see his t2 model
