@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/H2Wing.h
  *
  * Copyright (c) 2004-2016 by Stuart Ansell
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_H2Wing_h
@@ -28,16 +28,16 @@ class Simulation;
 namespace essSystem
 {
   class H2FlowGuide;
-  
+
 /*!
   \class H2Wing
   \version 1.0
   \author S. Ansell
-  \date April 2015 
+  \date April 2015
   \brief H2Wing component in the butterfly moderator
 */
 
-class H2Wing : 
+class H2Wing :
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
   public attachSystem::FixedComp,
@@ -50,8 +50,9 @@ class H2Wing :
   int cellIndex;             ///< Cell index
 
   int engActive;             ///< Engineering active
+  int bfType; ///< Type (BF1 or BF2)
   std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
-  
+
   double xStep;                 ///< Step across proton beam direction
   double yStep;                 ///< Step along proton beam direction
   double xyOffset;              ///< xy-Angle offset
@@ -60,12 +61,12 @@ class H2Wing :
   std::array<double,3> radius;  ///< corner radii
   double height;                ///< height of moderator cell
   double totalHeight;           ///< total height moderator
-  
+
   int modMat;                   ///< LH2
   double modTemp;               ///< LH2 temperature [K]
 
   std::vector<double> Thick;        ///< Layer thickness
-  std::vector<double> layerHeight;  ///< Layer veritcal 
+  std::vector<double> layerHeight;  ///< Layer veritcal
   std::vector<double> layerDepth;   ///< layer depth
   std::vector<int> mat;             ///< Layer material
   std::vector<double> temp;         ///< Layer temperature
@@ -74,7 +75,7 @@ class H2Wing :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 
-  void createSurfaces();
+  void createSurfaces(const attachSystem::FixedComp&);
   void createObjects(Simulation&);
   void createLinks();
 
@@ -84,7 +85,7 @@ class H2Wing :
 
   void cornerSet(const double,std::array<Geometry::Vec3D,3>&,
 		 std::array<Geometry::Vec3D,3>&) const;
-  
+
 
  public:
 
@@ -103,4 +104,4 @@ class H2Wing :
 }
 
 #endif
- 
+

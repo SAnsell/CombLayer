@@ -1,7 +1,7 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
- * File:   essBuild/H2Wing.cxx 
+
+ * File:   essBuild/H2Wing.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -115,10 +115,11 @@ H2Wing::H2Wing(const std::string& baseKey,
   OR.addObject(InnerComp);
 }
 
-H2Wing::H2Wing(const H2Wing& A) : 
+H2Wing::H2Wing(const H2Wing& A) :
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   baseName(A.baseName),
+  bfType(A.bfType),
   wingIndex(A.wingIndex),cellIndex(A.cellIndex),
   InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
@@ -144,6 +145,7 @@ H2Wing::operator=(const H2Wing& A)
       attachSystem::FixedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
+      bfType=A.bfType;
       *InnerComp=*A.InnerComp;
       Pts=A.Pts;
       radius=A.radius;
@@ -163,8 +165,8 @@ H2Wing::clone() const
 {
   return new H2Wing(*this);
 }
-  
-H2Wing::~H2Wing() 
+
+H2Wing::~H2Wing()
   /*!
     Destructor
   */
@@ -180,9 +182,12 @@ H2Wing::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("H2Wing","populate");
 
   engActive=Control.EvalTriple<int>(keyName,baseName,"","EngineeringActive");
+  bfType = Control.EvalDefVar<int>(baseName+"Type",2);
+  if ((bfType != 1)  && (bfType != 2))
+    throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
 
   totalHeight=Control.EvalVar<double>(baseName+"TotalHeight");
-  
+
   xStep=Control.EvalVar<double>(keyName+"XStep");
   yStep=Control.EvalVar<double>(keyName+"YStep");
 
@@ -225,7 +230,7 @@ H2Wing::populate(const FuncDataBase& Control)
       TH+=VH+VD;
     }
 
-  // calculated relative to 
+  // calculated relative to
   height=totalHeight-TH;
   if (height<Geometry::zeroTol)
     throw ColErr::NumericalAbort("Unable to calculate a negative height.\n"
@@ -233,10 +238,10 @@ H2Wing::populate(const FuncDataBase& Control)
 				 StrFunc::makeString(height)+
 				 "totalheight == "+
 				 StrFunc::makeString(totalHeight));
-  
+
   return;
 }
-  
+
 void
 H2Wing::createUnitVector(const attachSystem::FixedComp& FC)
   /*!
@@ -265,7 +270,7 @@ H2Wing::createLinks()
   /*!
     Construct links for the triangle moderator
     The normal 1-3 and 4-5 are plane,
-    7,8,9 are 
+    7,8,9 are
   */
 {
   ELog::RegMethod RegA("H2Wing","createLinks");
@@ -304,9 +309,9 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(6,getLayerString(nLayers-1,-7));
   FixedComp::setLinkSurf(7,getLayerString(nLayers-1,-8));
   FixedComp::setLinkSurf(8,getLayerString(nLayers-1,-9));
-  
+
   // INNER LINKS
-  
+
   cornerSet(0.0,CPts,NPts);
   // mid plane points
   ii=wingIndex+100;
@@ -322,10 +327,10 @@ H2Wing::createLinks()
   FixedComp::setLinkSurf(13,-SMap.realSurf(wingIndex+106));
 
 
-  
+
   return;
 }
-  
+
 
 Geometry::Vec3D
 H2Wing::realPt(const Geometry::Vec3D& CPt) const
@@ -366,7 +371,7 @@ H2Wing::cornerSet(const double scale,
     Calculate the corners and the normals to the surfaces
     \param scale :: Distance out from the surface
     \param CPts :: Corner points
-    \param NPts :: Normals 
+    \param NPts :: Normals
   */
 {
   ELog::RegMethod RegA("H2Wing","cornerSet");
@@ -377,7 +382,7 @@ H2Wing::cornerSet(const double scale,
       const Geometry::Vec3D a=(Pts[(i+1)%3]-Pts[i]).unit();
       const Geometry::Vec3D b=(Pts[(i+2)%3]-Pts[i]).unit();
       const Geometry::Vec3D c=(Pts[(i+2)%3]-Pts[(i+1)%3]).unit();
-      
+
       const double cosA=a.dotProd(b);
       const double sinA=sqrt(1.0-cosA*cosA);
       CPts[i]-=(a+b)*(scale/sinA);
@@ -389,7 +394,7 @@ H2Wing::cornerSet(const double scale,
   return;
 }
 
-Geometry::Vec3D 
+Geometry::Vec3D
 H2Wing::midNorm(const size_t index) const
   /*!
     Calcuate
@@ -403,10 +408,10 @@ H2Wing::midNorm(const size_t index) const
   const Geometry::Vec3D b=(Pts[(index+2)%3]-Pts[index]).unit();
   return((a+b)/2.0);
 }
-  
+
 
 void
-H2Wing::createSurfaces()
+H2Wing::createSurfaces(const attachSystem::FixedComp& FC)
   /*!
     Create All the surfaces
   */
@@ -416,15 +421,19 @@ H2Wing::createSurfaces()
   // Surfaces 1-6 are the FC container
   // Surfaces 11-16 are the outer blades etc
 
-  //  const double PSteps[]={wallThick,flatClearance,0.0};  
-  
+  //  const double PSteps[]={wallThick,flatClearance,0.0};
+
+  // Divider for BF1
+  if (bfType==1)
+    ModelSupport::buildPlane(SMap,wingIndex+3,FC.getCentre(),Y);
+
   int triOffset(wingIndex+100);
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
   double PDepth(0.0);
   double VH(0.0);
   double VD(0.0);
-  
+
   for(size_t j=0;j<nLayers;j++)
     {
       PDepth+=Thick[j];
@@ -438,13 +447,13 @@ H2Wing::createSurfaces()
 	  // Note :: Side norm faces out
 	  ModelSupport::buildPlane(SMap,triOffset+ii,CPts[i],
 				   NPts[i]);
-	  
+
 	  // corner centre
 	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
 	    RCircle=Geometry::findCornerCircle
 	    (CPts[i],CPts[(i+1)%3],CPts[(i+2)%3],radius[i]+PDepth);
 
-	  
+
 	  // Positive inward
 	  ModelSupport::buildPlane(SMap,triOffset+ii+20,
 				   std::get<1>(RCircle),
@@ -454,7 +463,7 @@ H2Wing::createSurfaces()
 				      std::get<0>(RCircle),
 				      Z,radius[i]+PDepth);
 	}
-      
+
       ModelSupport::buildPlane(SMap,triOffset+5,Origin-
 			       Z*(VD+height/2.0),Z);
       ModelSupport::buildPlane(SMap,triOffset+6,Origin+
@@ -470,13 +479,13 @@ H2Wing::createSurfaces()
     {
       const int ii(wingIndex+1001+static_cast<int>(i));
       const Geometry::Vec3D sidePt((CPts[(i+1)%3]+CPts[i])/2.0);
-      
+
       ModelSupport::buildPlane(SMap,ii,midPoint,midPoint+Z,
 			       sidePt,CPts[(i+1) % 3]-sidePt);
     }
   return;
 }
- 
+
 void
 H2Wing::createObjects(Simulation& System)
   /*!
@@ -490,14 +499,14 @@ H2Wing::createObjects(Simulation& System)
 
   int triOffset(wingIndex+100);
   HeadRule InnerA,InnerB,InnerC;
-  
+
   const std::string CutA=
     ModelSupport::getComposite(SMap,wingIndex," -1001 1003 ");
   const std::string CutB=
     ModelSupport::getComposite(SMap,wingIndex," 1001 -1002 ");
   const std::string CutC=
     ModelSupport::getComposite(SMap,wingIndex," 1002 -1003 ");
-  
+
   for(size_t i=0;i<nLayers;i++)
     {
       InnerA.makeComplement();
@@ -505,6 +514,7 @@ H2Wing::createObjects(Simulation& System)
       InnerC.makeComplement();
 
       OutA=ModelSupport::getComposite(SMap,triOffset,"-1 -3 5 -6 (21:-7)");
+      if (bfType==1) OutA += ModelSupport::getComposite(SMap,wingIndex," -3 ");
       OutB=ModelSupport::getComposite(SMap,triOffset,"-1 -2 5 -6 (22:-8)");
       OutC=ModelSupport::getComposite(SMap,triOffset,"-2 -3 5 -6 (23:-9) ");
 
@@ -512,6 +522,7 @@ H2Wing::createObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,triOffset,"-1 -2 -3 5 -6 (21:-7) (22:-8) (23:-9)");
+          if (bfType==1) Out += ModelSupport::getComposite(SMap,wingIndex," -3 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],Out));
 	  CellMap::setCell("Inner",cellIndex-1);
 	}
@@ -524,7 +535,7 @@ H2Wing::createObjects(Simulation& System)
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
 					   OutC+InnerC.display()+CutC));
 	}
-      
+
       InnerA.procString(OutA);
       InnerB.procString(OutB);
       InnerC.procString(OutC);
@@ -546,14 +557,14 @@ H2Wing::getSurfacePoint(const size_t layerIndex,
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3] // mid si-des   
+    \param sideIndex :: Side [0-3] // mid si-des
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Wing","getSurfacePoint");
   if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
-  
+
   // Loop over corners that are bound by convex
   std::array<Geometry::Vec3D,3> CPts;
   std::array<Geometry::Vec3D,3> NPts;
@@ -570,7 +581,7 @@ H2Wing::getSurfacePoint(const size_t layerIndex,
   cornerSet(PDepth,CPts,NPts);
 
   const size_t SI=static_cast<size_t>(std::abs(sideIndex));
-  
+
   switch(SI)
     {
     case 0:
@@ -594,13 +605,13 @@ H2Wing::getLayerSurf(const size_t layerIndex,
   /*!
     Given a side and a layer calculate the link point
     \param layerIndex :: layer, 0 is inner moderator [0-3]
-    \param sideIndex :: Side [0-3] // mid sides   
+    \param sideIndex :: Side [0-3] // mid sides
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Wing","getLayerSurf");
 
-  if (layerIndex>=nLayers) 
+  if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int triIndex(wingIndex+static_cast<int>((layerIndex+1)*100));
@@ -634,13 +645,13 @@ H2Wing::getLayerString(const size_t layerIndex,
   /*!
     Given a side and a layer calculate the surface bounding
     \param layerIndex :: layer, 0 is inner moderator [0-6]
-    \param sideIndex :: Side [0-3]+mid sides   
+    \param sideIndex :: Side [0-3]+mid sides
     \return Surface point
   */
 {
   ELog::RegMethod RegA("H2Wing","getLayerString");
 
-  if (layerIndex>=nLayers) 
+  if (layerIndex>=nLayers)
     throw ColErr::IndexError<size_t>(layerIndex,nLayers,"layerIndex");
 
   const int triOffset(wingIndex+static_cast<int>((layerIndex+1)*100));
@@ -665,6 +676,7 @@ H2Wing::getLayerString(const size_t layerIndex,
       break;
     case 7:
       Out=ModelSupport::getComposite(SMap,triOffset,"-1 -3 (21:-7) ");
+      if (bfType==1) Out += ModelSupport::getComposite(SMap,wingIndex," -3 ");
       break;
     case 8:
       Out=ModelSupport::getComposite(SMap,triOffset,"-1 -2 (22:-8) ");
@@ -685,7 +697,7 @@ H2Wing::getLayerString(const size_t layerIndex,
       throw ColErr::IndexError<long int>(sideIndex,12,
 					 "sideIndex + missing gap");
     }
-  
+
   if (sideIndex<0)
     {
       HeadRule HR(Out);
@@ -709,7 +721,7 @@ H2Wing::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC);
-  createSurfaces();
+  createSurfaces(FC);
   createObjects(System);
 
   createLinks();
@@ -719,5 +731,5 @@ H2Wing::createAll(Simulation& System,
     InnerComp->createAll(System,*this);
   return;
 }
-  
+
 }  // NAMESPACE moderatorSystem
