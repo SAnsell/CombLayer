@@ -108,8 +108,8 @@ class makeESS
   // Butterfly
   /// Primary Lower Mod
   std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<DiskPreMod> LowPreMod;         ///< Lower mod
-  std::shared_ptr<DiskPreMod> LowCapMod;         ///< Upper mod
+  std::shared_ptr<DiskLayerMod> LowPreMod;         ///< Lower mod
+  std::shared_ptr<DiskLayerMod> LowCapMod;         ///< Upper mod
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL

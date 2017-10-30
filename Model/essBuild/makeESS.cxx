@@ -105,7 +105,6 @@
 #include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
-#include "DiskPreMod.h"
 #include "DiskLayerMod.h"
 #include "Bunker.h"
 #include "pillarInfo.h"
@@ -136,8 +135,8 @@ makeESS::makeESS() :
 
   topFocus(new FocusPoints("TopFocus")),
   lowFocus(new FocusPoints("LowFocus")),
-  LowPreMod(new DiskPreMod("LowPreMod")),
-  LowCapMod(new DiskPreMod("LowCapMod")),
+  LowPreMod(new DiskLayerMod("LowPreMod")),
+  LowCapMod(new DiskLayerMod("LowCapMod")),
 
   LowAFL(new essSystem::WedgeFlightLine("LowAFlight")),
   LowBFL(new essSystem::WedgeFlightLine("LowBFlight")),
@@ -1234,6 +1233,9 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Mid"));
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Lower"));
   attachSystem::addToInsertForced(System, *TSMainBuildingObj,   Target->getCC("Shaft"));
+
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABHighBay);
+  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CDHighBay);
 
   // PROTON BEAMLINE
 
