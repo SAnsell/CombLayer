@@ -254,9 +254,7 @@ namespace essSystem
 				 SMap.realSurf(sS));
 
 	std::string OutA = Reflector.getSignedLinkString(lpS+1);
-	//	std::string OutB = Reflector.getLinkComplement(lsS);
 	std::string OutB = Reflector.getSignedLinkString(-(lsS+1));
-	ELog::EM << "Is this correct?: OutB" << ELog::endCrit;
 
 	surroundRule.setInnerRule(OutA);
 	surroundRule.setOuterRule(OutB);
