@@ -1242,7 +1242,7 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
   
-  /*  PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
+  PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
@@ -1250,7 +1250,7 @@ makeESS::build(Simulation& System,
   // 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
 				    PBeam->getCC("Sector3"));
-  */
+  
   if (engActive)
       buildTwister(System);
   else {
