@@ -530,7 +530,6 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
   double theta(0.0);
   std::vector<Geometry::Vec3D> vecFP;
   size_t colIndex(0);
-  //  ELog::EM << "Use StrFunc::convert instead of atoi in the loop below. Check its return value." << ELog::endCrit;
   for (size_t i=0; i<nitems; i++)
     {
       strtmp = IParam.getValue<std::string>("f5-collimators", i);
@@ -569,7 +568,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		throw ColErr::InContainerError<std::string>
 		  (lobeName,"Component not found");
 
-	      for (size_t ii=0; ii<20; ii++) // ??? how to get total number of link points ???
+	      for (size_t ii=0; ii<8; ii++) // we need 4,5,6,7
 		vecFP.push_back(midWater->getLinkPt(ii));
 	      vecFP.push_back(lobe->getLinkPt(12)); // zmin
 	      vecFP.push_back(lobe->getLinkPt(13)); // zmax
