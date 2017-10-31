@@ -356,8 +356,12 @@ MidWaterDivider::createSurfaces()
 			   Origin-leftNorm*(wallThick+length),-leftNorm);
 
 
-  if (topThick>Geometry::zeroTol)
+  if (baseThick>Geometry::zeroTol)
     ModelSupport::buildPlane(SMap,divIndex+5,
+                             Origin-Z*(height/2.0-baseThick),Z);
+
+  if (topThick>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,divIndex+6,
                              Origin+Z*(height/2.0-topThick),Z);
 
 
@@ -438,42 +442,63 @@ MidWaterDivider::createObjects(Simulation& System,
 
   if (topThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11 -5 (-7:8)");
-      Out+=LCut.display()+Base;
+      // water
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11 5 -6 (-7:8)");
+      Out+=LCut.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 -5 (-17:18)");
-      Out+=RCut.display()+Base;
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 5 -6 (-17:18)");
+      Out+=RCut.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
-      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11  5 (-7:8)");
+      // top container plate
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11 6 (-7:8)");
       Out+=LCut.display()+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
-      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 5 (-17:18)");
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 6 (-17:18)");
       Out+=RCut.display()+Top;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+      // bottom container plate
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"300 100 4 -11 -5 (-7:8)");
+      Out+=LCut.display()+Base;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,"-300 100 -3 -12 -5 (-17:18)");
+      Out+=RCut.display()+Base;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
       // Reverse side
       Out=ModelSupport::getSetComposite(SMap,divIndex,
-                                     "300 -100 -23  -31  -5 (-37:38) ");
-      Out+=LCut.display()+Base;
+                                     "300 -100 -23  -31 5 -6 (-37:38) ");
+      Out+=LCut.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
       
       Out=ModelSupport::getSetComposite(SMap,divIndex,
-                                     "-300 -100 24 -32 -5 (-27:28)");
-      Out+=RCut.display()+Base;
+                                     "-300 -100 24 -32 5 -6 (-27:28)");
+      Out+=RCut.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,modMat,modTemp,Out));
 
       
       Out=ModelSupport::getSetComposite(SMap,divIndex,
-                                     "300 -100 -23 -31 5 (-37:38) ");
+                                     "300 -100 -23 -31 6 (-37:38) ");
       Out+=LCut.display()+Top;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
 
       Out=ModelSupport::getSetComposite(SMap,divIndex,
-                                     "-300 -100 24 -32 5 (-27:28)");
+                                     "-300 -100 24 -32 6 (-27:28)");
       Out+=RCut.display()+Top;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "300 -100 -23 -31 -5 (-37:38) ");
+      Out+=LCut.display()+Base;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
+
+      Out=ModelSupport::getSetComposite(SMap,divIndex,
+                                     "-300 -100 24 -32 -5 (-27:28)");
+      Out+=RCut.display()+Base;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,modTemp,Out));
     }
   else 
@@ -643,7 +668,7 @@ MidWaterDivider::createAll(Simulation& System,
   ELog::RegMethod RegA("MidWaterDivider","createAll");
 
   populate(System.getDataBase());
-  height=LA.getLinkDistance(5,6)-topThick;
+  height=LA.getLinkDistance(5,6)-topThick-baseThick;
 
   createUnitVector(FC);
   createSurfaces();
