@@ -75,7 +75,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyZAngle",0.0);
   Control.addVariable("TopFlyTotalHeight",4.9); // master: 5.5
   Control.addVariable("TopFlyWallMat","Aluminium");
-  
+
   Control.addVariable("TopFlyLeftLobeXStep",1.0);  
   Control.addVariable("TopFlyLeftLobeYStep",0.0);  
 
@@ -123,71 +123,36 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideSQCenterA",1.0);
   Control.addVariable("TopFlyFlowGuideSQCenterE",-0.6);
   Control.addVariable("TopFlyFlowGuideSQCenterF",-0.005);
+
+  Control.addVariable("TopFlyLeftWaterWidth",15.76);
+  Control.addVariable("TopFlyLeftWaterWallThick",0.347);
+  Control.addVariable("TopFlyLeftWaterCutAngle",30.0);
+  Control.addVariable("TopFlyLeftWaterCutWidth",10.562);
+  Control.addVariable("TopFlyLeftWaterModMat","H2O");
+  Control.addVariable("TopFlyLeftWaterWallMat","Aluminium");
+  Control.addVariable("TopFlyLeftWaterModTemp",300.0);
+  // Julich drawing #212-000473 (bottom right drawing)
+  // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
+  Control.addVariable("TopFlyLeftWaterMidWallThick",0.2);
+  Control.addVariable("TopFlyLeftWaterMidWallLength",3.0);
+
+  // Top fly right-side components
+  Control.copyVarSet("TopFlyLeft","TopFlyRight");
+  Control.addVariable("TopFlyRightLobeXStep",-1.0);
+
+  Control.addVariable("TopFlyMidWaterCutLayer",3);
+  Control.addVariable("TopFlyMidWaterMidYStep",4.635);
+  Control.addVariable("TopFlyMidWaterMidAngle",90);
+  Control.addVariable("TopFlyMidWaterLength",11.4);
+  Control.addVariable("TopFlyMidWaterCornerRadius",0.5);
+  Control.addVariable("TopFlyMidWaterBaseThick",0.2);
+  Control.addVariable("TopFlyMidWaterTopThick",0.2);
   
-  Control.addVariable("TopFlyRightLobeXStep",-1.0);  
-  Control.addVariable("TopFlyRightLobeYStep",0.0);  
+  Control.addVariable("TopFlyMidWaterWallThick",0.2);
+  Control.addVariable("TopFlyMidWaterModMat","H2O");
+  Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
+  Control.addVariable("TopFlyMidWaterModTemp",300.0);
 
-  Control.addVariable("TopFlyRightLobeCorner1",Geometry::Vec3D(0,0.5,0));
-  Control.addVariable("TopFlyRightLobeCorner2",Geometry::Vec3D(-14.4,-13.2,0));
-  Control.addVariable("TopFlyRightLobeCorner3",Geometry::Vec3D(14.4,-13.2,0));
-
-  Control.addVariable("TopFlyRightLobeRadius1",5.0);
-  Control.addVariable("TopFlyRightLobeRadius2",2.506);
-  Control.addVariable("TopFlyRightLobeRadius3",2.506);
-
-  Control.addVariable("TopFlyRightLobeModMat","HPARA");
-  Control.addVariable("TopFlyRightLobeModTemp",20.0);
-
-  Control.addVariable("TopFlyRightLobeNLayers",4);
-
-  Control.addVariable("TopFlyRightLobeHeight1",0.3);
-  Control.addVariable("TopFlyRightLobeDepth1",0.3);
-  Control.addVariable("TopFlyRightLobeThick1",0.3);
-  Control.addVariable("TopFlyRightLobeMat1","Aluminium20K");  // 20K
-  Control.addVariable("TopFlyRightLobeTemp1",20.0);
-  
-  Control.addVariable("TopFlyRightLobeThick2",0.5);
-  Control.addVariable("TopFlyRightLobeMat2","Void");
-
-  Control.addVariable("TopFlyRightLobeHeight2",0.5);
-  Control.addVariable("TopFlyRightLobeDepth2",0.5);
-
-  Control.addVariable("TopFlyRightLobeThick3",0.3);
-  Control.addVariable("TopFlyRightLobeMat3","Aluminium");
-
-  Control.addVariable("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
-  Control.addVariable("TopFlyRightLobeDepth3",0.0);
-
-  for (const std::string& tb : TB)
-    {
-    for (const std::string& lr : LR)
-      {
-	Control.addVariable(tb+"Fly"+lr+"WaterWidth",15.76);
-	Control.addVariable(tb+"Fly"+lr+"WaterWallThick",0.347);
-	Control.addVariable(tb+"Fly"+lr+"WaterCutAngle",30.0);
-	Control.addVariable(tb+"Fly"+lr+"WaterCutWidth",10.562);
-	Control.addVariable(tb+"Fly"+lr+"WaterModMat","H2O");
-	Control.addVariable(tb+"Fly"+lr+"WaterWallMat","Aluminium");
-	Control.addVariable(tb+"Fly"+lr+"WaterModTemp",300.0);
-	// Julich drawing #212-000473 (bottom right drawing)
-	// https://plone.esss.lu.se/docs/neutronics/engineering/drawings/moderator/bf2-and-toppremod-drawings/view
-	Control.addVariable(tb+"Fly"+lr+"WaterMidWallThick",0.2);
-	Control.addVariable(tb+"Fly"+lr+"WaterMidWallLength",3.0);
-      }
-    Control.addVariable(tb+"FlyMidWaterCutLayer",3);
-    Control.addVariable(tb+"FlyMidWaterMidYStep",4.635);
-    Control.addVariable(tb+"FlyMidWaterMidAngle",90);
-    Control.addVariable(tb+"FlyMidWaterLength",11.4);
-    Control.addVariable(tb+"FlyMidWaterCornerRadius",0.5);
-    Control.addVariable(tb+"FlyMidWaterBaseThick",0.2);
-    Control.addVariable(tb+"FlyMidWaterTopThick",0.2);
-    
-    Control.addVariable(tb+"FlyMidWaterWallThick",0.2);
-    Control.addVariable(tb+"FlyMidWaterModMat","H2O");
-    Control.addVariable(tb+"FlyMidWaterWallMat","Aluminium");
-    Control.addVariable(tb+"FlyMidWaterModTemp",300.0);
-    }
-  
   // Low fly
   Control.copyVarSet("TopFly","LowFly");
   Control.addVariable("LowFlyTotalHeight",8.1-0.4);
@@ -415,30 +380,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingInnerMat3","Stainless304");
   Control.addVariable("TopLeftPreWingSurfMat3","Stainless304");
   
+  Control.copyVarSet("TopLeftPreWing", "TopRightPreWing");
   Control.addVariable("TopRightPreWingXYAngle",180.0);
-  Control.addVariable("TopRightPreWingInnerHeight",1.8);
-  Control.addVariable("TopRightPreWingOuterHeight",2.5);
-  Control.addVariable("TopRightPreWingInnerDepth",1.8);
-  Control.addVariable("TopRightPreWingOuterDepth",2.5);
-  Control.addVariable("TopRightPreWingInnerRadius",10.0);
-  Control.addVariable("TopRightPreWingOuterRadius",38.0);
-  Control.addVariable("TopRightPreWingInnerYCut",8.0);
-  Control.addVariable("TopRightPreWingWallThick",0.3);
-  Control.addVariable("TopRightPreWingMat","H2O");
-  Control.addVariable("TopRightPreWingWallMat","Aluminium");
-
-  Control.addVariable("TopRightPreWingNLayers",4);
-  Control.addVariable("TopRightPreWingLayerRadius1",30.0);
-  Control.addVariable("TopRightPreWingInnerMat1","Aluminium");
-  Control.addVariable("TopRightPreWingSurfMat1","Aluminium");
-
-  Control.addVariable("TopRightPreWingLayerRadius2",30.3);
-  Control.addVariable("TopRightPreWingInnerMat2","Void");
-  Control.addVariable("TopRightPreWingSurfMat2","Void");
-  
-  Control.addVariable("TopRightPreWingLayerRadius3",30.6);
-  Control.addVariable("TopRightPreWingInnerMat3","Stainless304");
-  Control.addVariable("TopRightPreWingSurfMat3","Stainless304");
 
   return;
 }
