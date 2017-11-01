@@ -362,33 +362,32 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModMat2x3","Stainless304");
 
   Control.copyVarSet("TopPreMod","LowPreMod");
-  Control.addVariable("TopCapModNLayers",4);
+  Control.addVariable("TopCapModNLayers",2);
   
-  Control.addVariable("TopCapModThick0",0.2);
-  Control.addVariable("TopCapModMat0x0","Void");
+  Control.addVariable("TopCapModThick0",0.3);
+  Control.addVariable("TopCapModRadius0x0",30.0);
+  Control.addVariable("TopCapModRadius0x1",32.3);
+  Control.addVariable("TopCapModRadius0x2",32.6);
+  Control.addVariable("TopCapModMat0x0","H2O");
+  Control.addVariable("TopCapModMat0x1","Aluminium");
+  Control.addVariable("TopCapModMat0x2","Void");
+  Control.addVariable("TopCapModMat0x3","Stainless304");
 
-  Control.addVariable("TopCapModThick1",0.3);
-  Control.addVariable("TopCapModRadius1x0",32.3);
-  Control.addVariable("TopCapModRadius1x1",32.6);
-  Control.addVariable("TopCapModMat1x0","Aluminium");
-  Control.addVariable("TopCapModMat1x1","Void"); 
-  Control.addVariable("TopCapModMat1x2","Stainless304");
+  Control.addVariable("TopCapModThick1",0.7);
+  Control.addVariable("TopCapModRadius1x0",32.0);
+  Control.addVariable("TopCapModRadius1x1",32.3);
+  Control.addVariable("TopCapModRadius1x2",32.6);
+  Control.addVariable("TopCapModMat1x0","H2O");
+  Control.addVariable("TopCapModMat1x1","Aluminium");
+  Control.addVariable("TopCapModMat1x2","Void");
+  Control.addVariable("TopCapModMat1x3","Stainless304");
 
-  Control.addVariable("TopCapModThick2",0.7);
-  Control.addVariable("TopCapModRadius2x0",32.0);
-  Control.addVariable("TopCapModRadius2x1",32.3);
-  Control.addVariable("TopCapModRadius2x2",32.6);
-  Control.addVariable("TopCapModMat2x0","H2O");
-  Control.addVariable("TopCapModMat2x1","Aluminium");
-  Control.addVariable("TopCapModMat2x2","Void");
-  Control.addVariable("TopCapModMat2x3","Stainless304");
-
-  Control.addVariable("TopCapModThick3",0.3);
-  Control.addVariable("TopCapModRadius3x0",32.3);
-  Control.addVariable("TopCapModRadius3x1",32.6);
-  Control.addVariable("TopCapModMat3x0","Aluminium");
-  Control.addVariable("TopCapModMat3x1","Void"); 
-  Control.addVariable("TopCapModMat3x2","Stainless304");
+  Control.addVariable("TopCapModThick2",0.3);
+  Control.addVariable("TopCapModRadius2x0",32.3);
+  Control.addVariable("TopCapModRadius2x1",32.6);
+  Control.addVariable("TopCapModMat2x0","Aluminium");
+  Control.addVariable("TopCapModMat2x1","Void");
+  Control.addVariable("TopCapModMat2x2","Stainless304");
   Control.copyVarSet("TopCapMod","LowCapMod");
 
 
