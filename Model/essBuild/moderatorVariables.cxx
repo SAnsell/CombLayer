@@ -73,7 +73,7 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("TopFlyXYAngle",90.0);
   Control.addVariable("TopFlyZAngle",0.0);
-  Control.addVariable("TopFlyTotalHeight",4.9); // master: 5.5
+  Control.addVariable("TopFlyTotalHeight",5.5);
   Control.addVariable("TopFlyWallMat","Aluminium");
 
   Control.addVariable("TopFlyLeftLobeXStep",1.0);  
@@ -95,7 +95,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeHeight1",0.3);
   Control.addVariable("TopFlyLeftLobeDepth1",0.3);
   Control.addVariable("TopFlyLeftLobeThick1",0.3);
-  Control.addVariable("TopFlyLeftLobeMat1","Aluminium");
+  Control.addVariable("TopFlyLeftLobeMat1","Aluminium20K");
   Control.addVariable("TopFlyLeftLobeTemp1",20.0);
   
   Control.addVariable("TopFlyLeftLobeThick2",0.5);
@@ -107,8 +107,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeThick3",0.3);
   Control.addVariable("TopFlyLeftLobeMat3","Aluminium");
 
-  Control.addVariable("TopFlyLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be; master: 0.3
-  Control.addVariable("TopFlyLeftLobeDepth3",0.0); // master: 0.3
+  Control.addVariable("TopFlyLeftLobeHeight3",0.6);
+  Control.addVariable("TopFlyLeftLobeDepth3",0.3);
 
   Control.addVariable("TopFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
@@ -145,8 +145,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyMidWaterMidAngle",90);
   Control.addVariable("TopFlyMidWaterLength",11.4);
   Control.addVariable("TopFlyMidWaterCornerRadius",0.5);
-  Control.addVariable("TopFlyMidWaterBaseThick",0.2);
-  Control.addVariable("TopFlyMidWaterTopThick",0.2);
+  Control.addVariable("TopFlyMidWaterBaseThick",0.3);
+  Control.addVariable("TopFlyMidWaterTopThick",0.6);
   
   Control.addVariable("TopFlyMidWaterWallThick",0.2);
   Control.addVariable("TopFlyMidWaterModMat","H2O");
@@ -301,7 +301,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopPreModNLayers",2);
   
   Control.addVariable("TopPreModThick0",0.3);
-  Control.addVariable("TopPreModThick1",2.85);
+  Control.addVariable("TopPreModThick1",3.0);
   Control.addVariable("TopPreModThick2",0.3);
   
   Control.addVariable("TopPreModRadius0x0",30.3);
