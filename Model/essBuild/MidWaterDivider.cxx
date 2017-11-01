@@ -668,7 +668,7 @@ MidWaterDivider::createAll(Simulation& System,
   ELog::RegMethod RegA("MidWaterDivider","createAll");
 
   populate(System.getDataBase());
-  height=LA.getLinkDistance(5,6)-topThick-baseThick;
+  height=LA.getLinkDistance(5,6);
 
   createUnitVector(FC);
   createSurfaces();
