@@ -1111,7 +1111,6 @@ makeESS::build(Simulation& System,
 
   const int matmesh=IParam.getValue<int>("matmesh"); // generate material mesh
 
-  const size_t nF5=IParam.getValue<size_t>("nF5");
   const int engActive=Control.EvalPair<int>
     ("BulkEngineeringActive","EngineeringActive");
 
