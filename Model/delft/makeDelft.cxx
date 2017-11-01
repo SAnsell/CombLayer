@@ -408,7 +408,6 @@ makeDelft::buildModerator(Simulation& System,
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-
   ColdPress->addInsertCell(Pool->getCells("Water"));
   ColdPress->addInsertCell(74123);
   ColdPress->createAll(System,FC,sideIndex);

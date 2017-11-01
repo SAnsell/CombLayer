@@ -164,14 +164,13 @@ createESSSource(const FuncDataBase& Control,Source& sourceCard)
   const double xRange=Control.EvalDefVar<double>("sdefWidth",8.0);
   const double zRange=Control.EvalDefVar<double>("sdefHeight",3.0);
  
-  
-  ParabolicSource PSource("essSDef");
+  ParabolicSource PSource("essSource");
   
   PSource.setEnergy(E);
   PSource.setParticle(9);
   PSource.setOffset(0,yStart,0);
   PSource.setRectangle(xRange,zRange);
-  PSource.setPower(2.0);
+  PSource.setPower(0.0);
   PSource.createAll(Control,World::masterOrigin(),0);
   PSource.createSource(sourceCard);
   
@@ -190,18 +189,26 @@ createESSPortSource(const FuncDataBase& Control,
     \param FC :: link surface for cylinder 
     \param sideIndex ::surface number
     \param sourceCard :: Source system
-    
   */
 {
   ELog::RegMethod RegA("SourceCreate","createESSPortSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   if (!FCPtr)
     throw ColErr::EmptyValue<void>("Pointer to FixedComp not filled");
 
-  SurfNormSource SX("portSource");
+  ParabolicSource PSource("portSource");
+
+  PSource.setParticle(9);
+  PSource.setPower(0.0);
+  PSource.createAll(Control,World::masterOrigin(),0);
+  PSource.createSource(sourceCard);
   
-  SX.createAll(Control,*FCPtr,sideIndex);
-  SX.createSource(sourceCard);
+  PSource.createAll(Control,*FCPtr,sideIndex);
+
+  SDB.registerSource(PSource.getKeyName(),PSource);
+  PSource.createSource(sourceCard);
   
   
   return;
@@ -353,7 +360,6 @@ createPointSource(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("SourceCreate","createPointSource");
 
-
   PointSource GX(keyName);
   if (!DVec.empty())
     {
@@ -392,6 +398,39 @@ createBeamSource(const FuncDataBase& Control,
   GX.createSource(Card);
   return;
 }
+
+void
+createLaserSource(const FuncDataBase& Control,
+		  Source& Card)
+  /*!
+    Create the photon source for gamma-nuclea spectrum
+    nuclear experiment source
+    \param Control :: Variables data base
+    \param keyName :: keyname for Gamma source
+    \param Card :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createLaserSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
+
+  GammaSource laserSource("laserSource");
+  laserSource.setParticle(1);
+  laserSource.setEnergy(E);
+  
+  laserSource.createAll(Control,World::masterOrigin(),0);
+  laserSource.createSource(Card);
+  
+
+  SDB.registerSource(laserSource.getKeyName(),laserSource);
+  return;
+
+
+  return;
+}
+
   
 void
 createGammaSource(const FuncDataBase& Control,
@@ -668,13 +707,15 @@ createTS2Source(const FuncDataBase& Control,Source& sourceCard)
 void
 createSinbadSource(const FuncDataBase&,Source& sourceCard)
   /*!
-    Create a fisson source for a cylinder/rectangular unit 
+    Create a distributed source for the Sinbad experiment
     \param Control :: Funcdat data base for values
     \param sourceCard :: Source system
   */
 {  
   ELog::RegMethod RegA("SourceCreate","createSinbadSource");
- 
+
+  
+  
   const size_t NX(15),NZ(15);     
   // This data is horizontal : X [cm] and vertical : Z[cm]
   const double XPts[NX+1]= 

@@ -71,7 +71,9 @@ namespace SDef
 
 GammaSource::GammaSource(const std::string& keyName) : 
   attachSystem::FixedOffset(keyName,0),
-  SourceBase()
+  SourceBase(),shape("Circle"),
+  width(1.0),height(1.0),radius(1.0),
+  angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -128,6 +130,52 @@ GammaSource::clone() const
   return new GammaSource(*this);
 }
   
+void
+GammaSource::setPoint()
+  /*!
+    Set the shape to be point
+  */
+{
+  shape="Point";
+  return;
+}
+
+void
+GammaSource::setRadius(const double R)
+  /*!
+    Set the shape to be circle
+    \param R :: Circle emmision radius
+  */
+{
+  shape="Circle";
+  radius=std::abs(R);
+  return;
+}
+
+void
+GammaSource::setRectangle(const double W,const double H)
+  /*!
+    Set the shape to be circle
+    \param W :: Width
+    \param H :: Height 
+  */
+{
+  shape="Rectangle";
+  width=W;
+  height=H;
+  return;
+}
+
+void
+GammaSource::setAngleSpread(const double A)
+  /*!
+    Set angle spread
+    \param A :: Angle to use [deg]
+  */
+{
+  angleSpread=A;
+  return;
+}
   
 void
 GammaSource::populate(const FuncDataBase& Control)
@@ -141,17 +189,15 @@ GammaSource::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   SourceBase::populate(keyName,Control);
   
-  
-
-  shape=Control.EvalDefVar<std::string>(keyName+"Shape","Circle");
+  shape=Control.EvalDefVar<std::string>(keyName+"Shape",shape);
   if (shape=="Circle")   // circle
-    radius=Control.EvalVar<double>(keyName+"Radius");
+    radius=Control.EvalDefVar<double>(keyName+"Radius",radius);
   else if (shape=="Rectangle")
     {
-      height=Control.EvalVar<double>(keyName+"Height");
-      width=Control.EvalVar<double>(keyName+"Width");
+      height=Control.EvalDefVar<double>(keyName+"Height",height);
+      width=Control.EvalDefVar<double>(keyName+"Width",width);
     }    
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
+  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",angleSpread); 
   
   return;
 }
@@ -205,7 +251,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
   ELog::EM<<"AngleSPread == "<<angleSpread<<ELog::endDiag;
   if (angleSpread>Geometry::zeroTol)
     {
-      ELog::EM<<"Adding ARI card"<<angleSpread<<ELog::endDiag;
+      ELog::EM<<"Adding ANGLE card"<<angleSpread<<ELog::endDiag;
       SDef::SrcData D2(2);
       SDef::SrcInfo SI2;
       SI2.addData(-1.0);
@@ -219,7 +265,7 @@ GammaSource::createSource(SDef::Source& sourceCard) const
     }
   else
     {
-      ELog::EM<<"Adding dir card"<<ELog::endDiag;
+      ELog::EM<<"Adding DIR card"<<ELog::endDiag;
       sourceCard.setComp("dir",1.0);
     }
 
@@ -227,12 +273,12 @@ GammaSource::createSource(SDef::Source& sourceCard) const
     createRadialSource(sourceCard);
   else if (shape=="Rectangle")
     createRectangleSource(sourceCard);
-  else if (shape!="Isotropic")
+  else if (shape!="Point")
     {
       ELog::EM<<"GammaSource shape options are :\n";
       ELog::EM<<"   Circle\n";
       ELog::EM<<"   Rectangle\n";
-      ELog::EM<<"   Isotropic\n";
+      ELog::EM<<"   Point\n";
       ELog::EM<<ELog::endDiag;
       throw ColErr::InContainerError<std::string>(shape,"Shape not known");
     }
@@ -250,7 +296,7 @@ GammaSource::createRadialSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("GammaSource","createRadialSource");
   
-
+  sourceCard.setComp("ara",M_PI*radius*radius);
   sourceCard.setComp("vec",Direction);
   sourceCard.setComp("pos",FocusPoint);
 
@@ -291,7 +337,7 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
   sourceCard.setData("x",D3);
 
   SDef::SrcProb SP4;
-  SP4.addData(0);
+  SP4.addData(0.0);
   SP4.addData(1.0);
   D4.addUnit(SI4);  
   D4.addUnit(SP4);  
@@ -331,36 +377,8 @@ GammaSource::write(std::ostream& OX) const
   ELog::RegMethod RegA("GammaSource","write");
 
   Source sourceCard;
-  
-  sourceCard.setActive();
-  sourceCard.setComp("vec",Direction);
-  sourceCard.setComp("y",Origin.Y());
-  sourceCard.setComp("ara",width*height);
-  
-  SDef::SrcData D3(3);
-  SDef::SrcInfo SI3;
-  SI3.addData(Origin[0]-width/2.0);
-  SI3.addData(Origin[0]+width/2.0);
 
-  SDef::SrcData D4(4);
-  SDef::SrcInfo SI4;
-  SI4.addData(Origin[2]-height/2.0);
-  SI4.addData(Origin[2]+height/2.0);
-
-  SDef::SrcProb SP3;
-  SP3.addData(0.0);
-  SP3.addData(1.0);
-  D3.addUnit(SI3);  
-  D3.addUnit(SP3);  
-  sourceCard.setData("x",D3);
-
-  SDef::SrcProb SP4;
-  SP4.addData(0);
-  SP4.addData(1.0);
-  D4.addUnit(SI4);  
-  D4.addUnit(SP4);  
-  sourceCard.setData("z",D4);
-
+  createSource(sourceCard);
   sourceCard.write(OX);
   return;
 

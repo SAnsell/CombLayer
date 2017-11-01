@@ -47,6 +47,8 @@ class GammaSource :
     
 
   std::string shape;            ///< Shape type
+
+
   double width;                 ///< width
   double height;                ///< height
   double radius;                ///< radius
@@ -70,9 +72,14 @@ class GammaSource :
   virtual GammaSource* clone() const;
   virtual ~GammaSource();
 
+  void setPoint();
+  void setRectangle(const double,const double);
+  void setRadius(const double);
+  void setAngleSpread(const double);
+  
+  
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
-  void createAll(const attachSystem::FixedComp&,const long int);
 
 
   virtual void createSource(SDef::Source&) const;

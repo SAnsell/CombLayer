@@ -63,8 +63,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "LinearComp.h"
-#include "SecondTrack.h"
+#include "LinkSupport.h"
 #include "inputParam.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
@@ -77,7 +76,6 @@
 #include "masterRotate.h"
 #include "objectRegister.h"
 #include "SourceBase.h"
-#include "ChipIRSource.h"
 #include "WorkData.h"
 #include "activeUnit.h"
 #include "activeFluxPt.h"
@@ -87,104 +85,6 @@
 
 namespace SDef
 {
-
-long int
-getLinkIndex(const std::string& Snd) 
-  /*!
-    Convert a name front back etc into a standard link number
-    \param Snd :: Snd link work    
-    \return link number [-ve for beamFront/beamBack]
-  */
-{
-  ELog::RegMethod RegA("SourceSelector[F]","getLinkIndex");
-  
-  long int linkPt(0);
-  if (!Snd.empty() && !StrFunc::convert(Snd,linkPt))
-    {
-      if (Snd=="origin") 
-	linkPt=0;
-      else if (Snd=="front") 
-	linkPt=1;
-      else if (Snd=="back")
-	linkPt=2;
-      else if (Snd=="beamFront")
-	linkPt=-1;
-      else if (Snd=="beamBack")
-	linkPt=-2;
-      else 
-	throw ColErr::InContainerError<std::string>(Snd,"String");
-    }
-  return linkPt;
-}
-
-void
-processSDefFile(const mainSystem::inputParam& IParam,
-		const FuncDataBase& Control,
-		const std::string& DObj,
-		SDef::Source& sourceCard)
-  /*!
-    Process the case of an sdefFile [spectrum] -- use 
-    the void sdef card
-    \param IParam :: input Parameters
-    \param Control :: dataBase for variables
-    \param DObj :: Name of object
-   */
-{
-  ELog::RegMethod RegA("SourceSelector","processSDefFile");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  const masterRotate& MR = masterRotate::Instance();
-  
-  const std::string FName=IParam.getValue<std::string>("sdefFile");
-  
-  const int index=IParam.getValue<int>("sdefIndex")-1;
-
-  const attachSystem::SecondTrack* SPtr(0);
-  const attachSystem::FixedComp* LPtr(0);
-  
-  if (DObj=="shutter" || DObj=="torpedo")
-    LPtr=OR.getObjectThrow<attachSystem::FixedComp>
-      (StrFunc::makeString(DObj,index),DObj+"FixedComp");
-  else
-    LPtr=OR.getObjectThrow<attachSystem::FixedComp>(DObj,"FixedComp");
-  
-  SPtr=dynamic_cast<const attachSystem::SecondTrack*>(LPtr);
-  
-  // Construct CSDEF :
-  SDef::ChipIRSource CSdef;
-  const double Angle=
-    IParam.getFlagDef<double>("sdefAngle",Control,"chipSourceAngle"); 
-  const double Radius=
-    IParam.getFlagDef<double>("sdefRadius",Control,"chipSourceRadial"); 
-  Geometry::Vec3D SPos;
-  if ( IParam.flag("sdefPos") )
-    {
-      // Care need to invert the position:
-      SPos=IParam.getValue<Geometry::Vec3D>("sdefPos");
-      SPos=MR.reverseRotate(SPos);           // View point	    
-    }
-  else
-    SPos=LPtr->getCentre();
-  
-  // Handle direction
-  Geometry::Vec3D SDir((SPtr) ? SPtr->getBeamAxis() : LPtr->getY());
-  if (IParam.flag("sdefVec"))
-    SDir=IParam.getValue<Geometry::Vec3D>("sdefVec");
-  else if (IParam.flag("sdefZRot"))
-    {
-      const double rotAngle=IParam.getValue<double>("sdefZRot");
-      const Geometry::Quaternion Qz=
-	Geometry::Quaternion::calcQRotDeg(rotAngle,LPtr->getX());
-      Qz.rotate(SDir);
-    }
-  
-  CSdef.createAll(FName,SDir,SPos,Angle,Radius,sourceCard);
-  
-  if (IParam.flag("ECut"))
-    CSdef.setCutEnergy(IParam.getValue<double>("ECut"));
-  return;
-}
   
 void 
 sourceSelection(Simulation& System,
@@ -216,7 +116,8 @@ sourceSelection(Simulation& System,
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(DObj);
 
-  const long int linkIndex=getLinkIndex(DSnd);
+  // divide 1000 to remove beam specifics
+  const long int linkIndex=attachSystem::getLinkIndex(DSnd)/1000;
 
   // NOTE: No return to allow active SSW systems
 
@@ -246,9 +147,9 @@ sourceSelection(Simulation& System,
     SDef::createTS1EpbCollSource(Control,sourceCard); 
   else if (sdefType=="Bilbao")                    // bilbauSource
     SDef::createBilbaoSource(Control,sourceCard);
-  else if (sdefType=="ess")                       
+  else if (sdefType=="ess")                       // essSource
     SDef::createESSSource(Control,sourceCard);
-  else if (sdefType=="essLinac")
+  else if (sdefType=="essLinac")                 // essLinacSource
     SDef::createESSLinacSource(Control,sourceCard);
   else if (sdefType=="essPort")
     SDef::createESSPortSource(Control,FCPtr,linkIndex,

@@ -47,6 +47,8 @@ namespace SDef
   void createBeamSource(const FuncDataBase&,const std::string&,
 			 const attachSystem::FixedComp&,const long int,
 			 Source&);
+
+  void createLaserSource(const FuncDataBase&,const std::string&,Source&);
   void createGammaSource(const FuncDataBase&,const std::string&,Source&);
   void createGammaSource(const FuncDataBase&,const std::string&,
 			 const attachSystem::FixedComp&,const long int,
