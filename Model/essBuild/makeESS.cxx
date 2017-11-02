@@ -528,6 +528,10 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 
   std::string midWaterName, lobeName;
   double theta(0.0);
+
+  const FuncDataBase& Control=System.getDataBase();
+  const double phiAB(1.0-Control.EvalVar<double>("ABunkerRightPhase")-Control.EvalVar<double>("ABunkerLeftPhase"));
+  const double phiCD(359.0+Control.EvalVar<double>("CBunkerRightPhase")+Control.EvalVar<double>("CBunkerLeftPhase"));
   std::vector<Geometry::Vec3D> vecFP;
   size_t colIndex(0);
   for (size_t i=0; i<nitems; i++)
@@ -575,36 +579,32 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 	      F5->setFocalPoints(vecFP);
 	      /////
 
-	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
 	      F5->createAll(System, World::masterOrigin());
 
-	      if (theta<90)
+	      if (theta<phiAB)
 		{
 		  attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
-		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
+		  if (std::abs(theta-phiAB)<1.0) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
 		}
-	      else if (theta<180)
+	      else if (theta<180.0)
 		{
 		  attachSystem::addToInsertSurfCtrl(System, *BBunker, *F5);
-		  if (std::abs(theta-90)<1) // Special care when theta is close to normals
+		  if (std::abs(theta-phiAB)<1.0) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *ABunker, *F5);
 		}
-	      else if (theta<270)
+	      else if (theta<phiCD)
 		{
 		  attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
-		  if (std::abs(theta-270)<1) // Special care when theta is close to normals
+		  if (std::abs(theta-phiCD)<1.0) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *CBunker, *F5);
 		}
-	      else if (theta<360)
+	      else if (theta<=360.0)
 		{
 		  attachSystem::addToInsertSurfCtrl(System, *CBunker, *F5);
-		  if (std::abs(theta-270)<1) // Special care when theta is close to normals
+		  if (std::abs(theta-phiCD)<1.0) // Special care when theta is close to normals
 		    attachSystem::addToInsertSurfCtrl(System, *DBunker, *F5);
 		}
-
-	      attachSystem::addToInsertSurfCtrl(System, *ShutterBayObj, *F5); // helps with single moderator !!! \todo not needed with two moderators
-	      attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj,*F5);
 
 	      F5array.push_back(F5);
 	    }
