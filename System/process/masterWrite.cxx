@@ -151,6 +151,7 @@ masterWrite::padNum(const T& V,const size_t len)
     Write out a padded string
     \param V :: Value
     \param len :: length
+    \return Num(T) + spaces to length
    */
 {
   std::string Out=Num(V);
@@ -166,6 +167,7 @@ masterWrite::padNum(const Geometry::Vec3D& V,const size_t len)
     Write out a padded string for a vec
     \param V :: Value
     \param len :: length of each component
+    \return Num(Vec3D) + spaces to length
    */ 
 {
   std::string Out;

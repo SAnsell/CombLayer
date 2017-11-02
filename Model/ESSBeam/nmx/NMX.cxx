@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMX.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,13 +80,14 @@
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
-#include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
+#include "BeamShutter.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "PipeCollimator.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "insertObject.h"
 #include "insertPlate.h"
 
@@ -113,6 +114,7 @@ NMX::NMX(const std::string& keyName) :
   CollA(new constructSystem::PipeCollimator(newName+"CollA")),
   BInsert(new BunkerInsert(newName+"BInsert")),
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
+  MainShutter(new constructSystem::BeamShutter(newName+"MainShutter")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA"))
   /*!
     Constructor
@@ -143,6 +145,7 @@ NMX::NMX(const std::string& keyName) :
 
   OR.addObject(CollA);
   
+  OR.addObject(MainShutter);
   OR.addObject(ShieldA);
 }
 
@@ -154,36 +157,6 @@ NMX::~NMX()
   */
 {}
 
-  
-void
-NMX::setBeamAxis(const FuncDataBase& Control,
-		 const GuideItem& GItem,
-		 const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("NMX","setBeamAxis");
-
-  nmxAxis->populate(Control);
-  nmxAxis->createUnitVector(GItem);
-  nmxAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  nmxAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  nmxAxis->linkShift(3);
-  nmxAxis->linkShift(4);
-  nmxAxis->linkAngleRotate(3);
-  nmxAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    nmxAxis->reverseZ();
-  return;
-}
   
 void 
 NMX::build(Simulation& System,
@@ -202,9 +175,10 @@ NMX::build(Simulation& System,
   ELog::RegMethod RegA("NMX","build");
   ELog::EM<<"\nBuilding NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
   const FuncDataBase& Control=System.getDataBase();
+
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*nmxAxis,Control,GItem,1);
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
@@ -281,7 +255,10 @@ NMX::build(Simulation& System,
   ShieldA->setFront(bunkerObj,2);
   ShieldA->createAll(System,FocusWall->getKey("Guide0"),2);
 
-
+  MainShutter->addInsertCell(ShieldA->getCells("Void"));
+  MainShutter->createAll(System,*ShieldA,-1);
+  
+                             
   return;
 }
 

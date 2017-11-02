@@ -3,7 +3,7 @@
  
  * File:   beamline/GuideLine.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -255,7 +255,8 @@ GuideLine::populate(const FuncDataBase& Control)
     }
 
   // set frontcut based on offset:
-  beamFrontCut=(fabs(beamYStep)>Geometry::zeroTol) ? 1 : 0;
+  if (!frontActive())
+    beamFrontCut=(std::abs<double>(beamYStep)>Geometry::zeroTol) ? 1 : 0;
 
   return;
 }
@@ -450,7 +451,35 @@ GuideLine::processShape(const FuncDataBase& Control)
 	  //	  BU->setEndPts(Origin,Origin+Y*L);      	  
 	  shapeUnits.push_back(BU);
 	}
+      else if (typeID=="Octagon")   
+	{
+	  PlateUnit* SU=new PlateUnit(GINumber,SULayer);
+	  const double SA=Control.EvalVar<double>(keyName+NStr+"WidthStart");
+	  const double SB=Control.EvalVar<double>(keyName+NStr+"WidthEnd");
+	  const double aA=sqrt(2.0)*SA/(2.0+sqrt(2.0));
+	  const double aB=sqrt(2.0)*SB/(2.0+sqrt(2.0));
+	  SU->addPairPoint(Geometry::Vec3D(SA/2.0,0.0,aA/2.0),
+			   Geometry::Vec3D(SB/2.0,0.0,aB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(aA/2.0,0.0,SA/2.0),
+			   Geometry::Vec3D(aB/2.0,0.0,SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-aA/2.0,0.0,SA/2.0),
+			   Geometry::Vec3D(-aB/2.0,0.0,SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-SA/2.0,0.0,aA/2.0),
+			   Geometry::Vec3D(-SB/2.0,0.0,aB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-SA/2.0,0.0,-aA/2.0),
+			   Geometry::Vec3D(-SB/2.0,0.0,-aB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(-aA/2.0,0.0,-SA/2.0),
+			   Geometry::Vec3D(-aB/2.0,0.0,-SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(aA/2.0,0.0,-SA/2.0),
+			   Geometry::Vec3D(aB/2.0,0.0,-SB/2.0));
+	  SU->addPairPoint(Geometry::Vec3D(SA/2.0,0.0,-aA/2.0),
+			   Geometry::Vec3D(SB/2.0,0.0,-aB/2.0));
 
+	  SU->setEndPts(Origin,Origin+Y*L);      	  
+	  SU->setXAxis(X,Z);      
+	  SU->constructConvex();
+	  shapeUnits.push_back(SU);
+	}
       else
 	{
 	  throw ColErr::InContainerError<std::string>
@@ -488,6 +517,7 @@ GuideLine::createUnitVector(const attachSystem::FixedComp& mainFC,
   guideFC.applyShift(beamXStep,beamYStep,beamZStep);
   guideFC.applyAngleRotate(beamXYAngle,beamZAngle);
   setDefault("GuideOrigin");
+
   return;
 }
 
@@ -511,8 +541,10 @@ GuideLine::createSurfaces()
     }
   
   if (beamFrontCut)
-    ModelSupport::buildPlane(SMap,guideIndex+1001,
-                             beamFC.getCentre(),beamFC.getY());
+    {
+      ModelSupport::buildPlane(SMap,guideIndex+1001,
+			       beamFC.getCentre(),beamFC.getY());
+    }
 
   if (!backActive())
     {
@@ -696,7 +728,7 @@ GuideLine::createGuideLinks()
     Create the linked units
    */
 {
-  ELog::RegMethod RegA("GuideLine","createMainLinks");
+  ELog::RegMethod RegA("GuideLine","createGuideLinks");
 
 
   int GI(guideIndex+2000);
@@ -776,7 +808,7 @@ GuideLine::getXSectionOut(const size_t shapeIndex,
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
-    \param shapelayerIndex :: Layer number [numberd from outside]
+    \param shapeLayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {

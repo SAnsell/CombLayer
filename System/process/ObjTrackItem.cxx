@@ -3,7 +3,7 @@
  
  * File:   process/ObjTrackItem.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@ ObjTrackItem::clearAll()
   return;
 }
 
-int
+void
 ObjTrackItem::addDistance(const int MatN,const double D) 
   /*!
     Adds a distance to the material track / creates
@@ -115,18 +115,9 @@ ObjTrackItem::addDistance(const int MatN,const double D)
   std::pair<MTYPE::iterator,bool> Res=
     MTrack.emplace(MatN,0.0);
   MTYPE::iterator mc=Res.first;
-  
-  // Test if exceeded aim point
-  if (aimDist-(TDist+D)<1e-6)
-    {
-      mc->second+=(aimDist-TDist);
-      TDist=aimDist;
-      return 1;
-    }
   mc->second+=D;
-  TDist+=D+0.00001;
-
-  return 0;
+  TDist+=D;
+  return;
 }
 
 double

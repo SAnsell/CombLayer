@@ -11,7 +11,7 @@ sub new
   my $self={
     
     bcomp => "gcc",
-    ccomp => "clang",
+    ccomp => "g++",
     cxx11 => " -std=c++11",
     fcomp => "gfortran",
     cflag => "-fPIC -Wconversion -W -Wall -Wextra ".

@@ -3,7 +3,7 @@
  
  * File:   weights/weightManager.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "particleConv.h"
 #include "Transform.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -55,6 +56,7 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "Mesh3D.h"
+#include "WWGWeight.h"
 #include "WWG.h"
 #include "weightManager.h"
 
@@ -201,6 +203,44 @@ weightManager::isMasked(const int cellN) const
   return false;
 }
   
+void
+weightManager::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the weight system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("weightManager","writePHITS");
+
+  const particleConv& PConv=particleConv::Instance();
+  if (!WMap.empty())
+    {
+      OX<<"[weight window]\n";
+      for(const CtrlTYPE::value_type& wf : WMap)
+        {
+          const std::vector<double>& Evec=wf.second->getEnergy();
+
+          OX<<"  part = "
+	    <<PConv.phitsType(wf.second->getParticle())
+	    <<std::endl;
+
+          OX<<"  eng = "<<Evec.size()<<std::endl;
+          for( const double& E : Evec )
+            OX<<"  "<<E;
+          OX<<std::endl;
+
+          OX<<"reg  ";
+          for(size_t i=1;i<=Evec.size();i++)
+            OX<<"    ww"<<i;
+          OX<<std::endl;
+
+          wf.second->writePHITS(OX);
+        }
+    }
+  
+  return;
+}
+
 void
 weightManager::write(std::ostream& OX) const
   /*!

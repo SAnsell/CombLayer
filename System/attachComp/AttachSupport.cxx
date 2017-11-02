@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,10 +86,11 @@ long int
 getLinkNumber(const std::string& Name)
   /*!
     Get a link number. Input is either a name 
-    - Orign : Origin [0]
+    - Origin : Origin [0]
     - front : link point 1
     - back : link point 2 
     \param Name :: Link name / number 
+    \return signed link number
   */
 {
   ELog::RegMethod RegA("AttachSupport[F]","getLinkNumber");
@@ -104,6 +105,10 @@ getLinkNumber(const std::string& Name)
 	linkPt=1;
       else if (Name=="back")
 	linkPt=2;
+      else if (Name=="front-") 
+	linkPt=-1;
+      else if (Name=="back-")
+	linkPt=-2;
       else 
 	throw ColErr::InContainerError<std::string>(Name,"Name");
     }
@@ -369,8 +374,8 @@ addToInsertControl(Simulation& System,
     must be set. It is tested against all the ojbect with
     this object .
     \param System :: Simulation to use
-    \param CellA :: First cell number [to test]
-    \param CellB :: Last cell number  [to test]
+    \param cellA :: First cell number [to test]
+    \param cellB :: Last cell number  [to test]
     \param FC :: FixedComp with the points
     \param CC :: ContainedComp object to add to this
   */
@@ -522,8 +527,8 @@ addToInsertSurfCtrl(Simulation& System,
    must be set. It is tested against all the ojbect with
    this object .
    \param System :: Simulation to use
-   \param CellA :: First cell number [to test]
-   \param CellB :: Last cell number  [to test]
+   \param cellA :: First cell number [to test]
+   \param cellB :: Last cell number  [to test]
    \param CC :: ContainedComp object to add to this
   */
 {
@@ -561,8 +566,9 @@ addToInsertOuterSurfCtrl(Simulation& System,
    this object .
    \param System :: Simulation to use
    \param BaseCC :: Only search using the base Contained Comp
-   \param CellA :: First cell number [to test]
-   \param CellB :: Last cell number  [to test]
+   \param cellA :: First cell number [to test]
+   \param cellB :: Last cell number  [to test]
+   \param BaseCC :: ContainedComp object use as the dermination cell
    \param CC :: ContainedComp object to add to this
   */
 {
@@ -775,8 +781,7 @@ addToInsertForced(Simulation& System,
  /*!
    Force CC into the BaseFC objects
   \param System :: Simulation to use
-  \param CellA :: First cell number [to test]
-  \param CellB :: Last cell number  [to test]
+  \param BaseFC :: Object to get range for cells
   \param CC :: ContainedComp object to add to the BaseFC
  */
 {

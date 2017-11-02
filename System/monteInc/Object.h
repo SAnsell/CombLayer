@@ -56,6 +56,7 @@ class Object
   int populated;     ///< Full population
 
   HeadRule HRule;    ///< Top rule
+
   /// Set of surfaces that are logically opposite in the rule.
   std::set<const Geometry::Surface*> logicOppSurf;
  
@@ -124,7 +125,8 @@ class Object
   /// get head rule 
   const HeadRule& getHeadRule() const { return HRule; }
   
-  int populate();
+  void populate();
+  void rePopulate();
   int createSurfaceList();
   void createLogicOpp();
   int isObjSurfValid() const { return objSurfValid; }  ///< Check validity needed

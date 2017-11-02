@@ -3,7 +3,7 @@
  
  * File:   source/activeUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,10 +146,12 @@ double
 activeUnit::XInverse(const double R) const
   /*!
     Inverse the y data [as based]
-    \param R :: Value to search for
+    \param R :: Value to search for             
+    \return value at E(R) 
   */
 {
-
+  ELog::RegMethod RegA("activeUnit","XInverse");
+  
   long int index=indexPos(cellFlux,R);
   const size_t IX=static_cast<size_t>(index);
   if (index<0 || IX>=cellFlux.size())
@@ -191,7 +193,7 @@ double
 activeUnit::getScaleFlux() const
   /*!
     return normalized scale flux value
-    \return value
+    \return flux / npoints
   */
 {
   return (scaleCnt) ? scaleIntegral/static_cast<double>(scaleCnt) : 1.0;
@@ -205,7 +207,7 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
   /*!
     Calculate the energy based on RNG nubmer and 
     write a photon in a random direction
-    \parma OX :: Output stream
+    \param OX :: Output stream
     \param Pt :: Point for interaction
     \param weight :: External Scaling factor 
   */
@@ -229,7 +231,5 @@ activeUnit::writePhoton(std::ostream& OX,const Geometry::Vec3D& Pt,
     }
   return;
 }
-  
-
-  
+    
 } // NAMESPACE SDef

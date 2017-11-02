@@ -3,7 +3,7 @@
  
  * File:   constructInc/FlightLine.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,15 @@
 
 class Simulation;
 
+
+/*!
+  \namespace moderatorSystem
+  \version 1.0
+  \author S. Ansell
+  \date April 2013
+  \brief Basic moderators [mainly TS2]
+*/
+
 namespace moderatorSystem
 {
 
@@ -36,18 +45,13 @@ namespace moderatorSystem
 */
 
 class FlightLine : public attachSystem::ContainedGroup,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int flightIndex;        ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double zStep;                 ///< Offset on Z top Target
-
-  double masterXY;              ///< Master rotation of general axis(XY)
-  double masterZ;               ///< Master rotation of general axis(Z)
   double anglesXY[2];           ///< Rotation in the XY plane 
   double anglesZ[2];            ///< Rotation in the Z plane
   
@@ -70,24 +74,24 @@ class FlightLine : public attachSystem::ContainedGroup,
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t,
+  void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const long int);
   //  void createUnitVector(const Geometry::Vec3D&,const Geometry::Vec3D&,
   //			const Geometry::Vec3D&);
-  void createRotatedUnitVector(const attachSystem::FixedComp&,const size_t,
-			       const size_t);
+  void createRotatedUnitVector(const attachSystem::FixedComp&,const long int,
+			       const long int);
 
   void createSurfaces();
-  void createCapSurfaces(const attachSystem::FixedComp&,const size_t);
+  void createCapSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const int,const size_t,
+		     const long int,
 		     const attachSystem::ContainedComp&);
 
   void removeObjects(Simulation&);
   std::string getRotatedDivider(const attachSystem::FixedComp&,
-				const size_t);
+				const long int);
 
  public:
 
@@ -98,16 +102,10 @@ class FlightLine : public attachSystem::ContainedGroup,
 
   void getInnerVec(std::vector<int>&) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
-  void createAll(Simulation&,const size_t,const size_t,
-		 const attachSystem::FixedComp&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&,const long int =0);
 
 
   
-  void reBoundary(Simulation&,const size_t,
+  void reBoundary(Simulation&,const long int,
 		  const attachSystem::FixedComp&);
 
   void processIntersectMajor(Simulation&,
@@ -117,6 +115,15 @@ class FlightLine : public attachSystem::ContainedGroup,
 			     const attachSystem::ContainedGroup&,
 			     const std::string&,const std::string&);
   
+
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+  void createAll(Simulation&,const long int,const long int,
+		 const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const attachSystem::ContainedComp&,const long int =0);
+
 };
 
 }

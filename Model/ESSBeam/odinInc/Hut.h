@@ -3,7 +3,7 @@
  
  * File:   constructInc/Hut.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,8 @@ namespace essSystem
 class Hut :
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
-  
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
@@ -72,8 +72,6 @@ class Hut :
 
   double wallYStep;               ///< Step from flat cut point
   double wallThick;               ///< Thickness 
-  double wallXGap;                ///< Hole for beam [X size]
-  double wallZGap;                ///< Hole for beam [Z size]
   
   int feMat;                  ///< Fe layer material 
   int concMat;                ///< Second layer material

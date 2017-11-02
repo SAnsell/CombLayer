@@ -98,8 +98,6 @@ class Cone : public Quadratic
   void setCutFlag(const int F) { cutFlag=F; }
   int getCutFlag() const { return cutFlag; }
 
-
-  virtual void writePOVRay(std::ostream&) const;
   void write(std::ostream&) const;  
 };
 

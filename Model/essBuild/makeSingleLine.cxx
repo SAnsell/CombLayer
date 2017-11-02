@@ -85,6 +85,7 @@
 #include "DREAM.h"
 #include "ESTIA.h"
 #include "FREIA.h"
+#include "HEIMDAL.h"
 #include "LOKI.h"
 #include "MAGIC.h"
 #include "MIRACLES.h"
@@ -109,8 +110,6 @@ namespace essSystem
 makeSingleLine::makeSingleLine() 
  /*!
     Constructor
-    \param SN :: Shutter name
-    \param BName :: Beamline
  */
 {
 }
@@ -152,7 +151,7 @@ makeSingleLine::build(Simulation& System,
 		      const mainSystem::inputParam& IParam)
   /*!
     Carry out the build of a single beamline
-    \param SimPtr :: Simulation system
+    \param System :: Simulation system
     \param IParam :: name of beamline
    */
 {
@@ -162,13 +161,37 @@ makeSingleLine::build(Simulation& System,
   const int voidCell(74123);
   beamName=IParam.getValueError<std::string>
     ("beamlines",0,0,"Single beamline not defined");
-  
-  if (beamName=="MAGIC")
+  // GXBLineTop7 for example
+  if (beamName.find("BLine")!=std::string::npos) 
+    beamName=IParam.getValueError<std::string>
+      ("beamlines",0,1,"Single beamline not defined");
+    
+  if (beamName=="BEER")
+    {
+      BEER beerBL("beer");
+      beerBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="FREIA")
+    {
+      FREIA freiaBL("freia");
+      freiaBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="HEIMDAL")
+    {
+      HEIMDAL heimdalBL("heimdal");
+      heimdalBL.buildIsolated(System,voidCell);
+    }
+  else if (beamName=="LOKI")
+    {
+      LOKI lokiBL("loki");
+      lokiBL.buildIsolated(System,voidCell);      
+    }
+  else if (beamName=="MAGIC")
     {
       MAGIC magicBL("magic");
       magicBL.buildIsolated(System,voidCell);      
     }
-  if (beamName=="MIRACLES")
+  else if (beamName=="MIRACLES")
     {
       MIRACLES miraclesBL("miracles");
       miraclesBL.buildIsolated(System,voidCell);      
@@ -178,9 +201,9 @@ makeSingleLine::build(Simulation& System,
       VESPA vespaBL("vespa");
       vespaBL.buildIsolated(System,voidCell);
     }
-  else if (beamName=="TEST")
+  else if (beamName=="TEST" || beamName=="TESTBEAM")
     {
-      TESTBEAM testBL("test");
+      TESTBEAM testBL("testBeam");
       testBL.buildIsolated(System,voidCell);
       
     }

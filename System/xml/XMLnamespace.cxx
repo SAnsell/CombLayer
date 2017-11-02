@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(XP Input builder
  
  * File:   xml/XMLnamespace.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,9 +31,6 @@
 #include <stack>
 #include <sys/stat.h>
 #include <time.h>
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -42,7 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "regexSupport.h"
+#include "regexBuild.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -465,7 +462,6 @@ splitObjGroup(XMLobject* AR,
     From a file: read \<key attrib=.....\> Body \<key/\>
     \param AR :: Input object/group
     \param Keys :: Keys for each sub-group
-    \param Attrib :: Attributes (if any)
     \param Body :: Main component
     \retval 0 :: failure
     \retval 1 :: success
@@ -825,11 +821,10 @@ matchPath(const std::string& A,const std::string& B)
 {
   if (A==B)
     return 1;
-#ifndef NO_REGEX
-  boost::regex Re(B);
-  if (StrFunc::StrLook(A,Re))
+
+  if (StrFunc::StrLook(A,B))
     return 2;
-#endif
+
   return 0;
 }
 

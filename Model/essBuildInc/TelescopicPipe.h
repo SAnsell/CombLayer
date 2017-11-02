@@ -11,7 +11,7 @@ namespace essSystem
   \author A. Milocco
   \version 1.0
   \date February 2013
-  \brief Reflector object
+  \brief Telescopic pipe object
 */
 class TelescopicPipe : public attachSystem::ContainedGroup,
     public attachSystem::FixedComp

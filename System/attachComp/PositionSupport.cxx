@@ -95,7 +95,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
     \param setIndex :: Index
     \param itemIndex :: item count
     \return Vecter point
-  */
+  */ 
 { 
   ELog::RegMethod RegA("PositionSuppport[F]","getCntVec3D");
 
@@ -191,7 +191,7 @@ getCntVec3D(const mainSystem::inputParam& IParam,
 
 }
 
-
+  
   
 
 }  // NAMESPACE attachSystem

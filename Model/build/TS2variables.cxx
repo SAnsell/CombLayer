@@ -3,7 +3,7 @@
  
  * File:   build/TS2variables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,13 +93,14 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("beamDY",0.0);        // Shift in beam horrizontal
 
   // REFLECTOR
-  Control.addVariable("reflectXYAngle",45);   // x-y angle
+  Control.addVariable("reflectXYAngle",-45.0);   // x-y angle
   Control.addVariable("reflectXStep",0);      // x shift of reflector
   Control.addVariable("reflectYStep",10.0);     // y shift of reflector
   Control.addVariable("reflectZStep",0);      // z shift of reflector
-  Control.addVariable("reflectXYSize",35);    // half width (xy direction)
-  Control.addVariable("reflectZSize",35);     // half height
-  Control.addVariable("reflectCutSize",30*sqrt(2.0));     // End cut
+  Control.addVariable("reflectXYSize",35.0);    // half width (xy direction)
+  Control.addVariable("reflectZSize",35.0);     // half height
+  Control.addVariable("reflectCornerAngle",45.0);     // End cut
+  Control.addVariable("reflectCutSize",30.0*sqrt(2.0));     // End cut
   Control.addVariable("reflectMat","Be300K");     // End cut
 
 
@@ -273,7 +274,18 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("cvacAlMat","Aluminium");           // Inner Material
   Control.addVariable("cvacOutMat","Aluminium");          // Outer Material 
 
-//  NEW DECOUPLED MODERATOR
+  // PLACEHOLDER
+  Control.addVariable("decPlateXStep",0.0);        //  X [across] shift
+  Control.addVariable("decPlateYStep",4.6);        //  Y [target] shift
+  Control.addVariable("decPlateZStep",11.862);     //  Z Shift 
+  Control.addVariable("decPlateZAngle",0.0);       //  Tilt angle
+  Control.addVariable("decPlateXYAngle",57.0);     // Angle  [relative to Y]
+  Control.addVariable("decPlateWidth",14.0);       //  Tilt angle
+  Control.addVariable("decPlateHeight",12.0);       //  Tilt angle
+  Control.addVariable("decPlateDepth",5.0);       //  Tilt angle
+  Control.addVariable("decPlateDefMat","Aluminium");       //  Tilt angle
+
+    //  NEW DECOUPLED MODERATOR
 
   Control.addVariable("decoupledXStep",0.0);        //  X [across] shift
   Control.addVariable("decoupledYStep",4.6);        //  Y [target] shift
@@ -301,7 +313,7 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decLayer2Thick",0.15);   // Al layer
   Control.addVariable("decLayer2Temp",20.0);   
   Control.addVariable("decLayer2Mat","Aluminium");   
-  Control.addVariable("decLayer3Thick",0.5);   // Type 2 Methane
+  Control.addVariable("decLayer3Thick",0.4);   // Type 2 Methane
   Control.addVariable("decLayer3Temp",20.0);   
   Control.addVariable("decLayer3Mat","CH4AlTypeII");   
   Control.addVariable("decLayer4Thick",1.0);   // Type 2 Methane
@@ -348,15 +360,15 @@ TS2layout(FuncDataBase& Control)
   Control.addVariable("decoupledModTemp",26.0);        // Moderator temperature
   
   // Poisoning:
-  Control.addVariable("decPoisonNBlades",0);        // Number of blades
-  Control.addVariable("decPoisonBladeWidth",0.3);    // Thickness [total]
+  Control.addVariable("decPoisonNBlades",7);        // Number of blades
+  Control.addVariable("decPoisonBladeWidth",0.15);    // Thickness [total]
   Control.addVariable("decPoisonBladeGap",0.7);       // Space of blade
   Control.addVariable("decPoisonAbsThick",0.05);      // Space in blade
   Control.addVariable("decPoisonYLength",1.0);       // Planeare
   Control.addVariable("decPoisonZLength",-1.0);       // -ve : to to bottom
-  Control.addVariable("decPoisonXOffset",0.0);       
-  Control.addVariable("decPoisonYOffset",0.0);       
-  Control.addVariable("decPoisonZOffset",0.0);       
+  Control.addVariable("decPoisonXStep",0.0);       
+  Control.addVariable("decPoisonYStep",0.0);       
+  Control.addVariable("decPoisonZStep",0.0);       
 
   Control.addVariable("decPoisonModTemp",26.0);           // CH4 + 10% Al [+Ar]
 
@@ -447,7 +459,7 @@ TS2layout(FuncDataBase& Control)
 
   // REFLECTOR COOL PADS:
   Control.addVariable("reflectNPads",1);      // Number of cooling pads
-  Control.addVariable("coolPad1FixIndex",1);   // Index
+  Control.addVariable("coolPad1FixIndex",2);   // Index
   Control.addVariable("coolPadXStep",0.0);   
   Control.addVariable("coolPad1ZStep",-17.5);   
   Control.addVariable("coolPad1Thick",3.75);   
@@ -525,9 +537,9 @@ TS2layout(FuncDataBase& Control)
 
   Control.addVariable("t2TargetBoreRadius",3.70);  // Master bore  
   // TARGET of TS2
-  Control.addVariable("t2TargetXOffset",0.0);           // Offset ref centre
-  Control.addVariable("t2TargetYOffset",4.2);           // Offset ref centre
-  Control.addVariable("t2TargetZOffset",0.0);           // Offset ref centre
+  Control.addVariable("t2TargetXStep",0.0);           // Step ref centre
+  Control.addVariable("t2TargetYStep",4.2);           // Step ref centre
+  Control.addVariable("t2TargetZStep",0.0);           // Step ref centre
   Control.addVariable("t2TargetMainLength",33.0);       // Length from 
   Control.addVariable("t2TargetCoreRadius",2.814);      // W radius 
   Control.addVariable("t2TargetSurfThick",0.3);         // skin layer
@@ -784,7 +796,7 @@ TS2layout(FuncDataBase& Control)
 
   // Beam Window (PROTON FLIGHT PATH)
   Control.addVariable("ProtonVoidViewRadius",3.4);  // Radius [guesses]
-  Control.addVariable("BWindowYStep",6.0);  // Y step
+  Control.addVariable("BWindowYStep",-6.0);  // Y step
   Control.addVariable("BWindowIncThick1",0.3);  // Inconel Thickness 1
   Control.addVariable("BWindowWaterThick",0.1); // Light water Thickness
   Control.addVariable("BWindowIncThick2",0.3); // Inconel Thickness 2

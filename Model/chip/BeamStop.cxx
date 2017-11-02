@@ -3,7 +3,7 @@
  
  * File:   chip/BeamStop.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -416,10 +416,9 @@ void
 BeamStop::createLinks()
   /*!
     Create all the linkes [OutGoing]
-    \param BUnit :: Bunker unit						
   */
 {
-  ELog::RegMethod RegA("BunkerInsert","createLinks");
+  ELog::RegMethod RegA("BeamStop","createLinks");
 
   FixedComp::setConnect(0,Origin,-Y);
   FixedComp::setConnect(1,Origin+Y*

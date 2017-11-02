@@ -69,9 +69,6 @@ class LayerDivide3D  : public attachSystem::FixedComp,
   std::string outputFile;        ///< File to write
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp&,
-			const long int,const bool);
 
   
   void checkDivide() const;

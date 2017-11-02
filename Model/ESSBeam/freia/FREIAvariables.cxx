@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/freia/FREIAvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,15 +94,15 @@ FREIAvariables(FuncDataBase& Control)
   Control.addVariable("freiaAxisXYAngle",0.0);   // rotation
   Control.addVariable("freiaAxisZAngle",0.0);   // down slope
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.4,"Void");
   FGen.setYOffset(0.0);
-  FGen.setThickness(0.5,0.4);
   // was 10.593 to 17.566 
-  FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0,10.593,15.566,
+  FGen.generateBender(Control,"freiaBA",350.0,4.0,4.0, 13.8,21.24,
                       7000.0,90.0);
 
   // Pipe in gamma shield
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   PipeGen.generatePipe(Control,"freiaPipeB",8.0,40.0);
   FGen.clearYOffset();
   FGen.generateBender(Control,"freiaBB",36.0,4.0,4.0,17.566,18.347,
@@ -195,6 +195,8 @@ FREIAvariables(FuncDataBase& Control)
 
   // Guide in wall
   FGen.generateTaper(Control,"freiaFWall",346.0,6.0,6.0,6.0,6.0);
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"freiaPipeWall",4.0,348.0);
 
   CGen.setMainRadius(56.0);
   CGen.setFrame(120.0,120.0);

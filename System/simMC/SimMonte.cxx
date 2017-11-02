@@ -3,7 +3,7 @@
  
  * File:   src/SimMonte.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,7 @@ void
 SimMonte::setDetector(const Transport::Detector& DObj)
   /*!
     Set the detector
-    \parma DetObj :: Detector object to add
+    \param DObj :: Detector object to add
   */
 {
   ELog::RegMethod RegA("SimMonte","setDetector");

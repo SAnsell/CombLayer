@@ -3,7 +3,7 @@
  
  * File:   weights/WCells.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -460,6 +460,7 @@ WCells::writeTable(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   // This line avoids a stupid bug.
   cx.str("");   // THIS IS A GCC BUG since cx.str("c ") DOES NOT WORK
+  
   cx<<"c   ";
   for(int i=0;i<static_cast<int>(Energy.size());i++)
     cx<<"c        ";
@@ -495,6 +496,21 @@ WCells::writeHead(std::ostream& OX) const
   return;
 }
 
+
+void
+WCells::writePHITS(std::ostream& OX) const
+  /*!
+    Generic write output
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("WCells","writePHITS");
+
+  for(const ItemTYPE::value_type& wf : WVal)
+    wf.second.write(OX);
+
+  return;
+}
 
 void
 WCells::write(std::ostream& OX) const

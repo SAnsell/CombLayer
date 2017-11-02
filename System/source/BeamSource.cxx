@@ -3,7 +3,7 @@
  
  * File:   source/BeamSource.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,12 +123,14 @@ BeamSource::populateEFile(const std::string& FName,
   /*!
     Load a distribution table
     - Care is taken to add an extra energy with zero 
-    weight onto the table since we are using a
+    - Scale weight  onto sum 1.0 in the table 
     \param FName :: filename 
-    return 0 on failure / 1 on success
+    \param colE :: Energy column from data file
+    \param colP :: Prob/Weight column from data file
+    \return 0 on failure / 1 on success
   */
 {
-  ELog::RegMethod RegA("BeamSource","loadEnergy");
+  ELog::RegMethod RegA("BeamSource","populateEFile");
 
   const int eCol(colE);
   const int iCol(colP);
@@ -245,7 +247,7 @@ BeamSource::populate(const FuncDataBase& Control)
       ELog::EM<<"Default energy == "<<E<<ELog::endDiag;
       const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
       const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
-      const double EStep((EEnd-E)/(nE+1));
+      const double EStep((EEnd-E)/static_cast<double>(nE+1));
       for(size_t i=0;i<nE;i++)
 	{
 	  Energy.push_back(E);
@@ -347,8 +349,9 @@ BeamSource::createAll(const FuncDataBase& Control,
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param souceCard :: Source Term
-    \param linkIndex :: link Index						
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
+    \param sourceCard :: Source Term
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");

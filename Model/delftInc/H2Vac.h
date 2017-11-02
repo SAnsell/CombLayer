@@ -3,7 +3,7 @@
  
  * File:   delftInc/H2Vac.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,12 +39,14 @@ namespace delftSystem
 
 class H2Vac : 
   public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int vacIndex;               ///< Index of surface offset
   int cellIndex;                    ///< Cell index
+
+  double sideRadius;        ///< Side radius 
   
   double vacPosGap;         ///< Positive side length [Origin: MaxR]
   double vacNegGap;         ///< Negative side length [Origin: MaxR]
@@ -53,7 +55,7 @@ class H2Vac :
   double vacSide;           ///< Radius of side gap
 
   double alPos;         ///< Positive al thickness
-  double alNeg;         ///< Positive al thickness
+  double alNeg;         ///< Negative al thickness
   double alSide;        ///< Side thickness
 
   double terPos;         ///< Positive tertiary thickness
@@ -61,7 +63,7 @@ class H2Vac :
   double terSide;        ///< Side tertiay thickness
 
   double outPos;         ///< Positive outer thickness
-  double outNeg;         ///< Positive outer thickness
+  double outNeg;         ///< Negagive outer thickness
   double outSide;        ///< Side thickness
 
   double clearPos;         ///< Clearance Positive side
@@ -73,7 +75,7 @@ class H2Vac :
 
   void populate(const FuncDataBase&);
 
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces(const attachSystem::FixedComp&);
   void createLinks();
   void createObjects(Simulation&,const std::string&);

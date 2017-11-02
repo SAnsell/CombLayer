@@ -3,7 +3,7 @@
  
  * File:   constructInc/DiskChopper.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,14 +41,15 @@ namespace constructSystem
 */
 
 class DiskChopper : public attachSystem::FixedOffsetGroup,
-    public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  private:
   
   const int chpIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
   int centreFlag;               ///< Centre origin / edge origin
-  int offsetFlag;               ///< Centre origin / edge origin
+  int offsetFlag;               ///< Move disk into choper-void
     
   double innerRadius;           ///< Inner Non-Viewed radius 
   double outerRadius;           ///< Outer Viewed radius
@@ -72,7 +73,6 @@ class DiskChopper : public attachSystem::FixedOffsetGroup,
   DiskChopper(const DiskChopper&);
   DiskChopper& operator=(const DiskChopper&);
   virtual ~DiskChopper();
-
 
   /// Access centre flag
   void setCentreFlag(const int C) { centreFlag=C; }

@@ -3,7 +3,7 @@
  
  * File:   tally/cellFluxTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,12 +256,6 @@ fissionTally::write(std::ostream& OX)  const
   if (!FSfield.empty())
     {
       cx<<"fs"<<IDnum<<" "<<FSfield;
-      StrFunc::writeMCNPX(cx.str(),OX);
-      cx.str("");
-    }
-  if (!SDfield.empty())
-    {
-      cx<<"sd"<<IDnum<<" "<<SDfield;
       StrFunc::writeMCNPX(cx.str(),OX);
       cx.str("");
     }

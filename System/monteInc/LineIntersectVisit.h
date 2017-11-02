@@ -3,7 +3,7 @@
  
  * File:   monteInc/LineIntersectVisit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,6 +109,7 @@ class LineIntersectVisit : public Global::BaseVisit
 
     // Accessors:
     double getDist(const Geometry::Surface*);
+    double getForwardDist(const Geometry::Surface*);
     const Geometry::Line& getTrack() const { return ATrack; } ///< Access Line
 
     void write(std::ostream&) const;

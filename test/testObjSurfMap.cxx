@@ -3,7 +3,7 @@
  
  * File:   test/testObjSurfMap.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,7 +137,8 @@ testObjSurfMap::createSurfaces()
   ELog::RegMethod RegA("testObjSurfMap","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  
+  SurI.reset();
+	     
   // First box :
   SurI.createSurface(1,"px -1");
   SurI.createSurface(2,"px 1");

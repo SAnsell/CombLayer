@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Element.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,9 @@
 #include "IsoTable.h"
 #include "Element.h"
 
+namespace MonteCarlo
+{
+  
 //----------------------------------------
 //    ABUNDANCE
 //----------------------------------------
@@ -49,7 +52,7 @@ Abundance::Abundance() :
   */
 {}
 
-Abundance::Abundance(const int Az) :
+Abundance::Abundance(const size_t Az) :
   Z(Az)
   /*!
     Constructor
@@ -89,7 +92,7 @@ Abundance::~Abundance()
 {}
 
 void
-Abundance::addIso(const int I,const double F)
+Abundance::addIso(const size_t I,const double F)
   /*!
     Adds an isotope to the list
     \param I :: Isotope number
@@ -146,15 +149,13 @@ Element::Instance()
   return EI;
 }
 
-int 
+size_t
 Element::elmIon(const std::string& Astr) const
   /*! 
     Calculate the Z and the ion from a string
     of type :: Em2+ 
     \param Astr :: String 
-    \retval Z of the element (recognised)
-    \retval -1 if string not found
-    \retval -2 if string not valid
+    \retval Z of the element (if recognised)
    */
 {
 
@@ -163,31 +164,25 @@ Element::elmIon(const std::string& Astr) const
   for(;i<3 && i<Astr.length() && 
 	isalpha(Astr[i]);i++) ;
   
-  if (!i || i>2)  // failed 
-    return -1;
-
   return this->elm(Astr.substr(0,i));
 }
 
-std::pair<int,int>
+std::pair<size_t,int>
 Element::elmIonPair(const std::string& Astr) const
   /*! 
     Calculate the Z and the ion from a string
     of type :: Em2+ 
     \param Astr :: String 
-    \retval Z of the element (recognised)
-    \retval -1 if string not found
-    \retval -2 if string not valid
+    \retval Z of the element (recognised) : charge
    */
 {
 
   // check and find length of real element part
-  std::pair<int,int> Out(-1,0);
+  std::pair<size_t,int> Out(0,0);
   unsigned int i(0);
   for(;i<3 && i<Astr.length() && 
 	isalpha(Astr[i]);i++) ;
-  
-  if (!i || i>2)  // failed 
+  if (!i || i==3)  // failed 
     return Out;
 
   Out.first=this->elm(Astr.substr(0,i));
@@ -206,47 +201,39 @@ Element::elmIonPair(const std::string& Astr) const
     digit=sign;
   digit*=sign;
   Out.second=digit;
+
   return Out;
 }
 
-int 
-Element::elm(const char* Astr) const
-  /*! 
-    Find element number from a char* 
-    \param Astr :: String 
-    \returns Z of the element
-   */
-{
-  std::string eStr(Astr);
-  return elm(eStr);
-}
-
-int 
+size_t
 Element::elm(const std::string& Astr) const
   /*! 
-    Find element number from a char* 
-    \param Astr :: String 
+    Find element number from a string
+    \param Astr :: Element name
     \retval Z of the element (recognised)
-    \retval -1 if string not found
-    \retval -2 if string not valied
+
    */
 {
+  ELog::RegMethod RegA("Element","elm");
   std::string Ts;
-  unsigned int i(0);
+  size_t i(0);
   for(i=0;i<Astr.length() && !isalpha(Astr[i]);i++) ;
-  if (i==Astr.length())
-    return -1;
- 
-  Ts=static_cast<char>(toupper(Astr[i]));
-  if ((i+1)!=Astr.length() && isalpha(Astr[i+1]))
-    Ts+=static_cast<char>(tolower(Astr[i+1]));
-  std::map<std::string,int>::const_iterator xv;
-  xv=Nmap.find(Ts);
-  return  (xv==Nmap.end()) ? -2 : xv->second;
+  if (i!=Astr.length())
+    {
+      Ts=static_cast<char>(toupper(Astr[i]));
+      if ((i+1)!=Astr.length() && isalpha(Astr[i+1]))
+	Ts+=static_cast<char>(tolower(Astr[i+1]));
+      std::map<std::string,size_t>::const_iterator xv;
+      xv=Nmap.find(Ts);
+      if (xv!=Nmap.end())
+	return xv->second;
+    }
+  
+  throw ColErr::InContainerError<std::string>(Astr,"Element not known");
 }
-
-std::string
-Element::elmSym(const int Z) const
+  
+const std::string&
+Element::elmSym(const size_t Z) const
   /*! 
     Determines the element from the Z number
     \param Z :: Atomic number
@@ -254,12 +241,13 @@ Element::elmSym(const int Z) const
   */
 {
   if (Z<1 || Z>Nelem)
-    return "";
-  return Sym[static_cast<size_t>(Z)-1];
+    throw ColErr::InContainerError<size_t>(Z,"Element number not known");
+
+  return Sym[Z-1];
 }
 
 double
-Element::Kedge(const int Z) const
+Element::Kedge(const size_t Z) const
   /*!
     Returns the K-edge at Z
     \param Z :: Atomic Number
@@ -279,15 +267,15 @@ Element::Kedge(const std::string& Symb) const
     \returns K-Edge [keV] (or 0.0 on failure)
   */
 {
-  const int Z=elm(Symb);
+  const size_t Z=elm(Symb);
   if (Z<1 || Z>Nelem)
     return 0.0;
-  return KEdge[static_cast<size_t>(Z)-1];
+  return KEdge[Z-1];
 }
 
 void
 Element::addZaid(const Zaid& ZItem,
-		 std::vector<int>& cZaid,
+		 std::vector<size_t>& cZaid,
 		 std::vector<double>& cFrac) const
   /*!
     Given a full string zaid, convert to a cinder type
@@ -298,9 +286,9 @@ Element::addZaid(const Zaid& ZItem,
 {
   ELog::RegMethod RegA("Element","addZaid");
 
-  const int Z=ZItem.getZ();
-  if (Z<=0) return;    // void Zaid. 
-  const size_t ZN=static_cast<size_t>(Z-1);
+  const size_t Z=ZItem.getZ();
+  if (!Z) return;    // void Zaid. 
+  const size_t ZN=Z-1;
   const double Frac=ZItem.getDensity();
   if (ZItem.getIso()==0)
     {
@@ -330,28 +318,28 @@ Element::populate()
   */
 {
   std::string NameData[]= {
-    "H" , "He", "Li", "Be", "B" ,"C",
-    "N" ,"O" ,"F" ,"Ne", "Na", "Mg",
-    "Al", "Si", "P" ,"S" ,"Cl", "Ar",
-    "K" ,"Ca", "Sc", "Ti", "V" ,"Cr",
+    "H" , "He", "Li", "Be", "B" , "C",
+    "N" , "O" , "F" , "Ne", "Na", "Mg",
+    "Al", "Si", "P" , "S" , "Cl", "Ar",
+    "K" , "Ca", "Sc", "Ti", "V" , "Cr",
     "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
     "Ga", "Ge", "As", "Se", "Br", "Kr",
-    "Rb", "Sr", "Y" ,"Zr", "Nb", "Mo",
+    "Rb", "Sr", "Y" , "Zr", "Nb", "Mo",
     "Tc", "Ru", "Rh", "Pd", "Ag", "Cd",
-    "In", "Sn", "Sb", "Te", "I" ,"Xe",
+    "In", "Sn", "Sb", "Te", "I" , "Xe",
     "Cs", "Ba", "La", "Ce", "Pr", "Nd",
     "Pm", "Sm", "Eu", "Gd", "Tb", "Dy",
     "Ho", "Er", "Tm", "Yb", "Lu", "Hf",
-    "Ta", "W" ,"Re", "Os", "Ir", "Pt",
+    "Ta", "W" , "Re", "Os", "Ir", "Pt",
     "Au", "Hg", "Tl", "Pb", "Bi", "Po",
     "At", "Rn", "Fr", "Ra", "Ac", "Th",
-    "Pa", "U" ,"Np", "Pu", "Am", "Cm",
+    "Pa", "U" , "Np", "Pu", "Am", "Cm",
     "Bk", "Cf", "Es", "Fm", "Md", "No",
     "Lr", "Rf", "Ha", "Sg", "Bh", "Hs",
     "Mt" };
 
 
-  for(int i=0;i<94;i++)
+  for(size_t i=0;i<94;i++)
     {
       Nmap[NameData[i]]=i+1;
       Sym.push_back(NameData[i]);
@@ -368,7 +356,7 @@ Element::populateIso()
   */
 {
   // Number of isotopes for each element
-  int NIso[]={
+  const size_t NIso[]={
     3, 2, 2, 2, 2, 
     3, 3, 4, 2, 3, 
     1, 5, 3, 5, 1, 
@@ -390,7 +378,7 @@ Element::populateIso()
     11, 13, 9, 13, 9, 
     9, 7, 6, 6, 5 }; 
   
-  int IsoAM[]={
+  const size_t IsoAM[]={
     1, 2, 3,                                     // Hydrogen   
     3, 4,                                        // Helium     
     6, 7,                                        // Lithium    
@@ -718,14 +706,13 @@ Element::populateIso()
     
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 
     0.000000 }; 
-  
 
   Isotopes.resize(100);
   size_t cnt(0);
   for(size_t i=0;i<100;i++)
     {
-      Abundance A(static_cast<int>(i)+1);
-      for(int j=0;j<NIso[i];j++)
+      Abundance A(i+1);
+      for(size_t j=0;j<NIso[i];j++)
         {
           A.addIso(IsoAM[cnt],FracV[cnt]/100.0);
           cnt++;
@@ -736,6 +723,8 @@ Element::populateIso()
   return;
 }
 
+
+
 void
 Element::populateEdge()
   /*!
@@ -743,7 +732,7 @@ Element::populateEdge()
     create the object's data (Energy Levels)
   */
 {
-  double KEdgeData[]= {
+  KEdge={
    0.140000E-01,   0.250000E-01,  0.550000E-01,
    0.112000E+00,   0.188000E+00,  0.284000E+00,
    0.402000E+00,   0.537000E+00,  0.686000E+00,
@@ -777,15 +766,11 @@ Element::populateEdge()
    0.000000E+00,   0.115603E+03,  0.000000E+00,
    0.121760E+03
   };
-
-
-  for(int i=0;i<94;i++)
-    KEdge.push_back(KEdgeData[i]);
   return;
 }
 
 double
-Element::mass(const int Z) const
+Element::mass(const size_t Z) const
   /*!
     Mean atomic mass for a natural abundance 
     element
@@ -794,11 +779,11 @@ Element::mass(const int Z) const
    */
 {
   return (Z<1 || Z>94) ? 0.0 : 
-    Isotopes[static_cast<size_t>(Z)-1].meanMass();
+    Isotopes[Z-1].meanMass();
 }
 
 size_t
-Element::natIsotopes(const int Z,std::vector<int>& AVec,
+Element::natIsotopes(const size_t Z,std::vector<size_t>& AVec,
 		     std::vector<double>& FVec) const
   /*!
     Access the set of natural isotopes
@@ -810,8 +795,11 @@ Element::natIsotopes(const int Z,std::vector<int>& AVec,
 {
   if (Z<1 || Z>94) 
     return 0;
-  const Abundance& AB=Isotopes[static_cast<size_t>(Z)-1];
+
+  const Abundance& AB=Isotopes[Z-1];
   AVec=AB.WList;
   FVec=AB.Frac;
-  return AB.WList.size();
+  return AB.WList.size(); 
 }
+
+}  // NAMESPACE MonteCarlo

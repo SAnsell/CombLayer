@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -552,13 +552,12 @@ objectRegister::calcRenumber(const int CN) const
   /*!
     Take a cell number and calculate the renumber [not ideal]
     \param CN :: orignal cell number
-    \return correct offset nubmer
+    \return correct offset number
    */
 {
   const std::string key=inRange(CN);
   if (key.empty())
     return CN;
-
 
   MTYPE::const_iterator Amc=regionMap.find(key);
   MTYPE::const_iterator Bmc=renumMap.find(key);
@@ -566,7 +565,7 @@ objectRegister::calcRenumber(const int CN) const
     return CN;
 
   const int Cdiff=CN-Amc->second.first;
-  return Bmc->second.first+Cdiff;
+  return Bmc->second.first+Cdiff-1;
 }
 
 std::vector<int>
@@ -596,7 +595,8 @@ objectRegister::getObjectRange(const std::string& objName) const
       std::vector<int> Out=CPtr->getCells(cellName);
       if (Out.empty())
         {
-          ELog::EM<<"EMPTY NAME::Possible names == "<<ELog::endDiag;
+          ELog::EM<<"EMPTY NAME::Possible names["<<itemName
+		  <<"] == "<<ELog::endDiag;
           std::vector<std::string> NameVec=CPtr->getNames();
           for(const std::string CName : NameVec)
             ELog::EM<<"  "<<CName<<ELog::endDiag;
@@ -605,11 +605,10 @@ objectRegister::getObjectRange(const std::string& objName) const
         }
       
       for(int& CN : Out)
-        CN=calcRenumber(CN);
-
+	CN=calcRenumber(CN);
       return Out;
     }
-
+  
   // Simple number range
   pos=objName.find("-");
   if (pos!=std::string::npos)
@@ -639,6 +638,7 @@ objectRegister::getObjectRange(const std::string& objName) const
         Out.push_back(calcRenumber(CN));
       return Out;
     }
+
   
   // Just an object name:
 
@@ -665,7 +665,6 @@ objectRegister::getObjectRange(const std::string& objName) const
     }
   for(int& CN : Out)
     CN=calcRenumber(CN);
-
   return Out;
 }
   

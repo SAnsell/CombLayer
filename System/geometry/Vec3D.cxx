@@ -34,8 +34,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 
-const double PTolerance(1e-6);   ///< Tolerance for a point
-
 std::ostream& 
 Geometry::operator<<(std::ostream& OX,const Geometry::Vec3D& A)
   /*!
@@ -218,7 +216,7 @@ Vec3D::operator==(const Vec3D& A) const
     \return A==this
   */
 {
-  return (&A==this || Distance(A)<=PTolerance) ? 1 : 0;
+  return (&A==this || Distance(A)<=zeroTol) ? 1 : 0;
 }
 
 bool
@@ -241,7 +239,7 @@ Vec3D::operator<(const Vec3D& A) const
   */
 {
   const double FV(this->abs()-A.abs());
-  return (FV<PTolerance) ? 0 : 1;
+  return (FV<zeroTol) ? 0 : 1;
 }
 
 bool
@@ -253,7 +251,7 @@ Vec3D::operator>(const Vec3D& A) const
   */
 {
   const double FV(A.abs()-this->abs());
-  return (FV<PTolerance) ? 0 : 1;
+  return (FV<zeroTol) ? 0 : 1;
 }
 
 Vec3D
@@ -481,9 +479,9 @@ Vec3D::principleDir() const
   size_t maxI=0;
   double maxV=0.0;
   for(size_t i=0;i<3;i++)
-    if (fabs(this->operator[](i))>maxV)
+    if (std::abs(this->operator[](i))>maxV)
       {
-	maxV=fabs(this->operator[](i));
+	maxV=std::abs(this->operator[](i));
 	maxI=i;
       }
   return maxI;
@@ -510,7 +508,7 @@ Vec3D::makeUnit()
   */
 {
   const double Sz(abs());
-  if (Sz>PTolerance)
+  if (Sz>zeroTol)
     {
       x/=Sz;
       y/=Sz;
@@ -755,7 +753,7 @@ Vec3D::coLinear(const Vec3D& Bv,const Vec3D& Cv) const
 {
   const Vec3D& Av=*this;
   const Vec3D Tmp((Bv-Av)*(Cv-Av));
-  return (Tmp.abs()>PTolerance) ? 0 : 1;
+  return (Tmp.abs()>zeroTol) ? 0 : 1;
 }
 
 Vec3D

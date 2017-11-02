@@ -130,6 +130,17 @@ pointTally::~pointTally()
 
 
 void
+pointTally::setFUflag(const int flag)
+  /*!
+    Sets the fu (special treatment) flag
+    \param flag :: flag value
+  */
+{
+  fuFlag=flag;
+  return;
+}
+
+void
 pointTally::setDDFlag(const double D,const int outFlag) 
   /*!
     Sets the weighting system:
@@ -152,7 +163,7 @@ pointTally::setSecondDist(const double D)
     \param D :: Second back track distance
   */
 {
-  ELog::EM<<"SECOND ++ "<<D<<ELog::endDebug;
+  ELog::EM<<"SECOND Distance:: "<<D<<ELog::endDiag;
   secondDist=D;
   secondDFlag=1;
   return;
@@ -482,7 +493,7 @@ pointTally::widenWindow(const int index,const double scale)
 void
 pointTally::divideWindow(const int xPts,const int yPts)
   /*!
-    Adjusts the tally to ad a modification to the fu
+    Adjusts the tally to add a modification to the fu
     card which has xpts / ypts : NBins [numbered 1 to N ]
     \param xPts :: Xpoints in grid
     \param yPts :: Ypoints in grid
@@ -668,6 +679,8 @@ pointTally::write(std::ostream& OX) const
 
   if (!isActive())
     return;
+
+
   
   std::stringstream cx;
   if (IDnum)  // maybe default 
@@ -676,18 +689,23 @@ pointTally::write(std::ostream& OX) const
       writeParticles(cx);
       cx<<Centre<<" "<<Radius;
       StrFunc::writeMCNPX(cx.str(),OX);
-      if (mcnp6Out)
-	writeMCNP6(OX);
     }
+
   if (!fuCard.empty() || fuFlag)
     {
       cx.str("");
       cx<<"fu"<<IDnum<<" "<<fuCard;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
-  else if (!mcnp6Out && !Window.empty())
-    StrFunc::writeMCNPX(StrFunc::makeString("fu",IDnum),OX);
-
+  
+  if ( !Window.empty() )
+    {
+      if ( !mcnp6Out )
+        StrFunc::writeMCNPX(StrFunc::makeString("fu",IDnum),OX);
+      else
+        writeMCNP6(OX);
+    }
+            
   writeFields(OX);
   return;
 }

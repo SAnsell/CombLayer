@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/NiGuide.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,18 +36,12 @@ namespace bibSystem
 */
 
 class NiGuide : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
-  const int niguideindex;             ///< Index of surface offset
+  const int niGuideIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
 
   double width;                   ///< width of Ni guide
   double height;                  ///< height of Ni guide
@@ -55,19 +49,15 @@ class NiGuide : public attachSystem::ContainedComp,
   double wallThick;                  ///< wall of Ni guide
  
   int wallMat;
- 
- 
-  
+   
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
-///   void createSurfaces();
-  void createSurfaces(const attachSystem::FixedComp&,
-		     const size_t,
-		     const attachSystem::FixedComp&,
-		     const size_t);
+  void createSurfaces(const attachSystem::FixedComp&,const long int,
+		     const attachSystem::FixedComp&,const long int);
+  
   void createObjects(Simulation&,const attachSystem::ContainedComp&);
   void createLinks();
 
@@ -78,14 +68,12 @@ class NiGuide : public attachSystem::ContainedComp,
   NiGuide& operator=(const NiGuide&);
   virtual ~NiGuide();
 
-///   void createAll(Simulation&,const attachSystem::FixedComp&,
-/// 		 const size_t,const attachSystem::ContainedComp&);
   void createAll(Simulation&, 
-		const attachSystem::FixedComp&,
-		const size_t,
-		const attachSystem::FixedComp&,
-		const size_t,
-		const attachSystem::ContainedComp&);
+		 const attachSystem::FixedComp&,
+		 const long int,
+		 const attachSystem::FixedComp&,
+		 const long int,
+		 const attachSystem::ContainedComp&);
   
 };
 

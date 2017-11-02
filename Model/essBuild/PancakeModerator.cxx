@@ -67,10 +67,12 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
 #include "ModBase.h"
 #include "DiskPreMod.h"
 #include "EdgeWater.h"
@@ -406,8 +408,8 @@ PancakeModerator::getSideRule() const
 
   HeadRule HR;
   HR.addUnion(MidH2->getSideRule());
-  HR.addUnion(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
+  // HR.addUnion(LeftWater->getSideRule());
+  // HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
 
   return HR.display();
@@ -422,8 +424,8 @@ PancakeModerator::getLeftRightWaterSideRule() const
 {
   std::string side("");
   HeadRule HR;
-  HR.procString(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
+  // HR.procString(LeftWater->getSideRule());
+  // HR.addUnion(RightWater->getSideRule());
   HR.makeComplement();
 
   return HR.display();

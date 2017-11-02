@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/t1PlateTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #include "Simulation.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "channel.h"
 #include "PressVessel.h"
@@ -141,31 +142,6 @@ t1PlateTarget::~t1PlateTarget()
  */
 {}
   
-void
-t1PlateTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("t1PlateTarget","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();     
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	    (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,6);   // realtive front face
-
-    }
-  return;
-}
 
 void
 t1PlateTarget::addProtonLine(Simulation& System,
@@ -181,7 +157,7 @@ t1PlateTarget::addProtonLine(Simulation& System,
   ELog::RegMethod RegA("t1PlateTarget","addProtonLine");
 
   PLine->createAll(System,*PressVObj,-7,refFC,index);
-  createBeamWindow(System);
+  createBeamWindow(System,7);
   
   return;
 }
@@ -199,7 +175,7 @@ t1PlateTarget::createAll(Simulation& System,
 
   PlateTarObj->populate(System);
   PressVObj->setTargetLength(PlateTarObj->getTargetLength());
-  PressVObj->createAll(System,FC);
+  PressVObj->createAll(System,FC,0);
 
   FixedComp::copyLinkObjects(*PressVObj);
   ContainedComp::copyRules(*PressVObj);

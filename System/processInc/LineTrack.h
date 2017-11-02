@@ -62,6 +62,7 @@ class LineTrack
  public:
 
   LineTrack(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  LineTrack(const Geometry::Vec3D&,const Geometry::Vec3D&,const double);
   LineTrack(const LineTrack&);
   LineTrack& operator=(const LineTrack&);    
   ~LineTrack() {}          ///< Destructor

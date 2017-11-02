@@ -40,6 +40,7 @@ namespace mainSystem
 		    const std::string&,int);
   void setESSNeutronics(defaultConfig&, const std::string&, const std::string&);
   void setESSSingle(defaultConfig&,std::vector<std::string>&);
+  //  void setESSLinac(defaultConfig&);
 }
 
 

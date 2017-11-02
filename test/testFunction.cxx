@@ -3,7 +3,7 @@
  
  * File:   test/testFunction.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,9 @@ testFunction::applyTest(const int extra)
 int
 testFunction::testAnalyse()
   /*!
-    Tests the function analysis
+    Tests the function analysis.
+    If the string is a mathematical expresssion then it should
+    be analysed and a value set
     \return 0 on success/-ve on failure
   */
 {
@@ -139,12 +141,15 @@ testFunction::testAnalyse()
   
   Tests.push_back(TTYPE("atan(tx*tx)",atan(100.0)));
   Tests.push_back(TTYPE("sin(tx+3)",sin(13.0)));
+  Tests.push_back(TTYPE("sqrt(itemA)",sqrt(3.4)));
+  Tests.push_back(TTYPE("sqrt(itemB)",sqrt(6.0)));
   Tests.push_back(TTYPE("sqrt(itemA+itemB)",sqrt(3.4+6.0)));
 
   FuncDataBase XX;   
   XX.addVariable("tx",10.0);
   XX.addVariable("itemA",3.4); 
-  XX.Parse("sqrt(36.0)");
+  //  XX.Parse("sqrt(36.0)");
+  XX.Parse("6.0");
   XX.addVariable("itemB");             // check the expression parse
   
   int cnt(1);
@@ -154,11 +159,14 @@ testFunction::testAnalyse()
       if (flag)
 	{
 	  ELog::EM<<"Compile error:"<<flag<<ELog::endWarn;
+	  ELog::EM<<"Compile error:"<<std::get<0>(tc)<<ELog::endWarn;
 	  return -cnt;
 	}
-      if (fabs(XX.Eval<double>()-std::get<1>(tc))>1e-5)
+      if (std::abs(XX.Eval<double>()-std::get<1>(tc))>1e-5)
 	{
-	  ELog::EM<<"Eval error:"<<XX.Eval<double>()<<ELog::endWarn;
+	  ELog::EM<<"Test     :"<<std::get<0>(tc)<<ELog::endWarn;
+	  ELog::EM<<"Eval     :"<<XX.Eval<double>()<<ELog::endWarn;
+	  ELog::EM<<"Expected :"<<std::get<1>(tc)<<ELog::endWarn;
 	  return -cnt;
 	}
       cnt++;
@@ -428,16 +436,17 @@ testFunction::testVec3DFunctions()
  
   // String : output type  : double / Vec out
   typedef std::tuple<std::string,int,Geometry::Vec3D,double> TTYPE;
-  std::vector<TTYPE> Tests;
+  std::vector<TTYPE> Tests={
+    TTYPE("vec3d(1,2,3)",1,Geometry::Vec3D(1,2,3),0),
+    TTYPE("V1",1,Geometry::Vec3D(3,4,5),0),
+    TTYPE("V1+vec3d(1,2,3)",1,Geometry::Vec3D(4,6,8),0),
+    TTYPE("V1+vec3d(1,2,3)",1,Geometry::Vec3D(4,6,8),0),
+    TTYPE("V1+vec3d(1,2,3)",1,Geometry::Vec3D(4,6,8),0),
+    TTYPE("abs(V1+vec3d(1,2,3))",0,Geometry::Vec3D(0,0,0),sqrt(16+36+64)),
+    TTYPE("V1*vec3d(1,2,3)",1,Geometry::Vec3D(2,-4,2),0),
+    TTYPE("dot(vec3d(1,2,3),V1)",0,Geometry::Vec3D(0,0,0),(3+8+15))
+  };
   
-  Tests.push_back(TTYPE("vec3d(1,2,3)",1,Geometry::Vec3D(1,2,3),0));
-  Tests.push_back(TTYPE("V1",1,Geometry::Vec3D(3,4,5),0));
-  Tests.push_back(TTYPE("V1+vec3d(1,2,3)",1,Geometry::Vec3D(4,6,8),0));
-  Tests.push_back(TTYPE("abs(V1+vec3d(1,2,3))",0,Geometry::Vec3D(0,0,0),
-			sqrt(16+36+64)));
-  Tests.push_back(TTYPE("dot(V1,vec3d(1,2,3))",0,Geometry::Vec3D(0,0,0),
-			sqrt(16+36+64)));
-
   for(const VTYPE& vc : TestVar)
     XX.addVariable(std::get<0>(vc),std::get<1>(vc));
 
@@ -456,8 +465,8 @@ testFunction::testVec3DFunctions()
 	    XX.Eval<Geometry::Vec3D>();
 	  if (std::get<2>(tc)!=Res)
 	    {
-	      ELog::EM<<"EVAL[Vec] Failure:  "
-		      <<cnt<<ELog::endDiag;
+	      ELog::EM<<"EVAL[Vec] Failure:  "<<cnt<<ELog::endDiag;
+	      ELog::EM<<"String:  "<<std::get<0>(tc)<<ELog::endDiag;
 	      ELog::EM<<"TC == "<<Res<<" != "<<std::get<2>(tc)<<ELog::endDiag;
 	      return -1;
 	    }
@@ -469,6 +478,7 @@ testFunction::testVec3DFunctions()
 	    {
 	      ELog::EM<<"EVAL[double] Failure:  "
 		      <<cnt<<ELog::endDiag;
+	      ELog::EM<<"String:  "<<std::get<0>(tc)<<ELog::endDiag;
 	      ELog::EM<<std::setprecision(9)<<"TC == "<<Res<<" != "
 		      <<std::get<3>(tc)<<ELog::endDiag;
 	      return -1;

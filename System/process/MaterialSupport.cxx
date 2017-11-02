@@ -3,7 +3,7 @@
  
  * File:   process/MaterialSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,8 +149,8 @@ EvalDefMat(const FuncDataBase& Control,
     Determine the material name based either on the string
     value or the material number
     \param Control :: Database of variables
-    \param KeyA :: First string to search    
-    \param defVal :: Defaul value
+    \param KeyA :: String to search    
+    \param defVal :: Default value
     \return MatNumber
   */
 {
@@ -159,10 +159,35 @@ EvalDefMat(const FuncDataBase& Control,
     EvalMat<T>(Control,KeyA) : defVal;
 }
 
+template<typename T>
+T
+EvalDefMat(const FuncDataBase& Control,
+           const std::string& KeyA,
+           const std::string& KeyB,
+           const T& defVal)
+  /*!
+    Determine the material name based either on the string
+    value or the material number
+    \param Control :: Database of variables
+    \param KeyA :: First string to search    
+    \param KeyB :: Second string to search    
+    \param defVal :: Default value
+    \return MatNumber
+  */
+{
+  ELog::RegMethod RegA("MaterialSupport[F]","EvalDefMat");
+  if(Control.hasVariable(KeyA))
+    return EvalMat<T>(Control,KeyA);
+
+  return (Control.hasVariable(KeyB)) ? 
+    EvalMat<T>(Control,KeyB) : defVal;
+}
+  
 int
 EvalMatName(const std::string& matName)
   /*!
     Convert material name into a number
+    \throw InContainerError :: Material not known in DB
     \param matName :: Material to change
     \return index 
   */
@@ -214,6 +239,10 @@ EvalMat(const FuncDataBase&,const std::string&,
 template int 
 EvalDefMat(const FuncDataBase&,const std::string&,
 	   const int&);
+
+template int 
+EvalDefMat(const FuncDataBase&,const std::string&,
+           const std::string&,const int&);
 
 /// \endcond TEMPLATE
 

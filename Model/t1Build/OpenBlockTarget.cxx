@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Build/OpenBlockTarget.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -91,8 +92,8 @@ OpenBlockTarget::OpenBlockTarget(const std::string& Key)  :
 OpenBlockTarget::OpenBlockTarget(const OpenBlockTarget& A) : 
   constructSystem::TargetBase(A),
   ptIndex(A.ptIndex),cellIndex(A.cellIndex),frontPlate(A.frontPlate),
-  backPlate(A.backPlate),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),height(A.height),width(A.width),
+  backPlate(A.backPlate),
+  height(A.height),width(A.width),
   nBlock(A.nBlock),tBlock(A.tBlock),tVoid(A.tVoid),
   WWidth(A.WWidth),WHeight(A.WHeight),WVoidHeight(A.WVoidHeight),
   WVoidWidth(A.WVoidWidth),taThick(A.taThick),waterThick(A.waterThick),
@@ -118,9 +119,6 @@ OpenBlockTarget::operator=(const OpenBlockTarget& A)
       cellIndex=A.cellIndex;
       frontPlate=A.frontPlate;
       backPlate=A.backPlate;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       height=A.height;
       width=A.width;
       nBlock=A.nBlock;
@@ -167,9 +165,7 @@ OpenBlockTarget::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OpenBlockTarget","populate");
 
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
+  attachSystem::FixedOffset::populate(Control);
 
   // Global values:
   height=Control.EvalVar<double>(keyName+"Height");
@@ -220,7 +216,8 @@ OpenBlockTarget::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("OpenBlockTarget","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,indexPt);
-
+  applyOffset();
+  
   return;
 }
 
@@ -398,8 +395,9 @@ OpenBlockTarget::plateEdge(const size_t plateN,double& W,double& L) const
   
   W=width;
   Geometry::Vec3D FPt(Origin);
-  FPt += Y*((plateN+1.0) * waterThick+
-	    (2.0*plateN+1.0) * taThick);
+  FPt += Y*(static_cast<double>(plateN+1) * waterThick+
+	    static_cast<double>(2*plateN+1) * taThick);
+
   for(size_t i=1; i<= plateN;i++)
     FPt+=Y*tBlock[i-1];
   
@@ -453,33 +451,6 @@ OpenBlockTarget::getTargetLength() const
 }
 
 void 
-OpenBlockTarget::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-   ELog::RegMethod RegA("SideCoolTarget","createBeamWindow");
-
-   if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();
-      
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	  (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,0);  // 2 => front face of target
-    }
-  return;
-}
-
-void 
 OpenBlockTarget::addProtonLine(Simulation& System,
 			 const attachSystem::FixedComp& refFC,
 			 const long int index)
@@ -494,7 +465,7 @@ OpenBlockTarget::addProtonLine(Simulation& System,
 
   // 0 ::  front face of target
   PLine->createAll(System,*this,0,refFC,index);
-  createBeamWindow(System);
+  createBeamWindow(System,1);
   System.populateCells();
   System.createObjSurfMap();
   return;

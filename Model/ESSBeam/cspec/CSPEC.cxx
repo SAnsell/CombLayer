@@ -3,7 +3,7 @@
  
  * File:   essBuild/CSPEC.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -84,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -102,14 +103,22 @@ CSPEC::CSPEC(const std::string& keyName) :
 
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
-  VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
-  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
-  BendB(new beamlineSystem::GuideLine(newName+"BB"))
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  FocusC(new beamlineSystem::GuideLine(newName+"FC")),
+
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
+  BWDiskA(new constructSystem::DiskChopper(newName+"BWDiskA")),
+
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  BendD(new beamlineSystem::GuideLine(newName+"BD"))
+
 
  /*!
     Constructor
+    \param keyName :: keyname of beamline 
  */
 {
   ELog::RegMethod RegA("CSPEC","CSPEC");
@@ -122,11 +131,18 @@ CSPEC::CSPEC(const std::string& keyName) :
   OR.addObject(cspecAxis);
 
   OR.addObject(FocusA);
-  OR.addObject(VPipeA);
-  OR.addObject(FocusB);
 
   OR.addObject(VPipeB);
-  OR.addObject(BendB);
+  OR.addObject(FocusB);
+
+  OR.addObject(VPipeC);
+  OR.addObject(FocusC);
+
+  OR.addObject(ChopperA);
+  OR.addObject(BWDiskA);
+
+  OR.addObject(VPipeD);
+  OR.addObject(BendD);
 
 }
   
@@ -135,38 +151,6 @@ CSPEC::~CSPEC()
     Destructor
   */
 {}
-
-void
-CSPEC::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("CSPEC","setBeamAxis");
-
-  cspecAxis->populate(Control);
-  cspecAxis->createUnitVector(GItem,0);
-  cspecAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  cspecAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  cspecAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  cspecAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  cspecAxis->linkShift(3);
-  cspecAxis->linkShift(4);
-  cspecAxis->linkAngleRotate(3);
-  cspecAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    cspecAxis->reverseZ();
-  return;
-}
-
-
   
 void 
 CSPEC::build(Simulation& System,
@@ -184,6 +168,8 @@ CSPEC::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("CSPEC","build");
 
+  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
+  
   ELog::EM<<"\nBuilding CSPEC on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
@@ -192,7 +178,7 @@ CSPEC::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,1);
+  essBeamSystem::setBeamAxis(*cspecAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -201,20 +187,34 @@ CSPEC::build(Simulation& System,
 
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
-  
-  VPipeA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeA->createAll(System,GItem.getKey("Beam"),2);
-
-  FocusB->addInsertCell(VPipeA->getCells("Void"));
-  FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
-
   VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,*VPipeA,2);
+  VPipeB->createAll(System,FocusA->getKey("Guide0"),2);
 
-  BendB->addInsertCell(VPipeA->getCells("Void"));
-  BendB->createAll(System,*VPipeA,2,*VPipeA,2);
+  FocusB->addInsertCell(VPipeB->getCells("Void"));
+  FocusB->createAll(System,*VPipeB,0,*VPipeB,0);
 
+  VPipeC->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeC->createAll(System,FocusB->getKey("Guide0"),2);
 
+  
+  FocusC->addInsertCell(VPipeC->getCells("Void"));
+  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+
+  ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
+  ChopperA->getKey("Main").setAxisControl(3,ZVert);
+  ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
+  ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+
+  BWDiskA->addInsertCell(ChopperA->getCell("Void"));
+  BWDiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*BWDiskA);
+  
+  VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
+  VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
+
+  BendD->addInsertCell(VPipeD->getCells("Void"));
+  BendD->createAll(System,*VPipeD,0,*VPipeD,0);
+  
   return;
 }
 

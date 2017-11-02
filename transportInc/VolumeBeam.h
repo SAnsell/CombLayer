@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   transportInc/VolumeBeam.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@ class VolumeBeam : public Beam
   Geometry::Vec3D Y;           ///< Axis 2
   Geometry::Vec3D Z;           ///< Axis 3 
   
-  double yBias;                ///< Bias in y
+  double yBias;                ///< Bias in y for neutron position
   
  public:
   
@@ -55,32 +55,25 @@ class VolumeBeam : public Beam
   Beam* clone() const { return new VolumeBeam(*this); }  
   virtual ~VolumeBeam();
 
-  /// Effective typeid
+  ///\cond GET/SETTER
   virtual std::string className() const { return "VolumeBeam"; }
-  /// Visitor Acceptance
   virtual void acceptVisitor(Global::BaseVisit& A) const
     {  A.Accept(*this); }
-  /// Accept visitor for input
   virtual void acceptVisitor(Global::BaseModVisit& A)
     { A.Accept(*this); }
 
-  /// Get wavelength
-  double wave() const { return wavelength; }      
-  /// get corner point
+  double wave() const { return wavelength; }
   const Geometry::Vec3D& getCorner() const { return Corner; }
-  const Geometry::Vec3D& getAxis(const int) const;
 
-  /// set bias
+  virtual void setWavelength(const double W) { wavelength=W; }  
   void setBias(const double YB) { yBias=YB; }
 
-
+  ///\endcond GET/SETTER
+  
+  const Geometry::Vec3D& getAxis(const int) const;
   void setCorners(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  /// Set Wavelength
-  virtual void setWavelength(const double W) { wavelength=W; }  
-
+  
   virtual MonteCarlo::neutron generateNeutron() const;
-
-  // Output stuff
   void write(std::ostream&) const;
 
 };

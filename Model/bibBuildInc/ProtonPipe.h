@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/ProtonPipe.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,18 +36,13 @@ namespace bibSystem
 */
 
 class ProtonPipe : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int protonIndex;          ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
 
   double radius;                  ///< Radius of inner pipe
   double innerWallThick;          ///< Inner wall thickness
@@ -64,10 +59,10 @@ class ProtonPipe : public attachSystem::ContainedComp,
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-		  const size_t);
+		  const long int);
 
   void createSurfaces(const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createObjects(Simulation&);
   void createLinks();
 

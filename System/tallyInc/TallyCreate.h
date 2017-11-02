@@ -3,7 +3,7 @@
  
  * File:   tallyInc/TallyCreate.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,32 +40,17 @@ namespace tallySystem
 
   sswTally* addSSWTally(Simulation&);
   
-  void addF1Tally(Simulation&,const int,const int);  // Add basic F1 tally
+  void addF1Tally(Simulation&,const int,const int);  //
   void addF1Tally(Simulation&,const int,
 		  const int,const std::vector<int>&);  
 
   void addF4Tally(Simulation&,const int,const std::string&,const std::vector<int>&);    
 
-  void addSimpleF5Tally(Simulation&,const int,const Geometry::Vec3D&,
-			const std::string&,const std::string&,const std::string&); 
   void addF7Tally(Simulation&,const int,const std::vector<int>&);    
-
-  std::vector<Geometry::Vec3D> 
-    calcWindowIntercept(const int,const int,const int,
-			const int,const int,const int);
-  std::vector<Geometry::Vec3D> 
-    calcWindowIntercept(const int,const int,const int,
-			const int,const int,const Geometry::Vec3D&);
 
   void addF5Tally(Simulation&,const int);
   void addF5Tally(Simulation&,const int,const Geometry::Vec3D&,
 		  const std::vector<Geometry::Vec3D>&,const double= 0.0);
-  void addF5Tally(Simulation&,const int,const int,   
-		  const int,const int,const int,const int,
-		  const double=1000.0,const int =0);
-  void addF5Tally(Simulation&,const int,const Geometry::Vec3D&,
-		  const int,const int,const int,
-		  const int,const int,const int =0);
   void setF5Position(Simulation&,const int,const Geometry::Vec3D&,
 		     const Geometry::Vec3D&,const double,const double);
   void setF5Position(Simulation&,const int,const Geometry::Vec3D&);

@@ -3,7 +3,7 @@
  
  * File:   essBuild/LayerDivide3D.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- *
+ * 
  ****************************************************************************/
 #include <fstream>
 #include <iomanip>
@@ -184,7 +184,7 @@ LayerDivide3D::processSurface(const size_t Index,
   // 
   // mirror planes only work with planes(!)
   std::string surGroup="ASurf";
-  surGroup[0]+=Index;
+  surGroup[0]=StrFunc::indexToAlpha(Index);
 
   if (WallSurf.first<0)
     {
@@ -307,7 +307,7 @@ LayerDivide3D::setFractions(const size_t index,
   /*!
     Set the fractions
     \param index :: Type index 0 to 2
-    \param FV :: Fraction
+    \param FV :: Fractions [0 - 1]
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","setFractions");
@@ -487,9 +487,6 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 
   checkDivide();
   
-  ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
-
   const MonteCarlo::Object* CPtr=System.findQhull(cellN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(cellN,"cellN");

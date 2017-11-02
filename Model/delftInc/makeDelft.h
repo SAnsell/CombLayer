@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/makeDelft.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #ifndef delftSystem_makeDelft_h
 #define delftSystem_makeDelft_h
 
+namespace attachSystem
+{
+  class FixedComp;
+  class FixedOffset;
+}
 /*!
   \namespace delftSystem
   \brief Delft reactor build system
@@ -35,8 +40,10 @@ namespace delftSystem
   class ReactorGrid;
   class BeamInsert;
   class BeamTube;
+  class BeamTubeJoiner;
   class SwimingPool;
   class virtualMod;
+  class FlatModerator;
   class SphereModerator;
   class H2Moderator;
   class H2Vac;
@@ -45,6 +52,7 @@ namespace delftSystem
   class BeCube;
   class BeFullBlock;
   class Rabbit;
+  class PressureVessel;
   class SpaceBlock;
 
   /*!
@@ -58,52 +66,51 @@ class makeDelft
 {
  private:
 
-  int vacReq;                            ///< Vac vessel required
-
   std::shared_ptr<ReactorGrid> GridPlate;    ///< Grid 
   std::shared_ptr<SwimingPool> Pool;         ///< Pool
-  std::shared_ptr<BeamTube> FlightA;         ///< Direct beamline 
+
+  std::shared_ptr<BeamTubeJoiner> FlightA;         ///< Direct beamline 
   std::shared_ptr<BeamTube> FlightB;         ///< Close [top]
   std::shared_ptr<BeamTube> FlightC;         ///< Close [base]
   std::shared_ptr<BeamTube> FlightD;         ///< Opposite direct
   std::shared_ptr<BeamTube> FlightE;         ///< Opposite [top]
   std::shared_ptr<BeamTube> FlightF;         ///< Opposition [base]
-  std::shared_ptr<virtualMod> ColdMod;      ///< H2 Moderator
-  /// H2 Moderator groove
-  std::vector<std::shared_ptr<H2Groove> > ColdGroove;      
-  /// H2 Moderator surround
-  std::shared_ptr<H2Vac> CSurround;  
+
+
+  std::shared_ptr<FlatModerator> ColdMod;       ///< H2 Moderator
+  std::shared_ptr<PressureVessel> ColdVac;      ///< Vacuum layer
+  std::shared_ptr<PressureVessel> ColdPress;    ///< Pressure vessel
+
 
   // --  Inserts for flightline  --
   std::shared_ptr<BeamInsert> R2Insert;      ///< FlightA/R2 inset
 
-  // Reflector additional
-  std::shared_ptr<BeSurround> R2Be;      ///< R2 tube refle
-  std::shared_ptr<BeCube> R2Cube;      ///< R2 tube refle
-  std::shared_ptr<BeFullBlock> RFull;      ///< R Full block
-  std::shared_ptr<BeFullBlock> LFull;      ///< L Full block
-
+  /// Reflector additional on tube
+  std::shared_ptr<attachSystem::FixedOffset> R2Be; 
 
   /// Boxed units
   std::vector<std::shared_ptr<SpaceBlock> > SBox;  
   /// RABBITS
   std::vector<std::shared_ptr<Rabbit> > RSet;  
 
-  static virtualMod* createColdMod(const std::string&);
-
-  void variableObjects(const FuncDataBase&);
   void makeBlocks(Simulation&);
   void makeRabbit(Simulation&);
 
+  void buildCore(Simulation&,const mainSystem::inputParam&);
+  void buildFlight(Simulation&,const std::string&);
+  void buildModerator(Simulation&,const attachSystem::FixedComp&,
+		      const long int,const std::string&,
+		      const std::string&);
+
  public:
   
-  makeDelft(const std::string&);
+  makeDelft();
   makeDelft(const makeDelft&);
   makeDelft& operator=(const makeDelft&);
   ~makeDelft();
   
-  void build(Simulation*,const mainSystem::inputParam&);
-  void setSource(Simulation*,const mainSystem::inputParam&);
+  void build(Simulation&,const mainSystem::inputParam&);
+  void setSource(Simulation&,const mainSystem::inputParam&);
 
 };
 

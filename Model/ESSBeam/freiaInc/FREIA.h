@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/FREIA.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace constructSystem
   class VacuumWindow;
   class ChopperHousing;
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class HoleShape;
   class JawSet;
 }
@@ -68,6 +68,8 @@ class FREIA : public attachSystem::CopiedComp
 {
  private:
 
+  /// Start at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+  int startPoint;  
   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
@@ -88,12 +90,12 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> WFMDisk;
 
@@ -103,7 +105,7 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendD;
 
   /// 8.5m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
 
@@ -113,7 +115,7 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendE;
 
   /// 10m 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
   /// Double disk chopper [wbc2]
   std::shared_ptr<constructSystem::DiskChopper> WBC2Disk;
 
@@ -123,12 +125,14 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendF;
 
   /// 11.1m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperE;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;
+  /// Vac pipe in wall (if used)
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeWall;
   /// Guide running to bunker wall
   std::shared_ptr<beamlineSystem::GuideLine> FocusWall;
 
@@ -137,12 +141,12 @@ class FREIA : public attachSystem::CopiedComp
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutACut;
   /// 15m WBC3 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// Double disk chopper (WBC3)
   std::shared_ptr<constructSystem::DiskChopper> WBC3Disk;
 
   /// 15m FOC3 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// Double disk chopper (FOC3)
   std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
 
@@ -164,15 +168,21 @@ class FREIA : public attachSystem::CopiedComp
   /// Collimator hole after jaws
   std::shared_ptr<constructSystem::HoleShape> OutBCutBack;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+			const long int,const int);
+  void buildOutGuide(Simulation&,const attachSystem::FixedComp&,
+		     const long int,const int);
+  void buildHut(Simulation&,const attachSystem::FixedComp&,
+		const long int,const int);
+
  public:
   
   FREIA(const std::string&);
   FREIA(const FREIA&);
   FREIA& operator=(const FREIA&);
   ~FREIA();
-  
+
+  void buildIsolated(Simulation&,const int);
   void build(Simulation&,const GuideItem&,
 	     const Bunker&,const int);
 

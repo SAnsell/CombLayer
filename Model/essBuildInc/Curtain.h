@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Curtain.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,8 @@ namespace essSystem
 
 class Curtain : public attachSystem::ContainedGroup,
   public attachSystem::FixedGroup,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
    
@@ -50,9 +51,10 @@ class Curtain : public attachSystem::ContainedGroup,
   double leftPhase;              ///< Sector phase left
   double rightPhase;             ///< Sector phase right
     
-
   double innerStep;              ///< inner radius [calculated]
   double wallThick;              ///< Wall radius
+  double baseGap;                ///< Base gap
+  double outerGap;               ///< Gap outer of wall
   double topRaise;               ///< Raise of top step
   double depth;                  ///< Floor depth
   double height;                 ///< Roof height
@@ -63,6 +65,10 @@ class Curtain : public attachSystem::ContainedGroup,
   std::vector<double> topFrac;    ///< Layer divider
   std::vector<double> midFrac;    ///< Layer divider
   std::vector<double> baseFrac;   ///< Layer divider
+
+  std::vector<int> topMat;    ///< Top layer materials
+  std::vector<int> midMat;    ///< Mid layer materials
+  std::vector<int> baseMat;   ///< Low layer materials
   
   int wallMat;                   ///< wall material  
   

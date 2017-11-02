@@ -3,7 +3,7 @@
  
  * File:   commonVarInc/FocusGenerator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,18 +42,17 @@ class FocusGenerator
 {
  private:
 
-  
-  double substrateThick;   ///< substrate thickness
-  double supportThick;     ///< substrate support thickness
-  double voidThick;        ///< clearance thickness
+
   int yStepActive;         ///< Y step active
   int yBeamActive;         ///< Y beam step active
   double yStep;            ///< Y step
   double yBeam;            ///< Y Beam step
   double zStep;            ///< Z step
-  
-  std::string guideMat;    ///< Main guide material
-  std::string supportMat;    ///< Main guide material
+
+  /// layer thicknesses [inside out]
+  std::vector<double> layerThick;
+  /// layer materials [inside out]
+  std::vector<std::string> layerMat;
 
   void writeLayers(FuncDataBase&,const std::string&,const double) const;
   
@@ -64,19 +63,8 @@ class FocusGenerator
   FocusGenerator& operator=(const FocusGenerator&);
   ~FocusGenerator();
 
-  /// set guide material
-  void setGuideMat(const std::string& matName)
-  { guideMat=matName; }
-  /// set guide material + support
-  void setGuideMat(const std::string& AName,const std::string& BName)
-  { guideMat=AName; supportMat=BName; }
-  /// set thickness
-  void setThickness(const double S,const double V)
-  { substrateThick=S;supportThick=0.0,voidThick=V; }
-  /// set thickness with support
-  void setThickness(const double S,const double Extra,const double V)
-  { substrateThick=S;supportThick=Extra,voidThick=V; }
-
+  void setLayer(const size_t,const double,const std::string&);
+  
   /// set the y step / beam step relative to the centre of the guide
   void setYCentreOffset(const double D)
   { yStep=D; yStepActive=2; yBeam=D; yBeamActive=2; }
@@ -118,7 +106,9 @@ class FocusGenerator
 		      const double,const double,
 		      const double,const double) const;
   
-
+  void generateOctagon(FuncDataBase&,
+		       const std::string&,const double,
+		       const double,const double) const;
   
 };
 

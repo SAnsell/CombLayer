@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,6 +67,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
@@ -104,7 +105,7 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
    OR.addObject(RightWater);
 }
 
-ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) : 
+ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   constructSystem::ModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
   bfType(A.bfType),
@@ -113,11 +114,7 @@ ButterflyModerator::ButterflyModerator(const ButterflyModerator& A) :
   MidWater(A.MidWater->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  totalHeight(A.totalHeight),
-  outerRadius(A.outerRadius),
-  wallMat(A.wallMat),
-  wallDepth(A.wallDepth),
-  wallHeight(A.wallHeight)
+  outerRadius(A.outerRadius)
   /*!
     Copy constructor
     \param A :: ButterflyModerator to copy
@@ -136,17 +133,13 @@ ButterflyModerator::operator=(const ButterflyModerator& A)
     {
       constructSystem::ModBase::operator=(A);
       cellIndex= A.cellIndex;
-      bfType=A.bfType;
+      bfType = A.bfType;
       *LeftUnit= *A.LeftUnit;
       *RightUnit= *A.RightUnit;
       *MidWater= *A.MidWater;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
-      totalHeight=A.totalHeight;
       outerRadius=A.outerRadius;
-      wallMat=A.wallMat;
-      wallDepth=A.wallDepth;
-      wallHeight=A.wallHeight;
     }
   return *this;
 }
@@ -161,7 +154,7 @@ ButterflyModerator::clone() const
   return new ButterflyModerator(*this);
 }
 
-  
+
 ButterflyModerator::~ButterflyModerator()
   /*!
     Destructor
@@ -181,12 +174,7 @@ ButterflyModerator::populate(const FuncDataBase& Control)
   bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
   if ((bfType != 1)  && (bfType != 2))
     throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
-
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
-  wallHeight = Control.EvalVar<double>(keyName+"WallHeight");
-
   return;
 }
 
@@ -207,11 +195,11 @@ ButterflyModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
 
   ModBase::createUnitVector(axisFC,orgFC,sideIndex);
   applyShift(0,0,totalHeight/2.0);
-  
+
   return;
 }
 
-  
+
 void
 ButterflyModerator::createSurfaces()
   /*!
@@ -219,13 +207,10 @@ ButterflyModerator::createSurfaces()
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createSurface");
-  
+
   ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
   ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
 
   return;
 }
@@ -239,49 +224,19 @@ ButterflyModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("ButterflyModerator","createObjects");
 
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
-
-  HeadRule HR(sideRule);
-  HR.makeComplement();
+  const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-
-  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-    }
-
-  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-      // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
-      HeadRule bfHR;
-      bfHR.procString(LeftUnit->getSideRule());
-      bfHR.addUnion(RightUnit->getSideRule());
-      bfHR.addUnion(MidWater->getSideRule());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
-    }
-
-  
-  
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string Exclude=sideRule;//ContainedComp::getExclude();
-
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
-  setCell("ambientVoid", cellIndex-1);
+  addCell("MainVoid",cellIndex-1);
 
   clearRules();
   addOuterSurf(Out);
-  
+
   return;
 }
-  
+
 
 int
 ButterflyModerator::getCommonSurf(const long int) const
@@ -290,7 +245,7 @@ ButterflyModerator::getCommonSurf(const long int) const
     \param  :: sideIndex
     \return surface number
   */
-  
+
 {
   ELog::RegMethod RegA("ButterflyModerator","getCommonSurf");
   throw ColErr::AbsObjMethod("Not implemented yet");
@@ -301,7 +256,7 @@ ButterflyModerator::getLayerSurf(const size_t,const long int) const
 /*!
   [PLACEHOLDER] Only components have reference values
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
   \return layer surface
   */
 {
@@ -314,7 +269,7 @@ ButterflyModerator::getLayerString(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
     \return surface string
   */
 {
@@ -328,7 +283,7 @@ ButterflyModerator::getSurfacePoint(const size_t,
   /*!
     [PLACEHOLDER] Given a side and a layer calculate the link point
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
     \return Surface point
   */
 {
@@ -353,25 +308,27 @@ ButterflyModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy surface top/bottom from H2Wing and Orign from center
-  
+  // copy surface top/bottom from H2Wing and Origin from center
+
   FixedComp::setLinkCopy(4,*LeftUnit,4);
   FixedComp::setLinkCopy(5,*LeftUnit,5);
-  const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
-  const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
+  const double LowV= LU[4].getConnectPt().Z();
+  const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
+  FixedComp::setLinkCopy(6,*MidWater,12);
+
   return;
 }
 
-  
+
 void
 ButterflyModerator::createExternal()
   /*!
-    Constructs the full outer exclude object 
+    Constructs the full outer exclude object
   */
 {
   ELog::RegMethod RegA("ButterflyModerator","createExternal");
@@ -381,7 +338,7 @@ ButterflyModerator::createExternal()
   addOuterUnionSurf(MidWater->getCompExclude());
   addOuterUnionSurf(LeftWater->getCompExclude());
   addOuterUnionSurf(RightWater->getCompExclude());
-  
+
   return;
 }
 
@@ -410,43 +367,82 @@ ButterflyModerator::getComponent(const std::string& compName) const
 }
 
 
+
 std::string
-ButterflyModerator::getSideRule() const
-/*
-  Return side rule
-  \todo // SA: Use union of link points as it is faster
-*/
+ButterflyModerator::getLeftFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
 {
-  ELog::RegMethod RegA("ButterflyModerator","getSideRule");
+  ELog::RegMethod RegA("ButterflyModerator","getLeftFarExclude");
 
-  HeadRule HR;
-  HR.procString(LeftUnit->getSideRule());
-  HR.addUnion(RightUnit->getSideRule());
-  HR.addUnion(MidWater->getSideRule());
-  HR.addUnion(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
-  HR.makeComplement();
-
-  return HR.display();
+  std::string Out;
+  Out=LeftWater->getSignedLinkString(4);
+  Out+=RightWater->getSignedLinkString(3);
+  return Out;
 }
 
 std::string
-ButterflyModerator::getLeftRightWaterSideRule() const
-/*
-  Return left+right water side rule
-  \todo // SA: Use union of link points as it is faster
-*/
+ButterflyModerator::getRightFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
 {
-  std::string side("");
-  HeadRule HR;
-  HR.procString(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
-  HR.makeComplement();
+  ELog::RegMethod RegA("ButterflyModerator","getRightFarExclude");
 
-  return HR.display();
+  std::string Out;
+  Out+=LeftWater->getSignedLinkString(3);
+  Out+=RightWater->getSignedLinkString(4);
+
+  return Out;
 }
 
-  
+std::string
+ButterflyModerator::getLeftExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points)
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
+  std::string Out;
+
+  Out+=LeftUnit->getSignedLinkString(8);
+  Out+=RightUnit->getSignedLinkString(9);
+  Out+=MidWater->getSignedLinkString(11);
+  Out+=LeftWater->getSignedLinkString(4);
+  Out+=RightWater->getSignedLinkString(3);
+
+  return Out;
+}
+
+std::string
+ButterflyModerator::getRightExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points) [+ve Y]
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("ButterflyModerator","getRightExclude");
+  std::string Out;
+
+  Out+=LeftUnit->getSignedLinkString(9);
+  Out+=RightUnit->getSignedLinkString(8);
+  Out+=MidWater->getSignedLinkString(12);
+
+  Out+=LeftWater->getSignedLinkString(3);
+  Out+=RightWater->getSignedLinkString(4);
+
+  return Out;
+
+}
+
 void
 ButterflyModerator::createAll(Simulation& System,
 			      const attachSystem::FixedComp& axisFC,
@@ -454,7 +450,7 @@ ButterflyModerator::createAll(Simulation& System,
 			      const long int sideIndex)
   /*!
     Construct the butterfly components
-    \param System :: Simulation 
+    \param System :: Simulation
     \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
     \param orgFC :: Extra origin point if required
     \param sideIndex :: link point for origin if given
@@ -465,25 +461,23 @@ ButterflyModerator::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(axisFC,orgFC,sideIndex);
   createSurfaces();
-  
+
   LeftUnit->createAll(System,*this);
   RightUnit->createAll(System,*this);
   MidWater->createAll(System,*this,*LeftUnit,*RightUnit);
-    
+
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
+    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
   LeftWater->createAll(System,*LeftUnit,2,Exclude);
   RightWater->createAll(System,*RightUnit,2,Exclude);
 
   Origin=MidWater->getCentre();
-  createExternal();  // makes intermediate 
+  createExternal();  // makes intermediate
 
 
   createObjects(System);
   createLinks();
-  
   return;
 }
-
 
 }  // NAMESPACE essSystem

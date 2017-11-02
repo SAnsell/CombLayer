@@ -3,7 +3,7 @@
  
  * File:   test/testSVD.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -128,7 +128,7 @@ testSVD::init()
   for(size_t i=0;i<10;i++)
     for(size_t j=0;j<5;j++)
       {
-	M[i][j]=50-((i*3+(j+4)*2) % 70);
+	M[i][j]=static_cast<double>(50-((i*3+(j+4)*2) % 70));
       }
   A.setMatrix(M);
   A.calcDecomp();
@@ -176,7 +176,7 @@ testSVD::testMakeSolution()
   Matrix<double> M(5,4);
   for(size_t i=0;i<5;i++)
     {
-      const double x(8.0+6*i);
+      const double x(static_cast<double>(8+6*i));
       // Calc B
       double bValue(0);
       double xV=1.0;
@@ -241,7 +241,7 @@ testSVD::testMakeSolLong()
 
   for(size_t i=0;i<vSize;i++)
     {
-      const double x(8.0+2.0*i);
+      const double x(static_cast<double>(8+2*i));
       X.push_back(x);
       // Calc B
       double bValue(0);

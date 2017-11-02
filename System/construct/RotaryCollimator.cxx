@@ -3,7 +3,7 @@
  
  * File:   construct/RotaryCollimator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -292,8 +292,6 @@ void
 RotaryCollimator::setHoleIndex()
   /*!
     Given a hole index determine and set the angle offset
-    \param HIndex :: Index to use [ Zero :: use HAngle directly]
-    \param HAngle :: Angle to use if HIndex is zero
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","setHoleIndex");
@@ -371,8 +369,8 @@ RotaryCollimator::createLinks()
         {
           holeFC.setLinkCopy(index,*Holes[i],0);
           holeFC.setLinkCopy(index+1,*Holes[i],1);
-          const Geometry::Vec3D midPt((Holes[i]->getLinkPt(0)+
-                                      Holes[i]->getLinkPt(1))/2.0);
+          const Geometry::Vec3D midPt((Holes[i]->getSignedLinkPt(1)+
+                                      Holes[i]->getSignedLinkPt(2))/2.0);
           holeFC.setConnect(index+2,midPt,Holes[i]->getSignedLinkAxis(1));
           index+=3;
         }
@@ -387,7 +385,7 @@ RotaryCollimator::layerProcess(Simulation&)
     Processes the splitting of the surfaces into a multilayer system
     This has to deal with the three layers that invade cells:
     
-    \param System :: Simulation to work on
+    \param  :: Simulation to work on
   */
 {
   ELog::RegMethod RegA("RotaryCollimator","LayerProcess");
@@ -419,4 +417,4 @@ RotaryCollimator::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE constructSystem

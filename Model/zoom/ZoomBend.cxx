@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomBend.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -205,7 +205,7 @@ ZoomBend::populate(const Simulation& System)
     }
   
   nAttn=Control.EvalVar<size_t>(keyName+"NAttn");
-  attnZStep=Control.EvalVar<size_t>(keyName+"AttnZStep");
+  attnZStep=Control.EvalVar<double>(keyName+"AttnZStep");
   upperYPos.clear();
   upperDist.clear();
   for(size_t i=0;i<nAttn;i++)
@@ -441,19 +441,22 @@ ZoomBend::createVanes(Simulation& System)
 
   if (NVanes)
     {
+      const double DNVanes(static_cast<double>(NVanes));
       std::vector<double> VGap;
       std::vector<int> Mat;
       // first construct fractional gap
       const double SiFrac=vaneThick/bendWidth;
-      const double VacFrac=(1.0-SiFrac*NVanes)/(NVanes+1.0);
+      const double VacFrac=(1.0-SiFrac*DNVanes)/(DNVanes+1.0);
+
       if (VacFrac<=0.0)
-	throw ColErr::RangeError<double>(SiFrac*NVanes,0.0,1.0,"VacFrac");
+	throw ColErr::RangeError<double>(SiFrac*DNVanes,0.0,1.0,"VacFrac");
+      
       // Construct layer process:
       ModelSupport::surfDivide DA;
       double gapSum=0.0;
 
       for(size_t i=0;i<NVanes;i++)
-	{
+	{ 
 	  gapSum+=VacFrac;
 	  DA.addFrac(gapSum);
 	  DA.addMaterial(0);

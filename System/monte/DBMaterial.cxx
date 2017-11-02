@@ -109,6 +109,51 @@ DBMaterial::getFreeNumber() const
 }
 
 void
+DBMaterial::readFile(const std::string& FName)
+  /*!
+    Read a basic MCNP material file
+    \param FName :: Filename
+   */
+{
+  ELog::RegMethod RegItem("DBMaterial","readMaterial");
+
+
+  if (FName.empty()) return;
+
+  std::vector<std::string> MatLines;
+  std::ifstream IX;
+  IX.open(FName.c_str());
+  if (!IX.good())
+    throw ColErr::FileError(0,FName,"File could not be opened");
+  
+  int currentMat(0);          // Current material
+  std::string Line = StrFunc::getLine(IX);           
+  while(IX.good() && currentMat != -100)
+    {
+      Line = StrFunc::getLine(IX);           
+      const int lineType = MonteCarlo::Material::lineType(Line);
+      if (lineType==0 && !MatLines.empty())             // Continue line
+	MatLines.back()+=" "+Line;
+      else if (lineType>0 && lineType==currentMat)      // mt/mx etc line
+	MatLines.push_back(Line);
+      else if (lineType>0 || lineType==-100 || !IX.good())    // newMat / END
+	{
+	  if (currentMat)
+	    {
+	      MonteCarlo::Material MObj;
+	      if (!MObj.setMaterial(MatLines))     
+		setMaterial(MObj);
+	      MatLines.clear();
+	    }
+	  currentMat=lineType;
+	  MatLines.push_back(Line);
+	}
+    }
+  return;
+}
+
+  
+void
 DBMaterial::initMaterial()
   /*!
      Initialize the database of materials
@@ -119,8 +164,10 @@ DBMaterial::initMaterial()
   const std::string MLib="hlib=.70h pnlib=70u";
 
   MonteCarlo::Material MObj;
-  // TWO ULTRA SPECIAL MATERIALS!!!
-  MObj.setMaterial(-1,"InValid","00000.00c 1.0","",MLib); 
+  // THREE ULTRA SPECIAL MATERIALS!!!
+  MObj.setMaterial(-2,"InValid","00000.00c 1.0","",MLib); 
+  setMaterial(MObj);
+  MObj.setMaterial(-1,"Empty","00000.00c 1.0","",MLib); 
   setMaterial(MObj);
   MObj.setMaterial(0,"Void","00000.00c 1.0","",MLib);
   setMaterial(MObj);
@@ -361,7 +408,9 @@ DBMaterial::initMaterial()
   // Material #48 Poly:
   MObj.setMaterial(48,"Poly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
+  MObj.setDensity(-0.91);
   setMaterial(MObj);
+
 
   // Material #49 Regular concrete
   // Regular concrete at 2.339 g/cc [supposedly]
@@ -399,7 +448,6 @@ DBMaterial::initMaterial()
 
   // Material #52: 5% borated poly  
   // Total atom density 0.1154 atom/barn-cm
-
   MObj.setMaterial(52,"B-Poly","1001.70c  0.0752 6000.70c "
 		   "0.0376 5010.70c  0.00051 5011.70c  0.002053",
 		   "poly.01t",MLib);
@@ -576,8 +624,8 @@ DBMaterial::initMaterial()
   // Material #73 : Copper
   // Density : 8.91g/cc rho=0.084438
   
-  MObj.setMaterial(73,"Copper","29063.70c 0.02604927 "
-		   "29065.70c 0.058389212","",MLib);
+  MObj.setMaterial(73,"Copper","29063.70c 0.058389212 "
+		   "29065.70c 0.02604927","",MLib);
   setMaterial(MObj);
 
    //Material #74: ChipIR Guide Steel (K Jones spec)
@@ -1005,7 +1053,7 @@ DBMaterial::initMaterial()
 		   "be.60t lwtr.01t", MLib);
   setMaterial(MObj);
 
-  // Material #120: helium liquid
+  // Material #120: 
   // Low density tungsten
   MObj.setMaterial(120, "Tungsten_15.1g",
 		   "74182.70c  0.265000000 "
@@ -1016,6 +1064,7 @@ DBMaterial::initMaterial()
   MObj.setDensity(-15.1);
   setMaterial(MObj);
 
+  // Material #120: 
   // Homogeneous mixture of Iron and 10% volume H2O
   MObj.setMaterial(121, "Iron_10H2O",
                    " 1001.70c 0.077534884 "
@@ -1146,7 +1195,7 @@ DBMaterial::initMaterial()
 
   // Carston concrete
   // Regular concrete - with B4C
-  MObj.setMaterial(131,"RegCartonConcB4C",
+  MObj.setMaterial(131,"RegCarstonConcB4C",
                    "1001.70c 5.50969e-05 1002.70c 6.33687e-09  "
                    "5010.70c 0.0250581 5011.70c 0.100862  "
                    "6000.70c 0.000163366 8016.70c 0.000700512  "
@@ -1179,6 +1228,54 @@ DBMaterial::initMaterial()
   MObj.setMaterial(134,"LiqN2","7014.70c 0.034718","",MLib);
   setMaterial(MObj);
 
+  // Skanska concrete
+  // Composition received from Skanska
+  // Source: MATER.INP from MARS. Material "ESSConc"
+  MObj.setMaterial(135,"SkanskaConcrete",
+		   " 1001.70c -3.35720233139058521e-03 "
+		   " 8016.70c -3.82342797668609513e-01 "
+		   " 12024.70c -0.0019 "
+		   " 13027.70c -0.0192 "
+		   " 14028.70c -0.1251 "
+		   " 16032.70c -0.0081 "
+		   " 19039.70c -0.0158 "
+		   " 20040.70c -0.3927 "
+		   " 22048.70c -0.0038 "
+		   " 25055.70c -0.0021 "
+		   " 26056.70c -0.0444 "
+		   " 28058.70c -0.0012 ", "lwtr.10t", MLib);
+  MObj.setDensity(-2.35);
+  setMaterial(MObj);
+
+  // Material #136 Silver
+  // Density 10.49g/cc atomic rho=0.058573
+  MObj.setMaterial(136,"Silver","47107.70c 0.043778 "
+                   "47109.70c 0.040672 ","",MLib); 
+  MObj.setDensity(-10.49); // wikipedia
+  setMaterial(MObj);
+
+  // 
+  // Material #137 Hi-DensityPoly:
+  MObj.setMaterial(137,"HighDensPoly","6000.70c 0.0333333 "
+		   "1001.70c 0.0666666666","poly.01t",MLib);
+  MObj.setDensity(-0.97);
+  setMaterial(MObj);
+
+  // 
+  // Material #138 Ammonia [695kg/m^3]
+  MObj.setMaterial(138,"Ammonia","7014.70c 0.024801 "
+		   "1001.70c 0.074402","orthh.99t",MLib);
+  setMaterial(MObj);
+
+  // 
+  // Material #139 boro-silicate glass (rho=2.24g 75% siO2 12% B2O4 13% Al2O3
+  MObj.setMaterial(139,"Borosilicate",
+		   "14028.70c 0.0160107 14029.70c 0.000812983  "
+		   "14030.70c 0.000535924 5010.70c 0.000663275  "
+		   "5011.70c 0.00266976 13027.70c 0.00361079  "
+		   "8016.70c 0.0451349 ","",MLib);
+  setMaterial(MObj);
+  
   return;
 }
 
@@ -1250,7 +1347,7 @@ DBMaterial::setMaterial(const MonteCarlo::Material& MO)
   IndexMap.insert(SCTYPE::value_type(MName,MIndex));
   return;
 }
-
+  
 bool
 DBMaterial::createMaterial(const std::string& MName)
   /*!
@@ -1266,7 +1363,6 @@ DBMaterial::createMaterial(const std::string& MName)
   std::string::size_type pos=MName.find('%');
   if (pos!=std::string::npos)
     {
-	
       double PFrac;
       const std::string AKey=MName.substr(0,pos);
       const std::string BKey=MName.substr(pos+1);
@@ -1473,23 +1569,24 @@ DBMaterial::initMXUnits()
 {
   ELog::RegMethod RegA("DBMaterial","initMXUnits");
 
-  typedef std::tuple<int,int,char,std::string,
-		       std::string> MXTYPE;
-  std::vector<MXTYPE> mxVec;
-
-  mxVec.push_back(MXTYPE(6000,70,'c',"h","6012.70h"));
-  mxVec.push_back(MXTYPE(4009,24,'c',"h","model"));
-  mxVec.push_back(MXTYPE(4009,70,'c',"h","model"));
-
-  mxVec.push_back(MXTYPE(4009,80,'c',"h","4009.80h"));
-  mxVec.push_back(MXTYPE(4010,80,'c',"h","4010.80h"));
-
-  mxVec.push_back(MXTYPE(78190,80,'c',"h","78190.80h"));
-  mxVec.push_back(MXTYPE(78192,80,'c',"h","78192.80h"));
-  mxVec.push_back(MXTYPE(78194,80,'c',"h","78194.80h"));
-  mxVec.push_back(MXTYPE(78195,80,'c',"h","78195.80h"));
-  mxVec.push_back(MXTYPE(78196,80,'c',"h","78196.80h"));
-  mxVec.push_back(MXTYPE(78198,80,'c',"h","78198.80h"));
+  typedef std::tuple<size_t,size_t,char,std::string,
+		     std::string> MXTYPE;
+  std::vector<MXTYPE> mxVec=
+    {
+      MXTYPE(6000,70,'c',"h","6012.70h"),
+      MXTYPE(4009,24,'c',"h","model"),
+      MXTYPE(4009,70,'c',"h","model"),
+      
+      MXTYPE(4009,80,'c',"h","4009.80h"),
+      MXTYPE(4010,80,'c',"h","4010.80h"),
+      
+      MXTYPE(78190,80,'c',"h","78190.80h"),
+      MXTYPE(78192,80,'c',"h","78192.80h"),
+      MXTYPE(78194,80,'c',"h","78194.80h"),
+      MXTYPE(78195,80,'c',"h","78195.80h"),
+      MXTYPE(78196,80,'c',"h","78196.80h"),
+      MXTYPE(78198,80,'c',"h","78198.80h")
+    };
 
 
   // NOTE : u is an illegal particle so how does MX work here??
@@ -1738,17 +1835,39 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 {
   ELog::RegMethod RegA("DBMaterial","writeMCNPX");
 
-  std::set<int>::const_iterator sc;
-  for(sc=active.begin();sc!=active.end();sc++)
+  for(const int sActive : active)
     {
-      if (*sc)
+      if (sActive)
 	{
-	  MTYPE::const_iterator mp=MStore.find(*sc);
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
+	  mp->second.write(OX);
+	}
+    }
+  return;
+}
+
+void
+DBMaterial::writePHITS(std::ostream& OX) const
+  /*!
+    Write everything out to the stream
+    for the phits output
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writePHITS");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
 	    throw ColErr::InContainerError<int>
-	      (*sc,"MStore find(active item)");
-	  if (mp->first)
-	    mp->second.write(OX);
+              (sActive,"MStore find(active item)");
+          
+	  mp->second.writePHITS(OX);
 	}
     }
   return;
@@ -1761,7 +1880,7 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("DBMaterial","writeMCNPX");
+  ELog::RegMethod RegA("DBMaterial","writeFLUKA");
 
   for(const int sActive : active)
     {
@@ -1769,11 +1888,9 @@ DBMaterial::writeFLUKA(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
 	  
-	  if (mp->first)
-	    mp->second.writeFLUKA(OX);
+	  mp->second.writeFLUKA(OX);
 	}
     }
   return;
@@ -1794,11 +1911,9 @@ DBMaterial::writePOVRay(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>
-	      (sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
 	  
-	  if (mp->first)
-	    mp->second.writePOVRay(OX);
+	  mp->second.writePOVRay(OX);
 	}
     }
   return;

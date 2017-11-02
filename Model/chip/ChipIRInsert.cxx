@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRInsert.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,6 @@
 #include "chipDataStore.h"
 #include "BulkInsert.h"
 #include "cylTrack.h"
-#include "CylinderColl.h"
 #include "LeadPlate.h"
 #include "ChipIRInsert.h"
 
@@ -454,20 +453,6 @@ ChipIRInsert::createDatumPoints() const
   return;
 }
 
-void
-ChipIRInsert::createCollimator(Simulation& System)
-  /*!
-    Create the cylindrical collimator
-    \param System :: Simuation to add
-  */
-{
-  ELog::RegMethod RegA("ChipIRInsert","createCollimator");
-  if (!CCol)
-    CCol=std::shared_ptr<CylinderColl>(new CylinderColl("chipCylInsert"));
-
-  CCol->createAll(System,*this);
-  return;
-}
 
 void
 ChipIRInsert::createLeadPlate(Simulation& System)
@@ -516,7 +501,6 @@ ChipIRInsert::createAll(Simulation& System,
   createUnitVector();
   createSurfaces();
   createObjects(System);
-  //  createCollimator(System);
   createLeadPlate(System);
   layerProcess(System);
   createDatumPoints();

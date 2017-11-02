@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   muonInc/DiscTarget.h
+ * File:   bnctBuild/DiscTarget.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ namespace bnctSystem
   \brief Thin Be/Layer target
 */
 
-class DiscTarget : public attachSystem::FixedComp,
+class DiscTarget : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
@@ -43,22 +43,17 @@ class DiscTarget : public attachSystem::FixedComp,
   const int discIndex;            ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double xStep;                 ///< X-Step
-  double yStep;                 ///< Y-Step
-  double zStep;                 ///< Z-Step
-  double xyAngle;               ///< XY angle
-  double zAngle;                ///< Z Angle
-
   size_t NLayers;                  ///< Number of layers
   std::vector<double> depth;      ///< Depth
   std::vector<double> radius;     ///< Radius
   std::vector<int> mat;           ///< Material  
 
-  double maxRad;                  ///< MAx radius
+  double maxRad;                  ///< Max radius
   size_t maxIndex;                ///< Maximum index 
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -71,7 +66,8 @@ class DiscTarget : public attachSystem::FixedComp,
   DiscTarget& operator=(const DiscTarget&);
   virtual ~DiscTarget();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 };
 
 }

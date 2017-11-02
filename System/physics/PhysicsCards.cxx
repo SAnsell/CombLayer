@@ -61,6 +61,7 @@
 #include "ExtControl.h"
 #include "PWTControl.h"
 #include "DXTControl.h"
+#include "particleConv.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -811,11 +812,17 @@ PhysicsCards::setRND(const long int N,
     \param H :: History
   */
 {
-
+  ELog::RegMethod RegA("PhysicsCards","setRND");
+  ELog::EM<<"SET RND"<<ELog::endDiag;
   if (N)
     {
-      if (mcnpVersion==10) dbCard->setRegItem("rndSeed",N);
-      RAND->setRegItem("SEED",N);
+      if (mcnpVersion==10)
+	dbCard->setRegItem("rndSeed",N);
+      else
+	{
+	  dbCard->setDefItem("rndSeed");
+	  RAND->setRegItem("SEED",N);
+	}
     }
   if (H) RAND->setRegItem("HIST",H);
 
@@ -871,9 +878,6 @@ PhysicsCards::setDBCN(const std::string& kY,
   dbCard->setRegItem(kY,Val);
   return;
 }
-
-
-  
   
 long int
 PhysicsCards::getRNDseed() const
@@ -986,6 +990,44 @@ PhysicsCards::writeHelp(const std::string& keyName) const
 }
   
    
+void 
+PhysicsCards::writePHITS(std::ostream& OX)
+  /*!
+    Write out each of the cards
+    \param OX :: Output stream
+    \param cellOutOrder :: Cell List
+    \param voidCell :: List of void cells
+    \todo Check that histp does not need a line cut.
+  */
+{
+  ELog::RegMethod RegA("PhyiscsCards","writePHITS");
+
+  const particleConv& pConv = particleConv::Instance();
+  
+  for(const PhysCard* PC : PCards)
+    {						
+      if (PC->getKey()=="cut")
+	{
+	  const PStandard* PS(dynamic_cast<const PStandard*>(PC));
+	  if (PS)
+	    {
+	      const double ECut  = PS->getValue(1);
+	      if (ECut>1e-12)
+		{
+		  for(const std::string& PItem : PS->getParticles())
+		    {
+		      OX<<" emin("<<std::setw(2)<<pConv.phitsITYP(PItem)
+			<<")    ="<<ECut;
+		      OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
+		    }
+		}
+	    }
+	}
+    }
+  
+  return;
+}
+
 void 
 PhysicsCards::write(std::ostream& OX,
 		    const std::vector<int>& cellOutOrder,

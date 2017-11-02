@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physicsInc/PStandard.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,9 @@ class PStandard : public PhysCard
 
   /// Get particle count
   size_t particleCount() const { return particles.size(); } 
+  /// Access to particles
+  const std::list<std::string>& getParticles() const
+    { return particles; }
   int removeParticle(const std::string&);
 
   double getValue(const size_t) const;
@@ -74,7 +77,6 @@ class PStandard : public PhysCard
 		 const double =0.0,const double =0.0,const double =0.0);
   void setValues(const std::string&);
   void setDef(const size_t);
-
 
   void addElmList(const std::string&);
 

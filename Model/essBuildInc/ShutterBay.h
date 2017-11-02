@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/ShutterBay.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,8 +48,16 @@ class ShutterBay : public attachSystem::ContainedComp,
   double height;        ///< height
   double depth;         ///< Depth
   double skin;          ///< radius of void surround
-  double topSkin;        ///< top gap thickness (Required?)
+  double topSkin;        ///< top gap thickness 
+  double cutSkin;        ///< cut gap skin in top cut
 
+  double topCut;        ///< Distance below top height for cut
+  double topRadius;     ///< Outer Radius at cut section
+
+  size_t NCurtain;                ///< Number of layers in curtain block
+  std::vector<double> curLayer;   ///< Vertial layers in curtain block
+  std::vector<int> curMat;        ///< Material for curtain block
+  
   int mat;              ///< Material
   int skinMat;          ///< Skin Material
 

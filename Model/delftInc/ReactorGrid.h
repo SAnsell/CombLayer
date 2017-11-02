@@ -3,7 +3,7 @@
  
  * File:   delftInc/ReactorGrid.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace delftSystem
   \brief Grid plate for Delft core elements
 */
 
-class ReactorGrid : public attachSystem::FixedComp,
+class ReactorGrid : public attachSystem::FixedOffset,
     public attachSystem::ContainedComp
 {
  private:
@@ -51,12 +51,6 @@ class ReactorGrid : public attachSystem::FixedComp,
 
   const int gridIndex;          ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< Xstep
-  double yStep;                 ///< Ystep
-  double zStep;                 ///< Zstep
-  double xyAngle;               ///< Rotation angle
-  double zAngle;                ///< Rotation angle
 
   size_t NX;                    ///< across size
   size_t NY;                    ///< tube direction size
@@ -75,7 +69,7 @@ class ReactorGrid : public attachSystem::FixedComp,
   boost::multi_array<RTYPE,2> Grid;     ///< Storage of the grid [size 3]
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
@@ -89,7 +83,6 @@ class ReactorGrid : public attachSystem::FixedComp,
   ReactorGrid& operator=(const ReactorGrid&);
   virtual ~ReactorGrid();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
   void createElements(Simulation&);
 
   /// Size accessor
@@ -116,10 +109,14 @@ class ReactorGrid : public attachSystem::FixedComp,
 
   std::vector<Geometry::Vec3D> fuelCentres() const;
   std::vector<int> getAllCells(const Simulation&) const;
+  std::vector<int> getFuelCells(const Simulation&,const size_t) const;
   
 
   void loadFuelXML(const std::string&);
   void writeFuelXML(const std::string&);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,const long int);
+    
 };
 
 }

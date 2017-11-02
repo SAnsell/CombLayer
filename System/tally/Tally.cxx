@@ -474,7 +474,7 @@ Tally::setSDField(const std::string& NItems)
     return 1;
   // Items to process
   
-  if (!SDfield.processString(NItems))
+  if (SDfield.processString(NItems))
     {
       ELog::EM<<"Failed to process SDField :"<<NItems<<ELog::endErr;
       return 0;

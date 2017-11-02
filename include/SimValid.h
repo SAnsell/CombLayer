@@ -74,7 +74,7 @@ class SimValid
 {
  private:
 
-  Geometry::Vec3D Centre;  // Centre for tracks
+  Geometry::Vec3D Centre;   // Centre for tracks
   
  public:
   
@@ -85,6 +85,9 @@ class SimValid
 
   /// Set the centre
   void setCentre(const Geometry::Vec3D C) { Centre=C;} 
+  /// Set the centre
+  void testDir(const Geometry::Vec3D D);
+
   // MAIN RUN:
   int run(const Simulation&,const size_t) const;
 

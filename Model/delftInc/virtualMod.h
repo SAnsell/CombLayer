@@ -3,7 +3,7 @@
  
  * File:   delftInc/virtualMod.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,8 @@ class virtualMod : public attachSystem::ContainedComp,
   ///\cond ABSTRACT 
   virtual virtualMod* clone() const =0;
   virtual int getMainBody() const =0;
-  virtual void createAll(Simulation&,const attachSystem::TwinComp&) =0;
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int) =0;
   virtual void postCreateWork(Simulation&) =0;
   ///\endcond ABSTRACT 
 };

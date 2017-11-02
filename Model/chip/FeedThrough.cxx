@@ -3,7 +3,7 @@
  
  * File:   chip/FeedThrough.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,12 +85,6 @@
 #include "boxUnit.h"
 #include "BoxLine.h"
 #include "HoleUnit.h"
-#include "InnerWall.h"
-#include "PreCollimator.h"
-#include "ColBox.h"
-#include "Table.h"
-#include "beamBlock.h"
-#include "BeamStop.h"
 #include "Hutch.h"
 #include "FeedThrough.h"
 
@@ -243,7 +237,8 @@ FeedThrough::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("FeedThrough","createAll");
-  
+
+  return;
   populate(System);
   createUnitVector(HutUnit);
   insertColl(System,HutUnit); 

@@ -302,8 +302,8 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   std::vector<int> SNum;
 
   // Inner point
-  HeadRule HM(BUnit.getMainRule(0));
-  HM.addIntersection(BUnit.getCommonRule(0));
+  HeadRule HM(BUnit.getSignedMainRule(1));
+  HM.addIntersection(BUnit.getSignedCommonRule(1));
   HM.populateSurf();
   HM.calcSurfIntersection(Origin,Y,Pts,SNum);
   const size_t indexA=SurInter::closestPt(Pts,Origin);
@@ -311,8 +311,8 @@ BunkerInsert::createLinks(const attachSystem::FixedComp& BUnit)
   endMidPt.push_back(Pts[indexA]);
   
   // Outer point
-  HM=BUnit.getMainRule(1);
-  HM.addIntersection(BUnit.getCommonRule(1));
+  HM=BUnit.getSignedMainRule(2);
+  HM.addIntersection(BUnit.getSignedCommonRule(2));
   HM.populateSurf();
   HM.calcSurfIntersection(Origin,Y,Pts,SNum);
   const size_t indexB=SurInter::closestPt(Pts,Origin);

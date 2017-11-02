@@ -3,7 +3,7 @@
  
  * File:   essModel/WedgeFlightLine.cxx
  *
- * Copyright (c) 2004-2016 by Konstantin Batkov
+ * Copyright (c) 2004-2017 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
@@ -137,15 +138,13 @@ WedgeFlightLine::populate(const FuncDataBase& Control)
 */
 {
   ELog::RegMethod RegA("WedgeFlightLine","populate");
-
+  
   nWedges=Control.EvalDefVar<size_t>(keyName+"NWedges", 0);
   return;
 }
 
 void
 WedgeFlightLine::buildWedges(Simulation& System,
-			   const attachSystem::FixedComp& originFC,
-			   const long int originIndex,
 			   const attachSystem::FixedComp& innerFC,
 			   const long int innerIndex,
 			   const attachSystem::FixedComp& outerFC,
@@ -184,8 +183,8 @@ WedgeFlightLine::buildWedges(Simulation& System,
   const std::string baseOut=
     innerFC.getSignedLinkString(innerIndex)+
     outerFC.getSignedLinkString(outerIndex)+
-    this->getLinkComplement(10)+
-    this->getLinkComplement(11);
+    this->getSignedLinkString(-11)+
+    this->getSignedLinkString(-12);
   
   // Create the radial surfaces that divide the wedges 
   int index(flightIndex+1001);
@@ -201,14 +200,14 @@ WedgeFlightLine::buildWedges(Simulation& System,
   for (size_t i=0;i<nWedges;i++)
     {
       Out= ModelSupport::getComposite(SMap,index,prevIndex," 1 -1M ")+
-        "("+wedges[i]->getLinkString(1)+":"+
-        wedges[i]->getLinkString(3)+")"+prevWedge;
+        "("+wedges[i]->getSignedLinkString(2)+":"+
+        wedges[i]->getSignedLinkString(4)+")"+prevWedge;
       
       System.addCell(MonteCarlo::Qhull(cellIndex++,
                                        MatInfo.first,MatInfo.second,
                                        Out+baseOut));
-      prevWedge=" ("+wedges[i]->getLinkString(1)+":"+
-        wedges[i]->getLinkString(2)+") ";
+      prevWedge=" ("+wedges[i]->getSignedLinkString(2)+":"+
+        wedges[i]->getSignedLinkString(3)+") ";
       
       prevIndex=index++;
     }
@@ -251,8 +250,8 @@ WedgeFlightLine::createAll(Simulation& System,
                                               innerFC, innerIndex,
                                               outerFC, outerIndex);
   populate(System.getDataBase());
-  buildWedges(System,originFC,originIndex,
-              innerFC,innerIndex,
+  buildWedges(System,
+	      innerFC,innerIndex,
 	      outerFC,outerIndex);
     
   return;

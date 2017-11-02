@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testRefPlate.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -169,11 +169,11 @@ testRefPlate::testAddBlock()
 
   ts1System::refPlate RP("testPlate1");
   
-  RP.setOrigin(*SObj,1);
-  RP.setPlane("X",*SObj,-1,3);
-  RP.setPlane("-X",*SObj,-1,2);
-  RP.setPlane("-Z",*SObj,-1,4);
-  RP.setPlane("Z",*SObj,-1,5);
+  RP.setOrigin(*SObj,2);
+  RP.setPlane("X",*SObj,-4);
+  RP.setPlane("-X",*SObj,-3);
+  RP.setPlane("-Z",*SObj,-5);
+  RP.setPlane("Z",*SObj,-6);
   RP.setPlane("Y",2.3);
 
   RP.setInsertCell(SObj->getCell());
@@ -200,11 +200,11 @@ testRefPlate::testAddTwoBlocks()
     RA(new ts1System::refPlate("testPlate1"));  
   OR.addObject(RA);
 
-  RA->setOrigin(*SObj,1);
-  RA->setPlane("X",*SObj,-1,3);
-  RA->setPlane("-X",*SObj,-1,2);
-  RA->setPlane("-Z",*SObj,-1,4);
-  RA->setPlane("Z",*SObj,-1,5);
+  RA->setOrigin(*SObj,2);
+  RA->setPlane("X",*SObj,-4);
+  RA->setPlane("-X",*SObj,-3);
+  RA->setPlane("-Z",*SObj,-5);
+  RA->setPlane("Z",*SObj,-6);
   RA->setPlane("Y",2.3);
 
   RA->setInsertCell(SObj->getCell());
@@ -216,11 +216,11 @@ testRefPlate::testAddTwoBlocks()
     RB(new ts1System::refPlate("testPlate2"));  
   OR.addObject(RB);
   
-  RB->setOrigin(*SObj,3);
-  RB->setPlane("X",*RA,1,3);
-  RB->setPlane("-X",*SObj,-1,0);
-  RB->setPlane("-Z",*SObj,-1,4);
-  RB->setPlane("Z",*SObj,-1,5);
+  RB->setOrigin(*SObj,4);
+  RB->setPlane("X",*RA,4);
+  RB->setPlane("-X",*SObj,-1);
+  RB->setPlane("-Z",*SObj,-5);
+  RB->setPlane("Z",*SObj,-6);
   RB->setPlane("Y",2.3);
 
   RB->setInsertCell(SObj->getCell());
@@ -232,11 +232,11 @@ testRefPlate::testAddTwoBlocks()
     RC(new ts1System::refPlate("testPlate3"));  
   OR.addObject(RC);
   
-  RC->setOrigin(*SObj,0);
-  RC->setPlane("X",*RB,1,3);
-  RC->setPlane("-X",*SObj,-1,2);
-  RC->setPlane("-Z",*SObj,-1,4);
-  RC->setPlane("Z",*SObj,-1,5);
+  RC->setOrigin(*SObj,1);
+  RC->setPlane("X",*RB,4);
+  RC->setPlane("-X",*SObj,-4);
+  RC->setPlane("-Z",*SObj,-5);
+  RC->setPlane("Z",*SObj,-6);
   RC->setPlane("Y",2.3);
 
   RC->setInsertCell(SObj->getCell());
@@ -263,51 +263,53 @@ testRefPlate::testArrayBlocks()
   std::vector<PTYPE> RVec;
   
   const std::string rpName("testPlate");
-  for(int i=0;i<6;i++)
+  for(int i=0;i<7;i++)
     {
       RVec.push_back(PTYPE(new ts1System::refPlate
 			   (StrFunc::makeString(rpName,i+1))));  
       OR.addObject(RVec.back());
     }
  
-  RVec[0]->setOrigin(*SObj,1);
-  RVec[0]->setPlane("-X",*SObj,-1,2);
-  RVec[0]->setPlane("X",*SObj,-1,3);
+  RVec[0]->setOrigin(*SObj,2);
+  RVec[0]->setPlane("-X",*SObj,-3);
+  RVec[0]->setPlane("X",*SObj,-4);
   RVec[0]->setPlane("Y",2.3);
 
-  RVec[1]->setOrigin(*SObj,3);
-  RVec[1]->setPlane("-X",*SObj,-1,0);
-  RVec[1]->setPlane("X",*RVec[0],1,3);
+  RVec[1]->setOrigin(*SObj,4);
+  RVec[1]->setPlane("-X",*SObj,-1);
+  RVec[1]->setPlane("X",*RVec[0],4);
   RVec[1]->setPlane("Y",2.3);
 
-  RVec[2]->setOrigin(*SObj,0);
-  RVec[2]->setPlane("-X",*SObj,-1,2);
-  RVec[2]->setPlane("X",*RVec[1],1,3);
+  RVec[2]->setOrigin(*SObj,1);
+  RVec[2]->setPlane("-X",*SObj,-3);
+  RVec[2]->setPlane("X",*RVec[1],4);
   RVec[2]->setPlane("Y",2.3);
 
-  RVec[3]->setOrigin(*SObj,2);
-  RVec[3]->setPlane("-X",*RVec[0],1,3);
-  RVec[3]->setPlane("X",*RVec[2],1,3);
+  RVec[3]->setOrigin(*SObj,3);
+  RVec[3]->setPlane("-X",*RVec[0],3);
+  RVec[3]->setPlane("X",*RVec[2],4);
   RVec[3]->setPlane("Y",2.3);
 
   for(size_t i=0;i<4;i++)
     {
-      RVec[i]->setPlane("-Z",*SObj,-1,4);
-      RVec[i]->setPlane("Z",*SObj,-1,5);
-
+      RVec[i]->setPlane("-Z",*SObj,-5);
+      RVec[i]->setPlane("Z",*SObj,-6);
     }
+  
   for(size_t i=4;i<6;i++)
     {
-      RVec[i]->setOrigin(*SObj,i);
-      RVec[i]->setPlane("-X",*RVec[0],1,3);
-      RVec[i]->setPlane("X",*RVec[2],1,3);
-      RVec[i]->setPlane("-Z",*RVec[1],1,3);
-      RVec[i]->setPlane("Z",*RVec[3],1,3);
+      ELog::EM<<"RVE == "<<i<<ELog::endDiag;
+      RVec[i]->setOrigin(*SObj,static_cast<long int>(i));
+      RVec[i]->setPlane("-X",*RVec[0],4);
+      RVec[i]->setPlane("X",*RVec[2],4);
+      RVec[i]->setPlane("-Z",*RVec[1],4);
+      RVec[i]->setPlane("Z",*RVec[3],4);
       RVec[i]->setPlane("Y",2.3);
     }
 
   for(size_t i=0;i<6;i++)
     {
+      ELog::EM<<"ITEM:"<<i<<ELog::endDiag;
       RVec[i]->setInsertCell(SObj->getCell());
       RVec[i]->createAll(ASim);
     }

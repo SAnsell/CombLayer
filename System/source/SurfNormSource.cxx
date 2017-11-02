@@ -3,7 +3,7 @@
  
  * File:   source/SurfNormSource.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -232,7 +232,7 @@ SurfNormSource::populate(const FuncDataBase& Control)
       double E=Control.EvalVar<double>(keyName+"EStart"); 
       const size_t nE=Control.EvalVar<size_t>(keyName+"NE"); 
       const double EEnd=Control.EvalVar<double>(keyName+"EEnd"); 
-      const double EStep((EEnd-E)/(nE+1));
+      const double EStep((EEnd-E)/static_cast<double>(nE+1));
       for(size_t i=0;i<nE;i++)
 	{
 	  Energy.push_back(E);

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testPairFactory.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,7 @@ testPairFactory::createSurfaces()
   ELog::RegMethod RegA("testPairFactory","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  SurI.reset();
   
   // First Surface
   SurI.createSurface(1,"px -1");
@@ -125,6 +126,9 @@ testPairFactory::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
+  ELog::RegMethod RegA("testPairFactory","applyTest");
+  TestFunc::regSector("testPairFactory");
+
   typedef int (testPairFactory::*testPtr)();
   testPtr TPtr[]=
     {
@@ -174,7 +178,7 @@ testPairFactory::testConstructPair()
   
   // SurfN:SurfN : Type [string]
   typedef std::tuple<int,int,std::string> TTYPE;
-  typedef pairItem<Geometry::Plane,Geometry::Plane> PTYPE;
+
   std::vector<TTYPE> Tests;
   Tests.push_back(TTYPE(1,11,"Plane Plane"));
   Tests.push_back(TTYPE(3,13,"Cylinder Cylinder"));

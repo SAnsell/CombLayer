@@ -30,9 +30,15 @@ namespace MapSupport
   \version 0.5
   \author S. Ansell
   \date May 2013
-  \brief Holds an iteratrion of a map pair
+  \brief Holds an iteration of a groupd
+
+  This constructs a set of values based on the idea of
+  switches. E.g. initial state for 6 keys would be
+   ------ then it goes through each pin +/- and run
+  2^6 iterations in the cycle
  */
-class mapIterator
+
+  class mapIterator
 {
  private:
 

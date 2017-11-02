@@ -3,7 +3,7 @@
  
  * File:   funcBase/varList.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -285,7 +285,8 @@ varList::copyVarSet(const std::string& oldHead,const std::string& newHead)
 }
 
 int 
-varList::selectValue(const int Key,Geometry::Vec3D& oVec,
+varList::selectValue(const int Key,
+		     Geometry::Vec3D& oVec,
 		     double& oDbl) const
   /*!
     Simple selector
@@ -299,7 +300,7 @@ varList::selectValue(const int Key,Geometry::Vec3D& oVec,
 {
   const FItem* FPtr=findVar(Key);
   if (!FPtr) return -1;
-  
+
   if (FPtr->getValue(oVec))
     return 1;
   FPtr->getValue(oDbl);
@@ -382,6 +383,76 @@ varList::removeVar(const std::string& Name)
 
 
 template<typename T>
+FItem* 
+varList::createFType(const int I,const T& V)
+  /*!
+    Creates a specific varble from an index and 
+    value
+    \param I :: Index value
+    \param V :: Value 
+    \return FItem pointer.
+  */
+
+{ 
+  return new FValue<T>(this,I,V); 
+}
+  
+
+
+template<>
+FItem* 
+varList::createFType<Code>(const int I,const Code& V) 
+  /*!
+    Create a function type		      
+    \param I :: Index 
+    \param V :: Code Item to copy 
+    \return Fitem ptr
+  */
+{
+  return new FFunc(this,I,V); 
+}
+
+template<>
+void
+varList::addVar(const std::string& Name,const Code& Value) 
+  /*!
+    Set the values to be V. If the variable exists
+    and is not of the correct type, it is deleted
+    and replaced.
+    \param Name :: Name of the variable
+    \param Value :: current value
+  */
+{
+  std::map<std::string,FItem*>::iterator vc;
+
+  vc=varName.find(Name);
+  FItem* Ptr(0);
+  if (vc!=varName.end())
+    {
+      // Note that the variable number is re-used 
+      // despite the change in variable.
+      const int I=vc->second->getIndex();
+
+      delete vc->second;
+      std::map<int,FItem*>::iterator ac;
+      ac=varItem.find(I);
+      varName.erase(vc);
+      varItem.erase(ac);
+      Ptr=createFType<Code>(I,Value);
+    }
+  else
+  // Need to make a completely new item
+    {
+      Ptr=createFType(varNum,Value);
+      varNum++;
+    }
+  // Now insert into master lists
+  varName.emplace(Name,Ptr);
+  varItem.emplace(Ptr->getIndex(),Ptr);
+  return;
+}
+
+template<typename T>
 void
 varList::addVar(const std::string& Name,const T& Value) 
   /*!
@@ -445,36 +516,6 @@ varList::setVar(const std::string& Name,const T& Value)
       addVar(Name,Value);
     }
   return;
-}
-
-template<typename T>
-FItem* 
-varList::createFType(const int I,const T& V)
-  /*!
-    Creates a specific varble from an index and 
-    value
-    \param I :: Index value
-    \param V :: Value 
-    \return FItem pointer.
-  */
-
-{ 
-  return new FValue<T>(this,I,V); 
-}
-  
-
-
-template<>
-FItem* 
-varList::createFType<Code>(const int I,const Code& V) 
-  /*!
-    Create a function type		      
-    \param I :: Index 
-    \param V :: Code Item to copy 
-    \return Fitem ptr
-  */
-{ 
-  return new FFunc(this,I,V); 
 }
 
 std::vector<std::string>
@@ -550,7 +591,7 @@ template void varList::addVar(const std::string&,const double&);
 template void varList::addVar(const std::string&,const int&);
 template void varList::addVar(const std::string&,const long int&);
 template void varList::addVar(const std::string&,const size_t&);
-template void varList::addVar(const std::string&,const Code&);
+// template void varList::addVar(const std::string&,const Code&);
 
 template void varList::setVar(const std::string&,const Geometry::Vec3D&);
 template void varList::setVar(const std::string&,const std::string&);

@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/loki/LOKIvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,17 +89,17 @@ LOKIvariables(FuncDataBase& Control)
   PipeGen.setPipe(4.5,0.5);
   PipeGen.setWindow(-2.0,0.3);
   PipeGen.setFlange(-4.0,1.0);
-  
+
+  Control.addVariable("lokiStopPoint",0);  
+  Control.addVariable("lokiStartPoint",0);  
   Control.addVariable("lokiAxisXStep",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisXYAngle",0.0);   // TEMP : ask Clara
   Control.addVariable("lokiAxisZAngle",0.0);
 
-  FGen.setGuideMat("Aluminium");
-
-  FGen.setThickness(0.5,0.5);
+  FGen.setLayer(1,0.5,"Aluminium");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
-  FGen.generateBender(Control,"lokiBA",350.0,2.5,2.5,2.5,2.5,6125.0,90.0);
-
+  FGen.generateBender(Control,"lokiBA",350.0,3.0,3.0,2.5,2.5,6125.0,90.0);
 
   Control.addVariable("lokiBlockShutterHeight",66.3);
   Control.addVariable("lokiBlockShutterWidth",38.8);
@@ -108,18 +108,18 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiBlockShutterDefMat","Stainless304");
 
   // Pipe in gamma shield
-  PipeGen.generatePipe(Control,"lokiPipeB",6.0,44.0);
-  FGen.setGuideMat("Aluminium");
+  PipeGen.generatePipe(Control,"lokiPipeB",7.0,43.0);
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
-  FGen.generateBender(Control,"lokiBB",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
+  FGen.generateBender(Control,"lokiBB",41.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
 
   // Pipe in gamma shield
   PipeGen.generatePipe(Control,"lokiPipeBLink",2.0,44.0);
   FGen.clearYOffset();
   FGen.generateBender(Control,"lokiBBLink",42.0, 3.0,3.0,3.0,3.0,5700.0,0.0);
   
-  CGen.setMainRadius(65.5);   // diameter 70.0 emali
-  CGen.setFrame(160.0,160.0);
+  CGen.setMainRadius(35.5);   // diameter 70.0 emali
+  CGen.setFrame(80.0,80.0);
   CGen.generateChopper(Control,"lokiChopperA",9.5,15.7,5.3);  
 
   
@@ -162,6 +162,8 @@ LOKIvariables(FuncDataBase& Control)
 
 
   FGen.generateBender(Control,"lokiFWall",355.0,2.5,2.5,2.5,2.5,6125.0,-90.0); 
+  // Optional pipe in wall
+  PipeGen.generatePipe(Control,"lokiPipeWall",4.0,348.0);
 
   PGen.setFeLayer(20.0);
   PGen.setConcLayer(30.0);
@@ -172,8 +174,8 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiPitACutShape","Square");
   Control.addVariable("lokiPitACutRadius",36.0); //should not be radius
 
-  CGen.setMainRadius(65.5);   // diameter 70.0 emali
-  CGen.setFrame(160.0,160.0);
+  CGen.setMainRadius(40.5);   // diameter 70.0 emali
+  CGen.setFrame(90.0,90.0);
   CGen.generateChopper(Control,"lokiChopperOutA",9.3,15.7,5.3);  
 
   // Double Blade chopper
@@ -198,7 +200,7 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiAppAInnerHeight",5.0);
   Control.addVariable("lokiAppAWidth",100.0);
   Control.addVariable("lokiAppAHeight",20.0);
-  Control.addVariable("lokiAppADepth",20.0);
+  Control.addVariable("lokiAppAThick",20.0);
   Control.addVariable("lokiAppAYStep",5.0); 
   Control.addVariable("lokiAppADefMat","Tungsten");
 
@@ -220,10 +222,10 @@ LOKIvariables(FuncDataBase& Control)
   Control.addVariable("lokiCollBMat","Copper"); 
 
   Control.addVariable("lokiAppBInnerWidth",4.0);
-  Control.addVariable("lokiAppBInnerHeight",9.0);
-  Control.addVariable("lokiAppBWidth",60.0);
-  Control.addVariable("lokiAppBHeight",5.0);
-  Control.addVariable("lokiAppBDepth",5.0);
+  Control.addVariable("lokiAppBInnerHeight",4.0);
+  Control.addVariable("lokiAppBWidth",10.0);
+  Control.addVariable("lokiAppBHeight",10.0);
+  Control.addVariable("lokiAppBThick",5.0);
   Control.addVariable("lokiAppBYStep",5.0); 
   Control.addVariable("lokiAppBDefMat","Tungsten");
 

@@ -3,7 +3,7 @@
  
  * File:   monte/IsoTable.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <fstream>
 #include <vector>
 #include <array>
+#include <tuple>
 
 #include "Exception.h"
 #include "Triple.h"
@@ -49,7 +50,7 @@ IsoTable::Instance()
 }
 
 double
-IsoTable::getMass(const int Z,const int A) const
+IsoTable::getMass(const size_t Z,const size_t A) const
   /*!
     Get the true mass for the system
     \param Z :: Z number
@@ -57,19 +58,18 @@ IsoTable::getMass(const int Z,const int A) const
     \return Mass [neutron units]
   */
 {
-  if (Z>=ZNum || ZNum<0) 
-    throw ColErr::IndexError<int>(Z,ZNum,"IsoTable::getMass[Z]");
+  if (Z>=ZNum) 
+    throw ColErr::IndexError<size_t>(Z,ZNum,"IsoTable::getMass[Z]");
   
-  const std::vector<DTriple<int,int,double> >& Elm=ZTable[Z];
-  
+  const std::vector<ITYPE>& Elm=ZTable[Z];  
 
-  const int A0(Elm.front().second);      // first atomic mass
-  const size_t Index=static_cast<size_t>(A-A0);
+  const size_t A0(std::get<1>(Elm.front()));      // first atomic mass
+  const size_t Index(A-A0);
   if (Index>Elm.size())
-    throw ColErr::RangeError<int>
-      (A,A0,static_cast<int>(Elm.size())+A0,"IsoTable::getMass[A]");
+    throw ColErr::RangeError<size_t>
+      (A,A0,Elm.size()+A0,"IsoTable::getMass[A]");
 
-  return Elm[Index].third;
+  return std::get<2>(Elm[Index]);
 }
 
 void
@@ -80,7 +80,7 @@ IsoTable::populateIso()
     Los Alamos.
   */
 {
-  const int IsoN[]={
+  const size_t IsoN[]={
     0,
     1,1,1,1,1,1,1,
     2,2,2,2,2,2,2,2,
@@ -203,7 +203,7 @@ IsoTable::populateIso()
   };
 
   // Atomic mass
-  const int Amass[]={
+  const size_t Amass[]={
     0,
     //Z == 1
     1,2,3,4,5,6,7,
@@ -1326,11 +1326,11 @@ IsoTable::populateIso()
     293.21467000000
   };
 
-  const int IS(sizeof(IsoN)/sizeof(int));
+  const size_t IS(sizeof(IsoN)/sizeof(size_t));
   
-  for(int i=0;i<IS;i++)
+  for(size_t i=0;i<IS;i++)
     {
-      ZTable[IsoN[i]].push_back(DTriple<int,int,double>(IsoN[i],Amass[i],MeVMass[i]));
+      ZTable[IsoN[i]].push_back(ITYPE(IsoN[i],Amass[i],MeVMass[i]));
     }
   return;
   

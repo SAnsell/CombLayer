@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/dream/DREAMvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,9 +82,9 @@ DREAMvariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.5);
   PipeGen.setFlange(-4.0,1.0);
 
-  SGen.addWall(1,20.0,"CastIron");
-  SGen.addRoof(1,20.0,"CastIron");
-  SGen.addFloor(1,20.0,"CastIron");
+  SGen.addWall(1,20.0,"Steel71");
+  SGen.addRoof(1,20.0,"Steel71");
+  SGen.addFloor(1,20.0,"Steel71");
   SGen.addFloorMat(5,"Concrete");
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
@@ -94,20 +94,23 @@ DREAMvariables(FuncDataBase& Control)
   Control.addVariable("dreamAxisXYAngle",0.0);   // rotation
   Control.addVariable("dreamAxisZAngle",0.0);   // rotation 
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.8,"Copper");
+  FGen.setLayer(2,0.5,"Void");
   FGen.setYOffset(0.0);
-  FGen.generateTaper(Control,"dreamFA",350.0,8.0,2.0,2.5,4.5);
-  
-  PipeGen.generatePipe(Control,"dreamPipeB",8.0,40.0);
+  FGen.generateTaper(Control,"dreamFA",350.0, 7.630,2.96, 4.0,4.0);
+
+  PipeGen.setWindow(-2.0,0);
+  PipeGen.setMat("Copper");
+  PipeGen.generatePipe(Control,"dreamPipeB",6.5,26.0);
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"dreamFB",38.0,2.5,2.5,4.5,4.5);   
-  //  Control.addVariable("dreamFBBeamYStep",4.0);
- 
+    //  FGen.generateTaper(Control,"dreamFB",50.0,2.88,2.11,3.81,3.95);   
+  FGen.generateTaper(Control,"dreamFB",26.0,2.63,2.14,3.75,3.76);   
+  
   // VACBOX A : 6.10m target centre
   //  Length 100.7 + Width [87.0] + Height [39.0] void Depth/2 + front
   CGen.setMainRadius(38.122);
   CGen.setFrame(86.5,86.5);
-  CGen.generateChopper(Control,"dreamChopperA",55.0,12.0,6.55);
+  CGen.generateChopper(Control,"dreamChopperA",32.5,12.0,6.55);
 
   // Double Blade chopper
   BGen.setThick({0.2,0.2});
@@ -120,122 +123,118 @@ DREAMvariables(FuncDataBase& Control)
   BGen.generateBlades(Control,"dreamSBlade",1.0,28.0,33.0);
    
     // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.generatePipe(Control,"dreamPipeC",2.0,260.0);
+  PipeGen.setMat("Aluminium");
+  PipeGen.generatePipe(Control,"dreamPipeC0",0.5,28.5);
+  PipeGen.setWindow(-2.0,0.5);
+  PipeGen.generatePipe(Control,"dreamPipeC",0.5,320.0);
 
+  FGen.setLayer(1,0.8,"Aluminium");
+  FGen.setLayer(2,0.5,"Void");
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"dreamFC",252.0,2.06,2.36,4.6,4.5);   
-  //  Control.addVariable("dreamFCBeamYStep",1.10); 
+  FGen.generateTaper(Control,"dreamFC",318.0,1.19,3.53,4.06,4.74);   
+
+  Control.addVariable("dreamCollimAYStep",26.0);
+  Control.addVariable("dreamCollimALength",50.0);
+  Control.addVariable("dreamCollimAMat","Copper"); 
 
   // Band chopoper
-  CGen.generateChopper(Control,"dreamChopperB",8.0,14.0,6.0);
+  CGen.setMainRadius(33.00);
+  CGen.setFrame(83.5,83.5);
+  CGen.generateChopper(Control,"dreamChopperB",7.5,14.0,6.0);
 
   BGen.setMaterials("Inconnel","Void");
   BGen.setThick({0.5});
   BGen.addPhase({95,275},{35.0,25.0});
   BGen.generateBlades(Control,"dreamBandADisk",0.5,22.0,30.0);
 
+  PipeGen.generatePipe(Control,"dreamPipeD",0.5,77.5);
+  FGen.generateTaper(Control,"dreamFD",75.5,3.6,3.90,4.77,4.9); 
+
   // T0 chopper:
-  CGen.generateChopper(Control,"dreamChopperC",20.0,36.0,32.0);
-  // T0 Chopper disk A/B
+  CGen.generateChopper(Control,"dreamChopperC",19.5,38.0,34.0);
+  // T0 Chopper disk A
   BGen.setMaterials("Inconnel","Void");
-  BGen.setThick({5.0});
-  BGen.setInnerThick({5.4});
+  BGen.setThick({30.0});
+  //  BGen.setInnerThick({5.4});
   BGen.addPhase({95,275},{30.0,30.0});
+  BGen.generateBlades(Control,"dreamT0DiskA",0.0,20.0,30.0);
 
-  BGen.generateBlades(Control,"dreamT0DiskA",-12.0,20.0,30.0);
-  BGen.generateBlades(Control,"dreamT0DiskB",12.0,20.0,30.0);  
+  PipeGen.generatePipe(Control,"dreamPipeE1",0.5,536.0);
+  FGen.generateTaper(Control,"dreamFE1",534.0,4.05,5.32,4.96,5.57);
+  Control.addVariable("dreamCollimBYStep",310.5);
+  Control.addVariable("dreamCollimBLength",50.0);
+  Control.addVariable("dreamCollimBMat","Copper"); 
 
-  // TMid guide  [Expected to be removed]
-  FGen.setThickness(0.4,1.5);
-  FGen.clearYOffset();  
-  FGen.generateTaper(Control,"dreamFT0Mid",16.0,2.05,2.36,4.6,4.5);
-  
-  // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.generatePipe(Control,"dreamPipeD",2.0,430.0);
+  PipeGen.generatePipe(Control,"dreamPipeE2",0.5,536.0);
+  FGen.generateTaper(Control,"dreamFE2",534.0,5.32,5.82,5.58,5.84);
 
-  
-  FGen.generateTaper(Control,"dreamFD",422.0,2.06,2.36,4.6,4.5); 
+  Control.addVariable("dreamCollimCYStep",26.0);
+  Control.addVariable("dreamCollimCLength",50.0);
+  Control.addVariable("dreamCollimCMat","Copper"); 
 
-  CGen.generateChopper(Control,"dreamChopperD",10.0,9.0,3.55);
+  //Heavy Shutter
+  PipeGen.generatePipe(Control,"dreamPipeF",0.5,200.0);
+  FGen.generateTaper(Control,"dreamFF",198.0,5.82,5.86,5.84,5.86); 
 
-  BGen.setMaterials("Inconnel","Void");
-  BGen.setThick({0.5});
-  BGen.addPhase({95,275},{35.0,25.0});
-
-  BGen.generateBlades(Control,"dreamBandBDisk",0.5,22.0,30.0);
-  
-  CGen.generateChopper(Control,"dreamChopperE",20.0,36.0,32.0);
-
-
-    // T0 chopper:
-  CGen.generateChopper(Control,"dreamChopperE",20.0,36.0,32.0);
-  // T0 Chopper disk A/B
-  BGen.setMaterials("Inconnel","Void");
-  BGen.setThick({5.0});
-  BGen.setInnerThick({5.4});
-  BGen.addPhase({95,275},{125.0,125.0});
-
-  BGen.generateBlades(Control,"dreamT1DiskA",-12.0,20.0,30.0);
-  BGen.generateBlades(Control,"dreamT1DiskB",12.0,20.0,30.0);  
-
-  // TMid guide  [Expected to be removed]
-  FGen.setThickness(0.4,1.5);
-  FGen.clearYOffset();  
-  FGen.generateTaper(Control,"dreamFT1Mid",16.0,2.05,2.36,4.6,4.5);
-
-
-  // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.generatePipe(Control,"dreamPipeE",2.0,500.0);
-  FGen.generateTaper(Control,"dreamFE",492.0,2.06,2.36,4.6,4.5); 
-
-  // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.generatePipe(Control,"dreamPipeF",2.0,500.0);
-  FGen.generateTaper(Control,"dreamFF",492.0,2.06,2.36,4.6,4.5); 
-
-
-  // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.generatePipe(Control,"dreamPipeG",2.0,800.0);
-  FGen.generateTaper(Control,"dreamFG",796.0,2.06,2.36,4.6,4.5);
-
-  // VACUUM PIPE: SDisk to T0 (A)
-  PipeGen.generatePipe(Control,"dreamPipeH",2.0,600.0);
-  FGen.generateTaper(Control,"dreamFH",566.0,2.06,2.36,4.6,4.5);
+  PipeGen.generatePipe(Control,"dreamPipeG",0.5,62.5);
+  FGen.generateRectangle(Control,"dreamFG",60.5,5.86,5.86); 
 
   // BEAM INSERT:
-  Control.addVariable("dreamBInsertHeight",20.0);
-  Control.addVariable("dreamBInsertWidth",28.0);
-  Control.addVariable("dreamBInsertTopWall",1.0);
-  Control.addVariable("dreamBInsertLowWall",1.0);
-  Control.addVariable("dreamBInsertLeftWall",1.0);
-  Control.addVariable("dreamBInsertRightWall",1.0);
-  Control.addVariable("dreamBInsertWallMat","Stainless304");       
+  Control.addVariable("dreamBInsertAYStep",2.0);
+  Control.addVariable("dreamBInsertANBox",1);
+  Control.addVariable("dreamBInsertAHeight",18.0);
+  Control.addVariable("dreamBInsertAWidth",18.0);
+  Control.addVariable("dreamBInsertALength",188.5);
+  Control.addVariable("dreamBInsertAMat","Stainless304");
+  Control.addVariable("dreamBInsertANWall",1);
+  Control.addVariable("dreamBInsertAWallThick",2.85);
+  Control.addVariable("dreamBInsertAWallMat","Stainless304");       
 
-  // Guide in wall
-  FGen.clearYOffset();  
-  FGen.generateTaper(Control,"dreamFWall",346.0,6.0,6.0,6.0,6.0);
+  Control.addVariable("dreamBInsertBNBox",1);
+  Control.addVariable("dreamBInsertBHeight",32.0);
+  Control.addVariable("dreamBInsertBWidth",30.0);
+  Control.addVariable("dreamBInsertBLength",191.5);
+  Control.addVariable("dreamBInsertBMat","Stainless304");
+  Control.addVariable("dreamBInsertBNWall",1);
+  Control.addVariable("dreamBInsertBWallThick",3.85);
+  Control.addVariable("dreamBInsertBWallMat","Stainless304"); 
+
+  // Guides in wall
+  FGen.setYOffset(2.0);
+  FGen.generateRectangle(Control,"dreamFWallA",380.0,5.86,5.86);  
 
   SGen.setRFLayers(3,8);
-  SGen.generateShield(Control,"dreamShieldA",1430.0,40.0,40.0,40.0,8,8);
+  SGen.generateShield(Control,"dreamShieldA",1335.0,40.0,40.0,40.0,8,8);
+  Control.addVariable("dreamShieldAYStep",171.5);
 
-  // Guide after wall [17.5m - 3.20] for wall
-
+  // Guide Section 2 (after wall) [+17.6m]  
   PipeGen.setPipe(6.0,0.5);
-  PipeGen.generatePipe(Control,"dreamPipeOutA",2.5,1422.0);  //
-
+  PipeGen.generatePipe(Control,"dreamPipeOutA",0.5,1314.5);  //
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"dreamFOutA",1418.0,4.5,4.97,2.24,3.05);
+  FGen.setLayer(1,1.0,"Borosilicate");
+  FGen.setLayer(2,0.5,"Void");
+  FGen.generateRectangle(Control,"dreamFOutA",1312.5,5.86,5.86); // end of second part
 
-  // Guide after wall [+17.5m] after section 1  
-  PipeGen.generatePipe(Control,"dreamPipeOutB",2.0,1750.0);
+  // Guide Section 3 [+17.6m]
+  SGen.generateShield(Control,"dreamShieldB",1760.0,32.0,32.0,32.0,8,8);  
+  PipeGen.generatePipe(Control,"dreamPipeOutB",0.0,1760.0);
+  FGen.generateRectangle(Control,"dreamFOutB",1758.0,5.86,5.86); // end of third part
 
-  FGen.setGuideMat("Glass");
-  FGen.generateTaper(Control,"dreamFOutB",2836,4.0,4.0,5.0,5.0);
+  // Part of Guide Section 4 [+11.85m]
+  SGen.generateShield(Control,"dreamShieldC",1185.0,32.0,32.0,32.0,8,8);  
+  PipeGen.generatePipe(Control,"dreamPipeOutC",0.0,1185);
+  FGen.generateOctagon(Control,"dreamFOutC",1183.0,5.86,4.34); 
 
-  SGen.generateShield(Control,"dreamShieldB",2850.0,32.0,32.0,32.0,8,8);  
+  PipeGen.setWindowMat("Void"); 
+  PipeGen.setWindow(-2.0,0.0);
+  // Part of Guide Section 4 inside Cave
+  PipeGen.generatePipe(Control,"dreamPipeCaveA",0.0,516.36);
+  FGen.generateOctagon(Control,"dreamFCaveA",516.36,4.33,1.5);
 
-  // Guide after wall [+17.5m] after section 1  
-  PipeGen.generatePipe(Control,"dreamPipeCaveA",0.0,500.0);
-  FGen.generateTaper(Control,"dreamFCaveA",496,4.0,4.0,5.0,5.0);
+  // Boron Nose
+  FGen.setLayer(1,1.0,"Boron");
+  FGen.generateOctagon(Control,"dreamFCaveB",27.3,1.8,1.1);
+  Control.addVariable("dreamFCaveBYStep",0.0);
 
   // HUT:
   Control.addVariable("dreamCaveYStep",0.0);

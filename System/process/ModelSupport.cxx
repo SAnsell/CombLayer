@@ -3,7 +3,7 @@
  
  * File:   process/ModelSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ spcDelimString(const std::string& baseString)
   /*
     Space delimit the input string to remove : and ( without spaces
     \param baseString :: input string
+    \return Striped string
   */
 {
   std::ostringstream cx;
@@ -85,10 +86,11 @@ getExclude(const int Offset)
 }
 
 std::string
-removeOpenPair(const std::string& CStr)
+removeOpenPair(const std::string& procString)
   /*!
     Remove double : : / : ) etc
-    \param CStr :: Input string
+    \param procString :: Input string
+    \return stripped string
   */
 {
   // Remove all == (:
@@ -96,40 +98,48 @@ removeOpenPair(const std::string& CStr)
   //            ==
 
   // pre-pass to add spaces after each
-  std::stringstream cx;
-  for(size_t i=0;i<CStr.length();i++)
+  std::stringstream cx(procString);
+  std::string CStr;
+  do 
     {
-      if (CStr[i]=='(' || CStr[i]==')')
-        cx<<' ';
-      cx<<CStr[i];
-      if (CStr[i]=='(' || CStr[i]==')')
-        cx<<' ';
-    }
+      CStr=cx.str();
+      cx.str("");
+      for(size_t i=0;i<CStr.length();i++)
+	{
+	  if (CStr[i]=='(' || CStr[i]==')')
+	    cx<<' ';
+	  cx<<CStr[i];
+	  if (CStr[i]=='(' || CStr[i]==')')
+	    cx<<' ';
+	}
 
-  std::string Out(cx.str());
-  cx.str("");
-
-  std::string prevItem;
-  std::string item;
-  while(StrFunc::section(Out,item))
-    {
-      if (prevItem=="(" && item==":")
-        {}
-      else if (prevItem==":" && item==")")
-        prevItem=item;
-      else if (prevItem=="(" && item==")")
-        prevItem="";
-      else if (prevItem==":" && item==":")
-        {}
-      else
-        {
-          cx<<prevItem<<" ";
-          prevItem=item;
-        }
-    }
-  cx<<" "<<prevItem;
-  return cx.str();
+      std::string Out(cx.str());
+      cx.str("");
+      
+      std::string prevItem;
+      std::string item;
+      while(StrFunc::section(Out,item))
+	{
+	  if (prevItem=="(" && item==":")
+	    {}
+	  else if (prevItem==":" && item==")")
+	    prevItem=item;
+	  else if (prevItem=="(" && item==")")
+	    prevItem="";
+	  else if (prevItem==":" && item==":")
+	    {}
+	  else
+	    {
+	      cx<<prevItem<<" ";
+	      prevItem=item;
+	    }
+	}
+      cx<<" "<<prevItem;
+    }  while(CStr!=cx.str());
+    
+  return CStr;
 }
+
   
 
 std::string
@@ -385,8 +395,8 @@ getSetComposite(const surfRegister& SMap,const int Offset,
 	  else
 	    cx<<OutUnit<<" ";
 	}
-    }
-  return cx.str();
+    }  
+  return removeOpenPair(cx.str());
 }
 
 
@@ -436,6 +446,7 @@ getSetComposite(const surfRegister& SMap,
 	    cx<<OutUnit<<" ";
 	}
     }
+
   return removeOpenPair(cx.str());
 
 }

@@ -3,7 +3,7 @@
  
  * File:   test/testSurfDIter.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@
 #include <list>
 #include <string>
 #include <algorithm>
+#include <numeric>
+
 #include <memory>
 
 #include "Exception.h"
@@ -80,6 +82,9 @@ testSurfDIter::applyTest(const int extra)
     \returns -ve on error 0 on success.
   */
 {
+  ELog::RegMethod RegA("testSurfDIter","applyTest");
+  TestFunc::regSector("testSurfDIter");
+
   typedef int (testSurfDIter::*testPtr)();
   testPtr TPtr[]=
     {
@@ -123,8 +128,6 @@ testSurfDIter::testPopulateQuadRange()
   */
 {
   ELog::RegMethod RegA("testSurfDIter","testStatic");
-
-
   
   // First test
   FuncDataBase Control;
@@ -136,14 +139,31 @@ testSurfDIter::testPopulateQuadRange()
   const double BPt(340.0);
   std::vector<double> Out;
   populateQuadRange(Control,N,"ATest",APt,NPt,BPt,Out);
-  for(size_t i=0;i<Out.size();i++)
-    ELog::EM<<"Pt["<<i<<"] == "<<Out[i]<<ELog::endDiag;
+  const double sum=
+    std::accumulate(Out.begin(),Out.end(),0.0,std::plus<double>());
+  if (std::abs(sum-1202.5)>1e-6)
+    {
+      ELog::EM<<"Failed on ATest"<<ELog::endDiag;
+      ELog::EM<<"Sum == "<<sum<<ELog::endDiag;
+      for(size_t i=0;i<Out.size();i++)
+	ELog::EM<<"Pt["<<i<<"] == "<<Out[i]<<ELog::endDiag;
+      return -1;
+    }
 
-  return 0;
   Control.addVariable("BTest6",2.0);
   populateQuadRange(Control,N,"BTest",APt,NPt,BPt,Out);
-  for(size_t i=0;i<Out.size();i++)
-    ELog::EM<<"Pt["<<i<<"] == "<<Out[i]<<ELog::endDiag;
+  const double sumB=
+    std::accumulate(Out.begin(),Out.end(),0.0,std::plus<double>());
+  if (std::abs(sumB-1564.42)>1e-2 || std::abs(Out[6]-2.0)>1e-6)
+    {
+      ELog::EM<<"Failed on BTest"<<ELog::endDiag;
+      ELog::EM<<"Sum == "<<sumB-1564.42<<ELog::endDiag;
+      ELog::EM<<"Pt[6] == "<<Out[6]-2.0<<ELog::endDiag;
+      for(size_t i=0;i<Out.size();i++)
+	ELog::EM<<"Pt["<<i<<"] == "<<Out[i]<<ELog::endDiag;
+      return -1;
+    }
+
   
   return 0;
 }

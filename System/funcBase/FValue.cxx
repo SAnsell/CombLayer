@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   funcBase/FValue.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -398,7 +398,7 @@ FValue<T>::getValue(size_t& V) const
     \return 1 (always possible)
   */
 {
-  if (Value<0.0)
+  if (Value<0)
     V=ULONG_MAX;
   else
     V=static_cast<size_t>(Value);
@@ -606,37 +606,33 @@ FValue<T>::write(std::ostream& OX) const
   return;
 }
 
-/// Simple Typename
+/// \cond simpleTemplate
+
 template<>
 std::string FValue<Geometry::Vec3D>::typeKey()  const
 {  return "Geometry::Vec3D"; }
 
-/// Simple Typename
 template<>
 std::string FValue<double>::typeKey()  const
 {  return "double"; }
 
-/// Simple Typename
 template<>
 std::string FValue<int>::typeKey()  const
 {  return "int"; }
 
-/// Simple Typename
 template<>
 std::string FValue<size_t>::typeKey()  const
 {  return "size_t"; }
 
-
-/// Simple Typename
 template<>
 std::string FValue<long int>::typeKey()  const
 {  return "long int"; }
 
-/// Simple Typename
 template<>
 std::string FValue<std::string>::typeKey()  const
 {  return "std::string"; }
 
+/// \endcond simpleTemplate
 
 /// \cond TEMPLATE
 

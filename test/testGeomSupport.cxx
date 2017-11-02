@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testGeomSupport.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,14 +79,12 @@ testGeomSupport::applyTest(const int extra)
   typedef int (testGeomSupport::*testPtr)();
   testPtr TPtr[]=
     {
-      &testGeomSupport::testCornerCircle,
-      &testGeomSupport::testCornerCircleTouch
+      &testGeomSupport::testFindCornerCircle
     };
 
   const std::string TestName[]=
     {
-      "CornerCircle",
-      "CornerCircleTouch"
+      "FindCornerCircle"
     };
 
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -114,7 +112,7 @@ testGeomSupport::applyTest(const int extra)
 }
 
 int
-testGeomSupport::testCornerCircleTouch()
+testGeomSupport::testFindCornerCircle()
   /*!
     Test the intersection of general quadratic surfaces
     \retval 0 :: success
@@ -126,18 +124,26 @@ testGeomSupport::testCornerCircleTouch()
   typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,
 		     Geometry::Vec3D,double,
 		     Geometry::Vec3D> TTYPE;
-  std::vector<TTYPE> Tests;
+  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D> RTYPE;
+		     
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
+	    Geometry::Vec3D(1,0,0),	1.0,Geometry::Vec3D(1,1,0)),
+      
+      TTYPE(Geometry::Vec3D(7,3,1),Geometry::Vec3D(7,4,1),
+	    Geometry::Vec3D(8,3,1),3.0,Geometry::Vec3D(10,6,1))
+      
+    };
 
-  Tests={TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
-	       Geometry::Vec3D(1,0,0),	1.0,Geometry::Vec3D(1,1,0)),
-	 
-	 TTYPE(Geometry::Vec3D(7,3,1),Geometry::Vec3D(7,4,1),
-	       Geometry::Vec3D(8,3,1),3.0,Geometry::Vec3D(10,6,1))
-	 
-  };
+  std::vector<RTYPE> Corners=
+    {
+      RTYPE(Geometry::Vec3D(1,0,0),Geometry::Vec3D(0,1,0)),
+      RTYPE(Geometry::Vec3D(10,3,1),Geometry::Vec3D(7,6,1))
+    };
 
  
-  int cnt(1);
+  size_t resIndex(0);
   for(const TTYPE& tc : Tests)
     {
       const Geometry::Vec3D Cent =std::get<0>(tc);
@@ -147,84 +153,29 @@ testGeomSupport::testCornerCircleTouch()
       const Geometry::Vec3D testResult =std::get<4>(tc);
 
 
-      Geometry::Vec3D Result=
-	Geometry::cornerCircleTouch(Cent,A,B,Rad);
-      if (Result.Distance(testResult)>Geometry::zeroTol)
-	{
-	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
-	  ELog::EM<<"C =  "<<Cent<<ELog::endDiag;
-	  ELog::EM<<"A =  "<<A<<ELog::endDiag;
-	  ELog::EM<<"B =  "<<B<<ELog::endDiag;
-	  ELog::EM<<"R =  "<<Rad<<ELog::endDiag;
-	  ELog::EM<<"Result "<<Result<<ELog::endDiag;
-	  ELog::EM<<"Expect "<<testResult<<ELog::endDiag;
-	  return -1;
-	}
-      cnt++;
-    }
+      std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+	Result=Geometry::findCornerCircle(Cent,A,B,Rad);
+      const Geometry::Vec3D R(std::get<0>(Result));
+      const Geometry::Vec3D ResA(std::get<0>(Corners[resIndex]));
+      const Geometry::Vec3D ResB(std::get<1>(Corners[resIndex]));
 
-  return 0;
-}
-
-
-int
-testGeomSupport::testCornerCircle()
-  /*!
-    Test the intersection of general quadratic surfaces
-    \retval 0 :: success
-  */
-{
-  ELog::RegMethod RegA("testSurInterSect","testCornerCircle");
-    
-  // Centre , A , B , Radius 
-  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D,
-		     Geometry::Vec3D,double> TTYPE;
-
-  // results
-  typedef std::tuple<Geometry::Vec3D,Geometry::Vec3D> RTYPE;
-  std::vector<TTYPE> Tests;
-  std::vector<RTYPE> Results;
-
-  Tests={TTYPE(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,1,0),
-	       Geometry::Vec3D(1,0,0),	1.0),
-	 
-	 TTYPE(Geometry::Vec3D(7,3,1),Geometry::Vec3D(7,4,1),
-	       Geometry::Vec3D(8,3,1),	3.0)
-  };
-  
-  Results={
-    RTYPE(Geometry::Vec3D(1,0,0),Geometry::Vec3D(0,1,0)),
-    RTYPE(Geometry::Vec3D(10,3,1),Geometry::Vec3D(7,6,1))
-  };
-	  
-  size_t resIndex(0);
-  for(const TTYPE& tc : Tests)
-    {
-      const Geometry::Vec3D Cent =std::get<0>(tc);
-      const Geometry::Vec3D A =std::get<1>(tc);
-      const Geometry::Vec3D B =std::get<2>(tc);
-      const double Rad =std::get<3>(tc);
-      const Geometry::Vec3D ResA=std::get<0>(Results[resIndex]);
-      const Geometry::Vec3D ResB=std::get<1>(Results[resIndex]);
+      const Geometry::Vec3D OutA(std::get<1>(Result));
+      const Geometry::Vec3D OutB(std::get<2>(Result));
       
-      const std::pair<Geometry::Vec3D,Geometry::Vec3D>
-	output=Geometry::cornerCircle(Cent,A,B,Rad);
+      if (R.Distance(testResult)>Geometry::zeroTol ||
 
-      if ((ResA.Distance(output.first)>Geometry::zeroTol ||
-	   ResB.Distance(output.second)>Geometry::zeroTol) &&
-	  (ResA.Distance(output.second)>Geometry::zeroTol ||
-	   ResB.Distance(output.first)>Geometry::zeroTol) )
+	  ((ResA.Distance(OutA)>Geometry::zeroTol ||
+	    ResB.Distance(OutB)>Geometry::zeroTol) &&
+	   (ResA.Distance(OutB)>Geometry::zeroTol ||
+	    ResB.Distance(OutA)>Geometry::zeroTol) ) )
 	{
 	  ELog::EM<<"Failed on test "<<resIndex+1<<ELog::endDiag;
 	  ELog::EM<<"C =  "<<Cent<<ELog::endDiag;
 	  ELog::EM<<"A =  "<<A<<ELog::endDiag;
 	  ELog::EM<<"B =  "<<B<<ELog::endDiag;
 	  ELog::EM<<"R =  "<<Rad<<ELog::endDiag;
-	  ELog::EM<<"ResA "<<output.first<<ELog::endDiag;
-	  ELog::EM<<"Expect "<<ResA<<ELog::endDiag;
-
-	  ELog::EM<<"ResB "<<output.second<<ELog::endDiag;
-	  ELog::EM<<"Expect "<<ResB<<ELog::endDiag;
+	  ELog::EM<<"Result "<<R<<ELog::endDiag;
+	  ELog::EM<<"Expect "<<testResult<<ELog::endDiag;
 	  return -1;
 	}
       resIndex++;
@@ -232,3 +183,4 @@ testGeomSupport::testCornerCircle()
 
   return 0;
 }
+

@@ -123,6 +123,7 @@ TestFunc::setSector(const std::string& S)
   TSector=S;
   if ((outStatus & 3)==2)
     {
+      ELog::EM<<"Out["<<S<<"] == "<<outStatus<<ELog::endDiag;
       reportTest(ELog::EM.Estream());
       ELog::EM<<ELog::endDiag;
     }

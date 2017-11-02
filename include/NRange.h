@@ -57,7 +57,7 @@ class NRange
  public:
 
   NRange();
-  NRange(const std::string&);         ///< Initialise with a string
+  NRange(const std::string&);    
   NRange(const NRange&);  
   NRange& operator=(const NRange&);
   ~NRange();

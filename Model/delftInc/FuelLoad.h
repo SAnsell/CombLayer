@@ -3,7 +3,7 @@
  
  * File:   delftInc/FuelLoad.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class FuelLoad
  private:
 
   std::map<size_t,std::string> FuelMap;         ///< Hash key : fuel number
-  XML::XMLcollect* activeXOut;
+  XML::XMLcollect* activeXOut;                  ///< Memmory for XML file
 
   static size_t hash(const size_t,const size_t,
 		     const size_t,const size_t);

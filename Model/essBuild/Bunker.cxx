@@ -3,7 +3,7 @@
  
  * File:   essBuild/Bunker.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,6 @@
 #include "mergeTemplate.h"
 
 #include "World.h"
-#include "BunkerInsert.h"
 #include "BunkerRoof.h"
 #include "BunkerWall.h"
 #include "LayerDivide3D.h"
@@ -117,7 +116,6 @@ Bunker::Bunker(const std::string& Key)  :
   OR.addObject(roofObj);
   OR.addObject(wallObj);
 }
-
 
 Bunker::~Bunker() 
   /*!
@@ -159,6 +157,7 @@ Bunker::populate(const FuncDataBase& Control)
     wallFrac[i]=(wallFrac[i]-wallRadius)/wallThick;
 
   nSectors=Control.EvalVar<size_t>(keyName+"NSectors");
+  nSectors=std::max<size_t>(nSectors,1);
   ModelSupport::populateRange(Control,nSectors,keyName+"SectAngle",
 			      leftPhase,rightPhase,sectPhase);
 
@@ -196,7 +195,6 @@ Bunker::createUnitVector(const attachSystem::FixedComp& FC,
 			 const bool reverseX)
   /*!
     Create the unit vectors
-    \param MainCentre :: Main rotation centre
     \param FC :: Linked object
     \param sideIndex :: Side for linkage centre
     \param reverseX :: reverse X direction
@@ -209,15 +207,6 @@ Bunker::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
-void
-Bunker::createWallSurfaces(const Geometry::Vec3D&,
-			   const Geometry::Vec3D&) 
-  /*!
-    Create the wall Surface if divided
-  */
-{
-  return;
-}
 
 void
 Bunker::calcSegPosition(const size_t segIndex,
@@ -272,7 +261,6 @@ Bunker::createSurfaces(const bool revX)
   ELog::RegMethod RegA("Bunker","createSurface");
 
   const Geometry::Vec3D ZRotAxis((revX) ? -Z : Z);
-  innerRadius=rotCentre.Distance(Origin);
 
   Geometry::Vec3D CentAxis(Y);
   Geometry::Vec3D AWallDir(X);
@@ -319,8 +307,13 @@ Bunker::createSurfaces(const bool revX)
   ModelSupport::buildPlane(SMap,bnkIndex+16,
 			   Origin+Z*(roofHeight+roofThick),Z);
 
+  setSurf("leftWallInner",SMap.realSurf(bnkIndex+3));
+  setSurf("rightWallInner",SMap.realSurf(bnkIndex+4));
+  setSurf("leftWallOuter",SMap.realSurf(bnkIndex+13));
+  setSurf("rightWallOuter",SMap.realSurf(bnkIndex+14));
   setSurf("floorInner",SMap.realSurf(bnkIndex+5));
   setSurf("roofInner",SMap.realSurf(bnkIndex+6));
+  setSurf("roofOuter",SMap.realSurf(bnkIndex+16));
   // CREATE Sector boundary lines
   // Note negative subtraction as moving +ve to -ve
 
@@ -335,7 +328,7 @@ Bunker::createSurfaces(const bool revX)
   int divIndex(bnkIndex+1001);
 
   double phase(leftPhase);
-  const double phaseStep((rightPhase-leftPhase)/nSectors);
+  const double phaseStep((rightPhase-leftPhase)/static_cast<double>(nSectors));
 
   SMap.addMatch(divIndex,SMap.realSurf(bnkIndex+3));
   for(size_t i=1;i<nSectors;i++)
@@ -499,6 +492,7 @@ Bunker::createMainRoof(Simulation& System,const int innerSurf)
   const std::string Out=ModelSupport::getComposite(SMap,bnkIndex," 1 ");
   roofObj->initialize(System.getDataBase(),*this,6);
   roofObj->setVertSurf(SMap.realSurf(bnkIndex+6),SMap.realSurf(bnkIndex+16));
+  
   roofObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
   roofObj->setDivider(Out);
 
@@ -567,13 +561,18 @@ Bunker::createMainWall(Simulation& System)
 
   
 void
-Bunker::createLinks()
+Bunker::createLinks(const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
   /*!
-    Create all the linkes [OutGoing]
+    Create all the links [OutGoing]
+    \param FC :: FixedComp use for inner surf
+    \param sideIndex :: link index for inner surf
   */
 {
   ELog::RegMethod RegA("Bunker","createLinks");
 
+  FixedComp::setLinkSignedCopy(2,FC,sideIndex);
+  
   FixedComp::setConnect(0,rotCentre+Y*(wallRadius),Y);
   FixedComp::setLinkSurf(0,-SMap.realSurf(bnkIndex+7));
   FixedComp::setBridgeSurf(0,SMap.realSurf(bnkIndex+1));
@@ -592,10 +591,11 @@ Bunker::createLinks()
   FixedComp::setConnect(6,rotCentre,Y);
   FixedComp::setLinkSurf(6,0);
 
-  // Inner
+  // Inner wall
   FixedComp::setConnect(7,rotCentre+Y*wallRadius,-Y);
   FixedComp::setLinkSurf(7,-SMap.realSurf(bnkIndex+7));
 
+  
   FixedComp::setConnect(10,Origin-Z*floorDepth,Z);
   FixedComp::setLinkSurf(10,SMap.realSurf(bnkIndex+5));
   FixedComp::setConnect(11,Origin+Z*roofHeight,-Z);
@@ -610,6 +610,7 @@ Bunker::calcSegment(const Simulation& System,
 		    const Geometry::Vec3D& Axis) const
   /*!
     Determine the segment that a point falls in
+    \param System :: Simulation System
     \param TPoint :: Point to check
     \param Axis :: Direction 
     \return Segment string
@@ -661,7 +662,6 @@ Bunker::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param MainCentre :: Rotatioin Centre
     \param FC :: Central origin
     \param linkIndex :: linkIndex number
     \param reverseX :: Reverse X direction
@@ -673,7 +673,7 @@ Bunker::createAll(Simulation& System,
   createUnitVector(FC,linkIndex,reverseX);
     
   createSurfaces(reverseX);
-  createLinks();
+  createLinks(FC,linkIndex);
   createObjects(System,FC,linkIndex);
   //  layerProcess(System);
   insertObjects(System);              

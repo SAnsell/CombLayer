@@ -3,7 +3,7 @@
  
  * File:   lensModel/LensTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,13 +155,13 @@ addSurfTally(Simulation& System,
 
   std::ostringstream cx;
   cx<<"Plate"<<FN<<"_"<<TNum;
-  constructSystem::insertPlate Pt(cx.str());
+  insertSystem::insertPlate Pt(cx.str());
   
   // 10x10x10 box 
   Pt.setValues(10.0,1.0,10.0,0);
   Pt.createAll(System,Org+Y*Dist,FL);
   
-  tallySystem::addF1Tally(System,TNum,Pt.getLinkSurf(0));
+  tallySystem::addF1Tally(System,TNum,Pt.getSignedLinkSurf(1));
   return TNum;
 }
 

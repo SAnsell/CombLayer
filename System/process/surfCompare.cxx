@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   process/surfCompare.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ struct unknownSurfaces
   \brief Surface / Surface == operator
   \author S. Ansell
   \version 1.0
-  \date Juley 2011
+  \date July 2011
   \tparam State (list of types - this one) 
   \tparam Index :: Type id number to execute on (runtime)
   \tparam SurType :: Current surface type
@@ -115,8 +115,8 @@ struct EqualSurfaces
       Creates the pointer to the surface
       Index refers to the positon on the Geometry::ExportClass list
       \param I :: Index of runtime value (check with Index)
-      \param SPtr :: Surface pointer      
-      \param TPtr :: Second surface point
+      \param SPtr :: First Surface pointer      
+      \param TPtr :: Second surface pointer
       \return success/failure
     */
     {
@@ -144,15 +144,13 @@ struct EqualSurfaces
 //                    OUTSIDE
 //----------------------------------------------------------------------
 
-
-
 int
 equalSurface(const Geometry::Surface* SPtr,const Geometry::Surface* TPtr)
   /*!
-    Process a equal surface request
+    Process a equal surface request to check surfaces are equal
     \param SPtr :: surface pointer
     \param TPtr :: surface pointer
-    \return Second sruface
+    \return true if surfaces are equivalent 
    */
 {
   if (!SPtr || !TPtr)

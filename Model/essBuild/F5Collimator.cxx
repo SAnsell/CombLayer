@@ -186,7 +186,7 @@ namespace essSystem
     wall=Control.EvalDefVar<double>(keyName+"WallThick", 0.5);
     viewWidth=Control.EvalPair<double>(keyName, "F5Default", "ViewWidth");
     delta = Control.EvalDefVar<double>(keyName+"Delta", 0.0);
-    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5Default", "Algorithm"); // "FocalPoint" "InnerFocalPoint" "MidWaterEdge" "MidWaterSide" "manual"
+    lpAlgorithm = Control.EvalPair<std::string>(keyName, "F5Default", "Algorithm"); // "FocalPoint" "manual"
 
     // xyz coordinates of F5 tally
     Control.setVariable<double>(keyName+"X", radius*sin(theta*M_PI/180.0));
@@ -218,36 +218,6 @@ namespace essSystem
 	  lp =  zStep>0 ? 5 : 7; // OK
 	else // if theta>270
 	  lp =  zStep>0 ? 4 : 6; // OK
-      } else if (lpAlgorithm == "InnerFocalPoint")
-      {
-	if (theta<90)
-	  lp =  zStep>0 ? 10 : 8; // OK these maths depend on the XYangle of the moderator
-	else if (theta<180)
-	  lp =  zStep>0 ? 11 : 9;
-	else if (theta<270)
-	  lp =  zStep>0 ? 9 : 11;
-	else // if theta>270
-	  lp =  zStep>0 ? 8 : 10;
-      } else if (lpAlgorithm == "MidWaterEdge")
-      {
-	if (theta<90)
-	  lp =  zStep>0 ? 14 : 12; // OK these maths depend on the XYangle of the moderator
-	else if (theta<180)
-	  lp =  zStep>0 ? 15 : 13;
-	else if (theta<270)
-	  lp =  zStep>0 ? 13 : 15;
-	else // if theta>270
-	  lp =  zStep>0 ? 12 : 14;
-      } else if (lpAlgorithm == "MidWaterSide")
-      {
-	if (theta<90)
-	  lp =  zStep>0 ? 18 : 16; // OK these maths depend on the XYangle of the moderator
-	else if (theta<180)
-	  lp =  zStep>0 ? 19 : 17;
-	else if (theta<270)
-	  lp =  zStep>0 ? 17 : 19;
-	else // if theta>270
-	  lp =  zStep>0 ? 16 : 18;
       } else if (lpAlgorithm == "manual")
       {
 	// "special" link points - needed to define the BOC sign
@@ -260,7 +230,7 @@ namespace essSystem
 	else // if theta>270
 	  lp =  zStep>0 ? -1 : -3;
       } else
-      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm not in 'FocalPoint', 'InnerFocalPoint', 'MidWaterEdge', 'MidWaterSide' or 'manual'");
+      throw ColErr::InvalidLine(lpAlgorithm,"Link point algorithm can be either 'FocalPoint' or 'manual'");
     
     Control.setVariable<int>(keyName+"LinkPoint", lp);
     LinkPoint = Control.EvalVar<int>(keyName+"LinkPoint");

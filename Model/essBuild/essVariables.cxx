@@ -3,7 +3,7 @@
  
  * File:   essBuild/essVariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,11 +56,13 @@ namespace setVariable
 {
 
 void
-EssVariables(FuncDataBase& Control)
+EssVariables(FuncDataBase& Control,
+             const std::set<std::string>& beamNames)
   /*!
     Function to set the control variables and constants
     -- This version is for ESS ()
     \param Control :: Function data base to add constants too
+    \param beamName :: Set of beamline names
   */
 {
 // -----------
@@ -73,254 +75,15 @@ EssVariables(FuncDataBase& Control)
 
   Control.addVariable("EngineeringActive",0);      // NO engineering
 
-  Control.addVariable("TopFocusDistance",8.60);
-  Control.addVariable("TopFocusWidth",7.20);
+  Control.addVariable("TopFocusDistance",8.90);
+  Control.addVariable("TopFocusWidth",5.40);
   Control.addVariable("TopFocusXYAngle",90.0);
   Control.addVariable("TopFocusZStep",13.70);
 
   Control.addVariable("LowFocusXYAngle",90.0);
-  Control.addVariable("LowFocusWidth",7.20);
-  Control.addVariable("LowFocusDistance",8.6);
+  Control.addVariable("LowFocusWidth",5.40);
+  Control.addVariable("LowFocusDistance",8.90);
   Control.addVariable("LowFocusZStep",-15.20);
-  
-  Control.addVariable("LowModXStep",0.0);  
-  Control.addVariable("LowModYStep",0.0);  
-  Control.addVariable("LowModZStep",-18.0);
-  Control.addVariable("LowModXYangle",125.15); 
-  Control.addVariable("LowModZangle",0.0);
-  Control.addVariable("LowModRadius",8.0);
-  Control.addVariable("LowModHeight",10.0);
-  Control.addVariable("LowModMat","ParaH2");
-  Control.addVariable("LowModTemp",20.0);
-  Control.addVariable("LowModNLayers",7);   // Inner counts as 1 + 6
-  // al layer
-  Control.addVariable("LowModHGap1",0.3);
-  Control.addVariable("LowModRadGap1",0.3);
-  Control.addVariable("LowModMaterial1","Aluminium");  // Al materk
-  Control.addVariable("LowModTemp1",20.0);  
-  // Vac gap
-  Control.addVariable("LowModHGap2",0.5);
-  Control.addVariable("LowModRadGap2",0.5);
-  Control.addVariable("LowModMaterial2","Void"); 
-  // Next Al layer
-  Control.addVariable("LowModHGap3",0.2);
-  Control.addVariable("LowModRadGap3",0.2);
-  Control.addVariable("LowModMaterial3","Aluminium"); 
-  Control.addVariable("LowModTemp3",77.0);  
-  // He Layer
-  Control.addVariable("LowModHGap4",0.2);
-  Control.addVariable("LowModRadGap4",0.2);
-  Control.addVariable("LowModMaterial4","Void"); 
-  // Outer Layer
-  Control.addVariable("LowModHGap5",0.2);
-  Control.addVariable("LowModRadGap5",0.2);
-  Control.addVariable("LowModMaterial5","Aluminium"); 
-  Control.addVariable("LowModTemp5",300.0); 
-  // Clearance
-  Control.addVariable("LowModHGap6",0.2);
-  Control.addVariable("LowModRadGap6",0.2);
-  Control.addVariable("LowModMaterial6","Void"); 
-  Control.addVariable("LowModNConic",0);
-  Control.addVariable("LowModNWedge",1);
-
-  Control.addVariable("LowModWedge1Cent",Geometry::Vec3D(0,0,1));
-  Control.addVariable("LowModWedge1XYangle",0.0);
-  Control.addVariable("LowModWedge1Zangle",0.0);
-  Control.addVariable("LowModWedge1ViewWidth",6.0);
-  Control.addVariable("LowModWedge1ViewHeight",3.0);
-  Control.addVariable("LowModWedge1ViewXY",30.0);
-  Control.addVariable("LowModWedge1ViewZ",0.0);
-  Control.addVariable("LowModWedge1Mat","Void");
-  Control.addVariable("LowModWedge1WallMat","Aluminium");
-  Control.addVariable("LowModWedge1Wall",0.2);
-  Control.addVariable("LowModWedge1Temp",20.0);
-
-  Control.addVariable("LowModConic1Cent",Geometry::Vec3D(0,0,1));
-  Control.addVariable("LowModConic1Axis",Geometry::Vec3D(0,0,1));
-  Control.addVariable("LowModConic1Angle",65.0);
-  Control.addVariable("LowModConic1Mat","Void");
-  Control.addVariable("LowModConic1WallMat","Aluminium");
-  Control.addVariable("LowModConic1Wall",0.2);
-
-  Control.addVariable("LowModConic2Cent",Geometry::Vec3D(0,0,-1));
-  Control.addVariable("LowModConic2Axis",Geometry::Vec3D(0,0,-1));
-  Control.addVariable("LowModConic2Angle",65.0);
-  Control.addVariable("LowModConic2Mat","Void");
-  Control.addVariable("LowModConic2WallMat","Aluminium");
-  Control.addVariable("LowModConic2Wall",0.2);
-
-  Control.addVariable("LowModConic4Cent",Geometry::Vec3D(-1,0,0));
-  Control.addVariable("LowModConic4Axis",Geometry::Vec3D(-1,0,0));
-  Control.addVariable("LowModConic4Angle",25.0);
-  Control.addVariable("LowModConic4Mat","Void");
-  Control.addVariable("LowModConic4WallMat","Aluminium");
-  Control.addVariable("LowModConic4Wall",0.2);
-
-  Control.addVariable("LowModConic3Cent",Geometry::Vec3D(1,0,0));
-  Control.addVariable("LowModConic3Axis",Geometry::Vec3D(1,0,0));
-  Control.addVariable("LowModConic3Angle",25.0);
-  Control.addVariable("LowModConic3Mat","Void");
-  Control.addVariable("LowModConic3WallMat","Aluminium");
-  Control.addVariable("LowModConic3Wall",0.2);
-
-
-  Control.addVariable("LowPreNLayers",4);  
-  Control.addVariable("LowPreHeight1",0.2);  
-  Control.addVariable("LowPreDepth1",0.2);  
-  Control.addVariable("LowPreThick1",0.2);  
-  Control.addVariable("LowPreMaterial1","Aluminium");  
-  Control.addVariable("LowPreHeight2",2.0);  
-  Control.addVariable("LowPreDepth2",2.0);  
-  Control.addVariable("LowPreThick2",2.0);  
-  Control.addVariable("LowPreMaterial2","H2O");  
-  Control.addVariable("LowPreHeight3",0.2);  
-  Control.addVariable("LowPreDepth3",0.2);  
-  Control.addVariable("LowPreThick3",0.2);  
-  Control.addVariable("LowPreMaterial3","Aluminium");  
-  Control.addVariable("LowPreHeight4",0.2);  
-  Control.addVariable("LowPreDepth4",0.2);  
-  Control.addVariable("LowPreThick4",0.2);  
-  Control.addVariable("LowPreMaterial4","Void"); 
- 
-  Control.addVariable("LowPreNView",2);  
-  Control.addVariable("LowPreViewHeight1",10.0);  
-  Control.addVariable("LowPreViewWidth1",15.0);  
-  Control.addVariable("LowPreViewAngle1",0.0);  
-  Control.addVariable("LowPreViewOpenAngle1",30.0);  
-
-  Control.addVariable("LowPreViewHeight2",10.0);  
-  Control.addVariable("LowPreViewWidth2",15.0);  
-  Control.addVariable("LowPreViewAngle2",180.0);  
-  Control.addVariable("LowPreViewOpenAngle2",30.0);  
-
-  Control.addVariable("LowPreABlockActive",1);  
-  Control.addVariable("LowPreABlockSide",0);  
-  Control.addVariable("LowPreABlockWidth",4.0);  
-  Control.addVariable("LowPreABlockHeight",12.0);  
-  Control.addVariable("LowPreABlockLength",10.4);
-  Control.addVariable("LowPreABlockWaterMat","H2O");  
-  Control.addVariable("LowPreABlockTemp",300.0);
-  Control.addVariable("LowPreABlockNLayers",3);  
-  Control.addVariable("LowPreABlockWallThick1",0.2);   
-  Control.addVariable("LowPreABlockWallMat1","Aluminium");  
-  Control.addVariable("LowPreABlockWallThick2",0.3);   
-  Control.addVariable("LowPreABlockWallMat2","Void");  
-  Control.addVariable("LowPreABlockWallTemp1",300.0);  
-
-  // Other block
-  Control.addVariable("LowPreBBlockActive",1);  
-  Control.addVariable("LowPreBBlockSide",0);  
-  Control.addVariable("LowPreBBlockWidth",4.0);  
-  Control.addVariable("LowPreBBlockHeight",12.0);  
-  Control.addVariable("LowPreBBlockLength",10.4);  
-  Control.addVariable("LowPreBBlockWaterMat","H2O");  
-  Control.addVariable("LowPreBBlockTemp",300.0);
-  Control.addVariable("LowPreBBlockNLayers",3);  
-  Control.addVariable("LowPreBBlockWallThick1",0.2);   
-  Control.addVariable("LowPreBBlockWallMat1","Aluminium");  
-  Control.addVariable("LowPreBBlockWallThick2",0.3);   
-  Control.addVariable("LowPreBBlockWallMat2","Void");  
-  Control.addVariable("LowPreBBlockWallTemp1",300.0);  
-
-  // TOP MODERATOR PRE:
-  Control.addVariable("TopPreNLayers",5);  
-  Control.addVariable("TopPreHeight1",0.2);  
-  Control.addVariable("TopPreDepth1",0.2);  
-  Control.addVariable("TopPreThick1",0.2);  
-  Control.addVariable("TopPreMaterial1","Void");  
-  Control.addVariable("TopPreHeight2",0.2);  
-  Control.addVariable("TopPreDepth2",0.2);  
-  Control.addVariable("TopPreThick2",0.2);  
-  Control.addVariable("TopPreMaterial2","Aluminium");  
-  Control.addVariable("TopPreHeight3",2.0);  
-  Control.addVariable("TopPreDepth3",2.0);  
-  Control.addVariable("TopPreThick3",2.0);  
-  Control.addVariable("TopPreMaterial3","H2O");  
-  Control.addVariable("TopPreHeight4",0.2);  
-  Control.addVariable("TopPreDepth4",0.2);  
-  Control.addVariable("TopPreThick4",0.2);  
-  Control.addVariable("TopPreMaterial4","Aluminium");  
-  Control.addVariable("TopPreHeight5",0.2);  
-  Control.addVariable("TopPreDepth5",0.2);  
-  Control.addVariable("TopPreThick5",0.2);  
-  Control.addVariable("TopPreMaterial5","Void"); 
- 
-  Control.addVariable("TopPreNView",2);  
-  Control.addVariable("TopPreViewHeight1",10.0);  
-  Control.addVariable("TopPreViewWidth1",8.0);  
-  Control.addVariable("TopPreViewAngle1",0.0);  
-  Control.addVariable("TopPreViewOpenAngle1",0.0);  
-
-  Control.addVariable("TopPreViewHeight2",10.0);  
-  Control.addVariable("TopPreViewWidth2",8.0);  
-  Control.addVariable("TopPreViewAngle2",180.0);  
-  Control.addVariable("TopPreViewOpenAngle2",30.0);  
-
-  Control.addVariable("TopPreABlockActive",1);  
-  Control.addVariable("TopPreABlockSide",0);  
-  Control.addVariable("TopPreABlockWidth",4.0);  
-  Control.addVariable("TopPreABlockHeight",12.0);  
-  Control.addVariable("TopPreABlockLength",10.4);  
-  Control.addVariable("TopPreABlockWaterMat","H2O");
-  Control.addVariable("TopPreABlockTemp",20);
-  Control.addVariable("TopPreABlockNLayers",2);  
-  Control.addVariable("TopPreABlockWallThick1",0.2);   
-  Control.addVariable("TopPreABlockWallMat1","Aluminium");  
-  Control.addVariable("TopPreABlockWallTemp1",20.0);  
-
-  // Other block
-  Control.addVariable("TopPreBBlockActive",1);  
-  Control.addVariable("TopPreBBlockSide",0);  
-  Control.addVariable("TopPreBBlockWidth",4.0);  
-  Control.addVariable("TopPreBBlockHeight",12.0);  
-  Control.addVariable("TopPreBBlockLength",10.8);  
-  Control.addVariable("TopPreBBlockWaterMat","H2O");
-  Control.addVariable("TopPreBBlockTemp",20);
-  Control.addVariable("TopPreBBlockNLayers",2);  
-  Control.addVariable("TopPreBBlockWallThick1",0.2);   
-  Control.addVariable("TopPreBBlockWallMat1","Aluminium");  
-  Control.addVariable("TopPreBBlockWallTemp1",20.0);  
-  //
-  Control.addVariable("TopModXStep",0.0);  
-  Control.addVariable("TopModYStep",0.0);  
-  Control.addVariable("TopModZStep",18.0);
-  Control.addVariable("TopModXYangle",54.850); 
-  Control.addVariable("TopModZangle",0.0);
-  Control.addVariable("TopModRadius",8.0);
-  Control.addVariable("TopModHeight",8.0);
-  Control.addVariable("TopModMat","ParaH2");
-  Control.addVariable("TopModTemp",20.0);
-  Control.addVariable("TopModNLayers",7);
-  // al layer
-  Control.addVariable("TopModHGap1",0.3);
-  Control.addVariable("TopModRadGap1",0.3);
-  Control.addVariable("TopModMaterial1","Aluminium");  // Al materk
-  Control.addVariable("TopModTemp1",20.0);  
-  // Vac gap
-  Control.addVariable("TopModHGap2",0.5);
-  Control.addVariable("TopModRadGap2",0.5);
-  Control.addVariable("TopModMaterial2","Void"); 
-  // Next Al layer
-  Control.addVariable("TopModHGap3",0.2);
-  Control.addVariable("TopModRadGap3",0.5);
-  Control.addVariable("TopModMaterial3","Aluminium"); 
-  Control.addVariable("TopModTemp3",77.0);  
-  // He Layer
-  Control.addVariable("TopModHGap4",0.2);
-  Control.addVariable("TopModRadGap4",0.2);
-  Control.addVariable("TopModMaterial4","Void"); 
-  // Outer Layer
-  Control.addVariable("TopModHGap5",0.2);
-  Control.addVariable("TopModRadGap5",0.2);
-  Control.addVariable("TopModMaterial5","Aluminium"); 
-  Control.addVariable("TopModTemp5",300.0); 
-  // Clearance
-  Control.addVariable("TopModHGap6",0.2);
-  Control.addVariable("TopModRadGap6",0.2);
-  Control.addVariable("TopModMaterial6","Void"); 
-
-  Control.addVariable("TopModNConic",0);
-  Control.addVariable("TopModNWedge",0);
 
   Control.addVariable("BeRefXStep",0.0);  
   Control.addVariable("BeRefYStep",0.0);  
@@ -370,8 +133,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkXStep",0.0);
   Control.addVariable("BulkYStep",0.0);
   Control.addVariable("BulkZStep",0.0);
-  Control.addVariable("BulkXYangle",0.0);
-  Control.addVariable("BulkZangle",0.0);
+  Control.addVariable("BulkXYAngle",0.0);
+  Control.addVariable("BulkZAngle",0.0);
   Control.addVariable("BulkNLayer",3);
 
   Control.addParse<double>("BulkRadius1","BeRefRadius+BeRefWallThick+0.2");
@@ -403,18 +166,23 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("BulkLAFlightNLiner",0);       // Liner
 
   // SHUTTER BAY
-  Control.addVariable("ShutterBayXStep",0.0);  
-  Control.addVariable("ShutterBayYStep",0.0);  
-  Control.addVariable("ShutterBayZStep",0.0);
-  Control.addVariable("ShutterBayXYangle",0.0); 
-  Control.addVariable("ShutterBayZangle",0.0);
   Control.addVariable("ShutterBayRadius",550.0);
+  Control.addVariable("ShutterBayTopRadius",500.0);
+  Control.addVariable("ShutterBayTopCut",186.0);
   Control.addVariable("ShutterBayHeight",400.0);
   Control.addVariable("ShutterBayDepth",400.0);
   Control.addVariable("ShutterBaySkin",6.0);
   Control.addVariable("ShutterBayTopSkin",6.0);
+  Control.addVariable("ShutterBayCutSkin",6.0);
   Control.addVariable("ShutterBayMat","CastIron");
+
   Control.addVariable("ShutterBaySkinMat","Void");
+  Control.addVariable("ShutterBayNCurtain",3);
+  Control.addVariable("ShutterBayCurtainMat0","Stainless304");
+  Control.addVariable("ShutterBayCurtainMat1","Void");
+  Control.addVariable("ShutterBayCurtainMat2","Concrete");
+  Control.addVariable("ShutterBayCurtainThick0",70.0);
+  Control.addVariable("ShutterBayCurtainThick1",6.0);
 
   // Guide BAY [ All 4 same ]
   Control.addVariable("GuideBayXStep",0.0);  
@@ -422,8 +190,8 @@ EssVariables(FuncDataBase& Control)
   Control.addVariable("GuideBayZStep",0.0);
   Control.addVariable("GuideBayZAngle",0.0);
   Control.addVariable("GuideBayViewAngle",128.0); 
-  Control.addVariable("GuideBayInnerHeight",30.0);
-  Control.addVariable("GuideBayInnerDepth",30.0);
+  Control.addVariable("GuideBayInnerHeight",40.0);
+  Control.addVariable("GuideBayInnerDepth",40.0);
   Control.addVariable("GuideBayMidRadius",170.0);
   Control.addVariable("GuideBayHeight",50.0);
   Control.addVariable("GuideBayDepth",50.0);
@@ -473,28 +241,6 @@ EssVariables(FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   EssPipeVariables(Control);
   
-  BEERvariables(Control);
-  BIFROSTvariables(Control);
-  CSPECvariables(Control);
-  DREAMvariables(Control);
-  ESTIAvariables(Control);
-  FREIAvariables(Control);
-  LOKIvariables(Control);
-  MAGICvariables(Control);
-  MIRACLESvariables(Control);
-  NMXvariables(Control);
-  ODINvariables(Control);
-  TREXvariables(Control);
-  TESTBEAMvariables(Control);
-  VESPAvariables(Control);
-  VORvariables(Control);
-  simpleITEMvariables(Control);
-
-  shortDREAMvariables(Control);
-  shortDREAM2variables(Control);
-  shortNMXvariables(Control);
-  shortODINvariables(Control);
-  
   EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);
@@ -502,6 +248,8 @@ EssVariables(FuncDataBase& Control)
   EssFlightLineVariables(Control);
   F5Variables(Control);
 
+  EssInstrumentVariables(beamNames,Control);
+  
   Control.addVariable("sdefEnergy",2000.0);
   Control.addVariable("sdefWidth",    7.0);
   Control.addVariable("sdefHeight",   1.6);
@@ -552,7 +300,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"BaseGap",0.1);
       Control.addVariable(baseKey+"TopGap",0.8); 
       Control.addVariable(baseKey+"Width1",20.0);
-      Control.addVariable(baseKey+"Depth1",5.0);
+      Control.addVariable(baseKey+"Depth1",10.0);
       Control.addVariable(baseKey+"Height1",12.0);
       Control.addVariable(baseKey+"Width2",28.0);
       Control.addVariable(baseKey+"Height2",22.0);
@@ -605,18 +353,18 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   Control.addVariable("TopAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("TopAFlightAngleXY2",60.0);  // Angle out
-  Control.addVariable("TopAFlightXYangle",180.0);
-  Control.addVariable("TopAFlightZangle",0.0);
+  Control.addVariable("TopAFlightXYAngle",180.0);
+  Control.addVariable("TopAFlightZAngle",0.0);
   // Step down angle !!! 1.455 is too much -
   Control.addVariable("TopAFlightAngleZTop",1.1);       // fight line cuts the Bilbao target wheel ESS-0032315.3
   Control.addVariable("TopAFlightAngleZBase",1.33);   // Step up angle ESS-0032315.3 
 
   // Full height = TopFlyTotalHeight
-  Control.addVariable("TopAFlightHeight", 2.9);     
+  Control.addVariable("TopAFlightHeight", 2.9);     // old: 4.6
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
-  Control.addVariable("TopAFlightNLiner", 1);      // Liner
-  Control.addVariable("TopAFlightLinerThick1", 0.3);      // Liner
-  Control.addVariable("TopAFlightLinerMat1","Aluminium");      // Liner
+  Control.addVariable("TopAFlightNLiner",1);      
+  Control.addVariable("TopAFlightLinerThick1",0.3);      
+  Control.addVariable("TopAFlightLinerMat1","Aluminium");      
 
   // LOWER flight lines
   // B FLIGHT CORRECTED
@@ -624,14 +372,14 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
   Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
-  Control.addVariable("TopBFlightXYangle", 0.0);
-  Control.addVariable("TopBFlightZangle", 0.0);
+  Control.addVariable("TopBFlightXYAngle", 0.0);
+  Control.addVariable("TopBFlightZAngle", 0.0);
   Control.addParse<double>("TopBFlightAngleZTop","TopAFlightAngleZTop");
   Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
   Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
   Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
   Control.addParse<double>("TopBFlightLinerThick1","TopAFlightLinerThick1");
-  Control.addVariable("TopBFlightNLiner",1);     
+  Control.addVariable("TopBFlightNLiner",1); ELog::EM << "Implement addParse<double>" << ELog::endCrit;
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
   
@@ -652,13 +400,13 @@ EssFlightLineVariables(FuncDataBase& Control)
   std::vector<double> TopAFlightWedgeTheta;
   TopAFlightWedgeTheta.push_back(t1);
   for (size_t i=1; i<=3; i++)
-    TopAFlightWedgeTheta.push_back(t1-dt1*i);
+    TopAFlightWedgeTheta.push_back(t1-dt1*static_cast<double>(i));
 
   // central wedge: Rickard Holmberg slide 14
   TopAFlightWedgeTheta.push_back(-2.8);
   TopAFlightWedgeTheta.push_back(t2);
   for (size_t i=1; i<=8; i++)
-    TopAFlightWedgeTheta.push_back(t2-dt2*i);
+    TopAFlightWedgeTheta.push_back(t2-dt2*static_cast<double>(i));
 
   double xstep(0);
   double ystep(0);
@@ -735,12 +483,15 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   const double t3 = (9.1+dt2*8)-180; // email from Rickard Holmberg 15 Sep, slide 5
   TopBFlightWedgeTheta.push_back(t3);
-  for (size_t i=1; i<=8; i++)
-    TopBFlightWedgeTheta.push_back(t3-dt2*i);
-  const double t4 = -15.45-180; // email from Rickard Holmberg 15 Sep, slide 6
+  for (size_t i=1;i<=8;i++)
+    TopBFlightWedgeTheta.push_back(t3-dt2*static_cast<double>(i));
+
+  // email from Rickard Holmberg 15 Sep, slide 6
+  const double t4 = -15.45-180.0; 
   TopBFlightWedgeTheta.push_back(t4);
-  for (size_t i=1; i<=2; i++)
-    TopBFlightWedgeTheta.push_back(t4-dt1*i);
+
+  TopBFlightWedgeTheta.push_back(t4-dt1);
+  TopBFlightWedgeTheta.push_back(t4-2.0*dt1);
 
   if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
     throw ColErr::RangeError<int>(TopBFlightNWedges,0,
@@ -783,8 +534,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightTapSurf", "cone");
   Control.addVariable("LowAFlightXStep",0.0); // Step from centre
   Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowAFlightXYangle",0.0);  // Angle out
-  Control.addVariable("LowAFlightZangle",0.0);  // Angle out
+  Control.addVariable("LowAFlightXYAngle",0.0);  // Angle out
+  Control.addVariable("LowAFlightZAngle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleZTop",0.9);  // Step down angle ESS-0032315.3
@@ -804,8 +555,8 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightTapSurf", "cone");
   Control.addVariable("LowBFlightXStep",0.0);     // Angle
   Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowBFlightXYangle",180.0);  // Angle out
-  Control.addVariable("LowBFlightZangle",0.0);     // Angle out
+  Control.addVariable("LowBFlightXYAngle",180.0);  // Angle out
+  Control.addVariable("LowBFlightZAngle",0.0);     // Angle out
   Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleZTop",0.9);  // Step down angle
@@ -820,4 +571,67 @@ EssFlightLineVariables(FuncDataBase& Control)
   return;
 }
 
+
+void
+EssInstrumentVariables(const std::set<std::string>& BL,
+                       FuncDataBase& Control)
+  /*!
+    Construct the variables for the beamlines if required
+    \param BL :: Set for the beamlines
+    \param Control :: Database for variables
+   */
+{
+  ELog::RegMethod RegA("essVariables[F]",
+                       "EssInstrumentVariables");
+
+  typedef void (*VariableFunction)(FuncDataBase&);
+  typedef std::multimap<std::string,VariableFunction> VMap;
+  
+  const VMap VarInit({
+     {"BEER",        &BEERvariables},
+     {"BIFROST",     &BIFROSTvariables},
+     {"CSPEC",       &CSPECvariables},
+     {"DREAM",       &DREAMvariables},     
+     {"ESTIA",       &ESTIAvariables},   
+     {"FREIA",       &FREIAvariables},
+     {"HEIMDAL",     &HEIMDALvariables},
+     {"LOKI",        &LOKIvariables},
+     {"MAGIC",       &MAGICvariables},
+     {"MIRACLES",    &MIRACLESvariables},
+     {"NMX",         &NMXvariables},
+     {"NNBAR",       &NNBARvariables},
+     {"ODIN",        &ODINvariables},
+     {"SKADI",       &SKADIvariables},
+     {"TREX",        &TREXvariables},
+     {"TESTBEAM",    &TESTBEAMvariables},
+     {"VESPA",       &VESPAvariables},
+     {"VOR",         &VORvariables},
+     {"SHORTNMX",     &NMXvariables},
+     {"SHORTNMX",     &shortNMXvariables},
+     {"SHORTDREAM",   &DREAMvariables},
+     {"SHORTDREAM",   &shortDREAMvariables},
+     {"SHORTDREAM2",  &DREAMvariables},
+     {"SHORTDREAM2",  &shortDREAM2variables},
+     {"SHORTODIN",    &ODINvariables},
+     {"SHORTODIN",    &shortODINvariables}
+
+       
+   });
+
+  
+  for(const std::string& beam : BL)
+    {
+      // std::pair<VMap::const_iterator,VMap::const_iterator>
+      VMap::const_iterator mc;
+      decltype(VarInit.equal_range("")) rangePair
+	= VarInit.equal_range(beam);
+      for(mc=rangePair.first;mc!=rangePair.second;mc++)
+	mc->second(Control);
+    }
+  
+  simpleITEMvariables(Control);
+
+  return;
+}  
+  
 }  // NAMESPACE setVariable

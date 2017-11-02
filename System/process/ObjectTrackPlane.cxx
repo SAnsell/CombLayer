@@ -118,7 +118,7 @@ ObjectTrackPlane::addUnit(const Simulation& System,
   if (mc!=Items.end())
     Items.erase(mc);
 
-  Geometry::Vec3D TP=TargetPlane.closestPt(IPt);
+  const Geometry::Vec3D TP=TargetPlane.closestPt(IPt);
   LineTrack A(IPt,TP);
   A.calculate(System);
   Items.insert(std::map<long int,LineTrack>::value_type(objN,A));

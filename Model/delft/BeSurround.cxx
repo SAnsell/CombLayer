@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delft/BeSurround.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeSurround.h"
 
@@ -82,7 +83,7 @@ namespace delftSystem
 {
 
 BeSurround::BeSurround(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   active(1),insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insertIndex+1)
   /*!
@@ -92,9 +93,8 @@ BeSurround::BeSurround(const std::string& Key)  :
 {}
 
 BeSurround::BeSurround(const BeSurround& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   active(A.active),insertIndex(A.insertIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
   innerRadius(A.innerRadius),outerRadius(A.outerRadius),
   length(A.length),mat(A.mat)
   /*!
@@ -114,12 +114,9 @@ BeSurround::operator=(const BeSurround& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       active=A.active;
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       innerRadius=A.innerRadius;
       outerRadius=A.outerRadius;
       length=A.length;
@@ -135,47 +132,45 @@ BeSurround::~BeSurround()
 {}
 
 void
-BeSurround::populate(const Simulation& System)
+BeSurround::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Data base to use
  */
 {
   ELog::RegMethod RegA("BeSurround","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
 
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-
-  length=Control.EvalVar<double>(keyName+"Length");
-  innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
-  outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
-
-  mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
-  
   active=Control.EvalDefVar<int>(keyName+"Active",1);
+  if (active)
+    {
+      FixedOffset::populate(Control);
+      
+      length=Control.EvalVar<double>(keyName+"Length");
+      innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
+      outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
+      frontThick=Control.EvalDefVar<double>(keyName+"FrontThick",0.0);
+
+      mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+      frontMat=ModelSupport::EvalDefMat<int>(Control,keyName+"FrontMat",mat);
+    }
+
   return;
 }
   
 void
-BeSurround::createUnitVector(const attachSystem::FixedComp& FC)
+BeSurround::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
+    \param sideIndex :: sideIndex for link point
   */
 {
   ELog::RegMethod RegA("BeSurround","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  Origin+=X*xStep+Y*yStep+Z*zStep;
+  FixedComp::createUnitVector(FC,sideIndex);
 
+  applyOffset();
   return;
 }
 
@@ -195,6 +190,9 @@ BeSurround::createSurfaces()
   ModelSupport::buildCylinder(SMap,insertIndex+17,
 			      Origin,Y,outerRadius);
 
+  // front surface
+  ModelSupport::buildPlane(SMap,insertIndex+11,Origin+Y*frontThick,Y);
+    
   return;
 }
 
@@ -204,16 +202,21 @@ BeSurround::createObjects(Simulation& System,
   /*!
     Adds the BeamLne components
     \param System :: Simulation to add beamline to
+    \param ExcludeString :: internal structure
   */
 {
   ELog::RegMethod RegA("BeSurround","createObjects");
   
   std::string Out;
-  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 -17 7 ");
-  addOuterSurf(Out);
-  Out+=ExcludeString;
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+  Out=ModelSupport::getComposite(SMap,insertIndex," 11 -2 -17 7 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out+ExcludeString));
   
+  Out=ModelSupport::getComposite(SMap,insertIndex,"1 -11 -17 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,frontMat,0.0,Out+ExcludeString));
+
+  Out=ModelSupport::getComposite(SMap,insertIndex," 1 -2 -17 (7:-11) ");
+  addOuterSurf(Out);
+    
   return;
 }
 
@@ -239,18 +242,22 @@ BeSurround::createLinks()
 
 void
 BeSurround::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+		      const long int sideIndex,
 		      const std::string& ExcludeStr)
   /*!
     Global creation of the vac-vessel
     \param System :: Simulation to add vessel to
     \param FC :: Moderator Object
+    \param sideIndex :: link point for construction
+    \param ExcludeStr :: Inner area
   */
 {
   ELog::RegMethod RegA("BeSurround","createAll");
-  populate(System);
+
+  populate(System.getDataBase());
   if (!active) return;
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System,ExcludeStr);
   createLinks();

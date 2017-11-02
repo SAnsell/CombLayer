@@ -278,8 +278,8 @@ namespace essSystem
     int innerMat = MatInfo.first;
     temp = MatInfo.second;
 
-    std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
-    std::string cylStr = Wheel.getLinkString(8) + Wheel.getLinkString(9); // min+max radii
+    std::string vertStr = Wheel.getSignedLinkString(6+1) + Wheel.getSignedLinkString(7+1); // top+bottom
+    std::string cylStr = Wheel.getSignedLinkString(8+1) + Wheel.getSignedLinkString(9+1); // min+max radii
 
     //    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,vertStr+cylStr));
     
@@ -320,7 +320,7 @@ namespace essSystem
     //    temp = MatInfo.second;
 
     //    vertStr =  // top+bottom
-    //    cylStr = Wheel.getLinkString(9) + " a " + Wheel.getLinkString(10) + "b"; // min+max radii
+    //    cylStr = Wheel.getSignedLinkString(9+1) + " a " + Wheel.getSignedLinkString(10+1) + "b"; // min+max radii
     //    ELog::EM << "cylStr" << cylStr << ELog::endDiag;
     
     return; 
@@ -341,8 +341,8 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
   
-  const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
-  const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
+  const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getSignedLinkSurf(8+1));
+  const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getSignedLinkSurf(9+1));
   
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
   
@@ -439,10 +439,10 @@ BilbaoWheelInnerStructure::createBrickSurfaces
     ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBricks");
 
     const std::string sideStr = side1 + side2;
-    const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+    const std::string vertStr = Wheel.getSignedLinkString(6+1) + Wheel.getSignedLinkString(7+1); // top+bottom
 
-    const std::string innerCyl = Wheel.getLinkString(8);
-    const std::string outerCyl = Wheel.getLinkString(9);
+    const std::string innerCyl = Wheel.getSignedLinkString(8+1);
+    const std::string outerCyl = Wheel.getSignedLinkString(9+1);
 
     std::string Out,Out1;
     int SI(insIndex+1000*(static_cast<int>(sector)+1));
