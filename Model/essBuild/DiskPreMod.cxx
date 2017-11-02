@@ -72,6 +72,7 @@
 #include "SurfMap.h"
 #include "ContainedComp.h"
 #include "CylFlowGuide.h"
+#include "OnionCooling.h"
 #include "DiskPreMod.h"
 
 
@@ -85,7 +86,9 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::CellMap(),attachSystem::SurfMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
-  InnerComp(new CylFlowGuide(Key+"FlowGuide"))
+  InnerComp(new CylFlowGuide(Key+"FlowGuide")),
+  onion(new OnionCooling(Key+"OnionCooling")),
+  sideRule("")
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -103,7 +106,10 @@ DiskPreMod::DiskPreMod(const DiskPreMod& A) :
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
   mat(A.mat),temp(A.temp),
-  InnerComp(A.InnerComp->clone())
+  flowGuideType(A.flowGuideType),
+  InnerComp(A.InnerComp->clone()),
+  onion(A.onion->clone()),
+  sideRule(A.sideRule)
   /*!
     Copy constructor
     \param A :: DiskPreMod to copy
@@ -132,7 +138,10 @@ DiskPreMod::operator=(const DiskPreMod& A)
       width=A.width;
       mat=A.mat;
       temp=A.temp;
+      flowGuideType=A.flowGuideType;
       *InnerComp=*A.InnerComp;
+      *onion=*A.onion;
+      sideRule=A.sideRule;
    }
   return *this;
 }
@@ -168,6 +177,7 @@ DiskPreMod::populate(const FuncDataBase& Control,
   ELog::RegMethod RegA("DiskPreMod","populate");
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+  flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
   zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
   outerRadius=outRadius;
@@ -321,7 +331,6 @@ DiskPreMod::createObjects(Simulation& System)
 
   SI-=10;
 
-
   // Outer extra void
   if (radius.empty() || radius.back()<outerRadius-Geometry::zeroTol)
     {
@@ -332,6 +341,9 @@ DiskPreMod::createObjects(Simulation& System)
     }
 
   addOuterSurf(Out);
+
+  sideRule=ModelSupport::getComposite(SMap,SI," -7 ");
+
   return; 
 }
 
@@ -415,7 +427,7 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 3:
       return Origin+X*(radius[layerIndex]);
     case 4:
-      return Origin-Z*(height[layerIndex]);
+      return Origin-Z*(depth[layerIndex]);
     case 5:
       return Origin+Z*(height[layerIndex]);
     }
@@ -537,9 +549,13 @@ DiskPreMod::createAll(Simulation& System,
 
   insertObjects(System);
 
-  if (engActive) 
-    InnerComp->createAll(System,*this,7);
-  
+  if (engActive)
+    {
+      if (flowGuideType.find("Onion")!=std::string::npos)
+          onion->createAll(System,*this);
+      else
+        InnerComp->createAll(System,*this,7);
+    }
 
   return;
 }
