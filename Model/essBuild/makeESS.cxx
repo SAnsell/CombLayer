@@ -1213,12 +1213,8 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Shaft"));
 
-
-  if (lowModType != "None")
-    {
-      createGuides(System);
-      makeBunker(System,IParam);
-    }
+  createGuides(System);
+  makeBunker(System,IParam);
 
   TSMainBuildingObj->addInsertCell(74123);
   TSMainBuildingObj->createAll(System,World::masterOrigin());
@@ -1258,10 +1254,8 @@ makeESS::build(Simulation& System,
     attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
   }
 
-  if (lowModType != "None")
-    makeBeamLine(System,IParam);
+  makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
-
 
   // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
   // been completed. Otherwize we can't find the pipe in the volume.
