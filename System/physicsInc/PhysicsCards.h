@@ -22,7 +22,10 @@
 #ifndef PhysicsSystem_PhysicsCards_h
 #define PhysicsSystem_PhysicsCards_h
 
-
+namespace SDef
+{
+  class Source;
+}
 /*!
   \namespace PhysicsSystem
   \version 1.0

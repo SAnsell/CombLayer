@@ -77,9 +77,9 @@
 #include "objectRegister.h"
 #include "SourceBase.h"
 #include "WorkData.h"
+#include "World.h"
 #include "activeUnit.h"
 #include "activeFluxPt.h"
-#include "ActiveWeight.h"
 #include "ActivationSource.h"
 #include "SourceSelector.h"
 
@@ -113,100 +113,81 @@ sourceSelection(Simulation& System,
       !StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
 
-  const attachSystem::FixedComp* FCPtr=
-    OR.getObject<attachSystem::FixedComp>(DObj);
-
-  // divide 1000 to remove beam specifics
-  const long int linkIndex=attachSystem::getLinkIndex(DSnd)/1000;
-
-  // NOTE: No return to allow active SSW systems
-
-  // If a chipIR style directional source
-  if (IParam.flag("sdefFile"))
-    {
-      processSDefFile(IParam,Control,DObj,sourceCard);
-      return;
-    }
+  const attachSystem::FixedComp& FC=
+    (DObj.empty()) ?  World::masterOrigin() :
+    *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
   
+  const long int linkIndex=(DSnd.empty()) ?  0 :
+    attachSystem::getLinkIndex(DSnd)/1000;
+
+  // NOTE: No return to allow active SSW systems  
   std::string sdefType=IParam.getValue<std::string>("sdefType");
   if (sdefType.empty() && IParam.hasKey("kcode") &&
       IParam.flag("kcode"))
     sdefType="kcode";
-  
+
+  std::string sName;
   if (sdefType=="TS1")                            // parabolic source
-    SDef::createTS1Source(Control,sourceCard);
+      sName=SDef::createTS1Source(Control,FC,linkIndex,sourceCard);
+
   else if (sdefType=="TS1Gauss")                   // TS1Gauss
-    SDef::createTS1GaussianSource(Control,sourceCard); 
+    sName=SDef::createTS1GaussianSource(Control,FC,linkIndex,sourceCard); 
+
   else if (sdefType=="TS1GaussNew")                // TS1NewGauss
-    SDef::createTS1GaussianNewSource(Control,sourceCard);     
+    sName=SDef::createTS1GaussianNewSource(Control,FC,linkIndex,sourceCard);     
+
   else if (sdefType=="TS1Muon")                    // TS1Muon
-    SDef::createTS1MuonSource(Control,sourceCard); 
+    sName=SDef::createTS1MuonSource(Control,FC,linkIndex,sourceCard); 
+
   else if (sdefType=="TS3Expt")                    
-    SDef::createTS3ExptSource(Control,sourceCard); 
+    sName=SDef::createTS3ExptSource(Control,FC,linkIndex,sourceCard); 
+
   else if (sdefType=="TS1EpbColl")                 // TS1EPB 
-    SDef::createTS1EpbCollSource(Control,sourceCard); 
+    sName=SDef::createTS1EPBCollSource(Control,FC,linkIndex,sourceCard); 
+
   else if (sdefType=="Bilbao")                    // bilbauSource
-    SDef::createBilbaoSource(Control,sourceCard);
+    sName=SDef::createBilbaoSource(Control,FC,linkIndex,sourceCard);
+
   else if (sdefType=="ess")                       // essSource
-    SDef::createESSSource(Control,sourceCard);
+    sName=SDef::createESSSource(Control,FC,linkIndex,sourceCard);
+
   else if (sdefType=="essLinac")                 // essLinacSource
-    SDef::createESSLinacSource(Control,sourceCard);
-  else if (sdefType=="essPort")
-    SDef::createESSPortSource(Control,FCPtr,linkIndex,
-			      sourceCard);
+    sName=SDef::createESSLinacSource(Control,FC,linkIndex,sourceCard);
   
   else if (sdefType=="D4C")
-    SDef::createD4CSource(Control,sourceCard);
+    sName=SDef::createD4CSource(Control,FC,linkIndex,sourceCard);
+
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
-    SDef::createSinbadSource(Control,sourceCard);
+    sName=SDef::createSinbadSource(Control,FC,linkIndex,sourceCard);
+
   else if (sdefType=="Gamma" || sdefType=="gamma")
-    SDef::createGammaSource(Control,"gammaSource",sourceCard);
+    sName=SDef::createGammaSource(Control,"gammaSource",
+				  FC,linkIndex,sourceCard);
+  
   else if (sdefType=="Laser" || sdefType=="laser")
-    SDef::createGammaSource(Control,"laserSource",sourceCard);
+    sName=SDef::createGammaSource(Control,"laserSource",
+				  FC,linkIndex,sourceCard);
   else if (sdefType=="Activation" || sdefType=="activation")
     activationSelection(System,IParam);
-  else if (sdefType=="ActiveWeight" || sdefType=="activeWeight")
-    activeWeight(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
-      if (FCPtr)
-        {
-          SDef::createPointSource(Control,"pointSource",
-                                  *FCPtr,linkIndex,DOffsetStep,sourceCard);
-        }
-      else
-	{
-          ELog::EM<<"Free Point Source "<<ELog::endDiag;
-	  SDef::createPointSource(Control,"pointSource",DObj,sourceCard);
-	}
+      sName=SDef::createPointSource(Control,"pointSource",
+			      FC,linkIndex,sourceCard);
     }
   else if (sdefType=="Disk" || sdefType=="disk")
     {
-      if (FCPtr)
-	SDef::createGammaSource(Control,"diskSource",
-				*FCPtr,linkIndex,sourceCard);
-      else
-	SDef::createGammaSource(Control,"diskSource",
-				sourceCard);
+      sName=SDef::createGammaSource(Control,"diskSource",FC,
+				    linkIndex,sourceCard);
     }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
       ELog::EM<<"SDEF == :: Beam"<<ELog::endDiag;
-      if (FCPtr)
-	SDef::createBeamSource(Control,"beamSource",
-			       *FCPtr,linkIndex,sourceCard);
-      else
-	SDef::createBeamSource(Control,"beamSource",sourceCard);
+      sName=SDef::createBeamSource(Control,"beamSource",
+			     FC,linkIndex,sourceCard);
     }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
-      const attachSystem::FixedComp* PC=
-	OR.getObject<attachSystem::FixedComp>("ProtonBeam");
-      if (!PC)
-	throw ColErr::InContainerError<std::string>("ProtonBeam",
-						  "Object container");
-      
-	SDef::createLensSource(Control,sourceCard,*PC);
+      sName=SDef::createLensSource(Control,FC,linkIndex,sourceCard);
     }
   else if (sdefType=="TS2")
     {
@@ -215,7 +196,9 @@ sourceSelection(Simulation& System,
 	sourceCard.setTransform(System.createSourceTransform());
   
       // Basic TS2 source
-      SDef::createTS2Source(Control,sourceCard);
+      // NOTE THIS IS the old stupid TS2 origin system
+      sName=SDef::createTS2Source(Control,World::masterTS2Origin(),
+				  0,sourceCard);
     }
   else if (sdefType=="kcode")
     {
@@ -225,7 +208,6 @@ sourceSelection(Simulation& System,
     {
       ELog::EM<<"sdefType :\n"
 	"Activation :: Activation source \n"
-        "ActiveWeight :: Activation weighted source \n"
 	"TS1 :: Target station one \n"
 	"TS2 :: Target station two \n"
 	"TS1Gauss :: Target station one [old gaussian beam] sigma = 15 mm \n"
@@ -243,6 +225,9 @@ sourceSelection(Simulation& System,
   if (IParam.flag("sdefVoid"))
     sourceCard.deactivate();
 
+  if (!sName.empty())
+    System.setSourceName(sName);
+  
   return;
 }
 
@@ -338,67 +323,6 @@ activationSelection(Simulation& System,
   return;
 }
   
-void
-activeWeight(Simulation& System,
-             const mainSystem::inputParam& IParam)
-  /*!
-    Select all the info for activation output
-    \param System :: Simuation to use
-    \param IParam :: input parameters
-   */
-{
-  ELog::RegMethod RegA("SourceSelector","activationSelection");
-
-  //File for input/
-  const std::string OName="test.source";
-  //    IParam.getDefValue<std::string>("test.source","actFile",0,1);
-
-  size_t index(0);
-  const Geometry::Vec3D APt=
-    IParam.getCntVec3D("actBox",0,index,"Start Point of box not defined");
-  const Geometry::Vec3D BPt=
-    IParam.getCntVec3D("actBox",0,index,"End Point of box not defined");
-
-  // WEIGHTING:
-  index=0;
-  const Geometry::Vec3D CPoint=
-    IParam.getCntVec3D("actBias",0,index,"Start Point of box not defined");
-  const Geometry::Vec3D Axis=
-    IParam.getCntVec3D("actBias",0,index,"Axis Line not defined");
-  const double distW=IParam.getDefValue<double>(2.0,"actBias",0,index);
-  const double angleW=IParam.getDefValue<double>(2.0,"actBias",0,index+1);
-
-  // MATERIAL:
-  std::vector<std::string> MatName;
-  std::vector<std::string> MatFile;
-  const size_t nP=IParam.setCnt("actMat");
-  for(size_t index=0;index<nP;index++)
-    {
-      const size_t nItems=IParam.itemCnt("actMat",index);
-      for(size_t j=0;j<nItems+1;j+=2)
-	{
-	  MatName.push_back
-	    (IParam.getValueError<std::string>
-	     ("actMat",index,j,"Material Name"));
-	  MatFile.push_back
-	    (IParam.getValueError<std::string>
-	     ("actMat",index,j+1,"Material File"));
-	}
-    }
-
-
-  SDef::ActiveWeight AS;
-  AS.setBiasConst(CPoint,Axis,distW,angleW);
-  AS.setBox(APt,BPt);
-
-  for(size_t i=0;i<MatName.size();i++)
-    AS.addMaterial(MatName[i],MatFile[i]);
-
-  AS.setNPoints(System.getPC().getNPS());
-  AS.createSource(System,OName);
-
-  return;
-}
   
 
   

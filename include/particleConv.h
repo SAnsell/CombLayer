@@ -79,6 +79,9 @@ class particleConv
   const std::string& phitsType(const std::string&) const;
   int phitsITYP(const std::string&) const;
   int nucleon(const std::string&) const;
+
+  const std::string& mcnpToPhits(const int) const;
+
 };
 
 

@@ -46,7 +46,7 @@ class SourceBase
   double cutEnergy;             ///< Energy cut point
   
   std::vector<double> Energy;   ///< Energies [MeV]
-  std::vector<double> EWeight;  ///< Weights
+  std::vector<double> EWeight;  ///< Weights  [sum to 1.0]
 
   double weight;                ///< Start particle weight
   

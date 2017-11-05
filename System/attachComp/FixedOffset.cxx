@@ -122,7 +122,7 @@ FixedOffset::populate(const FuncDataBase& Control)
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
-    (keyName+"CentOffset",Geometry::Vec3D(0,0,0));
+    (keyName+"CentOffset",Geometry::Vec3D(xStep,yStep,zStep));
   
   xStep=CentOffset.X();
   yStep=CentOffset.Y();

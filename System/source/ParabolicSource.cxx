@@ -205,8 +205,9 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 
   sourceCard.setComp("dir",1.0);
   sourceCard.setComp("vec",Y);
+  sourceCard.setComp("pos",Origin);
   sourceCard.setComp("y",Origin.dotProd(Y));
-
+  
   std::vector<double> XPts(nWidth+1);
   std::vector<double> XProb(nWidth+1);
   const double xRange=width/2.0;

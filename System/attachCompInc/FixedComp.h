@@ -183,6 +183,7 @@ class FixedComp
   virtual int getSignedLinkSurf(const long int) const;
   
   HeadRule getSignedFullRule(const long int) const;
+
   HeadRule getSignedMainRule(const long int) const;
   HeadRule getSignedCommonRule(const long int) const;
   

@@ -104,6 +104,8 @@
 #include "Source.h"
 #include "KCode.h"
 #include "PhysicsCards.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
@@ -148,7 +150,13 @@ SimPHITS::writeSource(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimPHITS","writeSource");
 
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  
   OX<<"[Source]"<<std::endl;
+
+  const SDef::SourceBase* SBPtr=
+    SDB.getSource<SDef::SourceBase>(sourceName);
+  SBPtr->writePHITS(OX);
   //  sdefCard.writePHITS(OX);
   
 

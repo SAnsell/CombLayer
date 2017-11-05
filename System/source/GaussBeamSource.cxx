@@ -188,6 +188,7 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
   sourceCard.setComp("pos",Origin);
+  sourceCard.setComp("y",Origin.dotProd(Y));
 
   SrcData D1(1);
   SrcProb SP1(1);
@@ -247,12 +248,18 @@ void
 GaussBeamSource::writePHITS(std::ostream& OX) const
   /*!
     Write out as a PHITS source system
+    This is an approximate gaussian sauce b
+    base no 100 x / 100 z units  
+    - Rotation done by transform
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("GaussBeamSource","write");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  SourceBase::writePHITS(OX);
+  
+
+  
   return;
 }
 
