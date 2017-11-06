@@ -188,6 +188,7 @@ class Simulation
   void calcAllVertex();
   
   void masterRotation();
+  void masterPhysicsRotation();
 
   // ADD Objects
   int addCell(const MonteCarlo::Qhull&);         

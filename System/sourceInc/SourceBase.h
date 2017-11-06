@@ -22,20 +22,17 @@
 #ifndef SDef_SourceBase_h
 #define SDef_SourceBase_h
 
+class localRotate;
+
 namespace SDef
 {
   class Source;
-}
-
-namespace SDef
-{
-
 /*!
   \class SourceBase
   \version 1.0
   \author S. Ansell
-  \date November 2014
-  \brief Adds gamma ray circular divergent source
+  \date November 2017
+  \brief Base for all source classes
 */
 
 class SourceBase 
@@ -70,6 +67,8 @@ class SourceBase
   void setEnergy(const double);
   void createEnergySource(SDef::Source&) const;
 
+  /// No-op to rotate
+  virtual void rotate(const localRotate&) { } 
   virtual void createSource(SDef::Source&) const =0;
   virtual void writePHITS(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;

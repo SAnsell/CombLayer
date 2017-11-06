@@ -137,7 +137,7 @@ BeamSource::populate(const FuncDataBase& Control)
   SourceBase::populate(keyName,Control);
   // default neutron
   angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
+  radius=Control.EvalDefVar<double>(keyName+"Radius",radius); 
 
   return;
 }

@@ -63,6 +63,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "localRotate.h"
 
 #include "SourceBase.h"
 #include "GaussBeamSource.h"
@@ -171,7 +172,20 @@ GaussBeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
-  
+
+void
+GaussBeamSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("GaussBeamSource","rotate");
+  FixedComp::applyRotation(LR);
+  ELog::EM<<"GAUSS ROTATEO"<<ELog::endDiag;
+  return;
+}
+
 void
 GaussBeamSource::createSource(SDef::Source& sourceCard) const
   /*!
@@ -256,10 +270,35 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("GaussBeamSource","write");
 
-  SourceBase::writePHITS(OX);
+  const long int nStep(20);
   
+  SourceBase::writePHITS(OX);
+  // PHITS are z axis sources
+
+  // Construct a transform to build the source
+
 
   
+  const double xStep=3.0*xWidth/static_cast<double>(nStep);
+  const double zStep=3.0*zWidth/static_cast<double>(nStep);
+
+
+  const double xSigma = sqrt(8.0*std::log(2.0)) * xWidth;
+  const double zSigma = sqrt(8.0*std::log(2.0)) * zWidth;
+
+  // y is implicitly zero  
+  for(long int i=-nStep;i<nStep;i++)
+    for(long int j=-nStep;j<nStep;j++)
+      {
+	const double x= i*xStep;
+	const double z= j*zStep;
+
+	const double expTerm=
+	  exp(-( x*x/(2.0*xSigma*xSigma)+z*z/(2.0*zSigma*zSigma) ));
+	// coordinate
+	const Geometry::Vec3D Pt=Origin+X*x+Z*z;
+      }
+     
   return;
 }
 

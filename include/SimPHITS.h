@@ -22,6 +22,8 @@
 #ifndef SimPHITS_h
 #define SimPHITS_h
 
+class localRotate;
+
 /*!
   \class SimPHITS
   \brief Modifides Simulation to output PHITS input file

@@ -66,6 +66,7 @@ class GaussBeamSource :
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
 
+  virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;

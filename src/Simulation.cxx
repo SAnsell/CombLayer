@@ -95,6 +95,8 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "Source.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
@@ -2307,28 +2309,47 @@ Simulation::masterRotation()
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
 
-  // Physics units [dxtrans and others]
-  PhysPtr->rotateMaster();
+  OR.rotateMaster();
+  
+  return;
+}
 
+void
+Simulation::masterPhysicsRotation()
+  /*!
+    Apply master rotations to the physics system
+   */
+{
+  ELog::RegMethod RegA("Simulation","masterPhysicsRotation");
+
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  const masterRotate& MR = masterRotate::Instance();
   
   // Source:
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->rotate(MR);
+    }
+	
   SDef::Source& sdef=PhysPtr->getSDefCard();
   if (sdef.isActive())
-    if (sdef.rotateMaster())
-      {
-	sdef.setTransform(createSourceTransform());
-	if (sdef.rotateMaster())
-          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-      }
+    {
+      ELog::EM<<"Call rotate"<<ELog::endDiag;
+      if (sdef.rotateMaster())
+	{
+	  sdef.setTransform(createSourceTransform());
+	  ELog::EM<<"Call SET"<<ELog::endDiag;
+	  if (sdef.rotateMaster())
+	    ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
+	}
+    }
+
   // Apply rotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();
 
-  OR.rotateMaster();
-  
-  MR.setGlobal();
-
   return;
 }
-

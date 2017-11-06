@@ -226,7 +226,7 @@ SimPHITS::writeCells(std::ostream& OX) const
       const double T=mp->second->getTemp();
       if (std::abs(T-300.0)>1.0 || std::abs<double>(T)>1e-6)
 	{
-	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e11);
+	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e-5);
 	}
     }
 

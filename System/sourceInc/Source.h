@@ -58,11 +58,11 @@ class Source
 
   typedef std::shared_ptr<SrcBase> SBasePtr;            ///< Source items
   typedef std::shared_ptr<SrcData> SDataPtr;            ///< Source data
-  typedef std::map<std::string,SBasePtr> sdMapTYPE;       ///< Storage for main line
-  typedef std::vector<SDataPtr> dvecTYPE;                 ///< Storage for extra-data
+  typedef std::map<std::string,SBasePtr> sdMapTYPE;     ///< Storage for main line
+  typedef std::vector<SDataPtr> dvecTYPE;               ///< Storage for extra-data
 
-  int active;                              ///< Is souce active
-  Geometry::Transform* transPTR;          ///< Trans number
+  int active;                             ///< Is souce active
+  Geometry::Transform* transPTR;          ///< Transform
   sdMapTYPE sdMap;                        ///< Map of main-line objects
   dvecTYPE DVec;                          ///< Data vectors
 
@@ -99,6 +99,7 @@ class Source
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int);
   void addComp(const std::string&,const SrcBase*);
+
   /// Set the transform number if needed
   void setTransform(Geometry::Transform* TP) { transPTR=TP; }
 

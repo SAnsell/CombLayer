@@ -138,6 +138,20 @@ sourceDataBase::getInternalSource(const std::string& Name) const
   return (mc!=Components.end()) ? mc->second.get() : 0;
 }
 
+SourceBase*
+sourceDataBase::getInternalSource(const std::string& Name) 
+  /*!
+    Find a SourceBase [if it exists] 
+    \param Name :: Name of source
+    \return SourcePtr / 0 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getInternalSource()");
+
+  SMAP::const_iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
 template<typename T>
 const T*
 sourceDataBase::getSource(const std::string& Name) const
@@ -173,6 +187,41 @@ sourceDataBase::getSourceThrow(const std::string& Name,
   return SPtr;
 }
 
+template<typename T>
+T*
+sourceDataBase::getSource(const std::string& Name) 
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \return SourcePtr / 0 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSource()");
+
+  SourceBase* SPtr = getInternalSource(Name);
+  return dynamic_cast<T*>(SPtr);
+}
+
+template<typename T>
+T*
+sourceDataBase::getSourceThrow(const std::string& Name,
+                               const std::string& Err) 
+  /*!
+    Find a source 
+    Throws InContainerError if not present in correct type
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return SourcePtr 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSourceThrow()");
+  
+  T* SPtr=getSource<T>(Name);
+  if (!SPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return SPtr;
+}
+
 
   
 void
@@ -189,6 +238,12 @@ sourceDataBase::write(const std::string& SName,std::ostream& OX) const
 }
 
 ///\cond TEMPLATE
+template SourceBase* 
+sourceDataBase::getSource(const std::string&); 
+
+template SourceBase* 
+sourceDataBase::getSourceThrow(const std::string&,const std::string&);
+
 template const SourceBase* 
 sourceDataBase::getSource(const std::string&) const; 
 

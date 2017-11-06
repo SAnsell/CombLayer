@@ -324,6 +324,7 @@ Source::rotateMaster()
   */
 {
   ELog::RegMethod RegA("Source","rotateMaster");
+  ELog::EM<<"HASREAEW "<<ELog::endCrit;
 
   // Place for general output:
   typedef  std::vector<std::pair<std::string,SBasePtr> > OutTYPE;
@@ -346,17 +347,24 @@ Source::rotateMaster()
       if (mc!=sdMap.end() && mc->second->isActive())
 	{
 	  const int aR=XYZ[i].masterDir();
-	  if (!aR )
+	  if (aR != i)
 	    {
-	      if (!transPTR)
-		return 1;
+	      if (!transPTR) return 1;
 	      setComp("tr",transPTR->getName());
 	      // Now calculate the rotation from the point : 
 	      setTransform(XYZ);
 	      // Note don't change x,y,z but rotate whole system:
 	      return 0;
 	    }
-	  else
+	}
+    }
+  for(int i=0;i<3;i++)
+    {
+      sdMapTYPE::iterator mc=sdMap.find(std::string(xyz[i]));
+      if (mc!=sdMap.end() && mc->second->isActive())
+	{
+	  const int aR=XYZ[i].masterDir();
+	  if (aR)
 	    {
 	      Out.push_back(OutTYPE::value_type(std::string(xyz[abs(aR)-1]),
 						SBasePtr(mc->second->clone())));
@@ -378,21 +386,17 @@ Source::rotateMaster()
       SrcItem<double>* Mptr=dynamic_cast<SrcItem<double>* >(mc->second.get());
       SrcItem<double>* Cptr=dynamic_cast<SrcItem<double>* >(ovc->second.get());
       if (!Mptr)
-	throw ColErr::CastError<SrcBase>(mc->second.get(),RegA.getBase());
+	throw ColErr::CastError<SrcBase>(mc->second.get(),"Mptr Source");
       if (!Cptr)
-	throw ColErr::CastError<SrcBase>(ovc->second.get(),RegA.getBase());
+	throw ColErr::CastError<SrcBase>(ovc->second.get(),"Ctr Source");
       (*Mptr)=(*Cptr);
     }
 
   // Now rotate the vectors:
-  std::vector<std::string> Keys;
-  Keys.push_back("vec");
-  Keys.push_back("axs");
-  Keys.push_back("pos");
-  std::vector<std::string>::const_iterator svc;
-  for(svc=Keys.begin();svc!=Keys.end();svc++)
+  const std::vector<std::string> Keys({"vec","axs","pos"});
+  for(const std::string& KItem : Keys)
     {
-      sdMapTYPE::iterator mc=sdMap.find(*svc);
+      sdMapTYPE::iterator mc=sdMap.find(KItem);
       if (mc!=sdMap.end() && mc->second->isActive())
 	{
 	  SrcItem<Geometry::Vec3D>* Mptr=
@@ -400,6 +404,7 @@ Source::rotateMaster()
 	  if (Mptr && Mptr->isData())
 	    {
 	      Geometry::Vec3D Pt=Mptr->getData();
+	      ELog::EM<<"Apply to "<<KItem<<" :: "<<Pt<<ELog::endDiag;
 	      MR.applyFull(Pt);
 	      Mptr->setValue(Pt);
 	    }
