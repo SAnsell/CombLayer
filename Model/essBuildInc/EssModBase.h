@@ -61,6 +61,11 @@ class EssModBase : public attachSystem::ContainedComp,
 
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
+
+  virtual std::string getLeftExclude() const = 0;
+  virtual std::string getLeftFarExclude() const = 0;
+  virtual std::string getRightExclude() const = 0;
+  virtual std::string getRightFarExclude() const = 0;
   
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
