@@ -2320,7 +2320,7 @@ Simulation::masterRotation()
 	if (sdef.rotateMaster())
           ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
       }
-  // Applyotations to tallies
+  // Apply rotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();

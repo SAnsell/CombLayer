@@ -75,6 +75,7 @@ class WCells : public WForm
 
   const std::vector<double>& getWeights(const int) const;
 
+  void writePHITSHead(std::ostream&) const;
   void writePHITS(std::ostream&) const;
   void write(std::ostream&) const;
 };

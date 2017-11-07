@@ -210,7 +210,7 @@ PhysicsCards::clearAll()
   ImpCards.clear();
   deletePCards();
   Volume.clear();
-  sdefCard.clear();
+ sdefCard.clear();
   RAND->reset();
   PTRAC->reset();
   dbCard->reset();
@@ -1011,6 +1011,7 @@ PhysicsCards::writePHITS(std::ostream& OX)
 	  const PStandard* PS(dynamic_cast<const PStandard*>(PC));
 	  if (PS)
 	    {
+	      const double TCut  = PS->getValue(0);
 	      const double ECut  = PS->getValue(1);
 	      if (ECut>1e-12)
 		{
@@ -1020,6 +1021,12 @@ PhysicsCards::writePHITS(std::ostream& OX)
 			<<")    ="<<ECut;
 		      OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
 		    }
+		}
+	      for(const std::string& PItem : PS->getParticles())
+		{
+		  OX<<" tmax("<<std::setw(2)<<pConv.phitsITYP(PItem)
+		    <<")    ="<<TCut;
+		  OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
 		}
 	    }
 	}
@@ -1080,6 +1087,7 @@ PhysicsCards::write(std::ostream& OX,
   DXTCard->write(OX);
   
   LEA.write(OX);
+
   sdefCard.write(OX);
   kcodeCard.write(OX);
   

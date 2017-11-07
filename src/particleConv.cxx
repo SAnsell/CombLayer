@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   src/masterRotate.cxx
+ * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,33 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "particleConv.h"
+
+pName::pName(const std::string& MChar,const int mcnpN,
+	     const std::string& PhitsN,const int pI,
+	     const int mcplN,const int N) :
+      mcnpName(MChar),mcnpITYP(mcnpN),
+      phitsName(PhitsN),phitsITYP(pI),
+      mcplNumber(mcplN),nucleon(N)
+  /*
+    Constructor 
+    \param MChar :: MCNP Name
+    \param mcnpN :: MCNP number
+    \param PhitsN :: Phits name
+    \param pI :: phits ityp number
+    \param mcplN :: kf/mcpl number
+    \param N :: nucleon number
+  */
+{}
+
+pName::pName(const pName& A) :
+      mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
+      phitsName(A.phitsName),phitsITYP(A.phitsITYP),
+      mcplNumber(A.mcplNumber),nucleon(A.nucleon)
+  /*
+    Copy Constructor 
+    \param A :: Object to copy
+  */
+{}
 
 particleConv::particleConv() : 
   indexLookup{
@@ -166,31 +193,30 @@ particleConv::nucleon(const std::string& MC) const
   return PN.nucleon;
 }
 
-pName::pName(const std::string& MChar,const int mcnpN,
-	     const std::string& PhitsN,const int pI,
-	     const int mcplN,const int N) :
-      mcnpName(MChar),mcnpITYP(mcnpN),
-      phitsName(PhitsN),phitsITYP(pI),
-      mcplNumber(mcplN),nucleon(N)
-  /*
-    Constructor 
-    \param MChar :: MCNP Name
-    \param mcnpN :: MCNP number
-    \param PhitsN :: Phits name
-    \param pI :: phits ityp number
-    \param mcplN :: kf/mcpl number
-    \param N :: nucleon number
+const std::string&
+particleConv::mcnpToPhits(const int mcnpNum) const
+  /*!
+    Convert mcnp number to Phits
+    \param mcnpNum :: mcnpNumber
+    \return phits string
   */
-{}
+{
+  ELog::RegMethod RegA("particleConv","mcnpToPhits");
 
-pName::pName(const pName& A) :
-      mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
-      phitsName(A.phitsName),phitsITYP(A.phitsITYP),
-      mcplNumber(A.mcplNumber),nucleon(A.nucleon)
-  /*
-    Copy Constructor 
-    \param A :: Object to copy
-  */
-{}
+  typedef std::map<std::string,pName>  PMAP;
+
+  PMAP::const_iterator mc=
+    std::find_if(indexLookup.begin(),indexLookup.end(),
+		 [&mcnpNum](const PMAP::value_type& PN) -> bool
+		 {
+		   return (mcnpNum == PN.second.mcnpITYP);
+		 } );
+  
+  if (mc==indexLookup.end())
+    throw ColErr::InContainerError<int>
+      (mcnpNum,"MCNP number not in particle list");
+  
+  return mc->second.phitsName;  
+}
 
  

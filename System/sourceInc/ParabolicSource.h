@@ -1,8 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   sourceInc/PointSource.h
- *
+ * File:   sourceInc/ParabolicSource.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -20,32 +19,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_PointSource_h
-#define SDef_PointSource_h
+#ifndef SDef_ParabolicSource_h
+#define SDef_ParabolicSource_h
 
 namespace SDef
 {
   class Source;
+  class SourceBase;
 }
 
 namespace SDef
 {
 
 /*!
-  \class PointSource
+  \class ParabolicSource
   \version 1.0
   \author S. Ansell
-  \date September 2015
-  \brief Ponit source
+  \date November 2014
+  \brief Adds gamma ray circular divergent source
 */
 
-class PointSource : 
+class ParabolicSource : 
   public attachSystem::FixedOffset,
   public SourceBase
 {
  private:
-  
-  double angleSpread;           ///< Angle spread
+
+  double decayPower;            ///< Fall off power
+  size_t nWidth;                ///< Number of widths
+  size_t nHeight;               ///< Number of heights
+  double width;                 ///< width
+  double height;                ///< height
+
   
   void populate(const FuncDataBase& Control);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -53,18 +58,19 @@ class PointSource :
 
  public:
 
-  PointSource(const std::string&);
-  PointSource(const PointSource&);
-  PointSource& operator=(const PointSource&);
-  virtual PointSource* clone() const;
-  virtual ~PointSource();
+  ParabolicSource(const std::string&);
+  ParabolicSource(const ParabolicSource&);
+  ParabolicSource& operator=(const ParabolicSource&);
+  virtual ParabolicSource* clone() const;
+  virtual ~ParabolicSource();
 
-  /// accessor to angle
-  void setAngleSpread(const double D) { angleSpread=D; }
-
+  /// accessor to power
+  void setPower(const double P) { decayPower=P; }
+  void setRectangle(const double,const double);
+  void setNPts(const size_t,const size_t);
+  
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
-
 
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;

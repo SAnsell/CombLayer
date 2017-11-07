@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/PointSource.cxx
+ * File:   source/GaussBeamSource.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -65,34 +65,35 @@
 #include "World.h"
 
 #include "SourceBase.h"
-#include "PointSource.h"
+#include "GaussBeamSource.h"
 
 namespace SDef
 {
 
-PointSource::PointSource(const std::string& keyName) : 
+GaussBeamSource::GaussBeamSource(const std::string& keyName) : 
   FixedOffset(keyName,0),SourceBase(),
-  angleSpread(0.0)
+  xWidth(1.0),zWidth(1.0),angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
   */
 {}
 
-PointSource::PointSource(const PointSource& A) : 
+GaussBeamSource::GaussBeamSource(const GaussBeamSource& A) : 
   attachSystem::FixedOffset(A),SourceBase(A),
+  xWidth(A.xWidth),zWidth(A.zWidth),
   angleSpread(A.angleSpread)
   /*!
     Copy constructor
-    \param A :: PointSource to copy
+    \param A :: GaussBeamSource to copy
   */
 {}
 
-PointSource&
-PointSource::operator=(const PointSource& A)
+GaussBeamSource&
+GaussBeamSource::operator=(const GaussBeamSource& A)
   /*!
     Assignment operator
-    \param A :: PointSource to copy
+    \param A :: GaussBeamSource to copy
     \return *this
   */
 {
@@ -100,55 +101,70 @@ PointSource::operator=(const PointSource& A)
     {
       attachSystem::FixedOffset::operator=(A);
       SourceBase::operator=(A);
+      xWidth=A.xWidth;
+      zWidth=A.zWidth;
       angleSpread=A.angleSpread;
     }
   return *this;
 }
 
-PointSource*
-PointSource::clone() const
-  /*!
-    Clone function 
-    \return new this
-  */
-{
-  return new PointSource(*this);
-}
-
-  
-PointSource::~PointSource() 
+GaussBeamSource::~GaussBeamSource() 
   /*!
     Destructor
   */
 {}
 
+GaussBeamSource*
+GaussBeamSource::clone() const
+  /*!
+    Clone constructor
+    \return copy of this
+  */
+{
+  return new GaussBeamSource(*this);
+}
+  
 void
-PointSource::populate(const FuncDataBase& Control)
+GaussBeamSource::setSize(const double W,const double H)
+  /*!
+    Set the beam width/height
+    \param W :: FWHM [horrizontal]
+    \param H :: FWHM [vertical]
+   */
+{
+  xWidth=W;
+  zWidth=H;
+  return;
+}
+  
+void
+GaussBeamSource::populate(const FuncDataBase& Control)
   /*!
     Populate Varaibles
     \param Control :: Control variables
    */
 {
-  ELog::RegMethod RegA("PointSource","populate");
+  ELog::RegMethod RegA("GaussBeamSource","populate");
 
   attachSystem::FixedOffset::populate(Control);
   SourceBase::populate(keyName,Control);
-
+  
+  xWidth=Control.EvalDefVar<double>(keyName+"XWidth",xWidth);
+  zWidth=Control.EvalDefVar<double>(keyName+"ZWidth",zWidth);
   angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-
   return;
 }
 
 void
-PointSource::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int linkIndex)
+GaussBeamSource::createUnitVector(const attachSystem::FixedComp& FC,
+				  const long int linkIndex)
   /*!
     Create the unit vector
     \param FC :: Fixed Componenet
     \param linkIndex :: Link index [signed for opposite side]
    */
 {
-  ELog::RegMethod RegA("PointSource","createUnitVector");
+  ELog::RegMethod RegA("GaussBeamSource","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
@@ -157,75 +173,94 @@ PointSource::createUnitVector(const attachSystem::FixedComp& FC,
 }
   
 void
-PointSource::createSource(SDef::Source& sourceCard) const
+GaussBeamSource::createSource(SDef::Source& sourceCard) const
   /*!
     Creates a gamma bremstraual source
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("PointSource","createSource");
-
+  ELog::RegMethod RegA("GaussBeamSource","createSource");
+  
   sourceCard.setActive();
 
-  if (angleSpread>Geometry::zeroTol &&
-      angleSpread<180.0-Geometry::zeroTol)
-    {
-      sourceCard.setComp("vec",Y);
-      sourceCard.setComp("axs",Y);
-      sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         ///
-    }
+  sourceCard.setComp("vec",Y);
+  sourceCard.setComp("axs",Y);
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
   sourceCard.setComp("pos",Origin);
+  sourceCard.setComp("y",Origin.dotProd(Y));
+
+  SrcData D1(1);
+  SrcProb SP1(1);
+  SP1.setFminus(-41,xWidth,0);
+  D1.addUnit(SP1);
+
+  SrcData D2(2);
+  SrcProb SP2(1);
+  SP2.setFminus(-41,zWidth,0);
+  D2.addUnit(SP2);
+  sourceCard.setData("x",D1);
+  sourceCard.setData("z",D2);
+
   SourceBase::createEnergySource(sourceCard);
 
   return;
 }  
 
 void
-PointSource::createAll(const FuncDataBase& Control,
-		       const attachSystem::FixedComp& FC,
-		       const long int linkIndex)
+GaussBeamSource::createAll(const FuncDataBase& Control,
+			   const attachSystem::FixedComp& FC,
+			   const long int linkIndex)
 
   /*!
     Create all the source
     \param Control :: DataBase for variables
-    \param FC :: Fixed point to get orientation from
-    \param linkIndex :: link Index						
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
+    \param sourceCard :: Source Term
    */
 {
-  ELog::RegMethod RegA("PointSource","createAll<Control,FC,linkIndex>");
+  ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
   populate(Control);
   createUnitVector(FC,linkIndex);
   return;
 }
-  
+
+
+
 void
-PointSource::write(std::ostream& OX) const
+GaussBeamSource::write(std::ostream& OX) const
   /*!
     Write out as a MCNP source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("PointSource","write");
+  ELog::RegMethod RegA("GaussBeamSource","write");
 
   Source sourceCard;
+  sourceCard.setActive();
   createSource(sourceCard);
   sourceCard.write(OX);
   return;
-
 }
 
 void
-PointSource::writePHITS(std::ostream& OX) const
+GaussBeamSource::writePHITS(std::ostream& OX) const
   /*!
     Write out as a PHITS source system
+    This is an approximate gaussian sauce b
+    base no 100 x / 100 z units  
+    - Rotation done by transform
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("PointSource","write");
+  ELog::RegMethod RegA("GaussBeamSource","write");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  SourceBase::writePHITS(OX);
+  
+
+  
   return;
 }
-
 
 } // NAMESPACE SDef

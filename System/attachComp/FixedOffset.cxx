@@ -122,7 +122,7 @@ FixedOffset::populate(const FuncDataBase& Control)
   preZAngle=Control.EvalDefVar<double>(keyName+"PreZAngle",preZAngle);
 
   const Geometry::Vec3D CentOffset=Control.EvalDefVar<Geometry::Vec3D>
-    (keyName+"CentOffset",Geometry::Vec3D(0,0,0));
+    (keyName+"CentOffset",Geometry::Vec3D(xStep,yStep,zStep));
   
   xStep=CentOffset.X();
   yStep=CentOffset.Y();
@@ -169,6 +169,47 @@ FixedOffset::populate(const std::string& baseName,
   zAngle=Control.EvalDefPair<double>(keyName,baseName,"ZAngle",zAngle);
   return;
   
+}
+
+void
+FixedOffset::setPreRotation(const double XYA,const double ZA)
+  /*!
+    Set the Pre-rotation values 
+    \param XYA :: xy angle rotation
+    \param ZA :: xy angle rotation
+   */
+{
+  preXYAngle=XYA;
+  preZAngle=ZA;
+  return;
+}
+
+void
+FixedOffset::setRotation(const double XYA,const double ZA)
+  /*!
+    Set the Potation values 
+    \param XYA :: xy angle rotation
+    \param ZA :: xy angle rotation
+   */
+{
+  xyAngle=XYA;
+  zAngle=ZA;
+  return;
+}
+
+void
+FixedOffset::setOffset(const double XS,const double YS,const double ZS)
+  /*!
+    Set the Potation values 
+    \param XS :: xStep
+    \param YS :: yStep
+    \param ZS :: zStep
+   */
+{
+  xStep=XS;
+  yStep=YS;
+  zStep=ZS;
+  return;
 }
   
 void

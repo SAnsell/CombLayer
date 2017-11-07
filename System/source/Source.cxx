@@ -3,7 +3,7 @@
  
  * File:   src/Source.cxx 
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,30 +235,6 @@ Source::addComp(const std::string& Key,const SrcBase* BPtr)
   return;
 }
 
-void
-Source::write(std::ostream& OX) const
-  /*!
-    Write out the sdef card
-    \param OX :: Output Stream
-  */
-{
-  if (active)
-    {
-      std::string out("sdef ");
-      sdMapTYPE::const_iterator mc;
-      for(mc=sdMap.begin();mc!=sdMap.end();mc++)
-	out+=mc->second->getString();
-      if (transPTR)
-	out+=StrFunc::makeString(std::string(" tr="),
-				 transPTR->getName());
-
-      StrFunc::writeMCNPX(out,OX);
-      
-      for_each(DVec.begin(),DVec.end(),
-	       std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
-    }
-  return;
-}
 
 void
 Source::cleanGroups()
@@ -496,7 +472,33 @@ Source::clear()
   sdMap.erase(sdMap.begin(),sdMap.end());
   populate();
 }
-  
+
+void
+Source::write(std::ostream& OX) const
+  /*!
+    Write out the sdef card
+    \param OX :: Output Stream
+  */
+{
+  if (active)
+    {
+      std::string out("sdef ");
+      sdMapTYPE::const_iterator mc;
+      for(mc=sdMap.begin();mc!=sdMap.end();mc++)
+	out+=mc->second->getString();
+      if (transPTR)
+	out+=StrFunc::makeString(std::string(" tr="),
+				 transPTR->getName());
+
+      StrFunc::writeMCNPX(out,OX);
+      
+      for_each(DVec.begin(),DVec.end(),
+	       std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
+    }
+  return;
+}
+
+
 ///\cond TEMPLATE
 
 template SrcItem<double>* Source::getItem(const std::string&);

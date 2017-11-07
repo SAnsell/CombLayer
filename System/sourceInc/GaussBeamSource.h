@@ -1,8 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   sourceInc/PointSource.h
- *
+ * File:   sourceInc/GaussBeamSource.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -20,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SDef_PointSource_h
-#define SDef_PointSource_h
+#ifndef SDef_GaussBeamSource_h
+#define SDef_GaussBeamSource_h
 
 namespace SDef
 {
@@ -32,19 +31,21 @@ namespace SDef
 {
 
 /*!
-  \class PointSource
+  \class GaussBeamSource
   \version 1.0
   \author S. Ansell
   \date September 2015
-  \brief Ponit source
+  \brief Circular Beam source
 */
 
-class PointSource : 
+class GaussBeamSource : 
   public attachSystem::FixedOffset,
   public SourceBase
 {
  private:
   
+  double xWidth;                ///< X fwhm
+  double zWidth;                ///< Z fwhm
   double angleSpread;           ///< Angle spread
   
   void populate(const FuncDataBase& Control);
@@ -53,22 +54,22 @@ class PointSource :
 
  public:
 
-  PointSource(const std::string&);
-  PointSource(const PointSource&);
-  PointSource& operator=(const PointSource&);
-  virtual PointSource* clone() const;
-  virtual ~PointSource();
+  GaussBeamSource(const std::string&);
+  GaussBeamSource(const GaussBeamSource&);
+  GaussBeamSource& operator=(const GaussBeamSource&);
+  virtual GaussBeamSource* clone() const;
+  virtual ~GaussBeamSource();
 
-  /// accessor to angle
-  void setAngleSpread(const double D) { angleSpread=D; }
 
+  void setSize(const double,const double);
+  
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
-
 
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
+    
 };
 
 }

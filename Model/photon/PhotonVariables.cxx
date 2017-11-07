@@ -66,7 +66,7 @@ PhotonVariables(FuncDataBase& Control)
   Control.addVariable("laserSourceYStep",40.0);
   Control.addVariable("laserSourceZStep",0.0);       
 
-  Control.addVariable("laserSourceShape",0);
+  Control.addVariable("laserSourceShape","Circle");
   Control.addVariable("laserSourceRadius",0.1);       
   Control.addVariable("laserSourceASpread",30.0);       
   Control.addVariable("laserSourceEStart",1.0);       
