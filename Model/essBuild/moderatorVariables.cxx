@@ -171,8 +171,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeXStep",0.0);  
   Control.addVariable("TopCakeYStep",0.0);  
   Control.addVariable("TopCakeZStep",0.0);
-  Control.addVariable("TopCakeZangle",0.0);
-  Control.addVariable("TopCakeXYangle",90.0);
+  Control.addVariable("TopCakeZAngle",0.0);
+  Control.addVariable("TopCakeXYAngle",90.0);
   Control.addVariable("TopCakeWallMat","Aluminium");
   Control.addVariable("TopCakeWallDepth",0.0);
   Control.addVariable("TopCakeWallHeight",0.3);
@@ -242,8 +242,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopBoxXStep",0.0);
   Control.addVariable("TopBoxYStep",0.0);
   Control.addVariable("TopBoxZStep",0.0);
-  Control.addVariable("TopBoxZangle",0.0);
-  Control.addVariable("TopBoxXYangle",90.0);
+  Control.addVariable("TopBoxZAngle",0.0);
+  Control.addVariable("TopBoxXYAngle",90.0);
   Control.addVariable("TopBoxWallMat","Aluminium");
   Control.addVariable("TopBoxWallDepth",0.0);
   Control.addVariable("TopBoxWallHeight",0.3);

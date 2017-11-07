@@ -154,8 +154,6 @@ EssModBase::createUnitVector(const attachSystem::FixedComp& orgFC,
   attachSystem::FixedComp::createUnitVector(axisFC,axisIndex);
   Origin=orgFC.getSignedLinkPt(orgIndex);
   applyOffset();
-  ELog::EM<<"Origin ["<<keyName<<"] "<<Origin<<" :: "<<Y<<" :: "<<Z<<ELog::endDiag;
-  ELog::EM<<"Axis ["<<keyName<<"] "<<axisFC.getCentre()<<" :: "<<axisFC.getY()<<" :: "<<axisFC.getZ()<<ELog::endDiag;
   return; 
 }
 

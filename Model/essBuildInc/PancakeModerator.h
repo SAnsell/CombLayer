@@ -38,7 +38,7 @@ namespace essSystem
 */
 
 class PancakeModerator :
-  public constructSystem::ModBase
+  public EssModBase
 {
  private:
 
@@ -59,8 +59,10 @@ class PancakeModerator :
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp*,
+			const long int,
+			const attachSystem::FixedComp&,
 			const long int);
+			
 
   void createExternal();
   void createSurfaces();
@@ -91,7 +93,8 @@ class PancakeModerator :
   std::vector<Geometry::Vec3D> getFocalPoints() const;
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,
+		 const long int,
+		 const attachSystem::FixedComp&,
 		 const long int);
 };
 

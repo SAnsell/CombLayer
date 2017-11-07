@@ -72,8 +72,8 @@
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "EssModBase.h"
 #include "SurfMap.h"
-#include "ModBase.h"
 #include "DiskPreMod.h"
 #include "EdgeWater.h"
 #include "PancakeModerator.h"
@@ -82,7 +82,7 @@ namespace essSystem
 {
 
 PancakeModerator::PancakeModerator(const std::string& Key) :
-  constructSystem::ModBase(Key,12),
+  EssModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
   MidH2(new DiskPreMod(Key+"MidH2")),
@@ -102,7 +102,7 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
 }
 
 PancakeModerator::PancakeModerator(const PancakeModerator& A) : 
-  constructSystem::ModBase(A),
+  EssModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
   bfType(A.bfType),
   MidH2(A.MidH2->clone()),
@@ -129,7 +129,7 @@ PancakeModerator::operator=(const PancakeModerator& A)
 {
   if (this!=&A)
     {
-      constructSystem::ModBase::operator=(A);
+      EssModBase::operator=(A);
       cellIndex= A.cellIndex;
       bfType=A.bfType;
       *MidH2= *A.MidH2;
@@ -170,7 +170,8 @@ PancakeModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PancakeModerator","populate");
 
-  ModBase::populate(Control);
+  EssModBase::populate(Control);
+  
   bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
   if ((bfType != 1)  && (bfType != 2))
     throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
@@ -184,9 +185,10 @@ PancakeModerator::populate(const FuncDataBase& Control)
 }
 
 void
-PancakeModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
-				     const attachSystem::FixedComp* orgFC,
-				     const long int sideIndex)
+PancakeModerator::createUnitVector(const attachSystem::FixedComp& orgFC,
+                                   const long int orgIndex,
+                                   const attachSystem::FixedComp& axisFC,
+                                   const long int axisIndex)
   /*!
     Create the unit vectors. This one uses axis from ther first FC
     but the origin for the second. Futher shifting the origin on the
@@ -198,7 +200,7 @@ PancakeModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
 {
   ELog::RegMethod RegA("PancakeModerator","createUnitVector");
 
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  EssModBase::createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   applyShift(0,0,totalHeight/2.0);
   
   return;
@@ -434,21 +436,23 @@ PancakeModerator::getLeftRightWaterSideRule() const
   
 void
 PancakeModerator::createAll(Simulation& System,
-			      const attachSystem::FixedComp& axisFC,
-			      const attachSystem::FixedComp* orgFC,
-			      const long int sideIndex)
+                            const attachSystem::FixedComp& orgFC,
+                            const long int orgIndex,
+                            const attachSystem::FixedComp& axisFC,
+                            const long int axisIndex)
   /*!
     Construct the butterfly components
     \param System :: Simulation 
-    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
     \param orgFC :: Extra origin point if required
-    \param sideIndex :: link point for origin if given
+    \param orgIndex :: link point for origin if given
+    \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
+    \param axisIndex :: link point for origin if given
    */
 {
   ELog::RegMethod RegA("PancakeModerator","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(axisFC,orgFC,sideIndex);
+  createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
   
   MidH2->createAll(System,*this,0,false, 0.0, 0.0);

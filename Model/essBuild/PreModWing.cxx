@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -76,7 +75,7 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "LayerComp.h"
-#include "ModBase.h"
+#include "EssModBase.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
 #include "PreModWing.h"

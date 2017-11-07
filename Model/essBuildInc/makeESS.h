@@ -30,7 +30,6 @@ namespace beamlineSystem
 
 namespace constructSystem
 {
-  class ModBase;
   class SupplyPipe;
 
 }
@@ -81,7 +80,7 @@ namespace essSystem
   class WedgeFlightLine;
   class TSMainBuilding;
   class Chicane;
-
+  class EssModBase;
 
       
   /*!
@@ -107,17 +106,17 @@ class makeESS
 
   // Butterfly
   /// Primary Lower Mod
-  std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<DiskLayerMod> LowPreMod;         ///< Lower mod
-  std::shared_ptr<DiskLayerMod> LowCapMod;         ///< Upper mod
+  std::shared_ptr<EssModBase> LowMod;
+  std::shared_ptr<DiskLayerMod> LowPreMod;         ///< Lower mod TaperedDiskPreMod???
+  std::shared_ptr<DiskLayerMod> LowCapMod;         ///< Upper mod TaperedDiskPreMod???
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
 
   // Butterly
-  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod
-  std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod
-  std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod
+  std::shared_ptr<EssModBase> TopMod;   ///< Primary Upper Mod
+  std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod TaperedDiskPreMod???
+  std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod TaperedDiskPreMod???
 
   std::shared_ptr<PreModWing> LowPreWingA; ///< Low premoderator wing
   std::shared_ptr<PreModWing> LowPreWingB; ///< Low premoderator wing

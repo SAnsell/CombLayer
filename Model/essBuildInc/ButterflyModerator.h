@@ -40,7 +40,7 @@ namespace essSystem
 */
 
 class ButterflyModerator :
-  public constructSystem::ModBase
+  public EssModBase
 {
  private:
 
@@ -59,7 +59,8 @@ class ButterflyModerator :
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const attachSystem::FixedComp*,
+			const long int,
+			const attachSystem::FixedComp&,
 			const long int);
 
   void createExternal();
@@ -82,6 +83,7 @@ class ButterflyModerator :
 
   /// Accessor to radius
   void setRadiusX(const double R) { outerRadius=R; }
+
   virtual const attachSystem::FixedComp&
     getComponent(const std::string&) const;
 
@@ -90,8 +92,9 @@ class ButterflyModerator :
   std::string getLeftFarExclude() const;
   std::string getRightFarExclude() const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::FixedComp*,
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int,
+		 const attachSystem::FixedComp&,
 		 const long int);
 };
 

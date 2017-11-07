@@ -124,8 +124,9 @@ main(int argc,char* argv[])
 
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
+      ELog::EM<<"A BUOLD "<<ELog::endDiag;
       ESSObj.build(*SimPtr,IParam);
-      
+      ELog::EM<<"BUILD "<<ELog::endDiag;
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

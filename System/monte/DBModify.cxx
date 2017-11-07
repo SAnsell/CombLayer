@@ -838,7 +838,6 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   "",MLib);
   MObj.setDensity(-19.298 * 0.04);
   MDB.resetMaterial(MObj);  
-
   return;
 }
 
