@@ -418,8 +418,7 @@ ButterflyModerator::getLeftExclude() const
   Out+=LeftUnit->getSignedLinkString(8);
   Out+=RightUnit->getSignedLinkString(9);
   Out+=MidWater->getSignedLinkString(11);
-  Out+=LeftWater->getSignedLinkString(4);
-  Out+=RightWater->getSignedLinkString(3);
+  Out+= getLeftFarExclude();
 
   return Out;
 }
@@ -438,9 +437,7 @@ ButterflyModerator::getRightExclude() const
   Out+=LeftUnit->getSignedLinkString(9);
   Out+=RightUnit->getSignedLinkString(8);
   Out+=MidWater->getSignedLinkString(12);
-
-  Out+=LeftWater->getSignedLinkString(3);
-  Out+=RightWater->getSignedLinkString(4);
+  Out+= getRightFarExclude();
 
   return Out;
 
