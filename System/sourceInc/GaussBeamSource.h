@@ -1,4 +1,4 @@
-/********************************************************************* 
+ /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
  * File:   sourceInc/GaussBeamSource.h
@@ -51,7 +51,7 @@ class GaussBeamSource :
   void populate(const FuncDataBase& Control);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
+  
  public:
 
   GaussBeamSource(const std::string&);
@@ -59,7 +59,6 @@ class GaussBeamSource :
   GaussBeamSource& operator=(const GaussBeamSource&);
   virtual GaussBeamSource* clone() const;
   virtual ~GaussBeamSource();
-
 
   void setSize(const double,const double);
   

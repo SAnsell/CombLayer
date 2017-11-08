@@ -173,7 +173,6 @@ SurfNormSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("SurfNormSource","createSource");
   
-  sourceCard.setActive();
   SourceBase::createEnergySource(sourceCard);
   sourceCard.setComp("sur",std::abs(surfNum));
 

@@ -94,7 +94,7 @@ Source::populate()
 }
 
 Source::Source() : 
-  active(0),transPTR(0)
+  transPTR(0)
   /*!
     Constructor
   */
@@ -103,7 +103,7 @@ Source::Source() :
 }
 
 Source::Source(const Source& A) :
-  active(A.active),transPTR(A.transPTR),
+  transPTR(A.transPTR),
   sdMap(A.sdMap),DVec(A.DVec)
   /*!
     Copy Constructor
@@ -121,7 +121,6 @@ Source::operator=(const Source& A)
 {
   if (this!=&A)
     {
-      active=A.active;
       transPTR=A.transPTR;
       sdMap=A.sdMap;
       DVec=A.DVec;
@@ -324,7 +323,6 @@ Source::rotateMaster()
   */
 {
   ELog::RegMethod RegA("Source","rotateMaster");
-  ELog::EM<<"HASREAEW "<<ELog::endCrit;
 
   // Place for general output:
   typedef  std::vector<std::pair<std::string,SBasePtr> > OutTYPE;
@@ -350,7 +348,6 @@ Source::rotateMaster()
 	  if (aR != i)
 	    {
 	      if (!transPTR) return 1;
-	      setComp("tr",transPTR->getName());
 	      // Now calculate the rotation from the point : 
 	      setTransform(XYZ);
 	      // Note don't change x,y,z but rotate whole system:
@@ -404,7 +401,6 @@ Source::rotateMaster()
 	  if (Mptr && Mptr->isData())
 	    {
 	      Geometry::Vec3D Pt=Mptr->getData();
-	      ELog::EM<<"Apply to "<<KItem<<" :: "<<Pt<<ELog::endDiag;
 	      MR.applyFull(Pt);
 	      Mptr->setValue(Pt);
 	    }
@@ -450,6 +446,7 @@ Source::setTransform(const Geometry::Vec3D XYZ[3])
   */
 {
   ELog::RegMethod RegA("Source","setTransform");
+
   masterRotate& MR=masterRotate::Instance();
   Geometry::Matrix<double> A(3,3);
   for(size_t i=0;i<3;i++)
@@ -485,21 +482,19 @@ Source::write(std::ostream& OX) const
     \param OX :: Output Stream
   */
 {
-  if (active)
-    {
-      std::string out("sdef ");
-      sdMapTYPE::const_iterator mc;
-      for(mc=sdMap.begin();mc!=sdMap.end();mc++)
-	out+=mc->second->getString();
-      if (transPTR)
-	out+=StrFunc::makeString(std::string(" tr="),
-				 transPTR->getName());
-
-      StrFunc::writeMCNPX(out,OX);
-      
-      for_each(DVec.begin(),DVec.end(),
-	       std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
-    }
+  std::string out("sdef ");
+  sdMapTYPE::const_iterator mc;
+  for(mc=sdMap.begin();mc!=sdMap.end();mc++)
+    out+=mc->second->getString();
+  
+  if (transPTR)
+    out+=StrFunc::makeString(std::string(" tr="),
+			     transPTR->getName());
+  
+  StrFunc::writeMCNPX(out,OX);
+  
+  for_each(DVec.begin(),DVec.end(),
+	   std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
   return;
 }
 

@@ -63,6 +63,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "Transform.h"
 #include "localRotate.h"
 
 #include "SourceBase.h"
@@ -173,6 +174,7 @@ GaussBeamSource::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+  
 void
 GaussBeamSource::rotate(const localRotate& LR)
   /*!
@@ -182,42 +184,68 @@ GaussBeamSource::rotate(const localRotate& LR)
 {
   ELog::RegMethod Rega("GaussBeamSource","rotate");
   FixedComp::applyRotation(LR);
-  ELog::EM<<"GAUSS ROTATEO"<<ELog::endDiag;
+
+  ELog::EM<<"X == "<<X<<ELog::endDiag;
+  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
+  const int aY=std::abs(Y.masterDir());
+  if (!X.masterDir() || !Y.masterDir() || !Z.masterDir() ||
+      std::abs(Origin.dotProd(Y))-Origin.abs()>Geometry::zeroTol)
+    {
+      SourceBase::createTransform(Origin,X,Y,Z);
+    }
+  else
+    {
+      delete TransPtr;
+      TransPtr=0;
+    }
+  
   return;
 }
 
 void
 GaussBeamSource::createSource(SDef::Source& sourceCard) const
   /*!
-    Creates a gamma bremstraual source
+    Creates a gaussian beam source
     \param sourceCard :: Source system
   */
 {
   ELog::RegMethod RegA("GaussBeamSource","createSource");
-  
-  sourceCard.setActive();
-
-  sourceCard.setComp("vec",Y);
-  sourceCard.setComp("axs",Y);
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
-  sourceCard.setComp("pos",Origin);
-  sourceCard.setComp("y",Origin.dotProd(Y));
 
+  // are we aligned on the master direction:
+  const int aR=(TransPtr) ? 2 : std::abs(Y.masterDir());
+
+  const std::string xyz[]={"x","y","z"};
+  if (!TransPtr)
+    {
+      sourceCard.setComp(xyz[aR-1],Origin.dotProd(Y));
+      sourceCard.setComp("vec",Y);
+      sourceCard.setComp("axs",Y);
+    }
+  else
+    {
+      sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
+      sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
+    }
+  
   SrcData D1(1);
   SrcProb SP1(1);
   SP1.setFminus(-41,xWidth,0);
   D1.addUnit(SP1);
-
+  
   SrcData D2(2);
   SrcProb SP2(1);
   SP2.setFminus(-41,zWidth,0);
   D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
+  
+  sourceCard.setData(xyz[aR % 3],D1);
+  sourceCard.setData(xyz[(aR+1) % 3],D2);
 
+  if (TransPtr)
+    sourceCard.setComp("tr",TransPtr->getName());
+  
   SourceBase::createEnergySource(sourceCard);
-
   return;
 }  
 
@@ -231,7 +259,6 @@ GaussBeamSource::createAll(const FuncDataBase& Control,
     \param Control :: DataBase for variables
     \param FC :: Fixed Point for origin/axis of beam
     \param linkIndex :: link Index				
-    \param sourceCard :: Source Term
    */
 {
   ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
@@ -239,8 +266,6 @@ GaussBeamSource::createAll(const FuncDataBase& Control,
   createUnitVector(FC,linkIndex);
   return;
 }
-
-
 
 void
 GaussBeamSource::write(std::ostream& OX) const
@@ -252,9 +277,11 @@ GaussBeamSource::write(std::ostream& OX) const
   ELog::RegMethod RegA("GaussBeamSource","write");
 
   Source sourceCard;
-  sourceCard.setActive();
+
   createSource(sourceCard);
   sourceCard.write(OX);
+  if (TransPtr)
+    TransPtr->write(OX);
   return;
 }
 

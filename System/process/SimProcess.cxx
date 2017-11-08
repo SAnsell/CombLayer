@@ -62,8 +62,6 @@
 #include "PhysCard.h"
 #include "PhysImp.h"
 #include "LSwitchCard.h"
-#include "Source.h"
-#include "KCode.h"
 #include "PhysicsCards.h"
 #include "Simulation.h"
 #include "SimProcess.h"

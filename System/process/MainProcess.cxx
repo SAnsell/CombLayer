@@ -523,7 +523,6 @@ buildFullSimulation(Simulation* SimPtr,
 
   SDef::sourceSelection(*SimPtr,IParam);
   SimPtr->masterPhysicsRotation();
-  ELog::EM<<"ASFDASFD"<<ELog::endDiag;
   // Ensure we done loop
   do
     {

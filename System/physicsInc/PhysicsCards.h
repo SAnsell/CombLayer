@@ -79,8 +79,6 @@ class PhysicsCards
   std::vector<PhysCard*> PCards;          ///< Physics cards
   LSwitchCard LEA;                        ///< LEA/LCA Card
 
-  SDef::Source sdefCard;                  ///< Source term
-  SDef::KCode kcodeCard;                  ///< KCode term [if used]
   PhysImp Volume;                         ///< Volume stack
   std::unique_ptr<ExtControl> ExtCard;    ///< Exponent control system
   std::unique_ptr<PWTControl> PWTCard;    ///< Photon Weight
@@ -127,10 +125,6 @@ class PhysicsCards
   template<typename T>
   T* addPhysCard(const std::string&,const std::string&);
   const PhysCard* getPhysCard(const std::string&,const std::string&) const;
-  /// Access source card
-  SDef::Source& getSDefCard() { return sdefCard; }
-  /// Access kcode card
-  SDef::KCode& getKCodeCard() { return kcodeCard; }
 
   /// Access ExpControl card
   ExtControl& getExtCard() { return *ExtCard; }
@@ -174,7 +168,7 @@ class PhysicsCards
 
   void rotateMaster();
   void substituteCell(const int,const int);
-  void substituteSurface(const int,const int); 
+  //  void substituteSurface(const int,const int); 
 
   void writeHelp(const std::string&) const;
   

@@ -88,8 +88,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "Source.h"
-#include "KCode.h"
 #include "PhysicsCards.h"
 #include "funcList.h"
 #include "Code.h"

@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Transform.h"
 #include "doubleErr.h"
 #include "Triple.h"
 #include "NRange.h"
@@ -72,7 +73,8 @@ namespace SDef
 
 SourceBase::SourceBase() : 
   particleType(1),cutEnergy(0.0),
-  Energy({14}),EWeight({1.0}),weight(1.0)
+  Energy({14}),EWeight({1.0}),weight(1.0),
+  TransPtr(0)
   /*!
     Constructor 
   */
@@ -81,7 +83,8 @@ SourceBase::SourceBase() :
 SourceBase::SourceBase(const SourceBase& A) : 
   particleType(A.particleType),cutEnergy(A.cutEnergy),
   Energy(A.Energy),EWeight(A.EWeight),
-  weight(A.weight)
+  weight(A.weight),
+  TransPtr((A.TransPtr) ? new Geometry::Transform(*A.TransPtr) : 0)
   /*!
     Copy constructor
     \param A :: SourceBase to copy
@@ -103,6 +106,8 @@ SourceBase::operator=(const SourceBase& A)
       Energy=A.Energy;
       EWeight=A.EWeight;
       weight=A.weight;
+      delete TransPtr;
+      TransPtr=(A.TransPtr) ? new Geometry::Transform(*A.TransPtr) : 0;
     }
   return *this;
 }
@@ -257,6 +262,38 @@ SourceBase::populate(const std::string& keyName,
   return;
 }
 
+void
+SourceBase::createTransform(const Geometry::Vec3D& Origin,
+			    const Geometry::Vec3D& X,
+			    const Geometry::Vec3D& Y,
+			    const Geometry::Vec3D& Z)
+  /*!
+    Construct a transform based on x,y,z on othogonatilty
+    \param Origin :: Origin
+    \param X :: X axis
+    \param Y :: Y Axis
+    \param Z :: Z axis
+  */
+{
+  ELog::RegMethod RegA("SourceBase","constructTransform");
+
+  if (!TransPtr)
+    TransPtr=new Geometry::Transform;
+
+  TransPtr->setName(1);
+
+  Geometry::Matrix<double> A(3,3);
+  for(size_t j=0;j<3;j++)
+    {
+      A[0][j]=X[j];
+      A[1][j]=Y[j];
+      A[2][j]=Z[j];
+    }
+
+  TransPtr->setTransform(Origin,A);
+  return;
+}
+
 
 void
 SourceBase::setEnergy(const double E)
@@ -282,8 +319,6 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("SourceBase","createSource");
   
-  sourceCard.setActive();
-
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
     
 
@@ -304,7 +339,7 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
 
   return;
 }  
-
+  
 void
 SourceBase::writePHITS(std::ostream& OX) const
   /*!
@@ -315,7 +350,6 @@ SourceBase::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("SourceBase","writePHITS");
 
   const particleConv& partCV=particleConv::Instance();
-  ELog::EM<<"ASDFASDFS ADF"<<ELog::endDiag;
  
   OX<<"    proj = "<<partCV.mcnpToPhits(particleType)<<std::endl;
   OX<<"    wgt  = "<<weight<<std::endl;

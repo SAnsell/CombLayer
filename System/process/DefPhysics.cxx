@@ -75,8 +75,6 @@
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Source.h"
-#include "KCode.h"
 #include "Simulation.h"
 #include "PhysImp.h"
 #include "PhysCard.h"

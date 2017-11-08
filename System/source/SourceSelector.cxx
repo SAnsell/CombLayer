@@ -55,7 +55,6 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "KCode.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -98,7 +97,6 @@ sourceSelection(Simulation& System,
   ELog::RegMethod RegA("SourceSelector[F]","sourceSelection");
   
   const FuncDataBase& Control=System.getDataBase();
-  SDef::Source& sourceCard=System.getPC().getSDefCard();
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -122,83 +120,81 @@ sourceSelection(Simulation& System,
 
   // NOTE: No return to allow active SSW systems  
   std::string sdefType=IParam.getValue<std::string>("sdefType");
+  std::string sName;
+  
+
+
   if (sdefType.empty() && IParam.hasKey("kcode") &&
       IParam.flag("kcode"))
-    sdefType="kcode";
+    sName="kcode";
 
-  std::string sName;
-  if (sdefType=="TS1")                            // parabolic source
-      sName=SDef::createTS1Source(Control,FC,linkIndex,sourceCard);
+  else if (sdefType=="TS1")                            // parabolic source
+    sName=SDef::createTS1Source(Control,FC,linkIndex);
 
   else if (sdefType=="TS1Gauss")                   // TS1Gauss
-    sName=SDef::createTS1GaussianSource(Control,FC,linkIndex,sourceCard); 
+    sName=SDef::createTS1GaussianSource(Control,FC,linkIndex); 
 
   else if (sdefType=="TS1GaussNew")                // TS1NewGauss
-    sName=SDef::createTS1GaussianNewSource(Control,FC,linkIndex,sourceCard);     
+    sName=SDef::createTS1GaussianNewSource(Control,FC,linkIndex);     
 
   else if (sdefType=="TS1Muon")                    // TS1Muon
-    sName=SDef::createTS1MuonSource(Control,FC,linkIndex,sourceCard); 
+    sName=SDef::createTS1MuonSource(Control,FC,linkIndex); 
 
   else if (sdefType=="TS3Expt")                    
-    sName=SDef::createTS3ExptSource(Control,FC,linkIndex,sourceCard); 
+    sName=SDef::createTS3ExptSource(Control,FC,linkIndex); 
 
   else if (sdefType=="TS1EpbColl")                 // TS1EPB 
-    sName=SDef::createTS1EPBCollSource(Control,FC,linkIndex,sourceCard); 
+    sName=SDef::createTS1EPBCollSource(Control,FC,linkIndex); 
 
   else if (sdefType=="Bilbao")                    // bilbauSource
-    sName=SDef::createBilbaoSource(Control,FC,linkIndex,sourceCard);
+    sName=SDef::createBilbaoSource(Control,FC,linkIndex);
 
   else if (sdefType=="ess")                       // essSource
-    sName=SDef::createESSSource(Control,FC,linkIndex,sourceCard);
+    sName=SDef::createESSSource(Control,FC,linkIndex);
 
   else if (sdefType=="essLinac")                 // essLinacSource
-    sName=SDef::createESSLinacSource(Control,FC,linkIndex,sourceCard);
+    sName=SDef::createESSLinacSource(Control,FC,linkIndex);
   
   else if (sdefType=="D4C")
-    sName=SDef::createD4CSource(Control,FC,linkIndex,sourceCard);
+    sName=SDef::createD4CSource(Control,FC,linkIndex);
 
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
-    sName=SDef::createSinbadSource(Control,FC,linkIndex,sourceCard);
+    sName=SDef::createSinbadSource(Control,FC,linkIndex);
 
   else if (sdefType=="Gamma" || sdefType=="gamma")
     sName=SDef::createGammaSource(Control,"gammaSource",
-				  FC,linkIndex,sourceCard);
+				  FC,linkIndex);
   
   else if (sdefType=="Laser" || sdefType=="laser")
     sName=SDef::createGammaSource(Control,"laserSource",
-				  FC,linkIndex,sourceCard);
+				  FC,linkIndex);
   else if (sdefType=="Activation" || sdefType=="activation")
     activationSelection(System,IParam);
   else if (sdefType=="Point" || sdefType=="point")
     {
       sName=SDef::createPointSource(Control,"pointSource",
-			      FC,linkIndex,sourceCard);
+			      FC,linkIndex);
     }
   else if (sdefType=="Disk" || sdefType=="disk")
     {
       sName=SDef::createGammaSource(Control,"diskSource",FC,
-				    linkIndex,sourceCard);
+				    linkIndex);
     }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
       ELog::EM<<"SDEF == :: Beam"<<ELog::endDiag;
       sName=SDef::createBeamSource(Control,"beamSource",
-			     FC,linkIndex,sourceCard);
+			     FC,linkIndex);
     }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
-      sName=SDef::createLensSource(Control,FC,linkIndex,sourceCard);
+      sName=SDef::createLensSource(Control,FC,linkIndex);
     }
   else if (sdefType=="TS2")
-    {
-      // Basic TS2 source
-      if(IParam.hasKey("horr") && IParam.flag("horr"))
-	sourceCard.setTransform(System.createSourceTransform());
-  
+    {  
       // Basic TS2 source
       // NOTE THIS IS the old stupid TS2 origin system
-      sName=SDef::createTS2Source(Control,World::masterTS2Origin(),
-				  0,sourceCard);
+      sName=SDef::createTS2Source(Control,World::masterTS2Origin(),0);
     }
   else if (sdefType=="kcode")
     {
@@ -222,10 +218,7 @@ sourceSelection(Simulation& System,
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 	
-  if (IParam.flag("sdefVoid"))
-    sourceCard.deactivate();
-
-  if (!sName.empty())
+  if (!IParam.flag("sdefVoid") || !sName.empty())
     System.setSourceName(sName);
   
   return;

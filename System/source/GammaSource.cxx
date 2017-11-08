@@ -244,7 +244,6 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 
   ELog::EM<<"Source shape ::"<<shape<<ELog::endDiag;
 
-  sourceCard.setActive();
   sourceCard.setComp("par",particleType);            
   SourceBase::createEnergySource(sourceCard);    
 

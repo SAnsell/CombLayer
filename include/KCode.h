@@ -26,6 +26,8 @@ class Simulation;
 
 namespace SDef
 {
+  class Source;
+  
 /*!
   \class KCode
   \version 1.0
@@ -36,14 +38,13 @@ namespace SDef
   Generic kcode term 
 */
 
-class KCode 
+class KCode :
+  public SourceBase
 {
  private:
 
-  int active;          ///< Is kcode active
-
   /// Kcode :nsrck rkk ikz kct msrk knrm mrkp kc8
-  double rkk;                        ///< keff 
+  double rkk;                     ///< keff 
   std::vector<int> defFlag;       ///< Default values
   std::vector<int> vals;          ///< Values
 
@@ -54,18 +55,15 @@ class KCode
   KCode();
   KCode(const KCode&);
   KCode& operator=(const KCode&);
-  ~KCode();
-
-  void setActive() { active=1; }         ///< Make active 
-  void deactivate() { active=0; }         ///< Make active 
-  int isActive() const { return active; } ///< is active
-
+  virtual KCode* clone() const;
+  virtual ~KCode();
 
   void setKSRC(const std::vector<Geometry::Vec3D>&); 
-
   void setLine(const std::string&);
 
-  void write(std::ostream&) const;   ///< Write physics cards to ostream
+  virtual void createSource(SDef::Source&) const { }
+  virtual void writePHITS(std::ostream&) const;
+  virtual void write(std::ostream&) const;  
 };
 
 }

@@ -70,11 +70,6 @@
 #include "Simulation.h"
 #include "inputParam.h"
 
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"

@@ -182,7 +182,6 @@ LensSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("LensSource","createSource");
   
-  sourceCard.setActive();
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("par",particleType);            /// Neutron
   sourceCard.setComp("pos",Origin);

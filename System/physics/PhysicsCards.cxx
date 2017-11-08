@@ -21,7 +21,7 @@
  ****************************************************************************/
 #include <iostream>
 #include <iomanip>
-#include <cstdio>
+#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -44,18 +44,15 @@
 #include "support.h"
 #include "MapRange.h"
 #include "Triple.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
 #include "LSwitchCard.h"
 #include "NList.h"
-#include "NRange.h"
 #include "nameCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"
@@ -120,11 +117,11 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   mcnpVersion(A.mcnpVersion),nps(A.nps),
   histp(A.histp),histpCells(A.histpCells),
   RAND(new nameCard(*A.RAND)), PTRAC(new nameCard(*A.PTRAC)),
-  dbCard(new nameCard(*dbCard)),
+  dbCard(new nameCard(*A.dbCard)),
   Basic(A.Basic),mode(A.mode),
   voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
-  PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
+  PCards(),LEA(A.LEA),
   Volume(A.Volume),
   ExtCard(new ExtControl(*A.ExtCard)),
   PWTCard(new PWTControl(*A.PWTCard)),
@@ -162,7 +159,6 @@ PhysicsCards::operator=(const PhysicsCards& A)
       prdmp=A.prdmp;
       ImpCards=A.ImpCards;
       LEA=A.LEA;
-      sdefCard=A.sdefCard;
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
       *PWTCard= *A.PWTCard;
@@ -210,7 +206,6 @@ PhysicsCards::clearAll()
   ImpCards.clear();
   deletePCards();
   Volume.clear();
- sdefCard.clear();
   RAND->reset();
   PTRAC->reset();
   dbCard->reset();
@@ -430,8 +425,7 @@ PhysicsCards::setEnergyCut(const double E)
 
   for(PhysCard* PC : PCards)
     PC->setEnergyCut(E);
-
-  sdefCard.cutEnergy(E);
+  
   return;
 }
 
@@ -898,7 +892,6 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
    */
 {
   ELog::RegMethod RegA("PhysicsCards","substituteCell");
-  sdefCard.substituteCell(oldCell,newCell);
   histpCells.changeItem(oldCell,newCell);
   for(PhysImp& PI : ImpCards)
     PI.renumberCell(oldCell,newCell);
@@ -907,18 +900,6 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
   PWTCard->renumberCell(oldCell,newCell);
   ExtCard->renumberCell(oldCell,newCell);
 
-  return;
-}
-
-void
-PhysicsCards::substituteSurface(const int oldSurf,const int newSurf)
-  /*!
-    Substitute all surfaces in all physics cards that use surface
-    \param oldSurf :: old surface number
-    \param newSurf :: new surface number
-  */
-{
-  sdefCard.substituteSurface(oldSurf,newSurf);
   return;
 }
   
@@ -1087,9 +1068,6 @@ PhysicsCards::write(std::ostream& OX,
   DXTCard->write(OX);
   
   LEA.write(OX);
-
-  sdefCard.write(OX);
-  kcodeCard.write(OX);
   
   if (!prdmp.empty())
     StrFunc::writeMCNPX("prdmp "+prdmp,OX);

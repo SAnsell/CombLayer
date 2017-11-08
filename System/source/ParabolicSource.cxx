@@ -200,7 +200,6 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("ParabolicSource","createSource");
 
-  sourceCard.setActive();
   SourceBase::createEnergySource(sourceCard);    
 
   sourceCard.setComp("dir",1.0);

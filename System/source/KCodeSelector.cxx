@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   build/KCodeSelector.cxx
+ * File:   source/KCodeSelector.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "Source.h"
+#include "SourceBase.h"
 #include "KCode.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -86,7 +87,6 @@ kcodeSelection(Simulation& System,const mainSystem::inputParam& IParam)
 
   // NOT FINISHED CODE:
   const FuncDataBase& Control=System.getDataBase();
-  SDef::KCode& KCard=System.getPC().getKCodeCard();
 
   return;
 }

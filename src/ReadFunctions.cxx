@@ -73,8 +73,6 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "DBMaterial.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"

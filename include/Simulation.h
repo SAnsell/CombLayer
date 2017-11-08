@@ -122,6 +122,7 @@ class Simulation
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writePhysics(std::ostream&) const;
   void writeVariables(std::ostream&,const char ='c') const;
 

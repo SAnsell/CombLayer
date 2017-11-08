@@ -165,8 +165,6 @@ PointSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("PointSource","createSource");
 
-  sourceCard.setActive();
-
   if (angleSpread>Geometry::zeroTol &&
       angleSpread<180.0-Geometry::zeroTol)
     {

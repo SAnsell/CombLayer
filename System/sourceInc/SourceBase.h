@@ -22,7 +22,12 @@
 #ifndef SDef_SourceBase_h
 #define SDef_SourceBase_h
 
+
 class localRotate;
+namespace Geometry
+{
+  class Transform;
+}
 
 namespace SDef
 {
@@ -45,10 +50,13 @@ class SourceBase
   std::vector<double> Energy;   ///< Energies [MeV]
   std::vector<double> EWeight;  ///< Weights  [sum to 1.0]
 
-  double weight;                ///< Start particle weight
+  double weight;                  ///< Start particle weight
+  Geometry::Transform* TransPtr;  ///< Transform [if required]
   
   int populateEnergy(std::string,std::string);
   int populateEFile(const std::string&,const int,const int);
+  void createTransform(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
  public:
 
@@ -67,6 +75,8 @@ class SourceBase
   void setEnergy(const double);
   void createEnergySource(SDef::Source&) const;
 
+  /// No-op to substitue
+  virtual void substituteSurface(const int,const int) {}
   /// No-op to rotate
   virtual void rotate(const localRotate&) { } 
   virtual void createSource(SDef::Source&) const =0;

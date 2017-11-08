@@ -168,8 +168,6 @@ BeamSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("BeamSource","createSource");
   
-  sourceCard.setActive();
-
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
@@ -231,7 +229,6 @@ BeamSource::write(std::ostream& OX) const
   ELog::RegMethod RegA("BeamSource","write");
 
   Source sourceCard;
-  sourceCard.setActive();
   createSource(sourceCard);
   sourceCard.write(OX);
   return;

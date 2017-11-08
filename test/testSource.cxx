@@ -167,7 +167,6 @@ testSource::testBasic()
 	
   const std::string Expect("sdef cel=1 x=3.4");
   Source A;
-  A.setActive();
   A.setComp("cel",1);
   A.setComp("x",3.4);
 
@@ -191,7 +190,6 @@ testSource::testProbTable()
      "sp1 0.2 0.3"  );
   
   Source A;
-  A.setActive();
   A.setComp("cel",1);
   A.setComp("x",3.4);
 
@@ -230,7 +228,6 @@ testSource::testItem()
 
   Source A;
   
-  A.setActive();
   A.setComp("dir",1.0);
   A.setComp("vec",Geometry::Vec3D(0,0,-5));
   A.setComp("tr",1);

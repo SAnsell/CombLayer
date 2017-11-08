@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/KCode.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,22 +55,22 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "localRotate.h"
-#include "masterRotate.h"
+#include "SourceBase.h"
 #include "KCode.h"
 
 namespace SDef
 {
 
-KCode::KCode() : 
-  active(0),rkk(1.0),
-  defFlag(8,0),vals(8)
+KCode::KCode() : SourceBase(),
+  rkk(1.0),defFlag(8,0),vals(8)
   /*!
     Constructor with default list
   */
 {}
 
-KCode::KCode(const KCode& A) : 
-  active(A.active),rkk(A.rkk),defFlag(A.defFlag),
+KCode::KCode(const KCode& A) :
+  SourceBase(A),
+  rkk(A.rkk),defFlag(A.defFlag),
   vals(A.vals),ksrc(A.ksrc)
   /*!
     Copy constructor
@@ -88,7 +88,7 @@ KCode::operator=(const KCode& A)
 {
   if (this!=&A)
     {
-      active=A.active;
+      SourceBase::operator=(A);
       rkk=A.rkk;
       defFlag=A.defFlag;
       vals=A.vals;
@@ -103,6 +103,16 @@ KCode::~KCode()
   */
 {}
 
+KCode*
+KCode::clone() const
+  /*!
+    Clone constructor
+    \return copy of this
+  */
+{
+  return new KCode(*this);
+}
+  
 void
 KCode::setKSRC(const std::vector<Geometry::Vec3D>& Pts)
   /*!
@@ -123,7 +133,6 @@ KCode::setLine(const std::string& KLine)
 {
   ELog::RegMethod RegA("KCode","setLine");
 
-  active=1;
   std::string Line=KLine;
   
   double R;
@@ -152,6 +161,19 @@ KCode::setLine(const std::string& KLine)
 }
 
 
+void
+KCode::writePHITS(std::ostream& OX) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("KCode","write");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
 
 void
 KCode::write(std::ostream& OX) const
@@ -162,7 +184,6 @@ KCode::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("KCode","write");
 
-  if (!active) return;
   std::ostringstream cx;
   cx<<"kcode";
   size_t i;

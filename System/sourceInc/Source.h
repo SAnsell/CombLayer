@@ -61,7 +61,6 @@ class Source
   typedef std::map<std::string,SBasePtr> sdMapTYPE;     ///< Storage for main line
   typedef std::vector<SDataPtr> dvecTYPE;               ///< Storage for extra-data
 
-  int active;                             ///< Is souce active
   Geometry::Transform* transPTR;          ///< Transform
   sdMapTYPE sdMap;                        ///< Map of main-line objects
   dvecTYPE DVec;                          ///< Data vectors
@@ -86,9 +85,6 @@ class Source
   Source& operator=(const Source&);
   ~Source();
 
-  void setActive() { active=1; }         ///< Make active 
-  void deactivate() { active=0; }         ///< Make active 
-  int isActive() const { return active; } ///< is active
   template<typename T>
   void setComp(const std::string&,const T&);
   void setData(const std::string&,const SrcData&);
@@ -99,7 +95,6 @@ class Source
   void substituteCell(const int,const int);
   void substituteSurface(const int,const int);
   void addComp(const std::string&,const SrcBase*);
-
   /// Set the transform number if needed
   void setTransform(Geometry::Transform* TP) { transPTR=TP; }
 
