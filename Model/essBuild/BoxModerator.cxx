@@ -300,7 +300,7 @@ BoxModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Origin from center
 
-  FixedComp::setLinkCopy(4,*MidH2,4); ELog::EM << "check numbers" << ELog::endDiag;
+  FixedComp::setLinkCopy(4,*MidH2,4);
   FixedComp::setLinkCopy(5,*MidH2,5);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
@@ -357,6 +357,7 @@ BoxModerator::getLeftFarExclude() const
   /*!
     Get the outer exclude surface without top/base
     (uses the standard link points)
+    x>0
     \return outer sidewards link exclude
   */
 {
@@ -373,6 +374,7 @@ BoxModerator::getRightFarExclude() const
   /*!
     Get the outer exclude surface without top/base
     (uses the standard link points)
+    x<0
     \return outer sidewards link exclude
   */
 {
@@ -390,14 +392,15 @@ BoxModerator::getLeftExclude() const
   /*!
     Get the complete exclude surface without top/base
     (uses the standard link points)
+    x>0
     \return full sidewards link exclude
   */
 {
   ELog::RegMethod RegA("BoxModerator","getLeftExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(3); ELog::EM << "check number" << ELog::endDiag;
-  Out+= getLeftFarExclude();
+  Out+=MidH2->getSignedLinkString(11);
+  Out+=getLeftFarExclude();
 
   return Out;
 }
@@ -407,14 +410,15 @@ BoxModerator::getRightExclude() const
   /*!
     Get the complete exclude surface without top/base
     (uses the standard link points) [+ve Y]
+    x<0
     \return full sidewards link exclude
   */
 {
   ELog::RegMethod RegA("BoxModerator","getRightExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(4); ELog::EM << "check number" << ELog::endDiag;
-  Out+= getRightFarExclude();
+  Out=MidH2->getSignedLinkString(10);
+  Out+=getRightFarExclude();
 
   return Out;
 
