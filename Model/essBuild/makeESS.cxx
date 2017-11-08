@@ -96,7 +96,7 @@
 #include "CylMod.h"
 #include "H2Wing.h"
 #include "ButterflyModerator.h"
-//#include "PancakeModerator.h"
+#include "PancakeModerator.h"
 #include "BoxModerator.h"
 #include "BlockAddition.h"
 #include "CylPreMod.h"
@@ -401,49 +401,49 @@ makeESS::buildTopButterfly(Simulation& System)
   return;
 }
 
-// void
-// makeESS::buildLowPancake(Simulation& System)
-//   /*!
-//     Build the lower pancake moderator
-//     \param System :: Stardard simulation
-//   */
-// {
-//   ELog::RegMethod RegA("makeESS","buildLowPancake");
+void
+makeESS::buildLowPancake(Simulation& System)
+  /*!
+    Build the lower pancake moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildLowPancake");
 
-//   ModelSupport::objectRegister& OR=
-//     ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-//   std::shared_ptr<PancakeModerator> BM
-//     (new essSystem::PancakeModerator("LowCake"));
-//   BM->setRadiusX(Reflector->getRadius());
-//   LowMod=std::shared_ptr<EssModBase>(BM);
-//   OR.addObject(LowMod);
-//   LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-//   return;
-// }
+  std::shared_ptr<PancakeModerator> BM
+    (new essSystem::PancakeModerator("LowCake"));
+  BM->setRadiusX(Reflector->getRadius());
+  LowMod=std::shared_ptr<EssModBase>(BM);
+  OR.addObject(LowMod);
+  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
+  return;
+}
 
   
-// void
-// makeESS::buildTopPancake(Simulation& System)
-//   /*!
-//     Build the top pancake moderator
-//     \param System :: Stardard simulation
-//   */
-// {
-//   ELog::RegMethod RegA("makeESS","buildTopPancake");
+void
+makeESS::buildTopPancake(Simulation& System)
+  /*!
+    Build the top pancake moderator
+    \param System :: Stardard simulation
+  */
+{
+  ELog::RegMethod RegA("makeESS","buildTopPancake");
 
-//   ModelSupport::objectRegister& OR=
-//     ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
 
-//   std::shared_ptr<PancakeModerator> BM
-//     (new essSystem::PancakeModerator("TopCake"));
-//   BM->setRadiusX(Reflector->getRadius());
-//   TopMod=std::shared_ptr<EssModBase>(BM);
-//   OR.addObject(TopMod);
+  std::shared_ptr<PancakeModerator> BM
+    (new essSystem::PancakeModerator("TopCake"));
+  BM->setRadiusX(Reflector->getRadius());
+  TopMod=std::shared_ptr<EssModBase>(BM);
+  OR.addObject(TopMod);
   
-//   TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-//   return;
-// }
+  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
+  return;
+}
 
 void
 makeESS::buildLowBox(Simulation& System)
@@ -1146,8 +1146,8 @@ makeESS::build(Simulation& System,
 
   if (lowModType == "Butterfly")
     buildLowButterfly(System);
-  //  else if (lowModType == "Pancake")
-  //buildLowPancake(System);
+  else if (lowModType == "Pancake")
+    buildLowPancake(System);
   else if (lowModType == "Box")
     buildLowBox(System);
   else if (lowModType != "None")
@@ -1155,8 +1155,8 @@ makeESS::build(Simulation& System,
 
   if (topModType == "Butterfly")
     buildTopButterfly(System);
-  //  else if (topModType == "Pancake")
-  //    buildTopPancake(System);
+  else if (topModType == "Pancake")
+    buildTopPancake(System);
   else if (topModType == "Box")
     buildTopBox(System);
 
