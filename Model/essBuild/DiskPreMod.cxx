@@ -415,7 +415,7 @@ DiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 3:
       return Origin+X*(radius[layerIndex]);
     case 4:
-      return Origin-Z*(height[layerIndex]);
+      return Origin-Z*(depth[layerIndex]);
     case 5:
       return Origin+Z*(height[layerIndex]);
     }
