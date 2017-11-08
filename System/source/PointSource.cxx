@@ -155,6 +155,18 @@ PointSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
+
+void
+PointSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("PointSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
   
 void
 PointSource::createSource(SDef::Source& sourceCard) const
@@ -165,13 +177,9 @@ PointSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("PointSource","createSource");
 
-  if (angleSpread>Geometry::zeroTol &&
-      angleSpread<180.0-Geometry::zeroTol)
-    {
-      sourceCard.setComp("vec",Y);
-      sourceCard.setComp("axs",Y);
-      sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         ///
-    }
+  sourceCard.setComp("vec",Y);
+  sourceCard.setComp("axs",Y);
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));   
   sourceCard.setComp("pos",Origin);
   SourceBase::createEnergySource(sourceCard);
 

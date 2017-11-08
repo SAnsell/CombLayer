@@ -158,21 +158,38 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
+
+void
+BeamSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("BeamSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
   
 void
 BeamSource::createSource(SDef::Source& sourceCard) const
   /*!
-    Creates a gamma bremstraual source
+    Creates a simple beam sampled uniformly in a
+    circle
     \param sourceCard :: Source system
   */
 {
   ELog::RegMethod RegA("BeamSource","createSource");
-  
+
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
-  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
-  sourceCard.setComp("pos",Origin);
+  sourceCard.setComp("ara",M_PI*radius*radius);         
+    
+  sourceCard.setComp("x",Origin[0]);
+  sourceCard.setComp("y",Origin[1]);
+  sourceCard.setComp("z",Origin[2]);
   
   // RAD
   SDef::SrcData D1(1);

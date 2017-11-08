@@ -50,7 +50,8 @@ class LensSource :
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
+  void rotate(const localRotate&);
+  
  public:
 
   LensSource(const std::string&);

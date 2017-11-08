@@ -185,11 +185,8 @@ GaussBeamSource::rotate(const localRotate& LR)
   ELog::RegMethod Rega("GaussBeamSource","rotate");
   FixedComp::applyRotation(LR);
 
-  ELog::EM<<"X == "<<X<<ELog::endDiag;
-  ELog::EM<<"Y == "<<Y<<ELog::endDiag;
-  const int aY=std::abs(Y.masterDir());
   if (!X.masterDir() || !Y.masterDir() || !Z.masterDir() ||
-      std::abs(Origin.dotProd(Y))-Origin.abs()>Geometry::zeroTol)
+      std::abs(std::abs(Origin.dotProd(Y))-Origin.abs())>Geometry::zeroTol)
     {
       SourceBase::createTransform(Origin,X,Y,Z);
     }
@@ -210,6 +207,7 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("GaussBeamSource","createSource");
+
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
 
@@ -230,17 +228,17 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
     }
   
   SrcData D1(1);
-  SrcProb SP1(1);
+  SrcProb SP1;
   SP1.setFminus(-41,xWidth,0);
   D1.addUnit(SP1);
   
   SrcData D2(2);
-  SrcProb SP2(1);
+  SrcProb SP2;
   SP2.setFminus(-41,zWidth,0);
   D2.addUnit(SP2);
   
-  sourceCard.setData(xyz[aR % 3],D1);
-  sourceCard.setData(xyz[(aR+1) % 3],D2);
+  sourceCard.setData(xyz[(aR+1) % 3],D1);
+  sourceCard.setData(xyz[aR % 3],D2);
 
   if (TransPtr)
     sourceCard.setComp("tr",TransPtr->getName());
@@ -276,12 +274,13 @@ GaussBeamSource::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("GaussBeamSource","write");
 
-  Source sourceCard;
 
-  createSource(sourceCard);
-  sourceCard.write(OX);
   if (TransPtr)
     TransPtr->write(OX);
+
+  Source sourceCard;
+  createSource(sourceCard);
+  sourceCard.write(OX);
   return;
 }
 
@@ -317,8 +316,8 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
   for(long int i=-nStep;i<nStep;i++)
     for(long int j=-nStep;j<nStep;j++)
       {
-	const double x= i*xStep;
-	const double z= j*zStep;
+	const double x= static_cast<double>(i)*xStep;
+	const double z= static_cast<double>(j)*zStep;
 
 	const double expTerm=
 	  exp(-( x*x/(2.0*xSigma*xSigma)+z*z/(2.0*zSigma*zSigma) ));

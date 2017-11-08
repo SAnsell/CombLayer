@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Transform.h"
 #include "doubleErr.h"
 #include "Triple.h"
 #include "NRange.h"
@@ -73,7 +74,7 @@ ParabolicSource::ParabolicSource(const std::string& keyName) :
   attachSystem::FixedOffset(keyName,0),
   SourceBase(),decayPower(2.0),
   nWidth(5),nHeight(5),
-  width(1.0),height(1.0)
+  width(1.0),height(1.0),angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
@@ -84,7 +85,8 @@ ParabolicSource::ParabolicSource(const ParabolicSource& A) :
   attachSystem::FixedOffset(A),SourceBase(A),
   decayPower(A.decayPower),
   nWidth(A.nWidth),nHeight(A.nHeight),
-  width(A.width),height(A.height)
+  width(A.width),height(A.height),
+  angleSpread(A.angleSpread)
   /*!
     Copy constructor
     \param A :: ParabolicSource to copy
@@ -108,6 +110,7 @@ ParabolicSource::operator=(const ParabolicSource& A)
       nHeight=A.nHeight;
       width=A.width;
       height=A.height;
+      angleSpread=A.angleSpread;
     }
   return *this;
 }
@@ -144,6 +147,7 @@ ParabolicSource::populate(const FuncDataBase& Control)
   decayPower=Control.EvalDefVar<double>(keyName+"DecayPower",decayPower);
   height=Control.EvalDefVar<double>(keyName+"Height",height);
   width=Control.EvalDefVar<double>(keyName+"Width",width);
+  angleSpread=Control.EvalDefVar<double>(keyName+"Width",angleSpread);
   
   return;
 }
@@ -189,7 +193,31 @@ ParabolicSource::setNPts(const size_t NW,const size_t NH)
   nHeight=(NH) ? NH : 1;
   return;
 }
-  
+
+void
+ParabolicSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("ParabolicSource","rotate");
+  FixedComp::applyRotation(LR);
+
+  if (!X.masterDir() || !Y.masterDir() || !Z.masterDir() ||
+      std::abs(std::abs(Origin.dotProd(Y))-Origin.abs())>Geometry::zeroTol)
+    {
+      SourceBase::createTransform(Origin,X,Y,Z);
+    }
+  else
+    {
+      delete TransPtr;
+      TransPtr=0;
+    }
+  return;
+}
+
+
 void
 ParabolicSource::createSource(SDef::Source& sourceCard) const
   /*!
@@ -200,12 +228,25 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("ParabolicSource","createSource");
 
-  SourceBase::createEnergySource(sourceCard);    
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
+  
+    // are we aligned on the master direction:
+  const int aR=(TransPtr) ? 2 : std::abs(Y.masterDir());
 
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Y);
-  sourceCard.setComp("pos",Origin);
-  sourceCard.setComp("y",Origin.dotProd(Y));
+  const std::string xyz[]={"x","y","z"};
+  if (!TransPtr)
+    {
+      sourceCard.setComp(xyz[aR-1],Origin.dotProd(Y));
+      sourceCard.setComp("vec",Y);
+      sourceCard.setComp("axs",Y);
+    }
+  else
+    {
+      sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
+      sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
+    }
+  
   
   std::vector<double> XPts(nWidth+1);
   std::vector<double> XProb(nWidth+1);
@@ -261,10 +302,18 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
   D2.addUnit(SI2);
   D1.addUnit(SP1);
   D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
 
+
+  sourceCard.setData(xyz[(aR+1) % 3],D1); // equiv of +2/-1
+  sourceCard.setData(xyz[aR % 3],D2);
   sourceCard.setComp("ara",4.0*xRange*zRange);
+
+  
+  if (TransPtr)
+    sourceCard.setComp("tr",TransPtr->getName());
+
+  
+  SourceBase::createEnergySource(sourceCard);    
   
   return;
 }
@@ -300,6 +349,8 @@ ParabolicSource::write(std::ostream& OX) const
   Source sourceCard;
   createSource(sourceCard);
   sourceCard.write(OX);
+  if (TransPtr)
+    TransPtr->write(OX);
   return;
 
 }

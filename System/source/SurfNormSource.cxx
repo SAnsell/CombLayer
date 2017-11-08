@@ -163,6 +163,18 @@ SurfNormSource::setSurf(const attachSystem::FixedComp& FC,
   return;
 }
   
+void
+SurfNormSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("SurfNormSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
+
   
 void
 SurfNormSource::createSource(SDef::Source& sourceCard) const

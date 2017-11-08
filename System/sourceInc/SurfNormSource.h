@@ -65,6 +65,7 @@ class SurfNormSource :
 		 const long int);
   void createAll(const attachSystem::FixedComp&,const long int);
 
+  virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void writePHITS(std::ostream&) const;
   virtual void write(std::ostream&) const;

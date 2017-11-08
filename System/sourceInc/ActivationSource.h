@@ -91,6 +91,7 @@ class ActivationSource :
 
   void createAll(Simulation&,const std::string&,const std::string&);
   
+  virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void writePHITS(std::ostream&) const;
   virtual void write(std::ostream&) const;

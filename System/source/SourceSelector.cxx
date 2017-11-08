@@ -143,7 +143,7 @@ sourceSelection(Simulation& System,
   else if (sdefType=="TS3Expt")                    
     sName=SDef::createTS3ExptSource(Control,FC,linkIndex); 
 
-  else if (sdefType=="TS1EpbColl")                 // TS1EPB 
+  else if (sdefType=="TS1EPBColl" || sdefType=="TS1EpbColl")
     sName=SDef::createTS1EPBCollSource(Control,FC,linkIndex); 
 
   else if (sdefType=="Bilbao")                    // bilbauSource
@@ -170,6 +170,7 @@ sourceSelection(Simulation& System,
 				  FC,linkIndex);
   else if (sdefType=="Activation" || sdefType=="activation")
     activationSelection(System,IParam);
+
   else if (sdefType=="Point" || sdefType=="point")
     {
       sName=SDef::createPointSource(Control,"pointSource",
@@ -182,7 +183,6 @@ sourceSelection(Simulation& System,
     }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
-      ELog::EM<<"SDEF == :: Beam"<<ELog::endDiag;
       sName=SDef::createBeamSource(Control,"beamSource",
 			     FC,linkIndex);
     }

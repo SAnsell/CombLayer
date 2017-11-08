@@ -624,7 +624,7 @@ createTS1EPBCollSource(const FuncDataBase& Control,
     \param sideIndex ::surface number
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createTS1EpbCollSource");
+  ELog::RegMethod RegA("SourceCreate","createTS1EPBCollSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   
@@ -663,7 +663,6 @@ createTS2Source(const FuncDataBase& Control,
   const double yStart=Control.EvalDefVar<double>("sdefOffset",-5.0);
 
   GaussBeamSource GBeam("TS2Proton");
-  ELog::EM<<"TS == "<<FC.getSignedLinkAxis(sideIndex)<<ELog::endDiag;
   GBeam.setParticle(9);
   GBeam.setOffset(0,yStart,0);
   GBeam.setEnergy(E);
