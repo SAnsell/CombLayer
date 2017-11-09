@@ -1359,11 +1359,26 @@ DBMaterial::createMaterial(const std::string& MName)
   ELog::RegMethod RegA("DBMaterial","createMaterial");
   if (hasKey(MName)) return 1;
 
+  
   // Now key found
-  std::string::size_type pos=MName.find('%');
+  // can be a new density or a new mix:
+  std::string::size_type pos=MName.find('#');
+  double PFrac;
   if (pos!=std::string::npos)
     {
-      double PFrac;
+      const std::string AKey=MName.substr(0,pos);
+      const std::string BKey=MName.substr(pos+1);
+      if (StrFunc::convert(BKey,PFrac))
+	{
+	  createNewDensity(MName,AKey,PFrac);
+	  return 1;
+	}
+    }
+
+  pos=MName.find('%');
+  if (pos!=std::string::npos)
+    {
+
       const std::string AKey=MName.substr(0,pos);
       const std::string BKey=MName.substr(pos+1);
       if (StrFunc::convert(BKey,PFrac))
@@ -1469,6 +1484,48 @@ DBMaterial::createMix(const std::string& Name,
   MA+=MB;
   MA.setNumber(matNum);
   MA.setName(Name);
+  setMaterial(MA);
+  return matNum;
+}
+
+int
+DBMaterial::createNewDensity(const std::string& Name,
+			     const std::string& MatA,
+			     const double densityFrac)
+  /*!
+    Creates an new material based on density
+    \param Name :: Name of object
+    \param MatA :: Material 
+    \param densityFrac :: scale of denisty  / -ve for absolte
+    
+    \return current number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","createNewDensity");
+
+  const int matNum(getFreeNumber());
+
+  // special case for void 
+  if (std::abs(densityFrac)<1e-5)
+    {
+      MonteCarlo::Material MA=getMaterial("Void");
+      MA.setNumber(matNum);
+      MA.setName(Name);
+      return matNum;
+    }
+  
+  MonteCarlo::Material MA=getMaterial(MatA);
+  MA.setNumber(matNum);
+  MA.setName(Name);
+  
+  if (densityFrac>0.0)
+    MA.setDensity(MA.getAtomDensity()*densityFrac);
+  else if (densityFrac> -0.3)          // atom fraction
+    MA.setDensity(-densityFrac);
+  else                                 // read density
+    MA.setDensity(densityFrac);
+
+
   setMaterial(MA);
   return matNum;
 }

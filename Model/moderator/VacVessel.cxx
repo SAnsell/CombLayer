@@ -418,7 +418,8 @@ VacVessel::createLinks()
 
   // set Links:
   for(size_t i=2;i<6;i++)
-    FixedComp::setConnect(i,getSurfacePoint(4,i+1),getDirection(i));
+    FixedComp::setConnect(i,getSurfacePoint(4,static_cast<long int>(i+1)),
+			  getDirection(i));
 
   // Set Connect surfaces:
   for(int i=2;i<6;i++)

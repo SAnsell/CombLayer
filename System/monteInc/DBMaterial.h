@@ -70,6 +70,8 @@ class DBMaterial
   int createOrthoParaMix(const std::string&,const double);
   int createMix(const std::string&,const std::string&,
 		const std::string&,const double);
+  int createNewDensity(const std::string&,const std::string&,
+		       const double);
 
  public:
   
