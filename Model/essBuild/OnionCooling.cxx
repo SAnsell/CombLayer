@@ -44,6 +44,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 
 #include "BaseMap.h"
@@ -57,7 +58,7 @@ namespace essSystem
 {
 
 OnionCooling::OnionCooling(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   onionIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(onionIndex+1)
   /*!
@@ -69,7 +70,7 @@ OnionCooling::OnionCooling(const std::string& Key) :
 
 OnionCooling::OnionCooling(const OnionCooling& A) :
   attachSystem::ContainedComp(A),
-  attachSystem::FixedComp(A),
+  attachSystem::FixedOffset(A),
   onionIndex(A.onionIndex),cellIndex(A.cellIndex),
   wallThick(A.wallThick),
   wallMat(A.wallMat),wallTemp(A.wallTemp),
@@ -94,7 +95,7 @@ OnionCooling::operator=(const OnionCooling& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
       wallThick=A.wallThick;
       wallMat=A.wallMat;
@@ -134,13 +135,8 @@ OnionCooling::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("OnionCooling","populate");
 
-
-    // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
+  FixedOffset::populate(Control);
+  
   //  height=Control.EvalVar<double>(keyName+"Height");   
   wallThick=Control.EvalVar<double>(keyName+"WallThick");   
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");   
@@ -165,9 +161,8 @@ OnionCooling::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("OnionCooling","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-  
+  applyOffset();
+
   return;
 }
 

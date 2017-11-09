@@ -13,18 +13,12 @@ namespace essSystem
 */
 
 class OnionCooling : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
 
   const int onionIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index. Every object has a space of about 10000 cells unless you request more.
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Angle
-  double zAngle;                  ///< Z Angle
 
   //  double height;                  ///< Height
   double wallThick;               ///< Wall thickness
