@@ -1025,7 +1025,7 @@ makeESS::build(Simulation& System,
   // Cap moderator DOES not span whole unit
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
-  ELog::EM<<"Origin == "<<TopCapMod->getSignedLinkPt(0)<<ELog::endDiag;
+
   if (lowModType != "None")
     LowCapMod->createAll(System,*LowMod,6,false,
 			 0.0,Reflector->getRadius());
