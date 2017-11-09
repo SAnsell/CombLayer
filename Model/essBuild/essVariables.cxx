@@ -493,7 +493,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   TopBFlightWedgeTheta.push_back(t4-dt1);
   TopBFlightWedgeTheta.push_back(t4-2.0*dt1);
 
-  if (TopBFlightNWedges > TopBFlightWedgeTheta.size())
+  if (TopBFlightNWedges > static_cast<int>(TopBFlightWedgeTheta.size()))
     throw ColErr::RangeError<int>(TopBFlightNWedges,0,
 				  static_cast<int>(TopBFlightWedgeTheta.size()),
 				  "NWedges should not exceed size of TopBFlightWedgeTheta");
