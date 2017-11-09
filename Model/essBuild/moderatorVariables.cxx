@@ -237,17 +237,13 @@ EssButterflyModerator(FuncDataBase& Control)
 
 
   // Box moderator
-  Control.addVariable("TopBoxXStep",0.0);
-  Control.addVariable("TopBoxYStep",0.0);
-  Control.addVariable("TopBoxZStep",0.0);
-  Control.addVariable("TopBoxZAngle",0.0);
   Control.addVariable("TopBoxXYAngle",90.0);
   Control.addVariable("TopBoxWallMat","Aluminium");
 
   Control.addVariable("TopBoxMidH2NLayers",4);
 
   Control.addVariable("TopBoxMidH2Length0",10.0);
-  Control.addVariable("TopBoxMidH2Width0",10);
+  Control.addVariable("TopBoxMidH2Width0",10.0);
   Control.addVariable("TopBoxMidH2Height0",1.5);
   Control.addParse<double>("TopBoxMidH2Depth0", "TopBoxMidH2Height0");
   Control.addVariable("TopBoxMidH2Mat0","HPARA");
@@ -261,36 +257,34 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopBoxMidH2Temp1",20.0);
 
   Control.addVariable("TopBoxMidH2Length2",0.5);
-  Control.addParse<double>("TopBoxMidH2Width2","TopBoxMidH2Length2");
+  Control.addParse<double>("TopBoxMidH2Width2", "TopBoxMidH2Length2");
   Control.addParse<double>("TopBoxMidH2Height2","TopBoxMidH2Length2");
   Control.addParse<double>("TopBoxMidH2Depth2", "TopBoxMidH2Height2");
   Control.addVariable("TopBoxMidH2Mat2","Void");
 
   Control.addVariable("TopBoxMidH2Length3",0.3);
-  Control.addParse<double>("TopBoxMidH2Width3","TopBoxMidH2Length3");
-  Control.addVariable("TopBoxMidH2Height3",0.3);
+  Control.addParse<double>("TopBoxMidH2Width3", "TopBoxMidH2Length3");
+  Control.addParse<double>("TopBoxMidH2Height3","TopBoxMidH2Length3");
   Control.addParse<double>("TopBoxMidH2Depth3", "TopBoxMidH2Height3");
   Control.addVariable("TopBoxMidH2Mat3","Aluminium");
 
   Control.addParse<double>("TopBoxTotalHeight",
 			   "TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2+TopBoxMidH2Height3+TopBoxMidH2Depth3");
-  Control.addParse<double>("TopBoxMidH2ZStep",
-			   "-TopBoxTotalHeight/2.0");
+  Control.addParse<double>("TopBoxMidH2ZStep", "-TopBoxTotalHeight/2.0");
 
-  for ( const std::string& s : LR)
-    {
-      Control.addVariable("TopBox"+s+"WaterWidth",30);  
-      Control.addVariable("TopBox"+s+"WaterWallThick",0.347);
-      Control.addVariable("TopBox"+s+"WaterCutAngle",30.0);
-      Control.addVariable("TopBox"+s+"WaterCutWidth",6);
-      Control.addVariable("TopBox"+s+"WaterModMat","Be5H2O");
-      Control.addVariable("TopBox"+s+"WaterWallMat","Aluminium");
-      Control.addVariable("TopBox"+s+"WaterModTemp",300.0);
-      Control.addVariable("TopBox"+s+"WaterMidWallThick",0.0);
-      Control.addVariable("TopBox"+s+"WaterPreThick",3);
-      Control.addVariable("TopBox"+s+"WaterPreMat","H2O");
-      Control.addVariable("TopBox"+s+"WaterPreTemp",300.0);
-   }
+  Control.addVariable("TopBoxLeftWaterWidth",30);  
+  Control.addVariable("TopBoxLeftWaterWallThick",0.347);
+  Control.addVariable("TopBoxLeftWaterCutAngle",30.0);
+  Control.addVariable("TopBoxLeftWaterCutWidth",6);
+  Control.addVariable("TopBoxLeftWaterModMat","Be5H2O");
+  Control.addVariable("TopBoxLeftWaterWallMat","Aluminium");
+  Control.addVariable("TopBoxLeftWaterModTemp",300.0);
+  Control.addVariable("TopBoxLeftWaterMidWallThick",0.0);
+  Control.addVariable("TopBoxLeftWaterPreThick",3);
+  Control.addVariable("TopBoxLeftWaterPreMat","H2O");
+  Control.addVariable("TopBoxLeftWaterPreTemp",300.0);
+  Control.copyVarSet("TopBoxLeft", "TopBoxRight");
+
   Control.addVariable("TopBoxMidH2FlowGuideType", "None");
   ////////////////////////////////////////////////////////////////////////
   
