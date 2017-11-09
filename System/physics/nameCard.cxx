@@ -162,7 +162,6 @@ nameCard::setDefItem(const std::string& kN)
    */
 {
   ELog::RegMethod RegA("nameCard","setDefItem");
-  ELog::EM<<"J insert "<<kN<<ELog::endDiag;
   JUnit.insert(kN);
   return;
 }
