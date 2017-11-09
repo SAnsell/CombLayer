@@ -177,7 +177,6 @@ script:
   - ./testMain -1 -1 -1
   # model quick tests
   - ./fullBuild -r fb_test 
-  - ./ess -r ess_test
   - ./bilbau -r bb_test
   - ./sns -r sns_test
   - ./reactor -r reactor_test
@@ -186,12 +185,18 @@ script:
   - ./photonMod2 -r photon_test
   - ./singleItem -r single_test
   - ./t1MarkII -r t1_test1
-  - ./t1Real -r t1_test2 
+  - ./t1Real -r t1_test2
   # model valid check
   - ./fullBuild -r -validCheck 100000 fb_vtest
- 
-  
-
-
-
-  
+  - ./ess -eng -defaultConfig neutronics Pancake single -mcnp 6 -validCheck 100000 pc-eng-test
+  - ./ess      -defaultConfig neutronics Pancake single -mcnp 6 -validCheck 100000 pc-test
+  - ./ess -eng -defaultConfig neutronics Box single -mcnp 6 -validCheck 100000 box-eng-test
+  - ./ess      -defaultConfig neutronics Box single -mcnp 6 -validCheck 100000 box-test
+  - ./ess -eng -defaultConfig neutronics BF1 single -mcnp 6 -validCheck 100000 bf1-single-eng-test
+  - ./ess      -defaultConfig neutronics BF1 single -mcnp 6 -validCheck 100000 bf1-single-test
+  - ./ess -eng -defaultConfig neutronics BF1 -mcnp 6 -validCheck 100000 bf1-eng-test
+  - ./ess      -defaultConfig neutronics BF1 -mcnp 6 -validCheck 100000 bf1-test
+  - ./ess -eng -defaultConfig neutronics BF2 single -mcnp 6 -validCheck 100000 bf2-single-eng-test
+  - ./ess      -defaultConfig neutronics BF2 single -mcnp 6 -validCheck 100000 bf2-single-test
+  - ./ess -eng -defaultConfig neutronics BF2 -mcnp 6 -validCheck 100000 bf2-eng-test
+  - ./ess      -defaultConfig neutronics BF2 -mcnp 6 -validCheck 100000 bf2-test
