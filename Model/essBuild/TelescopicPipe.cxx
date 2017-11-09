@@ -353,8 +353,8 @@ TelescopicPipe::createAll(Simulation& System,
   if (tIndex)
     {
       TSurf=(tIndex>0) ?
-	TargetFC.getLinkString(static_cast<size_t>(tIndex-1)) :
-	TargetFC.getBridgeComplement(static_cast<size_t>(-(tIndex+1)));
+	TargetFC.getSignedLinkString(static_cast<size_t>(tIndex)) :
+	TargetFC.getSignedCommonRule(static_cast<size_t>(-(tIndex+1+1))).display(); // is it correct instead of getBridgeComplement?
       if (tIndex<0)
 	FixedComp::setLinkComponent(0,TargetFC,
 				    static_cast<size_t>(-(tIndex-1)));
@@ -364,8 +364,10 @@ TelescopicPipe::createAll(Simulation& System,
   if (bIndex)
     {
       const size_t lIndex(static_cast<size_t>(std::abs(bIndex))-1);
+
       BSurf=(bIndex>0) ?
-	BulkFC.getLinkString(lIndex) : BulkFC.getBridgeComplement(lIndex) ;
+	BulkFC.getSignedLinkString(lIndex+1) : // check this
+	BulkFC.getSignedLinkString(bIndex); // at least works fine with TSMainBuokding,-1
       FixedComp::setLinkComponent(1,BulkFC,lIndex);
     }
   createObjects(System,TSurf,BSurf);

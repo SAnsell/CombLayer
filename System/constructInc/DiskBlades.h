@@ -3,7 +3,7 @@
  
  * File:   constructInc/DiskBlades.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,10 +53,11 @@ public:
   DiskBlades();
   DiskBlades(const DiskBlades&);
   DiskBlades& operator=(const DiskBlades&);
-  ~DiskBlades() {};
+  ~DiskBlades() {};           ///< Destructor
 
   void addOpen(const double,const double);
 
+  /// Number of  openings in blade
   size_t getNPhase() const { return nBlades; }
   /// getter for thickness
   double getThick() const { return thick; }

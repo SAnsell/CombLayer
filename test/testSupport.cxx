@@ -3,7 +3,7 @@
  
  * File:   test/testSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <tuple>
 
 #ifndef NO_REGEX
-#include <boost/regex.hpp>
+#include <regex>
 #endif
 
 #include "Exception.h"
@@ -74,7 +74,8 @@ testSupport::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testSupport","applyTest");
-
+  TestFunc::regSector("testSupport");
+  
   typedef int (testSupport::*testPtr)();
   testPtr TPtr[]=
     {
@@ -629,7 +630,7 @@ testSupport::testStrComp()
   std::string Target ="6log 8.9 90.0";
   std::string searchString="(^|\\s)(\\d+)log(\\s|$)";
 #ifndef NO_REGEX
-  boost::regex Re(searchString);
+  std::regex Re(searchString);
 
   int Out(0);
   if (!StrFunc::StrComp(Target,Re,Out,1) ||
@@ -687,7 +688,7 @@ testSupport::testStrFullCut()
       std::vector<std::string> OutVec;
       std::ostringstream cx;
       std::string Target=std::get<0>(tc);
-      boost::regex Re(std::get<1>(tc));
+      std::regex Re(std::get<1>(tc));
       int flag(0);
       // Basic test
       if (std::get<3>(tc).empty())
@@ -744,7 +745,7 @@ testSupport::testStrRemove()
   for(const TTYPE& tc : Tests)
     {
       std::string Y=std::get<0>(tc);
-      boost::regex sstr(std::get<1>(tc));
+      std::regex sstr(std::get<1>(tc));
       std::string Out;
       if (!StrRemove(Y,Out,sstr) ||
 	  Out!=std::get<2>(tc) || Y!=std::get<3>(tc))
@@ -770,34 +771,33 @@ testSupport::testStrParts()
 {
   ELog::RegMethod RegA("testSupport","testStrParts");
 
-#ifndef NO_REGEX
-  
   typedef std::tuple<std::string,std::string,unsigned int,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
+  const std::vector<TTYPE> Tests=
+    {
   
-  // remove space/> at start then split on 
-  Tests.push_back(TTYPE("$var s566>s4332 dxx","[\\s>]*([^\\s>]+)",4,"$var:s566:s4332:dxx:"));
+      // remove space/> at start then split on 
+      TTYPE("$var s566>s4332 dxx","[\\s>]*([^\\s>]+)",4,"$var:s566:s4332:dxx:")
+    };
 
   for(const TTYPE& tc : Tests)
     {
-      std::string Y=std::get<0>(tc);
-      boost::regex sstr(std::get<1>(tc));
-      std::vector<std::string> outVec=StrFunc::StrParts(Y,sstr);      
+      const std::string Y=std::get<0>(tc);
+      std::regex sstr(std::get<1>(tc));
+      const std::vector<std::string> outVec=
+	StrFunc::StrParts(Y,sstr);
+      
       std::ostringstream cx;
-      copy(outVec.begin(),outVec.end(),
-	   std::ostream_iterator<std::string>(cx,":"));
+
+      copy(outVec.begin(),outVec.end(),std::ostream_iterator<std::string>(cx,":"));
 
       if (outVec.size()!=std::get<2>(tc) || cx.str()!=std::get<3>(tc))
 	{
-	  ELog::EM<<"Test of :"<<std::get<0>(tc)<<ELog::endTrace;
-	  ELog::EM<<"Remain[] == "<<Y<< "=="<<ELog::endTrace;
-	  ELog::EM<<"Out == "<<cx.str()<<ELog::endTrace;
+	  ELog::EM<<"Test of :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Remain[] == "<<Y<< "=="<<ELog::endDiag;
+	  ELog::EM<<"Out == "<<cx.str()<<ELog::endDiag;
 	  return -1;
 	}
     }
-
-#endif
-
   return 0;
 }
 
@@ -814,7 +814,7 @@ testSupport::testStrSplit()
   // Start with a <(name)<spc> !> >       
   std::string searchString="<(\\S+)\\s+([^>]*)";
   std::string Target="Pre : <Key Attrib=test> <KeyB Attrib=> KeyC <KeyD A=Y>";
-  boost::regex Re(searchString);
+  std::regex Re(searchString);
   std::vector<std::string> Out;
   StrFunc::StrFullSplit(Target,Re,Out);
   if (Out.size()!=6 || 
@@ -852,7 +852,7 @@ testSupport::testStrSplit()
   Out.clear();
   searchString="(^|\\D+)(\\d*)";
   Target="19 : -56 -45 (4:- 5)";
-  boost::regex ReX(searchString,boost::regex::perl);
+  std::regex ReX(searchString);
   StrFunc::StrFullSplit(Target,ReX,Out);
   std::ostringstream cx;
   copy(Out.begin(),Out.end(),
@@ -875,7 +875,7 @@ testSupport::testStrSplit()
   Out.clear();
   searchString="(\\d+)\\.(\\d\\d)(\\S)";
   Target=" 54097.70c 4506.80c";
-  boost::regex ReY(searchString,boost::regex::perl);
+  std::regex ReY(searchString);
   StrFunc::StrSingleSplit(Target,ReY,Out);
   cx.str("");
   copy(Out.begin(),Out.end(),

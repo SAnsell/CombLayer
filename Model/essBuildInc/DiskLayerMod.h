@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DiskLayerMod.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,8 @@ namespace essSystem
 class DiskLayerMod : public attachSystem::ContainedComp,
     public attachSystem::LayerComp,
     public attachSystem::FixedComp,
-    public attachSystem::CellMap
+    public attachSystem::CellMap,
+    public attachSystem::SurfMap
 {
  private:
   
@@ -77,7 +78,8 @@ class DiskLayerMod : public attachSystem::ContainedComp,
   virtual std::string getLayerString(const size_t,const long int) const;
 
   /// total height of object
-  double getHeight() const { return getLinkDistance(5,6); }
+  double getHeight() const;
+
   /// Step on object
   double getZOffset() const { return zStep; }
 

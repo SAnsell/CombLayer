@@ -3,7 +3,7 @@
  
  * File:   commonVar/BladeGenerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,10 +137,12 @@ BladeGenerator::setInnerThick(const std::vector<double>& T)
     \param T :: Thickness vector [no checking]
    */
 {
+  ELog::RegMethod RegA("BladeGenerator","setInnerThick");
+  
   innerThick=T;
   for(size_t i=0;i<thick.size() && i<innerThick.size();i++)
     if (thick[i]-innerThick[i]>Geometry::zeroTol)
-      ELog::EM<<"Error with Thickness/InnerThicknes["<<i
+      ELog::EM<<"Error with Thickness/InnerThickness["<<i
 	      <<"] = "<<thick[i]<<" "<<innerThick[i]<<ELog::endErr;
   return;
 }
@@ -228,9 +230,18 @@ BladeGenerator::generateBlades(FuncDataBase& Control,
 {
   ELog::RegMethod RegA("BladeGenerator","generatorBlade");
 
+  double realYStep=yStep;
+  if (std::abs(yStep)<Geometry::zeroTol && !thick.empty())
+    {
+      realYStep= -std::accumulate(thick.begin(),thick.end(),0.0);
+      realYStep+=thick.front();  // front allowed for
+      realYStep-=(static_cast<double>(thick.size())-1.0)*gap;
+      realYStep/=2.0;
+    }
+  
   // Double Blade chopper
   Control.addVariable(keyName+"XStep",0.0);
-  Control.addVariable(keyName+"YStep",yStep);
+  Control.addVariable(keyName+"YStep",realYStep);
   Control.addVariable(keyName+"ZStep",0.0);
   Control.addVariable(keyName+"XYangle",0.0);
   Control.addVariable(keyName+"Zangle",0.0);

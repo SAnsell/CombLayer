@@ -3,7 +3,7 @@
  
  * File:   essBuild/BunkerRoof.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,61 @@ BunkerRoof::BunkerRoof(const std::string& bunkerName) :
   */
 {}
 
+BunkerRoof::BunkerRoof(const BunkerRoof& A) : 
+  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::CellMap(A),
+  attachSystem::SurfMap(A),
+  baseName(A.baseName),roofIndex(A.roofIndex),cellIndex(A.cellIndex),
+  roofThick(A.roofThick),roofMat(A.roofMat),activeRoof(A.activeRoof),
+  nVert(A.nVert),nRadial(A.nRadial),nMedial(A.nMedial),
+  vert(A.vert),radial(A.radial),medial(A.medial),
+  nBasicVert(A.nBasicVert),basicVert(A.basicVert),
+  basicMatVec(A.basicMatVec),loadFile(A.loadFile),
+  outFile(A.outFile),divider(A.divider),baseSurf(A.baseSurf),
+  topSurf(A.topSurf),innerSurf(A.innerSurf),outerSurf(A.outerSurf)
+  /*!
+    Copy constructor
+    \param A :: BunkerRoof to copy
+  */
+{}
+
+BunkerRoof&
+BunkerRoof::operator=(const BunkerRoof& A)
+  /*!
+    Assignment operator
+    \param A :: BunkerRoof to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      cellIndex=A.cellIndex;
+      roofThick=A.roofThick;
+      roofMat=A.roofMat;
+      activeRoof=A.activeRoof;
+      nVert=A.nVert;
+      nRadial=A.nRadial;
+      nMedial=A.nMedial;
+      vert=A.vert;
+      radial=A.radial;
+      medial=A.medial;
+      nBasicVert=A.nBasicVert;
+      basicVert=A.basicVert;
+      basicMatVec=A.basicMatVec;
+      loadFile=A.loadFile;
+      outFile=A.outFile;
+      divider=A.divider;
+      baseSurf=A.baseSurf;
+      topSurf=A.topSurf;
+      innerSurf=A.innerSurf;
+      outerSurf=A.outerSurf;
+    }
+  return *this;
+}
 
 BunkerRoof::~BunkerRoof() 
   /*!

@@ -3,7 +3,7 @@
  
  * File:   weightsInc/weightManager.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,8 @@ class weightManager
   static weightManager& Instance();
   ~weightManager();
   
-  WForm* getParticle(const char);
+  bool hasParticle(const char) const;
+  WForm* getParticle(const char) const;
   WWG& getWWG();
   const WWG& getWWG() const;
   template<typename T> void addParticle(const char);
@@ -66,6 +67,8 @@ class weightManager
   void renumberCell(const int,const int);  
   void maskCell(const int);
   bool isMasked(const int) const;
+
+  void writePHITS(std::ostream&) const;
   void write(std::ostream&) const;
 
 };

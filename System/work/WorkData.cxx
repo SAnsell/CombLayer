@@ -3,7 +3,7 @@
  
  * File:   work/WorkData.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,6 @@
 #include <boost/format.hpp>
 
 #include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -116,6 +114,30 @@ WorkData::setX(const size_t Index,const double XPt)
     }
 
   XCoord[Index]=XPt;
+  return;
+}
+
+void
+WorkData::setLogX(const double XMin,const double XMax,const size_t NPts)
+  /*!
+    Set a log set of points for X
+    \param XMin :: Low X value [+ve]
+    \param XMax :: High X value [+ve]
+    \param NPts :: number of points
+   */
+{
+  ELog::RegMethod RegA("WorkData","setLogX");
+  if (NPts<1) return;
+  
+  if (XMin<=0.0 || XMax<0.0 || XMax==XMin)
+    throw ColErr::NumericalAbort("Xmin == "+std::to_string(XMin)+
+                                 " Xmax == "+std::to_string(XMax));
+
+  XCoord.resize(NPts);
+  Yvec.clear();
+  for(size_t i=0;i<NPts;i++)
+    XCoord[i]=mathFunc::logFromLinear(XMin,XMax,NPts,i);
+  Yvec.resize(NPts-1,DError::doubleErr(0.0,0.0));
   return;
 }
 
@@ -564,6 +586,7 @@ WorkData::operator*(const double V)  const
   return Out;
 }
 
+
 WorkData
 WorkData::operator/(const double V)  const
   /*!
@@ -576,6 +599,25 @@ WorkData::operator/(const double V)  const
   WorkData Out=WorkData(*this);
   Out/=V;
   return Out;
+}
+
+void
+WorkData::normalize(const size_t NPts)
+  /*!
+    Normalize the data to N pts
+    \param NPts :: Number of points [not zero]
+  */
+{
+  ELog::RegMethod RegA("WorkData","normalize");
+
+  if (NPts)
+    {
+      const double scale(1.0/static_cast<double>(NPts));
+      weight*=scale;
+  
+      this->operator*=(scale);
+    }
+  return;
 }
 
 WorkData&
@@ -761,6 +803,39 @@ WorkData::getIndex(const double X,const double Y) const
 }
 
 size_t
+WorkData::getXIndex(const double X) const
+  /*!
+    Find the appropiate X bin
+    \param X :: X coordinate
+    \return index of point [ULONG_MAX on unfound coordinate]
+   */
+{
+  if (XCoord.empty() ||
+      XCoord.front()>X ||
+      XCoord.back()<X)
+    return ULONG_MAX;
+
+  std::vector<double>::const_iterator vc=
+    lower_bound(XCoord.begin(),XCoord.end(),X);
+  return static_cast<size_t>(vc-XCoord.begin());
+}
+
+void
+WorkData::addPoint(const double XC,const double YVal)
+  /*!
+    Add a point to existing bin
+    \param XC :: XValue
+    \param YVal :: Data point ot add
+  */
+{
+  const size_t Index=getXIndex(XC);
+  if (Index<=XCoord.size())
+    Yvec[Index]+=YVal;
+  return;
+}
+
+
+size_t
 WorkData::getMaxPoint() const
   /*!
     Determine the highest valued point
@@ -928,27 +1003,6 @@ WorkData::selectColumn(std::istream& IX,const int xcol,const int ycol,
   return 0;
 }
 
-void
-WorkData::write(std::ostream& OX) const
-  /*!
-    Writes out information about the WorkData
-    \param OX :: Output stream
-  */
-{
-  if (XCoord.size()>=1)
-    OX<<"Xrange:"<<XCoord.front()<<" "<<XCoord.back()
-      <<" ("<<XCoord.size()<<")"<<std::endl;
-  
-  const size_t MP(this->getMaxPoint());
-  if (MP==ULONG_MAX)
-    OX<<"No data"<<std::endl;
-  else
-    OX<<"Max ("<<MP<<")[<<"<<
-      XCoord[MP]<<"] == "<<Yvec[MP]<<std::endl;
-  
-  return; 
-}
-
 DError::doubleErr
 WorkData::integrate(const double xMin,const double xMax) const
   /*!
@@ -969,7 +1023,7 @@ WorkData::integrate(const double xMin,const double xMax) const
   // Get first point
   size_t i;
   for(i=0;i<Yvec.size() && XCoord[i+1]<xMin;i++) ;
-  if (i!=Yvec.size())   
+  if (i<Yvec.size())   
     {
       // Only one bin:
       if (XCoord[i+1]>xMax)
@@ -1022,6 +1076,35 @@ WorkData::integrateX(const double xMin,const double xMax) const
     }
   return sum;
 }
+WorkData&
+WorkData::sort()
+  /*!
+    Sort the data based on the X value
+    \return WorkData [after sort]
+  */
+{
+  ELog::RegMethod RegA("WorkData","sort");
+  
+  if (XCoord.size()>=2)
+    {
+      std::vector<size_t> Index(XCoord.size());
+      std::generate(Index.begin(),Index.end(),IncSeq());
+      indexSort(XCoord,Index);
+      std::vector<double> XItems;
+      std::vector<DError::doubleErr> YItems;
+      std::vector<size_t>::const_iterator vc;
+      for(vc=Index.begin();vc!=Index.end();vc++)
+	{
+	  XItems.push_back(XCoord[*vc]);
+	  if (*vc)
+	    YItems.push_back(Yvec[*vc-1]);
+	}
+      XCoord=XItems;
+      Yvec=YItems;
+    }
+  
+  return *this;
+}
 
 void
 WorkData::stream(std::ostream& OX) const
@@ -1039,6 +1122,28 @@ WorkData::stream(std::ostream& OX) const
   return;
  
 }
+
+void
+WorkData::write(std::ostream& OX) const
+  /*!
+    Writes out information about the WorkData
+    \param OX :: Output stream
+  */
+{
+  if (XCoord.size()>=1)
+    OX<<"Xrange:"<<XCoord.front()<<" "<<XCoord.back()
+      <<" ("<<XCoord.size()<<")"<<std::endl;
+  
+  const size_t MP(this->getMaxPoint());
+  if (MP==ULONG_MAX)
+    OX<<"No data"<<std::endl;
+  else
+    OX<<"Max ("<<MP<<")[<<"<<
+      XCoord[MP]<<"] == "<<Yvec[MP]<<std::endl;
+  
+  return; 
+}
+
 
 void
 WorkData::write(const std::string& FName) const

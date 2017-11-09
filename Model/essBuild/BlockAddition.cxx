@@ -3,7 +3,7 @@
  
  * File:   essBuild/BlockAddition.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -131,32 +131,6 @@ BlockAddition::~BlockAddition()
     Destructor
   */
 {}
-
-std::string
-BlockAddition::getLinkComplement(const size_t sideIndex) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  if (active)
-    return FixedComp::getLinkComplement(sideIndex);
-  return std::string("");
-}
-
-std::string
-BlockAddition::getLinkString(const size_t sideIndex) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  if (active)
-    return FixedComp::getLinkString(sideIndex);
-  return std::string("");
-}
 
 void
 BlockAddition::populate(const FuncDataBase& Control)
@@ -538,9 +512,9 @@ BlockAddition::createAll(Simulation& System,
     \param System :: Simulation
     \param O :: Origin (from track intersect)
     \param FC :: FixedComp for the angle
-    \param CylPeMod :: Cylindrical moderator [3 surfaces]
-    \param sideIndex :: Index object direction
+    \param CylPreMod :: Cylindrical moderator [3 surfaces]
     \param layerIndex :: Level to join to
+    \param sideIndex :: Index object direction
    */
 {
   ELog::RegMethod RegA("BlockAddition","createAll");

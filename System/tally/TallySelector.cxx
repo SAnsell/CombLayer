@@ -56,12 +56,13 @@
 #include "addInsertObj.h"
 #include "TallySelector.h"
 
-
-#include "basicConstruct.h"
 #include "pointConstruct.h"
 #include "meshConstruct.h"
+#include "tmeshConstruct.h"
+#include "fmeshConstruct.h"
 #include "fluxConstruct.h"
 #include "heatConstruct.h"
+#include "fissionConstruct.h"
 #include "itemConstruct.h"
 #include "surfaceConstruct.h"
 #include "sswConstruct.h"
@@ -81,7 +82,8 @@ tallySelection(Simulation& System,const mainSystem::inputParam& IParam)
   ELog::RegMethod RegA("TallySelector","tallySelection(basic)");
 
   tallySystem::tallyConstructFactory FC;
-  tallySystem::tallyConstruct TallyBuilder(FC);
+  tallySystem::tallyConstruct& TallyBuilder=
+    tallySystem::tallyConstruct::Instance(&FC);
 
   return TallyBuilder.tallySelection(System,IParam);
 }
@@ -91,7 +93,7 @@ void
 tallyAddition(Simulation& System,
 	      const mainSystem::inputParam& IParam)
   /*
-    Applies a large number of modifications to the tally system
+    Adds components to the model -- should NOT be here
     \param System :: Simulation to get tallies from 
     \param IParam :: Parameters
   */
@@ -122,6 +124,12 @@ tallyAddition(Simulation& System,
 	    " -- sphere object FixedComp linkPt +Vec3D(x,y,z) radius \n";
 	  ELog::EM<<
 	    " -- sphere free Vec3D(x,y,z) radius \n";
+	  ELog::EM<<
+	    " -- grid object FixedComp linkPt +Vec3D(x,y,z) "
+	    " NL length thick gap mat \n";
+	  ELog::EM<<
+	    " -- grid free Vec3D(x,y,z) Vec3D(yAxis) Vec3D(zAxis)"
+	    " NL length thick gap mat \n";
 	  ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;
@@ -129,7 +137,6 @@ tallyAddition(Simulation& System,
       const std::string PType=
 	IParam.getValueError<std::string>("TAdd",index,1,eMess);
 
-      size_t ptI;
       std::string FName,LName;
       Geometry::Vec3D VPos,YAxis,ZAxis;
       if (key=="Plate" || key=="plate")
@@ -168,6 +175,46 @@ tallyAddition(Simulation& System,
 	  else
 	    constructSystem::addInsertPlateCell
 	      (System,PName,VPos,YAxis,ZAxis,XW,YT,ZH,mat);
+	  
+	}
+      else if (key=="Grid" || key=="Grid")
+	{
+	  size_t ptI;
+	  const std::string PName="insertGrid"+StrFunc::makeString(index);
+	  if (PType=="object")
+	    {
+	      ptI=4;
+	      FName=IParam.getValueError<std::string>("TAdd",index,2,eMess);
+	      LName=IParam.getValueError<std::string>("TAdd",index,3,eMess);
+	      VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else if (PType=="free")
+	    {
+	      ptI=2;
+              VPos=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              YAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+              ZAxis=IParam.getCntVec3D("TAdd",index,ptI,eMess);
+	    }
+	  else
+	    throw ColErr::InContainerError<std::string>(PType,"plate type");
+	  
+	  const size_t NL=
+	    IParam.getValueError<size_t>("TAdd",index,ptI,eMess);
+	  const double length=
+	    IParam.getValueError<double>("TAdd",index,ptI+1,eMess);
+	  const double thick=
+	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+2);
+	  const double gap=
+	    IParam.getDefValue<double>(0.1,"TAdd",index,ptI+3);
+	  const std::string mat=
+            IParam.getDefValue<std::string>("Void","TAdd",index,ptI+4);
+	  
+	  if (PType=="object")
+	    constructSystem::addInsertGridCell
+	      (System,PName,FName,LName,VPos,NL,length,thick,gap,mat);
+	  else
+	    constructSystem::addInsertGridCell
+	      (System,PName,VPos,YAxis,ZAxis,NL,length,thick,gap,mat);
 	  
 	}
       else if (key=="Sphere" || key=="sphere")
@@ -223,6 +270,7 @@ tallyAddition(Simulation& System,
 	    }
 	  else
 	    throw ColErr::InContainerError<std::string>(PType,"cylinder type");
+	  
 	  const double radius=
 	    IParam.getValueError<double>("TAdd",index,ptI,eMess);
 	  const double length=
@@ -423,8 +471,7 @@ tallyModification(Simulation& System,
 }
 
 void
-tallyRenumberWork(Simulation& System,
-		  const mainSystem::inputParam& IParam)
+tallyRenumberWork(Simulation&,const mainSystem::inputParam&)
   /*!
     An amalgumation of values to determine what sort of tallies to put
     in the system.
@@ -435,9 +482,9 @@ tallyRenumberWork(Simulation& System,
   ELog::RegMethod RegA("TallySelector","tallyRenumberWork");
 
 
-  tallySystem::tallyConstructFactory FC;
-  tallySystem::tallyConstruct TallyBuilder(FC);
-  TallyBuilder.tallyRenumber(System,IParam);
+  // tallySystem::tallyConstructFactory FC;
+  // tallySystem::tallyConstruct TallyBuilder(FC);
+  // TallyBuilder.tallyRenumber(System,IParam);
  
   return;
 }

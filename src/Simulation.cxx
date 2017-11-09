@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,10 +61,12 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
+#include "pairRange.h"
 #include "Tally.h"
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
+#include "tmeshTally.h"
 #include "sswTally.h"
 #include "tallyFactory.h"
 #include "Transform.h"
@@ -1238,6 +1240,32 @@ Simulation::calcAllVertex()
 }
 
 void
+Simulation::updateSurface(const int SN,const std::string& SLine)
+  /*!
+    Update a surface that has already been assigned:
+    \param SN :: Surface number
+    \param SLine :: Surface string
+   */
+{
+  ELog::RegMethod RegA("Simulation","updateSurface");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  if (SurI.getSurf(SN))
+    SurI.deleteSurface(SN);
+  SurI.createSurface(SN,0,SLine);
+  //
+  OTYPE::iterator oc;
+  for(oc=OList.begin();oc!=OList.end();oc++)
+    {
+      if (oc->second->hasSurface(SN))
+	{
+	  oc->second->rePopulate();
+	}
+    }
+  return;
+}
+
+void
 Simulation::addObjSurfMap(MonteCarlo::Qhull* QPtr)
   /*! 
     Add an object surface mappings.
@@ -1541,13 +1569,51 @@ Simulation::writeTally(std::ostream& OX) const
   OX<<"c -----------------------------------------------------------"<<std::endl;
   OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
+  std::vector<tallySystem::tmeshTally*> TMeshVec;
   for(const TallyTYPE::value_type& TM : TItem)
-    TM.second->write(OX);
+    {
+      tallySystem::tmeshTally* TMPtr=
+	dynamic_cast<tallySystem::tmeshTally*>(TM.second);
+      if (!TMPtr)
+	TM.second->write(OX);
+      else
+	TMeshVec.push_back(TMPtr);
+    }
+  int index(1);
 
+  typedef std::vector<tallySystem::tmeshTally*> doseTYPE;
+
+  doseTYPE doseMesh;
+  if (!TMeshVec.empty())
+    {
+      OX<<"tmesh"<<std::endl;
+      for(tallySystem::tmeshTally* TMPtr : TMeshVec)
+	{
+	  if (TMPtr->hasActiveMSHMF())
+            {
+              // check if mesh currently exists:
+              const pairRange& mshValue=TMPtr->getMSHMF();
+              doseTYPE::const_iterator mc=
+                std::find_if(doseMesh.begin(),doseMesh.end(),
+                             [&mshValue](const doseTYPE::value_type& A) -> bool
+                             {
+                               return (A->getMSHMF() == mshValue);
+                             });
+              if (mc==doseMesh.end())
+                {
+                  TMPtr->setActiveMSHMF(index++);
+                  doseMesh.push_back(TMPtr);
+                }
+              else
+                {
+                  TMPtr->setActiveMSHMF(-(*mc)->hasActiveMSHMF());
+                }
+            }
+          TMPtr->write(OX);
+	}
+      OX<<"endmd"<<std::endl;
+    }
+  
   return;
 }
 
@@ -1639,7 +1705,6 @@ Simulation::writeMaterial(std::ostream& OX) const
   DB.resetActive();
 
 
-
   if (!PhysPtr->getMode().hasElm("h"))
     DB.deactivateParticle("h");
   
@@ -1695,27 +1760,31 @@ Simulation::writePhysics(std::ostream& OX) const
   std::map<int,tallySystem::Tally*>::const_iterator mc;
   std::vector<int> Idum;
   std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
+  if (mcnpVersion==10)
     {
-      const tallySystem::pointTally* Ptr=
-        dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-          Idum.push_back(Ptr->getKey());
-          for(size_t i=0;i<4;i++)
-            Rdum.push_back(Ptr->getWindowPt(i));
-          Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
-        }
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-        OX<<"           "<< *vc<<std::endl;
+      for(mc=TItem.begin();mc!=TItem.end();mc++)
+	{
+	  const tallySystem::pointTally* Ptr=
+	    dynamic_cast<const tallySystem::pointTally*>(mc->second);
+	  if(Ptr && Ptr->hasRdum())
+	    {
+	      Idum.push_back(Ptr->getKey());
+	      for(size_t i=0;i<4;i++)
+		Rdum.push_back(Ptr->getWindowPt(i));
+	      Rdum.push_back(Geometry::Vec3D(Ptr->getSecondDist(),0,0));
+	    }
+	}
+      
+      if (!Idum.empty())
+	{
+	  OX<<"idum "<<Idum.size()<<" ";
+	  copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
+	  OX<<std::endl;
+	  OX<<"rdum       "<<Rdum.front()<<std::endl;
+	  std::vector<Geometry::Vec3D>::const_iterator vc;
+	  for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
+	    OX<<"           "<< *vc<<std::endl;
+	}
     }
   
   // Remaining Physics cards
@@ -1735,6 +1804,8 @@ Simulation::writeVariables(std::ostream& OX,
 {
   ELog::RegMethod RegA("Simulation","writeVaraibles");
   OX<<commentChar<<" ---------- VERSION NUMBER ------------------"<<std::endl;
+  OX<<commentChar<<"  ===Git: "<<version::Instance().getBuildTag()
+    <<" ====== "<<std::endl;
   OX<<commentChar<<"  ========= "<<version::Instance().getIncrement()
     <<" ========== "<<std::endl;
   OX<<commentChar<<" ----------------------------------------------"<<std::endl;
@@ -1793,7 +1864,6 @@ Simulation::writeCinder() const
   ELog::RegMethod RegA("Simulation","writeCinder");
 
   writeCinderMat();
-  writeHTape();
   return;
 }
 
@@ -1818,45 +1888,6 @@ Simulation::write(const std::string& Fname) const
   writeTally(OX);
   writePhysics(OX);
   OX.close();
-  return;
-}
-
-void
-Simulation::writeHTape() const
-  /*!
-    Write out the all the f4 tallys 
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeHTape");
-
-  unsigned int index(0);
-  std::string tail="a"; 
-  TallyTYPE::const_iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::cellFluxTally* CPtr=
-	dynamic_cast<const tallySystem::cellFluxTally*>(mc->second);
-      if (CPtr)
-	{
-	  CPtr->writeHTape("inth",tail);
-	  if (tail[index]=='z')
-	    {
-	      if (index==0)
-		{
-		  tail[index]='a';
-		  tail+='a';
-		  index=1;
-		}
-	      else
-		{
-		  tail[0]++;
-		  tail[1]='a';
-		}
-	    }
-	  else
-	    tail[index]++;
-	}
-    }
   return;
 }
 
@@ -1979,7 +2010,7 @@ Simulation::getCellWithMaterial(const int matN) const
 }
 
 std::vector<int>
-Simulation::getCellWithZaid(const int zaidNum) const
+Simulation::getCellWithZaid(const size_t zaidNum) const
   /*!
     Ugly function to return the current
     vector of cells with a particular zaid type
@@ -2289,7 +2320,7 @@ Simulation::masterRotation()
 	if (sdef.rotateMaster())
           ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
       }
-  // Applyotations to tallies
+  // Apply rotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();

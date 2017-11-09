@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testFortranWrite.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,6 +114,7 @@ testFortranWrite::testParse()
   */
 {
   ELog::RegMethod RegA("testFortranWrite","testParse");
+  TestFunc::regSector("testFortranWrite");
 
   // type : Init string : final
   typedef std::tuple<std::string,std::string> TTYPE;

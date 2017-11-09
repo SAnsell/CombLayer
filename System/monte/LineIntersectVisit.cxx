@@ -3,7 +3,7 @@
  
  * File:   monte/LineIntersectVisit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <complex>
 #include <memory>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -282,6 +283,7 @@ LineIntersectVisit::procTrack(const Geometry::Surface* surfID)
   */
 {
   // Calculate the distances to the points
+  // add uncalculated DOut pointes
   for(size_t i=DOut.size();i<PtOut.size();i++)
     {
       const Geometry::Vec3D LP=PtOut[i]-ATrack.getOrigin();
@@ -309,6 +311,26 @@ LineIntersectVisit::getDist(const Geometry::Surface* SPtr)
 				   SPtr->className()+">");
 
   return DOut[0];
+}
+
+double
+LineIntersectVisit::getForwardDist(const Geometry::Surface* SPtr) 
+  /*!
+    Calculate the distance to the closest point along the line
+    to the surface SPtr. Only in the forward direction
+    \param SPtr :: surface to intersect
+    \return distance
+  */
+{
+  SPtr->acceptVisitor(*this);
+  
+  for(const double& D : DOut)
+    if (D>Geometry::zeroTol)
+      return D;
+  
+  throw ColErr::EmptyValue<void>("LineIntersecVisit::getDist<"+
+				 SPtr->className()+">");
+  
 }
 
 Geometry::Vec3D
@@ -353,7 +375,8 @@ LineIntersectVisit::getPoint(const std::string& RuleStr,
   /*!
     Calculate the point at the closest point along the line
     to the surface SPtr
-    \param SPtr :: surface to intersect
+    \param RuleStr :: Rule descriptor to intersect
+    \param nearPt :: Point ot use to intersect
     \return Points
   */
 {

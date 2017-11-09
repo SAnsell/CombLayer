@@ -3,7 +3,7 @@
  
  * File:   process/surfDivide.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <functional>
 #include <boost/format.hpp>
 
 #include "Exception.h"
@@ -571,7 +572,7 @@ surfDivide::procSurfDivide(Simulation& System,
 
 int
 surfDivide::procSimpleDivide(Simulation& System,
-			   const ModelSupport::surfRegister& SMap,
+                             const ModelSupport::surfRegister& SMap,
 			     const int cellNumber,
 			     const int moduleIndex,
 			     const int surfCreate,
@@ -581,15 +582,15 @@ surfDivide::procSimpleDivide(Simulation& System,
     Process all the basic dividing layers -- simple split
     \param System :: Simuation 
     \param SMap :: Surface registration
-    \param cellNubmer :: cell number to process
-    \param moduleNumber :: offset number
+    \param cellNubmer :: cell number to split/process
+    \param moduleIndex :: offset number for surfaces in VA
     \param surfCreate :: first surface number for new surface
     \param cellCreate :: first cell number for new object [0 no action]
-    \param VA :: Offset vector
+    \param VA :: Pairs of surface number to split
     \return cell nubmer
    */
 {
-  ELog::RegMethod Rega("surfDivide","procSurfDivide");
+  ELog::RegMethod Rega("surfDivide","procSimpleDivide");
   
   std::string OutA,OutB;
   // Cell Specific:

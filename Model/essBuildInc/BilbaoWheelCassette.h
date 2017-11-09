@@ -66,10 +66,10 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   int mainMat;                  ///< main material
   int wallMat;                  ///< wall material
   int heMat;                    ///< Helium material
-  size_t floor;                 ///< Floor link point
-  size_t roof;                  ///< Roof link point
-  size_t back;                  ///< Back cylinder link point
-  size_t front;                 ///< Front cylinder link point
+  long floor;                   ///< Floor link point
+  long roof;                    ///< Roof link point
+  long back;                    ///< Back cylinder link point
+  long front;                   ///< Front cylinder link point
 
   double getSegWallArea() const;
   double getSegWallThick() const;
@@ -95,10 +95,10 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,
-		 const size_t,
-		 const size_t,
-		 const size_t,
-		 const size_t,
+		 const long int,
+		 const long int,
+		 const long int,
+		 const long int,
 		 const double&);
 
 };

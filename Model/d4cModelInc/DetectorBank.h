@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   d4cModelInc/DetectorBank.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace d4cSystem
 */
 
 class DetectorBank : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
@@ -49,12 +49,6 @@ class DetectorBank : public attachSystem::ContainedComp,
   const std::string baseName;     ///< Base name       
   const int detIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< Sub-rotation after centreAngle
-  double zAngle;                  ///< sub-rotation z angle
 
   double centreOffset;            ///< Main origin centre distance [Z Rot Axis]
   double centreAngle;             ///< Main origin Y Axis Rotatoin

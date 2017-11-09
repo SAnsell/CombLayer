@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMXvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,18 +76,16 @@ shortNMXvariables(FuncDataBase& Control)
 
   
   // Pipe in gamma shield
-  FGen.setGuideMat("Aluminium");
-  FGen.setThickness(0.5,0.4);
+  FGen.setLayer(1,0.5,"Aluminium");
+  FGen.setLayer(2,0.4,"Void");
   PipeGen.generatePipe(Control,"shortNMXPipeB",8.0,46.0);
 
   FGen.clearYOffset();
   FGen.generateTaper(Control,"shortNMXFB",44.0,6.0,6.0,2.0,2.0);
 
   // Pipe to wall
-  FGen.setGuideMat("Aluminium");
   PipeGen.generatePipe(Control,"shortNMXPipeC",2.0,495.0);
-  FGen.generateTaper(Control,"shortNMXFC",440.0,8.0,8.0,2.0,2.0);
-
+  FGen.generateTaper(Control,"shortNMXFC",440.0,10.0,1.0,10.0,1.0);
 
   return;
 }

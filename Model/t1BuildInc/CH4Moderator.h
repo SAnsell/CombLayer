@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/CH4Moderator.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,18 +37,14 @@ namespace ts1System
 */
 
 class CH4Moderator : public attachSystem::ContainedComp,
-    public attachSystem::LayerComp,public attachSystem::FixedComp
+  public attachSystem::LayerComp,
+  public attachSystem::FixedOffset
 {
  private:
   
   const int ch4Index;            ///< Index of surface offset
   int cellIndex;                ///< Cell index
   
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-  double xyAngle;               ///< Angle [degrees]
-
   double width;                 ///< width
   double height;                ///< height
   double depth;                 ///< viewed distance [inner]
@@ -58,15 +54,15 @@ class CH4Moderator : public attachSystem::ContainedComp,
   double innerThick;            ///< Al thickness [inner]
   double vacThick;              ///< Vac layer
   double outerThick;            ///< Al thickness (out)
-  double clearThick;            ///< final clearacnce
+  double clearThick;            ///< final clearance
 
   double vacTop;              ///< Target vac space
   double outerView;            ///< Al thickness (out)
-  double clearTop;            ///< final clearacnce
+  double clearTop;            ///< final clearance
 
-  double poisonXStep;                 ///< Poison Offset on X to Origin
-  double poisonYStep;                 ///< Offset on Y
-  double poisonZStep;                 ///< Offset on Z
+  double poisonXStep;               ///< Poison Offset on X to Origin
+  double poisonYStep;               ///< Offset on Y
+  double poisonZStep;               ///< Offset on Z
   double poisonGdThick;             ///< Poison (Gadolinium) thickness
   double poisonAlThick;             ///< Poison (Aluminium) thickness
 
@@ -77,9 +73,9 @@ class CH4Moderator : public attachSystem::ContainedComp,
   
   double ch4Temp;                ///< CH4 temperature
 
-  void applyModification(std::map<size_t,double>&) const;
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
 
   void createSurfaces();
@@ -93,14 +89,15 @@ class CH4Moderator : public attachSystem::ContainedComp,
   CH4Moderator(const CH4Moderator&);
   CH4Moderator& operator=(const CH4Moderator&);
   virtual ~CH4Moderator();
-//
+
   std::string getComposite(const std::string&) const;
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
 
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

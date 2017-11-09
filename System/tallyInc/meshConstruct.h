@@ -3,7 +3,7 @@
  
  * File:   tallyInc/meshConstruct.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,11 @@ namespace attachSystem
   class FixedComp;
 }
 
+namespace mainSystem
+{
+  class inputParam;
+}
+
 class Simulation;
 
 namespace tallySystem
@@ -40,28 +45,27 @@ namespace tallySystem
   \brief Constructs a mesh tally from inputParam
 */
 
-class meshConstruct : virtual public basicConstruct
+class meshConstruct 
 {
- private:
+ protected:
 
   static const std::string& getDoseConversion();
   static const std::string& getPhotonDoseConversion();
   static void calcXYZ(const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
 
-  int fmeshFlag;         ///< Output to FMesh
-  
+  static void getObjectMesh(const mainSystem::inputParam&,
+			    const size_t,const size_t,
+			    Geometry::Vec3D&,
+			    Geometry::Vec3D&,
+			    std::array<size_t,3>&);
 
-  void rectangleMesh(Simulation&,const int,const std::string&,
-		     const Geometry::Vec3D&,const Geometry::Vec3D&,
-		     const size_t*) const;
-  void rectangleFMesh(Simulation&,const int,const std::string&,
-		     const Geometry::Vec3D&,const Geometry::Vec3D&,
-		     const size_t*) const;
-	       
+  static void getFreeMesh(const mainSystem::inputParam&,
+			    const size_t,const size_t,
+			    Geometry::Vec3D&,
+			    Geometry::Vec3D&,
+			    std::array<size_t,3>&);
 
-
-  
  public:
 
   meshConstruct();
@@ -69,12 +73,16 @@ class meshConstruct : virtual public basicConstruct
   meshConstruct& operator=(const meshConstruct&);
   virtual ~meshConstruct() {}  ///< Destructor
 
-  // Point Stuff
   void processMesh(Simulation&,const mainSystem::inputParam&,
 		   const size_t) const;
 
-  /// set the FMesh flag
-  void setFMeshFlag(const int I) { fmeshFlag=I; }
+  virtual void rectangleMesh(Simulation&,const int,
+			     const std::string&,
+			     const Geometry::Vec3D&,
+			     const Geometry::Vec3D&,
+			     const std::array<size_t,3>&) const =0;
+
+  
   virtual void writeHelp(std::ostream&) const;
 };
 

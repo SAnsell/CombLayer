@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testWrapper.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -134,35 +134,30 @@ testWrapper::createSurfaces()
 
   // PLANE SURFACES:
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
+  SurI.reset();
+  
   typedef std::pair<int,std::string> SCompT;
-  std::vector<SCompT> SurfLine;
-  SurfLine.push_back(SCompT(1,"px -1"));
-  SurfLine.push_back(SCompT(2,"px 1"));
-  SurfLine.push_back(SCompT(3,"py -2"));
-  SurfLine.push_back(SCompT(4,"py 2"));
-  SurfLine.push_back(SCompT(5,"pz -3"));
-  SurfLine.push_back(SCompT(6,"pz 3"));
-
-  SurfLine.push_back(SCompT(80001,"px 4.5"));
-  SurfLine.push_back(SCompT(80002,"px 6.5"));
-
-  SurfLine.push_back(SCompT(71,"so 0.8"));
-  SurfLine.push_back(SCompT(72,"s -0.7 0 0 0.3"));
-  SurfLine.push_back(SCompT(73,"s 0.6 0 0 0.4"));
-
-  std::vector<SCompT>::const_iterator vc;
+  const std::vector<SCompT> SurfLine=
+    {
+      SCompT(1,"px -1"),
+      SCompT(2,"px 1"),
+      SCompT(3,"py -2"),
+      SCompT(4,"py 2"),
+      SCompT(5,"pz -3"),
+      SCompT(6,"pz 3"),
+      
+      SCompT(80001,"px 4.5"),
+      SCompT(80002,"px 6.5"),
+      
+      SCompT(71,"so 0.8"),
+      SCompT(72,"s -0.7 0 0 0.3"),
+      SCompT(73,"s 0.6 0 0 0.4")
+    };
 
   // Note that the testObject now manages the "new Plane"
-  for(vc=SurfLine.begin();vc!=SurfLine.end();vc++)
-    {  
-      const int res=SurI.createSurface(vc->first,vc->second);
-      if (res)
-        {
-	  ELog::EM<<"Failed to process line "<<vc->second<<ELog::endErr;
-	  throw ColErr::ExitAbort("createSurface");
-	}
-    }
+  for(const SCompT& PItem : SurfLine)
+    SurI.createSurface(PItem.first,PItem.second);
+  
   return;
 }
 

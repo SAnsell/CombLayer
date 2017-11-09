@@ -94,7 +94,7 @@ namespace photonSystem
 
 makePhoton2::makePhoton2() :
   PModObj(new photonSystem::PlateMod("PMod")),
-  Catcher(new constructSystem::insertCylinder("Catcher")),
+  Catcher(new insertSystem::insertCylinder("Catcher")),
   Chamber(new photonSystem::VacuumVessel("Chamber")),
   BaseSupport(new photonSystem::TableSupport("BaseSupport")),
   centralSupport(new photonSystem::HeShield("CentralShield")),
@@ -155,8 +155,8 @@ makePhoton2::buildWings(Simulation& System)
   for(size_t i=0;i<4;i++)
     {
       SPlate.push_back
-	(std::shared_ptr<constructSystem::insertPlate>
-	 (new constructSystem::insertPlate
+	(std::shared_ptr<insertSystem::insertPlate>
+	 (new insertSystem::insertPlate
 	  ("SPlate"+StrFunc::makeString(i))));
 
       if (i>1)
@@ -203,7 +203,7 @@ makePhoton2::build(Simulation& System,
   centralSupport->addInsertCell(voidCell);
   centralSupport->createAll(System,*PModObj,-1);
 
-  centralTubes->addInsertCell(voidCell);
+  //  centralTubes->addInsertCell(voidCell);
   centralTubes->addInsertCell(centralSupport->getCell("Main"));
   centralTubes->createAll(System,*centralSupport,0);
   

@@ -3,7 +3,7 @@
  
  * File:   build/beamTallyConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -44,7 +45,6 @@
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
-#include "Tensor.h"
 #include "Vec3D.h"
 #include "Triple.h"
 #include "support.h"
@@ -90,7 +90,6 @@
 
 #include "TallySelector.h" 
 #include "SpecialSurf.h"
-#include "basicConstruct.h" 
 #include "pointConstruct.h" 
 #include "beamTallyConstruct.h" 
 
@@ -121,6 +120,31 @@ beamTallyConstruct::operator=(const beamTallyConstruct& A)
   return *this;
 }
 
+
+void
+beamTallyConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
+				      Geometry::Vec3D& BOrigin,
+				      Geometry::Vec3D& BAxis)
+  /*!
+    Calculate the beam direction and origin given a shutter component
+    \param FC :: Component that might be TwinComp
+    \param BOrigin :: Output for Origin
+    \param BAxis :: Output for Axis
+   */
+{
+  ELog::RegMethod RegA("beamTallyConstruct","calcBeamDirection");
+
+  const attachSystem::TwinComp* TwinPtr=
+    dynamic_cast<const attachSystem::TwinComp*>(&FC);
+  BAxis=(TwinPtr) ?  -TwinPtr->getBY() :
+    FC.getSignedLinkAxis(0);
+  
+  BOrigin=(TwinPtr) ? TwinPtr->getBeamStart() :
+    FC.getSignedLinkPt(0); 
+  
+  return;
+}
+
 void
 beamTallyConstruct::processPoint(Simulation& System,
 			     const mainSystem::inputParam& IParam,
@@ -144,19 +168,18 @@ beamTallyConstruct::processPoint(Simulation& System,
   
   if (PType=="beamline" || PType=="shutterLine")
     {
-      std::string modName;
-      int viewIndex(0);
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-
-      checkItem<std::string>(IParam,Index,3,modName);
-      checkItem<int>(IParam,Index,4,viewIndex);
-      checkItem<double>(IParam,Index,5,beamDist);
-      checkItem<double>(IParam,Index,6,windowOffset);
-      checkItem<double>(IParam,Index,7,pointZRot);
+      const int beamNum=IParam.getValueError<int>("tally",Index,2,
+						  "beamline number not given");
+      const std::string modName=
+	IParam.getDefValue<std::string>("","tally",Index,3);
+      const long int viewIndex=
+	IParam.getDefValue<long int>(0,"tally",Index,4);
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,5);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,7);
 
       ELog::EM<<"Beamline == "<<beamNum-1<<" "<<beamDist<<" "
 	      <<"Mod name = "<<modName<<" "<<viewIndex<<ELog::endDiag;
@@ -172,17 +195,17 @@ beamTallyConstruct::processPoint(Simulation& System,
     }
   if (PType=="viewLine")  // beamline
     {
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-      double timeOffset(0.0);
+      const int beamNum=IParam.getValueError<int>
+	("tally",Index,2,"beamline number not given");
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,3);
+      const double timeOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,4);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,5);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
 
-      checkItem<double>(IParam,Index,3,beamDist);
-      checkItem<double>(IParam,Index,4,timeOffset);
-      checkItem<double>(IParam,Index,5,windowOffset);
-      checkItem<double>(IParam,Index,6,pointZRot);
 
       addViewLineTally(System,beamNum-1,
 		       beamDist,timeOffset,
@@ -191,21 +214,20 @@ beamTallyConstruct::processPoint(Simulation& System,
     }
   if (PType=="viewInner")  // beamline Inner
     {
-      const int beamNum=inputItem<int>(IParam,Index,2,
-				       "beamline number not given");
-      const std::string face=inputItem<std::string>(IParam,Index,3,
-			       "beamline face : front/back not given");
+      const int beamNum=IParam.getValueError<int>
+	("tally",Index,2,"beamline number not given");
+      const std::string face=IParam.getValueError<std::string>
+	("tally",Index,3,"beamline face : front/back not given");
       const long int linkNumber=attachSystem::getLinkIndex(face);
 
-      double beamDist(1000.0);
-      double windowOffset(0.0);
-      double pointZRot(0.0);
-      double timeOffset(0.0);
-
-      checkItem<double>(IParam,Index,4,beamDist);
-      checkItem<double>(IParam,Index,5,timeOffset);
-      checkItem<double>(IParam,Index,6,windowOffset);
-      checkItem<double>(IParam,Index,7,pointZRot);
+      const double beamDist=
+	IParam.getDefValue<double>(1000.0,"tally",Index,3);
+      const double timeOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,4);
+      const double windowOffset=
+	IParam.getDefValue<double>(0.0,"tally",Index,5);
+      const double pointZRot=
+	IParam.getDefValue<double>(0.0,"tally",Index,6);
 
       addViewInnerTally(System,beamNum-1,linkNumber,
 			beamDist,timeOffset,
@@ -221,7 +243,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 				 const int beamNum,
 				 const double beamDist,
 				 const std::string& modName,
-				 const int viewSurface,
+				 const long int viewIndex,
 				 const double windowOffset,
 				 const double pointZRot) const
   /*!
@@ -230,7 +252,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
-    \param viewSurface :: Surface index
+    \param viewIndex :: Surface index
     \param windowOffset :: Distance to move window towards tally point
     \param pointZRot :: Z axis rotation of the beamline
   */
@@ -246,64 +268,61 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 
   int masterPlane(0);
 
-  size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
-	     static_cast<size_t>(-viewSurface-1));
-  int VSign((viewSurface<0) ? -1 : 1);
+  long int vSurface(viewIndex);
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
 
   // Do something if using old TS2 style point tally
+  const std::string errModStr("No Moderator in simulation");
   if (modName.empty())
     {
-      VSign=1;
       if (beamNum<4)
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
-	  iLP=0;
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("decoupled",errModStr);
+	  vSurface=1;
 	}
       else if (beamNum<9)
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("hydrogen");
-	  iLP=0;
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("hydrogen",errModStr);
+	  vSurface=1;
 	}
       else if (beamNum<14)
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("groove");
-	  iLP=0;
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("groove",errModStr);
+	  vSurface=1;
 	}
       else
 	{
-	  ModPtr=OR.getObject<attachSystem::FixedComp>("decoupled");
-	  iLP=1;
+	  ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	    ("decoupled",errModStr);
+	  vSurface=2;
 	}
     }
   else
     {
-      ModPtr=OR.getObject<attachSystem::FixedComp>(modName);
+      ModPtr=OR.getObjectThrow<attachSystem::FixedComp>
+	(modName,errModStr);
     }
   
-  ShutterPtr=OR.getObject<attachSystem::FixedComp>
-    (StrFunc::makeString(std::string("shutter"),beamNum));
-
-  if (!ShutterPtr)    
-    throw ColErr::InContainerError<int>(beamNum,"Shutter Object not found");
-  if (!ModPtr)    
-    throw ColErr::InContainerError<std::string>
-      (modName,"Moderator Object not found");
+  ShutterPtr=OR.getObjectThrow<attachSystem::FixedComp>
+    ("shutter"+std::to_string(beamNum),"Shutter Object");
+  
 
   // MODERATOR PLANE
-  masterPlane=
-    ModPtr->getExitWindow(iLP,Planes);
+  masterPlane=ModPtr->getExitWindow(vSurface,Planes);
 
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getSignedLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getSignedLinkPt(1); 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -321,13 +340,15 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
   std::transform(Window.begin(),Window.end(),Window.begin(),
 		 std::bind(std::minus<Geometry::Vec3D>(),
 			   std::placeholders::_1,BAxis*windowOffset));
-  std::vector<Geometry::Vec3D>::iterator vc;
+
+
   ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDiag;
-  for(vc=Window.begin();vc!=Window.end();vc++)
-    ELog::EM<<"Window == "<<*vc<<ELog::endDiag;
+
+  for(const Geometry::Vec3D& Pt : Window)
+    ELog::EM<<"Window == "<<Pt<<ELog::endDiag;
 
   // Apply rotation
-  if (fabs(pointZRot)>Geometry::zeroTol)
+  if (std::abs(pointZRot)>Geometry::zeroTol)
     {
       const Geometry::Vec3D Z=ShutterPtr->getZ();
       const Geometry::Quaternion Qxy=
@@ -336,6 +357,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
     }
   
   addF5Tally(System,tNum,MidPt-BAxis*beamDist,Window);
+
   ELog::EM<<"Tally: "<<tNum<<" "<<MidPt-BAxis*beamDist<<ELog::endTrace;
   // (NORMAL VIEW):
   // tallySystem::setF5Position(System,tNum,RefPtr->getViewOrigin(beamNum),
@@ -348,7 +370,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 				const int beamNum,
 				const double beamDist,
 				const std::string& modName,
-				const int viewSurface,
+				const long int viewIndex,
 				const double windowOffset,
 				const double pointZRot) const
   /*!
@@ -357,7 +379,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
-    \param viewSurface :: Surface index
+    \param viewIndex :: Surface link index
     \param windowOffset :: Distance to move window towards tally point
     \param pointZRot :: Z axis rotation of the beamline
   */
@@ -373,9 +395,8 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 
   int masterPlane(0);
 
-  size_t iLP((viewSurface>=0) ? static_cast<size_t>(viewSurface) : 
-	     static_cast<size_t>(-viewSurface-1));
-  //  int VSign((viewSurface<0) ? -1 : 1);
+  size_t iLP((viewIndex>=0) ? static_cast<size_t>(viewIndex) : 
+	     static_cast<size_t>(-viewIndex-1));
 
   const attachSystem::FixedComp* ModPtr;
   const attachSystem::FixedComp* ShutterPtr;
@@ -579,7 +600,7 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
       ELog::EM<<"Failed to find B4C in the viewAxis "<<ELog::endErr;
       return;
     }
-  Geometry::Vec3D BAxis;
+  Geometry::Vec3D BAxis=ShutterPtr->getSignedLinkAxis(0);
   Geometry::Vec3D BOrigin;
   calcBeamDirection(*ShutterPtr,BOrigin,BAxis);
 
@@ -608,7 +629,7 @@ void
 beamTallyConstruct::writeHelp(std::ostream& OX) const
   /*!
     Write out help
-    \param Output stream
+    \param OX :: Output stream
   */
 {
   OX<<

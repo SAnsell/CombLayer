@@ -3,7 +3,7 @@
  
  * File:   delft/SphereModerator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,8 +71,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "ContainedComp.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
@@ -162,7 +160,6 @@ SphereModerator::populate(const FuncDataBase& Control)
 
   FixedOffset::populate(Control);
   
-
   innerRadius=Control.EvalVar<double>(keyName+"InnerRadius");
   innerAl=Control.EvalVar<double>(keyName+"InnerAl");
   outerRadius=Control.EvalVar<double>(keyName+"OuterRadius");
@@ -184,22 +181,17 @@ SphereModerator::populate(const FuncDataBase& Control)
   
 
 void
-SphereModerator::createUnitVector(const attachSystem::SecondTrack& CUnit)
+SphereModerator::createUnitVector(const attachSystem::FixedComp& CUnit,
+				  const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points down the SphereModerator direction
-    - X Across the SphereModerator
-    - Z up (towards the target)
     \param CUnit :: Fixed unit that it is connected to 
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("SphereModerator","createUnitVector");
-  // Opposite since other face:
-  X=CUnit.getBX();
-  Y=CUnit.getBY();
-  Z=CUnit.getBZ();
 
-  Origin=CUnit.getBeamStart();
+  FixedComp::createUnitVector(CUnit,sideIndex);
   applyOffset();
 
   return;
@@ -381,17 +373,19 @@ SphereModerator::postCreateWork(Simulation& System)
   
 void
 SphereModerator::createAll(Simulation& System,
-		       const attachSystem::TwinComp& FUnit)
+			   const attachSystem::FixedComp& FUnit,
+			   const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation to create objects in
     \param FUnit :: Fixed Base unit
+    \param sideIndex :: link point to side
   */
 {
   ELog::RegMethod RegA("SphereModerator","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FUnit);
+  createUnitVector(FUnit,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

@@ -87,6 +87,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<int>("m","multi",1,1);
   IParam.regDefItem<std::string>("matDB","materialDatabase",1,
                                  std::string("shielding"));  
+  IParam.regItem("matFile","matFile");
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");
@@ -99,6 +100,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
+  IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
@@ -134,6 +136,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
@@ -154,7 +157,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wPWT","wPWT",25,0);
   IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
-  IParam.regItem("WType","weightType",1,30);
+  IParam.regItem("WEType","weightEnergyType",1,30);
   IParam.regMulti("WSource","weightSource",30,1);
   IParam.regMulti("WPlane","weightPlane",30,2);
   IParam.regMulti("WTally","weightTally",30,1);
@@ -172,6 +175,8 @@ createInputs(inputParam& IParam)
   IParam.regItem("wwgVTK","wwgVTK",1,10);
   IParam.regItem("wwgNorm","wwgNorm",0,30);
   IParam.regMulti("wwgCalc","wwgCalc",100,1);
+  IParam.regItem("wwgCADIS","wwgCADIS",0,30);
+  IParam.regMulti("wwgMarkov","wwgMarkov",100,1);
   IParam.regItem("wwgRPtMesh","wwgRPtMesh",1,125);
   IParam.regItem("wwgXMesh","wwgXMesh",3,125);
   IParam.regItem("wwgYMesh","wwgYMesh",3,125);
@@ -202,6 +207,8 @@ createInputs(inputParam& IParam)
   IParam.setDesc("m","Create multiple files (diff: RNDseed)");
   IParam.setDesc("matDB","Set the material database to use "
                  "(shielding or neutronics)");  
+  IParam.setDesc("matFile","Set the materials from a file");
+
   IParam.setDesc("M","Add mesh tally");
   IParam.setDesc("MA","Lower Point in mesh tally");
   IParam.setDesc("MB","Upper Point in mesh tally");
@@ -215,6 +222,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("offset","Displace to component [name]");
+  IParam.setDesc("ObjAdd","Add a component (cell)");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
@@ -234,7 +242,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
-  IParam.setDesc("TAdd","Add a tally component (cell)");
+  IParam.setDesc("TAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");
@@ -257,16 +265,20 @@ createInputs(inputParam& IParam)
   IParam.setDesc("wDXT","Dxtran sphere addition [set -wDXT help] ");
   IParam.setDesc("wDD","Dxtran Diagnostic [set -wDXT help] ");
   IParam.setDesc("wWWG","Weight WindowGenerator Mesh  ");
+  IParam.setDesc("wwgCalc","Single step evolve for the calculate for WWG/WWCell  ");
+  IParam.setDesc("wwgMarkov","Evolve the calculate for WWG/WWCell  ");
   IParam.setDesc("wIMP","set imp partile imp object(s)  ");
   IParam.setDesc("wFCL","Forced Collision ");
   IParam.setDesc("wPWT","Photon Bias [set -wPWT help]");
-  IParam.setDesc("WType","Initial model for weights [help for info]");
+  IParam.setDesc("WEType","Initial model for weights [help for info]");
   IParam.setDesc("WTemp","Temperature correction for weights");
   IParam.setDesc("WRebase","Rebase the weights based on a cell");
   IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
   IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
-
+  IParam.setDesc("wwgNorm"," normalization step : "
+		 "[weightRange - lowRange - highRange - powerRange]");
+  
   IParam.setDesc("x","XML input file");
   IParam.setDesc("X","XML output file");
   return;
@@ -335,6 +347,7 @@ createDelftInputs(inputParam& IParam)
   IParam.regItem("coreType","coreType",1);
   IParam.regDefItem<std::string>("modType","modType",1,"Sphere");
   IParam.regDefItem<std::string>("refExtra","refExtra",1,"None");
+  IParam.regDefItem<std::string>("buildType","buildType",1,"Full");
   IParam.regMulti("kcode","kcode",1000);
   IParam.regMulti("ksrcMat","ksrcMat",1000);
   IParam.regMulti("ksrcVec","ksrcVec",1000);
@@ -346,6 +359,7 @@ createDelftInputs(inputParam& IParam)
   IParam.setDesc("kcode","MatN nsourcePart keff skip realRuns");
   IParam.setDesc("ksrcMat","Acceptable material number for ksrc");
   IParam.setDesc("ksrcVec","Positions for ksrc [after matN check]");
+  IParam.setDesc("buildType","Single/Full -- build moderator only");
   IParam.setDesc("modType","Type of moderator (sphere/tunnel)");
   IParam.setDesc("refExtra","Type of extra Be around moderators");
   IParam.setDesc("FuelXML","Write Fuel config to XMLfile");
@@ -555,6 +569,21 @@ createPipeInputs(inputParam& IParam)
 }
 
 void
+createLinacInputs(inputParam& IParam)
+  /*!
+    Set the specialise inputs for the ESS-Linac
+    \param IParam :: Input Parameters
+  */
+{
+  ELog::RegMethod RegA("MainProcess::","createLinacInputs");
+  createInputs(IParam);
+
+  IParam.setValue("sdefType",std::string("essLinac"));
+  
+  return;
+}
+  
+void
 createESSInputs(inputParam& IParam)
   /*!
     Set the specialise inputs for the ESS
@@ -568,8 +597,8 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
   
-  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
+  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("None"));
+  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("Butterfly"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
@@ -578,6 +607,7 @@ createESSInputs(inputParam& IParam)
   
   IParam.regMulti("bunkerChicane","bunkerChicane",1000,1);
   IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
+  IParam.regMulti("bunkerPillars","bunkerPillars",1000,1);
   IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);
   

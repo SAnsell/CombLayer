@@ -3,7 +3,7 @@
  
  * File:   construct/Jaws.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,7 +75,6 @@
 #include "surfDivide.h"
 #include "mergeTemplate.h"
 
-
 #include "Jaws.h"
 
 namespace constructSystem
@@ -94,6 +93,7 @@ Jaws::Jaws(const std::string& Key) :
 
 Jaws::Jaws(const Jaws& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   jawIndex(A.jawIndex),cellIndex(A.cellIndex),xStep(A.xStep),
   yStep(A.yStep),zStep(A.zStep),xAngle(A.xAngle),
   yAngle(A.yAngle),zAngle(A.zAngle),zOpen(A.zOpen),
@@ -120,6 +120,7 @@ Jaws::operator=(const Jaws& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       xStep=A.xStep;
       yStep=A.yStep;
@@ -405,7 +406,7 @@ void
 Jaws::layerProcess(Simulation& System)
   /*!
     Processes the splitting of the surfaces into a multilayer system
-    Currently twoL
+    Currently two layer fields
       -- X
       -- Z
     \param System :: Simulation to work on
@@ -506,9 +507,9 @@ Jaws::layerProcess(Simulation& System)
   
 void
 Jaws::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC,
-		       const long int FIndex)
-  /*!
+		const attachSystem::FixedComp& FC,
+		const long int FIndex)
+/*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: FixedComp

@@ -1,9 +1,9 @@
-/*********************************************************************
+/********************************************************************* 
   CombLayer : MCNP(X) Input builder
-
+ 
  * File:   essBuildInc/EdgeWater.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
 #ifndef essSystem_EdgeWater_h
@@ -32,11 +32,11 @@ namespace essSystem
   \class EdgeWater
   \version 1.0
   \author S. Ansell
-  \date April 2015
+  \date April 2015 
   \brief EdgeWater component in the butterfly moderator
 */
 
-class EdgeWater :
+class EdgeWater : 
   public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
   public attachSystem::FixedComp,
@@ -49,21 +49,16 @@ class EdgeWater :
 
   double width;             ///< Full width
   double wallThick;         ///< Thickness for walls
-  double midWallThick; ///< middle wall thick
-  double midWallLength; ///< middle wall length (actually BeRefRadius-length)
 
   double cutAngle;    ///<  Angle cut away from H2 surface
   double cutWidth;    ///< Water thickness at its connection to the H2-lobe
-  double preThick; ///< Premoderator thickness (if any)
 
+  std::string sideRule;      ///< Side rule ????
+    
   int modMat;               ///< Water material
-  int preMat; ///< Premoderator material
   int wallMat;              ///< Wall material
   double modTemp;           ///< Moderator temperature
-  double preTemp; ///< Premoderator temperature
-
-  std::string sideRule;     ///< Side rule
-
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
@@ -80,12 +75,10 @@ class EdgeWater :
   EdgeWater& operator=(const EdgeWater&);
   virtual EdgeWater* clone() const;
   virtual ~EdgeWater();
-
+  
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual std::string getLayerString(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;
-
-  inline const std::string getSideRule() const { return sideRule; }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const std::string&);
@@ -94,4 +87,4 @@ class EdgeWater :
 }
 
 #endif
-
+ 

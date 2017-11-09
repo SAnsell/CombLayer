@@ -3,7 +3,7 @@
  
  * File:   test/testInputParam.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,8 +196,7 @@ testInputParam::testDefValue()
   A.regDefItem<int>("i","int",3,-8);
   // Test partial [Success]
   A.regDefItem<int>("j","jint",3,-8,-9);
-  A.regDefItem<std::string>("X","xmlout",1,
-			    "Model.xml");
+  A.regDefItem<std::string>("X","xmlout",1,"Model.xml");
 
   std::vector<std::string> Names=
     { "-k", "-i", "10", "7", "-X", "test.xml" };

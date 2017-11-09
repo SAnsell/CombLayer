@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   source/SourceCreate.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,339 +61,282 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "World.h"
+#include "SourceBase.h"
 #include "BeamSource.h"
 #include "GammaSource.h"
+#include "GaussBeamSource.h"
+#include "ParabolicSource.h"
 #include "PointSource.h"
 #include "SurfNormSource.h"
 #include "LensSource.h"
-#include "SourceCreate.h"
+#include "doubleErr.h"
+#include "WorkData.h"
+#include "activeUnit.h"
+#include "activeFluxPt.h"
+#include "ActivationSource.h"
+#include "sourceDataBase.h"
+
+#include "SourceCreate.h" 
 
 
 namespace SDef
 {
 
-void
-createSimpleSource(Source& sourceCard,
-		   const double Einit,const double Eend)
+std::string
+createActivationSource(const size_t timeSeg,
+		       const Geometry::Vec3D& APt,const Geometry::Vec3D& BPt,
+		       const size_t nVol,const double scale,
+		       const Geometry::Vec3D& weightPt,const double weightDist)
   /*!
-    Create a super simple source 
-    \param sourceCard :: Source system
-    \param Einit :: Energy [MeV]
-    \param Eend :: Energy [MeV]
-  */
+    Select all the info for activation output from
+    fluxes.
+    \param timeSeg :: Time segment
+    \param APt :: Box point
+    \param BPt :: Box point
+    \param scale :: scale value
+    \param weightPt :: scale based on distance to point
+    \param weightDist :: scale base on distance to point
+   */
 {
-  ELog::RegMethod RegA("SourceCreate[F]","createSimpleSource");
+  ELog::RegMethod RegA("SourceSelector","activationSelection");
 
-  sourceCard.setActive();
-
-  SDef::SrcData E1(1);
-  SDef::SrcInfo* SIE1=E1.getInfo();
-  SDef::SrcProb* SPE1=E1.getProb();
+  sourceDataBase& SDB=sourceDataBase::Instance();
   
-  const int NEPts(30);
-  const double ELA=log(Einit);       
-  const double ELB=log(Eend);        
-
-  const double Estep=(ELB-ELA)/NEPts;
-  double EWeight(0.0);
-  double Eval(0.0);
-  double width;
-  for(int i=0;i<NEPts;i++)
-    {
-      width= -Eval;
-      Eval=exp(ELA+Estep*i);
-      width+=Eval;
-      SIE1->addData(Eval);
-      SPE1->addData(EWeight);
-      EWeight=width*(1/Eval);
-    }
-  sourceCard.setData("erg",E1);
-  return;
+  
+  SDef::ActivationSource AS;
+  AS.setBox(APt,BPt);
+  AS.setTimeSegment(timeSeg);
+  AS.setNPoints(nVol);
+  AS.setWeightPoint(weightPt,weightDist);
+  AS.setScale(scale);
+  
+  SDB.registerSource("ActivationSource",AS);
+  return "ActivationSource";
 }
 
-void
-createBilbaoSource(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createBilbaoSource(const FuncDataBase& Control,
+		   const attachSystem::FixedComp& FC,
+		   const long int sideIndex,
+		   Source& sourceCard)
   /*!
     Creates a target 1 proton source:
     FWHM == 1.5*2.35482 ==> 3.53223
     \param Control :: Control system
+    \param FC :: Link point
+    \param sideIndex :: Link point [signed] 
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("SourceCreate","createTS2Source");
+  ELog::RegMethod RegA("SourceCreate","createBilbauSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(-1,1,0).unit());
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
+  GaussBeamSource bilSource("bilbauSource");
+  
+  bilSource.setEnergy(E);
+  bilSource.setParticle(9);
+  bilSource.setOffset(0,yStart,0);
+  bilSource.setPreRotation(-45,0);
+  bilSource.setSize(5.887,8.326);
 
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,5.887,0);
-  D1.addUnit(SP1);
+  bilSource.createAll(Control,FC,sideIndex);
+  bilSource.createSource(sourceCard);
 
-  SrcData D2(2);
-  SrcProb SP2(1);
-  SP2.setFminus(-41,8.326,0);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
+  SDB.registerSource(bilSource.getKeyName(),bilSource);
+  return bilSource.getKeyName();
 }
 
-void
-createESSSource(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createESSSource(const FuncDataBase& Control,
+		const attachSystem::FixedComp& FC,
+		const long int sideIndex,
+		Source& sourceCard)
   /*!
     Creates a target 1 proton source:
     FWHM == 1.5*2.35482 ==> 3.53223
     \param Control :: Control system
+    \param FC :: Link point
+    \param sideIndex :: Link point [signed] 
     \param sourceCard :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createESSSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-30.0);
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
-
   const double xRange=Control.EvalDefVar<double>("sdefWidth",8.0);
   const double zRange=Control.EvalDefVar<double>("sdefHeight",3.0);
-  const std::string pdf=Control.EvalDefVar<std::string>("sdefPDF", "gaus");
-
-  std::vector<double> XPts;
-  std::vector<double> XProb;
-  std::vector<double> ZPts;
-  std::vector<double> ZProb;
-  char siOption;
-  if (pdf=="gaus")
-    {
-      siOption = 'A';
-      const double step(0.5);  
-      double XValue= -xRange-step;
-      do
-	{
-	  XValue+=step;
-	  XPts.push_back(XValue);
-	  XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-	} while (XValue<xRange);
-
-      double ZValue= -zRange-step;
-      do
-	{
-	  ZValue+=step;
-	  ZPts.push_back(ZValue);
-	  ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-	} while (ZValue<zRange);
-    } else if (pdf=="uniform")
-    {
-      siOption = 'h';
-      XPts.push_back(-xRange);
-      XPts.push_back(xRange);
-      XProb.push_back(0);
-      XProb.push_back(1);
-      ZPts.push_back(-zRange);
-      ZPts.push_back(zRange);
-      ZProb.push_back(0);
-      ZProb.push_back(1);
-    } else
-    {
-      throw ColErr::InvalidLine(pdf,"sdefPDF can be either \"gaus\" or \"uniform\"");
-    }
+ 
+  ParabolicSource PSource("essSource");
   
-  SrcData D1(1);  
-  SrcData D2(2);
-
-  SrcInfo SI1(siOption);
-  SrcInfo SI2(siOption);
-
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
-
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(XProb);
-  SP2.setData(ZProb);
-
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
+  PSource.setEnergy(E);
+  PSource.setParticle(9);
+  PSource.setOffset(0,yStart,0);
+  PSource.setRectangle(xRange,zRange);
+  PSource.setPower(0.0);
+  PSource.createAll(Control,FC,sideIndex);
+  PSource.createSource(sourceCard);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
+  return PSource.getKeyName();
 }
 
-void
+std::string
 createESSPortSource(const FuncDataBase& Control,
-		    const attachSystem::FixedComp* FCPtr,
+		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex,
 		    Source& sourceCard)
   /*!
     Create a port source on a set of beam ports
     \param Control :: Control system
-    \param FC :: link surface for cylinder 
+    \param FC :: link surface for origin
     \param sideIndex ::surface number
     \param sourceCard :: Source system
-    
   */
 {
   ELog::RegMethod RegA("SourceCreate","createESSPortSource");
 
-  if (!FCPtr)
-    throw ColErr::EmptyValue<void>("Pointer to FixedComp not filled");
-
-  SurfNormSource SX("portSource");
+  sourceDataBase& SDB=sourceDataBase::Instance();
   
-  SX.createAll(Control,*FCPtr,sideIndex,sourceCard);
+  ParabolicSource PSource("portSource");
 
-  return;
+  PSource.setParticle(9);
+  PSource.setPower(0.0);
+  PSource.createAll(Control,FC,sideIndex);
+  PSource.createSource(sourceCard);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
+  return PSource.getKeyName();    
+}
+
+std::string
+createESSLinacSource(const FuncDataBase& Control,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex,
+		     Source& sourceCard)
+  /*!
+    Creates a ESS Linac source
+    \param Control :: Control system
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param sourceCard :: Source system
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",      75.0);
+  const double xStart=Control.EvalDefVar<double>("sdefXPos",  -15.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos", -100.0);
+  const double zStart=Control.EvalDefVar<double>("sdefZPos",    0.0);
+
+
+  PointSource PSource("essLinac");
+    
+  PSource.setEnergy(E);
+  PSource.setParticle(9);
+  PSource.setOffset(xStart,yStart,zStart);
+  PSource.createAll(Control,FC,sideIndex);
+  PSource.createSource(sourceCard);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
+
+  return PSource.getKeyName();    
 }
 
 
-void
-createD4CSource(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createD4CSource(const FuncDataBase& Control,
+		const attachSystem::FixedComp& FC,
+		const long int sideIndex,
+		Source& Card)
   /*!
     Creates a neutron beam 
     \param Control :: Control system
-    \param sourceCard :: Source system
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createD4CSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",175e-6);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+  const double xRange=Control.EvalDefVar<double>("sdefWidth",1.0);
+  const double zRange=Control.EvalDefVar<double>("sdefHeight",1.25);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",1);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
 
+  ParabolicSource PSource("D4CSource");
   
+  PSource.setEnergy(E);
+  PSource.setParticle(1);
+  PSource.setOffset(0,yStart,0);
+  PSource.setRectangle(xRange,zRange);
+  PSource.setPower(2.0);
+  PSource.createAll(Control,FC,sideIndex);
+  PSource.createSource(Card);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
 
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",2.0);
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",2.5);
-  sourceCard.setComp("ara",xRange*zRange);
-    
-  SrcData D1(1);  
-  SrcData D2(2);
-  std::vector<double> XPts={-xRange/2.0,xRange/2.0};
-  std::vector<double> ZPts={-zRange/2.0,zRange/2.0};
-  std::vector<double> Prob={0,1.0};
-  SrcInfo SI1('H');
-  SrcInfo SI2('H');
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
-
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(Prob);
-  SP2.setData(Prob);
-
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
+  return PSource.getKeyName();    
 }
 
-void
-createTS1Source(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createTS1Source(const FuncDataBase& Control,
+		const attachSystem::FixedComp& FC,
+		const long int sideIndex,
+		Source& sourceCard)
   /*!
     Creates a target 1 proton source:
     FWHM == 1.5*2.35482 ==> 3.53223
     \param Control :: Control system
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
     \param sourceCard :: Source system
   */
 {
   ELog::RegMethod RegA("SourceCreate","createTS1Source");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+
   const double xShift=Control.EvalDefVar<double>("sdefXOffset",0.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
   const double zShift=Control.EvalDefVar<double>("sdefZOffset",0.0);
 
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("y",yStart);
-
   const double xRange=Control.EvalDefVar<double>("sdefWidth",4.5);
-  const double xStep(xRange/16.0);  
-  std::vector<double> XPts;
-  std::vector<double> XProb;
-  double XValue= -xRange-xStep;
-  do
-    {
-      XValue+=xStep;
-      XPts.push_back(XValue+xShift);
-      XProb.push_back(1.0-(XValue*XValue)/(xRange*xRange));
-    } while (XValue<xRange);
-
   const double zRange=Control.EvalDefVar<double>("sdefHeight",4.5);
-  const double zStep(zRange/16.0);  
-  std::vector<double> ZPts;
-  std::vector<double> ZProb;
-  double ZValue= -zRange-zStep;
-  do
-    {
-      ZValue+=zStep;
-      ZPts.push_back(ZValue+zShift);
-      ZProb.push_back(1.0-(ZValue*ZValue)/(zRange*zRange));
-    } while (ZValue<zRange);
-
-  SrcData D1(1);  
-  SrcData D2(2);
   
-  SrcInfo SI1('A');
-  SrcInfo SI2('A');
-  SI1.setData(XPts);
-  SI2.setData(ZPts);
+  ParabolicSource ts1Beam("TS1Source");
 
-  SrcProb SP1;
-  SrcProb SP2;
-  SP1.setData(XProb);
-  SP2.setData(ZProb);
+  ts1Beam.setParticle(9);
+  ts1Beam.setEnergy(E);
+  ts1Beam.setOffset(xShift,yStart,zShift);
+  ts1Beam.setRectangle(xRange,zRange);
 
-  D1.addUnit(SI1);
-  D2.addUnit(SI2);
-  D1.addUnit(SP1);
-  D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
+  ts1Beam.createAll(Control,FC,sideIndex);
+  ts1Beam.createSource(sourceCard);
 
-  return;
+  SDB.registerSource(ts1Beam.getKeyName(),ts1Beam);
+  
+  return ts1Beam.getKeyName();    
 }
 
-void
+std::string
 createPointSource(const FuncDataBase& Control,
 		  const std::string& keyName,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex,
-                  const Geometry::Vec3D& D,
 		  Source& Card)
   /*!
     Create the point source -- currently a copy of the photo
@@ -402,262 +345,282 @@ createPointSource(const FuncDataBase& Control,
     \param keyName :: keyname for source
     \param FC :: Link point
     \param linkIndex :: Link point [signed] 
-    \param D :: Step [default]
     \param Card :: Source system
   */
 {
   ELog::RegMethod RegA("SourceCreate","createPointSource(FC,link)");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+
+  const double xShift=Control.EvalDefVar<double>("sdefXOffset",0.0);
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
+  const double zShift=Control.EvalDefVar<double>("sdefZOffset",0.0);
+
+
   PointSource GX(keyName);
-  GX.setDefaultStep(D);
-  GX.createAll(Control,FC,linkIndex,Card);
-  return;
+  GX.setParticle(1);
+  GX.setEnergy(E);
+  GX.setOffset(xShift,yStart,zShift);
+
+  GX.createAll(Control,FC,linkIndex);
+  GX.createSource(Card);
+  
+  SDB.registerSource(GX.getKeyName(),GX);  
+  return GX.getKeyName();      
 }
   
-void
-createPointSource(const FuncDataBase& Control,
-		  const std::string& keyName,
-                  const std::string& DVec,
-                  Source& Card)
-  /*!
-    Create the photon source for gamma-nuclea spectrum
-    nuclear experiment source
-    \param Control :: Variables data base
-    \param keyName :: keyname for Gamma source
-    \param D ::Step [default]
-    \param Card :: Source system
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createPointSource");
-
-
-  PointSource GX(keyName);
-  if (!DVec.empty())
-    {
-      double D(0.0);
-      Geometry::Vec3D DOffsetStep;
-      if (!StrFunc::convert(DVec,DOffsetStep) && 
-	  StrFunc::convert(DVec,D))
-	DOffsetStep[1]=D;
-      else
-	ELog::EM<<"DObj "<<DVec<<" not understood "<<ELog::endErr;
-      
-      GX.setDefaultStep(DOffsetStep);
-    }
-
-
-  GX.createAll(Control,Card);
-  return;
-}
-
-void
+std::string
 createBeamSource(const FuncDataBase& Control,
-		  const std::string& keyName,Source& Card)
+		 const std::string& keyName,
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex,
+		 Source& Card)
   /*!
-    Create the photon source for gamma-nuclea spectrum
+    Create the photon source for gamma-nuclear spectrum
     nuclear experiment source
     \param Control :: Variables data base
     \param keyName :: keyname for Gamma source
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
     \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createBeamSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
   BeamSource GX(keyName);
   
-  GX.createAll(Control,Card);
-  return;
+  GX.createAll(Control,FC,sideIndex);
+  GX.createSource(Card);
+
+  SDB.registerSource(GX.getKeyName(),GX);  
+  return GX.getKeyName();      
 }
-  
-void
-createGammaSource(const FuncDataBase& Control,
-		  const std::string& keyName,
-                  Source& Card)
+
+std::string
+createLaserSource(const FuncDataBase& Control,
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex,
+		  Source& Card)
   /*!
     Create the photon source for gamma-nuclea spectrum
     nuclear experiment source
     \param Control :: Variables data base
     \param keyName :: keyname for Gamma source
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
     \param Card :: Source system
    */
 {
-  ELog::RegMethod RegA("SourceCreate","createGammaSource");
-  GammaSource GX(keyName);
-  GX.createAll(Control,Card);
-  return;
+  ELog::RegMethod RegA("SourceCreate","createLaserSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
+
+  GammaSource laserSource("laserSource");
+  laserSource.setParticle(1);
+  laserSource.setEnergy(E);
+  
+  laserSource.createAll(Control,FC,sideIndex);
+  laserSource.createSource(Card);
+  
+  SDB.registerSource(laserSource.getKeyName(),laserSource);
+
+  return laserSource.getKeyName();
 }
+  
 
-
-
-void
+std::string
 createGammaSource(const FuncDataBase& Control,
 		  const std::string& keyName,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex,
 		  Source& Card)
   /*!
-    Create the point source -- currently a copy of the photo
+    Create the gamma-point source -- currently a copy of the photo
     nuclear experiment source
     \param Control :: Variables data base
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
     \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate[F]","createGammaSource(FC,link)");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
   GammaSource GX(keyName);
 
-  GX.createAll(Control,FC,linkIndex,Card);
-  return;
+  GX.createAll(Control,FC,linkIndex);
+  GX.createSource(Card);
+
+  SDB.registerSource(GX.getKeyName(),GX);
+  
+  return GX.getKeyName();
 }
 
-void
-createBeamSource(const FuncDataBase& Control,
-		  const std::string& keyName,
-		  const attachSystem::FixedComp& FC,
-		  const long int linkIndex,
-		  Source& Card)
-  /*!
-    Create the point source -- currently a copy of the photo
-    nuclear experiment source
-    \param Control :: Variables data base
-    \param keyName :: keyname for source
-    \param FC :: Link point
-    \param linkIndex :: Link point [signed] 
-    \param Card :: Source system
-  */
-{
-  ELog::RegMethod RegA("SourceCreate","createBeamSource(FC,link)");
-  BeamSource GX(keyName);
-
-  GX.createAll(Control,FC,linkIndex,Card);
-  return;
-}
-
-
-void
-createLensSource(const FuncDataBase& Control,Source& Card,
-		 const attachSystem::FixedComp& protonComp)
+std::string
+createLensSource(const FuncDataBase& Control,
+		 const attachSystem::FixedComp& FC,
+		 const long int sideIndex,
+		 Source& Card)
   /*!
     Create the laser source -- currently a copy of the photo
     nuclear experiment source
     \param Control :: Variables data base
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
     \param Card :: Source system
-    \param protonComp :: Proton component
    */
 {
   ELog::RegMethod RegA("SourceCreate","createLensSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   LensSource LS("lensSource");
-  LS.createAll(Control,Card,protonComp);
-  return;
+
+  LS.createAll(Control,FC,sideIndex);
+  LS.createSource(Card);
+  SDB.registerSource(LS.getKeyName(),LS);
+  
+  return LS.getKeyName();
 }
 
-void
-createGaussianSource(Source& sourceCard,
-		     const double E,
-		     const double yStart,
-		     const double width)
-  /*!
-    Creates a target 1 proton source [gaussian]
-    \param sourceCard :: Source system
-    \param E :: Energy [meV]
-    \param yStart :: y Position 
-    \param width :: fwhm
-   */
-{
-  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,1,0));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",2570);
-  sourceCard.setComp("y",yStart);
-
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,width,0);  
-  D1.addUnit(SP1);
-
-  SrcData D2(2);
-  D2.addUnit(SP1);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
-
-  return;
-}
-
-void
+std::string
 createTS1GaussianSource(const FuncDataBase& Control,
-			Source& sourceCard)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex,
+			Source& Card)
   /*!
     Creates a target 1 proton source [gaussian]
     FWHM == 1.5*2.35482 ==> 3.53223 <----------- "OLD" VALUE          
-    \param sourceCard :: Source system
+    \param Control :: Database for variables
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
-
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
+  
+  GaussBeamSource GBeam("TS1Gauss");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(3.5322,3.5322);
+  GBeam.createAll(Control,FC,sideIndex);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(Card);
 
-  createGaussianSource(sourceCard,E,yStart,3.5322);
-  return;
+  return GBeam.getKeyName();
 }
 
-void
+std::string
 createTS1GaussianNewSource(const FuncDataBase& Control,
-			   Source& sourceCard)
+			   const attachSystem::FixedComp& FC,
+			   const long int sideIndex,
+			   Source& Card)
   /*
     Creates a target 1 proton source [gaussian]
     FWHM == 1.8*2.35482 ==> 4.23868 <----------- "NEW" VALUE  // Goran
-    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
-    \param sourceCard :: Source system
+    (see B. Jones, D.J. Adams, Design and operational 
+    experience of delivering beam to ISIS TS1, November 2013)          
+    \param Control :: DataBase of variables
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 
 {
-  ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
+  ELog::RegMethod RegA("SourceCreate","createTS1GaussianNewSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
+  
+  GaussBeamSource GBeam("TS1NewGauss");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(4.23686,4.23868);
+  GBeam.createAll(Control,FC,sideIndex);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(Card);
 
-  createGaussianSource(sourceCard,E,yStart,4.23868);
-  return;
+  return GBeam.getKeyName();
 }
 
-void
-createTS1MuonSource(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createTS1MuonSource(const FuncDataBase& Control,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex,
+		    Source& Card)
   /*!
     Creates a intermediate target proton source [gaussian]
     FWHM == 0.5*2.35482 ==> 1.17741   // Goran
-    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)          
-    \param sourceCard :: Source system
+    (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)      
+    \param Control :: DataBase of variables
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-15.0);
-  createGaussianSource(sourceCard,E,yStart,1.17741);
+  
+  GaussBeamSource GBeam("TS1Muon");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(1.17741,1.17741);
+  GBeam.createAll(Control,FC,sideIndex);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
 
-  return;
+  GBeam.createSource(Card);
+
+  return GBeam.getKeyName();
 }
 
-void
-createTS3ExptSource(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createTS3ExptSource(const FuncDataBase& Control,
+		    const attachSystem::FixedComp& FC,
+		    const long int linkIndex,
+		    Source& sourceCard)
   /*!
-    Creates a field volume source for TS3 testing
-    \param sourceCard :: Source system
+    Creates a uniform spherical source for TS3 testing
+    \param Control :: DataBase of variables
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 {
-  ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
+  ELog::RegMethod RegA("SourceCreate","createTS3ExptSource");
 
   const double E=Control.EvalDefVar<double>("sdefEnergy",2.0);
   const double radius=Control.EvalDefVar<double>("sdefRadius",20.0);
-  
+
+  const Geometry::Vec3D OPt(FC.getSignedLinkPt(linkIndex));
   sourceCard.setActive();
   sourceCard.setComp("par",1);
   sourceCard.setComp("erg",E);
-  sourceCard.setComp("pos",Geometry::Vec3D(0,0,0));
-  
+  sourceCard.setComp("pos",OPt);
+  sourceCard.setComp("x",OPt.dotProd(FC.getX()));
+  sourceCard.setComp("y",OPt.dotProd(FC.getY()));
+  sourceCard.setComp("z",OPt.dotProd(FC.getZ()));
+		     
 
   SrcData D1(1);
   SDef::SrcInfo SI1;
@@ -670,71 +633,95 @@ createTS3ExptSource(const FuncDataBase& Control,Source& sourceCard)
   D1.addUnit(SP1);
 
   sourceCard.setData("rad",D1);
-  return;
+
+  return "";
 }
 
-void
-createTS1EpbCollSource(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createTS1EPBCollSource(const FuncDataBase& Control,
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex,
+		       Source& Card)
   /*!
     Creates a proton source [gaussian] for 3rd collimator in TS1 EPB
-     FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
-     \param Control :: Data base
-    \param sourceCard :: Source system
+    FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
+    \param Control :: DataBase of variables
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS1EpbCollSource");
 
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  
   const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",80.0);
-  createGaussianSource(sourceCard,E,yStart,2.35482);
-  return;
+  
+  GaussBeamSource GBeam("TS1EPB");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  GBeam.setEnergy(E);
+  GBeam.setSize(2.35482,2.35482);
+  GBeam.createAll(Control,FC,sideIndex);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(Card);
+
+  return GBeam.getKeyName();
 }
 
-void
-createTS2Source(const FuncDataBase& Control,Source& sourceCard)
+std::string
+createTS2Source(const FuncDataBase& Control,
+		const attachSystem::FixedComp& FC,
+		const long int sideIndex,
+		Source& Card)
   /*!
     Creates a target 2 proton source
-    \param sourceCard :: Source system
+    \param Control :: DataBase of variables
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \param Card :: Source system
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS2Source");
 
-
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double SOffset=Control.EvalDefVar<double>("sdefOffset",5.0);
+  ELog::EM<<"Create TS2 beam "<<ELog::endDiag;
+  sourceDataBase& SDB=sourceDataBase::Instance();
   
-  sourceCard.setActive();
-  sourceCard.setComp("dir",1.0);
-  sourceCard.setComp("vec",Geometry::Vec3D(0,0,-1));
-  sourceCard.setComp("par",9);
-  sourceCard.setComp("erg",E);
-  //  sourceCard.setComp("ccc",76);
-  sourceCard.setComp("z",SOffset);
+  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
+  const double yStart=Control.EvalDefVar<double>("sdefOffset",-5.0);
 
-  SrcData D1(1);
-  SrcProb SP1(1);
-  SP1.setFminus(-41,1.3344,0);
-  D1.addUnit(SP1);
+  GaussBeamSource GBeam("TS2Proton");
+  GBeam.setParticle(9);
+  GBeam.setOffset(0,yStart,0);
+  ELog::EM<<"Beam == "<<E<<ELog::endDiag;
+  GBeam.setEnergy(E);
+  GBeam.setSize(1.3344,1.3344);
+  GBeam.createAll(Control,FC,sideIndex);
+  
+  SDB.registerSource(GBeam.getKeyName(),GBeam);
+  GBeam.createSource(Card);
 
-  SrcData D2(2);
-  D2.addUnit(SP1);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("y",D2);
-
-  return;
+  return GBeam.getKeyName();
 }
 
 
-void
-createSinbadSource(const FuncDataBase&,Source& sourceCard)
+std::string
+createSinbadSource(const FuncDataBase&,
+		   const attachSystem::FixedComp& FC,
+		   const long int linkIndex,
+		   Source& sourceCard)
   /*!
-    Create a fisson source for a cylinder/rectangular unit 
+    Create a distributed source for the Sinbad experiment
     \param Control :: Funcdat data base for values
     \param sourceCard :: Source system
   */
 {  
   ELog::RegMethod RegA("SourceCreate","createSinbadSource");
- 
+
+  
+  
   const size_t NX(15),NZ(15);     
   // This data is horizontal : X [cm] and vertical : Z[cm]
   const double XPts[NX+1]= 
@@ -1167,12 +1154,7 @@ createSinbadSource(const FuncDataBase&,Source& sourceCard)
     D99.addUnit(SP99);
    }  
   sourceCard.setData("erg",D99);  
-  return;
+  return "";
 }  
-
-
-
-
-
 
 }  // NAMESPACE SDef

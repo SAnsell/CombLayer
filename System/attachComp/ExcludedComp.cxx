@@ -3,7 +3,7 @@
  
  * File:   attachComp/ExcludedComp.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,11 +233,10 @@ ExcludedComp::addExcludeSurf(const std::string& SList)
 
 void
 ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
-			    const int dirFlag,const size_t LIndex)
+			    const long int LIndex)
 /*!
   Add a boundary surface
   \param FC :: Fixed object to use
-  \param dirFlag :: Direction flag
   \param LIndex :: Link surface index 
 */
 
@@ -245,8 +244,7 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("RefBox","addExcludeSurf(FC,Index)");
 
   // Surfaces on links point outwards (hence swap of sign)
-  const int surfSwap((dirFlag<0) ? 1 : -1);
-  addExcludeSurf(FC.getLinkSurf(LIndex)*surfSwap);
+  addExcludeSurf(FC.getSignedLinkSurf(LIndex));
   
   return;
 }
@@ -254,12 +252,10 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
 
 void
 ExcludedComp::addExcludeSurf(const std::string& FCName,
-			     const int dirFlag,
-			     const size_t LIndex)
+			     const long int LIndex)
 /*!
   Add a boundary surface
   \param FCName :: Fixed object to use
-  \param dirFlag :: Direction flag
   \param LIndex :: Link surface index 
 */
 {
@@ -271,7 +267,7 @@ ExcludedComp::addExcludeSurf(const std::string& FCName,
   const attachSystem::FixedComp* FCptr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCName,"FixedComp");
 
-  addExcludeSurf(*FCptr,dirFlag,LIndex);
+  addExcludeSurf(*FCptr,LIndex);
   return;
 }
 
@@ -307,20 +303,16 @@ ExcludedComp::addExcludeObj(const std::string& ObjName)
     ModelSupport::objectRegister::Instance();
   
   const ContainedComp* CCPtr=
-    OR.getObject<ContainedComp>(ObjName);
+    OR.getObjectThrow<ContainedComp>(ObjName,"CC-Object Not found");
 
-  if (CCPtr)
-    {
-      const std::string OutStr=CCPtr->getCompExclude();
-      if (!OutStr.empty())
-	{
-	  MonteCarlo::Object Obj(1,0,0.0,OutStr);
-	  if (Obj.topRule())
-	    addUnion(Obj,boundary);
-	}
-      return;
-    }
   
+  const std::string OutStr=CCPtr->getCompExclude();
+  if (!OutStr.empty())
+    {
+      MonteCarlo::Object Obj(1,0,0.0,OutStr);
+      if (Obj.topRule())
+	addUnion(Obj,boundary);
+    }
   return;
 }
 

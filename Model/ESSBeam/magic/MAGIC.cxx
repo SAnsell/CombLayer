@@ -3,7 +3,7 @@
  
  * File:   essBuild/MAGIC.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@
 #include "FrontBackCut.h" 
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
 #include "Jaws.h"
@@ -84,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -105,7 +106,7 @@ MAGIC::MAGIC(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   PSCDisk(new constructSystem::DiskChopper(newName+"PSCBlade")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
@@ -211,6 +212,9 @@ MAGIC::MAGIC(const std::string& keyName) :
   OR.addObject(MCGuideA);  
   OR.addObject(MCInsertA);
 
+  OR.addObject(MCGuideB);  
+  OR.addObject(MCInsertB);
+
   OR.addObject(ShieldG);
   OR.addObject(VPipeOutG);  
   OR.addObject(FocusOutG);
@@ -224,36 +228,6 @@ MAGIC::~MAGIC()
     Destructor
   */
 {}
-
-void
-MAGIC::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-		   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("MAGIC","setBeamAxis");
-
-  magicAxis->populate(Control);
-  magicAxis->createUnitVector(GItem,0);
-  magicAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  magicAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  magicAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  magicAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  magicAxis->linkShift(3);
-  magicAxis->linkShift(4);
-  magicAxis->linkAngleRotate(3);
-  magicAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    magicAxis->reverseZ();
-  return;
-}
 
 void
 MAGIC::buildBunkerUnits(Simulation& System,
@@ -293,10 +267,8 @@ MAGIC::buildBunkerUnits(Simulation& System,
   ChopperA->createAll(System,BendC->getKey("Guide0"),2);
 
   // Double disk chopper
-  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
-  PSCDisk->setCentreFlag(3);  // Z direction
-  PSCDisk->setOffsetFlag(1);  // Z direction
-  PSCDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
+  //  PSCDisk->addInsertCell(ChopperA->getCell("Void"));
+  //  PSCDisk->createAll(System,ChopperA->getKey("Main"),0);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);
@@ -361,6 +333,7 @@ MAGIC::buildOutGuide(Simulation& System,
 
   VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,FocusOutA->getKey("Guide0"),2);
+
   FocusOutB->addInsertCell(VPipeOutB->getCells("Void"));
   FocusOutB->createAll(System,*ShieldA,2,*VPipeOutB,0);
 
@@ -389,18 +362,19 @@ MAGIC::buildOutGuide(Simulation& System,
   FocusOutE->createAll(System,*ShieldD,2,*VPipeOutE,0);
 
 
+
   return;
 }
 
 
 void
 MAGIC::buildPolarizer(Simulation& System,
-                     const attachSystem::FixedComp& FWshield,
-                     const long int startShield,
-                     const attachSystem::FixedComp& FWguide,
-                     const long int startGuide,
-                     const int voidCell)
-  /*!
+		      const attachSystem::FixedComp& FWshield,
+		      const long int startShield,
+		      const attachSystem::FixedComp& FWguide,
+		      const long int startGuide,
+		      const int voidCell)
+/*!
     Build all the components that are outside of the wall
     \param System :: Simulation 
     \param FWshield :: Focus unit of the shield
@@ -412,30 +386,43 @@ MAGIC::buildPolarizer(Simulation& System,
 {
   ELog::RegMethod RegA("MAGIC","buildPolarizer");
 
+  // Guide to be connected
   ShieldF->addInsertCell(voidCell);
   ShieldF->createAll(System,FWshield,startShield);
-  ELog::EM<<"START POL"<<ShieldF->getSignedLinkPt(2)<<ELog::endDiag;
+
+  VPipeOutF->addInsertCell(ShieldF->getCell("Void"));
+  VPipeOutF->createAll(System,FWguide,startGuide);
+
+  FocusOutF->addInsertCell(VPipeOutF->getCells("Void"));
+  FocusOutF->createAll(System,*ShieldE,2,*VPipeOutF,0);
+
   PolarizerPit->addInsertCell(voidCell);
   PolarizerPit->createAll(System,*ShieldF,2);
 
-
+  
   ShieldF->addInsertCell(PolarizerPit->getCells("Outer"));
   ShieldF->addInsertCell(PolarizerPit->getCells("MidLayerFront"));
   ShieldF->insertObjects(System);
-  
-  ELog::EM<<"FINISHED POL"<<ELog::endDiag;
-  return;
+
   MCGuideA->addInsertCell(PolarizerPit->getCells("Void"));
   MCGuideA->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
 
-  // NOTE: Guide numbers links point round guide not +/- x, z
+  MCGuideB->addInsertCell(PolarizerPit->getCells("Void"));
+  MCGuideB->createAll(System,*PolarizerPit,0,*PolarizerPit,0);
+  
   MCInsertA->addInsertCell(MCGuideA->getCells("Guide0Void"));
-  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),4,
-                          MCGuideA->getKey("Guide0"),6);
-  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),3,5);
+  MCInsertA->setFaces(MCGuideA->getKey("Guide0"),4,6);
+  MCInsertA->setLeftRight(MCGuideA->getKey("Guide0"),3,
+			  MCGuideA->getKey("Guide0"),5);
   MCInsertA->createAll(System,MCGuideA->getKey("Guide0"),0);
-  ELog::EM<<"Origin == "<<MCGuideA->getKey("Guide0").getSignedLinkPt(0)
-	  <<ELog::endDiag;
+
+  MCInsertB->addInsertCell(MCGuideB->getCells("Guide0Void"));
+  MCInsertB->setFaces(MCGuideB->getKey("Guide0"),4,6);
+  MCInsertB->setLeftRight(MCGuideB->getKey("Guide0"),3,
+			  MCGuideB->getKey("Guide0"),5);
+  MCInsertB->createAll(System,MCGuideB->getKey("Guide0"),0);
+
+  
   return;
 }
   
@@ -491,13 +478,14 @@ MAGIC::buildIsolated(Simulation& System,const int voidCell)
 		    *FStart,startIndex,
 		    *FExtra,extraIndex,voidCell);
       FStart= ShieldE.get();
-      FExtra= ShieldE.get();
+      FExtra= &FocusOutE->getKey("Guide0");
       startIndex=2;
       extraIndex=2;
     }
 
   if (startPoint<4)
     {
+      // lead-in piece of shielding and guide is built here
       buildPolarizer(System,*FStart,startIndex,*FExtra,extraIndex,voidCell);
     }
   return;
@@ -525,7 +513,8 @@ MAGIC::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
-  setBeamAxis(Control,GItem,0);
+
+  essBeamSystem::setBeamAxis(*magicAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -539,6 +528,7 @@ MAGIC::build(Simulation& System,
 
 
   if (stopPoint==2) return;                      // STOP At bunker edge
+  ELog::EM<<"STOP POINT == "<<stopPoint<<ELog::endDiag;
   // IN WALL
   // Make bunker insert
   BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
@@ -556,18 +546,10 @@ MAGIC::build(Simulation& System,
 
   if (stopPoint==4) return;
   
-  buildPolarizer(System,*ShieldE,2,*ShieldE,2,voidCell);
-
-  if (stopPoint==5) return;
+  buildPolarizer(System,*ShieldE,2,FocusOutE->getKey("Guide0"),2,voidCell);
 
   return;
-
-  VPipeOutF->addInsertCell(ShieldE->getCell("Void"));
-  VPipeOutF->addInsertCell(ShieldF->getCell("Void"));
-  VPipeOutF->createAll(System,FocusOutE->getKey("Guide0"),2);
-  FocusOutF->addInsertCell(VPipeOutF->getCells("Void"));
-  FocusOutF->createAll(System,*VPipeOutF,0,*VPipeOutF,0);
-
+  if (stopPoint==5) return;
 
   ShieldG->addInsertCell(voidCell);
   ShieldG->addInsertCell(PolarizerPit->getCells("Outer"));

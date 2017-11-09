@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -343,8 +343,8 @@ LinkUnit::setBridgeSurf(const std::string& SList)
 void
 LinkUnit::setBridgeSurf(const HeadRule& HR) 
   /*!
-    Add a surface to the output
-    \param SList :: String set to add
+    Set a surface to the output
+    \param HR :: Rule for bridge surface
   */
 {
   ELog::RegMethod RegA("LinkUnit","setBridgeSurf(HeadRule)");
@@ -372,7 +372,7 @@ LinkUnit::addBridgeSurf(const std::string& SList)
     \param SList ::  Surface string [fully decomposed]
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addInterSurf(std::string)");
+  ELog::RegMethod RegA("LinkUnit","addBridgeSurf(std::string)");
 
   bridgeSurf.addIntersection(SList);
   return;
@@ -382,10 +382,10 @@ void
 LinkUnit::addBridgeSurf(const HeadRule& HR) 
   /*!
     Add a set of surfaces to the output
-    \param SList ::  Surface string [fully decomposed]
+    \param HR ::  Rule for bridge surface
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");
+  ELog::RegMethod RegA("LinkUnit","addBridgeSurf(HeadRule)");
 
   bridgeSurf.addIntersection(HR);
   return;
@@ -414,7 +414,7 @@ LinkUnit::getLinkString() const
     \return linked surface number
   */
 {
-  ELog::RegMethod RegA("LinkUnit","getLinkSurf");
+  ELog::RegMethod RegA("LinkUnit","getLinkString");
   std::string Out;
   if (bridgeSurf.hasRule())
     Out=" "+bridgeSurf.display();
@@ -481,5 +481,17 @@ LinkUnit::applyRotation(const localRotate& LR)
   return;
 }
 
+void
+LinkUnit::populateSurf()
+  /*!
+    Populate surface
+   */
+{
+  ELog::RegMethod RegA("LinkUnit","populateSurf");
+    
+  mainSurf.populateSurf();
+  bridgeSurf.populateSurf();
+  return;
+}
   
 }  // NAMESPACE attachSystem

@@ -3,7 +3,7 @@
  
  * File:   bunker/BunkerFeed.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/multi_array.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -48,15 +47,10 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
-#include "surfEqual.h"
-#include "surfDivide.h"
-#include "surfDIter.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "Cylinder.h"
@@ -209,12 +203,10 @@ BunkerFeed::moveToLayer(const Bunker& BUnit,
   
 
 void 
-BunkerFeed::insertColl(Simulation& System,
-                       const Bunker& BUnit)
+BunkerFeed::insertColl(Simulation& System)
   /*!
     Add a feed pipe to the collimator area
     \param System :: Simulation to add pipe to
-    \param BUnit :: Bunker wall unit to use
   */
 {
   ELog::RegMethod RegA("BunkerFeed","insertColl");
@@ -265,7 +257,7 @@ BunkerFeed::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(bunkerObj,segNumber);
   moveToLayer(bunkerObj,feedName);
-  insertColl(System,bunkerObj); 
+  insertColl(System); 
 
   //  insertPipes(System);       
   

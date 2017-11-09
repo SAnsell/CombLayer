@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/LinkUnit.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ class LinkUnit
   Geometry::Vec3D Axis;         ///< Connnection axis
   Geometry::Vec3D ConnectPt;    ///< Connection point
   
-  int linkSurf;                 ///< Link surface [0 ==> Rule]
+  int linkSurf;                  ///< Link surface [0 ==> Rule]
   HeadRule mainSurf;             ///< Common surface unit
   HeadRule bridgeSurf;           ///< Bridging surface unit
   
@@ -106,6 +106,7 @@ class LinkUnit
   void addBridgeSurf(const HeadRule&);
 
   void applyRotation(const localRotate&);
+  void populateSurf(); 
 };
 
 }

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   delftInc/ConeModerator.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,6 @@ class ConeModerator : public virtualMod
   const int coneIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
 
-  double xStep;             ///< X Step
-  double yStep;             ///< Y Step
-  double zStep;             ///< Z Step
-
   double depth;             ///< apex-apex depth of H2
   double length;            ///< inner apex - cut plane 
   double innerAngle;        ///< Inner angle of cone
@@ -64,7 +60,7 @@ class ConeModerator : public virtualMod
   int HCell;                ///< Main H2 cell
   
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::SecondTrack&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -81,7 +77,8 @@ class ConeModerator : public virtualMod
   /// Access to hydrogen region
   virtual int getMainBody() const { return HCell; }
 
-  virtual void createAll(Simulation&,const attachSystem::TwinComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
   virtual void postCreateWork(Simulation&);
 };
 

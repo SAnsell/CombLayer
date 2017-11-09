@@ -3,7 +3,7 @@
  
  * File:   test/testMapRange.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,6 +120,14 @@ testMapRange::testSort()
       Range<int>(14,14),
       Range<int>(7,9)
   };
+
+  const std::vector<Range<int>> AnsVec=
+  {
+      Range<int>(1,3),
+      Range<int>(7,9),
+      Range<int>(14,14),
+      Range<int>(17,18)
+  };
   
   
   std::vector<size_t> Index=
@@ -128,10 +136,17 @@ testMapRange::testSort()
                                     const Range<int>& b)
                                  { return (a<b); } );
   mathSupport::applyPermutation(MVec,Index);
-  
+
+
   for(size_t i=0;i<MVec.size();i++)
     {
-      ELog::EM<<"Item["<<i<<"] "<<MVec[i]<<ELog::endDebug;
+      if (MVec[i]!=AnsVec[i])
+	{
+	  ELog::EM<<"Test Failed "<<ELog::endDiag;
+	  for(size_t j=0;j<MVec.size();j++)
+	    ELog::EM<<"Item["<<i<<"] "<<MVec[i]<<" : "<<AnsVec[i]<<ELog::endDiag;
+	  return -1;
+	}
     }
   return 0;
 }

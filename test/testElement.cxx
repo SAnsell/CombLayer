@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testElement.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,12 +114,12 @@ testElement::testCinder()
     \retval 0 :: success
   */
 {
-  ELog::RegMethod RegA("testElement","testMass");
+  ELog::RegMethod RegA("testElement","testCinder");
 
   std::vector<double> cFrac;
-  std::vector<int> cZ;
-  const Element& TX=Element::Instance();
-  Zaid c31;
+  std::vector<size_t> cZ;
+  const MonteCarlo::Element& TX=MonteCarlo::Element::Instance();
+  MonteCarlo::Zaid c31;
   c31.setZaid("31000.24c ");
   c31.setDensity(1.0);
   TX.addZaid(c31,cZ,cFrac);
@@ -169,10 +169,10 @@ testElement::testMass()
       0.000000E+00,0.238070E+03,0.000000E+00,0.000000E+00 
     };
 
-  const Element& TX=Element::Instance();
-  for(int i=1;i<95;i++)
+  const MonteCarlo::Element& TX=MonteCarlo::Element::Instance();
+  for(size_t i=1;i<95;i++)
     {
-      if (fabs(TX.mass(i)-meanAMASS[i-1])>1e-1)
+      if (std::abs(TX.mass(i)-meanAMASS[i-1])>1e-1)
 	{
 	  ELog::EM<<i<<" == "<<TX.mass(i)<<" "<<meanAMASS[i-1]<<ELog::endTrace;
 	  return -1;

@@ -3,7 +3,7 @@
  
  * File:   t1Engineer/makeT1Eng.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -341,8 +341,8 @@ makeT1Eng::build(Simulation* SimPtr,
       BulkObj->addInsertCell(voidCell);  
       BulkObj->createAll(*SimPtr,IParam,*VoidObj);
 
-      MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-      MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+      MonoTopObj->createAll(*SimPtr,3,*VoidObj,*BulkObj);
+      MonoBaseObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
       voidCell=VoidObj->getVoidCell();
     }
   else
@@ -354,7 +354,8 @@ makeT1Eng::build(Simulation* SimPtr,
   RefObj->createAll(*SimPtr,World::masterOrigin());
 
   RefObj->addToInsertChain(*TarObj);
-  TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+  //asfasdf
+  TarObj->setRefPlates(-RefObj->getSignedLinkSurf(3),0);
   TarObj->createAll(*SimPtr,World::masterOrigin());
   //  TarObjModify->createAll(*SimPtr,*TarObj);
 
@@ -394,7 +395,7 @@ makeT1Eng::build(Simulation* SimPtr,
   attachSystem::addToInsertSurfCtrl(*SimPtr,*CH4Mod,*H2Mod);
   
   // FLIGHTLINES:
-  const std::string Out=RefObj->getLinkComplement(2);
+  const std::string Out=RefObj->getSignedLinkString(3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
   RefObj->addToInsertChain(TriFLA->getCC("outer"));

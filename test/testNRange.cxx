@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testNRange.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -122,11 +122,13 @@ testNRange::testCondense()
 {
   ELog::RegMethod RegA("testNRange","testCondense");
 
-  std::vector<std::string> TString;
-  TString.push_back("1 8log 1e+09 3r");
-  TString.push_back("1 3r 4 5i 8");
-  TString.push_back("1 8log 1e+09 3i 1.2e+09");
-  TString.push_back("1e-3 251log 1e+09");
+  const std::vector<std::string> TString=
+    {
+      "1 8log 1e+09 3r",
+      "1 3r 4 5i 8",
+      "1 8log 1e+09 3i 1.2e+09",
+      "1e-3 251log 1e+09"
+    };
 
   for(size_t i=0;i<TString.size();i++)
     {
@@ -191,7 +193,7 @@ testNRange::testOperator()
 		  1000,1001,1002,1003,1004,1005,
 		  1006,1007,1008,1009,1010,1011  };
 
-  std::string testString("0.001 4log 100 3r 1000 49i 1050");
+  const std::string testString("0.001 4log 100 3r 1000 49i 1050");
   NRange NE;
   if (NE.processString(testString))
     {
@@ -236,7 +238,7 @@ testNRange::testOutput()
   NE.writeVector(values);
   const double sum=accumulate(values.begin(),values.end(),0.0,
 				   std::plus<double>());
-  if (fabs(sum-4.11111111e9)>1e3)
+  if (std::abs(sum-4.11111111e9)>1e3)
     {
       ELog::EM<<"Sum == "<<sum<<" from:"<<testString<<ELog::endWarn;
       ELog::EM<<"Data == ";
@@ -256,9 +258,9 @@ testNRange::testOutput()
   NE.writeVector(values);
   const double sumB=accumulate(values.begin(),values.end(),0.0,
 				   std::plus<double>());
-  if (fabs(sumB-52275.0)>1e-3)
+  if (std::abs(sumB-52275.0)>1e-3)
     {
-      ELog::EM<<"Sum == "<<sumB<<" ("<<fabs(sumB-52275.0)<<ELog::endWarn;
+      ELog::EM<<"Sum == "<<sumB<<" ("<<std::abs(sumB-52275.0)<<ELog::endWarn;
       ELog::EM<<" from:"<<testStringB<<ELog::endWarn;
       ELog::EM<<"Data == ";
       copy(values.begin(),values.end(),
@@ -281,15 +283,25 @@ testNRange::testRange()
 {
   ELog::RegMethod RegA("testNRange","testRange");
 
-  std::string testString("1.3e2 100i 1.6e6 5r 12e8 10log 3.7e9");
+  const std::string testString("1.3e2 100i 1.6e6 5r 12e8 10log 3.7e9");
+  const std::string expectString("130 100i 1.6e+06 5r 1.2e+09 10log 3.7e+09");
+
   NRange NE;
   if (NE.processString(testString))
     {
       ELog::EM<<"Error with NRange "<<ELog::endCrit;
       return -1;
     }
-  NE.write(ELog::EM.Estream());
-  ELog::EM.basic();
+  std::ostringstream cx;
+  NE.write(cx);
+  if (StrFunc::fullBlock(cx.str())!=expectString)
+    {
+      ELog::EM<<"Failed on string match"<<ELog::endDiag;
+      ELog::EM<<"Result == "<<cx.str()<<ELog::endDiag;
+      ELog::EM<<"Expect == "<<expectString<<ELog::endDiag;
+      return -1;
+    }
+  
   return 0;
 }
 

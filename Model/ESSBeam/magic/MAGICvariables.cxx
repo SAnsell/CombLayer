@@ -3,7 +3,7 @@
  
  * File:    ESSBeam/magic/MAGICvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,8 +94,8 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicAxisZAngle",0.46);   // rotation
   Control.addVariable("magicAxisZStep",0.0);   // rotation
 
-  FGen.setGuideMat("Copper");
-  FGen.setThickness(0.5,0.4);
+  FGen.setLayer(1,0.5,"Copper");
+  FGen.setLayer(2,0.4,"Void");
   FGen.setYOffset(8.0);
   FGen.generateTaper(Control,"magicFA",350.0,12.4,3.0 ,4.0,3.0);
 
@@ -103,15 +103,16 @@ MAGICvariables(FuncDataBase& Control)
 
   // out to 6.18m
   PipeGen.generatePipe(Control,"magicPipeC",10.0,75.0);
+  
 
-  FGen.setGuideMat("SiCrystal");
+  FGen.setLayer(1,0.5,"SiCrystal");
   FGen.clearYOffset();
   FGen.generateBender(Control,"magicBC",15.0, 3.0,3.0,3.0,3.0,
                       6500,0.0);
 
   CGen.setMainRadius(25.0);
-  CGen.setFrame(80.0,80.0);
-  CGen.generateChopper(Control,"magicChopperA",42.0,10.0,4.55);
+  CGen.setFrame(65.0,65.0);
+  CGen.generateChopper(Control,"magicChopperA",38.0,10.0,4.55);
 
   // Double Blade chopper
   BGen.setThick({0.2,0.2});
@@ -124,7 +125,7 @@ MAGICvariables(FuncDataBase& Control)
   // out from ChopA (6.5m) to 12m
   PipeGen.generatePipe(Control,"magicPipeD",3.0,650.0);
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   FGen.generateTaper(Control,"magicFD",646.0 ,2.7,4.08  ,2.4,4.06 );
 
@@ -132,8 +133,8 @@ MAGICvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"magicPipeE",3.0,600.0);
   FGen.generateTaper(Control,"magicFE",596.0 ,4.08,4.93, 4.06,4.79 );
   // out (19m to bunker wall)
-  PipeGen.generatePipe(Control,"magicPipeF",3.0,510.0);
-  FGen.generateTaper(Control,"magicFF",506.0 ,4.93,5.60,  4.79,5.50 );
+  PipeGen.generatePipe(Control,"magicPipeF",3.0,490.0);
+  FGen.generateTaper(Control,"magicFF",486.0 ,4.93,5.60,  4.79,5.50 );
 
     // BEAM INSERT:
   Control.addVariable("magicBInsertHeight",20.0);
@@ -150,12 +151,13 @@ MAGICvariables(FuncDataBase& Control)
   
   // 28m to 38m
   SGen.generateShield(Control,"magicShieldA",1000.0,40.0,40.0,60.0,4,8);
-  PipeGen.generatePipe(Control,"magicPipeOutA",1.0,998.0);
+  PipeGen.generatePipe(Control,"magicPipeOutA",5.0,994.0);
   FGen.clearYOffset();
-  FGen.setYMainOffset(4.0);  
-  FGen.generateTaper(Control,"magicOutFA",994.0, 5.89,6.65, 5.80,6.60 );
+  FGen.setYMainOffset(8.0);  
+  FGen.generateTaper(Control,"magicOutFA",990.0, 5.89,6.65, 5.80,6.60 );
 
   // 38m to 48m
+  FGen.setYMainOffset(4.0);  
   SGen.generateShield(Control,"magicShieldB",1000.0,40.0,40.0,60.0,4,8);
   PipeGen.generatePipe(Control,"magicPipeOutB",4.0,996.0);
   FGen.generateTaper(Control,"magicOutFB",992.0, 6.65,7.20, 6.60,7.18 );
@@ -176,13 +178,13 @@ MAGICvariables(FuncDataBase& Control)
   FGen.generateTaper(Control,"magicOutFE",992.0, 7.20,7.60, 7.18,7.58 );
   
   // 78 to 83m
-  SGen.generateShield(Control,"magicShieldF",560.0,40.0,40.0,60.0,2,8);
-  PipeGen.generatePipe(Control,"magicPipeOutF",6.0,556.0);
-  FGen.generateTaper(Control,"magicOutFF",552.0, 7.20,7.60, 7.18,7.58 );
+  SGen.generateShield(Control,"magicShieldF",590.0,40.0,40.0,60.0,2,8);
+  PipeGen.generatePipe(Control,"magicPipeOutF",6.0,586.0);
+  FGen.generateTaper(Control,"magicOutFF",582.0, 7.20,7.60, 7.18,7.58 );
 
   PGen.setFeLayer(6.0);
   PGen.setConcLayer(10.0);
-  PGen.generatePit(Control,"magicPolarizerPit",0.0,300.0,150.0,120.0,30.0);
+  PGen.generatePit(Control,"magicPolarizerPit",0.0,340.0,150.0,120.0,30.0);
 
   // 78 to 83m
   SGen.generateShield(Control,"magicShieldG",1000.0,40.0,40.0,60.0,4,8);
@@ -190,11 +192,14 @@ MAGICvariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"magicPipeOutG",5.0,994.0);
   FGen.generateTaper(Control,"magicOutFG",990.0, 7.20,7.60, 7.18,7.58 );
 
+
+  FGen.setYOffset(-160.0);
   FGen.generateRectangle(Control,"magicMCGuideA",150.0, 7.20,7.60);
   Control.addVariable("magicMCGuideAZAngle",-0.25);
 
+  FGen.setYOffset(10.0);
   FGen.generateRectangle(Control,"magicMCGuideB",150.0, 7.20,7.60);
-  Control.addVariable("magicMCGuideBZAngle",-0.25);
+  Control.addVariable("magicMCGuideBZAngle",-0.125);
    
   Control.addVariable("magicMCANBlades",6);
   Control.addVariable("magicMCABladeThick",0.2);
@@ -217,7 +222,7 @@ MAGICvariables(FuncDataBase& Control)
   Control.addVariable("magicAppAInnerHeight",4.0);
   Control.addVariable("magicAppAWidth",12.0);
   Control.addVariable("magicAppAHeight",12.0);
-  Control.addVariable("magicAppADepth",5.0);
+  Control.addVariable("magicAppAThick",5.0);
   Control.addVariable("magicAppAYStep",7.0);
   Control.addVariable("magicAppADefMat","Tungsten");
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/PreMod.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class PreMod : public attachSystem::ContainedComp,
   
   const int preIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< 1:var,2:axis,4:cent,8:face,16:cell
+
   int centOrgFlag;              ///< Origin centred / at a point
 
   double width;             ///< Total Width
@@ -58,13 +58,13 @@ class PreMod : public attachSystem::ContainedComp,
   int divideSurf;           ///< Division surface
   int targetSurf;           ///< Division surface
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
 
-  void createUnitVector(const size_t,
-			const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int,const long int);
 
 
-  void createSurfaces(const size_t,const attachSystem::FixedComp&);
+  void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&);
   void createLinks();
   
@@ -82,8 +82,8 @@ class PreMod : public attachSystem::ContainedComp,
   /// Setter 
   void setDivideSurf(const int SN) { divideSurf=SN; }
 
-  void createAll(Simulation&,const size_t,
-		 const attachSystem::FixedComp&,const int);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int,const bool);
 
 };
 

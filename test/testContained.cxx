@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testContained.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,8 @@ testContained::createSurfaces()
   ELog::RegMethod RegA("testContained","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-
+  SurI.reset();
+  
   // First box :
   SurI.createSurface(1,"px -1");
   SurI.createSurface(2,"px 1");
@@ -181,22 +182,21 @@ testContained::testAddition()
   */
 {
   ELog::RegMethod RegA("testContainedComp","testAddition");
+
   attachSystem::ContainedComp A;
-  A.addOuterSurf(-7);
-  A.addOuterSurf(23);
-  A.addOuterSurf(33);
+  A.addOuterSurf(-107);
+  A.addOuterSurf(22);
+  A.addOuterSurf(21);
+
   HeadRule OutCheck;
-  OutCheck.procString("-7 23 33");
+  OutCheck.procString("(107 : -22 :  -21)");
   
-  /*  if (HeadRule(A.getExclude())!=OutCheck())
+  if (HeadRule(A.getExclude())!=OutCheck)
     {
-      ELog::EM<<"Out = "<<A.getExclude()<<ELog::endDiag;
+      ELog::EM<<"ContainedComp = "<<A.getExclude()<<ELog::endDiag;
+      ELog::EM<<"HeadRule      = "<<OutCheck.display()<<ELog::endDiag;
       return -1;
     }
-  */	
-	
-
-  
   return 0;
 }
 

@@ -48,9 +48,9 @@ class Aperture : public attachSystem::ContainedComp,
 
   double innerWidth;                ///< inner width
   double innerHeight;               ///< inner height
-  double width;                     ///< full width
+  double width;                     ///< full width x2
   double height;                    ///< full height
-  double depth;                     ///< full depth
+  double thick;                     ///< full thick
   size_t nLayers;                   ///< number of extra layers
 
   int voidMat;                  ///< void material

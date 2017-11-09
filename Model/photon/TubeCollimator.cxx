@@ -3,7 +3,7 @@
  
  * File:   photon/TubeCollimator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -329,7 +329,9 @@ TubeCollimator::createCentres()
 	  {
 	    if (std::abs(i)==step || std::abs(j)==step)
 	      {
-		const Geometry::Vec3D CPoint=Origin+AAxis*(centSpc*i)+BAxis*(centSpc*j);
+		const Geometry::Vec3D CPoint=Origin+
+		  AAxis*(centSpc*static_cast<double>(i))+
+		  BAxis*(centSpc*static_cast<double>(j));
 		if (boundary.isValid(CPoint))
 		  {
 		    acceptFlag=1;
@@ -623,7 +625,8 @@ TubeCollimator::createTubes(Simulation& System)
 	for(long int j=-step;j<=step;j++)
 	  {
 	    const Geometry::Vec3D CPoint=
-	      AAxis*(centSpc*i)+BAxis*(centSpc*j);
+	      AAxis*(centSpc*static_cast<double>(i))+
+	      BAxis*(centSpc*static_cast<double>(j));
 	    if ((std::abs(i)==step || std::abs(j)==step) &&
 		boundary.isValid(CPoint))
 	      {
@@ -658,7 +661,6 @@ std::string
 TubeCollimator::boundaryString() const
   /*!
     Create the boundary string
-    \param compFlag :: Complementary
     \return boundary string
   */
 {

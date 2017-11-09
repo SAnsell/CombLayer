@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/Face.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -721,6 +721,7 @@ Face::planeIntersect(const Face& B) const
 int
 Face::Intersect(const Face& B) const
   /*!
+    Intersect between two facece
     \param B :: Face 
     \retval 1 Intersect
     \return -1 Does not intercept

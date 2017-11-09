@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   build/targetOuter.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 #include "ProtonVoid.h"
@@ -91,8 +92,6 @@ targetOuter::targetOuter(const std::string& Key) :
 targetOuter::targetOuter(const targetOuter& A) : 
   constructSystem::TargetBase(A),
   protonIndex(A.protonIndex),cellIndex(A.cellIndex),
-  populated(A.populated),xOffset(A.xOffset),
-  yOffset(A.yOffset),zOffset(A.zOffset),
   mainLength(A.mainLength),mainHeight(A.mainHeight),
   mainWidth(A.mainWidth),mercuryMat(A.mercuryMat),
   mercuryTemp(A.mercuryTemp),mainCell(A.mainCell)
@@ -114,10 +113,6 @@ targetOuter::operator=(const targetOuter& A)
     {
       constructSystem::TargetBase::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
-      xOffset=A.xOffset;
-      yOffset=A.yOffset;
-      zOffset=A.zOffset;
       mainLength=A.mainLength;
       mainHeight=A.mainHeight;
       mainWidth=A.mainWidth;
@@ -145,19 +140,14 @@ targetOuter::~targetOuter()
 {}
 
 void
-targetOuter::populate(const Simulation& System)
+  targetOuter::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
   ELog::RegMethod RegA("targetOuter","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  xOffset=Control.EvalVar<double>(keyName+"XOffset");
-  yOffset=Control.EvalVar<double>(keyName+"YOffset");
-  zOffset=Control.EvalVar<double>(keyName+"ZOffset");
 
   mainLength=Control.EvalVar<double>(keyName+"MainLength");
   mainJoin=Control.EvalVar<double>(keyName+"MainJoin");
@@ -221,7 +211,7 @@ targetOuter::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("targetOuter","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  applyShift(xOffset,yOffset,zOffset);
+  applyOffset();
   
   return;
 }
@@ -355,7 +345,6 @@ targetOuter::createSurfaces()
   return;
 }
 
-
 void
 targetOuter::createObjects(Simulation& System)
   /*!
@@ -478,32 +467,6 @@ targetOuter::createLinks()
 }
 
 
-void
-targetOuter::createBeamWindow(Simulation& System)
-  /*!
-    Create the beamwindow if present
-    \param System :: Simulation to build into
-  */
-{
-  ELog::RegMethod RegA("targetOuter","createBeamWindow");
-  if (PLine->getVoidCell())
-    {
-      ModelSupport::objectRegister& OR=
-	ModelSupport::objectRegister::Instance();
-      
-      if (!BWPtr)
-	{
-	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
-	  (new ts1System::BeamWindow("BWindow"));
-	  OR.addObject(BWPtr);
-	}      
-      BWPtr->addBoundarySurf(PLine->getCompContainer());
-      BWPtr->setInsertCell(PLine->getVoidCell());
-      BWPtr->createAll(System,*this,0);  // 0 => front face of target
-    }
-  return;
-}
-
 
 void
 targetOuter::addProtonLine(Simulation& System,
@@ -517,6 +480,10 @@ targetOuter::addProtonLine(Simulation& System,
    */
 {
   ELog::RegMethod RegA("SNStarget","addProtonLine");
+
+  PLine->createAll(System,*this,2,refFC,index);
+  createBeamWindow(System,1);
+
   return;
 }
 
@@ -531,7 +498,7 @@ targetOuter::createAll(Simulation& System,const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("targetOuter","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC);
   createSurfaces();
   createObjects(System);
@@ -543,4 +510,4 @@ targetOuter::createAll(Simulation& System,const attachSystem::FixedComp& FC)
 
 
   
-}  // NAMESPACE TMRsystem
+}  // NAMESPACE snsSystem

@@ -306,13 +306,13 @@ PBIP::createObjects(Simulation& System,
   ELog::RegMethod RegA("PBIP","createObjects");
 
   const std::string start =
-    std::to_string(-FCstart.getLinkSurf(static_cast<size_t>(lpStart)));
+    std::to_string(FCstart.getSignedLinkSurf(static_cast<size_t>(-(lpStart+1))));
 
   const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
-  std::string BSurf=(lpEnd>0) ?
-    FCend.getLinkString(lIndex) : FCend.getBridgeComplement(lIndex) ;
-  FixedComp::setLinkComponent(0,FCend,lIndex);
 
+  std::string BSurf=(lpEnd>0) ?
+    FCend.getSignedLinkString(lIndex+1) : FCend.getSignedCommonRule(lIndex+1).display() ;
+  FixedComp::setLinkComponent(0,FCend,lIndex);
 
   std::string Out;
   // main

@@ -104,7 +104,7 @@ class TriangleMod : public constructSystem::ModBase
   virtual ~TriangleMod();
 
   // special for 5 sides!!
-  virtual int getExitWindow(const size_t,std::vector<int>&) const;
+  virtual int getExitWindow(const long int,std::vector<int>&) const;
 
   virtual Geometry::Vec3D getSurfacePoint(const size_t,const long int) const;
   virtual int getLayerSurf(const size_t,const long int) const;

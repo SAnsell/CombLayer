@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/makeESS.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@ namespace beamlineSystem
 
 namespace constructSystem
 {
-  class ModBase;
   class SupplyPipe;
 
 }
@@ -71,22 +70,23 @@ namespace essSystem
   class BeamMonitor;
   class DiskPreMod;
   class DiskLayerMod;
-  class TaperedDiskPreMod;
   class Bunker;
   class TwisterModule;
   class RoofPillars;
   class Curtain;
+  class HighBay;
   class F5Collimator;
   class BunkerFeed;
   class WedgeFlightLine;
   class TSMainBuilding;
   class Chicane;
+  class EssModBase;
 
-
+      
   /*!
     \class makeESS
     \version 1.0
-    \author S. Ansell
+    \author S. Ansell / K. Batkov
     \date January 2013
     \brief Main moderator system for ESS
   */
@@ -106,22 +106,22 @@ class makeESS
 
   // Butterfly
   /// Primary Lower Mod
-  std::shared_ptr<constructSystem::ModBase> LowMod;
-  std::shared_ptr<TaperedDiskPreMod> LowPreMod;         ///< Lower mod
-  std::shared_ptr<TaperedDiskPreMod> LowCapMod;         ///< Upper mod
+  std::shared_ptr<EssModBase> LowMod;
+  std::shared_ptr<DiskLayerMod> LowPreMod;         ///< Lower mod TaperedDiskPreMod???
+  std::shared_ptr<DiskLayerMod> LowCapMod;         ///< Upper mod TaperedDiskPreMod???
 
   std::shared_ptr<essSystem::WedgeFlightLine> LowAFL;  ///< Lower Mode FL
   std::shared_ptr<essSystem::WedgeFlightLine> LowBFL;  ///< Lower Mode FL
 
   // Butterly
-  std::shared_ptr<constructSystem::ModBase> TopMod;   ///< Primary Upper Mod
-  std::shared_ptr<TaperedDiskPreMod> TopPreMod;            ///< Top mod
-  std::shared_ptr<TaperedDiskPreMod> TopCapMod;            ///< Lower mod
+  std::shared_ptr<EssModBase> TopMod;   ///< Primary Upper Mod
+  std::shared_ptr<DiskLayerMod> TopPreMod;            ///< Top mod TaperedDiskPreMod???
+  std::shared_ptr<DiskLayerMod> TopCapMod;            ///< Lower mod TaperedDiskPreMod???
 
-  std::shared_ptr<PreModWing> LowPreWing; ///< Low premoderator wing
-  std::shared_ptr<PreModWing> TopPreWing; ///< Top premoderator wing
-  std::shared_ptr<PreModWing> LowCapWing; ///< Low cap premoderator wing
-  std::shared_ptr<PreModWing> TopCapWing; ///< Top cap premoderator wing
+  std::shared_ptr<PreModWing> LowPreWingA; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> LowPreWingB; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWingA; ///< Low premoderator wing
+  std::shared_ptr<PreModWing> TopPreWingB; ///< Top premoderator wing
 
   std::shared_ptr<essSystem::WedgeFlightLine> TopAFL;  ///< Top Mod FL
   std::shared_ptr<essSystem::WedgeFlightLine> TopBFL;  ///< Top Mod FL
@@ -149,6 +149,8 @@ class makeESS
   ///< Right bunker Pillars [B]
   std::shared_ptr<RoofPillars> BBunkerPillars;
   std::shared_ptr<Curtain> TopCurtain;  ///< Conc-curtain
+  std::shared_ptr<HighBay> ABHighBay;   ///< HighBay structure
+  std::shared_ptr<HighBay> CDHighBay;   ///< HighBay structure
 
   /// collimators for F5 tallies
   std::vector<std::shared_ptr<F5Collimator>> F5array;
@@ -185,7 +187,7 @@ class makeESS
 			  const mainSystem::inputParam&);
   void buildBunkerQuake(Simulation&,
 			const mainSystem::inputParam&);
-  void buildPreWings(Simulation&,const std::string&);
+  void buildPreWings(Simulation&);
   void buildTwister(Simulation&);
 
   void buildF5Collimator(Simulation&, size_t); // when -nF5 is used

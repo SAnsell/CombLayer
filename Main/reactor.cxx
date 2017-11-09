@@ -49,7 +49,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "TallyCreate.h"
 #include "Transform.h"
 #include "Quaternion.h"
 #include "Surface.h"
@@ -64,16 +63,18 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
-#include "SurInter.h"
 #include "Simulation.h"
-#include "SimPHITS.h"
 #include "SimInput.h"
 #include "mainJobs.h"
 #include "Volumes.h"
-#include "DefPhysics.h"
 #include "TallySelector.h"
 #include "variableSetup.h"
 #include "World.h"
+
+#include "fissionConstruct.h"
+#include "reactorTallyConstruct.h"
+#include "tallyConstructFactory.h" 
+#include "tallyConstruct.h" 
 
 #include "makeDelft.h"
 
@@ -115,16 +116,20 @@ main(int argc,char* argv[])
       setVariable::DelftModel(SimPtr->getDataBase());
       setVariable::DelftCoreType(IParam,SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
-  
-
-      delftSystem::makeDelft RObj(IParam.getValue<std::string>("modType"));
+      mainSystem::setMaterialsDataBase(IParam);
+	
+      delftSystem::makeDelft RObj;
       World::createOuterObjects(*SimPtr);
-      RObj.build(SimPtr,IParam);
+      RObj.build(*SimPtr,IParam);
 
-      RObj.setSource(SimPtr,IParam);
+      RObj.setSource(*SimPtr,IParam);
 
+      tallySystem::tallyConstructFactory FC;
+      tallySystem::tallyConstruct& TC=
+	tallySystem::tallyConstruct::Instance(&FC);
+      TC.setFission(new tallySystem::reactorTallyConstruct);
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-      reactorTallySelection(*SimPtr,IParam);
+
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       ModelSupport::calcVolumes(SimPtr,IParam);

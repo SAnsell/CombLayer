@@ -89,7 +89,7 @@ namespace essSystem
 
 Box::Box(const std::string& Key)  :
   attachSystem::ContainedComp(),
-  attachSystem::FixedOffset(Key,9),
+  attachSystem::FixedOffset(Key,11),
   attachSystem::LayerComp(0),
   attachSystem::CellMap(),
   surfIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -318,6 +318,18 @@ Box::createLinks()
 
   FixedComp::setConnect(8,Origin+Z*height[0],-Z);
   FixedComp::setLinkSurf(8,-SMap.realSurf(surfIndex+6));
+
+  // links for getLeft/RightExclude
+  std::string Out;
+
+  Out = ModelSupport::getComposite(SMap,SI,"2:-3:4");
+  FixedComp::setConnect(9,Origin+Y*l,Y);
+  FixedComp::setLinkSurf(9,Out);
+
+  Out = ModelSupport::getComposite(SMap,SI,"-1:-3:4");
+  FixedComp::setConnect(10,Origin-Y*l,Y);
+  FixedComp::setLinkSurf(10,Out);
+
 
   return;
 }

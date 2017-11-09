@@ -75,8 +75,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "SurfMap.h"
 #include "World.h"
 #include "BulkModule.h"
 
@@ -84,7 +86,8 @@ namespace essSystem
 {
 
 BulkModule::BulkModule(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,9),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
+  attachSystem::SurfMap(),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -94,11 +97,10 @@ BulkModule::BulkModule(const std::string& Key)  :
 {}
 
 BulkModule::BulkModule(const BulkModule& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::SurfMap(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),nLayer(A.nLayer),
-  radius(A.radius),height(A.height),depth(A.depth),
+  nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
   /*!
     Copy constructor
@@ -117,13 +119,9 @@ BulkModule::operator=(const BulkModule& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       nLayer=A.nLayer;
       radius=A.radius;
       height=A.height;
@@ -141,24 +139,16 @@ BulkModule::~BulkModule()
 {}
 
 void
-BulkModule::populate(const Simulation& System)
+BulkModule::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("BulkModule","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
-  engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedOffset::populate(Control);
+  
   nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
   if (!nLayer) return;
   radius.resize(nLayer);
@@ -185,17 +175,18 @@ BulkModule::populate(const Simulation& System)
 }
   
 void
-BulkModule::createUnitVector(const attachSystem::FixedComp& FC)
+BulkModule::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
+    \param sideIndex :: Link point 
   */
 {
   ELog::RegMethod RegA("BulkModule","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
     
   for(size_t i=0;i<nLayer;i++)
     COffset[i]=X*COffset[i].X()+Y*COffset[i].Y();
@@ -223,6 +214,7 @@ BulkModule::createSurfaces()
       ModelSupport::buildPlane(SMap,RI+6,Origin+Z*height[i],Z);
       ModelSupport::buildCylinder(SMap,RI+7,Origin+COffset[i]
 				  ,Z,radius[i]);
+      addSurf("Radius"+std::to_string(i),SMap.realSurf(RI+7));
       RI+=10;
     }
 
@@ -322,9 +314,9 @@ BulkModule::addFlightUnit(Simulation& System,
 
   std::stringstream cx;
   cx<<" (";
-  for(size_t index=2;index<5;index++)
-    cx<<FC.getLinkString(index)<<" : ";
-  cx<<FC.getLinkString(5)<<" )";
+  for(long int index=3;index<6;index++)
+    cx<<FC.getSignedLinkString(index)<<" : ";
+  cx<<FC.getSignedLinkString(6)<<" )";
 
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
@@ -336,8 +328,8 @@ BulkModule::addFlightUnit(Simulation& System,
     }
   // Now make internal surface
   cx.str("");
-  for(size_t index=2;index<6;index++)
-    cx<<FC.getLinkComplement(index)<<" ";
+  for(long int index=3;index<7;index++)
+    cx<<FC.getSignedLinkString(-index)<<" ";
 
   Out=ModelSupport::getComposite(SMap,bulkIndex,
 				 bulkIndex+10*static_cast<int>(nLayer-1),
@@ -360,8 +352,8 @@ BulkModule::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BulkModule","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,0);
   createSurfaces();
   createLinks();
   createObjects(System,CC);

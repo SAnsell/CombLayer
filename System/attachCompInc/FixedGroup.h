@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/FixedGroup.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,11 @@ class FixedGroup : public FixedComp
   FixedGroup(const std::string&,const std::string&,const size_t,
 	     const std::string&,const size_t,
 	     const std::string&,const size_t);
+  FixedGroup(const std::string&,const std::string&,const size_t,
+	     const std::string&,const size_t,
+	     const std::string&,const size_t,
+	     const std::string&,const size_t);
+
   FixedGroup(const FixedGroup&);
   FixedGroup& operator=(const FixedGroup&);
   virtual ~FixedGroup();

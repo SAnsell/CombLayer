@@ -3,7 +3,7 @@
  
  * File:   photon/VacuumVessel.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,13 +196,13 @@ He3Tubes::createSurfaces()
   ModelSupport::buildPlane(SMap,heIndex+1,Origin-Y*offset,Y);
   ModelSupport::buildPlane(SMap,heIndex+2,Origin+Y*offset,Y);
   ModelSupport::buildPlane(SMap,heIndex+3,
-			   Origin-X*(offset+separation*(nTubes-1.0)/2.0),X);
-  ModelSupport::buildPlane(SMap,heIndex+4,
-			   Origin+X*(offset+separation*(nTubes-1.0)/2.0),X);
+			   Origin-X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
+  ModelSupport::buildPlane(SMap,heIndex+4,Origin+X*(offset+separation*(static_cast<double>(nTubes)-1.0)/2.0),X);
   ModelSupport::buildPlane(SMap,heIndex+5,Origin-Z*(length/2.0),Z);
   ModelSupport::buildPlane(SMap,heIndex+6,Origin+Z*(length/2.0),Z);
 
-  Geometry::Vec3D CentPt(Origin-X*(separation*(nTubes-1.0)/2.0));
+  Geometry::Vec3D CentPt(Origin-X*(separation*
+				   (static_cast<double>(nTubes)-1.0)/2.0));
 
   int tubeIndex(heIndex);
   for(size_t i=0;i<nTubes;i++)

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geometry/surfIndex.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,10 +31,6 @@
 #include <string>
 #include <algorithm>
 
-#ifndef NO_REGEX
-#include <boost/regex.hpp>
-#endif 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -47,7 +43,7 @@
 #include "Triple.h"
 #include "Quaternion.h"
 #include "support.h"
-#include "regexSupport.h"
+#include "regexBuild.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
@@ -221,7 +217,7 @@ surfIndex::removeOpposite(const int SN)
    */
 {
   ELog::RegMethod RegA("surfIndex","removeOpposite");
-  ELog::EM<<"RevOPP"<<ELog::endDebug;
+
   STYPE::iterator sc=SMap.find(SN);
   if (sc!=SMap.end())
     {
@@ -342,52 +338,38 @@ surfIndex::createNewSurf(int& surfN)
   return outPtr;
 }
 
-int
+void
 surfIndex::createSurface(const int SN,const std::string& SLine)
   /*!
     Given a surface adds the line
     \param SN :: Surface Number
     \param SLine :: Line to use.
-    \return -ve errorFlag  (0 on success)
   */
 {
-  return createSurface(SN,0,SLine);
+  createSurface(SN,0,SLine);
+  return;
 }
 
-int
+void
 surfIndex::createSurface(const int SN,const int TN,const std::string& SLine)
   /*!
     Given a surface adds the line
     \param SN :: Surface Number
     \param TN :: Transform number
     \param SLine :: Line to use.
-    \return -ve errorFlag  (0 on success)
   */
 {
   ELog::RegMethod RegA("surfIndex","createSurface");
-  try
-    {
-      Geometry::Surface* SPtr=
-	Geometry::surfaceFactory::Instance().processLine(SLine);
-      SPtr->setName(SN);
-      SPtr->setTrans(TN);
-      STYPE::iterator mc=SMap.find(SN);
-      if (mc!=SMap.end())
-        {
-	  delete mc->second;
-	  mc->second=SPtr;
-	}
-      else
-        {
-	  SMap.insert(STYPE::value_type(SN,SPtr));
-	}
-    }
-  catch (const ColErr::ExBase& A)
-    {
-      // Message is written by surfaceFactory::procLine
-      return -1;
-    }
-  return 0; 
+
+  Geometry::Surface* SPtr=
+    Geometry::surfaceFactory::Instance().processLine(SLine);
+  SPtr->setName(SN);
+  SPtr->setTrans(TN);
+  STYPE::iterator mc=SMap.find(SN);
+  if (mc!=SMap.end())
+    throw ColErr::InContainerError<int>(SN,"Surface in use");
+  SMap.emplace(SN,SPtr);
+  return; 
 }
 
 void
@@ -706,9 +688,9 @@ surfIndex::readOutputSurfaces(const std::string& FName)
       return -1;
     }
 
-  boost::regex startSea("SURFACE CARDS");
-  boost::regex surfUnit("^\\s*(\\d+)-\\s+(\\S.*)$");
-  boost::regex stopSea("\\+\\+\\s*END\\s*\\+\\+");
+  const std::string startSea("SURFACE CARDS");
+  const std::string surfUnit("^\\s*(\\d+)-\\s+(\\S.*)$");
+  const std::string stopSea("\\+\\+\\s*END\\s*\\+\\+");
 
   std::string InputLine;
   std::string Line;
@@ -737,7 +719,7 @@ surfIndex::readOutputSurfaces(const std::string& FName)
 	  else if ((!errLine.empty() && monoLine>1) ||
 		   errLine.size()>4)
 	    {
-	      ELog::EM<<"Error with line grp:"<<ELog::endCrit;;
+	      ELog::EM<<"Error with line grp:"<<ELog::endCrit;
 	      for(unsigned int i=0;i<errLine.size();i++)
 		ELog::EM<<"   "<<errLine[i]<<ELog::endCrit;
 	      throw ColErr::InvalidLine(Line,"Line",0);
@@ -789,11 +771,9 @@ surfIndex::processSurfaces(const std::string& InputLine)
   int transN(0);
   StrFunc::section(Line,transN);
 
-  int retNum=createSurface(name,transN,Line);
-  if (!retNum) return 1;
+  createSurface(name,transN,Line);
 
-  // Incomplete here:
-  return 0;
+  return 1;
 }
 
 int

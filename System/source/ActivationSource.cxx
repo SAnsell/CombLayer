@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,14 +67,15 @@
 #include "FixedComp.h"
 #include "Object.h"
 #include "WorkData.h"
-#include "MXcards.h"
 #include "Zaid.h"
+#include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "ModeCard.h"
 #include "Simulation.h"
 #include "activeUnit.h"
 #include "activeFluxPt.h"
+#include "SourceBase.h"
 #include "ActivationSource.h"
 
 extern MTRand RNG;
@@ -83,6 +84,7 @@ namespace SDef
 {
 
 ActivationSource::ActivationSource() :
+  SourceBase(),
   timeStep(2),nPoints(0),nTotal(0),
   weightDist(-1.0),externalScale(1.0)
   /*!
@@ -133,6 +135,16 @@ ActivationSource::~ActivationSource()
   */
 {}
 
+ActivationSource*
+ActivationSource::clone() const
+  /*!
+    Clone operator
+    \return new this
+  */
+{
+  return new ActivationSource(*this);
+}
+  
 
 void
 ActivationSource::setBox(const Geometry::Vec3D& APt,
@@ -465,9 +477,9 @@ ActivationSource::writePoints(const std::string& outputName) const
   
   
 void
-ActivationSource::createSource(Simulation& System,
-                               const std::string& inputFileBase,
-                               const std::string& outputName)
+ActivationSource::createAll(Simulation& System,
+			    const std::string& inputFileBase,
+			    const std::string& outputName)
   /*!
     Create all the source
     \param System :: Simuation 
@@ -477,18 +489,53 @@ ActivationSource::createSource(Simulation& System,
    */
 {
   ELog::RegMethod RegA("ActivationSource","createSource");
-
+  //
   // First loop is to generate all the points within the set
   // it allows volumes to be effectively calculated.
   //
   readFluxes(inputFileBase);
   createFluxVolumes(System);
   normalizeScale();
-  writePoints(outputName);
-
-  
+  writePoints(outputName);  
   return;
 }
+
+
+void
+ActivationSource::createSource(SDef::Source&) const
+  /*!
+   */
+{
+  ELog::RegMethod RegA("ActivationSource","createSource");
+
+  return;
+}
+
+void
+ActivationSource::write(std::ostream&) const
+  /*!
+    Write out as a MCNP source system
+    \param :: Output stream [no op : as sdefVoid]
+  */
+{
+  ELog::RegMethod RegA("ActivationSource","write");
+  return;
+}
+
+void
+ActivationSource::writePHITS(std::ostream& OX) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("ActivationSource","write");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+
 
 
 } // NAMESPACE SDef

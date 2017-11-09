@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/nmx/NMXvariables.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,18 +81,19 @@ NMXvariables(FuncDataBase& Control)
   SGen.addRoofMat(5,"Concrete");
   SGen.addWallMat(5,"Concrete");
 
+  Control.addVariable("nmxStopPoint",4);
   Control.addVariable("nmxAxisXStep",0.0);
   Control.addVariable("nmxAxisYStep",0.0);
   Control.addVariable("nmxAxisZStep",0.0);
   Control.addVariable("nmxAxisXYAngle",0.0);   // rotation 
   Control.addVariable("nmxAxisZAngle",1.0);
 
-  FGen.setGuideMat("Copper");
+  FGen.setLayer(1,0.5,"Copper");
   FGen.setYOffset(0.1);
   FGen.generateTaper(Control,"nmxFA",350.0,3.0,3.0,3.0,4.5);
   Control.addVariable("nmxGABeamZAngle",0.0);         // -1.0 [BEND]
 
-  FGen.setGuideMat("Aluminium");
+  FGen.setLayer(1,0.5,"Aluminium");
   FGen.clearYOffset();
   
   const double bendAngle(90.0);
@@ -140,6 +141,18 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxCollALength",30.0);
   Control.addVariable("nmxCollAMat","Tungsten");
 
+  Control.addVariable("nmxMainShutterYStep",3.0);
+  Control.addVariable("nmxMainShutterLiftZStep",0.0);
+  Control.addVariable("nmxMainShutterWidth",5.0);
+  Control.addVariable("nmxMainShutterHeight",5.0);
+  Control.addVariable("nmxMainShutterLength",20.0);
+  Control.addVariable("nmxMainShutterNLayers",1);
+  Control.addVariable("nmxMainShutterMat0","Stainless304");
+
+  Control.addVariable("nmxMainShutterSurroundThick",1.0);
+  Control.addVariable("nmxMainShutterSurroundMat","Aluminium");
+  Control.addVariable("nmxMainShutterTopVoid",6.0);
+  
   return;
 }
 

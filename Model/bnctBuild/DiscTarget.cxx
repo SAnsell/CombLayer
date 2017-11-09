@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   muon/muonCarbonTarget.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * File:   bnct/DiscTarget.cxx
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,13 +72,14 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "DiscTarget.h"
 
 namespace bnctSystem
 {
 
 DiscTarget::DiscTarget(const std::string& Key)  : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
   discIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(discIndex+1)
   /*!
@@ -87,6 +88,39 @@ DiscTarget::DiscTarget(const std::string& Key)  :
   */
 {}
 
+DiscTarget::DiscTarget(const DiscTarget& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  discIndex(A.discIndex),cellIndex(A.cellIndex),
+  NLayers(A.NLayers),depth(A.depth),radius(A.radius),
+  mat(A.mat),maxRad(A.maxRad),maxIndex(A.maxIndex)
+  /*!
+    Copy constructor
+    \param A :: DiscTarget to copy
+  */
+{}
+
+DiscTarget&
+DiscTarget::operator=(const DiscTarget& A)
+  /*!
+    Assignment operator
+    \param A :: DiscTarget to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      cellIndex=A.cellIndex;
+      NLayers=A.NLayers;
+      depth=A.depth;
+      radius=A.radius;
+      mat=A.mat;
+      maxRad=A.maxRad;
+      maxIndex=A.maxIndex;
+    }
+  return *this;
+}
 
 DiscTarget::~DiscTarget() 
   /*!
@@ -95,21 +129,15 @@ DiscTarget::~DiscTarget()
 {}
 
 void
-DiscTarget::populate(const Simulation& System)
+DiscTarget::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase to use
   */
 {
   ELog::RegMethod RegA("DiscTarget","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"XYAngle");
+  FixedOffset::populate(Control);
 
   NLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   double D,R;
@@ -128,16 +156,18 @@ DiscTarget::populate(const Simulation& System)
 }
 
 void
-DiscTarget::createUnitVector(const attachSystem::FixedComp& FC)
+DiscTarget::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
+    \param FC :: FixedComp for origin
+    \param sideIndex :: Link Point
   */
 {
   ELog::RegMethod RegA("DiscTarget","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);  
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   
   return;
 }
@@ -178,7 +208,6 @@ DiscTarget::createObjects(Simulation& System)
   
   std::string Out;
   int DI(discIndex+10);
-  int maxID(0);
   for(size_t i=0;i<NLayers;i++)
     {
       Out=ModelSupport::getComposite(SMap,DI-10,DI,"1 -1M -7M ");
@@ -212,8 +241,6 @@ DiscTarget::createObjects(Simulation& System)
 		}
 	    }
 	}
-      else
-	maxID=DI;
       
       DI+=10;
     }
@@ -251,16 +278,19 @@ DiscTarget::createLinks()
 
 void
 DiscTarget::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Create the shutter
     \param System :: Simulation to process
+    \param FC :: FixedComp for origin
+    \param sideIndex :: Link Point
   */
 {
   ELog::RegMethod RegA("DiscTarget","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

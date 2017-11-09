@@ -3,7 +3,7 @@
  
  * File:   Main/ess.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,8 +113,10 @@ main(int argc,char* argv[])
       if (!SimPtr) return -1;
       
       // The big variable setting
-      setVariable::EssVariables(SimPtr->getDataBase());
-      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      const std::set<std::string> beamlines=
+        IParam.getComponents<std::string>("beamlines",1);
+      setVariable::EssVariables(SimPtr->getDataBase(),beamlines);
+      mainSystem::setDefUnits(SimPtr->getDataBase(),IParam); // kbat: for me does not work if called before setVariable::EssVariables => had to move it here
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
@@ -122,8 +124,9 @@ main(int argc,char* argv[])
 
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
+      ELog::EM<<"A BUOLD "<<ELog::endDiag;
       ESSObj.build(*SimPtr,IParam);
-      
+      ELog::EM<<"BUILD "<<ELog::endDiag;
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

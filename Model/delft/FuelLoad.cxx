@@ -3,7 +3,7 @@
  
  * File:   delft/FuelLoad.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,8 @@ FuelLoad::hash(const size_t XGrid,const size_t YGrid,
 
 size_t 
 FuelLoad::hash(const std::string& GName,
-	       const size_t Element,const size_t Index) 
+	       const size_t Element,
+	       const size_t Index) 
   /*!
     Calculate the hash from the input data [NOTE: Some of the 
     data is general so must accept zeros
@@ -172,6 +173,7 @@ FuelLoad::loadXML(const std::string& FName)
   */
 {
   ELog::RegMethod RegA("FuelLoad","loadXML");
+
   ELog::EM<<"Load fuel "<<FName<<ELog::endDiag;
   XML::XMLcollect CO;
   if (FName.empty() || CO.loadXML(FName))
@@ -192,9 +194,27 @@ FuelLoad::loadXML(const std::string& FName)
       MatName= AR->getNamedItem<std::string>("Material");
       MatName=StrFunc::fullBlock(MatName);
       const size_t HN=FuelLoad::hash(GridItem,bladeN,IndexN);
-      FuelMap.insert(std::map<size_t,std::string>::value_type(HN,MatName));
+      FuelMap.emplace(HN,MatName);
       CO.deleteObj(AR);      
       AR=CO.findObj("Fuel");
+    }
+
+  // PARSE MATERIALS:
+
+  XML::XMLgroup* BurnUp=CO.findGroup("Burnup");
+  if (BurnUp)
+    AR=BurnUp->findObj("Material");
+
+  while(AR)
+    {
+      const std::string GridItem=AR->getItem<std::string>("Grid");
+      const size_t IndexN=AR->getDefItem<size_t>("Index",0);
+      MatName= AR->getNamedItem<std::string>("Material");
+      MatName=StrFunc::fullBlock(MatName);
+      const size_t HN=FuelLoad::hash(GridItem,0,IndexN);
+      FuelMap.emplace(HN,MatName);
+      CO.deleteObj(AR);
+      AR=BurnUp->findObj("Material");
     }
   return (FuelMap.empty()) ? 0 : 1;
 }
@@ -301,7 +321,7 @@ FuelLoad::addXML(const size_t nx,const size_t ny,
     \param ny :: Index of Grid Position
     \param nElements :: Elements in this cell
     \param nCells :: Cell dividion of this cell
-    \pararm exclude :: Cells not unsed
+    \param exclude :: Cells not unsed
   */
 {
   ELog::RegMethod RegA("FuelLoad","addXML");

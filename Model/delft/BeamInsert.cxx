@@ -3,7 +3,7 @@
  
  * File:   delft/BeamInsert.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "beamSlot.h"
 #include "BeamInsert.h"
@@ -77,7 +78,7 @@ namespace delftSystem
 {
 
 BeamInsert::BeamInsert(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   insertIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(insertIndex+1)
   /*!
@@ -87,11 +88,10 @@ BeamInsert::BeamInsert(const std::string& Key)  :
 {}
 
 BeamInsert::BeamInsert(const BeamInsert& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   insertIndex(A.insertIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),length(A.length),
-  radius(A.radius),nSlots(A.nSlots),Holes(A.Holes),
+  length(A.length),radius(A.radius),
+  nSlots(A.nSlots),Holes(A.Holes),
   mat(A.mat)
   /*!
     Copy constructor
@@ -110,13 +110,8 @@ BeamInsert::operator=(const BeamInsert& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       length=A.length;
       radius=A.radius;
       nSlots=A.nSlots;
@@ -134,23 +129,15 @@ BeamInsert::~BeamInsert()
 {}
 
 void
-BeamInsert::populate(const Simulation& System)
+BeamInsert::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: FuncDataBase to use
  */
 {
   ELog::RegMethod RegA("BeamInsert","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-
-  // First get inner widths:
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+  FixedOffset::populate(Control);
 
   length=Control.EvalVar<double>(keyName+"Length");
   radius=Control.EvalVar<double>(keyName+"Radius");
@@ -169,8 +156,6 @@ BeamInsert::populate(const Simulation& System)
       Holes.push_back(std::shared_ptr<beamSlot>
 		      (new beamSlot(BIStr+"Slot",static_cast<int>(i+1))));
       OR.addObject(StrFunc::makeString(BIStr+"Slot",i+1),Holes.back());
-
-
     }
   
   return;
@@ -181,9 +166,6 @@ BeamInsert::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
   /*!
     Create the unit vectors
-    - Y Points towards the beamline
-    - X Across the Face
-    - Z up (towards the target)
     \param FC :: A Contained FixedComp to use as basis set
     \param sideIndex :: link point side
   */
@@ -191,8 +173,7 @@ BeamInsert::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BeamInsert","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  applyOffset();
 
   return;
 }
@@ -263,7 +244,8 @@ BeamInsert::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("BeamInsert","createAll");
-  populate(System);
+
+  populate(System.getDataBase());
 
   createUnitVector(FC,sideIndex);
   createSurfaces();

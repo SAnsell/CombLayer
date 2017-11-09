@@ -3,7 +3,7 @@
  
  * File:   construct/InnerPort.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -493,7 +493,6 @@ void
 InnerPort::generateInsert()
   /*!
     Create the links for the object
-    \param System :: Simulation to use
   */
 {
   ELog::RegMethod RegA("InnerPort","generateInsert");

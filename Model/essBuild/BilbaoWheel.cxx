@@ -1283,7 +1283,7 @@ BilbaoWheel::buildSectors(Simulation& System) const
 	c(new BilbaoWheelCassette(keyName,"Sec",i));
       OR.addObject(c);
       c->createAll(System,*this,0,
-		   6,7,8,11,i*360.0/nSectors);
+		   7,8,9,12,i*360.0/nSectors);
     }
 }
 

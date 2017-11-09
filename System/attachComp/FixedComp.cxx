@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "surfEqual.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 
@@ -149,8 +150,7 @@ FixedComp::setAxisControl(const long int axisIndex,
     throw ColErr::NumericalAbort("NAxis is zero");
   if (axisIndex>3 || axisIndex<-3)
     throw ColErr::IndexError<long int>(axisIndex,2,"axisIndex");
-  
-  
+    
   orientateAxis=NAxis.unit(); ///< Axis for reorientation
   primeAxis=axisIndex;
   return;
@@ -174,7 +174,7 @@ FixedComp::createUnitVector(const FixedComp& FC)
   beamAxis=FC.beamAxis;
 
   if (primeAxis>0)
-      reOrientate();
+    reOrientate();
 
   return;
 }
@@ -213,14 +213,33 @@ FixedComp::createUnitVector(const FixedComp& FC,
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,side)");
 
-  if (sideIndex==0)
+  createUnitVector(FC,sideIndex,sideIndex);
+  return;
+}
+
+void
+FixedComp::createUnitVector(const FixedComp& FC,
+			    const long int orgIndex,
+			    const long int basisIndex)
+  /*!
+    Create the unit vectors
+    \param FC :: Fixed unit for link points
+    \param orgIndex :: SIGNED +1 side index
+    \param basisIndex :: SIGNED +1 side index
+  */
+{
+  ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
+
+  if (basisIndex==0)
     {
       createUnitVector(FC);
+      Origin=FC.getSignedLinkPt(orgIndex);
       return;
     }
+	  
   const size_t linkIndex=
-    (sideIndex>0) ? static_cast<size_t>(sideIndex-1) :
-    static_cast<size_t>(-sideIndex-1) ;
+    (basisIndex>0) ? static_cast<size_t>(basisIndex-1) :
+    static_cast<size_t>(-basisIndex-1) ;
   if (linkIndex>=FC.LU.size())
     throw ColErr::IndexError<size_t>
       (linkIndex,FC.LU.size(),
@@ -228,19 +247,22 @@ FixedComp::createUnitVector(const FixedComp& FC,
        keyName);
      
   const LinkUnit& LU=FC.getLU(linkIndex);
-  const double signV((sideIndex>0) ? 1.0 : -1.0);
+  const double signV((basisIndex>0) ? 1.0 : -1.0);
 
   const Geometry::Vec3D yTest=LU.getAxis()*signV;
+      
   Geometry::Vec3D zTest=FC.getZ();
   Geometry::Vec3D xTest=FC.getX();
-  if (fabs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+  if (std::abs(zTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     zTest=FC.getY();
-  else if (fabs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
+  else if (std::abs(xTest.dotProd(yTest))>1.0-Geometry::zeroTol)
     xTest=FC.getY();
 
   computeZOffPlane(xTest,yTest,zTest);
 
-  createUnitVector(LU.getConnectPt(),yTest*zTest,yTest,zTest);
+  createUnitVector(FC.getSignedLinkPt(orgIndex),
+		   yTest*zTest,yTest,zTest);
+  
   return;
 }
 
@@ -320,7 +342,7 @@ FixedComp::reOrientate()
   */
 {
   ELog::RegMethod RegA("FixedComp","reOrientate");
-
+  
   if (primeAxis>0)
     reOrientate(static_cast<size_t>(primeAxis)-1,orientateAxis);
   else if (primeAxis<0)
@@ -343,7 +365,6 @@ FixedComp::reOrientate(const size_t index,
    */
 {
   ELog::RegMethod RegA("FixedComp","reorientate");
-
   
   if (index>3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
@@ -352,7 +373,7 @@ FixedComp::reOrientate(const size_t index,
 
   std::vector<Geometry::Vec3D*> AVec({&X,&Y,&Z});
 
-  const double cosTheta=axisDir.dotProd( *AVec[index]);
+  const double cosTheta=axisDir.dotProd( *AVec[index] );
   // Both checks with tolerance:
   if (cosTheta-Geometry::zeroTol>1.0) return;
   if (cosTheta+1.0<Geometry::zeroTol)
@@ -747,7 +768,7 @@ FixedComp::setLinkSurf(const size_t Index,
     \param SList :: String to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  ELog::RegMethod RegA("FixedComp","setLinkSurf(string)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
@@ -822,25 +843,6 @@ FixedComp::setLinkSurf(const size_t Index,const int SN)
   return;
 }
 
-void
-FixedComp::setLinkSurf(const size_t Index,
-		       const attachSystem::FixedComp& FC,
-		       const size_t otherIndex) 
-  /*!
-    Set  a surface to output
-    \param Index :: Link number
-    \param FC :: Fixed component to use as connection
-    \param otherIndex :: Connecting surface on the FC
-  */
-{
-  ELog::RegMethod RegA("FixedComp","setLinkSurf<FC>");
-  if (otherIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>(otherIndex,FC.LU.size(),
-				  "otherIndex/LU.size");
-
-  setLinkSurf(Index,-FC.getLinkSurf(otherIndex));
-  return;
-}
 
 void
 FixedComp::setBridgeSurf(const size_t Index,const int SN) 
@@ -866,7 +868,7 @@ FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR)
     \param HR :: HeadRule for bridge
   */
 {
-  ELog::RegMethod RegA("FixedComp","setBridgeSurf");
+  ELog::RegMethod RegA("FixedComp","setBridgeSurf(HR)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
 
@@ -874,25 +876,6 @@ FixedComp::setBridgeSurf(const size_t Index,const HeadRule& HR)
   return;
 }
 
-void
-FixedComp::setBridgeSurf(const size_t Index,
-		       const attachSystem::FixedComp& FC,
-		       const size_t otherIndex) 
-  /*!
-    Set  a surface to bridge
-    \param Index :: Link number
-    \param FC :: Fixed component to use as connection
-    \param otherIndex :: Connecting surface on the FC
-  */
-{
-  ELog::RegMethod RegA("FixedComp","setBridgeSurf<FC>");
-  if (otherIndex>=FC.LU.size())
-    throw ColErr::IndexError<size_t>(otherIndex,FC.LU.size(),
-				  "otherIndex/LU.size");
-
-  setBridgeSurf(Index,-FC.getLinkSurf(otherIndex));
-  return;
-}
 void
 FixedComp::addBridgeSurf(const size_t Index,const int SN) 
   /*!
@@ -920,7 +903,7 @@ FixedComp::addBridgeSurf(const size_t Index,
     \param SList :: String to process
   */
 {
-  ELog::RegMethod RegA("FixedComp","addBridgeSurf");
+  ELog::RegMethod RegA("FixedComp","addBridgeSurf(string)");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/Index");
 
@@ -944,6 +927,31 @@ FixedComp::setConnect(const size_t Index,const Geometry::Vec3D& C,
 
   LU[Index].setConnectPt(C);
   LU[Index].setAxis(A);
+  return;
+}
+
+void
+FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
+			  const Geometry::Vec3D& A)
+ /*!
+   Set the axis of the linked component
+   \param Index :: Link number
+   \param C :: Centre coordinate
+   \param A :: Axis direciton
+ */
+{
+  ELog::RegMethod RegA("FixedComp","setLineConnect");
+
+  if (Index>=LU.size())
+    throw ColErr::IndexError<size_t>(Index,LU.size(),"LU.size/index");
+
+  LinkUnit& LObj=LU[Index];
+  LObj.populateSurf();
+  const Geometry::Vec3D Pt=
+    SurInter::getLinePoint(C,A,LObj.getMainRule(),LObj.getCommonRule()); 
+  LObj.setConnectPt(Pt);
+  LObj.setAxis(A);
+
   return;
 }
 
@@ -996,7 +1004,7 @@ FixedComp::setLinkCopy(const size_t Index,
 void
 FixedComp::setLinkSignedCopy(const size_t Index,
 			     const FixedComp& FC,
-			     const long int  sideIndex)
+			     const long int sideIndex)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -1239,40 +1247,6 @@ FixedComp::getSignedLinkAxis(const long int sideIndex) const
 }
 
 std::string
-FixedComp::getMasterString(const size_t Index) const
-  /*!
-    Accessor to the master link surface string
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getMasterString:"+keyName);
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-  
-  return LU[Index].getMain();
-}
-
-std::string
-FixedComp::getMasterComplement(const size_t Index) const
-  /*!
-    Accessor to the master link surface string
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getMasterString");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  HeadRule RP;
-  RP.procString(LU[Index].getMain());
-  RP.makeComplement();
-  return RP.display();
-}
-
-
-std::string
 FixedComp::getSignedLinkString(const long int sideIndex) const
   /*!
     Accessor to the link string
@@ -1324,64 +1298,6 @@ FixedComp::getLinkComplement(const size_t Index) const
   RP.makeComplement();
   
   RP.addIntersection(LU[Index].getCommon());
-  return RP.display();
-}
-
-std::string
-FixedComp::getCommonString(const size_t Index) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getBridgeString");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  return (LU[Index].hasCommon()) ? LU[Index].getCommon() : ""; 
-}
-
-std::string
-FixedComp::getCommonComplement(const size_t Index) const
-  /*!
-    Accessor to the common surfaces [in complement]
-    \param Index :: Link number
-    \return String of common link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getBridgeString");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  if (LU[Index].hasCommon())
-    {
-      HeadRule RP;
-      RP.procString(LU[Index].getCommon());
-      RP.makeComplement();
-      return RP.display();
-    }
-  return "";
-}
-
-std::string
-FixedComp::getBridgeComplement(const size_t Index) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getBridgeComplement");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-
-  HeadRule RP;
-  RP.procString(LU[Index].getMain());
-  RP.makeComplement();
-  if (LU[Index].hasCommon())
-    RP.addIntersection(LU[Index].getCommon());
-
   return RP.display();
 }
 
@@ -1480,9 +1396,9 @@ FixedComp::selectAltAxis(const long int sideIndex,
   YOut=getSignedLinkAxis(sideIndex);
 
   double dp[3];
-  dp[0]=fabs(X.dotProd(YOut)); 
-  dp[1]=fabs(Y.dotProd(YOut)); 
-  dp[2]=fabs(Z.dotProd(YOut)); 
+  dp[0]=std::abs(X.dotProd(YOut)); 
+  dp[1]=std::abs(Y.dotProd(YOut)); 
+  dp[2]=std::abs(Z.dotProd(YOut)); 
   const double* dptr=std::max_element(dp,dp+3);
 
   XOut=(dptr==dp) ? Y : X;
@@ -1660,33 +1576,27 @@ FixedComp::applyRotation(const localRotate& LR)
   return;
 }
   
-int
-FixedComp::getMasterSurf(const size_t outIndex) const
-  /*!
-    Calculate the unsigned exit surface
-    \param outIndex :: Out surface direction
-    \return surfNum
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getMasterSurf");
-  return std::abs(SMap.realSurf(getLinkSurf(outIndex)));
-}
 
 int
-FixedComp::getExitWindow(const size_t outIndex,
+FixedComp::getExitWindow(const long int sideIndex,
 			 std::vector<int>& window) const
   /*!
     Generic exit window system : 
     -- Requires at least 6 surfaces
     -- Requires 3-6 to be sign surf
-    \param outIndex :: Direction 0  for entry 1 for exit
+    \param sideIndex :: Link point
     \param window :: window vector of paired planes
     \return Viewed surface
   */
 {
   ELog::RegMethod RegA("FixedComp","getExitWindow");
-  if (LU.size()<6)
+  if (LU.size()<5)
     throw ColErr::IndexError<size_t>(LU.size(),6,"Link size too small");
+
+  const size_t outIndex((sideIndex>0) ?
+			static_cast<size_t>(sideIndex)-1 :
+			static_cast<size_t>(-sideIndex)-1);
+			
   if (outIndex>LU.size())
     throw ColErr::IndexError<size_t>(outIndex,6,"outIndex too big");
 
@@ -1709,6 +1619,14 @@ FixedComp::getExitWindow(const size_t outIndex,
   window.clear();
   for(size_t i=0;i<4;i++)
     window.push_back(std::abs(getLinkSurf(oA[i])));
+  // check two pairs of order:
+  const Geometry::Vec3D aX=getLinkAxis(0);
+  const Geometry::Vec3D bX=getLinkAxis(1);
+  const Geometry::Vec3D cX=getLinkAxis(2);
+  if (std::abs<double>(aX.dotProd(bX))>0.99)
+    std::swap(window[1],window[2]);
+  else if (std::abs<double>(bX.dotProd(cX))>0.99)
+    std::swap(window[2],window[3]);
 
   //
   // Extremely ugly code to extract the dividing surface [if it exists]

@@ -115,7 +115,7 @@ setESSFull(defaultConfig& A)
     \param A :: Paramter for default config
    */
 {
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
+  ELog::RegMethod RegA("DefUnitsESS[F]","setESSFull");
 
   A.setOption("lowMod","Butterfly");
   A.setOption("topMod","Butterfly");
@@ -131,7 +131,7 @@ setESSFull(defaultConfig& A)
       // {"CSPEC","G4BLine3"},
        {"VESPA","G2BLineTop7"},
       {"FREIA","G1BLineTop15"},     // N5
-      {"ODIN","G1BLineLow2"}
+      {"ODIN","G1BLineTop20"}        // was low / now high
     };
   
   const std::set<std::string> beamFilled=
@@ -221,30 +221,40 @@ setESSSingle(defaultConfig& A,
   A.setOption("lowMod","Butterfly");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
-     {"HEIMDAL","G1BLineLow8"},     // W8
-     {"SLEIPNIR","G1BLineLow13"},   // N9
-     {"ANNI","G2BLineTop3"},        // E3
-     {"SURFSCATTER","G2BLineTop8"},        // E8
-     {"SKADI","G2BLineTop5"}         // E5
+     {"HEIMDAL","G1BLineTop18"},       // S2
+     {"SLEIPNIR","G1BLineLow13"},      // N9
+     {"ANNI","G2BLineTop4"},           // E4
+     {"SURFSCATTER","G2BLineTop8"},    // E8
+     {"SKADI","G2BLineTop5"}           // E5
     };     
   const std::map<std::string,std::string> beamDef=
-    {{"NMX","G1BLineTop1"},        // W1
-     {"BEER","G1BLineTop2"},       // W2
-     {"CSPEC","G1BLineTop3"},      // W3
-     {"BIFROST","G1BLineTop4"},    // W4
+    {{"NMX","G1BLineTop1"},               // W1
+     {"BEER","G1BLineTop2"},              // W2
+     {"CSPEC","G1BLineTop3"},             // W3
+     {"BIFROST","G1BLineTop4"},           // W4
+     
+
      {"MIRACLES","G1BLineTop5"},   // W5
      {"MAGIC","G1BLineTop6"},      // W6     
      {"TREX","G1BLineTop7"},       // W7
-
+     {"HEIMDAL","G1BLineTop8"},    // W8 
+     
      {"LOKI","G1BLineTop15"},      // N7
      {"FREIA","G1BLineTop17"},     // N5
 
 
-     {"ODIN","G2BLineLow20"},      // Lower S2
+     {"NNBAR","G1BLineTop11"},      // TEST PORT
+     {"TESTBEAM","G1BLineTop11"},   // TEST PORT
+     
+     {"ODIN","G2BLineTop20"},      // MOVED from Lower to top: S2
      {"DREAM","G2BLineTop19"},     // S3
 
+     {"SKADI","G2BLineTop3"},      // E3
+     
+     
      {"VOR","G2BLineTop11"},       // S10/S11  [CHANGED TO FIT]
-     {"VESPA","G2BLineTop7"},     // E7
+     {"VESPA","G2BLineTop7"},      // E7
+
 
      {"ESTIA","G2BLineTop2"},     // E2
      
@@ -257,9 +267,9 @@ setESSSingle(defaultConfig& A,
 
     };     
   const std::set<std::string> beamFilled=
-    {"BEER","BIFROST","CSPEC","DREAM","FREIA","LOKI",
-     "MAGIC","MIRACLES","NMX","TREX","VESPA",
-     "VOR","SHORTNMX","SHORTDREAM"};
+    {"BEER","BIFROST","CSPEC","DREAM","FREIA","HEIMDAL","LOKI",
+     "MAGIC","MIRACLES","NMX","NNBAR","ODIN","TESTBEAM",
+     "TREX","VESPA","VOR","SHORTNMX","SHORTDREAM","SKADI","ESTIA"};
 
   size_t beamLineIndex(0);
   while(!LItems.empty())
@@ -331,9 +341,6 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       bfType = 1;
       A.setOption("lowMod", "Butterfly");
       A.setOption("topMod", "Butterfly");
-      A.setVar("TopFlyLeftLobeXStep", -2.0);
-      A.setVar("TopFlyRightLobeXStep", 2.0);
-      A.setVar("TopFlyMidWaterMidYStep", 7.0);
       A.setOption("topPipe", "supply");
 
       // These variables are as in the model received from Luca 22 Feb 2017
@@ -380,100 +387,6 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
 	A.setVar(s+"SQCenterE",-0.6);
 	A.setVar(s+"SQCenterF",-0.005);
       }
-
-      // These variables (until "moderator end") are copied from the BF2
-      // section of moderatorVarialbes to be sure that the BF1 geometry
-      // does not change if we change the BF2 variables:
-
-      A.setVar("TopFlyXStep",0.0);
-      A.setVar("TopFlyYStep",0.0);
-      A.setVar("TopFlyZStep",0.0);
-      A.setVar("TopFlyXYangle",90.0);
-      A.setVar("TopFlyZangle",0.0);
-      A.setVar("TopFlyTotalHeight",4.9);
-      A.setVar("TopFlyWallMat","Aluminium");
-      A.setVar("TopFlyWallDepth",0.0);
-      A.setVar("TopFlyWallHeight",0.3);
-  
-      A.setVar("TopFlyLeftLobeYStep",0.0);
-  
-      A.setVar("TopFlyLeftLobeRadius2",2.506);
-      A.setVar("TopFlyLeftLobeRadius3",2.506);
-
-      A.setVar("TopFlyLeftLobeModMat","HPARA");
-      A.setVar("TopFlyLeftLobeModTemp",20.0);
-
-      A.setVar("TopFlyLeftLobeNLayers",4);
-      A.setVar("TopFlyLeftLobeThick1",0.3);
-      A.setVar("TopFlyLeftLobeMat1","Aluminium20K");
-
-      A.setVar("TopFlyLeftLobeHeight1",0.3);
-      A.setVar("TopFlyLeftLobeDepth1",0.3);
-      A.setVar("TopFlyLeftLobeTemp1",20.0);
-  
-      A.setVar("TopFlyLeftLobeThick2",0.5);
-      A.setVar("TopFlyLeftLobeMat2","Void");
-
-      A.setVar("TopFlyLeftLobeHeight2",0.5);
-      A.setVar("TopFlyLeftLobeDepth2",0.5);
-
-      A.setVar("TopFlyLeftLobeThick3",0.3);
-      A.setVar("TopFlyLeftLobeMat3","Aluminium");
-
-      A.setVar("TopFlyLeftLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
-      A.setVar("TopFlyLeftLobeDepth3",0.0);
-  
-      A.setVar("TopFlyRightLobeYStep",0.0);
-
-      A.setVar("TopFlyRightLobeRadius2",2.506);
-      A.setVar("TopFlyRightLobeRadius3",2.506);
-
-      A.setVar("TopFlyRightLobeModMat","HPARA");
-      A.setVar("TopFlyRightLobeModTemp",20.0);
-
-      A.setVar("TopFlyRightLobeNLayers",4);
-      A.setVar("TopFlyRightLobeThick1",0.3);
-      A.setVar("TopFlyRightLobeMat1","Aluminium20K");
-
-      A.setVar("TopFlyRightLobeHeight1",0.3);
-      A.setVar("TopFlyRightLobeDepth1",0.3);
-      A.setVar("TopFlyRightLobeTemp1",20.0);
-  
-      A.setVar("TopFlyRightLobeThick2",0.5);
-      A.setVar("TopFlyRightLobeMat2","Void");
-
-      A.setVar("TopFlyRightLobeHeight2",0.5);
-      A.setVar("TopFlyRightLobeDepth2",0.5);
-
-      A.setVar("TopFlyRightLobeThick3",0.3);
-      A.setVar("TopFlyRightLobeMat3","Aluminium");
-
-      A.setVar("TopFlyRightLobeHeight3",0.0); // KB: must be 0, otherwise 3 Al layers b/w H2 and Be
-      A.setVar("TopFlyRightLobeDepth3",0.0);
-
-      A.setVar("TopFlyMidWaterCutLayer",3);
-      A.setVar("TopFlyMidWaterMidAngle",90);
-      A.setVar("TopFlyMidWaterEdgeRadius",0.5);
-
-      A.setVar("TopFlyMidWaterWallThick",0.2);
-      A.setVar("TopFlyMidWaterModMat","H2O");
-      A.setVar("TopFlyMidWaterWallMat","Aluminium");
-      A.setVar("TopFlyMidWaterModTemp",300.0);
-
-      A.setVar("TopFlyLeftWaterWidth",15.76);  
-      A.setVar("TopFlyLeftWaterWallThick",0.347);
-      A.setVar("TopFlyLeftWaterCutAngle",30.0);
-      A.setVar("TopFlyLeftWaterModMat","H2O");
-      A.setVar("TopFlyLeftWaterWallMat","Aluminium");
-      A.setVar("TopFlyLeftWaterModTemp",300.0);
-
-      A.setVar("TopFlyRightWaterWidth",15.76);
-      A.setVar("TopFlyRightWaterWallThick",0.347);
-      A.setVar("TopFlyRightWaterCutAngle",30.0);
-      A.setVar("TopFlyRightWaterModMat","H2O");
-      A.setVar("TopFlyRightWaterWallMat","Aluminium");
-      A.setVar("TopFlyRightWaterModTemp",300.0);
-      // moderator end
 
       // pipes
       A.setOption("topPipe", "supply");
@@ -578,23 +491,42 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowRefMat", "SS316L");
       A.setVar("BeRefLowWallMat", "AluminiumBe");
       A.setVar("BeRefLowInnerStructureActive", 1);
-      // The following numbers are from Yannick's email 31 Jan 2017:
-      A.setVar("BeRefDepth", 50.3); // (157.5+17.5 + 120 + 30 + 50 +30 +20)/10.0+7.8
-      A.setVar("BulkDepth1", 51); // a bit bigger to make some clearance
-      A.setVar("BeRefLowInnerStructureNLayers", 7);
-      A.setVar("BeRefLowInnerStructureBaseLen1", 0.0470589); // 2 cm
-      A.setVar("BeRefLowInnerStructureBaseLen2", 0.0705882); // 3
-      A.setVar("BeRefLowInnerStructureBaseLen3", 0.117647); // 5
-      A.setVar("BeRefLowInnerStructureBaseLen4", 0.0705882); // 3
-      A.setVar("BeRefLowInnerStructureBaseLen5", 0.282353); // 12
-      A.setVar("BeRefLowInnerStructureBaseLen6", 0.0411765); // 1.75
-      A.setVar("BeRefLowInnerStructureMat0", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat1", "H2O");
-      A.setVar("BeRefLowInnerStructureMat2", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat3", "H2O");
-      A.setVar("BeRefLowInnerStructureMat4", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat5", "H2O");
-      A.setVar("BeRefLowInnerStructureMat6", "SS316L");
+      // The following numbers are from LZ drawing 2017-10-10
+      // and discussions with Marc 2017-10-11
+      const double BeRefDepth(57.7); // 30+51+30+9+30+30+30+90+30+90+30+127
+      const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
+      A.setVar("BeRefDepth", BeRefDepth+Ztop);
+      A.setVar("BulkDepth1", BeRefDepth+Ztop+1); // a bit bigger to make some clearance
+
+      A.setVar("BeRefVoidCylRadius", 15.0);
+      A.setVar("BeRefVoidCylDepth", 3.0+5.1+3.0); // first 3 InnerStructure layers
+
+      A.setVar("BeRefLowInnerStructureNLayers", 12);
+      A.setVar("BeRefLowInnerStructureBaseLen1", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen2", 5.1/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen3", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen4", 0.9/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen5", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen6", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen7", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen8", 9.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen9", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen10", 9.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen11", 3.0/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureBaseLen12", 12.7/BeRefDepth);
+      A.setVar("BeRefLowInnerStructureMat0", "H2O");
+      A.setVar("BeRefLowInnerStructureMat1", "SS316L_40H2O"); // email from Marc 13 Oct 2017
+      A.setVar("BeRefLowInnerStructureMat2", "H2O");
+      A.setVar("BeRefLowInnerStructureMat3", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat4", "H2O");
+      A.setVar("BeRefLowInnerStructureMat5", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat6", "H2O");
+      A.setVar("BeRefLowInnerStructureMat7", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat8", "H2O");
+      A.setVar("BeRefLowInnerStructureMat9", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat10", "H2O");
+      A.setVar("BeRefLowInnerStructureMat11", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat12", "H2O");
       // Since there is no bunkers, we have to 
       // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
       A.setVar("F5DefaultLength", 440.0);
@@ -674,7 +606,7 @@ setESS(defaultConfig& A)
       {"CSPEC","G1BLineTop3"},
       {"VOR","G1BLinetop7"},   // also 17  
       {"LOKI","G1BLineTop17"},
-      {"ODIN","G2BLineLow2"}
+      {"ODIN","G2BLineTop20"}
     };     
   const std::set<std::string> beamFilled=
     {"NMX","CSPEC","DREAM","VOR","LOKI"};

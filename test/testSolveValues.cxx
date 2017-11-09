@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testSolveValues.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,8 @@ testSolveValues::applyTest(const int extra)
   */
 {
   ELog::RegMethod RegA("testSolveValues","applyTest");
-
+  TestFunc::regSector("testSolveValues");
+  
   typedef int (testSolveValues::*testPtr)();
   testPtr TPtr[]=
     {
@@ -123,33 +124,32 @@ testSolveValues::testGetSolutions()
   typedef std::tuple<std::string,std::string,
 		       std::string,size_t,double> TTYPE;
 
-  std::vector<TTYPE> Tests;
+  const std::vector<TTYPE> Tests=
+    {
 
-  Tests.push_back(TTYPE("-0.69465837z-0.7193398y-379.108596",
+      TTYPE("-0.69465837z-0.7193398y-379.108596",
+	    
+	    "0.517449748z^2+(-0.999390827y+21.8953305)z+"
+	    "0.482550252y^2-21.1440748y+x^2+52.575x+920.402005",
+	    
+	    "0.517780408z^2+(-0.998706012y-0.0363556101x+"
+	    "4.60265241)z+0.482904825y^2+"
+	    "(-0.0376473363x-4.50181022)y+"
+	    "0.999314767x^2+1.5680273x-389.022646",			
+	    2,1e-2),
 
-			"0.517449748z^2+(-0.999390827y+21.8953305)z+"
-			"0.482550252y^2-21.1440748y+x^2+52.575x+920.402005",
 
-			"0.517780408z^2+(-0.998706012y-0.0363556101x+"
-			"4.60265241)z+0.482904825y^2+"
-			"(-0.0376473363x-4.50181022)y+"
-			"0.999314767x^2+1.5680273x-389.022646",			
-			2,1e-2));
-
-
-  Tests.push_back(TTYPE("x-23","y-10","z-30",1,1e-2));
-
-  Tests.push_back(TTYPE("x-23","y-10","z^2+y^2-1108.89",2,1e-2));
-
-  Tests.push_back(TTYPE("z^2+y^2+10y+x^2","z^2+y^2-10y+x^2","z^2+y^2+x^2-10x",1,
-			1e-2));
-
-  Tests.push_back(TTYPE("-0.71934z+0.694658y+5.78095",
-   			"-0.694658z-0.71934y-177.109",
-   			"0.51745z^2+(-0.999391y+4.63118)z+0.48255y^2-4.47227y+x^2-95.7277",
-   			2,1e-2));
-
-  
+      TTYPE("x-23","y-10","z-30",1,1e-2),
+      
+      TTYPE("x-23","y-10","z^2+y^2-1108.89",2,1e-2),
+      
+      TTYPE("z^2+y^2+10y+x^2","z^2+y^2-10y+x^2","z^2+y^2+x^2-10x",1,1e-2),
+      
+      TTYPE("-0.71934z+0.694658y+5.78095",
+	    "-0.694658z-0.71934y-177.109",
+	    "0.51745z^2+(-0.999391y+4.63118)z+0.48255y^2-4.47227y+x^2-95.7277",
+	    2,1e-2)
+    };
 
 
   PolyVar<3> FXYZ,GXYZ,HXYZ;
@@ -185,11 +185,13 @@ testSolveValues::testGetSolutions()
 	  ELog::EM<<"FXYZ =="<<FXYZ<<ELog::endDiag;
 	  ELog::EM<<"GXYZ =="<<GXYZ<<ELog::endDiag;
 	  ELog::EM<<"HXYZ =="<<HXYZ<<ELog::endDiag;
-	  ELog::EM<<"SumPT == "<<sumResult<<" Exp=="<<std::get<4>(tc)<<ELog::endDiag;
+	  ELog::EM<<"SumPT == "<<sumResult
+		  <<" Exp=="<<std::get<4>(tc)<<ELog::endDiag;
 
 	  ELog::EM<<"Results == ";
 	  copy(Res.begin(),Res.end(),
-	       std::ostream_iterator<Geometry::Vec3D>(ELog::EM.Estream()," : "));
+	       std::ostream_iterator<Geometry::Vec3D>
+	       (ELog::EM.Estream()," : "));
 	  ELog::EM<<ELog::endDiag;
 
 	  for(size_t j=0;j<Res.size();j++)

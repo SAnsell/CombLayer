@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/BeRef.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_BeRef_h
@@ -33,7 +33,7 @@ namespace essSystem
   \author S. Ansell
   \version 1.0
   \date February 2013
-  \brief Reflector object 
+  \brief Reflector object
 */
 
 class BeRef : public attachSystem::ContainedComp,
@@ -69,9 +69,14 @@ class BeRef : public attachSystem::ContainedComp,
 
   int topRefMat;                  ///< reflector material (upper Be tier)
   int lowRefMat;                  ///< reflector material (lower Be tier)
-  int topWallMat;                 ///< wall Material (upper tier) 
+  int topWallMat;                 ///< wall Material (upper tier)
   int lowWallMat;                 ///< wall Material (lower tier)
   int targSepMat;                 ///< Separator Mat
+
+  // Void cylinder below the Target Wheel
+  // needed only for 1-moderator models
+  double voidCylRadius; ///< Void cylinder radius
+  double voidCylDepth; ///< Void cylinder depth
 
   // Functions:
 
@@ -100,4 +105,4 @@ class BeRef : public attachSystem::ContainedComp,
 }
 
 #endif
- 
+

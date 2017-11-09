@@ -1,9 +1,9 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/PancakeModerator.cxx
  *
- * Copyright (c) 2004-2017 by Konstantin Batkov / Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -67,11 +67,14 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
-#include "ModBase.h"
+#include "EssModBase.h"
+#include "H2Wing.h"
+#include "SurfMap.h"
 #include "DiskPreMod.h"
 #include "EdgeWater.h"
 #include "PancakeModerator.h"
@@ -80,7 +83,7 @@ namespace essSystem
 {
 
 PancakeModerator::PancakeModerator(const std::string& Key) :
-  constructSystem::ModBase(Key,12),
+  EssModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
   MidH2(new DiskPreMod(Key+"MidH2")),
@@ -100,17 +103,12 @@ PancakeModerator::PancakeModerator(const std::string& Key) :
 }
 
 PancakeModerator::PancakeModerator(const PancakeModerator& A) : 
-  constructSystem::ModBase(A),
+  essSystem::EssModBase(A),
   flyIndex(A.flyIndex),cellIndex(A.cellIndex),
-  bfType(A.bfType),
   MidH2(A.MidH2->clone()),
   LeftWater(A.LeftWater->clone()),
   RightWater(A.LeftWater->clone()),
-  totalHeight(A.totalHeight),
-  outerRadius(A.outerRadius),
-  wallMat(A.wallMat),
-  wallDepth(A.wallDepth),
-  wallHeight(A.wallHeight)
+  outerRadius(A.outerRadius)
   /*!
     Copy constructor
     \param A :: PancakeModerator to copy
@@ -127,17 +125,12 @@ PancakeModerator::operator=(const PancakeModerator& A)
 {
   if (this!=&A)
     {
-      constructSystem::ModBase::operator=(A);
+      essSystem::EssModBase::operator=(A);
       cellIndex= A.cellIndex;
-      bfType=A.bfType;
       *MidH2= *A.MidH2;
       *LeftWater= *A.LeftWater;
       *RightWater= *A.RightWater;
-      totalHeight=A.totalHeight;
       outerRadius=A.outerRadius;
-      wallMat=A.wallMat;
-      wallDepth=A.wallDepth;
-      wallHeight=A.wallHeight;
     }
   return *this;
 }
@@ -152,7 +145,7 @@ PancakeModerator::clone() const
   return new PancakeModerator(*this);
 }
 
-  
+
 PancakeModerator::~PancakeModerator()
   /*!
     Destructor
@@ -168,41 +161,36 @@ PancakeModerator::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("PancakeModerator","populate");
 
-  ModBase::populate(Control);
-  bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
-  if ((bfType != 1)  && (bfType != 2))
-    throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
-
+  EssModBase::populate(Control);
+  
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  wallDepth = Control.EvalVar<double>(keyName+"WallDepth");
-  wallHeight = Control.EvalVar<double>(keyName+"WallHeight");
-
   return;
 }
 
 void
-PancakeModerator::createUnitVector(const attachSystem::FixedComp& axisFC,
-				     const attachSystem::FixedComp* orgFC,
-				     const long int sideIndex)
+PancakeModerator::createUnitVector(const attachSystem::FixedComp& orgFC,
+				     const long int orgIndex,
+                                     const attachSystem::FixedComp& axisFC,
+                                     const long int axisIndex)
   /*!
     Create the unit vectors. This one uses axis from ther first FC
     but the origin for the second. Futher shifting the origin on the
     Z axis to the centre.
     \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
     \param orgFC :: Extra origin point if required
-    \param sideIndex :: link point for origin if given
+    \param orgIndex :: link point for origin if given
+    \param axisIndex :: link point for origin if given
   */
 {
   ELog::RegMethod RegA("PancakeModerator","createUnitVector");
 
-  ModBase::createUnitVector(axisFC,orgFC,sideIndex);
+  EssModBase::createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   applyShift(0,0,totalHeight/2.0);
-  
+
   return;
 }
 
-  
+
 void
 PancakeModerator::createSurfaces()
   /*!
@@ -210,13 +198,10 @@ PancakeModerator::createSurfaces()
   */
 {
   ELog::RegMethod RegA("PancakeModerator","createSurface");
-  
+
   ModelSupport::buildCylinder(SMap,flyIndex+7,Origin,Z,outerRadius);
   ModelSupport::buildPlane(SMap,flyIndex+5,Origin-Z*(totalHeight/2.0),Z);
   ModelSupport::buildPlane(SMap,flyIndex+6,Origin+Z*(totalHeight/2.0),Z);
-
-  ModelSupport::buildPlane(SMap,flyIndex+15,Origin-Z*(totalHeight/2.0-wallDepth),Z);
-  ModelSupport::buildPlane(SMap,flyIndex+16,Origin+Z*(totalHeight/2.0-wallHeight),Z);
 
   return;
 }
@@ -230,49 +215,19 @@ PancakeModerator::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("PancakeModerator","createObjects");
 
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string sideRule=getSideRule(); // ContainedComp::getExclude();
-
-  HeadRule HR(sideRule);
-  HR.makeComplement();
+  const std::string Exclude=ContainedComp::getExclude();
 
   std::string Out;
-
-  if (wallDepth>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -15 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-    }
-
-  if (wallHeight>Geometry::zeroTol) // \todo SA: why CL can't take care about it?
-    {
-      Out=ModelSupport::getComposite(SMap,flyIndex," -7 16 -6 ");  
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+HR.display()));
-      // otherwise split complicated cell by parts:
-      /*      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+LeftWater->getSideRule()));
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+RightWater->getSideRule()));
-      HeadRule bfHR;
-      bfHR.procString(LeftUnit->getSideRule());
-      bfHR.addUnion(RightUnit->getSideRule());
-      bfHR.addUnion(MidH2->getSideRule());
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out+bfHR.display()));*/
-    }
-
-  
-  
-  // getSideRule contains only side surfaces, while getExclude - also top/bottom
-  const std::string Exclude=sideRule;//ContainedComp::getExclude();
-
-  Out=ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+Exclude));
-  setCell("ambientVoid", cellIndex-1);
+  addCell("MainVoid",cellIndex-1);
 
   clearRules();
   addOuterSurf(Out);
-  
+
   return;
 }
-  
+
 
 int
 PancakeModerator::getCommonSurf(const long int) const
@@ -281,7 +236,7 @@ PancakeModerator::getCommonSurf(const long int) const
     \param  :: sideIndex
     \return surface number
   */
-  
+
 {
   ELog::RegMethod RegA("PancakeModerator","getCommonSurf");
   throw ColErr::AbsObjMethod("Not implemented yet");
@@ -292,7 +247,7 @@ PancakeModerator::getLayerSurf(const size_t,const long int) const
 /*!
   [PLACEHOLDER] Only components have reference values
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
   \return layer surface
   */
 {
@@ -305,7 +260,7 @@ PancakeModerator::getLayerString(const size_t,const long int) const
   /*!
     Only components have reference values [PLACEHOLDER]
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
     \return surface string
   */
 {
@@ -319,7 +274,7 @@ PancakeModerator::getSurfacePoint(const size_t,
   /*!
     [PLACEHOLDER] Given a side and a layer calculate the link point
     \param  :: layer, 0 is inner moderator [0-6]
-    \param  :: Side [0-3] // mid sides   
+    \param  :: Side [0-3] // mid sides
     \return Surface point
   */
 {
@@ -344,25 +299,27 @@ PancakeModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy surface top/bottom from H2Wing and Orign from center
-  
+  // copy surface top/bottom from H2Wing and Origin from center
+
   FixedComp::setLinkCopy(4,*MidH2,4);
   FixedComp::setLinkCopy(5,*MidH2,5);
-  const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
-  const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
+  const double LowV= LU[4].getConnectPt().Z();
+  const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
+  //  FixedComp::setLinkCopy(6,*MidH2,12); ELog::EM << "is it correct?" << ELog::endDiag;
+
   return;
 }
 
-  
+
 void
 PancakeModerator::createExternal()
   /*!
-    Constructs the full outer exclude object 
+    Constructs the full outer exclude object
   */
 {
   ELog::RegMethod RegA("PancakeModerator","createExternal");
@@ -370,7 +327,7 @@ PancakeModerator::createExternal()
   addOuterUnionSurf(MidH2->getCompExclude());
   addOuterUnionSurf(LeftWater->getCompExclude());
   addOuterUnionSurf(RightWater->getCompExclude());
-  
+
   return;
 }
 
@@ -395,49 +352,84 @@ PancakeModerator::getComponent(const std::string& compName) const
 }
 
 
+
 std::string
-PancakeModerator::getSideRule() const
-/*
-  Return side rule
-  \todo // SA: Use union of link points as it is faster
-*/
+PancakeModerator::getLeftFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
 {
-  ELog::RegMethod RegA("PancakeModerator","getSideRule");
+  ELog::RegMethod RegA("PancakeModerator","getLeftFarExclude");
 
-  HeadRule HR;
-  HR.addUnion(MidH2->getSideRule());
-  HR.addUnion(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
-  HR.makeComplement();
-
-  return HR.display();
+  std::string Out;
+  Out=LeftWater->getSignedLinkString(4);
+  Out+=RightWater->getSignedLinkString(3);
+  return Out;
 }
 
 std::string
-PancakeModerator::getLeftRightWaterSideRule() const
-/*
-  Return left+right water side rule
-  \todo // SA: Use union of link points as it is faster
-*/
+PancakeModerator::getRightFarExclude() const
+  /*!
+    Get the outer exclude surface without top/base
+    (uses the standard link points)
+    \return outer sidewards link exclude
+  */
 {
-  std::string side("");
-  HeadRule HR;
-  HR.procString(LeftWater->getSideRule());
-  HR.addUnion(RightWater->getSideRule());
-  HR.makeComplement();
+  ELog::RegMethod RegA("PancakeModerator","getRightFarExclude");
 
-  return HR.display();
+  std::string Out;
+  Out+=LeftWater->getSignedLinkString(3);
+  Out+=RightWater->getSignedLinkString(4);
+
+  return Out;
 }
 
-  
+std::string
+PancakeModerator::getLeftExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points)
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("PancakeModerator","getLeftExclude");
+  std::string Out;
+
+  Out+=MidH2->getSignedLinkString(1);
+  Out+= getLeftFarExclude();
+
+  return Out;
+}
+
+std::string
+PancakeModerator::getRightExclude() const
+  /*!
+    Get the complete exclude surface without top/base
+    (uses the standard link points) [+ve Y]
+    \return full sidewards link exclude
+  */
+{
+  ELog::RegMethod RegA("PancakeModerator","getRightExclude");
+  std::string Out;
+
+  Out+=MidH2->getSignedLinkString(2);
+  Out+= getRightFarExclude();
+
+  return Out;
+
+}
+
 void
 PancakeModerator::createAll(Simulation& System,
+			      const attachSystem::FixedComp& orgFC,
+                              const long int orgIndex,
 			      const attachSystem::FixedComp& axisFC,
-			      const attachSystem::FixedComp* orgFC,
-			      const long int sideIndex)
+			      const long int axisIndex)
   /*!
     Construct the butterfly components
-    \param System :: Simulation 
+    \param System :: Simulation
     \param axisFC :: FixedComp to get axis [origin if orgFC == 0]
     \param orgFC :: Extra origin point if required
     \param sideIndex :: link point for origin if given
@@ -446,25 +438,21 @@ PancakeModerator::createAll(Simulation& System,
   ELog::RegMethod RegA("PancakeModerator","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(axisFC,orgFC,sideIndex);
+  createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
-  
-  MidH2->createAll(System,*this,0,false, 0.0, 0.0);
-    
+
+  MidH2->createAll(System,*this,0,false,0.0,0.0);
+
   const std::string Exclude=
-    ModelSupport::getComposite(SMap,flyIndex," -7 15 -16 ");
-  LeftWater->createAll(System,*MidH2,4,Exclude); 
+    ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
+  LeftWater->createAll(System,*MidH2,4,Exclude);
   RightWater->createAll(System,*MidH2,3,Exclude);
 
-  Origin=MidH2->getCentre();
-  createExternal();  // makes intermediate 
-
+  createExternal();  // makes intermediate
 
   createObjects(System);
   createLinks();
-  
   return;
 }
-
 
 }  // NAMESPACE essSystem

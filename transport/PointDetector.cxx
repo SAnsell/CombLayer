@@ -3,7 +3,7 @@
  
  * File:   transport/PointPointDetector.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -198,6 +198,7 @@ void
 PointDetector::writeHeader(std::ostream& OX) const
   /*!
     Write out a header
+    \param OX :: Output stream
   */
 {
   const ModelSupport::DBMaterial& DB=
@@ -217,13 +218,10 @@ PointDetector::write(std::ostream& OX) const
   /*!
     Write the detector to a stream
     \param OX :: Output stream
-    \param EBin :: Bin to write
   */
 {
   ELog::RegMethod RegA("PointDetector","write(stream,double)");
   
-  
-
   OX<<index<<" "<<angle<<" ";
   for(const std::pair<int,double>& MItem  : cnt)
     OX<<MItem.second<<" ";

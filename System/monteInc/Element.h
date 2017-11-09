@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Element.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef Element_h
-#define Element_h
+#ifndef MonteCarlo_Element_h
+#define MonteCarlo_Element_h
+
+namespace MonteCarlo
+{
 
 class Zaid;
 
@@ -34,17 +37,17 @@ class Zaid;
 
 struct Abundance
 {
-  int Z;                               ///< Z of the element
-  std::vector<int> WList;              ///< Atomic Weight of the components
+  size_t Z;                            ///< Z of the element
+  std::vector<size_t> WList;           ///< Atomic Weight of the components
   std::vector<double> Frac;            ///< Fractional weight
 
   Abundance();
-  explicit Abundance(const int);
+  explicit Abundance(const size_t);
   Abundance(const Abundance&);
   Abundance& operator=(const Abundance&);
   ~Abundance();
 
-  void addIso(const int,const double);
+  void addIso(const size_t,const double);
   double meanMass() const;
 
 };
@@ -66,15 +69,15 @@ class Element
 {
  private:
 
-  const int Nelem;                  ///< Max number of elements (approx 94)
-  std::map<std::string,int> Nmap;   ///< Map of names to Z
-  std::vector<std::string> Sym;     ///< Vector of symbols
-  std::vector<double> KEdge;        ///< Vector of k-Edge [keV]
-  std::vector<Abundance> Isotopes;  ///< Vector of Isotopes and abunances
+  const size_t Nelem;                  ///< Max number of elements (approx 94)
+  std::map<std::string,size_t> Nmap;   ///< Map of names to Z
+  std::vector<std::string> Sym;        ///< Vector of symbols
+  std::vector<double> KEdge;           ///< Vector of k-Edge [keV]
+  std::vector<Abundance> Isotopes;     ///< Vector of Isotopes and abunances
 
-  void populate();        ///< Initialise the map and symbol table
-  void populateEdge();    ///< Initialise the Edge information
-  void populateIso();     ///< Set the abundance and isotopes
+  void populate();     
+  void populateEdge(); 
+  void populateIso();  
 
   Element();
   ///\cond SINGLETON
@@ -87,19 +90,22 @@ class Element
   static const Element& Instance();
   ~Element();
 
-  int elm(const char*) const;             ///< Determine Z from string
-  int elm(const std::string&) const;      ///< Determine Z from string
-  int elmIon(const std::string&) const;   
-  std::pair<int,int> elmIonPair(const std::string&) const;   
-  std::string elmSym(const int) const;    ///< Element symbol from Z
+  size_t elm(const std::string&) const;    
+  size_t elmIon(const std::string&) const;   
+  std::pair<size_t,int> elmIonPair(const std::string&) const;   
+  const std::string& elmSym(const size_t) const;    
 
   double Kedge(const std::string&) const;    ///< Get K-edge from Symbol
-  double Kedge(const int) const;             ///< Get K-edge from Z
+  double Kedge(const size_t) const;             ///< Get K-edge from Z
   /// Process cinder zaids
-  void addZaid(const Zaid&,std::vector<int>&,std::vector<double>&) const;
+  void addZaid(const Zaid&,std::vector<size_t>&,
+	       std::vector<double>&) const;
 
-  double mass(const int) const;       
-  size_t natIsotopes(const int,std::vector<int>&,std::vector<double>&) const;
+  double mass(const size_t) const;       
+  size_t natIsotopes(const size_t,std::vector<size_t>&,
+		     std::vector<double>&) const;
 };
+
+}
 
 #endif

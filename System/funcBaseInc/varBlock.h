@@ -3,7 +3,7 @@
  
  * File:   funcBaseInc/varBlock.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ private:
 
   typedef std::pair<int,size_t> VTYPE;             ///< Variable type 
   
-  int populated;     ///< Populated flag
+  int populated;                               ///< Populated flag
 
   size_t tCnt;                                 ///< Total count
   std::vector<double> dV;                      ///< double items
@@ -71,8 +71,6 @@ public:
   template<typename T>
   T getVar(const std::string&) const;
 
-  template<typename T>
-  void setVar(const size_t&,const T&);
   template<typename T>
   void setVar(const std::string&,const T&);
     

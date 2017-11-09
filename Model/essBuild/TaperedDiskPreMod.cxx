@@ -429,7 +429,7 @@ TaperedDiskPreMod::getSurfacePoint(const size_t layerIndex,
     case 5:
       return Origin+Z*(height[layerIndex]);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 
@@ -462,7 +462,7 @@ TaperedDiskPreMod::getLayerSurf(const size_t layerIndex,
     case 5:
       return SMap.realSurf(SI+6);
     }
-  throw ColErr::IndexError<size_t>(sideIndex,6,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,6,"sideIndex ");
 }
 
 std::string
@@ -508,7 +508,7 @@ TaperedDiskPreMod::getLayerString(const size_t layerIndex,
       cx<<" "<<SMap.realSurf(SI+6)<<" ";
       return cx.str();
     }
-  throw ColErr::IndexError<size_t>(sideIndex,4,"sideIndex ");
+  throw ColErr::IndexError<long int>(sideIndex,4,"sideIndex ");
 }
 
 

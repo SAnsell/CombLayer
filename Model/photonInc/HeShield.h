@@ -63,8 +63,8 @@ class HeShield : public attachSystem::ContainedComp,
 
   double cdThick;           ///< Back CD thick
 
-  int polyMat;              ///< wall material
-  int cdMat;                ///< wall material
+  int polyMat;              ///< outer wall material
+  int cdMat;                ///< main decoupler material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

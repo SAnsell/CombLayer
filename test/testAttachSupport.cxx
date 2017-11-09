@@ -84,6 +84,7 @@ testAttachSupport::~testAttachSupport()
     Destructor
   */
 {
+  ASim.resetAll();
 }
 
 void

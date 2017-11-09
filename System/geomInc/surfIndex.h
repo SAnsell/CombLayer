@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   geomInc/surfIndex.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,8 +79,8 @@ class surfIndex
   int getUniq();
 
   void reset();
-  int createSurface(const int,const std::string&);  
-  int createSurface(const int,const int,const std::string&);
+  void createSurface(const int,const std::string&);  
+  void createSurface(const int,const int,const std::string&);
   int checkSurface(const int,const Geometry::Vec3D&) const; 
   void deleteSurface(const int);
   void renumber(const int,const int);

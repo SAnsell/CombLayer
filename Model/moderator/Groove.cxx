@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/Groove.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Groove.h"
 
@@ -74,9 +75,9 @@ namespace moderatorSystem
 {
 
 Groove::Groove(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,7),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,7),
   gveIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(gveIndex+1),populated(0)
+  cellIndex(gveIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -84,10 +85,9 @@ Groove::Groove(const std::string& Key)  :
 {}
 
 Groove::Groove(const Groove& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  gveIndex(A.gveIndex),cellIndex(A.cellIndex),populated(A.populated),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),xStep(A.xStep),yStep(A.yStep),
-  zStep(A.zStep),width(A.width),height(A.height),depth(A.depth),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  gveIndex(A.gveIndex),cellIndex(A.cellIndex),
+  width(A.width),height(A.height),depth(A.depth),
   GCentre(A.GCentre),innerRadius(A.innerRadius),
   innerXShift(A.innerXShift),innerZShift(A.innerZShift),
   innerWidth(A.innerWidth),innerHeight(A.innerHeight),
@@ -113,14 +113,8 @@ Groove::operator=(const Groove& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -154,21 +148,16 @@ Groove::~Groove()
 {}
 
 void
-Groove::populate(const Simulation& System)
+Groove::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: DataBase of variables
   */
 {
   ELog::RegMethod RegA("Groove","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
+
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"MethWidth");
   height=Control.EvalVar<double>(keyName+"MethHeight");
@@ -213,26 +202,13 @@ Groove::createUnitVector(const attachSystem::FixedComp& FC)
   ELog::RegMethod RegA("Groove","createUnitVector");
 
   FixedComp::createUnitVector(FC);
-  
-
-  Origin+=X*xStep+Y*yStep+Z*zStep;
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  
-  Qz.rotate(Y);
-  Qz.rotate(Z);
-  Qxy.rotate(Y);
-  Qxy.rotate(X);
-  Qxy.rotate(Z);
+  applyOffset();
     
   // Groove Centre:
   // -- Step in by cut, and  
   const double MStep=(depth-innerCut)-
     sqrt(innerRadius*innerRadius-innerWidth*innerWidth/4.0);
   GCentre=Origin+Y*MStep+X*innerXShift+Z*innerZShift;
-  FixedComp::setConnect(0,Origin,-Y);
   return;
 }
   
@@ -243,7 +219,6 @@ Groove::createSurfaces()
   */
 {
   ELog::RegMethod RegA("Groove","createSurface");
-
 
   // INNER DIVIDE PLANE
   ModelSupport::buildPlane(SMap,gveIndex+1,Origin,Y);
@@ -418,7 +393,7 @@ Groove::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("Groove","createAll");
-  populate(System);
+  populate(System.getDataBase());
 
   createUnitVector(FC);
   createSurfaces();

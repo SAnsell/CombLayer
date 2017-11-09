@@ -3,7 +3,7 @@
  
  * File:   essBuild/GuideBay.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,8 @@
 #include "GuideItem.h"
 #include "GuideBay.h"
 
+#include "AttachSupport.h"
+
 namespace essSystem
 {
 
@@ -148,10 +150,24 @@ GuideBay::~GuideBay()
 {}
 
 void
+GuideBay::setCylBoundary(const int A,const int B)
+  /*!
+    Set inside and outside cylinder cuts
+    \todo Move to a headrule system
+    \param A :: Inner cylinder 
+    \param B :: Outer cylinder
+   */
+{
+  innerCyl=std::abs(A);
+  outerCyl=std::abs(B);
+  return;
+}
+  
+void
 GuideBay::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: Database to use
  */
 {
   ELog::RegMethod RegA("GuideBay","populate");
@@ -352,11 +368,13 @@ GuideBay::outerMerge(Simulation& System,
   
 void
 GuideBay::createGuideItems(Simulation& System,
-                           const std::string& modName)
+                           const std::string& modName,
+			   const std::string& wheelName)
   /*!
     Create the guide items
     \param System :: Simulation to link
     \param modName :: Moderator name (top/low)
+    \param wheelName :: Wheel object [if used]
   */
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
@@ -374,7 +392,14 @@ GuideBay::createGuideItems(Simulation& System,
   
   const int dPlane=SMap.realSurf(bayIndex+1);
 
-  const GuideItem* GB(0);
+  const GuideItem* GB(0);  // guides can intersect
+
+  
+  attachSystem::ContainedGroup* CG=
+    (!wheelName.empty()) ?
+    OR.getObjectThrow<attachSystem::ContainedGroup>
+    (wheelName,"Wheel unit not found") : 0;
+    
   for(size_t i=0;i<nItems;i++)
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
@@ -387,6 +412,15 @@ GuideBay::createGuideItems(Simulation& System,
       GA->createAll(System,*ModFC,FI,GB);
       GUnit.push_back(GA);
       OR.addObject(GUnit.back());
+
+      // Add wheel to inner cell if required
+      if (GA->hasItem("BodyMetal"))
+	{
+	  GA->insertComponent(System,"Body",CG->getCC("Wheel"));
+     //	  attachSystem::addToInsertSurfCtrl(System,*GA,"BodyMetal",
+     //					    CG->getCC("Wheel"));
+	}
+      
       GB=GA.get();
     }
   

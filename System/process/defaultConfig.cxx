@@ -3,7 +3,7 @@
  
  * File:   process/defaultConfig.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,7 +207,11 @@ defaultConfig::process(FuncDataBase& Control,
 	IParam.setMultiValue(std::get<0>(TI),std::get<1>(TI),
 			     std::get<2>(TI));
     }
-
+  // Set active flags:
+  for(const std::pair<std::string,std::string>& FItem : flagName)
+    IParam.setFlag(FItem.first);
+  for(const TTYPE& TI : multiSet)
+    IParam.setFlag(std::get<0>(TI));
   return;
 }
 

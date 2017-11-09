@@ -3,7 +3,7 @@
  
  * File:   support/Exception.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -578,6 +578,26 @@ DimensionError<ndim,T>::DimensionError(const T* A,const T* R,
 }
 
 template<unsigned int ndim,typename T>
+DimensionError<ndim,T>::DimensionError(const std::vector<T>& A,
+				       const std::vector<T>& R,
+				       const std::string& Place) :
+  ExBase(0,Place)
+  /*!
+    Set a DimensionError
+    \param A :: Array size
+    \param R :: Required size
+    \param Place :: String describing the place
+  */
+{
+  for(size_t i=0;i<ndim;i++)
+    {
+      indexSize[i]=(i<A.size()) ? A[i] : T(0);
+      reqSize[i]=(i<R.size()) ? R[i] : T(0);
+    }
+  setOutLine();
+}
+
+template<unsigned int ndim,typename T>
 DimensionError<ndim,T>::DimensionError(const DimensionError<ndim,T>& A) :
   ExBase(A)
   /*!
@@ -618,7 +638,7 @@ void
 DimensionError<ndim,T>::setOutLine()
   /*!
     Writes out the range and aim point
-    to \OutLine
+    to OutLine
   */
 {
   std::stringstream cx;
@@ -697,7 +717,7 @@ void
 ArrayError<ndim>::setOutLine()
   /*!
     Writes out the range and aim point
-    to \OutLine
+    to OutLine
   */
 {
   std::stringstream cx;
@@ -1180,7 +1200,7 @@ ConstructionError::ConstructionError(const std::string& N,
     \param Place :: Description string
     \param M :: Method
     \param IP1 :: Input 1
-    \param IP1 :: Input 2
+    \param IP2 :: Input 2
    */
 {
   setOutLine();
@@ -1365,6 +1385,7 @@ ExitAbort::ExitAbort(const std::string& Err,const int flag) :
   /*!
     Constructor
     \param Err :: Class:method string
+    \param flag :: Extract a full calling path info 
   */
 { }
 

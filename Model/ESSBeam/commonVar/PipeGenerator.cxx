@@ -84,10 +84,11 @@ namespace setVariable
 PipeGenerator::PipeGenerator() :
   pipeType(0),pipeRadius(8.0),
   pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
-  flangeRadius(12.0),flangeLen(1.0),
+  claddingThick(0.0),flangeRadius(12.0),flangeLen(1.0),
   windowRadius(10.0),windowThick(0.5),
-  pipeMat("Aluminium"),windowMat("Silicon300K"),
-  voidMat("Void")
+  pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
+  backWindowMat("Silicon300K"),
+  voidMat("Void"),claddingMat("B4C")
   /*!
     Constructor and defaults
   */
@@ -158,6 +159,45 @@ PipeGenerator::setFlange(const double R,const double L)
   flangeLen=L;
   return;
 }
+
+void
+PipeGenerator::setWindowMat(const std::string& M)
+  /*!
+    Set the window materials [back/front]
+    \param M :: Material
+   */
+{
+  frontWindowMat=M;
+  backWindowMat=M;
+  return;
+}
+
+void
+PipeGenerator::setWindowMat(const std::string& MA,
+                            const std::string& MB)
+  /*!
+    Set the window materials [back/front]
+    \param MA :: Front Material
+    \param MB :: Back Material
+   */
+{
+  frontWindowMat=MA;
+  backWindowMat=MB;
+  return;
+}
+
+void
+PipeGenerator::setCladding(const double T,const std::string& M)
+  /*!
+    Set the cladding thickess and material
+    \param T :: Thickness
+    \param M :: Material
+   */
+{
+  claddingThick=T;
+  claddingMat=M;
+  return;
+}
   
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
@@ -175,11 +215,12 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   const double minRadius(pipeType ?
                          std::min(pipeWidth,pipeHeight) :
                          pipeRadius);
-  const double realWindowRadius=(windowRadius<0.0) ?
+  double realWindowRadius=(windowRadius<0.0) ?
     minRadius-windowRadius : windowRadius;
   const double realFlangeRadius=(flangeRadius<0.0) ?
     minRadius-flangeRadius : flangeRadius;
-  
+  realWindowRadius=std::min(realWindowRadius,realFlangeRadius);
+
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
   if (!pipeType)
@@ -199,9 +240,13 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"WindowRadius",realWindowRadius);
   
   Control.addVariable(keyName+"WindowThick",windowThick);
-  Control.addVariable(keyName+"WindowMat",windowMat);
+  Control.addVariable(keyName+"WindowFrontMat",frontWindowMat);
+  Control.addVariable(keyName+"WindowBackMat",backWindowMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-  
+
+  Control.addVariable(keyName+"CladdingThick",claddingThick);
+  Control.addVariable(keyName+"CladdingMat",claddingMat);
+      
   return;
 
 }

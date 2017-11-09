@@ -3,7 +3,7 @@
  
  * File:   delft/beamSlot.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,7 +86,7 @@ beamSlot::beamSlot(const std::string& Key,const int SN)  :
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
-    \parma SN :: slot number  (id number)
+    \param SN :: slot number  (id number)
   */
 {}
 
@@ -214,8 +214,9 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("beamSlot","createSurfaces");
 
-  SMap.addMatch(surfIndex+1,FC.getLinkSurf(0));
-  SMap.addMatch(surfIndex+2,FC.getLinkSurf(1));
+  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(1));
+  SMap.addMatch(surfIndex+2,FC.getSignedLinkSurf(2));
+
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(xSize/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(xSize/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+5,Origin-Z*zSize/2.0,Z);
@@ -227,7 +228,8 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlane(SMap,surfIndex+14,
   			   Origin+X*(xSize/2.0-endThick),X);
 
-  const double gap=(zSize-(NChannels+1.0)*divideThick)/NChannels;
+  const double gap=(zSize-static_cast<double>(NChannels+1)*divideThick)/
+    static_cast<double>(NChannels);
   double zPoint(-zSize/2.0);
   int surfOffset(surfIndex+10);
   for(size_t i=0;i<NChannels;i++)
@@ -303,7 +305,9 @@ beamSlot::createLinks()
   FixedComp::setConnect(4,Origin-Z*zSize/2.0,-Z); 
   FixedComp::setConnect(5,Origin+Z*zSize/2.0,Z); 
 
-  for(size_t i=0;i<6;i++)
+  FixedComp::setLinkSurf(0,-SMap.realSurf(surfIndex+1));
+  FixedComp::setLinkSurf(1,SMap.realSurf(surfIndex+2));
+  for(size_t i=2;i<6;i++)
     {
       const int sN(surfIndex+static_cast<int>(i+1));
       FixedComp::setLinkSurf(i,SMap.realSurf(sN));

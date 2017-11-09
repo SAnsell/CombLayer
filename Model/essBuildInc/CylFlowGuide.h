@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   essBuildInc/CylFlowGuide.h
  *
- * Copyright (c) 2004-2015 by Konstatin Batkov/Stuart Ansell
+ * Copyright (c) 2004-2017 by Konstatin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,16 +46,16 @@ class CylFlowGuide : public attachSystem::ContainedComp,
   double radius;                  ///< Main radius [from built object]
   double wallThick;               ///< Wall thickness
   int wallMat;                    ///< Wall material
-
-  double gapWidth;        ///< Gap to allow water to flow
-  size_t nBaffles;        ///< Number of baffles
+ 
+  double gapWidth;                ///< Gap to allow water to flow
+  size_t nBaffles;                ///< Number of baffles
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createLinks();
 
  public:

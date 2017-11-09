@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderatorInc/DecLayer.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@ class DecLayer : public Decoupled
   int centMat;                        ///< Central material
   double centTemp;                    ///< Central temperature
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createSurfaces();
-  void createObjects(Simulation&);
+  virtual void createObjects(Simulation&);
 
  public:
 
@@ -65,7 +65,8 @@ class DecLayer : public Decoupled
 
   /// Doesnt internal pipe
   virtual int needsHePipe() const { return 0; }
-  virtual void createAll(Simulation&,const attachSystem::FixedComp&);
+  virtual void createAll(Simulation&,const attachSystem::FixedComp&,
+			 const long int);
 
 };
 

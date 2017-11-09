@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   gammaBuildInc/NordBall.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace gammaSystem
 */
 
 class NordBall : public attachSystem::ContainedComp,
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset
 {
  private:
 
@@ -44,12 +44,6 @@ class NordBall : public attachSystem::ContainedComp,
   const std::string baseName;     ///< Base name
   const int detIndex;             ///< Index
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< Y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< XY Rotation angle
-  double zAngle;                  ///< Vertical rotation angle
 
   size_t nFace;                   ///< Number of layers
   double faceWidth;               ///< Face short distance
@@ -71,7 +65,8 @@ class NordBall : public attachSystem::ContainedComp,
   int elecMat;                    ///< Electronics Material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -84,7 +79,8 @@ class NordBall : public attachSystem::ContainedComp,
   NordBall& operator=(const NordBall&);
   virtual ~NordBall();
   
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
   
 };
 

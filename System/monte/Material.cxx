@@ -140,7 +140,7 @@ Material::operator+=(const Material& A)
    */
 {
   ELog::RegMethod RegA("Material","operator+=");
-  
+
   // Need to match off Zaids:
   for(const Zaid& ZItem : A.zaidVec)
     {
@@ -163,14 +163,49 @@ Material::operator+=(const Material& A)
         SQW.push_back(SQItem);
     }
 
+  // MX:
+  typedef std::map<std::string,MXcards> MXTYPE;
+  for(MXTYPE::value_type MX : mxCards)
+    {
+      // find if has particle
+      MXTYPE::const_iterator mc=A.mxCards.find(MX.first);
+      // only add if doesn't exist
+      if (mc!=A.mxCards.end())
+	{
+	  MXcards& mx=MX.second;
+	  const MXcards& Amx=mc->second;
+	  for(const Zaid& ZI : zaidVec)
+	    {
+	      const size_t zIndex(ZI.getZaidNum());
+	      if (!mx.hasZaid(zIndex) && Amx.hasZaid(zIndex) )
+		mx.setZaid(zIndex,Amx.getZaid(zIndex));
+	    }
+	}
+    }
+  // Now add All cards in A, that don't exist in *this.
+  for(const MXTYPE::value_type MX : A.mxCards)
+    {
+      MXTYPE::const_iterator mc=mxCards.find(MX.first);
+      if (mc==mxCards.end())
+	mxCards.emplace(mc->first,mc->second);
+    }
+
+  // SQW
+  for(const std::string& SQItem : A.SQW)
+    {
+      if (sqSet.find(SQItem)==sqSet.end())
+        SQW.push_back(SQItem);
+    }
+
   // LIBS:
   sqSet.clear();
   for(const std::string& LItem : Libs)
     sqSet.insert(LItem);
+
   for(const std::string& LItem : A.Libs)
     {
       if (sqSet.find(LItem)==sqSet.end())
-        Libs.push_back(LItem);
+	Libs.push_back(LItem);
     }
 
   return *this;
@@ -192,7 +227,7 @@ Material::setENDF7()
 }
 
 size_t
-Material::getZaidIndex(const int ZNum,const int TNum,const char C) const
+Material::getZaidIndex(const size_t ZNum,const size_t TNum,const char C) const
   /*!
     Determine if a Zaid exists
     \param ZNum :: Zaid number
@@ -209,7 +244,7 @@ Material::getZaidIndex(const int ZNum,const int TNum,const char C) const
 }
 
 bool
-Material::hasZaid(const int ZNum,const int TNum,const char C) const
+Material::hasZaid(const size_t ZNum,const size_t TNum,const char C) const
   /*!
     Determine if a Zaid exists
     \param ZNum :: Zaid number [ignored if ZNum==0;]
@@ -223,7 +258,7 @@ Material::hasZaid(const int ZNum,const int TNum,const char C) const
 }
 
 void
-Material::setMXitem(const int ZNum,const int TNum,const char C,
+Material::setMXitem(const size_t ZNum,const size_t TNum,const char C,
 		    const std::string& P,const std::string& Item)
   /*!
     Subsisture a zaid if it exists
@@ -236,15 +271,17 @@ Material::setMXitem(const int ZNum,const int TNum,const char C,
 {
   typedef std::map<std::string,MXcards> MXTYPE;
 
-  const size_t NIndex=getZaidIndex(ZNum,TNum,C);
-  if (NIndex!=ULONG_MAX)
+  if (!P.empty())
     {
-      MXTYPE::iterator mc= mxCards.find(P);
-      if (mc==mxCards.end())
-	mxCards.insert(MXTYPE::value_type
-		       (P,MXcards(Mnum,zaidVec.size(),P)));
-      mc= mxCards.find(P);
-      mc->second.setItem(NIndex,Item);
+      const size_t NIndex=getZaidIndex(ZNum,TNum,C);
+      if (NIndex!=ULONG_MAX)
+	{
+	  MXTYPE::iterator mc= mxCards.find(P);
+	  if (mc==mxCards.end())
+	    mxCards.emplace(P,MXcards(P));
+	  mc= mxCards.find(P);
+	  mc->second.setZaid(ZNum,Item);
+	}
     }
   return;
 }
@@ -287,8 +324,7 @@ Material::removeLib(const std::string& lHead)
 int
 Material::lineType(std::string& Line)
   /*!
-    Determine the type of the line. Removes
-    trailing spaces etc
+    Determine the type of the line. Removes trailing spaces etc
     \param Line :: Line to process
     \retval 0 :: no information / contline
     \retval -1 :: empty/comment line
@@ -306,18 +342,22 @@ Material::lineType(std::string& Line)
        (Line.size()==1 || isspace(Line[1]))))
     return -1;
   
-
   Line=StrFunc::fullBlock(Line);                
   int index;
   std::string part;
   if (!StrFunc::convert(Line,part)) return 0;
   if (part.size()<2 || (part[0]!='m' && part[0]!='M')) 
     return 0;
-  size_t i(0);
-  while(i<part.size() && !isdigit(part[i]))
-    part[i]=' ';
+  part[0]=' ';
   if (StrFunc::convert(part,index))
     return index;
+  // do something clever here:
+  if (part[1]=='x' || part[1]=='X' ||
+      part[1]=='t' || part[1]=='T' )
+    part[1]=' ';
+  if (StrFunc::convert(part,index))
+    return index;
+  
 
   return 0;
 }
@@ -340,16 +380,15 @@ Material::getExtraType(std::string& Line,std::string& particles)
   std::string LCopy(Line);
   if (!StrFunc::section(LCopy,FItem) || FItem.size()<3)
     return 0;
-  if (FItem[0]!='m' && FItem[0]!='M')
-    return 0;
+  StrFunc::lowerString(FItem);
+  if (FItem[0]!='m') return 0;
   // get key
-  std::string key("m");
+  std::string key;
   for(size_t i=0;i<FItem.size() && isalpha(FItem[i]);i++)
     {
-      key+=static_cast<char>(tolower(FItem[i]));
+      key+=FItem[i];
       FItem[i]=' ';
     }
- 
   int index;
   if (!StrFunc::sectPartNum(FItem,index))
     return 0;
@@ -487,14 +526,14 @@ Material::setMaterial(const std::vector<std::string>& PVec)
     \retval 0 :: on success
   */
 {
-  ELog::RegMethod RegA("Material","setMaterial");
-  // Process First line : 
-  std::string Pstr=PVec[0];
+  ELog::RegMethod RegA("Material","setMaterial<Vec>");
 
+  if (PVec.empty()) return -1;
+
+  // Process First line : 
   // Divide line into zaid / density / extras:
-  std::vector<std::string> Items=StrFunc::StrParts(Pstr);
-  if (Items.size()<2)
-    return -1;
+  std::vector<std::string> Items=StrFunc::StrParts(PVec[0]);
+  if (Items.size()<2) return -1;
 
   std::string& FItem(Items[0]);  
   const char pItem=FItem[0];
@@ -507,23 +546,23 @@ Material::setMaterial(const std::vector<std::string>& PVec)
   
   Zaid AZ;
   double Dens;                   // density
-  std::vector<std::string>::iterator vc=Items.begin();
+
+  // PROCESS : mXX zaid line
   int typeFlag(0);
   // skip first item
-  for(vc++;vc!=Items.end();vc++)
+  Items.erase(Items.begin());
+  for(const std::string& unit : Items)
     {
       if (!typeFlag)
 	{
-	  if (AZ.setZaid(*vc))
+	  if (AZ.setZaid(unit))
 	    typeFlag=1;
-	  else              // Maybe a modifier 
-	    {
-	      Libs.push_back(*vc);
-	    }
+	  else              // Maybe a modifier [hopefully]
+	    Libs.push_back(unit);
 	}
       else
 	{
-	  if (StrFunc::convert(*vc,Dens))
+	  if (StrFunc::convert(unit,Dens))
 	    {
 	      AZ.setDensity(Dens);
 	      zaidVec.push_back(AZ);
@@ -531,23 +570,25 @@ Material::setMaterial(const std::vector<std::string>& PVec)
 	    }
 	}
     }
-  // NOW PROCESS EXTRA LINES: 
-  std::vector<std::string>::const_iterator sc=PVec.begin();
-  for(sc++;sc!=PVec.end();sc++)
+  // NOW PROCESS EXTRA LINES (and libs)
+  std::vector<std::string>::const_iterator sc(PVec.begin());
+
+  for(sc++;sc<PVec.end();sc++)
     {
-      std::string ItemStr=*sc;
+      std::string sqwItem(*sc);
       std::string Particle;
-      const int mType=getExtraType(ItemStr,Particle);
+      const int mType=getExtraType(sqwItem,Particle);
       switch (mType)
 	{
 	case 1:          // mt card
-	  SQW.push_back(StrFunc::fullBlock(ItemStr));
+	  SQW.push_back(StrFunc::fullBlock(sqwItem));
 	  break;
 	case 2:          // mx card
-	  ELog::EM.error("Un supported mx card");
-	  break;
+	  throw ColErr::InContainerError<std::string>
+	    (sqwItem,"Un supported mx card");
 	}
     }
+  Name="m"+std::to_string(Mnum);
   calcAtomicDensity();
   return 0;
 }
@@ -617,6 +658,7 @@ double
 Material::getMeanA() const
   /*!
     Return the mean A value 
+    \return mean atomic number
   */
 {
   double AW(0.0);
@@ -668,19 +710,18 @@ Material::print() const
 {
   std::cout<<"Material "<<Name<<" N == "<<zaidVec.size()<<std::endl;
   std::vector<Zaid>::const_iterator zc;
-  std::vector<std::string>::const_iterator vc;
 
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    std::cout<<*zc<<std::endl;
+  for(const Zaid& ZItem : zaidVec)
+    std::cout<<ZItem<<std::endl;
 
   std::cout<<"Libs == ";
-  for(vc=Libs.begin();vc!=Libs.end();vc++)
-    std::cout<<*vc<<"  ";
+  for(const std::string& LItem : Libs)
+    std::cout<<LItem<<"  ";
   std::cout<<std::endl;
 
   std::cout<<"S(q,w)== ";
-  for(vc=SQW.begin();vc!=SQW.end();vc++)
-    std::cout<<*vc<<"  ";
+  for(const std::string& SItem : Libs)
+    std::cout<<SItem<<"  ";
   std::cout<<std::endl;
 
   return;
@@ -697,20 +738,19 @@ Material::writeCinder(std::ostream& OX) const
 
   std::ostringstream cx;
   cx.precision(10);
-  std::vector<int> cZaid;      // Cinder zaid list
+  std::vector<size_t> cZaid;      // Cinder zaid list
   std::vector<double> cFrac;   // Fraction 
 
   // Construct zaid and fractions
-  std::vector<Zaid>::const_iterator vc;
-
+  // normalize fractions
   double sum(0.0);
-  for(vc=zaidVec.begin();vc!=zaidVec.end();vc++)
+  for(const Zaid& ZItem : zaidVec)
     {
-      Element::Instance().addZaid(*vc,cZaid,cFrac);
-      sum+= vc->getDensity();;
+      Element::Instance().addZaid(ZItem,cZaid,cFrac);
+      sum+= ZItem.getDensity();;
     }
-  transform(cFrac.begin(),cFrac.end(),cFrac.begin(),
-	    std::bind2nd(std::divides<double>(),sum));
+  for(double& C : cFrac)
+    C/=sum;
   
   if (!cZaid.empty())
     {
@@ -729,7 +769,7 @@ Material::writeCinder(std::ostream& OX) const
 }
 
 void
-Material::changeLibrary(const int T,const char key)
+Material::changeLibrary(const size_t T,const char key)
   /*!
     Change the library type of all materials out
     of the 000 type.
@@ -745,7 +785,7 @@ Material::changeLibrary(const int T,const char key)
 }
 
 void 
-Material::writeZaid(std::ostream& OX,const double F,const int ZD) 
+Material::writeZaid(std::ostream& OX,const double F,const size_t ZD) 
   /*!
     Write the zaid file
     \param OX :: Output streamx
@@ -755,14 +795,64 @@ Material::writeZaid(std::ostream& OX,const double F,const int ZD)
 {
   ELog::RegMethod RegA("Material","writeZaid");
   boost::format ZFMT("%3d%03d0  %10.7e");
-  std::vector<int> ANat;
-  std::vector<double> FNat;
-  const int Z=ZD/1000;
-  const int A=ZD % 1000;
-  if (A>0)
+
+  const size_t Z=ZD/1000;
+  const size_t A=ZD % 1000;
+  if (A)
     OX<<(ZFMT % A % Z % F)<<std::endl;
   return;
 }
+
+void 
+Material::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in PHITS files format
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writeFLUKA");
+  
+
+  const Element& EL(Element::Instance());
+
+  std::ostringstream cx;
+  OX<<"c Material : "<<Name<<" rho="<<atomDensity<<std::endl;
+  OX<<"mat["<<Mnum<<"]\n";
+
+  
+  cx.precision(10);
+  std::vector<Zaid>::const_iterator zc;
+  std::vector<std::string>::const_iterator vc;
+  for(const Zaid& ZItem: zaidVec)
+    {
+      cx.str("");
+      if (ZItem.getIso())
+	{
+	  cx<<"  "<<ZItem.getIso()<<EL.elmSym(ZItem.getZ())
+	    <<"       "<<ZItem.getDensity();
+	}
+      else
+	{
+	  cx<<"    "<<EL.elmSym(ZItem.getZ())
+	    <<"       "<<ZItem.getDensity();
+	}
+		  
+      OX<<cx.str()<<std::endl;
+    }
+  
+  if (!SQW.empty())
+    {
+      cx.str("");
+      cx<<"mt"<<Mnum<<"    ";
+      if (Mnum<10) cx<<" ";
+      std::copy(SQW.begin(),SQW.end(),
+		std::ostream_iterator<std::string>(cx," "));
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+
+  return;
+} 
 
 void 
 Material::writeFLUKA(std::ostream& OX) const
@@ -788,29 +878,33 @@ Material::writeFLUKA(std::ostream& OX) const
   if (Mnum<10) cx<<" ";
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    cx<<*zc<<" ";
+  for(const Zaid& ZItem: zaidVec)
+    cx<<ZItem<<" ";
 
-  for(vc=Libs.begin();vc!=Libs.end();vc++)
-    cx<<*vc<<"  ";
-
+  for(const std::string& libItem : Libs)
+    cx<<libItem<<"  ";
   StrFunc::writeMCNPX(cx.str(),OX);
-
+  
+  cx.str("");
   MXTYPE::const_iterator mc;
   for(mc=mxCards.begin();mc!=mxCards.end();mc++)
-    mc->second.write(OX);
-
-
+    {
+      cx<<"mx"<<Mnum;
+      mc->second.write(cx,zaidVec);
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  // avoid having to reset flags/precision in cx
   std::ostringstream rx;
   if (!SQW.empty())
     {
       rx.str("");
       rx<<"mt"<<Mnum<<"    ";
       if (Mnum<10) rx<<" ";
-      for(vc=SQW.begin();vc!=SQW.end();vc++)
-	rx<<*vc<<" ";
+      std::copy(SQW.begin(),SQW.end(),
+		std::ostream_iterator<std::string>(rx," "));
       StrFunc::writeMCNPX(rx.str(),OX);
     }
+
   return;
 } 
 
@@ -846,39 +940,40 @@ Material::write(std::ostream& OX) const
   */
 {
   typedef std::map<std::string,MXcards> MXTYPE;
-
   
   std::ostringstream cx;
   cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity;
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
-
+  
   cx.precision(10);
   cx<<"m"<<Mnum<<"     ";
   if (Mnum<10) cx<<" ";
-  std::vector<Zaid>::const_iterator zc;
-  std::vector<std::string>::const_iterator vc;
-  for(zc=zaidVec.begin();zc!=zaidVec.end();zc++)
-    cx<<*zc<<" ";
+  std::copy(zaidVec.begin(),zaidVec.end(),std::ostream_iterator<Zaid>(cx," "));
 
-  for(vc=Libs.begin();vc!=Libs.end();vc++)
-    cx<<*vc<<"  ";
-
+  for(const std::string& libItem : Libs)
+    cx<<libItem<<"  ";
   StrFunc::writeMCNPX(cx.str(),OX);
 
+
+  cx.str("");
   MXTYPE::const_iterator mc;
   for(mc=mxCards.begin();mc!=mxCards.end();mc++)
-    mc->second.write(OX);
+    {
+      cx<<"mx"<<Mnum;
+      mc->second.write(cx,zaidVec);
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
 
-
+  // avoid having to reset flags/precision in cx
   std::ostringstream rx;
   if (!SQW.empty())
     {
       rx.str("");
       rx<<"mt"<<Mnum<<"    ";
       if (Mnum<10) rx<<" ";
-      for(vc=SQW.begin();vc!=SQW.end();vc++)
-	rx<<*vc<<" ";
+      std::copy(SQW.begin(),SQW.end(),
+		std::ostream_iterator<std::string>(rx," "));
       StrFunc::writeMCNPX(rx.str(),OX);
     }
   return;

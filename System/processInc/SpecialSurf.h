@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   processInc/SpecialSurf.h
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ int addPlane(const int,const Geometry::Vec3D&,
 size_t calcVertex(const int,const int,const int,
 		std::vector<Geometry::Vec3D>&,const int);
 size_t calcVertex(const int,const int,const int,
-	       std::vector<Geometry::Vec3D>&,const Geometry::Vec3D&);
+		  Geometry::Vec3D&,const Geometry::Vec3D&);
 
 void listSurfaces();
 

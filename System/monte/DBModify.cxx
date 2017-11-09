@@ -54,6 +54,20 @@ namespace ModelSupport
 {
 
 void
+processMaterialFile(const std::string& matFile)
+  /*!
+    Read materials from a file
+    \param matFile
+  */
+{
+  ELog::RegMethod RegA("DBModify[F]","processMaterialFile");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  DB.readFile(matFile);
+  return;
+}
+
+void
 cloneBasicMaterial()
   /*!
     Clone ESS materials if not using the ESS Database materials
@@ -824,7 +838,6 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   "",MLib);
   MObj.setDensity(-19.298 * 0.04);
   MDB.resetMaterial(MObj);  
-
   return;
 }
 

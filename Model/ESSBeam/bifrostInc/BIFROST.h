@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/BIFROST.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace instrumentSystem
 namespace constructSystem
 {  
   class Aperture;
-  class ChopperUnit;
+  class SingleChopper;
   class ChopperPit;
   class DiskChopper;
   class Jaws;
@@ -90,7 +90,7 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::Aperture> AppA;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
   
@@ -100,7 +100,7 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// 10.5m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskB;
 
@@ -115,7 +115,7 @@ class BIFROST : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// 20.5m FOC-2
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
 
@@ -163,7 +163,7 @@ class BIFROST : public attachSystem::CopiedComp
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutACutBack;
   /// First out of bunker chopper 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// single disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskOutA;
   
@@ -187,9 +187,7 @@ class BIFROST : public attachSystem::CopiedComp
 
   /// Vacuum pipe in the front of the cave
   std::shared_ptr<constructSystem::VacuumPipe> VPipeCave;
-  
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-  
+    
  public:
   
   BIFROST(const std::string&);

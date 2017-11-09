@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,6 +83,8 @@
 #include "FixedOffset.h" 
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 
 #include "FuelLoad.h"
 #include "RElement.h"
@@ -145,11 +147,10 @@ ReactorGrid::getElement(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ReactorGrid","getElement");
 
-  const std::string Key[2]=
-    { 
-      std::string(1,static_cast<char>(I)+'A'),
-      StrFunc::makeString(J),
-    };
+  std::array<std::string,2> Key;
+  Key[0]=StrFunc::indexToAlpha(I);
+  Key[1]=std::to_string(J);
+
   // Completely specified:
   if (Control.hasVariable(Name+Key[0]+Key[1]))
     return Control.EvalVar<T>(Name+Key[0]+Key[1]);
@@ -185,11 +186,10 @@ ReactorGrid::getDefElement(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("ReactorGrid","getElement");
 
-  const std::string Key[2]=
-    { 
-      std::string(1,static_cast<char>(I)+'A'),
-      StrFunc::makeString(J),
-    };
+  std::array<std::string,2> Key;
+  Key[0]=StrFunc::indexToAlpha(I);
+  Key[1]=std::to_string(J);
+
   // Completely specified:
   if (Control.hasVariable(Name+Key[0]+Key[1]))
     return Control.EvalVar<T>(Name+Key[0]+Key[1]);
@@ -227,7 +227,7 @@ ReactorGrid::getElementName(const std::string& Name,const size_t I,
   ELog::RegMethod RegA("ReactorGrid","getElementName");
   
   std::string Out(Name);
-  Out+=std::string(1,static_cast<char>(I)+'A');
+  Out+=StrFunc::indexToAlpha(I);
   Out+=StrFunc::makeString(J);
   return Out;
 }
@@ -253,7 +253,7 @@ ReactorGrid::getElementNumber(const std::string& Name)
 
 
 ReactorGrid::ReactorGrid(const std::string& Key) : 
-  attachSystem::FixedComp(Key,7),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,7),attachSystem::ContainedComp(),
   gridIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(gridIndex+1)
   /*!
@@ -263,11 +263,9 @@ ReactorGrid::ReactorGrid(const std::string& Key) :
 {}
 
 ReactorGrid::ReactorGrid(const ReactorGrid& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   gridIndex(A.gridIndex),cellIndex(A.cellIndex),
-  xStep(A.xStep),yStep(A.yStep),zStep(A.zStep),
-  xyAngle(A.xyAngle),zAngle(A.zAngle),NX(A.NX),
-  NY(A.NY),Width(A.Width),Depth(A.Depth),Base(A.Base),
+  NX(A.NX),NY(A.NY),Width(A.Width),Depth(A.Depth),Base(A.Base),
   Top(A.Top),plateThick(A.plateThick),plateRadius(A.plateRadius),
   plateMat(A.plateMat),waterMat(A.waterMat),GType(A.GType),
   Grid(A.Grid)
@@ -287,14 +285,9 @@ ReactorGrid::operator=(const ReactorGrid& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       NX=A.NX;
       NY=A.NY;
       Width=A.Width;
@@ -326,14 +319,10 @@ ReactorGrid::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ReactorGrid","populate");
 
+  FixedOffset::populate(Control);
+  
   NX=Control.EvalVar<size_t>(keyName+"XSize");
   NY=Control.EvalVar<size_t>(keyName+"YSize");
-
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
 
   Width=Control.EvalVar<double>(keyName+"Width");
   Depth=Control.EvalVar<double>(keyName+"Depth");
@@ -367,16 +356,18 @@ ReactorGrid::populate(const FuncDataBase& Control)
 }
 
 void
-ReactorGrid::createUnitVector(const attachSystem::FixedComp& FC)
+ReactorGrid::createUnitVector(const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Orign object
+    \param sideIndex :: Link point						
   */
 {
   ELog::RegMethod RegA("ReactorGrid","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  attachSystem::FixedComp::applyShift(xStep,yStep,zStep);
-  attachSystem::FixedComp::applyAngleRotate(xyAngle,zAngle);
+  
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
   return;
 }
 
@@ -418,8 +409,10 @@ ReactorGrid::createSurfaces()
   for(int dimI=0;dimI<2;dimI++)
     {
       Geometry::Vec3D layerO(Origin-Axis[dimI]*SArray[dimI]/2.0);
-      const Geometry::Vec3D LStep(Axis[dimI]*(SArray[dimI]/NArray[dimI]));
-      int sNum(gridIndex+7+static_cast<int>(dimI));
+      const Geometry::Vec3D LStep
+	(Axis[dimI]*(SArray[dimI]/static_cast<double>(NArray[dimI])));
+      
+      int sNum(gridIndex+7+dimI);
 
       SMap.addMatch(sNum,gridIndex+1+dimI*2);   // match 1,3,5 to 7,8,9
       for(size_t i=1;i<NArray[dimI];i++)
@@ -427,8 +420,8 @@ ReactorGrid::createSurfaces()
 	  sNum+=10; 
 	  layerO+=LStep;
 	  ModelSupport::buildPlane(SMap,sNum,layerO,Axis[dimI]);
-
 	}
+      
       sNum+=10;  // For exit
       SMap.addMatch(sNum,gridIndex+2+dimI*2);   // match 2,4 to x7,x8
     }
@@ -525,9 +518,15 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
   ELog::RegMethod RegA("ReactorGrid","getCellOrigin");
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
+
+  const double halfWidth=static_cast<double>(2.0*(i+1))-
+    static_cast<double>(NX+1);
+  const double halfDepth=static_cast<double>(2.0*(j+1))-
+    static_cast<double>(NY+1);
   
-  return Origin+X*(Width*(2.0*i-NX+1.0)/(2.0*NX))+
-    Y*(Depth*(2.0*j-NY+1.0)/(2.0*NY));
+  return Origin+
+    X*(Width*halfWidth/static_cast<double>(2*NX))+
+    Y*(Depth*halfDepth/static_cast<double>(2*NY));
 }
 
 
@@ -590,7 +589,7 @@ void
 ReactorGrid::createLinks()
   /*!
     Create the linked units
-   */
+  */
 {
   ELog::RegMethod RegA("ReactorGrid","createLinks");
 
@@ -635,6 +634,45 @@ ReactorGrid::fuelCentres() const
 }
 
 std::vector<int>
+ReactorGrid::getFuelCells(const Simulation& System,
+			  const size_t zaid) const
+  /*!
+    Get a comprehensive list of all cells
+    \param System :: Simualation to check cell existance
+    \param zaid :: isotope to check for in zaid
+    \return All cell numbers of fuel
+   */
+{
+  ELog::RegMethod RegA("ReactorGrid","getFuelCells");
+  const ModelSupport::objectRegister& OR= 
+    ModelSupport::objectRegister::Instance();
+  const ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+  
+  std::vector<int> cellOut;
+  for(long int i=0;i<static_cast<long int>(NX);i++)
+    {
+      for(long int j=0;j<static_cast<long int>(NY);j++)
+	{
+	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
+	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
+	  for(int index=cellBegin;index<=cellEnd;index++)
+	    {
+	      const MonteCarlo::Object* OPtr=
+		System.findQhull(index);
+	      if (OPtr)
+		{
+		  const int matN=OPtr->getMat();
+		  const MonteCarlo::Material& cellMat=DB.getMaterial(matN);
+		  if (cellMat.hasZaid(zaid,0,0))
+		    cellOut.push_back(index);
+		}
+	    }
+	}
+    }
+  return cellOut;
+}
+
+std::vector<int>
 ReactorGrid::getAllCells(const Simulation& System) const
   /*!
     Get a comprehensive list of all cells
@@ -651,8 +689,9 @@ ReactorGrid::getAllCells(const Simulation& System) const
     {
       for(long int j=0;j<static_cast<long int>(NY);j++)
 	{
-	  const int EOff=OR.getCell(Grid[i][j]->getItemKeyName());
-	  for(int index=EOff;index<EOff+10000;index++)
+	  const int cellBegin=OR.getCell(Grid[i][j]->getItemKeyName());
+	  const int cellEnd=OR.getLast(Grid[i][j]->getItemKeyName());
+	  for(int index=cellBegin;index<=cellEnd;index++)
 	    {
 	      if (System.existCell(index))
 		cellOut.push_back(index);
@@ -725,17 +764,19 @@ ReactorGrid::writeFuelXML(const std::string& FName)
 
 void
 ReactorGrid::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Object for origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("ReactorGrid","createAll");
   
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

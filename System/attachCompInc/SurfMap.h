@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/SurfMap.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #define attachSystem_SurfMap_h
 
 class Simulation;
+class HeadRule;
 
 namespace attachSystem
 {
@@ -47,39 +48,46 @@ class SurfMap : public BaseMap
   SurfMap& operator=(const SurfMap&);
   virtual ~SurfMap() {}     ///< Destructor
 
-  /// Renaming function
+
+  //@{
+  /*!
+    Rename transform functions to BaseMap
+    \param K :: Key name 
+    \param CN :: Offset index
+  */  
   void setSurf(const std::string& K,const int CN)
     { BaseMap::setItem(K,CN); }
       
-  /// Renaming function
   void setSurf(const std::string& K,const size_t Index,const int CN)
     { BaseMap::setItem(K,Index,CN); }
 
-  /// Renaming function 
   void setSurfs(const std::string& K,const int CNA,const int CNB)
     { BaseMap::setItems(K,CNA,CNB); }
 
-  /// Renaming function
   void addSurf(const std::string& K,const int CN)
     { BaseMap::addItem(K,CN); }
-  /// Renaming function
   void addSurfs(const std::string& K,const std::vector<int>& CN)
     { BaseMap::addItems(K,CN); }
-
-  /// Renaming function
+  
   int getSurf(const std::string& K) const
     { return BaseMap::getItem(K); }
-  /// Renaming function
   int getSurf(const std::string& K,const size_t Index) const
     { return BaseMap::getItem(K,Index); }
 
-  /// Renaming function
   std::vector<int> getSurfs(const std::string& K) const
     { return BaseMap::getItems(K); }
-  ///  Renaming function
   std::vector<int> getSurfs() const
     { return BaseMap::getItems(); }
-    
+  //@}
+
+  int getSignedSurf(const std::string&,const long int) const;
+
+  HeadRule getSurfRules(const std::string&) const;
+  HeadRule getSurfRule(const std::string&,const size_t =0) const;
+  HeadRule combine(const std::set<std::string>&) const;
+
+  std::string getSurfString(const std::string&) const;
+  std::string getSurfComplement(const std::string&) const;
 };
 
 }

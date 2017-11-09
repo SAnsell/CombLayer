@@ -66,12 +66,9 @@ EssPipeVariables(FuncDataBase& Control)
   ELog::RegMethod RegA("EssPipeVariables[F]","EssPipeVariables"); 
   
   const size_t nRad(4);
-  const double invarPipeHeight(30.0);
-  const double invarPipeLength(12.5);
 
   const double AlPPt3X(3.597);
   const double AlPPt3Y(22.7);
-  const double connectPipeLength(2.0);
 
   const std::vector<double> R({1.1, 1.3, 1.5, 1.8});
 

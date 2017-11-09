@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   test/testBoxLine.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ testBoxLine::testZigZag()
     \returns 0 on succes and -ve on failure
   */
 {
-  ELog::RegMethod RegA("testBoxLine","testJoin");
+  ELog::RegMethod RegA("testBoxLine","testZigZag");
   
   BoxLine AP("testBox");
 

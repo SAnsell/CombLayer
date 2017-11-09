@@ -3,7 +3,7 @@
  
  * File:   weightsInc/MarkovProcess.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,17 @@ class MarkovProcess
 {
  private:
 
+  
+  size_t nIteration;       ///< number of iterations
+
+  long int WX;             ///< WX size of WWG
+  long int WY;             ///< WY size of WWG 
+  long int WZ;             ///< WZ size of WWG
+
+  long int FSize;          ///< size of fluxField [square]
+  /// Array of interaction [initialCell][finalCell]
+  boost::multi_array<double,2> fluxField;
+  
  public:
 
   MarkovProcess();
@@ -63,7 +74,10 @@ class MarkovProcess
   MarkovProcess& operator=(const MarkovProcess&);
   ~MarkovProcess();
 
-  
+
+  void initializeData(const WWG&);
+  void computeMatrix(const Simulation&,const WWG&,const double,
+		     const double,const double);
     
 };
 

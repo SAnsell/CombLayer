@@ -3,7 +3,7 @@
  
  * File:   construct/LineShield.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
- ****************************************************************************/
+ *************************************************************************/
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -180,9 +180,10 @@ LineShield::removeFrontOverLap()
       index--;
       if (index>0)
         {
-          length-=segStep*index;
+	  const double LUnit=segStep*static_cast<double>(index);
+          length-=LUnit;
           nSeg-=index;
-          Origin+=Y*(index*segStep/2.0);
+          Origin+=Y*(LUnit/2.0);
           ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
                   <<index<<ELog::endDiag;
         }
@@ -283,7 +284,7 @@ LineShield::createSurfaces()
       ModelSupport::buildPlane(SMap,SI+2,Origin+Y*segLen,Y);
       SI+=10;
     }
-  
+
   int WI(shieldIndex);
   for(size_t i=0;i<nWallLayers;i++)
     {
@@ -448,7 +449,7 @@ LineShield::createLinks()
     }
   else
     {
-      FixedComp::setLinkSurf(0,backSurf,1,backCut,0);      
+      FixedComp::setLinkSurf(1,backSurf,1,backCut,0);      
       FixedComp::setConnect
         (1,SurInter::getLinePoint(Origin,Y,backSurf,backCut),Y);
     }
