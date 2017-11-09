@@ -194,15 +194,15 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addParse<double>("TopCakeMidH2Thick2","TopCakeMidH2Height2");
   Control.addVariable("TopCakeMidH2Mat2","Void");
 
-  Control.addVariable("TopCakeMidH2Height3",0.0);
-  Control.addVariable("TopCakeMidH2Depth3",0.0);
+  Control.addVariable("TopCakeMidH2Height3",0.3);
+  Control.addVariable("TopCakeMidH2Depth3",0.3);
   Control.addVariable("TopCakeMidH2Thick3",0.3);
   Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
   Control.addParse<double>("TopCakeTotalHeight",
-			   "TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2");
+			   "TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2+TopCakeMidH2Height3+TopCakeMidH2Depth3");
   Control.addParse<double>("TopCakeMidH2ZStep",
-			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
+			   "-TopCakeTotalHeight/2.0");
 
   for ( const std::string& s : LR)
     {
@@ -275,7 +275,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addParse<double>("TopBoxTotalHeight",
 			   "TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2+TopBoxMidH2Height3+TopBoxMidH2Depth3");
   Control.addParse<double>("TopBoxMidH2ZStep",
-			   "-(TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2+TopBoxMidH2Height3+TopBoxMidH2Depth3)/2.0");
+			   "-TopBoxTotalHeight/2.0");
 
   for ( const std::string& s : LR)
     {
