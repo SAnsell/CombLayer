@@ -376,6 +376,7 @@ ButterflyModerator::getLeftFarExclude() const
   /*!
     Get the outer exclude surface without top/base
     (uses the standard link points)
+    x>0 region
     \return outer sidewards link exclude
   */
 {
@@ -392,6 +393,7 @@ ButterflyModerator::getRightFarExclude() const
   /*!
     Get the outer exclude surface without top/base
     (uses the standard link points)
+    x<0 region
     \return outer sidewards link exclude
   */
 {
@@ -409,6 +411,7 @@ ButterflyModerator::getLeftExclude() const
   /*!
     Get the complete exclude surface without top/base
     (uses the standard link points)
+    x>0 region
     \return full sidewards link exclude
   */
 {
@@ -428,6 +431,7 @@ ButterflyModerator::getRightExclude() const
   /*!
     Get the complete exclude surface without top/base
     (uses the standard link points) [+ve Y]
+    x<0 region
     \return full sidewards link exclude
   */
 {

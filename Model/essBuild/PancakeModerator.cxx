@@ -301,7 +301,7 @@ PancakeModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Origin from center
 
-  FixedComp::setLinkCopy(4,*MidH2,4); ELog::EM << "check numbers" << ELog::endDiag;
+  FixedComp::setLinkCopy(4,*MidH2,4);
   FixedComp::setLinkCopy(5,*MidH2,5);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
@@ -397,7 +397,7 @@ PancakeModerator::getLeftExclude() const
   ELog::RegMethod RegA("PancakeModerator","getLeftExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(3); ELog::EM << "check number" << ELog::endDiag;
+  Out+=MidH2->getSignedLinkString(1);
   Out+= getLeftFarExclude();
 
   return Out;
@@ -414,7 +414,7 @@ PancakeModerator::getRightExclude() const
   ELog::RegMethod RegA("PancakeModerator","getRightExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(4); ELog::EM << "check number" << ELog::endDiag;
+  Out+=MidH2->getSignedLinkString(2);
   Out+= getRightFarExclude();
 
   return Out;
