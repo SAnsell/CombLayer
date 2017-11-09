@@ -217,8 +217,8 @@ sourceSelection(Simulation& System,
 	"Beam :: Test Beam [Radial] source \n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
-	
-  if (!IParam.flag("sdefVoid") || !sName.empty())
+
+  if (!IParam.flag("sdefVoid") && !sName.empty())
     System.setSourceName(sName);
   
   return;

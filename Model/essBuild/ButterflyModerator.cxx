@@ -85,6 +85,7 @@ ButterflyModerator::ButterflyModerator(const std::string& Key) :
   essSystem::EssModBase(Key,12),
   flyIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(flyIndex+1),
+  bfType("BF1"),
   LeftUnit(new H2Wing(Key,"LeftLobe",90.0)),
   RightUnit(new H2Wing(Key,"RightLobe",270.0)),
   MidWater(new MidWaterDivider(Key,"MidWater")),
@@ -172,11 +173,7 @@ ButterflyModerator::populate(const FuncDataBase& Control)
 
   EssModBase::populate(Control);
   
-  bfType=Control.EvalDefVar<int>(keyName+"Type", 2);
-  if ((bfType != 1)  && (bfType != 2))
-    throw ColErr::RangeError<double>(bfType, 1, 2, "bfType");
-
-
+  bfType=Control.EvalDefVar<std::string>(keyName+"Type", "BF1");
   totalHeight=Control.EvalVar<double>(keyName+"TotalHeight");
   return;
 }

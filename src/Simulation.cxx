@@ -928,27 +928,6 @@ Simulation::setMaterialDensity(const int cellNum)
   return 0;
 }
 
-Geometry::Transform*
-Simulation::createSourceTransform() 
-  /*!
-    Create an unused transform for the source 
-    term in the case of non-orthoganal rotation
-    \return Transform ptr [never zero]
-   */
-{
-  ELog::RegMethod RegA("Simulation","createSourceTransform");
-
-  int index(1);
-  while(TList.find(index)!=TList.end())
-    index++;
-  std::pair<TransTYPE::iterator,bool> TX=
-    TList.insert(TransTYPE::value_type(index,Geometry::Transform()));
-
-  TX.first->second.setName(index);
-  return &TX.first->second;          //*(TX.first)
-}
-
-
 void
 Simulation::processCellsImp()
   /*!
@@ -1435,6 +1414,17 @@ Simulation::addTally(const tallySystem::Tally& TRef)
 }
 
 void
+Simulation::setSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
+  */
+{
+  sourceName=S;
+  return;
+}
+
+void
 Simulation::setForCinder()
   /*!
     Assuming that the cell tallies have
@@ -1769,6 +1759,7 @@ Simulation::writeSource(std::ostream& OX) const
   OX<<"c -------------------------------------------------------"<<std::endl;
   OX<<"c --------------- SOURCE CARDS --------------------------"<<std::endl;
   OX<<"c -------------------------------------------------------"<<std::endl;
+
   if (!sourceName.empty())
     {
       SDef::SourceBase* SPtr=

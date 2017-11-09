@@ -173,12 +173,10 @@ class Simulation
   physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
 
   /// set Source name
-  void setSourceName(const std::string& S) { sourceName=S; }
-  
+  void setSourceName(const std::string&);
+
   const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells
-  Geometry::Transform* createSourceTransform();
-  
 
   int removeComplements(); 
 
