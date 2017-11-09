@@ -174,8 +174,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeZAngle",0.0);
   Control.addVariable("TopCakeXYAngle",90.0);
   Control.addVariable("TopCakeWallMat","Aluminium");
-  Control.addVariable("TopCakeWallDepth",0.0);
-  Control.addVariable("TopCakeWallHeight",0.3);
 
   Control.addVariable("TopCakeMidH2NLayers",4);
   
@@ -202,7 +200,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
   Control.addParse<double>("TopCakeTotalHeight",
-			   "TopCakeWallHeight+TopCakeWallDepth+TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2");
+			   "TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2");
   Control.addParse<double>("TopCakeMidH2ZStep",
 			   "-(TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Depth2+TopCakeMidH2Height2+TopCakeMidH2Depth3+TopCakeMidH2Height3)/2.0-0.15");
 
@@ -245,8 +243,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopBoxZAngle",0.0);
   Control.addVariable("TopBoxXYAngle",90.0);
   Control.addVariable("TopBoxWallMat","Aluminium");
-  Control.addVariable("TopBoxWallDepth",0.0);
-  Control.addVariable("TopBoxWallHeight",0.3);
 
   Control.addVariable("TopBoxMidH2NLayers",4);
 
@@ -272,14 +268,14 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.addVariable("TopBoxMidH2Length3",0.3);
   Control.addParse<double>("TopBoxMidH2Width3","TopBoxMidH2Length3");
-  Control.addVariable("TopBoxMidH2Height3",0.0);
+  Control.addVariable("TopBoxMidH2Height3",0.3);
   Control.addParse<double>("TopBoxMidH2Depth3", "TopBoxMidH2Height3");
   Control.addVariable("TopBoxMidH2Mat3","Aluminium");
 
   Control.addParse<double>("TopBoxTotalHeight",
-			   "TopBoxWallHeight+TopBoxWallDepth+TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2");
+			   "TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2+TopBoxMidH2Height3+TopBoxMidH2Depth3");
   Control.addParse<double>("TopBoxMidH2ZStep",
-			   "-(TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Depth2+TopBoxMidH2Height2+TopBoxMidH2Depth3+TopBoxMidH2Height3)/2.0-0.15");
+			   "-(TopBoxMidH2Height0+TopBoxMidH2Depth0+TopBoxMidH2Height1+TopBoxMidH2Depth1+TopBoxMidH2Height2+TopBoxMidH2Depth2+TopBoxMidH2Height3+TopBoxMidH2Depth3)/2.0");
 
   for ( const std::string& s : LR)
     {
