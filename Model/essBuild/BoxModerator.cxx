@@ -451,7 +451,6 @@ BoxModerator::createAll(Simulation& System,
   LeftWater->createAll(System,*MidH2,4,Exclude);
   RightWater->createAll(System,*MidH2,3,Exclude);
 
-  Origin=MidH2->getCentre();
   createExternal();  // makes intermediate
 
   createObjects(System);
