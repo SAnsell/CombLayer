@@ -207,11 +207,6 @@ EssButterflyModerator(FuncDataBase& Control)
 
   // onion cooling
   Control.addVariable("TopCakeMidH2FlowGuideType","Onion");
-  Control.addVariable("TopCakeMidH2OnionCoolingXStep", 0);
-  Control.addVariable("TopCakeMidH2OnionCoolingYStep", 0);
-  Control.addVariable("TopCakeMidH2OnionCoolingZStep", 0.0);
-  Control.addVariable("TopCakeMidH2OnionCoolingXYangle",0.0); 
-  Control.addVariable("TopCakeMidH2OnionCoolingZangle",0.0);
   Control.addParse<double>("TopCakeMidH2OnionCoolingHeight",
 			   "TopCakeMidH2Height0+TopCakeMidH2Depth0");
   Control.addVariable("TopCakeMidH2OnionCoolingWallThick", 0.3);

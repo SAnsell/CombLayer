@@ -38,7 +38,7 @@ namespace essSystem
 
 class DiskPreMod : public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -47,7 +47,6 @@ class DiskPreMod : public attachSystem::ContainedComp,
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double zStep;                   ///< Step away from target
   double outerRadius;             ///< Outer radius of Be Zone
 
   std::vector<double> radius;         ///< cylinder radii [additive]

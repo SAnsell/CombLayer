@@ -83,7 +83,7 @@ namespace essSystem
 DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,9),
+  attachSystem::FixedOffset(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
@@ -102,7 +102,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
@@ -129,7 +129,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -177,10 +177,11 @@ DiskPreMod::populate(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
+  FixedOffset::populate(Control);
+
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
   outerRadius=outRadius;
 
   // clear stuff 
@@ -248,7 +249,9 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
       Z*=-1;
     }
   const double D=(depth.empty()) ? 0.0 : depth.back();
-  applyShift(0,0,zStep+D);
+
+  zStep += D;
+  applyOffset();
 
   return;
 }
