@@ -62,10 +62,7 @@ EssButterflyModerator(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssButterflyModerator");
 
-  const std::vector<std::string> TB = {"Top", "Low"};
-  const std::vector<std::string> LR = {"Left", "Right"};
-  
-  // TOP MODERATOR
+  // Top Butterfly
 
   Control.addVariable("TopFlyXStep",0.0);  
   Control.addVariable("TopFlyYStep",0.0);  
@@ -153,7 +150,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyMidWaterWallMat","Aluminium");
   Control.addVariable("TopFlyMidWaterModTemp",300.0);
 
-  // Low fly
+  // Low Butterfly
   Control.copyVarSet("TopFly","LowFly");
   Control.addVariable("LowFlyTotalHeight",8.1-0.4);
   Control.addVariable("LowFlyZAngle", 180);
@@ -166,12 +163,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("LowFlyFlowGuideBaseThick",0.4);
   Control.addVariable("LowFlyLeftLobeMat1","Aluminium20K");
 
-
   // Pancake
-  Control.addVariable("TopCakeXStep",0.0);  
-  Control.addVariable("TopCakeYStep",0.0);  
-  Control.addVariable("TopCakeZStep",0.0);
-  Control.addVariable("TopCakeZAngle",0.0);
   Control.addVariable("TopCakeXYAngle",90.0);
   Control.addVariable("TopCakeWallMat","Aluminium");
 
@@ -195,26 +187,23 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2Mat2","Void");
 
   Control.addVariable("TopCakeMidH2Height3",0.3);
-  Control.addVariable("TopCakeMidH2Depth3",0.3);
-  Control.addVariable("TopCakeMidH2Thick3",0.3);
+  Control.addParse<double>("TopCakeMidH2Depth3","TopCakeMidH2Height3");
+  Control.addParse<double>("TopCakeMidH2Thick3","TopCakeMidH2Height3");
   Control.addVariable("TopCakeMidH2Mat3","Aluminium");
 
   Control.addParse<double>("TopCakeTotalHeight",
 			   "TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2+TopCakeMidH2Height3+TopCakeMidH2Depth3");
-  Control.addParse<double>("TopCakeMidH2ZStep",
-			   "-TopCakeTotalHeight/2.0");
+  Control.addParse<double>("TopCakeMidH2ZStep","-TopCakeTotalHeight/2.0");
 
-  for ( const std::string& s : LR)
-    {
-      Control.addVariable("TopCake"+s+"WaterWidth",30);  
-      Control.addVariable("TopCake"+s+"WaterWallThick",0.347);
-      Control.addVariable("TopCake"+s+"WaterCutAngle",30.0);
-      Control.addVariable("TopCake"+s+"WaterCutWidth",6);
-      Control.addVariable("TopCake"+s+"WaterModMat","H2O");
-      Control.addVariable("TopCake"+s+"WaterWallMat","Aluminium");
-      Control.addVariable("TopCake"+s+"WaterModTemp",300.0);
-      Control.addVariable("TopCake"+s+"WaterMidWallThick",0.0);
-    }
+  Control.addVariable("TopCakeLeftWaterWidth",30);
+  Control.addVariable("TopCakeLeftWaterWallThick",0.347);
+  Control.addVariable("TopCakeLeftWaterCutAngle",30.0);
+  Control.addVariable("TopCakeLeftWaterCutWidth",6);
+  Control.addVariable("TopCakeLeftWaterModMat","H2O");
+  Control.addVariable("TopCakeLeftWaterWallMat","Aluminium");
+  Control.addVariable("TopCakeLeftWaterModTemp",300.0);
+  Control.addVariable("TopCakeLeftWaterMidWallThick",0.0);
+  Control.copyVarSet("TopCakeLeftWater", "TopCakeRightWater");
 
   // onion cooling
   Control.addVariable("TopCakeMidH2FlowGuideType","Onion");
@@ -223,8 +212,9 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2OnionCoolingZStep", 0.0);
   Control.addVariable("TopCakeMidH2OnionCoolingXYangle",0.0); 
   Control.addVariable("TopCakeMidH2OnionCoolingZangle",0.0);
-  Control.addVariable("TopCakeMidH2OnionCoolingHeight", 3); // should be same as moderator height
-  Control.addVariable("TopCakeMidH2OnionCoolingWallThick", 0.3); // in addition to Be
+  Control.addParse<double>("TopCakeMidH2OnionCoolingHeight",
+			   "TopCakeMidH2Height0+TopCakeMidH2Depth0");
+  Control.addVariable("TopCakeMidH2OnionCoolingWallThick", 0.3);
   Control.addVariable("TopCakeMidH2OnionCoolingWallMat",   "Aluminium20K");
   Control.addVariable("TopCakeMidH2OnionCoolingWallTemp",   20.0);
   Control.addVariable("TopCakeMidH2OnionCoolingNRings", 2);
@@ -234,7 +224,6 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopCakeMidH2OnionCoolingRadius2", 8);
   Control.addVariable("TopCakeMidH2OnionCoolingGateWidth2", 2);
   Control.addVariable("TopCakeMidH2OnionCoolingGateLength2", 1.5);
-
 
   // Box moderator
   Control.addVariable("TopBoxXYAngle",90.0);
@@ -250,7 +239,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopBoxMidH2Temp0",20.0);
 
   Control.addVariable("TopBoxMidH2Length1",0.3);
-  Control.addParse<double>("TopBoxMidH2Width1","TopBoxMidH2Length1");
+  Control.addParse<double>("TopBoxMidH2Width1", "TopBoxMidH2Length1");
   Control.addParse<double>("TopBoxMidH2Height1","TopBoxMidH2Length1");
   Control.addParse<double>("TopBoxMidH2Depth1", "TopBoxMidH2Height1");
   Control.addVariable("TopBoxMidH2Mat1","Aluminium20K");
