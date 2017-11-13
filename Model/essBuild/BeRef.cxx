@@ -454,8 +454,8 @@ BeRef::createAll(Simulation& System,
   insertObjects(System);
 
   if (engActive) {
-    InnerCompTop->createAll(System, *this, "topBe", 10, 7);
-    InnerCompLow->createAll(System, *this, "lowBe",  9, 6);
+    InnerCompTop->createAll(System, *this, "topBe", 11, 8);
+    InnerCompLow->createAll(System, *this, "lowBe",  10, 7);
   }
 
   return;

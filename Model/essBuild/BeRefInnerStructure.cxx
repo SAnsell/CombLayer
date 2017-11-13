@@ -220,8 +220,8 @@ namespace essSystem
     ELog::RegMethod RegA("BeRefInnerStructure","layerProcess");
     if (nLayers>1)
       {
-	const int pS = Reflector.getSignedLinkSurf(lpS+1);
-	const int sS = Reflector.getSignedLinkSurf(lsS+1);
+	const int pS = Reflector.getSignedLinkSurf(lpS);
+	const int sS = Reflector.getSignedLinkSurf(lsS);
 
 	const attachSystem::CellMap* CM = dynamic_cast<const attachSystem::CellMap*>(&Reflector);
 	MonteCarlo::Object* beObj(0);
@@ -253,8 +253,8 @@ namespace essSystem
 	surroundRule.setSurfPair(SMap.realSurf(pS),
 				 SMap.realSurf(sS));
 
-	std::string OutA = Reflector.getSignedLinkString(lpS+1);
-	std::string OutB = Reflector.getSignedLinkString(-(lsS+1));
+	std::string OutA = Reflector.getSignedLinkString(lpS);
+	std::string OutB = Reflector.getSignedLinkString(-lsS);
 
 	surroundRule.setInnerRule(OutA);
 	surroundRule.setOuterRule(OutB);
