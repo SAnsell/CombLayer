@@ -166,12 +166,10 @@ DiskPreMod::~DiskPreMod()
 
 void
 DiskPreMod::populate(const FuncDataBase& Control,
-		     const double zShift,
-		     const double outRadius)
+		     const double& outRadius)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height 
     \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
@@ -530,21 +528,19 @@ DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex,
 		      const bool zRotate,
-		      const double VOffset,
-		      const double ORad)
+		      const double& ORad)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
     \param sideIndex :: side of object
     \param zRotate :: Rotate to -ve Z
-    \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  populate(System.getDataBase(),VOffset,ORad);
+  populate(System.getDataBase(),ORad);
   createUnitVector(FC,sideIndex,zRotate);
 
   createSurfaces();

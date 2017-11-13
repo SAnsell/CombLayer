@@ -65,7 +65,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::shared_ptr<OnionCooling> onion;
   std::string sideRule; ///< side rule
 
-  void populate(const FuncDataBase&,const double,const double);
+  void populate(const FuncDataBase&,const double&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
 
@@ -93,7 +93,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double,const double);
+		 const long int,const bool,const double&);
 
 };
 

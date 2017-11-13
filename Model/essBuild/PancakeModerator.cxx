@@ -441,7 +441,7 @@ PancakeModerator::createAll(Simulation& System,
   createUnitVector(orgFC,orgIndex,axisFC,axisIndex);
   createSurfaces();
 
-  MidH2->createAll(System,*this,0,false,0.0,0.0);
+  MidH2->createAll(System,*this,0,false,0.0);
 
   const std::string Exclude=
     ModelSupport::getComposite(SMap,flyIndex," -7 5 -6 ");
