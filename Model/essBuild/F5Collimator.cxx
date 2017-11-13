@@ -70,8 +70,8 @@ namespace essSystem
     colIndex(A.colIndex), cellIndex(A.cellIndex),
     delta(A.delta),height(A.height),length(A.length),width(A.width),
     wall(A.wall),viewWidth(A.viewWidth),LinkPoint(A.LinkPoint),
-    radius(A.radius),theta(A.theta),vecFP(A.vecFP),range(A.range),
-    lpAlgorithm(A.lpAlgorithm)
+    radius(A.radius),theta(A.theta),lpAlgorithm(A.lpAlgorithm),
+    vecFP(A.vecFP),range(A.range)
   {
   }
 

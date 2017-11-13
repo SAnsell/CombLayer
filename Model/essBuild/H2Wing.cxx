@@ -119,8 +119,8 @@ H2Wing::H2Wing(const H2Wing& A) :
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   baseName(A.baseName),
-  bfType(A.bfType),
   wingIndex(A.wingIndex),cellIndex(A.cellIndex),
+  bfType(A.bfType),
   InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
   modMat(A.modMat),modTemp(A.modTemp)
