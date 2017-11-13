@@ -493,6 +493,7 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowInnerStructureActive", 1);
       // The following numbers are from LZ drawing 2017-10-10
       // and discussions with Marc 2017-10-11
+      // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/reflector/water-layers-in-lower-be-reflector/view
       const double BeRefDepth(57.7); // 30+51+30+9+30+30+30+90+30+90+30+127
       const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
       A.setVar("BeRefDepth", BeRefDepth+Ztop);
@@ -514,19 +515,19 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowInnerStructureBaseLen10", 9.0/BeRefDepth);
       A.setVar("BeRefLowInnerStructureBaseLen11", 3.0/BeRefDepth);
       A.setVar("BeRefLowInnerStructureBaseLen12", 12.7/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureMat0", "H2O");
-      A.setVar("BeRefLowInnerStructureMat1", "SS316L_40H2O"); // email from Marc 13 Oct 2017
-      A.setVar("BeRefLowInnerStructureMat2", "H2O");
-      A.setVar("BeRefLowInnerStructureMat3", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat4", "H2O");
-      A.setVar("BeRefLowInnerStructureMat5", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat6", "H2O");
-      A.setVar("BeRefLowInnerStructureMat7", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat8", "H2O");
-      A.setVar("BeRefLowInnerStructureMat9", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat10", "H2O");
-      A.setVar("BeRefLowInnerStructureMat11", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat12", "H2O");
+      // 40% water fraction based on email from Marc 13 Oct 2017
+      A.setVar("BeRefLowInnerStructureMat0", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat1", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat2", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat3", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat4", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat5", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat6", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat7", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat8", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat9", "SS316L");
+      A.setVar("BeRefLowInnerStructureMat10", "SS316L_40H2O");
+      A.setVar("BeRefLowInnerStructureMat11", "SS316L");
       // Since there is no bunkers, we have to 
       // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
       A.setVar("F5DefaultLength", 440.0);
