@@ -30,6 +30,7 @@
 #include <list>
 #include <map>
 #include <string>
+#include <numeric>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -491,30 +492,25 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowRefMat", "SS316L");
       A.setVar("BeRefLowWallMat", "AluminiumBe");
       A.setVar("BeRefLowInnerStructureActive", 1);
-      // The following numbers are from LZ drawing 2017-10-10
+      // The 'depth' array numbers are from LZ drawing 2017-10-10
       // and discussions with Marc 2017-10-11
       // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/reflector/water-layers-in-lower-be-reflector/view
-      const double BeRefDepth(57.7); // 30+51+30+9+30+30+30+90+30+90+30+127
+      std::vector<double> depth({3.0,5.1,3.0,0.9,3.0,3.0,3.0,9.0,3.0,9.0,3.0,12.7});
+      const double BeRefDepth(std::accumulate(depth.begin(), depth.end(), 0.0));
       const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
       A.setVar("BeRefDepth", BeRefDepth+Ztop);
-      A.setVar("BulkDepth1", BeRefDepth+Ztop+1); // a bit bigger to make some clearance
-
+      A.setVar("BulkDepth1", BeRefDepth+Ztop+1.0); // a bit bigger to make some clearance
       A.setVar("BeRefVoidCylRadius", 15.0);
-      A.setVar("BeRefVoidCylDepth", 3.0+5.1+3.0); // first 3 InnerStructure layers
+      A.setVar("BeRefVoidCylDepth", std::accumulate(depth.begin(),
+						    depth.begin()+3, 0.0));
 
-      A.setVar("BeRefLowInnerStructureNLayers", 12);
-      A.setVar("BeRefLowInnerStructureBaseLen1", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen2", 5.1/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen3", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen4", 0.9/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen5", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen6", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen7", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen8", 9.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen9", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen10", 9.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen11", 3.0/BeRefDepth);
-      A.setVar("BeRefLowInnerStructureBaseLen12", 12.7/BeRefDepth);
+      const size_t nLayers(depth.size());
+      A.setVar("BeRefLowInnerStructureNLayers", nLayers);
+
+      for (size_t i=0; i<nLayers; i++)
+	  A.setVar("BeRefLowInnerStructureBaseLen" + std::to_string(i+1),
+		   depth[i]/BeRefDepth);
+
       // 40% water fraction based on email from Marc 13 Oct 2017
       A.setVar("BeRefLowInnerStructureMat0", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat1", "SS316L");
@@ -528,9 +524,6 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       A.setVar("BeRefLowInnerStructureMat9", "SS316L");
       A.setVar("BeRefLowInnerStructureMat10", "SS316L_40H2O");
       A.setVar("BeRefLowInnerStructureMat11", "SS316L");
-      // Since there is no bunkers, we have to 
-      // prolong collimators until they are emerged into ShutterBay, otherwise a neutron crosses imp=0 cell
-      A.setVar("F5DefaultLength", 440.0);
     } else
     throw ColErr::InvalidLine(single,"Either 'single' or nothing are supported in defaultConfig");
 
@@ -569,7 +562,6 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
   A.setVar("DBunkerRoofMat0", "Void");
   A.setVar("DBunkerWallMat0", "Void");
   A.setVar("DBunkerWallMat", "Void");
-
 
   // simplify the curtain
   A.setVar("CurtainNBaseLayers", 1);
