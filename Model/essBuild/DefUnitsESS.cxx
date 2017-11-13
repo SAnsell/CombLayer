@@ -532,36 +532,20 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
 
   A.setOption("matDB", "neutronics");
   A.setOption("physModel", "BD");
-  
+
   // simplify the bunkers
   A.setOption("bunker", "noPillar");
-  A.setVar("ABunkerWallNBasic", 1);
-  A.setVar("ABunkerRoofNBasicVert", 1);
-  A.setVar("ABunkerNSectors", 1);
-  A.setVar("ABunkerRoofMat0", "Void");
-  A.setVar("ABunkerWallMat0", "Void");
-  A.setVar("ABunkerWallMat", "Void");
 
-  A.setVar("BBunkerWallNBasic", 1);
-  A.setVar("BBunkerRoofNBasicVert", 1);
-  A.setVar("BBunkerNSectors", 1);
-  A.setVar("BBunkerRoofMat0", "Void");
-  A.setVar("BBunkerWallMat0", "Void");
-  A.setVar("BBunkerWallMat", "Void");
-
-  A.setVar("CBunkerWallNBasic", 1);
-  A.setVar("CBunkerRoofNBasicVert", 1);
-  A.setVar("CBunkerNSectors", 1);
-  A.setVar("CBunkerRoofMat0", "Void");
-  A.setVar("CBunkerWallMat0", "Void");
-  A.setVar("CBunkerWallMat", "Void");
-
-  A.setVar("DBunkerWallNBasic", 1);
-  A.setVar("DBunkerRoofNBasicVert", 1);
-  A.setVar("DBunkerNSectors", 1);
-  A.setVar("DBunkerRoofMat0", "Void");
-  A.setVar("DBunkerWallMat0", "Void");
-  A.setVar("DBunkerWallMat", "Void");
+  std::vector<std::string> bunkerName({"A","B","C","D"});
+  for (const std::string n: bunkerName)
+    {
+      A.setVar(n+"BunkerWallNBasic", 1);
+      A.setVar(n+"BunkerRoofNBasicVert", 1);
+      A.setVar(n+"BunkerNSectors", 1);
+      A.setVar(n+"BunkerRoofMat0", "Void");
+      A.setVar(n+"BunkerWallMat0", "Void");
+      A.setVar(n+"BunkerWallMat", "Void");
+    }
 
   // simplify the curtain
   A.setVar("CurtainNBaseLayers", 1);
