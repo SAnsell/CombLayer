@@ -65,6 +65,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::shared_ptr<OnionCooling> onion;
   std::string sideRule; ///< side rule
 
+  using FixedOffset::populate;
   void populate(const FuncDataBase&,const double&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
