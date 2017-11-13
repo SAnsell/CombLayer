@@ -507,23 +507,14 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       const size_t nLayers(depth.size());
       A.setVar("BeRefLowInnerStructureNLayers", nLayers);
 
+      // 40% water fraction based on email from Marc 13 Oct 2017
       for (size_t i=0; i<nLayers; i++)
+	{
 	  A.setVar("BeRefLowInnerStructureBaseLen" + std::to_string(i+1),
 		   depth[i]/BeRefDepth);
-
-      // 40% water fraction based on email from Marc 13 Oct 2017
-      A.setVar("BeRefLowInnerStructureMat0", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat1", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat2", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat3", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat4", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat5", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat6", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat7", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat8", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat9", "SS316L");
-      A.setVar("BeRefLowInnerStructureMat10", "SS316L_40H2O");
-      A.setVar("BeRefLowInnerStructureMat11", "SS316L");
+	  A.setVar("BeRefLowInnerStructureMat" + std::to_string(i),
+		   (i%2) ? "SS316L": "SS316L_40H2O");
+	}
     } else
     throw ColErr::InvalidLine(single,"Either 'single' or nothing are supported in defaultConfig");
 
