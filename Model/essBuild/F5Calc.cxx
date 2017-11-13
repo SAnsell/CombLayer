@@ -69,6 +69,7 @@ F5Calc::operator=(const F5Calc& a)
       A=a.A;
       M=a.M;
     }
+  return *this;
 }
 F5Calc::~F5Calc()
   /*!
