@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -180,7 +181,7 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("BeamSource","createSource");
-
+  
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
@@ -260,7 +261,22 @@ BeamSource::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("BeamSource","write");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  boost::format fFMT("%1$11.6g%|14t|");
+
+  const double phi=180.0*acos(Y[0])/M_PI;
+  
+  OX<<"  s-type =  1        # axial source \n";
+  OX<<"  r0 =   "<<(fFMT % radius)   <<"   # radius [cm]\n";
+  OX<<"  x0 =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
+  OX<<"  y0 =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
+  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  miniumu of z-axis [cm]\n";
+  OX<<"  z1 =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
+  OX<<" dir =   "<<(fFMT % Y[2])     <<" dir cosine direction of Z\n";
+  OX<<" phi =   "<<(fFMT % phi)      <<" phi angle to X axis [deg]\n";
+  if (angleSpread>Geometry::zeroTol)
+    OX<<" dom =   "<<(fFMT % angleSpread)<<" solid angle to X axis [deg]\n";
+
+  OX<<std::endl;
   return;
 }
 

@@ -69,7 +69,7 @@ PhysicsCards::PhysicsCards() :
   RAND(new nameCard("RAND",0)),
   PTRAC(new nameCard("PTRAC",0)),
   dbCard(new nameCard("dbcn",1)),
-  voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
+  voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol"),ExtCard(new ExtControl),
   PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
@@ -119,7 +119,7 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   RAND(new nameCard(*A.RAND)), PTRAC(new nameCard(*A.PTRAC)),
   dbCard(new nameCard(*A.dbCard)),
   Basic(A.Basic),mode(A.mode),
-  voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
+  voidCard(A.voidCard),wImpOut(A.wImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
   PCards(),LEA(A.LEA),
   Volume(A.Volume),
@@ -214,6 +214,31 @@ PhysicsCards::clearAll()
   return;
 }
 
+void
+PhysicsCards::setWImpFlag(const std::string& particleType)
+  /*!
+    Set the imp than are excluded because they have 
+    a wcell/wwg mesh
+    \param particleType :: particle type
+  */
+{
+  wImpOut.insert(particleType);
+  return;
+}
+
+bool
+PhysicsCards::hasWImpFlag(const std::string& particleType) const
+  /*!
+    Set the imp than are excluded because they have 
+    a wcell/wwg mesh
+    \param particleType :: particle type
+    \return true if particle exists
+  */
+{
+  return (wImpOut.find(particleType) == wImpOut.end()) ? 0 : 1;
+}
+
+  
 void
 PhysicsCards::addHistpCells(const std::vector<int>& AL)
   /*!
@@ -383,35 +408,6 @@ PhysicsCards::processCard(const std::string& Line)
       return 1;
     }
   return 1;
-/*
-  // ext card
-  pos=Comd.find("ext:");
-  if (pos!=std::string::npos)
-    {
-      Comd.erase(0,pos+4);
-      // Ugly hack to get all the a,b,c,d items 
-      // since I can't think of the regular expression
-      size_t index;
-      for(index=0;index<Comd.length() && !isspace(Comd[index]);index++)
-	if (Comd[index]!=',')
-	  ExtCard->addElm(std::string(1,Comd[index]));
-      // NOW HAVE PROBLEM BECAUSE MULTI-LINE
-      extCell=1;
-      if (ExtCard->addUnitList(extCell,Comd))
-	return 1;
-      // drops through to further processing
-    }
-
-  if (extCell)
-    {
-      if (ExtCard->addUnitList(extCell,Comd))
-	return 1;
-    }
-	
-  // Component:
-  Basic.push_back(Line);
-  return 1;
-*/
 }
 
 void
@@ -1048,11 +1044,10 @@ PhysicsCards::write(std::ostream& OX,
   PTRAC->write(OX);
   
   mode.write(OX);
-  Volume.write(OX,cellOutOrder);
+  Volume.write(OX,std::set<std::string>(),cellOutOrder);
   for(const PhysImp& PI : ImpCards)
     {
-      if (nImpOut!=1 || !PI.hasElm("n"))
-	PI.write(OX,cellOutOrder);
+      PI.write(OX,wImpOut,cellOutOrder);
     }
   
   PWTCard->write(OX,cellOutOrder,voidCells);

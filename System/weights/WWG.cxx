@@ -317,8 +317,6 @@ WWG::writeWWINP(const std::string& FName) const
     StrFunc::writeLine(OX,E,itemCnt,6);
   if (itemCnt!=0)
     OX<<std::endl;
-  itemCnt=0;
-
   WMesh.writeWWINP(OX);
   
   OX.close();

@@ -113,7 +113,8 @@ SimPHITS::SimPHITS() : Simulation()
 {}
 
 
-SimPHITS::SimPHITS(const SimPHITS& A) : Simulation(A)
+SimPHITS::SimPHITS(const SimPHITS& A) :
+  Simulation(A)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -323,9 +324,9 @@ SimPHITS::writePhysics(std::ostream& OX) const
   PhysPtr->writePHITS(OX);
 
 
-  if (WM.hasParticle('n'))
+  if (WM.hasParticle("n"))
     {
-      const WeightSystem::WForm* NWForm=WM.getParticle('n');
+      const WeightSystem::WForm* NWForm=WM.getParticle("n");
       NWForm->writePHITSHead(OX);
     }
   

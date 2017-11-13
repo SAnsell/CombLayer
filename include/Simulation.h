@@ -146,7 +146,6 @@ class Simulation
   void resetAll();
   void readMaster(const std::string&);   
   int applyTransforms();  
-  void populateWCells();
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
 

@@ -1116,27 +1116,6 @@ Simulation::populateCells(const std::vector<int>& cellVec)
   return 0;
 }
 
-void
-Simulation::populateWCells()
-  /*!
-    Once Qhull objects are build the Weight
-    system can be populated with density/temp
-    info etc. This does not do Energy or Weight
-    trace.
-  */
-{
-  ELog::RegMethod RegA("Simulation","populateWCells");
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  
-  // char:WForm
-  WeightSystem::weightManager::CtrlTYPE::iterator mc;
-  for(mc=WM.WMap.begin();mc!=WM.WMap.end();mc++)
-    mc->second->populateCells(OList);
-	
-  return;
-}
-
 int
 Simulation::applyTransforms()
   /*! 

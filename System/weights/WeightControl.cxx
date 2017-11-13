@@ -93,6 +93,7 @@ WeightControl::WeightControl() :
 }
 
 WeightControl::WeightControl(const WeightControl& A) : 
+  activeParticles(A.activeParticles),
   energyCut(A.energyCut),scaleFactor(A.scaleFactor),
   weightPower(A.weightPower),
   density(A.density),r2Length(A.r2Length),r2Power(A.r2Power),
@@ -114,6 +115,7 @@ WeightControl::operator=(const WeightControl& A)
 {
   if (this!=&A)
     {
+      activeParticles=A.activeParticles;
       energyCut=A.energyCut;
       scaleFactor=A.scaleFactor;
       weightPower=A.weightPower;
@@ -295,6 +297,33 @@ WeightControl::processPtString(std::string ptStr,
 
   
 void
+WeightControl::procParticles(const mainSystem::inputParam& IParam)
+  /*!
+    Extract the particles used for the weight system
+    \param IParam :: input param
+  */
+{
+  ELog::RegMethod RegA("weightControl","procParticles");
+
+  activeParticles.clear();
+
+  const size_t nItem=IParam.itemCnt("weightParticles",0);
+  if (!nItem) activeParticles.insert("n");
+  
+  std::string PList;
+  for(size_t index=0;index<nItem;index++)
+    {
+      PList=IParam.getValue<std::string>("weightParticles",0,index);
+      std::string P;
+      while(StrFunc::section(PList,P))
+	{
+	  activeParticles.insert(P);
+	}
+    }
+  return;
+}
+
+void
 WeightControl::procEnergyType(const mainSystem::inputParam& IParam)
   /*!
     Extract hte type from the input to process of energy system 
@@ -375,43 +404,6 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   return;
 }
     
-void
-WeightControl::setWeights(Simulation& System)
-   /*!
-    Function to set up the weights system.
-    It replaces the old file read system.
-    \param System :: Simulation component
-  */
-{
-  ELog::RegMethod RegA("WeightControl","setWeights(Simulation)");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
-
-  WM.addParticle<WeightSystem::WCells>('n');
-  WeightSystem::WCells* WF=
-    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
-  if (!WF)
-    throw ColErr::InContainerError<std::string>("n","WCell - WM");
-
-  WF->setEnergy(EBand);
-  System.populateWCells();
-  WF->balanceScale(WT);
-
-  const Simulation::OTYPE& Cells=System.getCells();
-  Simulation::OTYPE::const_iterator oc;
-  for(oc=Cells.begin();oc!=Cells.end();oc++)
-    {
-      if(!oc->second->getImp())
-	WF->maskCell(oc->first);      
-    }
-  WF->maskCell(1);
-
-  // remove neutron imp:
-  setWCellImp(System);
-  //  removePhysImp(System,"n");
-  return;
-}
 
 
 void
@@ -448,11 +440,11 @@ WeightControl::processWeights(Simulation& System,
   System.populateCells();
   System.createObjSurfMap();
 
+  procParticles(IParam);
+  
   if (IParam.flag("weightEnergyType"))
     procEnergyType(IParam);
 
-  if (IParam.flag("weight"))
-    setWeights(System);
 
   if (IParam.flag("weightSource"))
     procSourcePoint(IParam);

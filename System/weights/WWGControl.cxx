@@ -482,9 +482,13 @@ WWGControl::processWeights(Simulation& System,
       wwgCombine(System,IParam);                 
       wwgNormalize(IParam); 
       wwgVTK(IParam);
-      
-      WM.getParticle('n')->setActiveWWP(0);
-      setWWGImp(System);
+
+
+      for(const std::string& P : activeParticles)
+	{
+	  WM.getParticle(P)->setActiveWWP(0);
+	  setWImp(System,P);
+	}
     }
 
   return;

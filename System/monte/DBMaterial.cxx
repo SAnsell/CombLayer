@@ -1926,7 +1926,8 @@ DBMaterial::writePOVRay(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
 	  
 	  mp->second.writePOVRay(OX);
 	}

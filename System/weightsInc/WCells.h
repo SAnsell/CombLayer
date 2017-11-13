@@ -48,7 +48,7 @@ class WCells : public WForm
  public:
   
   WCells();
-  WCells(const char);
+  WCells(const std::string&);
   WCells(const WCells&);
   WCells& operator=(const WCells&);
   ~WCells();

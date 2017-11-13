@@ -121,44 +121,46 @@ weightManager::getWWG() const
 
   
 bool
-weightManager::hasParticle(const char c) const
+weightManager::hasParticle(const std::string& particleType) const
   /*!
     Determine if a specific particle type exists
-    \param c :: Particle identifier
+    \param particleType :: Particle identifier
     \return true if exists
   */
 {
-  CtrlTYPE::const_iterator mc=WMap.find(c);
+  CtrlTYPE::const_iterator mc=WMap.find(particleType);
   return (mc==WMap.end()) ? 0 : 1;
 }
   
 WForm*
-weightManager::getParticle(const char c) const
+weightManager::getParticle(const std::string& particleType) const
   /*!
     Get a specific particle type
-    \param c :: Particle identifier
+    \param particleType :: Particle identifier
     \return WForm pointer 
   */
 {
   ELog::RegMethod RegA("weightManager","getParticle");
-  CtrlTYPE::const_iterator mc=WMap.find(c);
+  CtrlTYPE::const_iterator mc=WMap.find(particleType);
   if (mc==WMap.end())
-    throw ColErr::InContainerError<char>(c,"particle not found");
+    throw ColErr::InContainerError<std::string>
+      (particleType,"particle not found");
+  
   return mc->second;
 }
 
 template<typename T>
 void
-weightManager::addParticle(const char c)
+weightManager::addParticle(const std::string& particleType)
   /*!
     Add a specific component
-    \param c :: particle key [should this be a string?]
+    \param particleType :: particle key 
    */
 {
   ELog::RegMethod RegA("weightManager","addComponent");
-  if (WMap.find(c)==WMap.end())
+  if (WMap.find(particleType)==WMap.end())
     {
-      WMap.insert(CtrlTYPE::value_type(c,new T(c)));
+      WMap.emplace(particleType,new T(particleType));
     }
   return;
 }
@@ -276,7 +278,7 @@ weightManager::write(std::ostream& OX) const
 
 ///\cond TEMPLATE
 
-template void weightManager::addParticle<WCells>(const char);
+template void weightManager::addParticle<WCells>(const std::string&);
 
 ///\endcond TEMPLATE
   
