@@ -94,7 +94,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofNVert",20);
       Control.addVariable(KItem+"BunkerRoofNMedial",1);
       Control.addVariable(KItem+"BunkerRoofNRadial",12);
-      Control.addVariable(KItem+"BunkerRoofNBasicVert",5);      
       
       Control.addVariable(KItem+"BunkerNSide",5);
       Control.addVariable(KItem+"BunkerNSideVert",5);
@@ -117,11 +116,13 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerWallNBasic",15);      
 
       // ROOF LAYERED
-      Control.addVariable(KItem+"BunkerNBasicVert",5);
-      Control.addVariable(KItem+"BunkerRoofVert1",30.0);
-      Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert4",35.0);
+      Control.addVariable(KItem+"BunkerRoofNBasicVert",7);
+      Control.addVariable(KItem+"BunkerRoofVert1",10.0);   // B poly
+      Control.addVariable(KItem+"BunkerRoofVert2",5.0);    // steel
+      Control.addVariable(KItem+"BunkerRoofVert3",20.0);
+      Control.addVariable(KItem+"BunkerRoofVert4",45.0);   // steel
+      Control.addVariable(KItem+"BunkerRoofVert5",40.0);  
+      Control.addVariable(KItem+"BunkerRoofVert6",25.0);   // steel
   
       
       Control.addVariable(KItem+"BunkerRoofMat0","Poly");
@@ -129,6 +130,8 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofMat2","Poly");
       Control.addVariable(KItem+"BunkerRoofMat3","ChipIRSteel");
       Control.addVariable(KItem+"BunkerRoofMat4","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat5","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat6","Poly");
 
 
       Control.addVariable(KItem+"BunkerWallMat0","Poly");

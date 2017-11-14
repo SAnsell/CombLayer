@@ -183,7 +183,8 @@ class makeESS
   void makeBeamLine(Simulation&,
 		    const mainSystem::inputParam&);
 
-  void buildPillars(Simulation&);
+  void buildPillars(Simulation&,
+		    const mainSystem::inputParam&);
   void buildBunkerFeedThrough(Simulation&,
 			      const mainSystem::inputParam&);
   void buildBunkerChicane(Simulation&,

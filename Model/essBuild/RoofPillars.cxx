@@ -120,11 +120,12 @@ RoofPillars::insertBeamCells(Simulation& System,
     \param halfWidth :: Half beam width
     \param XAxis :: XAxis direction
     \param EPts :: End points
-    \param innerCut :: cut string for pillar void
+    \param innerCut :: cut string for beam void
   */
 {
   ELog::RegMethod RegA("RoofPillars","insertBeamCells");
-  
+
+  static int cnt(0);
   // horrizontal points:
   const std::array<Geometry::Vec3D,4> CPts=
     {{  EPts[0]-XAxis*halfWidth,
@@ -132,8 +133,16 @@ RoofPillars::insertBeamCells(Simulation& System,
 	EPts[1]-XAxis*halfWidth,
         EPts[1]+XAxis*halfWidth
       }};
+  if (cnt==9)
+    {
+      ELog::EM<<"X["<<cnt<<"] = "<<EPts[0]<<" :: "<<EPts[1]<<ELog::endDiag;
+      ELog::EM<<"XAxi == "<<XAxis<<" "<<halfWidth<<ELog::endDiag;
+      for(size_t i=0;i<4;i++)
+	ELog::EM<<"CPT["<<i<<"] == "<<CPts[i]<<ELog::endDiag;
+    }
   
-  insertRoofCells(System,CPts,innerCut);
+  insertRoofCells(System,CPts,0.1,innerCut);
+  cnt++;
   return;
 }			      
 
@@ -162,19 +171,21 @@ RoofPillars::insertPillarCells(Simulation& System,
         CP+XAxis*WT-YAxis*DT,
         CP-XAxis*WT+YAxis*DT,
         CP+XAxis*WT+YAxis*DT }};
-
-  insertRoofCells(System,CPts,innerCut);
+  
+  insertRoofCells(System,CPts,0.9,innerCut);
   return;
 }
 
 void
 RoofPillars::insertRoofCells(Simulation& System,
 			     const std::array<Geometry::Vec3D,4>& CPts,
+			     const double innerStep,
 			     const std::string& innerCut)
   /*!
     Insert roof cells
     \param System :: Simulation system
     \param CPts :: plan points on layer of roof cross beam
+    \param innerStep :: distance to move points inward to recalc
     \param innerCut :: cut string for pillar void
   */
 {
@@ -184,7 +195,6 @@ RoofPillars::insertRoofCells(Simulation& System,
     SurInter::getLinePoint(Origin,Z,getBackRule(),getBackBridgeRule());
   const Geometry::Vec3D ZTop=ZBase+Z*topFootHeight;
 
-  
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -193,14 +203,27 @@ RoofPillars::insertRoofCells(Simulation& System,
   for(size_t i=0;i<4;i++)
     for(size_t j=0;j<4;j++)
       attachSystem::lineIntersect(System,CPts[i]+ZBase,CPts[j]+ZTop,OMap);
+  if (std::abs(innerStep)>Geometry::zeroTol)
+    {
 
+      const std::array<Geometry::Vec3D,4> IPts=
+	{{
+	  CPts[0]+(CPts[3]-CPts[0])*innerStep,
+	  CPts[1]+(CPts[2]-CPts[1])*innerStep,
+	  CPts[2]+(CPts[1]-CPts[2])*innerStep,
+	  CPts[3]+(CPts[0]-CPts[3])*innerStep
+	  }};
+      for(size_t i=0;i<4;i++)
+	for(size_t j=0;j<4;j++)
+	  attachSystem::lineIntersect(System,IPts[i]+ZBase,IPts[j]+ZTop,OMap);
+    }
+  
   HeadRule IC(innerCut);
   IC.makeComplement();
   for(const OTYPE::value_type Vunit : OMap)
     Vunit.second->addSurfString(IC.display());
 
-  return;
-  
+  return;  
 }
   
 void

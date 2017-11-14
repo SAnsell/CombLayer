@@ -220,7 +220,6 @@ procAngle(const mainSystem::inputParam& IParam,
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
-
       
       const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
 	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);

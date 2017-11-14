@@ -105,8 +105,9 @@ class RoofPillars : public attachSystem::FixedComp,
 		       const std::string&);
   void insertPillarCells(Simulation&,const pillarInfo&,const std::string&);
   void insertRoofCells(Simulation&,const std::array<Geometry::Vec3D,4>&,
+		       const double,
 		       const std::string&);
-  
+
   
   void getPillarPair(const std::string&,const std::string&,
 		     Geometry::Vec3D&,Geometry::Vec3D&,

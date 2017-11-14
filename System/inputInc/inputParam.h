@@ -110,6 +110,9 @@ class inputParam
 		  const std::string&) const;
 
 
+  std::vector<std::string>
+    getAllItems(const std::string&) const;
+
   const std::vector<std::string>&
     getObjectItems(const std::string&,const size_t) const;
 

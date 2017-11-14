@@ -693,15 +693,25 @@ makeESS::buildBunkerQuake(Simulation& System,
 }
   
 void
-makeESS::buildPillars(Simulation& System)
+makeESS::buildPillars(Simulation& System,
+		      const mainSystem::inputParam& IParam)
   /*!
     Build the pillars in the bunker
     \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("makeESS","buildPillars");
-  //  ABunkerPillars->createAll(System,*ABunker);
-  BBunkerPillars->createAll(System,*BBunker);
+
+  const std::vector<std::string> BP=
+    IParam.getAllItems("bunkerPillars");
+
+  for(const std::string& Item : BP)
+    {
+      if (Item=="ABunker")
+	ABunkerPillars->createAll(System,*ABunker);
+      if (Item=="BBunker")
+	BBunkerPillars->createAll(System,*BBunker);
+    }
   return;
 }
   
@@ -1081,6 +1091,7 @@ makeESS::build(Simulation& System,
   makeBunker(System,IParam);
 
   // THIS CANNOT BE RIGHT--- VERY INEFFICIENT
+  /*
   TSMainBuildingObj->addInsertCell(74123);
   TSMainBuildingObj->createAll(System,World::masterOrigin(),0);
   attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
@@ -1095,7 +1106,7 @@ makeESS::build(Simulation& System,
 
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABHighBay);
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CDHighBay);
-
+  */
   
   // PROTON BEAMLINE
 
@@ -1123,8 +1134,7 @@ makeESS::build(Simulation& System,
 
   
   ModPipes->buildTopPipes(System,topPipeType);
-  if (IParam.flag("bunkerPillars"))
-    buildPillars(System);
+  buildPillars(System,IParam);
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
   if (IParam.flag("bunkerQuake"))
