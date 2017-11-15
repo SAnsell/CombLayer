@@ -362,11 +362,11 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 
       if (j>0)
 	{
-	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-10+11),
-				      SMap.realSurfPtr(SJ-10+13),
+	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-100+11),
+				      SMap.realSurfPtr(SJ-100+13),
 				      SMap.realSurfPtr(surfIndex+5)) - X*wallSegThick*dir;
-	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-10+11),
-				      SMap.realSurfPtr(SJ-10+14),
+	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-100+11),
+				      SMap.realSurfPtr(SJ-100+14),
 				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*dir;
 	}
 
@@ -376,7 +376,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
       ModelSupport::buildPlaneRotAxis(SMap,SJ+14,
 				      orig14,X,Z,
 				      wallSegDelta-delta/2.0);
-      SJ += 10;
+
+      SJ += 100;
     }
 
 
@@ -442,7 +443,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	Out1 = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
 	  FC.getSignedLinkString(back);
       else
-	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-10," 11 -11M ");
+	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-100," 11 -11M ");
 
       ///
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + Out1;
@@ -454,13 +455,13 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13M -14M ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,j==0?heMat:mainMat,temp,Out+tb));
 
-      SJ += 10;
+      SJ += 100;
     }
 
   const std::string Out1 = FC.getSignedLinkString(back) + FC.getSignedLinkString(front);
 
   // Part from the left (remove)
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-10," 3 -4 -11M ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-100," 3 -4 -11M ") +
     FC.getSignedLinkString(front);
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 
@@ -503,9 +504,9 @@ BilbaoWheelCassette::createLinks()
 	  FixedComp::setConnect(i,p,-X);
 	  FixedComp::setLinkSurf(i,-SMap.realSurf(SJ+14));
 
-	  ELog::EM << p << ELog::endDiag;
+	  ELog::EM << "LP " << j << ": " << p << ELog::endDiag;
 
-	  SJ += 10;
+	  SJ += 100;
 	  i++;
 	}
     }
