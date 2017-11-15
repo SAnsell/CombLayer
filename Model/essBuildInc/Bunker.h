@@ -140,6 +140,10 @@ class Bunker : public attachSystem::ContainedComp,
   Bunker& operator=(const Bunker&);
   virtual ~Bunker();
 
+  /// Roof component
+  const BunkerRoof& getRoofObj() const { return *roofObj; }
+  const BunkerWall& getWallObj() const { return *wallObj; }
+
   void calcSegPosition(const size_t,Geometry::Vec3D&,
 		       Geometry::Vec3D&,Geometry::Vec3D&,
 		       Geometry::Vec3D&) const;
@@ -155,6 +159,8 @@ class Bunker : public attachSystem::ContainedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const bool);
 
+
+  
 };
 
 }
