@@ -354,7 +354,7 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   Geometry::Vec3D orig14=Origin-Y*(R*cos(d2)) + X*dx;
   for (size_t j=0; j<nWallSeg; j++)
     {
-      R += fabs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
+      R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
 
