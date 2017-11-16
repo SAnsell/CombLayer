@@ -185,6 +185,14 @@ addESSMaterial()
   MObj.setDensity(-0.203);
   MDB.resetMaterial(MObj);
 
+  // HPARA + 2.9% vol Al
+  // calculated with mixtures.py (commit 5c3c8ef)
+  MObj.setMaterial(imat++, "HPARA_Al2.9",
+		   " 01001.70c 0.958741450196  "
+		   " 13027.70c 0.0412585498042 ","hpara.10t al27.10t", MLib);
+  MObj.setDensity(-0.14627);
+  MDB.resetMaterial(MObj);
+
   // Generic light water
   // Simplified light water for  basic neutronic simulations
   MObj.setMaterial(imat++/*110*/, "H2O", " 1001.70c 0.66666667 "
