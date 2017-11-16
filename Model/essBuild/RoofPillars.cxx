@@ -164,7 +164,7 @@ RoofPillars::insertPillarCells(Simulation& System,
         CP-XAxis*WT+YAxis*DT,
         CP+XAxis*WT+YAxis*DT }};
   
-  insertRoofCells(System,CPts,0.9,innerCut);
+  insertRoofCells(System,CPts,0.1,innerCut);
   return;
 }
 
@@ -183,10 +183,6 @@ RoofPillars::insertRoofCells(Simulation& System,
 {
   ELog::RegMethod RegA("RoofPillars","insertRoofCells");
 
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  
   static int cnt(0);
   const Geometry::Vec3D ZBase=
     SurInter::getLinePoint(Origin,Z,getBackRule(),getBackBridgeRule());
@@ -221,30 +217,55 @@ RoofPillars::insertRoofCells(Simulation& System,
 	  {
 	    attachSystem::lineIntersect(System,CPts[i]+ZBase,IPts[j]+ZTop,OMap);
 	    attachSystem::lineIntersect(System,IPts[i]+ZBase,CPts[j]+ZTop,OMap);
-	    attachSystem::lineIntersect(System,CPts[i+2]+ZBase,IPts[j+2]+ZTop,OMap);
-	    attachSystem::lineIntersect(System,IPts[i+2]+ZBase,CPts[j+2]+ZTop,OMap);
+	    attachSystem::lineIntersect(System,CPts[i+2]+ZBase,
+					IPts[j+2]+ZTop,OMap);
+	    attachSystem::lineIntersect(System,IPts[i+2]+ZBase,
+					CPts[j+2]+ZTop,OMap);
 	  }
     }
   
+  if (cnt==84)
+    {
+      if (roofCells)
+	{
+	  // first make ordered set of possibles
+	  std::set<int> cellName;
+	  for(const OTYPE::value_type Vunit : OMap)
+	    {
+	      const int cellN(Vunit.second->getName());
+	      if (roofCells->hasCell(cellN))
+		cellName.insert(cellN);
+	    }
+
+	  // now check order components
+	  int prevCellN=0;
+	  for(const int cellN : cellName)
+	    {
+	      // check not consecutive and not in other group 
+	      if (prevCellN && prevCellN+1!=cellN && prevCellN+10000>cellN)
+		{
+		  for(int newCN=prevCellN+1;newCN<cellN;newCN++)
+		    {
+		      MonteCarlo::Object* NPtr=System.findQhull(newCN);
+		      if (NPtr)
+			{
+			  OMap.emplace(newCN,NPtr);
+			  ELog::EM<<"EMPLACE == "<<NPtr->getName()
+				  <<ELog::endDiag;
+			}
+		    }
+		}
+	      prevCellN=cellN;
+	    }
+	}
+    }
+
+  // make intersection:
   HeadRule IC(innerCut);
   IC.makeComplement();
   for(const OTYPE::value_type Vunit : OMap)
     Vunit.second->addSurfString(IC.display());
-  if (cnt==84)
-    {
-      int prevCellN(0);
-      for(const OTYPE::value_type Vunit : OMap)
-	{
-	  const int cellN(Vunit.second->getName());
-	  if (prevCellN && prevCellN+1 != cellN)
-	    {
-	      const std::string PItem=OR.inRange(prevCellN);
-	      const std::string CItem=OR.inRange(cellN);
-	    }
-	  ELog::EM<<"Cell == "<<Vunit.second->getName()
-		  <<"::"<<OR.inRange(cellN)<<ELog::endErr;
-	}
-    }
+
   cnt++;
   return;  
 }
@@ -926,7 +947,7 @@ RoofPillars::createAll(Simulation& System,
   createObjects(System);
   insertPillars(System,bunkerObj);
 
-  //roofCells=bunkerObj.getRoofObj())
+  roofCells=bunkerObj.getRoofObj();
   createCrossBeams(System);
   createLongBeams(System);
   return;

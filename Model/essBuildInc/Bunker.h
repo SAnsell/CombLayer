@@ -141,8 +141,7 @@ class Bunker : public attachSystem::ContainedComp,
   virtual ~Bunker();
 
   /// Roof component
-  const BunkerRoof& getRoofObj() const { return *roofObj; }
-  const BunkerWall& getWallObj() const { return *wallObj; }
+  std::shared_ptr<BunkerRoof> getRoofObj() const { return roofObj; }
 
   void calcSegPosition(const size_t,Geometry::Vec3D&,
 		       Geometry::Vec3D&,Geometry::Vec3D&,
