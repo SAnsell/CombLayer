@@ -546,8 +546,8 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
   
   // sdef
   A.setVar("sdefEnergy", 2000.0);
-  A.setVar("sdefWidth", 7.0);
-  A.setVar("sdefHeight", 1.6);
+  A.setVar("sdefWidth", 14);
+  A.setVar("sdefHeight", 3.2);
   A.setVar("sdefYPos", -500);
   A.setVar("sdefPDF", "uniform");
   

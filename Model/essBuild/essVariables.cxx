@@ -251,8 +251,8 @@ EssVariables(FuncDataBase& Control,
   EssInstrumentVariables(beamNames,Control);
   
   Control.addVariable("sdefEnergy",2000.0);
-  Control.addVariable("sdefWidth",    7.0);
-  Control.addVariable("sdefHeight",   1.6);
+  Control.addVariable("sdefWidth",    14.0);
+  Control.addVariable("sdefHeight",   3.2);
   Control.addVariable("sdefYPos",    -500);
   Control.addVariable("sdefPDF","uniform");
   
