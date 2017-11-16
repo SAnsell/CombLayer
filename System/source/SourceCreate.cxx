@@ -181,6 +181,7 @@ createESSSource(const FuncDataBase& Control,
   PSource.setOffset(0,yStart,0);
   PSource.setRectangle(xRange,zRange);
   PSource.setPower(0.0);
+  PSource.setNPts(1,1);
   PSource.createAll(Control,FC,sideIndex);
   PSource.createSource(sourceCard);
   
