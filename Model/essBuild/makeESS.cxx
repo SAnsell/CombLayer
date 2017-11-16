@@ -159,10 +159,11 @@ makeESS::makeESS() :
   ABunkerPillars(new RoofPillars("ABunkerPillars")),
   BBunkerPillars(new RoofPillars("BBunkerPillars")),
   TopCurtain(new Curtain("Curtain")),
-  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding")),
 
   ABHighBay(new HighBay("ABHighBay")),
-  CDHighBay(new HighBay("CDHighBay"))
+  CDHighBay(new HighBay("CDHighBay")),
+
+  TSMainBuildingObj(new TSMainBuilding("TSMainBuilding"))
  /*!
     Constructor
  */
