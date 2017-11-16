@@ -63,6 +63,7 @@ class H2Wing :
   double totalHeight;           ///< total height moderator
 
   int modMat;                   ///< LH2
+  int modMatH;                  ///< Homogenised moderator material
   double modTemp;               ///< LH2 temperature [K]
 
   std::vector<double> Thick;        ///< Layer thickness

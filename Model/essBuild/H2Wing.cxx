@@ -123,7 +123,8 @@ H2Wing::H2Wing(const H2Wing& A) :
   bfType(A.bfType),
   InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
-  modMat(A.modMat),modTemp(A.modTemp)
+  modMat(A.modMat),modTemp(A.modTemp),
+  modMatH(A.modMatH)
   /*!
     Copy constructor
     \param A :: H2Wing to copy
@@ -151,6 +152,7 @@ H2Wing::operator=(const H2Wing& A)
       radius=A.radius;
       height=A.height;
       modMat=A.modMat;
+      modMatH=A.modMatH;
       modTemp=A.modTemp;
     }
   return *this;
@@ -201,6 +203,7 @@ H2Wing::populate(const FuncDataBase& Control)
 
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
+  modMatH=ModelSupport::EvalMat<int>(Control,keyName+"HomogenisedModMat");
 
   // Multi-layer
   nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
@@ -528,11 +531,12 @@ H2Wing::createObjects(Simulation& System)
 	}
       else
 	{
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+	  const int m = i ? mat[i] : modMatH;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,m,temp[i],
 				       OutA+InnerA.display()+CutA));
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,m,temp[i],
 					   OutB+InnerB.display()+CutB));
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat[i],temp[i],
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,m,temp[i],
 					   OutC+InnerC.display()+CutC));
 	}
 

@@ -84,7 +84,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyLeftLobeRadius2",2.506);
   Control.addVariable("TopFlyLeftLobeRadius3",2.506);
 
-  Control.addVariable("TopFlyLeftLobeModMat","HPARA");  
+  Control.addVariable("TopFlyLeftLobeModMat","HPARA");
+  Control.addVariable("TopFlyLeftLobeHomogenisedModMat","HPARA_Al2.9");
   Control.addVariable("TopFlyLeftLobeModTemp",20.0);
 
   Control.addVariable("TopFlyLeftLobeNLayers",4);
