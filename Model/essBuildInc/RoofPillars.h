@@ -77,6 +77,9 @@ class RoofPillars : public attachSystem::FixedComp,
   BeamTYPE beamLinks;          ///< link of each X-beamline
   size_t nLongBeam;            ///< Number of long beam
   BeamTYPE longLinks;          ///< link of each long-beamline
+
+  ///< roof object
+  std::shared_ptr<attachSystem::CellMap> roofCells; 
   
   HeadRule topFoot;            ///< Full headrule
   HeadRule topFootPlate;       ///< Plate headrule
@@ -84,7 +87,8 @@ class RoofPillars : public attachSystem::FixedComp,
   HeadRule baseBeam;           ///< Base beam inner
   HeadRule topLong;            ///< Top long  inner
   HeadRule baseLong;           ///< Base long inner
-    
+
+  
   void populate(const FuncDataBase&);
   void populateBeamSet(const FuncDataBase&,const std::string&,
 		       const long int,const long int,BeamTYPE&) const;

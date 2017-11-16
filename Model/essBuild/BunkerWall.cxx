@@ -292,7 +292,6 @@ BunkerWall::createSector(Simulation& System,
 
   const bool AFlag (activeWall & (1 << sectNum));
 
-  ELog::EM<<"MAin WALL == "<<keyName<<ELog::endDiag;
   std::vector<std::string> actualMatVec;
   ModelSupport::populateVecDivide
     (Control,keyName+std::to_string(sectNum)+"Mat",

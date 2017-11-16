@@ -95,6 +95,7 @@ class Bunker : public attachSystem::ContainedComp,
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
   double floorDepth;             ///< Floor depth
+  double wallHeight;             ///< Wall height (allows roof to intercolate)
   double roofHeight;             ///< Roof height
 
   double wallThick;              ///< backWall thickness
@@ -141,8 +142,7 @@ class Bunker : public attachSystem::ContainedComp,
   virtual ~Bunker();
 
   /// Roof component
-  const BunkerRoof& getRoofObj() const { return *roofObj; }
-  const BunkerWall& getWallObj() const { return *wallObj; }
+  std::shared_ptr<BunkerRoof> getRoofObj() const { return roofObj; }
 
   void calcSegPosition(const size_t,Geometry::Vec3D&,
 		       Geometry::Vec3D&,Geometry::Vec3D&,
