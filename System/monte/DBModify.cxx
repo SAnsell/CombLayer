@@ -84,7 +84,6 @@ cloneBasicMaterial()
   // original name to use
   DB.cloneMaterial("CastIron","Iron");
   DB.cloneMaterial("Aluminium","Aluminium20K");
-  DB.cloneMaterial("Tungsten_15.1g","Tungsten151");
   DB.cloneMaterial("Iron_10H2O","Iron_10H2O");
   DB.cloneMaterial("Void","Helium");
   DB.cloneMaterial("Void","M2644");
@@ -551,6 +550,16 @@ MObj.setMaterial(imat++/*2660*/, "Invar36",
 		   "74186.71c  0.284300000 ",
 		   "",MLib);
   MObj.setDensity(-15.1);
+  MDB.resetMaterial(MObj);
+
+  MObj.setMaterial(imat++, "Tungsten_15.3g",
+		   "74180.50c  0.001200000 "
+		   "74182.71c  0.265000000 "
+		   "74183.71c  0.143100000 "
+		   "74184.71c  0.306400000 "
+		   "74186.71c  0.284300000 ",
+		   "",MLib);
+  MObj.setDensity(-15.3);
   MDB.resetMaterial(MObj);
 
   // Bilbao M30001 - same ase 7400 but at 15.6 g/cm3

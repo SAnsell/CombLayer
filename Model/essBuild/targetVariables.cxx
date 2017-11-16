@@ -138,7 +138,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSectorSepMat", "SS316L");
   Control.addVariable("BilbaoWheelTemperature", 600);
 
-  Control.addVariable("BilbaoWheelWMat","Tungsten_15.1g");
+  Control.addVariable("BilbaoWheelWMat","Tungsten_15.3g"); // email from LZ 25 Oct 2017
   Control.addVariable("BilbaoWheelSteelMat","SS316L");
   Control.addVariable("BilbaoWheelHeMat","Void"); // TSM141108V3000
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
