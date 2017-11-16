@@ -159,6 +159,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSecWallMat","SS316L");
   Control.addVariable("BilbaoWheelSecWallThick",1.0);
 
+  // The sector variables are based on the
+  // ESS-Bilbao drawing TRGT-ESS-0106.01.03 rev.4
+  // CHESS: ESS-0017676
+  //  https://plone.esss.lu.se/docs/neutronics/engineering/drawings/target/cassette-side-steel/view
   Control.addVariable("BilbaoWheelSecNWallSeg",16); // 15 layers of bricks + 1
   Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
   Control.addVariable("BilbaoWheelSecWallSegLength1",-3.2);
