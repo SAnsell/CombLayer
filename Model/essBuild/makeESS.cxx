@@ -1236,7 +1236,7 @@ makeESS::build(Simulation& System,
 
   // PROTON BEAMLINE
 
-  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
+  pbip->createAll(System,World::masterOrigin(),0,*Bulk,-4,*Target,1);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));

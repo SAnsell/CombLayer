@@ -67,7 +67,7 @@ class PBIP : public attachSystem::ContainedGroup,
   int foilMat; ///< foil material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int&);
 
   void createSurfaces();
   void createLinks();

@@ -209,7 +209,8 @@ PBIP::populate(const FuncDataBase& Control)
 }
 
 void
-PBIP::createUnitVector(const attachSystem::FixedComp& FC)
+PBIP::createUnitVector(const attachSystem::FixedComp& FC,
+		       const long int& sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
@@ -217,7 +218,7 @@ PBIP::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("PBIP","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
@@ -306,13 +307,12 @@ PBIP::createObjects(Simulation& System,
   ELog::RegMethod RegA("PBIP","createObjects");
 
   const std::string start =
-    std::to_string(FCstart.getSignedLinkSurf(static_cast<size_t>(-(lpStart+1))));
-
-  const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
+    std::to_string(FCstart.getSignedLinkSurf(lpStart));
 
   std::string BSurf=(lpEnd>0) ?
-    FCend.getSignedLinkString(lIndex+1) : FCend.getSignedCommonRule(lIndex+1).display() ;
-  FixedComp::setLinkComponent(0,FCend,lIndex);
+    FCend.getSignedLinkString(lpEnd) :
+    FCend.getSignedCommonRule(lpEnd).display();
+  //  FixedComp::setLinkComponent(0,FCend,lpEnd-1);
 
   std::string Out;
   // main
@@ -407,7 +407,7 @@ PBIP::createAll(Simulation& System,
   ELog::RegMethod RegA("PBIP","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,lp);
   createSurfaces();
   createLinks();
   createObjects(System,FCstart,lpStart,FCend,lpEnd);
