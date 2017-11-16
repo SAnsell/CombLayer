@@ -120,7 +120,12 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   floor(A.floor),
   roof(A.roof),
   back(A.back),
-  front(A.front)
+  front(A.front),
+  nBricks(A.nBricks),
+  brickWidth(A.brickWidth),
+  brickLength(A.brickLength),
+  brickGap(A.brickGap),
+  brickMat(A.brickMat)
   /*!
     Copy constructor
     \param A :: BilbaoWheelCassette to copy
@@ -156,6 +161,11 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       roof=A.roof;
       back=A.back;
       front=A.front;
+      nBricks=A.nBricks;
+      brickWidth=A.brickWidth;
+      brickLength=A.brickLength;
+      brickGap=A.brickGap;
+      brickMat=A.brickMat;
     }
   return *this;
 }
@@ -271,6 +281,11 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   wallSegDelta=delta/2.0; // otherwise wall planes near bricks are not parallel
   wallSegThick=Control.EvalPair<double>(keyName,commonName,"WallSegThick");
 
+  brickWidth=Control.EvalPair<double>(keyName,commonName,"BrickWidth");
+  brickLength=Control.EvalPair<double>(keyName,commonName,"BrickLength");
+  brickGap=Control.EvalPair<double>(keyName,commonName,"BrickGap");
+  brickMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickMat",keyName+"BrickMat");
+
   return;
 }
 
@@ -362,11 +377,11 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 
       if (j>0)
 	{
-	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-100+11),
-				      SMap.realSurfPtr(SJ-100+13),
+	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-1000+11),
+				      SMap.realSurfPtr(SJ-1000+13),
 				      SMap.realSurfPtr(surfIndex+5)) - X*wallSegThick*dir;
-	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-100+11),
-				      SMap.realSurfPtr(SJ-100+14),
+	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-1000+11),
+				      SMap.realSurfPtr(SJ-1000+14),
 				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*dir;
 	}
 
@@ -376,11 +391,37 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
       ModelSupport::buildPlaneRotAxis(SMap,SJ+14,
 				      orig14,X,Z,
 				      wallSegDelta-delta/2.0);
+      if (j==0)
+	{
+	  nBricks.push_back(0); // no bricks in the innermost segment
+	}
+      else // build the bricks
+	{
+	  // n = number of bircks in the given wall segment
+	  // L = n*brickWidth + (n-1)*brickGap =>
+	  // n = (L+brickGap) / (brickWidth+brickGap)
+	  const double L(orig13.Distance(orig14));
+	  const size_t n = static_cast<size_t>((L+brickGap)/(brickWidth+brickGap)+0.5+1);
+	  nBricks.push_back(n);
 
-      SJ += 100;
+	  int SBricks(SJ+100);
+	  double bOffset(brickWidth);
+	  ELog::EM << j << "\t" << n << " dist: " << L << ELog::endDiag;
+	  for (size_t i=0; i<n; i++) // bricks
+	    {
+	      ModelSupport::buildShiftedPlane(SMap,SBricks+3,
+					      SMap.realPtr<Geometry::Plane>(SJ+13),
+					      bOffset);
+	      ModelSupport::buildShiftedPlane(SMap,SBricks+4,
+					      SMap.realPtr<Geometry::Plane>(SBricks+3),
+					      brickGap);
+	      SBricks += 10;
+	      bOffset += brickWidth;
+	    }
+	}
+
+      SJ += 1000;
     }
-
-
 
   return;
 }
@@ -443,7 +484,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	Out1 = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
 	  FC.getSignedLinkString(back);
       else
-	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-100," 11 -11M ");
+	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
 
       ///
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + Out1;
@@ -452,16 +493,38 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
 
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 13M -14M ") + Out1;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,j==0?heMat:mainMat,temp,Out+tb));
+      if (j==0)
+	{
+	  Out=ModelSupport::getComposite(SMap,SJ," 13 -14 ") + Out1;
+	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,j==0?heMat:mainMat,temp,Out+tb));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+	}
+      else
+	{
+	  int SBricks(SJ+100);
+	  std::string prev = ModelSupport::getComposite(SMap,SJ," 13 ");
+	  for (size_t i=0; i<nBricks[j]; i++) // create brick cells
+	    {
+	      Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,brickMat,temp,Out+Out1+tb));
 
-      SJ += 100;
+	      Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
+
+	      prev = ModelSupport::getComposite(SMap,SBricks," 4 ");
+
+	      SBricks += 10;
+	    }
+	  Out=ModelSupport::getComposite(SMap,SBricks-10,SJ," 4 -14M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
+	}
+      SJ += 1000;
     }
 
   const std::string Out1 = FC.getSignedLinkString(back) + FC.getSignedLinkString(front);
 
   // Part from the left (remove)
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-100," 3 -4 -11M ") +
+  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-1000," 3 -4 -11M ") +
     FC.getSignedLinkString(front);
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 
@@ -506,7 +569,7 @@ BilbaoWheelCassette::createLinks()
 
 	  ELog::EM << "LP " << j << ": " << p << ELog::endDiag;
 
-	  SJ += 100;
+	  SJ += 1000;
 	  i++;
 	}
     }

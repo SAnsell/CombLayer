@@ -70,6 +70,11 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   long roof;                    ///< Roof link point
   long back;                    ///< Back cylinder link point
   long front;                   ///< Front cylinder link point
+  std::vector<size_t> nBricks;     ///< Number of bricks in each segment
+  double brickWidth; ///< Brick width
+  double brickLength; ///< Brick length
+  double brickGap; ///< Distance between bricks in the given segment
+  int brickMat; ///< Brick material
 
   double getSegWallArea() const;
   double getSegWallThick() const;
