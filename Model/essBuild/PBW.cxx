@@ -112,8 +112,9 @@ PBW::PBW(const PBW& A) :
   attachSystem::FixedOffset(A),
   surfIndex(A.surfIndex),cellIndex(A.cellIndex),
   engActive(A.engActive),
-  plugLength1(A.plugLength1),plugWidth1(A.plugWidth1),
+  plugLength1(A.plugLength1),
   plugLength2(A.plugLength2),
+  plugWidth1(A.plugWidth1),
   plugWidth2(A.plugWidth2),
   plugHeight(A.plugHeight),
   plugDepth(A.plugDepth),
@@ -278,7 +279,7 @@ PBW::populate(const FuncDataBase& Control)
 }
 
 void
-PBW::createUnitVector(const attachSystem::FixedComp& FC)
+PBW::createUnitVector(const attachSystem::FixedComp& FC,const long int& sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
@@ -286,7 +287,7 @@ PBW::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("PBW","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
+  FixedComp::createUnitVector(FC,sideIndex);
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
@@ -601,7 +602,7 @@ PBW::createAll(Simulation& System,
   ELog::RegMethod RegA("PBW","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,lp);
   createSurfaces();
   createLinks();
   createObjects(System);

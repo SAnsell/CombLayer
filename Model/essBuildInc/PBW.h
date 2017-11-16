@@ -90,7 +90,7 @@ class PBW : public attachSystem::ContainedComp,
   std::shared_ptr<TelescopicPipe> shield; ///< Shielding
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int&);
 
   void createSurfaces();
   void createLinks();
