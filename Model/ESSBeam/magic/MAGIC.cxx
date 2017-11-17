@@ -85,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -106,7 +106,7 @@ MAGIC::MAGIC(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   PSCDisk(new constructSystem::DiskChopper(newName+"PSCBlade")),
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),

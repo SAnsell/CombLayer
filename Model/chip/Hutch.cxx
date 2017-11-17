@@ -80,6 +80,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
@@ -1371,14 +1372,15 @@ ChipIRHutch::createCommonAll(Simulation& System,
 {
   ELog::RegMethod RegA("Hutch","createCommonAll");
 
-  Trimmer->createSurf(System,Guide);
+  Trimmer->createOnlySurfaces(System,Guide,2);
   createWallSurfaces(Guide);
   
   createWallObjects(System,IC);
   addExtraWalls(System,Guide);
   createLinks();
 
-  Trimmer->createObj(System);
+  Trimmer->createOnlyObjects(System);
+
   addOuterVoid();
   addCollimators(System,Guide);
   BStop->createAll(System,getKey("Main"),4);

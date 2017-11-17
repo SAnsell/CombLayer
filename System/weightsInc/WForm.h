@@ -3,7 +3,7 @@
  
  * File:   weightsInc/WForm.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,10 +49,10 @@ class WForm
 {
  protected:
 
-  int activeWWP;       ///< Controls wwp being active 
-  char ptype;          ///< Particle type
+  int activeWWP;               ///< Controls wwp being active 
+  std::string pType;           ///< Particle type
   std::vector<double> Energy;  ///< Energy windows.
-  double wupn;         ///< Max weight before upsplitting
+  double wupn;         ///< Max weight before upsplitting * minWeight
   double wsurv;        ///< survival possiblitiy
   int maxsp;           ///< max split
   int mwhere;          ///< Check weight -1:col 0:all 1:surf
@@ -61,7 +61,7 @@ class WForm
  public:
   
   WForm();
-  explicit WForm(const char);
+  explicit WForm(const std::string&);
   WForm(const WForm&);
   WForm& operator=(const WForm&);
   virtual ~WForm() {}  ///< Destructor
@@ -69,7 +69,7 @@ class WForm
   bool operator==(const WForm&) const; 
 
   ///< Set type e.g. n,p
-  void setParticle(const char c) { ptype=c; }  
+  void setParticle(const std::string& P) { pType=P; }  
 
   void setEnergy(const std::vector<double>&);
   void setParam(const double,const double,const int,
@@ -79,7 +79,7 @@ class WForm
   const std::vector<double>& getEnergy() const 
     { return Energy; }
   /// Get particle
-  char getParticle() const { return ptype; }
+  const std::string& getParticle() const { return pType; }
   /// accessor to flag
   void setActiveWWP(const int F) { activeWWP=F; }
 
@@ -95,9 +95,13 @@ class WForm
   virtual void populateCells(const std::map<int,MonteCarlo::Qhull*>&) =0;
   virtual void renumberCell(const int,const int) =0;
   virtual void balanceScale(const std::vector<double>&) =0;
+  virtual void writePHITS(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;
 
   ///\endcond ABSTRACT
+  
+  // Nullop for non-cell
+  virtual void writePHITSHead(std::ostream&) const {}
   
 
 };

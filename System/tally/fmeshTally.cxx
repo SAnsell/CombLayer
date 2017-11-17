@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <iterator>
+#include <array>
 #include <memory>
 #include <boost/format.hpp>
 
@@ -71,7 +72,10 @@ fmeshTally::fmeshTally(const int ID) :
 {}
 
 fmeshTally::fmeshTally(const fmeshTally& A) : 
-  Tally(A)
+  Tally(A),
+  typeID(A.typeID),keyWords(A.keyWords),
+  requireRotation(A.requireRotation),Pts(A.Pts),
+  minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
     \param A :: fmeshTally to copy
@@ -89,6 +93,12 @@ fmeshTally::operator=(const fmeshTally& A)
   if (this!=&A)
     {
       Tally::operator=(A);
+      typeID=A.typeID;
+      keyWords=A.keyWords;
+      requireRotation=A.requireRotation;
+      Pts=A.Pts;
+      minCoord=A.minCoord;
+      maxCoord=A.maxCoord;
     }
   return *this;
 }
@@ -228,7 +238,8 @@ fmeshTally::writeCoordinates(std::ostream& OX) const
     \param OX :: Oupt stream
   */
 {
-  static char abc[]="ijk";
+  const static char abc[]="ijk";
+  
   std::ostringstream cx;
   for(size_t i=0;i<3;i++)
     {
@@ -258,13 +269,15 @@ fmeshTally::write(std::ostream& OX) const
       //GEOMETRY:
       cx<<"GEOM="<<"xyz"<<" ";
       cx<<"ORIGIN="<<MW.Num(minCoord)<<" ";
-            
       StrFunc::writeMCNPX(cx.str(),OX);
-      if (!getEnergy().empty())
+      cx.str("");
+
+      std::vector<double> EPts;
+      const size_t EN=getEnergy().writeVector(EPts);
+      if (EN)
 	{
-	  cx.str("");
-	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
+	  cx.str("");
 	}					 
       // if (!mshmf.empty())
       //   {
@@ -280,5 +293,4 @@ fmeshTally::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE tallySystem
-
 

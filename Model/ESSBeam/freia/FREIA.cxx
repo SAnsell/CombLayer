@@ -85,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
@@ -110,28 +110,28 @@ FREIA::FREIA(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
   FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   BendE(new beamlineSystem::GuideLine(newName+"BE")),
   
-  ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
+  ChopperD(new constructSystem::SingleChopper(newName+"ChopperD")),
   WBC2Disk(new constructSystem::DiskChopper(newName+"WBC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   BendF(new beamlineSystem::GuideLine(newName+"BF")),
 
-  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
+  ChopperE(new constructSystem::SingleChopper(newName+"ChopperE")),
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
@@ -140,10 +140,10 @@ FREIA::FREIA(const std::string& keyName) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
 
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
   JawPit(new constructSystem::ChopperPit(newName+"JawPit")),

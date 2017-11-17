@@ -44,7 +44,7 @@ class WWG
 {
  private:
 
-  char ptype;          ///< Particle type
+  std::set<std::string> pType;   ///< Particle type
   double wupn;         ///< Max weight before upsplitting
   double wsurv;        ///< survival possiblitiy
   int maxsp;           ///< max split
@@ -77,6 +77,8 @@ class WWG
   /// get grid mid point
   const std::vector<Geometry::Vec3D>& getMidPoints() const
     { return GridMidPt; }
+
+  void setParticles(const std::set<std::string>&);
   /// Access to EBin
   const std::vector<double>& getEBin() const { return EBin; }
   void setEnergyBin(const std::vector<double>&,

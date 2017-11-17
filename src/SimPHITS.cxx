@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,15 +94,14 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
+#include "WForm.h"
 #include "ModeCard.h"
 #include "LSwitchCard.h"
 #include "PhysCard.h"
 #include "PhysImp.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "KCode.h"
 #include "PhysicsCards.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
@@ -114,7 +113,8 @@ SimPHITS::SimPHITS() : Simulation()
 {}
 
 
-SimPHITS::SimPHITS(const SimPHITS& A) : Simulation(A)
+SimPHITS::SimPHITS(const SimPHITS& A) :
+  Simulation(A)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -138,9 +138,32 @@ SimPHITS::operator=(const SimPHITS& A)
 
 
 void
+SimPHITS::writeSource(std::ostream& OX) const
+  /*!
+    Writes out the sources 
+    construction.
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimPHITS","writeSource");
+
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  
+  OX<<"[Source]"<<std::endl;
+
+  const SDef::SourceBase* SBPtr=
+    SDB.getSource<SDef::SourceBase>(sourceName);
+  SBPtr->writePHITS(OX);
+  //  sdefCard.writePHITS(OX);
+  
+
+  return;
+}
+
+void
 SimPHITS::writeTally(std::ostream& OX) const
   /*!
-    Writes out the tallies using a nice boost binding
+    Writes out the tallies 
     construction.
     \param OX :: Output stream
    */
@@ -167,12 +190,12 @@ SimPHITS::writeTransform(std::ostream& OX) const
   */
 
 {
-  OX<<"[transform]"<<std::endl;
-
-  TransTYPE::const_iterator vt;
-  for(vt=TList.begin();vt!=TList.end();vt++)
+  if (!TList.empty())
     {
-      vt->second.write(OX);
+      OX<<"[transform]"<<std::endl;
+      TransTYPE::const_iterator vt;
+      for(vt=TList.begin();vt!=TList.end();vt++)
+	vt->second.write(OX);
     }
   return;
 }
@@ -198,9 +221,9 @@ SimPHITS::writeCells(std::ostream& OX) const
   for(mp=OList.begin();mp!=OList.end();mp++)
     {
       const double T=mp->second->getTemp();
-      if (fabs(T-300.0)>1.0)
+      if (std::abs(T-300.0)>1.0 || std::abs<double>(T)>1e-6)
 	{
-	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e11);
+	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e-5);
 	}
     }
 
@@ -236,8 +259,20 @@ SimPHITS::writeMaterial(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"    [material]"<<std::endl;
-  ModelSupport::DBMaterial::Instance().writeMCNPX(OX);
+  OX<<"[ Material ]"<<std::endl;
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+
+  if (!PhysPtr->getMode().hasElm("h"))
+    DB.deactivateParticle("h");
+  
+  OTYPE::const_iterator mp;
+  for(mp=OList.begin();mp!=OList.end();mp++)
+    DB.setActive(mp->second->getMat());
+  
+  ModelSupport::DBMaterial::Instance().writePHITS(OX);
+  
   return;
 }
 
@@ -254,8 +289,7 @@ SimPHITS::writeWeights(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"[weight]"<<std::endl;
-  WM.write(OX);
+  WM.writePHITS(OX);
   return;
 }
 
@@ -272,34 +306,33 @@ SimPHITS::writePhysics(std::ostream& OX) const
 {  
   ELog::RegMethod RegA("SimPHITS","writePhysics");
   // Processing for point tallies
-  std::map<int,tallySystem::Tally*>::const_iterator mc;
-  std::vector<int> Idum;
-  std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::pointTally* Ptr=
-	dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-	  Idum.push_back(Ptr->getKey());
-	  for(size_t i=0;i<4;i++)
-	    Rdum.push_back(Ptr->getWindowPt(i));
-	}
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      std::vector<Geometry::Vec3D>::const_iterator vc;
-      for(vc=Rdum.begin()+1;vc!=Rdum.end();vc++)
-	OX<<"           "<< *vc<<std::endl;
-    }
 
-  // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder,voidCells);
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+
+  boost::format FMT("%1$8.0d ");
+  OX<<"[Parameters]"<<std::endl;
+
+  OX<<" icntl       =        "<<(FMT % 0)<<std::endl;
+  OX<<" maxcas      =        "<<(FMT % (PhysPtr->getNPS()/10))<<std::endl;
+  OX<<" maxbch      =        "<<(FMT % 10)<<std::endl;
+  OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
+  OX<<" file(1)     = /home/stuartansell/phits"<<std::endl;  
+  OX<<" file(6)     = phits.out"<<std::endl;
+  OX<<" rseed       =        "<<(FMT % PhysPtr->getRNDseed())<<std::endl;  
+  
+  PhysPtr->writePHITS(OX);
+
+
+  if (WM.hasParticle("n"))
+    {
+      const WeightSystem::WForm* NWForm=WM.getParticle("n");
+      NWForm->writePHITSHead(OX);
+    }
+  
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+
+  
   OX<<std::endl;  // MCNPX requires a blank line to terminate
   return;
 }
@@ -312,14 +345,19 @@ SimPHITS::write(const std::string& Fname) const
   */
 {
   std::ofstream OX(Fname.c_str());
-  Simulation::writeVariables(OX);
+  OX<<"[Title]"<<std::endl;
+  writePhysics(OX);
+  //  Simulation::writeVariables(OX);
+  OX<<std::endl;
+  
   writeCells(OX);
   writeSurfaces(OX);
   writeMaterial(OX);
-  writeTransform(OX);
   writeWeights(OX);
+  writeTransform(OX);
   writeTally(OX);
-  writePhysics(OX);
+  writeSource(OX);
+  
   OX.close();
   return;
 }

@@ -85,7 +85,7 @@
 #include "BunkerInsert.h"
 #include "Aperture.h"
 #include "CompBInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -107,7 +107,7 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
   SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
 
@@ -120,13 +120,13 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
   
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
   
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")), 
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")), 
   T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
 
   VPipeE1(new constructSystem::VacuumPipe(newName+"PipeE1")),

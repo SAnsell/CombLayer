@@ -75,8 +75,6 @@
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Source.h"
-#include "KCode.h"
 #include "Simulation.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
@@ -222,7 +220,6 @@ procAngle(const mainSystem::inputParam& IParam,
       
       Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
       GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
-
       
       const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
 	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
@@ -438,7 +435,7 @@ setDefaultPhysics(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   
   std::string PList=
-    IParam.getDefValue<std::string>("h / d t s a","mode",0);
+    IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
   if (PList=="empty" || PList=="Empty")
     PList=" ";
   

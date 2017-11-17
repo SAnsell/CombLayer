@@ -158,6 +158,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WEType","weightEnergyType",1,30);
+  IParam.regItem("WParticle","weightParticles",1,30);
   IParam.regMulti("WSource","weightSource",30,1);
   IParam.regMulti("WPlane","weightPlane",30,2);
   IParam.regMulti("WTally","weightTally",30,1);
@@ -597,8 +598,8 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
   
-  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
+  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("None"));
+  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("Butterfly"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,

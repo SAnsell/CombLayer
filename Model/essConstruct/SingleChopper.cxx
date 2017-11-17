@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/ChopperUnit.cxx
+ * File:   construct/SingleChopper.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -81,12 +81,12 @@
 #include "InnerPort.h"
 #include "boltRing.h"
 #include "Motor.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 
 namespace constructSystem
 {
 
-ChopperUnit::ChopperUnit(const std::string& Key) : 
+SingleChopper::SingleChopper(const std::string& Key) : 
   attachSystem::FixedOffsetGroup(Key,"Main",6,"Beam",2,"BuildBeam",0),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   attachSystem::SurfMap(),
@@ -114,7 +114,7 @@ ChopperUnit::ChopperUnit(const std::string& Key) :
   OR.addObject(IPB);
 }
 
-ChopperUnit::ChopperUnit(const ChopperUnit& A) : 
+SingleChopper::SingleChopper(const SingleChopper& A) : 
   attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   houseIndex(A.houseIndex),cellIndex(A.cellIndex),
@@ -127,15 +127,15 @@ ChopperUnit::ChopperUnit(const ChopperUnit& A) :
   IPB(new InnerPort(*A.IPB))
   /*!
     Copy constructor
-    \param A :: ChopperUnit to copy
+    \param A :: SingleChopper to copy
   */
 {}
 
-ChopperUnit&
-ChopperUnit::operator=(const ChopperUnit& A)
+SingleChopper&
+SingleChopper::operator=(const SingleChopper& A)
   /*!
     Assignment operator
-    \param A :: ChopperUnit to copy
+    \param A :: SingleChopper to copy
     \return *this
   */
 {
@@ -163,20 +163,20 @@ ChopperUnit::operator=(const ChopperUnit& A)
   return *this;
 }
 
-ChopperUnit::~ChopperUnit() 
+SingleChopper::~SingleChopper() 
   /*!
     Destructor
   */
 {}
 
 void
-ChopperUnit::populate(const FuncDataBase& Control)
+SingleChopper::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","populate");
+  ELog::RegMethod RegA("SingleChopper","populate");
 
   FixedOffsetGroup::populate(Control);
   //  + Fe special:
@@ -199,7 +199,7 @@ ChopperUnit::populate(const FuncDataBase& Control)
 }
 
 void
-ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
+SingleChopper::createUnitVector(const attachSystem::FixedComp& FC,
                               const long int sideIndex)
   /*!
     Create the unit vectors
@@ -207,7 +207,7 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","createUnitVector");
+  ELog::RegMethod RegA("SingleChopper","createUnitVector");
 
   attachSystem::FixedComp& Main=getKey("Main");
   attachSystem::FixedComp& BuildBeam=getKey("BuildBeam");
@@ -224,12 +224,12 @@ ChopperUnit::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-ChopperUnit::createSurfaces()
+SingleChopper::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","createSurfaces");
+  ELog::RegMethod RegA("SingleChopper","createSurfaces");
 
   const Geometry::Vec3D XLong=X*(width/2.0);
   const Geometry::Vec3D ZLong=Z*(height/2.0);
@@ -276,13 +276,13 @@ ChopperUnit::createSurfaces()
 }
   
 void
-ChopperUnit::createObjects(Simulation& System)
+SingleChopper::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","createObjects");
+  ELog::RegMethod RegA("SingleChopper","createObjects");
 
   const attachSystem::FixedComp& BuildBeam=getKey("BuildBeam");
   
@@ -343,13 +343,13 @@ ChopperUnit::createObjects(Simulation& System)
 }
 
 void
-ChopperUnit::createLinks()
+SingleChopper::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","createLinks");
+  ELog::RegMethod RegA("SingleChopper","createLinks");
 
   attachSystem::FixedComp& mainFC=FixedGroup::getKey("Main");
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
@@ -383,7 +383,7 @@ ChopperUnit::createLinks()
 }
 
 void
-ChopperUnit::insertAxle(Simulation& System,
+SingleChopper::insertAxle(Simulation& System,
 			const attachSystem::CellMap& CM) const
   /*!
     Accessor function to allow the axle to be put in the 
@@ -393,7 +393,7 @@ ChopperUnit::insertAxle(Simulation& System,
     named cells (Inner).
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","insertAxle");
+  ELog::RegMethod RegA("SingleChopper","insertAxle");
 
   motor->insertInCell("Axle",System,CM.getCells("Inner"));
 
@@ -401,13 +401,13 @@ ChopperUnit::insertAxle(Simulation& System,
 }
 
 void
-ChopperUnit::createMotor(Simulation& System)
+SingleChopper::createMotor(Simulation& System)
   /*!
     Create the motor
     \param System :: Simulation to use
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","procMotor");
+  ELog::RegMethod RegA("SingleChopper","procMotor");
 
   RS->createAll(System,FixedGroup::getKey("Main"),0);
   
@@ -426,7 +426,7 @@ ChopperUnit::createMotor(Simulation& System)
 
 
 void
-ChopperUnit::createAll(Simulation& System,
+SingleChopper::createAll(Simulation& System,
                        const attachSystem::FixedComp& beamFC,
                        const long int FIndex)
   /*!
@@ -436,7 +436,7 @@ ChopperUnit::createAll(Simulation& System,
     \param FIndex :: side index
   */
 {
-  ELog::RegMethod RegA("ChopperUnit","createAll(FC)");
+  ELog::RegMethod RegA("SingleChopper","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(beamFC,FIndex);

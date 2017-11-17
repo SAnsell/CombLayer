@@ -3,7 +3,7 @@
  
  * File:   physics/PhysImp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <sstream>
 #include <vector>
 #include <complex>
+#include <set>
 #include <list>
 #include <map>
 #include <iterator>
@@ -98,6 +99,15 @@ PhysImp::~PhysImp()
   */
 {}
 
+const std::list<std::string>&
+PhysImp::getParticleList() const
+  /*!
+    Accessor to particle list
+  */
+{
+  return particles;
+}
+  
 void
 PhysImp::clear()
   /*!
@@ -344,6 +354,7 @@ PhysImp::removeParticle(const std::string& PT)
 
 void
 PhysImp::write(std::ostream& OX,
+	       const std::set<std::string>& excludeParticles,
 	       const std::vector<int>& cellOutOrder) const
   /*!
     Writes out the imp list including
@@ -363,17 +374,21 @@ PhysImp::write(std::ostream& OX,
       // Write out imp:n,x list
       if (!particles.empty())
         {
-	  cx<<":";
-	  std::list<std::string>::const_iterator pc=particles.begin();
-	  cx<<(*pc++);
-	  for(;pc!=particles.end();pc++)
-	    cx<<","<<(*pc);
+	  char separator(':');
+	  for(const std::string& pType : particles)
+	    {
+	      if (excludeParticles.find(pType) == excludeParticles.end())
+		{
+		  cx<<separator<<pType;
+		  separator=',';
+		}
+	    }
+	  // no work to do
+	  if (separator==':')
+	    return;
 	}
       cx<<" ";
 
-      // for(vc=impNum.begin();vc!=impNum.end();vc++)
-      // 	impList.push_back(std::pair<int,double>(vc->first,vc->second));
-      // impList.sort( mathSupport::PairFstLess<int,double>() );
       NRange A;
       std::vector<double> Index;
       std::vector<int>::const_iterator cvec;

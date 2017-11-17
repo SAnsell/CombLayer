@@ -263,7 +263,7 @@ testRefPlate::testArrayBlocks()
   std::vector<PTYPE> RVec;
   
   const std::string rpName("testPlate");
-  for(int i=0;i<6;i++)
+  for(int i=0;i<7;i++)
     {
       RVec.push_back(PTYPE(new ts1System::refPlate
 			   (StrFunc::makeString(rpName,i+1))));  
@@ -294,10 +294,11 @@ testRefPlate::testArrayBlocks()
     {
       RVec[i]->setPlane("-Z",*SObj,-5);
       RVec[i]->setPlane("Z",*SObj,-6);
-
     }
-  for(size_t i=5;i<7;i++)
+  
+  for(size_t i=4;i<6;i++)
     {
+      ELog::EM<<"RVE == "<<i<<ELog::endDiag;
       RVec[i]->setOrigin(*SObj,static_cast<long int>(i));
       RVec[i]->setPlane("-X",*RVec[0],4);
       RVec[i]->setPlane("X",*RVec[2],4);
@@ -308,6 +309,7 @@ testRefPlate::testArrayBlocks()
 
   for(size_t i=0;i<6;i++)
     {
+      ELog::EM<<"ITEM:"<<i<<ELog::endDiag;
       RVec[i]->setInsertCell(SObj->getCell());
       RVec[i]->createAll(ASim);
     }

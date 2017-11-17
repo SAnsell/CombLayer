@@ -64,6 +64,8 @@ EssVariables(FuncDataBase& Control,
     \param beamName :: Set of beamline names
   */
 {
+  ELog::RegMethod RegA("setVariable","EssVariables");
+  
 // -----------
 // GLOBAL stuff
 // -----------
@@ -206,30 +208,7 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("BulkMat3","Iron10H2O");        // SA: using hand-made mixture because CL can't generate volume fractions
 
 
-  // Twister
-  Control.addVariable("TwisterXStep",11.0);
-  Control.addVariable("TwisterYStep",-62.0);
-  Control.addVariable("TwisterZStep",0.0);
-  Control.addVariable("TwisterXYAngle",10.0);
-  Control.addVariable("TwisterZAngle",0.0);
-  Control.addVariable("TwisterShaftRadius",18.5);
-  Control.addVariable("TwisterShaftHeight",120.0+222.4);
-  Control.addVariable("TwisterShaftMat","Iron10H2O");
-  Control.addVariable("TwisterShaftWallThick",3.0);
-  Control.addVariable("TwisterShaftWallMat","Iron10H2O"); 
-  Control.addVariable("TwisterShaftBearingRadius",4);
-  Control.addVariable("TwisterShaftBearingHeight",54.4);
-  Control.addVariable("TwisterShaftBearingWallThick",12.2);
-  Control.addVariable("TwisterPlugFrameRadius",105.0);
-  Control.addVariable("TwisterPlugFrameWallThick",3.0);
-  Control.addVariable("TwisterPlugFrameHeight",57.6);
-  Control.addVariable("TwisterPlugFrameDepth",60.6);
-  Control.addVariable("TwisterPlugFrameAngle",38.0);
-  Control.addVariable("TwisterPlugFrameMat","Iron10H2O");
-  Control.addVariable("TwisterPlugFrameWallThick",3.0);
-  Control.addVariable("TwisterPlugFrameWallMat","Iron10H2O");
 
-  
   // BULK FLIGHT VOID
   Control.addVariable("BulkLAFlightSideIndex",-2);   // Index
   Control.addVariable("BulkLAFlightXStep",0.0);      // Step from centre
@@ -278,7 +257,45 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("GuideBay2XYAngle",90.0); 
   Control.addVariable("GuideBay1NItems",21);  
   Control.addVariable("GuideBay2NItems",21);  
-  
+
+
+    // Twister
+  Control.addVariable("TwisterXStep",11.0);
+  Control.addVariable("TwisterYStep",-62.0);
+  Control.addVariable("TwisterZStep",0.0);
+  Control.addVariable("TwisterXYAngle",10.0);
+  Control.addVariable("TwisterZAngle",0.0);
+  Control.addVariable("TwisterShaftRadius",18.5);
+  Control.addVariable("TwisterShaftHeight",120.0+222.4);
+  Control.addVariable("TwisterShaftMat","Iron10H2O");
+  Control.addVariable("TwisterShaftWallThick",3.0);
+  Control.addVariable("TwisterShaftWallMat","Iron10H2O"); 
+  Control.addVariable("TwisterShaftBearingRadius",4);
+  Control.addVariable("TwisterShaftBearingHeight",54.4);
+  Control.addVariable("TwisterShaftBearingWallThick",12.2);
+  Control.addVariable("TwisterPlugFrameRadius",105.0);
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
+  Control.addVariable("TwisterPlugFrameHeight",57.6);
+  Control.addVariable("TwisterPlugFrameDepth",60.6);
+  Control.addVariable("TwisterPlugFrameAngle",38.0);
+  Control.addVariable("TwisterPlugFrameMat","Iron10H2O");
+  Control.addVariable("TwisterPlugFrameWallThick",3.0);
+  Control.addVariable("TwisterPlugFrameWallMat","Iron10H2O");
+
+
+  // Target Station main building
+  Control.addVariable("TSMainBuildingXStep", 0.0);
+  Control.addVariable("TSMainBuildingYStep", 0.0);
+  Control.addVariable("TSMainBuildingZStep", 0.0);
+  Control.addVariable("TSMainBuildingXYangle", 0.0);
+  Control.addVariable("TSMainBuildingZangle", 0.0);
+  Control.addVariable("TSMainBuildingLength", 2200*2.0);
+  Control.addVariable("TSMainBuildingWidth",  1090*2.0);
+  Control.addVariable("TSMainBuildingHeight", 1000.0);
+  Control.addVariable("TSMainBuildingDepth",  750.0);
+  Control.addVariable("TSMainBuildingMainMat",  "Concrete");
+  Control.addVariable("TSMainBuildingRoomMat",  "Void");
+
   EssProtonBeam(Control);
   EssBeamLinesVariables(Control);
   EssPipeVariables(Control);

@@ -78,6 +78,7 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Aperture.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -85,7 +86,7 @@
 #include "VacuumPipe.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -126,7 +127,7 @@ MIRACLES::MIRACLES(const std::string& keyName) :
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopE(new constructSystem::ChopperUnit(newName+"ChopE")),
+  ChopE(new constructSystem::SingleChopper(newName+"ChopE")),
   EDisk(new constructSystem::DiskChopper(newName+"EBlade")),
 
   ShutterA(new constructSystem::BeamShutter(newName+"ShutterA")),

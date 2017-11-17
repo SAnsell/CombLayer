@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   physicsInc/PhysCard.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@ class PhysCard
   virtual PhysCard* clone() const =0;
   virtual ~PhysCard() {}
 
-  
   virtual void clear() =0;
   virtual std::string getKey() const =0;
   virtual void write(std::ostream&) const =0;

@@ -83,7 +83,7 @@
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
 #include "ChopperHousing.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
@@ -130,7 +130,7 @@ TREX::TREX(const std::string& keyName):
   PitA(new constructSystem::ChopperPit(newName+"PitA")),
   PitACutFront(new constructSystem::HoleShape(newName+"PitACutFront")),
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
@@ -139,7 +139,7 @@ TREX::TREX(const std::string& keyName):
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
   PitBCutFront(new constructSystem::HoleShape(newName+"PitBCutFront")),
   PitBCutBack(new constructSystem::HoleShape(newName+"PitBCutBack")),
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   DiskB(new constructSystem::DiskChopper(newName+"BDisk")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
@@ -150,7 +150,7 @@ TREX::TREX(const std::string& keyName):
   PitC(new constructSystem::ChopperPit(newName+"PitC")),
   PitCCutFront(new constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
   DiskC(new constructSystem::DiskChopper(newName+"CDisk")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),
@@ -160,7 +160,7 @@ TREX::TREX(const std::string& keyName):
   PitE(new constructSystem::ChopperPit(newName+"PitE")),
   PitECutFront(new constructSystem::HoleShape(newName+"PitECutFront")),
   PitECutBack(new constructSystem::HoleShape(newName+"PitECutBack")),
-  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
+  ChopperE(new constructSystem::SingleChopper(newName+"ChopperE")),
   DiskE1(new constructSystem::DiskChopper(newName+"E1Disk")),
   DiskE2(new constructSystem::DiskChopper(newName+"E2Disk")),
   ShieldE(new constructSystem::LineShield(newName+"ShieldE")),
@@ -175,13 +175,13 @@ TREX::TREX(const std::string& keyName):
   VPipeOutG(new constructSystem::VacuumPipe(newName+"PipeOutG")),
   GuideOutG(new beamlineSystem::GuideLine(newName+"GOutG")),
   
-  ChopperG(new constructSystem::ChopperUnit(newName+"ChopperG")),
+  ChopperG(new constructSystem::SingleChopper(newName+"ChopperG")),
   DiskG(new constructSystem::DiskChopper(newName+"GDisk")),
   
   VPipeOutH(new constructSystem::VacuumPipe(newName+"PipeOutH")),
   GuideOutH(new beamlineSystem::GuideLine(newName+"GOutH")),
   
-  ChopperH(new constructSystem::ChopperUnit(newName+"ChopperH")),
+  ChopperH(new constructSystem::SingleChopper(newName+"ChopperH")),
   DiskH1(new constructSystem::DiskChopper(newName+"H1Disk")),
   DiskH2(new constructSystem::DiskChopper(newName+"H2Disk")),
 

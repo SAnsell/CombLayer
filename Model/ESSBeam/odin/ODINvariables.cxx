@@ -54,6 +54,7 @@
 #include "ChopperGenerator.h"
 #include "PipeGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "JawGenerator.h"
 #include "RotaryHoleGenerator.h"

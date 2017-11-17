@@ -84,7 +84,7 @@
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
 #include "ChopperHousing.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
@@ -140,7 +140,7 @@ SKADI::SKADI(const std::string& keyName):
   PitACutFront(new constructSystem::HoleShape(newName+"PitACutFront")),
   
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   ChopAMotor(new constructSystem::Motor(newName+"ChopAMotor")),
   DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
 
@@ -150,7 +150,7 @@ SKADI::SKADI(const std::string& keyName):
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
   PitBCutFront(new constructSystem::HoleShape(newName+"PitBCutFront")),
   PitBCutBack(new constructSystem::HoleShape(newName+"PitBCutBack")),
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   DiskB(new constructSystem::DiskChopper(newName+"BDisk")),
 
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
@@ -160,9 +160,9 @@ SKADI::SKADI(const std::string& keyName):
   PitCCutFront(new
   constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
-  ChopperC1(new constructSystem::ChopperUnit(newName+"ChopperC1")),
+  ChopperC1(new constructSystem::SingleChopper(newName+"ChopperC1")),
   DiskC1(new constructSystem::DiskChopper(newName+"C1Disk")),
-  ChopperC2(new constructSystem::ChopperUnit(newName+"ChopperC2")),
+  ChopperC2(new constructSystem::SingleChopper(newName+"ChopperC2")),
   DiskC2(new constructSystem::DiskChopper(newName+"C2Disk")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),

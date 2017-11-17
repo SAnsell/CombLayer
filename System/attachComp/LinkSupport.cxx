@@ -3,7 +3,7 @@
  
  * File:   attachComp/LinkSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,4 +226,35 @@ getPoint(const std::vector<std::string>& StrItem,
   return 0;
 }
 
+void
+calcBoundaryLink(attachSystem::FixedComp& FC,const size_t linkIndex,
+		 const HeadRule& boundary,
+		 const Geometry::Vec3D& Origin,
+		 const Geometry::Vec3D& Axis)
+  /*!
+    Calculates the intersecting surface and point 
+    of a line with a headRule. The surfaces is the out
+    going surface and the point is the intersection point
+    along with the axis.  
+    \param FC :: FixedComp to add link point to
+    \param linkIndex :: link Index    
+    \param boundary :: link Index
+    \param Origin :: Origin of line
+    \param Axis :: Axis of line
+   */
+{
+  ELog::RegMethod RegA("LinkSupport[F]","calcBoundaryLink");
+
+  double D;
+  const int SN=boundary.trackSurf(Origin,Axis,D);
+  if (SN)
+    {
+      FC.setLinkSurf(linkIndex,SN);
+      FC.setConnect(linkIndex,Origin+Axis*D,Axis);
+    }
+  return;
+}
+
+
+  
 }  // NAMESPACE attachSystem

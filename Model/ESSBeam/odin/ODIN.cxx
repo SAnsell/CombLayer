@@ -76,7 +76,8 @@
 #include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "VacuumPipe.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Jaws.h"
 #include "LineShield.h"
@@ -108,36 +109,36 @@ ODIN::ODIN(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperAA(new constructSystem::ChopperUnit(newName+"ChopperAA")),
+  ChopperAA(new constructSystem::SingleChopper(newName+"ChopperAA")),
   DiskAA(new constructSystem::DiskChopper(newName+"DiskAA")),
-  ChopperAB(new constructSystem::ChopperUnit(newName+"ChopperAB")),
+  ChopperAB(new constructSystem::SingleChopper(newName+"ChopperAB")),
   DiskAB(new constructSystem::DiskChopper(newName+"DiskAB")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
   
-  ChopperFOC1(new constructSystem::ChopperUnit(newName+"ChopperFOC1")),
+  ChopperFOC1(new constructSystem::SingleChopper(newName+"ChopperFOC1")),
   FOC1Disk(new constructSystem::DiskChopper(newName+"FOC1Blade")),
   
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperFOC2(new constructSystem::ChopperUnit(newName+"ChopperFOC2")),
+  ChopperFOC2(new constructSystem::SingleChopper(newName+"ChopperFOC2")),
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  ChopperFOC3(new constructSystem::ChopperUnit(newName+"ChopperFOC3")),
+  ChopperFOC3(new constructSystem::SingleChopper(newName+"ChopperFOC3")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
-  ChopperFOC4(new constructSystem::ChopperUnit(newName+"ChopperFOC4")),
+  ChopperFOC4(new constructSystem::SingleChopper(newName+"ChopperFOC4")),
   FOC4Disk(new constructSystem::DiskChopper(newName+"FOC4Blade")),
 
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
@@ -153,7 +154,7 @@ ODIN::ODIN(const std::string& keyName) :
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
   OutBCut(new constructSystem::HoleShape(newName+"OutBCut")),
-  ChopOutFOC5(new constructSystem::ChopperUnit(newName+"ChopOutFOC5")),
+  ChopOutFOC5(new constructSystem::SingleChopper(newName+"ChopOutFOC5")),
   FOC5Disk(new constructSystem::DiskChopper(newName+"FOC5Blade")),
   
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),

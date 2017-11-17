@@ -45,7 +45,7 @@ namespace constructSystem
   class VacuumWindow;
   class ChopperHousing;
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class HoleShape;
   class JawSet;
 }
@@ -90,12 +90,12 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> WFMDisk;
 
@@ -105,7 +105,7 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendD;
 
   /// 8.5m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
 
@@ -115,7 +115,7 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendE;
 
   /// 10m 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
   /// Double disk chopper [wbc2]
   std::shared_ptr<constructSystem::DiskChopper> WBC2Disk;
 
@@ -125,7 +125,7 @@ class FREIA : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendF;
 
   /// 11.1m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperE;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
 
@@ -141,12 +141,12 @@ class FREIA : public attachSystem::CopiedComp
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutACut;
   /// 15m WBC3 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// Double disk chopper (WBC3)
   std::shared_ptr<constructSystem::DiskChopper> WBC3Disk;
 
   /// 15m FOC3 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// Double disk chopper (FOC3)
   std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
 

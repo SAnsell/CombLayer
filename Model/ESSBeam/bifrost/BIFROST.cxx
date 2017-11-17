@@ -85,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -108,13 +108,13 @@ BIFROST::BIFROST(const std::string& keyName) :
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
   AppA(new constructSystem::Aperture(newName+"AppA")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
   
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOC1Blade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -123,7 +123,7 @@ BIFROST::BIFROST(const std::string& keyName) :
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
   FOCDiskC(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
@@ -151,7 +151,7 @@ BIFROST::BIFROST(const std::string& keyName) :
   OutACutFront(new constructSystem::HoleShape(newName+"OutACutFront")),
   OutACutBack(new constructSystem::HoleShape(newName+"OutACutBack")),
 
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   FOCDiskOutA(new constructSystem::DiskChopper(newName+"FOCOutABlade")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),

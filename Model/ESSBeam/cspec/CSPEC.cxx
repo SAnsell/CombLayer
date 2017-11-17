@@ -85,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -109,7 +109,7 @@ CSPEC::CSPEC(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   BWDiskA(new constructSystem::DiskChopper(newName+"BWDiskA")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),

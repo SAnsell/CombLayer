@@ -95,6 +95,8 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "Source.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
@@ -798,6 +800,8 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
   */
 {
   ELog::RegMethod RegA("Simulation","substituteAllSurface");
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  
   const int NS(NsurfN>0 ? NsurfN : -NsurfN);
   Geometry::Surface* XPtr=ModelSupport::surfIndex::Instance().getSurf(NS);
   if (!XPtr)
@@ -812,7 +816,14 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
   for(tc=TItem.begin();tc!=TItem.end();tc++)
     tc->second->renumberSurf(KeyN,NsurfN);
 
-  PhysPtr->substituteSurface(KeyN,NsurfN);
+  // Source:
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->substituteSurface(KeyN,NsurfN);
+    }
+
   
   return 0;
 }
@@ -916,27 +927,6 @@ Simulation::setMaterialDensity(const int cellNum)
   setMaterialDensity(ObjSet);
   return 0;
 }
-
-Geometry::Transform*
-Simulation::createSourceTransform() 
-  /*!
-    Create an unused transform for the source 
-    term in the case of non-orthoganal rotation
-    \return Transform ptr [never zero]
-   */
-{
-  ELog::RegMethod RegA("Simulation","createSourceTransform");
-
-  int index(1);
-  while(TList.find(index)!=TList.end())
-    index++;
-  std::pair<TransTYPE::iterator,bool> TX=
-    TList.insert(TransTYPE::value_type(index,Geometry::Transform()));
-
-  TX.first->second.setName(index);
-  return &TX.first->second;          //*(TX.first)
-}
-
 
 void
 Simulation::processCellsImp()
@@ -1124,27 +1114,6 @@ Simulation::populateCells(const std::vector<int>& cellVec)
 	}
     }
   return 0;
-}
-
-void
-Simulation::populateWCells()
-  /*!
-    Once Qhull objects are build the Weight
-    system can be populated with density/temp
-    info etc. This does not do Energy or Weight
-    trace.
-  */
-{
-  ELog::RegMethod RegA("Simulation","populateWCells");
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  
-  // char:WForm
-  WeightSystem::weightManager::CtrlTYPE::iterator mc;
-  for(mc=WM.WMap.begin();mc!=WM.WMap.end();mc++)
-    mc->second->populateCells(OList);
-	
-  return;
 }
 
 int
@@ -1421,6 +1390,17 @@ Simulation::addTally(const tallySystem::Tally& TRef)
   tallySystem::Tally* TX=TRef.clone();
   TItem.insert(TallyTYPE::value_type(keyNum,TX));
   return 0;
+}
+
+void
+Simulation::setSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
+  */
+{
+  sourceName=S;
+  return;
 }
 
 void
@@ -1742,6 +1722,35 @@ Simulation::writeWeights(std::ostream& OX) const
 
 
 void
+Simulation::writeSource(std::ostream& OX) const
+  /*!
+    Write the source care standard MCNPX output 
+    type.
+    \param OX :: Output stream
+  */
+
+{
+  ELog::RegMethod RegA("Simulation","writeSource");
+  
+  SDef::sourceDataBase& SDB=
+    SDef::sourceDataBase::Instance();
+
+  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c --------------- SOURCE CARDS --------------------------"<<std::endl;
+  OX<<"c -------------------------------------------------------"<<std::endl;
+
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->write(OX);
+    }
+  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  return;
+}
+
+
+void
 Simulation::writePhysics(std::ostream& OX) const
   /*!
     Write all the used Weight in standard MCNPX output 
@@ -1800,6 +1809,7 @@ Simulation::writeVariables(std::ostream& OX,
   /*!
     Write all the variables in standard MCNPX output format
     \param OX :: Output stream
+    \param commentChar :: character for comments
   */
 {
   ELog::RegMethod RegA("Simulation","writeVaraibles");
@@ -1867,29 +1877,6 @@ Simulation::writeCinder() const
   return;
 }
 
-
-void
-Simulation::write(const std::string& Fname) const
-  /*!
-    Write out all the system (in MCNPX output format)
-    \param Fname :: Output file 
-  */
-{
-  std::ofstream OX(Fname.c_str());
-  
-  OX<<"Input File:"<<inputFile<<std::endl;
-  StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
-  writeVariables(OX);
-  writeCells(OX);
-  writeSurfaces(OX);
-  writeMaterial(OX);
-  writeTransform(OX);
-  writeWeights(OX);
-  writeTally(OX);
-  writePhysics(OX);
-  OX.close();
-  return;
-}
 
 void
 Simulation::writeCinderMat() const
@@ -2278,6 +2265,8 @@ Simulation::prepareWrite()
 	    voidCells.insert(OVal.first);
 	}
     }
+  
+  
   return;
 }
 
@@ -2307,28 +2296,58 @@ Simulation::masterRotation()
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
 
-  // Physics units [dxtrans and others]
-  PhysPtr->rotateMaster();
+  OR.rotateMaster();
+  
+  return;
+}
 
+void
+Simulation::masterPhysicsRotation()
+  /*!
+    Apply master rotations to the physics system
+   */
+{
+  ELog::RegMethod RegA("Simulation","masterPhysicsRotation");
+
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  const masterRotate& MR = masterRotate::Instance();
   
   // Source:
-  SDef::Source& sdef=PhysPtr->getSDefCard();
-  if (sdef.isActive())
-    if (sdef.rotateMaster())
-      {
-	sdef.setTransform(createSourceTransform());
-	if (sdef.rotateMaster())
-          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-      }
-  // Applyotations to tallies
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->rotate(MR);
+    }
+
+  // Apply rotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();
 
-  OR.rotateMaster();
-  
-  MR.setGlobal();
-
   return;
 }
 
+void
+Simulation::write(const std::string& Fname) const
+  /*!
+    Write out all the system (in MCNPX output format)
+    \param Fname :: Output file 
+  */
+{
+  std::ofstream OX(Fname.c_str());
+  
+  OX<<"Input File:"<<inputFile<<std::endl;
+  StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
+  writeVariables(OX);
+  writeCells(OX);
+  writeSurfaces(OX);
+  writeMaterial(OX);
+  writeTransform(OX);
+  writeWeights(OX);
+  writeTally(OX);
+  writeSource(OX);
+  writePhysics(OX);
+  OX.close();
+  return;
+}

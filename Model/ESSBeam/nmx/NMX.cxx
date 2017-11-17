@@ -179,6 +179,7 @@ NMX::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
   essBeamSystem::setBeamAxis(*nmxAxis,Control,GItem,1);
+  
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);

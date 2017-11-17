@@ -37,7 +37,7 @@ namespace insertSystem
 namespace constructSystem
 {  
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class Jaws;
   class DiskChopper;
   class PipeCollimator;
@@ -88,7 +88,7 @@ class LOKI : public attachSystem::CopiedComp
 
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDiskA;
 
@@ -109,7 +109,7 @@ class LOKI : public attachSystem::CopiedComp
   /// Exit of pit A
   std::shared_ptr<constructSystem::HoleShape> PitACut;
   /// vac box for first chopper out of bunker
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// double disks for first chopper out of bunker
   std::shared_ptr<constructSystem::DiskChopper> DDiskOutA;
 

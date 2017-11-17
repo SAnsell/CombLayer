@@ -1,0 +1,197 @@
+# test of travis ci for comblayer
+language: cpp
+matrix:
+   include:
+     # linux - g++ 4.9
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - george-edison55-precise-backports
+           packages:
+             - g++-4.9
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
+     # linux - g++ 5
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - george-edison55-precise-backports
+           packages:
+             - g++-5
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+     # linux - g++ 6
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - george-edison55-precise-backports
+           packages:
+             - g++-6
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+     # linux - g++ 7
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - george-edison55-precise-backports
+           packages:
+             - g++-7
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+     # linux - clang 3.7 with default g++
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - llvm-toolchain-precise-3.7
+             - george-edison55-precise-backports
+           packages:
+             - clang-3.7
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+     # linux - clang 3.8 with g++6
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - llvm-toolchain-precise-3.8
+             - george-edison55-precise-backports
+           packages:
+             - g++-6
+             - clang-3.8
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+     # linux - clang 3.9 with g++6
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - llvm-toolchain-trusty-3.9
+             - george-edison55-precise-backports
+           packages:
+             - g++-6
+             - clang-3.9
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+     # linux - clang 4.0 with g++6
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - llvm-toolchain-trusty-4.0
+             - george-edison55-precise-backports
+           packages:
+             - g++-6
+             - clang-4.0
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+     # linux - clang 5.0 with g++6
+     - os: linux
+       addons:
+         apt:
+           sources:
+             - ubuntu-toolchain-r-test
+             - llvm-toolchain-trusty-5.0
+             - george-edison55-precise-backports
+           packages:
+             - g++-6
+             - clang-5.0
+             - cmake
+             - cmake-data
+             - libgsl0-dev
+             - libboost-dev
+             - libboost-regex-dev
+             - libboost-filesystem-dev
+       env:
+          - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+before_install:
+  - eval "${MATRIX_EVAL}" 
+  - cmake -version
+  - echo $CC
+  - echo $CXX 
+script:
+  - ./CMake.pl -O -g++=$CXX
+  - cmake ./
+  - make -j6
+  # unit test
+  - ./testMain -1 -1 -1
+  # model quick tests
+  - ./fullBuild -r fb_test 
+  - ./ess -r ess_test
+  - ./bilbau -r bb_test
+  - ./sns -r sns_test
+  - ./reactor -r reactor_test
+  - ./muBeam -r mu_test
+  - ./pipe -r pipe_test
+  - ./photonMod2 -r photon_test
+  - ./singleItem -r single_test
+  - ./t1MarkII -r t1_test1
+  - ./t1Real -r t1_test2 
+  # model valid check
+  - ./fullBuild -r -validCheck 100000 fb_vtest
+ 
+  
+
+
+
+  

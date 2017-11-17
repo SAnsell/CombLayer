@@ -183,7 +183,8 @@ BunkerWall::populate(const FuncDataBase& Control)
 				  wallThick,basic);
   ModelSupport::populateDivide(Control,nBasic,keyName+"Mat",
 			       ModelSupport::EvalMatString(wallMat),
-			       basicMatVec);	  
+			       basicMatVec);
+
 
   // Need two sets active and passive :
   // ACTIVE:
@@ -205,7 +206,7 @@ BunkerWall::populate(const FuncDataBase& Control)
       
       ModelSupport::populateDivideLen(Control,nMedial,keyName+"Medial",
 				      1.0,medial);
-
+      
       loadFile=Control.EvalDefVar<std::string>(keyName+"LoadFile","");
       outFile=Control.EvalDefVar<std::string>(keyName+"OutFile","");
     }
@@ -276,7 +277,8 @@ BunkerWall::createSector(Simulation& System,
 {
   ELog::RegMethod RegA("BunkerWall","createSector");
 
-
+  const FuncDataBase& Control=System.getDataBase();
+  
   std::vector<double> empty;
   
   ModelSupport::LayerDivide3D LD3(keyName+"MainWall"+
@@ -290,9 +292,13 @@ BunkerWall::createSector(Simulation& System,
 
   const bool AFlag (activeWall & (1 << sectNum));
 
+  std::vector<std::string> actualMatVec;
+  ModelSupport::populateVecDivide
+    (Control,keyName+std::to_string(sectNum)+"Mat",
+     basicMatVec,actualMatVec);
+
   if (AFlag)
     {
-
       LD3.setFractions(0,radial);
       LD3.setFractions(1,medial);	    
       LD3.setFractions(2,vert);
@@ -301,8 +307,8 @@ BunkerWall::createSector(Simulation& System,
 			      ModelSupport::EvalMatString(wallMat)))
 	{
 	  ELog::EM<<"Using Basic Material Layers: [size="
-		  <<basicMatVec.size()<<"]"<<ELog::endDiag;
-	  LD3.setMaterials(0,basicMatVec);
+		  <<actualMatVec.size()<<"]"<<ELog::endDiag;	    
+	  LD3.setMaterials(0,actualMatVec);
 	}
     }
   else
@@ -310,8 +316,7 @@ BunkerWall::createSector(Simulation& System,
       LD3.setFractions(0,basic);
       LD3.setFractions(1,empty);
       LD3.setFractions(2,empty);
-      for(size_t index=0;index<basicMatVec.size();index++)
-	LD3.setMaterials(0,basicMatVec);
+      LD3.setMaterials(0,actualMatVec);
     }
   LD3.divideCell(System,cellN);
   addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());

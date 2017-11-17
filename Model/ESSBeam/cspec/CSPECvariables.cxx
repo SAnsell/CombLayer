@@ -55,6 +55,7 @@
 #include "PipeGenerator.h"
 #include "JawGenerator.h"
 #include "BladeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "essVariables.h"
 

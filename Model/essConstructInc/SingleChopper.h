@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/ChopperUnit.h
+ * File:   constructInc/SingleChopper.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_ChopperUnit_h
-#define constructSystem_ChopperUnit_h
+#ifndef constructSystem_SingleChopper_h
+#define constructSystem_SingleChopper_h
 
 class Simulation;
 
@@ -32,17 +32,17 @@ namespace constructSystem
   class Motor;
   
 /*!
-  \class ChopperUnit
+  \class SingleChopper
   \version 1.0
   \author S. Ansell
   \date March 2016
-  \brief ChopperUnit unit  
+  \brief SingleChopper unit  
   
   This piece aligns away from the chopper axis. Using
   the chopper origin [bearing position]
 */
 
-class ChopperUnit :
+class SingleChopper :
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -85,10 +85,10 @@ class ChopperUnit :
   
  public:
 
-  ChopperUnit(const std::string&);
-  ChopperUnit(const ChopperUnit&);
-  ChopperUnit& operator=(const ChopperUnit&);
-  virtual ~ChopperUnit();
+  SingleChopper(const std::string&);
+  SingleChopper(const SingleChopper&);
+  SingleChopper& operator=(const SingleChopper&);
+  virtual ~SingleChopper();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

@@ -314,9 +314,11 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
 					     Out+vertStr+cylStr));
 	  else
-	    createBricks(System, Wheel, 
-			 ModelSupport::getComposite(SMap, SIsec," 4 "), 
-			 ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
+	    {
+	      createBricks(System, Wheel, 
+			   ModelSupport::getComposite(SMap, SIsec," 4 "), 
+			   ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
+	    }
 	    
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,

@@ -21,7 +21,7 @@
  ****************************************************************************/
 #include <iostream>
 #include <iomanip>
-#include <cstdio>
+#include <cmath>
 #include <fstream>
 #include <sstream>
 #include <vector>
@@ -44,23 +44,21 @@
 #include "support.h"
 #include "MapRange.h"
 #include "Triple.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
+#include "MatrixBase.h"
+#include "Matrix.h"
+#include "Vec3D.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
 #include "LSwitchCard.h"
 #include "NList.h"
-#include "NRange.h"
 #include "nameCard.h"
 #include "EUnit.h"
 #include "ExtControl.h"
 #include "PWTControl.h"
 #include "DXTControl.h"
+#include "particleConv.h"
 #include "PhysicsCards.h"
 
 namespace physicsSystem
@@ -71,7 +69,7 @@ PhysicsCards::PhysicsCards() :
   RAND(new nameCard("RAND",0)),
   PTRAC(new nameCard("PTRAC",0)),
   dbCard(new nameCard("dbcn",1)),
-  voidCard(0),nImpOut(0),prdmp("1e7 1e7 0 2 1e7"),
+  voidCard(0),prdmp("1e7 1e7 0 2 1e7"),
   Volume("vol"),ExtCard(new ExtControl),
   PWTCard(new PWTControl),DXTCard(new DXTControl)
   /*!
@@ -86,6 +84,7 @@ PhysicsCards::PhysicsCards() :
       "COINC STR","EVENT STR","FILTER STR","TYPE STR",
       "NPS STR","CELL STR","SURFACE STR","TALLY STR"}
      );
+  ELog::EM<<"RAND HAS SEED"<<ELog::endDiag;
   RAND->registerItems
     (
      {"SEED INT"}
@@ -119,11 +118,11 @@ PhysicsCards::PhysicsCards(const PhysicsCards& A) :
   mcnpVersion(A.mcnpVersion),nps(A.nps),
   histp(A.histp),histpCells(A.histpCells),
   RAND(new nameCard(*A.RAND)), PTRAC(new nameCard(*A.PTRAC)),
-  dbCard(new nameCard(*dbCard)),
+  dbCard(new nameCard(*A.dbCard)),
   Basic(A.Basic),mode(A.mode),
-  voidCard(A.voidCard),nImpOut(A.nImpOut),printNum(A.printNum),
+  voidCard(A.voidCard),wImpOut(A.wImpOut),printNum(A.printNum),
   prdmp(A.prdmp),ImpCards(A.ImpCards),
-  PCards(),LEA(A.LEA),sdefCard(A.sdefCard),
+  PCards(),LEA(A.LEA),
   Volume(A.Volume),
   ExtCard(new ExtControl(*A.ExtCard)),
   PWTCard(new PWTControl(*A.PWTCard)),
@@ -161,7 +160,6 @@ PhysicsCards::operator=(const PhysicsCards& A)
       prdmp=A.prdmp;
       ImpCards=A.ImpCards;
       LEA=A.LEA;
-      sdefCard=A.sdefCard;
       Volume=A.Volume;
       *ExtCard= *A.ExtCard;
       *PWTCard= *A.PWTCard;
@@ -209,7 +207,6 @@ PhysicsCards::clearAll()
   ImpCards.clear();
   deletePCards();
   Volume.clear();
-  sdefCard.clear();
   RAND->reset();
   PTRAC->reset();
   dbCard->reset();
@@ -218,6 +215,31 @@ PhysicsCards::clearAll()
   return;
 }
 
+void
+PhysicsCards::setWImpFlag(const std::string& particleType)
+  /*!
+    Set the imp than are excluded because they have 
+    a wcell/wwg mesh
+    \param particleType :: particle type
+  */
+{
+  wImpOut.insert(particleType);
+  return;
+}
+
+bool
+PhysicsCards::hasWImpFlag(const std::string& particleType) const
+  /*!
+    Set the imp than are excluded because they have 
+    a wcell/wwg mesh
+    \param particleType :: particle type
+    \return true if particle exists
+  */
+{
+  return (wImpOut.find(particleType) == wImpOut.end()) ? 0 : 1;
+}
+
+  
 void
 PhysicsCards::addHistpCells(const std::vector<int>& AL)
   /*!
@@ -387,35 +409,6 @@ PhysicsCards::processCard(const std::string& Line)
       return 1;
     }
   return 1;
-/*
-  // ext card
-  pos=Comd.find("ext:");
-  if (pos!=std::string::npos)
-    {
-      Comd.erase(0,pos+4);
-      // Ugly hack to get all the a,b,c,d items 
-      // since I can't think of the regular expression
-      size_t index;
-      for(index=0;index<Comd.length() && !isspace(Comd[index]);index++)
-	if (Comd[index]!=',')
-	  ExtCard->addElm(std::string(1,Comd[index]));
-      // NOW HAVE PROBLEM BECAUSE MULTI-LINE
-      extCell=1;
-      if (ExtCard->addUnitList(extCell,Comd))
-	return 1;
-      // drops through to further processing
-    }
-
-  if (extCell)
-    {
-      if (ExtCard->addUnitList(extCell,Comd))
-	return 1;
-    }
-	
-  // Component:
-  Basic.push_back(Line);
-  return 1;
-*/
 }
 
 void
@@ -429,8 +422,7 @@ PhysicsCards::setEnergyCut(const double E)
 
   for(PhysCard* PC : PCards)
     PC->setEnergyCut(E);
-
-  sdefCard.cutEnergy(E);
+  
   return;
 }
 
@@ -812,12 +804,11 @@ PhysicsCards::setRND(const long int N,
   */
 {
   ELog::RegMethod RegA("PhysicsCards","setRND");
-  ELog::EM<<"SET RND"<<ELog::endDiag;
   if (N)
     {
       if (mcnpVersion==10)
 	dbCard->setRegItem("rndSeed",N);
-      else
+      else 
 	{
 	  dbCard->setDefItem("rndSeed");
 	  RAND->setRegItem("SEED",N);
@@ -885,7 +876,9 @@ PhysicsCards::getRNDseed() const
     \return seed
    */
 {
-  return RAND->getItem<long int>("SEED");
+  return  (mcnpVersion==10) ?
+    dbCard->getItem<long int>("rndSeed") :
+    RAND->getItem<long int>("SEED");
 }
   
 void
@@ -897,7 +890,6 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
    */
 {
   ELog::RegMethod RegA("PhysicsCards","substituteCell");
-  sdefCard.substituteCell(oldCell,newCell);
   histpCells.changeItem(oldCell,newCell);
   for(PhysImp& PI : ImpCards)
     PI.renumberCell(oldCell,newCell);
@@ -906,18 +898,6 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
   PWTCard->renumberCell(oldCell,newCell);
   ExtCard->renumberCell(oldCell,newCell);
 
-  return;
-}
-
-void
-PhysicsCards::substituteSurface(const int oldSurf,const int newSurf)
-  /*!
-    Substitute all surfaces in all physics cards that use surface
-    \param oldSurf :: old surface number
-    \param newSurf :: new surface number
-  */
-{
-  sdefCard.substituteSurface(oldSurf,newSurf);
   return;
 }
   
@@ -990,6 +970,51 @@ PhysicsCards::writeHelp(const std::string& keyName) const
   
    
 void 
+PhysicsCards::writePHITS(std::ostream& OX)
+  /*!
+    Write out each of the cards
+    \param OX :: Output stream
+    \param cellOutOrder :: Cell List
+    \param voidCell :: List of void cells
+    \todo Check that histp does not need a line cut.
+  */
+{
+  ELog::RegMethod RegA("PhyiscsCards","writePHITS");
+
+  const particleConv& pConv = particleConv::Instance();
+  
+  for(const PhysCard* PC : PCards)
+    {						
+      if (PC->getKey()=="cut")
+	{
+	  const PStandard* PS(dynamic_cast<const PStandard*>(PC));
+	  if (PS)
+	    {
+	      const double TCut  = PS->getValue(0);
+	      const double ECut  = PS->getValue(1);
+	      if (ECut>1e-12)
+		{
+		  for(const std::string& PItem : PS->getParticles())
+		    {
+		      OX<<" emin("<<std::setw(2)<<pConv.phitsITYP(PItem)
+			<<")    ="<<ECut;
+		      OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
+		    }
+		}
+	      for(const std::string& PItem : PS->getParticles())
+		{
+		  OX<<" tmax("<<std::setw(2)<<pConv.phitsITYP(PItem)
+		    <<")    ="<<TCut;
+		  OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
+		}
+	    }
+	}
+    }
+  
+  return;
+}
+
+void 
 PhysicsCards::write(std::ostream& OX,
 		    const std::vector<int>& cellOutOrder,
 		    const std::set<int>& voidCells) const 
@@ -1022,11 +1047,10 @@ PhysicsCards::write(std::ostream& OX,
   PTRAC->write(OX);
   
   mode.write(OX);
-  Volume.write(OX,cellOutOrder);
+  Volume.write(OX,std::set<std::string>(),cellOutOrder);
   for(const PhysImp& PI : ImpCards)
     {
-      if (nImpOut!=1 || !PI.hasElm("n"))
-	PI.write(OX,cellOutOrder);
+      PI.write(OX,wImpOut,cellOutOrder);
     }
   
   PWTCard->write(OX,cellOutOrder,voidCells);
@@ -1041,8 +1065,6 @@ PhysicsCards::write(std::ostream& OX,
   DXTCard->write(OX);
   
   LEA.write(OX);
-  sdefCard.write(OX);
-  kcodeCard.write(OX);
   
   if (!prdmp.empty())
     StrFunc::writeMCNPX("prdmp "+prdmp,OX);

@@ -183,9 +183,9 @@ class FixedComp
   virtual int getSignedLinkSurf(const long int) const;
   
   HeadRule getSignedFullRule(const long int) const;
+
   HeadRule getSignedMainRule(const long int) const;
   HeadRule getSignedCommonRule(const long int) const;
-  
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 

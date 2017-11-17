@@ -91,7 +91,8 @@ boltRing::boltRing(const std::string& BKey,
   NBolts(0),sealRadius(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
-    \param Key :: KeyName
+    \param BKey :: Base KeyName
+    \param PKey :: primary name
   */
 {}
 
@@ -152,6 +153,8 @@ boltRing::setMaterials(const std::string& boltM,const std::string& mainM)
   
   boltMat=ModelSupport::EvalMatName(boltM);
   mainMat=ModelSupport::EvalMatName(mainM);
+  ELog::EM<<"Port Mat incorrect here " <<ELog::endWarn;
+  mainMat++;
   populated |= 2;
   return;
 }

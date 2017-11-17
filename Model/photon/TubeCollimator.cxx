@@ -329,7 +329,9 @@ TubeCollimator::createCentres()
 	  {
 	    if (std::abs(i)==step || std::abs(j)==step)
 	      {
-		const Geometry::Vec3D CPoint=Origin+AAxis*(centSpc*i)+BAxis*(centSpc*j);
+		const Geometry::Vec3D CPoint=Origin+
+		  AAxis*(centSpc*static_cast<double>(i))+
+		  BAxis*(centSpc*static_cast<double>(j));
 		if (boundary.isValid(CPoint))
 		  {
 		    acceptFlag=1;
@@ -623,7 +625,8 @@ TubeCollimator::createTubes(Simulation& System)
 	for(long int j=-step;j<=step;j++)
 	  {
 	    const Geometry::Vec3D CPoint=
-	      AAxis*(centSpc*i)+BAxis*(centSpc*j);
+	      AAxis*(centSpc*static_cast<double>(i))+
+	      BAxis*(centSpc*static_cast<double>(j));
 	    if ((std::abs(i)==step || std::abs(j)==step) &&
 		boundary.isValid(CPoint))
 	      {

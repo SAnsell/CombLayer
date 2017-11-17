@@ -30,6 +30,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <functional>
 #include <memory>
 
 #include "Exception.h"

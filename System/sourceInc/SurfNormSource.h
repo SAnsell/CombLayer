@@ -35,44 +35,41 @@ namespace SDef
   \version 1.0
   \author S. Ansell
   \date September 2015
-  \brief Creat a source on the +/- of a surface
+  \brief Create a source on the +/- of a surface
 */
 
 class SurfNormSource :
-  public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public SourceBase
 {
  private:
     
-  int particleType;             ///< Particle Type
   double angleSpread;           ///< Angle from normal
   int surfNum;                  ///< Surfacte number
-  double cutEnergy;             ///< Start energy
+  double width;                 ///< Width of source
   double height;                ///< Height of source
-  
-  double weight;
-  std::vector<double> Energy;   ///< Energies [MeV]
-  std::vector<double> EWeight;  ///< Weights
-  
+    
   void populate(const FuncDataBase& Control);
-  int populateEnergy(std::string,std::string);
-
   void setSurf(const attachSystem::FixedComp&,
 			const long int);
-  void createSource(SDef::Source&) const;
 
  public:
 
   SurfNormSource(const std::string&);
   SurfNormSource(const SurfNormSource&);
   SurfNormSource& operator=(const SurfNormSource&);
+  SurfNormSource* clone() const;
   ~SurfNormSource();
-
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
-  void loadEnergy(const std::string&);
   
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
-		 const long int,SDef::Source&);
+		 const long int);
+  void createAll(const attachSystem::FixedComp&,const long int);
+
+  virtual void rotate(const localRotate&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void writePHITS(std::ostream&) const;
+  virtual void write(std::ostream&) const;
+
   
 };
 

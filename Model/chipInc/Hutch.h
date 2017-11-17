@@ -3,7 +3,7 @@
  
  * File:   chipInc/Hutch.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@ namespace shutterSystem
 namespace attachSystem
 {
  class FixedComp;
+ class FixedOffset;
+ class ContainedComp;
  class CellMap;
 }
 
@@ -50,7 +52,12 @@ namespace constructSystem
 namespace hutchSystem
 {
 
-class ChipSample;
+  class ChipSample;
+  class InnerWall;
+  class Table;
+  class PreCollimator;
+  class ColBox;
+  class BeamStop;
 
 /*!
   \class ChipIRHutch

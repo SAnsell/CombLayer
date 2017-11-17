@@ -284,21 +284,20 @@ VESPAvariables(FuncDataBase& Control)
   BGen.addPhase({30.0},{320.0});
   BGen.generateBlades(Control,"vespaFOCBladeOutB",0.0,25.0,35.5);
 
-  SGen.generateShield(Control,"vespaShieldC",200.0,40.0,40.0,40.0,1,8);  
+  SGen.generateShield(Control,"vespaShieldC",500.0,40.0,40.0,40.0,1,8);  
 
-  PipeGen.generatePipe(Control,"vespaPipeOutC",26.0,225.0);  //
+  PipeGen.generatePipe(Control,"vespaPipeOutC",26.0,525.0);  //
   Control.addVariable("vespaPipeOutCRadius",9.0);
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"vespaFOutC",220.0,9.0,11.0,8.5,10.0);
+  FGen.generateTaper(Control,"vespaFOutC",520.0,9.0,11.0,8.5,10.0);
 
   // HUT:  
   Control.addVariable("vespaCaveYStep",25.0);
   Control.addVariable("vespaCaveXStep",0.0);
-  Control.addVariable("vespaCaveVoidFront",60.0);
   Control.addVariable("vespaCaveVoidHeight",270.0);
   Control.addVariable("vespaCaveVoidDepth",225.0);
-  Control.addVariable("vespaCaveVoidWidth",480.0);  // max 5.8 full
-  Control.addVariable("vespaCaveVoidLength",960.0);
+  Control.addVariable("vespaCaveVoidWidth",450.0);  // max 5.8 full
+  Control.addVariable("vespaCaveVoidLength",450.0);
 
   Control.addVariable("vespaCaveFeFront",25.0);
   Control.addVariable("vespaCaveFeLeftWall",15.0);
@@ -317,10 +316,33 @@ VESPAvariables(FuncDataBase& Control)
   Control.addVariable("vespaCaveFeMat","Stainless304");
   Control.addVariable("vespaCaveConcMat","Concrete");
 
-  // Beam port through front of cave
-  Control.addVariable("vespaCaveCutShape","Circle");
-  Control.addVariable("vespaCaveCutRadius",10.0);
+  // INNER Comp:  
+  Control.addVariable("vespaInnerVoidHeight",100.0);
+  Control.addVariable("vespaInnerVoidDepth",105.0);
+  Control.addVariable("vespaInnerVoidWidth",100.0);  // max 5.8 full
+  Control.addVariable("vespaInnerVoidLength",120.0);
+  Control.addVariable("vespaInnerBackAngle",45.0);
+  Control.addVariable("vespaInnerBackCutStep",30.0);
 
+  Control.addVariable("vespaInnerFeFront",5.0);
+  Control.addVariable("vespaInnerFeLeftWall",10.0);
+  Control.addVariable("vespaInnerFeRightWall",10.0);
+  Control.addVariable("vespaInnerFeRoof",10.0);
+  Control.addVariable("vespaInnerFeFloor",10.0);
+
+  Control.addVariable("vespaInnerConcFront",10.0);
+  Control.addVariable("vespaInnerConcLeftWall",10.0);
+  Control.addVariable("vespaInnerConcRightWall",10.0);
+  Control.addVariable("vespaInnerConcRoof",10.0);
+  Control.addVariable("vespaInnerConcFloor",50.0);
+
+  Control.addVariable("vespaInnerFeMat","Stainless304");
+  Control.addVariable("vespaInnerConcMat","Concrete");
+
+  // Beam port through front of inner cave
+  Control.addVariable("vespaInnerExitShape","Circle");
+  Control.addVariable("vespaInnerExitRadius",10.0);
+  
   JawGen.generateJaws(Control,"vespaVJaws",75.0);
 
   Control.addVariable("vespaSampleYStep",0.0);
@@ -396,7 +418,7 @@ VESPAvariables(FuncDataBase& Control)
         }
     }
   // CRYOSTAT
-  CryGen.generateFridge(Control,"vespaCryo",300.0,-10,4.5);
+  CryGen.generateFridge(Control,"vespaCryo",150.0,-10,4.5);
   return;
 }
  

@@ -83,7 +83,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "LineShield.h"
 #include "HoleShape.h"
 #include "DHut.h"
@@ -107,7 +107,7 @@ VOR::VOR(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -119,7 +119,7 @@ VOR::VOR(const std::string& keyName) :
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   FOCDisk(new constructSystem::DiskChopper(newName+"FOCDisk")),
   FOCExitPort(new constructSystem::HoleShape(newName+"FOCExitPort")),
 
@@ -128,7 +128,7 @@ VOR::VOR(const std::string& keyName) :
   FocusOutA(new beamlineSystem::GuideLine(newName+"FOutA")),
 
   OutPitB(new constructSystem::ChopperPit(newName+"OutPitB")),
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOCDiskB(new constructSystem::DiskChopper(newName+"FOCDiskB")),
   FOCEntryPortB(new constructSystem::HoleShape(newName+"FOCEntryPortB")),
   FOCExitPortB(new constructSystem::HoleShape(newName+"FOCExitPortB")),

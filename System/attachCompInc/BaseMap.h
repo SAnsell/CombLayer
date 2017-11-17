@@ -58,6 +58,9 @@ class BaseMap
 
   bool hasItem(const std::string&) const;
   bool hasItem(const std::string&,const size_t) const;
+
+  bool hasCell(const int) const;
+  bool hasCell(const std::string&,const int) const;
   
   void setItem(const std::string&,const int);
   void setItem(const std::string&,const size_t,const int);
@@ -75,7 +78,8 @@ class BaseMap
   std::vector<int> getItems(const std::string&) const;
   std::vector<int> getItems() const;
 
-
+  std::string findCell(const int) const;
+  
   std::string removeItemNumber(const int,const size_t =0);
   int removeItem(const std::string&,const size_t =0);
   

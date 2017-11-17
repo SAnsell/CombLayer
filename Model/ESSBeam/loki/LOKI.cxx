@@ -84,7 +84,7 @@
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "Aperture.h"
@@ -117,7 +117,7 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
   BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
@@ -129,7 +129,7 @@ LOKI::LOKI(const std::string& keyN) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   DDiskOutA(new constructSystem::DiskChopper(newName+"DBladeOutA")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),

@@ -3,7 +3,7 @@
  
  * File:   lensModel/LensSource.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,15 +60,16 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
+#include "SourceBase.h"
 #include "LensSource.h"
-
 
 namespace SDef
 {
 
 LensSource::LensSource(const std::string& Key) : 
-  keyName(Key),populated(0),cutEnergy(0.0),weight(1.0),
-  radialSpread(0.0)
+  attachSystem::FixedOffset(Key,0),SourceBase(),
+  radialArea(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -76,10 +77,8 @@ LensSource::LensSource(const std::string& Key) :
 {}
 
 LensSource::LensSource(const LensSource& A) : 
-  keyName(A.keyName),populated(A.populated),
-  cutEnergy(A.cutEnergy),weight(A.weight),
-  CentPoint(A.CentPoint),Direction(A.Direction),
-  radialSpread(A.radialSpread)
+  attachSystem::FixedOffset(A),SourceBase(A),
+  radialArea(A.radialArea)
   /*!
     Copy constructor
     \param A :: LensSource to copy
@@ -96,12 +95,9 @@ LensSource::operator=(const LensSource& A)
 {
   if (this!=&A)
     {
-      populated=A.populated;
-      cutEnergy=A.cutEnergy;
-      weight=A.weight;
-      CentPoint=A.CentPoint;
-      Direction=A.Direction;
-      radialSpread=A.radialSpread;
+      attachSystem::FixedOffset::operator=(A);
+      SourceBase::operator=(A);
+      radialArea=A.radialArea;
     }
   return *this;
 }
@@ -112,6 +108,16 @@ LensSource::~LensSource()
   */
 {}
 
+LensSource*
+LensSource::clone() const
+  /*!
+    Clone constructor
+    \return copy of this
+  */
+{
+  return new LensSource(*this);
+}
+
 void
 LensSource::populate(const FuncDataBase& Control)
   /*!
@@ -119,46 +125,65 @@ LensSource::populate(const FuncDataBase& Control)
     \param Control :: Variables to access
   */
 {
-  radialSpread=Control.EvalVar<double>(keyName+"Radial");
+  ELog::RegMethod RegA("LensSource","populate");
+
+  FixedOffset::populate(Control);
+  SourceBase::populate(keyName,Control);
+  radialArea=Control.EvalDefVar<double>(keyName+"Radial",0.0);
   
-  populated=1;
   return;
 }
 
 
 void
-LensSource::createUnitVector(const attachSystem::FixedComp& pBeam)
+LensSource::createUnitVector(const attachSystem::FixedComp& FC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
-    \param pBeam :: Linear Component to represent proton beam
+    \param FC :: Linear Component to represent proton beam
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("LensSource","createUnitVector");
 
-  CentPoint=pBeam.getCentre();           // Shutter view point
-  Direction= -pBeam.getExitNorm();  
+  FixedComp::createUnitVector(FC,sideIndex);  
+  applyOffset();
+  
   return;
 }
 
 
 void
 LensSource::createAll(const FuncDataBase& Control,
-		      SDef::Source& sourceCard,
-		      const attachSystem::FixedComp& protonComp)
+		      const attachSystem::FixedComp& FC,
+		      const long int sideIndex)
   /*!
     Generic function to create everything
     \param Control :: DataBase resouces
-    \param sourceCard :: Card to update
-    \param protonComp :: Proton beam line 
+    \param FC :: Proton beam line 
+    \param sideIndex :: side index
   */
 {
   ELog::RegMethod RegA("LensSource","createAll");
+
   populate(Control);
-  createUnitVector(protonComp);
-  createSource(sourceCard);
+  createUnitVector(FC,sideIndex);
+  
   return;
 }
 
+void
+LensSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("LensSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
+  
   
 void
 LensSource::createSource(SDef::Source& sourceCard) const
@@ -168,19 +193,25 @@ LensSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("LensSource","createSource");
-  sourceCard.setActive();
-  sourceCard.setComp("vec",Direction);
-  sourceCard.setComp("par",1);            /// Neutron
-  sourceCard.setComp("pos",CentPoint);
+
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  sourceCard.setComp("vec",Y);
+  sourceCard.setComp("axs",Y);
+  sourceCard.setComp("ara",M_PI*radialArea*radialArea);         
+    
+  sourceCard.setComp("x",Origin[0]);
+  sourceCard.setComp("y",Origin[1]);
+  sourceCard.setComp("z",Origin[2]);
+
 
   // Radial
-  if (radialSpread>0.0)
+  if (radialArea>Geometry::zeroTol)
     {
       SDef::SrcData R1(3);
       SDef::SrcInfo* SIR3=R1.getInfo();
       SDef::SrcProb* SPR3=R1.getProb();
       SIR3->addData(0.0);
-      SIR3->addData(radialSpread);
+      SIR3->addData(radialArea);
       SPR3->setFminus(-21,1.0);
       sourceCard.setData("rad",R1);
     }
@@ -194,6 +225,7 @@ LensSource::createSource(SDef::Source& sourceCard) const
     { 0.000E+00,5.969E+01,4.895E+02,9.452E+02,1.322E+03,
       1.267E+03,1.379E+03,1.627E+03,1.647E+03,9.364E+02,
       1.244E+02 };
+  
   SDef::SrcData D1(1);
   SDef::SrcInfo* SI1=D1.getInfo();
   SDef::SrcProb* SP1=D1.getProb();
@@ -487,6 +519,36 @@ LensSource::createSource(SDef::Source& sourceCard) const
     }
   D2.addUnit(&DI4);
   sourceCard.setData("erg",D2);    
+  return;
+}
+
+
+
+void
+LensSource::write(std::ostream& OX) const
+  /*!
+    Write out as a MCNP source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("LensSource","write");
+
+  Source sourceCard;
+  createSource(sourceCard);
+  sourceCard.write(OX);
+  return;
+}
+
+void
+LensSource::writePHITS(std::ostream& OX) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("LensSource","write");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
 }
   

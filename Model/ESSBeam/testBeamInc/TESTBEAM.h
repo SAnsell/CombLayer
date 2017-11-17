@@ -47,7 +47,7 @@ namespace constructSystem
   class VacuumBox;
   class VacuumPipe;
   class VacuumWindow;
-  class ChopperUnit;
+  class SingleChopper;
   class TwinChopper;
   class HoleShape;
   class CrystalMount;
@@ -92,7 +92,7 @@ class TESTBEAM : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::DiskChopper> BDisk;
 
   /// Test item : T0 Chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperT0;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperT0;
   /// Test item : T0 Chopper blades
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
   /// Test item : T0 Chopper motor
