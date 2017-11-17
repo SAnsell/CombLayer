@@ -301,28 +301,10 @@ BunkerRoof::createSector(Simulation& System,
       LD3.setMaterials(2,basicMatVec);
     }
   
-  if (cellN==1450019)
-    {
-      ELog::EM<<"Inner == "<<innerSurf<<" == "<<outerSurf<<ELog::endDiag;
-      ELog::EM<<"LW    == "<<lwIndex<<" == "<<rwIndex<<ELog::endDiag;
-      ELog::EM<<"Base == "<<baseSurf<<" == "<<topSurf<<ELog::endDiag;
-      ELog::EM<<"Divie == "<<divider<<ELog::endDiag;
-      const MonteCarlo::Object* OPtr=System.findQhull(cellN);
-      ELog::EM<<"Cell == "<<OPtr->str()<<ELog::endDiag;
-    }
   LD3.setDividerByExclude(System,cellN);
   LD3.divideCell(System,cellN);
 
   addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());
-  for(const int CN : LD3.getCells())
-    {
-      if (CN==4910001)
-	{
-	  const MonteCarlo::Object* OPtr=System.findQhull(CN);
-	  ELog::EM<<"CN == "<<cellN<<" "<<ELog::endDiag;
-	  ELog::EM<<"Cell == "<<OPtr->str()<<ELog::endDiag;
-	}
-    }
   return;
 }
 
