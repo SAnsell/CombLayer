@@ -107,13 +107,12 @@ writeIndexSim(Simulation& System,const std::string& FName,const int Number)
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSim");
   
   physicsSystem::PhysicsCards& PC=System.getPC();
-  // increase the RND seed by 10
+  // increase the RND seed by N*10 [10,20,40,etc]
   PC.setRND(PC.getRNDseed()+Number*10);
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.prepareWrite();
   System.write(cx.str());
-
   
   return;
 }

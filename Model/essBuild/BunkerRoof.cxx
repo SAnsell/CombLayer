@@ -273,7 +273,6 @@ BunkerRoof::createSector(Simulation& System,
   ELog::RegMethod RegA("BunkerRoof","createSector");
 
   std::vector<double> empty;
-  
   ModelSupport::LayerDivide3D LD3(keyName+"Main"+
 				  StrFunc::makeString(sectNum));
 
@@ -299,10 +298,12 @@ BunkerRoof::createSector(Simulation& System,
       LD3.setFractions(0,empty);
       LD3.setFractions(1,empty);
       LD3.setFractions(2,basicVert);
-      for(size_t index=0;index<basicMatVec.size();index++)
-	LD3.setMaterials(2,basicMatVec);
+      LD3.setMaterials(2,basicMatVec);
     }
+  
+  LD3.setDividerByExclude(System,cellN);
   LD3.divideCell(System,cellN);
+
   addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());
   return;
 }

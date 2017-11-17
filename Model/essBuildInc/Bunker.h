@@ -95,6 +95,7 @@ class Bunker : public attachSystem::ContainedComp,
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
   double floorDepth;             ///< Floor depth
+  double wallHeight;             ///< Wall height (allows roof to intercolate)
   double roofHeight;             ///< Roof height
 
   double wallThick;              ///< backWall thickness

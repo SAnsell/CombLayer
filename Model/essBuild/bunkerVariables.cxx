@@ -101,11 +101,12 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerNSideThick",5);
 
       Control.addVariable(KItem+"BunkerFloorDepth",120.0);
-      Control.addVariable(KItem+"BunkerRoofHeight",170.0); 
+      Control.addVariable(KItem+"BunkerRoofHeight",150.0);
+      Control.addVariable(KItem+"BunkerWallHeight",170.0); 
       
       Control.addVariable(KItem+"BunkerWallThick",350.0);
       Control.addVariable(KItem+"BunkerSideThick",80.0);
-      Control.addVariable(KItem+"BunkerRoofThick",155.0);
+      Control.addVariable(KItem+"BunkerRoofThick",175.0);
       Control.addVariable(KItem+"BunkerFloorThick",100.0);
       
       Control.addVariable(KItem+"BunkerVoidMat","Void");
@@ -117,19 +118,24 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerWallNBasic",15);      
 
       // ROOF LAYERED
-      Control.addVariable(KItem+"BunkerNBasicVert",5);
-      Control.addVariable(KItem+"BunkerRoofVert1",30.0);
-      Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert4",35.0);
+      Control.addVariable(KItem+"BunkerRoofNBasicVert",8);
+      Control.addVariable(KItem+"BunkerRoofVert1",20.0);   // Void [below]
+      Control.addVariable(KItem+"BunkerRoofVert2",10.0);   // B poly
+      Control.addVariable(KItem+"BunkerRoofVert3",5.0);    // steel
+      Control.addVariable(KItem+"BunkerRoofVert4",20.0);
+      Control.addVariable(KItem+"BunkerRoofVert5",45.0);   // steel
+      Control.addVariable(KItem+"BunkerRoofVert6",40.0);  
+      Control.addVariable(KItem+"BunkerRoofVert7",25.0);   // steel
   
       
-      Control.addVariable(KItem+"BunkerRoofMat0","Poly");
-      Control.addVariable(KItem+"BunkerRoofMat1","ChipIRSteel");
-      Control.addVariable(KItem+"BunkerRoofMat2","Poly");
-      Control.addVariable(KItem+"BunkerRoofMat3","ChipIRSteel");
-      Control.addVariable(KItem+"BunkerRoofMat4","Poly");
-
+      Control.addVariable(KItem+"BunkerRoofMat0","Void");
+      Control.addVariable(KItem+"BunkerRoofMat1","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat2","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat3","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat4","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat5","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat6","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat7","Poly");
 
       Control.addVariable(KItem+"BunkerWallMat0","Poly");
       Control.addVariable(KItem+"BunkerWallMat1","ChipIRSteel");
