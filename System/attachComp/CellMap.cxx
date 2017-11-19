@@ -111,7 +111,6 @@ CellMap::insertComponent(Simulation& System,
     \param cutKey :: Items in the Cell map to slicde
     \param CM :: Items that will cut this
     \param holdKey :: Items in the Cell map to be inserted
-
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CellMap)");

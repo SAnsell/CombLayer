@@ -443,17 +443,20 @@ Bunker::createObjects(Simulation& System,
       Out=ModelSupport::getComposite(SMap,bnkIndex," 1 -17 6 (106 : -7) -16 ");
       if (i)
 	Out+=ModelSupport::getComposite(SMap,divIndex," 1 ");
+      else if (leftWallFlag)
+	Out+=ModelSupport::getComposite(SMap,bnkIndex," 13  (106 : 3) ");
       else
-	Out+=ModelSupport::getComposite(SMap,lwIndex," 3 ");
+	Out+=ModelSupport::getComposite(SMap,bnkIndex," 13 ");
 
       if (i+1!=nSectors)
 	Out+=ModelSupport::getComposite(SMap,divIndex," -2 ");
+      else if (rightWallFlag)
+	  Out+=ModelSupport::getComposite(SMap,bnkIndex," -14  (106 : -4) ");
       else
-	Out+=ModelSupport::getComposite(SMap,rwIndex," -4 ");
-
+	Out+=ModelSupport::getComposite(SMap,bnkIndex," -14 ");
+      
       System.addCell(MonteCarlo::Qhull(cellIndex++,roofMat,0.0,Out+Inner));
       addCell("roof"+StrFunc::makeString(i),cellIndex-1);
-
       Out=ModelSupport::getComposite(SMap,bnkIndex,divIndex,
 				     " 1 7 -17 1M -2M 5 -106 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,0.0,Out));
