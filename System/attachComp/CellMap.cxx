@@ -108,8 +108,10 @@ CellMap::insertComponent(Simulation& System,
   /*!
     Insert a component into a cell
     \param System :: Simulation to obtain cell from
-    \param Key :: KeyName for cell
-    \param CC :: CM object to be inserted
+    \param cutKey :: Items in the Cell map to slicde
+    \param CM :: Items that will cut this
+    \param holdKey :: Items in the Cell map to be inserted
+
    */
 {
   ELog::RegMethod RegA("CellMap","insertComponent(CellMap)");

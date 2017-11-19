@@ -173,6 +173,8 @@ BeamWindow::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp::createUnitVector(FC,indexPt);	
   applyOffset();
+  ELog::EM<<"BWPtr "<<Origin<<" = "<<yStep<<ELog::endDiag;
+  ELog::EM<<"BWPtr "<<Y<<" = "<<indexPt<<ELog::endDiag;
   return;
 }
 

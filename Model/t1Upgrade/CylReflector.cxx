@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/CylReflector.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,8 +68,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
-#include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "World.h"
 #include "CylReflector.h"
 
@@ -77,7 +79,8 @@ namespace ts1System
 {
 
 CylReflector::CylReflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,10),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,10),
+  attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
   /*!
@@ -87,10 +90,10 @@ CylReflector::CylReflector(const std::string& Key)  :
 {}
 
 CylReflector::CylReflector(const CylReflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),nLayer(A.nLayer),radius(A.radius),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
+  nLayer(A.nLayer),radius(A.radius),
   height(A.height),depth(A.depth),COffset(A.COffset),
   Mat(A.Mat)
   /*!
@@ -110,13 +113,9 @@ CylReflector::operator=(const CylReflector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       nLayer=A.nLayer;
       radius=A.radius;
       height=A.height;
@@ -134,22 +133,16 @@ CylReflector::~CylReflector()
 {}
 
 void
-CylReflector::populate(const Simulation& System)
+CylReflector::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to used
  */
 {
   ELog::RegMethod RegA("CylReflector","populate");
   
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
-
+  attachSystem::FixedOffset::populate(Control);
+ 
   nLayer=Control.EvalVar<size_t>(keyName+"NLayer");
   if (!nLayer) return;
   radius.resize(nLayer);
@@ -176,18 +169,19 @@ CylReflector::populate(const Simulation& System)
 }
   
 void
-CylReflector::createUnitVector(const attachSystem::FixedComp& FC)
+CylReflector::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
+    \param sideIndex :: link pint
   */
 {
   ELog::RegMethod RegA("CylReflector","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-    
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+  
   for(size_t i=0;i<nLayer;i++)
     COffset[i]=X*COffset[i].X()+Y*COffset[i].Y();
 
@@ -235,6 +229,8 @@ CylReflector::createObjects(Simulation& System)
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out+OutX));
       RI+=10;
+      addCell("Reflector",cellIndex-1);
+      addCell("RefLayer"+std::to_string(i),cellIndex-1);
     }
   
   addOuterSurf(Out);
@@ -250,65 +246,6 @@ CylReflector::getComposite(const std::string& surfList) const
   */
 {
   return ModelSupport::getComposite(SMap,refIndex,surfList);
-}
-
-void
-CylReflector::addToInsertChain(attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  ELog::RegMethod RegA("CylReflector","addToInsertChain");
-
-  for(int i=refIndex+1;i<cellIndex;i++)
-    CC.addInsertCell(i);
-    
-  return;
-}
-
-void
-CylReflector::addToInsertControl(Simulation& System,
-				 const attachSystem::FixedComp& FC,
-				 attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    FC is the fixed object that is to be inserted -- linkpoints
-    must be set. It is tested against all the ojbect with
-    this object .
-    
-    \todo This can easily be moved to FixedComp and out of this class
-       -- it requies that cellNumber is checked in ObjectRegister
-       -- That all objects can be effectively calculated [no open virtual
-       holers]
-       -- THAT IS IT!!!
-
-    \param FC :: FixedComp with the points
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  ELog::RegMethod RegA("CylReflector","addToInsertControl");
-
-  const size_t NPoint=FC.NConnect();
-  for(int i=refIndex+1;i<cellIndex;i++)
-    {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (!CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not build");
-
-      CRPtr->populate();
-      for(size_t j=0;j<NPoint;j++)
-	{
-	  const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	  if (CRPtr->isValid(Pt))
-	    {
-	      CC.addInsertCell(i);
-	      break;
-	    }
-	}
-    }
-  CC.insertObjects(System);
-  return;
 }
 
 void
@@ -349,17 +286,19 @@ CylReflector::getCells() const
 
 void
 CylReflector::createAll(Simulation& System,
-		       const attachSystem::FixedComp& FC)
+			const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("CylReflector","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createLinks();
   createObjects(System);

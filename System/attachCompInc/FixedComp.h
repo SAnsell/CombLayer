@@ -75,8 +75,12 @@ class FixedComp
 
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;
-  
+
+
  public:
+
+  const Geometry::Vec3D& getLinkPt(const size_t) const;
+  const Geometry::Vec3D& getLinkAxis(const size_t) const;
 
   static void computeZOffPlane(const Geometry::Vec3D&,
 			       const Geometry::Vec3D&,
@@ -164,8 +168,6 @@ class FixedComp
 
   virtual int getExitWindow(const long int,std::vector<int>&) const;
 
-  const Geometry::Vec3D& getLinkPt(const size_t) const;
-  const Geometry::Vec3D& getLinkAxis(const size_t) const;
 
   void copyLinkObjects(const FixedComp&);
   /// How many connections
