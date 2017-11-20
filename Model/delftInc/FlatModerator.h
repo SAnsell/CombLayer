@@ -50,9 +50,6 @@ class FlatModerator : public virtualMod
   double frontWallThick;    ///< Wall thickenss of view side
   double backWallThick;     ///< Wall thickenss of core side
 
-  double frontGasThick;    ///< Laye of gas on front wall
-  double backGasThick;     ///< Layer of gas on back wall
-  
   double wingAngle;         ///< Angle of cone
   double viewExtent;        ///< Distance across join
 

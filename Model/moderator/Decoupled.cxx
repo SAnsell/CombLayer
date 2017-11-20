@@ -178,7 +178,7 @@ Decoupled::populate(const FuncDataBase& Control)
   alCurve=Control.EvalVar<double>(keyName+"AlCurve");
   alSides=Control.EvalVar<double>(keyName+"AlSides");
   alUpDown=Control.EvalVar<double>(keyName+"AlUpDown");
-  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
+
   modTemp=Control.EvalVar<double>(keyName+"ModTemp");
   modMat=ModelSupport::EvalMat<int>(Control,keyName+"ModMat");
   alMat=ModelSupport::EvalMat<int>(Control,keyName+"AlMat");

@@ -522,6 +522,7 @@ buildFullSimulation(Simulation* SimPtr,
   tallyModification(*SimPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);
+  SimPtr->masterPhysicsRotation();
   // Ensure we done loop
   do
     {

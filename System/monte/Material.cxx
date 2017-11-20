@@ -804,6 +804,57 @@ Material::writeZaid(std::ostream& OX,const double F,const size_t ZD)
 }
 
 void 
+Material::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the information about the material
+    in PHITS files format
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("Material","writeFLUKA");
+  
+
+  const Element& EL(Element::Instance());
+
+  std::ostringstream cx;
+  OX<<"c Material : "<<Name<<" rho="<<atomDensity<<std::endl;
+  OX<<"mat["<<Mnum<<"]\n";
+
+  
+  cx.precision(10);
+  std::vector<Zaid>::const_iterator zc;
+  std::vector<std::string>::const_iterator vc;
+  for(const Zaid& ZItem: zaidVec)
+    {
+      cx.str("");
+      if (ZItem.getIso())
+	{
+	  cx<<"  "<<ZItem.getIso()<<EL.elmSym(ZItem.getZ())
+	    <<"       "<<ZItem.getDensity();
+	}
+      else
+	{
+	  cx<<"    "<<EL.elmSym(ZItem.getZ())
+	    <<"       "<<ZItem.getDensity();
+	}
+		  
+      OX<<cx.str()<<std::endl;
+    }
+  
+  if (!SQW.empty())
+    {
+      cx.str("");
+      cx<<"mt"<<Mnum<<"    ";
+      if (Mnum<10) cx<<" ";
+      std::copy(SQW.begin(),SQW.end(),
+		std::ostream_iterator<std::string>(cx," "));
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+
+  return;
+} 
+
+void 
 Material::writeFLUKA(std::ostream& OX) const
   /*!
     Write out the information about the material

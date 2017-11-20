@@ -75,14 +75,16 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
+#include "Motor.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
 #include "ChopperHousing.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
@@ -109,21 +111,21 @@ SKADI::SKADI(const std::string& keyName):
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   BendB(new beamlineSystem::GuideLine(newName+"BB")),
 
-  VPipeInA(new constructSystem::VacuumPipe(newName+"PipeInA")),
-  BendInA(new beamlineSystem::GuideLine(newName+"BInA")),
+  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  BendC(new beamlineSystem::GuideLine(newName+"BC")),
 
-  VPipeInB(new constructSystem::VacuumPipe(newName+"PipeInB")),
-  BendInB(new beamlineSystem::GuideLine(newName+"BInB")),
+  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
-  VPipeInC(new constructSystem::VacuumPipe(newName+"PipeInC")),
-  BendInC(new beamlineSystem::GuideLine(newName+"BInC")),
+  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  BendE(new beamlineSystem::GuideLine(newName+"BE")),
 
-  VPipeInD(new constructSystem::VacuumPipe(newName+"PipeInD")),
-  GuideInD(new beamlineSystem::GuideLine(newName+"GInD")),
+  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  CollimA(new constructSystem::PipeCollimator(newName+"CollimA")),
-  CollimB(new constructSystem::PipeCollimator(newName+"CollimB")),
-  CollimC(new constructSystem::PipeCollimator(newName+"CollimC")),
+  CollA(new constructSystem::PipeCollimator(newName+"CollA")),
+  CollB(new constructSystem::PipeCollimator(newName+"CollB")),
+  CollC(new constructSystem::PipeCollimator(newName+"CollC")),
 
   BInsert(new CompBInsert(newName+"BInsert")),
   FocusWallA(new beamlineSystem::GuideLine(newName+"FWallA")),
@@ -132,42 +134,38 @@ SKADI::SKADI(const std::string& keyName):
   FocusWallB(new beamlineSystem::GuideLine(newName+"FWallB")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
-  ShieldA1(new constructSystem::LineShield(newName+"ShieldA1")),
   VPipeOutA(new constructSystem::VacuumPipe(newName+"PipeOutA")),
   GuideOutA(new beamlineSystem::GuideLine(newName+"GOutA")),  
   PitA(new constructSystem::ChopperPit(newName+"PitA")),
-  PitACutFront(new
-  constructSystem::HoleShape(newName+"PitACutFront")),
+  PitACutFront(new constructSystem::HoleShape(newName+"PitACutFront")),
+  
   PitACutBack(new constructSystem::HoleShape(newName+"PitACutBack")),
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
+  ChopAMotor(new constructSystem::Motor(newName+"ChopAMotor")),
   DiskA(new constructSystem::DiskChopper(newName+"ADisk")),
 
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
-  ShieldB1(new constructSystem::LineShield(newName+"ShieldB1")),
   VPipeOutB(new constructSystem::VacuumPipe(newName+"PipeOutB")),
   GuideOutB(new beamlineSystem::GuideLine(newName+"GOutB")),
   PitB(new constructSystem::ChopperPit(newName+"PitB")),
-  PitBCutFront(new
-  constructSystem::HoleShape(newName+"PitBCutFront")),
+  PitBCutFront(new constructSystem::HoleShape(newName+"PitBCutFront")),
   PitBCutBack(new constructSystem::HoleShape(newName+"PitBCutBack")),
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   DiskB(new constructSystem::DiskChopper(newName+"BDisk")),
 
   ShieldC(new constructSystem::LineShield(newName+"ShieldC")),
-  ShieldC1(new constructSystem::LineShield(newName+"ShieldC1")),
   VPipeOutC(new constructSystem::VacuumPipe(newName+"PipeOutC")),
   GuideOutC(new beamlineSystem::GuideLine(newName+"GOutC")),
   PitC(new constructSystem::ChopperPit(newName+"PitC")),
   PitCCutFront(new
   constructSystem::HoleShape(newName+"PitCCutFront")),
   PitCCutBack(new constructSystem::HoleShape(newName+"PitCCutBack")),
-  ChopperC1(new constructSystem::ChopperUnit(newName+"ChopperC1")),
+  ChopperC1(new constructSystem::SingleChopper(newName+"ChopperC1")),
   DiskC1(new constructSystem::DiskChopper(newName+"C1Disk")),
-  ChopperC2(new constructSystem::ChopperUnit(newName+"ChopperC2")),
+  ChopperC2(new constructSystem::SingleChopper(newName+"ChopperC2")),
   DiskC2(new constructSystem::DiskChopper(newName+"C2Disk")),
 
   ShieldD(new constructSystem::LineShield(newName+"ShieldD")),
-  ShieldD1(new constructSystem::LineShield(newName+"ShieldD1")),
   VPipeOutD(new constructSystem::VacuumPipe(newName+"PipeOutD")),
   GuideOutD(new beamlineSystem::GuideLine(newName+"GOutD")),
 
@@ -176,7 +174,7 @@ SKADI::SKADI(const std::string& keyName):
   CaveFrontCut(new constructSystem::HoleShape(newName+"CaveFrontCut")),
   
   ShieldF(new constructSystem::LineShield(newName+"ShieldF"))
- 
+  
 {
   ELog::RegMethod RegA("SKADI","SKADI");
   
@@ -189,22 +187,22 @@ SKADI::SKADI(const std::string& keyName):
 
   OR.addObject(VPipeB);
   OR.addObject(BendB);
-
-  OR.addObject(VPipeInA);
-  OR.addObject(BendInA);
   
-  OR.addObject(VPipeInB);
-  OR.addObject(BendInB);  
+  OR.addObject(VPipeC);
+  OR.addObject(BendC);  
 
-  OR.addObject(VPipeInC);
-  OR.addObject(BendInC);  
+  OR.addObject(VPipeD);
+  OR.addObject(BendD);  
 
-  OR.addObject(VPipeInD);
-  OR.addObject(GuideInD);
+  OR.addObject(VPipeE);
+  OR.addObject(BendE);  
 
-  OR.addObject(CollimA);
-  OR.addObject(CollimB);
-  OR.addObject(CollimC);
+  OR.addObject(VPipeF);
+  OR.addObject(FocusF);
+
+  OR.addObject(CollA);
+  OR.addObject(CollB);
+  OR.addObject(CollC);
 
   OR.addObject(BInsert);
   OR.addObject(FocusWallA);
@@ -213,7 +211,6 @@ SKADI::SKADI(const std::string& keyName):
   OR.addObject(FocusWallB);
 
   OR.addObject(ShieldA);
-  OR.addObject(ShieldA1);
   OR.addObject(VPipeOutA);
   OR.addObject(GuideOutA);
   OR.addObject(PitA);
@@ -223,7 +220,6 @@ SKADI::SKADI(const std::string& keyName):
   OR.addObject(DiskA);
 
   OR.addObject(ShieldB);
-  OR.addObject(ShieldB1);
   OR.addObject(VPipeOutB);
   OR.addObject(GuideOutB);
   OR.addObject(PitB);
@@ -233,7 +229,6 @@ SKADI::SKADI(const std::string& keyName):
   OR.addObject(DiskB);
 
   OR.addObject(ShieldC);
-  OR.addObject(ShieldC1);
   OR.addObject(VPipeOutC);
   OR.addObject(GuideOutC);
   OR.addObject(PitC);
@@ -245,7 +240,6 @@ SKADI::SKADI(const std::string& keyName):
   OR.addObject(DiskC2);
 
   OR.addObject(ShieldD);
-  OR.addObject(ShieldD1);
   OR.addObject(VPipeOutD);
   OR.addObject(GuideOutD);  
 
@@ -260,40 +254,72 @@ SKADI::SKADI(const std::string& keyName):
 SKADI::~SKADI()
 {}
 
+
+
 void
-SKADI::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
+SKADI::buildBunkerUnits(Simulation& System,
+                           const attachSystem::FixedComp& FA,
+                           const long int startIndex,
+                           const int bunkerVoid)
   /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
+    Build all the components in the bunker space
+    \param System :: simulation
+    \param FA :: Fixed component to start build from [Mono guide]
+    \param startIndex :: Fixed component link point
+    \param bunkerVoid :: cell to place objects in
+  */
 {
-  ELog::RegMethod RegA("SKADI","setBeamAxis");
-  
-  skadiAxis->populate(Control);
-  skadiAxis->createUnitVector(GItem);
-  skadiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  skadiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  skadiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  skadiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  skadiAxis->linkShift(3);
-  skadiAxis->linkShift(4);
-  skadiAxis->linkAngleRotate(3);
-  skadiAxis->linkAngleRotate(4);
+  ELog::RegMethod RegA("SKADI","buildBunkerUnits");
+  /// Pipe+Guide at Light shutter position
 
-  skadiAxis->applyOffset();
+  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->createAll(System,FA,startIndex);
+  BendB->addInsertCell(VPipeB->getCells("Void"));
+  BendB->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  if (reverseZ)
-    skadiAxis->reverseZ();
+  VPipeC->addInsertCell(bunkerVoid);
+  VPipeC->createAll(System,BendB->getKey("Guide0"),2);
+  BendC->addInsertCell(VPipeC->getCells("Void"));
+  BendC->createAll(System,*VPipeC,0,*VPipeC,0);
+
+  CollA->setOuter(VPipeC->getSignedFullRule(-6));
+  CollA->setInner(BendC->getXSection(0,0)); 
+  CollA->addInsertCell(VPipeC->getCell("Void"));
+  CollA->createAll(System,*VPipeC,-1);
+
+  VPipeD->addInsertCell(bunkerVoid);
+  VPipeD->createAll(System,BendC->getKey("Guide0"),2);
+  BendD->addInsertCell(VPipeD->getCells("Void"));
+  BendD->createAll(System,BendC->getKey("Guide0"),2,
+		    BendC->getKey("Guide0"),2);
+  
+  CollB->setOuter(VPipeD->getSignedFullRule(-6));
+  CollB->setInner(BendD->getXSection(0,0)); 
+  CollB->addInsertCell(VPipeD->getCell("Void"));
+  CollB->createAll(System,*VPipeD,-1);
+
+  
+  VPipeE->addInsertCell(bunkerVoid);
+  VPipeE->createAll(System,BendD->getKey("Guide0"),2);
+  BendE->addInsertCell(VPipeE->getCells("Void"));
+  BendE->createAll(System,BendD->getKey("Guide0"),2,
+		   BendD->getKey("Guide0"),2);
+
+  VPipeF->addInsertCell(bunkerVoid);
+  VPipeF->createAll(System,BendE->getKey("Guide0"),2);
+  FocusF->addInsertCell(VPipeF->getCells("Void"));
+  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+
+  CollC->setOuter(VPipeF->getSignedFullRule(-6)); 
+  CollC->setInner(FocusF->getXSection(0,0)); 
+  CollC->addInsertCell(VPipeF->getCell("Void"));
+  CollC->createAll(System,*VPipeF,-1);
+
 
   return;
 }
 
-
+  
 void
 SKADI::build(Simulation& System,
 	    const GuideItem& GItem,
@@ -319,7 +345,7 @@ SKADI::build(Simulation& System,
 
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*skadiAxis,Control,GItem,1);
 
   /// Inside the Monolith
   BendA->addInsertCell(GItem.getCells("Void"));
@@ -329,54 +355,14 @@ SKADI::build(Simulation& System,
   
   if (stopPoint==1) return;          // Stop at Monolith
 
-  /// Pipe+Guide at Light shutter position
-  VPipeB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeB->createAll(System,BendA->getKey("Guide0"),2);
-  BendB->addInsertCell(VPipeB->getCells("Void"));
-  BendB->createAll(System,*VPipeB,0,*VPipeB,0);
+  buildBunkerUnits(System,BendA->getKey("Guide0"),2,
+                   bunkerObj.getCell("MainVoid"));
 
-  VPipeInA->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInA->createAll(System,BendB->getKey("Guide0"),2);
-  BendInA->addInsertCell(VPipeInA->getCells("Void"));
-  BendInA->createAll(System,*VPipeInA,0,*VPipeInA,0);
 
-  CollimA->setOuter(VPipeInA->getSignedFullRule(-6));
-  CollimA->setInner(BendInA->getXSection(0,0)); 
-  CollimA->addInsertCell(VPipeInA->getCell("Void"));
-  CollimA->createAll(System,*VPipeInA,-1);
-  
-  VPipeInB->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInB->createAll(System,BendInA->getKey("Guide0"),2);
-  BendInB->addInsertCell(VPipeInB->getCells("Void"));
-  BendInB->createAll(System,BendInA->getKey("Guide0"),2,
-		     BendInA->getKey("Guide0"),2);
-  
-  CollimB->setOuter(VPipeInB->getSignedFullRule(-6));
-  CollimB->setInner(BendInB->getXSection(0,0)); 
-  CollimB->addInsertCell(VPipeInB->getCell("Void"));
-  CollimB->createAll(System,*VPipeInB,-1);
-
-  
-  VPipeInC->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInC->createAll(System,BendInB->getKey("Guide0"),2);
-  BendInC->addInsertCell(VPipeInC->getCells("Void"));
-  BendInC->createAll(System,BendInB->getKey("Guide0"),2,
-		     BendInB->getKey("Guide0"),2);
-
-  VPipeInD->addInsertCell(bunkerObj.getCell("MainVoid"));
-  VPipeInD->createAll(System,BendInC->getKey("Guide0"),2);
-  GuideInD->addInsertCell(VPipeInD->getCells("Void"));
-  GuideInD->createAll(System,*VPipeInD,0,*VPipeInD,0);
-
-  CollimC->setOuter(VPipeInD->getSignedFullRule(-6)); 
-  CollimC->setInner(GuideInD->getXSection(0,0)); 
-  CollimC->addInsertCell(VPipeInD->getCell("Void"));
-  CollimC->createAll(System,*VPipeInD,-1);
-  
   if (stopPoint==2) return;         // Stop at last pipe in Bunker
   
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
-  BInsert->createAll(System,*VPipeInD,2,bunkerObj);
+  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);
   FocusWallA->addInsertCell(BInsert->getCells("Item"));
   FocusWallA->createAll(System,*BInsert,0,*BInsert,0);
@@ -398,22 +384,15 @@ SKADI::build(Simulation& System,
   
   ShieldA->addInsertCell(voidCell);
   ShieldA->addInsertCell(PitA->getCells("Outer"));
-  ShieldA->addInsertCell(PitA->getCells("MidLayer"));
   ShieldA->setFront(bunkerObj,2);
   ShieldA->setBack(PitA->getKey("Mid"),1);  
   ShieldA->createAll(System,FocusWallA->getKey("Guide0"),2);
 
-  ShieldA1->addInsertCell(ShieldA->getCell("Void"));
-  ShieldA1->addInsertCell(PitA->getCells("Outer"));
-  ShieldA1->addInsertCell(PitA->getCells("MidLayer"));
-  ShieldA1->setBack(PitA->getKey("Mid"),1);
-  ShieldA1->setFront(bunkerObj,2);
-  ShieldA1->createAll(System,*ShieldA,-1);
-
   CInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   CInsert->addInsertCell(voidCell);
-  CInsert->addInsertCell(ShieldA1->getCell("Void"));
+  CInsert->addInsertCell(ShieldA->getCell("Void"));
   CInsert->createAll(System,*BInsert,2,bunkerObj);
+
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*CInsert);
   
   FocusWallB->addInsertCell(CInsert->getCells("Item"));
@@ -421,10 +400,14 @@ SKADI::build(Simulation& System,
 
   ChopperA->addInsertCell(PitA->getCell("Void"));
   ChopperA->createAll(System,*PitA,0);
+
+  //  ChopAMotor->addInsertCell(PitA->getCell("Void"));
+  //  ChopAMotor->createAll(System,ChopperA->getKey("Main"),1);
+  
   DiskA->addInsertCell(ChopperA->getCell("Void"));
-  DiskA->setCentreFlag(3);
   DiskA->setOffsetFlag(1);
-  DiskA->createAll(System,ChopperA->getKey("Beam"),0);
+  DiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DiskA);
   
   PitB->addInsertCell(voidCell); //Chopper II pit
   PitB->createAll(System,PitA->getKey("Outer"),2);
@@ -441,47 +424,38 @@ SKADI::build(Simulation& System,
   ChopperB->addInsertCell(PitB->getCell("Void"));
   ChopperB->createAll(System,*PitB,0);
   DiskB->addInsertCell(ChopperB->getCell("Void"));
-  DiskB->setCentreFlag(3);
   DiskB->setOffsetFlag(1);
-  DiskB->createAll(System,ChopperB->getKey("Beam"),0);
+  DiskB->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*DiskB);
   
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(PitA->getCells("Outer"));
-  ShieldB->addInsertCell(PitA->getCells("MidLayer"));
   ShieldB->setFront(PitA->getKey("Mid"),2);
   ShieldB->addInsertCell(PitB->getCells("Outer"));
-  ShieldB->addInsertCell(PitB->getCells("MidLayer"));
   ShieldB->setBack(PitB->getKey("Mid"),1);  
   ShieldB->createAll(System,PitA->getKey("Mid"),2);
   
-  ShieldB1->addInsertCell(ShieldB->getCell("Void"));
-  ShieldB1->addInsertCell(PitA->getCells("Outer"));
-  ShieldB1->addInsertCell(PitA->getCells("MidLayer"));
-  ShieldB1->setFront(PitA->getKey("Mid"),2);
-  ShieldB1->addInsertCell(PitB->getCells("Outer"));
-  ShieldB1->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldB1->setBack(PitB->getKey("Mid"),1);  
-  ShieldB1->createAll(System,*ShieldB,-1);
 
-  VPipeOutA->addInsertCell(ShieldB1->getCell("Void"));
+  VPipeOutA->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutA->createAll(System,PitA->getKey("Mid"),2);
   GuideOutA->addInsertCell(VPipeOutA->getCells("Void"));
   GuideOutA->createAll(System,*VPipeOutA,0,*VPipeOutA,0);
 
-  VPipeOutB->addInsertCell(ShieldB1->getCell("Void"));
+  //  VPipeOutB->addInsertCell(ShieldB1->getCell("Void"));
+  VPipeOutB->addInsertCell(ShieldB->getCell("Void"));
   VPipeOutB->createAll(System,*VPipeOutA,2);
-  VPipeOutB->addInsertCell(PitB->getCells("Outer"));
-  VPipeOutB->addInsertCell(PitB->getCells("MidLayer"));
-  VPipeOutB->setBack(PitB->getKey("Mid"),1); 
+
   GuideOutB->addInsertCell(VPipeOutB->getCells("Void"));
   GuideOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
   
   PitC->addInsertCell(voidCell); //Chopper III & IV pit
   PitC->createAll(System,PitB->getKey("Outer"),2);
+
   PitCCutFront->addInsertCell(PitC->getCells("MidLayerFront"));
   PitCCutFront->setFaces(PitC->getKey("Mid").getSignedFullRule(-1),
 			 PitC->getKey("Inner").getSignedFullRule(1));
   PitCCutFront->createAll(System,PitC->getKey("Inner"),-1);
+
   PitCCutBack->addInsertCell(PitC->getCells("MidLayerBack"));
   PitCCutBack->addInsertCell(PitC->getCells("Collet"));
   PitCCutBack->setFaces(PitC->getKey("Mid").getSignedFullRule(-2),
@@ -490,38 +464,27 @@ SKADI::build(Simulation& System,
 
   ChopperC1->addInsertCell(PitC->getCell("Void"));
   ChopperC1->createAll(System,*PitC,0);
+
   DiskC1->addInsertCell(ChopperC1->getCell("Void"));
-  DiskC1->setCentreFlag(3);
-  DiskC1->setOffsetFlag(1);
-  DiskC1->createAll(System,ChopperC1->getKey("Beam"),0);
-  
+  DiskC1->createAll(System,ChopperC1->getKey("Main"),0);
+  ChopperC1->insertAxle(System,*DiskC1);
+    
   ChopperC2->addInsertCell(PitC->getCell("Void"));
   ChopperC2->createAll(System,*PitC,0);
   DiskC2->addInsertCell(ChopperC2->getCell("Void"));
-  DiskC2->setCentreFlag(3);
-  DiskC2->setOffsetFlag(1);
-  DiskC2->createAll(System,ChopperC2->getKey("Beam"),0);
-  
+  DiskC2->createAll(System,ChopperC2->getKey("Main"),0);
+  ChopperC2->insertAxle(System,*DiskC2);
+    
   ShieldC->addInsertCell(voidCell);
   ShieldC->addInsertCell(PitB->getCells("Outer"));
-  ShieldC->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldC->setFront(PitB->getKey("Mid"),2);
   ShieldC->addInsertCell(PitC->getCells("Outer"));
-  ShieldC->addInsertCell(PitC->getCells("MidLayer"));
+  ShieldC->setFront(PitB->getKey("Mid"),2);
   ShieldC->setBack(PitC->getKey("Mid"),1);  
   ShieldC->createAll(System,*VPipeOutB,2);
 
-  ShieldC1->addInsertCell(ShieldC->getCell("Void"));
-  ShieldC1->addInsertCell(PitB->getCells("Outer"));
-  ShieldC1->addInsertCell(PitB->getCells("MidLayer"));
-  ShieldC1->setFront(PitB->getKey("Mid"),2);
-  ShieldC1->addInsertCell(PitC->getCells("Outer"));
-  ShieldC1->addInsertCell(PitC->getCells("MidLayer"));
-  ShieldC1->setBack(PitC->getKey("Mid"),1);  
-  ShieldC1->createAll(System,*ShieldC,-1);
-
-  VPipeOutC->addInsertCell(ShieldC1->getCell("Void"));
-  VPipeOutC->createAll(System,*ShieldC1,-1);
+  VPipeOutC->addInsertCell(ShieldC->getCell("Void"));
+  VPipeOutC->createAll(System,*ShieldC,-1);
+  
   GuideOutC->addInsertCell(VPipeOutC->getCells("Void"));
   GuideOutC->createAll(System,*VPipeOutC,0,*VPipeOutC,0);
 
@@ -531,16 +494,9 @@ SKADI::build(Simulation& System,
   ShieldD->setFront(PitC->getKey("Mid"),2);
   ShieldD->createAll(System,*VPipeOutC,2);
 
-  ShieldD1->addInsertCell(ShieldD->getCell("Void"));
-  ShieldD1->addInsertCell(PitC->getCells("Outer"));
-  ShieldD1->addInsertCell(PitC->getCells("MidLayer"));
-  ShieldD1->setFront(PitC->getKey("Mid"),2);
-  ShieldD1->setBack(*ShieldD,-2);
-  ShieldD1->createAll(System,*ShieldD,-1);
-
-  VPipeOutD->addInsertCell(ShieldD1->getCell("Void"));
+  VPipeOutD->addInsertCell(ShieldD->getCell("Void"));
   VPipeOutD->setBack(*ShieldD,-2);
-  VPipeOutD->createAll(System,*ShieldD1,-1);
+  VPipeOutD->createAll(System,*ShieldD,-1);
   GuideOutD->addInsertCell(VPipeOutD->getCells("Void"));
   GuideOutD->createAll(System,*VPipeOutD,0,*VPipeOutD,0);
 

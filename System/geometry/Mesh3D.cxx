@@ -317,24 +317,14 @@ Mesh3D::point(const size_t a,const size_t b,const size_t c) const
 }
 
 void
-Mesh3D::writeWWINP(std::ostream& OX,const int tallyN,
-                   const size_t NEBin) const
+Mesh3D::writeWWINP(std::ostream& OX) const
   /*!
     Write out to a mesh to a wwinp file
     Currently ONLY works correctly with a rectangular file
     \param OX :: Output stream
-    \param tallyN :: tally number
-    \param NEBin :: Number of energy bins
   */
 {
   ELog::RegMethod RegA("Mesh3D","writeWWINP");
-
-  boost::format TopFMT("%10i%10i%10i%10i%28s\n");
-  const std::string date("10/07/15 15:37:51");
-  OX<<(TopFMT % tallyN % 1 % 1 % 10 % date);
-
-  // Energy bins
-  OX<<std::setw(10)<<NEBin<<std::endl;
 
   // Write Mesh:
   size_t itemCnt(0);
@@ -346,7 +336,7 @@ Mesh3D::writeWWINP(std::ostream& OX,const int tallyN,
   StrFunc::writeLine(OX,XFine.size(),itemCnt,4);
   StrFunc::writeLine(OX,YFine.size(),itemCnt,4);
   StrFunc::writeLine(OX,ZFine.size(),itemCnt,4);
-  // what are these 1.0 for??
+  // Course bin (3) + Geometry is rectangle flag
   StrFunc::writeLine(OX,1.0,itemCnt,4);
 
   // loop over X/Y/Z

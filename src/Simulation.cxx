@@ -61,10 +61,12 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
+#include "pairRange.h"
 #include "Tally.h"
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
+#include "tmeshTally.h"
 #include "sswTally.h"
 #include "tallyFactory.h"
 #include "Transform.h"
@@ -93,6 +95,8 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "Source.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ObjSurfMap.h"
 #include "PhysicsCards.h"
@@ -796,6 +800,8 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
   */
 {
   ELog::RegMethod RegA("Simulation","substituteAllSurface");
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  
   const int NS(NsurfN>0 ? NsurfN : -NsurfN);
   Geometry::Surface* XPtr=ModelSupport::surfIndex::Instance().getSurf(NS);
   if (!XPtr)
@@ -810,7 +816,14 @@ Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
   for(tc=TItem.begin();tc!=TItem.end();tc++)
     tc->second->renumberSurf(KeyN,NsurfN);
 
-  PhysPtr->substituteSurface(KeyN,NsurfN);
+  // Source:
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->substituteSurface(KeyN,NsurfN);
+    }
+
   
   return 0;
 }
@@ -914,27 +927,6 @@ Simulation::setMaterialDensity(const int cellNum)
   setMaterialDensity(ObjSet);
   return 0;
 }
-
-Geometry::Transform*
-Simulation::createSourceTransform() 
-  /*!
-    Create an unused transform for the source 
-    term in the case of non-orthoganal rotation
-    \return Transform ptr [never zero]
-   */
-{
-  ELog::RegMethod RegA("Simulation","createSourceTransform");
-
-  int index(1);
-  while(TList.find(index)!=TList.end())
-    index++;
-  std::pair<TransTYPE::iterator,bool> TX=
-    TList.insert(TransTYPE::value_type(index,Geometry::Transform()));
-
-  TX.first->second.setName(index);
-  return &TX.first->second;          //*(TX.first)
-}
-
 
 void
 Simulation::processCellsImp()
@@ -1124,27 +1116,6 @@ Simulation::populateCells(const std::vector<int>& cellVec)
   return 0;
 }
 
-void
-Simulation::populateWCells()
-  /*!
-    Once Qhull objects are build the Weight
-    system can be populated with density/temp
-    info etc. This does not do Energy or Weight
-    trace.
-  */
-{
-  ELog::RegMethod RegA("Simulation","populateWCells");
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();
-  
-  // char:WForm
-  WeightSystem::weightManager::CtrlTYPE::iterator mc;
-  for(mc=WM.WMap.begin();mc!=WM.WMap.end();mc++)
-    mc->second->populateCells(OList);
-	
-  return;
-}
-
 int
 Simulation::applyTransforms()
   /*! 
@@ -1233,6 +1204,32 @@ Simulation::calcAllVertex()
       // This point may be outside of the point
       if (!mc->second->calcVertex())   
 	mc->second->calcMidVertex();
+    }
+  return;
+}
+
+void
+Simulation::updateSurface(const int SN,const std::string& SLine)
+  /*!
+    Update a surface that has already been assigned:
+    \param SN :: Surface number
+    \param SLine :: Surface string
+   */
+{
+  ELog::RegMethod RegA("Simulation","updateSurface");
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  if (SurI.getSurf(SN))
+    SurI.deleteSurface(SN);
+  SurI.createSurface(SN,0,SLine);
+  //
+  OTYPE::iterator oc;
+  for(oc=OList.begin();oc!=OList.end();oc++)
+    {
+      if (oc->second->hasSurface(SN))
+	{
+	  oc->second->rePopulate();
+	}
     }
   return;
 }
@@ -1396,6 +1393,17 @@ Simulation::addTally(const tallySystem::Tally& TRef)
 }
 
 void
+Simulation::setSourceName(const std::string& S)
+ /*!
+   Set the source name from the database
+   \param S :: Source name
+  */
+{
+  sourceName=S;
+  return;
+}
+
+void
 Simulation::setForCinder()
   /*!
     Assuming that the cell tallies have
@@ -1541,13 +1549,51 @@ Simulation::writeTally(std::ostream& OX) const
   OX<<"c -----------------------------------------------------------"<<std::endl;
   OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
   OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
+  std::vector<tallySystem::tmeshTally*> TMeshVec;
   for(const TallyTYPE::value_type& TM : TItem)
-    TM.second->write(OX);
+    {
+      tallySystem::tmeshTally* TMPtr=
+	dynamic_cast<tallySystem::tmeshTally*>(TM.second);
+      if (!TMPtr)
+	TM.second->write(OX);
+      else
+	TMeshVec.push_back(TMPtr);
+    }
+  int index(1);
 
+  typedef std::vector<tallySystem::tmeshTally*> doseTYPE;
+
+  doseTYPE doseMesh;
+  if (!TMeshVec.empty())
+    {
+      OX<<"tmesh"<<std::endl;
+      for(tallySystem::tmeshTally* TMPtr : TMeshVec)
+	{
+	  if (TMPtr->hasActiveMSHMF())
+            {
+              // check if mesh currently exists:
+              const pairRange& mshValue=TMPtr->getMSHMF();
+              doseTYPE::const_iterator mc=
+                std::find_if(doseMesh.begin(),doseMesh.end(),
+                             [&mshValue](const doseTYPE::value_type& A) -> bool
+                             {
+                               return (A->getMSHMF() == mshValue);
+                             });
+              if (mc==doseMesh.end())
+                {
+                  TMPtr->setActiveMSHMF(index++);
+                  doseMesh.push_back(TMPtr);
+                }
+              else
+                {
+                  TMPtr->setActiveMSHMF(-(*mc)->hasActiveMSHMF());
+                }
+            }
+          TMPtr->write(OX);
+	}
+      OX<<"endmd"<<std::endl;
+    }
+  
   return;
 }
 
@@ -1676,6 +1722,35 @@ Simulation::writeWeights(std::ostream& OX) const
 
 
 void
+Simulation::writeSource(std::ostream& OX) const
+  /*!
+    Write the source care standard MCNPX output 
+    type.
+    \param OX :: Output stream
+  */
+
+{
+  ELog::RegMethod RegA("Simulation","writeSource");
+  
+  SDef::sourceDataBase& SDB=
+    SDef::sourceDataBase::Instance();
+
+  OX<<"c -------------------------------------------------------"<<std::endl;
+  OX<<"c --------------- SOURCE CARDS --------------------------"<<std::endl;
+  OX<<"c -------------------------------------------------------"<<std::endl;
+
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->write(OX);
+    }
+  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  return;
+}
+
+
+void
 Simulation::writePhysics(std::ostream& OX) const
   /*!
     Write all the used Weight in standard MCNPX output 
@@ -1734,6 +1809,7 @@ Simulation::writeVariables(std::ostream& OX,
   /*!
     Write all the variables in standard MCNPX output format
     \param OX :: Output stream
+    \param commentChar :: character for comments
   */
 {
   ELog::RegMethod RegA("Simulation","writeVaraibles");
@@ -1798,72 +1874,9 @@ Simulation::writeCinder() const
   ELog::RegMethod RegA("Simulation","writeCinder");
 
   writeCinderMat();
-  writeHTape();
   return;
 }
 
-
-void
-Simulation::write(const std::string& Fname) const
-  /*!
-    Write out all the system (in MCNPX output format)
-    \param Fname :: Output file 
-  */
-{
-  std::ofstream OX(Fname.c_str());
-  
-  OX<<"Input File:"<<inputFile<<std::endl;
-  StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
-  writeVariables(OX);
-  writeCells(OX);
-  writeSurfaces(OX);
-  writeMaterial(OX);
-  writeTransform(OX);
-  writeWeights(OX);
-  writeTally(OX);
-  writePhysics(OX);
-  OX.close();
-  return;
-}
-
-void
-Simulation::writeHTape() const
-  /*!
-    Write out the all the f4 tallys 
-  */
-{
-  ELog::RegMethod RegA("Simulation","writeHTape");
-
-  unsigned int index(0);
-  std::string tail="a"; 
-  TallyTYPE::const_iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::cellFluxTally* CPtr=
-	dynamic_cast<const tallySystem::cellFluxTally*>(mc->second);
-      if (CPtr)
-	{
-	  CPtr->writeHTape("inth",tail);
-	  if (tail[index]=='z')
-	    {
-	      if (index==0)
-		{
-		  tail[index]='a';
-		  tail+='a';
-		  index=1;
-		}
-	      else
-		{
-		  tail[0]++;
-		  tail[1]='a';
-		}
-	    }
-	  else
-	    tail[index]++;
-	}
-    }
-  return;
-}
 
 void
 Simulation::writeCinderMat() const
@@ -1984,7 +1997,7 @@ Simulation::getCellWithMaterial(const int matN) const
 }
 
 std::vector<int>
-Simulation::getCellWithZaid(const int zaidNum) const
+Simulation::getCellWithZaid(const size_t zaidNum) const
   /*!
     Ugly function to return the current
     vector of cells with a particular zaid type
@@ -2252,6 +2265,8 @@ Simulation::prepareWrite()
 	    voidCells.insert(OVal.first);
 	}
     }
+  
+  
   return;
 }
 
@@ -2281,28 +2296,58 @@ Simulation::masterRotation()
   for(oc=OList.begin();oc!=OList.end();oc++)
     MR.applyFull(oc->second);
 
-  // Physics units [dxtrans and others]
-  PhysPtr->rotateMaster();
+  OR.rotateMaster();
+  
+  return;
+}
 
+void
+Simulation::masterPhysicsRotation()
+  /*!
+    Apply master rotations to the physics system
+   */
+{
+  ELog::RegMethod RegA("Simulation","masterPhysicsRotation");
+
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+  const masterRotate& MR = masterRotate::Instance();
   
   // Source:
-  SDef::Source& sdef=PhysPtr->getSDefCard();
-  if (sdef.isActive())
-    if (sdef.rotateMaster())
-      {
-	sdef.setTransform(createSourceTransform());
-	if (sdef.rotateMaster())
-          ELog::EM<<"Failed on setting source term rotate"<<ELog::endErr;
-      }
-  // Applyotations to tallies
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->rotate(MR);
+    }
+
+  // Apply rotations to tallies
   std::map<int,tallySystem::Tally*>::iterator mc;
   for(mc=TItem.begin();mc!=TItem.end();mc++)
     mc->second->rotateMaster();
 
-  OR.rotateMaster();
-  
-  MR.setGlobal();
-
   return;
 }
 
+void
+Simulation::write(const std::string& Fname) const
+  /*!
+    Write out all the system (in MCNPX output format)
+    \param Fname :: Output file 
+  */
+{
+  std::ofstream OX(Fname.c_str());
+  
+  OX<<"Input File:"<<inputFile<<std::endl;
+  StrFunc::writeMCNPXcomment("RunCmd:"+cmdLine,OX);
+  writeVariables(OX);
+  writeCells(OX);
+  writeSurfaces(OX);
+  writeMaterial(OX);
+  writeTransform(OX);
+  writeWeights(OX);
+  writeTally(OX);
+  writeSource(OX);
+  writePhysics(OX);
+  OX.close();
+  return;
+}

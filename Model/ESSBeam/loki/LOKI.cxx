@@ -67,8 +67,6 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
-#include "SecondTrack.h"
-#include "TwinComp.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -76,15 +74,17 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "insertObject.h"
 #include "insertPlate.h"
+
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
 #include "Bunker.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
 #include "Aperture.h"
@@ -94,7 +94,6 @@
 #include "BunkerInsert.h"
 #include "CompBInsert.h"
 #include "Hut.h"
-
 #include "RotaryCollimator.h"
 #include "PinHole.h"
 #include "RentrantBS.h"
@@ -118,7 +117,7 @@ LOKI::LOKI(const std::string& keyN) :
   VPipeBLink(new constructSystem::VacuumPipe(newName+"PipeBLink")),
   BendBLink(new beamlineSystem::GuideLine(newName+"BBLink")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDiskA(new constructSystem::DiskChopper(newName+"DBladeA")),
 
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
@@ -130,7 +129,7 @@ LOKI::LOKI(const std::string& keyN) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   PitACut(new constructSystem::HoleShape(newName+"PitACut")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   DDiskOutA(new constructSystem::DiskChopper(newName+"DBladeOutA")),
 
   ShieldA(new constructSystem::LineShield(newName+"ShieldA")),
@@ -227,37 +226,6 @@ LOKI::registerObjects()
 }
 
 void
-LOKI::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse the z-direction 
-   */
-{
-  ELog::RegMethod RegA("LOKI","setBeamAxis");
-
-  lokiAxis->populate(Control);
-  lokiAxis->createUnitVector(GItem);
-  lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  lokiAxis->linkShift(3);
-  lokiAxis->linkShift(4);
-  lokiAxis->linkAngleRotate(3);
-  lokiAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    lokiAxis->reverseZ();
-  return;
-}
-
-void
 LOKI::buildBunkerUnits(Simulation& System,
                         const attachSystem::FixedComp& FA,
                         const long int startIndex,
@@ -300,10 +268,9 @@ LOKI::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   DDiskA->addInsertCell(ChopperA->getCell("Void"));
-  DDiskA->setCentreFlag(3);  // Z direction
-  DDiskA->setOffsetFlag(1);  // X direction
-  DDiskA->createAll(System,ChopperA->getKey("BuildBeam"),0);
-
+  DDiskA->setOffsetFlag(1);  // centre disk based on thickness
+  DDiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDiskA);
 
   VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
@@ -347,10 +314,9 @@ LOKI::buildOutGuide(Simulation& System,
 
   // Double disk chopper
   DDiskOutA->addInsertCell(ChopperOutA->getCell("Void"));
-  DDiskOutA->setCentreFlag(3);  // Z direction
-  DDiskOutA->setOffsetFlag(1);  // X direction
-  DDiskOutA->createAll(System,ChopperOutA->getKey("BuildBeam"),0);  
-
+  DDiskOutA->setOffsetFlag(1);  // Normalized thickness to centre
+  DDiskOutA->createAll(System,ChopperOutA->getKey("Main"),0);  
+  ChopperOutA->insertAxle(System,*DDiskOutA);
 
  //Beamline Shileding
   ShieldA->addInsertCell(voidCell);
@@ -482,13 +448,12 @@ LOKI::build(Simulation& System,
   // For output stream
   ELog::RegMethod RegA("LOKI","build");
   ELog::EM<<"\nBuilding LOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
-  const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
-  
+
   FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(Control);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*lokiAxis,System.getDataBase(),GItem,1);
 
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);
@@ -500,6 +465,8 @@ LOKI::build(Simulation& System,
   buildBunkerUnits(System,BendA->getKey("Guide0"),2,
                    bunkerObj.getCell("MainVoid"));
 
+  if (stopPoint==2) return;                // STOP At Bunker Wall
+  
   // WALL
   BInsert->addInsertCell(bunkerObj.getCell("MainVoid"));
   BInsert->setFront(bunkerObj,-1);
@@ -512,6 +479,8 @@ LOKI::build(Simulation& System,
   FocusWall->setBack(*BInsert,-2);
   FocusWall->createAll(System,*BInsert,7,*BInsert,7); 
 
+  if (stopPoint==3) return;                // STOP At Outer-Bunker Wall
+  
   OutPitA->addFrontWall(bunkerObj,2);
   buildOutGuide(System,FocusWall->getKey("Guide0"),2,voidCell);
   
@@ -530,15 +499,7 @@ LOKI::build(Simulation& System,
 
   VTank->addInsertCell(Cave->getCell("Void"));
   VTank->createAll(System,FocusOutC->getKey("Guide0"),2);
-  
-  return;
-  
-
-  // Vacuum tank
-  VTank->addInsertCell(Cave->getCell("Void"));
-  //  VTank->createAll(System,CaveGuide->getKey("Guide0"),2);
-  //  VTank->createAll(System,GridD->getKey("Beam"),2);
-
+ 
   return;
 }
 

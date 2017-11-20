@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   sourceInc/GammaSource.h
-*
- * Copyright (c) 2004-2016 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 namespace SDef
 {
   class Source;
+  class SourceBase;
 }
 
 namespace SDef
@@ -39,33 +40,25 @@ namespace SDef
 */
 
 class GammaSource : 
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public SourceBase
 {
  private:
     
-  int particleType;             ///< Particle Type
-  double cutEnergy;             ///< Energy cut point
 
-  size_t shape;                    ///< Shape type
+  std::string shape;            ///< Shape type
+
   double width;                 ///< width
   double height;                ///< height
   double radius;                ///< radius
   double angleSpread;           ///< Angle spread
   
   Geometry::Vec3D FocusPoint;   ///< Focus point
-  Geometry::Vec3D Direction;    ///< Beam direction
-
-  double weight;
-  std::vector<double> Energy;   ///< Energies [MeV]
-  std::vector<double> EWeight;  ///< Weights
   
   void populate(const FuncDataBase& Control);
-  int populateEnergy(std::string,std::string);
-  int populateEFile(const std::string&,const int,const int);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void calcPosition();
-  void createSource(SDef::Source&) const;
   void createRectangleSource(SDef::Source&) const;
   void createRadialSource(SDef::Source&) const;
 
@@ -74,16 +67,23 @@ class GammaSource :
   GammaSource(const std::string&);
   GammaSource(const GammaSource&);
   GammaSource& operator=(const GammaSource&);
-  ~GammaSource();
+  virtual GammaSource* clone() const;
+  virtual ~GammaSource();
 
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
-
-
-  void createAll(const FuncDataBase&,SDef::Source&);
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
-		 const long int,SDef::Source&);
+  void setPoint();
+  void setRectangle(const double,const double);
+  void setRadius(const double);
+  void setAngleSpread(const double);
   
+  
+  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+		 const long int);
+
+
+  virtual void rotate(const localRotate&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void write(std::ostream&) const;
+  virtual void writePHITS(std::ostream&) const;
 };
 
 }

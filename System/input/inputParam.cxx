@@ -41,8 +41,6 @@
 #include "NameStack.h"
 #include "RegMethod.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "mathSupport.h"
@@ -563,6 +561,33 @@ inputParam::getCntVec3D(const std::string& K,
     throw ColErr::EmptyValue<void>(K+":IPtr");
   
   return IPtr->getCntVec3D(setIndex,itemIndex);
+}
+
+std::vector<std::string>
+inputParam::getAllItems(const std::string& K) const
+  /*!
+    Accessor to the whole raw string
+    \param K :: Key to seach
+    \return Set of raw-strings
+  */
+{
+  ELog::RegMethod Rega("inputParam","getAllItems");
+
+  
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+  const size_t nSet=IPtr->getNSets();
+
+  std::vector<std::string> Out;
+  for(size_t index=0;index<nSet;index++)
+    {
+      const std::vector<std::string>& IVec=
+	IPtr->getObjectItems(index);
+      Out.insert(Out.end(),IVec.begin(),IVec.end());
+    }
+  
+  return Out;
 }
 
 const std::vector<std::string>&

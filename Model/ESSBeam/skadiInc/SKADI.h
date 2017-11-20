@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  CombLayer : MCNP(X) put builder
  
- * File:   ESSBeam/skadiInc/SKADI.h
+ * File:   ESSBeam/skadic/SKADI.h
  *
  * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
  *
@@ -38,7 +38,7 @@ namespace constuctSystem
   class DiskChopper;
   class ChopperPit;
   class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -50,7 +50,7 @@ namespace constuctSystem
 
 namespace essSystem
 {
-  class CompBInsert;
+  class CompBsert;
   class GuideItem;
   class SkadiHut;
   
@@ -68,7 +68,7 @@ class SKADI : public attachSystem::CopiedComp
 {
  private:
 
-   /// Stop at [0:Complete / 1:Mono Wall / 2:Inner Bunker / 3:Outer Bunker ]
+   /// Stop at [0:Complete / 1:Mono Wall / 2:ner Bunker / 3:Outer Bunker ]
   int stopPoint;  
 
   /// Main Beam Axis
@@ -77,39 +77,45 @@ class SKADI : public attachSystem::CopiedComp
   /// Monolith guideline
   std::shared_ptr<beamlineSystem::GuideLine> BendA;
 
-  /// Bridge guide in the light shutter
+  /// VacPipe in the light shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// bender guide in the light shutter
   std::shared_ptr<beamlineSystem::GuideLine> BendB;
 
+  /// Pipe A inside Bunker
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
   /// Benders inside Bunker
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeInA;
-  std::shared_ptr<beamlineSystem::GuideLine> BendInA;
+  std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeInB;
-  std::shared_ptr<beamlineSystem::GuideLine> BendInB;
+  /// Vac-pipe for S-Bend inbetween section 
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
+  ///  S-Bend inbetween section 
+  std::shared_ptr<beamlineSystem::GuideLine> BendD;
 
-  // Heavy Shutter
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeInC;
-  std::shared_ptr<beamlineSystem::GuideLine> BendInC;
+  /// Last vac-pipe in S-Bend
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
+  /// Last bender in S-Bend
+  std::shared_ptr<beamlineSystem::GuideLine> BendE;
 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeInD;
-  std::shared_ptr<beamlineSystem::GuideLine> GuideInD;
+  /// Straight vac pipe for heavy shutter space
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
+  std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
-  //Collimator inside bunker
-  std::shared_ptr<constructSystem::PipeCollimator> CollimA;
-  std::shared_ptr<constructSystem::PipeCollimator> CollimB;
-  std::shared_ptr<constructSystem::PipeCollimator> CollimC;
+  /// Collamator directly after gamma shield
+  std::shared_ptr<constructSystem::PipeCollimator> CollA;
+  /// Collamator mid - S bend
+  std::shared_ptr<constructSystem::PipeCollimator> CollB;
+  /// Collamator before bunker wall
+  std::shared_ptr<constructSystem::PipeCollimator> CollC;
   
-  /// Bunker Insert
+  /// Bunker sert
   std::shared_ptr<essSystem::CompBInsert> BInsert;
   std::shared_ptr<beamlineSystem::GuideLine> FocusWallA;
   std::shared_ptr<essSystem::CompBInsert> CInsert;
   std::shared_ptr<beamlineSystem::GuideLine> FocusWallB;
 
   /// Structure Up to the First Chopper I  Pit
-
   std::shared_ptr<constructSystem::LineShield> ShieldA;
-  std::shared_ptr<constructSystem::LineShield> ShieldA1;
 
   // Instrument shutter
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
@@ -118,7 +124,8 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitA;
   std::shared_ptr<constructSystem::HoleShape> PitACutFront;
   std::shared_ptr<constructSystem::HoleShape> PitACutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
+  std::shared_ptr<constructSystem::Motor> ChopAMotor;
   std::shared_ptr<constructSystem::DiskChopper> DiskA;
 
   /// Structure Up to the First Chopper II  Pit
@@ -131,26 +138,24 @@ class SKADI : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitB;
   std::shared_ptr<constructSystem::HoleShape> PitBCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitBCutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   std::shared_ptr<constructSystem::DiskChopper> DiskB;
 
   /// Structure Up to the First Chopper III  Pit
 
   std::shared_ptr<constructSystem::LineShield> ShieldC;
-  std::shared_ptr<constructSystem::LineShield> ShieldC1;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutC;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutC;
 
   std::shared_ptr<constructSystem::ChopperPit> PitC;
   std::shared_ptr<constructSystem::HoleShape> PitCCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitCCutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC1;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC1;
   std::shared_ptr<constructSystem::DiskChopper> DiskC1;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC2;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC2;
   std::shared_ptr<constructSystem::DiskChopper> DiskC2;
 
   std::shared_ptr<constructSystem::LineShield> ShieldD;
-  std::shared_ptr<constructSystem::LineShield> ShieldD1;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutD;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutD;
   
@@ -161,8 +166,10 @@ class SKADI : public attachSystem::CopiedComp
 
   std::shared_ptr<constructSystem::LineShield> ShieldF; 
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
-    
+  void buildBunkerUnits(Simulation&,
+			const attachSystem::FixedComp&,
+			const long int,const int);
+
  public:
   
   SKADI(const std::string&);

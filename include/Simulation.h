@@ -104,7 +104,8 @@ class Simulation
 
   TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
-  //  WeightSystem::WeightControl* WCtrlPtr;  ///< Weight control pointer
+
+  std::string sourceName;                 ///< Source name
   
   // METHODS:
 
@@ -121,12 +122,12 @@ class Simulation
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writePhysics(std::ostream&) const;
   void writeVariables(std::ostream&,const char ='c') const;
 
   // The Cinder Write stuff
   void writeCinderMat() const;
-  void writeHTape() const;
 
   int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
@@ -145,7 +146,6 @@ class Simulation
   void resetAll();
   void readMaster(const std::string&);   
   int applyTransforms();  
-  void populateWCells();
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
 
@@ -171,11 +171,11 @@ class Simulation
   /// Get PhysicsCards
   physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
 
-  
+  /// set Source name
+  void setSourceName(const std::string&);
+
   const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells
-  Geometry::Transform* createSourceTransform();
-  
 
   int removeComplements(); 
 
@@ -186,6 +186,7 @@ class Simulation
   void calcAllVertex();
   
   void masterRotation();
+  void masterPhysicsRotation();
 
   // ADD Objects
   int addCell(const MonteCarlo::Qhull&);         
@@ -206,7 +207,7 @@ class Simulation
   std::vector<int> getNonVoidCellVector() const;
   std::vector<int> getCellVectorRange(const int,const int) const;
   std::vector<int> getCellWithMaterial(const int) const;
-  std::vector<int> getCellWithZaid(const int) const;
+  std::vector<int> getCellWithZaid(const size_t) const;
 
   void processCellsImp();           
   int makeVirtual(const int);
@@ -217,7 +218,7 @@ class Simulation
   int removeAllSurface(const int);
   int substituteAllSurface(const int,const int);
   void voidObject(const std::string&);
-
+  void updateSurface(const int,const std::string&);
 
   void createObjSurfMap();
   void validateObjSurfMap();

@@ -3,7 +3,7 @@
  
  * File:   weightsInc/Mesh3D.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ class Mesh3D
   void setRefPt(const Geometry::Vec3D&);  
   
   void write(std::ostream&) const;
-  void writeWWINP(std::ostream&,const int,const size_t) const;
+  void writeWWINP(std::ostream&) const;
 
 };
 

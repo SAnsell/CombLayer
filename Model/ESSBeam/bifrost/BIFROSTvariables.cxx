@@ -128,7 +128,7 @@ BIFROSTvariables(FuncDataBase& Control)
   BGen.setThick({0.2,0.2});
   BGen.addPhase({95,275},{60.0,60.0});
   BGen.addPhase({95,275},{60.0,60.0});
-  BGen.generateBlades(Control,"bifrostDBlade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostDBlade",0.0,20.0,35.0);
 
   // VACUUM PIPE: SDisk to T0 (A)
   PipeGen.setPipe(12.0,0.5);
@@ -148,7 +148,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Singe Blade chopper FOC
   BGen.setThick({0.2});
   BGen.addPhase({95},{60.0});
-  BGen.generateBlades(Control,"bifrostFOC1Blade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostFOC1Blade",0.0,20.0,35.0);
 
   // VACUUM PIPE: from ChoperB to 6m holding point
   PipeGen.setPipe(12.0,0.5);
@@ -175,7 +175,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Singe Blade chopper FOC
   BGen.setThick({0.2});
   BGen.addPhase({95},{60.0});
-  BGen.generateBlades(Control,"bifrostFOC2Blade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostFOC2Blade",0.0,20.0,35.0);
 
   // VACUUM PIPE: from ChoperC with 4m
   PipeGen.setPipe(12.0,0.5);
@@ -293,7 +293,7 @@ BIFROSTvariables(FuncDataBase& Control)
   // Singe Blade chopper FOC
   BGen.setThick({0.2});
   BGen.addPhase({95},{60.0});
-  BGen.generateBlades(Control,"bifrostFOCOutABlade",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"bifrostFOCOutABlade",0.0,20.0,35.0);
 
   // Shield: leaving chopper pit A
   SGen.generateShield(Control,"bifrostShieldB",6275.0,40.0,40.0,40.0,4,8);

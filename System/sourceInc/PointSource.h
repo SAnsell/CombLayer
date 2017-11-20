@@ -4,7 +4,7 @@
  * File:   sourceInc/PointSource.h
  *
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,45 +40,36 @@ namespace SDef
 */
 
 class PointSource : 
-  public attachSystem::FixedOffset
+  public attachSystem::FixedOffset,
+  public SourceBase
 {
  private:
   
-  
-  int particleType;             ///< Particle Type
-  double cutEnergy;             ///< Energy cut point
   double angleSpread;           ///< Angle spread
-  double weight;                ///< Particle weight
-
-  std::vector<double> Energy;   ///< Energies [MeV]
-  std::vector<double> EWeight;  ///< Weights
   
   void populate(const FuncDataBase& Control);
-  int populateEnergy(std::string,std::string);
-  int populateEFile(const std::string&,const int,const int);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
-
-  void createSource(SDef::Source&) const;
 
  public:
 
   PointSource(const std::string&);
   PointSource(const PointSource&);
   PointSource& operator=(const PointSource&);
-  ~PointSource();
+  virtual PointSource* clone() const;
+  virtual ~PointSource();
 
-  /// set default distance
-  void setDefaultStep(const Geometry::Vec3D& D)
-  { xStep=D[0]; yStep=D[1], zStep=D[2]; }
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
+  /// accessor to angle
+  void setAngleSpread(const double D) { angleSpread=D; }
 
-
-  void createAll(const FuncDataBase&,SDef::Source&);
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
-		 const long int,SDef::Source&);
-  
+		 const long int);
+
+
+  virtual void rotate(const localRotate&);
+  virtual void createSource(SDef::Source&) const;
+  virtual void write(std::ostream&) const;
+  virtual void writePHITS(std::ostream&) const;
 };
 
 }

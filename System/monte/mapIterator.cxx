@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/mapIterator.cxx
 *
- * Copyright (c) 2004-2013 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,8 @@ size_t
 mapIterator::binaryToGray(const size_t I)
   /*!
     Simple way to convert a binary value to a gray
+    \param I :: Input value
+    \param size_t :: Otuptu greay
    */
 {
   return (I >> 1) ^ I;

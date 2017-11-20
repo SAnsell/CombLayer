@@ -55,7 +55,8 @@
 #include "pairRange.h"
 #include "Tally.h"
 #include "pointTally.h"
-#include "meshTally.h"
+#include "tmeshTally.h"
+#include "fmeshTally.h"
 #include "heatTally.h"
 #include "cellFluxTally.h"
 #include "fissionTally.h"
@@ -74,8 +75,6 @@
 #include "PhysCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
-#include "Source.h"
-#include "KCode.h"
 #include "PhysicsCards.h"
 #include "Simulation.h"
 #include "SpecialSurf.h"
@@ -83,13 +82,58 @@
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
 #include "pointDetOpt.h"
-#include "meshConstruct.h" 
 
 #include "TallyCreate.h"
 
 namespace tallySystem
 {
   
+
+void
+addF1Tally(Simulation& System,const int tNum,
+	   const int surfNum)
+  /*!
+    Addition of a tally to the mcnpx
+    deck
+    \param System :: Simulation class
+    \param tNum :: tally number
+    \param surfNum :: surface to tally
+  */
+{
+  tallySystem::surfaceTally TX(tNum);
+  TX.setParticles("n");                  /// F1 Tally on neutrons
+  TX.addSurface(surfNum);
+  TX.setEnergy("1.0e-11 251log 1e3");
+  TX.setPrintField("f d u s m e t c");
+  System.addTally(TX);
+
+  return;
+}
+
+void
+addF1Tally(Simulation& System,const int tNum,
+	   const int surfNum,
+	   const std::vector<int>& SDividers)
+  /*!
+    Addition of a tally to the mcnpx
+    deck
+    \param System :: Simulation class
+    \param tNum :: tally number
+    \param surfNum :: surface to tally
+    \param SDividers :: Add surface dividers
+  */
+{
+  tallySystem::surfaceTally TX(tNum);
+  TX.setParticles("n");                  /// F1 Tally on neutrons
+  TX.addSurface(surfNum);
+  TX.setEnergy("1.0e-11 251log 1e3");
+  TX.setPrintField("f d u s m e t c");
+  TX.setSurfDivider(SDividers);
+  System.addTally(TX);
+
+  return;
+}
+
 void
 addFullHeatBlock(Simulation& System)
   /*!
@@ -172,51 +216,6 @@ addHeatBlock(Simulation& System,const std::vector<int>& CellList)
       TX.setParticles(part[i]);
       System.addTally(TX);
     }
-  return;
-}
-
-void
-addF1Tally(Simulation& System,const int tNum,
-	   const int surfNum)
-  /*!
-    Addition of a tally to the mcnpx
-    deck
-    \param System :: Simulation class
-    \param tNum :: tally number
-    \param surfNum :: surface to tally
-  */
-{
-  tallySystem::surfaceTally TX(tNum);
-  TX.setParticles("n");                  /// F1 Tally on neutrons
-  TX.addSurface(surfNum);
-  TX.setEnergy("1.0e-11 251log 1e3");
-  TX.setPrintField("f d u s m e t c");
-  System.addTally(TX);
-
-  return;
-}
-
-void
-addF1Tally(Simulation& System,const int tNum,
-	   const int surfNum,
-	   const std::vector<int>& SDividers)
-  /*!
-    Addition of a tally to the mcnpx
-    deck
-    \param System :: Simulation class
-    \param tNum :: tally number
-    \param surfNum :: surface to tally
-    \param SDividers :: Add surface dividers
-  */
-{
-  tallySystem::surfaceTally TX(tNum);
-  TX.setParticles("n");                  /// F1 Tally on neutrons
-  TX.addSurface(surfNum);
-  TX.setEnergy("1.0e-11 251log 1e3");
-  TX.setPrintField("f d u s m e t c");
-  TX.setSurfDivider(SDividers);
-  System.addTally(TX);
-
   return;
 }
   
@@ -776,12 +775,19 @@ getFarPoint(const Simulation& Sim,Geometry::Vec3D& Pt)
 	}
       else 
 	{
-	  const meshTally* Mptr=
-	    dynamic_cast<const meshTally*>(mc->second);
-	  if (Mptr)
+	  const tmeshTally* TMptr=
+	    dynamic_cast<const tmeshTally*>(mc->second);
+	  const fmeshTally* FMptr=
+	    dynamic_cast<const fmeshTally*>(mc->second);
+	  if (TMptr)
 	    {
-	      tnum=Mptr->getKey();
-	      Pt=Mptr->getCentre();
+	      tnum=TMptr->getKey();
+	      Pt=TMptr->getCentre();
+	    }
+	  else if (FMptr)
+	    {
+	      tnum=FMptr->getKey();
+	      Pt=FMptr->getCentre();
 	    }
 	}
     }

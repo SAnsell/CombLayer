@@ -372,7 +372,7 @@ LinkUnit::addBridgeSurf(const std::string& SList)
     \param SList ::  Surface string [fully decomposed]
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addInterSurf(std::string)");
+  ELog::RegMethod RegA("LinkUnit","addBridgeSurf(std::string)");
 
   bridgeSurf.addIntersection(SList);
   return;
@@ -385,7 +385,7 @@ LinkUnit::addBridgeSurf(const HeadRule& HR)
     \param HR ::  Rule for bridge surface
   */
 {
-  ELog::RegMethod RegA("LinkUnit","addInterSurf(HeadRule)");
+  ELog::RegMethod RegA("LinkUnit","addBridgeSurf(HeadRule)");
 
   bridgeSurf.addIntersection(HR);
   return;
@@ -414,7 +414,7 @@ LinkUnit::getLinkString() const
     \return linked surface number
   */
 {
-  ELog::RegMethod RegA("LinkUnit","getLinkSurf");
+  ELog::RegMethod RegA("LinkUnit","getLinkString");
   std::string Out;
   if (bridgeSurf.hasRule())
     Out=" "+bridgeSurf.display();

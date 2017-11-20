@@ -292,9 +292,11 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
   temp = MatInfo.second;
   
   const std::string vertStr =
-    Wheel.getLinkString(6)+Wheel.getLinkString(7); // top+bottom
+    Wheel.getSignedLinkString(7)+
+    Wheel.getSignedLinkString(8); // top+bottom
   const std::string cylStr =
-    Wheel.getLinkString(8)+Wheel.getLinkString(9); // min+max radii
+    Wheel.getSignedLinkString(9)+
+    Wheel.getSignedLinkString(10); // min+max radii
 
 
   int SIsec(insIndex+0), SI1;
@@ -312,9 +314,11 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
 	    System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,temp,
 					     Out+vertStr+cylStr));
 	  else
-	    createBricks(System, Wheel, 
-			 ModelSupport::getComposite(SMap, SIsec," 4 "), 
-			 ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
+	    {
+	      createBricks(System, Wheel, 
+			   ModelSupport::getComposite(SMap, SIsec," 4 "), 
+			   ModelSupport::getComposite(SMap, SI1, " -3 "), j); // another side plane
+	    }
 	    
 	    // Pieces of steel between Tungsten sectors
 	    // -1 is needed since planes 3 and -4 cross Tunsten in two places,
@@ -344,8 +348,10 @@ BilbaoWheelInnerStructure::createBrickSurfaces
 {
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
   
-  const Geometry::Surface *innerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(8));
-  const Geometry::Surface *outerCyl = SMap.realSurfPtr(Wheel.getLinkSurf(9));
+  const Geometry::Surface *innerCyl =
+    SMap.realSurfPtr(Wheel.getSignedLinkSurf(9));
+  const Geometry::Surface *outerCyl =
+    SMap.realSurfPtr(Wheel.getSignedLinkSurf(10));
   
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
   
@@ -488,10 +494,11 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   SMap.realPtr<Geometry::Plane>(insIndex+5);
   
   std::string sideStr = side1 + side2;
-  const std::string vertStr = Wheel.getLinkString(6) + Wheel.getLinkString(7); // top+bottom
+  const std::string vertStr = Wheel.getSignedLinkString(7) +
+    Wheel.getSignedLinkString(8); // top+bottom
   
-  const std::string innerCyl = Wheel.getLinkString(8);
-  const std::string outerCyl = Wheel.getLinkString(9);
+  const std::string innerCyl = Wheel.getSignedLinkString(9);
+  const std::string outerCyl = Wheel.getSignedLinkString(10);
   
   std::string Out,Out1;
   int SI(insIndex+1000*(static_cast<int>(sector+1)));

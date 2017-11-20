@@ -312,7 +312,7 @@ VolSum::pointRun(const Simulation& System,const size_t N)
   // directiron
 
   for(size_t i=0;i<N;i++)
-    {
+    { 
       Geometry::Vec3D Pt(Origin+
 			 X*(RNG.rand()-0.5)+
 			 Y*(RNG.rand()-0.5)+
@@ -369,9 +369,6 @@ VolSum::trackRun(const Simulation& System,const size_t N)
 {
   ELog::RegMethod RegA("VolSum","run");
   
-  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
-
-  MonteCarlo::Object* InitObj(0);
   reset();
   
   const double AreaXY(X[0]*Y[1]);
@@ -426,7 +423,7 @@ VolSum::calcVolume(const int TN) const
   std::map<int,volUnit>::const_iterator mc;
   mc=tallyVols.find(TN);
   if (mc!=tallyVols.end())
-    return fullVol*mc->second.calcVol(1.0/nTracks);
+    return fullVol*mc->second.calcVol(1.0/static_cast<double>(nTracks));
   ELog::EM<<"No tally of value "<<TN<<ELog::endErr;
   return 0.0;
 }
@@ -450,10 +447,11 @@ VolSum::write(const std::string& OFile) const
 
   char sf='a';  
   tvTYPE::const_iterator mc;
+  const double nT((nTracks) ? static_cast<double>(nTracks) : 1.0);
   for(mc=tallyVols.begin();mc!=tallyVols.end();mc++)
     {
       OX<<"tally"<<(FMTI3 % mc->first % 
-		    (fullVol*mc->second.calcVol(1.0/nTracks)) %
+		    (fullVol*mc->second.calcVol(1.0/nT)) %
 		    sf % mc->second.getMat() % 
 		    mc->second.getComment())<<std::endl;
       sf++;

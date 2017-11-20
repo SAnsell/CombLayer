@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/Cannelloni.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,10 +57,6 @@ class Cannelloni : public constructSystem::TargetBase
 
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
-
-  double xStep;               ///< Master offset distance 
-  double yStep;               ///< Master offset distance 
-  double zStep;               ///< Master offset distance 
   
   double mainLength;            ///< Straight length
   double coreRadius;            ///< Inner W radius [cyl]
@@ -85,7 +81,6 @@ class Cannelloni : public constructSystem::TargetBase
   double waterTemp;             ///< Water temperature
   double externTemp;            ///< Pressure temperature
 
-  //  std::vector<thexUnit> 
   int mainCell;                 ///< Main tungsten cylinder
 
   void clearHVec();
@@ -94,12 +89,11 @@ class Cannelloni : public constructSystem::TargetBase
 
   void createLinkSurf();
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
   
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createBeamWindow(Simulation&);
   void createInnerObjects(Simulation&);
   void createInnerCells(Simulation&);
 
@@ -114,6 +108,7 @@ class Cannelloni : public constructSystem::TargetBase
   /// Main cell body
   int getMainBody() const { return tarIndex+1; }
   void addInnerBoundary(attachSystem::ContainedComp&) const;
+
   /// Set the extext of the reflector
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }

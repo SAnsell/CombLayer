@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   lensModelInc/LensSource.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,39 +39,37 @@ namespace SDef
   \brief Adds a new source in the lens system
 */
 
-class LensSource 
+class LensSource :
+  public attachSystem::FixedOffset,
+  public SourceBase
 {
  private:
   
-  const std::string keyName;    ///< Key name [for variables]
-  int populated;                ///< populated or not
-
-  double cutEnergy;             ///< Energy cut point
-  double weight;                ///< neutron weight
-  Geometry::Vec3D CentPoint;    ///< Origin Point [Start shutter]
-  Geometry::Vec3D Direction;    ///< Direction of centre
-  double radialSpread;          ///< Radial spread
+  double radialArea;          ///< Radial spread
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
-  void createSource(SDef::Source&) const;
-
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void rotate(const localRotate&);
+  
  public:
 
   LensSource(const std::string&);
   LensSource(const LensSource&);
   LensSource& operator=(const LensSource&);
-  ~LensSource();
+  virtual LensSource* clone() const;
+  virtual ~LensSource();
 
-    /// Access central point:
-  const Geometry::Vec3D& getCentPoint() const { return CentPoint; }
-  /// Access central axis:
-  const Geometry::Vec3D& getDirection() const { return Direction; }
 
-  /// Set cut energy
-  void setCutEnergy(const double E) { cutEnergy=E; }
-  void createAll(const FuncDataBase&,SDef::Source&,
-		 const attachSystem::FixedComp&);
+
+  void createAll(const FuncDataBase&,
+		 const attachSystem::FixedComp&,
+		 const long int);
+
+  virtual void createSource(SDef::Source&) const;
+  virtual void writePHITS(std::ostream&) const;
+  virtual void write(std::ostream&) const;
+  
 
   
 };

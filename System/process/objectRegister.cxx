@@ -656,7 +656,6 @@ objectRegister::getObjectRange(const std::string& objName) const
   std::vector<int> Out;
   std::set<int>::const_iterator sc=activeCells.end();
 
-  ELog::EM<<"BStart = "<<BStart<<" : "<<BRange<<ELog::endDiag;
   for(int i=BStart;i<BRange+BStart;i++)
     {
       sc=activeCells.find(i);
@@ -665,13 +664,7 @@ objectRegister::getObjectRange(const std::string& objName) const
       
     }
   for(int& CN : Out)
-    {
-
-      ELog::EM<<"CN:"<<CN<<":";
-      CN=calcRenumber(CN);
-      ELog::EM<<CN<<ELog::endDiag;
-    }
-
+    CN=calcRenumber(CN);
   return Out;
 }
   

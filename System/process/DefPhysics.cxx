@@ -75,8 +75,6 @@
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Source.h"
-#include "KCode.h"
 #include "Simulation.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
@@ -217,17 +215,17 @@ procAngle(const mainSystem::inputParam& IParam,
         OR.getObjectThrow<attachSystem::FixedComp>(BItem,"FixedComp");
       const std::string CItem=
         IParam.getDefValue<std::string>("2","angle",index,2);
-
+      
       const long int sideIndex=attachSystem::getLinkIndex(CItem);
-	  
-
-      const Geometry::Vec3D AxisVec=
-        GIPtr->getSignedLinkAxis(sideIndex);
-	  
-      const Geometry::Quaternion QR=
-        Geometry::Quaternion::calcQVRot(Geometry::Vec3D(1,0,0),AxisVec);
-      MR.addRotation(QR.getAxis(),
-                     Geometry::Vec3D(0,0,0),-180.0*QR.getTheta()/M_PI);
+      
+      Geometry::Vec3D XRotAxis,YRotAxis,ZRotAxis;
+      GIPtr->selectAltAxis(sideIndex,XRotAxis,YRotAxis,ZRotAxis);
+      
+      const Geometry::Quaternion QR=Geometry::Quaternion::calcQVRot
+	(Geometry::Vec3D(1,0,0),YRotAxis,ZRotAxis);
+      
+      MR.addRotation(QR.getAxis(),Geometry::Vec3D(0,0,0),
+		     -180.0*QR.getTheta()/M_PI);
     }
   else if (AItem=="free" || AItem=="FREE")
     {
@@ -437,7 +435,7 @@ setDefaultPhysics(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   
   std::string PList=
-    IParam.getDefValue<std::string>("h / d t s a","mode",0);
+    IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
   if (PList=="empty" || PList=="Empty")
     PList=" ";
   

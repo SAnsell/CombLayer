@@ -37,40 +37,72 @@ class BilbaoWheelInnerStructure;
   \brief Bilbao-type wheel for ESS
 */
 
+class BilbaoWheelInnerStructure;
+
 class BilbaoWheel : public WheelBase
 {
  private:
   
-  int engActive;                 ///< Engineering active flag
   std::shared_ptr<BilbaoWheelInnerStructure> InnerComp; ///< Inner components
   
   double targetHeight;           ///< Total height of target
+  double targetInnerHeight;      ///< Inner height of target wheel (R<Tungsten)
+  double targetInnerHeightRadius; ///< Radius of the inner height of target wheel (R<Tungsten)
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
   double steelTungstenThick;     ///< Steel thickness below/above Tungsten
+  double steelTungstenInnerThick; ///< Steel thickness below/above Tungsten in the inner part
   double caseThickIn;            ///< Thickness of coolant (inner wheel)
   double coolantThick;           ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
   double voidThick;              ///< void surrounding thickness
   
   double innerRadius;            ///< Inner core
+  double innerHoleHeight;        ///< Vent hole height at the inner radius
+  double innerHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
+  double innerHoleXYangle;       ///< XY angle offset of inner holes
   double coolantRadiusIn;        ///< Inner coolant radius
   double coolantRadiusOut;       ///< Outer coolant radius
   double caseRadius;             ///< Outer case radius
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
 
-  double mainTemp;               ///< Main temperature 
+  double mainTemp;                  ///< Main temperature 
   
-  size_t nSectors;               ///< number of sectors for LayerDivide3D
-  size_t nLayers;                ///< number of radial layers
-  std::vector<double> radius;    ///< cylinder radii
-  std::vector<int> matTYPE;      ///< Material type
+  size_t nSectors;                  ///< number of sectors for LayerDivide3D
+  size_t nLayers;                   ///< number of radial layers
+  std::vector<double> radius;       ///< cylinder radii
+  std::vector<int> matTYPE;         ///< Material type
 
   // shaft
   double shaftHeight;               ///< Shaft Height (above origin)
-  size_t nShaftLayers;           ///< Number of shaft layers
-  std::vector<double> shaftRadius; ///< shaft radii
-  std::vector<int> shaftMat;     ///< shaft materials
+  size_t nShaftLayers;              ///< Number of shaft layers
+  std::vector<double> shaftRadius;  ///< shaft radii
+  std::vector<int> shaftMat;        ///< shaft materials
+  double shaft2StepHeight;          ///< height of the 2nd step
+  double shaft2StepConnectionHeight;///< height of the 2nd step connection thickness
+  double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
+  double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
+
+  double shaftHoleHeight;        ///< Vent hole height at the shaft radius
+  double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
+  double shaftHoleXYangle;       ///< XY angle offset of shaft holes
+
+  
+  double shaftBaseDepth;            ///< shaft depth (below origin)
+  double catcherTopSteelThick; ///< thickness of top steel plate
+  double catcherHeight;    ///< catcher total height
+  double catcherRadius;    ///< catcher rotal radius
+  double catcherMiddleHeight;///< catcher mid height
+  double catcherMiddleRadius;///< catchr mid radius
+  double catcherNotchDepth; ///< catcher notch depth
+  double catcherNotchRadius; ///< catcher notch radius
+  double catcherRingRadius; ///< catcher ring radius
+  double catcherRingDepth; ///< catcher ring depth (below origin)
+  double catcherRingThick; ///< catcher ring thickness
+
+  double circlePipesBigRad;   /// Big radius of circle of pipes]
+  double circlePipesRad;      /// Radius of pipes in the circle of pipes
+  double circlePipesWallThick; /// Thickness of pipes in the circle of pipes
   
   int wMat;                         ///< W material
   int heMat;                        ///< He material
@@ -82,6 +114,8 @@ class BilbaoWheel : public WheelBase
   // Functions:
 
   void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -92,6 +126,14 @@ class BilbaoWheel : public WheelBase
 
   void createRadialSurfaces();
   void divideRadial(Simulation&,const std::string&,const int);
+
+  void buildHoles(Simulation&,
+		  const std::string&,const std::string&,const std::string&,
+		  const int, const double, const double,const double,
+		  const double,const int);
+
+  void buildCirclePipes(Simulation&,const std::string&,const std::string&,
+			const int);
 
   public:
 
@@ -106,7 +148,7 @@ class BilbaoWheel : public WheelBase
   {
     return targetHeight+
       2.0*(voidTungstenThick+steelTungstenThick+coolantThick+
-	   caseThickIn+voidThick);
+	   caseThick+voidThick);
   }
 
   //  virtual int getCell() const { return mainShaftCell; }

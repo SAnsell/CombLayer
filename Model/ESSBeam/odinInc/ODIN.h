@@ -33,7 +33,7 @@ namespace attachSystem
 namespace constructSystem
 {
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class DiskChopper;
   class HoleShape;
   class Jaws;
@@ -83,11 +83,11 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Front chopper housing pair [movable]
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperAA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperAA;
   /// Front  blades
   std::shared_ptr<constructSystem::DiskChopper> DiskAA;
   /// Back chopper housing pair [movable]
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperAB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperAB;
   /// Back chopper bladed
   std::shared_ptr<constructSystem::DiskChopper> DiskAB;
 
@@ -97,12 +97,12 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
 
   /// T0 housing
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// T0 chopper [8.150m]
   std::shared_ptr<constructSystem::DiskChopper> T0Disk;
 
   /// FOC1 housing
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperFOC1;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC1;
   /// FOC1 chopper [8.50m]
   std::shared_ptr<constructSystem::DiskChopper> FOC1Disk;
 
@@ -112,7 +112,7 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
   /// FOC2 housing
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperFOC2;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC2;
   /// FOC2 chopper [11.84m]
   std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
   
@@ -122,7 +122,7 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
 
   /// FOC3 housing [16.49m]
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperFOC3;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC3;
   /// FOC3 chopper [16.49m]
   std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
   
@@ -132,7 +132,7 @@ class ODIN : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusG;
   
   /// FOC4 housing [22.97m]
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperFOC4;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC4;
   /// FOC3 chopper [22.97m]
   std::shared_ptr<constructSystem::DiskChopper> FOC4Disk;
 
@@ -160,7 +160,7 @@ class ODIN : public attachSystem::CopiedComp
   /// Collimator hole 
   std::shared_ptr<constructSystem::HoleShape> OutBCut;
   /// 32.0m FOC
-  std::shared_ptr<constructSystem::ChopperUnit> ChopOutFOC5;
+  std::shared_ptr<constructSystem::SingleChopper> ChopOutFOC5;
   /// Singe disk chopper (FOC5)
   std::shared_ptr<constructSystem::DiskChopper> FOC5Disk;
 

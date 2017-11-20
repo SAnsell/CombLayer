@@ -73,9 +73,11 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "VacuumPipe.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
 #include "Jaws.h"
 #include "LineShield.h"
@@ -107,36 +109,36 @@ ODIN::ODIN(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperAA(new constructSystem::ChopperUnit(newName+"ChopperAA")),
+  ChopperAA(new constructSystem::SingleChopper(newName+"ChopperAA")),
   DiskAA(new constructSystem::DiskChopper(newName+"DiskAA")),
-  ChopperAB(new constructSystem::ChopperUnit(newName+"ChopperAB")),
+  ChopperAB(new constructSystem::SingleChopper(newName+"ChopperAB")),
   DiskAB(new constructSystem::DiskChopper(newName+"DiskAB")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   T0Disk(new constructSystem::DiskChopper(newName+"T0Disk")),
   
-  ChopperFOC1(new constructSystem::ChopperUnit(newName+"ChopperFOC1")),
+  ChopperFOC1(new constructSystem::SingleChopper(newName+"ChopperFOC1")),
   FOC1Disk(new constructSystem::DiskChopper(newName+"FOC1Blade")),
   
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperFOC2(new constructSystem::ChopperUnit(newName+"ChopperFOC2")),
+  ChopperFOC2(new constructSystem::SingleChopper(newName+"ChopperFOC2")),
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
-  ChopperFOC3(new constructSystem::ChopperUnit(newName+"ChopperFOC3")),
+  ChopperFOC3(new constructSystem::SingleChopper(newName+"ChopperFOC3")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
   VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
   FocusG(new beamlineSystem::GuideLine(newName+"FG")),
 
-  ChopperFOC4(new constructSystem::ChopperUnit(newName+"ChopperFOC4")),
+  ChopperFOC4(new constructSystem::SingleChopper(newName+"ChopperFOC4")),
   FOC4Disk(new constructSystem::DiskChopper(newName+"FOC4Blade")),
 
   VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
@@ -152,7 +154,7 @@ ODIN::ODIN(const std::string& keyName) :
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
   OutBCut(new constructSystem::HoleShape(newName+"OutBCut")),
-  ChopOutFOC5(new constructSystem::ChopperUnit(newName+"ChopOutFOC5")),
+  ChopOutFOC5(new constructSystem::SingleChopper(newName+"ChopOutFOC5")),
   FOC5Disk(new constructSystem::DiskChopper(newName+"FOC5Blade")),
   
   ShieldB(new constructSystem::LineShield(newName+"ShieldB")),
@@ -253,37 +255,6 @@ ODIN::~ODIN()
 {}
 
 void
-ODIN::setBeamAxis(const FuncDataBase& Control,
-                  const attachSystem::FixedGroup& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Primary beam object
-    \param reverseZ :: Reverse Z direction
-  */
-{
-  ELog::RegMethod RegA("ODIN","setBeamAxis");
-
-  odinAxis->populate(Control);
-  odinAxis->createUnitVector(GItem);
-  odinAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  odinAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  odinAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  odinAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  odinAxis->linkShift(3);
-  odinAxis->linkShift(4);
-  odinAxis->linkAngleRotate(3);
-  odinAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    odinAxis->reverseZ();
-  return;
-}
-
-void
 ODIN::buildBunkerUnits(Simulation& System,
                        const attachSystem::FixedComp& FA,
                        const long int startIndex,
@@ -314,15 +285,15 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperAA->createAll(System,FocusC->getKey("Guide0"),2);
 
   DiskAA->addInsertCell(ChopperAA->getCell("Void"));
-  DiskAA->createAll(System,ChopperAA->getKey("Main"),0,
-		    ChopperAA->getKey("BuildBeam"),0);
+  DiskAA->createAll(System,ChopperAA->getKey("Main"),0);
+  ChopperAA->insertAxle(System,*DiskAA);
 
   ChopperAB->addInsertCell(bunkerVoid);
   ChopperAB->createAll(System,ChopperAA->getKey("Beam"),2);
 
   DiskAB->addInsertCell(ChopperAB->getCell("Void"));
-  DiskAB->createAll(System,ChopperAB->getKey("Main"),0,
-		    ChopperAB->getKey("BuildBeam"),0);
+  DiskAB->createAll(System,ChopperAB->getKey("Main"),0);
+  ChopperAB->insertAxle(System,*DiskAB);
 
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperAB->getKey("Beam"),2);
@@ -335,14 +306,15 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperB->createAll(System,FocusD->getKey("Guide0"),2);
   T0Disk->addInsertCell(ChopperB->getCell("Void"));
   T0Disk->createAll(System,ChopperB->getKey("Main"),0);
-
+  ChopperB->insertAxle(System,*T0Disk);
   
   // FOC1 disk chopper
   ChopperFOC1->addInsertCell(bunkerVoid);
   ChopperFOC1->createAll(System,ChopperB->getKey("Beam"),2);
   FOC1Disk->addInsertCell(ChopperFOC1->getCell("Void"));
   FOC1Disk->createAll(System,ChopperFOC1->getKey("Main"),0);
-
+  ChopperFOC1->insertAxle(System,*FOC1Disk);
+  
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperFOC1->getKey("Beam"),2);
   FocusE->addInsertCell(VPipeE->getCells("Void"));
@@ -353,7 +325,8 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperFOC2->createAll(System,FocusE->getKey("Guide0"),2);
   FOC2Disk->addInsertCell(ChopperFOC2->getCell("Void"));
   FOC2Disk->createAll(System,ChopperFOC2->getKey("Main"),0);
-
+  ChopperFOC2->insertAxle(System,*FOC2Disk);
+  
   VPipeF->addInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperFOC2->getKey("Beam"),2);
   FocusF->addInsertCell(VPipeF->getCells("Void"));
@@ -364,7 +337,8 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperFOC3->createAll(System,FocusF->getKey("Guide0"),2);
   FOC3Disk->addInsertCell(ChopperFOC3->getCell("Void"));
   FOC3Disk->createAll(System,ChopperFOC3->getKey("Main"),0);
-
+  ChopperFOC3->insertAxle(System,*FOC3Disk);
+  
   VPipeG->addInsertCell(bunkerVoid);
   VPipeG->createAll(System,ChopperFOC3->getKey("Beam"),2);
   FocusG->addInsertCell(VPipeG->getCells("Void"));
@@ -375,7 +349,8 @@ ODIN::buildBunkerUnits(Simulation& System,
   ChopperFOC4->createAll(System,FocusG->getKey("Guide0"),2);
   FOC4Disk->addInsertCell(ChopperFOC4->getCell("Void"));
   FOC4Disk->createAll(System,ChopperFOC4->getKey("Main"),0);
-
+  ChopperFOC4->insertAxle(System,*FOC4Disk);
+  
   VPipeH->addInsertCell(bunkerVoid);
   VPipeH->createAll(System,ChopperFOC4->getKey("Beam"),2);
   FocusH->addInsertCell(VPipeH->getCells("Void"));
@@ -433,7 +408,8 @@ ODIN::buildOutGuide(Simulation& System,
   // Double disk chopper
   FOC5Disk->addInsertCell(ChopOutFOC5->getCell("Void"));
   FOC5Disk->createAll(System,ChopOutFOC5->getKey("Main"),0);
-
+  ChopOutFOC5->insertAxle(System,*FOC5Disk);
+  
   ShieldB->addInsertCell(voidCell);
   ShieldB->addInsertCell(OutPitA->getCells("Outer"));
   ShieldB->setFront(OutPitA->getKey("Mid"),2);
@@ -520,7 +496,7 @@ ODIN::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*odinAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);

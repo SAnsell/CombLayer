@@ -128,6 +128,7 @@ surfaceConstruct::processSurface(Simulation& System,
   const std::string MType(IParam.getValue<std::string>("tally",Index,2)); 
   ELog::EM<<"Surface Tally Type == "<<pType<<ELog::endDiag;
   std::vector<std::string> excludeSurf;
+  // Process a surface extracted from a linkPt of an object(FC)
   if (pType=="object")
     {
       const std::string place=
@@ -139,6 +140,8 @@ surfaceConstruct::processSurface(Simulation& System,
       const long int linkNumber=attachSystem::getLinkIndex(snd);
       return processSurfObject(System,place,linkNumber,excludeSurf);
     }
+
+  // Process a surface extracted from a surfMap
   if (pType=="surfMap")
     {
       const std::string object=IParam.getValueError<std::string>
@@ -201,18 +204,14 @@ surfaceConstruct::processSurfObject(Simulation& System,
       const attachSystem::FixedComp* TPtr=
 	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
       
-      const size_t iLP=(linkPt>0) ?
-	static_cast<size_t>(linkPt-1) : static_cast<size_t>(-1-linkPt);
-      const int masterPlane=  
-	TPtr->getMasterSurf(iLP);
+      const int masterPlane= TPtr->getSignedLinkSurf(linkPt);
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
 	{
 	  const long int LIndex=attachSystem::getLinkIndex(linkN[i]);
 	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
 	}
-      const int signV((linkPt>0) ? 1 : -1);
-      addF1Tally(System,tNum,signV*masterPlane,surfN);
+      addF1Tally(System,tNum,masterPlane,surfN);
       return 1;
     }
   return 0;

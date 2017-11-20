@@ -451,14 +451,12 @@ Object::setObject(const int N,const int matNum,
   return 0;
 }
 
-int 
+void
 Object::populate()
   /*! 
      Goes through the cell objects and adds the pointers
      to the SurfPoint keys (using their keyN).
      Addition ot remove NullSurface
-     \retval 1000+ keyNumber :: Error with keyNumber
-     \retval 0 :: successfully populated all the whole OSbject.
   */
 {
   ELog::RegMethod RegA("Object","populate");
@@ -468,7 +466,23 @@ Object::populate()
       HRule.populateSurf();
       populated=1;
     }
-  return 0;
+  return;
+}
+
+void
+Object::rePopulate()
+  /*! 
+     Goes through the cell objects and adds the pointers
+     to the SurfPoint keys (using their keyN).
+     Addition ot remove NullSurface
+     \retval 1000+ keyNumber :: Error with keyNumber
+     \retval 0 :: successfully populated all the whole OSbject.
+  */
+{
+  ELog::RegMethod RegA("Object","rePopulate");
+  HRule.populateSurf();
+  populated=1;
+  return;
 }
 
 int
@@ -957,7 +971,7 @@ Object::trackOutCell(const MonteCarlo::neutron& N,double& D,
     \param N :: Neutron
     \param D :: Distance to exit
     \param SPtr :: Surface at exit
-    \param startSurf :: Start surface [not to be used]
+    \param startSurf :: Start surface (not to be used) [0 to ignore]
     \return surface number on exit
   */
 {
@@ -1020,13 +1034,12 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
 
   MonteCarlo::LineIntersectVisit LI(N);
   for(const Geometry::Surface* isptr : SurList)
-    {
-      isptr->acceptVisitor(LI);
-    }
+    isptr->acceptVisitor(LI);
 
   const std::vector<Geometry::Vec3D>& IPts(LI.getPoints());
   const std::vector<double>& dPts(LI.getDistance());
   const std::vector<const Geometry::Surface*>& surfIndex(LI.getSurfIndex());
+
   D=1e38;
   surfPtr=0;
   int touchUnit(0);
@@ -1061,8 +1074,16 @@ Object::trackCell(const MonteCarlo::neutron& N,double& D,
     }
   if (touchUnit && D>1e37)
     D=Geometry::zeroTol;
-    
-  return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
+
+  if (!surfPtr) return 0;
+  const int NSsurf=surfPtr->getName();
+  const bool pSurfFound(SurSet.find(NSsurf)!=SurSet.end());
+  const bool mSurfFound(SurSet.find(-NSsurf)!=SurSet.end());
+  
+  if (pSurfFound && mSurfFound)
+    return bestPairValid*NSsurf;
+
+  return (pSurfFound) ? -NSsurf : NSsurf;
 }
 
 		  

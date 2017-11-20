@@ -3,7 +3,7 @@
  
  * File:   t1BuildInc/InnerTarget.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,6 @@ class InnerTarget : public constructSystem::TargetBase
 
   int frontPlate;               ///< Front Plate
   int backPlate;                ///< Back Plate
-
-  double xStep;               ///< Master offset distance 
-  double yStep;               ///< Master offset distance 
-  double zStep;               ///< Master offset distance 
   
   double mainLength;            ///< Straight length
   double coreRadius;            ///< Inner W radius [cyl]
@@ -78,6 +74,7 @@ class InnerTarget : public constructSystem::TargetBase
   double frontWater;            ///< Front Water radius
   double innerClad;             ///< Thickness of inner cladding
   double innerWater;            ///< Thickness of inner water
+
   size_t nSphere;                     ///< Sphere count
   std::vector<double> sRadius;        ///< Radii
   std::vector<Geometry::Vec3D> sCent; ///< Centres
@@ -87,13 +84,13 @@ class InnerTarget : public constructSystem::TargetBase
   size_t nLayers;               ///< number of layers
   std::vector<double> mainFrac; ///< Main fraction
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
   
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void createBeamWindow(Simulation&);
 
  public:
 

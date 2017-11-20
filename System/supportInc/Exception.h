@@ -319,6 +319,9 @@ class DimensionError : public ExBase
  public:
 
   DimensionError(const T*,const T*,const std::string&);
+  DimensionError(const std::vector<T>&,const std::vector<T>&,
+		 const std::string&);
+  
   DimensionError(const DimensionError<ndim,T>&);
   DimensionError<ndim,T>& operator=(const DimensionError<ndim,T>&);
   virtual ~DimensionError() throw() {}  ///< Destructor

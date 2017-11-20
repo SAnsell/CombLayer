@@ -95,6 +95,7 @@ class Bunker : public attachSystem::ContainedComp,
   double innerRadius;            ///< inner radius [calculated]
   double wallRadius;             ///< Wall radius
   double floorDepth;             ///< Floor depth
+  double wallHeight;             ///< Wall height (allows roof to intercolate)
   double roofHeight;             ///< Roof height
 
   double wallThick;              ///< backWall thickness
@@ -120,7 +121,7 @@ class Bunker : public attachSystem::ContainedComp,
 			const long int,const bool);
 
   void createSurfaces(const bool);
-  void createLinks();
+  void createLinks(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int);
 
@@ -140,6 +141,9 @@ class Bunker : public attachSystem::ContainedComp,
   Bunker& operator=(const Bunker&);
   virtual ~Bunker();
 
+  /// Roof component
+  std::shared_ptr<BunkerRoof> getRoofObj() const { return roofObj; }
+
   void calcSegPosition(const size_t,Geometry::Vec3D&,
 		       Geometry::Vec3D&,Geometry::Vec3D&,
 		       Geometry::Vec3D&) const;
@@ -155,6 +159,8 @@ class Bunker : public attachSystem::ContainedComp,
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const bool);
 
+
+  
 };
 
 }

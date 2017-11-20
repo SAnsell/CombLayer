@@ -64,7 +64,8 @@
 #include "TallyCreate.h"
 #include "localRotate.h"
 #include "masterRotate.h"
-#include "meshTally.h"
+#include "tmeshTally.h"
+#include "fmeshTally.h"
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "LinkUnit.h"
@@ -75,7 +76,9 @@
 #include "TallySelector.h" 
 #include "pointConstruct.h"
 #include "gridConstruct.h" 
-#include "meshConstruct.h" 
+#include "meshConstruct.h"
+#include "tmeshConstruct.h"
+#include "fmeshConstruct.h" 
 #include "fluxConstruct.h" 
 #include "fissionConstruct.h" 
 #include "heatConstruct.h" 
@@ -111,10 +114,10 @@ tallyConstruct::initStatic()
   
 tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) : 
   pointPtr(FC.makePoint()),gridPtr(FC.makeGrid()),
-  meshPtr(FC.makeMesh()),fluxPtr(FC.makeFlux()),
-  heatPtr(FC.makeHeat()),itemPtr(FC.makeItem()),
-  surfPtr(FC.makeSurf()),fissionPtr(FC.makeFission()),
-  sswPtr(FC.makeSSW())
+  tmeshPtr(FC.makeTMesh()),fmeshPtr(FC.makeFMesh()),
+  fluxPtr(FC.makeFlux()),heatPtr(FC.makeHeat()),
+  itemPtr(FC.makeItem()),surfPtr(FC.makeSurf()),
+  fissionPtr(FC.makeFission()),sswPtr(FC.makeSSW())
   /*!
     Constructor
     \param FC :: Factory object to specialize constructors
@@ -126,7 +129,8 @@ tallyConstruct::tallyConstruct(const tallyConstructFactory& FC) :
 tallyConstruct::tallyConstruct(const tallyConstruct& A) : 
   pointPtr(new pointConstruct(*A.pointPtr)),
   gridPtr(new gridConstruct(*A.gridPtr)),
-  meshPtr(new meshConstruct(*A.meshPtr)),
+  tmeshPtr(new tmeshConstruct(*A.tmeshPtr)),
+  fmeshPtr(new fmeshConstruct(*A.fmeshPtr)),
   fluxPtr(new fluxConstruct(*A.fluxPtr)),
   heatPtr(new heatConstruct(*A.heatPtr)),
   itemPtr(new itemConstruct(*A.itemPtr)),
@@ -151,7 +155,8 @@ tallyConstruct::operator=(const tallyConstruct& A)
     {
       *pointPtr=*A.pointPtr;
       *gridPtr=*A.gridPtr;
-      *meshPtr=*A.meshPtr;
+      *tmeshPtr=*A.tmeshPtr;
+      *fmeshPtr=*A.fmeshPtr;
       *fluxPtr=*A.fluxPtr;
       *heatPtr=*A.heatPtr;
       *itemPtr=*A.itemPtr;
@@ -170,7 +175,8 @@ tallyConstruct::~tallyConstruct()
 {
   delete pointPtr;
   delete gridPtr;
-  delete meshPtr;
+  delete tmeshPtr;
+  delete fmeshPtr;
   delete fluxPtr;
   delete heatPtr;
   delete itemPtr;
@@ -184,6 +190,7 @@ tallyConstruct::buildInstance(const tallyConstructFactory& FC)
   /*!
     Inner constructor
     \param FC :: Factory to use
+    \return Insertnace of factory
    */
 {
   static tallyConstruct A(FC);
@@ -195,6 +202,7 @@ tallyConstruct::Instance(const tallyConstructFactory* FC)
   /*!
     External system for building 
     \param FC :: Factory pointer [0 normally]
+    \return tally constructor
    */
 {
   static tallyConstruct* TC(0);
@@ -257,21 +265,25 @@ tallyConstruct::tallySelection(Simulation& System,
     {
       const std::string TType=
 	IParam.getValue<std::string>("tally",i,0);
-
+      
       const size_t NItems=IParam.itemCnt("tally",i);
       const std::string HType=(NItems>1) ?
 	IParam.getValue<std::string>("tally",i,1) : "help";
+
       
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
       else if (HType=="help" || HType=="?")
 	helpTallyType(TType);
+
       else if (TType=="grid") 
 	gridPtr->processGrid(System,IParam,i);
       else if (TType=="point")
 	pointPtr->processPoint(System,IParam,i);
-      else if (TType=="mesh")
-	meshPtr->processMesh(System,IParam,i);
+      else if (TType=="tmesh")
+	tmeshPtr->processMesh(System,IParam,i);
+      else if (TType=="fmesh")
+	fmeshPtr->processMesh(System,IParam,i);
       else if (TType=="flux")
 	workFlag+=fluxPtr->processFlux(System,IParam,i);
       else if (TType=="fission")
@@ -338,18 +350,22 @@ tallyConstruct::helpTallyType(const std::string& HType) const
 
   if (HType=="grid")
     gridPtr->writeHelp(ELog::EM.Estream());
-  else if (HType=="heat")
-    heatPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="tmesh")
+    tmeshPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="fmesh")
+    fmeshPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="point")
     pointPtr->writeHelp(ELog::EM.Estream());
-  else if (HType=="mesh")
-    meshPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="surface")
     surfPtr->writeHelp(ELog::EM.Estream());
   else if (HType=="flux")
     fluxPtr->writeHelp(ELog::EM.Estream());
-  else if (HType=="flux")
+  else if (HType=="heat")
+    heatPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="fission")
     fissionPtr->writeHelp(ELog::EM.Estream());
+  else if (HType=="ssw")
+    sswPtr->writeHelp(ELog::EM.Estream());
   else
     {
       ELog::EM<<"Tally Types:\n\n";

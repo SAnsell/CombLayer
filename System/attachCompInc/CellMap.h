@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/CellMap.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,10 @@ class CellMap  : public BaseMap
   int removeCell(const std::string& K,const size_t Index=0)
     {  return BaseMap::removeItem(K,Index); }
 
-
+  void insertComponent(Simulation&,const std::string&,
+		       const CellMap&,const std::string&) const;
+  void insertComponent(Simulation&,const std::string&,const size_t,
+		       const CellMap&,const std::string&,const size_t) const;
   void insertComponent(Simulation&,const std::string&,
 		       const ContainedComp&) const;
   void insertComponent(Simulation&,const std::string&,const size_t,
@@ -103,7 +106,6 @@ class CellMap  : public BaseMap
 		       const std::string&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
-
   
  void deleteCell(Simulation&,const std::string&,const size_t =0);
 

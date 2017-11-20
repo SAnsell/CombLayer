@@ -3,7 +3,7 @@
  
  * File:   processInc/ObjSurfMap.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class ObjSurfMap
 
   /// Object set
   typedef std::vector<MonteCarlo::Object*> STYPE;
-  typedef std::set<int> surfTYPE;
+  typedef std::set<int> surfTYPE;          ///< surfaces used
   typedef std::map<int,STYPE> OMTYPE;      ///< +/-SurfN : ObjecPtr
   typedef std::map<int,surfTYPE> OSTYPE;   ///< objName : surfSet
    

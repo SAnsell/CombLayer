@@ -476,6 +476,34 @@ LayerDivide3D::setMaterialXML(const std::string& LFile,
 
   
 void
+LayerDivide3D::setDividerByExclude(const Simulation& System,const int cellN)
+  /*!
+    Set the divider
+    \param System :: Simulation to use
+    \param cellN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("LayerDivide3D","setDividerByExclude");
+  const MonteCarlo::Object* CPtr=System.findQhull(cellN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(cellN,"cellN");
+
+  HeadRule CellRule= CPtr->getHeadRule();
+
+  CellRule.removeItems(AWall.first);
+  CellRule.removeItems(AWall.second);
+  CellRule.removeItems(BWall.first);
+  CellRule.removeItems(BWall.second);
+  CellRule.removeItems(CWall.first);
+  CellRule.removeItems(CWall.second);
+
+  divider=CellRule.display();
+  return;
+}
+
+
+
+void
 LayerDivide3D::divideCell(Simulation& System,const int cellN)
   /*!
     Create a tesselated main wall
@@ -516,7 +544,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 	  for(size_t k=0;k<CLen;k++,cIndex++)
 	    {
 	      const std::string CCut=
-		ModelSupport::getComposite(SMap,cIndex,"1 -2")+BCut;
+		ModelSupport::getComposite(SMap,cIndex," 1 -2 ")+BCut;
 	      const int Mat=DGPtr->getMaterial(i+1,j+1,k+1);
 	      
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
@@ -526,6 +554,7 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
       	    }
 	}
     }
+
   System.removeCell(cellN);
   if (DGPtr && !outputFile.empty())
     DGPtr->writeXML(outputFile,objName,ALen,BLen,CLen);

@@ -87,6 +87,7 @@
 #include "LineShield.h"
 #include "PipeCollimator.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "insertObject.h"
 #include "insertPlate.h"
 
@@ -157,36 +158,6 @@ NMX::~NMX()
 {}
 
   
-void
-NMX::setBeamAxis(const FuncDataBase& Control,
-		 const GuideItem& GItem,
-		 const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("NMX","setBeamAxis");
-
-  nmxAxis->populate(Control);
-  nmxAxis->createUnitVector(GItem);
-  nmxAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  nmxAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  nmxAxis->linkShift(3);
-  nmxAxis->linkShift(4);
-  nmxAxis->linkAngleRotate(3);
-  nmxAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    nmxAxis->reverseZ();
-  return;
-}
-  
 void 
 NMX::build(Simulation& System,
 	    const GuideItem& GItem,
@@ -204,9 +175,11 @@ NMX::build(Simulation& System,
   ELog::RegMethod RegA("NMX","build");
   ELog::EM<<"\nBuilding NMX on : "<<GItem.getKeyName()<<ELog::endDiag;
   const FuncDataBase& Control=System.getDataBase();
+
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*nmxAxis,Control,GItem,1);
+  
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);

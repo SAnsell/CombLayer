@@ -53,7 +53,10 @@
 
 #include "CryoGenerator.h"
 #include "BladeGenerator.h"
+#include "RectPipeGenerator.h"
+#include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
+#include "TwinFlatGenerator.h"
 
 namespace setVariable
 {
@@ -70,7 +73,6 @@ SingleItemVariables(FuncDataBase& Control)
 // -----------
 // GLOBAL stuff
 // -----------
-
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
@@ -80,6 +82,15 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::TwinGenerator TGen;
   TGen.generateChopper(Control,"singleTwinB",0.0,16.0,10.0);  
 
+  setVariable::TwinFlatGenerator TCGen;
+  TCGen.generateChopper(Control,"singleTwinC",0.0,16.0,10.0);  
+
+  TCGen.generateChopper(Control,"singleTwinD",80.0,16.0,10.0);  
+
+  setVariable::RectPipeGenerator PipeGen;
+  PipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
+  PipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
+  
   setVariable::BladeGenerator BGen;
   // Single Blade chopper
   BGen.setThick({0.2});

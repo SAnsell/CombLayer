@@ -59,17 +59,13 @@
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "DSTerm.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
+#include "LineTrack.h"
 #include "ImportControl.h"
 #include "SimValid.h"
 #include "MainProcess.h"
@@ -122,6 +118,7 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
   */
 {
   ELog::RegMethod RegA("SimInput[F]","processExitChecks");
+
   int errFlag(0);
   if (IParam.flag("validCheck"))
     {
@@ -131,13 +128,35 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
       
       if (IParam.flag("validPoint"))
 	SValidCheck.setCentre(IParam.getValue<Geometry::Vec3D>("validPoint"));
-
+      
       if (!SValidCheck.run(System,IParam.getValue<size_t>("validCheck")))
 	errFlag += -1;
     }
+
+  
+  const size_t NLine = IParam.setCnt("validLine");
+  for(size_t i=0;i<NLine;i++)
+    {
+      ELog::EM<<"Processing "<<i<<" / "<<NLine<<ELog::endDiag;
+      size_t cnt(0);
+      const Geometry::Vec3D C=
+	IParam.getCntVec3D("validLine",i,cnt,"Start point");
+      Geometry::Vec3D D=
+	IParam.getCntVec3D("validLine",i,cnt,"End point/Direction");
+      if (D.abs()>1.5 || D.abs()<0.5)
+	D-=C;
+      D.makeUnit();
+      ELog::EM<<std::setprecision(12)<<"C == "<<C<<":"<<D<<ELog::endDiag;
+      ModelSupport::LineTrack LT(C,D,1000.0);
+      ModelSupport::LineTrack LTR(C,-D,1000.0);
+      LT.calculate(System);
+      LTR.calculate(System);
+    }
+  
+	
   if (IParam.flag("cinder"))
     System.writeCinder();
-  
+
   return errFlag;
 }
 

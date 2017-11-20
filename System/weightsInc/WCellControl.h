@@ -79,7 +79,7 @@ class WCellControl : public WeightControl
   void procWWGWeights(Simulation&,
 		      const mainSystem::inputParam&);
   
-  void setWeights(Simulation&);
+  void setWeights(Simulation&,const std::string&);
   void cTrack(const Simulation&,const Geometry::Vec3D&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const std::vector<long int>&,

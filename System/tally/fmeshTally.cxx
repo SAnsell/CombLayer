@@ -3,7 +3,7 @@
  
  * File:   tally/fmeshTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@
 #include <set>
 #include <map>
 #include <iterator>
+#include <array>
 #include <memory>
 #include <boost/format.hpp>
 
@@ -41,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -70,7 +72,10 @@ fmeshTally::fmeshTally(const int ID) :
 {}
 
 fmeshTally::fmeshTally(const fmeshTally& A) : 
-  Tally(A)
+  Tally(A),
+  typeID(A.typeID),keyWords(A.keyWords),
+  requireRotation(A.requireRotation),Pts(A.Pts),
+  minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
     \param A :: fmeshTally to copy
@@ -88,6 +93,12 @@ fmeshTally::operator=(const fmeshTally& A)
   if (this!=&A)
     {
       Tally::operator=(A);
+      typeID=A.typeID;
+      keyWords=A.keyWords;
+      requireRotation=A.requireRotation;
+      Pts=A.Pts;
+      minCoord=A.minCoord;
+      maxCoord=A.maxCoord;
     }
   return *this;
 }
@@ -129,46 +140,59 @@ fmeshTally::setKeyWords(const std::string&)
 {
   return;
 }
-
-void
-fmeshTally::setIndexLine(std::string)
-{
-  return;
-}
   
 void
-fmeshTally::setIndex(const size_t* IDX)
+fmeshTally::setIndex(const std::array<size_t,3>& IDX)
   /*!
     Sets the individual index for each x,y,z
     \param IDX :: array of three object
   */
 {
   ELog::RegMethod RegA("fmeshTally","setIndex");
-
   for(size_t i=0;i<3;i++)
     {
       if (!IDX[i])
 	throw ColErr::IndexError<size_t>(IDX[i],i,"IDX[index] zero");
+      Pts[i]=IDX[i];
     }
+  
   return;
 }
 
 int
 fmeshTally::addLine(const std::string& LX)
+  /*!
+    Add a line
+   */
 {
   return Tally::addLine(LX);
 }
 
 void
-fmeshTally::setCoordinates(const Geometry::Vec3D&,
-                           const Geometry::Vec3D&)
+fmeshTally::setCoordinates(const Geometry::Vec3D& A,
+                           const Geometry::Vec3D& B)
   /*!
     Sets the min/max coordinates
     \param A :: First coordinate
     \param B :: Second coordinate
   */
 {
+  ELog::RegMethod RegA("fmeshTally","setCoordinates");
+  
+  minCoord=A;
+  maxCoord=B;
   // Add some checking here
+  for(size_t i=0;i<3;i++)
+    {
+      if (std::abs(minCoord[i]-maxCoord[i])<Geometry::zeroTol)
+	throw ColErr::NumericalAbort(StrFunc::makeString(minCoord)+" ::: "+
+				     StrFunc::makeString(maxCoord)+
+				     " Equal components");
+      if (minCoord[i]>maxCoord[i])
+	std::swap(minCoord[i],maxCoord[i]);
+    }
+
+
   return;
 }
 
@@ -198,9 +222,11 @@ fmeshTally::rotateMaster()
   
   if (requireRotation)
     {
+      ELog::EM<<"Rotation required"<<ELog::endDiag;
       const masterRotate& MR=masterRotate::Instance(); 
-      //      MR.applyFull(minCoord);
-      //      MR.applyFull(maxCoord);
+      MR.applyFull(minCoord);
+      MR.applyFull(maxCoord);
+      requireRotation=0;
     }
   return;
 }
@@ -212,11 +238,18 @@ fmeshTally::writeCoordinates(std::ostream& OX) const
     \param OX :: Oupt stream
   */
 {
-  static char abc[]="abc";
+  const static char abc[]="ijk";
   
-  //  for(size_t i=0;i<3;i++)
-    //    OX<<"cor"<<abc[i]<<IDnum<<" "<<minCoord[i]<<" "
-    //      <<(Pts[i]-1)<<"i "<<maxCoord[i]<<std::endl;
+  std::ostringstream cx;
+  for(size_t i=0;i<3;i++)
+    {
+      cx.str("");
+      cx<<abc[i]<<"mesh "<<maxCoord[i]<<" "
+	<<abc[i]<<"ints "<<Pts[i];
+      StrFunc::writeMCNPXcont(cx.str(),OX);
+    }
+
+  
   return;
 }
   
@@ -230,24 +263,21 @@ fmeshTally::write(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
   if (isActive())
     {
-
       std::ostringstream cx;
       cx<<"fmesh"<<IDnum;
       writeParticles(cx);
       //GEOMETRY:
-      cx<<"GEOM="<<geomType<<" ";
-      cx<<"ORIGIN="<<MW.Num(Origin)<<" ";
-      
-      //      std::vector<double>::const_iterator vc;
-      //      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
-      //	cx<<MW.Num(*vc)<<" ";
-      
+      cx<<"GEOM="<<"xyz"<<" ";
+      cx<<"ORIGIN="<<MW.Num(minCoord)<<" ";
       StrFunc::writeMCNPX(cx.str(),OX);
-      if (!getEnergy().empty())
+      cx.str("");
+
+      std::vector<double> EPts;
+      const size_t EN=getEnergy().writeVector(EPts);
+      if (EN)
 	{
-	  cx.str("");
-	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
+	  cx.str("");
 	}					 
       // if (!mshmf.empty())
       //   {
@@ -263,5 +293,4 @@ fmeshTally::write(std::ostream& OX) const
 }
 
 }  // NAMESPACE tallySystem
-
 

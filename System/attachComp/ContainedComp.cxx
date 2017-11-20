@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -194,7 +195,7 @@ ContainedComp::getConstSurfaces() const
     }
   return outerSurf.getTopRule()->getConstSurfVector();
 }
-
+  
 void
 ContainedComp::addOuterSurf(const int SN) 
   /*!
@@ -545,7 +546,20 @@ ContainedComp::isOuterValid(const Geometry::Vec3D& V) const
   return (outerSurf.isValid(V)) ? 0 : 1;
 }
 
-void 
+void
+ContainedComp::addInsertCell(const ContainedComp& CC)
+  /*!
+    Adds CC-cells to the insert list
+    \param CC :: ContainedComp to copy
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","addInsertCell<CC>");
+
+  addInsertCell(CC.insertCells);
+  return;
+}
+
+void
 ContainedComp::addInsertCell(const std::vector<int>& CVec)
   /*!
     Adds a cell to the insert list
@@ -616,8 +630,8 @@ ContainedComp::setInsertCell(const std::vector<int>& CN)
 void
 ContainedComp::insertObjects(Simulation& System)
   /*!
-    Create outer virtual space that includes the beamstop etc
-    \param System :: Simulation to add to 
+    Insert the ContainedComp into the cell list
+    \param System :: Simulation to get objects from
   */
 {
   ELog::RegMethod RegA("ContainedComp","insertObjects");
@@ -632,6 +646,50 @@ ContainedComp::insertObjects(Simulation& System)
 	ELog::EM<<"Failed to find outerObject: "<<CN<<ELog::endErr;
     }
   insertCells.clear();
+  return;
+}
+
+void
+ContainedComp::insertInCell(Simulation& System,
+			    const int cellN) const
+  /*!
+    Insert the ContainedComp in a single cell.
+    \param System :: Simulation to get objects 
+    \param cellN :: Cell number
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","insertInCell");
+  
+  if (!hasOuterSurf()) return;
+
+  MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  if (outerObj)
+    outerObj->addSurfString(getExclude());
+  else
+    throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+  return;
+}
+
+void
+ContainedComp::insertInCell(Simulation& System,
+			    const std::vector<int>& cellVec) const
+  /*!
+    Insert the ContainedComp in a single cell.
+    \param System :: Simulation to get objects 
+    \param cellVec :: Cell numbers
+  */
+{
+  ELog::RegMethod RegA("ContainedComp","insertInCell(Vec)");
+  
+  if (!hasOuterSurf()) return;
+  for(const int cellN : cellVec)
+    {
+      MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+      if (outerObj)
+	outerObj->addSurfString(getExclude());
+      else
+	throw ColErr::InContainerError<int>(cellN,"Cell not in Simulation");
+    }
   return;
 }
 

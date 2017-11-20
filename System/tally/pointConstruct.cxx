@@ -71,7 +71,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
 #include "LinkSupport.h"
 #include "Simulation.h"
 #include "inputParam.h"
@@ -408,59 +407,6 @@ pointConstruct::calcWindowIntercept(const int bPlane,
   VList.resize(4);
   
   return VList;
-}
-
-
-void 
-pointConstruct::addBasicPointTally(Simulation& System,
-				   const attachSystem::FixedComp& FC,
-				   const size_t FCpoint,
-				   const double YStep) const
-  /*!
-    Adds a beamline tally to the system
-    \param System :: Simulation system
-    \param FC :: Guide unit to create tally after
-    \param FCpoint :: Point surface
-    \param YStep :: distance to step
-  */
-{
-  ELog::RegMethod RegA("pointConstruct","addBasicPointTally");
-
-  const masterRotate& MR=masterRotate::Instance();
-
-  const int tNum=System.nextTallyNum(5);
-  // Guide back point
-  Geometry::Vec3D Pt=FC.getLinkPt(FCpoint);
-  const Geometry::Vec3D TVec=FC.getLinkAxis(FCpoint);
-  Pt+=TVec*YStep;      // Add so not on boundary
-  ELog::EM<<"Tally "<<tNum<<" (point) = "
-	  <<MR.calcRotate(Pt)<<ELog::endDiag;
-  tallySystem::addF5Tally(System,tNum,Pt,			      
-			  std::vector<Geometry::Vec3D>());
-  return;
-}
-
-void
-pointConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
-				  Geometry::Vec3D& BOrigin,
-				  Geometry::Vec3D& BAxis)
-  /*!
-    Calculate the beam direction and origin given a shutter component
-    \param FC :: Component that might be TwinComp
-    \param BOrigin :: Output for Origin
-    \param BAxis :: Output for Axis
-   */
-{
-  ELog::RegMethod RegA("pointConstruct","calcBeamDirection");
-
-  const attachSystem::TwinComp* TwinPtr=
-    dynamic_cast<const attachSystem::TwinComp*>(&FC);
-  BAxis=(TwinPtr) ?  -TwinPtr->getBY() : FC.getLinkAxis(0);
-  
-  BOrigin=(TwinPtr) ?
-    TwinPtr->getBeamStart() : FC.getLinkPt(0); 
-  
-  return;
 }
 
 void

@@ -377,7 +377,7 @@ Sphere::write(std::ostream& OX) const
     \todo (Needs precision) 
   */
 {
-  const char xyz[]("xyz");
+  const char xyz[]="xyz";
   
   std::ostringstream cx;
   Quadratic::writeHeader(cx);

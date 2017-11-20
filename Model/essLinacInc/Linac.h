@@ -56,11 +56,12 @@ class Linac : public attachSystem::ContainedComp,
   double depth;                 ///< Inner depth
 
   double wallThick;             ///< Thickness of side walls
-  double roofThick; ///< Roof thickness
-  double floorThick; ///< Thickness of floor
-  double floorWidthLeft; ///< floor width towards x+
-  double floorWidthRight; ///< floor width towards x-
-  int nAirLayers; ///< number of layers in the air of the tunnel (along the proton beam)
+  double roofThick;             ///< Roof thickness
+  double floorThick;            ///< Thickness of floor
+  double floorWidthLeft;        ///< floor width towards x+
+  double floorWidthRight;       ///< floor width towards x-
+  /// number of layers in the air of the tunnel (along the proton beam)
+  size_t  nAirLayers;   
 
   int airMat;                    ///< air material
   int wallMat;                   ///< wall material
@@ -69,13 +70,14 @@ class Linac : public attachSystem::ContainedComp,
   double tswWidth;               ///< Temporary shielding wall width
   double tswGap;                 ///< Distance between Temporary shielding walls
   double tswOffsetY;             ///< TSW location on the Y-axis
-  int tswNLayers;                ///< number of layers in a TSW wall
+  size_t tswNLayers;             ///< number of layers in a TSW wall
 
   std::shared_ptr<BeamDump> beamDump; ///< linac 4 commissionning dump
   std::shared_ptr<FaradayCup> faradayCup; ///< Faraday Cup
+
   void layerProcess(Simulation&,const std::string&,
-		    const size_t&, const size_t&,
-		    const int&, const int&);
+		    const long int, const long int,
+		    const size_t, const int);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

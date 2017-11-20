@@ -71,7 +71,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 {
   ELog::RegMethod RegA("bunkerVariables[F]","setBunkerVar");
 
-
   Control.addVariable(AKey+"BunkerLeftPhase",-65.0);
   Control.addVariable(AKey+"BunkerRightPhase",-12.0);
   Control.addVariable(AKey+"BunkerLeftAngle",0.0);
@@ -95,18 +94,18 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofNVert",20);
       Control.addVariable(KItem+"BunkerRoofNMedial",1);
       Control.addVariable(KItem+"BunkerRoofNRadial",12);
-      Control.addVariable(KItem+"BunkerRoofNBasicVert",5);      
       
       Control.addVariable(KItem+"BunkerNSide",5);
       Control.addVariable(KItem+"BunkerNSideVert",5);
       Control.addVariable(KItem+"BunkerNSideThick",5);
 
       Control.addVariable(KItem+"BunkerFloorDepth",120.0);
-      Control.addVariable(KItem+"BunkerRoofHeight",170.0); 
+      Control.addVariable(KItem+"BunkerRoofHeight",150.0);
+      Control.addVariable(KItem+"BunkerWallHeight",170.0); 
       
       Control.addVariable(KItem+"BunkerWallThick",350.0);
       Control.addVariable(KItem+"BunkerSideThick",80.0);
-      Control.addVariable(KItem+"BunkerRoofThick",155.0);
+      Control.addVariable(KItem+"BunkerRoofThick",175.0);
       Control.addVariable(KItem+"BunkerFloorThick",100.0);
       
       Control.addVariable(KItem+"BunkerVoidMat","Void");
@@ -118,18 +117,24 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerWallNBasic",15);      
 
       // ROOF LAYERED
-      Control.addVariable(KItem+"BunkerNBasicVert",5);
-      Control.addVariable(KItem+"BunkerRoofVert1",30.0);
-      Control.addVariable(KItem+"BunkerRoofVert2",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert3",40.0);
-      Control.addVariable(KItem+"BunkerRoofVert4",35.0);
+      Control.addVariable(KItem+"BunkerRoofNBasicVert",8);
+      Control.addVariable(KItem+"BunkerRoofVert1",20.0);   // Void [below]
+      Control.addVariable(KItem+"BunkerRoofVert2",10.0);   // B poly
+      Control.addVariable(KItem+"BunkerRoofVert3",5.0);    // steel
+      Control.addVariable(KItem+"BunkerRoofVert4",20.0);
+      Control.addVariable(KItem+"BunkerRoofVert5",45.0);   // steel
+      Control.addVariable(KItem+"BunkerRoofVert6",40.0);  
+      Control.addVariable(KItem+"BunkerRoofVert7",25.0);   // steel
   
       
-      Control.addVariable(KItem+"BunkerRoofMat0","Poly");
-      Control.addVariable(KItem+"BunkerRoofMat1","ChipIRSteel");
-      Control.addVariable(KItem+"BunkerRoofMat2","Poly");
-      Control.addVariable(KItem+"BunkerRoofMat3","ChipIRSteel");
-      Control.addVariable(KItem+"BunkerRoofMat4","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat0","Void");
+      Control.addVariable(KItem+"BunkerRoofMat1","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat2","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat3","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat4","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat5","Poly");
+      Control.addVariable(KItem+"BunkerRoofMat6","ChipIRSteel");
+      Control.addVariable(KItem+"BunkerRoofMat7","Poly");
 
 
       Control.addVariable(KItem+"BunkerWallMat0","Poly");
@@ -185,6 +190,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(AKey+"BunkerPillarsBeamWidth",12.0);
   Control.addVariable(AKey+"BunkerPillarsBeamWallThick",2.0);
+  Control.addVariable(AKey+"BunkerPillarsBeamRoofThick",10.0);
   Control.addVariable(AKey+"BunkerPillarsBeamWallGap",5.0);
   
 
@@ -262,6 +268,81 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
 
   Control.addVariable(BKey+"BunkerLoadFile","BBunkerDef.xml");
   Control.addVariable(BKey+"BunkerOutFile","BBunker.xml");
+
+
+  Control.addVariable(BKey+"BunkerPillarsWidth",18.0);
+  Control.addVariable(BKey+"BunkerPillarsDepth",18.0);
+  Control.addVariable(BKey+"BunkerPillarsThick",1.0);
+  Control.addVariable(BKey+"BunkerPillarsMat","Stainless304");
+  Control.addVariable(BKey+"BunkerPillarsInnerMat","Poly%Void%50.0");
+  Control.addVariable(BKey+"BunkerPillarsNRadius",2);
+  Control.addVariable(BKey+"BunkerPillarsNSector",9); // default
+
+  Control.addVariable(BKey+"BunkerPillarsTopFootWidth",35.0);
+  Control.addVariable(BKey+"BunkerPillarsTopFootDepth",35.0);
+  Control.addVariable(BKey+"BunkerPillarsTopFootHeight",29.9);  // vertical
+  Control.addVariable(BKey+"BunkerPillarsTopFootThick",11.0);  // vertical
+  Control.addVariable(BKey+"BunkerPillarsTopFootGap",3.0);
+
+  Control.addVariable(BKey+"BunkerPillarsBeamWidth",12.0);
+  Control.addVariable(BKey+"BunkerPillarsBeamWallThick",2.0);
+  Control.addVariable(BKey+"BunkerPillarsBeamRoofThick",10.0);
+  Control.addVariable(BKey+"BunkerPillarsBeamWallGap",5.0);
+  
+
+  Control.addVariable(BKey+"BunkerPillarsR0",600.0);
+  Control.addVariable(BKey+"BunkerPillarsR1",900.0);
+  
+  Control.addVariable(BKey+"BunkerPillarsRS_0",3.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_1",9.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_2",15.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_3",21.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_4",27.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_5",34.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_6",39.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_7",46.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_8",52.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_9",57.0);
+  Control.addVariable(BKey+"BunkerPillarsRS_10",63.0);
+
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_1Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_2Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_5Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_0S_6Active",0);
+  //  Control.addVariable(AKey+"BunkerPillarsR_1S_2Active",0);
+
+
+  Control.addVariable(BKey+"BunkerPillarsNXBeam",0);
+  Control.addVariable(BKey+"BunkerPillarsXBeam0A","R_1S_0");
+  Control.addVariable(BKey+"BunkerPillarsXBeam1A","R_1S_1");
+  Control.addVariable(BKey+"BunkerPillarsXBeam2A","R_1S_2");
+  Control.addVariable(BKey+"BunkerPillarsXBeam3A","R_2S_3");
+  Control.addVariable(BKey+"BunkerPillarsXBeam4A","R_2S_4");
+  Control.addVariable(BKey+"BunkerPillarsXBeam5A","R_3S_5");
+  Control.addVariable(BKey+"BunkerPillarsXBeam6A","R_4S_6");
+  Control.addVariable(BKey+"BunkerPillarsXBeam7A","R_5S_7");
+
+
+  Control.addVariable(BKey+"BunkerPillarsNLBeam",0);
+
+  // R0 BLOCK
+  Control.addVariable(BKey+"BunkerPillarsLBeam0A","R_0S_0");
+  Control.addVariable(BKey+"BunkerPillarsLBeam1A","R_0S_1");
+  Control.addVariable(BKey+"BunkerPillarsLBeam2A","R_0S_2");
+  Control.addVariable(BKey+"BunkerPillarsLBeam3A","R_1S_2");
+  Control.addVariable(BKey+"BunkerPillarsLBeam4A","R_1S_3");
+  Control.addVariable(BKey+"BunkerPillarsLBeam5A","R_1S_4");
+  Control.addVariable(BKey+"BunkerPillarsLBeam6A","R_2S_5");
+  Control.addVariable(BKey+"BunkerPillarsLBeam7A","R_3S_6");
+  Control.addVariable(BKey+"BunkerPillarsLBeam8A","R_4S_7");
+
+  Control.addVariable(BKey+"BunkerPillarsLBeam9A","R_0S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam10A","R_1S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam11A","R_2S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam12A","R_3S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam13A","R_4S_8");
+  Control.addVariable(BKey+"BunkerPillarsLBeam14A","R_5S_8");
+
   
   return;
 }
@@ -358,7 +439,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("CurtainBaseGap",6.0);
   Control.addVariable("CurtainOuterGap",5.0);
   Control.addVariable("CurtainTopRaise",60.0);
-  Control.addVariable("CurtainHeight",250.0);
+  Control.addVariable("CurtainHeight",450.0);
   Control.addVariable("CurtainDepth",186.0);     // fixed by Ben.
   Control.addVariable("CurtainWallMat","Concrete");
   Control.addVariable("CurtainNTopLayers",1);   // 7 
@@ -385,8 +466,19 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("BunkerChicane0Height", 30.0);
   Control.addVariable("BunkerChicane0Mat", "Void");
 
+
+  Control.addVariable("ABHighBayLength",450.0);
+  Control.addVariable("ABHighBayHeight",330.0);
+  Control.addVariable("ABHighBayThick",200.0);
+  Control.addVariable("ABHighBayWallMat","Concrete");
+  Control.addVariable("ABHighBayRoofMat","Concrete"); 
   
-  return;
+  Control.addVariable("CDHighBayLength",450.0);
+  Control.addVariable("CDHighBayHeight",330.0);
+  Control.addVariable("CDHighBayThick",200.0);
+  Control.addVariable("CDHighBayWallMat","Concrete");
+  Control.addVariable("CDHighBayRoofMat","Concrete"); 
+return;
 }
   
 }  // NAMESPACE setVariable

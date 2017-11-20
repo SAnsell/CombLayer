@@ -84,11 +84,11 @@ namespace setVariable
 PipeGenerator::PipeGenerator() :
   pipeType(0),pipeRadius(8.0),
   pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
-  flangeRadius(12.0),flangeLen(1.0),
+  claddingThick(0.0),flangeRadius(12.0),flangeLen(1.0),
   windowRadius(10.0),windowThick(0.5),
   pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
   backWindowMat("Silicon300K"),
-  voidMat("Void")
+  voidMat("Void"),claddingMat("B4C")
   /*!
     Constructor and defaults
   */
@@ -185,6 +185,19 @@ PipeGenerator::setWindowMat(const std::string& MA,
   backWindowMat=MB;
   return;
 }
+
+void
+PipeGenerator::setCladding(const double T,const std::string& M)
+  /*!
+    Set the cladding thickess and material
+    \param T :: Thickness
+    \param M :: Material
+   */
+{
+  claddingThick=T;
+  claddingMat=M;
+  return;
+}
   
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
@@ -230,7 +243,10 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"WindowFrontMat",frontWindowMat);
   Control.addVariable(keyName+"WindowBackMat",backWindowMat);
   Control.addVariable(keyName+"VoidMat",voidMat);
-  
+
+  Control.addVariable(keyName+"CladdingThick",claddingThick);
+  Control.addVariable(keyName+"CladdingMat",claddingMat);
+      
   return;
 
 }

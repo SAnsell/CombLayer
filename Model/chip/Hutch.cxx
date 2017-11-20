@@ -3,7 +3,7 @@
  
  * File:   chip/Hutch.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,6 +80,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "FixedGroup.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
@@ -643,12 +644,12 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   // ---------------------------------------------------
   // OUTER WALLS:
   // ---------------------------------------------------
-  SMap.addMatch(hutchIndex+1,Guide.getLinkSurf(1));
+  SMap.addMatch(hutchIndex+1,Guide.getSignedLinkSurf(2));
 
   // CENTRE LINE [normal on x axis]:
   ModelSupport::buildPlane(SMap,hutchIndex+100,Origin,X); 
   
-  SMap.addMatch(hutchIndex+11,Guide.getLinkSurf(6));
+  SMap.addMatch(hutchIndex+11,Guide.getSignedLinkSurf(7));
   //  ModelSupport::buildPlane(SMap,hutchIndex+11,Origin-Y*hFWallThick,Y);
   ModelSupport::buildPlane(SMap,hutchIndex+2,Origin+Y*hMainLen,Y);
 
@@ -801,8 +802,8 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   SMap.registerSurf(hutchIndex+8,PX);
 
   // Use trimmers attached objects
-  SMap.addMatch(hutchIndex+101,Trimmer->getLU(0).getLinkSurf());
-  SMap.addMatch(hutchIndex+102,-Trimmer->getLU(1).getLinkSurf());
+  SMap.addMatch(hutchIndex+101,Trimmer->getSignedLinkSurf(1));
+  SMap.addMatch(hutchIndex+102,Trimmer->getSignedLinkSurf(-2));
 
   // Attach back containment:
   Trimmer->addBoundarySurf(SMap.realSurf(hutchIndex+33));
@@ -1125,7 +1126,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
       
       Out=ModelSupport::getComposite(SMap,hutchIndex,
 				     "-1004 1011 (4:-11) -8 15 -6 ");
-      Out+=Guide.getLinkString(8);
+      Out+=Guide.getSignedLinkString(9);
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addOuterUnionSurf(Out);
       
@@ -1152,8 +1153,6 @@ ChipIRHutch::addCollimators(Simulation& System,
 {
   ELog::RegMethod RegA("ChipIRHutch","addCollimators");
 
-  chipIRDatum::chipDataStore& CS=chipIRDatum::chipDataStore::Instance();
-  
   PreColObj->addInsertCell(collimatorVoid);
   PreColObj->addBoundarySurf(SMap.realSurf(hutchIndex+33));
   PreColObj->addBoundarySurf(-SMap.realSurf(hutchIndex+34));
@@ -1373,14 +1372,15 @@ ChipIRHutch::createCommonAll(Simulation& System,
 {
   ELog::RegMethod RegA("Hutch","createCommonAll");
 
-  Trimmer->createSurf(System,Guide);
+  Trimmer->createOnlySurfaces(System,Guide,2);
   createWallSurfaces(Guide);
   
   createWallObjects(System,IC);
   addExtraWalls(System,Guide);
   createLinks();
 
-  Trimmer->createObj(System);
+  Trimmer->createOnlyObjects(System);
+
   addOuterVoid();
   addCollimators(System,Guide);
   BStop->createAll(System,getKey("Main"),4);

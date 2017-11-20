@@ -49,7 +49,7 @@ class LinkUnit
   Geometry::Vec3D Axis;         ///< Connnection axis
   Geometry::Vec3D ConnectPt;    ///< Connection point
   
-  int linkSurf;                 ///< Link surface [0 ==> Rule]
+  int linkSurf;                  ///< Link surface [0 ==> Rule]
   HeadRule mainSurf;             ///< Common surface unit
   HeadRule bridgeSurf;           ///< Bridging surface unit
   

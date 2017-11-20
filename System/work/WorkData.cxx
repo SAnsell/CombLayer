@@ -35,8 +35,6 @@
 #include <boost/format.hpp>
 
 #include "Exception.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "GTKreport.h"
 #include "FileReport.h"
 #include "NameStack.h"
@@ -827,7 +825,7 @@ WorkData::addPoint(const double XC,const double YVal)
   /*!
     Add a point to existing bin
     \param XC :: XValue
-    \parma YVal :: Data point ot add
+    \param YVal :: Data point ot add
   */
 {
   const size_t Index=getXIndex(XC);

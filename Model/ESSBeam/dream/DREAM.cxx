@@ -74,18 +74,18 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
-#include "ChopperHousing.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "Aperture.h"
 #include "CompBInsert.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -107,7 +107,7 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
   SDisk(new constructSystem::DiskChopper(newName+"SBlade")),
 
@@ -120,13 +120,13 @@ DREAM::DREAM(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
   
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   BandADisk(new constructSystem::DiskChopper(newName+"BandADisk")),  
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
   
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")), 
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")), 
   T0DiskA(new constructSystem::DiskChopper(newName+"T0DiskA")),
 
   VPipeE1(new constructSystem::VacuumPipe(newName+"PipeE1")),
@@ -242,35 +242,6 @@ DREAM::~DREAM()
     Destructor
   */
 {}
-
-void
-DREAM::setBeamAxis(const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("DREAM","setBeamAxis");
-
-  dreamAxis->createUnitVector(GItem);
-  dreamAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  dreamAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  dreamAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  dreamAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  dreamAxis->linkShift(3);
-  dreamAxis->linkShift(4);
-  dreamAxis->linkAngleRotate(3);
-  dreamAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    dreamAxis->reverseZ();
-  return;
-}
-
   
 void 
 DREAM::build(Simulation& System,
@@ -291,12 +262,12 @@ DREAM::build(Simulation& System,
   ELog::EM<<"\nBuilding DREAM on : "<<GItem.getKeyName()<<ELog::endDiag;
 
   const FuncDataBase& Control=System.getDataBase();
-  CopiedComp::process(System.getDataBase());
+  CopiedComp::process(System.getDataBase());  // CONTROL modified
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
-  setBeamAxis(GItem,1);
+  essBeamSystem::setBeamAxis(*dreamAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -314,19 +285,19 @@ DREAM::build(Simulation& System,
   // NEW TEST SECTION:
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
-
+  
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->setOffsetFlag(1);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("Beam"),0);
-
+  DDisk->setOffsetFlag(1);  // centre flag
+  DDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDisk);
+ 
   // Double disk chopper
   SDisk->addInsertCell(ChopperA->getCell("Void"));
-  SDisk->setCentreFlag(3);  // Z direction
   SDisk->setOffsetFlag(1);  // Centre offset control
-  SDisk->createAll(System,ChopperA->getKey("Beam"),0);
-
+  SDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*SDisk);
+  
   VPipeC0->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeC0->createAll(System,ChopperA->getKey("Beam"),2);
 
@@ -344,10 +315,10 @@ DREAM::build(Simulation& System,
   ChopperB->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperB->createAll(System,*VPipeC,2);
   BandADisk->addInsertCell(ChopperB->getCell("Void"));
-  BandADisk->setCentreFlag(3);  // Z direction
   BandADisk->setOffsetFlag(1);  // Centre offset control
-  BandADisk->createAll(System,ChopperB->getKey("Beam"),0);
-  
+  BandADisk->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*BandADisk);
+    
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
@@ -360,9 +331,8 @@ DREAM::build(Simulation& System,
 
   // First disk of a T0 chopper
   T0DiskA->addInsertCell(ChopperC->getCell("Void",0));
-  T0DiskA->setCentreFlag(3);  // Z direction
-  T0DiskA->setOffsetFlag(0);  // Centre offset control
-  T0DiskA->createAll(System,ChopperC->getKey("Beam"),0);
+  T0DiskA->createAll(System,ChopperC->getKey("Main"),0);
+  ChopperC->insertAxle(System,*T0DiskA);
   
   VPipeE1->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeE1->createAll(System,ChopperC->getKey("Beam"),2);

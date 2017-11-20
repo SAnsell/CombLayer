@@ -170,8 +170,6 @@ insertObject::createUnitVector(const attachSystem::FixedComp& FC,
 
 
   FixedComp::createUnitVector(FC,lIndex);
-  ELog::EM<<"Y Axis == "<<Y<<ELog::endDiag;
-  ELog::EM<<"Y Step == "<<yStep<<ELog::endDiag;
   applyOffset();
   return;
 }

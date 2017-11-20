@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   construct/BeamWindow.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "BeamWindow.h"
 
@@ -80,9 +81,9 @@ namespace ts1System
 {
 
 BeamWindow::BeamWindow(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   bwIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(bwIndex+1),populated(0)
+  cellIndex(bwIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -90,9 +91,8 @@ BeamWindow::BeamWindow(const std::string& Key)  :
 {}
 
 BeamWindow::BeamWindow(const BeamWindow& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   bwIndex(A.bwIndex),cellIndex(A.cellIndex),
-  populated(A.populated),yStep(A.yStep),
   incThick1(A.incThick1),waterThick(A.waterThick),
   incThick2(A.incThick2),heMat(A.heMat),
   inconelMat(A.inconelMat),waterMat(A.waterMat)
@@ -113,10 +113,8 @@ BeamWindow::operator=(const BeamWindow& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
-      yStep=A.yStep;
       incThick1=A.incThick1;
       waterThick=A.waterThick;
       incThick2=A.incThick2;
@@ -135,45 +133,35 @@ BeamWindow::~BeamWindow()
 {}
 
 void
-BeamWindow::populate(const Simulation& System)
+BeamWindow::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase to use
  */
 {
   ELog::RegMethod RegA("BeamWindow","populate");
+
+  FixedOffset::populate(Control);
+  // Master values
+
+  incThick1=Control.EvalVar<double>(keyName+"IncThick1");
+  waterThick=Control.EvalVar<double>(keyName+"WaterThick");
+  incThick2=Control.EvalVar<double>(keyName+"IncThick2");
   
-  const FuncDataBase& Control=System.getDataBase();
+  // Materials
+  inconelMat=ModelSupport::EvalMat<int>(Control,keyName+"InconelMat");
+  waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
+  
+  //  populated = (incThick1*waterThick*incThick2
+  //	       <Geometry::zeroTol) ? 0 : 1;
 
-  try
-    {
-      // Master values
-      yStep=Control.EvalVar<double>(keyName+"YStep");
-      incThick1=Control.EvalVar<double>(keyName+"IncThick1");
-      waterThick=Control.EvalVar<double>(keyName+"WaterThick");
-      incThick2=Control.EvalVar<double>(keyName+"IncThick2");
-      
-      // Materials
-      inconelMat=ModelSupport::EvalMat<int>(Control,keyName+"InconelMat");
-      waterMat=ModelSupport::EvalMat<int>(Control,keyName+"WaterMat");
-
-      populated = (incThick1*waterThick*incThick2
-		   <Geometry::zeroTol) ? 0 : 1;
-    }
-  // Exit and don't report if we are not using this scatter plate
-  catch (ColErr::InContainerError<std::string>& EType)
-    {
-      ELog::EM<<keyName<<" not in use Var:"
-	      <<EType.getItem()<<ELog::endWarn;
-      populated=0;   
-    }
 
   return;
 }
   
 void
 BeamWindow::createUnitVector(const attachSystem::FixedComp& FC,
-			     const size_t indexPt)
+			     const long int indexPt)
   /*!
     Create the unit vectors
     - Y Down the beamline
@@ -183,11 +171,10 @@ BeamWindow::createUnitVector(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BeamWindow","createUnitVector");
 
-  attachSystem::FixedComp::createUnitVector(FC);
-  // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(indexPt)-Y*yStep;
-
+  attachSystem::FixedComp::createUnitVector(FC,indexPt);	
+  applyOffset();
+  ELog::EM<<"BWPtr "<<Origin<<" = "<<yStep<<ELog::endDiag;
+  ELog::EM<<"BWPtr "<<Y<<" = "<<indexPt<<ELog::endDiag;
   return;
 }
 
@@ -257,17 +244,17 @@ BeamWindow::createLinks()
 void
 BeamWindow::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
-		      const size_t targetFrontIndex)
+		      const long int targetFrontIndex)
   /*!
-    Global creation of the hutch
+    Global creation of the BeamWindow
     \param System :: Simulation to add vessel to
     \param FC :: Fixed target object
     \param targetFrontIndex :: front point of the target
   */
 {
   ELog::RegMethod RegA("BeamWindow","createAll");
-  populate(System);
-  if (populated)
+  populate(System.getDataBase());
+  //  if (populated)
     {
       createUnitVector(FC,targetFrontIndex);
       createSurfaces();
@@ -280,4 +267,4 @@ BeamWindow::createAll(Simulation& System,
 }
 
   
-}  // NAMESPACE ts1System
+}  // NAMESPACE t1System

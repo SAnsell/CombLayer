@@ -45,8 +45,7 @@
 namespace physicsSystem
 {
   
-nameCard::nameCard(const std::string& KN,
-                     const int wT) :
+nameCard::nameCard(const std::string& KN,const int wT) :
   keyName(KN),writeType(wT),active(0)
   /*!
     Constructor
@@ -145,6 +144,7 @@ nameCard::reset()
 {
   ELog::RegMethod RegA("nameCard","reset");
 
+  active=0;
   JUnit.erase(JUnit.begin(),JUnit.end());
   DUnit.erase(DUnit.begin(),DUnit.end());
   IUnit.erase(IUnit.begin(),IUnit.end());
@@ -162,13 +162,7 @@ nameCard::setDefItem(const std::string& kN)
    */
 {
   ELog::RegMethod RegA("nameCard","setDefItem");
-
-  std::set<std::string>::const_iterator jIter;
-
-  jIter=JUnit.find(kN);
-  if (jIter==JUnit.end())
-    JUnit.insert(kN);
-
+  JUnit.insert(kN);
   return;
 }
 
@@ -206,6 +200,9 @@ nameCard::setItem(const std::string& kN,const long int& Value)
 {
   ELog::RegMethod RegA("nameCard","setItem<long int>");
 
+  // if (keyName=="dbcn")
+  //   ELog::EM<<"Item["<<keyName<<"] == "<<kN<<" "<<Value<<ELog::endErr;
+
   active=1;
   std::map<std::string,long int>::iterator iIter;
   iIter=IUnit.find(kN);
@@ -228,7 +225,7 @@ nameCard::setItem(const std::string& kN,
   /*!
     Set an item based on the type
     \param kN :: Index number to return
-    \param Value :: vale to set
+    \param Value :: value to set
    */
 {
   ELog::RegMethod RegA("nameCard","setItem<string>");
@@ -447,6 +444,7 @@ nameCard::getItem<std::string>(const std::string& kN) const
 
   return sIter->second;
 }
+
 void
 nameCard::registerItems(const std::vector<std::string>& Items)
   /*!
@@ -454,6 +452,8 @@ nameCard::registerItems(const std::vector<std::string>& Items)
     \param Items :: list of items and maybe defaults
   */
 {
+  ELog::RegMethod RegA("nameCard","registerItems");
+  
   std::string K,Type;
   for(std::string full : Items)
     {
@@ -501,7 +501,33 @@ nameCard::writeJ(std::ostream& OX,size_t& jCnt)
 
   return;
 }
-  
+
+bool
+nameCard::isAllDefault() const
+  /*!
+    If the card is 100% default return true
+    \return 1 if all j / 0 if value exists
+  */
+{
+  for(const std::string& K : nameOrder)
+    {
+      // A set J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
+      if (IUnit.find(K) != IUnit.end())
+	return 0;
+
+      if (DUnit.find(K)!=DUnit.end())
+	return 0;
+      
+      if (SUnit.find(K)!=SUnit.end())
+        return 0;
+    }
+  return 1;
+}
+
+
 void
 nameCard::writeFlat(std::ostream& OX) const
   /*!
@@ -511,7 +537,6 @@ nameCard::writeFlat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("nameCard","writeFlat");
 
-  std::set<std::string>::const_iterator jIter;
   std::map<std::string,double>::const_iterator dIter;
   std::map<std::string,long int>::const_iterator iIter;
   std::map<std::string,std::string>::const_iterator sIter;
@@ -522,7 +547,10 @@ nameCard::writeFlat(std::ostream& OX) const
   size_t jCnt(0);
   for(const std::string& K : nameOrder)
     {
-      
+      // A set J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
       iIter=IUnit.find(K);
       if (iIter!=IUnit.end())
         {
@@ -531,14 +559,14 @@ nameCard::writeFlat(std::ostream& OX) const
           continue;
         }
       dIter=DUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (dIter!=DUnit.end())
         {
           writeJ(cx,jCnt);
           cx<<dIter->second<<" ";
           continue;
         }
       sIter=SUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (sIter!=SUnit.end())
         {
           writeJ(cx,jCnt);
           cx<<sIter->second<<" ";
@@ -566,10 +594,14 @@ nameCard::writeWithName(std::ostream& OX) const
   std::map<std::string,std::string>::const_iterator sIter;
 
   std::ostringstream cx;
-  
+
   cx<<keyName<<" ";
   for(const std::string& K : nameOrder)
     {
+      // SET J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
       cx<<" "<<K<<"=";
       iIter=IUnit.find(K);
       if (iIter!=IUnit.end())
@@ -578,13 +610,13 @@ nameCard::writeWithName(std::ostream& OX) const
           continue;
         }
       dIter=DUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (dIter!=DUnit.end())
         {
           cx<<dIter->second;
           continue;
         }
       sIter=SUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (sIter!=SUnit.end())
         {
           cx<<sIter->second;
           continue;
@@ -605,10 +637,13 @@ nameCard::write(std::ostream& OX) const
   ELog::RegMethod RegA("nameCard","write");
 
   if (!active) return;
-  if (writeType)
-    writeFlat(OX);
-  else
-    writeWithName(OX);
+  if (!isAllDefault())
+    {
+      if (writeType)
+	writeFlat(OX);
+      else
+	writeWithName(OX);
+    }
   return;
 }
 

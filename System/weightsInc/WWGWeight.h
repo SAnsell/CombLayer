@@ -22,6 +22,8 @@
 #ifndef WeightSystem_WWGWeight_h
 #define WeightSystem_WWGWeight_h
 
+class Simulation;
+
 namespace WeightSystem
 {
 
@@ -37,12 +39,12 @@ class WWGWeight
 {
  private:
 
-  int logFlag;                  ///<  normal values[-1]/ no state[0] / log values [1]
+  int zeroFlag;            ///<  set value [0] / zero Value [1]
   
-  const long int WX;             ///< Weight XIndex size
-  const long int WY;             ///< Weight YIndex size
-  const long int WZ;             ///< Weight ZIndex size
-  const long int WE;             ///< Energy size
+  long int WX;             ///< Weight XIndex size
+  long int WY;             ///< Weight YIndex size
+  long int WZ;             ///< Weight ZIndex size
+  long int WE;             ///< Energy size
   
   /// local storage for data [i,j,k,Energy]
   boost::multi_array<double,4> WGrid; 
@@ -54,44 +56,67 @@ class WWGWeight
   WWGWeight& operator=(const WWGWeight&);    
   ~WWGWeight() {}          ///< Destructor
 
+  //@{
+  /*!
+    Accessors				       
+    \return named value
+  */  
+  
   long int getXSize() const { return WX; }
   long int getYSize() const { return WY; }
   long int getZSize() const { return WZ; }
   long int getESize() const { return WE; }
 
   /// set log state
-  void assignLogState(const bool L) { logFlag=L; }
-  bool getLogState() const { return logFlag; }
+  //  void assignLogState(const bool L) { logFlag=L; }
+  /// return log state
+  //  bool getLogState() const { return logFlag; }
+
+  /// accessor to Cells
+  const boost::multi_array<double,4>& getGrid() const
+    { return WGrid; }
+
+  //@}
+  
+  bool isSized(const long int,const long int,const long int,
+	       const long int) const;
+  void resize(const long int,const long int,
+	      const long int,const long int);  
+
   
   void zeroWGrid();
   double calcMaxAttn(const long int) const;
   double calcMaxAttn() const;
 
-  void controlMinValue(const double);
-  
-  /// accessor to Cells
-  const boost::multi_array<double,4>& getGrid() const
-    { return WGrid; }
-  void setPoint(const long int,const long int,const double);
-  void addPoint(const long int,const long int,const double);
-  void scaleSource(const double);
-  
-  double distTrack(const Simulation&,const Geometry::Vec3D&,
+  void setLogPoint(const long int,const long int,const double);
+  void addLogPoint(const long int,const long int,const double);
+
+  void scaleMeshItem(const long int,const long int,const long int,
+		     const long int, const double);
+  void scaleGrid(const double);
+  void scalePower(const double);
+  void scaleRange(const double,const double,const double);
+  void setMinSourceValue(const double);
+
+
+  template<typename T>
+  double distTrack(const Simulation&,const T&,
 		   const Geometry::Vec3D&,const double,
 		   const double,const double) const;
-  
-  void wTrack(const Simulation&,const Geometry::Vec3D&,
-	      const std::vector<Geometry::Vec3D>&,
-	      const double,const double,const double);
-  
-  void wTrack(const Simulation&,const Geometry::Plane&,
+
+  template<typename T>
+  void wTrack(const Simulation&,const T&,
 	      const std::vector<Geometry::Vec3D>&,
 	      const double,const double,const double);
 
+  template<typename T,typename U>
   void CADISnorm(const Simulation&,const WWGWeight&,
 		 const std::vector<Geometry::Vec3D>&,
-		 const Geometry::Vec3D&);
+		 const T&,const U&);
   
+  
+  void writeWWINP(std::ostream&) const;
+  void writeVTK(std::ostream&,const long int) const;
   void write(std::ostream&) const;
 };
 

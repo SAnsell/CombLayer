@@ -306,7 +306,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-5),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1CylTarget";
     }    
@@ -315,7 +315,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-5),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Inner";
     }    
@@ -324,7 +324,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(5),0);
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -347,7 +347,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(4),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-5),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Cannelloni";
     }    
@@ -357,7 +357,7 @@ makeT1Real::buildTarget(Simulation& System,const std::string& TType,
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
       RefObj->addToInsertChain(*TarObj);
-      TarObj->setRefPlates(-RefObj->getLinkSurf(2),0);
+      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1BlockTarget";
     }    
@@ -406,8 +406,8 @@ makeT1Real::build(Simulation* SimPtr,
       BulkObj->addInsertCell(voidCell);  
       BulkObj->createAll(*SimPtr,IParam,*VoidObj);
 
-      MonoTopObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
-      MonoBaseObj->createAll(*SimPtr,1,*VoidObj,*BulkObj);
+      MonoTopObj->createAll(*SimPtr,3,*VoidObj,*BulkObj);
+      MonoBaseObj->createAll(*SimPtr,2,*VoidObj,*BulkObj);
       voidCell=VoidObj->getVoidCell();
     }
   else

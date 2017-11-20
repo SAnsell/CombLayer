@@ -3,7 +3,7 @@
  
  * File:   construct/TargetBase.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,9 +71,9 @@
 #include "ModelSupport.h"
 #include "generateSurf.h"
 #include "SimProcess.h"
-#include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "World.h"
 #include "ProtonVoid.h"
@@ -85,7 +85,7 @@ namespace constructSystem
 {
   
 TargetBase::TargetBase(const std::string& Key,const size_t NLink)  : 
-  ContainedComp(),FixedComp(Key,NLink),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,NLink),
   PLine(new ts1System::ProtonVoid("ProtonVoid"))
   /*!
     Constructor
@@ -100,7 +100,7 @@ TargetBase::TargetBase(const std::string& Key,const size_t NLink)  :
 }
 
 TargetBase::TargetBase(const TargetBase& A) : 
-  ContainedComp(A),FixedComp(A),  
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),  
   BWPtr((A.BWPtr) ? new ts1System::BeamWindow(*A.BWPtr) : 0),
   PLine(new ts1System::ProtonVoid(*A.PLine))
   /*!
@@ -121,7 +121,7 @@ TargetBase::operator=(const TargetBase& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       if (A.BWPtr)
 	*BWPtr = *A.BWPtr;
       else
@@ -133,6 +133,34 @@ TargetBase::operator=(const TargetBase& A)
 }
 
 
+void
+TargetBase::createBeamWindow(Simulation& System,
+			     const long int sideIndex)
+  /*!
+    Create the beamwindow if present
+    \param System :: Simulation to build into
+  */
+{
+  ELog::RegMethod RegA("TargetBase","createBeamWindow");
+  if (PLine->getVoidCell())
+    {
+      ModelSupport::objectRegister& OR=
+	ModelSupport::objectRegister::Instance();
+      
+      if (!BWPtr)
+	{
+	  BWPtr=std::shared_ptr<ts1System::BeamWindow>
+	  (new ts1System::BeamWindow("BWindow"));
+	  OR.addObject(BWPtr);
+	}      
+      BWPtr->addBoundarySurf(PLine->getCompContainer());
+      BWPtr->setInsertCell(PLine->getVoidCell());
+      BWPtr->createAll(System,*this,sideIndex);
+    }
+  return;
+}
+
+  
 void
 TargetBase::addProtonLineInsertCell(const int CN)
   /*!

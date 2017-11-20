@@ -408,7 +408,9 @@ DBMaterial::initMaterial()
   // Material #48 Poly:
   MObj.setMaterial(48,"Poly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
+  MObj.setDensity(-0.91);
   setMaterial(MObj);
+
 
   // Material #49 Regular concrete
   // Regular concrete at 2.339 g/cc [supposedly]
@@ -1256,7 +1258,7 @@ DBMaterial::initMaterial()
   // Material #137 Hi-DensityPoly:
   MObj.setMaterial(137,"HighDensPoly","6000.70c 0.0333333 "
 		   "1001.70c 0.0666666666","poly.01t",MLib);
-  MObj.setDensity(-1.05);
+  MObj.setDensity(-0.97);
   setMaterial(MObj);
 
   // 
@@ -1357,11 +1359,26 @@ DBMaterial::createMaterial(const std::string& MName)
   ELog::RegMethod RegA("DBMaterial","createMaterial");
   if (hasKey(MName)) return 1;
 
+  
   // Now key found
-  std::string::size_type pos=MName.find('%');
+  // can be a new density or a new mix:
+  std::string::size_type pos=MName.find('#');
+  double PFrac;
   if (pos!=std::string::npos)
     {
-      double PFrac;
+      const std::string AKey=MName.substr(0,pos);
+      const std::string BKey=MName.substr(pos+1);
+      if (StrFunc::convert(BKey,PFrac))
+	{
+	  createNewDensity(MName,AKey,PFrac);
+	  return 1;
+	}
+    }
+
+  pos=MName.find('%');
+  if (pos!=std::string::npos)
+    {
+
       const std::string AKey=MName.substr(0,pos);
       const std::string BKey=MName.substr(pos+1);
       if (StrFunc::convert(BKey,PFrac))
@@ -1467,6 +1484,48 @@ DBMaterial::createMix(const std::string& Name,
   MA+=MB;
   MA.setNumber(matNum);
   MA.setName(Name);
+  setMaterial(MA);
+  return matNum;
+}
+
+int
+DBMaterial::createNewDensity(const std::string& Name,
+			     const std::string& MatA,
+			     const double densityFrac)
+  /*!
+    Creates an new material based on density
+    \param Name :: Name of object
+    \param MatA :: Material 
+    \param densityFrac :: scale of denisty  / -ve for absolte
+    
+    \return current number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","createNewDensity");
+
+  const int matNum(getFreeNumber());
+
+  // special case for void 
+  if (std::abs(densityFrac)<1e-5)
+    {
+      MonteCarlo::Material MA=getMaterial("Void");
+      MA.setNumber(matNum);
+      MA.setName(Name);
+      return matNum;
+    }
+  
+  MonteCarlo::Material MA=getMaterial(MatA);
+  MA.setNumber(matNum);
+  MA.setName(Name);
+  
+  if (densityFrac>0.0)
+    MA.setDensity(MA.getAtomDensity()*densityFrac);
+  else if (densityFrac> -0.3)          // atom fraction
+    MA.setDensity(-densityFrac);
+  else                                 // read density
+    MA.setDensity(densityFrac);
+
+
   setMaterial(MA);
   return matNum;
 }
@@ -1805,6 +1864,31 @@ DBMaterial::writeMCNPX(std::ostream& OX) const
 }
 
 void
+DBMaterial::writePHITS(std::ostream& OX) const
+  /*!
+    Write everything out to the stream
+    for the phits output
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("DBMaterial","writePHITS");
+
+  for(const int sActive : active)
+    {
+      if (sActive)
+	{
+	  MTYPE::const_iterator mp=MStore.find(sActive);
+	  if (mp==MStore.end())
+	    throw ColErr::InContainerError<int>
+              (sActive,"MStore find(active item)");
+          
+	  mp->second.writePHITS(OX);
+	}
+    }
+  return;
+}
+
+void
 DBMaterial::writeFLUKA(std::ostream& OX) const
   /*!
     Write everything out to the fluka system
@@ -1842,7 +1926,8 @@ DBMaterial::writePOVRay(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
 	  
 	  mp->second.writePOVRay(OX);
 	}

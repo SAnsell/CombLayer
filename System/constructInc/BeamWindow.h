@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   constructInc/BeamWindow.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,15 +37,13 @@ namespace ts1System
 */
 
 class BeamWindow : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int bwIndex;            ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  int populated;                ///< Is populated
 
-  double yStep;                 ///< Step down proton line [+ve]
   double incThick1;              ///< Inconel Thickness 1
   double waterThick;              ///< Light water Thickness
   double incThick2;            ///< Inconel Thickness 2
@@ -54,9 +52,9 @@ class BeamWindow : public attachSystem::ContainedComp,
   int inconelMat;                   ///< Inconel
   int waterMat;                  ///< Light water
 
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const size_t);
+			const long int);
 
   void createSurfaces();
       
@@ -71,7 +69,7 @@ class BeamWindow : public attachSystem::ContainedComp,
   virtual ~BeamWindow();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

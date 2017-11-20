@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <complex>
 #include <memory>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"

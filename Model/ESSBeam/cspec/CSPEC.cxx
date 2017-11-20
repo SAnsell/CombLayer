@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -84,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DreamHut.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
@@ -108,7 +109,7 @@ CSPEC::CSPEC(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   BWDiskA(new constructSystem::DiskChopper(newName+"BWDiskA")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
@@ -150,38 +151,6 @@ CSPEC::~CSPEC()
     Destructor
   */
 {}
-
-void
-CSPEC::setBeamAxis(const FuncDataBase& Control,
-		   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database of variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("CSPEC","setBeamAxis");
-
-  cspecAxis->populate(Control);
-  cspecAxis->createUnitVector(GItem,0);
-  cspecAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  cspecAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  cspecAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  cspecAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  
-  cspecAxis->linkShift(3);
-  cspecAxis->linkShift(4);
-  cspecAxis->linkAngleRotate(3);
-  cspecAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    cspecAxis->reverseZ();
-  return;
-}
-
-
   
 void 
 CSPEC::build(Simulation& System,
@@ -209,7 +178,7 @@ CSPEC::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*cspecAxis,Control,GItem,1);
 
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
@@ -230,15 +199,15 @@ CSPEC::build(Simulation& System,
   
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
-  ELog::EM<<"CC == "<<FocusC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+
   ChopperA->addInsertCell(bunkerObj.getCell("MainVoid"));
   ChopperA->getKey("Main").setAxisControl(3,ZVert);
   ChopperA->getKey("BuildBeam").setAxisControl(3,ZVert);
   ChopperA->createAll(System,FocusC->getKey("Guide0"),2);
-  ELog::EM<<"CC == "<<FocusC->getKey("Guide0").getSignedLinkPt(2)<<ELog::endDiag;
+
   BWDiskA->addInsertCell(ChopperA->getCell("Void"));
-  BWDiskA->createAll(System,ChopperA->getKey("Main"),0,
-                     ChopperA->getKey("Beam"),2);
+  BWDiskA->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*BWDiskA);
   
   VPipeD->addInsertCell(bunkerObj.getCell("MainVoid"));
   VPipeD->createAll(System,ChopperA->getKey("Beam"),2);

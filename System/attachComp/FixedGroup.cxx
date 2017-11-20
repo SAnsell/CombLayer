@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedGroup.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ FixedGroup::FixedGroup(const std::string& mainKey,
     \param ANL :: Size of Fixed group
   */
 {
-  ELog::RegMethod RegA("FixedGroup","constructor(string)");
+  ELog::RegMethod RegA("FixedGroup","constructor(1Group)");
 
   registerKey(AKey,ANL);
   setDefault(AKey);
@@ -93,7 +93,7 @@ FixedGroup::FixedGroup(const std::string& mainKey,
     \param BNL :: Size of Fixed group
   */
 {
-  ELog::RegMethod RegA("FixedGroup","constructor(string,string)");
+  ELog::RegMethod RegA("FixedGroup","constructor(2Group)");
 
   registerKey(AKey,ANL);
   registerKey(BKey,BNL);
@@ -120,11 +120,44 @@ FixedGroup::FixedGroup(const std::string& mainKey,
     \param CNL :: Size of Fixed group
   */
 {
-  ELog::RegMethod RegA("FixedGroup","constructor(string,string)");
+  ELog::RegMethod RegA("FixedGroup","constructor(3Group)");
 
   registerKey(AKey,ANL);
   registerKey(BKey,BNL);
   registerKey(CKey,CNL);
+
+  setDefault(AKey);
+}
+
+FixedGroup::FixedGroup(const std::string& mainKey,
+		       const std::string& AKey,
+		       const size_t ANL,
+		       const std::string& BKey,
+		       const size_t BNL,
+		       const std::string& CKey,
+		       const size_t CNL,
+		       const std::string& DKey,
+		       const size_t DNL) :
+  FixedComp(mainKey,0)
+  /*!
+    Constructor 
+    \param mainKey :: mainKey
+    \param AKey :: Key one
+    \param ANL :: Size of Fixed group 1
+    \param BKey :: Key Two
+    \param BNL :: Size of Fixed group 2
+    \param CKey :: Key Three
+    \param CNL :: Size of Fixed group 3 
+    \param DKey :: Key Four
+    \param DNL :: Size of Fixed group 4
+  */
+{
+  ELog::RegMethod RegA("FixedGroup","constructor(4Group)");
+
+  registerKey(AKey,ANL);
+  registerKey(BKey,BNL);
+  registerKey(CKey,CNL);
+  registerKey(DKey,DNL);
 
   setDefault(AKey);
 }

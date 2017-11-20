@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   world/World.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,6 @@ masterTS2Origin()
 				    Geometry::Vec3D(0,1,0),
 				    Geometry::Vec3D(0,0,-1),
 				    Geometry::Vec3D(-1,0,0));
-  
   return MO;
 }
   
@@ -136,7 +135,11 @@ createOuterObjects(Simulation& System)
   PX=SurI.createUniqSurf<Geometry::Plane>(50000);   
   PX->setPlane(Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
   SurI.insertSurface(PX);                        // Force onto stack
-    
+
+  PX=SurI.createUniqSurf<Geometry::Plane>(60000);   
+  PX->setPlane(Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  SurI.insertSurface(PX);                        // Force onto stack
+
   //   Create object 74123
   System.addCell(MonteCarlo::Qhull(74123,0,0.0," -1 "));
 

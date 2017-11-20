@@ -38,7 +38,7 @@ namespace constuctSystem
   class DiskChopper;
   class ChopperPit;
   class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
   class RotaryCollimator;
   class VacuumBox;
   class VacuumPipe;
@@ -108,7 +108,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitA;
   std::shared_ptr<constructSystem::HoleShape> PitACutFront;
   std::shared_ptr<constructSystem::HoleShape> PitACutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   std::shared_ptr<constructSystem::DiskChopper> DiskA;
   std::shared_ptr<constructSystem::LineShield> ShieldA;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutA;
@@ -118,7 +118,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitB;
   std::shared_ptr<constructSystem::HoleShape> PitBCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitBCutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   std::shared_ptr<constructSystem::DiskChopper> DiskB;
   std::shared_ptr<constructSystem::LineShield> ShieldB;
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutB;
@@ -129,7 +129,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitC;
   std::shared_ptr<constructSystem::HoleShape> PitCCutFront;
   std::shared_ptr<constructSystem::HoleShape> PitCCutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   std::shared_ptr<constructSystem::DiskChopper> DiskC;
 
 
@@ -146,7 +146,7 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::ChopperPit> PitE;
   std::shared_ptr<constructSystem::HoleShape> PitECutFront;
   std::shared_ptr<constructSystem::HoleShape> PitECutBack;
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperE;
   std::shared_ptr<constructSystem::DiskChopper> DiskE1;
   std::shared_ptr<constructSystem::DiskChopper> DiskE2;
   std::shared_ptr<constructSystem::LineShield> ShieldE;
@@ -163,21 +163,27 @@ class TREX : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutG;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutG;
 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperG;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperG;
   std::shared_ptr<constructSystem::DiskChopper> DiskG;
   
   std::shared_ptr<constructSystem::VacuumPipe> VPipeOutH;
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutH;
 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperH;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperH;
   std::shared_ptr<constructSystem::DiskChopper> DiskH1;
   std::shared_ptr<constructSystem::DiskChopper> DiskH2;
 
   std::shared_ptr<beamlineSystem::GuideLine> GuideOutI;
  
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,
-		   const bool);
-    
+
+  void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
+                        const long int,const int);
+  void buildBunkerWallUnits(Simulation&,const Bunker&,
+			    const attachSystem::FixedComp&,
+			    const long int,const int);
+  
+
+  
  public:
   
   TREX(const std::string&);

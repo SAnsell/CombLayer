@@ -66,6 +66,7 @@
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
+#include "FrontBackCut.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -74,8 +75,11 @@
 #include "AttachSupport.h"
 
 #include "Cryostat.h"
+#include "TwinBase.h"
 #include "TwinChopper.h"
+#include "TwinChopperFlat.h"
 #include "DiskChopper.h"
+#include "VacuumPipe.h"
 #include "makeSingleItem.h"
 
 namespace singleItemSystem
@@ -109,21 +113,44 @@ makeSingleItem::build(Simulation& System,
   int voidCell(74123);
 
   constructSystem::TwinChopper TwinB("singleTwinB");
+  constructSystem::TwinChopperFlat TwinC("singleTwinC");
+  constructSystem::TwinChopperFlat TwinD("singleTwinD");
   constructSystem::DiskChopper BDiskTop("singleBBladeTop");
   constructSystem::DiskChopper BDiskLow("singleBBladeLow");
+
+  constructSystem::VacuumPipe APipe("singleBoxPipeA");
+  constructSystem::VacuumPipe BPipe("singleBoxPipeB");
+
+  TwinC.addInsertCell(voidCell);
+  TwinC.createAll(System,World::masterOrigin(),0);
+
+  TwinD.addInsertCell(voidCell);
+  TwinD.createAll(System,World::masterOrigin(),0);
+
+  APipe.addInsertCell(voidCell);
+  APipe.setFront(TwinC.getKey("Main"),2);
+  APipe.setBack(TwinD.getKey("Main"),1);
+  APipe.createAll(System,TwinC.getKey("Main"),2);
+
+  BPipe.addInsertCell(voidCell);
+  BPipe.setFront(TwinD.getKey("Main"),2);
+  BPipe.createAll(System,TwinD.getKey("Main"),2);
+  
+  return;
 
   TwinB.addInsertCell(voidCell);
   TwinB.createAll(System,World::masterOrigin(),0);
 
   BDiskLow.addInsertCell(TwinB.getCell("Void"));
-  BDiskLow.createAll(System,TwinB.getKey("Motor"),6,
-                      TwinB.getKey("BuildBeam"),-1);
+  BDiskLow.createAll(System,TwinB.getKey("MotorBase"),0,
+		     TwinB.getKey("Beam"),2);
 
   BDiskTop.addInsertCell(TwinB.getCell("Void"));
-  BDiskTop.createAll(System,TwinB.getKey("Motor"),3,
-                      TwinB.getKey("BuildBeam"),-1);
-  
+  BDiskTop.createAll(System,TwinB.getKey("MotorTop"),0,
+                      TwinB.getKey("Beam"),2);
 
+  TwinB.insertAxle(System,BDiskLow,BDiskTop);
+  
   return;
   constructSystem::Cryostat A("singleCryo");  
   A.addInsertCell(voidCell);

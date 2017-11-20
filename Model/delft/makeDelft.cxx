@@ -65,7 +65,8 @@
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
-#include "Source.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "KCode.h"
 #include "ModeCard.h"
 #include "PhysImp.h"
@@ -283,6 +284,7 @@ makeDelft::setSource(Simulation& System,
 {
   // For output stream
   ELog::RegMethod RControl("makeDelft","build");
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
   
   if (IParam.flag("kcode"))
     {
@@ -290,12 +292,13 @@ makeDelft::setSource(Simulation& System,
       std::ostringstream cx;
       for(size_t i=0;i<NItems;i++)
 	cx<<IParam.getValue<std::string>("kcode",i)<<" ";
-      SDef::KCode& KCard=System.getPC().getKCodeCard();
+      
+      SDef::KCode KCard;
       KCard.setLine(cx.str());
 
       if (IParam.flag("ksrcMat"))
 	{
-	  const int fissileZaid=IParam.getDefValue<int>(0,"ksrcMat",0,0);
+	  const size_t fissileZaid=IParam.getDefValue<size_t>(0,"ksrcMat",0,0);
 	  std::vector<int> fuelCells=
 	    GridPlate->getFuelCells(System,fissileZaid);
 
@@ -315,6 +318,7 @@ makeDelft::setSource(Simulation& System,
 	    }
 	  ELog::EM<<"Fission size == "<<FissionVec.size()<<ELog::endDiag;
 	  KCard.setKSRC(FissionVec);
+	  SDB.registerSource("kcode",KCard);
 	}
     }
 
@@ -407,7 +411,6 @@ makeDelft::buildModerator(Simulation& System,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
 
   ColdPress->addInsertCell(Pool->getCells("Water"));
   ColdPress->addInsertCell(74123);

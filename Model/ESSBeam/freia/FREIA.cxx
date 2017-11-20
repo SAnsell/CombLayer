@@ -74,6 +74,7 @@
 #include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "beamlineSupport.h"
 #include "GuideItem.h"
 #include "Jaws.h"
 #include "GuideLine.h"
@@ -84,7 +85,7 @@
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
-#include "ChopperUnit.h"
+#include "SingleChopper.h"
 #include "DetectorTank.h"
 #include "CylSample.h"
 #include "LineShield.h"
@@ -109,28 +110,28 @@ FREIA::FREIA(const std::string& keyName) :
   VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
   BendC(new beamlineSystem::GuideLine(newName+"BC")),
 
-  ChopperA(new constructSystem::ChopperUnit(newName+"ChopperA")),
+  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
   DDisk(new constructSystem::DiskChopper(newName+"DBlade")),
 
-  ChopperB(new constructSystem::ChopperUnit(newName+"ChopperB")),
+  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")),
   WFMDisk(new constructSystem::DiskChopper(newName+"WFMBlade")),
 
   VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
   BendD(new beamlineSystem::GuideLine(newName+"BD")),
 
-  ChopperC(new constructSystem::ChopperUnit(newName+"ChopperC")),
+  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
   FOCDiskC(new constructSystem::DiskChopper(newName+"FOC1Blade")),
 
   VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
   BendE(new beamlineSystem::GuideLine(newName+"BE")),
   
-  ChopperD(new constructSystem::ChopperUnit(newName+"ChopperD")),
+  ChopperD(new constructSystem::SingleChopper(newName+"ChopperD")),
   WBC2Disk(new constructSystem::DiskChopper(newName+"WBC2Blade")),
 
   VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
   BendF(new beamlineSystem::GuideLine(newName+"BF")),
 
-  ChopperE(new constructSystem::ChopperUnit(newName+"ChopperE")),
+  ChopperE(new constructSystem::SingleChopper(newName+"ChopperE")),
   FOC2Disk(new constructSystem::DiskChopper(newName+"FOC2Blade")),
 
   BInsert(new BunkerInsert(newName+"BInsert")),
@@ -139,10 +140,10 @@ FREIA::FREIA(const std::string& keyName) :
 
   OutPitA(new constructSystem::ChopperPit(newName+"OutPitA")),
   OutACut(new constructSystem::HoleShape(newName+"OutACut")),
-  ChopperOutA(new constructSystem::ChopperUnit(newName+"ChopperOutA")),
+  ChopperOutA(new constructSystem::SingleChopper(newName+"ChopperOutA")),
   WBC3Disk(new constructSystem::DiskChopper(newName+"WBC3Blade")),
 
-  ChopperOutB(new constructSystem::ChopperUnit(newName+"ChopperOutB")),
+  ChopperOutB(new constructSystem::SingleChopper(newName+"ChopperOutB")),
   FOC3Disk(new constructSystem::DiskChopper(newName+"FOC3Blade")),
 
   JawPit(new constructSystem::ChopperPit(newName+"JawPit")),
@@ -229,37 +230,6 @@ FREIA::~FREIA()
 {}
 
 void
-FREIA::setBeamAxis(const FuncDataBase& Control,
-                   const GuideItem& GItem,
-                   const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Database for variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse axis
-   */
-{
-  ELog::RegMethod RegA("FREIA","setBeamAxis");
-
-  freiaAxis->populate(Control);
-  freiaAxis->createUnitVector(GItem);
-  freiaAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  freiaAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  freiaAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  freiaAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-
-  // BEAM needs to be shifted/rotated:
-  freiaAxis->linkShift(3);
-  freiaAxis->linkShift(4);
-  freiaAxis->linkAngleRotate(3);
-  freiaAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    freiaAxis->reverseZ();
-  return;
-}
-
-void
 FREIA::buildBunkerUnits(Simulation& System,
                         const attachSystem::FixedComp& FA,
                         const long int startIndex,
@@ -295,8 +265,8 @@ FREIA::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   DDisk->addInsertCell(ChopperA->getCell("Void"));
-  DDisk->setCentreFlag(3);  // Z direction
-  DDisk->createAll(System,ChopperA->getKey("BuildBeam"),0);
+  DDisk->createAll(System,ChopperA->getKey("Main"),0);
+  ChopperA->insertAxle(System,*DDisk);
 
 
     // First (green chopper)
@@ -307,9 +277,9 @@ FREIA::buildBunkerUnits(Simulation& System,
   
   // Double disk chopper
   WFMDisk->addInsertCell(ChopperB->getCell("Void"));
-  WFMDisk->setCentreFlag(3);  // Z direction
-  WFMDisk->createAll(System,ChopperB->getKey("BuildBeam"),0);
-
+  WFMDisk->createAll(System,ChopperB->getKey("Main"),0);
+  ChopperB->insertAxle(System,*WFMDisk);
+  
   VPipeD->addInsertCell(bunkerVoid);
   VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
 
@@ -323,10 +293,9 @@ FREIA::buildBunkerUnits(Simulation& System,
   ChopperC->createAll(System,BendD->getKey("Guide0"),2);
   // Double disk chopper
   FOCDiskC->addInsertCell(ChopperC->getCell("Void"));
-  FOCDiskC->setCentreFlag(3);  // Z direction
-  FOCDiskC->createAll(System,ChopperC->getKey("BuildBeam"),0);
-
-
+  FOCDiskC->createAll(System,ChopperC->getKey("Main"),0);
+  ChopperC->insertAxle(System,*FOCDiskC);
+  
   VPipeE->addInsertCell(bunkerVoid);
   VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
 
@@ -340,9 +309,9 @@ FREIA::buildBunkerUnits(Simulation& System,
   ChopperD->createAll(System,BendE->getKey("Guide0"),2);
   // Double disk chopper
   WBC2Disk->addInsertCell(ChopperD->getCell("Void"));
-  WBC2Disk->setCentreFlag(3);  // Z direction
-  WBC2Disk->createAll(System,ChopperD->getKey("BuildBeam"),0);
-
+  WBC2Disk->createAll(System,ChopperD->getKey("Main"),0);
+  ChopperD->insertAxle(System,*WBC2Disk);
+  
   VPipeF->addInsertCell(bunkerVoid);
   VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
 
@@ -357,8 +326,8 @@ FREIA::buildBunkerUnits(Simulation& System,
 
   // Double disk chopper
   FOC2Disk->addInsertCell(ChopperE->getCell("Void"));
-  FOC2Disk->setCentreFlag(3);  // Z direction
-  FOC2Disk->createAll(System,ChopperE->getKey("BuildBeam"),0);
+  FOC2Disk->createAll(System,ChopperE->getKey("Main"),0);
+  ChopperE->insertAxle(System,*FOC2Disk);
 
   return;
 }
@@ -402,10 +371,10 @@ FREIA::buildOutGuide(Simulation& System,
   ChopperOutA->createAll(System,FocusWall->getKey("Guide0"),2);
   // Double disk chopper
   WBC3Disk->addInsertCell(ChopperOutA->getCell("Void"));
-  WBC3Disk->setCentreFlag(3);  // Z direction
-  WBC3Disk->setOffsetFlag(1);  // Z direction
-  WBC3Disk->createAll(System,ChopperOutA->getKey("BuildBeam"),0);
-
+  WBC3Disk->setOffsetFlag(1);  // Centre disk
+  WBC3Disk->createAll(System,ChopperOutA->getKey("Main"),0);
+  ChopperOutA->insertAxle(System,*WBC3Disk);
+  
   ChopperOutB->addInsertCell(OutPitA->getCell("Void"));
   ChopperOutB->getKey("Main").setAxisControl(3,ZVert);
   ChopperOutB->getKey("BuildBeam").setAxisControl(3,ZVert);
@@ -413,10 +382,10 @@ FREIA::buildOutGuide(Simulation& System,
 
   // Double disk chopper
   FOC3Disk->addInsertCell(ChopperOutB->getCell("Void"));
-  FOC3Disk->setCentreFlag(3);  // Z direction
-  FOC3Disk->setOffsetFlag(1);  // Z direction
-  FOC3Disk->createAll(System,ChopperOutB->getKey("BuildBeam"),0);
-  
+  FOC3Disk->setOffsetFlag(1);  // Centre in chopper void
+  FOC3Disk->createAll(System,ChopperOutB->getKey("Main"),0);
+  ChopperOutB->insertAxle(System,*FOC3Disk);
+    
   JawPit->addInsertCell(voidCell);
   JawPit->setAxisControl(-3,ZVert);
   JawPit->createAll(System,ChopperOutA->getKey("Beam"),2);
@@ -555,7 +524,7 @@ FREIA::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
 	  <<ELog::endDiag;
   
-  setBeamAxis(Control,GItem,0);
+  essBeamSystem::setBeamAxis(*freiaAxis,Control,GItem,1);
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setFront(GItem.getKey("Beam"),-1);

@@ -119,7 +119,8 @@ refPlate::dirOppositeType(const std::string& DN)
 }
 
 void
-refPlate::setOrigin(const std::string& Name,const size_t Index)
+refPlate::setOrigin(const std::string& Name,
+		    const long int Index)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
@@ -134,17 +135,16 @@ refPlate::setOrigin(const std::string& Name,const size_t Index)
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* OPtr=
-    OR.getObject<attachSystem::FixedComp>(Name);
+    OR.getObjectThrow<attachSystem::FixedComp>(Name,"FixedComp");
   
-  if (OPtr)
-    setOrigin(*OPtr,Index);
+  setOrigin(*OPtr,Index);
 
   return;
 }
 
 void
 refPlate::setOrigin(const attachSystem::FixedComp& FC,
-		    const size_t Index)
+		    const long int Index)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
@@ -155,9 +155,9 @@ refPlate::setOrigin(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("refPlate","setOrigin(FC,size_t)");
   
-  Origin=FC.getLinkPt(Index);
-  Y= -FC.getLinkAxis(Index);
-  SN[2]= -FC.getLinkSurf(Index);
+  Origin= FC.getSignedLinkPt(Index);
+  Y= FC.getSignedLinkAxis(-Index);
+  SN[2]= FC.getSignedLinkSurf(Index);
 
   FixedComp::setLinkSurf(2,-SN[2]);
   FixedComp::setConnect(2,Origin,-Y);
@@ -169,15 +169,13 @@ refPlate::setOrigin(const attachSystem::FixedComp& FC,
 void
 refPlate::setPlane(const std::string& dirName,
 		   const std::string& Name,
-		   const int dirFlag,
-		   const size_t LIndex)
+		   const long int LIndex)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
     the Y-axis [+ve].
     \param dirName :: Direction name
     \param Name :: FixedComp keyname
-    \param dirFlag :: Direction flag +/-
     \param LIndex :: Link surface index 
   */
 {
@@ -187,29 +185,23 @@ refPlate::setPlane(const std::string& dirName,
     ModelSupport::objectRegister::Instance();
 
   const attachSystem::FixedComp* OPtr=
-    OR.getObject<attachSystem::FixedComp>(Name);
+    OR.getObjectThrow<attachSystem::FixedComp>(Name,"FixedComp not found");
 
-  if (OPtr)
-    setPlane(dirName,*OPtr,dirFlag,LIndex);
+  setPlane(dirName,*OPtr,LIndex);
   return;
 }
 
 void
 refPlate::setPlane(const std::string& dirName,
 		   const FixedComp& FC,
-		   const int dirFlag,
-		   const size_t LIndex)
+		   const long int LIndex)
   /*!
     Takes a named object (from the object-register), used the
     link surface given by Index as the origin and the axis is
     the Y-axis [+ve].
 
-    If index is -ve then it is -(index+1) and the surface sense 
-    is reversed.
-
     \param dirName :: Direction name
     \param Name :: FixedComp keyname
-    \param dirFlag :: Direction flag
     \param LIndex :: Link surface index 
   */
 {
@@ -217,13 +209,10 @@ refPlate::setPlane(const std::string& dirName,
 
   // Calculate the sense of the surface:
   const size_t DIndex=dirType(dirName);
-  const int surfSwap((dirFlag<0) ? -1 : 1);
 
-  SN[DIndex]=FC.getLinkSurf(LIndex)*surfSwap;
 
-  FixedComp::setConnect(DIndex,FC.getLinkPt(LIndex),
-			-FC.getLinkAxis(LIndex)*surfSwap);
-  FixedComp::setLinkSurf(DIndex,-SN[DIndex]);
+  SN[DIndex]=FC.getSignedLinkSurf(LIndex);
+  FixedComp::setLinkSignedCopy(DIndex,FC,LIndex);
 
   planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
     
@@ -283,9 +272,10 @@ refPlate::setPlane(const std::string& dirName,
   ModelSupport::buildPlane(SMap,pIndex+static_cast<int>(DIndex),
 			   Pt-Axis*D,-Axis);
 
-  SN[DIndex]= -(pIndex+static_cast<int>(DIndex));
+  SN[DIndex]= -SMap.realSurf(pIndex+static_cast<int>(DIndex));
   FixedComp::setLinkSurf(DIndex,pIndex+static_cast<int>(DIndex));
-  planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
+
+  planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;
   return;
 }
 

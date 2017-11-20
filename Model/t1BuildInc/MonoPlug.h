@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1BuildInc/MonoPlug.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,10 +55,10 @@ class MonoPlug : public attachSystem::FixedComp,
   // Functions:
 
   void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
-  void createObjects(Simulation&,const size_t,
+  void createObjects(Simulation&,const long int,
 		     const attachSystem::FixedComp&,
 		     const attachSystem::FixedComp&);
   void createLinks();
@@ -70,7 +70,7 @@ class MonoPlug : public attachSystem::FixedComp,
   MonoPlug& operator=(const MonoPlug&);
   virtual ~MonoPlug();
 
-  void createAll(Simulation&,const size_t,
+  void createAll(Simulation&,const long int,
 		 const attachSystem::FixedComp&,
 		 const attachSystem::FixedComp&);
   

@@ -92,9 +92,6 @@ class ESTIA : public attachSystem::CopiedComp
 		      constructSystem::DiskChopper&,
 		      constructSystem::ChopperHousing&,
 		      constructSystem::VacuumPipe&);
-
-  
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   
  public:
   

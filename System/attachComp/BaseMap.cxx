@@ -333,7 +333,9 @@ BaseMap::getItems(const std::string& Key) const
   if (Key=="All" || Key=="all") return getItems(); 
   std::vector<int> Out;  
   LCTYPE::const_iterator mc=Items.find(Key);
-  return (mc==Items.end()) ? std::vector<int>() : mc->second;
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(Key,"Key");
+  return mc->second;
 }
 
 std::vector<int>
@@ -386,6 +388,65 @@ BaseMap::removeVecUnit(const std::string& kName,
   if (SRef.empty())
     Items.erase(mc);
   return;
+}
+
+std::string
+BaseMap::findCell(const int cellN) const
+  /*!
+    Determine if cellN exists in set and return
+    cell name.
+    \param cellN :: Cell to test
+    \return string if found 
+    \todo use std::optional 
+  */
+{
+  for(const LCTYPE::value_type& IUnit : Items)
+    {
+      const std::vector<int>& SRef(IUnit.second);
+      if (std::find(SRef.begin(),SRef.end(),cellN) != SRef.end())
+	return IUnit.first;
+    }
+  return "";
+}
+
+bool
+BaseMap::hasCell(const int cellN) const
+  /*!
+    Determine if cellN exists in set
+    \param cellN :: Cell to test
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("BaseMap","hasCell");
+  
+  for(const LCTYPE::value_type& IUnit : Items)
+    {
+      const std::vector<int>& SRef(IUnit.second);
+      if (std::find(SRef.begin(),SRef.end(),cellN) != SRef.end())
+	return 1;
+    }
+  return 0;
+}
+
+
+bool
+BaseMap::hasCell(const std::string& kName,const int cellN) const
+  /*!
+    Determine if cellN exists in set
+    \param kName :: unit to search
+    \param cellN :: Cell to test
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("BaseMap","hasCell(string)");
+
+  LCTYPE::const_iterator mc=Items.find(kName);
+
+  if (mc==Items.end())
+    throw ColErr::InContainerError<std::string>(kName,"Key not present");
+
+  const std::vector<int>& SRef(mc->second);
+  return (std::find(SRef.begin(),SRef.end(),cellN) != SRef.end());
 }
 
   

@@ -55,6 +55,7 @@ class ContainedGroup
  public:
 
   ContainedGroup();
+  explicit ContainedGroup(const std::string&);
   ContainedGroup(const std::string&,const std::string&);
   ContainedGroup(const std::string&,const std::string&,
 		 const std::string&);
@@ -87,14 +88,19 @@ class ContainedGroup
   // and its sign.
   int surfOuterIntersect(const std::string&,const Geometry::Line&) const;
 
-
-  void addInsertCell(const std::string&,const int);
   void addAllInsertCell(const int);
+  void addAllInsertCell(const ContainedComp&);
+  void addInsertCell(const std::string&,const int);
+  void addInsertCell(const std::string&,const std::vector<int>&);
+  void addInsertCell(const std::string&,const ContainedComp&);
+  
   void setInsertCell(const std::string&,const int);
   void setAllInsertCell(const int);
 
-  void addInsertCell(const std::string&,const std::vector<int>&);
+
   void insertObjects(Simulation&);
+  void insertInCell(const std::string&,Simulation&,const int);
+  void insertInCell(const std::string&,Simulation&,const std::vector<int>&);
 
   /// Size accessor
   size_t nGroups() const { return CMap.size(); } 

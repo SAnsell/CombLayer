@@ -461,7 +461,9 @@ DiskLayerMod::getHeight() const
     \return Full-Height [linkPoint 5-6]
   */
 {
-  return getLinkDistance(5,6);
+  return (getSignedLU(5).hasConnectPt() &&
+	  getSignedLU(6).hasConnectPt() ) ?
+       getLinkDistance(5,6) : 0.0;
 }
 
 void

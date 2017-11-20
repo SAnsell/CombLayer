@@ -25,43 +25,85 @@
 namespace SDef
 {
   class Source;
-  void createGaussianSource(Source&,const double,const double,const double);  
 
-  void createSimpleSource(Source&,const double,const double);
-  void createBeamSource(const FuncDataBase&,const std::string&,
-			const attachSystem::FixedComp&,const long int,
-			Source&);
-  void createBeamSource(const FuncDataBase&,const std::string&,Source&);
-  void createBilbaoSource(const FuncDataBase&,Source&);
-  void createD4CSource(const FuncDataBase&,Source&);
+  std::string createActivationSource(const size_t,
+				     const Geometry::Vec3D&,
+				     const Geometry::Vec3D&,
+				     const size_t,
+				     const double,
+				     const Geometry::Vec3D&,const double);
+  
+  std::string createBeamSource(const FuncDataBase&,const std::string&,
+			       const attachSystem::FixedComp&,const long int);
 
-  void createESSLinacSource(const FuncDataBase&,Source&);
-  void createESSSource(const FuncDataBase&,Source&);
-  void createESSPortSource(const FuncDataBase&,const attachSystem::FixedComp*,
-			   const long int,Source&);
-  void createBeamSource(const FuncDataBase&,const std::string&,Source&);
-  void createBeamSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 Source&);
-  void createGammaSource(const FuncDataBase&,const std::string&,Source&);
-  void createGammaSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 Source&);
-  void createLensSource(const FuncDataBase&,Source&,
-			const attachSystem::FixedComp&);
-  void createPointSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 const Geometry::Vec3D&,Source&);
-  void createPointSource(const FuncDataBase&,const std::string&,
-			 const std::string&,Source&);
-  void createSinbadSource(const FuncDataBase&,Source&);
-  void createTS1Source(const FuncDataBase&,Source&);
-  void createTS1GaussianSource(const FuncDataBase&,Source&);
-  void createTS1GaussianNewSource(const FuncDataBase&,Source&);   // Goran
-  void createTS1MuonSource(const FuncDataBase&,Source&); // Goran
-  void createTS1EpbCollSource(const FuncDataBase&,Source&);   // Goran    
-  void createTS2Source(const FuncDataBase&,Source&);
-  void createTS3ExptSource(const FuncDataBase&,Source&);
+  
+  std::string createBilbaoSource(const FuncDataBase&,
+				 const attachSystem::FixedComp&,const long int);
+  
+  std::string createD4CSource(const FuncDataBase&,
+			      const attachSystem::FixedComp&,
+			      const long int);
+
+  std::string createESSLinacSource(const FuncDataBase&,
+				   const attachSystem::FixedComp&,
+				   const long int);
+  
+  std::string createESSSource(const FuncDataBase&,
+		       const attachSystem::FixedComp&,const long int);
+  
+  std::string createESSPortSource(const FuncDataBase&,
+			   const attachSystem::FixedComp&,
+				  const long int);
+  
+  std::string createBeamSource(const FuncDataBase&,const std::string&,
+			       const attachSystem::FixedComp&,const long int);
+
+  std::string createLaserSource(const FuncDataBase&,const std::string&);
+  std::string createGammaSource(const FuncDataBase&,const std::string&,
+				const attachSystem::FixedComp&,const long int);
+  
+  std::string createLensSource(const FuncDataBase&,
+			const attachSystem::FixedComp&,
+			const long int);
+  
+  std::string createPointSource(const FuncDataBase&,const std::string&,
+				const attachSystem::FixedComp&,
+				const long int);
+  
+  std::string createSinbadSource(const FuncDataBase&,
+				 const attachSystem::FixedComp&,
+				 const long int);
+  
+  std::string createTS1Source(const FuncDataBase&,
+			      const attachSystem::FixedComp&,
+			      const long int);
+  
+  std::string createTS1GaussianSource(const FuncDataBase&,
+				      const attachSystem::FixedComp&,
+				      const long int);
+
+
+  // Goran section:
+  std::string createTS1GaussianNewSource(const FuncDataBase&,
+				  const attachSystem::FixedComp&,
+				  const long int);  
+  
+  std::string createTS1MuonSource(const FuncDataBase&,
+				  const attachSystem::FixedComp&,
+				  const long int);
+  
+  std::string createTS1EPBCollSource(const FuncDataBase&,
+				     const attachSystem::FixedComp&,
+				     const long int);
+
+  // ---------------------------
+  
+  std::string createTS2Source(const FuncDataBase&,
+			      const attachSystem::FixedComp&,const long int);
+
+  
+  std::string createTS3ExptSource(const FuncDataBase&,
+			   const attachSystem::FixedComp&,const long int);
 }
 
 

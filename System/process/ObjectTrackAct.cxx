@@ -164,8 +164,7 @@ ObjectTrackAct::getAttnSum(const long int objN) const
   // Get Two Paired Vectors
   const std::vector<MonteCarlo::Object*>& OVec=
     mc->second.getObjVec();
-  const std::vector<double>& TVec=
-    mc->second.getTrack();
+  const std::vector<double>& TVec=mc->second.getTrack();
   
   double sum(0.0);
   for(size_t i=0;i<TVec.size();i++)

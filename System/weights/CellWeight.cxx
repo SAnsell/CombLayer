@@ -173,10 +173,11 @@ CellWeight::updateWM(const double eCut,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
-  WeightSystem::WForm* WF=WM.getParticle('n');
+  WeightSystem::WForm* WF=WM.getParticle("n");
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
 
+  
   // quick way to get length of array
   const std::vector<double> EVec=WF->getEnergy();
   std::vector<double> DVec=EVec;
@@ -228,7 +229,7 @@ CellWeight::invertWM(const double eCut,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
-  WeightSystem::WForm* WF=WM.getParticle('n');
+  WeightSystem::WForm* WF=WM.getParticle("n");
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
 

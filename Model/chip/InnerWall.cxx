@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/InnerWall.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,7 @@
 #include "MaterialSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "InnerWall.h"
 
@@ -79,7 +80,7 @@ namespace hutchSystem
 {
 
 InnerWall::InnerWall(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,2),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
   innerIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(innerIndex+1),nLayers(0)
   /*!
@@ -89,11 +90,9 @@ InnerWall::InnerWall(const std::string& Key)  :
 {}
 
 InnerWall::InnerWall(const InnerWall& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),  
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),  
   innerIndex(A.innerIndex),cellIndex(A.cellIndex),
-  fStep(A.fStep),xStep(A.xStep),zStep(A.zStep),
-  Centre(A.Centre),height(A.height),
-  width(A.width),depth(A.depth),defMat(A.defMat),
+  height(A.height),width(A.width),depth(A.depth),defMat(A.defMat),
   nLayers(A.nLayers),cFrac(A.cFrac),cMat(A.cMat),
   CDivideList(A.CDivideList)
   /*!
@@ -115,10 +114,6 @@ InnerWall::operator=(const InnerWall& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
-      fStep=A.fStep;
-      xStep=A.xStep;
-      zStep=A.zStep;
-      Centre=A.Centre;
       height=A.height;
       width=A.width;
       depth=A.depth;
@@ -139,19 +134,15 @@ InnerWall::~InnerWall()
 {}
 
 void
-InnerWall::populate(const Simulation& System)
+InnerWall::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Database to use
   */
 {
   ELog::RegMethod RegA("InnerWall","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-  
-  fStep=Control.EvalVar<double>(keyName+"FStep");
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
+  FixedOffset::populate(Control);
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
@@ -171,22 +162,27 @@ InnerWall::populate(const Simulation& System)
 }
 
 void
-InnerWall::createUnitVector(const attachSystem::FixedComp& LC)
+InnerWall::createUnitVector(const attachSystem::FixedComp& FC,
+			    const long int sideIndex)
   /*!
     Create the unit vectors
-    \param LC :: LinearComponent to attach to
+    \param FC :: LinearComponent to attach to
+    \param sideIndex :: Link point
   */
 {
   ELog::RegMethod RegA("InnerWall","createUnitVector");
   // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(LC);
-  Origin=LC.getExit();
-
-  Origin+=X*xStep+Y*fStep+Z*zStep;
+  FixedComp::createUnitVector(FC,sideIndex);
+  yStep+=depth/2.0;
+  applyOffset();
+  
+  // This should not be needed:
+  //  Origin=FC.getExit();
+  //  Origin+=X*xStep+Y*yStep+Z*zStep;
   // Move centre before rotation
-  Centre=Origin+Y*(depth/2.0);
+  //  Centre=Origin+Y*(depth/2.0);
    
-  setExit(Origin+Y*depth,Y);
+  //  setExit(Origin+Y*depth,Y);
   return;
 }
 
@@ -198,21 +194,21 @@ InnerWall::createSurfaces()
 {
   ELog::RegMethod RegA("InnerWall","createSurface");
   // INNER PLANES
-  
+
   // Front
-  ModelSupport::buildPlane(SMap,innerIndex+1,Centre-Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,innerIndex+1,Origin-Y*depth/2.0,Y);
   addLinkSurf(0,SMap.realSurf(innerIndex+1));
   // Back
-  ModelSupport::buildPlane(SMap,innerIndex+2,Centre+Y*depth/2.0,Y);
+  ModelSupport::buildPlane(SMap,innerIndex+2,Origin+Y*depth/2.0,Y);
 
   setBridgeSurf(1,SMap.realSurf(innerIndex+2));
   addLinkSurf(1,-SMap.realSurf(innerIndex+2));
 
   // Hole Inner:
-  ModelSupport::buildPlane(SMap,innerIndex+3,Centre-X*width,X);
-  ModelSupport::buildPlane(SMap,innerIndex+4,Centre+X*width,X);
-  ModelSupport::buildPlane(SMap,innerIndex+5,Centre-Z*height,Z);
-  ModelSupport::buildPlane(SMap,innerIndex+6,Centre+Z*height,Z);
+  ModelSupport::buildPlane(SMap,innerIndex+3,Origin-X*width,X);
+  ModelSupport::buildPlane(SMap,innerIndex+4,Origin+X*width,X);
+  ModelSupport::buildPlane(SMap,innerIndex+5,Origin-Z*height,Z);
+  ModelSupport::buildPlane(SMap,innerIndex+6,Origin+Z*height,Z);
   return;
 }
 
@@ -252,8 +248,7 @@ InnerWall::layerProcess(Simulation& System)
     \param System :: Simulation to work on
   */
 {
-  ELog::RegMethod RegA("InnerWall","LayerProcess");
-  
+  ELog::RegMethod RegA("InnerWall","layerProcess");  
 
   if (nLayers<1) return;
 
@@ -299,41 +294,73 @@ InnerWall::exitWindow(const double Dist,
   window.push_back(SMap.realSurf(innerIndex+4));
   window.push_back(SMap.realSurf(innerIndex+5));
   window.push_back(SMap.realSurf(innerIndex+6));
-  Pt=Centre+Y*Dist;  
+  Pt=Origin+Y*(Dist-depth/2.0);  
   return SMap.realSurf(innerIndex+2);
 }
   
+
 void
-InnerWall::createSurf(Simulation& System,
-		      const attachSystem::FixedComp& LC)
+InnerWall::createOnlyObjects(Simulation& System)
+
   /*!
-    Generic function to create surfaces
+    Generic function to create objects
     \param System :: Simulation item
-    \param LC :: Linear component to set axis etc
   */
 {
-  ELog::RegMethod RegA("InnerWall","createSurf");
-  populate(System);
-  createUnitVector(LC);
+  ELog::RegMethod RegA("InnerWall","createAll");
+
+  createObjects(System);
+  layerProcess(System);
+  //  createLinks();
+  insertObjects(System);
+
+  
+  return;
+}
+
+void
+InnerWall::createOnlySurfaces(Simulation& System,
+			      const attachSystem::FixedComp& FC,
+			      const long int sideIndex)
+/*!
+  Generic function to create surfaces
+    \param System :: Simulation item
+    \param FC :: Linear component to set axis etc
+    \param sideIndex :: link point
+*/
+{
+  ELog::RegMethod RegA("InnerWall","createAll");
+
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   
   return;
 }
 
 void
-InnerWall::createObj(Simulation& System)
+InnerWall::createAll(Simulation& System,
+		     const attachSystem::FixedComp& FC,
+		     const long int sideIndex)
   /*!
-    Generic function to create objects
+    Generic function to create surfaces
     \param System :: Simulation item
+    \param FC :: Linear component to set axis etc
+    \param sideIndex :: link point
   */
 {
-  ELog::RegMethod RegA("InnerWall","createObj");
+  ELog::RegMethod RegA("InnerWall","createAll");
 
+  populate(System.getDataBase());
+  createUnitVector(FC,sideIndex);
+  createSurfaces();
   createObjects(System);
   layerProcess(System);
+  //  createLinks();
   insertObjects(System);
+
   
   return;
 }
-  
-}  // NAMESPACE shutterSystem
+
+}  // NAMESPACE hutchSystem

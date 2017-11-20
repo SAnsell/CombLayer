@@ -161,7 +161,7 @@ addSurfTally(Simulation& System,
   Pt.setValues(10.0,1.0,10.0,0);
   Pt.createAll(System,Org+Y*Dist,FL);
   
-  tallySystem::addF1Tally(System,TNum,Pt.getLinkSurf(0));
+  tallySystem::addF1Tally(System,TNum,Pt.getSignedLinkSurf(1));
   return TNum;
 }
 

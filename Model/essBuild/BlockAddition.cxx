@@ -132,32 +132,6 @@ BlockAddition::~BlockAddition()
   */
 {}
 
-std::string
-BlockAddition::getLinkComplement(const size_t sideIndex) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param Index :: Link number
-    \return String of link
-  */
-{
-  if (active)
-    return FixedComp::getLinkComplement(sideIndex);
-  return std::string("");
-}
-
-std::string
-BlockAddition::getLinkString(const size_t sideIndex) const
-  /*!
-    Accessor to the link surface string [negative]
-    \param sideIndex :: Link number
-    \return String of link
-  */
-{
-  if (active)
-    return FixedComp::getLinkString(sideIndex);
-  return std::string("");
-}
-
 void
 BlockAddition::populate(const FuncDataBase& Control)
   /*!

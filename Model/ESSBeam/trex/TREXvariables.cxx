@@ -186,7 +186,7 @@ void TREXvariables(FuncDataBase& Control)
   BGen.setMaterials("Copper","B4C");
   BGen.setThick({0.2});
   BGen.addPhase({95},{60});
-  BGen.generateBlades(Control,"trexADisk",0.0,25.0,35.0);
+  BGen.generateBlades(Control,"trexADisk",0.0,20.0,35.0);
 
   const double shieldMatThick(60.0);
   const double shieldVoidThick(25.0);

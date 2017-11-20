@@ -518,10 +518,15 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
   ELog::RegMethod RegA("ReactorGrid","getCellOrigin");
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
+
+  const double halfWidth=static_cast<double>(2.0*(i+1))-
+    static_cast<double>(NX+1);
+  const double halfDepth=static_cast<double>(2.0*(j+1))-
+    static_cast<double>(NY+1);
   
   return Origin+
-    X*(Width*static_cast<double>(2*i-NX+1)/static_cast<double>(2*NX))+
-    X*(Depth*static_cast<double>(2*j-NY+1)/static_cast<double>(2*NY));
+    X*(Width*halfWidth/static_cast<double>(2*NX))+
+    Y*(Depth*halfDepth/static_cast<double>(2*NY));
 }
 
 
@@ -584,7 +589,7 @@ void
 ReactorGrid::createLinks()
   /*!
     Create the linked units
-   */
+  */
 {
   ELog::RegMethod RegA("ReactorGrid","createLinks");
 
@@ -630,7 +635,7 @@ ReactorGrid::fuelCentres() const
 
 std::vector<int>
 ReactorGrid::getFuelCells(const Simulation& System,
-			  const int zaid) const
+			  const size_t zaid) const
   /*!
     Get a comprehensive list of all cells
     \param System :: Simualation to check cell existance

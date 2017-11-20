@@ -80,10 +80,10 @@ class LinkWrapper : public attachSystem::ContainedComp,
   virtual ~LinkWrapper();
 
   void addSurface(const Geometry::Vec3D&,const Geometry::Vec3D&);
-  void addSurface(const attachSystem::FixedComp&,const int,const size_t);
+  void addSurface(const attachSystem::FixedComp&,const long int);
   void addSurface(const attachSystem::FixedComp&,std::string);
   void addSurface(const std::string&,const std::string&);
-  void addSurface(const std::string&,const int,const size_t);
+  void addSurface(const std::string&,const long int);
  
   /// Get Central cell [last built]
   int centralCell() const { return cellIndex-1; }

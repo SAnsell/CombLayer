@@ -440,23 +440,19 @@ H2Wing::createSurfaces()
 				   NPts[i]);
 	  
 	  // corner centre
-	  const Geometry::Vec3D RCent=
-	    Geometry::cornerCircleTouch
+	  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+	    RCircle=Geometry::findCornerCircle
 	    (CPts[i],CPts[(i+1)%3],CPts[(i+2)%3],radius[i]+PDepth);
-	  // Mid norm point INWARD!
-
-	  std::pair<Geometry::Vec3D,Geometry::Vec3D> CutPair=
-	    Geometry::cornerCircle
-	    (CPts[i],CPts[(i+1)%3],CPts[(i+2)%3],radius[i]+PDepth);
-
-	  // Positive inward
-	  ModelSupport::buildPlane(SMap,triOffset+ii+20,
-				   CutPair.first,CutPair.second,
-				   CutPair.first+Z,MD);
 
 	  
+	  // Positive inward
+	  ModelSupport::buildPlane(SMap,triOffset+ii+20,
+				   std::get<1>(RCircle),
+				   std::get<2>(RCircle),
+				   std::get<1>(RCircle)+Z,MD);
 	  ModelSupport::buildCylinder(SMap,triOffset+ii+6,
-				      RCent,Z,radius[i]+PDepth);
+				      std::get<0>(RCircle),
+				      Z,radius[i]+PDepth);
 	}
       
       ModelSupport::buildPlane(SMap,triOffset+5,Origin-

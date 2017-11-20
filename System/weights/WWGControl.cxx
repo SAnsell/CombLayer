@@ -76,11 +76,11 @@
 #include "ObjectTrackPoint.h"
 #include "ObjectTrackPlane.h"
 #include "Mesh3D.h"
-#include "WWG.h"
 #include "WWGItem.h"
 #include "WWGWeight.h"
 #include "MarkovProcess.h"
 #include "WeightControl.h"
+#include "WWG.h"
 #include "WWGControl.h"
 
 namespace WeightSystem
@@ -132,6 +132,23 @@ WWGControl::~WWGControl()
   delete adjointFlux;
 }
   
+void
+WWGControl::wwgSetParticles(const std::set<std::string>& actPart)
+  /*!
+    Process wwg Mesh - constructs the 3D mesh boundary
+    \param actPart :: active paritcles
+  */
+{
+  ELog::RegMethod RegA("WWGControl","wwgSetParticles");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+
+  wwg.setParticles(actPart);
+  return;
+}
+
   
 void
 WWGControl::wwgMesh(const mainSystem::inputParam& IParam)
@@ -239,28 +256,29 @@ WWGControl::wwgCreate(const Simulation& System,
         IParam.getValueError<std::string>
         ("wwgCalc",iSet,0,"wwgCalc without source term");
 
-      processPtString(SourceStr,ptType,ptIndex,adjointFlag);
+      WeightControl::processPtString(SourceStr,ptType,ptIndex,adjointFlag);
       
-      // get values [ecut / density / minWeight/ r2Length / r2Power ]
+      // get values [ecut / density / r2Length / r2Power ]
       procParam(IParam,"wwgCalc",iSet,1);      
       WWGWeight& wSet=(adjointFlag) ? *adjointFlux : *sourceFlux;
 
-      if (ptType=="Plane")   
+      if (ptType=="help" || ptType=="Help")
 	{
-          if (ptIndex>=planePt.size())
-            throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
-                                             "planePt.size() < ptIndex");
-          
+	  ELog::EM<<"wwgCalc ==> \n"
+	    "       SourceType [S/T Plane/Source/Cone Index]\n"
+	    "       Energy cut [MeV] \n"
+	    "       ScaleFactor [default: 1.0] \n"
+	    "       densityFactor [default: 1.0] \n"
+	    "       r2Length factor [default: 1.0] \n"
+	    "       r2Power [default: 2.0] \n"<<ELog::endCrit;
+	}
+      else if (ptType=="Plane")   
+	{
 	  wSet.wTrack(System,planePt[ptIndex],GridMidPt,
 		      density,r2Length,r2Power);
 	}
       else if (ptType=="Source")
         {
-	  ELog::EM<<"Here "<<ptIndex<<" "<<sourcePt.size()<<ELog::endDiag;
-	  if (ptIndex>=sourcePt.size())
-            throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
-                                             "sourcePt.size() < ptIndex");
-
           wSet.wTrack(System,sourcePt[ptIndex],GridMidPt,
 		      density,r2Length,r2Power);
         }
@@ -268,7 +286,6 @@ WWGControl::wwgCreate(const Simulation& System,
 	throw ColErr::InContainerError<std::string>
 	  (ptType,"SourceType not known");
 
-      wSet.controlMinValue(minWeight);
       wwgFlag|= (adjointFlag) ? 2 : 1;
     }
   
@@ -329,25 +346,33 @@ WWGControl::wwgNormalize(const mainSystem::inputParam& IParam)
   WWG& wwg=WM.getWWG();
 
   wwg.updateWM(*sourceFlux,1.0);
+  
   if (IParam.flag("wwgNorm"))
     {
-      const double minWeight=
-        IParam.getDefValue<double>(-100.0,"wwgNorm",0,0);
-      if (minWeight<-90)
+      const std::string info=
+        IParam.getDefValue<std::string>("","wwgNorm",0,0);
+      if (info=="help" || info=="Help")
 	{
-	  ELog::EM<<"Norm == "<<ELog::endDiag;
-	  wwg.normalize();
+	  ELog::EM<<"wwgNorm ==> \n"
+	    "       log(weightRange) [Manditory] (typical 20) \n"
+	    "       lowRange (+ve takes data range) [default 1.0]\n"
+	    "       highRange (+ve takes data range) [default 1.0]\n"
+	    <<ELog::endCrit;
+	  return;
 	}
-      else
-	{
-	  const double powerWeight=
-	    IParam.getDefValue<double>(1.0,"wwgNorm",0,1);
-	  ELog::EM<<"Scale Range == "<<std::pow(10.0,-minWeight)<<ELog::endDiag;
-	  wwg.scaleRange(std::pow(10.0,-minWeight),1.0);
-	  wwg.powerRange(powerWeight);
 
-	      
-	}
+      const double weightRange=
+        IParam.getValueError<double>("wwgNorm",0,0,"Weight range not given");
+      const double lowRange=
+        IParam.getDefValue<double>(1.0,"wwgNorm",0,1);    // +ve means default
+      const double highRange=
+        IParam.getDefValue<double>(1.0,"wwgNorm",0,2);
+      //      const double powerRange=
+      //        IParam.getDefValue<double>(1.0,"wwgNorm",0,3);
+      
+
+      wwg.scaleRange(lowRange,highRange,weightRange);
+      //      wwg.powerRange(powerWeight);
     }
   else
     ELog::EM<<"Warning : No WWG normalization step"<<ELog::endWarn;
@@ -408,19 +433,39 @@ WWGControl::wwgCombine(const Simulation& System,
       WWG& wwg=WM.getWWG();
 	
       size_t itemCnt(0);
-
-      const Geometry::Vec3D SPoint=
-	IParam.getCntVec3D("wwgCADIS",0,itemCnt,"CADIS Source Point");
+      const std::string SUnit=
+      	IParam.getValueError<std::string>("wwgCADIS",0,itemCnt++,
+					  "CADIS Source Point");
+      const std::string TUnit=
+      	IParam.getDefValue<std::string>(SUnit,"wwgCADIS",0,itemCnt);
+      
+      std::string ptType,sndPtType;
+      size_t ptIndex,sndPtIndex;
+      bool adjointFlag,sndAdjointFlag;
+      WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
+      WeightControl::processPtString(SUnit,sndPtType,sndPtIndex,sndAdjointFlag);
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
 
-      //      sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);
-      sourceFlux->CADISnorm(System,*adjointFlux,GridMidPt,SPoint);      
+      if (ptType=="Plane" && sndPtType=="Plane")
+	{
+	  sourceFlux->CADISnorm(System,*adjointFlux,
+				GridMidPt,planePt[ptIndex],
+                                planePt[sndPtIndex]);      
+	}
+      else if (ptType=="Source" && sndPtType=="Source")
+	{
+	  sourceFlux->CADISnorm(System,*adjointFlux,
+				GridMidPt,sourcePt[ptIndex],
+                                sourcePt[sndPtIndex]);
+	}
+      else
+	{
+	  ELog::EM<<"Mixed source/plane cadis not currently supported"
+		  <<ELog::endErr;
+	}
     }
   else
     ELog::EM<<"Warning : No WWG CADIS step"<<ELog::endWarn;
-
-
-  
   
   return;
 }
@@ -444,6 +489,7 @@ WWGControl::processWeights(Simulation& System,
   if (IParam.flag("wWWG"))
     {
       WeightControl::processWeights(System,IParam);
+      wwgSetParticles(activeParticles);
       
       procParam(IParam,"wWWG",0,0);
       wwgMesh(IParam);               // create mesh [wwgXMesh etc]
@@ -454,9 +500,13 @@ WWGControl::processWeights(Simulation& System,
       wwgCombine(System,IParam);                 
       wwgNormalize(IParam); 
       wwgVTK(IParam);
-      
-      WM.getParticle('n')->setActiveWWP(0);
-      setWWGImp(System);
+
+
+      for(const std::string& P : activeParticles)
+	{
+	  WM.getParticle(P)->setActiveWWP(0);
+	  setWImp(System,P);
+	}
     }
 
   return;

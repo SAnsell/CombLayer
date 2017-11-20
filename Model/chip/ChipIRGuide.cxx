@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <functional>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -75,7 +76,8 @@
 #include "chipDataStore.h"
 #include "shutterBlock.h"
 #include "LinkUnit.h"  
-#include "FixedComp.h" 
+#include "FixedComp.h"
+#include "FixedOffset.h" 
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "ContainedComp.h"
@@ -1098,10 +1100,10 @@ ChipIRGuide::addWallCuts(Simulation& System)
 	  throw ColErr::InContainerError<std::string>(WC->getInsertKey(),
 						    "InsertKey");
 	}
-      if (!Out.empty())
-	WC->createAll(System,*this,0,HeadRule(Out));
-      else
-	WC->createAll(System,*this,0,HeadRule());
+
+      HeadRule Boundary(Out);
+      Boundary.populateSurf();
+      WC->createAll(System,*this,0,Boundary);
     }
   
   return;

@@ -3,7 +3,7 @@
  
  * File:   src/ReadFunctions.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,8 +73,6 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "DBMaterial.h"
-#include "Source.h"
-#include "KCode.h"
 #include "ModeCard.h"
 #include "PhysCard.h"
 #include "LSwitchCard.h"
@@ -194,11 +192,10 @@ processSurface(const std::string& InputLine,const int offset)
   int transN(0);
   StrFunc::section(Line,transN);
 
-  int retNum=ModelSupport::surfIndex::Instance().
+  ModelSupport::surfIndex::Instance().
     createSurface(name,transN,Line);
-  if (!retNum) return 1;
-  // Incomplete here:
-  return 0;
+  
+  return 1;
 }
 
 int

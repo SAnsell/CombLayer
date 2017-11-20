@@ -180,9 +180,10 @@ LineShield::removeFrontOverLap()
       index--;
       if (index>0)
         {
-          length-=segStep*index;
+	  const double LUnit=segStep*static_cast<double>(index);
+          length-=LUnit;
           nSeg-=index;
-          Origin+=Y*(index*segStep/2.0);
+          Origin+=Y*(LUnit/2.0);
           ELog::EM<<"Removal["<<keyName<<"] of Active segment == "
                   <<index<<ELog::endDiag;
         }

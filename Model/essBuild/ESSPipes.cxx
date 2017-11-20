@@ -181,10 +181,8 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
   PipeTYPE& pipeConnect=getPipe(pipeConnectName);
   PipeTYPE& pipeInvar=getPipe(pipeInvarName);
 
-  
   const attachSystem::FixedComp* lobe=
-    OR.getObjectThrow<attachSystem::FixedComp>
-    (lobeName,"FixedComp::Lobe");
+    OR.getObjectThrow<attachSystem::FixedComp>(lobeName,"FixedComp::Lobe");
 
   const attachSystem::CellMap* waterCM=
     OR.getObjectThrow<attachSystem::CellMap>(waterName,"CellMap::Water");

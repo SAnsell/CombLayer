@@ -214,8 +214,8 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("beamSlot","createSurfaces");
 
-  SMap.addMatch(surfIndex+1,FC.getLinkSurf(0));
-  SMap.addMatch(surfIndex+2,FC.getLinkSurf(1));
+  SMap.addMatch(surfIndex+1,FC.getSignedLinkSurf(1));
+  SMap.addMatch(surfIndex+2,FC.getSignedLinkSurf(2));
 
   ModelSupport::buildPlane(SMap,surfIndex+3,Origin-X*(xSize/2.0),X);
   ModelSupport::buildPlane(SMap,surfIndex+4,Origin+X*(xSize/2.0),X);
@@ -228,7 +228,8 @@ beamSlot::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlane(SMap,surfIndex+14,
   			   Origin+X*(xSize/2.0-endThick),X);
 
-  const double gap=(zSize-(NChannels+1.0)*divideThick)/NChannels;
+  const double gap=(zSize-static_cast<double>(NChannels+1)*divideThick)/
+    static_cast<double>(NChannels);
   double zPoint(-zSize/2.0);
   int surfOffset(surfIndex+10);
   for(size_t i=0;i<NChannels;i++)

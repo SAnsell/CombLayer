@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysImp.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@ class PhysImp
 
   int hasElm(const std::string&) const;
   std::string getParticles() const;
+  const std::list<std::string>& getParticleList() const;
   /// Type accessor
   const std::string& getType() const { return type; }
   
@@ -80,7 +81,8 @@ class PhysImp
   void removeCell(const int);
   void renumberCell(const int,const int);
 
-  void write(std::ostream&,const std::vector<int>&) const;
+  void write(std::ostream&,const std::set<std::string>&,
+	     const std::vector<int>&) const;
   
 };
 

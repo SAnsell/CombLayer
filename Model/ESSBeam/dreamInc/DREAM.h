@@ -45,7 +45,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
   class Aperture;
   class PipeCollimator;
 }
@@ -83,7 +83,7 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
   
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
   /// Double disk chopper
@@ -100,7 +100,7 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// Vac box for BandPass chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// Band Chopper
   std::shared_ptr<constructSystem::DiskChopper> BandADisk;
 
@@ -109,7 +109,7 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
   
   /// Vac box for T0 chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// TO disk chopper [part A]
   std::shared_ptr<constructSystem::DiskChopper> T0DiskA;
 
@@ -154,8 +154,6 @@ class DREAM : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusCaveA;  
   std::shared_ptr<beamlineSystem::GuideLine> FocusCaveB;
  
-  void setBeamAxis(const GuideItem&,const bool);
-  
  public:
   
   DREAM(const std::string&);

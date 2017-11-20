@@ -46,7 +46,7 @@ namespace constructSystem
   class VacuumWindow;
   class ChopperHousing;
   class ChopperPit;
-  class ChopperUnit;
+  class SingleChopper;
   class HoleShape;
   class JawSet;
 }
@@ -91,12 +91,12 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendC;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> DDisk;
 
   /// Vac box for first chopper
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> WFMDisk;
 
@@ -106,7 +106,7 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendD;
 
   /// 8.5m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperC;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOCDiskC;
 
@@ -116,7 +116,7 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendE;
 
   /// 10m 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperD;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
   /// Double disk chopper [wbc2]
   std::shared_ptr<constructSystem::DiskChopper> WBC2Disk;
 
@@ -126,7 +126,7 @@ class BEER : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> BendF;
 
   /// 11.1m FOC 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperE;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperE;
   /// Double disk chopper
   std::shared_ptr<constructSystem::DiskChopper> FOC2Disk;
 
@@ -143,12 +143,12 @@ class BEER : public attachSystem::CopiedComp
     /// 15m WBC3 
   std::shared_ptr<constructSystem::HoleShape> OutACut;
   /// 15m WBC3 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutA;
   /// Double disk chopper (WBC3)
   std::shared_ptr<constructSystem::DiskChopper> WBC3Disk;
 
   /// 15m FOC3 
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperOutB;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperOutB;
   /// Double disk chopper (FOC3)
   std::shared_ptr<constructSystem::DiskChopper> FOC3Disk;
 
@@ -165,7 +165,6 @@ class BEER : public attachSystem::CopiedComp
   /// Beamline from bunker to hutch
   std::shared_ptr<constructSystem::JawSet> CaveJaw;
 
-  void setBeamAxis(const FuncDataBase&,const GuideItem&,const bool);
   void buildBunkerUnits(Simulation&,const attachSystem::FixedComp&,
 			const long int,const int);
   void buildOutGuide(Simulation&,const attachSystem::FixedComp&,

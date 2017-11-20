@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1UpgradeInc/CylReflector.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,19 +42,13 @@ namespace ts1System
 */
 
 class CylReflector : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap
 {
  private:
   
   const int refIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-  
-  double xStep;                 ///< Offset on X to Target
-  double yStep;                 ///< Offset on Y to Target [+ve forward]
-  double zStep;                 ///< Offset on Z top Target
-
-  double xyAngle;               ///< Angle 
-  double zAngle;                ///< Angle 
 
   size_t nLayer;                 ///< Number of layers
   std::vector<double> radius;        ///< radius of outer
@@ -64,8 +58,9 @@ class CylReflector : public attachSystem::ContainedComp,
 
   std::vector<int> Mat;             ///< Default materials
 
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createLinks();
@@ -79,14 +74,13 @@ class CylReflector : public attachSystem::ContainedComp,
   virtual ~CylReflector();
 
   std::string getComposite(const std::string&) const;
-  void addToInsertChain(attachSystem::ContainedComp& CC) const;
-  void addToInsertControl(Simulation&,
-			  const attachSystem::FixedComp&,
-			  attachSystem::ContainedComp& CC) const;
+
   // Main cell
   int getInnerCell() const { return refIndex+1; }
   std::vector<int> getCells() const;
-  void createAll(Simulation&,const attachSystem::FixedComp&);
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

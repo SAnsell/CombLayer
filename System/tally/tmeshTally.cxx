@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/meshTally.cxx
+ * File:   tally/tmeshTally.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,36 +52,37 @@
 #include "NRange.h"
 #include "pairRange.h"
 #include "Tally.h"
-#include "meshTally.h"
+#include "tmeshTally.h"
 
 namespace tallySystem
 {
 
-meshTally::meshTally(const int ID) :
-  Tally(ID),typeID(1),keyWords("flux"),
-  requireRotation(0)
+tmeshTally::tmeshTally(const int ID) :
+  Tally(ID),typeID(1),keyWords(""),
+  activeMSHMF(0),requireRotation(0)
   /*!
     Constructor
     \param ID :: Identity number of tally
   */
 {}
 
-meshTally::meshTally(const meshTally& A) : 
+tmeshTally::tmeshTally(const tmeshTally& A) : 
   Tally(A),
   typeID(A.typeID),keyWords(A.keyWords),kIndex(A.kIndex),
-  mshmf(A.mshmf),requireRotation(A.requireRotation),
+  activeMSHMF(A.activeMSHMF),mshmf(A.mshmf),
+  requireRotation(A.requireRotation),
   Pts(A.Pts),minCoord(A.minCoord),maxCoord(A.maxCoord)
   /*!
     Copy constructor
-    \param A :: meshTally to copy
+    \param A :: tmeshTally to copy
   */
 {}
 
-meshTally&
-meshTally::operator=(const meshTally& A)
+tmeshTally&
+tmeshTally::operator=(const tmeshTally& A)
   /*!
     Assignment operator
-    \param A :: meshTally to copy
+    \param A :: tmeshTally to copy
     \return *this
   */
 {
@@ -91,6 +92,7 @@ meshTally::operator=(const meshTally& A)
       typeID=A.typeID;
       keyWords=A.keyWords;
       kIndex=A.kIndex;
+      activeMSHMF=A.activeMSHMF;
       mshmf=A.mshmf;
       requireRotation=A.requireRotation;
       Pts=A.Pts;
@@ -100,37 +102,37 @@ meshTally::operator=(const meshTally& A)
   return *this;
 }
 
-meshTally*
-meshTally::clone() const
+tmeshTally*
+tmeshTally::clone() const
   /*!
     Clone object
     \return new (this)
   */
 {
-  return new meshTally(*this);
+  return new tmeshTally(*this);
 }
 
-meshTally::~meshTally()
+tmeshTally::~tmeshTally()
   /*!
     Destructor
   */
 {}
 
 void
-meshTally::setType(const int T)
+tmeshTally::setType(const int T)
   /*!
     Set the mesh typeID values
     \param T :: Type to set [1,2,3]
   */
 {
   if (T<1 || T>3)
-    throw ColErr::RangeError<int>(T,1,4,"meshTally::setType");
+    throw ColErr::RangeError<int>(T,1,4,"tmeshTally::setType");
   typeID=T;
   return;
 }
 
 void
-meshTally::setKeyWords(const std::string& K)
+tmeshTally::setKeyWords(const std::string& K)
   /*!
     Set the mesh keyworkds
     \param K :: Keyword to add
@@ -144,9 +146,9 @@ meshTally::setKeyWords(const std::string& K)
 }
 
 void
-meshTally::setIndexLine(std::string K)
+tmeshTally::setIndexLine(std::string K)
   /*!
-    Set the mesh keyworkds
+    Set the mesh index items [?]
     \param K :: Line to process
   */
 {
@@ -159,13 +161,13 @@ meshTally::setIndexLine(std::string K)
 }
 
 void
-meshTally::setIndex(const size_t* IDX)
+tmeshTally::setIndex(const std::array<size_t,3>& IDX)
   /*!
     Sets the individual index for each x,y,z
     \param IDX :: array of three object
   */
 {
-  ELog::RegMethod RegA("meshTally","setIndex");
+  ELog::RegMethod RegA("tmeshTally","setIndex");
 
   for(size_t i=0;i<3;i++)
     {
@@ -178,8 +180,8 @@ meshTally::setIndex(const size_t* IDX)
 }
 
 void
-meshTally::setCoordinates(const Geometry::Vec3D& A,
-			  const Geometry::Vec3D& B)
+tmeshTally::setCoordinates(const Geometry::Vec3D& A,
+			   const Geometry::Vec3D& B)
   /*!
     Sets the min/max coordinates
     \param A :: First coordinate
@@ -193,23 +195,24 @@ meshTally::setCoordinates(const Geometry::Vec3D& A,
 }
 
 void 
-meshTally::setResponse(const std::string& Line)
+tmeshTally::setResponse(const std::string& Line)
   /*!
     Set the mesh response function based on the input line
     \param Line :: Line to process
   */
 {
-  ELog::RegMethod RegA("meshTally","setResponse");
+  ELog::RegMethod RegA("tmeshTally","setResponse");
   if (mshmf.processString(Line))
     {
       ELog::EM<<"Failed to set response line :"<<ELog::endCrit;
-      ELog::EM<<Line<<ELog::endErr;
+      throw ColErr::InvalidLine("mshmf reponse: ",Line,0);
     }
+  activeMSHMF=1;
   return;
 }
 
 int
-meshTally::addLine(const std::string& LX)
+tmeshTally::addLine(const std::string& LX)
   /*!
     Adds a string, if this fails
     it return Tally::addLine.
@@ -259,24 +262,25 @@ meshTally::addLine(const std::string& LX)
   
 
 void
-meshTally::rotateMaster()
+tmeshTally::rotateMaster()
   /*!
     Rotate the points [if required]
   */
 {
-  ELog::RegMethod RegA("meshTally","rotateMaster");
+  ELog::RegMethod RegA("tmeshTally","rotateMaster");
   
   if (requireRotation)
     {
       const masterRotate& MR=masterRotate::Instance(); 
       MR.applyFull(minCoord);
       MR.applyFull(maxCoord);
+      requireRotation=0;
     }
   return;
 }
 
 void
-meshTally::writeCoordinates(std::ostream& OX) const
+tmeshTally::writeCoordinates(std::ostream& OX) const
   /*!
     Function to write out the coordinates for the user
     \param OX :: Oupt stream
@@ -291,27 +295,32 @@ meshTally::writeCoordinates(std::ostream& OX) const
 }
   
 void
-meshTally::write(std::ostream& OX) const
+tmeshTally::write(std::ostream& OX) const
   /*!
     Write out the mesh tally into the tally region
     \param OX :: Output stream
-   */
+  */
 {
   masterWrite& MW=masterWrite::Instance();
+
   if (isActive())
     {
       const char typeLetter[]="rcs";
-      OX<<"tmesh"<<std::endl;
 
       std::ostringstream cx;
       
       cx<<typeLetter[typeID-1]<<"mesh"<<IDnum;
       writeParticles(cx);
-      cx<<keyWords<<" ";
-      std::vector<double>::const_iterator vc;
-      for(vc=kIndex.begin();vc!=kIndex.end();vc++)
-	cx<<MW.Num(*vc)<<" ";
-      
+      if (!activeMSHMF)
+	{
+	  // THIS IS JUNK as maybe two keywords and two value sets
+	  cx<<keyWords<<" ";
+	  for(const double V : kIndex)
+	    cx<<MW.Num(V)<<" ";
+	}
+      else
+	cx<<"DOSE "<<std::abs(activeMSHMF);
+
       StrFunc::writeMCNPX(cx.str(),OX);
       if (!getEnergy().empty())
 	{
@@ -319,14 +328,13 @@ meshTally::write(std::ostream& OX) const
 	  cx<<"ergsh"<<IDnum<<" "<<getEnergy();
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}					 
-      if (!mshmf.empty())
+      if (!mshmf.empty() && activeMSHMF>0)
 	{
 	  cx.str("");
-	  cx<<"mshmf"<<IDnum<<" "<<mshmf;
+	  cx<<"mshmf"<<activeMSHMF<<" "<<mshmf;
 	  StrFunc::writeMCNPX(cx.str(),OX);
 	}
       writeCoordinates(OX);
-      OX<<"endmd"<<std::endl;
     }
   return;
 }

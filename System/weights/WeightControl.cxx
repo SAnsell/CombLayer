@@ -83,7 +83,7 @@ namespace WeightSystem
 {
   
 WeightControl::WeightControl() :
-  scaleFactor(1.0),minWeight(1e-20),weightPower(0.5),
+  scaleFactor(1.0),weightPower(0.5),
   density(1.0),r2Length(1.0),r2Power(2.0)
   /*
     Constructor
@@ -93,8 +93,9 @@ WeightControl::WeightControl() :
 }
 
 WeightControl::WeightControl(const WeightControl& A) : 
+  activeParticles(A.activeParticles),
   energyCut(A.energyCut),scaleFactor(A.scaleFactor),
-  minWeight(A.minWeight),weightPower(A.weightPower),
+  weightPower(A.weightPower),
   density(A.density),r2Length(A.r2Length),r2Power(A.r2Power),
   EBand(A.EBand),WT(A.WT),conePt(A.conePt),planePt(A.planePt),
   sourcePt(A.sourcePt)
@@ -114,9 +115,9 @@ WeightControl::operator=(const WeightControl& A)
 {
   if (this!=&A)
     {
+      activeParticles=A.activeParticles;
       energyCut=A.energyCut;
       scaleFactor=A.scaleFactor;
-      minWeight=A.minWeight;
       weightPower=A.weightPower;
       density=A.density;
       r2Length=A.r2Length;
@@ -284,10 +285,44 @@ WeightControl::processPtString(std::string ptStr,
   if (!StrFunc::sectPartNum(ptStr,ptIndex))
     throw ColErr::InvalidLine(Input,"PtStr Index not found");
 
+  if (ptType=="Plane" && ptIndex>=planePt.size())
+    throw ColErr::IndexError<size_t>(ptIndex,planePt.size(),
+				     "planePt.size() < ptIndex");
+  else if (ptType=="Source" && ptIndex>=sourcePt.size())
+    throw ColErr::IndexError<size_t>(ptIndex,sourcePt.size(),
+				     "sourcePt.size() < ptIndex");
+
   return;
 }
 
   
+void
+WeightControl::procParticles(const mainSystem::inputParam& IParam)
+  /*!
+    Extract the particles used for the weight system
+    \param IParam :: input param
+  */
+{
+  ELog::RegMethod RegA("weightControl","procParticles");
+
+  activeParticles.clear();
+
+  const size_t nItem=IParam.itemCnt("weightParticles",0);
+  if (!nItem) activeParticles.insert("n");
+  
+  std::string PList;
+  for(size_t index=0;index<nItem;index++)
+    {
+      PList=IParam.getValue<std::string>("weightParticles",0,index);
+      std::string P;
+      while(StrFunc::section(PList,P))
+	{
+	  activeParticles.insert(P);
+	}
+    }
+  return;
+}
+
 void
 WeightControl::procEnergyType(const mainSystem::inputParam& IParam)
   /*!
@@ -335,8 +370,9 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
                          const size_t iOffset)
   /*!
     Set the global constants based on a unit and the offset numbers
+    Numbers are in log space [nat log]
     \param IParam :: Input parameters
-    \param unit :: unit string
+    \param unitName :: unit string
     \param iSet :: group number [normally 0]
     \param iOffset :: offset number 
    */
@@ -351,60 +387,23 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
 
   energyCut=IParam.getDefValue<double>(0.0,unitName,iSet,index++);
   scaleFactor=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
-  minWeight=IParam.getDefValue<double>(1e-20,unitName,iSet,index++);
   density=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
+  ELog::EM<<"SCALE == "<<energyCut<<" "<<scaleFactor<<" "
+	  <<density<<ELog::endDiag;
   if (scaleFactor>1.0)
     ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
   
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
-    	  <<" minW:"<<minWeight
     	  <<" rho:"<<density
     	  <<" r2Len:"<<r2Length
 	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
   return;
 }
     
-void
-WeightControl::setWeights(Simulation& System)
-   /*!
-    Function to set up the weights system.
-    It replaces the old file read system.
-    \param System :: Simulation component
-  */
-{
-  ELog::RegMethod RegA("WeightControl","setWeights(Simulation)");
-
-  WeightSystem::weightManager& WM=
-    WeightSystem::weightManager::Instance();  
-
-  WM.addParticle<WeightSystem::WCells>('n');
-  WeightSystem::WCells* WF=
-    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
-  if (!WF)
-    throw ColErr::InContainerError<std::string>("n","WCell - WM");
-
-  WF->setEnergy(EBand);
-  System.populateWCells();
-  WF->balanceScale(WT);
-
-  const Simulation::OTYPE& Cells=System.getCells();
-  Simulation::OTYPE::const_iterator oc;
-  for(oc=Cells.begin();oc!=Cells.end();oc++)
-    {
-      if(!oc->second->getImp())
-	WF->maskCell(oc->first);      
-    }
-  WF->maskCell(1);
-
-  // remove neutron imp:
-  setWCellImp(System);
-  //  removePhysImp(System,"n");
-  return;
-}
 
 
 void
@@ -441,11 +440,11 @@ WeightControl::processWeights(Simulation& System,
   System.populateCells();
   System.createObjSurfMap();
 
+  procParticles(IParam);
+  
   if (IParam.flag("weightEnergyType"))
     procEnergyType(IParam);
-  ELog::EM<<"HERER :"<<ELog::endDiag;
-  if (IParam.flag("weight"))
-    setWeights(System);
+
 
   if (IParam.flag("weightSource"))
     procSourcePoint(IParam);

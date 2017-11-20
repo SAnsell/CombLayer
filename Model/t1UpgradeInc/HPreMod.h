@@ -64,13 +64,13 @@ class HPreMod : public attachSystem::ContainedComp,
   std::vector<Geometry::Vec3D> sideAxis;
   
   void getConnectPoints(const attachSystem::FixedComp&,
-			const size_t);
+			const long int);
 
   void populate(const Simulation&);
   void createUnitVector(const attachSystem::FixedComp&);
-  void createSurfaces(const attachSystem::FixedComp&,const size_t);
+  void createSurfaces(const attachSystem::FixedComp&,const long int);
   void createObjects(Simulation&,const attachSystem::FixedComp&,
-		     const size_t);
+		     const long int);
   void createLinks();
 
  public:
@@ -82,7 +82,7 @@ class HPreMod : public attachSystem::ContainedComp,
   virtual ~HPreMod();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

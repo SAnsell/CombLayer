@@ -53,7 +53,9 @@ class TriangleShield :
   double right;                 ///< total right width
   double height;                ///< Total height
   double depth;                 ///< Total depth
+
   double endWall;               ///< Total back wall thick
+  double endVoid;               ///< Total back wall thick
   
   int defMat;                       ///< Fe material layer
 
@@ -62,6 +64,10 @@ class TriangleShield :
   size_t nWallLayers;               ///< number of layers
   std::vector<double> wallFrac;     ///< wall Layer thicknesss 
   std::vector<int> wallMat;         ///< wall Layer materials
+
+  size_t nEndLayers;               ///< number of layers
+  std::vector<double> endFrac;     ///< end Layer thicknesss 
+  std::vector<int> endMat;         ///< end Layer materials
 
   size_t nRoofLayers;                ///< number of layers
   std::vector<double> roofFrac;      ///< Layer thicknesss 

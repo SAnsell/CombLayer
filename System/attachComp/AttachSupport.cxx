@@ -527,8 +527,8 @@ addToInsertSurfCtrl(Simulation& System,
    must be set. It is tested against all the ojbect with
    this object .
    \param System :: Simulation to use
-   \param CellA :: First cell number [to test]
-   \param CellB :: Last cell number  [to test]
+   \param cellA :: First cell number [to test]
+   \param cellB :: Last cell number  [to test]
    \param CC :: ContainedComp object to add to this
   */
 {
@@ -781,8 +781,7 @@ addToInsertForced(Simulation& System,
  /*!
    Force CC into the BaseFC objects
   \param System :: Simulation to use
-  \param CellA :: First cell number [to test]
-  \param CellB :: Last cell number  [to test]
+  \param BaseFC :: Object to get range for cells
   \param CC :: ContainedComp object to add to the BaseFC
  */
 {
@@ -795,25 +794,6 @@ addToInsertForced(Simulation& System,
   return;
 }  
 
-double
-calcLinkDistance(const FixedComp& FC,const long int sideIndexA,
-		 const long int sideIndexB)
-/*!
-  Calculate the distance between two link point
-  \param FC :: FixedComp to use
-  \param sideIndexA :: First point +1
-  \param sideIndexB :: Second point +1 
-  \return distance between points
-*/
-
-{
-  ELog::RegMethod RegA("AttachSupport","calcLinkDistance");
-
-  const Geometry::Vec3D PtA=FC.getSignedLinkPt(sideIndexA);
-  const Geometry::Vec3D PtB=FC.getSignedLinkPt(sideIndexB);
-  return PtA.Distance(PtB);
-  
-}
 
 HeadRule
 unionLink(const attachSystem::FixedComp& FC,

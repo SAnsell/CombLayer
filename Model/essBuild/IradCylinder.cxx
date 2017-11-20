@@ -3,7 +3,7 @@
  
  * File:   essBuild/IradCylinder.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -232,14 +232,14 @@ IradCylinder::createInnerObjects(Simulation& System)
   const size_t NZ(2*static_cast<size_t>(radius/sampleZ));
 
   int DI(iradIndex+1003);
-  double posX(-sampleX*(NX/2));
+  double posX(-sampleX*(static_cast<double>(NX)/2));
   for(size_t i=0;i<=NX;i++)
     {
       ModelSupport::buildPlane(SMap,DI,Origin+X*posX,X);
       posX+=sampleX;
       DI+=10;
     }
-  double posY(-sampleY*(NY/2));
+  double posY(-sampleY*(static_cast<double>(NY)/2));
   DI=iradIndex+1001;
   for(size_t i=0;i<=NY;i++)
     {
@@ -247,7 +247,7 @@ IradCylinder::createInnerObjects(Simulation& System)
       posY+=sampleY;
       DI+=10;
     }
-  double posZ(-sampleZ*(NZ/2));
+  double posZ(-sampleZ*(static_cast<double>(NZ)/2));
   DI=iradIndex+1005;
   for(size_t i=0;i<=NZ;i++)
     {

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/BWaterPipe.h
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,10 +56,12 @@ class BWaterPipe : public attachSystem::FixedComp
 
   double fullLen;              ///< Outer Height
   
-  void populate(const Simulation&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
-  void insertPipe(Simulation&,const attachSystem::FixedComp&,const size_t);
+  void insertPipe(Simulation&,const attachSystem::FixedComp&,
+		  const long int);
 
  public:
 
@@ -69,7 +71,7 @@ class BWaterPipe : public attachSystem::FixedComp
   ~BWaterPipe();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

@@ -46,6 +46,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "particleConv.h"
 #include "Transform.h"
 #include "Rules.h"
 #include "HeadRule.h"
@@ -55,6 +56,7 @@
 #include "WItem.h"
 #include "WCells.h"
 #include "Mesh3D.h"
+#include "WWGWeight.h"
 #include "WWG.h"
 #include "weightManager.h"
 
@@ -118,33 +120,47 @@ weightManager::getWWG() const
 }
 
   
+bool
+weightManager::hasParticle(const std::string& particleType) const
+  /*!
+    Determine if a specific particle type exists
+    \param particleType :: Particle identifier
+    \return true if exists
+  */
+{
+  CtrlTYPE::const_iterator mc=WMap.find(particleType);
+  return (mc==WMap.end()) ? 0 : 1;
+}
+  
 WForm*
-weightManager::getParticle(const char c)
+weightManager::getParticle(const std::string& particleType) const
   /*!
     Get a specific particle type
-    \param c :: Particle identifier
+    \param particleType :: Particle identifier
     \return WForm pointer 
   */
 {
   ELog::RegMethod RegA("weightManager","getParticle");
-  CtrlTYPE::iterator mc=WMap.find(c);
+  CtrlTYPE::const_iterator mc=WMap.find(particleType);
   if (mc==WMap.end())
-    throw ColErr::InContainerError<char>(c,"particle not found");
+    throw ColErr::InContainerError<std::string>
+      (particleType,"particle not found");
+  
   return mc->second;
 }
 
 template<typename T>
 void
-weightManager::addParticle(const char c)
+weightManager::addParticle(const std::string& particleType)
   /*!
     Add a specific component
-    \param c :: particle key [should this be a string?]
+    \param particleType :: particle key 
    */
 {
   ELog::RegMethod RegA("weightManager","addComponent");
-  if (WMap.find(c)==WMap.end())
+  if (WMap.find(particleType)==WMap.end())
     {
-      WMap.insert(CtrlTYPE::value_type(c,new T(c)));
+      WMap.emplace(particleType,new T(particleType));
     }
   return;
 }
@@ -202,6 +218,44 @@ weightManager::isMasked(const int cellN) const
 }
   
 void
+weightManager::writePHITS(std::ostream& OX) const
+  /*!
+    Write out the weight system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("weightManager","writePHITS");
+
+  const particleConv& PConv=particleConv::Instance();
+  if (!WMap.empty())
+    {
+      OX<<"[weight window]\n";
+      for(const CtrlTYPE::value_type& wf : WMap)
+        {
+          const std::vector<double>& Evec=wf.second->getEnergy();
+
+          OX<<"  part = "
+	    <<PConv.phitsType(wf.second->getParticle())
+	    <<std::endl;
+
+          OX<<"  eng = "<<Evec.size()<<std::endl;
+          for( const double& E : Evec )
+            OX<<"  "<<E;
+          OX<<std::endl;
+
+          OX<<"reg  ";
+          for(size_t i=1;i<=Evec.size();i++)
+            OX<<"    ww"<<i;
+          OX<<std::endl;
+
+          wf.second->writePHITS(OX);
+        }
+    }
+  
+  return;
+}
+
+void
 weightManager::write(std::ostream& OX) const
   /*!
     Write out the weight system
@@ -224,7 +278,7 @@ weightManager::write(std::ostream& OX) const
 
 ///\cond TEMPLATE
 
-template void weightManager::addParticle<WCells>(const char);
+template void weightManager::addParticle<WCells>(const std::string&);
 
 ///\endcond TEMPLATE
   

@@ -100,6 +100,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("povray","PovRay");
   IParam.regDefItem<int>("mcnp","MCNP",1,6);
   IParam.regFlag("Monte","Monte");
+  IParam.regMulti("ObjAdd","objectAdd",1000);
   IParam.regMulti("offset","offset",10000,1,8);
   IParam.regDefItem<double>("photon","photon",1,0.001);  // 1keV
   IParam.regDefItem<double>("photonModel","photonModel",1,100.0);
@@ -135,6 +136,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
   IParam.regMulti("volume","volume",4,1);
@@ -156,6 +158,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("WControl","weightControl",1,10);
   IParam.regItem("WTemp","weightTemp",1);
   IParam.regItem("WEType","weightEnergyType",1,30);
+  IParam.regItem("WParticle","weightParticles",1,30);
   IParam.regMulti("WSource","weightSource",30,1);
   IParam.regMulti("WPlane","weightPlane",30,2);
   IParam.regMulti("WTally","weightTally",30,1);
@@ -220,6 +223,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("PHITS","PHITS output");
   IParam.setDesc("Monte","MonteCarlo capable simulation");
   IParam.setDesc("offset","Displace to component [name]");
+  IParam.setDesc("ObjAdd","Add a component (cell)");
   IParam.setDesc("photon","Photon Cut energy");
   IParam.setDesc("photonModel","Photon Model Energy [min]");
   IParam.setDesc("r","Renubmer cells");
@@ -239,7 +243,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
-  IParam.setDesc("TAdd","Add a tally component (cell)");
+  IParam.setDesc("TAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");
@@ -273,7 +277,9 @@ createInputs(inputParam& IParam)
   IParam.setDesc("WObject","Reconstruct weights base on cells");
   IParam.setDesc("WP","Weight bias Point");
   IParam.setDesc("weightControl","Sets: energyCut scaleFactor minWeight");
-
+  IParam.setDesc("wwgNorm"," normalization step : "
+		 "[weightRange - lowRange - highRange - powerRange]");
+  
   IParam.setDesc("x","XML input file");
   IParam.setDesc("X","XML output file");
   return;
@@ -592,8 +598,8 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("sdefType",std::string("ess"));  
   IParam.setValue("targetType",std::string("Bilbao"));
   
-  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("lowMod"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("topMod"));
+  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("None"));
+  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("Butterfly"));
   IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,

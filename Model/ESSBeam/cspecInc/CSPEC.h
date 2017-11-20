@@ -45,7 +45,7 @@ namespace constructSystem
   class VacuumPipe;
   class VacuumWindow;
   class ChopperHousing;
-  class ChopperUnit;
+  class SingleChopper;
 }
 
 namespace essSystem
@@ -86,7 +86,7 @@ class CSPEC : public attachSystem::CopiedComp
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
   /// First Chopper unit [BW1]
-  std::shared_ptr<constructSystem::ChopperUnit> ChopperA;
+  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
   /// First BW blade
   std::shared_ptr<constructSystem::DiskChopper> BWDiskA;
 
@@ -94,8 +94,6 @@ class CSPEC : public attachSystem::CopiedComp
   std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
   /// S-Bender first section [in bunker]
   std::shared_ptr<beamlineSystem::GuideLine> BendD;
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
   
  public:
   

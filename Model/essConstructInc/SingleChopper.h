@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/ChopperUnit.h
+ * File:   constructInc/SingleChopper.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,31 +19,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_ChopperUnit_h
-#define constructSystem_ChopperUnit_h
+#ifndef constructSystem_SingleChopper_h
+#define constructSystem_SingleChopper_h
 
 class Simulation;
 
 namespace constructSystem
 {
+  class boltRing;
   class RingSeal;
   class InnerPort;
+  class Motor;
   
 /*!
-  \class ChopperUnit
+  \class SingleChopper
   \version 1.0
   \author S. Ansell
   \date March 2016
-  \brief ChopperUnit unit  
+  \brief SingleChopper unit  
   
   This piece aligns away from the chopper axis. Using
   the chopper origin [bearing position]
 */
 
-class ChopperUnit :
+class SingleChopper :
   public attachSystem::FixedOffsetGroup,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
   
@@ -61,33 +64,13 @@ class ChopperUnit :
   
   double mainRadius;        ///< main innner radius
   double mainThick;         ///< main inner thickness
-
-  double motorRadius;           ///< motor port radius
-  double motorOuter;           ///< Extrernal radius of motor port
-  double motorStep;             ///< motor flange step
   
-  double portRadius;           ///< Port radius
-  double portOuter;            ///< Port flange [outer radius
-  double portStep;             ///< Port step [unused]
-  double portWindow;           ///< Port window thickness
-  
-  size_t portNBolt;            ///< Number of port bolts
-  double portBoltRad;          ///< Bolt radius
-  double portBoltAngOff;       ///< Angle to start relative to 12:00
-  double portSeal;             ///< Port seal
-  int portSealMat;             ///< Port Seal material
-  int portWindowMat;           ///< Window material
-  
-  size_t motorNBolt;            ///< number of motor bolts  
-  double motorBoltRad;          ///< Bolt radius
-  double motorBoltAngOff;       ///< angle relative to 12:00
-  double motorSeal;             ///< Motor seal
-  int motorSealMat;             ///< Motor Seal material
-  
-  int motorMat;                 ///< Motor material
   int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
 
+  std::shared_ptr<Motor> motor;           ///< Motor 
+  std::shared_ptr<boltRing> frontFlange;   ///< Front flange
+  std::shared_ptr<boltRing> backFlange;    ///< Back flange
   std::shared_ptr<RingSeal> RS;   ///< ringseal for main system
   std::shared_ptr<InnerPort> IPA; ///< inner port
   std::shared_ptr<InnerPort> IPB; ///< inner port
@@ -98,22 +81,19 @@ class ChopperUnit :
   void createObjects(Simulation&);
   void createLinks();
 
-  void createRing(Simulation&,const int,const Geometry::Vec3D&,
-		  const std::string&,const std::string&,
-		  const double,const size_t,const double,
-		  const double,
-		  const std::string&,const int);
+  void createMotor(Simulation&);
   
  public:
 
-  ChopperUnit(const std::string&);
-  ChopperUnit(const ChopperUnit&);
-  ChopperUnit& operator=(const ChopperUnit&);
-  virtual ~ChopperUnit();
+  SingleChopper(const std::string&);
+  SingleChopper(const SingleChopper&);
+  SingleChopper& operator=(const SingleChopper&);
+  virtual ~SingleChopper();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
+  void insertAxle(Simulation&,const attachSystem::CellMap&) const;
 };
 
 }

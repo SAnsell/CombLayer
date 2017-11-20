@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <iterator>
+#include <functional>
 #include <memory>
 
 #include "Exception.h"
@@ -160,7 +161,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
     \param pointZRot :: Z axis rotation of the beamline
   */
 {
-  ELog::RegMethod RegA("itemConstruct","addBeamLineTally");
+  ELog::RegMethod RegA("itemConstruct","addBeamLineItem");
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -185,15 +186,15 @@ itemConstruct::addBeamLineItem(Simulation& System,
   // MODERATOR PLANE
 
   const int masterPlane=ModPtr->getExitWindow(viewSurface,Planes);
-
+  
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getSignedLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getSignedLinkPt(1); 
 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=

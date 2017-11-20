@@ -3,7 +3,7 @@
  
  * File:   processInc/surfDIter.h
 *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +55,10 @@ void populateDivide(const FuncDataBase&,const size_t,
 			std::vector<double>&);
 
 
+void populateVecDivide(const FuncDataBase&,const std::string&,
+		       const std::vector<int>&,std::vector<int>&);
+void populateVecDivide(const FuncDataBase&,const std::string&,
+		       const std::vector<std::string>&,std::vector<std::string>&);
  
 }
 

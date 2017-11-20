@@ -181,7 +181,7 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
       std::shared_ptr<GuideBox> GA
 	(new GuideBox(StrFunc::makeString("Guide",i+1)));
       GA->addInsertCell(voidCell);
-      GA->createAll(System,*ColdMod,1,*BeFilterForward,1);      
+      GA->createAll(System,*ColdMod,2,*BeFilterForward,2);      
       OR.addObject(GA);
       
       attachSystem::addToInsertForced(System,*RefObj,*GA);
@@ -196,7 +196,7 @@ makeBib::buildGuideArray(Simulation& System,const int voidCell)
       std::shared_ptr<GuideBox> GA
 	(new GuideBox(StrFunc::makeString("Guide",i+3)));
       GA->addInsertCell(voidCell);
-      GA->createAll(System,*ColdMod2,1,*BeFilterBackward,1);      
+      GA->createAll(System,*ColdMod2,2,*BeFilterBackward,2);      
       OR.addObject(GA);
       
       attachSystem::addToInsertForced(System,*RefObj,*GA);
@@ -225,7 +225,7 @@ makeBib::buildShieldArray(Simulation& System)
       std::shared_ptr<GuideShield> GS
 	(new GuideShield("GShield",i+1));
       GS->addInsertCell(CWall->getInnerCell());
-      GS->createAll(System,*GuideArray[i],*RefObj,2,*CWall,0);      
+      GS->createAll(System,*GuideArray[i],*RefObj,3,*CWall,1);      
       OR.addObject(GS);      
       ShieldArray.push_back(GS);
     }

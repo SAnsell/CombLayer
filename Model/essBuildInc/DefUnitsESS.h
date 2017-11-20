@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/DefUnitsESS.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ namespace mainSystem
   class inputParam;
 
   void setDefUnits(FuncDataBase&,inputParam&);
+  void setESSNeutronics(defaultConfig&,const std::string&,
+			const std::string&);
 
   void setESS(defaultConfig&);
   void setESSPortsOnly(defaultConfig&,const std::string&,
