@@ -225,7 +225,7 @@ AirBoxElement::createSurfaces(const attachSystem::FixedComp& RG)
 			   Origin+X*(Width/2.0-edgeGap-wallThick),X);
 
   ModelSupport::buildPlane(SMap,surfIndex+25,
-			   RG.getLinkPt(4)+Z*wallThick,Z);
+			   RG.getSignedLinkPt(5)+Z*wallThick,Z);
 
   ModelSupport::buildPlane(SMap,surfIndex+26,
 			   Origin+Z*(Height-wallThick),Z);

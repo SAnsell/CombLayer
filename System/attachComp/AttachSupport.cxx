@@ -338,7 +338,7 @@ addToInsertControl(Simulation& System,
   ELog::RegMethod RegA("attachSuport[F]",
                        "addToInsertControl(CM,string,FC,CC)");
 
-  const size_t NPoint=FC.NConnect();
+  const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
   const std::string excludeStr=CC.getExclude();
 
   for(const int cN : BaseObj.getCells(cellName))
@@ -347,11 +347,9 @@ addToInsertControl(Simulation& System,
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  for(size_t j=0;j<NPoint;j++)
+	  for(const Geometry::Vec3D& IP : linkPts)	  
 	    {
-
-	      const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	      if (CRPtr->isValid(Pt))
+	      if (CRPtr->isValid(IP))
 		{
 		  CRPtr->addSurfString(excludeStr);
 		  break;
@@ -382,18 +380,18 @@ addToInsertControl(Simulation& System,
 {
   ELog::RegMethod RegA("AttachSupport","addToInsertControl");
 
-  const size_t NPoint=FC.NConnect();
+  const std::vector<Geometry::Vec3D> linkPts=FC.getAllLinkPts();
   const std::string excludeStr=CC.getExclude();
+
   for(int i=cellA+1;i<=cellB;i++)
     {
       MonteCarlo::Qhull* CRPtr=System.findQhull(i);
       if (CRPtr)
 	{
 	  CRPtr->populate();
-	  for(size_t j=0;j<NPoint;j++)
+	  for(const Geometry::Vec3D& IP : linkPts)	  
 	    {
-	      const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	      if (CRPtr->isValid(Pt))
+	      if (CRPtr->isValid(IP))
 		{
 		  CRPtr->addSurfString(excludeStr);
 		  break;

@@ -183,8 +183,8 @@ collInsertBase::createUnitVector(const FixedComp& FC)
   beamZ=Z;
   if (FC.NConnect()>1)
     {
-      Origin=FC.getLinkPt(1)+Y*fStep;
-      beamY=FC.getLinkAxis(1);
+      Origin=FC.getSignedLinkPt(2)+Y*fStep;
+      beamY=FC.getSignedLinkAxis(2);
     }
   else
     {

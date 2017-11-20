@@ -105,7 +105,8 @@ getLinkIndex(const std::string& linkName)
 int
 getAttachPoint(const std::string& FCName,
 	       const std::string& linkName,
-	       Geometry::Vec3D& Pt,Geometry::Vec3D& YAxis)
+	       Geometry::Vec3D& Pt,
+	       Geometry::Vec3D& YAxis)
   /*!
     Takes the linkName and the fixed object and converts
     this into the direction and point.
@@ -122,28 +123,13 @@ getAttachPoint(const std::string& FCName,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const FixedComp* FC=
+  const attachSystem::FixedComp* FC=
     OR.getObject<attachSystem::FixedComp>(FCName);
   if (!FC) return 0;
 
   const long int index=getLinkIndex(linkName);
-
-  // All these calls throw on error
-  if (index<0)
-    {
-      Pt=FC->getLinkPt(static_cast<size_t>(-1-index));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(-1-index));
-    }
-  else if (index>0)
-    {
-      Pt=FC->getLinkPt(static_cast<size_t>(index-1));
-      YAxis=-FC->getLinkAxis(static_cast<size_t>(index-1));
-    }
-  else
-    {
-      Pt=FC->getCentre();
-      YAxis=-FC->getY();
-    }
+  Pt=FC->getSignedLinkPt(index);
+  YAxis=FC->getSignedLinkAxis(index);
   return 1;
 }
 

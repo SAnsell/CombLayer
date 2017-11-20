@@ -269,7 +269,7 @@ IrradElement::createSurfaces(const attachSystem::FixedComp& RG)
 			   Origin+X*(Width/2.0-locThick),X);
 
   SMap.addMatch(surfIndex+5,RG.getSignedLinkSurf(5));
-  Geometry::Vec3D BaseZ(RG.getLinkPt(4));
+  Geometry::Vec3D BaseZ(RG.getSignedLinkPt(5));
   
   BaseZ+=Z*endStop;
   ModelSupport::buildPlane(SMap,surfIndex+15,BaseZ,Z);

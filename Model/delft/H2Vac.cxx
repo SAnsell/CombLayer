@@ -275,7 +275,7 @@ H2Vac::createSurfaces(const attachSystem::FixedComp& FC)
 
 
   if (sideRadius<Geometry::zeroTol)
-    sideRadius=(Origin-FC.getLinkPt(2)).abs();
+    sideRadius=FC.getLinkDistance(0,3);
   
   ELog::EM<<"Side radius == "<<sideRadius<<ELog::endDiag;
 

@@ -147,7 +147,7 @@ addSurfTally(Simulation& System,
    
   const attachSystem::FixedComp& FL=FC.getLine(FN);
   
-  const Geometry::Vec3D& Y=FL.getLinkAxis(1);
+  const Geometry::Vec3D& Y=FL.getSignedLinkAxis(2);
   const Geometry::Vec3D& Org=FL.getCentre();
   
   int TNum=tallySystem::getLastTallyNumber(System,1);

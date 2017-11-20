@@ -93,11 +93,12 @@ checkLineIntersect(const FixedComp& InsertFC,
 {
   ELog::RegMethod RegA("AttachSupportLine[F]","checkLineInsert");
   
-  
-  const size_t NPoint=InsertFC.NConnect();
-  for(size_t j=0;j<NPoint;j++)
+
+  const std::vector<Geometry::Vec3D> linkPts=
+    InsertFC.getAllLinkPts();
+
+  for(const Geometry::Vec3D& IP : linkPts)
     {
-      const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
       if (CellObj.isValid(IP))
 	return 1;
     }
@@ -107,12 +108,11 @@ checkLineIntersect(const FixedComp& InsertFC,
   const std::vector<const Geometry::Surface*>& SurList=
     CellObj.getSurList();
 
-  for(size_t j=0;j<NPoint;j++)
+  for(const Geometry::Vec3D& IP : linkPts)
     {
-      const Geometry::Vec3D& IP=InsertFC.getLinkPt(j);
-      for(size_t k=j+1;k<NPoint;k++)
+      for(const Geometry::Vec3D& JP : linkPts)
         {
-          Geometry::Vec3D UV=InsertFC.getLinkPt(k)-IP;
+          Geometry::Vec3D UV=JP-IP;
           const double LLen=UV.makeUnit();
           if (LLen>Geometry::zeroTol)
             {

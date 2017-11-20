@@ -162,7 +162,7 @@ KCode::setLine(const std::string& KLine)
 
 
 void
-KCode::writePHITS(std::ostream& OX) const
+KCode::writePHITS(std::ostream&) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream

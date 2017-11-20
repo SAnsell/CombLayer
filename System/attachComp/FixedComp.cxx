@@ -1165,6 +1165,23 @@ FixedComp::getLinkPt(const size_t Index) const
   return LU[Index].getConnectPt();
 }
 
+std::vector<Geometry::Vec3D>
+FixedComp::getAllLinkPts() const
+  /*!
+    Accessor to all the link point
+    \return Link points
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getAllLinkPts:"+keyName);
+
+  std::vector<Geometry::Vec3D> LPout;
+  
+  for(const LinkUnit& lunit : LU)
+    LPout.push_back(lunit.getConnectPt());
+
+  return LPout;
+}
+
 double
 FixedComp::getLinkDistance(const long int AIndex,
                            const long int BIndex) const

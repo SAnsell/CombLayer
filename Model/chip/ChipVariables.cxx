@@ -144,7 +144,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPb1Active",0);      // 
   Control.addVariable("chipPb1ZAngle",0.0);      // 
   Control.addVariable("chipPb1XYAngle",0.0);      // 
-  Control.addVariable("chipPb1FStep",10.0);      // 
+  Control.addVariable("chipPb1YStep",10.0);      // 
   Control.addVariable("chipPb1Thick",9.0);      // 
   Control.addVariable("chipPb1DefMat","Lead");      // 
   Control.addVariable("chipPb1SupportMat","Stainless304");      //  304 stainless
@@ -155,7 +155,7 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipPb2Active",0);      // 
   Control.addVariable("chipPb2ZAngle",0.0);      // 
   Control.addVariable("chipPb2XYAngle",0.0);      // 
-  Control.addVariable("chipPb2FStep",-50.0);      // 
+  Control.addVariable("chipPb2YStep",-50.0);      // 
   Control.addVariable("chipPb2Thick",9.0);      // 
   Control.addVariable("chipPb2DefMat","Lead");      // 
   Control.addVariable("chipPb2SupportMat","Stainless304");      //  304 stainless
@@ -369,8 +369,9 @@ ChipVariables(FuncDataBase& Control)
   Control.addVariable("chipSampleXYAngle",0.0); 
   Control.addVariable("chipSampleZAngle",0.0); 
   Control.addVariable("chipSampleXStep",0.0);  
+  Control.addVariable("chipSampleZStep",40.0);   // From table top
   Control.addVariable("chipSampleDepth",0.5);    // thickness 5mm
-  Control.addVariable("chipSampleZLift",40.0);   // From table top
+
 
   Control.addVariable("chipSample1YStep",-10.0);   // Relative to table centre  
   Control.addVariable("chipSample2YStep",-5.0);   

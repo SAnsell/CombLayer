@@ -726,8 +726,8 @@ BilbaoWheel::createRadialSurfaces()
 
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta;
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
+      theta += dTheta;
       SI += 10;
     }
   // add 1st surface again with reversed normal - to simplify building cells

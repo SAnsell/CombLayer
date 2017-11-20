@@ -222,10 +222,9 @@ sourceDataBase::getSourceThrow(const std::string& Name,
   return SPtr;
 }
 
-
-  
 void
-sourceDataBase::write(const std::string& SName,std::ostream& OX) const
+sourceDataBase::write(const std::string&,
+                      std::ostream&) const
   /*!
     Write out the source for MCNP
     \param SName :: source name

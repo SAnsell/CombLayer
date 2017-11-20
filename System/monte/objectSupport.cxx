@@ -144,7 +144,7 @@ cellSelection(const Simulation& System,
 	      if (matN) addItem(cellOut,CN);
 	      break;
 	    case 0:        // ?
-	      if (cellMat.hasZaid(matNumber,0,0))
+	      if (cellMat.hasZaid(static_cast<size_t>(matNumber),0,0))
 		addItem(cellOut,CN);
 	      break;
 	    case 1:        // named material
@@ -191,7 +191,7 @@ getCellSelection(const Simulation& System,
   std::vector<int> matCell;
   
   if (matN>1000)
-    matCell=System.getCellWithZaid(matN);
+    matCell=System.getCellWithZaid(static_cast<size_t>(matN));
   else  
     matCell=System.getCellWithMaterial(matN);
 

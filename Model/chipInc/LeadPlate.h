@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chipInc/LeadPlate.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,17 +41,14 @@ namespace shutterSystem
 */
 
 class LeadPlate : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int leadIndex;      ///< Index of surface offset
   int cellIndex;            ///< Cell index
-  int populated;            ///< Variables populated
+  int activeFlag;           ///< Variables populated
 
-  double zAngle;            ///< Z angle rotation
-  double xyAngle;           ///< XY angle rotation
-  double fStep;             ///< Forward step
   double thick;             ///< Full Thickness
 
   int defMat;               ///< Material
@@ -67,9 +64,9 @@ class LeadPlate : public attachSystem::ContainedComp,
   int checkCorners(const Geometry::Plane*,
 		   const Geometry::Vec3D&) const;
   
-  void populate(const Simulation&);
+  void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
-			const size_t);
+			const long int);
 
   void createSurfaces();
   void createObjects(Simulation&);
@@ -90,7 +87,7 @@ class LeadPlate : public attachSystem::ContainedComp,
   /// Ugly set centre
   void setCentre(const Geometry::Vec3D& C) { Centre=C; }
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t);
+		 const long int);
 
 };
 

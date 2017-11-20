@@ -49,8 +49,8 @@ class CylPreMod : public attachSystem::ContainedGroup,
   std::shared_ptr<BlockAddition> ExtBObj;     ///< Right Extension
   int blockActiveA;                           ///< Flag for left ext
   int blockActiveB;                           ///< Flag for right ext
-  size_t aSide;                               ///< Link point
-  size_t bSide;                               ///< Link point
+  long int aSide;                               ///< Link point
+  long int bSide;                               ///< Link point
 
   double innerRadius;             ///< Radius from inner cell
   double innerHeight;             ///< height from inner cell
@@ -85,7 +85,7 @@ class CylPreMod : public attachSystem::ContainedGroup,
   void updateLayers(Simulation&,const char,
 		    const size_t,const size_t) const;
 
-  Geometry::Vec3D calcViewIntercept(const size_t,const size_t) const;
+  Geometry::Vec3D calcViewIntercept(const size_t,const long int) const;
 
  public:
 

@@ -76,11 +76,11 @@ class FixedComp
   const HeadRule& getMainRule(const size_t) const;
   const HeadRule& getCommonRule(const size_t) const;
 
+  const Geometry::Vec3D& getLinkPt(const size_t) const;
+  const Geometry::Vec3D& getLinkAxis(const size_t) const;
 
  public:
 
-  const Geometry::Vec3D& getLinkPt(const size_t) const;
-  const Geometry::Vec3D& getLinkAxis(const size_t) const;
 
   static void computeZOffPlane(const Geometry::Vec3D&,
 			       const Geometry::Vec3D&,
@@ -174,10 +174,11 @@ class FixedComp
   size_t NConnect() const { return LU.size(); }
   void setNConnect(const size_t);
   const LinkUnit& getLU(const size_t)  const;
-
+  
   LinkUnit& getSignedLU(const long int);
   const LinkUnit& getSignedLU(const long int)  const; 
-  
+
+  std::vector<Geometry::Vec3D> getAllLinkPts() const;
   virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
   virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
   virtual std::string getSignedLinkString(const long int) const;

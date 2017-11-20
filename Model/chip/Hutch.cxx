@@ -441,7 +441,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   FixedGroup::setDefault("Main");
   
   const Geometry::Vec3D ImpactPoint= (shutterFC.NConnect()) ?
-    shutterFC.getLinkPt(0) : shutterFC.getCentre(); 
+    shutterFC.getSignedLinkPt(1) : shutterFC.getCentre(); 
   //  setExit(Origin+Y*hMainLen,Y);
   //  SecondTrack::setBeamExit(LC.getLinkPoint(1),bY);
 
