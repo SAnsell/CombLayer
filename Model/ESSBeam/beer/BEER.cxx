@@ -335,8 +335,8 @@ BEER::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayer"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   OutACut->createAll(System,OutPitA->getKey("Inner"),2);
 
   // 15m WBC chopper
@@ -456,14 +456,14 @@ BEER::build(Simulation& System,
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
   
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
   essBeamSystem::setBeamAxis(*beerAxis,Control,GItem,1);
   
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->setBack(GItem.getKey("Beam"),-2);
   BendA->createAll(System,*beerAxis,-3,*beerAxis,-3);
-  ELog::EM<<"BeerAxis == "<<beerAxis->getSignedLinkAxis(-3)<<ELog::endDiag;
+  ELog::EM<<"BeerAxis == "<<beerAxis->getLinkAxis(-3)<<ELog::endDiag;
   if (stopPoint==1) return;                      // STOP At monolith
                                                  // edge
   

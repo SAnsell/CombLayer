@@ -226,15 +226,15 @@ Curtain::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   topFC.createUnitVector(FC,sideIndex);
-  topFC.setCentre(FC.getSignedLinkPt(topIndex));
+  topFC.setCentre(FC.getLinkPt(topIndex));
   midFC.createUnitVector(FC,sideIndex);
-  midFC.setCentre(FC.getSignedLinkPt(topIndex));
+  midFC.setCentre(FC.getLinkPt(topIndex));
   baseFC.createUnitVector(FC,sideIndex);
-  baseFC.setCentre(FC.getSignedLinkPt(topIndex));
+  baseFC.setCentre(FC.getLinkPt(topIndex));
   
-  //  Origin=FC.getSignedLinkPt(topIndex);
+  //  Origin=FC.getLinkPt(topIndex);
 
-  wallRadius=FC.getCentre().Distance(FC.getSignedLinkPt(sideIndex));
+  wallRadius=FC.getCentre().Distance(FC.getLinkPt(sideIndex));
   setDefault("Lower");
 
 
@@ -305,9 +305,9 @@ Curtain::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("Curtain","createObjects");
 
-  const std::string topSurf=FC.getSignedLinkString(topIndex);
-  const std::string topBase=FC.getSignedLinkString(-topIndex);
-  const std::string sideSurf=FC.getSignedLinkString(sideIndex);
+  const std::string topSurf=FC.getLinkString(topIndex);
+  const std::string topBase=FC.getLinkString(-topIndex);
+  const std::string sideSurf=FC.getLinkString(sideIndex);
   std::string Out;
   // Top section
   Out=ModelSupport::getComposite(SMap,curIndex," 7 -17 3 -4 15 -6 ");
@@ -419,7 +419,7 @@ Curtain::layerProcess(Simulation& System,
       surroundRule.setSurfPair(SMap.realSurf(curIndex+5),
                                SMap.realSurf(topSurf));
 
-      OutA=FC.getSignedLinkString(-topIndex);
+      OutA=FC.getLinkString(-topIndex);
       OutB=ModelSupport::getComposite(SMap,curIndex," 5 ");
       
       surroundRule.setInnerRule(OutB);

@@ -271,7 +271,7 @@ ColdH2Mod::createSurfaces(const attachSystem::FixedComp& FC,
 			   Origin+Z*(height/2.0+D),Z); 
   
 
-  SMap.addMatch(coldIndex+21,FC.getSignedLinkSurf(sideIndex)); // all links point out
+  SMap.addMatch(coldIndex+21,FC.getLinkSurf(sideIndex)); // all links point out
   ModelSupport::buildPlane(SMap,coldIndex+22,Origin+
 			   Y*(depth/2.0+wallThick+backGap),Y);  
   ModelSupport::buildPlane(SMap,coldIndex+23,Origin-

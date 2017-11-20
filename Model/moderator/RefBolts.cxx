@@ -134,7 +134,7 @@ RefBolts::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("RefBolts","createUnitVector");
 
   FixedComp::createUnitVector(CUnit,0);
-  Origin=CUnit.getSignedLinkPt(sideIndex);
+  Origin=CUnit.getLinkPt(sideIndex);
   return;
 }
 

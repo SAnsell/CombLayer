@@ -128,8 +128,8 @@ getAttachPoint(const std::string& FCName,
   if (!FC) return 0;
 
   const long int index=getLinkIndex(linkName);
-  Pt=FC->getSignedLinkPt(index);
-  YAxis=FC->getSignedLinkAxis(index);
+  Pt=FC->getLinkPt(index);
+  YAxis=FC->getLinkAxis(index);
   return 1;
 }
 
@@ -164,8 +164,8 @@ getAttachPointWithXYZ(const std::string& FCName,
 
   const long int index=getLinkIndex(linkName);
   // All these calls throw on error
-  Pt=FC->getSignedLinkPt(index);
-  YAxis=FC->getSignedLinkAxis(index);
+  Pt=FC->getLinkPt(index);
+  YAxis=FC->getLinkAxis(index);
   ZAxis=FC->getZ();
 
   FixedComp::computeZOffPlane(XAxis,YAxis,ZAxis);

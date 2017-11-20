@@ -157,8 +157,8 @@ SurfNormSource::setSurf(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("SurfNormSource","setSurf");
   ELog::EM<<"Surface == "<<FC.getKeyName()<<" "<<sideIndex<<ELog::endDiag;
-  ELog::EM<<"STR == "<<FC.getSignedLinkString(sideIndex)<<ELog::endDiag;
-  surfNum=FC.getSignedLinkSurf(sideIndex);
+  ELog::EM<<"STR == "<<FC.getLinkString(sideIndex)<<ELog::endDiag;
+  surfNum=FC.getLinkSurf(sideIndex);
   ELog::EM<<"Surface == "<<FC.getKeyName()<<ELog::endDiag;
   return;
 }

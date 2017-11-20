@@ -391,14 +391,14 @@ ODIN::buildOutGuide(Simulation& System,
   
   
   OutACut->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(1),
-                    OutPitA->getKey("Mid").getSignedFullRule(-1));
+  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(1),
+                    OutPitA->getKey("Mid").getFullRule(-1));
   OutACut->createAll(System,OutPitA->getKey("Inner"),1);
 
   OutBCut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutBCut->addInsertCell(OutPitA->getCells("Collet"));
-  OutBCut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutBCut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   OutBCut->createAll(System,OutPitA->getKey("Inner"),2);
   
     
@@ -447,8 +447,8 @@ ODIN::buildCave(Simulation& System,
   ShieldB->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("FeNose"));
-  CaveCut->setFaces(Cave->getKey("Outer").getSignedFullRule(-1),
-                    Cave->getKey("Inner").getSignedFullRule(1));
+  CaveCut->setFaces(Cave->getKey("Outer").getFullRule(-1),
+                    Cave->getKey("Inner").getFullRule(1));
   CaveCut->createAll(System,Cave->getKey("Inner"),-1);
 
   VPipeCaveA->addInsertCell(Cave->getCells("VoidNose"));
@@ -493,7 +493,7 @@ ODIN::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*odinAxis,Control,GItem,1);

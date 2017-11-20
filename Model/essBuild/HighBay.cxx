@@ -186,7 +186,7 @@ HighBay::createObjects(Simulation& System,
   std::string Out;
 
 
-  const std::string frontCut=leftBunker.getSignedLinkString(3);
+  const std::string frontCut=leftBunker.getLinkString(3);
 
   const HeadRule leftWallInner(leftBunker.getSurfRules("leftWallInner"));
   const HeadRule rightWallInner(rightBunker.getSurfRules("-rightWallInner"));

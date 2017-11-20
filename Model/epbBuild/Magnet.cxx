@@ -211,7 +211,7 @@ Magnet::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,magIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
   for(size_t i=1;i<=segLen;i++)
-    Out+=FC.getSignedLinkString(static_cast<long int>(segIndex+i));
+    Out+=FC.getLinkString(static_cast<long int>(segIndex+i));
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
 
   return;

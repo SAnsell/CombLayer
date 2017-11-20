@@ -171,7 +171,7 @@ MonoPlug::createUnitVector(const attachSystem::FixedComp& VoidFC,
   ELog::RegMethod RegA("MonoPlug","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(VoidFC);
-  Origin=VoidFC.getSignedLinkPt(sideIndex);
+  Origin=VoidFC.getLinkPt(sideIndex);
   return;
 }
 
@@ -233,12 +233,12 @@ MonoPlug::createObjects(Simulation& System,
   std::string Out;
 
   // The outside stuff
-  const std::string voidSurf=VoidFC.getSignedLinkString(vLCIndex);
-  const std::string outSurf=VoidFC.getSignedLinkString(-1);
+  const std::string voidSurf=VoidFC.getLinkString(vLCIndex);
+  const std::string outSurf=VoidFC.getLinkString(-1);
   
 
   const std::string bulkSurf=
-    BulkFC.getSignedLinkString(-vLCIndex);
+    BulkFC.getLinkString(-vLCIndex);
 
   // SPECIAL FOR ONE SINGLE ITEM:
   if (nPlugs==1)

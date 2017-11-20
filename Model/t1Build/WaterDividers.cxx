@@ -255,11 +255,11 @@ WaterDividers::createSurfaces(const PlateTarget& PT,
   ELog::RegMethod RegA("WaterDividers","createSurface");
 
   // VacVessel values [Back plate]: 
-  SMap.addMatch(wIndex+2002,Vessel.getSignedLinkSurf(2));
-  const Geometry::Vec3D VesselPt=Vessel.getSignedLinkPt(2);
+  SMap.addMatch(wIndex+2002,Vessel.getLinkSurf(2));
+  const Geometry::Vec3D VesselPt=Vessel.getLinkPt(2);
 
-  SMap.addMatch(wIndex+2005,Vessel.getSignedLinkSurf(5));
-  SMap.addMatch(wIndex+2006,Vessel.getSignedLinkSurf(6));
+  SMap.addMatch(wIndex+2005,Vessel.getLinkSurf(5));
+  SMap.addMatch(wIndex+2006,Vessel.getLinkSurf(6));
 
 
   // FORWARD DIVIDER

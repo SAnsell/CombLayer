@@ -193,7 +193,7 @@ OrthoInsert::createSurfaces(const Hydrogen& HC)
   int signVal(-1);
   for(int i=1;i<7;i++)
     {
-      SMap.addMatch(hydIndex+i,signVal*HC.getSignedLinkSurf(i));
+      SMap.addMatch(hydIndex+i,signVal*HC.getLinkSurf(i));
       signVal*=-1;
     }
 

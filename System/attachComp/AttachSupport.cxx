@@ -809,7 +809,7 @@ unionLink(const attachSystem::FixedComp& FC,
   HeadRule Out;
 
   for(const long int LI : LIndex)
-    Out.addUnion(FC.getSignedLinkString(LI));
+    Out.addUnion(FC.getLinkString(LI));
 
 
   return Out;
@@ -830,7 +830,7 @@ intersectionLink(const attachSystem::FixedComp& FC,
   HeadRule Out;
 
   for(const long int LI : LIndex)
-    Out.addIntersection(FC.getSignedLinkString(LI));
+    Out.addIntersection(FC.getLinkString(LI));
 
   return Out;
 }

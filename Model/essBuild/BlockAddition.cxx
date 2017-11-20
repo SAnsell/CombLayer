@@ -525,7 +525,7 @@ BlockAddition::createAll(Simulation& System,
   if (FC)
     {
       populate(System.getDataBase());
-      createUnitVector(O,FC->getSignedLinkAxis(sideIndex),FC->getZ());
+      createUnitVector(O,FC->getLinkAxis(sideIndex),FC->getZ());
 
       createSurfaces();
       createObjects(System,CylPreMod,layerIndex,sideIndex);

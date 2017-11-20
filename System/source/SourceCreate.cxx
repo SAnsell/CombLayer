@@ -587,7 +587,7 @@ createTS3ExptSource(const FuncDataBase& Control,
   const double E=Control.EvalDefVar<double>("sdefEnergy",2.0);
   const double radius=Control.EvalDefVar<double>("sdefRadius",20.0);
 
-  const Geometry::Vec3D OPt(FC.getSignedLinkPt(linkIndex));
+  const Geometry::Vec3D OPt(FC.getLinkPt(linkIndex));
   sourceCard.setActive();
   sourceCard.setComp("par",1);
   sourceCard.setComp("erg",E);

@@ -660,9 +660,9 @@ PressVessel::buildFeedThrough(Simulation& System)
       const double sX((i % 2) ? -1 : 1);
       const double sZ((i / 2) ? -1 : 1);
 //       ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
-      const Geometry::Vec3D PStart=getSignedLinkPt(1)+Y*cutY+
+      const Geometry::Vec3D PStart=getLinkPt(1)+Y*cutY+
 	        X*sX*sideXOffset+Z*sZ*(sideZCenter-sideHeight);
-      const Geometry::Vec3D PEnd=getSignedLinkPt(2)+
+      const Geometry::Vec3D PEnd=getLinkPt(2)+
 	        X*sX*sideXOffset+Z*sZ*(sideZCenter-sideHeight);
 
       SideWaterChannel.addPoint(PStart);
@@ -680,8 +680,8 @@ PressVessel::buildFeedThrough(Simulation& System)
 //      const double sX((i % 2) ? -1 : 1);
 //      const double sZ((i / 2) ? -1 : 1);
 //       ELog::EM<<"Start of feedThrough"<<ELog::endDebug;
-      const Geometry::Vec3D PStart=getSignedLinkPt(2)+X*begXstep[i];
-      const Geometry::Vec3D PEnd=getSignedLinkPt(12)+X*begXstep[i];
+      const Geometry::Vec3D PStart=getLinkPt(2)+X*begXstep[i];
+      const Geometry::Vec3D PEnd=getLinkPt(12)+X*begXstep[i];
 
       EndWaterChannel.addPoint(PStart);
       EndWaterChannel.addPoint(PEnd);

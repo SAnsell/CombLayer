@@ -259,8 +259,8 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
   ELog::RegMethod RegA("Linac","layerProcess");
   if (nLayers>1 && linkPrimSurf && linkSndSurf)
     {
-      const int pS = getSignedLinkSurf(linkPrimSurf);
-      const int sS = getSignedLinkSurf(linkSndSurf);
+      const int pS = getLinkSurf(linkPrimSurf);
+      const int sS = getLinkSurf(linkSndSurf);
       
       const int wallCell=getCell(cellName);
       
@@ -283,8 +283,8 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
       surroundRule.setSurfPair(SMap.realSurf(pS),
 			       SMap.realSurf(sS));
       
-      const std::string OutA = getSignedLinkString(linkPrimSurf);
-      const std::string OutB = getSignedLinkString(-linkSndSurf);
+      const std::string OutA = getLinkString(linkPrimSurf);
+      const std::string OutB = getLinkString(-linkSndSurf);
       
       surroundRule.setInnerRule(OutA);
       surroundRule.setOuterRule(OutB);

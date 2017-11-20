@@ -163,8 +163,8 @@ collInsertBase::createUnitVector(const collInsertBase& ZB)
   beamY=ZB.beamY;  
   beamZ=ZB.beamZ;
 
-  Origin=ZB.getSignedLinkPt(2)+Y*fStep;
-  beamOrigin=ZB.getSignedLinkPt(4)+beamY*fStep;
+  Origin=ZB.getLinkPt(2)+Y*fStep;
+  beamOrigin=ZB.getLinkPt(4)+beamY*fStep;
 
   return;
 }
@@ -183,8 +183,8 @@ collInsertBase::createUnitVector(const FixedComp& FC)
   beamZ=Z;
   if (FC.NConnect()>1)
     {
-      Origin=FC.getSignedLinkPt(2)+Y*fStep;
-      beamY=FC.getSignedLinkAxis(2);
+      Origin=FC.getLinkPt(2)+Y*fStep;
+      beamY=FC.getLinkAxis(2);
     }
   else
     {
@@ -332,7 +332,7 @@ collInsertBase::createAll(Simulation& System,
   populate(System,&ZB);
 
   createUnitVector(ZB);
-  createSurfaces(ZB.getSignedLinkSurf(2));
+  createSurfaces(ZB.getLinkSurf(2));
   createObjects(System,"","");
   createLinks();
   insertObjects(System);       

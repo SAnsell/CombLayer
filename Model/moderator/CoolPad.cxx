@@ -275,7 +275,7 @@ CoolPad::createAll(Simulation& System,
   
   createUnitVector(FUnit,sideIndex);
   createSurfaces();
-  hotSurf=FUnit.getSignedFullRule(sideIndex);
+  hotSurf=FUnit.getFullRule(sideIndex);
   createObjects(System);
   insertObjects(System);       
   createWaterTrack(System);

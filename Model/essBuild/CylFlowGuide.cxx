@@ -172,7 +172,7 @@ CylFlowGuide::createUnitVector(const attachSystem::FixedComp& FC,
   attachSystem::FixedComp::createUnitVector(FC);
 
   // Take data from containing object
-  const int CN=std::abs(FC.getSignedLinkSurf(sideIndex));
+  const int CN=std::abs(FC.getLinkSurf(sideIndex));
 
   const Geometry::Cylinder* CPtr=SMap.realPtr<Geometry::Cylinder>(CN);
   if (!CPtr)
@@ -242,10 +242,10 @@ CylFlowGuide::createObjects(Simulation& System,
 
   // This is AWFUL:
   const std::string vertStr =
-    FC.getSignedLinkString(sideIndex+3)+
-    FC.getSignedLinkString(sideIndex+2);
+    FC.getLinkString(sideIndex+3)+
+    FC.getLinkString(sideIndex+2);
   const std::string sideStr =
-    FC.getSignedLinkString(sideIndex);
+    FC.getLinkString(sideIndex);
 
   const int initCellIndex(cellIndex);
   // central plate

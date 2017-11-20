@@ -315,8 +315,8 @@ BulkModule::addFlightUnit(Simulation& System,
   std::stringstream cx;
   cx<<" (";
   for(long int index=3;index<6;index++)
-    cx<<FC.getSignedLinkString(index)<<" : ";
-  cx<<FC.getSignedLinkString(6)<<" )";
+    cx<<FC.getLinkString(index)<<" : ";
+  cx<<FC.getLinkString(6)<<" )";
 
   // AVOID INNER
   for(int i=1;i<static_cast<int>(nLayer);i++)
@@ -329,7 +329,7 @@ BulkModule::addFlightUnit(Simulation& System,
   // Now make internal surface
   cx.str("");
   for(long int index=3;index<7;index++)
-    cx<<FC.getSignedLinkString(-index)<<" ";
+    cx<<FC.getLinkString(-index)<<" ";
 
   Out=ModelSupport::getComposite(SMap,bulkIndex,
 				 bulkIndex+10*static_cast<int>(nLayer-1),

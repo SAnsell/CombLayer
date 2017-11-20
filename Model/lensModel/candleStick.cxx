@@ -189,14 +189,14 @@ candleStick::createUnitVector(const attachSystem::FixedComp& FC)
   FixedComp::createUnitVector(FC);  
 
   // Centre Base centre to be half way into bar:
-  BaseCent=FC.getSignedLinkPt(5)+X*baseXoffset+Y*baseYoffset-
+  BaseCent=FC.getLinkPt(5)+X*baseXoffset+Y*baseYoffset-
     Z*baseThick/2.0;
 
   // Set stick vector
   StickCent=X*vsXoffset+Y*vsYoffset+
     Z*(BaseCent.Z()+baseThick/2.0);
 
-  CylCent=FC.getSignedLinkPt(5)+Geometry::Vec3D(-xCyl,yCyl,0);
+  CylCent=FC.getLinkPt(5)+Geometry::Vec3D(-xCyl,yCyl,0);
 
   return;
 }

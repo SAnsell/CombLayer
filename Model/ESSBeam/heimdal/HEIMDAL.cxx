@@ -225,9 +225,9 @@ HEIMDAL::buildBunkerUnits(Simulation& System,
   FocusCB->addInsertCell(VPipeB->getCells("Void"));
   FocusCB->createAll(System,FCA,coldIndex,FCA,coldIndex);
 
-  ELog::EM<<"Cold = "<<FocusCB->getKey("Guide0").getSignedLinkAxis(2)
+  ELog::EM<<"Cold = "<<FocusCB->getKey("Guide0").getLinkAxis(2)
 	  <<ELog::endDiag;
-  ELog::EM<<"Thermal = "<<FocusTB->getKey("Guide0").getSignedLinkAxis(2)
+  ELog::EM<<"Thermal = "<<FocusTB->getKey("Guide0").getLinkAxis(2)
 	  <<ELog::endDiag;
   VPipeC->addInsertCell(bunkerVoid);
   VPipeC->createAll(System,*VPipeB,2);
@@ -377,7 +377,7 @@ HEIMDAL::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*heimdalAxis,Control,GItem,1);

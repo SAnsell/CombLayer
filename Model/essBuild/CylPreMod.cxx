@@ -181,9 +181,9 @@ CylPreMod::getBoxCut(const char F) const
    */
 {
   if (F=='A' && blockActiveA)
-    return ExtAObj->getSignedLinkString(-4); 
+    return ExtAObj->getLinkString(-4); 
   if (F=='B' && blockActiveB)
-    return ExtBObj->getSignedLinkString(-4); 
+    return ExtBObj->getLinkString(-4); 
   return "";
 }
 
@@ -212,7 +212,7 @@ CylPreMod::checkItems(const attachSystem::FixedComp& Mod)
   // Never figure out if we are +/- Z so decided to test
   for(long int i=5;i<=6;i++)
     {
-      OutPt=Mod.getSignedLinkPt(i)-Origin;
+      OutPt=Mod.getLinkPt(i)-Origin;
       if (OutPt.dotProd(Z)>0.0)
 	innerHeight=OutPt.abs();
       else

@@ -238,17 +238,17 @@ HWrapper::createSurfaces(const attachSystem::FixedComp& VacFC,
 
   // Note can use the divide surface as a real surface.
   SMap.addMatch(preIndex+1,divideSurf);
-  SMap.addMatch(preIndex+2,VacFC.getSignedLinkSurf(2));  // front
-  SMap.addMatch(preIndex+3,VacFC.getSignedLinkSurf(3));  // side
-  SMap.addMatch(preIndex+4,VacFC.getSignedLinkSurf(4));  // side
-  SMap.addMatch(preIndex+5,VacFC.getSignedLinkSurf(5));  // base
-  SMap.addMatch(preIndex+6,VacFC.getSignedLinkSurf(6));  // top  [target]
+  SMap.addMatch(preIndex+2,VacFC.getLinkSurf(2));  // front
+  SMap.addMatch(preIndex+3,VacFC.getLinkSurf(3));  // side
+  SMap.addMatch(preIndex+4,VacFC.getLinkSurf(4));  // side
+  SMap.addMatch(preIndex+5,VacFC.getLinkSurf(5));  // base
+  SMap.addMatch(preIndex+6,VacFC.getLinkSurf(6));  // top  [target]
 
   // FLight line
-  SMap.addMatch(preIndex+103,FLine.getSignedLinkSurf(-3));  // side 
-  SMap.addMatch(preIndex+104,FLine.getSignedLinkSurf(4));  // side
-  SMap.addMatch(preIndex+105,FLine.getSignedLinkSurf(-5));  // base [outer]
-  SMap.addMatch(preIndex+106,FLine.getSignedLinkSurf(6));  // top  [target]
+  SMap.addMatch(preIndex+103,FLine.getLinkSurf(-3));  // side 
+  SMap.addMatch(preIndex+104,FLine.getLinkSurf(4));  // side
+  SMap.addMatch(preIndex+105,FLine.getLinkSurf(-5));  // base [outer]
+  SMap.addMatch(preIndex+106,FLine.getLinkSurf(6));  // top  [target]
 
   const double sideWater=sideExt-(alInner+vacOuter+vacInner);
   const double topWater=heightExt-(alOuter+alInner+vacOuter+vacInner);

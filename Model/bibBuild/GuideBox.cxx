@@ -214,7 +214,7 @@ GuideBox::createObjects(Simulation& System,
   
   std::string Out;
 
-  const std::string boundSurf=FC.getSignedLinkString(sideIndex);
+  const std::string boundSurf=FC.getLinkString(sideIndex);
   
   Out=ModelSupport::getComposite(SMap,guideIndex," -7 3 -4 5 -6 ");
   Out+=boundSurf;

@@ -292,11 +292,11 @@ BilbaoWheelInnerStructure::createObjects(Simulation& System,
   temp = MatInfo.second;
   
   const std::string vertStr =
-    Wheel.getSignedLinkString(7)+
-    Wheel.getSignedLinkString(8); // top+bottom
+    Wheel.getLinkString(7)+
+    Wheel.getLinkString(8); // top+bottom
   const std::string cylStr =
-    Wheel.getSignedLinkString(9)+
-    Wheel.getSignedLinkString(10); // min+max radii
+    Wheel.getLinkString(9)+
+    Wheel.getLinkString(10); // min+max radii
 
 
   int SIsec(insIndex+0), SI1;
@@ -349,9 +349,9 @@ BilbaoWheelInnerStructure::createBrickSurfaces
   ELog::RegMethod RegA("BilbaoWheelInnerStructure","createBrickSurfaces");
   
   const Geometry::Surface *innerCyl =
-    SMap.realSurfPtr(Wheel.getSignedLinkSurf(9));
+    SMap.realSurfPtr(Wheel.getLinkSurf(9));
   const Geometry::Surface *outerCyl =
-    SMap.realSurfPtr(Wheel.getSignedLinkSurf(10));
+    SMap.realSurfPtr(Wheel.getLinkSurf(10));
   
   const Geometry::Plane *pz = SMap.realPtr<Geometry::Plane>(insIndex+5);
   
@@ -494,11 +494,11 @@ BilbaoWheelInnerStructure::createBricks(Simulation& System,
   SMap.realPtr<Geometry::Plane>(insIndex+5);
   
   std::string sideStr = side1 + side2;
-  const std::string vertStr = Wheel.getSignedLinkString(7) +
-    Wheel.getSignedLinkString(8); // top+bottom
+  const std::string vertStr = Wheel.getLinkString(7) +
+    Wheel.getLinkString(8); // top+bottom
   
-  const std::string innerCyl = Wheel.getSignedLinkString(9);
-  const std::string outerCyl = Wheel.getSignedLinkString(10);
+  const std::string innerCyl = Wheel.getLinkString(9);
+  const std::string outerCyl = Wheel.getLinkString(10);
   
   std::string Out,Out1;
   int SI(insIndex+1000*(static_cast<int>(sector+1)));

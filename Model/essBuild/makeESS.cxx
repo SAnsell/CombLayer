@@ -269,8 +269,8 @@ makeESS::createGuides(Simulation& System)
       OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
       GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
-      GB->setCylBoundary(Bulk->getSignedLinkSurf(3),
-			 ShutterBayObj->getSignedLinkSurf(7));
+      GB->setCylBoundary(Bulk->getLinkSurf(3),
+			 ShutterBayObj->getLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);  
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
@@ -889,12 +889,12 @@ makeESS::buildPreWings(Simulation& System)
         (new PreModWing("TopLeftPreWing"));
       
       OR.addObject(TopPreWingA);
-      TopPreWingA->setDivider(TMod->getSignedMainRule(-7));
+      TopPreWingA->setDivider(TMod->getMainRule(-7));
       TopPreWingA->setInnerExclude(TMod->getLeftExclude());
       TopPreWingA->setMidExclude(TMod->getLeftFarExclude());
 
       TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
-      TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
+      TopPreWingA->setTopCut(TopCapMod->getFullRule(5));
       TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
       TopPreWingA->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingA->createAll(System,*TMod,0);
@@ -903,11 +903,11 @@ makeESS::buildPreWings(Simulation& System)
         std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
       
       OR.addObject(TopPreWingB);
-      TopPreWingB->setDivider(TMod->getSignedMainRule(7));
+      TopPreWingB->setDivider(TMod->getMainRule(7));
       TopPreWingB->setInnerExclude(TMod->getRightExclude());
       TopPreWingB->setMidExclude(TMod->getRightFarExclude());
-      TopPreWingB->setBaseCut(TopPreMod->getSignedFullRule(6));
-      TopPreWingB->setTopCut(TopCapMod->getSignedFullRule(5));
+      TopPreWingB->setBaseCut(TopPreMod->getFullRule(6));
+      TopPreWingB->setTopCut(TopCapMod->getFullRule(5));
       TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
       
       TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));

@@ -248,7 +248,7 @@ VanePoison::createObjects(Simulation& System,
 
   yFront= (std::abs(yStep)>Geometry::zeroTol) ?
     ModelSupport::getComposite(SMap,vaneIndex," 11 ") :
-    FC.getSignedLinkString(linkPt);
+    FC.getLinkString(linkPt);
   yBack=ModelSupport::getComposite(SMap,vaneIndex," -12 ");
 
   if (zLength>Geometry::zeroTol)
@@ -265,8 +265,8 @@ VanePoison::createObjects(Simulation& System,
       if (zUp>5)                 // Inner points are reversed
 	std::swap(zUp,zDown);      
 
-      zBase=FC.getSignedLinkString(zDown+1);
-      zTop=FC.getSignedLinkString(zUp+1);
+      zBase=FC.getLinkString(zDown+1);
+      zTop=FC.getLinkString(zUp+1);
     }
 
   std::string Out;

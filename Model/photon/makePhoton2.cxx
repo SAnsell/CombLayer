@@ -141,12 +141,12 @@ makePhoton2::buildWings(Simulation& System)
   const double H=Control.EvalDefVar<double>("SPlateHeight",1.5);
   const double W=Control.EvalDefVar<double>("SPlateWidth",7.5);
 
-  const Geometry::Vec3D YA=PModObj->getSignedLinkPt(1);
-  const Geometry::Vec3D YB=PModObj->getSignedLinkPt(2);
-  const Geometry::Vec3D XA=PModObj->getSignedLinkPt(3);
-  const Geometry::Vec3D XB=PModObj->getSignedLinkPt(4);
-  const Geometry::Vec3D ZA=PModObj->getSignedLinkPt(5);
-  const Geometry::Vec3D ZB=PModObj->getSignedLinkPt(6);
+  const Geometry::Vec3D YA=PModObj->getLinkPt(1);
+  const Geometry::Vec3D YB=PModObj->getLinkPt(2);
+  const Geometry::Vec3D XA=PModObj->getLinkPt(3);
+  const Geometry::Vec3D XB=PModObj->getLinkPt(4);
+  const Geometry::Vec3D ZA=PModObj->getLinkPt(5);
+  const Geometry::Vec3D ZB=PModObj->getLinkPt(6);
   
   const double DX=XA.Distance(XB)/2.0;
   const double DY=YA.Distance(YB);   // Not dividde

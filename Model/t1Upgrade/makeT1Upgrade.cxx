@@ -285,8 +285,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new TMRSystem::TS2target("t1CylTarget"));
       OR.addObject(TarObj);
       // Cylinder [innernal] both the same
-      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),
-			   RefObj->getSignedLinkSurf(-3));
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
       return "t1CylTarget";
     }    
@@ -296,8 +296,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
 	(new TMRSystem::TS2FlatTarget("t1CylTarget"));
       OR.addObject("t1CylTarget",TarObj);
       // Cylinder [innernal] both the same
-      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),
-			   RefObj->getSignedLinkSurf(-3));
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<TMRSystem::TS2ModifyTarget> TarObjModify
@@ -311,8 +311,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::InnerTarget("t1Inner"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),
-			   RefObj->getSignedLinkSurf(-3));
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
       return "t1Inner";
     }    
@@ -323,8 +323,8 @@ makeT1Upgrade::buildTarget(Simulation& System,
       OR.addObject(TarObj);
       /// Target
 
-      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),
-			   RefObj->getSignedLinkSurf(-3));
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),
+			   RefObj->getLinkSurf(-3));
       TarObj->createAll(System,World::masterOrigin());
 
       std::shared_ptr<ts1System::targCoolant> 
@@ -340,7 +340,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::OpenBlockTarget("t1BlockTarget"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1BlockTarget";
     }    
@@ -349,7 +349,7 @@ makeT1Upgrade::buildTarget(Simulation& System,
       TarObj=std::shared_ptr<constructSystem::TargetBase>
 	(new ts1System::Cannelloni("t1Cannelloni"));
       OR.addObject(TarObj);
-      TarObj->setRefPlates(RefObj->getSignedLinkSurf(-3),0);
+      TarObj->setRefPlates(RefObj->getLinkSurf(-3),0);
       TarObj->createAll(System,World::masterOrigin());
       return "t1Cannelloni";
     }    
@@ -788,7 +788,7 @@ makeT1Upgrade::build(Simulation& System,
     attachSystem::addToInsertSurfCtrl(System,*CH4Mod,*H2PMod);  
 
   // FLIGHTLINES:
-  const std::string Out=RefObj->getSignedLinkString(-3);
+  const std::string Out=RefObj->getLinkString(-3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);
   TriFLA->createAll(System,*TriMod,*TriMod,TriMod->getSideIndex(0));

@@ -262,8 +262,8 @@ H2FlowGuide::createObjects(Simulation& System,
       (innerCell,"H2Wing inner Cell not found");
   
   std::string Out;
-  const std::string topBottomStr=HW.getSignedLinkString(13)+
-    HW.getSignedLinkString(14);
+  const std::string topBottomStr=HW.getLinkString(13)+
+    HW.getLinkString(14);
   HeadRule wallExclude;
   // base
   Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");

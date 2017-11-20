@@ -152,7 +152,7 @@ EssModBase::createUnitVector(const attachSystem::FixedComp& orgFC,
   ELog::RegMethod RegA("EssModBase","createUnitVector");
   
   attachSystem::FixedComp::createUnitVector(axisFC,axisIndex);
-  Origin=orgFC.getSignedLinkPt(orgIndex);
+  Origin=orgFC.getLinkPt(orgIndex);
   applyOffset();
   return; 
 }

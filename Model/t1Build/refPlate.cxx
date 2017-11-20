@@ -155,9 +155,9 @@ refPlate::setOrigin(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("refPlate","setOrigin(FC,size_t)");
   
-  Origin= FC.getSignedLinkPt(Index);
-  Y= FC.getSignedLinkAxis(-Index);
-  SN[2]= FC.getSignedLinkSurf(Index);
+  Origin= FC.getLinkPt(Index);
+  Y= FC.getLinkAxis(-Index);
+  SN[2]= FC.getLinkSurf(Index);
 
   FixedComp::setLinkSurf(2,-SN[2]);
   FixedComp::setConnect(2,Origin,-Y);
@@ -211,7 +211,7 @@ refPlate::setPlane(const std::string& dirName,
   const size_t DIndex=dirType(dirName);
 
 
-  SN[DIndex]=FC.getSignedLinkSurf(LIndex);
+  SN[DIndex]=FC.getLinkSurf(LIndex);
   FixedComp::setLinkSignedCopy(DIndex,FC,LIndex);
 
   planeFlag |= (DIndex) ? 2 << (DIndex-1) : 1;            
@@ -266,9 +266,9 @@ refPlate::setPlane(const std::string& dirName,
   const size_t AltIndex=dirOppositeType(dirName);
 
   Geometry::Vec3D Pt=
-    this->getSignedLinkPt(static_cast<long int>(AltIndex+1));
+    this->getLinkPt(static_cast<long int>(AltIndex+1));
   Geometry::Vec3D Axis=
-    this->getSignedLinkAxis(static_cast<long int>(AltIndex+1));
+    this->getLinkAxis(static_cast<long int>(AltIndex+1));
 
   FixedComp::setConnect(DIndex,Pt-Axis*D,-Axis);
   ModelSupport::buildPlane(SMap,pIndex+static_cast<int>(DIndex),

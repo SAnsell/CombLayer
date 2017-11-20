@@ -355,7 +355,7 @@ makeT1Eng::build(Simulation& System,
 
   RefObj->addToInsertChain(*TarObj);
   //asfasdf
-  TarObj->setRefPlates(-RefObj->getSignedLinkSurf(3),0);
+  TarObj->setRefPlates(-RefObj->getLinkSurf(3),0);
   TarObj->createAll(System,World::masterOrigin());
   //  TarObjModify->createAll(System,*TarObj);
 
@@ -402,7 +402,7 @@ makeT1Eng::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*CH4Mod,*H2Mod);
   
   // FLIGHTLINES:
-  const std::string Out=RefObj->getSignedLinkString(3);
+  const std::string Out=RefObj->getLinkString(3);
   TriFLA->addBoundarySurf("inner",Out);  
   TriFLA->addBoundarySurf("outer",Out);  
 

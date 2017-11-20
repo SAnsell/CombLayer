@@ -246,7 +246,7 @@ H2Vac::getSurfacePoint(const attachSystem::FixedComp& FC,
   for(size_t i=0;i<=layerIndex;i++)
     sumVec+=DPtr[SI][i];
   
-  return FC.getSignedLinkPt(sideIndex)+XYZ*sumVec;
+  return FC.getLinkPt(sideIndex)+XYZ*sumVec;
 }
 
 void

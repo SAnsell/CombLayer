@@ -240,7 +240,7 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
 {
   ELog::RegMethod RegA("DiskPreMod","createUnitVector");
   attachSystem::FixedComp::createUnitVector(refCentre);
-  Origin=refCentre.getSignedLinkPt(sideIndex);
+  Origin=refCentre.getLinkPt(sideIndex);
   if (zRotate)
     {
       X*=-1;

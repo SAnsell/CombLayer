@@ -196,8 +196,8 @@ FrontBackCut::setFront(const attachSystem::FixedComp& WFC,
   ELog::RegMethod RegA("FrontBackCut","setFront");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  frontCut=WFC.getSignedMainRule(sideIndex);
-  frontDivider=WFC.getSignedCommonRule(sideIndex);
+  frontCut=WFC.getMainRule(sideIndex);
+  frontDivider=WFC.getCommonRule(sideIndex);
   frontCut.populateSurf();
   frontDivider.populateSurf();
   activeFront=1;
@@ -216,8 +216,8 @@ FrontBackCut::setBack(const attachSystem::FixedComp& WFC,
   ELog::RegMethod RegA("FrontBackCut","setBack");
 
   // FixedComp::setLinkSignedCopy(0,FC,sideIndex);
-  backCut=WFC.getSignedMainRule(sideIndex);
-  backDivider=WFC.getSignedCommonRule(sideIndex);
+  backCut=WFC.getMainRule(sideIndex);
+  backDivider=WFC.getCommonRule(sideIndex);
   backCut.populateSurf();
   backDivider.populateSurf();
   activeBack=1;

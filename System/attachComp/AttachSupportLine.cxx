@@ -295,10 +295,10 @@ lineIntersect(Simulation& System,
 
   for(long int i=0;i<=NC;i++)
     {
-      const Geometry::Vec3D APt(FC.getSignedLinkPt(i));
+      const Geometry::Vec3D APt(FC.getLinkPt(i));
       for(long int j=i+1;j<=NC;j++)
 	{
-	  const Geometry::Vec3D BPt(FC.getSignedLinkPt(j));
+	  const Geometry::Vec3D BPt(FC.getLinkPt(j));
 	  lineIntersect(System,APt,BPt,OMap);
 	}
     }

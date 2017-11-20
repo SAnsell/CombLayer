@@ -395,7 +395,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
      (new constructSystem::LWInner("RBoxLH2")));
 
   Boxes[5]->addSurface(*this,"-4 -11 -6 -7");  // sides
-  Boxes[5]->addBoundarySurf(this->getSignedLinkSurf(-11));
+  Boxes[5]->addBoundarySurf(this->getLinkSurf(-11));
   Boxes[5]->addSurface("CH4FlightS",3);  // base
   Boxes[5]->addSurface("CH4Mod",3);  // base
   Boxes[5]->addSurface("CH4FlightN",4);  // base
@@ -414,8 +414,8 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
      (new constructSystem::LWOuter("RBoxMerlinWrapper")));
 
   Boxes[6]->addSurface("MerlinMod","-1 -2 -3 -4 -5 -6");
-  Boxes[6]->addBoundarySurf(Boxes[3]->getSignedLinkSurf(-27));
-  Boxes[6]->addBoundaryUnionSurf(Boxes[3]->getSignedLinkSurf(-28));
+  Boxes[6]->addBoundarySurf(Boxes[3]->getLinkSurf(-27));
+  Boxes[6]->addBoundaryUnionSurf(Boxes[3]->getLinkSurf(-28));
 
   Boxes[6]->maskSection(0);
   Boxes[6]->maskSection(4);
@@ -431,10 +431,10 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
 
   Boxes[7]->addSurface("H2Mod","-1 -2 -3 -4");
   Boxes[7]->addSurface("H2Flight","-5 -6");
-  Boxes[7]->addBoundarySurf(Boxes[5]->getSignedLinkSurf(-27));
-  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getSignedLinkSurf(-28));
-  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getSignedLinkSurf(-29));
-  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getSignedLinkSurf(-26));
+  Boxes[7]->addBoundarySurf(Boxes[5]->getLinkSurf(-27));
+  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-28));
+  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-29));
+  Boxes[7]->addBoundaryUnionSurf(Boxes[5]->getLinkSurf(-26));
   
   Boxes[7]->maskSection(0);
   Boxes[7]->maskSection(4);
@@ -467,7 +467,7 @@ t1Reflector::createBoxes(Simulation& System,const std::string& TName)
   Boxes[9]->addSurface("H2Flight","-3 -4 -5 -6");
 //  Boxes[9]->addSurface("H2Mod",-4);
   Boxes[9]->addSurface("H2Mod",1);    
-  Boxes[9]->addBoundarySurf(Boxes[5]->getSignedLinkSurf(-21));
+  Boxes[9]->addBoundarySurf(Boxes[5]->getLinkSurf(-21));
   Boxes[9]->maskSection(0);
   Boxes[9]->maskSection(1);
   Boxes[9]->maskSection(5); 

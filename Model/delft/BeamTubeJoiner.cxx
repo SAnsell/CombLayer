@@ -248,7 +248,7 @@ BeamTubeJoiner::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BeamTubeJoiner","createObjects");
 
-  const std::string frontLayer=FC.getSignedLinkString(sideIndex);
+  const std::string frontLayer=FC.getLinkString(sideIndex);
   std::string Out;
   Out=ModelSupport::getComposite(SMap,flightIndex," -2 -7 ");
   addOuterSurf(Out+frontLayer);

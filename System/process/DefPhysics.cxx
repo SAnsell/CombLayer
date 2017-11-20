@@ -176,7 +176,7 @@ procAngle(const mainSystem::inputParam& IParam,
       const long int axisIndex=attachSystem::getLinkIndex(CItem);
 
       const Geometry::Vec3D AxisVec=
-        GIPtr->getSignedLinkAxis(axisIndex);
+        GIPtr->getLinkAxis(axisIndex);
 
       // Align item such that we put the object linkPt at +ve X
       const Geometry::Vec3D ZRotAxis=GIPtr->getZ();
@@ -200,7 +200,7 @@ procAngle(const mainSystem::inputParam& IParam,
 
       const long int sideIndex=attachSystem::getLinkIndex(CItem);
           
-      Geometry::Vec3D LP=GIPtr->getSignedLinkPt(sideIndex);
+      Geometry::Vec3D LP=GIPtr->getLinkPt(sideIndex);
       LP=LP.cutComponent(Geometry::Vec3D(0,0,1));
       LP.makeUnit();
 
@@ -288,9 +288,9 @@ procOffset(const mainSystem::inputParam& IParam,
       const std::string CItem=
         IParam.getDefValue<std::string>("0","offset",index,2);
       const long int linkIndex=attachSystem::getLinkIndex(CItem);
-      ELog::EM<<"Offset at "<<GIPtr->getSignedLinkPt(linkIndex)
+      ELog::EM<<"Offset at "<<GIPtr->getLinkPt(linkIndex)
               <<ELog::endDiag;
-      MR.addDisplace(-GIPtr->getSignedLinkPt(linkIndex));
+      MR.addDisplace(-GIPtr->getLinkPt(linkIndex));
     }
   else if (AItem=="free" || AItem=="FREE")
     {

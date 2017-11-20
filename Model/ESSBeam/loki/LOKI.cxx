@@ -304,8 +304,8 @@ LOKI::buildOutGuide(Simulation& System,
   //Cut throught chopper pit for guide and pipe that are following it 
   PitACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   PitACut->addInsertCell(OutPitA->getCells("Collet"));
-  PitACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  PitACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   PitACut->createAll(System,OutPitA->getKey("Inner"),2);
   
   //Chopper unit
@@ -341,7 +341,7 @@ LOKI::buildOutGuide(Simulation& System,
   attachSystem::addToInsertForced(System,*AppA,*VPipeOutA);
 
   //Collimator block in first shielding
-  CollA->setInnerExclude(VPipeOutA->getSignedFullRule(9));
+  CollA->setInnerExclude(VPipeOutA->getFullRule(9));
   CollA->setOuter(ShieldA->getXSectionIn());
   CollA->addInsertCell(ShieldA->getCell("Void"));
   CollA->addInsertCell(VPipeOutA->getCell("OutVoid"));
@@ -359,7 +359,7 @@ LOKI::buildOutGuide(Simulation& System,
   FocusOutB->addInsertCell(VPipeOutB->getCell("Void"));
   FocusOutB->createAll(System,*VPipeOutB,0,*VPipeOutB,0);
 
-  CollB->setInnerExclude(VPipeOutB->getSignedFullRule(9));
+  CollB->setInnerExclude(VPipeOutB->getFullRule(9));
   CollB->setOuter(ShieldB->getXSectionIn());
   CollB->addInsertCell(ShieldB->getCell("Void"));
   CollB->addInsertCell(VPipeOutB->getCell("OutVoid"));
