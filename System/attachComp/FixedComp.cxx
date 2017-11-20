@@ -1148,22 +1148,6 @@ FixedComp::getLinkSurf(const size_t Index) const
   return LU[Index].getLinkSurf();
 }
 
-const Geometry::Vec3D&
-FixedComp::getLinkPt(const size_t Index) const
-  /*!
-    Accessor to the link point
-    \param Index :: Link number
-    \return Link point
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getLinkPt:"+keyName);
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),
-				     "Index/LU.size");
-
-  // this can throw:
-  return LU[Index].getConnectPt();
-}
 
 std::vector<Geometry::Vec3D>
 FixedComp::getAllLinkPts() const
@@ -1229,22 +1213,6 @@ FixedComp::getSignedLinkSurf(const long int sideIndex) const
   return sign*LItem.getLinkSurf();
 }
 
-
-  
-const Geometry::Vec3D&
-FixedComp::getLinkAxis(const size_t Index) const
-  /*!
-    Accessor to the link axis
-    \param Index :: Link number
-    \return Link Axis
-  */
-{
-  ELog::RegMethod RegA("FixedComp","getLinkAxis");
-  if (Index>=LU.size())
-    throw ColErr::IndexError<size_t>(Index,LU.size(),"Index/LU.size");
-  
-  return LU[Index].getAxis();
-}
 
 Geometry::Vec3D
 FixedComp::getSignedLinkAxis(const long int sideIndex) const
@@ -1637,9 +1605,12 @@ FixedComp::getExitWindow(const long int sideIndex,
   for(size_t i=0;i<4;i++)
     window.push_back(std::abs(getLinkSurf(oA[i])));
   // check two pairs of order:
-  const Geometry::Vec3D aX=getLinkAxis(0);
-  const Geometry::Vec3D bX=getLinkAxis(1);
-  const Geometry::Vec3D cX=getLinkAxis(2);
+
+  const Geometry::Vec3D& aX=LU[0].getAxis();
+  const Geometry::Vec3D& bX=LU[1].getAxis();
+  const Geometry::Vec3D& cX=LU[2].getAxis();
+
+  
   if (std::abs<double>(aX.dotProd(bX))>0.99)
     std::swap(window[1],window[2]);
   else if (std::abs<double>(bX.dotProd(cX))>0.99)

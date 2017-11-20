@@ -163,8 +163,8 @@ collInsertBase::createUnitVector(const collInsertBase& ZB)
   beamY=ZB.beamY;  
   beamZ=ZB.beamZ;
 
-  Origin=ZB.getLinkPt(1)+Y*fStep;
-  beamOrigin=ZB.getLinkPt(3)+beamY*fStep;
+  Origin=ZB.getSignedLinkPt(2)+Y*fStep;
+  beamOrigin=ZB.getSignedLinkPt(4)+beamY*fStep;
 
   return;
 }

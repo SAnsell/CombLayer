@@ -265,8 +265,10 @@ refPlate::setPlane(const std::string& dirName,
   const size_t DIndex=dirType(dirName);
   const size_t AltIndex=dirOppositeType(dirName);
 
-  Geometry::Vec3D Pt=this->getLinkPt(AltIndex);
-  Geometry::Vec3D Axis=this->getLinkAxis(AltIndex);
+  Geometry::Vec3D Pt=
+    this->getSignedLinkPt(static_cast<long int>(AltIndex+1));
+  Geometry::Vec3D Axis=
+    this->getSignedLinkAxis(static_cast<long int>(AltIndex+1));
 
   FixedComp::setConnect(DIndex,Pt-Axis*D,-Axis);
   ModelSupport::buildPlane(SMap,pIndex+static_cast<int>(DIndex),
