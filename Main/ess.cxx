@@ -76,6 +76,17 @@
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
 #include "World.h"
+
+#include "Source.h"
+#include "KCode.h"
+#include "LSwitchCard.h"
+#include "PhysCard.h"
+#include "PhysImp.h"
+#include "ModeCard.h"
+#include "Triple.h"
+#include "NList.h"
+#include "PhysicsCards.h"
+
 #include "makeESS.h"
 
 
@@ -121,6 +132,7 @@ main(int argc,char* argv[])
       mainSystem::setMaterialsDataBase(IParam);
 
       SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+      SimPtr->getPC().setPrdmp("1e7 1e7 1 1 1e7");
 
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);
