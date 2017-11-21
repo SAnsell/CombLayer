@@ -8,7 +8,9 @@ Cell-based weight window can be generated with the following arguments:
 
 \begin{description}
 \item[-defaultConfig Single ODIN -angle objAxis odinAxis 0] These optional arguments build the ODIN beam line
-  and rotate geometry around the $z$ axis in such a way that ODIN is collinear to the $x$ axis.
+  and rotate geometry around the $z$ axis and then the $y$ axis such that the FixedComp linkPt axis specified
+  in the -angle command is made collinear with the $x$ axis.
+  In this example it is the ODIN beamline axis which is aligned on the $x$ axis.
   This rotation simplifies the weight window source plane setup for the current example and used here for
   illustration purpose~(see \figref{fig:vr:cell}).
 \item[-w] should precede all weight-related arguments.
@@ -18,7 +20,7 @@ Cell-based weight window can be generated with the following arguments:
     \item If use the word {\em energy} then the format is energy followed by default weight for that bin
       (in our example: for energies below \SI{0.1}{\mega\electronvolt} the default weight is \num{0.95};
           for energies between \num{0.1} and \SI{1}{\mega\electronvolt} the default weight is \num{0.85} etc).
-    \item If you drop the word {\em energy} then you just set the energy grid without specifying default weights.
+    \item If you drop the word {\em energy} then you just set the energy grid without specifying default weights and the default weight is taken as 1.0.
     \item Alternatively you can use pre-defined keywords:
       {\tt basic}, {\tt high}, {\tt mid} and {\tt flat}\footnote{Energy-weight binnings for these keywords are defined in \tt{System/weights/WeightControl.cxx}}.
     \end{enumerate}
@@ -31,9 +33,15 @@ Cell-based weight window can be generated with the following arguments:
 \item[--weightObject] Define objects we would like to make cell-based variance reduction to.
   \begin{description}
   \item[G2BLineTop20] Object name.  It's also possible to specify range of objects within an object or cell name via {\tt CellMap}.
-    \item[SS0] Refer to the first simple source term (the point defined via {\bf weightSource} above)  % 00:10
-    \item[energyCut=0.0] Energy cut. Defines min energy for variance reduction (i.e. no variance reduction below this energy will be made~--- default weight will be used \alert{The weight defined in weightEnergyType?}).
-    \item[scaleFactor=1.0] Linear scale factor. You are going to work out an exponent which is the scattering term into something. It's $\exp(-\sigma \rho / r^2)$.
+  \item[SS0] Refer to the first simple source term (the point defined via {\bf weightSource} above).
+    It implies that the point should be considered as a source (i.e. particles are emitted from it).
+  \item[TS1] Refer to the second simple source term (the point defined via {\bf weightSource} above).
+    It implies that the point should be considered as a tally region, it is calculated in the same way as
+    as source term but the weight contribute is calculated as the reciprical of the contribution (inverted with respect to SS0).
+    \item[energyCut=0.0] Energy cut. Defines min energy for variance reduction (i.e. no variance reduction below this energy will be made~--- default weight will be used as defined in weightEnergyType. If energyCut is less than 0.0 then it defines the maximum energy for variance reduction.
+    \item[scaleFactor=1.0] Linear scale factor. You are going to work out an exponent which is
+      the scattering term into something. It's $ \textrm{scaleFactor} \exp(-\sigma \rho /
+           {\textrm r2len} r)^{\textrm{r2Pow}} )$.
       It's transport to go from {\em a} cell to another cell. \alert{Scale factor is taken out in the mesh based variance reduction.}
     \item[density=0.9] Density scale factor. Normally we set it a bit less than one to make it easier to do transport through thick layers.
     \item[r2Len=1.0] Length scale factor \alert{Do not understand}
@@ -51,7 +59,8 @@ Cell-based weight window can be generated with the following arguments:
 
 \paragraph{Notes}
 \begin{itemize}
-\item In order to set up biasing, you need at least one source and one tally. If several tallies are used, then the previous tally is called {\em joint} and servers as a source for the current one.
+\item In order to set up biasing, you need at least one source. If you have one tally you must also have at least one source, If several tallies are used, then the weight is multipied together, however at each stage
+  normalization to the source is carried out. Therefore the order is important.
 \item Source can be defined either as a point (via {\bf --weightSource}) or a plane (via {\bf --weightPlane}). In the example above we defined point source.
   However the defined sources and planes do nothing until you use them in {\bf --weightObject} or somewhere else.
 \item General rule to get the things into work: try different setups and compare results. Then you renormalise it back out again. It's just basically numerical level game.
