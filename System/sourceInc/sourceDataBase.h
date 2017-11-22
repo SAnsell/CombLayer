@@ -58,6 +58,7 @@ class sourceDataBase
   ///\endcond SINGLETON
 
   const SourceBase* getInternalSource(const std::string&) const;
+  SourceBase* getInternalSource(const std::string&);
   
  public:
   
@@ -69,6 +70,11 @@ class sourceDataBase
     getSource(const std::string&) const;
   template<typename T> const T*
     getSourceThrow(const std::string&,const std::string&) const;
+
+  template<typename T> T*
+    getSource(const std::string&);
+  template<typename T> T*
+    getSourceThrow(const std::string&,const std::string&);
 
   void reset();
   

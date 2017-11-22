@@ -102,10 +102,6 @@ bool findPlaneIntersect(const Geometry::Plane&,
 			std::vector<int>&,
 			std::vector<int>&);
 
-double calcLinkDistance(const FixedComp&,
-			const long int,const long int);
-
-
 HeadRule unionLink(const FixedComp&,
 		   const std::vector<long int>&);
 HeadRule intersectionLink(const FixedComp&,

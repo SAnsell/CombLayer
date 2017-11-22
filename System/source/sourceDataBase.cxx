@@ -138,6 +138,20 @@ sourceDataBase::getInternalSource(const std::string& Name) const
   return (mc!=Components.end()) ? mc->second.get() : 0;
 }
 
+SourceBase*
+sourceDataBase::getInternalSource(const std::string& Name) 
+  /*!
+    Find a SourceBase [if it exists] 
+    \param Name :: Name of source
+    \return SourcePtr / 0 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getInternalSource()");
+
+  SMAP::const_iterator mc=Components.find(Name);
+  return (mc!=Components.end()) ? mc->second.get() : 0;
+}
+
 template<typename T>
 const T*
 sourceDataBase::getSource(const std::string& Name) const
@@ -223,6 +237,12 @@ sourceDataBase::write(const std::string&,
 }
 
 ///\cond TEMPLATE
+template SourceBase* 
+sourceDataBase::getSource(const std::string&); 
+
+template SourceBase* 
+sourceDataBase::getSourceThrow(const std::string&,const std::string&);
+
 template const SourceBase* 
 sourceDataBase::getSource(const std::string&) const; 
 
