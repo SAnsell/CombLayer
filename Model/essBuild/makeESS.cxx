@@ -577,9 +577,9 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		  (lobeName,"Component not found");
 
 	      for (long ii=0; ii<8; ii++) // we need 4,5,6,7
-		vecFP.push_back(midWater->getLinkPt(ii));
-	      vecFP.push_back(lobe->getLinkPt(12)); // zmin
-	      vecFP.push_back(lobe->getLinkPt(13)); // zmax
+		vecFP.push_back(midWater->getLinkPt(ii+1));
+	      vecFP.push_back(lobe->getLinkPt(13)); // zmin
+	      vecFP.push_back(lobe->getLinkPt(14)); // zmax
 	      F5->setFocalPoints(vecFP);
 	      /////
 
@@ -638,8 +638,8 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		vecFP.push_back(midH2->getLinkPt(0));
 	      
 	      // last two must be zmin/zmax:
-	      vecFP.push_back(midH2->getLinkPt(7));
-	      vecFP.push_back(midH2->getLinkPt(8));
+	      vecFP.push_back(midH2->getLinkPt(7+1));
+	      vecFP.push_back(midH2->getLinkPt(8+1));
 	      F5->setFocalPoints(vecFP);
 
 	      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
