@@ -576,7 +576,7 @@ void makeESS::buildF5Collimator(Simulation& System, const mainSystem::inputParam
 		throw ColErr::InContainerError<std::string>
 		  (lobeName,"Component not found");
 
-	      for (size_t ii=0; ii<8; ii++) // we need 4,5,6,7
+	      for (long ii=0; ii<8; ii++) // we need 4,5,6,7
 		vecFP.push_back(midWater->getLinkPt(ii));
 	      vecFP.push_back(lobe->getLinkPt(12)); // zmin
 	      vecFP.push_back(lobe->getLinkPt(13)); // zmax

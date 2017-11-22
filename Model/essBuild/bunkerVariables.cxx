@@ -94,7 +94,6 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofNVert",20);
       Control.addVariable(KItem+"BunkerRoofNMedial",1);
       Control.addVariable(KItem+"BunkerRoofNRadial",12);
-      Control.addVariable(KItem+"BunkerRoofNBasicVert",5);      
       
       Control.addVariable(KItem+"BunkerNSide",5);
       Control.addVariable(KItem+"BunkerNSideVert",5);
@@ -136,6 +135,7 @@ setBunkerVar(FuncDataBase& Control,const std::string& AKey,
       Control.addVariable(KItem+"BunkerRoofMat5","Poly");
       Control.addVariable(KItem+"BunkerRoofMat6","ChipIRSteel");
       Control.addVariable(KItem+"BunkerRoofMat7","Poly");
+
 
       Control.addVariable(KItem+"BunkerWallMat0","Poly");
       Control.addVariable(KItem+"BunkerWallMat1","ChipIRSteel");

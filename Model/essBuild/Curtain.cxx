@@ -402,7 +402,7 @@ Curtain::layerProcess(Simulation& System,
     }
   if (nBaseLayers>1)
     {
-      const int topSurf=FC.getLU(topIndex).getLinkSurf();
+      const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nBaseLayers;i++)
