@@ -1359,11 +1359,26 @@ DBMaterial::createMaterial(const std::string& MName)
   ELog::RegMethod RegA("DBMaterial","createMaterial");
   if (hasKey(MName)) return 1;
 
+  
   // Now key found
-  std::string::size_type pos=MName.find('%');
+  // can be a new density or a new mix:
+  std::string::size_type pos=MName.find('#');
+  double PFrac;
   if (pos!=std::string::npos)
     {
-      double PFrac;
+      const std::string AKey=MName.substr(0,pos);
+      const std::string BKey=MName.substr(pos+1);
+      if (StrFunc::convert(BKey,PFrac))
+	{
+	  createNewDensity(MName,AKey,PFrac);
+	  return 1;
+	}
+    }
+
+  pos=MName.find('%');
+  if (pos!=std::string::npos)
+    {
+
       const std::string AKey=MName.substr(0,pos);
       const std::string BKey=MName.substr(pos+1);
       if (StrFunc::convert(BKey,PFrac))
@@ -1371,11 +1386,6 @@ DBMaterial::createMaterial(const std::string& MName)
 	  if (AKey=="ParaOrtho")
 	    {
 	      createOrthoParaMix(MName,PFrac/100.0);
-	      return 1;
-	    }
-	  if (AKey=="ParaOrthoNeutronics")
-	    {
-	      createOrthoParaNeutronicsMix(MName,PFrac/100.0);
 	      return 1;
 	    }
 	  if (AKey=="UBurn")
@@ -1447,43 +1457,6 @@ DBMaterial::createOrthoParaMix(const std::string& Name,
 }
 
 int
-DBMaterial::createOrthoParaNeutronicsMix(const std::string& Name,
-			       const double PFrac)
-  /*!
-    Creates an ortho/Para Mixture as used in the ESS neutronics group
-    \param Name :: Name of object
-    \param PFrac :: fraction of Para
-    \return current number
-   */
-{
-  ELog::RegMethod RegA("DBMaterial","createOrthoParaNeutronicsMix");
-
-  const int matNum(getFreeNumber());
-  const double H2density(0.0418277);
-  if (PFrac<-1e-5 || PFrac>1.00001)
-    throw ColErr::RangeError<double>(PFrac,0.0,1.0,"Para fraction");
-
-  MonteCarlo::Material MObj;
-  std::string Unit;
-  std::string SQW;
-  const std::string MLib="hlib=.70h pnlib=70u";
-  if (PFrac>1e-5)
-    {
-      Unit+=" 1001.70c "+StrFunc::makeString(H2density*PFrac);
-      SQW+="hpara.10t ";
-    }
-  if (1.0-PFrac>1e-5)
-    {
-      Unit+=" 1004.70c "+StrFunc::makeString(H2density*(1.0-PFrac));
-      SQW+="hortho.10t ";
-    }
-  
-  MObj.setMaterial(matNum,Name,Unit,SQW,MLib);
-  setMaterial(MObj);
-  return matNum;
-}
-
-int
 DBMaterial::createMix(const std::string& Name,
 		      const std::string& MatA,
 		      const std::string& MatB,
@@ -1511,6 +1484,48 @@ DBMaterial::createMix(const std::string& Name,
   MA+=MB;
   MA.setNumber(matNum);
   MA.setName(Name);
+  setMaterial(MA);
+  return matNum;
+}
+
+int
+DBMaterial::createNewDensity(const std::string& Name,
+			     const std::string& MatA,
+			     const double densityFrac)
+  /*!
+    Creates an new material based on density
+    \param Name :: Name of object
+    \param MatA :: Material 
+    \param densityFrac :: scale of denisty  / -ve for absolte
+    
+    \return current number
+   */
+{
+  ELog::RegMethod RegA("DBMaterial","createNewDensity");
+
+  const int matNum(getFreeNumber());
+
+  // special case for void 
+  if (std::abs(densityFrac)<1e-5)
+    {
+      MonteCarlo::Material MA=getMaterial("Void");
+      MA.setNumber(matNum);
+      MA.setName(Name);
+      return matNum;
+    }
+  
+  MonteCarlo::Material MA=getMaterial(MatA);
+  MA.setNumber(matNum);
+  MA.setName(Name);
+  
+  if (densityFrac>0.0)
+    MA.setDensity(MA.getAtomDensity()*densityFrac);
+  else if (densityFrac> -0.3)          // atom fraction
+    MA.setDensity(-densityFrac);
+  else                                 // read density
+    MA.setDensity(densityFrac);
+
+
   setMaterial(MA);
   return matNum;
 }
@@ -1911,7 +1926,8 @@ DBMaterial::writePOVRay(std::ostream& OX) const
 	{
 	  MTYPE::const_iterator mp=MStore.find(sActive);
 	  if (mp==MStore.end())
-	    throw ColErr::InContainerError<int>(sActive,"MStore find(active item)");
+	    throw ColErr::InContainerError<int>
+	      (sActive,"MStore find(active item)");
 	  
 	  mp->second.writePOVRay(OX);
 	}

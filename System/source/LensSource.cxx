@@ -172,6 +172,18 @@ LensSource::createAll(const FuncDataBase& Control,
   return;
 }
 
+void
+LensSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("LensSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
+  
   
 void
 LensSource::createSource(SDef::Source& sourceCard) const
@@ -181,11 +193,16 @@ LensSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("LensSource","createSource");
-  
-  sourceCard.setActive();
+
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("vec",Y);
-  sourceCard.setComp("par",particleType);            /// Neutron
-  sourceCard.setComp("pos",Origin);
+  sourceCard.setComp("axs",Y);
+  sourceCard.setComp("ara",M_PI*radialArea*radialArea);         
+    
+  sourceCard.setComp("x",Origin[0]);
+  sourceCard.setComp("y",Origin[1]);
+  sourceCard.setComp("z",Origin[2]);
+
 
   // Radial
   if (radialArea>Geometry::zeroTol)

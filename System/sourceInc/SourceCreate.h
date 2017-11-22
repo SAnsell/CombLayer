@@ -27,86 +27,83 @@ namespace SDef
   class Source;
 
   std::string createActivationSource(const size_t,
-			      const Geometry::Vec3D&,const Geometry::Vec3D&,
-			      const size_t,
-			      const double,
-			      const Geometry::Vec3D&,const double);
+				     const Geometry::Vec3D&,
+				     const Geometry::Vec3D&,
+				     const size_t,
+				     const double,
+				     const Geometry::Vec3D&,const double);
   
   std::string createBeamSource(const FuncDataBase&,const std::string&,
-			const attachSystem::FixedComp&,const long int,
-			Source&);
+			       const attachSystem::FixedComp&,const long int);
 
   
   std::string createBilbaoSource(const FuncDataBase&,
-			  const attachSystem::FixedComp&,const long int,
-			  Source&);
+				 const attachSystem::FixedComp&,const long int);
   
   std::string createD4CSource(const FuncDataBase&,
-		       const attachSystem::FixedComp&,const long int,
-		       Source&);
+			      const attachSystem::FixedComp&,
+			      const long int);
 
   std::string createESSLinacSource(const FuncDataBase&,
-			    const attachSystem::FixedComp&,const long int,
-			    Source&);
+				   const attachSystem::FixedComp&,
+				   const long int);
   
   std::string createESSSource(const FuncDataBase&,
-		       const attachSystem::FixedComp&,const long int,
-		       Source&);
+		       const attachSystem::FixedComp&,const long int);
   
   std::string createESSPortSource(const FuncDataBase&,
-			   const attachSystem::FixedComp&,const long int,
-			   Source&);
+			   const attachSystem::FixedComp&,
+				  const long int);
   
   std::string createBeamSource(const FuncDataBase&,const std::string&,
-			const attachSystem::FixedComp&,const long int,
-			Source&);
+			       const attachSystem::FixedComp&,const long int);
 
-  std::string createLaserSource(const FuncDataBase&,const std::string&,Source&);
+  std::string createLaserSource(const FuncDataBase&,const std::string&);
   std::string createGammaSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 Source&);
+				const attachSystem::FixedComp&,const long int);
   
   std::string createLensSource(const FuncDataBase&,
 			const attachSystem::FixedComp&,
-			const long int,Source& Card);
+			const long int);
   
   std::string createPointSource(const FuncDataBase&,const std::string&,
-			 const attachSystem::FixedComp&,const long int,
-			 Source&);
+				const attachSystem::FixedComp&,
+				const long int);
   
   std::string createSinbadSource(const FuncDataBase&,
-			  const attachSystem::FixedComp&,const long int,
-			  Source&);
+				 const attachSystem::FixedComp&,
+				 const long int);
   
   std::string createTS1Source(const FuncDataBase&,
-		       const attachSystem::FixedComp&,const long int,
-		       Source&);
+			      const attachSystem::FixedComp&,
+			      const long int);
   
   std::string createTS1GaussianSource(const FuncDataBase&,
-			       const attachSystem::FixedComp&,const long int,
-			       Source&);
+				      const attachSystem::FixedComp&,
+				      const long int);
+
 
   // Goran section:
   std::string createTS1GaussianNewSource(const FuncDataBase&,
 				  const attachSystem::FixedComp&,
-				  const long int,Source&);  
+				  const long int);  
   
   std::string createTS1MuonSource(const FuncDataBase&,
-			   const attachSystem::FixedComp&,const long int,
-			   Source&); 
+				  const attachSystem::FixedComp&,
+				  const long int);
   
   std::string createTS1EPBCollSource(const FuncDataBase&,
-			      const attachSystem::FixedComp&,const long int,
-			      Source&);   
+				     const attachSystem::FixedComp&,
+				     const long int);
+
   // ---------------------------
   
   std::string createTS2Source(const FuncDataBase&,
-		       const attachSystem::FixedComp&,const long int,
-		       Source&);
+			      const attachSystem::FixedComp&,const long int);
+
   
   std::string createTS3ExptSource(const FuncDataBase&,
-			   const attachSystem::FixedComp&,const long int,
-			   Source&);
+			   const attachSystem::FixedComp&,const long int);
 }
 
 

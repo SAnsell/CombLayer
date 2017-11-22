@@ -621,7 +621,7 @@ MBrect::writeFLUKA(std::ostream&) const
   ELog::EM<<"Unsupported output"<<ELog::endErr;
   return;
 }
-  
+
 void
 MBrect::writePOVRay(std::ostream&) const
   /*!

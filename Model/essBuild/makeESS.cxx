@@ -1012,12 +1012,12 @@ makeESS::buildPreWings(Simulation& System)
     (new PreModWing("TopLeftPreWing"));
     
   OR.addObject(TopPreWingA);
-  TopPreWingA->setDivider(TopMod->getSignedMainRule(-7));
+  TopPreWingA->setDivider(TopMod->getMainRule(-7));
   TopPreWingA->setInnerExclude(TopMod->getLeftExclude());
   TopPreWingA->setMidExclude(TopMod->getLeftFarExclude());
 
   TopPreWingA->setBaseCut(TopPreMod->getSurfRules("Layer2"));
-  TopPreWingA->setTopCut(TopCapMod->getSignedFullRule(5));
+  TopPreWingA->setTopCut(TopCapMod->getFullRule(5));
   TopPreWingA->setOuter(TopPreMod->getSurfRule("-OuterRad"));
   TopPreWingA->addInsertCell(TopMod->getCells("MainVoid"));
   TopPreWingA->createAll(System,*TopMod,0);
@@ -1026,11 +1026,11 @@ makeESS::buildPreWings(Simulation& System)
     std::shared_ptr<PreModWing>(new PreModWing("TopRightPreWing"));
       
   OR.addObject(TopPreWingB);
-  TopPreWingB->setDivider(TopMod->getSignedMainRule(7));
+  TopPreWingB->setDivider(TopMod->getMainRule(7));
   TopPreWingB->setInnerExclude(TopMod->getRightExclude());
   TopPreWingB->setMidExclude(TopMod->getRightFarExclude());
-  TopPreWingB->setBaseCut(TopPreMod->getSignedFullRule(6));
-  TopPreWingB->setTopCut(TopCapMod->getSignedFullRule(5));
+  TopPreWingB->setBaseCut(TopPreMod->getFullRule(6));
+  TopPreWingB->setTopCut(TopCapMod->getFullRule(5));
   TopPreWingB->setOuter(TopPreMod->getSurfRule("-OuterRad"));
       
   TopPreWingB->addInsertCell(TopMod->getCells("MainVoid"));
@@ -1154,9 +1154,9 @@ makeESS::build(Simulation& System,
   else if (topModType == "Box")
     buildTopBox(System);
 
-  const double LMHeight=(lowModType == "None") ? 0.0 : attachSystem::calcLinkDistance(*LowMod,5,6);
+  const double LMHeight=(lowModType == "None") ? 0.0 : LowMod->getLinkDistance(5,6);
 
-  const double TMHeight=attachSystem::calcLinkDistance(*TopMod,5,6);
+  const double TMHeight=TopMod->getLinkDistance(5,6);
 
 
   // Cap moderator DOES not span whole unit

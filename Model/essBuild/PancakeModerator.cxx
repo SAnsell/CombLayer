@@ -364,8 +364,8 @@ PancakeModerator::getLeftFarExclude() const
   ELog::RegMethod RegA("PancakeModerator","getLeftFarExclude");
 
   std::string Out;
-  Out=LeftWater->getSignedLinkString(4);
-  Out+=RightWater->getSignedLinkString(3);
+  Out=LeftWater->getLinkString(4);
+  Out+=RightWater->getLinkString(3);
   return Out;
 }
 
@@ -380,8 +380,8 @@ PancakeModerator::getRightFarExclude() const
   ELog::RegMethod RegA("PancakeModerator","getRightFarExclude");
 
   std::string Out;
-  Out+=LeftWater->getSignedLinkString(3);
-  Out+=RightWater->getSignedLinkString(4);
+  Out+=LeftWater->getLinkString(3);
+  Out+=RightWater->getLinkString(4);
 
   return Out;
 }
@@ -397,7 +397,7 @@ PancakeModerator::getLeftExclude() const
   ELog::RegMethod RegA("PancakeModerator","getLeftExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(1);
+  Out+=MidH2->getLinkString(1);
   Out+= getLeftFarExclude();
 
   return Out;
@@ -414,7 +414,7 @@ PancakeModerator::getRightExclude() const
   ELog::RegMethod RegA("PancakeModerator","getRightExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(2);
+  Out+=MidH2->getLinkString(2);
   Out+= getRightFarExclude();
 
   return Out;

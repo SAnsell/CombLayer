@@ -41,7 +41,7 @@ class weightManager
 {
  public:
 
-  typedef std::map<char,WForm*> CtrlTYPE;  ///< WControl map  
+  typedef std::map<std::string,WForm*> CtrlTYPE;  ///< WControl map  
   CtrlTYPE WMap;                           ///< Map of weight systems
   WWG* WWGPtr;                             ///< Weight mesh
     
@@ -58,11 +58,11 @@ class weightManager
   static weightManager& Instance();
   ~weightManager();
   
-  bool hasParticle(const char) const;
-  WForm* getParticle(const char) const;
+  bool hasParticle(const std::string&) const;
+  WForm* getParticle(const std::string&) const;
   WWG& getWWG();
   const WWG& getWWG() const;
-  template<typename T> void addParticle(const char);
+  template<typename T> void addParticle(const std::string&);
   
   void renumberCell(const int,const int);  
   void maskCell(const int);

@@ -50,6 +50,7 @@ class ParabolicSource :
   size_t nHeight;               ///< Number of heights
   double width;                 ///< width
   double height;                ///< height
+  double angleSpread;           ///< Angle distribution
 
   
   void populate(const FuncDataBase& Control);
@@ -72,6 +73,7 @@ class ParabolicSource :
   void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
 		 const long int);
 
+  virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;

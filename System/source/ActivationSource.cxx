@@ -73,6 +73,7 @@
 #include "DBMaterial.h"
 #include "ModeCard.h"
 #include "Simulation.h"
+#include "localRotate.h"
 #include "activeUnit.h"
 #include "activeFluxPt.h"
 #include "SourceBase.h"
@@ -92,7 +93,8 @@ ActivationSource::ActivationSource() :
   */
 {}
 
-ActivationSource::ActivationSource(const ActivationSource& A) : 
+ActivationSource::ActivationSource(const ActivationSource& A) :
+  SourceBase(A),
   timeStep(A.timeStep),nPoints(A.nPoints),nTotal(A.nTotal),
   ABoxPt(A.ABoxPt),BBoxPt(A.BBoxPt),
   volCorrection(A.volCorrection),cellFlux(A.cellFlux),
@@ -114,6 +116,7 @@ ActivationSource::operator=(const ActivationSource& A)
 {
   if (this!=&A)
     {
+      SourceBase::operator=(A);
       timeStep=A.timeStep;
       nPoints=A.nPoints;
       nTotal=A.nTotal;
@@ -180,7 +183,22 @@ ActivationSource::setWeightPoint(const Geometry::Vec3D& Pt,
   weightDist=distScale;
   return;
 }
-    
+
+void
+ActivationSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("ActivationSource","rotate");
+
+  LR.applyFull(ABoxPt);
+  LR.applyFull(BBoxPt);
+  LR.applyFull(weightPt);
+  return;
+}
+
   
 void
 ActivationSource::createFluxVolumes(const Simulation& System)

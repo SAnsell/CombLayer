@@ -63,6 +63,8 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "Transform.h"
+#include "localRotate.h"
 
 #include "SourceBase.h"
 #include "GaussBeamSource.h"
@@ -171,39 +173,77 @@ GaussBeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
+
   
+void
+GaussBeamSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("GaussBeamSource","rotate");
+  FixedComp::applyRotation(LR);
+
+  if (!X.masterDir() || !Y.masterDir() || !Z.masterDir() ||
+      std::abs(std::abs(Origin.dotProd(Y))-Origin.abs())>Geometry::zeroTol)
+    {
+      SourceBase::createTransform(Origin,X,Y,Z);
+    }
+  else
+    {
+      delete TransPtr;
+      TransPtr=0;
+    }
+  
+  return;
+}
+
 void
 GaussBeamSource::createSource(SDef::Source& sourceCard) const
   /*!
-    Creates a gamma bremstraual source
+    Creates a gaussian beam source
     \param sourceCard :: Source system
   */
 {
   ELog::RegMethod RegA("GaussBeamSource","createSource");
-  
-  sourceCard.setActive();
 
-  sourceCard.setComp("vec",Y);
-  sourceCard.setComp("axs",Y);
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
-  sourceCard.setComp("pos",Origin);
-  sourceCard.setComp("y",Origin.dotProd(Y));
 
+  // are we aligned on the master direction:
+  const int aR=(TransPtr) ? 2 : std::abs(Y.masterDir());
+
+  const std::string xyz[]={"x","y","z"};
+  if (!TransPtr)
+    {
+      sourceCard.setComp(xyz[aR-1],Origin.dotProd(Y));
+      sourceCard.setComp("vec",Y);
+      sourceCard.setComp("axs",Y);
+    }
+  else
+    {
+      sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
+      sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
+    }
+  
   SrcData D1(1);
-  SrcProb SP1(1);
+  SrcProb SP1;
   SP1.setFminus(-41,xWidth,0);
   D1.addUnit(SP1);
-
+  
   SrcData D2(2);
-  SrcProb SP2(1);
+  SrcProb SP2;
   SP2.setFminus(-41,zWidth,0);
   D2.addUnit(SP2);
-  sourceCard.setData("x",D1);
-  sourceCard.setData("z",D2);
+  
+  sourceCard.setData(xyz[(aR+1) % 3],D1);
+  sourceCard.setData(xyz[aR % 3],D2);
 
+  if (TransPtr)
+    sourceCard.setComp("tr",TransPtr->getName());
+  
   SourceBase::createEnergySource(sourceCard);
-
   return;
 }  
 
@@ -217,7 +257,6 @@ GaussBeamSource::createAll(const FuncDataBase& Control,
     \param Control :: DataBase for variables
     \param FC :: Fixed Point for origin/axis of beam
     \param linkIndex :: link Index				
-    \param sourceCard :: Source Term
    */
 {
   ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
@@ -225,8 +264,6 @@ GaussBeamSource::createAll(const FuncDataBase& Control,
   createUnitVector(FC,linkIndex);
   return;
 }
-
-
 
 void
 GaussBeamSource::write(std::ostream& OX) const
@@ -237,8 +274,11 @@ GaussBeamSource::write(std::ostream& OX) const
 {
   ELog::RegMethod RegA("GaussBeamSource","write");
 
+
+  if (TransPtr)
+    TransPtr->write(OX);
+
   Source sourceCard;
-  sourceCard.setActive();
   createSource(sourceCard);
   sourceCard.write(OX);
   return;
@@ -256,10 +296,35 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("GaussBeamSource","write");
 
-  SourceBase::writePHITS(OX);
+  const long int nStep(20);
   
+  SourceBase::writePHITS(OX);
+  // PHITS are z axis sources
+
+  // Construct a transform to build the source
+
 
   
+  const double xStep=3.0*xWidth/static_cast<double>(nStep);
+  const double zStep=3.0*zWidth/static_cast<double>(nStep);
+
+
+  const double xSigma = sqrt(8.0*std::log(2.0)) * xWidth;
+  const double zSigma = sqrt(8.0*std::log(2.0)) * zWidth;
+
+  // y is implicitly zero  
+  for(long int i=-nStep;i<nStep;i++)
+    for(long int j=-nStep;j<nStep;j++)
+      {
+	const double x= static_cast<double>(i)*xStep;
+	const double z= static_cast<double>(j)*zStep;
+
+	const double expTerm=
+	  exp(-( x*x/(2.0*xSigma*xSigma)+z*z/(2.0*zSigma*zSigma) ));
+	// coordinate
+	const Geometry::Vec3D Pt=Origin+X*x+Z*z;
+      }
+     
   return;
 }
 

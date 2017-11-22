@@ -4,6 +4,7 @@
 #include <map>
 #include <set>
 #include <fstream>
+#include <complex>
 
 #include "NameStack.h"
 #include "RegMethod.h"

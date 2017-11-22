@@ -47,7 +47,7 @@ class nameCard
   bool active;                             ///< Active
   
   std::vector<std::string> nameOrder;      ///< Ordered list of units
-  std::map<std::string,MData> regNames;      ///< Registered names / type
+  std::map<std::string,MData> regNames;    ///< Registered names / type
 
   std::set<std::string> JUnit;             ///< Default items [superseeds]
   
@@ -65,7 +65,7 @@ class nameCard
   template<typename T>
   void setItem(const std::string&,const T&);
 
-
+  bool isAllDefault() const;
   
  public:
    

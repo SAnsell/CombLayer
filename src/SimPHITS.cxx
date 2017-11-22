@@ -99,10 +99,6 @@
 #include "LSwitchCard.h"
 #include "PhysCard.h"
 #include "PhysImp.h"
-#include "SrcData.h"
-#include "SrcItem.h"
-#include "Source.h"
-#include "KCode.h"
 #include "PhysicsCards.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
@@ -117,7 +113,8 @@ SimPHITS::SimPHITS() : Simulation()
 {}
 
 
-SimPHITS::SimPHITS(const SimPHITS& A) : Simulation(A)
+SimPHITS::SimPHITS(const SimPHITS& A) :
+  Simulation(A)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -226,7 +223,7 @@ SimPHITS::writeCells(std::ostream& OX) const
       const double T=mp->second->getTemp();
       if (std::abs(T-300.0)>1.0 || std::abs<double>(T)>1e-6)
 	{
-	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e11);
+	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e-5);
 	}
     }
 
@@ -327,9 +324,9 @@ SimPHITS::writePhysics(std::ostream& OX) const
   PhysPtr->writePHITS(OX);
 
 
-  if (WM.hasParticle('n'))
+  if (WM.hasParticle("n"))
     {
-      const WeightSystem::WForm* NWForm=WM.getParticle('n');
+      const WeightSystem::WForm* NWForm=WM.getParticle("n");
       NWForm->writePHITSHead(OX);
     }
   

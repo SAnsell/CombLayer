@@ -94,7 +94,7 @@ Source::populate()
 }
 
 Source::Source() : 
-  active(0),transPTR(0)
+  transPTR(0)
   /*!
     Constructor
   */
@@ -103,7 +103,7 @@ Source::Source() :
 }
 
 Source::Source(const Source& A) :
-  active(A.active),transPTR(A.transPTR),
+  transPTR(A.transPTR),
   sdMap(A.sdMap),DVec(A.DVec)
   /*!
     Copy Constructor
@@ -121,7 +121,6 @@ Source::operator=(const Source& A)
 {
   if (this!=&A)
     {
-      active=A.active;
       transPTR=A.transPTR;
       sdMap=A.sdMap;
       DVec=A.DVec;
@@ -346,17 +345,23 @@ Source::rotateMaster()
       if (mc!=sdMap.end() && mc->second->isActive())
 	{
 	  const int aR=XYZ[i].masterDir();
-	  if (!aR )
+	  if (aR != i)
 	    {
-	      if (!transPTR)
-		return 1;
-	      setComp("tr",transPTR->getName());
+	      if (!transPTR) return 1;
 	      // Now calculate the rotation from the point : 
 	      setTransform(XYZ);
 	      // Note don't change x,y,z but rotate whole system:
 	      return 0;
 	    }
-	  else
+	}
+    }
+  for(int i=0;i<3;i++)
+    {
+      sdMapTYPE::iterator mc=sdMap.find(std::string(xyz[i]));
+      if (mc!=sdMap.end() && mc->second->isActive())
+	{
+	  const int aR=XYZ[i].masterDir();
+	  if (aR)
 	    {
 	      Out.push_back(OutTYPE::value_type(std::string(xyz[abs(aR)-1]),
 						SBasePtr(mc->second->clone())));
@@ -378,21 +383,17 @@ Source::rotateMaster()
       SrcItem<double>* Mptr=dynamic_cast<SrcItem<double>* >(mc->second.get());
       SrcItem<double>* Cptr=dynamic_cast<SrcItem<double>* >(ovc->second.get());
       if (!Mptr)
-	throw ColErr::CastError<SrcBase>(mc->second.get(),RegA.getBase());
+	throw ColErr::CastError<SrcBase>(mc->second.get(),"Mptr Source");
       if (!Cptr)
-	throw ColErr::CastError<SrcBase>(ovc->second.get(),RegA.getBase());
+	throw ColErr::CastError<SrcBase>(ovc->second.get(),"Ctr Source");
       (*Mptr)=(*Cptr);
     }
 
   // Now rotate the vectors:
-  std::vector<std::string> Keys;
-  Keys.push_back("vec");
-  Keys.push_back("axs");
-  Keys.push_back("pos");
-  std::vector<std::string>::const_iterator svc;
-  for(svc=Keys.begin();svc!=Keys.end();svc++)
+  const std::vector<std::string> Keys({"vec","axs","pos"});
+  for(const std::string& KItem : Keys)
     {
-      sdMapTYPE::iterator mc=sdMap.find(*svc);
+      sdMapTYPE::iterator mc=sdMap.find(KItem);
       if (mc!=sdMap.end() && mc->second->isActive())
 	{
 	  SrcItem<Geometry::Vec3D>* Mptr=
@@ -445,6 +446,7 @@ Source::setTransform(const Geometry::Vec3D XYZ[3])
   */
 {
   ELog::RegMethod RegA("Source","setTransform");
+
   masterRotate& MR=masterRotate::Instance();
   Geometry::Matrix<double> A(3,3);
   for(size_t i=0;i<3;i++)
@@ -480,21 +482,19 @@ Source::write(std::ostream& OX) const
     \param OX :: Output Stream
   */
 {
-  if (active)
-    {
-      std::string out("sdef ");
-      sdMapTYPE::const_iterator mc;
-      for(mc=sdMap.begin();mc!=sdMap.end();mc++)
-	out+=mc->second->getString();
-      if (transPTR)
-	out+=StrFunc::makeString(std::string(" tr="),
-				 transPTR->getName());
-
-      StrFunc::writeMCNPX(out,OX);
-      
-      for_each(DVec.begin(),DVec.end(),
-	       std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
-    }
+  std::string out("sdef ");
+  sdMapTYPE::const_iterator mc;
+  for(mc=sdMap.begin();mc!=sdMap.end();mc++)
+    out+=mc->second->getString();
+  
+  if (transPTR)
+    out+=StrFunc::makeString(std::string(" tr="),
+			     transPTR->getName());
+  
+  StrFunc::writeMCNPX(out,OX);
+  
+  for_each(DVec.begin(),DVec.end(),
+	   std::bind(&SrcData::write,std::placeholders::_1,std::ref(OX)));
   return;
 }
 

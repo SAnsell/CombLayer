@@ -48,14 +48,12 @@ class GammaSource :
 
   std::string shape;            ///< Shape type
 
-
   double width;                 ///< width
   double height;                ///< height
   double radius;                ///< radius
   double angleSpread;           ///< Angle spread
   
   Geometry::Vec3D FocusPoint;   ///< Focus point
-  Geometry::Vec3D Direction;    ///< Beam direction
   
   void populate(const FuncDataBase& Control);
   void createUnitVector(const attachSystem::FixedComp&,
@@ -82,6 +80,7 @@ class GammaSource :
 		 const long int);
 
 
+  virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;

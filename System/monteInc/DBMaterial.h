@@ -68,9 +68,10 @@ class DBMaterial
   int getFreeNumber() const;
 
   int createOrthoParaMix(const std::string&,const double);
-  int createOrthoParaNeutronicsMix(const std::string&,const double); // used in the ESS neutronics group
   int createMix(const std::string&,const std::string&,
 		const std::string&,const double);
+  int createNewDensity(const std::string&,const std::string&,
+		       const double);
 
  public:
   

@@ -61,6 +61,8 @@ class WeightControl
 {
  protected:
 
+  std::set<std::string> activeParticles;    ///< active particles
+  
   double energyCut;              ///< Energy cut [MeV]
   double scaleFactor;            ///< Scale factor
   double weightPower;            ///< makes weight W^power
@@ -81,14 +83,13 @@ class WeightControl
   void setMidEBand();
   void setLowEBand();
   
+  void procParticles(const mainSystem::inputParam&);
   void procEnergyType(const mainSystem::inputParam&);
   void procSourcePoint(const mainSystem::inputParam&);
   void procPlanePoint(const mainSystem::inputParam&);
 
-
   void procParam(const mainSystem::inputParam&,const std::string&,
 		const size_t,const size_t);  
-
 
   static void help();
 
@@ -98,16 +99,12 @@ class WeightControl
   static void procObjectHelp();
   static void procRebaseHelp();
 
-  virtual void setWeights(Simulation&);
-
-
  public:
 
   WeightControl();
   WeightControl(const WeightControl&);
   WeightControl& operator=(const WeightControl&);
   virtual ~WeightControl();
-
   
   virtual void processWeights(Simulation&,const mainSystem::inputParam&);
   virtual void normWeights(Simulation&,const mainSystem::inputParam&);

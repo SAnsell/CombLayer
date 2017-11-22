@@ -22,20 +22,22 @@
 #ifndef SDef_SourceBase_h
 #define SDef_SourceBase_h
 
-namespace SDef
+
+class localRotate;
+namespace Geometry
 {
-  class Source;
+  class Transform;
 }
 
 namespace SDef
 {
-
+  class Source;
 /*!
   \class SourceBase
   \version 1.0
   \author S. Ansell
-  \date November 2014
-  \brief Adds gamma ray circular divergent source
+  \date November 2017
+  \brief Base for all source classes
 */
 
 class SourceBase 
@@ -48,10 +50,13 @@ class SourceBase
   std::vector<double> Energy;   ///< Energies [MeV]
   std::vector<double> EWeight;  ///< Weights  [sum to 1.0]
 
-  double weight;                ///< Start particle weight
+  double weight;                  ///< Start particle weight
+  Geometry::Transform* TransPtr;  ///< Transform [if required]
   
   int populateEnergy(std::string,std::string);
   int populateEFile(const std::string&,const int,const int);
+  void createTransform(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		       const Geometry::Vec3D&,const Geometry::Vec3D&);
 
  public:
 
@@ -70,6 +75,10 @@ class SourceBase
   void setEnergy(const double);
   void createEnergySource(SDef::Source&) const;
 
+  /// No-op to substitue
+  virtual void substituteSurface(const int,const int) {}
+  /// No-op to rotate
+  virtual void rotate(const localRotate&) { } 
   virtual void createSource(SDef::Source&) const =0;
   virtual void writePHITS(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;

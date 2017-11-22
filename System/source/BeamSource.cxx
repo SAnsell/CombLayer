@@ -32,6 +32,7 @@
 #include <string>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -137,7 +138,7 @@ BeamSource::populate(const FuncDataBase& Control)
   SourceBase::populate(keyName,Control);
   // default neutron
   angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-  radius=Control.EvalVar<double>(keyName+"Radius"); 
+  radius=Control.EvalDefVar<double>(keyName+"Radius",radius); 
 
   return;
 }
@@ -158,23 +159,38 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   return;
 }
+
+void
+BeamSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the source
+    \param LR :: Rotation to apply
+  */
+{
+  ELog::RegMethod Rega("BeamSource","rotate");
+  FixedComp::applyRotation(LR);  
+  return;
+}
   
 void
 BeamSource::createSource(SDef::Source& sourceCard) const
   /*!
-    Creates a gamma bremstraual source
+    Creates a simple beam sampled uniformly in a
+    circle
     \param sourceCard :: Source system
   */
 {
   ELog::RegMethod RegA("BeamSource","createSource");
   
-  sourceCard.setActive();
-
+  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
-  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
-  sourceCard.setComp("pos",Origin);
+  sourceCard.setComp("ara",M_PI*radius*radius);         
+    
+  sourceCard.setComp("x",Origin[0]);
+  sourceCard.setComp("y",Origin[1]);
+  sourceCard.setComp("z",Origin[2]);
   
   // RAD
   SDef::SrcData D1(1);
@@ -231,7 +247,6 @@ BeamSource::write(std::ostream& OX) const
   ELog::RegMethod RegA("BeamSource","write");
 
   Source sourceCard;
-  sourceCard.setActive();
   createSource(sourceCard);
   sourceCard.write(OX);
   return;
@@ -246,7 +261,22 @@ BeamSource::writePHITS(std::ostream& OX) const
 {
   ELog::RegMethod RegA("BeamSource","write");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  boost::format fFMT("%1$11.6g%|14t|");
+
+  const double phi=180.0*acos(Y[0])/M_PI;
+  
+  OX<<"  s-type =  1        # axial source \n";
+  OX<<"  r0 =   "<<(fFMT % radius)   <<"   # radius [cm]\n";
+  OX<<"  x0 =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
+  OX<<"  y0 =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
+  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  miniumu of z-axis [cm]\n";
+  OX<<"  z1 =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
+  OX<<" dir =   "<<(fFMT % Y[2])     <<" dir cosine direction of Z\n";
+  OX<<" phi =   "<<(fFMT % phi)      <<" phi angle to X axis [deg]\n";
+  if (angleSpread>Geometry::zeroTol)
+    OX<<" dom =   "<<(fFMT % angleSpread)<<" solid angle to X axis [deg]\n";
+
+  OX<<std::endl;
   return;
 }
 

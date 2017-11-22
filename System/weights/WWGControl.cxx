@@ -132,6 +132,23 @@ WWGControl::~WWGControl()
   delete adjointFlux;
 }
   
+void
+WWGControl::wwgSetParticles(const std::set<std::string>& actPart)
+  /*!
+    Process wwg Mesh - constructs the 3D mesh boundary
+    \param actPart :: active paritcles
+  */
+{
+  ELog::RegMethod RegA("WWGControl","wwgSetParticles");
+
+  WeightSystem::weightManager& WM=
+    WeightSystem::weightManager::Instance();
+  WWG& wwg=WM.getWWG();
+
+  wwg.setParticles(actPart);
+  return;
+}
+
   
 void
 WWGControl::wwgMesh(const mainSystem::inputParam& IParam)
@@ -472,6 +489,7 @@ WWGControl::processWeights(Simulation& System,
   if (IParam.flag("wWWG"))
     {
       WeightControl::processWeights(System,IParam);
+      wwgSetParticles(activeParticles);
       
       procParam(IParam,"wWWG",0,0);
       wwgMesh(IParam);               // create mesh [wwgXMesh etc]
@@ -482,9 +500,13 @@ WWGControl::processWeights(Simulation& System,
       wwgCombine(System,IParam);                 
       wwgNormalize(IParam); 
       wwgVTK(IParam);
-      
-      WM.getParticle('n')->setActiveWWP(0);
-      setWWGImp(System);
+
+
+      for(const std::string& P : activeParticles)
+	{
+	  WM.getParticle(P)->setActiveWWP(0);
+	  setWImp(System,P);
+	}
     }
 
   return;

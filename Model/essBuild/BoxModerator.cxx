@@ -364,8 +364,8 @@ BoxModerator::getLeftFarExclude() const
   ELog::RegMethod RegA("BoxModerator","getLeftFarExclude");
 
   std::string Out;
-  Out=LeftWater->getSignedLinkString(4);
-  Out+=RightWater->getSignedLinkString(3);
+  Out=LeftWater->getLinkString(4);
+  Out+=RightWater->getLinkString(3);
   return Out;
 }
 
@@ -381,8 +381,8 @@ BoxModerator::getRightFarExclude() const
   ELog::RegMethod RegA("BoxModerator","getRightFarExclude");
 
   std::string Out;
-  Out+=LeftWater->getSignedLinkString(3);
-  Out+=RightWater->getSignedLinkString(4);
+  Out+=LeftWater->getLinkString(3);
+  Out+=RightWater->getLinkString(4);
 
   return Out;
 }
@@ -399,7 +399,7 @@ BoxModerator::getLeftExclude() const
   ELog::RegMethod RegA("BoxModerator","getLeftExclude");
   std::string Out;
 
-  Out+=MidH2->getSignedLinkString(11);
+  Out+=MidH2->getLinkString(11);
   Out+=getLeftFarExclude();
 
   return Out;
@@ -417,7 +417,7 @@ BoxModerator::getRightExclude() const
   ELog::RegMethod RegA("BoxModerator","getRightExclude");
   std::string Out;
 
-  Out=MidH2->getSignedLinkString(10);
+  Out=MidH2->getLinkString(10);
   Out+=getRightFarExclude();
 
   return Out;

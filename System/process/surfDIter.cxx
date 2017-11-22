@@ -396,12 +396,62 @@ populateQuadRange(const FuncDataBase& Control,const size_t N,
 	    Vec[i]=mathSupport::evalSpline
 	      (X,SP,static_cast<double>(i));
 	}
-      
     }
   return;
 }
 
-      
+void
+populateVecDivide(const FuncDataBase& Control,
+		  const std::string& Name,
+		  const std::vector<std::string>& VecDef,
+		  std::vector<std::string>& VecOut)
+  /*!
+    Function to populate an integer vector
+    with a set of points bases on a name type 
+    \param Control :: Function data base
+    \param Name :: BaseName of divide name
+    \param VecDef :: Default starting value [as string
+    \param VecOut :: Vector to populate [and clear]
+  */
+{
 
+  VecOut.clear();
+
+  for(size_t i=0;i<VecDef.size();i++)
+    {
+      const std::string defV=Control.EvalDefVar<std::string>
+	(Name+std::to_string(i),VecDef[i]);
+      
+      VecOut.push_back(defV);
+    }
+  return;
+}
+
+void
+populateVecDivide(const FuncDataBase& Control,
+		  const std::string& Name,
+		  const std::vector<int>& VecDef,
+		  std::vector<int>& VecOut)
+  /*!
+    Function to populate an integer vector
+    with a set of points bases on a name type 
+    \param Control :: Function data base
+    \param Name :: BaseName of divide name
+    \param VecDef :: Default starting value
+    \param VecOut :: Vector to populate [and clear]
+  */
+{
+  ELog::RegMethod RegA("surfDIter[F]","populateVecDivide");
+  VecOut.clear();
+
+  for(size_t i=0;i<VecDef.size();i++)
+    {
+      const int defV=ModelSupport::EvalDefMat<int>
+	(Control,Name+std::to_string(i),VecDef[i]);
+      
+      VecOut.push_back(defV);
+    }
+  return;
+}
 
 } // NAMESPACE ModelSupport

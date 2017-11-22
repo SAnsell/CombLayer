@@ -58,11 +58,10 @@ class Source
 
   typedef std::shared_ptr<SrcBase> SBasePtr;            ///< Source items
   typedef std::shared_ptr<SrcData> SDataPtr;            ///< Source data
-  typedef std::map<std::string,SBasePtr> sdMapTYPE;       ///< Storage for main line
-  typedef std::vector<SDataPtr> dvecTYPE;                 ///< Storage for extra-data
+  typedef std::map<std::string,SBasePtr> sdMapTYPE;     ///< Storage for main line
+  typedef std::vector<SDataPtr> dvecTYPE;               ///< Storage for extra-data
 
-  int active;                              ///< Is souce active
-  Geometry::Transform* transPTR;          ///< Trans number
+  Geometry::Transform* transPTR;          ///< Transform
   sdMapTYPE sdMap;                        ///< Map of main-line objects
   dvecTYPE DVec;                          ///< Data vectors
 
@@ -86,9 +85,6 @@ class Source
   Source& operator=(const Source&);
   ~Source();
 
-  void setActive() { active=1; }         ///< Make active 
-  void deactivate() { active=0; }         ///< Make active 
-  int isActive() const { return active; } ///< is active
   template<typename T>
   void setComp(const std::string&,const T&);
   void setData(const std::string&,const SrcData&);

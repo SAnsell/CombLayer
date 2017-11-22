@@ -32,7 +32,6 @@
 #include <algorithm>
 #include <memory>
 #include <array>
-#include <cmath>
 
 #include "Exception.h"
 #include "FileReport.h"

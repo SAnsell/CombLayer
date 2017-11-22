@@ -49,8 +49,8 @@ class WForm
 {
  protected:
 
-  int activeWWP;       ///< Controls wwp being active 
-  char ptype;          ///< Particle type
+  int activeWWP;               ///< Controls wwp being active 
+  std::string pType;           ///< Particle type
   std::vector<double> Energy;  ///< Energy windows.
   double wupn;         ///< Max weight before upsplitting * minWeight
   double wsurv;        ///< survival possiblitiy
@@ -61,7 +61,7 @@ class WForm
  public:
   
   WForm();
-  explicit WForm(const char);
+  explicit WForm(const std::string&);
   WForm(const WForm&);
   WForm& operator=(const WForm&);
   virtual ~WForm() {}  ///< Destructor
@@ -69,7 +69,7 @@ class WForm
   bool operator==(const WForm&) const; 
 
   ///< Set type e.g. n,p
-  void setParticle(const char c) { ptype=c; }  
+  void setParticle(const std::string& P) { pType=P; }  
 
   void setEnergy(const std::vector<double>&);
   void setParam(const double,const double,const int,
@@ -79,7 +79,7 @@ class WForm
   const std::vector<double>& getEnergy() const 
     { return Energy; }
   /// Get particle
-  char getParticle() const { return ptype; }
+  const std::string& getParticle() const { return pType; }
   /// accessor to flag
   void setActiveWWP(const int F) { activeWWP=F; }
 

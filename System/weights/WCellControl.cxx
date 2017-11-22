@@ -124,7 +124,7 @@ WCellControl::procRebase(const Simulation& System,
 	IParam.getValue<double>("weightRebase",0,3) : 0.0;
 
       WeightSystem::WCells* WF=
-	dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+	dynamic_cast<WeightSystem::WCells*>(WM.getParticle("n"));
       if (!WF)
         throw ColErr::DynamicConv("WForm","WCells","neutron particles");
       
@@ -267,7 +267,7 @@ WCellControl::scaleObject(const Simulation& System,
     WeightSystem::weightManager::Instance();  
 
   WeightSystem::WCells* WF=
-    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+    dynamic_cast<WeightSystem::WCells*>(WM.getParticle("n"));
 
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","neutron has no WCell");
@@ -332,7 +332,7 @@ WCellControl::findMax(const Simulation& System,
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
-  WeightSystem::WForm* WF=WM.getParticle('n');
+  WeightSystem::WForm* WF=WM.getParticle("n");
   if (!WF)
     throw ColErr::InContainerError<std::string>("n","neutron has no WForm");
   const std::vector<double>& WEng=WF->getEnergy();
@@ -535,45 +535,36 @@ WCellControl::calcCellTrack(const Simulation& System,
   cTrack(System,initPt,Pts,index,CTrack);
   return;
 }
-
-
- 
-
-  
 void
-WCellControl::setWeights(Simulation& System)
+WCellControl::setWeights(Simulation& System,
+			  const std::string& particleType)
    /*!
     Function to set up the weights system.
     It replaces the old file read system.
     \param System :: Simulation component
+    \param particleType :: Particle type
   */
 {
-  ELog::RegMethod RegA("WCellControl","setWeights(Simulation)");
+  ELog::RegMethod RegA("WeightControl","setWeights(Simulation)");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
 
-  WM.addParticle<WeightSystem::WCells>('n');
+  WM.addParticle<WeightSystem::WCells>(particleType);
   WeightSystem::WCells* WF=
-    dynamic_cast<WeightSystem::WCells*>(WM.getParticle('n'));
+    dynamic_cast<WeightSystem::WCells*>(WM.getParticle(particleType));
   if (!WF)
-    throw ColErr::InContainerError<std::string>("n","WCell - WM");
+    throw ColErr::InContainerError<std::string>
+      (std::string(particleType,1),"WCell - WM");
 
   WF->setEnergy(EBand);
-  System.populateWCells();
+  WF->populateCells(System.getCells());
   WF->balanceScale(WT);
-  const Simulation::OTYPE& Cells=System.getCells();
-  Simulation::OTYPE::const_iterator oc;
-  for(oc=Cells.begin();oc!=Cells.end();oc++)
-    {
-      if(!oc->second->getImp())
-	WF->maskCell(oc->first);      
-    }
   WF->maskCell(1);
 
-  // remove neutron imp:
-  setWCellImp(System);
-  //  removePhysImp(System,"n");
+  // mask imp:n etc
+  setWImp(System,particleType);
+  
   return;
 }
 
@@ -612,6 +603,14 @@ WCellControl::processWeights(Simulation& System,
   ELog::RegMethod RegA("WCellControl","processWeights");
 
   WeightControl::processWeights(System,IParam);
+  if (IParam.flag("weight"))
+    {
+      for(const std::string& P : activeParticles)
+	{
+	  setWeights(System,P);
+	  ELog::EM<<"Cell PROCESS :: "<<P<<ELog::endDiag;
+	}
+    }
 
   // requirements for vertex:
   if (IParam.flag("weightObject") ||
@@ -621,7 +620,8 @@ WCellControl::processWeights(Simulation& System,
     
   if (IParam.flag("weightObject"))
     procObject(System,IParam);
-        
+
+
   return;
 }
   

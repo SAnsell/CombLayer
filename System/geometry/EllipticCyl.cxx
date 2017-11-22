@@ -555,6 +555,17 @@ EllipticCyl::distance(const Geometry::Vec3D& A) const
   return firstQuadrant(e,y);
 }
 
+void
+EllipticCyl::writePOVRay(std::ostream& OX) const
+  /*! 
+    Write out the cylinder for POVRay
+    \param OX :: output stream
+  */
+{
+  Quadratic::writePOVRay(OX);
+  return;
+}
+
   
 void
 EllipticCyl::write(std::ostream& OX) const
@@ -567,18 +578,6 @@ EllipticCyl::write(std::ostream& OX) const
   Quadratic::write(OX);
   return;
 }
-
-void
-EllipticCyl::writePOVRay(std::ostream& OX) const
-  /*! 
-    Write out the cylinder for POVRay
-    \param OX :: output stream
-  */
-{
-  Quadratic::write(OX);
-  return;
-}
-
 
 void
 EllipticCyl::print() const

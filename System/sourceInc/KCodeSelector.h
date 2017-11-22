@@ -1,7 +1,7 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
- * File:   log/Debug.cxx
+ * File:   buildInc/KCodeSelector.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,56 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include "Debug.h"
+#ifndef SDef_KCodeSelector_h
+#define SDef_KCodeSelector_h
 
-namespace ELog
+class Simulation;
+
+namespace SDef
 {
 
-debugStatus::debugStatus() : 
-  status(0),counter(0)
-  /*!
-    Constructor
-  */
-{}
+void kcodeSelection(Simulation&,const mainSystem::inputParam&);
 
-debugStatus&
-debugStatus::Instance()
-  /*!
-    Singleton this
-    \return debugStatus object
-   */
-{
-  static debugStatus MR;
-  return MR;
-}
-  
-ClassCounter::ClassCounter()
-  /*!
-    Constructor (increased count)
-  */
-{
-  classN++;
- }
-
-ClassCounter::ClassCounter(const ClassCounter&)
-  /*!
-    Copy constructor (increased count)
-  */
-{
-  classN++;
 }
 
-ClassCounter::~ClassCounter()
-  /*!
-    Destructor reduces count
-  */
-{
-  classN--;
-}
-
-int ClassCounter::classN(0);
-
-}
+#endif
+ 

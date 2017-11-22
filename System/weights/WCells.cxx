@@ -67,15 +67,16 @@ WCells::WCells() : WForm()
   */
 {}
 
-WCells::WCells(const char c) : WForm(c)
+WCells::WCells(const std::string& pType) :
+  WForm(pType)
   /*!
     Basic constructor with MCNPX defaults
-    \param c :: Character type
+    \param pType :: particle type
   */
 {}
 
-WCells::WCells(const WCells& A) : WForm(A),
-				  WVal(A.WVal)
+WCells::WCells(const WCells& A) :
+  WForm(A),WVal(A.WVal)
   /*!
     Standard copy constructor
     \param A:: WCells object to copy
@@ -137,14 +138,15 @@ WCells::populateCells(const std::map<int,MonteCarlo::Qhull*>& Object)
     \param Object :: The Qhull map to interigate
   */
 {
+  ELog::RegMethod RegA("WCells","populateCells");
+  
   std::map<int,MonteCarlo::Qhull*>::const_iterator vc;
   for(vc=Object.begin();vc!=Object.end();vc++)
     {
-      ItemTYPE::iterator ac;
       const int cellN(vc->first);
       const MonteCarlo::Qhull& QRef(*vc->second);
 
-      ac=WVal.find(cellN);
+      ItemTYPE::iterator ac=WVal.find(cellN);
       if (QRef.isPlaceHold())      // IF virtual remove
         {
 	  if (ac!=WVal.end())
@@ -158,9 +160,12 @@ WCells::populateCells(const std::map<int,MonteCarlo::Qhull*>& Object)
 	    }
 	  else
 	    {
-	      WVal.insert(ItemTYPE::value_type(cellN,
-		  WItem(cellN,QRef.getDensity(),QRef.getTemp())));
+	      WVal.emplace(cellN,
+			   WItem(cellN,QRef.getDensity(),QRef.getTemp()));
 	    }
+
+	  if (!QRef.getImp())
+	    maskCell(cellN);
 	}
     }
   return;
@@ -193,8 +198,8 @@ bool
 WCells::isMasked(const int cellN) const
   /*!
     Check if a cell is masked out
-   \param cellN :: Cell number
-   \return true if masked / false if no or no cell
+    \param cellN :: Cell number
+    \return true if masked / false if no or no cell
   */
 {
   ItemTYPE::const_iterator vc= WVal.find(cellN);
@@ -222,8 +227,8 @@ void
 WCells::maskCellComp(const int cellN,const size_t Index)
   /*!
     Mask out a particular cell
-   \param cellN :: Cell number
-   \param Index :: Item componenet
+    \param cellN :: Cell number
+    \param Index :: Item componenet
   */
 {
   ItemTYPE::iterator vc= WVal.find(cellN);
@@ -279,7 +284,7 @@ WCells::setWeights(const std::vector<double>& WT)
 
   ELog::EM<<"Cell Weighting system: "<<ELog::endDiag
 	  <<"  Cells == "<<WVal.size()<<"   Particle = "
-	  <<ptype<<ELog::endDiag;
+	  <<pType<<ELog::endDiag;
 
   if (WT.size()!=Energy.size())
     throw ColErr::MisMatch<size_t>(WT.size(),Energy.size(),
@@ -456,7 +461,7 @@ WCells::writeTable(std::ostream& OX) const
   std::ostringstream cx;
   cx<<"# ";
   for(int i=0;i<static_cast<int>(Energy.size());i++)
-    cx<<"  wwn"<<i+1<<":"<<ptype;
+    cx<<"  wwn"<<i+1<<":"<<pType;
   StrFunc::writeMCNPX(cx.str(),OX);
   // This line avoids a stupid bug.
   cx.str("");   // THIS IS A GCC BUG since cx.str("c ") DOES NOT WORK
@@ -482,14 +487,14 @@ WCells::writeHead(std::ostream& OX) const
   */
 {
   std::ostringstream cx;
-  cx<<"wwe:"<<ptype<<" ";
+  cx<<"wwe:"<<pType<<" ";
   copy(Energy.begin(),Energy.end(),std::ostream_iterator<double>(cx," "));
   StrFunc::writeMCNPX(cx.str(),OX);
 
   if (activeWWP)
     {
       cx.str("");  
-      cx<<"wwp:"<<ptype<<" ";
+      cx<<"wwp:"<<pType<<" ";
       cx<<wupn<<" "<<wsurv<<" "<<maxsp<<" "<<mwhere<<" 0 "<<mtime;
       StrFunc::writeMCNPX(cx.str(),OX);
     }

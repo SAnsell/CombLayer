@@ -326,10 +326,10 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*(wallThick+dw),X,Z,delta/2.0);
 
   // front plane
-  double d = attachSystem::calcLinkDistance(FC, back, front);
+  double d = FC.getLinkDistance(back, front);
 
   Geometry::Cylinder *backCyl =
-    SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(back));
+    SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
 
   d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
   Geometry::Vec3D offset = Origin-Y*(backCyl->getRadius()+d);
@@ -358,7 +358,7 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 
   // detailed wall
   Geometry::Cylinder *backCyl =
-    SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(back));
+    SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
 
   const double d2 = M_PI*delta/180.0/2.0;
   double R = backCyl->getRadius();
@@ -437,8 +437,8 @@ BilbaoWheelCassette::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
-  const std::string outer = FC.getSignedLinkString(floor) +
-    FC.getSignedLinkString(roof) +FC.getSignedLinkString(back) + FC.getSignedLinkString(front);
+  const std::string outer = FC.getLinkString(floor) +
+    FC.getLinkString(roof) +FC.getLinkString(back) + FC.getLinkString(front);
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
@@ -470,7 +470,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjectsBricks");
 
-  const std::string tb = FC.getSignedLinkString(floor) + FC.getSignedLinkString(roof);
+  const std::string tb = FC.getLinkString(floor) + FC.getLinkString(roof);
 
   std::string Out;
   int SI(surfIndex+100);
@@ -482,7 +482,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       std::string Out1; // back-front surfaces
       if (j==0)
 	Out1 = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
-	  FC.getSignedLinkString(back);
+	  FC.getLinkString(back);
       else
 	Out1 = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
 
@@ -521,14 +521,14 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       SJ += 1000;
     }
 
-  const std::string Out1 = FC.getSignedLinkString(back) + FC.getSignedLinkString(front);
+  const std::string Out1 = FC.getLinkString(back) + FC.getLinkString(front);
 
   // Part from the left (remove)
   Out=ModelSupport::getComposite(SMap,surfIndex,SJ-1000," 3 -4 -11M ") +
-    FC.getSignedLinkString(front);
+    FC.getLinkString(front);
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 
-  const std::string outer = tb + FC.getSignedLinkString(front) + FC.getSignedLinkString(back);
+  const std::string outer = tb + FC.getLinkString(front) + FC.getLinkString(back);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -4 -1 ");
   addOuterSurf(Out+outer);

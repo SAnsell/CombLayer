@@ -211,7 +211,7 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
       PipeTYPE& pipeConnect = getPipe(pipeConnectName);
       pipeConnect->setAngleSeg(12);
       pipeConnect->setOption(pipeSpecialization);
-      pipeConnect->setStartSurf(pipeAl->getSignedLinkString(2));
+      pipeConnect->setStartSurf(pipeAl->getLinkString(2));
       pipeConnect->createAll(System,*pipeAl,2);
     
       if (pipeInvarName.length())
@@ -219,7 +219,7 @@ ESSPipes::buildH2Pipe(Simulation& System,const std::string& lobeName,
 	  PipeTYPE& pipeInvar = getPipe(pipeInvarName);
 	  pipeInvar->setAngleSeg(12);
 	  pipeInvar->setOption(pipeSpecialization);
-	  pipeInvar->setStartSurf(pipeConnect->getSignedLinkString(2));
+	  pipeInvar->setStartSurf(pipeConnect->getLinkString(2));
 	  pipeInvar->createAll(System,*pipeConnect,2);
 	}
     }

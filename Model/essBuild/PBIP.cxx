@@ -309,7 +309,7 @@ PBIP::createObjects(Simulation& System,
   ELog::RegMethod RegA("PBIP","createObjects");
 
   const std::string start =
-    std::to_string(FCstart.getSignedLinkSurf(lpStart));
+    std::to_string(FCstart.getLinkSurf(lpStart));
 
   std::string BSurf=(lpEnd>0) ?
     FCend.getLinkString(lpEnd) :

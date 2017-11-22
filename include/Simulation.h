@@ -122,6 +122,7 @@ class Simulation
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writePhysics(std::ostream&) const;
   void writeVariables(std::ostream&,const char ='c') const;
 
@@ -145,7 +146,6 @@ class Simulation
   void resetAll();
   void readMaster(const std::string&);   
   int applyTransforms();  
-  void populateWCells();
   int isValidCell(const int,const Geometry::Vec3D&) const;
 
 
@@ -172,12 +172,10 @@ class Simulation
   physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
 
   /// set Source name
-  void setSourceName(const std::string& S) { sourceName=S; }
-  
+  void setSourceName(const std::string&);
+
   const OTYPE& getCells() const { return OList; } ///< Get cells(const)
   OTYPE& getCells() { return OList; } ///< Get cells
-  Geometry::Transform* createSourceTransform();
-  
 
   int removeComplements(); 
 
@@ -188,6 +186,7 @@ class Simulation
   void calcAllVertex();
   
   void masterRotation();
+  void masterPhysicsRotation();
 
   // ADD Objects
   int addCell(const MonteCarlo::Qhull&);         

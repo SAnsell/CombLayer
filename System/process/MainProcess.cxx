@@ -440,7 +440,7 @@ setMaterialsDataBase(const inputParam& IParam)
   ELog::RegMethod RegA("MainProcess","setMaterialsDataBase");
 
   const std::string materials=IParam.getValue<std::string>("matDB");
-
+  
   // Add extra materials to the DBMaterials
   if (materials=="neutronics")
     ModelSupport::addESSMaterial();
@@ -522,6 +522,7 @@ buildFullSimulation(Simulation* SimPtr,
   tallyModification(*SimPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);
+  SimPtr->masterPhysicsRotation();
   // Ensure we done loop
   do
     {

@@ -162,7 +162,6 @@ nameCard::setDefItem(const std::string& kN)
    */
 {
   ELog::RegMethod RegA("nameCard","setDefItem");
-
   JUnit.insert(kN);
   return;
 }
@@ -502,7 +501,33 @@ nameCard::writeJ(std::ostream& OX,size_t& jCnt)
 
   return;
 }
-  
+
+bool
+nameCard::isAllDefault() const
+  /*!
+    If the card is 100% default return true
+    \return 1 if all j / 0 if value exists
+  */
+{
+  for(const std::string& K : nameOrder)
+    {
+      // A set J superceeds
+      if (JUnit.find(K)!=JUnit.end())
+	continue;
+
+      if (IUnit.find(K) != IUnit.end())
+	return 0;
+
+      if (DUnit.find(K)!=DUnit.end())
+	return 0;
+      
+      if (SUnit.find(K)!=SUnit.end())
+        return 0;
+    }
+  return 1;
+}
+
+
 void
 nameCard::writeFlat(std::ostream& OX) const
   /*!
@@ -534,14 +559,14 @@ nameCard::writeFlat(std::ostream& OX) const
           continue;
         }
       dIter=DUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (dIter!=DUnit.end())
         {
           writeJ(cx,jCnt);
           cx<<dIter->second<<" ";
           continue;
         }
       sIter=SUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (sIter!=SUnit.end())
         {
           writeJ(cx,jCnt);
           cx<<sIter->second<<" ";
@@ -585,13 +610,13 @@ nameCard::writeWithName(std::ostream& OX) const
           continue;
         }
       dIter=DUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (dIter!=DUnit.end())
         {
           cx<<dIter->second;
           continue;
         }
       sIter=SUnit.find(K);
-      if (iIter!=IUnit.end())
+      if (sIter!=SUnit.end())
         {
           cx<<sIter->second;
           continue;
@@ -612,10 +637,13 @@ nameCard::write(std::ostream& OX) const
   ELog::RegMethod RegA("nameCard","write");
 
   if (!active) return;
-  if (writeType)
-    writeFlat(OX);
-  else
-    writeWithName(OX);
+  if (!isAllDefault())
+    {
+      if (writeType)
+	writeFlat(OX);
+      else
+	writeWithName(OX);
+    }
   return;
 }
 

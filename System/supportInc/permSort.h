@@ -22,8 +22,6 @@
 #ifndef mathSupport_permSort_h
 #define mathSupport_permSort_h
 
-#include <numeric>
-
 namespace mathSupport
 {
 

@@ -604,7 +604,7 @@ Quadratic::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   return;
 }
-  
+
 void
 Quadratic::writePOVRay(std::ostream& OX) const
   /*!

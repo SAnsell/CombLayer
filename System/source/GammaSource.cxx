@@ -45,6 +45,8 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "Transform.h"
+#include "localRotate.h"
 #include "doubleErr.h"
 #include "Triple.h"
 #include "NRange.h"
@@ -84,7 +86,7 @@ GammaSource::GammaSource(const GammaSource& A) :
   attachSystem::FixedOffset(A),SourceBase(A),
   shape(A.shape),width(A.width),height(A.height),
   radius(A.radius),angleSpread(A.angleSpread),
-  FocusPoint(A.FocusPoint),Direction(A.Direction)
+  FocusPoint(A.FocusPoint)
   /*!
     Copy constructor
     \param A :: GammaSource to copy
@@ -109,7 +111,6 @@ GammaSource::operator=(const GammaSource& A)
       radius=A.radius;
       angleSpread=A.angleSpread;
       FocusPoint=A.FocusPoint;
-      Direction=A.Direction;
     }
   return *this;
 }
@@ -215,7 +216,6 @@ GammaSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
-  Direction=Y;
   return;
 }
   
@@ -227,12 +227,38 @@ GammaSource::calcPosition()
 {
   ELog::RegMethod RegA("GammaSource","calcPosition");
   if (angleSpread>Geometry::zeroTol)
-    FocusPoint=Origin-Direction*(radius/tan(M_PI*angleSpread/180.0));
+    FocusPoint=Origin-Y*(radius/tan(M_PI*angleSpread/180.0));
   else
     FocusPoint=Origin;
   return;
 }
 
+
+void
+GammaSource::rotate(const localRotate& LR)
+  /*!
+    Rotate the whole source
+    \param LR :: Rotation value
+  */
+{
+  ELog::RegMethod Rega("GammaSource","rotate");
+  FixedComp::applyRotation(LR);
+  LR.applyFull(FocusPoint);
+
+  if (shape!="Circle" && 
+      (!X.masterDir() || !Y.masterDir() || !Z.masterDir() ||
+       std::abs(std::abs(FocusPoint.dotProd(Y))-FocusPoint.abs())>Geometry::zeroTol))
+    {
+      SourceBase::createTransform(FocusPoint,X,Y,Z);
+    }
+  else
+    {
+      delete TransPtr;
+      TransPtr=0;
+    }
+  return;
+}
+  
 void
 GammaSource::createSource(SDef::Source& sourceCard) const
   /*!
@@ -244,14 +270,12 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 
   ELog::EM<<"Source shape ::"<<shape<<ELog::endDiag;
 
-  sourceCard.setActive();
   sourceCard.setComp("par",particleType);            
   SourceBase::createEnergySource(sourceCard);    
 
   ELog::EM<<"AngleSPread == "<<angleSpread<<ELog::endDiag;
   if (angleSpread>Geometry::zeroTol)
     {
-      ELog::EM<<"Adding ANGLE card"<<angleSpread<<ELog::endDiag;
       SDef::SrcData D2(2);
       SDef::SrcInfo SI2;
       SI2.addData(-1.0);
@@ -265,7 +289,6 @@ GammaSource::createSource(SDef::Source& sourceCard) const
     }
   else
     {
-      ELog::EM<<"Adding DIR card"<<ELog::endDiag;
       sourceCard.setComp("dir",1.0);
     }
 
@@ -297,12 +320,9 @@ GammaSource::createRadialSource(SDef::Source& sourceCard) const
   ELog::RegMethod RegA("GammaSource","createRadialSource");
   
   sourceCard.setComp("ara",M_PI*radius*radius);
-  sourceCard.setComp("vec",Direction);
+  sourceCard.setComp("vec",Y);
+  sourceCard.setComp("axs",Y);
   sourceCard.setComp("pos",FocusPoint);
-
-  ELog::EM<<"Direction  "<<Direction<<ELog::endDiag;
-  ELog::EM<<"FocusPoint "<<FocusPoint<<ELog::endDiag;
-
   return;
 }  
 
@@ -315,9 +335,31 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("GammaSource","createRectangleSource");
 
-  sourceCard.setComp("vec",Direction);
+  sourceCard.setComp("vec",Y);
   sourceCard.setComp("y",Origin.Y());
   sourceCard.setComp("ara",width*height);
+
+  // are we aligned on the master direction:
+  const int aR=(TransPtr) ? 2 : std::abs(Y.masterDir());
+
+  const std::string xyz[]={"x","y","z"};
+  if (!TransPtr)
+    {
+      sourceCard.setComp(xyz[aR-1],Origin.dotProd(Y));
+      sourceCard.setComp("vec",Y);
+      sourceCard.setComp("axs",Y);
+    }
+  else
+    {
+      sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
+      sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
+    }
+  
+  
+
+  if (TransPtr)
+    sourceCard.setComp("tr",TransPtr->getName());
+
   
   SDef::SrcData D3(3);
   SDef::SrcInfo SI3;
@@ -334,14 +376,14 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
   SP3.addData(1.0);
   D3.addUnit(SI3);  
   D3.addUnit(SP3);  
-  sourceCard.setData("x",D3);
+  sourceCard.setData(xyz[(aR+1) % 3],D3);
 
   SDef::SrcProb SP4;
   SP4.addData(0.0);
   SP4.addData(1.0);
   D4.addUnit(SI4);  
-  D4.addUnit(SP4);  
-  sourceCard.setData("z",D4);
+  D4.addUnit(SP4);
+  sourceCard.setData(xyz[aR % 3],D4);
 
   return;
 }  
