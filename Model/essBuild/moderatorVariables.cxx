@@ -335,7 +335,7 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingOuterHeight",2.5);
   Control.addVariable("TopLeftPreWingInnerDepth",2.0);
   Control.addVariable("TopLeftPreWingOuterDepth",2.5);
-  Control.addVariable("TopLeftPreWingInnerRadius",10.0);
+  Control.addVariable("TopLeftPreWingInnerRadius",19.5);
   Control.addVariable("TopLeftPreWingOuterRadius",38.0);
   Control.addVariable("TopLeftPreWingInnerYCut",8.0);
   Control.addVariable("TopLeftPreWingWallThick",0.3);
