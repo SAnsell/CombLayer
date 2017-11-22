@@ -40,7 +40,6 @@ namespace setVariable
   void EssVariables(FuncDataBase&,const std::set<std::string>&);
   void EssLinacVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
-  void F5Variables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
   void FilterVariables(FuncDataBase&);
   void gammaVariables(FuncDataBase&);
@@ -82,6 +81,7 @@ namespace setVariable
   void DelftCoreType(mainSystem::inputParam&,FuncDataBase&);
 
   void siSimulation(FuncDataBase&);
+
 }
 
 #endif

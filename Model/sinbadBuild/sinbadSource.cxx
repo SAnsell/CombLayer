@@ -42,7 +42,6 @@
 #include "FixedComp.h"
 #include "SecondTrack.h"
 #include "TwinComp.h"
-//#include "LinearComp.h"
 #include "WorkData.h"
 #include "sinbadSource.h"
 
@@ -200,9 +199,6 @@ sinbadSource::createSourceSinbad(SDef::Source& sourceCard)
 
 
 
-
-  sourceCard.setActive();
- 
 
 
   double Xerg7[]=  { 0.000000E-6 ,   1.000000E-5 ,  1.100000E-5 , 1.200000E-5,  1.300000E-5 ,   1.400000E-5 , 1.500000E-5  ,      1.600000E-5 ,    1.700000E-5 ,   1.800000E-5  , 1.900000E-5 , 2.000000E-5 , 2.100000E-5 ,   2.200000E-5,  2.300000E-5  ,     2.400000E-5 ,   2.500000E-5 ,   2.600000E-5 ,  2.700000E-5 , 2.800000E-5 , 2.900000E-5,    3.000000E-5 , 3.100000E-5    ,   3.200000E-5   , 3.300000E-5   , 3.400000E-5 ,  3.500000E-5 , 3.600000E-5,  3.700000E-5 ,   3.800000E-5 ,  3.900000E-5,      4.000000E-5 ,   4.100000E-5 ,   4.200000E-5 , 4.300000E-5 ,  4.400000E-5 , 4.500000E-5 , 4.600000E-5 ,   4.700000E-5,
