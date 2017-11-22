@@ -246,7 +246,8 @@ TS2FlatTarget::createSurfaces()
 {
   ELog::RegMethod RegA("TS2FlatTarget","createSurface");
   
-  // INNER PLANES    
+  // INNER PLANES
+
   SMap.addMatch(protonIndex+186,frontPlate);
   SMap.addMatch(protonIndex+190,backPlate);
 
@@ -361,9 +362,10 @@ TS2FlatTarget::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,protonIndex,"1 -2 57 -101");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,protonIndex,"2 -101 186");
+  // Space for water manifold
+  Out=ModelSupport::getComposite(SMap,protonIndex,"2 -101 190");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-    
+  ELog::EM<<"Cell == "<<Out<<" ::: "<<cellIndex-1<<ELog::endDiag;
   // FRONT Plate:
   Out=ModelSupport::getComposite(SMap,protonIndex,"-1 -27 301");
   System.addCell(MonteCarlo::Qhull(cellIndex++,taMat,0.0,Out));
@@ -466,14 +468,16 @@ TS2FlatTarget::addProtonLine(Simulation& System,
 {
   ELog::RegMethod RegA("TS2Target","addProtonLine");
   ELog::EM<<"Target centre [TS2] "<<Origin<<ELog::endDebug;
-  PLine->createAll(System,*this,2,refFC,index);
+
+  PLine->createAll(System,*this,3,refFC,index);
   createBeamWindow(System,3);
   return;
 }
 
   
 void
-TS2FlatTarget::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+TS2FlatTarget::createAll(Simulation& System,
+			 const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
     \param System :: Simulation item

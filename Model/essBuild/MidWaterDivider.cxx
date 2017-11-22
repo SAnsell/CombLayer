@@ -232,10 +232,10 @@ MidWaterDivider::createLinks(const H2Wing& leftWing,
   FixedComp::setLinkSurf(8, SMap.realSurf(divIndex+132));  
 
   std::vector<int> surfN;
-  surfN.push_back(leftWing.getSignedLinkSurf(1));
-  surfN.push_back(leftWing.getSignedLinkSurf(3));
-  surfN.push_back(rightWing.getSignedLinkSurf(1));
-  surfN.push_back(rightWing.getSignedLinkSurf(3));
+  surfN.push_back(leftWing.getLinkSurf(1));
+  surfN.push_back(leftWing.getLinkSurf(3));
+  surfN.push_back(rightWing.getLinkSurf(1));
+  surfN.push_back(rightWing.getLinkSurf(3));
 
   // Now deterermine point which are divider points
   const Geometry::Plane* midPlane=
@@ -430,8 +430,8 @@ MidWaterDivider::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("MidWaterDivider","createObjects");
 
-  const std::string Base=leftWing.getSignedLinkString(-5);
-  const std::string Top=leftWing.getSignedLinkString(-6);
+  const std::string Base=leftWing.getLinkString(-5);
+  const std::string Top=leftWing.getLinkString(-6);
   
   HeadRule LCut(leftWing.getLayerString(cutLayer,7));
   HeadRule RCut(rightWing.getLayerString(cutLayer,7));
@@ -574,9 +574,9 @@ MidWaterDivider::cutOuterWing(Simulation& System,
   const size_t rWing=rightWing.getNLayers();
 
   const std::string LBase=
-    leftWing.getSignedLinkString(-5)+leftWing.getSignedLinkString(-6);
+    leftWing.getLinkString(-5)+leftWing.getLinkString(-6);
   const std::string RBase=
-    rightWing.getSignedLinkString(-5)+rightWing.getSignedLinkString(-6);
+    rightWing.getLinkString(-5)+rightWing.getLinkString(-6);
 
   HeadRule cutRule;
   std::string Out;

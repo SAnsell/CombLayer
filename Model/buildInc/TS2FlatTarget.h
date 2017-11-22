@@ -50,8 +50,8 @@ class TS2FlatTarget : public constructSystem::TargetBase
 
   int cellIndex;                ///< Cell index
 
-  int frontPlate;               ///< Front Plate
-  int backPlate;                ///< Back Plate
+  int frontPlate;               ///< Front Reflector surf
+  int backPlate;                ///< Back Reflector surf
   
   double mainLength;            ///< Straight length
   double coreRadius;            ///< Inner W radius [cyl]
@@ -110,6 +110,7 @@ class TS2FlatTarget : public constructSystem::TargetBase
   int getSkinBody() const { return skinCell; }
 
   void addInnerBoundary(attachSystem::ContainedComp&) const;
+
   /// Set the extext of the reflector
   void setRefPlates(const int A,const int B) 
     { frontPlate=A; backPlate=B; }

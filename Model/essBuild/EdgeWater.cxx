@@ -366,7 +366,7 @@ EdgeWater::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  const std::string divider=FC.getSignedLinkString(sideIndex);
+  const std::string divider=FC.getLinkString(sideIndex);
   createObjects(System,divider,container);
 
   createLinks();

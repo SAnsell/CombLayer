@@ -242,7 +242,7 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit)
   for(size_t i=0;i<6;i++)
     BVec[i]=FUnit[i].getConnectPt();
   
-  divideSurf= FUnit.getSignedLinkSurf(-1);
+  divideSurf= FUnit.getLinkSurf(-1);
 
   return;
 }
@@ -279,10 +279,10 @@ VacVessel::createBoundary(const attachSystem::FixedComp& FUnit,
     BVec[i]+=Origin;
 
   // Centres: 
-  BVec[0]=FUnit.getSignedLinkPt(2);
-  BVec[1]=GUnit.getSignedLinkPt(2);
+  BVec[0]=FUnit.getLinkPt(2);
+  BVec[1]=GUnit.getLinkPt(2);
   
-  divideSurf= FUnit.getSignedLinkSurf(-1);
+  divideSurf= FUnit.getLinkSurf(-1);
   return;
 }
 
@@ -526,15 +526,15 @@ VacVessel::createAllPair(Simulation& System,const Groove& GMod,
   FixedComp::setLinkSurf(6,-SMap.realSurf(vacIndex+41));
   FixedComp::setBridgeSurf(6,SMap.realSurf(divideSurf));
 
-  Geometry::Vec3D AimPt=GMod.getSignedLinkPt(7);
-  Geometry::Vec3D LP=this->getSignedLinkPt(1);
+  Geometry::Vec3D AimPt=GMod.getLinkPt(7);
+  Geometry::Vec3D LP=this->getLinkPt(1);
   LP-= Z * Z.dotProd(LP);
   LP+= Z * Z.dotProd(AimPt);
   FixedComp::setConnect(6,LP,Y);
 
   FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+42));
   FixedComp::setBridgeSurf(7,SMap.realSurf(divideSurf));
-  FixedComp::setConnect(7,HMod.getSignedLinkPt(2),Y);  
+  FixedComp::setConnect(7,HMod.getLinkPt(2),Y);  
   return;
 }
 

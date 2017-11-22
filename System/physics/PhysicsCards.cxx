@@ -87,7 +87,7 @@ PhysicsCards::PhysicsCards() :
       "COINC STR","EVENT STR","FILTER STR","TYPE STR",
       "NPS STR","CELL STR","SURFACE STR","TALLY STR"}
      );
-  ELog::EM<<"RAND HAS SEED"<<ELog::endDiag;
+
   RAND->registerItems
     (
      {"SEED INT"}

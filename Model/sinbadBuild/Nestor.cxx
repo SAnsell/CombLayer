@@ -152,7 +152,7 @@ Nestor::getFrontSurface(const size_t layerIndex,
       const int SI(slabIndex+static_cast<int>(layerIndex)*10);
       return ModelSupport::getComposite(SMap,SI," 1 ");
     }
-  return FC.getSignedLinkString(sideIndex);
+  return FC.getLinkString(sideIndex);
 }
 
 std::string

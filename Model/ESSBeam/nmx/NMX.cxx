@@ -184,7 +184,7 @@ NMX::build(Simulation& System,
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); // beam front reversed
   if (stopPoint==1) return;                  // STOP at Monolith
-  //  ELog::EM<<"Front == "<<GuideA.getKey("Beam").getSignedLinkString(-1)
+  //  ELog::EM<<"Front == "<<GuideA.getKey("Beam").getLinkString(-1)
   //          <<ELog::endDiag;
 
 
@@ -235,7 +235,7 @@ NMX::build(Simulation& System,
 
   // EXPERIMENTAL WAY TO PLACE A SIMPLE COLLIMATOR   
   CollA->setInnerExclude(BendC->getXSectionOut());
-  CollA->setOuter(VPipeC->getSignedFullRule(-3));
+  CollA->setOuter(VPipeC->getFullRule(-3));
   CollA->addInsertCell(VPipeC->getCell("Void"));
   CollA->createAll(System,*VPipeC,0);
   

@@ -225,7 +225,7 @@ OnionCooling::createObjects(Simulation& System,
       (innerCell,"Inner Cell not found");
 
   std::string Out;
-  const std::string topBottomStr=FC.getSignedLinkString(7+1)+FC.getSignedLinkString(8+1);
+  const std::string topBottomStr=FC.getLinkString(7+1)+FC.getLinkString(8+1);
   HeadRule wallExclude;
   
   // [2:1381] There are 2 types of cells: object cells (Monte Carlo objects = MC qhulls)

@@ -169,7 +169,7 @@ BWaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("BWaterPipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getSignedLinkPt(sideIndex);
+  Origin=CUnit.getLinkPt(sideIndex);
 
   return;
 }
@@ -187,11 +187,11 @@ BWaterPipe::insertPipe(Simulation& System,const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BWaterPipe","insertPipe");
 
   // Base Points
-  Central.addPoint(FC.getSignedLinkPt(sideIndex)+X*Xoffset+Y*Yoffset);
-  Central.addPoint(FC.getSignedLinkPt(sideIndex)+X*Xoffset+Y*Yoffset
+  Central.addPoint(FC.getLinkPt(sideIndex)+X*Xoffset+Y*Yoffset);
+  Central.addPoint(FC.getLinkPt(sideIndex)+X*Xoffset+Y*Yoffset
 		   +Z*fullLen);
 
-  Geometry::Vec3D Pt(FC.getSignedLinkPt(sideIndex)+X*Xoffset+Y*Yoffset
+  Geometry::Vec3D Pt(FC.getLinkPt(sideIndex)+X*Xoffset+Y*Yoffset
 		     +Z*fullLen);
 
   Pt+=X*20.0+Y*20.0;

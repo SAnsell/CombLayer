@@ -72,6 +72,7 @@
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "mainJobs.h"
 #include "Volumes.h"
 #include "DefPhysics.h"
@@ -128,7 +129,7 @@ main(int argc,char* argv[])
       
       ts1System::makeT1Upgrade T1Obj;
       World::createOuterObjects(*SimPtr);
-      T1Obj.build(SimPtr,IParam);
+      T1Obj.build(*SimPtr,IParam);
             
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
       

@@ -345,7 +345,7 @@ layers::createObjects(Simulation& System,
   std::string Wedge,Out;
   // Build Wedge Takeout
   Wedge=ModelSupport::getComposite(SMap,surIndex,"-127 ")+
-    CS.getSignedLinkString(2);
+    CS.getLinkString(2);
   
   // Build Wedge units [Always build 1]
   for(int i=0;i<=static_cast<int>(nWedge);i++)
@@ -448,7 +448,7 @@ layers::createLinks(const attachSystem::FixedComp& CS)
     {
       FixedComp::setConnect(i,Origin,Y);
       FixedComp::setLinkSurf(i,SMap.realSurf(surIndex+127));
-      FixedComp::addLinkSurf(i,CS.getSignedLinkSurf(1));
+      FixedComp::addLinkSurf(i,CS.getLinkSurf(1));
     }
 
   return;

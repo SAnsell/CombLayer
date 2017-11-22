@@ -239,14 +239,14 @@ insertPlate::createLinks()
   FixedComp::setLinkSurf(5,SMap.realSurf(ptIndex+6));
 
   // corners
-  const Geometry::Vec3D frontPt=getSignedLinkPt(1);
+  const Geometry::Vec3D frontPt=getLinkPt(1);
   FixedComp::setConnect(6,frontPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
   FixedComp::setConnect(7,frontPt+X*(width/2.0)-Z*(height/2.0),X-Z);
   FixedComp::setConnect(8,frontPt-X*(width/2.0)+Z*(height/2.0),-X+Z);
   FixedComp::setConnect(9,frontPt+X*(width/2.0)+Z*(height/2.0),X+Z);
 
   // Back corner:
-  const Geometry::Vec3D backPt=getSignedLinkPt(2);
+  const Geometry::Vec3D backPt=getLinkPt(2);
   FixedComp::setConnect(10,backPt-X*(width/2.0)-Z*(height/2.0),-X-Z);
   FixedComp::setConnect(11,backPt+X*(width/2.0)-Z*(height/2.0),X-Z);
   FixedComp::setConnect(12,backPt-X*(width/2.0)+Z*(height/2.0),-X+Z);

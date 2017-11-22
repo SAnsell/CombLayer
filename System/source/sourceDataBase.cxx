@@ -173,10 +173,44 @@ sourceDataBase::getSourceThrow(const std::string& Name,
   return SPtr;
 }
 
+template<typename T>
+T*
+sourceDataBase::getSource(const std::string& Name) 
+  /*!
+    Find a FixedComp [if it exists]
+    \param Name :: Name
+    \return SourcePtr / 0 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSource()");
 
+  SourceBase* SPtr = getInternalSource(Name);
+  return dynamic_cast<T*>(SPtr);
+}
+
+template<typename T>
+T*
+sourceDataBase::getSourceThrow(const std::string& Name,
+                               const std::string& Err) 
+  /*!
+    Find a source 
+    Throws InContainerError if not present in correct type
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return SourcePtr 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSourceThrow()");
   
+  T* SPtr=getSource<T>(Name);
+  if (!SPtr)
+    throw ColErr::InContainerError<std::string>(Name,Err);
+  return SPtr;
+}
+
 void
-sourceDataBase::write(const std::string& SName,std::ostream& OX) const
+sourceDataBase::write(const std::string&,
+                      std::ostream&) const
   /*!
     Write out the source for MCNP
     \param SName :: source name

@@ -383,8 +383,9 @@ ButterflyModerator::getLeftFarExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getLeftFarExclude");
 
   std::string Out;
-  Out=LeftWater->getSignedLinkString(4);
-  Out+=RightWater->getSignedLinkString(3);
+  Out=LeftWater->getLinkString(4);   
+  Out+=RightWater->getLinkString(3);
+
   return Out;
 }
 
@@ -400,8 +401,8 @@ ButterflyModerator::getRightFarExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getRightFarExclude");
 
   std::string Out;
-  Out+=LeftWater->getSignedLinkString(3);
-  Out+=RightWater->getSignedLinkString(4);
+  Out+=LeftWater->getLinkString(3);   
+  Out+=RightWater->getLinkString(4);
 
   return Out;
 }
@@ -418,9 +419,9 @@ ButterflyModerator::getLeftExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getLeftExclude");
   std::string Out;
 
-  Out+=LeftUnit->getSignedLinkString(8);
-  Out+=RightUnit->getSignedLinkString(9);
-  Out+=MidWater->getSignedLinkString(11);
+  Out+=LeftUnit->getLinkString(8);
+  Out+=RightUnit->getLinkString(9);
+  Out+=MidWater->getLinkString(11);
   Out+= getLeftFarExclude();
 
   return Out;
@@ -438,9 +439,10 @@ ButterflyModerator::getRightExclude() const
   ELog::RegMethod RegA("ButterflyModerator","getRightExclude");
   std::string Out;
 
-  Out+=LeftUnit->getSignedLinkString(9);
-  Out+=RightUnit->getSignedLinkString(8);
-  Out+=MidWater->getSignedLinkString(12);
+  Out+=LeftUnit->getLinkString(9);
+  Out+=RightUnit->getLinkString(8);
+  Out+=MidWater->getLinkString(12);
+  ELog::EM << "remove FarExclude? - no in master" << ELog::endDiag;
   Out+= getRightFarExclude();
 
   return Out;

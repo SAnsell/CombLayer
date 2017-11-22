@@ -219,7 +219,7 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
     OR.getObjectThrow<attachSystem::FixedComp>(Place,"FixedComp");
   
 
-  const Geometry::Vec3D O=FC->getSignedLinkPt(linkNumber);
+  const Geometry::Vec3D O=FC->getLinkPt(linkNumber);
 
   Geometry::Vec3D X,Y,Z;
   FC->calcLinkAxis(linkNumber,X,Y,Z);

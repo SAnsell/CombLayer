@@ -180,7 +180,7 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("PreMod","createSurface");
 
-  const Geometry::Vec3D& cAxis=FC.getSignedLinkAxis(baseIndex);
+  const Geometry::Vec3D& cAxis=FC.getLinkAxis(baseIndex);
   const int cFlag=(cAxis.dotProd(Z)<-0.8) ? -1 : 1;
 
   if (centOrgFlag)
@@ -192,7 +192,7 @@ PreMod::createSurfaces(const attachSystem::FixedComp& FC,
   else
     ModelSupport::buildPlane(SMap,preIndex+1,Origin,Y);
 
-  SMap.addMatch(preIndex+5,cFlag*FC.getSignedLinkSurf(baseIndex));
+  SMap.addMatch(preIndex+5,cFlag*FC.getLinkSurf(baseIndex));
   if (targetSurf)
     SMap.addMatch(preIndex+7,targetSurf);  // This is a cylinder [hopefully]
 

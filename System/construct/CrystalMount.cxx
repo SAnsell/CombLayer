@@ -188,7 +188,7 @@ CrystalMount::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("CrystalMount","createUnitVector");
   attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
-  viewPoint=FC.getSignedLinkPt(sideIndex);
+  viewPoint=FC.getLinkPt(sideIndex);
 
   applyFullRotate(0,yRotation,0,viewPoint);
   applyFullRotate(0,zRotation,viewPoint);

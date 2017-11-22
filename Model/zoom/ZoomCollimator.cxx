@@ -224,8 +224,8 @@ ZoomCollimator::createSurfaces(const attachSystem::FixedComp& LC)
 {
   ELog::RegMethod RegA("ZoomCollimator","createSurface");
 
-  SMap.addMatch(colIndex+1,LC.getSignedLinkSurf(2));   // back plane
-  //  SMap.addMatch(colIndex+14,LC.getSignedLinkSurf(4));   // right plane
+  SMap.addMatch(colIndex+1,LC.getLinkSurf(2));   // back plane
+  //  SMap.addMatch(colIndex+14,LC.getLinkSurf(4));   // right plane
 
   ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,colIndex+3,Origin-X*leftWidth,X);

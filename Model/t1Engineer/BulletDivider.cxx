@@ -204,7 +204,7 @@ BulletDivider::setInnerRadius(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("BulletDivider","setInnerRadius");
 
-  const Geometry::Vec3D Pt=FC.getSignedLinkPt(sideIndex);
+  const Geometry::Vec3D Pt=FC.getLinkPt(sideIndex);
   radii[0]=std::abs(X.dotProd(Pt-Origin));
   
   return;
@@ -286,9 +286,9 @@ BulletDivider::createObjects(Simulation& System,
   
   std::string Out;
 
-  const std::string innerRadii=TarObj.getSignedLinkString(radialSide);
-  const std::string vertCut=VesselObj.getSignedLinkString(topSide)+
-    VesselObj.getSignedLinkString(baseSide);
+  const std::string innerRadii=TarObj.getLinkString(radialSide);
+  const std::string vertCut=VesselObj.getLinkString(topSide)+
+    VesselObj.getLinkString(baseSide);
   int DV(divIndex);
 
   // Note special first surface Special for first contact:

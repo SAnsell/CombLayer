@@ -147,8 +147,8 @@ zoomInsertBase::createUnitVector(const zoomInsertBase& ZB)
   beamY=ZB.beamY;  
   beamZ=ZB.beamZ;
 
-  Origin=ZB.getLinkPt(1)+Y*fStep;
-  beamOrigin=ZB.getLinkPt(3)+beamY*fStep;
+  Origin=ZB.getLinkPt(2)+Y*fStep;
+  beamOrigin=ZB.getLinkPt(4)+beamY*fStep;
 
   return;
 }
@@ -167,8 +167,8 @@ zoomInsertBase::createUnitVector(const FixedComp& FC)
   beamZ=Z;
   if (FC.NConnect()>1)
     {
-      Origin=FC.getLinkPt(1)+Y*fStep;
-      beamY=FC.getLinkAxis(1);
+      Origin=FC.getLinkPt(2)+Y*fStep;
+      beamY=FC.getLinkAxis(2);
     }
   else
     {
@@ -316,7 +316,7 @@ zoomInsertBase::createAll(Simulation& System,
   populate(System,&ZB);
 
   createUnitVector(ZB);
-  createSurfaces(ZB.getSignedLinkSurf(2));
+  createSurfaces(ZB.getLinkSurf(2));
   createObjects(System,"","");
   createLinks();
   insertObjects(System);       

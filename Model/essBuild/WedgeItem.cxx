@@ -202,9 +202,9 @@ WedgeItem::createSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("WedgeItem","createSurface");
 
-  // we assume that baseLinkPt is cylinder
-  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getSignedLinkSurf(baseLinkPt));
-  
+  // we assume that baseSurf is cylinder
+  outerCyl = SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(baseLinkPt));
+
   // divider:
   const Geometry::Plane *pZ =
     ModelSupport::buildPlane(SMap,wedgeIndex+5,Origin,Z);
@@ -253,10 +253,10 @@ WedgeItem::createObjects(Simulation& System,
 
   std::string Out;
 
-  Out = ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ")+
-    FC.getSignedLinkString(baseLinkPt)+
-    FL.getSignedLinkString(topLinkPt)+
-    FL.getSignedLinkString(bottomLinkPt);
+  Out=ModelSupport::getComposite(SMap, wedgeIndex, " 1 3 -4 ")+
+    FC.getLinkString(baseLinkPt)+
+    FL.getLinkString(topLinkPt)+
+    FL.getLinkString(bottomLinkPt);
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   
   addOuterSurf(Out);

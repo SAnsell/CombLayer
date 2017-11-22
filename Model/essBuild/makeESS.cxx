@@ -272,8 +272,8 @@ makeESS::createGuides(Simulation& System)
       OR.addObject(GB);
       GB->addInsertCell("Inner",ShutterBayObj->getCell("MainCell"));
       GB->addInsertCell("Outer",ShutterBayObj->getCell("MainCell"));
-      GB->setCylBoundary(Bulk->getSignedLinkSurf(3),
-			 ShutterBayObj->getSignedLinkSurf(7));
+      GB->setCylBoundary(Bulk->getLinkSurf(3),
+			 ShutterBayObj->getLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));

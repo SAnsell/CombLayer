@@ -280,7 +280,7 @@ BunkerRoof::createSector(Simulation& System,
   LD3.setSurfPair(0,innerSurf,outerSurf);
   LD3.setSurfPair(1,lwIndex,rwIndex);
   LD3.setSurfPair(2,baseSurf,topSurf);
-  LD3.setDivider(divider);
+  LD3.setDividerByExclude(System,cellN);
 
   const bool AFlag (activeRoof & (1 << sectNum));
 
@@ -301,9 +301,7 @@ BunkerRoof::createSector(Simulation& System,
       LD3.setMaterials(2,basicMatVec);
     }
   
-  LD3.setDividerByExclude(System,cellN);
   LD3.divideCell(System,cellN);
-
   addCells("Sector"+StrFunc::makeString(sectNum),LD3.getCells());
   return;
 }

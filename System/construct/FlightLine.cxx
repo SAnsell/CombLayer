@@ -224,7 +224,7 @@ FlightLine::createRotatedUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("FlightLine","createRotatedUnitVector");
-  const Geometry::Vec3D CentPt=FC.getSignedLinkPt(origIndex);
+  const Geometry::Vec3D CentPt=FC.getLinkPt(origIndex);
 
   createUnitVector(FC,sideIndex); 
   
@@ -356,13 +356,13 @@ FlightLine::getRotatedDivider(const attachSystem::FixedComp& FC,
 
   static int offset(750);
 
-  const HeadRule primary=FC.getSignedMainRule(sideIndex);
+  const HeadRule primary=FC.getMainRule(sideIndex);
 
   attachRule=" "+primary.display()+" ";
   if (std::abs(xyAngle)<45.0) 
     return attachRule;
 
-  HeadRule rotHead(FC.getSignedCommonRule(sideIndex));
+  HeadRule rotHead(FC.getCommonRule(sideIndex));
   const std::set<int> commonSN(rotHead.getSurfSet());
 
   for(const int SN : commonSN)
@@ -402,7 +402,7 @@ FlightLine::createCapSurfaces(const attachSystem::FixedComp& FC,
 {
   ELog::RegMethod RegA("FlightLine","createCapSurfaces");
 
-  const HeadRule& MainUnit=FC.getSignedMainRule(sideIndex);
+  const HeadRule& MainUnit=FC.getMainRule(sideIndex);
   const std::vector<int> SurNum(MainUnit.getSurfaceNumbers());
   
   int surfN(501+flightIndex);
@@ -473,7 +473,7 @@ FlightLine::createObjects(Simulation& System,
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
-  attachRule+=divider+FC.getSignedMainRule(sideIndex).display();
+  attachRule+=divider+FC.getMainRule(sideIndex).display();
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");
@@ -537,9 +537,9 @@ FlightLine::createObjects(Simulation& System,
 
   // attachRule SET in getRotatedDivider
   const std::string divider=getRotatedDivider(FC,sideIndex);
-  attachRule+=divider+FC.getSignedMainRule(sideIndex).display();
+  attachRule+=divider+FC.getMainRule(sideIndex).display();
   // Note this is negative
-  const std::string baseSurf(FC.getSignedMainRule(sideIndex).display());
+  const std::string baseSurf(FC.getMainRule(sideIndex).display());
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,outIndex," 3 -4 5 -6 ");

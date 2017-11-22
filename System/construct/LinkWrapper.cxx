@@ -262,11 +262,8 @@ LinkWrapper::addSurface(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("LinkWrapper","addSurface(FC,Index)");
 
   // Surfaces on links point outwards (hence swap of sign)
-  surfNum.push_back(FC.getSignedLinkSurf(LIndex));
+  surfNum.push_back(FC.getLinkSurf(LIndex));
   surfEntryOrder.push_back(static_cast<int>(surfNum.size()));
-  long int INumber(0);
-  if (LIndex>0) INumber= -(LIndex-1);
-  if (LIndex<0) INumber= -(LIndex+1);
   return;
 }
 

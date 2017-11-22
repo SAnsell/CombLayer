@@ -247,8 +247,8 @@ MAGIC::buildBunkerUnits(Simulation& System,
   const Geometry::Vec3D& ZVert(World::masterOrigin().getZ());
 
   ELog::EM<<"Bunker Unit start == "
-          <<FA.getSignedLinkPt(startIndex)<<" == "
-          <<FA.getSignedLinkPt(startIndex).abs()
+          <<FA.getLinkPt(startIndex)<<" == "
+          <<FA.getLinkPt(startIndex).abs()
           <<ELog::endDiag;
     
   VPipeB->addInsertCell(bunkerVoid);
@@ -311,12 +311,12 @@ MAGIC::buildOutGuide(Simulation& System,
   ELog::RegMethod RegA("MAGIC","buildOutGuide");
 
   ELog::EM<<"Outer start == "
-          <<FWshield.getSignedLinkPt(startShield)<<" == "
-          <<FWshield.getSignedLinkPt(startShield).abs()<<" "
+          <<FWshield.getLinkPt(startShield)<<" == "
+          <<FWshield.getLinkPt(startShield).abs()<<" "
           <<ELog::endDiag;
   ELog::EM<<"Outer start[G] == "
-          <<FWguide.getSignedLinkPt(startGuide)<<" == "
-          <<FWguide.getSignedLinkPt(startGuide).abs()<<ELog::endDiag;
+          <<FWguide.getLinkPt(startGuide)<<" == "
+          <<FWguide.getLinkPt(startGuide).abs()<<ELog::endDiag;
   
 
   ShieldA->addInsertCell(voidCell);
@@ -511,7 +511,7 @@ MAGIC::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*magicAxis,Control,GItem,1);

@@ -253,8 +253,8 @@ pointConstruct::processPointWindow(Simulation& System,
 	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
 
       masterPlane=TPtr->getExitWindow(linkPt,Planes);
-      orgPoint= TPtr->getSignedLinkPt(linkPt); 
-      BAxis= TPtr->getSignedLinkAxis(linkPt);
+      orgPoint= TPtr->getLinkPt(linkPt); 
+      BAxis= TPtr->getLinkAxis(linkPt);
       TPoint=orgPoint+BAxis*beamDist;
       
       ELog::EM<<"Link point   == "<<orgPoint<<ELog::endDiag;
@@ -307,8 +307,8 @@ pointConstruct::processPointFree(Simulation& System,
     OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
     
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
-  TPoint+=TPtr->getSignedLinkAxis(linkPt)*OD;
+  Geometry::Vec3D TPoint=TPtr->getLinkPt(linkPt);
+  TPoint+=TPtr->getLinkAxis(linkPt)*OD;
 
   std::vector<Geometry::Vec3D> EmptyVec;
   addF5Tally(System,tNum,TPoint,EmptyVec);
@@ -339,7 +339,7 @@ pointConstruct::processPointFree(Simulation& System,
   
   
   const int tNum=System.nextTallyNum(5);
-  Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkPt);
+  Geometry::Vec3D TPoint=TPtr->getLinkPt(linkPt);
   
   Geometry::Vec3D XDir,YDir,ZDir;
   TPtr->calcLinkAxis(linkPt,XDir,YDir,ZDir);

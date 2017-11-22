@@ -250,7 +250,7 @@ makeBib::build(Simulation& System,
 
   Rotor->createAll(System,World::masterOrigin());
 
-  RefObj->createAll(System,*Rotor,8);
+  RefObj->createAll(System,*Rotor,9);
   attachSystem::addToInsertSurfCtrl(System,*RefObj,
 				  Rotor->getCC("Target"));
   attachSystem::addToInsertForced(System,*RefObj,

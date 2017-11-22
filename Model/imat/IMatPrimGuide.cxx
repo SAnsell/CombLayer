@@ -160,7 +160,7 @@ IMatPrimGuide::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("IMatPrimGuide","createObjects");
   
-  const std::string insertEdge=FC.getSignedLinkString(2);
+  const std::string insertEdge=FC.getLinkString(2);
   std::string Out;
   Out=ModelSupport::getComposite(SMap,guideIndex," -2 33 -34 35 -36 ");
   addOuterSurf("Inner",Out);

@@ -172,8 +172,8 @@ CH4PreMod::getConnectPoints(const attachSystem::FixedComp& FC,
   sideAxis.clear();
   for(size_t i=0;i<6;i++)
     {
-      sidePts.push_back(FC.getSignedLinkPt(sequence[index][i]));
-      sideAxis.push_back(FC.getSignedLinkAxis(sequence[index][i]));
+      sidePts.push_back(FC.getLinkPt(sequence[index][i]));
+      sideAxis.push_back(FC.getLinkAxis(sequence[index][i]));
     }
   Y=sideAxis[0];
   Z=sideAxis[5];
@@ -319,16 +319,16 @@ CH4PreMod::createObjects(Simulation& System,
     {
       if (i==touchSurf)
 	{
-	  touch=FC.getSignedLinkString(i);
-	  compTouch=FC.getSignedLinkString(i);
+	  touch=FC.getLinkString(i);
+	  compTouch=FC.getLinkString(i);
 	}
       else if (i!=frontIndex && i!=backIndex)
 	{
 	  if (addFlag) Inner+=":";
 	  addFlag=1;
-	  Inner+=FC.getSignedLinkString(i);
+	  Inner+=FC.getLinkString(i);
 	}
-      FullInner+=FC.getSignedLinkString(i)+":";
+      FullInner+=FC.getLinkString(i)+":";
     }
   Inner+=") ";
   FullInner[FullInner.size()-1]=')';
@@ -361,8 +361,8 @@ CH4PreMod::createObjects(Simulation& System,
   Out+=touch;
   System.addCell(MonteCarlo::Qhull(cellIndex++,alMat,modTemp,Out));
 
-  const std::string FFace=FC.getSignedLinkString(-(frontIndex+1));
-  const std::string BFace=FC.getSignedLinkString(-(backIndex+1));
+  const std::string FFace=FC.getLinkString(-(frontIndex+1));
+  const std::string BFace=FC.getLinkString(-(backIndex+1));
 
   // VAC Outer:
   std::string IOut;

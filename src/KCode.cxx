@@ -151,7 +151,18 @@ KCode::setLine(const std::string& KLine)
   
 }
 
+  void
+KCode::writePHITS(std::ostream&) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("KCode","write");
 
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
 
 void
 KCode::write(std::ostream& OX) const

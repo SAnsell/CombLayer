@@ -205,12 +205,12 @@ ZoomPrimary::createSurfaces(const attachSystem::FixedComp& LC)
 {
   ELog::RegMethod RegA("ZoomPrimary","createSurface");
 
-  SMap.addMatch(colIndex+1,LC.getSignedLinkSurf(2));   // back plane
+  SMap.addMatch(colIndex+1,LC.getLinkSurf(2));   // back plane
   ModelSupport::buildPlane(SMap,colIndex+2,Origin+Y*length,Y);
   ModelSupport::buildPlane(SMap,colIndex+3,Origin-X*leftWidth,X);
   ModelSupport::buildPlane(SMap,colIndex+4,Origin+X*rightWidth,X);
   ModelSupport::buildPlane(SMap,colIndex+5,Origin-Z*depth,Z);
-  SMap.addMatch(colIndex+6,LC.getSignedLinkSurf(6));   // right plane
+  SMap.addMatch(colIndex+6,LC.getLinkSurf(6));   // right plane
 
   //  ModelSupport::buildPlane(SMap,colIndex+6,Origin+Z*height,Z);
 

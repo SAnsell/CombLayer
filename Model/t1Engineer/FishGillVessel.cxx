@@ -286,7 +286,7 @@ FishGillVessel::createObjects(Simulation& System,
   
   std::string Out;
   
-  const std::string FFace=TarObj.getSignedLinkString(frontIndex);
+  const std::string FFace=TarObj.getLinkString(frontIndex);
   // Front water space
   Out=ModelSupport::getComposite(SMap,pvIndex,"21 5 -6 -8 ")+FFace;
   System.addCell(MonteCarlo::Qhull(cellIndex++,waterMat,0.0,Out));
@@ -375,7 +375,7 @@ FishGillVessel::createObjects(Simulation& System,
 
 
   // BACKPLATE:
-  const std::string BFace=TarObj.getSignedLinkString(2);
+  const std::string BFace=TarObj.getLinkString(2);
   Out=ModelSupport::getComposite(SMap,pvIndex,PV," -8 -2M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+BFace));
   

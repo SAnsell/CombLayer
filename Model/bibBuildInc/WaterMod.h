@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuildInc/WaterMod.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,18 +36,12 @@ namespace bibSystem
 */
 
 class WaterMod : public attachSystem::ContainedComp,
-    public attachSystem::FixedComp
+    public attachSystem::FixedOffset
 {
  private:
   
   const int watIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
-
-  double xStep;                   ///< X step
-  double yStep;                   ///< y step
-  double zStep;                   ///< Z step
-  double xyAngle;                 ///< xy angle
-  double zAngle;                  ///< zAngle step
 
   double width;                   ///< width of moderator
   double height;                 
@@ -68,7 +62,7 @@ class WaterMod : public attachSystem::ContainedComp,
   // Functions:
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const size_t);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::ContainedComp&);
@@ -82,7 +76,7 @@ class WaterMod : public attachSystem::ContainedComp,
   virtual ~WaterMod();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const size_t,const attachSystem::ContainedComp&);
+		 const long int,const attachSystem::ContainedComp&);
   
 };
 

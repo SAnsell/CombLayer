@@ -237,7 +237,7 @@ t1BulkShield::createSurfaces(const attachSystem::FixedComp& FC)
 			      Origin,Z,outerRadius);
 
   // INNER LAYER:
-  SMap.addMatch(bulkIndex+7,FC.getSignedLinkSurf(1));
+  SMap.addMatch(bulkIndex+7,FC.getLinkSurf(1));
   return;
 }
 

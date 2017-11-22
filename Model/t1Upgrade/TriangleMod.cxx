@@ -708,10 +708,10 @@ TriangleMod::getExitWindow(const long int sideIndex,
   window.clear();
   for(long int i=1;i<6;i++)
     if (i!=outIndex)
-      window.push_back(std::abs(getSignedLinkSurf(i)));
+      window.push_back(std::abs(getLinkSurf(i)));
 
   window.push_back(0);
-  return std::abs(SMap.realSurf(getSignedLinkSurf(sideIndex)));
+  return std::abs(SMap.realSurf(getLinkSurf(sideIndex)));
 }
 
 Geometry::Vec3D

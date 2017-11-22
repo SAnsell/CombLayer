@@ -697,7 +697,7 @@ VacuumPipe::createLinks()
   
   // MID Point: [NO SURF]
   const Geometry::Vec3D midPt=
-    (getSignedLinkPt(1)+getSignedLinkPt(2))/2.0;
+    (getLinkPt(1)+getLinkPt(2))/2.0;
   FixedComp::setConnect(6,midPt,Y);
 
   if (flangeRadius>0.0)
@@ -737,8 +737,8 @@ VacuumPipe::setFront(const attachSystem::FixedComp& FC,
   if (joinFlag)
     {
       frontJoin=1;
-      FPt=FC.getSignedLinkPt(sideIndex);
-      FAxis=FC.getSignedLinkAxis(sideIndex);
+      FPt=FC.getLinkPt(sideIndex);
+      FAxis=FC.getLinkAxis(sideIndex);
     }
     
   return;
@@ -761,8 +761,8 @@ VacuumPipe::setBack(const attachSystem::FixedComp& FC,
   if (joinFlag)
     {
       backJoin=1;
-      BPt=FC.getSignedLinkPt(sideIndex);
-      BAxis=FC.getSignedLinkAxis(sideIndex);
+      BPt=FC.getLinkPt(sideIndex);
+      BAxis=FC.getLinkAxis(sideIndex);
     }
   return;
 }

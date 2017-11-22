@@ -293,8 +293,10 @@ PBIP::createSurfaces()
 
 void
 PBIP::createObjects(Simulation& System,
-		    const attachSystem::FixedComp& FCstart,const long int& lpStart,
-		    const attachSystem::FixedComp& FCend,const long int& lpEnd)
+		    const attachSystem::FixedComp& FCstart,
+		    const long int& lpStart,
+		    const attachSystem::FixedComp& FCend,
+		    const long int& lpEnd)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -310,8 +312,8 @@ PBIP::createObjects(Simulation& System,
     std::to_string(FCstart.getSignedLinkSurf(lpStart));
 
   std::string BSurf=(lpEnd>0) ?
-    FCend.getSignedLinkString(lpEnd) :
-    FCend.getSignedCommonRule(lpEnd).display();
+    FCend.getLinkString(lpEnd) :
+    FCend.getCommonRule(lpEnd).display();
   //  FixedComp::setLinkComponent(0,FCend,lpEnd-1);
 
   std::string Out;
