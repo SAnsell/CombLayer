@@ -497,15 +497,17 @@ WWGControl::processWeights(Simulation& System,
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);
       
-      wwgCombine(System,IParam);                 
-      wwgNormalize(IParam); 
+      wwgCombine(System,IParam);
       wwgVTK(IParam);
+      wwgNormalize(IParam); 
+      //      wwgVTK(IParam);
 
 
       for(const std::string& P : activeParticles)
 	{
+	  // don't write a wwp:particle card
 	  WM.getParticle(P)->setActiveWWP(0);
-	  setWImp(System,P);
+	  clearWImp(System,P);
 	}
     }
 
