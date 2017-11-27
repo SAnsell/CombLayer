@@ -488,12 +488,12 @@ Reflector::createInternalObjects(Simulation& System,
   FLhydro->addBoundarySurf("outer",Out);  
   FLhydro->createAll(System,*VacObj,2);
 
-  PMgroove->setTargetSurf(TarObj->getSignedLinkSurf(1));
+  PMgroove->setTargetSurf(TarObj->getLinkSurf(1));
   PMgroove->setDivideSurf(VacObj->getDivideSurf());
   PMgroove->setEdge();
   PMgroove->createAll(System,*VacObj,6,0);
 
-  PMhydro->setTargetSurf(TarObj->getSignedLinkSurf(1));
+  PMhydro->setTargetSurf(TarObj->getLinkSurf(1));
   PMhydro->setDivideSurf(-VacObj->getDivideSurf());
   PMhydro->setEdge();
   PMhydro->createAll(System,*VacObj,6,1);
@@ -520,7 +520,7 @@ Reflector::createInternalObjects(Simulation& System,
       FLwish->addBoundarySurf("outer",Out);
       FLwish->createAll(System,*DVacObj,2);
       
-      PMdec->setTargetSurf(TarObj->getSignedLinkSurf(1));
+      PMdec->setTargetSurf(TarObj->getLinkSurf(1));
       PMdec->createAll(System,*DVacObj,5,1);
     }
   else
@@ -535,7 +535,7 @@ Reflector::createInternalObjects(Simulation& System,
       FLwish->addBoundarySurf("outer",Out);  
       FLwish->createAll(System,*DMod,2);
       
-      PMdec->setTargetSurf(TarObj->getSignedLinkSurf(1));
+      PMdec->setTargetSurf(TarObj->getLinkSurf(1));
       PMdec->createAll(System,*DMod,6,1);
     }  
   Out=ModelSupport::getComposite(SMap,refIndex," 3 ");
@@ -604,23 +604,23 @@ Reflector::calcModeratorPlanes(const int BeamLine,
   if (BeamLine<4)       // NARROW
     {
       FLnarrow->getInnerVec(Window);
-      return DVacObj->getSignedLinkSurf(2);
+      return DVacObj->getLinkSurf(2);
     }
   if (BeamLine<9)      // H2
     {
       FLhydro->getInnerVec(Window);
-      return VacObj->getSignedLinkSurf(2);
+      return VacObj->getLinkSurf(2);
     }
   if (BeamLine<14)      // Groove
     {
       FLgroove->getInnerVec(Window);
       dSurf=GrooveObj->getDividePlane();
-      return VacObj->getSignedLinkSurf(1);
+      return VacObj->getLinkSurf(1);
     }
   // WISH
       FLwish->getInnerVec(Window);
       //      dSurf=DMod->getDividePlane(0);
-      return DVacObj->getSignedLinkSurf(2);
+      return DVacObj->getLinkSurf(2);
 }
 
 Geometry::Vec3D

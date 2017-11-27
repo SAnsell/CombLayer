@@ -138,7 +138,7 @@ sswConstruct::processSSW(Simulation& System,
       
       const long int sideIndex(attachSystem::getLinkIndex(linkPt));
       const std::set<int> OutSurf=
-        FCPtr->getSignedMainRule(sideIndex).getSurfSet();
+        FCPtr->getMainRule(sideIndex).getSurfSet();
       for(const int CN : OutSurf)
         SList.push_back(CN);
     }

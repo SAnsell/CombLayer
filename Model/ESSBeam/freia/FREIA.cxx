@@ -360,8 +360,8 @@ FREIA::buildOutGuide(Simulation& System,
 
   OutACut->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACut->addInsertCell(OutPitA->getCells("Collet"));
-  OutACut->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                    OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutACut->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                    OutPitA->getKey("Mid").getFullRule(-2));
   OutACut->createAll(System,FocusWall->getKey("Guide0"),2);
 
   // 15m WBC chopper
@@ -429,13 +429,13 @@ FREIA::buildHut(Simulation& System,
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
-                        JawPit->getKey("Mid").getSignedFullRule(-2));
+  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
+                        JawPit->getKey("Mid").getFullRule(-2));
   OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getSignedFullRule(-1),
-                         JawPit->getKey("Inner").getSignedFullRule(1));
+  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
+                         JawPit->getKey("Inner").getFullRule(1));
   OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
 
   return;
@@ -521,7 +521,7 @@ FREIA::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());  
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*freiaAxis,Control,GItem,1);
@@ -557,13 +557,13 @@ FREIA::build(Simulation& System,
 
   OutBCutBack->addInsertCell(JawPit->getCells("MidLayerBack"));
   OutBCutBack->addInsertCell(JawPit->getCells("Collet"));
-  OutBCutBack->setFaces(JawPit->getKey("Inner").getSignedFullRule(2),
-                        JawPit->getKey("Mid").getSignedFullRule(-2));
+  OutBCutBack->setFaces(JawPit->getKey("Inner").getFullRule(2),
+                        JawPit->getKey("Mid").getFullRule(-2));
   OutBCutBack->createAll(System,JawPit->getKey("Inner"),2);
 
   OutBCutFront->addInsertCell(JawPit->getCells("MidLayerFront"));
-  OutBCutFront->setFaces(JawPit->getKey("Mid").getSignedFullRule(-1),
-                         JawPit->getKey("Inner").getSignedFullRule(1));
+  OutBCutFront->setFaces(JawPit->getKey("Mid").getFullRule(-1),
+                         JawPit->getKey("Inner").getFullRule(1));
   OutBCutFront->createAll(System,JawPit->getKey("Inner"),-1);
   
   return;

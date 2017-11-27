@@ -287,7 +287,7 @@ BlockShutter::createInsert(Simulation& System)
       const zbTYPE ZB= iBlock.back();  // previous block
       ItemZB->initialize(System,*ZB);
       Out=ModelSupport::getComposite(SMap,surfIndex,"-17 ")+divideStr();
-      ItemZB->createAll(System,ZB->getSignedLinkSurf(2),"",Out);
+      ItemZB->createAll(System,ZB->getLinkSurf(2),"",Out);
       iBlock.push_back(ItemZB);
     }
   processColletExclude(System,colletOuterCell,cutPt,iBlock.size());	  
@@ -316,8 +316,8 @@ BlockShutter::processColletExclude(Simulation& System,const int cellN,
       if (!iBlock[i]->equalExternal(*ZB))
 	{
 	  if (firstCell)
-	    ZB->addOuterSurf(iBlock[firstCell]->getSignedLinkSurf(1));
-	  ZB->addOuterSurf(ZB->getSignedLinkSurf(-2));
+	    ZB->addOuterSurf(iBlock[firstCell]->getLinkSurf(1));
+	  ZB->addOuterSurf(ZB->getLinkSurf(-2));
 	  ZB->setInsertCell(cellN);
 	  ZB->insertObjects(System);
 	  firstCell=i;
@@ -326,7 +326,7 @@ BlockShutter::processColletExclude(Simulation& System,const int cellN,
   // Always add one block:
   zbTYPE ZOut=iBlock.back();
   if (firstCell)
-    ZOut->addOuterSurf(iBlock[firstCell]->getSignedLinkSurf(-1));
+    ZOut->addOuterSurf(iBlock[firstCell]->getLinkSurf(-1));
   ZOut->setInsertCell(cellN);
   ZOut->insertObjects(System);
   return;

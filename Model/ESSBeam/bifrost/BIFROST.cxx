@@ -289,11 +289,11 @@ BIFROST::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*bifrostAxis,Control,GItem,1);
-  ELog::EM<<"Beam axis == "<<bifrostAxis->getSignedLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Beam axis == "<<bifrostAxis->getLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setFront(GItem.getKey("Beam"),-1);
   FocusA->setBack(GItem.getKey("Beam"),-2);
@@ -429,15 +429,15 @@ BIFROST::build(Simulation& System,
     }
 
   OutACutFront->addInsertCell(OutPitA->getCells("MidLayerFront"));
-  OutACutFront->setFaces(OutPitA->getKey("Mid").getSignedFullRule(-1),
-                         OutPitA->getKey("Inner").getSignedFullRule(1));
+  OutACutFront->setFaces(OutPitA->getKey("Mid").getFullRule(-1),
+                         OutPitA->getKey("Inner").getFullRule(1));
   OutACutFront->createAll(System,OutPitA->getKey("Inner"),-1);
 
 
   OutACutBack->addInsertCell(OutPitA->getCells("MidLayerBack"));
   OutACutBack->addInsertCell(OutPitA->getCells("Collet"));
-  OutACutBack->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                        OutPitA->getKey("Mid").getSignedFullRule(-2));
+  OutACutBack->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                        OutPitA->getKey("Mid").getFullRule(-2));
   OutACutBack->createAll(System,OutPitA->getKey("Inner"),2);
   
 
@@ -489,8 +489,8 @@ BIFROST::build(Simulation& System,
   ShieldB->insertObjects(System);
 
   CaveCut->addInsertCell(Cave->getCells("IronFront"));
-  CaveCut->setFaces(Cave->getKey("Mid").getSignedFullRule(-1),
-                    Cave->getKey("Inner").getSignedFullRule(1));
+  CaveCut->setFaces(Cave->getKey("Mid").getFullRule(-1),
+                    Cave->getKey("Inner").getFullRule(1));
   CaveCut->createAll(System,*ShieldB,2);
 
   // Elliptic 6m section

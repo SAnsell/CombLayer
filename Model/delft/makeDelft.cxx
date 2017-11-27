@@ -440,8 +440,8 @@ makeDelft::buildModerator(Simulation& System,
       BePtr->addInsertCell(Pool->getCells("Water"));
       if (Pool->getCells("Water").empty())
 	BePtr->addInsertCell(voidCell);
-      HeadRule CPCut(ColdPress->getSignedFullRule(1));
-      CPCut.addUnion(ColdPress->getSignedFullRule(3));
+      HeadRule CPCut(ColdPress->getFullRule(1));
+      CPCut.addUnion(ColdPress->getFullRule(3));
       BePtr->createAll(System,FC,sideIndex,
 		       FlightB->getExclude()+FlightC->getExclude()+
 		       CPCut.display());

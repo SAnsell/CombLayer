@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/WaterMod.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 
@@ -75,7 +76,7 @@ namespace bibSystem
 {
 
 WaterMod::WaterMod(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,6),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,6),
   watIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(watIndex+1)
   /*!
@@ -85,10 +86,9 @@ WaterMod::WaterMod(const std::string& Key) :
 {}
 
 WaterMod::WaterMod(const WaterMod& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  watIndex(A.watIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),width(A.width),height(A.height),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  watIndex(A.watIndex),cellIndex(A.cellIndex),
+  width(A.width),height(A.height),
   depth(A.depth),wallThick(A.wallThick),waterMat(A.waterMat),
   wallMat(A.wallMat)
   /*!
@@ -108,13 +108,8 @@ WaterMod::operator=(const WaterMod& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       width=A.width;
       height=A.height;
       depth=A.depth;
@@ -141,14 +136,7 @@ WaterMod::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("WaterMod","populate");
 
-  // Master values
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-  zAngle=Control.EvalVar<double>(keyName+"Zangle");
-
+  FixedOffset::populate(Control);
 
   width=Control.EvalVar<double>(keyName+"Width");
   height=Control.EvalVar<double>(keyName+"Height");
@@ -171,19 +159,17 @@ WaterMod::populate(const FuncDataBase& Control)
 
 void
 WaterMod::createUnitVector(const attachSystem::FixedComp& FC,
-			   const size_t sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed Component
+    \param sideIndex :: link point
   */
 {
   ELog::RegMethod RegA("WaterMod","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
-
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
+  
   return;
 }
 
@@ -290,7 +276,7 @@ WaterMod::createLinks()
 void
 WaterMod::createAll(Simulation& System,
 		    const attachSystem::FixedComp& FC,
-		    const size_t sideIndex,
+		    const long int sideIndex,
 		    const attachSystem::ContainedComp& CC)
   /*!
     Extrenal build everything

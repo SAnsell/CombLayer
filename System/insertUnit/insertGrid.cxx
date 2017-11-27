@@ -275,14 +275,14 @@ insertGrid::createLinks()
 
   // corners
   
-  const Geometry::Vec3D frontPt=getSignedLinkPt(1);
+  const Geometry::Vec3D frontPt=getLinkPt(1);
   FixedComp::setConnect(6,frontPt-X*fullW-Z*fullH,-X-Z);
   FixedComp::setConnect(7,frontPt+X*fullW-Z*fullH,X-Z);
   FixedComp::setConnect(8,frontPt-X*fullW+Z*fullH,-X+Z);
   FixedComp::setConnect(9,frontPt+X*fullW+Z*fullH,X+Z);
 
   // Back corner:
-  const Geometry::Vec3D backPt=getSignedLinkPt(2);
+  const Geometry::Vec3D backPt=getLinkPt(2);
   FixedComp::setConnect(10,backPt-X*fullW-Z*fullH,-X-Z);
   FixedComp::setConnect(11,backPt+X*fullW-Z*fullH,X-Z);
   FixedComp::setConnect(12,backPt-X*fullW+Z*fullH,-X+Z);

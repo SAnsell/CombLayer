@@ -197,7 +197,7 @@ BunkerQUnit::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("BunkerQUnit","createUnitVector");
 
   FixedComp::createUnitVector(FC,axisIndex);
-  Origin=FC.getSignedLinkPt(orgIndex);
+  Origin=FC.getLinkPt(orgIndex);
   applyOffset();
 
   return;

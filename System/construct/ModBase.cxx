@@ -90,8 +90,8 @@ ModBase::ModBase(const std::string& Key,const size_t nLinks)  :
 {}
 
 ModBase::ModBase(const ModBase& A) : 
-  attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
+  attachSystem::FixedOffset(A),attachSystem::CellMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex)
   /*!
     Copy constructor
@@ -112,6 +112,7 @@ ModBase::operator=(const ModBase& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
     }
   return *this;
@@ -164,7 +165,7 @@ ModBase::createUnitVector(const attachSystem::FixedComp& axisFC,
   
   attachSystem::FixedComp::createUnitVector(axisFC);
   if (orgFC)
-    Origin= orgFC->getSignedLinkPt(sideIndex);
+    Origin= orgFC->getLinkPt(sideIndex);
   FixedOffset::applyOffset();
   return; 
 }

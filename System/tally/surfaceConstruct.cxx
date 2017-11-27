@@ -204,12 +204,12 @@ surfaceConstruct::processSurfObject(Simulation& System,
       const attachSystem::FixedComp* TPtr=
 	OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
       
-      const int masterPlane= TPtr->getSignedLinkSurf(linkPt);
+      const int masterPlane= TPtr->getLinkSurf(linkPt);
       std::vector<int> surfN;
       for(size_t i=0;i<linkN.size();i++)
 	{
 	  const long int LIndex=attachSystem::getLinkIndex(linkN[i]);
-	  surfN.push_back(TPtr->getSignedLinkSurf(LIndex));
+	  surfN.push_back(TPtr->getLinkSurf(LIndex));
 	}
       addF1Tally(System,tNum,masterPlane,surfN);
       return 1;

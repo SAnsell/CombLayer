@@ -204,7 +204,7 @@ H2Pipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("H2Pipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getSignedLinkPt(sideIndex);
+  Origin=CUnit.getLinkPt(sideIndex);
 
   return;
 }

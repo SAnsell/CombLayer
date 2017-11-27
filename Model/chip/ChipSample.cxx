@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   chip/ChipSample.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "chipDataStore.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ChipSample.h"
 
@@ -74,10 +75,10 @@ namespace hutchSystem
 
 ChipSample::ChipSample(const std::string& Key,const size_t Index) :
   attachSystem::ContainedComp(),
-  attachSystem::FixedComp(Key+StrFunc::makeString(Index),2),
+  attachSystem::FixedOffset(Key+StrFunc::makeString(Index),2),
   ID(Index),baseName(Key),
   csIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
-  cellIndex(csIndex+1),populated(0)
+  cellIndex(csIndex+1)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: Name for item in search
@@ -86,13 +87,10 @@ ChipSample::ChipSample(const std::string& Key,const size_t Index) :
 {}
 
 ChipSample::ChipSample(const ChipSample& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
   ID(A.ID),baseName(A.baseName),csIndex(A.csIndex),
-  cellIndex(A.cellIndex),populated(A.populated),
-  tableNum(A.tableNum),zAngle(A.zAngle),xyAngle(A.xyAngle),
-  XStep(A.XStep),YStep(A.YStep),ZLift(A.ZLift),
-  width(A.width),height(A.height),length(A.length),
-  defMat(A.defMat)
+  cellIndex(A.cellIndex),tableNum(A.tableNum),width(A.width),
+  height(A.height),length(A.length),defMat(A.defMat)
   /*!
     Copy constructor
     \param A :: ChipSample to copy
@@ -110,15 +108,10 @@ ChipSample::operator=(const ChipSample& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      populated=A.populated;
       tableNum=A.tableNum;
       zAngle=A.zAngle;
-      xyAngle=A.xyAngle;
-      XStep=A.XStep;
-      YStep=A.YStep;
-      ZLift=A.ZLift;
       width=A.width;
       height=A.height;
       length=A.length;
@@ -134,69 +127,41 @@ ChipSample::~ChipSample()
 {}
 
 void
-ChipSample::populate(const Simulation& System)
+ChipSample::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
-    \param System :: Simulation to use
+    \param Control :: Funciont
   */
 {
   ELog::RegMethod RegA("ChipSample","populate");
 
-  const FuncDataBase& Control=System.getDataBase();
-
-  try
-    {
-      tableNum=Control.EvalPair<int>(keyName,baseName,"TableNum");
-      zAngle=Control.EvalPair<double>(keyName,baseName,"ZAngle");
-      xyAngle=Control.EvalPair<double>(keyName,baseName,"XYAngle");
-
-      XStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-      YStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-      ZLift=Control.EvalPair<double>(keyName,baseName,"ZLift");
-      
-      width=Control.EvalPair<double>(keyName,baseName,"Width");
-      height=Control.EvalPair<double>(keyName,baseName,"Height");
-      length=Control.EvalPair<double>(keyName,baseName,"Depth");
-      defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat",
+  FixedOffset::populate(baseName,Control);
+  
+  tableNum=Control.EvalPair<int>(keyName,baseName,"TableNum");
+  
+  width=Control.EvalPair<double>(keyName,baseName,"Width");
+  height=Control.EvalPair<double>(keyName,baseName,"Height");
+  length=Control.EvalPair<double>(keyName,baseName,"Depth");
+  defMat=ModelSupport::EvalMat<int>(Control,keyName+"DefMat",
 					baseName+"DefMat");
       
-      populated = 1;
-    }
-  // Exit and don't report if we are not using this scatter plate
-  catch (ColErr::InContainerError<std::string>& EType)
-    {
-      ELog::EM<<keyName<<" not in use Vars:"
-	      <<EType.getItem()<<ELog::endWarn;
-      populated=0;   
-    }
   return;
 }
 
 void
-ChipSample::createUnitVector(const FixedComp& TC)
+ChipSample::createUnitVector(const FixedComp& TC,
+			     const long int sideIndex)
   /*!
     Create the unit vectors
     \param TC :: Table to attach sample to
+    \param sideIndex :: Table link point
   */
 {
   ELog::RegMethod RegA("ChipSample","createUnitVector");
 
   // Origin is in the wrong place as it is at the EXIT:
-  FixedComp::createUnitVector(TC);
-
-  Origin=TC.getLinkPt(4);
-  Origin+=X*XStep+Y*YStep+Z*ZLift;
-
-  const Geometry::Quaternion Qz=
-    Geometry::Quaternion::calcQRotDeg(zAngle,X);
-  const Geometry::Quaternion Qxy=
-    Geometry::Quaternion::calcQRotDeg(xyAngle,Z);
-  
-  Qz.rotate(Y);
-  Qz.rotate(X);
-  Qxy.rotate(X);
-  Qxy.rotate(Y);
-  Qxy.rotate(Z);
+  FixedComp::createUnitVector(TC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -231,9 +196,10 @@ ChipSample::createObjects(Simulation& System)
   std::string Out;
   // Master box: 
   Out=ModelSupport::getComposite(SMap,csIndex,"1 -2 3 -4 5 -6");
-  addOuterSurf(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,defMat,0.0,Out));
-  
+
+  addOuterSurf(Out);
+    
   return;
 }
 
@@ -267,18 +233,16 @@ ChipSample::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ChipSample","createAll");
 
-  populate(System);
-  if (populated)
-    {
-      if (tableNum==1)
-	createUnitVector(TCA);
-      else
-	createUnitVector(TCB);
-      createSurfaces();
-      createObjects(System);
-      createLinks();
-      insertObjects(System);
-    }
+  populate(System.getDataBase());
+  if (tableNum==1)
+    createUnitVector(TCA,5);
+  else
+    createUnitVector(TCB,5);
+  createSurfaces();
+  createObjects(System);
+  createLinks();
+  insertObjects(System);
+
   return;
 }
   

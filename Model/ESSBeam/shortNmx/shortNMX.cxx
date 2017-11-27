@@ -185,12 +185,12 @@ shortNMX::build(Simulation& System,
   CopiedComp::process(System.getDataBase());
   ELog::EM<<"EVAL == "<<newName+"StopPoint"<<ELog::endDiag;
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
   setBeamAxis(System.getDataBase(),GItem,0);
 
-  ELog::EM<<"Beam axis == "<<nmxAxis->getSignedLinkPt(3)<<ELog::endDiag;
+  ELog::EM<<"Beam axis == "<<nmxAxis->getLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));
   FocusA->setBack(GItem.getKey("Beam"),-2);
   FocusA->createAll(System,*nmxAxis,-3,*nmxAxis,-3); 

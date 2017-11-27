@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   t1Upgrade/EngReflector.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2017 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,10 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "World.h"
 #include "EngReflector.h"
 
@@ -76,7 +79,8 @@ namespace ts1System
 {
 
 EngReflector::EngReflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,13),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,13),
+  attachSystem::CellMap(),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
   /*!
@@ -86,10 +90,10 @@ EngReflector::EngReflector(const std::string& Key)  :
 {}
 
 EngReflector::EngReflector(const EngReflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),radius(A.radius),width(A.width),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::CellMap(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
+  radius(A.radius),width(A.width),
   height(A.height),topCutHeight(A.topCutHeight),
   botCutHeight(A.botCutHeight),cutLen(A.cutLen),cutAngle(A.cutAngle),
   topCCHeight(A.topCCHeight),cCoff(A.cCoff),cutRadius(A.cutRadius),
@@ -123,13 +127,9 @@ EngReflector::operator=(const EngReflector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       radius=A.radius;
       width=A.width;
       height=A.height;
@@ -181,21 +181,15 @@ EngReflector::~EngReflector()
 {}
 
 void
-EngReflector::populate(const Simulation& System)
+EngReflector::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("EngReflector","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
+
+  FixedOffset::populate(Control);
 
   radius=Control.EvalVar<double>(keyName+"Radius");
   width=Control.EvalVar<double>(keyName+"Width");
@@ -247,16 +241,17 @@ EngReflector::populate(const Simulation& System)
 }
   
 void
-EngReflector::createUnitVector(const attachSystem::FixedComp& FC)
+EngReflector::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
+    \param sideIndex 
   */
 {
   ELog::RegMethod RegA("EngReflector","createUnitVector");
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -409,7 +404,7 @@ EngReflector::createObjects(Simulation& System)
   Out+=ModelSupport::getComposite(SMap,refIndex," (417:-415:416) ");		
   Out+=ModelSupport::getComposite(SMap,refIndex," (427:-415:416) ");		
   System.addCell(MonteCarlo::Qhull(cellIndex++,reflMat,reflTemp,Out));
-
+  addCell("Reflector",cellIndex-1);
 
   Out=ModelSupport::getComposite(SMap,refIndex,"-7 3 -4 6 -36");
   Out+=ModelSupport::getComposite(SMap,refIndex," (-12:7:36:-6) ");
@@ -464,49 +459,6 @@ EngReflector::addToInsertChain(attachSystem::ContainedComp& CC) const
   return;
 }
 
-void
-EngReflector::addToInsertControl(Simulation& System,
-				 const attachSystem::FixedComp& FC,
-				 attachSystem::ContainedComp& CC) const
-  /*!
-    Adds this object to the containedComp to be inserted.
-    FC is the fixed object that is to be inserted -- linkpoints
-    must be set. It is tested against all the ojbect with
-    this object .
-    
-    \todo This can easily be moved to FixedComp and out of this class
-       -- it requies that cellNumber is checked in ObjectRegister
-       -- That all objects can be effectively calculated [no open virtual
-       holers]
-       -- THAT IS IT!!!
-
-    \param FC :: FixedComp with the points
-    \param CC :: ContainedComp object to add to this
-  */
-{
-  ELog::RegMethod RegA("EngReflector","addToInsertControl");
-
-  const size_t NPoint=FC.NConnect();
-  for(int i=refIndex+1;i<cellIndex;i++)
-    {
-      MonteCarlo::Qhull* CRPtr=System.findQhull(i);
-      if (!CRPtr)
-	throw ColErr::InContainerError<int>(i,"Object not build");
-
-      CRPtr->populate();
-      for(size_t j=0;j<NPoint;j++)
-	{
-	  const Geometry::Vec3D& Pt=FC.getLinkPt(j);
-	  if (CRPtr->isValid(Pt))
-	    {
-	      CC.addInsertCell(i);
-	      break;
-	    }
-	}
-    }
-  CC.insertObjects(System);
-  return;
-}
 
 void
 EngReflector::createLinks()
@@ -515,6 +467,7 @@ EngReflector::createLinks()
   */
 {
   ELog::RegMethod RegA("Reflector","createLinks");
+
   FixedComp::setLinkSurf(0,SMap.realSurf(refIndex+7));
   FixedComp::setLinkSurf(1,SMap.realSurf(refIndex+11));
   FixedComp::setLinkSurf(2,-SMap.realSurf(refIndex+3));
@@ -578,8 +531,8 @@ EngReflector::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("EngReflector","createAll");
 
-  populate(System);
-  createUnitVector(FC);
+  populate(System.getDataBase());
+  createUnitVector(FC,0);
   createSurfaces();
   createLinks();
   createObjects(System);

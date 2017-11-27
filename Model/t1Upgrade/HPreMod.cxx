@@ -177,8 +177,8 @@ HPreMod::getConnectPoints(const attachSystem::FixedComp& FC,
   sideAxis.clear();
   for(size_t i=0;i<6;i++)
     {
-      sidePts.push_back(FC.getSignedLinkPt(sequence[index][i]));
-      sideAxis.push_back(FC.getSignedLinkAxis(sequence[index][i]));
+      sidePts.push_back(FC.getLinkPt(sequence[index][i]));
+      sideAxis.push_back(FC.getLinkAxis(sequence[index][i]));
     }
   Y=sideAxis[0];
   Z=sideAxis[5];
@@ -319,12 +319,12 @@ HPreMod::createObjects(Simulation& System,
 	{
 	  if (addFlag) Inner+=":";
 	  addFlag=1;
-	  Inner+=FC.getSignedLinkString(i);
+	  Inner+=FC.getLinkString(i);
 	}
     }
   Inner+=")";
 
-  const std::string FFace=FC.getSignedLinkString(-frontIndex);
+  const std::string FFace=FC.getLinkString(-frontIndex);
   // Set first link Point:
   FixedComp::setLinkSignedCopy(0,FC,frontIndex);
 

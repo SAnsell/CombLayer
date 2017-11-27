@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
- 
- * File:   essBuild/VESPA.cxx
+
+ * File:   ESSBeam/vespa/VESPA.cxx
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.or g/licenses/>. 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -87,6 +87,7 @@
 #include "SingleChopper.h"
 #include "TwinBase.h"
 #include "TwinChopper.h"
+#include "TwinChopperFlat.h"
 #include "DetectorTank.h"
 #include "LineShield.h"
 #include "TriangleShield.h"
@@ -403,8 +404,8 @@ VESPA::buildOutGuide(Simulation& System,
   
   T0ExitPort->addInsertCell(OutPitT0->getCells("MidLayerBack"));
   T0ExitPort->addInsertCell(OutPitT0->getCells("Collet"));
-  T0ExitPort->setFaces(OutPitT0->getKey("Inner").getSignedFullRule(2),
-                       OutPitT0->getKey("Mid").getSignedFullRule(-2));
+  T0ExitPort->setFaces(OutPitT0->getKey("Inner").getFullRule(2),
+                       OutPitT0->getKey("Mid").getFullRule(-2));
   T0ExitPort->createAll(System,OutPitT0->getKey("Inner"),2);
 
   OutPitA->addInsertCell(voidCell);
@@ -464,14 +465,14 @@ VESPA::buildOutGuide(Simulation& System,
   OutPitB->createAll(System,OutPitA->getKey("Inner"),2);
   
   PitBPortA->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  PitBPortA->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
-                       OutPitB->getKey("Mid").getSignedFullRule(-1));
+  PitBPortA->setFaces(OutPitB->getKey("Inner").getFullRule(1),
+                       OutPitB->getKey("Mid").getFullRule(-1));
   PitBPortA->createAll(System,OutPitB->getKey("Inner"),2);
 
   PitBPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   PitBPortB->addInsertCell(OutPitB->getCells("Collet"));
-  PitBPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
-                      OutPitB->getKey("Mid").getSignedFullRule(-2));
+  PitBPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
+                      OutPitB->getKey("Mid").getFullRule(-2));
   PitBPortB->createAll(System,OutPitB->getKey("Inner"),2);
   
   const size_t lastIndex(ShieldArray.size()-1);
@@ -537,8 +538,8 @@ VESPA::buildHut(Simulation& System,
 
   VInnerExit->addInsertCell(VInner->getCells("FeLayer"));
   VInnerExit->addInsertCell(VInner->getCells("ConcLayer"));
-  VInnerExit->setFaces(VInner->getKey("Inner").getSignedFullRule(2),
-                       VInner->getKey("Outer").getSignedFullRule(-2));
+  VInnerExit->setFaces(VInner->getKey("Inner").getFullRule(2),
+                       VInner->getKey("Outer").getFullRule(-2));
   VInnerExit->createAll(System,VInner->getKey("Inner"),2);
 
   ShieldC->addInsertCell(Cave->getCells("FrontWall"));
@@ -691,7 +692,7 @@ VESPA::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*vespaAxis,Control,GItem,0);

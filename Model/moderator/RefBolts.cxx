@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   moderator/RefBolts.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,8 +121,8 @@ RefBolts::~RefBolts()
   
 void
 RefBolts::createUnitVector(const attachSystem::FixedComp& CUnit,
-				   const size_t sideIndex)
-  /*!
+			   const long int sideIndex)
+/*!
     Create the unit vectors
     - Y Points towards WISH
     - X Across the moderator
@@ -133,7 +133,7 @@ RefBolts::createUnitVector(const attachSystem::FixedComp& CUnit,
 {
   ELog::RegMethod RegA("RefBolts","createUnitVector");
 
-  FixedComp::createUnitVector(CUnit);
+  FixedComp::createUnitVector(CUnit,0);
   Origin=CUnit.getLinkPt(sideIndex);
   return;
 }
@@ -208,7 +208,8 @@ RefBolts::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("RefBolts","createAll");
-  createUnitVector(FUnit,6);
+
+  createUnitVector(FUnit,7);
   createBoltGrp(System,"Nim");
   createBoltGrp(System,"Steel");
   createBoltGrp(System,"Buck");

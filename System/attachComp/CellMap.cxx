@@ -258,7 +258,7 @@ CellMap::insertComponent(Simulation& System,
     throw ColErr::InContainerError<long int>
       (0,"Zero line surface not defined for : "+FC.getKeyName());
 
-  insertComponent(System,Key,FC.getSignedLinkString(sideIndex));
+  insertComponent(System,Key,FC.getLinkString(sideIndex));
   return;
 }
 

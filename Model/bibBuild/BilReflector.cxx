@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   bibBuild/BilReflector.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "BilReflector.h"
@@ -82,7 +83,7 @@ namespace bibSystem
 {
 
 BilReflector::BilReflector(const std::string& Key)  :
-  attachSystem::ContainedComp(),attachSystem::FixedComp(Key,3),
+  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,3),
   refIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(refIndex+1)
   /*!
@@ -92,10 +93,9 @@ BilReflector::BilReflector(const std::string& Key)  :
 {}
 
 BilReflector::BilReflector(const BilReflector& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedComp(A),
-  refIndex(A.refIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xyAngle(A.xyAngle),
-  zAngle(A.zAngle),BeHeight(A.BeHeight),BeDepth(A.BeDepth),
+  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  refIndex(A.refIndex),cellIndex(A.cellIndex),
+  BeHeight(A.BeHeight),BeDepth(A.BeDepth),
   BeRadius(A.BeRadius),BeMat(A.BeMat),InnerHeight(A.InnerHeight),
   InnerDepth(A.InnerDepth),InnerRadius(A.InnerRadius),
   InnerMat(A.InnerMat),PbHeight(A.PbHeight),PbDepth(A.PbDepth),
@@ -122,13 +122,8 @@ BilReflector::operator=(const BilReflector& A)
   if (this!=&A)
     {
       attachSystem::ContainedComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xyAngle=A.xyAngle;
-      zAngle=A.zAngle;
       BeHeight=A.BeHeight;
       BeDepth=A.BeDepth;
       BeRadius=A.BeRadius;
@@ -165,22 +160,16 @@ BilReflector::~BilReflector()
 
 
 void
-BilReflector::populate(const Simulation& System)
+BilReflector::populate(const FuncDataBase& Control)
  /*!
    Populate all the variables
-   \param System :: Simulation to use
+   \param Control :: DataBase
  */
 {
   ELog::RegMethod RegA("BilReflector","populate");
-  
-  const FuncDataBase& Control=System.getDataBase();
-  
-  xStep=Control.EvalVar<double>(keyName+"XStep");
-  yStep=Control.EvalVar<double>(keyName+"YStep");
-  zStep=Control.EvalVar<double>(keyName+"ZStep");
-  xyAngle=Control.EvalVar<double>(keyName+"XYAngle");
-  zAngle=Control.EvalVar<double>(keyName+"ZAngle");
 
+  attachSystem::FixedOffset::populate(Control);
+    
   BeHeight=Control.EvalVar<double>(keyName+"BeHeight");
   BeDepth=Control.EvalVar<double>(keyName+"BeDepth");
   BeRadius=Control.EvalVar<double>(keyName+"BeRadius");
@@ -216,7 +205,7 @@ BilReflector::populate(const Simulation& System)
   
 void
 BilReflector::createUnitVector(const attachSystem::FixedComp& FC,
-			       const size_t sideIndex)
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Linked object
@@ -224,13 +213,8 @@ BilReflector::createUnitVector(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("BilReflector","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
-  Origin=FC.getLinkPt(sideIndex); /** Aqui pide el punto*/
-
-  // ANGLE SHIFT [Do not remove! -- the reflect is never
-  // optimally at the centre of the target
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
+  FixedOffset::applyOffset();
 
   return;
 }
@@ -327,7 +311,7 @@ BilReflector::createLinks()
 void
 BilReflector::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
-		       const size_t sideIndex)
+		       const long int sideIndex)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -336,7 +320,7 @@ BilReflector::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("BilReflector","createAll");
 
-  populate(System);
+  populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
 
   createSurfaces();

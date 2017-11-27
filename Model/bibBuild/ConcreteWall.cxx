@@ -185,9 +185,9 @@ ConcreteWall::createSurfaces(const attachSystem::FixedComp& ReflFC,
   // rotation of axis:
 
   const long int SI(std::abs(sideIndex));
-  SMap.addMatch(wallIndex+7,ReflFC.getSignedLinkSurf(SI));
-  SMap.addMatch(wallIndex+1,ReflFC.getSignedLinkSurf(1+((SI+1) % 3)));
-  SMap.addMatch(wallIndex+2,ReflFC.getSignedLinkSurf(1+((SI+2) % 3)));
+  SMap.addMatch(wallIndex+7,ReflFC.getLinkSurf(SI));
+  SMap.addMatch(wallIndex+1,ReflFC.getLinkSurf(1+((SI+1) % 3)));
+  SMap.addMatch(wallIndex+2,ReflFC.getLinkSurf(1+((SI+2) % 3)));
 
   ModelSupport::buildCylinder(SMap,wallIndex+17,Origin,Z,innerRadius);
   ModelSupport::buildCylinder(SMap,wallIndex+27,Origin,Z,innerRadius+thickness);

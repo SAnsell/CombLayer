@@ -537,7 +537,7 @@ WCellControl::calcCellTrack(const Simulation& System,
 }
 void
 WCellControl::setWeights(Simulation& System,
-			  const std::string& particleType)
+			 const std::string& particleType)
    /*!
     Function to set up the weights system.
     It replaces the old file read system.
@@ -545,7 +545,7 @@ WCellControl::setWeights(Simulation& System,
     \param particleType :: Particle type
   */
 {
-  ELog::RegMethod RegA("WeightControl","setWeights(Simulation)");
+  ELog::RegMethod RegA("WCellControl","setWeights(Simulation)");
 
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();  
@@ -577,7 +577,7 @@ WCellControl::normWeights(Simulation& System,
   */
     
 {
-  ELog::RegMethod RegA("WeightControl","normWeights");
+  ELog::RegMethod RegA("WCellControl","normWeights");
   
   
   if (IParam.flag("weightTemp"))
@@ -589,10 +589,9 @@ WCellControl::normWeights(Simulation& System,
   return;
 }
 
-
 void
 WCellControl::processWeights(Simulation& System,
-			      const mainSystem::inputParam& IParam)
+			     const mainSystem::inputParam& IParam)
   /*!
     Set individual weights based on temperature/cell
     Call via WeightControl processWeight
@@ -608,7 +607,6 @@ WCellControl::processWeights(Simulation& System,
       for(const std::string& P : activeParticles)
 	{
 	  setWeights(System,P);
-	  ELog::EM<<"Cell PROCESS :: "<<P<<ELog::endDiag;
 	}
     }
 

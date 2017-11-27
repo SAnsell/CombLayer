@@ -22,11 +22,16 @@
 #ifndef SDef_SourceCreate_h
 #define SDef_SourceCreate_h
 
+class Simulation;
+
 namespace SDef
 {
   class Source;
 
-  std::string createActivationSource(const size_t,
+  std::string createActivationSource(const Simulation&,
+				     const std::string&,
+				     const std::string&,
+				     const size_t,
 				     const Geometry::Vec3D&,
 				     const Geometry::Vec3D&,
 				     const size_t,

@@ -187,7 +187,7 @@ WaterPipe::createUnitVector(const attachSystem::FixedComp& CUnit,
   ELog::RegMethod RegA("WaterPipe","createUnitVector");
 
   FixedComp::createUnitVector(CUnit);
-  Origin=CUnit.getSignedLinkPt(sideIndex);
+  Origin=CUnit.getLinkPt(sideIndex);
 
   return;
 }

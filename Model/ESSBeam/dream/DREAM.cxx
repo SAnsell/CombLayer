@@ -264,7 +264,7 @@ DREAM::build(Simulation& System,
   const FuncDataBase& Control=System.getDataBase();
   CopiedComp::process(System.getDataBase());  // CONTROL modified
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
   
   essBeamSystem::setBeamAxis(*dreamAxis,Control,GItem,1);
@@ -306,7 +306,7 @@ DREAM::build(Simulation& System,
   FocusC->addInsertCell(VPipeC->getCells("Void"));
   FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
   
-  CollimA->setOuter(VPipeC->getSignedFullRule(-6));
+  CollimA->setOuter(VPipeC->getFullRule(-6));
   CollimA->setInner(FocusC->getXSection(0,0)); 
   CollimA->addInsertCell(VPipeC->getCells("Void"));
   CollimA->createAll(System,*VPipeC,-1);
@@ -339,7 +339,7 @@ DREAM::build(Simulation& System,
   FocusE1->addInsertCell(VPipeE1->getCells("Void"));
   FocusE1->createAll(System,*VPipeE1,0,*VPipeE1,0);
 
-  CollimB->setOuter(VPipeE1->getSignedFullRule(-6));
+  CollimB->setOuter(VPipeE1->getFullRule(-6));
   CollimB->setInner(FocusE1->getXSection(0,0)); 
   CollimB->addInsertCell(VPipeE1->getCells("Void"));
   CollimB->createAll(System,*VPipeE1,-1);
@@ -349,7 +349,7 @@ DREAM::build(Simulation& System,
   FocusE2->addInsertCell(VPipeE2->getCells("Void"));
   FocusE2->createAll(System,*VPipeE2,0,*VPipeE2,0);
   
-  CollimC->setOuter(VPipeE2->getSignedFullRule(-6));
+  CollimC->setOuter(VPipeE2->getFullRule(-6));
   CollimC->setInner(FocusE2->getXSection(0,0)); 
   CollimC->addInsertCell(VPipeE2->getCells("Void"));
   CollimC->createAll(System,*VPipeE2,-2);

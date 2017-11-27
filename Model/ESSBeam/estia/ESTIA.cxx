@@ -210,7 +210,7 @@ ESTIA::build(Simulation& System,
   essBeamSystem::setBeamAxis(*estiaAxis,System.getDataBase(),GItem,1);
 
   FocusMono->addInsertCell(GItem.getCells("Void"));
-  FocusMono->setBack(GItem.getKey("Beam").getSignedLinkString(-2));
+  FocusMono->setBack(GItem.getKey("Beam").getLinkString(-2));
   FocusMono->createAll(System,*estiaAxis,-3,*estiaAxis,-3);
 
   // Shutter pipe [note gap front/back]

@@ -234,8 +234,8 @@ GuideShield::createObjects(Simulation& System,
       else if (CC)
 	Out+=CC->getExclude();
 
-      Out+=InnerFC.getSignedLinkString(innerSide);
-      Out+=OuterFC.getSignedLinkString(outerSide);
+      Out+=InnerFC.getLinkString(innerSide);
+      Out+=OuterFC.getLinkString(outerSide);
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out));
       SI+=10;
@@ -287,9 +287,9 @@ GuideShield::calcInnerDimensions(const attachSystem::FixedComp& GO)
 {
   ELog::RegMethod RegA("GuideShield","calcInnerDimensions");
 
-  innerWidth=GO.getLinkPt(3).Distance(GO.getLinkPt(2));
-  innerHeight=GO.getLinkPt(4).Distance(GO.getLinkPt(5));
-
+  innerWidth=GO.getLinkDistance(3,4);
+  innerHeight=GO.getLinkDistance(5,6);
+  return;
 }
 
 void

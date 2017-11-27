@@ -329,7 +329,7 @@ VOR::build(Simulation& System,
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
 
 
-  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getSignedLinkPt(-1)
+  ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<ELog::endDiag;
 
   essBeamSystem::setBeamAxis(*vorAxis,Control,GItem,1);
@@ -376,8 +376,8 @@ VOR::build(Simulation& System,
   
   FOCExitPort->addInsertCell(OutPitA->getCells("MidLayerBack"));
   FOCExitPort->addInsertCell(OutPitA->getCells("Collet"));
-  FOCExitPort->setFaces(OutPitA->getKey("Inner").getSignedFullRule(2),
-                       OutPitA->getKey("Mid").getSignedFullRule(-2));
+  FOCExitPort->setFaces(OutPitA->getKey("Inner").getFullRule(2),
+                       OutPitA->getKey("Mid").getFullRule(-2));
   FOCExitPort->createAll(System,OutPitA->getKey("Inner"),2);
 
 
@@ -386,15 +386,15 @@ VOR::build(Simulation& System,
   OutPitB->createAll(System,OutPitA->getKey("Inner"),0);
 
   FOCEntryPortB->addInsertCell(OutPitB->getCells("MidLayerFront"));
-  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(1),
-			  OutPitB->getKey("Mid").getSignedFullRule(-1));
+  FOCEntryPortB->setFaces(OutPitB->getKey("Inner").getFullRule(1),
+			  OutPitB->getKey("Mid").getFullRule(-1));
   FOCEntryPortB->createAll(System,OutPitB->getKey("Inner"),1);
 
   
   FOCExitPortB->addInsertCell(OutPitB->getCells("MidLayerBack"));
   FOCExitPortB->addInsertCell(OutPitB->getCells("Collet"));
-  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getSignedFullRule(2),
-                       OutPitB->getKey("Mid").getSignedFullRule(-2));
+  FOCExitPortB->setFaces(OutPitB->getKey("Inner").getFullRule(2),
+                       OutPitB->getKey("Mid").getFullRule(-2));
   FOCExitPortB->createAll(System,OutPitB->getKey("Inner"),2);
 
   // shielding between PitA and P it B
@@ -438,8 +438,8 @@ VOR::build(Simulation& System,
 
   CavePort->addInsertCell(Cave->getCells("Steel"));
   CavePort->setCutFaceFlag(1);
-  CavePort->setFaces(Cave->getKey("Inner").getSignedFullRule(1),
-		     Cave->getKey("Mid").getSignedFullRule(-1));
+  CavePort->setFaces(Cave->getKey("Inner").getFullRule(1),
+		     Cave->getKey("Mid").getFullRule(-1));
   CavePort->createAll(System,FocusOutC->getKey("Guide0"),2);
 
   Tank->addInsertCell(Cave->getCells("Void"));

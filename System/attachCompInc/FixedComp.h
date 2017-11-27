@@ -48,9 +48,9 @@ class FixedComp
  private:
 
 
-  std::string getLinkString(const size_t) const;
-  std::string getLinkComplement(const size_t) const;
-  int getLinkSurf(const size_t) const;
+  std::string getUSLinkString(const size_t) const;
+  std::string getUSLinkComplement(const size_t) const;
+  int getUSLinkSurf(const size_t) const;
   
  protected:
   
@@ -73,14 +73,10 @@ class FixedComp
   
   void makeOrthogonal();
 
-  const HeadRule& getMainRule(const size_t) const;
-  const HeadRule& getCommonRule(const size_t) const;
-
+  const HeadRule& getUSMainRule(const size_t) const;
+  const HeadRule& getUSCommonRule(const size_t) const;
 
  public:
-
-  const Geometry::Vec3D& getLinkPt(const size_t) const;
-  const Geometry::Vec3D& getLinkAxis(const size_t) const;
 
   static void computeZOffPlane(const Geometry::Vec3D&,
 			       const Geometry::Vec3D&,
@@ -174,20 +170,21 @@ class FixedComp
   size_t NConnect() const { return LU.size(); }
   void setNConnect(const size_t);
   const LinkUnit& getLU(const size_t)  const;
-
+  
   LinkUnit& getSignedLU(const long int);
   const LinkUnit& getSignedLU(const long int)  const; 
-  
-  virtual Geometry::Vec3D getSignedLinkPt(const long int) const;
-  virtual Geometry::Vec3D getSignedLinkAxis(const long int) const;
-  virtual std::string getSignedLinkString(const long int) const;
-  virtual double getLinkDistance(const long int,const long int) const;
-  virtual int getSignedLinkSurf(const long int) const;
-  
-  HeadRule getSignedFullRule(const long int) const;
 
-  HeadRule getSignedMainRule(const long int) const;
-  HeadRule getSignedCommonRule(const long int) const;
+  std::vector<Geometry::Vec3D> getAllLinkPts() const;
+  virtual Geometry::Vec3D getLinkPt(const long int) const;
+  virtual Geometry::Vec3D getLinkAxis(const long int) const;
+  virtual std::string getLinkString(const long int) const;
+  virtual double getLinkDistance(const long int,const long int) const;
+  virtual int getLinkSurf(const long int) const;
+  
+  HeadRule getFullRule(const long int) const;
+
+  HeadRule getMainRule(const long int) const;
+  HeadRule getCommonRule(const long int) const;
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 

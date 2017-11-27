@@ -191,10 +191,10 @@ itemConstruct::addBeamLineItem(Simulation& System,
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getSignedLinkAxis(1);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getSignedLinkPt(1); 
+    ShutterPtr->getLinkPt(1); 
 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=

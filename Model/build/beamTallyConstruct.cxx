@@ -137,10 +137,10 @@ beamTallyConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(&FC);
   BAxis=(TwinPtr) ?  -TwinPtr->getBY() :
-    FC.getSignedLinkAxis(0);
+    FC.getLinkAxis(0);
   
   BOrigin=(TwinPtr) ? TwinPtr->getBeamStart() :
-    FC.getSignedLinkPt(0); 
+    FC.getLinkPt(0); 
   
   return;
 }
@@ -319,10 +319,10 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getSignedLinkAxis(1);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(1);
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getSignedLinkPt(1); 
+    ShutterPtr->getLinkPt(1); 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -418,10 +418,11 @@ beamTallyConstruct::addShutterTally(Simulation& System,
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
 
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getY();
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getCentre();
+  
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -441,9 +442,10 @@ beamTallyConstruct::addShutterTally(Simulation& System,
         std::bind(std::minus<Geometry::Vec3D>(),
 		  std::placeholders::_1,BAxis*windowOffset));
   std::vector<Geometry::Vec3D>::iterator vc;
-  ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDebug;
+
+  ELog::EM<<"BEAM START "<<shutterPoint<<ELog::endDiag;
   for(vc=Window.begin();vc!=Window.end();vc++)
-    ELog::EM<<"Window == "<<*vc<<ELog::endDebug;
+    ELog::EM<<"Window == "<<*vc<<ELog::endDiag;
 
   // Apply rotation
   if (std::abs(pointZRot)>Geometry::zeroTol)
@@ -505,10 +507,10 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
   const attachSystem::TwinComp* TwinPtr=
     dynamic_cast<const attachSystem::TwinComp*>(ShutterPtr);
   Geometry::Vec3D BAxis=(TwinPtr) ? 
-    TwinPtr->getBY()*-1.0 :  ShutterPtr->getLinkAxis(0);
+    TwinPtr->getBY()*-1.0 :  ShutterPtr->getY();
   Geometry::Vec3D shutterPoint=(TwinPtr) ?
     TwinPtr->getBeamStart() : 
-    ShutterPtr->getLinkPt(0); 
+    ShutterPtr->getCentre(); 
   // CALC Intercept between Moderator boundary
   std::vector<Geometry::Vec3D> Window=
     calcWindowIntercept(masterPlane,Planes,shutterPoint);
@@ -600,7 +602,7 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
       ELog::EM<<"Failed to find B4C in the viewAxis "<<ELog::endErr;
       return;
     }
-  Geometry::Vec3D BAxis=ShutterPtr->getSignedLinkAxis(0);
+  Geometry::Vec3D BAxis=ShutterPtr->getLinkAxis(0);
   Geometry::Vec3D BOrigin;
   calcBeamDirection(*ShutterPtr,BOrigin,BAxis);
 

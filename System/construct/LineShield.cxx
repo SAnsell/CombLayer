@@ -478,8 +478,8 @@ LineShield::setFront(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeFront=1;
-  frontSurf=FC.getSignedMainRule(sideIndex);
-  frontCut=FC.getSignedCommonRule(sideIndex);
+  frontSurf=FC.getMainRule(sideIndex);
+  frontCut=FC.getCommonRule(sideIndex);
   frontSurf.populateSurf();
   frontCut.populateSurf();
   
@@ -501,8 +501,8 @@ LineShield::setBack(const attachSystem::FixedComp& FC,
     throw ColErr::EmptyValue<long int>("SideIndex cant be zero");
 
   activeBack=1;
-  backSurf=FC.getSignedMainRule(sideIndex);
-  backCut=FC.getSignedCommonRule(sideIndex);
+  backSurf=FC.getMainRule(sideIndex);
+  backCut=FC.getCommonRule(sideIndex);
   backSurf.populateSurf();
   backCut.populateSurf();
   

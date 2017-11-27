@@ -153,11 +153,11 @@ class GeneralShutter : public attachSystem::TwinComp,
 
   /// Access FrontPoint
   Geometry::Vec3D getFrontPt() const 
-    { return getSignedLinkPt(1); }
+    { return getLinkPt(1); }
 
   /// Access BackPoint
   virtual Geometry::Vec3D getBackPt() const 
-    { return getSignedLinkPt(2); }
+    { return getLinkPt(2); }
   
   /// Access flat-angle
   double getAngle() const { return xyAngle; }

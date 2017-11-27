@@ -155,7 +155,7 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   if (modLink<5)
     throw ColErr::IndexError<long int>(4,modLink,"Moderator LU size");
   
-  Geometry::Vec3D OutPt=Mod.getSignedLinkPt(1);  // first outer surface
+  Geometry::Vec3D OutPt=Mod.getLinkPt(1);  // first outer surface
   innerRadius=OutPt.Distance(Origin);
   ELog::EM<<"Inner radius == "<<innerRadius<<ELog::endDiag;
 
@@ -166,9 +166,9 @@ CylPreSimple::checkItems(const attachSystem::FixedComp& Mod)
   double ZDownCos(1.0);
   for(long int i=2;i<modLink;i++)
     {
-      const Geometry::Vec3D OutAxis=Mod.getSignedLinkAxis(i);
+      const Geometry::Vec3D OutAxis=Mod.getLinkAxis(i);
       const double DP=OutAxis.dotProd(Z);
-      OutPt=Mod.getSignedLinkPt(i)-Origin;
+      OutPt=Mod.getLinkPt(i)-Origin;
       if (DP>ZUpCos)
 	{
 	  ZUpCos=DP;
@@ -594,8 +594,8 @@ CylPreSimple::createFlightPoint(const attachSystem::FixedComp& FLine)
   
   for(long int i=3;i<=6;i++)
     {
-      const Geometry::Vec3D Pt=FLine.getSignedLinkPt(i);
-      const Geometry::Vec3D Ax=FLine.getSignedLinkAxis(i);
+      const Geometry::Vec3D Pt=FLine.getLinkPt(i);
+      const Geometry::Vec3D Ax=FLine.getLinkAxis(i);
       FLpts.push_back(Pt);
       FLunit.push_back(Ax);
     }

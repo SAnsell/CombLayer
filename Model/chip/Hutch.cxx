@@ -425,9 +425,9 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   attachSystem::FixedComp& beamFC=FixedGroup::getKey("Beam");
   
   mainFC.createUnitVector(LC);
-  mainFC.setCentre(LC.getSignedLinkPt(7));
+  mainFC.setCentre(LC.getLinkPt(7));
   beamFC.createUnitVector(LC);
-  beamFC.setCentre(LC.getSignedLinkPt(7));
+  beamFC.setCentre(LC.getLinkPt(7));
   FixedGroup::setDefault("Main");
       
   // remove old Z component and replace:
@@ -441,7 +441,7 @@ ChipIRHutch::createUnitVector(const attachSystem::FixedComp& shutterFC,
   FixedGroup::setDefault("Main");
   
   const Geometry::Vec3D ImpactPoint= (shutterFC.NConnect()) ?
-    shutterFC.getLinkPt(0) : shutterFC.getCentre(); 
+    shutterFC.getLinkPt(1) : shutterFC.getCentre(); 
   //  setExit(Origin+Y*hMainLen,Y);
   //  SecondTrack::setBeamExit(LC.getLinkPoint(1),bY);
 
@@ -644,12 +644,12 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   // ---------------------------------------------------
   // OUTER WALLS:
   // ---------------------------------------------------
-  SMap.addMatch(hutchIndex+1,Guide.getSignedLinkSurf(2));
+  SMap.addMatch(hutchIndex+1,Guide.getLinkSurf(2));
 
   // CENTRE LINE [normal on x axis]:
   ModelSupport::buildPlane(SMap,hutchIndex+100,Origin,X); 
   
-  SMap.addMatch(hutchIndex+11,Guide.getSignedLinkSurf(7));
+  SMap.addMatch(hutchIndex+11,Guide.getLinkSurf(7));
   //  ModelSupport::buildPlane(SMap,hutchIndex+11,Origin-Y*hFWallThick,Y);
   ModelSupport::buildPlane(SMap,hutchIndex+2,Origin+Y*hMainLen,Y);
 
@@ -802,8 +802,8 @@ ChipIRHutch::createWallSurfaces(const attachSystem::FixedComp& Guide)
   SMap.registerSurf(hutchIndex+8,PX);
 
   // Use trimmers attached objects
-  SMap.addMatch(hutchIndex+101,Trimmer->getSignedLinkSurf(1));
-  SMap.addMatch(hutchIndex+102,Trimmer->getSignedLinkSurf(-2));
+  SMap.addMatch(hutchIndex+101,Trimmer->getLinkSurf(1));
+  SMap.addMatch(hutchIndex+102,Trimmer->getLinkSurf(-2));
 
   // Attach back containment:
   Trimmer->addBoundarySurf(SMap.realSurf(hutchIndex+33));
@@ -1126,7 +1126,7 @@ ChipIRHutch::addExtraWalls(Simulation& System,
       
       Out=ModelSupport::getComposite(SMap,hutchIndex,
 				     "-1004 1011 (4:-11) -8 15 -6 ");
-      Out+=Guide.getSignedLinkString(9);
+      Out+=Guide.getLinkString(9);
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addOuterUnionSurf(Out);
       

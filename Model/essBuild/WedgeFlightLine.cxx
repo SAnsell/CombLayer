@@ -181,10 +181,10 @@ WedgeFlightLine::buildWedges(Simulation& System,
   std::string Out;
 
   const std::string baseOut=
-    innerFC.getSignedLinkString(innerIndex)+
-    outerFC.getSignedLinkString(outerIndex)+
-    this->getSignedLinkString(-11)+
-    this->getSignedLinkString(-12);
+    innerFC.getLinkString(innerIndex)+
+    outerFC.getLinkString(outerIndex)+
+    this->getLinkString(-11)+
+    this->getLinkString(-12);
   
   // Create the radial surfaces that divide the wedges 
   int index(flightIndex+1001);
@@ -200,14 +200,14 @@ WedgeFlightLine::buildWedges(Simulation& System,
   for (size_t i=0;i<nWedges;i++)
     {
       Out= ModelSupport::getComposite(SMap,index,prevIndex," 1 -1M ")+
-        "("+wedges[i]->getSignedLinkString(2)+":"+
-        wedges[i]->getSignedLinkString(4)+")"+prevWedge;
+        "("+wedges[i]->getLinkString(2)+":"+
+        wedges[i]->getLinkString(4)+")"+prevWedge;
       
       System.addCell(MonteCarlo::Qhull(cellIndex++,
                                        MatInfo.first,MatInfo.second,
                                        Out+baseOut));
-      prevWedge=" ("+wedges[i]->getSignedLinkString(2)+":"+
-        wedges[i]->getSignedLinkString(3)+") ";
+      prevWedge=" ("+wedges[i]->getLinkString(2)+":"+
+        wedges[i]->getLinkString(3)+") ";
       
       prevIndex=index++;
     }

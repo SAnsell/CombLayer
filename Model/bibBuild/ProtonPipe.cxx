@@ -184,7 +184,7 @@ ProtonPipe::createSurfaces(const attachSystem::FixedComp& TarFC,
 {
   ELog::RegMethod RegA("ProtonPipe","createSurfaces");
 
-  SMap.addMatch(protonIndex+1,TarFC.getSignedLinkSurf(targetIndex));
+  SMap.addMatch(protonIndex+1,TarFC.getLinkSurf(targetIndex));
   ModelSupport::buildPlane(SMap,protonIndex+2,Origin+Y*length,Y);
 
   ModelSupport::buildCylinder(SMap,protonIndex+7,

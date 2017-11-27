@@ -222,8 +222,8 @@ ProtonVoid::createAll(Simulation& System,
 
   createUnitVector(TargetFC);
   createSurfaces();
-  const std::string TSurf=TargetFC.getSignedLinkString(tIndex);
-  const std::string RSurf=RefFC.getSignedLinkString(rIndex);
+  const std::string TSurf=TargetFC.getLinkString(tIndex);
+  const std::string RSurf=RefFC.getLinkString(rIndex);
 
   createObjects(System,TSurf,RSurf);
   createLinks();

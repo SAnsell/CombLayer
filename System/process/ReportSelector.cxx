@@ -122,8 +122,8 @@ reportSelection(Simulation& System,const mainSystem::inputParam& IParam)
           const attachSystem::FixedComp* TPtr=
             OR.getObjectThrow<attachSystem::FixedComp>(FObject,"FixedComp");
           
-          const Geometry::Vec3D TPoint=TPtr->getSignedLinkPt(linkNumber);
-          const Geometry::Vec3D TAxis=TPtr->getSignedLinkAxis(linkNumber);
+          const Geometry::Vec3D TPoint=TPtr->getLinkPt(linkNumber);
+          const Geometry::Vec3D TAxis=TPtr->getLinkAxis(linkNumber);
           
           ELog::EM<<TPtr->getKeyName()<<"["<<linkNumber<<"] ";
           const size_t len=ELog::EM.Estream().str().size();

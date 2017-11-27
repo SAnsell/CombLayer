@@ -244,7 +244,7 @@ ExcludedComp::addExcludeSurf(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("RefBox","addExcludeSurf(FC,Index)");
 
   // Surfaces on links point outwards (hence swap of sign)
-  addExcludeSurf(FC.getSignedLinkSurf(LIndex));
+  addExcludeSurf(FC.getLinkSurf(LIndex));
   
   return;
 }
