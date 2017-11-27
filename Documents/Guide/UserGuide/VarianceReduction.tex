@@ -38,11 +38,12 @@ Cell-based weight window can be generated with the following arguments:
   {\tt --wwgE}}.
   The following variants of syntax are possible:
   \begin{enumerate}
-    \item If use the word {\em energy} then the format is energy followed by inital weight for that bin
+
+    \item If use the word {\em energy} then the format is energy followed by initial weight for that bin
       (in our example: for energies below \SI{0.1}{\mega\electronvolt} the initial weight is \num{0.95};
           for energies between \num{0.1} and \SI{1}{\mega\electronvolt} the initial weight is \num{0.85} etc).
-        \item If you drop the word {\em energy} then you just set the energy grid without specifying initial weights
-          which are taken to be zero
+        \item If you drop the word {\em energy} then you just set the energy grid and all the initial weights are
+          taken as 1.0
     \item Alternatively you can use pre-defined keywords:
       {\tt basic}, {\tt high}, {\tt mid} and {\tt flat}\footnote{Energy-weight binnings for these keywords are defined in \tt{System/weights/WeightControl.cxx}}.
   \end{enumerate}
