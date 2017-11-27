@@ -2321,9 +2321,9 @@ Simulation::masterPhysicsRotation()
     }
 
   // Apply rotations to tallies
-  std::map<int,tallySystem::Tally*>::iterator mc;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    mc->second->rotateMaster();
+  // std::map<int,tallySystem::Tally*>::iterator mc;
+  // for(mc=TItem.begin();mc!=TItem.end();mc++)
+  //   mc->second->rotateMaster();
 
   return;
 }
