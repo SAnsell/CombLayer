@@ -57,7 +57,7 @@ The process is as follows:
   \end{enumerate}
 \end{enumerate}
    
-Thus the spoon is inserted only into those cells of Mug which it intersects (\figref{fig:surfctrl}).
+Thus the spoon is inserted only into those cells of Mug which it intersects~(\figref{fig:surfctrl}).
 
 It is not always better to call {\tt addToInsertSurfCtrl} instead of
 {\tt addToInsertForced} in cases that if is certain that an
@@ -77,10 +77,10 @@ slower than addToInsertForced, but the geometry will be faster.
       \node[legend] at (2,2) {1};
       \node[legend] at (-1.25,2) {2};
 
-      \node[legend] at (2.25,4.5) {3};
-      \node[legend] at (2.25,6) {4};
+      \node[legend,blue,fill=white] at (2.25,4.5) {3};
+      \node[legend,blue,fill=white] at (2.25,6) {4};
     \end{tikzpicture}
-  }
+  } \quad
   \subfloat[None of the cells are modified]{
     \begin{tikzpicture}
       \drawMug{0}{0}{}
@@ -88,8 +88,8 @@ slower than addToInsertForced, but the geometry will be faster.
       \node[legend] at (2,2) {1};
       \node[legend] at (-1.25,2) {2};
 
-      \node[legend] at (5.25,2) {3};
-      \node[legend] at (5.25,3) {4};
+      \node[legend,blue,fill=white] at (5.25,2) {3};
+      \node[legend,blue,fill=white] at (5.25,3) {4};
     \end{tikzpicture}
   }
   \caption{addToInsertSurfCtrl: only needed cells are excluded}
@@ -104,8 +104,43 @@ cause them to fail.
 \subsubsection{addToInsertControl}
 
 It's a very simple method. The link points from Spoon are uses as a test for each of the cells within Mug. 
-The method checks if any of these link point fit inside each of the cells of Mug. If it does, then it cuts Spoon from the Mug cell.
+The method checks if any of these link point fit inside each of the cells of Mug. If it does, then it cuts Spoon from the Mug cell~(\figref{fig:control}).
 It is possible to add a vector of link points to check as a parameter to limit the search.
+
+\begin{figure}
+  \centering
+  \subfloat[Cell 3 is excluded from cell 1 since Mug has a link point which is located inside cell 3. Cells 2 and 4 are not modifed. \alert{Compare: The Spoon cells (3 and 4) are excluded from the Mug cells (1 and 2) since Mug has a link point which is located inside a Spoon cell}]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (2,5) circle (2pt);
+
+      \drawSpoon{2}{4}{dashed}
+      \node[legend,blue,fill=white] at (2.25,4.5) {3};
+      \node[legend,blue,fill=white] at (2.25,6) {4};
+      \draw[blue] (2.25,4) circle (2pt);
+    \end{tikzpicture}
+  } \quad
+  \subfloat[Intersection is not made since none of link points are located in another component. Geometry is broken. To fix it, define more link points or use another volume inclusion method. \alert{check}]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (-1.53,2) circle (2pt);
+      \draw[red] (-1,2) circle (2pt);
+      \draw[red] (0,2.5) circle (2pt);
+
+      \drawSpoon{-0.85}{-1}{dashed}
+      \node[legend,blue,fill=white] at (-0.6,-0.3) {3};
+      \node[legend,blue,fill=white] at (-0.6,3.5) {4};
+      \draw[blue] (-0.6,4) circle (2pt);
+      \draw[blue] (-0.6,0.5) circle (2pt);
+    \end{tikzpicture}
+  }
+  \caption{addToInsertControl: intersection relies on the link points}
+  \label{fig:control}
+\end{figure}
 
 \subsubsection{addToInsertLineCtrl}
 
