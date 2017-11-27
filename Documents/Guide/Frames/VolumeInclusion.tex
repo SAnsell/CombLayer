@@ -57,7 +57,7 @@ The process is as follows:
   \end{enumerate}
 \end{enumerate}
    
-Thus the spoon is inserted only into those cells of Mug which it intersects.
+Thus the spoon is inserted only into those cells of Mug which it intersects (\figref{fig:surfctrl}).
 
 It is not always better to call {\tt addToInsertSurfCtrl} instead of
 {\tt addToInsertForced} in cases that if is certain that an
@@ -66,10 +66,40 @@ cells have large numbers of surfaces).
 
 {\tt addToInsertSurfCtrl} is a very expensive function to call,
 because you have to check all the surface triplets. So, it runs a bit
-slower than addToInsertForced, but the geometry will be faster.  The
-two remaining methods provide similar functionality but with less
+slower than addToInsertForced, but the geometry will be faster.
+
+\begin{figure}
+  \centering
+  \subfloat[Cell 3 is excluded from cell 1; cells 2 and 4 not changed]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \drawSpoon{2}{4}{dashed}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+
+      \node[legend] at (2.25,4.5) {3};
+      \node[legend] at (2.25,6) {4};
+    \end{tikzpicture}
+  }
+  \subfloat[None of the cells are modified]{
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \drawSpoon{5}{1}{dashed}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+
+      \node[legend] at (5.25,2) {3};
+      \node[legend] at (5.25,3) {4};
+    \end{tikzpicture}
+  }
+  \caption{addToInsertSurfCtrl: only needed cells are excluded}
+  \label{fig:surfctrl}
+\end{figure}
+
+The two remaining methods provide similar functionality but with less
 computational overhead, however, there are cell constructs which will
 cause them to fail.
+
 
 \subsubsection{addToInsertControl}
 
