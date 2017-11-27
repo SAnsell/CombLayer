@@ -148,4 +148,27 @@ Imagine we have a (big) contained component~(Mug) and some (small)
 object which clips it~(Spoon). The link points are {\bf not} in the
 Mug~(therefore {\bf addToInsertControl} can not be used), but the
 lines which connect them are in the Mug.  The method checks the lines
-connecting the link points and sorts out the intersections.
+connecting the link points and sorts out the intersections~(\figref{fig:linectrl}).
+
+\begin{figure}
+  \centering
+    \begin{tikzpicture}
+      \drawMug{0}{0}{}
+      \node[legend] at (2,2) {1};
+      \node[legend] at (-1.25,2) {2};
+      \draw[red] (-1.53,2) circle (2pt);
+      \draw[red] (-1,2) circle (2pt);
+      \draw[red] (0,2.5) circle (2pt);
+
+      \drawSpoon{-0.85}{-1}{dashed}
+      \node[legend,blue,fill=white] at (-0.6,-0.3) {3};
+      \node[legend,blue,fill=white] at (-0.7,3.5) {4};
+      \draw[blue] (-0.6,4) circle (2pt);
+      \draw[blue] (-0.6,0.5) circle (2pt);
+
+     \draw[blue] (-0.6,0.5) -- (-0.6,4);
+     \draw[red] (-1.53,2) -- (0,2.5);
+    \end{tikzpicture}
+  \caption{addToInsertLineCtrl: intersection relies on the lines connecting link points (not all link points and connections are shown). Mug is substracted from Spoon since at least one line connecting the Mug link points intersect one of the lines between the Spoon link points. \alert{Check this + is the substraction made individually for separate Mug/Spoon cells?}}
+  \label{fig:linectrl}
+\end{figure}
