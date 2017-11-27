@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SimValid_h
-#define SimValid_h
+#ifndef ModelSupport_SimValid_h
+#define ModelSupport_SimValid_h
 
 
 namespace ModelSupport
@@ -44,20 +44,24 @@ struct simPoint
   MonteCarlo::Object* OPtr;        ///< Object pointer
 
   
-  simPoint(const Geometry::Vec3D& P,const int ON,const int SN,
-	   MonteCarlo::Object* OP) :
-    Pt(P),objN(ON),surfN(SN),OPtr(OP) {}
+  simPoint(const Geometry::Vec3D& P,const Geometry::Vec3D& D,
+	   const int ON,const int SN,MonteCarlo::Object* OP) :
+  Pt(P),Dir(D),objN(ON),surfN(SN),OPtr(OP) {}
 
   simPoint(const simPoint& A) :
-    Pt(A.Pt),objN(A.objN),surfN(A.surfN),OPtr(A.OPtr) {}
+  Pt(A.Pt),Dir(A.Dir),objN(A.objN),surfN(A.surfN),OPtr(A.OPtr) {}
 
   /// assignement operator
   simPoint& operator=(const simPoint& A) 
     {
-      Pt=A.Pt;
-      objN=A.objN;
-      surfN=A.surfN;
-      OPtr=A.OPtr;
+      if (this!=&A)
+	{
+	  Pt=A.Pt;
+	  Dir=A.Dir;
+	  objN=A.objN;
+	  surfN=A.surfN;
+	  OPtr=A.OPtr;
+	}
       return *this;
     }
 

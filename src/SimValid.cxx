@@ -57,6 +57,7 @@
 #include "SurInter.h"
 #include "ObjSurfMap.h"
 #include "neutron.h"
+#include "objectRegister.h"
 #include "Simulation.h"
 #include "SimValid.h"
 
@@ -106,7 +107,9 @@ SimValid::diagnostics(const Simulation& System,
    */
 {
   ELog::RegMethod RegA("SimValid","diagnostics");
-  
+
+  const ModelSupport::ObjSurfMap* OSMPtr =System.getOSM();
+    
   ELog::EM<<"------------"<<ELog::endCrit;
 
   for(size_t j=0;j<Pts.size();j++)
@@ -115,9 +118,11 @@ SimValid::diagnostics(const Simulation& System,
 	      <<Pts[j].objN<<" Surf:"<<Pts[j].surfN<<ELog::endDiag;
     }
   
-  /*
+
   if (Pts.size()>=3)
     {
+      double aDist;
+      const Geometry::Surface* SPtr;          // Output surface
       const size_t index(Pts.size()-3);
       MonteCarlo::neutron TNeut(1,Pts[index].Pt,Pts[index].Dir);
                                       
@@ -127,13 +132,13 @@ SimValid::diagnostics(const Simulation& System,
 	      <<ELog::endDiag;
       // RESET:
       TNeut.Pos=Pts[index].Pt;  // Reset point
-      OPtr=Pts[index].OPtr;
-      SN=Pts[index].surfN;
-      DebA.activate();
+      const MonteCarlo::Object* OPtr=Pts[index].OPtr;
+      const int SN=Pts[index].surfN;
+
       ELog::EM<<"RESET POS== "<<TNeut.Pos<<ELog::endDiag;
       ELog::EM<<"RESET Obj== "<<OPtr->getName()<<ELog::endDiag;
       ELog::EM<<"RESET SurfN== "<<Pts[index].surfN<<ELog::endDiag;
-      ELog::EM<<"----------------------------------"<<ELog::endDebug;
+      ELog::EM<<"----------------------------------"<<ELog::endDiag ;
       OPtr=OSMPtr->findNextObject(Pts[index].surfN,
 				  TNeut.Pos,OPtr->getName());	    
       if (OPtr)
@@ -144,7 +149,8 @@ SimValid::diagnostics(const Simulation& System,
 	}
       else
 	ELog::EM<<"No object "<<ELog::endDiag;
-      TNeut.Pos+=D*0.00001;
+
+      TNeut.Pos += TNeut.uVec*0.00001;
       
       MonteCarlo::Object* NOPtr=System.findCell(TNeut.Pos,0);
       if (NOPtr)
@@ -158,7 +164,7 @@ SimValid::diagnostics(const Simulation& System,
       
       OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
     }
-  */
+
   return;
 }
 
@@ -199,15 +205,15 @@ SimValid::runPoint(const Simulation& System,
       // Get random starting point on edge of volume
       phi=RNG.rand()*M_PI;
       theta=2.0*RNG.rand()*M_PI;
-      Geometry::Vec3D D(cos(theta)*sin(phi),
-			sin(theta)*sin(phi),
-			cos(phi));
-      MonteCarlo::neutron TNeut(1,Centre,D);
+      Geometry::Vec3D uVec(cos(theta)*sin(phi),
+			     sin(theta)*sin(phi),
+			     cos(phi));
+      MonteCarlo::neutron TNeut(1,Centre,uVec);
 
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);
 
-      Pts.push_back(simPoint(TNeut.Pos,OPtr->getName(),SN,OPtr));
+      Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
       while(OPtr && OPtr->getImp())
 	{
 	  // Note: Need OPPOSITE Sign on exiting surface
@@ -222,7 +228,7 @@ SimValid::runPoint(const Simulation& System,
 	    }
 
 	  TNeut.moveForward(aDist);
-	  Pts.push_back(simPoint(TNeut.Pos,OPtr->getName(),SN,OPtr));
+	  Pts.push_back(simPoint(TNeut.Pos,TNeut.uVec,OPtr->getName(),SN,OPtr));
 	  OPtr=(SN) ?
 	    OSMPtr->findNextObject(SN,TNeut.Pos,OPtr->getName()) : 0;	    
 	}
@@ -250,8 +256,8 @@ SimValid::runFixedComp(const Simulation& System,
   ELog::RegMethod RegA("SimValid","run");
   ELog::debugMethod DebA;
 
-  //  ModelSupport::objectRegister& OR=
-  //    ModelSupport::objectRegister::Instance();
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
   
 
   
