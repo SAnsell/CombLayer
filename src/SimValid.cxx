@@ -58,6 +58,9 @@
 #include "ObjSurfMap.h"
 #include "neutron.h"
 #include "objectRegister.h"
+#include "surfRegister.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
 #include "Simulation.h"
 #include "SimValid.h"
 
@@ -253,13 +256,24 @@ SimValid::runFixedComp(const Simulation& System,
     \return true if valid
   */
 {
-  ELog::RegMethod RegA("SimValid","run");
-  ELog::debugMethod DebA;
-
+  ELog::RegMethod RegA("SimValid","runFixedComp");
+  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
 
+  typedef std::shared_ptr<attachSystem::FixedComp> CTYPE;
+  typedef std::map<std::string,CTYPE> cMapTYPE;
+
+  const cMapTYPE& CM=OR.getComponents();
+
+  for(const cMapTYPE::value_type& FCitem : CM)
+    {
+      const CTYPE& FC = FCitem.second;
+      const std::vector<Geometry::Vec3D> FCPts=
+	FC->getAllLinkPts();
+      for(const Geometry::Vec3D& Pt : FCPts)
+	ELog::EM<<"PT == "<<FC->getKeyName()<<" :: "<<Pt<<ELog::endDiag;
+    }
   
   ELog::EM<<"Finished Validation check"<<ELog::endDiag;
   return 1;
