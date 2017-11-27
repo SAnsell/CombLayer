@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   src/SimValid.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,12 +97,81 @@ SimValid::operator=(const SimValid& A)
   return *this;
 }
 
+void
+SimValid::diagnostics(const Simulation& System,
+		     const std::vector<simPoint>& Pts) const
+  /*!
+    Write out some diagnostic information
+    \param System :: simuation to sued
+   */
+{
+  ELog::RegMethod RegA("SimValid","diagnostics");
+  
+  ELog::EM<<"------------"<<ELog::endCrit;
+
+  for(size_t j=0;j<Pts.size();j++)
+    {
+      ELog::EM<<"Pos["<<j<<"]=="<<Pts[j].Pt<<" :: Obj:"
+	      <<Pts[j].objN<<" Surf:"<<Pts[j].surfN<<ELog::endDiag;
+    }
+  
+  /*
+  if (Pts.size()>=3)
+    {
+      const size_t index(Pts.size()-3);
+      MonteCarlo::neutron TNeut(1,Pts[index].Pt,Pts[index].Dir);
+                                      
+      ELog::EM<<"Base Obj == "<<*Pts[index].OPtr
+	      <<ELog::endDiag;
+      ELog::EM<<"Next Obj == "<<*Pts[index+1].OPtr
+	      <<ELog::endDiag;
+      // RESET:
+      TNeut.Pos=Pts[index].Pt;  // Reset point
+      OPtr=Pts[index].OPtr;
+      SN=Pts[index].surfN;
+      DebA.activate();
+      ELog::EM<<"RESET POS== "<<TNeut.Pos<<ELog::endDiag;
+      ELog::EM<<"RESET Obj== "<<OPtr->getName()<<ELog::endDiag;
+      ELog::EM<<"RESET SurfN== "<<Pts[index].surfN<<ELog::endDiag;
+      ELog::EM<<"----------------------------------"<<ELog::endDebug;
+      OPtr=OSMPtr->findNextObject(Pts[index].surfN,
+				  TNeut.Pos,OPtr->getName());	    
+      if (OPtr)
+	{
+	  ELog::EM<<"Found Obj == "<<*OPtr<<" :: "<<Pts[index].Pt<<" "
+		  <<OPtr->pointStr(Pts[index].Pt)<<ELog::endDiag;
+	  ELog::EM<<OPtr->isValid(Pts[index].Pt)<<ELog::endDiag;
+	}
+      else
+	ELog::EM<<"No object "<<ELog::endDiag;
+      TNeut.Pos+=D*0.00001;
+      
+      MonteCarlo::Object* NOPtr=System.findCell(TNeut.Pos,0);
+      if (NOPtr)
+	{
+	  ELog::EM<<"Neutron == "<<TNeut<<ELog::endDiag;
+	  ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDiag;
+	  ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDiag;
+	}
+      ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
+      ELog::EM<<"--------------"<<ELog::endDiag;
+      
+      OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
+    }
+  */
+  return;
+}
+
+  
 int
-SimValid::run(const Simulation& System,const size_t N) const
+SimValid::runPoint(const Simulation& System,
+		   const Geometry::Vec3D& CP,
+		   const size_t  nAngle) const
   /*!
     Calculate the tracking
     \param System :: Simulation to use
-    \param N :: Number of points to test
+    \param CP :: Centre point
+    \param nAngle :: Number of points to test
     \return true if valid
   */
 {
@@ -120,14 +189,11 @@ SimValid::run(const Simulation& System,const size_t N) const
 
   // Find Initial cell [Store for next time]
   //  Centre+=Geometry::Vec3D(0.001,0.001,0.001);
-  InitObj=System.findCell(Centre,InitObj);  
-  const int initSurfNum=InitObj->isOnSide(Centre);
+  InitObj=System.findCell(CP,InitObj);  
+  const int initSurfNum=InitObj->isOnSide(CP);
 
-  ELog::EM<<"Init Object nubmer == "<<InitObj->getName()<<ELog::endDiag;      
-  ELog::EM<<"Initial surface [if on surf] == "<<initSurfNum<<ELog::endDiag; 
-     
   // check surfaces
-  for(size_t i=0;i<N;i++)
+  for(size_t i=0;i<nAngle;i++)
     {
       std::vector<simPoint> Pts;
       // Get random starting point on edge of volume
@@ -146,7 +212,6 @@ SimValid::run(const Simulation& System,const size_t N) const
 	{
 	  // Note: Need OPPOSITE Sign on exiting surface
 	  SN= OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
-
 	  if (aDist>1e30 && Pts.size()<=1)
 	    {
 	      ELog::EM<<"Fail on Pts==1 and aDist inf"<<ELog::endDiag;
@@ -164,55 +229,32 @@ SimValid::run(const Simulation& System,const size_t N) const
 
       if (!OPtr)
 	{
-	  ELog::EM<<"------------"<<ELog::endCrit;
-	  ELog::EM<<"I/SN == "<<i<<" "<<SN<<ELog::endCrit;
-	  for(size_t j=0;j<Pts.size();j++)
-	    {
-	      ELog::EM<<"Pos["<<j<<"]=="<<Pts[j].Pt<<" :: Obj:"
-		      <<Pts[j].objN<<" Surf:"<<Pts[j].surfN<<ELog::endDiag;
-	    }
-
-	  const size_t index(Pts.size()-3);
-	  ELog::EM<<"Base Obj == "<<*Pts[index].OPtr
-		  <<ELog::endDiag;
-	  ELog::EM<<"Next Obj == "<<*Pts[index+1].OPtr
-		  <<ELog::endDiag;
-	  // RESET:
-	  TNeut.Pos=Pts[index].Pt;  // Reset point
-	  OPtr=Pts[index].OPtr;
-          SN=Pts[index].surfN;
-          DebA.activate();
-          ELog::EM<<"RESET POS== "<<TNeut.Pos<<ELog::endDiag;
-          ELog::EM<<"RESET Obj== "<<OPtr->getName()<<ELog::endDiag;
-          ELog::EM<<"RESET SurfN== "<<Pts[index].surfN<<ELog::endDiag;
-          ELog::EM<<"----------------------------------"<<ELog::endDebug;
-	  OPtr=OSMPtr->findNextObject(Pts[index].surfN,
-				      TNeut.Pos,OPtr->getName());	    
-	  if (OPtr)
-	    {
-	      ELog::EM<<"Found Obj == "<<*OPtr<<" :: "<<Pts[index].Pt<<" "
-		      <<OPtr->pointStr(Pts[index].Pt)<<ELog::endDiag;
-	      ELog::EM<<OPtr->isValid(Pts[index].Pt)<<ELog::endDiag;
-	    }
-	  else
-	    ELog::EM<<"No object "<<ELog::endDiag;
-	  TNeut.Pos+=D*0.00001;
-
-	  MonteCarlo::Object* NOPtr=System.findCell(TNeut.Pos,0);
-	  if (NOPtr)
-	    {
-	      ELog::EM<<"Neutron == "<<TNeut<<ELog::endDiag;
-	      ELog::EM<<"Actual object == "<<*NOPtr<<ELog::endDiag;
-	      ELog::EM<<" IMP == "<<NOPtr->getImp()<<ELog::endDiag;
-	    }
-          ELog::EM<<"TRACK to NEXT"<<ELog::endDiag;
-          ELog::EM<<"--------------"<<ELog::endDiag;
-          
-          OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
 	  ELog::EM<<"Failed to calculate cell correctly: "<<i<<ELog::endCrit;
+	  diagnostics(System,Pts);
 	  return 0;
 	}
     }
+  return 1;
+}
+
+int
+SimValid::runFixedComp(const Simulation& System,
+		       const size_t N) const
+  /*!
+    Calculate the tracking from fixedcomp
+    \param System :: Simulation to use
+    \param N :: Number of points to test
+    \return true if valid
+  */
+{
+  ELog::RegMethod RegA("SimValid","run");
+  ELog::debugMethod DebA;
+
+  //  ModelSupport::objectRegister& OR=
+  //    ModelSupport::objectRegister::Instance();
+  
+
+  
   ELog::EM<<"Finished Validation check"<<ELog::endDiag;
   return 1;
 }
