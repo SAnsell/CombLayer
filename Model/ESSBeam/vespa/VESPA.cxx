@@ -115,31 +115,45 @@ VESPA::VESPA(const std::string& keyName) :
 
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),
   FocusB(new beamlineSystem::GuideLine(newName+"FB")),
-  
-  ChopperA(new constructSystem::SingleChopper(newName+"ChopperA")),
-  WFMDiskA(new constructSystem::DiskChopper(newName+"WFMBladeA")),
 
-  VPipeC(new constructSystem::VacuumPipe(newName+"PipeC")),
+  VPipeB(new constructSystem::VacuumPipe(newName+"PipeB")),
   FocusC(new beamlineSystem::GuideLine(newName+"FC")),
 
-  ChopperB(new constructSystem::SingleChopper(newName+"ChopperB")), 
-  WFMDiskB(new constructSystem::DiskChopper(newName+"WFMBladeB")),
+  TwinChopperA(new constructSystem::TwinChopperFlat(newName+"TwinChopperA")),
+  PSCDiskTopA(new constructSystem::DiskChopper(newName+"PSCTopBladeA")),
+  PSCDiskBottomA(new constructSystem::DiskChopper(newName+"PSCBottomBladeA")),
 
-  VPipeD(new constructSystem::VacuumPipe(newName+"PipeD")),
+  // Joining Pipe AB
+  JPipeAB(new constructSystem::VacuumPipe(newName+"JoinPipeAB")),
   FocusD(new beamlineSystem::GuideLine(newName+"FD")),
 
-  ChopperC(new constructSystem::SingleChopper(newName+"ChopperC")),
-  WFMDiskC(new constructSystem::DiskChopper(newName+"WFMBladeC")),
+  TwinChopperB(new constructSystem::TwinChopperFlat(newName+"TwinChopperB")),
+  PSCDiskTopB(new constructSystem::DiskChopper(newName+"PSCTopBladeB")),
+  PSCDiskBottomB(new constructSystem::DiskChopper(newName+"PSCBottomBladeB")),
 
-  VPipeE(new constructSystem::VacuumPipe(newName+"PipeE")),
+  // Joining Pipe AB
+  JPipeBC(new constructSystem::VacuumPipe(newName+"JoinPipeBC")),
   FocusE(new beamlineSystem::GuideLine(newName+"FE")),
 
-  ChopperD(new constructSystem::SingleChopper(newName+"ChopperD")),
-  FOCDiskA(new constructSystem::DiskChopper(newName+"FOCBladeA")),
+  TwinChopperC(new constructSystem::TwinChopperFlat(newName+"TwinChopperC")),
+  PSCDiskTopC(new constructSystem::DiskChopper(newName+"PSCTopBladeC")),
+  PSCDiskBottomC(new constructSystem::DiskChopper(newName+"PSCBottomBladeC")),
 
-  VPipeF(new constructSystem::VacuumPipe(newName+"PipeF")),
+  // Joining Pipe C to outer
+  JPipeCOut(new constructSystem::VacuumPipe(newName+"JoinPipeCOut")),
   FocusF(new beamlineSystem::GuideLine(newName+"FF")),
 
+  VPipeG(new constructSystem::VacuumPipe(newName+"PipeG")),
+  FocusG(new beamlineSystem::GuideLine(newName+"FG")),
+
+  // FOC
+  ChopperFOC(new constructSystem::SingleChopper(newName+"ChopperFOC")),
+  FOCDisk(new constructSystem::DiskChopper(newName+"FOCBlade")),
+
+  VPipeH(new constructSystem::VacuumPipe(newName+"PipeH")),
+  FocusH(new beamlineSystem::GuideLine(newName+"FH")),
+
+  
   BInsert(new BunkerInsert(newName+"BInsert")),
   VPipeWall(new constructSystem::VacuumPipe(newName+"PipeWall")),  
   FocusWall(new beamlineSystem::GuideLine(newName+"FWall")),
@@ -195,29 +209,24 @@ VESPA::VESPA(const std::string& keyName) :
   OR.addObject(VPipeA);
   OR.addObject(FocusB);
 
-  OR.addObject(ChopperA);
-  OR.addObject(WFMDiskA);
+  OR.addObject(TwinChopperA);
+  OR.addObject(PSCDiskTopA);
+  OR.addObject(PSCDiskBottomA);
 
-  OR.addObject(VPipeC);
-  OR.addObject(FocusC);
-
-  OR.addObject(ChopperB);
-  OR.addObject(WFMDiskB);
-
-  OR.addObject(VPipeD);
+  OR.addObject(JPipeAB);
   OR.addObject(FocusD);
+  
+  OR.addObject(TwinChopperB);
+  OR.addObject(PSCDiskTopB);
+  OR.addObject(PSCDiskBottomB);
 
-  OR.addObject(ChopperC);
-  OR.addObject(WFMDiskC);
-
-  OR.addObject(VPipeE);
+  OR.addObject(JPipeBC);
   OR.addObject(FocusE);
 
-  OR.addObject(ChopperD);
-  OR.addObject(FOCDiskA);
+  OR.addObject(TwinChopperC);
+  OR.addObject(PSCDiskTopC);
+  OR.addObject(PSCDiskBottomC);
 
-  OR.addObject(VPipeF);
-  OR.addObject(FocusF);
   
   OR.addObject(BInsert);
   OR.addObject(VPipeWall);
@@ -306,66 +315,79 @@ VESPA::buildBunkerUnits(Simulation& System,
   FocusB->addInsertCell(VPipeA->getCells("Void"));
   FocusB->createAll(System,*VPipeA,0,*VPipeA,0);
 
-  // First Chopper
-  ChopperA->addInsertCell(bunkerVoid);
-  ChopperA->createAll(System,FocusB->getKey("Guide0"),2);
+  VPipeB->addInsertCell(bunkerVoid);
+  VPipeB->createAll(System,FocusB->getKey("Guide0"),2);
 
-  // Double disk chopper
-  WFMDiskA->addInsertCell(ChopperA->getCell("Void"));
-  WFMDiskA->createAll(System,ChopperA->getKey("Main"),0);
-  ChopperA->insertAxle(System,*WFMDiskA);
-  
-  VPipeC->addInsertCell(bunkerVoid);
-  VPipeC->createAll(System,ChopperA->getKey("Beam"),2);
+  FocusC->addInsertCell(VPipeB->getCells("Void"));
+  FocusC->createAll(System,*VPipeB,0,*VPipeB,0);
 
-  FocusC->addInsertCell(VPipeC->getCells("Void"));
-  FocusC->createAll(System,*VPipeC,0,*VPipeC,0);
+  //PSC-A
+  TwinChopperA->addInsertCell(bunkerVoid);
+  TwinChopperA->createAll(System,FocusC->getKey("Guide0"),2);
+  PSCDiskTopA->addInsertCell(TwinChopperA->getCell("Void"));
+  PSCDiskTopA->createAll(System,TwinChopperA->getKey("MotorTop"),0);
+  PSCDiskBottomA->addInsertCell(TwinChopperA->getCell("Void"));
+  PSCDiskBottomA->createAll(System,TwinChopperA->getKey("MotorBase"),0);
+  TwinChopperA->insertAxle(System,*PSCDiskBottomA,*PSCDiskTopA);
+
+    //PSC-B
+  TwinChopperB->addInsertCell(bunkerVoid);
+  TwinChopperB->createAll(System,FocusC->getKey("Guide0"),2);
+  PSCDiskTopB->addInsertCell(TwinChopperB->getCell("Void"));
+  PSCDiskTopB->createAll(System,TwinChopperB->getKey("MotorTop"),0);
+  PSCDiskBottomB->addInsertCell(TwinChopperB->getCell("Void"));
+  PSCDiskBottomB->createAll(System,TwinChopperB->getKey("MotorBase"),0);
+  TwinChopperB->insertAxle(System,*PSCDiskBottomB,*PSCDiskTopB);
+
+  //PSC-C
+  TwinChopperC->addInsertCell(bunkerVoid);
+  TwinChopperC->createAll(System,FocusC->getKey("Guide0"),2);
+  PSCDiskTopC->addInsertCell(TwinChopperC->getCell("Void"));
+  PSCDiskTopC->createAll(System,TwinChopperC->getKey("MotorTop"),0);
+  PSCDiskBottomC->addInsertCell(TwinChopperC->getCell("Void"));
+  PSCDiskBottomC->createAll(System,TwinChopperC->getKey("MotorBase"),0);
+  TwinChopperC->insertAxle(System,*PSCDiskBottomC,*PSCDiskTopC);
 
 
-  // First Chopper
-  ChopperB->addInsertCell(bunkerVoid);
-  ChopperB->createAll(System,FocusC->getKey("Guide0"),2);
+  // JPipeAB
+  JPipeAB->addInsertCell(bunkerVoid);
+  JPipeAB->setFront(TwinChopperA->getKey("Main"),2);
+  JPipeAB->setBack(TwinChopperB->getKey("Main"),1);  
+  JPipeAB->createAll(System, TwinChopperA->getKey("Main"),2);
+  FocusD->addInsertCell(JPipeAB->getCells("Void"));
+  FocusD->createAll(System,*JPipeAB,7,*JPipeAB,7);
 
-  // Double disk chopper
-  WFMDiskB->addInsertCell(ChopperB->getCell("Void"));
-  WFMDiskB->createAll(System,ChopperB->getKey("Main"),0);
-  ChopperB->insertAxle(System,*WFMDiskB);
-  
-  VPipeD->addInsertCell(bunkerVoid);
-  VPipeD->createAll(System,ChopperB->getKey("Beam"),2);
+  // JPipeBC
+  JPipeBC->addInsertCell(bunkerVoid);
+  JPipeBC->setFront(TwinChopperB->getKey("Main"),2);
+  JPipeBC->setBack(TwinChopperC->getKey("Main"),1);
+  JPipeBC->createAll(System,TwinChopperB->getKey("Main"),2);
+  FocusE->addInsertCell(JPipeBC->getCells("Void"));
+  FocusE->createAll(System,*JPipeBC,7,*JPipeBC,7);
 
-  FocusD->addInsertCell(VPipeD->getCells("Void"));
-  FocusD->createAll(System,*VPipeD,0,*VPipeD,0);
+    // JPipeCOut
+  JPipeCOut->addInsertCell(bunkerVoid);
+  JPipeCOut->setFront(TwinChopperC->getKey("Main"),2);
+  JPipeCOut->createAll(System,TwinChopperC->getKey("Main"),2);
+  FocusF->addInsertCell(JPipeCOut->getCells("Void"));
+  FocusF->createAll(System,*JPipeCOut,7,*JPipeCOut,7);
 
-  // First Chopper
-  ChopperC->addInsertCell(bunkerVoid);
-  ChopperC->createAll(System,FocusD->getKey("Guide0"),2);
+  VPipeG->addInsertCell(bunkerVoid);
+  VPipeG->createAll(System,FocusF->getKey("Guide0"),2);
+  FocusG->addInsertCell(VPipeG->getCells("Void"));
+  FocusG->createAll(System,*VPipeG,0,*VPipeG,0);
 
-  // Double disk chopper
-  WFMDiskC->addInsertCell(ChopperC->getCell("Void"));
-  WFMDiskC->createAll(System,ChopperC->getKey("Main"),0);
-  ChopperC->insertAxle(System,*WFMDiskC);
-  
-  VPipeE->addInsertCell(bunkerVoid);
-  VPipeE->createAll(System,ChopperC->getKey("Beam"),2);
+  // FO-Chopper
+  ChopperFOC->addInsertCell(bunkerVoid);
+  ChopperFOC->createAll(System,FocusG->getKey("Guide0"),2);
+  FOCDisk->addInsertCell(ChopperFOC->getCell("Void"));
+  FOCDisk->createAll(System,ChopperFOC->getKey("Main"),0);
+  ChopperFOC->insertAxle(System,*FOCDisk);
 
-  FocusE->addInsertCell(VPipeE->getCells("Void"));
-  FocusE->createAll(System,*VPipeE,0,*VPipeE,0);
-
-  // 10m Chopper
-  ChopperD->addInsertCell(bunkerVoid);
-  ChopperD->createAll(System,FocusE->getKey("Guide0"),2);
-
-  // Double disk chopper
-  FOCDiskA->addInsertCell(ChopperD->getCell("Void"));
-  FOCDiskA->createAll(System,ChopperD->getKey("Main"),0);
-  ChopperD->insertAxle(System,*FOCDiskA);
-  
-  VPipeF->addInsertCell(bunkerVoid);
-  VPipeF->createAll(System,ChopperD->getKey("Beam"),2);
-
-  FocusF->addInsertCell(VPipeF->getCells("Void"));
-  FocusF->createAll(System,*VPipeF,0,*VPipeF,0);
+  VPipeH->addInsertCell(bunkerVoid);
+  VPipeH->createAll(System,ChopperFOC->getKey("Beam"),2);
+  FocusH->addInsertCell(VPipeH->getCells("Void"));
+  FocusH->createAll(System,*VPipeH,0,*VPipeH,0);
 
   return;
 }
@@ -635,7 +657,7 @@ VESPA::buildIsolated(Simulation& System,const int voidCell)
     {
       buildBunkerUnits(System,*FStart,startIndex,voidCell);
       // Set the start point fo rb
-      FStart= &(FocusF->getKey("Guide0"));
+      FStart= &(FocusH->getKey("Guide0"));
       startIndex= 2;
     }
   if (stopPoint==2 || stopPoint==1) return;
@@ -711,7 +733,7 @@ VESPA::build(Simulation& System,
 
   // IN WALL
   // Make bunker insert
-  BInsert->createAll(System,FocusF->getKey("Guide0"),2,bunkerObj);
+  BInsert->createAll(System,FocusH->getKey("Guide0"),2,bunkerObj);
   attachSystem::addToInsertSurfCtrl(System,bunkerObj,"frontWall",*BInsert);  
 
   // using 7 : mid point

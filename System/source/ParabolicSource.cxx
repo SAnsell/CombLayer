@@ -288,8 +288,8 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
   SrcData D1(1);  
   SrcData D2(2);
   
-  SrcInfo SI1('A');
-  SrcInfo SI2('A');
+  SrcInfo SI1('H');
+  SrcInfo SI2('H');
   SI1.setData(XPts);
   SI2.setData(ZPts);
 
