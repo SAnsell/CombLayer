@@ -126,7 +126,8 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   brickLength(A.brickLength),
   brickGap(A.brickGap),
   brickMat(A.brickMat),
-  pipeCellThick(A.pipeCellThick)
+  pipeCellThick(A.pipeCellThick),
+  pipeCellMat(A.pipeCellMat)
   /*!
     Copy constructor
     \param A :: BilbaoWheelCassette to copy
@@ -168,6 +169,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       brickGap=A.brickGap;
       brickMat=A.brickMat;
       pipeCellThick=A.pipeCellThick;
+      pipeCellMat=A.pipeCellMat;
     }
   return *this;
 }
@@ -289,6 +291,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   brickMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickMat",keyName+"BrickMat");
 
   pipeCellThick=Control.EvalPair<double>(keyName,commonName,"PipeCellThick");
+  pipeCellMat=ModelSupport::EvalMat<int>(Control,commonName+"PipeCellMat",keyName+"PipeCellMat");
 
   return;
 }
@@ -444,8 +447,8 @@ BilbaoWheelCassette::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
-  const std::string outer = FC.getLinkString(floor) +
-    FC.getLinkString(roof) +FC.getLinkString(back) + FC.getLinkString(front);
+  const std::string fr = FC.getLinkString(floor) + FC.getLinkString(roof);
+  const std::string outer = fr + FC.getLinkString(back) + FC.getLinkString(front);
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
@@ -458,7 +461,7 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 11 -12 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,temp,Out+outer));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));

@@ -186,6 +186,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSecBrickLength",3.0);
   Control.addVariable("BilbaoWheelSecBrickGap",0.2);
   Control.addVariable("BilbaoWheelSecBrickMat","Tungsten");
+  Control.addVariable("BilbaoWheelSecPipeCellThick", 1.2);
+  Control.addVariable("BilbaoWheelSecPipeCellMat", "SS316L%Void%90");
 
   Control.addVariable("WheelShaftNLayers",3);
   Control.addVariable("WheelShaftHeight",435.0);

@@ -76,6 +76,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double brickGap; ///< Distance between bricks in the given segment
   int brickMat; ///< Brick material
   double pipeCellThick; ///< Thickness of the pipe cell
+  int pipeCellMat; ///< Pipe cell homogenized material
 
   double getSegWallArea() const;
   double getSegWallThick() const;
