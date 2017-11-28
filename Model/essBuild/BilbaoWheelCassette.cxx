@@ -261,7 +261,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
 
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
-  bricksActive=Control.EvalDefPair<int>(keyName,commonName,"BricksActive", 1);
+  bricksActive=Control.EvalDefPair<int>(keyName,commonName,"BricksActive", 0);
 
   const double nSectors = Control.EvalVar<double>(baseName+"NSectors");
   delta = 360.0/nSectors;
@@ -415,7 +415,7 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 
 	  int SBricks(SJ+100);
 	  double bOffset(brickWidth);
-	  //	  ELog::EM << j << "\t" << n << " dist: " << L << ELog::endDiag;
+	  ELog::EM << j << "\t" << n << " dist: " << L << ELog::endDiag;
 	  for (size_t i=0; i<n; i++) // bricks
 	    {
 	      ModelSupport::buildShiftedPlane(SMap,SBricks+3,
@@ -502,31 +502,31 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + Out1;
       System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
 
-      //      if (j==0)
+      if (j==0)
 	{
 	  Out=ModelSupport::getComposite(SMap,SJ," 13 -14 ") + Out1;
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+tb));
-	  //System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
+	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,j==0?heMat:mainMat,temp,Out+tb));
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 	}
-      // else
-      // 	{
-      // 	  int SBricks(SJ+100);
-      // 	  std::string prev = ModelSupport::getComposite(SMap,SJ," 13 ");
-      // 	  for (size_t i=0; i<nBricks[j]; i++) // create brick cells
-      // 	    {
-      // 	      Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
-      // 	      System.addCell(MonteCarlo::Qhull(cellIndex++,brickMat,temp,Out+Out1+tb));
+      else
+	{
+	  int SBricks(SJ+100);
+	  std::string prev = ModelSupport::getComposite(SMap,SJ," 13 ");
+	  for (size_t i=0; i<nBricks[j]; i++) // create brick cells
+	    {
+	      Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,brickMat,temp,Out+Out1+tb));
 
-      // 	      Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
-      // 	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
+	      Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
 
-      // 	      prev = ModelSupport::getComposite(SMap,SBricks," 4 ");
+	      prev = ModelSupport::getComposite(SMap,SBricks," 4 ");
 
-      // 	      SBricks += 10;
-      // 	    }
-      // 	  Out=ModelSupport::getComposite(SMap,SBricks-10,SJ," 4 -14M ");
-      // 	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
-      // 	}
+	      SBricks += 10;
+	    }
+	  Out=ModelSupport::getComposite(SMap,SBricks-10,SJ," 4 -14M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
+	}
       SJ += 1000;
     }
 
@@ -535,7 +535,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
   // Part from the left (remove)
   Out=ModelSupport::getComposite(SMap,surfIndex,SJ-1000," 3 -4 -11M ") +
     FC.getLinkString(front);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+tb));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 
   const std::string outer = tb + FC.getLinkString(front) + FC.getLinkString(back);
 
@@ -576,7 +576,7 @@ BilbaoWheelCassette::createLinks()
 	  FixedComp::setConnect(i,p,-X);
 	  FixedComp::setLinkSurf(i,-SMap.realSurf(SJ+14));
 
-	  //	  ELog::EM << "LP " << j << ": " << p << ELog::endDiag;
+	  ELog::EM << "LP " << j << ": " << p << ELog::endDiag;
 
 	  SJ += 1000;
 	  i++;

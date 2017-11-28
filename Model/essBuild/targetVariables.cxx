@@ -170,23 +170,23 @@ EssWheel(FuncDataBase& Control)
   // The same drawings in CHESS: ESS-0102065
   // 3D project: ESS-0017676
   // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/target/cassette-side-steel/view
-  Control.addVariable("BilbaoWheelSecNWallSeg",15); // 15 layers of bricks + 1
-  //  Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
-  Control.addVariable("BilbaoWheelSecWallSegLength0",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength1",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength2",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength3",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength4",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength5",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength6",-3.2);
+  Control.addVariable("BilbaoWheelSecNWallSeg",16); // 15 layers of bricks + 1
+  Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
+  Control.addVariable("BilbaoWheelSecWallSegLength1",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength2",-3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength3",3.0);
+  Control.addVariable("BilbaoWheelSecWallSegLength4",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength5",-3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength6",3.0);
   Control.addVariable("BilbaoWheelSecWallSegLength7",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength8",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength9",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength10",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength8",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength9",-3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength10",3.0);
   Control.addVariable("BilbaoWheelSecWallSegLength11",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength12",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength13",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength14",-4-1.2+2);
+  Control.addVariable("BilbaoWheelSecWallSegLength12",-3.2);
+  Control.addVariable("BilbaoWheelSecWallSegLength13",-3.4);
+  Control.addVariable("BilbaoWheelSecWallSegLength14",3.0);
+  Control.addVariable("BilbaoWheelSecWallSegLength15",-4-1.2);
   Control.addVariable("BilbaoWheelSecWallSegThick",0.6);
   Control.addVariable("BilbaoWheelSecBrickWidth",1.0);
   Control.addVariable("BilbaoWheelSecBrickLength",3.0);
