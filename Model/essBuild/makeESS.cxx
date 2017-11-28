@@ -24,7 +24,6 @@
 #include <iostream>
 #include <sstream>
 #include <utility>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
