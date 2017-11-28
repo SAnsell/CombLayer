@@ -338,7 +338,7 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   Geometry::Cylinder *backCyl =
     SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
 
-  d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
+  // d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
   Geometry::Vec3D offset = Origin-Y*(backCyl->getRadius()+d);
   ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
 
@@ -447,21 +447,18 @@ BilbaoWheelCassette::createObjects(Simulation& System,
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","createObjects");
 
-  const std::string fr = FC.getLinkString(floor) + FC.getLinkString(roof);
-  const std::string outer = fr + FC.getLinkString(back) + FC.getLinkString(front);
+  const std::string tb = FC.getLinkString(floor) + FC.getLinkString(roof);
+  const std::string outer = tb + FC.getLinkString(back) + FC.getLinkString(front);
 
   std::string Out;
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 -11 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 ") + FC.getLinkString(back);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 12 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+outer));
-
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 11 -12 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+outer));
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -12 ") + FC.getLinkString(front);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+tb));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
