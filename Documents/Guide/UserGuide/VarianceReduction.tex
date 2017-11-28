@@ -6,65 +6,110 @@ Cell-based weight window can be generated with the following arguments:
 
 \lstinputlisting[language=bash,numbers=none,backgroundcolor=\color{yellow!20},frame=tb]{UserGuide/cell-biasing.sh}
 
-\begin{description}
-\item[-defaultConfig Single ODIN -angle objAxis odinAxis 0] These optional arguments build the ODIN beam line
-  and rotate geometry around the $z$ axis and then the $y$ axis such that the FixedComp linkPt axis specified
-  in the -angle command is made collinear with the $x$ axis.
-  In this example it is the ODIN beamline axis which is aligned on the $x$ axis.
-  This rotation simplifies the weight window source plane setup for the current example and used here for
-  illustration purpose~(see \figref{fig:vr:cell}).
-\item[-w] should precede all weight-related arguments.
-\item[--weightEnergyType] defines energy grid\footnote{With the {\tt wwg} card you can either use this expression or {\tt --wwgE}.}.
+
+
+  The purpose of the variance reduction is to change the weight in the cell by the following equation 
+  \begin{equation}
+    \label{weigthEqn}
+    w_{mod}= \textrm{scaleFactor} \times \frac{\exp (-\sigma \times \rho \times \textrm{densityFactor}
+      \times r \times \textrm{rScale}) }
+    { (\textrm{rScale} \times r )^{\textrm{r2Power}} }
+  \end{equation}
+
+  Note the repeate of rScale in the equation, thus effectively separating densityFactor from rScale.
+  For each --weightObject the weight in the cells in modifed by $w_{mod}$ in the equation above. 
+  
+  \begin{description}
+\item[-defaultConfig Single ODIN ] These optional arguments build the ODIN beam line
+  without building any other beamlines~(see \figref{fig:vr:cell})..
+
+\item[-angle objAxis odinAxis 0] This rotates the model about the 
+  master $z$ axis followed by around the master $y$ axis such that
+  the FixedComp link-point axis specified after objAxis is collinear with the
+  $x$ axis in the final output. In this example the FixedComp is the {\it odinAxis}
+  and the link point is zero (which signifies to used the FixedComp origin and Y axis
+  rather than a linkPoint).
+  This rotation simplifies the weight window source plane setup
+  for the current example and used here for illustration purpose.
+
+\item[-w] should precede all weight-related arguments and sets up the model for variance analysis.
+  
+\item[--weightEnergyType] defines energy grid\footnote{With the {\tt wwg} card you can either use this expression or
+  {\tt --wwgE}}.
   The following variants of syntax are possible:
   \begin{enumerate}
-    \item If use the word {\em energy} then the format is energy followed by default weight for that bin
-      (in our example: for energies below \SI{0.1}{\mega\electronvolt} the default weight is \num{0.95};
-          for energies between \num{0.1} and \SI{1}{\mega\electronvolt} the default weight is \num{0.85} etc).
-    \item If you drop the word {\em energy} then you just set the energy grid without specifying default weights and the default weight is taken as 1.0.
+
+    \item If use the word {\em energy} then the format is energy followed by initial weight for that bin
+      (in our example: for energies below \SI{0.1}{\mega\electronvolt} the initial weight is \num{0.95};
+          for energies between \num{0.1} and \SI{1}{\mega\electronvolt} the initial weight is \num{0.85} etc).
+        \item If you drop the word {\em energy} then you just set the energy grid and all the initial weights are
+          taken as 1.0
     \item Alternatively you can use pre-defined keywords:
       {\tt basic}, {\tt high}, {\tt mid} and {\tt flat}\footnote{Energy-weight binnings for these keywords are defined in \tt{System/weights/WeightControl.cxx}}.
-    \end{enumerate}
-\item[--weightSource] This argument defines a point in space. We can define as many as we want (by adding several {\tt weightSource} arguments),
-  but only those used with {\tt weightObject} will be used.
+  \end{enumerate}
+  
+\item[--weightSource] This argument defines a point in space.
+  We can define as many as we want (by adding several {\tt weightSource} arguments),
+  but only those used with {\tt weightObject} will be used. When referenced they will be called S0, S1, S2 ... etc
+  based on the order they appear in the command line.
   This particular point is shown by a circle in the left side of \figref{fig:vr:cell:labels}.
+  
 \item[--weightPlane] This argument defines a plane. Similarly to {\tt weightSource}, we can define as many planes as we want,
   but only those used with {\tt weightObject} will be used.
+  When referenced they will be called P0, P1, P2 ... etc based on the order they appear in the command line.
   This particular plane is shown by a dashed vertical line in the right side of \figref{fig:vr:cell:labels}.
+  
 \item[--weightObject] Define objects we would like to make cell-based variance reduction to.
   \begin{description}
-  \item[G2BLineTop20] Object name.  It's also possible to specify range of objects within an object or cell name via {\tt CellMap}.
-  \item[SS0] Refer to the first simple source term (the point defined via {\bf weightSource} above).
-    It implies that the point should be considered as a source (i.e. particles are emitted from it).
-  \item[TS1] Refer to the second simple source term (the point defined via {\bf weightSource} above).
-    It implies that the point should be considered as a tally region, it is calculated in the same way as
-    as source term but the weight contribute is calculated as the reciprical of the contribution (inverted with respect to SS0).
-    \item[energyCut=0.0] Energy cut. Defines min energy for variance reduction (i.e. no variance reduction below this energy will be made~--- default weight will be used as defined in weightEnergyType. If energyCut is less than 0.0 then it defines the maximum energy for variance reduction.
-    \item[scaleFactor=1.0] Linear scale factor. You are going to work out an exponent which is
-      the scattering term into something. It's $ \textrm{scaleFactor} \exp(-\sigma \rho /
-           {\textrm r2len} r)^{\textrm{r2Pow}} )$.
-      It's transport to go from {\em a} cell to another cell. \alert{Scale factor is taken out in the mesh based variance reduction.}
-    \item[density=0.9] Density scale factor. Normally we set it a bit less than one to make it easier to do transport through thick layers.
-    \item[r2Len=1.0] Length scale factor \alert{Do not understand}
-    \item[r2Pow=2.0] Scale for the length exponent in $r^{\text{r2Pow}}$.
+  \item[G2BLineTop20] Object name. It's also possible to specify range of objects within an object or cell name via
+    {\tt CellMap}.
+  \item[SS0] This is a two part reference. The first letter (S) implies that the item is considered to emmit neutrons.
+    The second characters imply that this occurs from the position of the first source point defined above.
+
+  \item[energyCut=0.0] Energy cut. Defines min energy for variance reduction
+    (i.e. no modification will occur to energy bins below this value). However, if the number is negative, then
+    if defines a -ve maximum energy past which no variance modification will be made.
+
+  \item[scaleFactor=1.0] Linear scale factor in equation \ref{weightEquation}
+    It's transport to go from {\em a} cell to another cell.
+    \alert{Scale factor is taken out in the mesh based variance reduction because it is identical in effect to the
+      command [-wwgNorm scaleFactor 1.0] }
+
+  \item[densityFactor=0.9] Density scale factor. Normally we set it a bit less than one to make it easier to do transport through thick layers
+    
+  \item[rScale=1.0] Length is adjusted to a different scale effect
+    
+  \item[r2Pow=2.0] Scale for the length exponent in the distance effect. It should be increased in high absorbing
+    regions and decreased in regions that are effectively in a forward going direction for the higher energy scattering
+    (effectively mimicking forward angle scattering)
+    
   \end{description}
 
- % {\tt TP1}: tally plane 1;
- %  \mbox{\tt 1.0 1.0 0.15 1e-20}: energy above \SI{1}{\mega\electronvolt} (below it we are not interested~--- use default values);
- %  {\tt 1.0}: scale factor; 
- %  {\tt 0.15}: density factor; {\tt 1e-20}: minimum weight % 41:12
-\item[--voidUnMask] By default the importance of the void cell surrounding geometry is 0. This argument sets it to 1.
-  It can be useful if we believe that particles travelling through that cell can contribute into the tally.
-  It's always recommended to put this flag unless you really understand what you are doing.
+\item[--voidUnMask] The unpopulated world is made of sphere of importance 0 both inside and out.
+  All objects that are places in the world must go in the inner spherical volume and they (unless specified) will have
+  importance 1.0. In the case that the tally extends into this inner region sphere (e.g. for a dose after a
+  shielding wall) must have either (a) a void volume added to the model or (b) the inner part of the world shere set
+  to importance zero. This flag does option (b) [This flag may also be used to allow cross talk between two beamlines for
+    example] 
+
 \end{description}
 
 \paragraph{Notes}
 \begin{itemize}
-\item In order to set up biasing, you need at least one source. If you have one tally you must also have at least one source, If several tallies are used, then the weight is multipied together, however at each stage
-  normalization to the source is carried out. Therefore the order is important.
-\item Source can be defined either as a point (via {\bf --weightSource}) or a plane (via {\bf --weightPlane}). In the example above we defined point source.
-  However the defined sources and planes do nothing until you use them in {\bf --weightObject} or somewhere else.
-\item General rule to get the things into work: try different setups and compare results. Then you renormalise it back out again. It's just basically numerical level game.
-  Very often SA scales by this and then rescales by that.
+\item In order to set up biasing, you need at least one source, if you one or more tally (adjoint) points then you must have at least one source.
+
+\item Source can be defined either as a point (via {\bf --weightSource}) or a plane (via {\bf --weightPlane}).
+  In the example above we defined point source. However the defined sources and planes do nothing until you use them in
+  {\bf --weightObject}.
+  
+\item General rule to get the things into work: try different setups and compare results. In particular, higher energy
+  transport is forward going and it is easy to over weight the splitting when particle would predominately scatter
+  in a forward direction. This can be overcome by either reducing the $r^2$ power or decreasing the density.
+  Similarly, resonance streaming dominates thick shielding transport but the code does not account for that, so to
+  approximate the lower attenuation coefficient the density can be reduced using the density factor. Finally,
+  for H$_2$ systems (e.g. polyethelene shielding) the high energy lose term for the hydrogen is not correctly
+  weighted (CombLayer uses single group approximation) and additional $r^2$ or Rlength scaling is worth cosidering.
+
 \end{itemize}
 
 % \begin{equation}

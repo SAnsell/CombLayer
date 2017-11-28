@@ -227,6 +227,18 @@ PhysicsCards::setWImpFlag(const std::string& particleType)
   return;
 }
 
+void
+PhysicsCards::clearWImpFlag(const std::string& particleType)
+  /*!
+    Set the imp than are excluded because they have 
+    a wcell/wwg mesh
+    \param particleType :: particle type
+  */
+{
+  wImpOut.erase(particleType);
+  return;
+}
+
 bool
 PhysicsCards::hasWImpFlag(const std::string& particleType) const
   /*!
@@ -436,7 +448,7 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
     \param Particle :: Particle to add [n,p,e] etc
     \return PhysImp item
   */
-{
+{    
   ELog::RegMethod RegA("PhysicsCards","addPhysImp");
   try 
     {
@@ -465,7 +477,7 @@ PhysicsCards::removePhysImp(const std::string& Type,
   */
 {
   ELog::RegMethod RegA("PhysicsCards","removePhysImp");
-
+  ELog::EM<<"REMOVE = "<<Type<<" :: "<<Particle<<ELog::endDiag;
   for(PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type)
@@ -706,6 +718,7 @@ PhysicsCards::getPhysImp(const std::string& Type,
     \return importance of the cell
   */
 {
+
   ELog::RegMethod RegA("PhysicsCards","getPhysImp");
 
   std::vector<PhysImp>::iterator vc;
@@ -1034,7 +1047,6 @@ PhysicsCards::write(std::ostream& OX,
   if (voidCard)
     OX<<"void"<<std::endl;
   
-  
   if (histp)
     {
       std::ostringstream cx;
@@ -1049,9 +1061,7 @@ PhysicsCards::write(std::ostream& OX,
   mode.write(OX);
   Volume.write(OX,std::set<std::string>(),cellOutOrder);
   for(const PhysImp& PI : ImpCards)
-    {
-      PI.write(OX,wImpOut,cellOutOrder);
-    }
+    PI.write(OX,wImpOut,cellOutOrder);
   
   PWTCard->write(OX,cellOutOrder,voidCells);
 
