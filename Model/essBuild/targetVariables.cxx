@@ -112,7 +112,14 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelZangle",0.0);
   Control.addVariable("BilbaoWheelTargetHeight",8.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelTargetInnerHeight",6.6); // TSM141108V3000
-  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",68.7); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
+  // TSV31-TargetUpdate02
+  // this sets the inner W radius to 77.2 cm
+  // 77.2 = R750 + 2.2 in the upper sector plate
+  // R750: TRGT-ESS-0106 page 2
+  // 2.2: detail B in  TRGT-ESS-0106 page 1
+  // In the lower sector plate:
+  // 77.2 = R74.5 + 2.7
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",76.7);
 
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2); // TSM141108V3000: upper 0.2, lower 0.3
@@ -152,7 +159,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelRadius2",77.0); // TSM141108V3000
   Control.addVariable("BilbaoWheelMatTYPE2",0); // TSM141108V3000
 
-  Control.addVariable("BilbaoWheelRadius3",126.4); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017) - this cylinder approximates plane in that file
+  Control.addVariable("BilbaoWheelRadius3",126.2); // TSV31-TargetUpdate02 (email from AT 22 Nov 2017)
   Control.addVariable("BilbaoWheelMatTYPE3",3);
 
   // Sectors
