@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -144,7 +143,7 @@ F5Calc::GetZAngle()
   lF5_Projected=CalculateProjectionOntoPlane(lNV2,M,F5); 
   
   const double lAngle=(180.0/M_PI)*
-    fabs(atan(F5.Distance(lF5_Projected))/
+    std::abs(atan(F5.Distance(lF5_Projected))/
 	 M.Distance(lF5_Projected));
 
   // This is junk: Should be relative to the lF5-projection anlge
@@ -217,7 +216,7 @@ F5Calc::CalculateProjectionOntoPlane
 */
 {
 
-    const double lDistance=fabs(NV.dotProd(M-P)/NV.abs());
+    const double lDistance=std::abs(NV.dotProd(M-P)/NV.abs());
     //Calculate the possible projections
     return P+NV*lDistance;
 }

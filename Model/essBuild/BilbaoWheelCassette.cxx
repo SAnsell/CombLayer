@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -205,9 +204,9 @@ BilbaoWheelCassette::getSegWallArea() const
   double h3(0.0); // leg of triangle: h2=h1+h3
   for (size_t i=0; i<nWallSeg; i++)
     {
-      h3 = fabs(wallSegLength[i])*tan(wallSegDelta*M_PI/180.0);
+      h3 = std::abs(wallSegLength[i])*tan(wallSegDelta*M_PI/180.0);
       h2 = h1+h3;
-      const double s1 = h1*fabs(wallSegLength[i]);
+      const double s1 = h1*std::abs(wallSegLength[i]);
       const double s2 = wallSegLength[i]*h3/2.0;
       s += s1+s2;
 
@@ -231,9 +230,9 @@ BilbaoWheelCassette::getSegWallThick() const
 
   // Total wall length is sum of all its segments:
   double L = std::accumulate(std::next(wallSegLength.begin()), wallSegLength.end(),
-			      fabs(wallSegLength[0]),
+			      std::abs(wallSegLength[0]),
 			      [](double b, double c){
-			       return fabs(b)+fabs(c);
+			       return std::abs(b)+std::abs(c);
 			      });
 
   return getSegWallArea()/L;
@@ -564,7 +563,7 @@ BilbaoWheelCassette::createLinks()
 	  Geometry::Vec3D p = SurInter::getPoint(SMap.realSurfPtr(SJ+11),
 						 SMap.realSurfPtr(SJ+13),
 						 SMap.realSurfPtr(surfIndex+5));
-	  p += Y*fabs(wallSegLength[j]/2.0);
+	  p += Y*std::abs(wallSegLength[j]/2.0);
 	  FixedComp::setConnect(i,p,X);
 	  FixedComp::setLinkSurf(i,SMap.realSurf(SJ+13));
 
@@ -573,7 +572,7 @@ BilbaoWheelCassette::createLinks()
 	  p = SurInter::getPoint(SMap.realSurfPtr(SJ+11),
 				 SMap.realSurfPtr(SJ+14),
 				 SMap.realSurfPtr(surfIndex+5));
-	  p += Y*fabs(wallSegLength[j]/2.0);
+	  p += Y*std::abs(wallSegLength[j]/2.0);
 	  FixedComp::setConnect(i,p,-X);
 	  FixedComp::setLinkSurf(i,-SMap.realSurf(SJ+14));
 
