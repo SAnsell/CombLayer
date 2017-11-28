@@ -125,7 +125,8 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   brickWidth(A.brickWidth),
   brickLength(A.brickLength),
   brickGap(A.brickGap),
-  brickMat(A.brickMat)
+  brickMat(A.brickMat),
+  pipeCellThick(A.pipeCellThick)
   /*!
     Copy constructor
     \param A :: BilbaoWheelCassette to copy
@@ -166,6 +167,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       brickLength=A.brickLength;
       brickGap=A.brickGap;
       brickMat=A.brickMat;
+      pipeCellThick=A.pipeCellThick;
     }
   return *this;
 }
@@ -286,6 +288,8 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   brickGap=Control.EvalPair<double>(keyName,commonName,"BrickGap");
   brickMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickMat",keyName+"BrickMat");
 
+  pipeCellThick=Control.EvalPair<double>(keyName,commonName,"PipeCellThick");
+
   return;
 }
 
@@ -334,6 +338,9 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
   Geometry::Vec3D offset = Origin-Y*(backCyl->getRadius()+d);
   ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
+
+  offset += Y*pipeCellThick;
+  ModelSupport::buildPlane(SMap,surfIndex+12,offset,Y);
 
   return;
 }
@@ -447,8 +454,11 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 -11 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 11 ");
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -1 12 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+outer));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 11 -12 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,temp,Out+outer));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 14 -4 -1 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
