@@ -64,9 +64,10 @@ TwinBaseGenerator::TwinBaseGenerator() :
   motorRadius(10.0),
   motorFlangeInner(10.20),motorFlangeOuter(12.20),
   motorOuter((motorFlangeInner+motorFlangeOuter)/2.0),
-  motorLength(32.0),
-  motorNBolt(24),motorBoltRadius(0.5),
-  motorSealThick(0.2),motorSealMat("Poly"),
+  motorLength(32.0),motorNBolt(24),
+  motorBoltRadius(0.5),motorSealThick(0.2),
+  motorRevFlagA(0),motorRevFlagB(0),
+  motorSealMat("Poly"),
 
   ringNBolt(12),lineNBolt(8),outerStep(0.5),
   outerBoltRadius(0.8),outerBoltMat("ChipIRSteel"),
@@ -98,6 +99,19 @@ TwinBaseGenerator::setMainRadius(const double R)
   motorRadius*=R/mainRadius;
   motorLength*=R/mainRadius;
   mainRadius=R;
+  return;
+}
+
+void
+TwinBaseGenerator::setReverseMotors(const bool A,const bool B)
+  /*!
+    Reverse the motors from -ve Y direction
+    \param A :: Reverse Motor A
+    \param B :: Reverse Motor B
+  */
+{
+  motorRevFlagA=A;
+  motorRevFlagB=B;
   return;
 }
 
@@ -175,6 +189,8 @@ TwinBaseGenerator::generateChopper(FuncDataBase& Control,
       Control.addVariable(keyName+itemName+"SealThick",0.2);  
       Control.addVariable(keyName+itemName+"SealMat",motorSealMat);
     }
+  Control.addVariable(keyName+"MotorAReverse",static_cast<int>(motorRevFlagA));
+  Control.addVariable(keyName+"MotorBReverse",static_cast<int>(motorRevFlagB));
 
   Control.addVariable(keyName+"OuterRingNBolt",ringNBolt);
   Control.addVariable(keyName+"OuterLineNBolt",lineNBolt);

@@ -49,7 +49,8 @@ class ChopperGenerator
   double ringRadius;       ///< Radius of the ring 
 
   double motorRadius;      ///< Motor radius
-  double motorOuter;       ///< Motor outer
+  double motorInner;       ///< Motor inner flange
+  double motorOuter;       ///< Motor outer flange
   double portRadius;       ///< Port radius
   double portOuter;        ///< Port outer
 

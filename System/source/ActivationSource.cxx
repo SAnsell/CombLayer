@@ -213,7 +213,6 @@ ActivationSource::createFluxVolumes(const Simulation& System)
   size_t index=0;
   fluxPt.clear();
 
-
   ELog::EM<<"Volume == "<<ABoxPt<<" : "<<BBoxPt<<ELog::endDiag;
   const Geometry::Vec3D BDiff(BBoxPt-ABoxPt);
   const double xStep(BDiff[0]);
@@ -495,13 +494,12 @@ ActivationSource::writePoints(const std::string& outputName) const
   
   
 void
-ActivationSource::createAll(Simulation& System,
+ActivationSource::createAll(const Simulation& System,
 			    const std::string& inputFileBase,
 			    const std::string& outputName)
   /*!
     Create all the source
     \param System :: Simuation 
-    \param souceCard :: Source Term
     \param inputFileBase :: input file key
     \param outputName :: Output file
    */

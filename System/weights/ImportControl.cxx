@@ -87,17 +87,29 @@ setWImp(Simulation& System,const std::string& particleType)
     \param System :: Simulation
     \param particleType :: Particle type
   */
-{
-  ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
-
+{    
+  ELog::RegMethod RegA("ImportControl[F]","setWImp");
   System.getPC().setWImpFlag(particleType);
+  return;
+}
+
+void
+clearWImp(Simulation& System,const std::string& particleType)
+  /*!
+    control neutron importance for wwg cards
+    \param System :: Simulation
+    \param particleType :: Particle type
+  */
+{    
+  ELog::RegMethod RegA("ImportControl[F]","clearWImp");
+  System.getPC().clearWImpFlag(particleType);
   return;
 }
 
 void
 removePhysImp(Simulation& System,const std::string& pType)
   /*!
-    Removes neutron importance
+    Removes particle importance if cell based system dominates
     \param System :: Simulation
     \param pType :: Particle type
   */

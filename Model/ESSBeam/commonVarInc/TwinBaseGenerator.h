@@ -53,6 +53,8 @@ class TwinBaseGenerator
   size_t motorNBolt;         ///< Number of bolts
   double motorBoltRadius;    ///< Radius of bolts
   double motorSealThick;     ///< Seal thickness
+  bool motorRevFlagA;         ///< Motor rotated A
+  bool motorRevFlagB;         ///< Motor rotated B
   std::string motorSealMat;  ///< Seal material
 
   size_t ringNBolt;         ///< Bolts in outer ring
@@ -75,6 +77,7 @@ class TwinBaseGenerator
   void setFrame(const double,const double);  
   void setMainRadius(const double);
   void setMotorLength(const double);
+  void setReverseMotors(const bool,const bool); 
 
 
   void generateChopper(FuncDataBase&,

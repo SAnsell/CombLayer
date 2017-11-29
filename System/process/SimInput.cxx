@@ -125,12 +125,15 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
       ELog::EM<<"SIMVALID TRACK "<<ELog::endDiag;
       ELog::EM<<"-------------- "<<ELog::endDiag;
       ModelSupport::SimValid SValidCheck;
-      
+
       if (IParam.flag("validPoint"))
-	SValidCheck.setCentre(IParam.getValue<Geometry::Vec3D>("validPoint"));
-      
-      if (!SValidCheck.run(System,IParam.getValue<size_t>("validCheck")))
-	errFlag += -1;
+	{
+	  const Geometry::Vec3D CPoint=
+	    IParam.getValue<Geometry::Vec3D>("validPoint");
+	  if (!SValidCheck.runPoint(System,CPoint,
+				    IParam.getValue<size_t>("validCheck")))
+	    errFlag += -1;
+	}
     }
 
   

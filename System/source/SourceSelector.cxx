@@ -307,11 +307,10 @@ activationSelection(Simulation& System,
         }
     }
 
-  createActivationSource(timeSeg,APt,BPt,nVol,
+  createActivationSource(System,cellDir,OName,
+			 timeSeg,APt,BPt,nVol,
 			 scale,weightPt,weightDist);
 
-  
-  //  AS.createSource(System,cellDir,OName);
 
   return;
 }

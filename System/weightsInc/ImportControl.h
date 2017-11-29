@@ -44,6 +44,7 @@ namespace WeightSystem
   void SBias(Simulation&,const mainSystem::inputParam&);
   void removePhysImp(Simulation&,const std::string&);
   void setWImp(Simulation&,const std::string&);
+  void clearWImp(Simulation&,const std::string&);
 
 }
 
