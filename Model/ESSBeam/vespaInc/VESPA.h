@@ -50,7 +50,8 @@ namespace constructSystem
   class TwinChopper;
   class HoleShape;
   class CrystalMount;
-  class TubeDetBox;  
+  class TubeDetBox;
+  class TwinChopperFlat;
 }
 
 namespace essSystem
@@ -88,45 +89,62 @@ class VESPA : public attachSystem::CopiedComp
   /// Tapered guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusB;
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperA;
-  /// Double disk chopper [Wavelength Frame multiplication]
-  std::shared_ptr<constructSystem::DiskChopper> WFMDiskA;
-  
-  /// Vac pipe 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeC;
-  /// Tapered guide from WFMA to WFMB
+  /// Vac pipe  
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeB;
+  /// Tapered guide from 5.5 to 6metre
   std::shared_ptr<beamlineSystem::GuideLine> FocusC;
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperB;
-  /// Double disk chopper [Wavelength Frame multiplication]
-  std::shared_ptr<constructSystem::DiskChopper> WFMDiskB;
+  /// PulseShapingChopper-A 
+  std::shared_ptr<constructSystem::TwinChopperFlat> TwinChopperA;
+  /// PSC -- top disk
+  std::shared_ptr<constructSystem::DiskChopper> PSCDiskTopA;
+  /// PSC -- lower disk
+  std::shared_ptr<constructSystem::DiskChopper> PSCDiskBottomA;
 
-  /// Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeD;
-  /// Rectangular guide from WFMB to WFMC
+  /// Joining pipe between Choppers: A-B
+  std::shared_ptr<constructSystem::VacuumPipe> JPipeAB;
+  /// Guide in Join AB
   std::shared_ptr<beamlineSystem::GuideLine> FocusD;
+  
+  /// PulseShapingChopper-B 
+  std::shared_ptr<constructSystem::TwinChopperFlat> TwinChopperB;
+  /// PSC -- top disk 
+  std::shared_ptr<constructSystem::DiskChopper> PSCDiskTopB;
+  /// PSC -- lower disk
+  std::shared_ptr<constructSystem::DiskChopper> PSCDiskBottomB;
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperC;
-  /// Double disk chopper [Wavelength Frame multiplication]
-  std::shared_ptr<constructSystem::DiskChopper> WFMDiskC;
-
-  /// Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeE;
-  /// Rectangular guide from WFMB to WFMC
+  /// Joining pipe between Choppers: B-C
+  std::shared_ptr<constructSystem::VacuumPipe> JPipeBC;
+  /// Guide in Join AB
   std::shared_ptr<beamlineSystem::GuideLine> FocusE;
 
-  /// Vac box for first chopper
-  std::shared_ptr<constructSystem::SingleChopper> ChopperD;
-  /// Double disk chopper [Wavelength Frame multiplication]
-  std::shared_ptr<constructSystem::DiskChopper> FOCDiskA;
+  /// PulseShapingChopper-C 
+  std::shared_ptr<constructSystem::TwinChopperFlat> TwinChopperC;
+  /// PSC -- top disk 
+  std::shared_ptr<constructSystem::DiskChopper> PSCDiskTopC;
+  /// PSC -- lower disk
+  std::shared_ptr<constructSystem::DiskChopper> PSCDiskBottomC;
 
-  /// Vac pipe in 
-  std::shared_ptr<constructSystem::VacuumPipe> VPipeF;
-  /// Rectangular guide from WFMB to WFMC
+  /// Joining pipe between Choppers: C to Out
+  std::shared_ptr<constructSystem::VacuumPipe> JPipeCOut;
+  /// Guide in Join AB
   std::shared_ptr<beamlineSystem::GuideLine> FocusF;
+
+  /// General Pipe between PSC-C and FO-chopper
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeG;
+  /// Guide for VPipeG
+  std::shared_ptr<beamlineSystem::GuideLine> FocusG;
+
+  /// FO-Chopper
+  std::shared_ptr<constructSystem::SingleChopper> ChopperFOC;
+  /// FO-Chopper Disk
+  std::shared_ptr<constructSystem::DiskChopper> FOCDisk;
+
+  /// General Pipe between FOC and Bunker wall
+  std::shared_ptr<constructSystem::VacuumPipe> VPipeH;
+  /// Guide for VPipeH
+  std::shared_ptr<beamlineSystem::GuideLine> FocusH;
+
 
   /// Bunker insert
   std::shared_ptr<essSystem::BunkerInsert> BInsert;

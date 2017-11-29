@@ -89,7 +89,8 @@ class ActivationSource :
 
   void createOutput(const std::string&);
 
-  void createAll(Simulation&,const std::string&,const std::string&);
+  void createAll(const Simulation&,const std::string&,
+		 const std::string&);
   
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
