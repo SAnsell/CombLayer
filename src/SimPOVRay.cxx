@@ -3,7 +3,7 @@
  
  * File:   src/SimPOVRay.cxx
  *
- * Copyright (c) 2017 by Konstantin Batkov
+ * Copyright (c) 2004-2017 by Konstantin Batkov/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,8 +111,7 @@ SimPOVRay::writeCells(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SimPOVRay","writeCells");
-  
-  
+    
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writePOVRay(OX);

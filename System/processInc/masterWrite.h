@@ -60,7 +60,8 @@ class masterWrite
 
   template<typename T>
   std::string padNum(const T&,const size_t);
-  
+
+  std::string NameNoDot(std::string);
   std::string NumComma(const Geometry::Vec3D&);
   std::string Num(const Geometry::Vec3D&);
   std::string Num(const double&);
