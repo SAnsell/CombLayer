@@ -34,6 +34,7 @@
 #include <sstream>
 #include <algorithm>
 #include <memory>
+#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -60,6 +61,12 @@
 #include "neutron.h"
 #include "RuleCheck.h"
 #include "objectRegister.h"
+#include "masterWrite.h"
+#include "Element.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "Object.h"
 
 #include "Debug.h"
@@ -1332,6 +1339,11 @@ Object::writePOVRay(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writePOVRay");
 
+  masterWrite& MW=masterWrite::Instance();
+  
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   if (!placehold && MatN>0)
@@ -1344,7 +1356,7 @@ Object::writePOVRay(std::ostream& OX) const
       OX<<"// Cell "<<objName<<" "<<ObjName<<"\n";
       OX<<"intersection{\n"
 	<<HRule.displayPOVRay()<<"\n"
-	<< " texture {mat" << MatN <<"}\n"
+	<< " texture {mat" <<MW.NameNoDot(DB.getKey(MatN)) <<"}\n"
 	<< "}"<<std::endl;
     }
   

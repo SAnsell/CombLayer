@@ -143,6 +143,19 @@ masterWrite::NumComma(const Geometry::Vec3D& V)
   return Out;
 }
 
+std::string
+masterWrite::NameNoDot(std::string V)
+  /*!
+    Write out a name without "." which is
+    forbidden in povray
+    \param V :: Name as a dot
+    \return formated name
+  */
+{
+  std::replace(V.begin(),V.end(),'.','x');
+  return V;
+}
+
 
 template<typename T>
 std::string
