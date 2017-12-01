@@ -395,16 +395,15 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       const std::vector<std::string> TLpipe = {"T", "L"};
       for (std::string strpipe : TLpipe) {
 	s = strpipe + "Supply";
-	A.setVar(s+"RightAlNSegIn", 1);
+	A.setVar(s+"RightAlNSegIn", 2);
 	A.setVar(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
-	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,15,0));
-	A.setVar(s+"RightInvarPPt1", Geometry::Vec3D(0,8.3,0)); // should be inside twister
-	A.setVar(s+"RightInvarPPt2", Geometry::Vec3D(0,8.3,30));
-	A.setVar(s+"LeftAlNSegIn", 1);
+	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,30,0));
+	A.setVar(s+"RightAlPPt2", Geometry::Vec3D(0,30,50));
+
+	A.setVar(s+"LeftAlNSegIn", 2);
 	A.setVar(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
-	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,15,0));
-	A.setVar(s+"LeftInvarPPt1", Geometry::Vec3D(0,8.3,0)); // should be inside twister
-	A.setVar(s+"LeftInvarPPt2", Geometry::Vec3D(0,8.3,30));
+	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,30,0));
+	A.setVar(s+"LeftAlPPt2", Geometry::Vec3D(0,30,50));
       }
     } else if (modtype=="BF2")
     {
