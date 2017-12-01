@@ -67,7 +67,7 @@ EssPipeVariables(FuncDataBase& Control)
   const size_t nRad(4);
 
   const double AlPPt3X(3.597);
-  const double AlPPt3Y(28);
+  const double AlPPt3Y(22.8);
 
   const std::vector<double> R({1.1, 1.3, 1.5, 1.8});
 

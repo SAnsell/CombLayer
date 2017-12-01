@@ -397,13 +397,13 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
 	s = strpipe + "Supply";
 	A.setVar(s+"RightAlNSegIn", 2);
 	A.setVar(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
-	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,30,0));
-	A.setVar(s+"RightAlPPt2", Geometry::Vec3D(0,30,50));
+	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,26,0));
+	A.setVar(s+"RightAlPPt2", Geometry::Vec3D(0,26,40));
 
 	A.setVar(s+"LeftAlNSegIn", 2);
 	A.setVar(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
-	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,30,0));
-	A.setVar(s+"LeftAlPPt2", Geometry::Vec3D(0,30,50));
+	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,25.3,0));
+	A.setVar(s+"LeftAlPPt2", Geometry::Vec3D(0,25.3,40));
       }
     } else if (modtype=="BF2")
     {
