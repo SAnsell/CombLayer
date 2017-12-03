@@ -401,7 +401,7 @@ VESPA::buildOutGuide(Simulation& System,
     Build all the components that are outside of the wall
     \param System :: Simulation 
     \param FW :: Focus wall fixed axis
-    \param startPoint :: link point 
+    \param startIndex :: link point 
     \param voidCell :: void cell nubmer
    */
 {

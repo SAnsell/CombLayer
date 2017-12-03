@@ -53,6 +53,7 @@ class ChopperGenerator
   double motorOuter;       ///< Motor outer flange
   double portRadius;       ///< Port radius
   double portOuter;        ///< Port outer
+  bool motorRevFlag;       ///< reverse motor to +Y direction
 
   double portWidth;        ///< Port width
   double portHeight;       ///< Port height
@@ -76,7 +77,8 @@ class ChopperGenerator
   void setMainRadius(const double);
   void setMotorRadius(const double);
   void setPortRadius(const double);
-
+  void setReverseMotor(const bool);
+  
   void generateChopper(FuncDataBase&,
 		       const std::string&,
 		       const double,const double,

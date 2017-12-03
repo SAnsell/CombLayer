@@ -27,7 +27,10 @@ class Simulation;
 namespace SDef
 {
   class Source;
-
+  class SourceBase;
+  
+  std::shared_ptr<SourceBase> makeActivationSourece(const std::string&);
+  
   std::string createActivationSource(const Simulation&,
 				     const std::string&,
 				     const std::string&,

@@ -83,6 +83,25 @@
 namespace SDef
 {
 
+std::shared_ptr<SourceBase>
+makeActivationSource(const std::string& ASName)
+  /*!
+    Construct and return an activation source
+    \param ASName :: Activive sourece name
+  */
+{
+  ELog::RegMethod RegA("SourceSelector","makeActivationSelection");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  SDef::ActivationSource AS;
+
+  SDB.registerSource(ASName,AS);
+  
+  return SDB.getSharedThrow(ASName,"Source "+ASName+" not registered");
+}
+  
+  
 std::string
 createActivationSource(const Simulation& System,
 		       const std::string& cellDir,
@@ -120,7 +139,7 @@ createActivationSource(const Simulation& System,
   AS.createAll(System,cellDir,outFile);
   
   SDB.registerSource("ActivationSource",AS);
-  
+
   return "ActivationSource";
 }
 

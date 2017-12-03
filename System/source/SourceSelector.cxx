@@ -300,6 +300,12 @@ activationSelection(Simulation& System,
         {
           nVol=IParam.getValueError<size_t>("activation",index,1,eMess);
         }
+      else if (key=="weightPlane")
+        {
+	  size_t itemCnt(0);
+	  //	  Geoemtry::Vec3D PL=
+	  //	    IParam.getValueError<size_t>("activation",index,1,eMess);
+        }
       else
         {
           throw ColErr::InContainerError<std::string>
