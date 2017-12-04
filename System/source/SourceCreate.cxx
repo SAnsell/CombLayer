@@ -102,46 +102,6 @@ makeActivationSource(const std::string& ASName)
 }
   
   
-std::string
-createActivationSource(const Simulation& System,
-		       const std::string& cellDir,
-		       const std::string& outFile,
-		       const size_t timeSeg,
-		       const Geometry::Vec3D& APt,const Geometry::Vec3D& BPt,
-		       const size_t nVol,const double scale,
-		       const Geometry::Vec3D& weightPt,
-		       const double weightDist)
-/*!
-  Select all the info for activation output from
-  fluxes.
-  \param System :: Simuation system
-  \param cellDir :: Cell directory name
-  \param outFile :: Data.ssw file name
-  \param timeSeg :: Time segment
-  \param APt :: Box point
-  \param BPt :: Box point
-  \param scale :: scale value
-  \param weightPt :: scale based on distance to point
-  \param weightDist :: scale base on distance to point
-  \return keyName of source
-*/
-{
-  ELog::RegMethod RegA("SourceSelector","activationSelection");
-
-  sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  SDef::ActivationSource AS;
-  AS.setBox(APt,BPt);
-  AS.setTimeSegment(timeSeg);
-  AS.setNPoints(nVol);
-  AS.setWeightPoint(weightPt,weightDist);
-  AS.setScale(scale);
-  AS.createAll(System,cellDir,outFile);
-  
-  SDB.registerSource("ActivationSource",AS);
-
-  return "ActivationSource";
-}
 
 std::string
 createBilbaoSource(const FuncDataBase& Control,

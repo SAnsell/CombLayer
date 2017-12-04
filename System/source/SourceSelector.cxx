@@ -256,7 +256,7 @@ activationSelection(Simulation& System,
       if (!AS)
 	throw ColErr::DynamicConv("SourceBase","ActivationSource",
 				  " convertion ");
-      
+    
   
       for(size_t index=0;index<nP;index++)
 	{
@@ -327,12 +327,14 @@ activationSelection(Simulation& System,
 		(key,"Key not found for activation");
 	    }
 	}
+            
+      AS->setBox(APt,BPt);
+      AS->setTimeSegment(timeSeg);
+      AS->setNPoints(nVol);
+      AS->setWeightPoint(weightPt,weightDist);
+      AS->setScale(scale);
+      AS->createAll(System,cellDir,OName);
     }
-  
-  createActivationSource(System,cellDir,OName,
-			 timeSeg,APt,BPt,nVol,
-			 scale,weightPt,weightDist);
-
 
   return;
 }

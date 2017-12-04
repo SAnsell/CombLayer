@@ -163,6 +163,8 @@ ActivationSource::setPlane(const Geometry::Vec3D& APt,
 			   const double rPower)
   /*!
     Build the plane if needed
+    \param APt :: Point on plane
+    \param AAxis :: Normal
    */
 {
   ELog::RegMethod Rega("ActivationSource","setPlane");
@@ -449,14 +451,11 @@ ActivationSource::calcWeight(const Geometry::Vec3D& Pt) const
   double D=1.0;
   if (PPtr)
     D=PPtr->distance(Pt);
+
   else if (weightDist>Geometry::zeroTol)
     D=(weightPt.Distance(Pt))/weightDist;
-  
+
   return (D<0.1) ? 100.0 : 1/std::pow(D,r2Power);
-
-
-  
-  return 1.0;
 }
 
 void
