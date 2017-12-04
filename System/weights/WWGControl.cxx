@@ -498,10 +498,8 @@ WWGControl::processWeights(Simulation& System,
       wwgMarkov(System,IParam);
       
       wwgCombine(System,IParam);
-      wwgVTK(IParam);
-      wwgNormalize(IParam); 
-      //      wwgVTK(IParam);
-
+      wwgNormalize(IParam);
+      wwgVTK(IParam);	    
 
       for(const std::string& P : activeParticles)
 	{

@@ -83,7 +83,7 @@
 namespace SDef
 {
 
-std::shared_ptr<SourceBase>
+std::shared_ptr<SDef::SourceBase>
 makeActivationSource(const std::string& ASName)
   /*!
     Construct and return an activation source
