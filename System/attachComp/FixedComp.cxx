@@ -102,7 +102,8 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 {}
 
 FixedComp::FixedComp(const FixedComp& A) : 
-  keyName(A.keyName),SMap(A.SMap),X(A.X),Y(A.Y),Z(A.Z),
+  keyName(A.keyName),SMap(A.SMap),keyMap(A.keyMap),
+  X(A.X),Y(A.Y),Z(A.Z),
   Origin(A.Origin),beamAxis(A.beamAxis),
   orientateAxis(A.orientateAxis),primeAxis(A.primeAxis),
   LU(A.LU)
@@ -123,6 +124,7 @@ FixedComp::operator=(const FixedComp& A)
   if (this!=&A)
     {
       SMap=A.SMap;
+      keyMap=A.keyMap;
       X=A.X;
       Y=A.Y;
       Z=A.Z;
@@ -1148,7 +1150,52 @@ FixedComp::getUSLinkSurf(const size_t Index) const
   return LU[Index].getLinkSurf();
 }
 
+void
+FixedComp::nameSideIndex(const size_t lP,
+                         const std::string& linkName)
+  /*!
+    Set the named sideIndex
+    \param lP :: Link point
+    \param linkName :: keyname for link point
+   */
+{
+  ELog::RegMethod RegA("FixedComp","nameSideIndex"+keyName);
 
+  if (keyMap.find(linkName)!=keyMap.end())
+    ColErr::InContainerError<std::string>(linkName,"linkName exists");
+
+  keyMap.emplace(linkName,lP);
+  return;
+}
+  
+long int
+FixedComp::getSideIndex(const std::string& sideName) const
+  /*!
+    Find the sideIndex from the name
+    \param sideName :: Name with +/- at front if require to change 
+    \return sideIndex which is signed
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getSideIndex");
+  if (!sideName.empty())
+    {
+      const std::string partName=
+        (sideName[0]=='+' || sideName[0]=='-' || sideName[0]=='#') ?
+           sideName.substr(1) : sideName;
+      std::map<std::string,size_t>::const_iterator mc=
+        keyMap.find(partName);
+
+      if (mc!=keyMap.end())
+        return (sideName[0]!='+') ?
+          -static_cast<long int>(mc->second+1) :
+          static_cast<long int>(mc->second+1);
+
+      if (partName=="Origin" || partName=="origin")
+        return 0;
+    }
+  throw ColErr::InContainerError<std::string>(sideName,"sideName");
+}
+  
 std::vector<Geometry::Vec3D>
 FixedComp::getAllLinkPts() const
   /*!
@@ -1182,6 +1229,35 @@ FixedComp::getLinkDistance(const long int AIndex,
   return getLinkPt(AIndex).Distance(getLinkPt(BIndex));
 }
 
+Geometry::Vec3D
+FixedComp::getLinkPt(const std::string& sideName) const
+  /*!
+    Accessor to the link point
+    \param sideName :: named link point
+    \return Link point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkPt[str]:"+keyName);
+
+  const long sideIndex =getSideIndex(sideName);
+  return getLinkPt(sideName);
+}
+
+
+Geometry::Vec3D
+FixedComp::getLinkAxis(const std::string& sideName) const
+  /*!
+    Accessor to the link axis
+    \param sideName :: named link point
+    \return Link point
+  */
+{
+  ELog::RegMethod RegA("FixedComp","getLinkAxis[str]:"+keyName);
+
+  const long sideIndex =getSideIndex(sideName);
+  return getLinkAxis(sideName);
+}
+  
 Geometry::Vec3D
 FixedComp::getLinkPt(const long int sideIndex) const
   /*!
