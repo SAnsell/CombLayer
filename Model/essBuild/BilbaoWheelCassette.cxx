@@ -114,7 +114,9 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   wallSegLength(A.wallSegLength),
   wallSegDelta(A.wallSegDelta),
   wallSegThick(A.wallSegThick),
-  mainMat(A.mainMat),wallMat(A.wallMat),
+  homoWMat(A.homoWMat),
+  homoSteelMat(A.homoSteelMat),
+  wallMat(A.wallMat),
   heMat(A.heMat),
   floor(A.floor),
   roof(A.roof),
@@ -126,6 +128,7 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   brickGap(A.brickGap),
   brickSteelMat(A.brickSteelMat),
   brickWMat(A.brickWMat),
+  nSteelRows(A.nSteelRows),
   pipeCellThick(A.pipeCellThick),
   pipeCellMat(A.pipeCellMat)
   /*!
@@ -156,7 +159,8 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       wallSegLength=A.wallSegLength;
       wallSegDelta=A.wallSegDelta;
       wallSegThick=A.wallSegThick;
-      mainMat=A.mainMat;
+      homoWMat=A.homoWMat;
+      homoSteelMat=A.homoSteelMat;
       wallMat=A.wallMat;
       heMat=A.heMat;
       floor=A.floor;
@@ -169,6 +173,7 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       brickGap=A.brickGap;
       brickSteelMat=A.brickSteelMat;
       brickWMat=A.brickWMat;
+      nSteelRows=A.nSteelRows;
       pipeCellThick=A.pipeCellThick;
       pipeCellMat=A.pipeCellMat;
     }
@@ -273,7 +278,8 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",
 				     keyName+"WallMat");
   heMat=ModelSupport::EvalMat<int>(Control,baseName+"HeMat");
-  mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
+  homoWMat=ModelSupport::EvalMat<int>(Control,baseName+"HomoWMat");
+  homoSteelMat=ModelSupport::EvalMat<int>(Control,baseName+"HomoSteelMat");
   temp=Control.EvalVar<double>(baseName+"Temp");
 
   // for detailed wall geometry (if bricksActive=true)
@@ -294,6 +300,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 					   keyName+"BrickSteelMat");
   brickWMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickWMat",
 				       keyName+"BrickWMat");
+  nSteelRows=Control.EvalPair<size_t>(keyName,commonName,"NSteelRows");
 
   pipeCellThick=Control.EvalPair<double>(keyName,commonName,"PipeCellThick");
   pipeCellMat=ModelSupport::EvalMat<int>(Control,commonName+"PipeCellMat",
@@ -346,7 +353,13 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   const double R(backCyl->getRadius());
 
   // bircks start from this cylinder:
-  ModelSupport::buildCylinder(SMap, surfIndex+7, Origin, Z, R+wallSegLength[0]);
+  ModelSupport::buildCylinder(SMap, surfIndex+7, Origin, Z,
+			      R+std::abs(wallSegLength[0]));
+
+  double rSteel(R+std::abs(wallSegLength[0])); // outer radius of steel bricks
+  for (size_t i=0; i<nSteelRows; i++)
+    rSteel += std::abs(wallSegLength[i+1]);
+  ModelSupport::buildCylinder(SMap, surfIndex+17, Origin, Z, rSteel);
 
   // d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
   Geometry::Vec3D offset = Origin-Y*(R+d);
@@ -464,8 +477,19 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 7 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+tb));
+  if (nSteelRows>0)
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 17 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,homoWMat,temp,Out+tb));
+
+      Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -17 7 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,homoSteelMat,temp,Out+tb));
+    }
+  else
+    {
+      Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 7 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,homoWMat,temp,Out+tb));
+    }
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -7 ") + FC.getLinkString(back);
   System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
@@ -519,7 +543,6 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       if (j==0)
 	{
 	  Out=ModelSupport::getComposite(SMap,SJ," 13 -14 ") + Out1;
-	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,j==0?heMat:mainMat,temp,Out+tb));
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 	}
       else
@@ -529,7 +552,9 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	  for (size_t i=0; i<nBricks[j]; i++) // create brick cells
 	    {
 	      Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,brickWMat,temp,Out+Out1+tb));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,
+					       j<=nSteelRows?brickSteelMat:brickWMat,
+					       temp,Out+Out1+tb));
 
 	      Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));

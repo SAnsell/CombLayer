@@ -146,7 +146,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSectorSepMat", "SS316L");
   Control.addVariable("BilbaoWheelTemperature", 600);
 
-  Control.addVariable("BilbaoWheelWMat","Tungsten_15.3g"); // email from LZ 25 Oct 2017
+  Control.addVariable("BilbaoWheelHomoWMat","Tungsten_15.3g"); // email from LZ 25 Oct 2017
+  // calculated to have the same density fraction with respect to
+  // SS316L as Tungsten/Tungsten_15.3g = 1.26131
+  Control.addVariable("BilbaoWheelHomoSteelMat","SS316L_6.22g");
   Control.addVariable("BilbaoWheelSteelMat","SS316L");
   Control.addVariable("BilbaoWheelHeMat","Void"); // TSM141108V3000
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
@@ -195,6 +198,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelSecBrickGap",0.2);
   Control.addVariable("BilbaoWheelSecBrickSteelMat","SS316L");
   Control.addVariable("BilbaoWheelSecBrickWMat","Tungsten");
+  Control.addVariable("BilbaoWheelSecNSteelRows",2);
   Control.addVariable("BilbaoWheelSecPipeCellThick", 1.2);
   Control.addVariable("BilbaoWheelSecPipeCellMat", "SS316LBilbaoWheelPipeCellMat");
 

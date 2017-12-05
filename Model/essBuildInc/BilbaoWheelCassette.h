@@ -63,7 +63,8 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double wallSegDelta;          ///< Wall angular width [deg] (for detailed wall geometry)
   double wallSegThick;          ///< Wall base thickness (for detailed wall geometry)
 
-  int mainMat;                  ///< main material
+  int homoWMat;     ///< Tungsten material for homogenized W bricks
+  int homoSteelMat; ///< Steel material for homogenized steel bricks
   int wallMat;                  ///< wall material
   int heMat;                    ///< Helium material
   long floor;                   ///< Floor link point
@@ -76,6 +77,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double brickGap; ///< Distance between bricks in the given segment
   int brickSteelMat; ///< Steel Brick material
   int brickWMat; ///< Tungsten Brick material
+  size_t nSteelRows; ///< Number of brick rows made from steel
   double pipeCellThick; ///< Thickness of the pipe cell
   int pipeCellMat; ///< Pipe cell homogenized material
 
