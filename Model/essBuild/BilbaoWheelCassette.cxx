@@ -124,7 +124,8 @@ BilbaoWheelCassette::BilbaoWheelCassette(const BilbaoWheelCassette& A) :
   brickWidth(A.brickWidth),
   brickLength(A.brickLength),
   brickGap(A.brickGap),
-  brickMat(A.brickMat),
+  brickSteelMat(A.brickSteelMat),
+  brickWMat(A.brickWMat),
   pipeCellThick(A.pipeCellThick),
   pipeCellMat(A.pipeCellMat)
   /*!
@@ -166,7 +167,8 @@ BilbaoWheelCassette::operator=(const BilbaoWheelCassette& A)
       brickWidth=A.brickWidth;
       brickLength=A.brickLength;
       brickGap=A.brickGap;
-      brickMat=A.brickMat;
+      brickSteelMat=A.brickSteelMat;
+      brickWMat=A.brickWMat;
       pipeCellThick=A.pipeCellThick;
       pipeCellMat=A.pipeCellMat;
     }
@@ -268,7 +270,8 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   wallThick=Control.EvalPair<double>(keyName,commonName,"WallThick");
   wallThick /= 2.0; // there is half wall from each side of neighbouring sectors
-  wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",keyName+"WallMat");
+  wallMat=ModelSupport::EvalMat<int>(Control,commonName+"WallMat",
+				     keyName+"WallMat");
   heMat=ModelSupport::EvalMat<int>(Control,baseName+"HeMat");
   mainMat=ModelSupport::EvalMat<int>(Control,baseName+"WMat");
   temp=Control.EvalVar<double>(baseName+"Temp");
@@ -287,10 +290,14 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
   brickWidth=Control.EvalPair<double>(keyName,commonName,"BrickWidth");
   brickLength=Control.EvalPair<double>(keyName,commonName,"BrickLength");
   brickGap=Control.EvalPair<double>(keyName,commonName,"BrickGap");
-  brickMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickMat",keyName+"BrickMat");
+  brickSteelMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickSteelMat",
+					   keyName+"BrickSteelMat");
+  brickWMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickWMat",
+				       keyName+"BrickWMat");
 
   pipeCellThick=Control.EvalPair<double>(keyName,commonName,"PipeCellThick");
-  pipeCellMat=ModelSupport::EvalMat<int>(Control,commonName+"PipeCellMat",keyName+"PipeCellMat");
+  pipeCellMat=ModelSupport::EvalMat<int>(Control,commonName+"PipeCellMat",
+					 keyName+"PipeCellMat");
 
   return;
 }
@@ -522,7 +529,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	  for (size_t i=0; i<nBricks[j]; i++) // create brick cells
 	    {
 	      Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,brickMat,temp,Out+Out1+tb));
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,brickWMat,temp,Out+Out1+tb));
 
 	      Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+Out1+tb));
