@@ -175,23 +175,21 @@ EssWheel(FuncDataBase& Control)
   // The same drawings in CHESS: ESS-0102065
   // 3D project: ESS-0017676
   // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/target/cassette-side-steel/view
-  Control.addVariable("BilbaoWheelSecNWallSeg",16); // 15 layers of bricks + 1
-  Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
-  Control.addVariable("BilbaoWheelSecWallSegLength1",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength2",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength3",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength4",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength5",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength6",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength7",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength8",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength9",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength10",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength11",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength12",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength13",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength14",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength15",-4-1.2);
+
+  const std::vector<size_t> nBricks({0,9,10,11,10,11,12,11,12,13,14,13,14,15,16,15});
+  const std::vector<double> segLen({4.9,-3.2,-3.4,3.0,-3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-4-1.2});
+  const size_t NB(nBricks.size());
+  Control.addVariable("BilbaoWheelSecNWallSeg",NB); // 15 layers of bricks + 1
+  if (segLen.size() != NB)
+    ELog::EM << "Different lengths of vectors segLen and nBricks" << ELog::endCrit;
+
+  for (size_t i=0; i<NB; i++)
+    {
+      const std::string si(std::to_string(i));
+      Control.addVariable("BilbaoWheelSecWallSegLength"+si,segLen[i]);
+      Control.addVariable("BilbaoWheelSecWallSegNBricks"+si,nBricks[i]);
+    }
+
   Control.addVariable("BilbaoWheelSecWallSegThick",0.6);
   Control.addVariable("BilbaoWheelSecBrickWidth",1.0);
   Control.addVariable("BilbaoWheelSecBrickLength",3.0);
