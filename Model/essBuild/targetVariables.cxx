@@ -118,7 +118,9 @@ EssWheel(FuncDataBase& Control)
   // 2.2: detail B in  TRGT-ESS-0106 page 1
   // In the lower sector plate:
   // 77.2 = R74.5 + 2.7
-  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",76.7);
+
+  // 71.8 = 76.7-4.9 (BilbaoWheelSecWallSegLength0)
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",71.8);
 
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2); // TSM141108V3000: upper 0.2, lower 0.3

@@ -336,9 +336,13 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
 
   Geometry::Cylinder *backCyl =
     SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
+  const double R(backCyl->getRadius());
+
+  // bircks start from this cylinder:
+  ModelSupport::buildCylinder(SMap, surfIndex+7, Origin, Z, R+wallSegLength[0]);
 
   // d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
-  Geometry::Vec3D offset = Origin-Y*(backCyl->getRadius()+d);
+  Geometry::Vec3D offset = Origin-Y*(R+d);
   ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
 
   offset += Y*pipeCellThick;
@@ -369,8 +373,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   Geometry::Cylinder *backCyl =
     SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
 
-  const double d2 = M_PI*delta/180.0/2.0;
-  double R = backCyl->getRadius();
+  const double d2(M_PI*delta/180.0/2.0);
+  double R(backCyl->getRadius());
 
   int SJ(SI);
   const double dx = R*sin(d2)-wallSegThick-wallThick;
@@ -453,8 +457,11 @@ BilbaoWheelCassette::createObjects(Simulation& System,
   Out=ModelSupport::getComposite(SMap,surfIndex," 3 -13 -1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+outer));
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 ") + FC.getLinkString(back);
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 12 7 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mainMat,temp,Out+tb));
+
+  Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -7 ") + FC.getLinkString(back);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 13 -14 -12 ") + FC.getLinkString(front);
   System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,Out+tb));
