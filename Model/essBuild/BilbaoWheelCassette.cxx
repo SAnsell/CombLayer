@@ -205,20 +205,30 @@ BilbaoWheelCassette::getSegWallArea() const
   ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallArea");
 
   // get segmented wall area:
+  // it's a sum of rectangle (s1) and triangle (s2)
   double s(0.0);
   double h1(wallSegThick); // downstream thick
   double h2(0.0); // upstream thick
   double h3(0.0); // leg of triangle: h2=h1+h3
-  for (size_t i=0; i<nWallSeg; i++)
-    {
-      h3 = std::abs(wallSegLength[i])*tan(wallSegDelta*M_PI/180.0);
-      h2 = h1+h3;
-      const double s1 = h1*std::abs(wallSegLength[i]);
-      const double s2 = wallSegLength[i]*h3/2.0;
-      s += s1+s2;
 
-      if (i<nWallSeg-1)
-	h1 = wallSegLength[i+1]>0.0 ? h2+wallSegThick : h2-wallSegThick;
+  // for the inner segment with  no bricks
+  h3 = std::abs(wallSegLength[0])*tan(wallSegDelta*M_PI/180.0);
+  h2 = h1+h3;
+  const double s1 = h1*std::abs(wallSegLength[0]); // rectangle
+  const double s2 = wallSegLength[0]*h3/2.0; // triangle
+  s += s1+s2;
+
+  // for the segments with bricks:
+  double R(innerCylRadius);
+  for (size_t j=1; j<nWallSeg; j++)
+    {
+      R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
+      const double L = 2*R*sin(wallSegDelta*M_PI/180.0);
+      const double bg(getBrickGapThick(j));
+
+      //      ELog::EM << j << " " << R << " " << L-bg << ELog::endDiag;
+
+      s += (L-bg)*std::abs(wallSegLength[j])/2;
     }
 
   return s;
@@ -243,6 +253,21 @@ BilbaoWheelCassette::getSegWallThick() const
 			      });
 
   return getSegWallArea()/L;
+}
+
+double
+BilbaoWheelCassette::getBrickGapThick(size_t& j) const
+  /*!
+    Calculate total thick of bricks + gaps in the given segment
+    Used to calculate wall thickness when bricksActive is true.
+   */
+{
+  ELog::RegMethod RegA("BilbaoWheelCassette","getBrickGapThick(size_t&)");
+
+  if (j==0)
+    throw ColErr::RangeError<size_t>(j, 1, nWallSeg-1, "segment index");
+
+  return nBricks[j]*brickWidth + (nBricks[j]-1)*brickGap;
 }
 
 void
@@ -298,7 +323,7 @@ BilbaoWheelCassette::populate(const FuncDataBase& Control)
 
   brickWidth=Control.EvalPair<double>(keyName,commonName,"BrickWidth");
   brickLength=Control.EvalPair<double>(keyName,commonName,"BrickLength");
-  //  brickGap=Control.EvalPair<double>(keyName,commonName,"BrickGap");
+  brickGap=Control.EvalPair<double>(keyName,commonName,"BrickGap");
   brickSteelMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickSteelMat",
 					   keyName+"BrickSteelMat");
   brickWMat=ModelSupport::EvalMat<int>(Control,commonName+"BrickWMat",
@@ -344,16 +369,14 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+3,Origin,X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+4,Origin,X,Z,delta/2.0);
 
-  const double dw = getSegWallThick();
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*(wallThick+dw),X,Z,-delta/2.0);
-  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*(wallThick+dw),X,Z,delta/2.0);
+  const double dw = getSegWallThick()+wallThick;
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*(dw),X,Z,-delta/2.0);
+  ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*(dw),X,Z,delta/2.0);
 
   // front plane
   double d = FC.getLinkDistance(back, front);
 
-  Geometry::Cylinder *backCyl =
-    SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
-  const double R(backCyl->getRadius());
+  const double R(innerCylRadius);
 
   // bircks start from this cylinder:
   ModelSupport::buildCylinder(SMap, surfIndex+7, Origin, Z,
@@ -396,45 +419,37 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
   Geometry::Cylinder *backCyl =
     SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
 
-  const double d2(M_PI*delta/180.0/2.0);
-  double R(backCyl->getRadius());
+  const double d2(M_PI*wallSegDelta/180.0); // half of the sector opening angle
+  double R(innerCylRadius);
 
   int SJ(SI);
+  
+  // only for the inner segment with no bricks:
   const double dx = R*sin(d2)-wallSegThick-wallThick;
   Geometry::Vec3D orig13=Origin-Y*(R*cos(d2)) - X*dx;
   Geometry::Vec3D orig14=Origin-Y*(R*cos(d2)) + X*dx;
+  
   for (size_t j=0; j<nWallSeg; j++)
     {
       R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
 
-      const short dir = wallSegLength[j]>0.0 ? -1 : 1; // groove direction
-
-      if (j>0)
+      if (j==0) // for the inner segment with no bricks
 	{
-	  orig13 = SurInter::getPoint(SMap.realSurfPtr(SJ-1000+11),
-				      SMap.realSurfPtr(SJ-1000+13),
-				      SMap.realSurfPtr(surfIndex+5)) - X*wallSegThick*dir;
-	  orig14 = SurInter::getPoint(SMap.realSurfPtr(SJ-1000+11),
-				      SMap.realSurfPtr(SJ-1000+14),
-				      SMap.realSurfPtr(surfIndex+5)) + X*wallSegThick*dir;
+	  ModelSupport::buildPlaneRotAxis(SMap,SJ+13,
+					  orig13,X,Z,
+					  delta/2.0-wallSegDelta);
+	  ModelSupport::buildPlaneRotAxis(SMap,SJ+14,
+					  orig14,X,Z,
+					  wallSegDelta-delta/2.0);
 	}
-
-      ModelSupport::buildPlaneRotAxis(SMap,SJ+13,
-				      orig13,X,Z,
-				      delta/2.0-wallSegDelta);
-      ModelSupport::buildPlaneRotAxis(SMap,SJ+14,
-				      orig14,X,Z,
-				      wallSegDelta-delta/2.0);
-      if (j) // build the bricks
+      else // build the bricks
 	{
-	  const double L(orig13.Distance(orig14)); // total space for bricks in the current segment
-	  const double totBW(nBricks[j]*brickWidth); // total thick of all bricks in the current segment
-	  brickGap = (L-totBW)/(nBricks[j]-1);
-	  //	  ELog::EM << j << " " << L << " " << brickGap << ELog::endDiag;
+	  const double L(getBrickGapThick(j)); // total space for bricks in the current segment
+	  ModelSupport::buildPlane(SMap,SJ+13,Origin-X*L/2.0,X);
+	  ModelSupport::buildPlane(SMap,SJ+14,Origin+X*L/2.0,X);
 
-	  
 	  int SBricks(SJ+100);
 	  double bOffset(brickWidth);
 	  for (size_t i=0; i<nBricks[j]; i++) // bricks
@@ -656,6 +671,11 @@ BilbaoWheelCassette::createAll(Simulation& System,
   populate(System.getDataBase());
   xyAngle=theta;
   createUnitVector(FC,sideIndex);
+  
+  Geometry::Cylinder *innerCyl =
+    SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
+  innerCylRadius = innerCyl->getRadius();
+  
   if (!bricksActive)
     {
       createSurfaces(FC);

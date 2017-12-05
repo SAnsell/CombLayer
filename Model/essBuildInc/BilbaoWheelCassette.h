@@ -81,8 +81,11 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double pipeCellThick; ///< Thickness of the pipe cell
   int pipeCellMat; ///< Pipe cell homogenized material
 
+  double innerCylRadius; // radius of inner cylinder
+
   double getSegWallArea() const;
   double getSegWallThick() const;
+  double getBrickGapThick(size_t&) const;
   void   buildBricks();
 
   void populate(const FuncDataBase&);

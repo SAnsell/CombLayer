@@ -168,7 +168,7 @@ EssWheel(FuncDataBase& Control)
 
   // Sectors
   Control.addVariable("BilbaoWheelSecWallMat","SS316L");
-  Control.addVariable("BilbaoWheelSecWallThick",1.0);
+  Control.addVariable("BilbaoWheelSecWallThick",0.0);
 
   // The sector variables are based on the
   // ESS-Bilbao drawing TRGT-ESS-0106.01.03 rev.4
@@ -190,7 +190,7 @@ EssWheel(FuncDataBase& Control)
       Control.addVariable("BilbaoWheelSecWallSegNBricks"+si,nBricks[i]);
     }
 
-  Control.addVariable("BilbaoWheelSecWallSegThick",0.6);
+  Control.addVariable("BilbaoWheelSecWallSegThick",1.6); // 1st segment only - thickness of the others depends on total number of bircks and gaps
   Control.addVariable("BilbaoWheelSecBrickWidth",1.0);
   Control.addVariable("BilbaoWheelSecBrickLength",3.0);
   Control.addVariable("BilbaoWheelSecBrickGap",0.2);
