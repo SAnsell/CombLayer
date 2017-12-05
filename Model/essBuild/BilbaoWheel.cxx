@@ -133,7 +133,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   circlePipesBigRad(A.circlePipesBigRad),
   circlePipesRad(A.circlePipesRad),
   circlePipesWallThick(A.circlePipesWallThick),
-  wMat(A.wMat),heMat(A.heMat),
+  homoWMat(A.homoWMat),heMat(A.heMat),
   steelMat(A.steelMat),ssVoidMat(A.ssVoidMat),
   innerMat(A.innerMat)
   /*!
@@ -203,7 +203,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       circlePipesBigRad=A.circlePipesBigRad;
       circlePipesRad=A.circlePipesRad;
       circlePipesWallThick=A.circlePipesWallThick;
-      wMat=A.wMat;
+      homoWMat=A.homoWMat;
       heMat=A.heMat;
       steelMat=A.steelMat;
       ssVoidMat=A.ssVoidMat;
@@ -352,7 +352,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   circlePipesRad=Control.EvalVar<double>(keyName+"CirclePipesRad");
   circlePipesWallThick=Control.EvalVar<double>(keyName+"CirclePipesWallThick");
 
-  wMat=ModelSupport::EvalMat<int>(Control,keyName+"WMat");  
+  homoWMat=ModelSupport::EvalMat<int>(Control,keyName+"HomoWMat");  
   heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
   steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
   ssVoidMat=ModelSupport::EvalMat<int>(Control,keyName+"SS316LVoidMat");
@@ -1041,7 +1041,7 @@ BilbaoWheel::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("BilbaoWheel","createObjects");
 
-  const int matNum[4]={0,steelMat,heMat,wMat};
+  const int matNum[4]={0,steelMat,heMat,homoWMat};
   std::string Out, Out1;
   // 
   // Loop through each item and build inner section
@@ -1119,7 +1119,7 @@ BilbaoWheel::createObjects(Simulation& System)
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -115 35 ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
-      else if (mat==wMat)
+      else if (mat==homoWMat)
 	{
 	  if (nInner>0)
 	    ELog::EM << "More than one spallation layer" << ELog::endErr;

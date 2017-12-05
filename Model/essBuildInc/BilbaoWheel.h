@@ -100,7 +100,7 @@ class BilbaoWheel : public WheelBase
   double circlePipesRad;      /// Radius of pipes in the circle of pipes
   double circlePipesWallThick; /// Thickness of pipes in the circle of pipes
   
-  int wMat;                         ///< W material
+  int homoWMat;                     ///< homogenized W material
   int heMat;                        ///< He material
   int steelMat;                     ///< Steel mat
   int ssVoidMat;                    ///< Mixture of SS316L and void 
