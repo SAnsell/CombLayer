@@ -204,6 +204,7 @@ BilbaoWheelCassette::getSegWallArea() const
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","getSegWallArea");
 
+  // for the innermost segment without bricks:
   // get segmented wall area:
   // it's a sum of rectangle (s1) and triangle (s2)
   double s(0.0);
