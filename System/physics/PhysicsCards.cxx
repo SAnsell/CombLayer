@@ -51,6 +51,7 @@
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
+#include "PSimple.h"
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "nameCard.h"
@@ -1115,6 +1116,9 @@ PhysicsCards::setDBCN(const std::string&,
 
   
 template PStandard*
+PhysicsCards::addPhysCard(const std::string&,const std::string&);
+
+template PSimple*
 PhysicsCards::addPhysCard(const std::string&,const std::string&);
 
 ///\endcond TEMPLATE
