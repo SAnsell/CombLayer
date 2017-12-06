@@ -3,7 +3,7 @@
 
  * File:   essBuild/H2FlowGuide.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,14 +107,14 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   baseName(A.baseName),midName(A.midName),endName(A.endName),
   flowIndex(A.flowIndex),
   cellIndex(A.cellIndex),
-  wallThick(A.wallThick),baseLen(A.baseLen),
+  wallThick(A.wallThick),len1L(A.len1L),
   baseOffset(A.baseOffset),
-  angle(A.angle),
-  sqOffsetY(A.sqOffsetY),
-  sqSideA(A.sqSideA),
-  sqSideE(A.sqSideE),
-  sqSideF(A.sqSideF),
-  sqCenterA(A.sqCenterA),
+  len1R(A.len1R),
+  dist2(A.dist2),
+  len2L(A.len2L),
+  len2R(A.len2R),
+  dist3(A.dist3),
+  len3(A.len3),
   sqCenterE(A.sqCenterE),
   sqCenterF(A.sqCenterF),
   wallMat(A.wallMat),
@@ -138,14 +138,14 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       attachSystem::FixedComp::operator=(A);
       cellIndex=A.cellIndex;
       wallThick=A.wallThick;
-      baseLen=A.baseLen;
+      len1L=A.len1L;
       baseOffset=A.baseOffset;
-      angle=A.angle;
-      sqOffsetY=A.sqOffsetY;
-      sqSideA=A.sqSideA;
-      sqSideE=A.sqSideE;
-      sqSideF=A.sqSideF;
-      sqCenterA=A.sqCenterA;
+      len1R=A.len1R;
+      dist2=A.dist2;
+      len2L=A.len2L;
+      len2R=A.len2R;
+      dist3=A.dist3;
+      len3=A.len3;
       sqCenterE=A.sqCenterE;
       sqCenterF=A.sqCenterF;
       wallMat=A.wallMat;
@@ -180,15 +180,15 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("H2FlowGuide","populate");
 
 
-  wallThick=Control.EvalPair<double>(keyName,baseName+endName,"BaseThick");
-  baseLen=Control.EvalPair<double>(keyName,baseName+endName,"BaseLen");
+  wallThick=Control.EvalPair<double>(keyName,baseName+endName,"WallThick");
+  len1L=Control.EvalPair<double>(keyName,baseName+endName,"Len1L");
+  len1R=Control.EvalPair<double>(keyName,baseName+endName,"Len1R");
   baseOffset=Control.EvalPair<double>(keyName,baseName+endName,"BaseOffset");
-  angle=Control.EvalPair<double>(keyName,baseName+endName,"Angle");
-  sqOffsetY=Control.EvalPair<double>(keyName,baseName+endName,"SQOffsetY");
-  sqSideA=Control.EvalPair<double>(keyName,baseName+endName,"SQSideA");
-  sqSideE=Control.EvalPair<double>(keyName,baseName+endName,"SQSideE");
-  sqSideF=Control.EvalPair<double>(keyName,baseName+endName,"SQSideF");
-  sqCenterA=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterA");
+  dist2=Control.EvalPair<double>(keyName,baseName+endName,"Dist2");
+  len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
+  len2R=Control.EvalPair<double>(keyName,baseName+endName,"Len2R");
+  dist3=Control.EvalPair<double>(keyName,baseName+endName,"Dist3");
+  len3=Control.EvalPair<double>(keyName,baseName+endName,"Len3");
   sqCenterE=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterE");
   sqCenterF=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterF");
 
@@ -211,39 +211,6 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
   return;
 }
 
-std::string
-H2FlowGuide::getSQSurface(const double& offsetY,
-			  const double& A, const double& E, const double& F)
-  /*
-    Return MCNP(X) surface card for flow guide
-    \param offsetY :: y offset
-    \param E :: same as E in the sq equation,
-                affects opening angle
-    \param F :: same as F in the sq equation,
-                affects inclination of vertical walls
-  */
-{
-  double dy = offsetY;
-  //  if (Origin.Y()>0.0) - does not work for BF1
-  if (keyName.find("Left") != std::string::npos)
-    dy *= -1.0;
-
-  double e = E;
-  //  if (Origin.Y()<0.0) - does not work for BF1
-  if (keyName.find("Right") != std::string::npos)
-    e *= - 1.0;
-
-  std::string surf = "sq " +
-    std::to_string(A) + " 0 0 0 " +
-    std::to_string(e) + " " + std::to_string(F) + " 0 " +
-    std::to_string(Origin.X()) + " " +
-    std::to_string(Origin.Y()-dy) + " " +
-    std::to_string(Origin.Z());
-
-  return surf;
-}
-
-
 void
 H2FlowGuide::createSurfaces()
   /*!
@@ -252,50 +219,29 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
-  const Geometry::Quaternion QrotLeft =
-    Geometry::Quaternion::calcQRotDeg(angle,Z);
-  const Geometry::Quaternion QrotRight =
-    Geometry::Quaternion::calcQRotDeg(-angle,Z);
+  double y(baseOffset);
+  ModelSupport::buildPlane(SMap,flowIndex+1,Origin+Y*(y),Y);
+  y += wallThick;
+  ModelSupport::buildPlane(SMap,flowIndex+2,Origin+Y*(y),Y);
+  y += dist2;
+  ModelSupport::buildPlane(SMap,flowIndex+11,Origin+Y*(y),Y);
+  y += wallThick;
+  ModelSupport::buildPlane(SMap,flowIndex+12,Origin+Y*(y),Y);
+  y += dist3;
+  ModelSupport::buildPlane(SMap,flowIndex+21,Origin+Y*(y),Y);
+  y += wallThick;
+  ModelSupport::buildPlane(SMap,flowIndex+22,Origin+Y*(y),Y);
+  
+  ModelSupport::buildPlane(SMap,flowIndex+31,Origin-Y*(len3),Y);
 
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  Geometry::General *GA;
+  ModelSupport::buildPlane(SMap,flowIndex+3,Origin-X*(len1R),X);
+  ModelSupport::buildPlane(SMap,flowIndex+4,Origin+X*(len1L),X);
 
-  // left part
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+501);
-  GA->setSurface(getSQSurface(sqOffsetY, sqSideA, sqSideE, sqSideF));
-  GA->rotate(QrotLeft);
-  SMap.registerSurf(GA);
+  ModelSupport::buildPlane(SMap,flowIndex+13,Origin-X*(len2R),X);
+  ModelSupport::buildPlane(SMap,flowIndex+14,Origin+X*(len2L),X);
 
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+502);
-  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.1*sqSideA, sqSideE, sqSideF));
-  GA->rotate(QrotLeft);
-  SMap.registerSurf(GA);
-
-  // right part
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+503);
-  GA->setSurface(getSQSurface(sqOffsetY, sqSideA, sqSideE, sqSideF));
-  GA->rotate(QrotRight);
-  SMap.registerSurf(GA);
-
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+504);
-  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.1*sqSideA, sqSideE, sqSideF));
-  GA->rotate(QrotRight);
-  SMap.registerSurf(GA);
-
-  // central part
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+505);
-  GA->setSurface(getSQSurface(sqOffsetY, sqCenterA, sqCenterE, sqCenterF));
-  SMap.registerSurf(GA);
-  GA = SurI.createUniqSurf<Geometry::General>(flowIndex+506);
-  GA->setSurface(getSQSurface(sqOffsetY+wallThick, 1.2*sqCenterA, sqCenterE, sqCenterF));
-  SMap.registerSurf(GA);
-
-  ModelSupport::buildPlane(SMap,flowIndex+1,
-			   Origin+Y*(baseOffset),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+2,
-			   Origin+Y*(baseOffset+baseLen),Y);
-  ModelSupport::buildPlane(SMap,flowIndex+10,
-			   Origin+Y*(baseOffset-1.0),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+23,Origin-X*(wallThick/2.0),X);
+  ModelSupport::buildPlane(SMap,flowIndex+24,Origin+X*(wallThick/2.0),X);
 
   return;
 }
@@ -325,21 +271,20 @@ H2FlowGuide::createObjects(Simulation& System,
       (innerCell,"H2Wing inner Cell not found");
 
   std::string Out;
-  const std::string topBottomStr=HW.getLinkString(13)+
-    HW.getLinkString(14);
+  const std::string tb(HW.getLinkString(13)+HW.getLinkString(14));
   HeadRule wallExclude;
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -501 502 503 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
   wallExclude.procString(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -503 504 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 11 -12 13 -14 ");
   wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 10 -505 506 -2 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 21 -22 13 -14 ");
   wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+topBottomStr));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());

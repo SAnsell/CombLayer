@@ -3,7 +3,7 @@
 
  * File:   essBuildInc/H2FlowGuide.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2017 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ namespace essSystem
 /*!
   \class H2FlowGuide
   \version 2.0
-  \author S. Ansell / Konstantin Batkov
+  \author Konstantin Batkov
   \date Feb 2017
   \brief H2FlowGuide component in the butterfly moderator
 */
@@ -48,14 +48,14 @@ class H2FlowGuide :
   int cellIndex;             ///< Cell index
 
   double wallThick;            ///< Wal thickness
-  double baseLen;              ///< Base length
   double baseOffset;  ///< Base offset
-  double angle; ///< sq xy angle
-  double sqOffsetY; ///< sq offset along the y-axis
-  double sqSideA; ///< parameter A of the side SQ surfaces
-  double sqSideE; ///< parameter E of the side SQ surfaces
-  double sqSideF; ///< parameter F of the side SQ surfaces
-  double sqCenterA; ///< parameter A of the central SQ surfaces
+  double len1L; ///< Left length of 1st blade
+  double len1R; ///< Right length of 1st blade
+  double dist2; ///< Distance between 1st and 2nd blades
+  double len2L; ///< Left length of 2nd blade
+  double len2R; ///< Right length of 2nd blade
+  double dist3; ///< Distance betwen 2nd and 3rd blades
+  double len3; ///< parameter A of the central SQ surfaces
   double sqCenterE; ///< parameter E of the central SQ surfaces
   double sqCenterF; ///< parameter F of the central SQ surfaces
 
@@ -64,8 +64,6 @@ class H2FlowGuide :
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
-
-  std::string getSQSurface(const double&,const double&,const double&,const double&);
 
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&);
