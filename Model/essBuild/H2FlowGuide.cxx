@@ -255,6 +255,7 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
 
   ModelSupport::buildPlane(SMap,SOffset+1,P2,Y);
   ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,P2,Y,Z,-angle);
+  ModelSupport::buildPlaneRotAxis(SMap,SOffset+9,P2,Y,Z,-angle-90); //< auxilliary for plane 6
 
   const std::string Out=ModelSupport::getComposite(SMap,SOffset, "-1 3 ");
   HeadRule CCorner(Out);
@@ -267,8 +268,8 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
 				       R);
   ModelSupport::buildPlane(SMap,SOffset+4,P1,X);
   ModelSupport::buildShiftedPlane(SMap,SOffset+6,
-				  SMap.realPtr<Geometry::Plane>(SOffset+1),
-				  -lenFoot);
+				  SMap.realPtr<Geometry::Plane>(SOffset+9),
+				  lenFoot);
 
   const Geometry::Vec3D MD=midNorm(P2,P1,P3);
 
@@ -295,33 +296,35 @@ H2FlowGuide::createSurfaces()
 
   double x(0.0);
   double y(baseOffset);
-  createCurvedBladeSurf(flowIndex,x,y,len1R,len1L,len1Foot,angle1,radius1);
+  int SI(flowIndex);
+  createCurvedBladeSurf(SI,x,y,len1R,len1L,len1Foot,angle1,radius1);
   y += wallThick;
   x -= wallThick;
-  createCurvedBladeSurf(flowIndex+10,x,y,len1R,len1L,len1Foot,angle1,radius1+wallThick);
+  createCurvedBladeSurf(SI+10,x,y,len1R,len1L,len1Foot,angle1,radius1+wallThick);
 
-  //  ModelSupport::buildPlane(SMap,flowIndex+2,Origin+Y*(y),Y);
-  // P1 = P1 + Y*wallThick;
-  // P2 = P2 + Y*wallThick;
-  // P3 = P3 - X*wallThick;
-
-
-
+  SI += 100;
   y += dist2;
-  ModelSupport::buildPlane(SMap,flowIndex+111,Origin+Y*(y),Y);
+  x = 0.0;
+  createCurvedBladeSurf(SI,x,y,len2R,len2L,len1Foot,angle2,radius1);
   y += wallThick;
-  ModelSupport::buildPlane(SMap,flowIndex+112,Origin+Y*(y),Y);
-  y += dist3;
-  ModelSupport::buildPlane(SMap,flowIndex+121,Origin+Y*(y),Y);
-  y += wallThick;
-  ModelSupport::buildPlane(SMap,flowIndex+122,Origin+Y*(y),Y);
+  x -= wallThick;
+  createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len1Foot,angle2,radius1+wallThick);
 
 
-  ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2L),X);
-  ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2R),X);
+  // ModelSupport::buildPlane(SMap,flowIndex+111,Origin+Y*(y),Y);
+  // y += wallThick;
+  // ModelSupport::buildPlane(SMap,flowIndex+112,Origin+Y*(y),Y);
+  // y += dist3;
+  // ModelSupport::buildPlane(SMap,flowIndex+121,Origin+Y*(y),Y);
+  // y += wallThick;
+  // ModelSupport::buildPlane(SMap,flowIndex+122,Origin+Y*(y),Y);
 
-  ModelSupport::buildPlane(SMap,flowIndex+203,Origin-X*(len3L),X);
-  ModelSupport::buildPlane(SMap,flowIndex+204,Origin+X*(len3R),X);
+
+  // ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2L),X);
+  // ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2R),X);
+
+  // ModelSupport::buildPlane(SMap,flowIndex+203,Origin-X*(len3L),X);
+  // ModelSupport::buildPlane(SMap,flowIndex+204,Origin+X*(len3R),X);
 
   return;
 }
@@ -354,28 +357,33 @@ H2FlowGuide::createObjects(Simulation& System,
   const std::string tb(HW.getLinkString(13)+HW.getLinkString(14));
   HeadRule wallExclude;
 
-  // first curved blade
-  Out=ModelSupport::getComposite(SMap,flowIndex, " 1 -11 8 -4 ");
-  wallExclude.procString(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
-  Out=ModelSupport::getComposite(SMap,flowIndex, " 13 -3 6 8 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
-  Out=ModelSupport::getComposite(SMap,flowIndex, " -8 -11 13 7 18 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
-  Out=ModelSupport::getComposite(SMap,flowIndex, " -18 7 -17 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  int SI(flowIndex);
 
-  // second (not yet) curved blade
-  Out=ModelSupport::getComposite(SMap,flowIndex," 111 -112 103 -104 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  // curved blades
+  for (size_t i=0; i<2; i++)
+    {
+      Out=ModelSupport::getComposite(SMap,SI, " 1 -11 8 -4 ");
+      if (i==0)
+	wallExclude.procString(Out);
+      else
+	wallExclude.addUnion(Out);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,SI, " 13 -3 -6 8 ");
+      wallExclude.addUnion(Out);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,SI, " -8 -11 13 7 18 ");
+      wallExclude.addUnion(Out);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+      Out=ModelSupport::getComposite(SMap,SI, " -18 7 -17 ");
+      wallExclude.addUnion(Out);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+      SI += 100;
+    }
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 121 -122 203 -204 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+
+  // Out=ModelSupport::getComposite(SMap,flowIndex," 121 -122 203 -204 ");
+  // wallExclude.addUnion(Out);
+  // System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
