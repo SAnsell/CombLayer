@@ -55,8 +55,8 @@ class H2FlowGuide :
   double len2L; ///< Left length of 2nd blade
   double len2R; ///< Right length of 2nd blade
   double dist3; ///< Distance betwen 2nd and 3rd blades
-  double len3; ///< parameter A of the central SQ surfaces
-  double sqCenterE; ///< parameter E of the central SQ surfaces
+  double len3L; ///< Left length of 3rd blade
+  double len3R; ///< Right length of 3rd blade
   double sqCenterF; ///< parameter F of the central SQ surfaces
 
   int wallMat;                   ///< inner material

@@ -111,13 +111,14 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
   Control.addVariable("TopFlyFlowGuideWallThick",0.2);
   Control.addVariable("TopFlyFlowGuideBaseOffset",-12);
-  Control.addVariable("TopFlyFlowGuideLen1L",6.5);
+  Control.addVariable("TopFlyFlowGuideLen1L",8);
   Control.addVariable("TopFlyFlowGuideLen1R",3);
   Control.addVariable("TopFlyFlowGuideDist2",2.0);
   Control.addVariable("TopFlyFlowGuideLen2L",4.0);
-  Control.addVariable("TopFlyFlowGuideLen2R",3.0);
+  Control.addVariable("TopFlyFlowGuideLen2R",3.3);
   Control.addVariable("TopFlyFlowGuideDist3",2.0);
-  Control.addVariable("TopFlyFlowGuideLen3",1.0);
+  Control.addVariable("TopFlyFlowGuideLen3L",1.0);
+  Control.addVariable("TopFlyFlowGuideLen3R",3.5);
   Control.addVariable("TopFlyFlowGuideSQCenterE",-0.6);
   Control.addVariable("TopFlyFlowGuideSQCenterF",-0.005);
 

@@ -373,19 +373,7 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       // flow guides
       for (std::string strmod : TLfly) {
 	s = strmod + "FlowGuide";
-	A.setVar(s+"WallMat","Aluminium20K");
-	A.setVar(s+"WallTemp",20.0);
-	A.setVar(s+"BaseThick",0.3);
-	A.setVar(s+"BaseLen",6.5);
-	A.setVar(s+"BaseOffset",-11);
-	A.setVar(s+"Angle",23);
-	A.setVar(s+"SQOffsetY",3.0);
-	A.setVar(s+"SQSideA",1.0);
-	A.setVar(s+"SQSideE",-1.0);
-	A.setVar(s+"SQSideF",-0.005);
-	A.setVar(s+"SQCenterA",1.0);
-	A.setVar(s+"SQCenterE",-0.6);
-	A.setVar(s+"SQCenterF",-0.005);
+	A.setVar(s+"BaseOffset",-9);
       }
 
       // pipes

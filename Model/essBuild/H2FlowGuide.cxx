@@ -114,8 +114,8 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   len2L(A.len2L),
   len2R(A.len2R),
   dist3(A.dist3),
-  len3(A.len3),
-  sqCenterE(A.sqCenterE),
+  len3L(A.len3L),
+  len3R(A.len3R),
   sqCenterF(A.sqCenterF),
   wallMat(A.wallMat),
   wallTemp(A.wallTemp)
@@ -145,8 +145,8 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       len2L=A.len2L;
       len2R=A.len2R;
       dist3=A.dist3;
-      len3=A.len3;
-      sqCenterE=A.sqCenterE;
+      len3L=A.len3L;
+      len3R=A.len3R;
       sqCenterF=A.sqCenterF;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
@@ -188,8 +188,8 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
   len2R=Control.EvalPair<double>(keyName,baseName+endName,"Len2R");
   dist3=Control.EvalPair<double>(keyName,baseName+endName,"Dist3");
-  len3=Control.EvalPair<double>(keyName,baseName+endName,"Len3");
-  sqCenterE=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterE");
+  len3L=Control.EvalPair<double>(keyName,baseName+endName,"Len3L");
+  len3R=Control.EvalPair<double>(keyName,baseName+endName,"Len3R");
   sqCenterF=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterF");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
@@ -232,16 +232,14 @@ H2FlowGuide::createSurfaces()
   y += wallThick;
   ModelSupport::buildPlane(SMap,flowIndex+22,Origin+Y*(y),Y);
   
-  ModelSupport::buildPlane(SMap,flowIndex+31,Origin-Y*(len3),Y);
-
   ModelSupport::buildPlane(SMap,flowIndex+3,Origin-X*(len1R),X);
   ModelSupport::buildPlane(SMap,flowIndex+4,Origin+X*(len1L),X);
 
-  ModelSupport::buildPlane(SMap,flowIndex+13,Origin-X*(len2R),X);
-  ModelSupport::buildPlane(SMap,flowIndex+14,Origin+X*(len2L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2R),X);
+  ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2L),X);
 
-  ModelSupport::buildPlane(SMap,flowIndex+23,Origin-X*(wallThick/2.0),X);
-  ModelSupport::buildPlane(SMap,flowIndex+24,Origin+X*(wallThick/2.0),X);
+  ModelSupport::buildPlane(SMap,flowIndex+203,Origin-X*(len3R),X);
+  ModelSupport::buildPlane(SMap,flowIndex+204,Origin+X*(len3L),X);
 
   return;
 }
@@ -278,11 +276,11 @@ H2FlowGuide::createObjects(Simulation& System,
   wallExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 11 -12 13 -14 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 11 -12 103 -104 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 21 -22 13 -14 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 21 -22 203 -204 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
