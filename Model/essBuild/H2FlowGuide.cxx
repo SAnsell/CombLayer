@@ -328,12 +328,12 @@ H2FlowGuide::createStraightBladeSurf(const int SOffset,const double& dy,
     const double a(90.0-angle);
     
     Geometry::Plane *p1 =
-      ModelSupport::buildPlaneRotAxis(SMap,SOffset+1,Origin+Y*dy-X*lenL,Y,Z,a);
+      ModelSupport::buildPlaneRotAxis(SMap,SOffset+1,Origin+Y*dy,Y,Z,a);
     ModelSupport::buildShiftedPlane(SMap,SOffset+2,p1,wallThick);
 
     Geometry::Plane *p3 =
       ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,
-				      Origin+Y*dy-p1->getNormal()*Z*lenL,X,Z,
+				      Origin+Y*dy-p1->getNormal()*Z*lenR,X,Z,
 				      a);
     ModelSupport::buildShiftedPlane(SMap,SOffset+4,p3,lenL+lenR);
 }

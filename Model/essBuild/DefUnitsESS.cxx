@@ -373,7 +373,7 @@ setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string
       // flow guides
       for (std::string strmod : TLfly) {
 	s = strmod + "FlowGuide";
-	A.setVar(s+"BaseOffset",-9);
+	A.setVar(s+"BaseOffset",-10.5);
       }
 
       // pipes
