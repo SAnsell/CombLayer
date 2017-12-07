@@ -114,16 +114,20 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   angle1(A.angle1),
   radius1(A.radius1),
   len1Foot(A.len1Foot),
-  dist2(A.dist2),
+  dist12(A.dist12),
   len2L(A.len2L),
   len2R(A.len2R),
   angle2(A.angle2),
   len2Foot(A.len2Foot),
   radius2(A.radius2),
-  dist3(A.dist3),
+  dist23(A.dist23),
   len3L(A.len3L),
   len3R(A.len3R),
-  sqCenterF(A.sqCenterF),
+  angle3(A.angle3),
+  dist14(A.dist14),
+  len4L(A.len4L),
+  len4R(A.len4R),
+  angle4(A.angle4),
   wallMat(A.wallMat),
   wallTemp(A.wallTemp)
   /*!
@@ -151,16 +155,20 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       angle1=A.angle1;
       radius1=A.radius1;
       len1Foot=A.len1Foot;
-      dist2=A.dist2;
+      dist12=A.dist12;
       len2L=A.len2L;
       len2R=A.len2R;
       angle2=A.angle2;
       len2Foot=A.len2Foot;
       radius2=A.radius2;
-      dist3=A.dist3;
+      dist23=A.dist23;
       len3L=A.len3L;
       len3R=A.len3R;
-      sqCenterF=A.sqCenterF;
+      angle3=A.angle3;
+      dist14=A.dist14;
+      len4L=A.len4L;
+      len4R=A.len4R;
+      angle4=A.angle4;
       wallMat=A.wallMat;
       wallTemp=A.wallTemp;
     }
@@ -200,16 +208,21 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   radius1=Control.EvalPair<double>(keyName,baseName+endName,"Radius1");
   len1Foot=Control.EvalPair<double>(keyName,baseName+endName,"Len1Foot");
   baseOffset=Control.EvalPair<double>(keyName,baseName+endName,"BaseOffset");
-  dist2=Control.EvalPair<double>(keyName,baseName+endName,"Dist2");
+  dist12=Control.EvalPair<double>(keyName,baseName+endName,"Dist12");
   len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
   len2R=Control.EvalPair<double>(keyName,baseName+endName,"Len2R");
   angle2=Control.EvalPair<double>(keyName,baseName+endName,"Angle2");
   radius2=Control.EvalPair<double>(keyName,baseName+endName,"Radius2");
   len2Foot=Control.EvalPair<double>(keyName,baseName+endName,"Len2Foot");
-  dist3=Control.EvalPair<double>(keyName,baseName+endName,"Dist3");
+  dist23=Control.EvalPair<double>(keyName,baseName+endName,"Dist23");
   len3L=Control.EvalPair<double>(keyName,baseName+endName,"Len3L");
   len3R=Control.EvalPair<double>(keyName,baseName+endName,"Len3R");
-  sqCenterF=Control.EvalPair<double>(keyName,baseName+endName,"SQCenterF");
+  angle3=Control.EvalPair<double>(keyName,baseName+endName,"Angle3");
+
+  dist14=Control.EvalPair<double>(keyName,baseName+endName,"Dist14");
+  len4L=Control.EvalPair<double>(keyName,baseName+endName,"Len4L");
+  len4R=Control.EvalPair<double>(keyName,baseName+endName,"Len4R");
+  angle4=Control.EvalPair<double>(keyName,baseName+endName,"Angle4");
 
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat",
 				     baseName+endName+"WallMat");
@@ -312,14 +325,16 @@ H2FlowGuide::createStraightBladeSurf(const int SOffset,const double& dy,
 {
     ELog::RegMethod RegA("H2FlowGuide","createStraightBladeSurf");
 
+    const double a(90.0-angle);
+    
     Geometry::Plane *p1 =
-      ModelSupport::buildPlaneRotAxis(SMap,SOffset+1,Origin+Y*dy,Y,Z,angle);
+      ModelSupport::buildPlaneRotAxis(SMap,SOffset+1,Origin+Y*dy-X*lenL,Y,Z,a);
     ModelSupport::buildShiftedPlane(SMap,SOffset+2,p1,wallThick);
 
     Geometry::Plane *p3 =
       ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,
 				      Origin+Y*dy-p1->getNormal()*Z*lenL,X,Z,
-				      angle);
+				      a);
     ModelSupport::buildShiftedPlane(SMap,SOffset+4,p3,lenL+lenR);
 }
 
@@ -343,7 +358,7 @@ H2FlowGuide::createSurfaces()
   createCurvedBladeSurf(SI+10,x,y,len1R,len1L,len1Foot,angle1,radius1+wallThick,SI+3);
 
   SI += 100;
-  y += dist2;
+  y += dist12;
   x = 0.0;
   createCurvedBladeSurf(SI,x,y,len2R,len2L,len2Foot,angle2,radius2);
   y += wallThick;
@@ -351,8 +366,12 @@ H2FlowGuide::createSurfaces()
   createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len2Foot,angle2,radius2+wallThick,SI+3);
 
   SI += 100;
-  y += dist3;
-  createStraightBladeSurf(SI,y,len3L,len3R,10);
+  y += dist23;
+  createStraightBladeSurf(SI,y,len3L,len3R,angle3);
+
+  SI += 100;
+  y = baseOffset + dist14;
+  createStraightBladeSurf(SI,y,len4L,len4R,angle4);
 
   return;
 }
@@ -408,7 +427,13 @@ H2FlowGuide::createObjects(Simulation& System,
       SI += 100;
     }
 
+  // blade 3
+  Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 ");
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
+  // blade 4
+  SI += 100;
   Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));

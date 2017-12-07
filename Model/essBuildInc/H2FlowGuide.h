@@ -54,16 +54,20 @@ class H2FlowGuide :
   double angle1; ///< Opening angle of the 1st blade
   double radius1; ///< Curvature radius of the 1st segment
   double len1Foot; ///< Length of the foot segment of the 1st blade
-  double dist2; ///< Distance between 1st and 2nd blades
+  double dist12; ///< Distance between 1st and 2nd blades
   double len2L; ///< Left length of 2nd blade
   double len2R; ///< Right length of 2nd blade
   double angle2; ///< Opening angle of the 2nd blade
   double len2Foot; ///< Length of the foot segment of the 2nd blade
   double radius2; ///< Curvature radius of the 2nd blade
-  double dist3; ///< Distance betwen 2nd and 3rd blades
+  double dist23; ///< Distance betwen 2nd and 3rd blades
   double len3L; ///< Left length of 3rd blade
   double len3R; ///< Right length of 3rd blade
-  double sqCenterF; ///< parameter F of the central SQ surfaces
+  double angle3; ///< Inclination of 3rd blade
+  double dist14; ///< parameter F of the central SQ surfaces
+  double len4L; ///< Left length of 4th blade
+  double len4R; ///< Right length of 4th blade
+  double angle4; ///< Inclination of 4rd blade
 
   int wallMat;                   ///< inner material
   double wallTemp;               ///< LH2 temperature [K]
