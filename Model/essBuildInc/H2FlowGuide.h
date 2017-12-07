@@ -68,7 +68,8 @@ class H2FlowGuide :
   int wallMat;                   ///< inner material
   double wallTemp;               ///< LH2 temperature [K]
 
-  Geometry::Vec3D midNorm(Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&) const;
+  Geometry::Vec3D midNorm(const Geometry::Vec3D&,const Geometry::Vec3D&,
+			  const Geometry::Vec3D&) const;
   void createCurvedBladeSurf(const int,const double&,const double&,
 			     const double&,const double&,const double&,
 			     const double&,const double&);

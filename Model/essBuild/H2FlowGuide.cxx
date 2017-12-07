@@ -230,7 +230,8 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
 }
 
 Geometry::Vec3D
-H2FlowGuide::midNorm(Geometry::Vec3D& C,Geometry::Vec3D& A,Geometry::Vec3D& B) const
+H2FlowGuide::midNorm(const Geometry::Vec3D& C,const Geometry::Vec3D& A,
+		     const Geometry::Vec3D& B) const
   /*!
     \return Normal between two sides A-C and B-C
   */
@@ -255,14 +256,17 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
 {
   ELog::RegMethod RegA("H2FlowGuide","createCurvedBladeSurf");
 
-  Geometry::Vec3D P1(Origin+X*(lenR+dx)+Y*dy);
-  Geometry::Vec3D P2(Origin-X*(lenL+dx)+Y*dy);
+  const Geometry::Vec3D P1(Origin+X*(lenR)+Y*dy);
+  const Geometry::Vec3D P2(Origin-X*(lenL+dx)+Y*dy);
 
-  ModelSupport::buildPlane(SMap,SOffset+1,P2,Y);
-  Geometry::Plane *p3 = ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,P2,Y,Z,-angle);
-  Geometry::Vec3D P3 = P2 + p3->getNormal()*Z*lenFoot;
+  ModelSupport::buildPlane(SMap,SOffset+1,P1,Y);
+  Geometry::Plane *pl3 = ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,P2,Y,Z,
+							 -angle);
+  const Geometry::Vec3D P3 = P2 + pl3->getNormal()*Z*lenFoot;
 
-  const std::string Out=ModelSupport::getComposite(SMap,SOffset, "-1 3 ");
+  ELog::EM << keyName << " " << P2 << ELog::endDiag;
+
+  const std::string Out=ModelSupport::getComposite(SMap,SOffset, " -1 3 ");
   HeadRule CCorner(Out);
   CCorner.populateSurf();
   const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
@@ -272,7 +276,7 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
 				       *SMap.realPtr<Geometry::Plane>(60000),
 				       R);
   ModelSupport::buildPlane(SMap,SOffset+4,P1,X);
-  ModelSupport::buildPlaneRotAxis(SMap,SOffset+6,P3,Y,Z,-angle+90);
+  ModelSupport::buildPlaneRotAxis(SMap,SOffset+6,P3,Y,Z,90-angle);
 
   const Geometry::Vec3D MD=midNorm(P2,P1,P3);
 
