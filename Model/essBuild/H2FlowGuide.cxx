@@ -220,6 +220,56 @@ H2FlowGuide::createUnitVector(const attachSystem::FixedComp& FC)
   return;
 }
 
+Geometry::Vec3D
+H2FlowGuide::midNorm(Geometry::Vec3D& C,Geometry::Vec3D& A,Geometry::Vec3D& B) const
+  /*!
+    \return Normal between two sides A-C and B-C
+  */
+{
+  ELog::RegMethod RegA("H2FlowGuide","midNorm");
+
+  const Geometry::Vec3D a=(A-C).unit();
+  const Geometry::Vec3D b=(B-C).unit();
+
+  return((a+b)/2.0);
+}
+
+void
+H2FlowGuide::createCurvedBladeSurf(const int SOffset,
+				   const double&dx,const double& dy,
+				   const double& lenR,const double& lenL,
+				   const double& lenFoot,
+				   const double& R)
+/*!
+  Create surfaces for curved blade
+ */
+{
+  ELog::RegMethod RegA("H2FlowGuide","createCurvedBladeSurf");
+
+  Geometry::Vec3D P1(Origin+X*(lenR-dx)+Y*dy);
+  Geometry::Vec3D P2(Origin-X*(lenL-dx)+Y*dy);
+  Geometry::Vec3D P3(Origin-X*(lenL-dx)+Y*(dy-lenFoot));
+  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+    RCircle=Geometry::findCornerCircle(P2,P1,P3,R);
+  ModelSupport::buildPlane(SMap,SOffset+1,P2,Y);
+  ModelSupport::buildPlane(SMap,SOffset+3,P2,X);
+  ModelSupport::buildPlane(SMap,SOffset+4,P1,X);
+  ModelSupport::buildShiftedPlane(SMap,SOffset+6,
+				  SMap.realPtr<Geometry::Plane>(SOffset+1),
+				  -lenFoot);
+
+  const Geometry::Vec3D MD=midNorm(P2,P1,P3);
+
+  ModelSupport::buildCylinder(SMap,SOffset+7,
+			      std::get<0>(RCircle),
+			      Z,R);
+  // Positive inward
+  ModelSupport::buildPlane(SMap,SOffset+8,
+			   std::get<1>(RCircle),
+			   std::get<2>(RCircle),
+			   std::get<1>(RCircle)+Z,MD);
+}
+
 void
 H2FlowGuide::createSurfaces()
   /*!
@@ -229,28 +279,30 @@ H2FlowGuide::createSurfaces()
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
   // Separator
-  ModelSupport::buildPlane(SMap,flowIndex+5,Origin,Z);
+  //  ModelSupport::buildPlane(SMap,flowIndex+5000,Origin,Z);
 
+  double x(0.0);
   double y(baseOffset);
-  Geometry::Vec3D P1(Origin+X*len1R+Y*y);
-  Geometry::Vec3D P2(Origin-X*len1L+Y*y);
-  Geometry::Vec3D P3(Origin-X*len1L+Y*(y-len1Foot));
-  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
-    RCircle=Geometry::findCornerCircle(P2,P1,P3,radius1);
-  ModelSupport::buildPlane(SMap,flowIndex+1,P2,Y);
-  ModelSupport::buildPlane(SMap,flowIndex+3,P2,X);
-  ModelSupport::buildPlane(SMap,flowIndex+4,P1,X);
+  createCurvedBladeSurf(flowIndex,x,y,len1R,len1L,len1Foot,radius1);
+  y += wallThick;
+  x -= wallThick;
+  createCurvedBladeSurf(flowIndex+10,x,y,len1R,len1L,len1Foot,radius1+wallThick);
 
-  y += wallThick;
-  ModelSupport::buildPlane(SMap,flowIndex+2,Origin+Y*(y),Y);
+  //  ModelSupport::buildPlane(SMap,flowIndex+2,Origin+Y*(y),Y);
+  // P1 = P1 + Y*wallThick;
+  // P2 = P2 + Y*wallThick;
+  // P3 = P3 - X*wallThick;
+
+
+  
   y += dist2;
-  ModelSupport::buildPlane(SMap,flowIndex+11,Origin+Y*(y),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+111,Origin+Y*(y),Y);
   y += wallThick;
-  ModelSupport::buildPlane(SMap,flowIndex+12,Origin+Y*(y),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+112,Origin+Y*(y),Y);
   y += dist3;
-  ModelSupport::buildPlane(SMap,flowIndex+21,Origin+Y*(y),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+121,Origin+Y*(y),Y);
   y += wallThick;
-  ModelSupport::buildPlane(SMap,flowIndex+22,Origin+Y*(y),Y);
+  ModelSupport::buildPlane(SMap,flowIndex+122,Origin+Y*(y),Y);
 
 
   ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2L),X);
@@ -290,15 +342,16 @@ H2FlowGuide::createObjects(Simulation& System,
   const std::string tb(HW.getLinkString(13)+HW.getLinkString(14));
   HeadRule wallExclude;
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 1 -2 3 -4 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex,
+				 " ((1 -11 18 -4) : (13 -3 6 18) : (-8 7 -17)) ");
   wallExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 11 -12 103 -104 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 111 -112 103 -104 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
-  Out=ModelSupport::getComposite(SMap,flowIndex," 21 -22 203 -204 ");
+  Out=ModelSupport::getComposite(SMap,flowIndex," 121 -122 203 -204 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
