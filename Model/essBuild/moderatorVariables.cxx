@@ -120,6 +120,8 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideLen2L",4.0);
   Control.addVariable("TopFlyFlowGuideLen2R",3.3);
   Control.addVariable("TopFlyFlowGuideAngle2",135);
+  Control.addVariable("TopFlyFlowGuideRadius2",1);
+  Control.addVariable("TopFlyFlowGuideLen2Foot",5);
   Control.addVariable("TopFlyFlowGuideDist3",2.0);
   Control.addVariable("TopFlyFlowGuideLen3L",1.0);
   Control.addVariable("TopFlyFlowGuideLen3R",3.5);

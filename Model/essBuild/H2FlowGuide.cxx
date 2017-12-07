@@ -117,6 +117,8 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   len2L(A.len2L),
   len2R(A.len2R),
   angle2(A.angle2),
+  len2Foot(A.len2Foot),
+  radius2(A.radius2),
   dist3(A.dist3),
   len3L(A.len3L),
   len3R(A.len3R),
@@ -152,6 +154,8 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       len2L=A.len2L;
       len2R=A.len2R;
       angle2=A.angle2;
+      len2Foot=A.len2Foot;
+      radius2=A.radius2;
       dist3=A.dist3;
       len3L=A.len3L;
       len3R=A.len3R;
@@ -199,6 +203,8 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
   len2R=Control.EvalPair<double>(keyName,baseName+endName,"Len2R");
   angle2=Control.EvalPair<double>(keyName,baseName+endName,"Angle2");
+  radius2=Control.EvalPair<double>(keyName,baseName+endName,"Radius2");
+  len2Foot=Control.EvalPair<double>(keyName,baseName+endName,"Len2Foot");
   dist3=Control.EvalPair<double>(keyName,baseName+endName,"Dist3");
   len3L=Control.EvalPair<double>(keyName,baseName+endName,"Len3L");
   len3R=Control.EvalPair<double>(keyName,baseName+endName,"Len3R");
@@ -305,26 +311,10 @@ H2FlowGuide::createSurfaces()
   SI += 100;
   y += dist2;
   x = 0.0;
-  createCurvedBladeSurf(SI,x,y,len2R,len2L,len1Foot,angle2,radius1);
+  createCurvedBladeSurf(SI,x,y,len2R,len2L,len2Foot,angle2,radius2);
   y += wallThick;
   x -= wallThick;
-  createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len1Foot,angle2,radius1+wallThick);
-
-
-  // ModelSupport::buildPlane(SMap,flowIndex+111,Origin+Y*(y),Y);
-  // y += wallThick;
-  // ModelSupport::buildPlane(SMap,flowIndex+112,Origin+Y*(y),Y);
-  // y += dist3;
-  // ModelSupport::buildPlane(SMap,flowIndex+121,Origin+Y*(y),Y);
-  // y += wallThick;
-  // ModelSupport::buildPlane(SMap,flowIndex+122,Origin+Y*(y),Y);
-
-
-  // ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2L),X);
-  // ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2R),X);
-
-  // ModelSupport::buildPlane(SMap,flowIndex+203,Origin-X*(len3L),X);
-  // ModelSupport::buildPlane(SMap,flowIndex+204,Origin+X*(len3R),X);
+  createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len2Foot,angle2,radius2+wallThick);
 
   return;
 }
