@@ -111,6 +111,8 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   baseOffset(A.baseOffset),
   len1R(A.len1R),
   angle1(A.angle1),
+  radius1(A.radius1),
+  len1Foot(A.len1Foot),
   dist2(A.dist2),
   len2L(A.len2L),
   len2R(A.len2R),
@@ -143,6 +145,8 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       baseOffset=A.baseOffset;
       len1R=A.len1R;
       angle1=A.angle1;
+      radius1=A.radius1;
+      len1Foot=A.len1Foot;
       dist2=A.dist2;
       len2L=A.len2L;
       len2R=A.len2R;
@@ -186,6 +190,8 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   len1L=Control.EvalPair<double>(keyName,baseName+endName,"Len1L");
   len1R=Control.EvalPair<double>(keyName,baseName+endName,"Len1R");
   angle1=Control.EvalPair<double>(keyName,baseName+endName,"Angle1");
+  radius1=Control.EvalPair<double>(keyName,baseName+endName,"Radius1");
+  len1Foot=Control.EvalPair<double>(keyName,baseName+endName,"Len1Foot");
   baseOffset=Control.EvalPair<double>(keyName,baseName+endName,"BaseOffset");
   dist2=Control.EvalPair<double>(keyName,baseName+endName,"Dist2");
   len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
@@ -222,8 +228,19 @@ H2FlowGuide::createSurfaces()
 {
   ELog::RegMethod RegA("H2FlowGuide","createSurface");
 
+  // Separator
+  ModelSupport::buildPlane(SMap,flowIndex+5,Origin,Z);
+
   double y(baseOffset);
-  ModelSupport::buildPlane(SMap,flowIndex+1,Origin+Y*(y),Y);
+  Geometry::Vec3D P1(Origin+X*len1R+Y*y);
+  Geometry::Vec3D P2(Origin-X*len1L+Y*y);
+  Geometry::Vec3D P3(Origin-X*len1L+Y*(y-len1Foot));
+  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+    RCircle=Geometry::findCornerCircle(P2,P1,P3,radius1);
+  ModelSupport::buildPlane(SMap,flowIndex+1,P2,Y);
+  ModelSupport::buildPlane(SMap,flowIndex+3,P2,X);
+  ModelSupport::buildPlane(SMap,flowIndex+4,P1,X);
+
   y += wallThick;
   ModelSupport::buildPlane(SMap,flowIndex+2,Origin+Y*(y),Y);
   y += dist2;
@@ -235,8 +252,6 @@ H2FlowGuide::createSurfaces()
   y += wallThick;
   ModelSupport::buildPlane(SMap,flowIndex+22,Origin+Y*(y),Y);
 
-  ModelSupport::buildPlane(SMap,flowIndex+3,Origin-X*(len1L),X);
-  ModelSupport::buildPlane(SMap,flowIndex+4,Origin+X*(len1R),X);
 
   ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2L),X);
   ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2R),X);

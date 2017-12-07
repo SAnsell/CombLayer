@@ -52,6 +52,8 @@ class H2FlowGuide :
   double len1L; ///< Left length of 1st blade
   double len1R; ///< Right length of 1st blade
   double angle1; ///< Opening angle of the 1st blade
+  double radius1; ///< Curvature radius of the 1st segment
+  double len1Foot; ///< Length of the foot segment of the 1st blade
   double dist2; ///< Distance between 1st and 2nd blades
   double len2L; ///< Left length of 2nd blade
   double len2R; ///< Right length of 2nd blade
