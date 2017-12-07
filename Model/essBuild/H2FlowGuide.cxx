@@ -312,10 +312,15 @@ H2FlowGuide::createStraightBladeSurf(const int SOffset,const double& dy,
 {
     ELog::RegMethod RegA("H2FlowGuide","createStraightBladeSurf");
 
-    ModelSupport::buildPlane(SMap,SOffset+1,Origin+Y*dy,Y);
-    ModelSupport::buildPlane(SMap,SOffset+2,Origin+Y*(dy+wallThick),Y);
-    ModelSupport::buildPlane(SMap,SOffset+3,Origin-X*lenL,X);
-    ModelSupport::buildPlane(SMap,SOffset+4,Origin+X*lenR,X);
+    Geometry::Plane *p1 =
+      ModelSupport::buildPlaneRotAxis(SMap,SOffset+1,Origin+Y*dy,Y,Z,angle);
+    ModelSupport::buildShiftedPlane(SMap,SOffset+2,p1,wallThick);
+
+    Geometry::Plane *p3 =
+      ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,
+				      Origin+Y*dy-p1->getNormal()*Z*lenL,X,Z,
+				      angle);
+    ModelSupport::buildShiftedPlane(SMap,SOffset+4,p3,lenL+lenR);
 }
 
 void
@@ -347,7 +352,7 @@ H2FlowGuide::createSurfaces()
 
   SI += 100;
   y += dist3;
-  createStraightBladeSurf(SI,y,len3L,len3R,90);
+  createStraightBladeSurf(SI,y,len3L,len3R,10);
 
   return;
 }
