@@ -110,6 +110,7 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   wallThick(A.wallThick),len1L(A.len1L),
   baseOffset(A.baseOffset),
   len1R(A.len1R),
+  angle1(A.angle1),
   dist2(A.dist2),
   len2L(A.len2L),
   len2R(A.len2R),
@@ -141,6 +142,7 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       len1L=A.len1L;
       baseOffset=A.baseOffset;
       len1R=A.len1R;
+      angle1=A.angle1;
       dist2=A.dist2;
       len2L=A.len2L;
       len2R=A.len2R;
@@ -183,6 +185,7 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   wallThick=Control.EvalPair<double>(keyName,baseName+endName,"WallThick");
   len1L=Control.EvalPair<double>(keyName,baseName+endName,"Len1L");
   len1R=Control.EvalPair<double>(keyName,baseName+endName,"Len1R");
+  angle1=Control.EvalPair<double>(keyName,baseName+endName,"Angle1");
   baseOffset=Control.EvalPair<double>(keyName,baseName+endName,"BaseOffset");
   dist2=Control.EvalPair<double>(keyName,baseName+endName,"Dist2");
   len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
@@ -231,7 +234,7 @@ H2FlowGuide::createSurfaces()
   ModelSupport::buildPlane(SMap,flowIndex+21,Origin+Y*(y),Y);
   y += wallThick;
   ModelSupport::buildPlane(SMap,flowIndex+22,Origin+Y*(y),Y);
-  
+
   ModelSupport::buildPlane(SMap,flowIndex+3,Origin-X*(len1R),X);
   ModelSupport::buildPlane(SMap,flowIndex+4,Origin+X*(len1L),X);
 

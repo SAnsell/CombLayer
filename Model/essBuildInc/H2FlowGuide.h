@@ -51,6 +51,7 @@ class H2FlowGuide :
   double baseOffset;  ///< Base offset
   double len1L; ///< Left length of 1st blade
   double len1R; ///< Right length of 1st blade
+  double angle1; ///< Opening angle of the 1st blade
   double dist2; ///< Distance between 1st and 2nd blades
   double len2L; ///< Left length of 2nd blade
   double len2R; ///< Right length of 2nd blade
