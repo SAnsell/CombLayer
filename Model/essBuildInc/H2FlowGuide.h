@@ -74,6 +74,9 @@ class H2FlowGuide :
 			     const double&,const double&,const double&,
 			     const double&,const double&,const int&);
 
+  void createStraightBladeSurf(const int,const double&,const double&,
+			       const double&,const double&);
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);
 

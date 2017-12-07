@@ -303,6 +303,22 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
 }
 
 void
+H2FlowGuide::createStraightBladeSurf(const int SOffset,const double& dy,
+				     const double& lenL,const double& lenR,
+				     const double& angle)
+/*!
+  Create surfaces for straight (rectangular) blade
+ */
+{
+    ELog::RegMethod RegA("H2FlowGuide","createStraightBladeSurf");
+
+    ModelSupport::buildPlane(SMap,SOffset+1,Origin+Y*dy,Y);
+    ModelSupport::buildPlane(SMap,SOffset+2,Origin+Y*(dy+wallThick),Y);
+    ModelSupport::buildPlane(SMap,SOffset+3,Origin-X*lenL,X);
+    ModelSupport::buildPlane(SMap,SOffset+4,Origin+X*lenR,X);
+}
+
+void
 H2FlowGuide::createSurfaces()
   /*!
     Create All the surfaces
@@ -328,6 +344,10 @@ H2FlowGuide::createSurfaces()
   y += wallThick;
   x += wallThick;
   createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len2Foot,angle2,radius2+wallThick,SI+3);
+
+  SI += 100;
+  y += dist3;
+  createStraightBladeSurf(SI,y,len3L,len3R,90);
 
   return;
 }
@@ -384,9 +404,9 @@ H2FlowGuide::createObjects(Simulation& System,
     }
 
 
-  // Out=ModelSupport::getComposite(SMap,flowIndex," 121 -122 203 -204 ");
-  // wallExclude.addUnion(Out);
-  // System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 ");
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
