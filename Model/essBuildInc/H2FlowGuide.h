@@ -72,7 +72,7 @@ class H2FlowGuide :
 			  const Geometry::Vec3D&) const;
   void createCurvedBladeSurf(const int,const double&,const double&,
 			     const double&,const double&,const double&,
-			     const double&,const double&);
+			     const double&,const double&,const int&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

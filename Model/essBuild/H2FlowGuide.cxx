@@ -81,6 +81,7 @@
 #include "CellMap.h"
 #include "AttachSupport.h"
 #include "geomSupport.h"
+#include "SurInter.h"
 #include "H2Wing.h"
 #include "H2FlowGuide.h"
 
@@ -249,7 +250,7 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
 				   const double& dx,const double& dy,
 				   const double& lenR,const double& lenL,
 				   const double& lenFoot, const double& angle,
-				   const double& R)
+				   const double& R,const int& n3=0)
 /*!
   Create surfaces for curved blade
  */
@@ -257,14 +258,25 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
   ELog::RegMethod RegA("H2FlowGuide","createCurvedBladeSurf");
 
   const Geometry::Vec3D P1(Origin+X*(lenR)+Y*dy);
-  const Geometry::Vec3D P2(Origin-X*(lenL+dx)+Y*dy);
-
+  Geometry::Vec3D P2;
+  Geometry::Plane *pl3;
   ModelSupport::buildPlane(SMap,SOffset+1,P1,Y);
-  Geometry::Plane *pl3 = ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,P2,Y,Z,
-							 -angle);
+  if (n3==0) // build plane 3 manually
+    {
+      P2 = Origin-X*(lenL+dx)+Y*dy;
+      pl3 = ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,P2,Y,Z,
+							     -angle);
+    }
+  else // just build shifted plane
+    {
+      pl3 = ModelSupport::buildShiftedPlane(SMap,SOffset+3,
+					    SMap.realPtr<Geometry::Plane>(n3),
+					    -wallThick);
+      P2 = SurInter::getPoint(SMap.realPtr<Geometry::Plane>(SOffset+1),
+			      SMap.realPtr<Geometry::Plane>(SOffset+3),
+			      SMap.realPtr<Geometry::Plane>(60000));
+    }
   const Geometry::Vec3D P3 = P2 + pl3->getNormal()*Z*lenFoot;
-
-  ELog::EM << keyName << " " << P2 << ELog::endDiag;
 
   const std::string Out=ModelSupport::getComposite(SMap,SOffset, " -1 3 ");
   HeadRule CCorner(Out);
@@ -307,7 +319,7 @@ H2FlowGuide::createSurfaces()
   createCurvedBladeSurf(SI,x,y,len1R,len1L,len1Foot,angle1,radius1);
   y += wallThick;
   x += wallThick;
-  createCurvedBladeSurf(SI+10,x,y,len1R,len1L,len1Foot,angle1,radius1+wallThick);
+  createCurvedBladeSurf(SI+10,x,y,len1R,len1L,len1Foot,angle1,radius1+wallThick,SI+3);
 
   SI += 100;
   y += dist2;
@@ -315,7 +327,7 @@ H2FlowGuide::createSurfaces()
   createCurvedBladeSurf(SI,x,y,len2R,len2L,len2Foot,angle2,radius2);
   y += wallThick;
   x += wallThick;
-  createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len2Foot,angle2,radius2+wallThick);
+  createCurvedBladeSurf(SI+10,x,y,len2R,len2L,len2Foot,angle2,radius2+wallThick,SI+3);
 
   return;
 }
