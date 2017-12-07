@@ -235,14 +235,14 @@ H2FlowGuide::createSurfaces()
   y += wallThick;
   ModelSupport::buildPlane(SMap,flowIndex+22,Origin+Y*(y),Y);
 
-  ModelSupport::buildPlane(SMap,flowIndex+3,Origin-X*(len1R),X);
-  ModelSupport::buildPlane(SMap,flowIndex+4,Origin+X*(len1L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+3,Origin-X*(len1L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+4,Origin+X*(len1R),X);
 
-  ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2R),X);
-  ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+103,Origin-X*(len2L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+104,Origin+X*(len2R),X);
 
-  ModelSupport::buildPlane(SMap,flowIndex+203,Origin-X*(len3R),X);
-  ModelSupport::buildPlane(SMap,flowIndex+204,Origin+X*(len3L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+203,Origin-X*(len3L),X);
+  ModelSupport::buildPlane(SMap,flowIndex+204,Origin+X*(len3R),X);
 
   return;
 }
