@@ -342,11 +342,21 @@ H2FlowGuide::createObjects(Simulation& System,
   const std::string tb(HW.getLinkString(13)+HW.getLinkString(14));
   HeadRule wallExclude;
 
-  Out=ModelSupport::getComposite(SMap,flowIndex,
-				 " ((1 -11 18 -4) : (13 -3 6 18) : (-8 7 -17)) ");
+  // first curved blade
+  Out=ModelSupport::getComposite(SMap,flowIndex, " 1 -11 8 -4 ");
   wallExclude.procString(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,flowIndex, " 13 -3 6 8 ");
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,flowIndex, " -8 -11 13 7 18 ");
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  Out=ModelSupport::getComposite(SMap,flowIndex, " -18 7 -17 ");
+  wallExclude.addUnion(Out);
+  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
 
+  // second (not yet) curved blade
   Out=ModelSupport::getComposite(SMap,flowIndex," 111 -112 103 -104 ");
   wallExclude.addUnion(Out);
   System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
