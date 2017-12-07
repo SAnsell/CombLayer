@@ -57,6 +57,7 @@ class H2FlowGuide :
   double dist2; ///< Distance between 1st and 2nd blades
   double len2L; ///< Left length of 2nd blade
   double len2R; ///< Right length of 2nd blade
+  double angle2; ///< Opening angle of the 2nd blade
   double dist3; ///< Distance betwen 2nd and 3rd blades
   double len3L; ///< Left length of 3rd blade
   double len3R; ///< Right length of 3rd blade
@@ -68,7 +69,7 @@ class H2FlowGuide :
   Geometry::Vec3D midNorm(Geometry::Vec3D&,Geometry::Vec3D&,Geometry::Vec3D&) const;
   void createCurvedBladeSurf(const int,const double&,const double&,
 			     const double&,const double&,const double&,
-			     const double&);
+			     const double&,const double&);
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&);

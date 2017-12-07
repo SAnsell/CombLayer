@@ -116,6 +116,7 @@ H2FlowGuide::H2FlowGuide(const H2FlowGuide& A) :
   dist2(A.dist2),
   len2L(A.len2L),
   len2R(A.len2R),
+  angle2(A.angle2),
   dist3(A.dist3),
   len3L(A.len3L),
   len3R(A.len3R),
@@ -150,6 +151,7 @@ H2FlowGuide::operator=(const H2FlowGuide& A)
       dist2=A.dist2;
       len2L=A.len2L;
       len2R=A.len2R;
+      angle2=A.angle2;
       dist3=A.dist3;
       len3L=A.len3L;
       len3R=A.len3R;
@@ -196,6 +198,7 @@ H2FlowGuide::populate(const FuncDataBase& Control)
   dist2=Control.EvalPair<double>(keyName,baseName+endName,"Dist2");
   len2L=Control.EvalPair<double>(keyName,baseName+endName,"Len2L");
   len2R=Control.EvalPair<double>(keyName,baseName+endName,"Len2R");
+  angle2=Control.EvalPair<double>(keyName,baseName+endName,"Angle2");
   dist3=Control.EvalPair<double>(keyName,baseName+endName,"Dist3");
   len3L=Control.EvalPair<double>(keyName,baseName+endName,"Len3L");
   len3R=Control.EvalPair<double>(keyName,baseName+endName,"Len3R");
@@ -236,9 +239,9 @@ H2FlowGuide::midNorm(Geometry::Vec3D& C,Geometry::Vec3D& A,Geometry::Vec3D& B) c
 
 void
 H2FlowGuide::createCurvedBladeSurf(const int SOffset,
-				   const double&dx,const double& dy,
+				   const double& dx,const double& dy,
 				   const double& lenR,const double& lenL,
-				   const double& lenFoot,
+				   const double& lenFoot, const double& angle,
 				   const double& R)
 /*!
   Create surfaces for curved blade
@@ -249,10 +252,19 @@ H2FlowGuide::createCurvedBladeSurf(const int SOffset,
   Geometry::Vec3D P1(Origin+X*(lenR-dx)+Y*dy);
   Geometry::Vec3D P2(Origin-X*(lenL-dx)+Y*dy);
   Geometry::Vec3D P3(Origin-X*(lenL-dx)+Y*(dy-lenFoot));
-  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
-    RCircle=Geometry::findCornerCircle(P2,P1,P3,R);
+
   ModelSupport::buildPlane(SMap,SOffset+1,P2,Y);
-  ModelSupport::buildPlane(SMap,SOffset+3,P2,X);
+  ModelSupport::buildPlaneRotAxis(SMap,SOffset+3,P2,Y,Z,-angle);
+
+  const std::string Out=ModelSupport::getComposite(SMap,SOffset, "-1 3 ");
+  HeadRule CCorner(Out);
+  CCorner.populateSurf();
+  const std::tuple<Geometry::Vec3D,Geometry::Vec3D,Geometry::Vec3D>
+    RCircle=Geometry::findCornerCircle(CCorner,
+				       *SMap.realPtr<Geometry::Plane>(SOffset+1),
+				       *SMap.realPtr<Geometry::Plane>(SOffset+3),
+				       *SMap.realPtr<Geometry::Plane>(60000),
+				       R);
   ModelSupport::buildPlane(SMap,SOffset+4,P1,X);
   ModelSupport::buildShiftedPlane(SMap,SOffset+6,
 				  SMap.realPtr<Geometry::Plane>(SOffset+1),
@@ -283,10 +295,10 @@ H2FlowGuide::createSurfaces()
 
   double x(0.0);
   double y(baseOffset);
-  createCurvedBladeSurf(flowIndex,x,y,len1R,len1L,len1Foot,radius1);
+  createCurvedBladeSurf(flowIndex,x,y,len1R,len1L,len1Foot,angle1,radius1);
   y += wallThick;
   x -= wallThick;
-  createCurvedBladeSurf(flowIndex+10,x,y,len1R,len1L,len1Foot,radius1+wallThick);
+  createCurvedBladeSurf(flowIndex+10,x,y,len1R,len1L,len1Foot,angle1,radius1+wallThick);
 
   //  ModelSupport::buildPlane(SMap,flowIndex+2,Origin+Y*(y),Y);
   // P1 = P1 + Y*wallThick;
@@ -294,7 +306,7 @@ H2FlowGuide::createSurfaces()
   // P3 = P3 - X*wallThick;
 
 
-  
+
   y += dist2;
   ModelSupport::buildPlane(SMap,flowIndex+111,Origin+Y*(y),Y);
   y += wallThick;
