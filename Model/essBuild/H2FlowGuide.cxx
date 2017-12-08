@@ -406,7 +406,7 @@ H2FlowGuide::createObjects(Simulation& System,
 
   int SI(flowIndex);
 
-  // curved blades
+  // curved blades 1 and 2
   for (size_t i=0; i<2; i++)
     {
       Out=ModelSupport::getComposite(SMap,SI, " 1 -11 8 -4 ");
@@ -427,16 +427,14 @@ H2FlowGuide::createObjects(Simulation& System,
       SI += 100;
     }
 
-  // blade 3
-  Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
-
-  // blade 4
-  SI += 100;
-  Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 ");
-  wallExclude.addUnion(Out);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+  // blades 3 and 4
+  for (size_t i=0; i<2; i++)
+    {
+      Out=ModelSupport::getComposite(SMap,SI," 1 -2 3 -4 ");
+      wallExclude.addUnion(Out);
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,wallTemp,Out+tb));
+      SI += 100;
+    }
 
   wallExclude.makeComplement();
   InnerObj->addSurfString(wallExclude.display());
