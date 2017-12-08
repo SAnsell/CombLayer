@@ -84,6 +84,7 @@
 #include "geomSupport.h"
 #include "ModBase.h"
 #include "H2FlowGuide.h"
+#include "McDonaldFlowGuide.h"
 #include "H2Wing.h"
 
 namespace essSystem
@@ -97,9 +98,9 @@ H2Wing::H2Wing(const std::string& baseKey,
   attachSystem::FixedComp(baseKey+extraKey,16),
   attachSystem::CellMap(),
   baseName(baseKey),
+  extraName(extraKey),
   wingIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(wingIndex+1),
-  InnerComp(new H2FlowGuide(baseKey,extraKey,"FlowGuide")),
   xyOffset(XYAngle)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -108,19 +109,15 @@ H2Wing::H2Wing(const std::string& baseKey,
     \param XYAngle :: Offset of angle of Wing
   */
 {
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-  OR.addObject(InnerComp);
 }
 
 H2Wing::H2Wing(const H2Wing& A) :
   attachSystem::ContainedComp(A),attachSystem::LayerComp(A),
   attachSystem::FixedComp(A),attachSystem::CellMap(A),
   baseName(A.baseName),
+  extraName(A.extraName),
   wingIndex(A.wingIndex),cellIndex(A.cellIndex),
   bfType(A.bfType),
-  InnerComp(A.InnerComp->clone()),
   Pts(A.Pts),radius(A.radius),height(A.height),
   modMat(A.modMat),modTemp(A.modTemp),
   modMatH(A.modMatH)
@@ -146,7 +143,6 @@ H2Wing::operator=(const H2Wing& A)
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       bfType=A.bfType;
-      *InnerComp=*A.InnerComp;
       Pts=A.Pts;
       radius=A.radius;
       height=A.height;
@@ -731,7 +727,23 @@ H2Wing::createAll(Simulation& System,
   insertObjects(System);
 
   if (engActive)
-    InnerComp->createAll(System,*this);
+    {
+      ModelSupport::objectRegister& OR=ModelSupport::objectRegister::Instance();
+      if (bfType==1)
+	{
+	  std::shared_ptr<H2FlowGuide>
+	    bf1FlowGuide(new H2FlowGuide(baseName,extraName,"FlowGuide"));
+	  OR.addObject(bf1FlowGuide);
+	  bf1FlowGuide->createAll(System,*this);
+	}
+      else if (bfType==2)
+	{
+	  std::shared_ptr<McDonaldFlowGuide>
+	  bf2FlowGuide(new McDonaldFlowGuide(baseName,extraName,"FlowGuide"));
+	  OR.addObject(bf2FlowGuide);
+	  bf2FlowGuide->createAll(System,*this);
+	}
+    }
   return;
 }
 

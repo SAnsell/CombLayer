@@ -28,6 +28,7 @@ class Simulation;
 namespace essSystem
 {
   class H2FlowGuide;
+  class McDonaldFlowGuide;
 
 /*!
   \class H2Wing
@@ -46,12 +47,12 @@ class H2Wing :
  private:
 
   const std::string baseName; ///< Basename
+  const std::string extraName; ///< Extra name
   const int wingIndex;       ///< Index of surface offset
   int cellIndex;             ///< Cell index
 
   int engActive;             ///< Engineering active
   int bfType; ///< Type (BF1 or BF2)
-  std::shared_ptr<H2FlowGuide> InnerComp;    ///< Inner flow components
 
   double xStep;                 ///< Step across proton beam direction
   double yStep;                 ///< Step along proton beam direction

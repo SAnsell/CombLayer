@@ -110,15 +110,17 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideWallMat","Aluminium20K");
   Control.addVariable("TopFlyFlowGuideWallTemp",20.0);
   Control.addVariable("TopFlyFlowGuideWallThick",0.2);
-  Control.addVariable("TopFlyFlowGuideBaseOffset",-20);
-  Control.addVariable("TopFlyFlowGuideLen1L",1.2);
+
+  // BF1 - straight and curved blades
+  Control.addVariable("TopFlyFlowGuideBaseOffset",-10.7);
+  Control.addVariable("TopFlyFlowGuideLen1L",3.0);
   Control.addVariable("TopFlyFlowGuideLen1R",8);
   Control.addVariable("TopFlyFlowGuideAngle1",90);
   Control.addVariable("TopFlyFlowGuideRadius1",1);
   Control.addVariable("TopFlyFlowGuideLen1Foot",2.3);
   Control.addVariable("TopFlyFlowGuideDist12",3);
   Control.addVariable("TopFlyFlowGuideLen2L",5.0);
-  Control.addVariable("TopFlyFlowGuideLen2R",8);
+  Control.addVariable("TopFlyFlowGuideLen2R",7);
   Control.addVariable("TopFlyFlowGuideAngle2",135);
   Control.addVariable("TopFlyFlowGuideRadius2",1);
   Control.addVariable("TopFlyFlowGuideLen2Foot",4);
@@ -130,6 +132,19 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopFlyFlowGuideLen4L",8.0);
   Control.addVariable("TopFlyFlowGuideLen4R",-5.0);
   Control.addVariable("TopFlyFlowGuideAngle4",135+90);
+
+  // BF2 - McDonald
+  Control.addVariable("TopFlyFlowGuideBaseThick",0.3);
+  Control.addVariable("TopFlyFlowGuideBaseLen",6.5);
+  Control.addVariable("TopFlyFlowGuideBaseOffset",-12);
+  Control.addVariable("TopFlyFlowGuideAngle",17);
+  Control.addVariable("TopFlyFlowGuideSQOffsetY",4.0);
+  Control.addVariable("TopFlyFlowGuideSQSideA",1.0);
+  Control.addVariable("TopFlyFlowGuideSQSideE",-1.0);
+  Control.addVariable("TopFlyFlowGuideSQSideF",-0.005);
+  Control.addVariable("TopFlyFlowGuideSQCenterA",1.0);
+  Control.addVariable("TopFlyFlowGuideSQCenterE",-0.6);
+  Control.addVariable("TopFlyFlowGuideSQCenterF",-0.005);
 
   Control.addVariable("TopFlyLeftWaterWidth",15.76);
   Control.addVariable("TopFlyLeftWaterWallThick",0.347);
