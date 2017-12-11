@@ -79,6 +79,7 @@
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
+#include "PSimple.h"
 #include "ModeCard.h"
 #include "LSwitchCard.h"
 #include "PhysImp.h"
@@ -425,7 +426,7 @@ setDefaultPhysics(Simulation& System,
       setReactorPhysics(System,IParam);
       return;
     }
-  
+
   if (IParam.hasKey("neutronOnly"))
     {
       setNeutronPhysics(System);
@@ -437,7 +438,11 @@ setDefaultPhysics(Simulation& System,
   std::string PList=
     IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
   if (PList=="empty" || PList=="Empty")
-    PList=" ";
+    {
+      ELog::EM<<"ASDFSADFSDAF "<<ELog::endDiag;
+      PC.addPhysCard<physicsSystem::PSimple>(std::string("mphys"),std::string(""));
+      PList=" ";
+    }
   
   const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double cutUp=IParam.getValue<double>("cutWeight",0);  // [1keV
@@ -456,6 +461,7 @@ setDefaultPhysics(Simulation& System,
   
   PC.setMode("n p "+PList+elcAdd);
   System.processCellsImp();
+
 
   PC.setCells("imp",1,0);            // Set a zero cell	  
   physicsSystem::PStandard* NCut=
@@ -484,7 +490,7 @@ setDefaultPhysics(Simulation& System,
   pn->setValues(EMax+" 0.0 j j j");
 
   physicsSystem::PStandard* pp=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","p");
+    PC.addPhysCard<physicsSystem::PStandard>("phys","p");
   if (elcEnergy>=0.0)
     pp->setValues(PHMax+" j j -1");
   else
@@ -518,7 +524,7 @@ setNeutronPhysics(Simulation& System)
     \param System :: Simulation
   */
 {
-  ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics","setNeutronPhysics");
 
   const FuncDataBase& Control=System.getDataBase();
   
