@@ -76,6 +76,32 @@ SingleItemVariables(FuncDataBase& Control)
   Control.addVariable("zero",0.0);     // Zero
   Control.addVariable("one",1.0);      // one
 
+
+  Control.addVariable("CryoBOuterRadius",20.0);
+  
+  Control.addVariable("CryoBNLayers",0);
+  Control.addVariable("CryoBLRadius0",1.0);
+  Control.addVariable("CryoBLRadius1",3.0);
+  Control.addVariable("CryoBLRadius2",5.0);
+  Control.addVariable("CryoBLRadius3",8.0);
+  Control.addVariable("CryoBLThick",0.5);
+  Control.addVariable("CryoBLTemp",300.0);
+  
+  Control.addVariable("CryoBTopOffset",1.0);
+  Control.addVariable("CryoBBaseOffset",1.0);
+  Control.addVariable("CryoBCutTopAngle",10.0);
+  Control.addVariable("CryoBCutBaseAngle",10.0);
+
+  Control.addVariable("CryoBTopThick",10.0);
+  Control.addVariable("CryoBBaseThick",10.0);
+
+  Control.addVariable("CryoBApertureWidth",2.0);
+  Control.addVariable("CryoBApertureHeight",2.0);
+
+  Control.addVariable("CryoBMat","Aluminium");
+
+
+  
   setVariable::CryoGenerator CryGen;
   CryGen.generateFridge(Control,"singleCryo",3.0,-10,4.5);
 

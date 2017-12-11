@@ -366,10 +366,10 @@ EssBunkerVariables(FuncDataBase& Control)
 
   Control.addVariable("ABunkerQuake0NPoint",11);
   Control.addVariable("ABunkerQuake0XGap",6.5);
-  Control.addVariable("ABunkerQuake0ZGap",40.0);
+  Control.addVariable("ABunkerQuake0ZGap",50.0);
   Control.addVariable("ABunkerQuake0XStep",0.0);
   Control.addVariable("ABunkerQuake0YStep",0.0);
-  Control.addVariable("ABunkerQuake0ZStep",30.0);
+  Control.addVariable("ABunkerQuake0ZStep",20.0);
 
   // top dilitation
   Control.addVariable("ABunkerQuake0PtA0",Geometry::Vec3D(785,103,0));
@@ -404,7 +404,7 @@ EssBunkerVariables(FuncDataBase& Control)
 
   Control.addVariable("ABunkerQuake2NPoint",8);
   Control.addVariable("ABunkerQuake2XGap",6.5);
-  Control.addVariable("ABunkerQuake2ZGap",30.0);
+  Control.addVariable("ABunkerQuake2ZGap",45.0);
   Control.addVariable("ABunkerQuake2XStep",0.0);
   Control.addVariable("ABunkerQuake2YStep",0.0);
   Control.addVariable("ABunkerQuake2ZStep",130.0);
