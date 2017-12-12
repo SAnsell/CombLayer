@@ -817,7 +817,7 @@ Material::writePHITS(std::ostream& OX) const
   const Element& EL(Element::Instance());
 
   std::ostringstream cx;
-  OX<<"c Material : "<<Name<<" rho="<<atomDensity<<std::endl;
+  OX<<"$ Material : "<<Name<<" rho="<<atomDensity<<std::endl;
   OX<<"mat["<<Mnum<<"]\n";
 
   
