@@ -357,7 +357,7 @@ Intersection::displayFluka() const
   out+=" ";
   
   if (B->type()==-1)
-    out+="( "+B->displayFluka()+" )";
+    out+="+( "+B->displayFluka()+" )";
   else
     out+=B->displayFluka();
   return out;
