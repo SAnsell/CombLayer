@@ -344,7 +344,6 @@ Sphere::writeFLUKA(std::ostream& OX) const
   
   masterWrite& MW=masterWrite::Instance();
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   cx<<"SPH s"<<getName()<<" "
     <<MW.Num(Centre)<<" "
     <<MW.Num(Radius);

@@ -326,7 +326,7 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"TITLE "<<std::endl;
   OX<<" Fluka model from CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
-  OX<<FmtStr % "GEOBEGIN" % "COMBNAM";
+  OX<<FmtStr % "GEOBEGIN" % "COMBNAME"<<std::endl<<"Just need an extra line with whatever crap";
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;

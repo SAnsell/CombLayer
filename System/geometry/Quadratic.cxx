@@ -595,7 +595,6 @@ Quadratic::writeFLUKA(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
   
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);
   cx<<"QUA s"<<getName();
   // write all 10 items in order: as xy xz yz coeffients

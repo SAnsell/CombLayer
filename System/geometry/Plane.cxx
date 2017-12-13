@@ -653,7 +653,6 @@ Plane::writeFLUKA(std::ostream& OX) const
   masterWrite& MW=masterWrite::Instance();
 
   std::ostringstream cx;
-  Surface::writeHeader(cx);
   const int ptype=planeType();
   if (!ptype)
     {

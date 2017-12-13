@@ -1285,7 +1285,8 @@ Object::writeFLUKAmat(std::ostream& OX) const
     {
       std::string objName=OR.inRenumberRange(ObjName);
       if (objName.empty())
-	objName="global";
+	//	objName="global";
+	objName="g"; //need shorter names for FLUKA
       std::ostringstream cx;
       cx<<"ASSIGNMA    ";
       if (!MatN)
@@ -1293,7 +1294,8 @@ Object::writeFLUKAmat(std::ostream& OX) const
       else
 	cx<<"    M"<<MatN;
       
-      cx<<"    "<<objName<<"_"<<ObjName;
+      //      cx<<"    "<<objName<<"_"<<ObjName;
+      cx<<"    "<<objName<<ObjName; // need shorter names, underscore doesn't fit
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   
@@ -1316,12 +1318,14 @@ Object::writeFLUKA(std::ostream& OX) const
     {
       std::string objName=OR.inRenumberRange(ObjName);
       if (objName.empty())
-	objName="global";
+	//	objName="global";
+	objName="g"; //shortening name, otherwise doesn't fit the space reserved for names
       std::ostringstream cx;
       cx.precision(10);
 
 
-      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
+      //      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
+      cx<<objName<<ObjName<<" "<<SurList.size()<<" "; // need still a one symbol shorter name
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);
     }

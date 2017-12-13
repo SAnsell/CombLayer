@@ -533,7 +533,6 @@ Cylinder::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
 
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);  
   if (Ndir==-1 || Ndir==1)
     {
