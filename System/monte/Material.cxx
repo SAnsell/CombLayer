@@ -871,39 +871,47 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL 0 0"<<
+  cx<<"MATERIAL 0.0 0.0 ";
+  cx<<atomDensity<<" "<<Mnum<<" 0.0 0.0 ";
+  cx<<"m"<<Mnum<<std::endl;
   
-  cx.precision(10);
-  cx<<"m"<<Mnum<<"     ";
-  if (Mnum<10) cx<<" ";
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
+  cx<<"COMPOUND ";
+  size_t i(0);
   for(const Zaid& ZItem: zaidVec)
-    cx<<ZItem<<" ";
+    {
+    cx<<std::scientific<<ZItem.getDensity()<<" "<<ZItem.getZaidNum()<< " ";
+    i++;
+    if (!(i%3)) cx<<" m"<<Mnum<<std::endl<<"COMPOUND ";
+    }
+  cx<<std::endl;
 
-  for(const std::string& libItem : Libs)
-    cx<<libItem<<"  ";
-  StrFunc::writeMCNPX(cx.str(),OX);
-  
-  cx.str("");
-  MXTYPE::const_iterator mc;
-  for(mc=mxCards.begin();mc!=mxCards.end();mc++)
-    {
-      cx<<"mx"<<Mnum;
-      mc->second.write(cx,zaidVec);
-      StrFunc::writeMCNPX(cx.str(),OX);
-    }
-  // avoid having to reset flags/precision in cx
-  std::ostringstream rx;
-  if (!SQW.empty())
-    {
-      rx.str("");
-      rx<<"mt"<<Mnum<<"    ";
-      if (Mnum<10) rx<<" ";
-      std::copy(SQW.begin(),SQW.end(),
-		std::ostream_iterator<std::string>(rx," "));
-      StrFunc::writeMCNPX(rx.str(),OX);
-    }
+  // hlib:
+  // for(const std::string& libItem : Libs)
+  //   cx<<libItem<<"  "; 
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  // MX and MT:
+  // cx.str("");
+  // MXTYPE::const_iterator mc;
+  // for(mc=mxCards.begin();mc!=mxCards.end();mc++)
+  //   {
+  //     cx<<"mx"<<Mnum;
+  //     mc->second.write(cx,zaidVec);
+  //     StrFunc::writeMCNPX(cx.str(),OX);
+  //   }
+  // // avoid having to reset flags/precision in cx
+  // std::ostringstream rx;
+  // if (!SQW.empty())
+  //   {
+  //     rx.str("");
+  //     rx<<"mt"<<Mnum<<"    ";
+  //     if (Mnum<10) rx<<" ";
+  //     std::copy(SQW.begin(),SQW.end(),
+  // 		std::ostream_iterator<std::string>(rx," "));
+  //     StrFunc::writeMCNPX(rx.str(),OX);
+  //   }
 
   return;
 } 
