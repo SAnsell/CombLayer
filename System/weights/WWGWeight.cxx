@@ -485,7 +485,8 @@ WWGWeight::wTrack(const Simulation& System,
 	    setLogPoint(cN-1,index,DT);
 	  
 	  if (!(cN % NCut))
-	    ELog::EM<<"Item "<<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
+	    ELog::EM<<"Item[ "<<index<<"] == "
+		    <<cN<<" "<<MidPt.size()<<" "<<densityFactor<<" "
 		    <<r2Length<<ELog::endDiag;
 	}
       cN++;

@@ -1402,7 +1402,6 @@ Object::writePHITS(std::ostream& OX) const
     \param OX :: Output stream (required for multiple std::endl)
   */
 {
-  bool universeWritten(0);
   std::ostringstream cx;
 
   cx.precision(10);
@@ -1411,11 +1410,10 @@ Object::writePHITS(std::ostream& OX) const
       cx<<str();
       StrFunc::writeMCNPXcomment(cx.str(),OX);
     }
-  else if (imp==0 && !universeWritten)
+  else if (ObjName==1 && imp==0)
     {
       cx<<ObjName<<" -1 "<<HRule.display();
       StrFunc::writeMCNPX(cx.str(),OX);
-      universeWritten=1;
     }
   else 
     {
