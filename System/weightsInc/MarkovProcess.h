@@ -64,6 +64,7 @@ class MarkovProcess
   long int WZ;             ///< WZ size of WWG
 
   long int FSize;          ///< size of fluxField [square]
+
   /// Array of interaction [initialCell][finalCell]
   boost::multi_array<double,2> fluxField;
   
@@ -78,7 +79,9 @@ class MarkovProcess
   void initializeData(const WWG&);
   void computeMatrix(const Simulation&,const WWG&,const double,
 		     const double,const double);
-    
+  void multiplyOut(const size_t);
+  void rePopulateWWG();
+  
 };
 
 }

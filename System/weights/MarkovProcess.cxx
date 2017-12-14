@@ -176,7 +176,7 @@ MarkovProcess::computeMatrix(const Simulation& System,
 	  const double AT=OTrack.getAttnSum(j);  // this can take an
 	  const double WFactor= -densityFactor*AT-r2Power*log(DistT);
 	  if (WFactor>-20)
-	    fluxField[i][j]=fluxField[j][i]=exp(-WFactor);
+	    fluxField[i][j]=fluxField[j][i]= -WFactor;
 	  else
 	    fluxField[i][j]=fluxField[j][i]=0.0;
 	}
@@ -184,6 +184,16 @@ MarkovProcess::computeMatrix(const Simulation& System,
   return;
 }
 
-  
+void
+MarkovProcess::multiplyOut(const size_t index)
+{
+  return;
+}
+
+void
+MarkovProcess::rePopulateWWG() 
+{
+  return;
+}
   
 } // namespace WeightSystem
