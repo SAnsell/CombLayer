@@ -830,6 +830,20 @@ sectionCINDER(std::string& A,double& out)
   return 0;
 }
 
+void
+writeFLUKA(const std::string& Line,std::ostream& OX)
+/*!
+  Write out the line in the limited form for FLUKA
+  ie initial line from 0::72 after that 8 to 72
+  (split on a space or comma)
+  \param Line :: full MCNPX line
+  \param OX :: ostream to write to
+*/
+{
+  writeControl(Line,OX,1000,8);
+  return;
+}
+
 
 void
 writeMCNPX(const std::string& Line,std::ostream& OX)
