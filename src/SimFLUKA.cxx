@@ -192,7 +192,6 @@ SimFLUKA::writeCells(std::ostream& OX) const
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writeFLUKA(OX);
   OX<<"END"<<std::endl;
-  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
 
@@ -214,8 +213,6 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
   for(const ModelSupport::surfIndex::STYPE::value_type& sm : SurMap)
     sm.second->writeFLUKA(OX);
   OX<<"END"<<std::endl;
-  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
-  OX<<std::endl;
   return;
 } 
 
@@ -326,7 +323,8 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"TITLE "<<std::endl;
   OX<<" Fluka model from CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
-  OX<<FmtStr % "GEOBEGIN" % "COMBNAME"<<std::endl<<"Just need an extra line with whatever crap";
+  OX<<FmtStr % "GEOBEGIN" % "COMBNAME";
+  OX<<"  0 0 FLUKA Geometry"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;

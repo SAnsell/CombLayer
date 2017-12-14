@@ -1284,16 +1284,14 @@ Object::writeFLUKAmat(std::ostream& OX) const
   if (!placehold)
     {
       std::string objName=OR.inRenumberRange(ObjName);
-      if (objName.empty())
-	objName="global";
       std::ostringstream cx;
-      cx<<"ASSIGNMA    ";
+      cx<<"ASSIGNMAT ";
       if (!MatN)
-	cx<<" VACUUM";
+	cx<<"VACUUM";
       else
-	cx<<"    M"<<MatN;
+	cx<<"M"<<MatN;
       
-      cx<<"    "<<objName<<ObjName; // need shorter name
+      cx<<" R"<<ObjName;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   
@@ -1320,7 +1318,7 @@ Object::writeFLUKA(std::ostream& OX) const
       std::ostringstream cx;
       cx.precision(10);
 
-      cx<<objName<<ObjName<<" "<<SurList.size()<<" ";
+      cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
