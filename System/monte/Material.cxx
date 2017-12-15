@@ -123,10 +123,9 @@ Material::operator*=(const double V)
    */
 {
   ELog::RegMethod RegA("Material","operator*=");
-  
-  std::vector<Zaid>::iterator vc;
-  for(vc=zaidVec.begin();vc!=zaidVec.end();vc++)
-    vc->setDensity(vc->getDensity()*V);
+
+  for(Zaid& ZR : zaidVec)
+    ZR.setDensity(ZR.getDensity()*V);
   
   return *this;
 }
@@ -207,7 +206,8 @@ Material::operator+=(const Material& A)
       if (sqSet.find(LItem)==sqSet.end())
 	Libs.push_back(LItem);
     }
-
+  
+  calcAtomicDensity();
   return *this;
 }
 
@@ -237,7 +237,7 @@ Material::getZaidIndex(const size_t ZNum,const size_t TNum,const char C) const
   */
 {
   for(size_t i=0;i<zaidVec.size();i++)
-    if (zaidVec[i].isEquavilent(ZNum,TNum,C))
+    if (zaidVec[i].isEquivalent(ZNum,TNum,C))
       return i;
   
   return ULONG_MAX;
@@ -681,7 +681,10 @@ Material::calcAtomicDensity()
 {
   atomDensity=0.0;
   for(const Zaid& ZC : zaidVec)
-    atomDensity+=ZC.getDensity();
+    {
+      if (ZC.getZ())
+	atomDensity+=ZC.getDensity();
+    }
 
   return;
 }

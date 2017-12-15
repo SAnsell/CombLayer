@@ -66,6 +66,7 @@ class WItem
   void mask();
   void mask(const size_t);
 
+  bool isNegative() const;
   /// Access weight
   const std::vector<double>& getWeight() const
     { return Val; }
