@@ -871,7 +871,9 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL  "<<std::setw(30)<<atomDensity<<std::setw(30)<<"m"+std::to_string(Mnum)<<std::endl;
+  cx<<"MATERIAL  "<<
+    std::setw(30)<<atomDensity<<
+    std::setw(30)<<" "<<std::left<<"m"+std::to_string(Mnum)<<std::endl;
   
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
