@@ -183,9 +183,9 @@ SimFLUKA::writeCells(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","writeCells");
-  OX<<"* -------------------------------------------------------"<<std::endl;
-  OX<<"* ------------------ CELL CARDS -------------------------"<<std::endl;
-  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
+  OX<<"* CELL CARDS "<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
   
   
   OTYPE::const_iterator mp;
@@ -203,9 +203,9 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"* -------------------------------------------------------"<<std::endl;
-  OX<<"* --------------- SURFACE CARDS -------------------------"<<std::endl;
-  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
+  OX<<"* SURFACE CARDS "<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
@@ -226,9 +226,9 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimFLUKA","writeMaterial");
 
-  OX<<"* -------------------------------------------------------"<<std::endl;
-  OX<<"* --------------- MATERIAL CARDS ------------------------"<<std::endl;
-  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
+  OX<<"* MATERIAL CARDS "<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
   // WRITE OUT ASSIGNMENT:
   for(const OTYPE::value_type& mp : OList)
     mp.second->writeFLUKAmat(OX);
@@ -242,7 +242,7 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 
   DB.writeFLUKA(OX);
   
-  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
   return;
 }
   
@@ -324,7 +324,7 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<" Fluka model from CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
   OX<<FmtStr % "GEOBEGIN" % "COMBNAME";
-  OX<<"  0 0 FLUKA Geometry"<<std::endl;
+  OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
