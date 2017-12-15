@@ -1278,7 +1278,6 @@ Object::writeFLUKAmat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writeFLUKAmat");
 
-  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   if (!placehold)
@@ -1287,11 +1286,11 @@ Object::writeFLUKAmat(std::ostream& OX) const
       std::ostringstream cx;
       cx<<"ASSIGNMAT ";
       if (!MatN)
-	cx<<"VACUUM";
+	cx<<std::setw(10)<<"VACUUM";
       else
-	cx<<"M"<<MatN;
+	cx<<std::setw(10)<<"M"+std::to_string(MatN);
       
-      cx<<" R"<<ObjName;
+      cx<<std::setw(10)<<"R"+std::to_string(ObjName);
       StrFunc::writeMCNPX(cx.str(),OX);
     }
   
