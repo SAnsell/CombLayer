@@ -871,10 +871,11 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL  "<<
-    std::setw(30)<<atomDensity<<
-    std::setw(30)<<" "<<std::left<<"m"+std::to_string(Mnum)<<std::endl;
-  
+  boost::format MATstr("%10s%20s%10g%30g%|-10s|");
+
+  cx << MATstr % "MATERIAL  " % " " % atomDensity % " "
+    % ("M"+std::to_string(Mnum)) << std::endl;
+ 
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
   cx<<"COMPOUND  ";
@@ -882,7 +883,7 @@ Material::writeFLUKA(std::ostream& OX) const
   for(const Zaid& ZItem: zaidVec)
     {
       cx<<std::setw(10)<<std::setprecision(3)<<ZItem.getDensity()<<
-	std::setw(10)<<"m"+std::to_string(ZItem.getZaidNum());
+	std::setw(10)<<"E"+std::to_string(ZItem.getZaidNum());
     i++;
     if (!(i%3)) cx<<std::setw(10)<<" m"+std::to_string(Mnum)<<std::endl<<"COMPOUND  ";
     }
