@@ -102,15 +102,18 @@
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
-
-SimFLUKA::SimFLUKA() : Simulation()
+SimFLUKA::SimFLUKA() :
+  Simulation(),
+  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM")
   /*!
     Constructor
   */
 {}
 
 
-SimFLUKA::SimFLUKA(const SimFLUKA& A) : Simulation(A)
+SimFLUKA::SimFLUKA(const SimFLUKA& A) :
+  Simulation(A),
+  alignment(A.alignment)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -183,11 +186,8 @@ SimFLUKA::writeCells(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","writeCells");
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
   OX<<"* CELL CARDS "<<std::endl;
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
-  
-  
+
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     mp->second->writeFLUKA(OX);
@@ -203,9 +203,7 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
   OX<<"* SURFACE CARDS "<<std::endl;
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
 
   const ModelSupport::surfIndex::STYPE& SurMap =
     ModelSupport::surfIndex::Instance().surMap();
@@ -226,9 +224,8 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 {
   ELog::RegMethod RegA("SimFLUKA","writeMaterial");
 
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
   OX<<"* MATERIAL CARDS "<<std::endl;
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
+  OX<<alignment<<std::endl;
   // WRITE OUT ASSIGNMENT:
   for(const OTYPE::value_type& mp : OList)
     mp.second->writeFLUKAmat(OX);
@@ -242,7 +239,7 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 
   DB.writeFLUKA(OX);
   
-  OX<<"*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8"<<std::endl;
+  OX<<alignment<<std::endl;
   return;
 }
   

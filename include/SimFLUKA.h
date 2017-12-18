@@ -32,6 +32,7 @@
 class SimFLUKA : public Simulation
 {
  private:
+  const std::string alignment;
 
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
