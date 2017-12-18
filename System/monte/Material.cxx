@@ -871,23 +871,23 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  boost::format MATstr("%10s%20s%10g%30g%|-10s|");
-
-  cx << MATstr % "MATERIAL  " % " " % atomDensity % " "
-    % ("M"+std::to_string(Mnum)) << std::endl;
+  cx << "MATERIAL" << " -  - "  <<
+    std::setprecision(3)<<atomDensity <<
+    " -  -  - " <<
+    "M"+std::to_string(Mnum) << std::endl;
  
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
-  cx<<"COMPOUND  ";
+  cx<<"COMPOUND ";
   size_t i(0);
   for(const Zaid& ZItem: zaidVec)
     {
-      cx<<std::setw(10)<<std::setprecision(3)<<ZItem.getDensity()<<
-	std::setw(10)<<"E"+std::to_string(ZItem.getZaidNum());
+      cx<<ZItem.getDensity()<<
+	" E"+std::to_string(ZItem.getZaidNum())+" ";
     i++;
-    if (!(i%3)) cx<<std::setw(10)<<" m"+std::to_string(Mnum)<<std::endl<<"COMPOUND  ";
+    if (!(i%3)) cx<<" M"+std::to_string(Mnum)<<
+		  " COMPOUND ";
     }
-  cx<<std::endl;
 
   // hlib:
   // for(const std::string& libItem : Libs)

@@ -20,12 +20,12 @@
  *
  ****************************************************************************/
 #include <iostream>
+#include <iterator>
 #include <iomanip>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <sstream>
-#include <cmath>
 #include <cctype>
 #include <complex>
 #include <vector>
@@ -833,14 +833,29 @@ sectionCINDER(std::string& A,double& out)
 void
 writeFLUKA(const std::string& Line,std::ostream& OX)
 /*!
-  Write out the line in the limited form for FLUKA
-  ie initial line from 0::72 after that 8 to 72
-  (split on a space or comma)
+  Write out the line in the fixed FLUKA format WHAT(1-6).
+  Replace " - " by space to write empty WHAT cards.
   \param Line :: full MCNPX line
   \param OX :: ostream to write to
 */
 {
-  writeControl(Line,OX,1000,8);
+  std::istringstream iss(Line);
+  std::vector<std::string> splt(std::istream_iterator<std::string>{iss},
+				std::istream_iterator<std::string>());
+
+  size_t i(0);
+  OX << std::left;
+  for (std::string& s : splt)
+    {
+      if (s=="-") s=" ";
+      OX<<std::setw(10)<<s<<std::right;
+
+      if (!((i+1)%8))
+	OX<<std::endl<<std::left;
+      i++;
+    }
+  OX<<std::endl;
+
   return;
 }
 

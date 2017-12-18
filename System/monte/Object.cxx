@@ -1286,12 +1286,12 @@ Object::writeFLUKAmat(std::ostream& OX) const
       std::ostringstream cx;
       cx<<"ASSIGNMAT ";
       if (!MatN)
-	cx<<std::setw(10)<<"VACUUM";
+	cx<<"VACUUM";
       else
-	cx<<std::setw(10)<<"M"+std::to_string(MatN);
+	cx<<"M"+std::to_string(MatN);
       
-      cx<<std::setw(10)<<"R"+std::to_string(ObjName);
-      StrFunc::writeMCNPX(cx.str(),OX);
+      cx<<" R"+std::to_string(ObjName);
+      StrFunc::writeFLUKA(cx.str(),OX);
     }
   
   return;
