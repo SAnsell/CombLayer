@@ -51,6 +51,8 @@
 #include "Element.h"
 #include "MapSupport.h"
 #include "MXcards.h"
+#include "Element.h"
+#include "Zaid.h"
 #include "Material.h"
 #include "DBMaterial.h"
 #include "MatrixBase.h"
@@ -215,10 +217,53 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
 } 
 
 void
+SimFLUKA::writeElements(std::ostream& OX) const
+/*!
+  Write all the used isotopes.
+  To be used by material definitions in the COMPOUND cards.
+ */
+{
+  ELog::RegMethod RegA("SimFLUKA","writeElements");
+
+  OX<<"* ELEMENTS "<<std::endl;
+  OX<<alignment<<std::endl;
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
+
+  size_t za;
+  std::set<size_t> setZA;
+  //  for(mp=OList.begin();mp!=OList.end();mp++)
+  for(const OTYPE::value_type& mp : OList)
+    {
+      MonteCarlo::Material m = DB.getMaterial(mp.second->getMat());
+      std::vector<MonteCarlo::Zaid> zaidVec = m.getZaidVec();
+      for (const MonteCarlo::Zaid& ZC : zaidVec)
+	{
+	  za = ZC.getZaidNum();
+	  setZA.insert(za);
+	}
+
+      // ELog::EM << mp.second->getDensity() << " " << mp.second->getMat() << " " <<
+      // 	m.getAtomDensity() << " " << m.getMacroDensity() << ELog::endDiag;
+    }
+
+  std::ostringstream cx;
+  for (const size_t &za : setZA)
+    {
+      if (!za) continue;
+      cx << "MATERIAL " << za / 1000 << " - " << " 1.0 " << " - - " << za % 1000 << " E"+std::to_string(za) << " ";
+    }
+
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  OX<<alignment<<std::endl;
+
+  return;
+}
+
+void
 SimFLUKA::writeMaterial(std::ostream& OX) const
   /*!
-    Write all the used Materials in standard MCNPX output 
-    type.
+    Write all the used Materials in fixed FLUKA format 
     \param OX :: Output stream
   */
 {
@@ -236,6 +281,8 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
     DB.setActive(mp->second->getMat());
+
+  writeElements(OX);
 
   DB.writeFLUKA(OX);
   

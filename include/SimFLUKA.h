@@ -38,6 +38,7 @@ class SimFLUKA : public Simulation
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
   void writeMaterial(std::ostream&) const;
+  void writeElements(std::ostream&) const;
   void writeWeights(std::ostream&) const;
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
