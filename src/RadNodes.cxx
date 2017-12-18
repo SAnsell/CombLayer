@@ -48,6 +48,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
