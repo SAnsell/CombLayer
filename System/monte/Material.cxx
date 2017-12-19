@@ -857,8 +857,7 @@ Material::writePHITS(std::ostream& OX) const
 void 
 Material::writeFLUKA(std::ostream& OX) const
   /*!
-    Write out the information about the material
-    in a humman readable form (same as mcnpx file)
+    Write out material definitions in the fixed FLUKA format
     \param OX :: Output stream
   */
 {
@@ -871,49 +870,37 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx << "MATERIAL" << " -  - "  <<
-    std::setprecision(3)<<atomDensity <<
-    " -  -  - " <<
-    "M"+std::to_string(Mnum) << std::endl;
- 
+  cx << "MATERIAL" << " -  - "  << std::setprecision(3)<<atomDensity <<
+    " -  -  - " << "M"+std::to_string(Mnum) << std::endl;
+
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
   cx<<"COMPOUND ";
   size_t i(0);
+  const size_t n(zaidVec.size());
   for(const Zaid& ZItem: zaidVec)
     {
       cx<<ZItem.getDensity()<<
 	" E"+std::to_string(ZItem.getZaidNum())+" ";
     i++;
-    if (!(i%3)) cx<<" M"+std::to_string(Mnum)<<
-		  " COMPOUND ";
+    if (!(i%3))
+      {
+	cx<<" M"+std::to_string(Mnum);
+	if (i!=n)
+	  cx<<" COMPOUND ";
+      }
     }
 
-  // hlib:
-  // for(const std::string& libItem : Libs)
-  //   cx<<libItem<<"  "; 
-  StrFunc::writeFLUKA(cx.str(),OX);
+  // Add additional empty WHAT cards and SDEF in the end
+  // if the COMPOUND line is not complete
+  if (i%3)
+    {
+      while (i++%3)
+	  cx<< " - - ";
+      cx<<" M"+std::to_string(Mnum);
+    }
 
-  // MX and MT:
-  // cx.str("");
-  // MXTYPE::const_iterator mc;
-  // for(mc=mxCards.begin();mc!=mxCards.end();mc++)
-  //   {
-  //     cx<<"mx"<<Mnum;
-  //     mc->second.write(cx,zaidVec);
-  //     StrFunc::writeMCNPX(cx.str(),OX);
-  //   }
-  // // avoid having to reset flags/precision in cx
-  // std::ostringstream rx;
-  // if (!SQW.empty())
-  //   {
-  //     rx.str("");
-  //     rx<<"mt"<<Mnum<<"    ";
-  //     if (Mnum<10) rx<<" ";
-  //     std::copy(SQW.begin(),SQW.end(),
-  // 		std::ostream_iterator<std::string>(rx," "));
-  //     StrFunc::writeMCNPX(rx.str(),OX);
-  //   }
+  StrFunc::writeFLUKA(cx.str(),OX);
 
   return;
 } 
