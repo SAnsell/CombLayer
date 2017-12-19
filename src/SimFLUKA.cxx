@@ -241,16 +241,14 @@ SimFLUKA::writeElements(std::ostream& OX) const
 	  za = ZC.getZaidNum();
 	  setZA.insert(za);
 	}
-
-      // ELog::EM << mp.second->getDensity() << " " << mp.second->getMat() << " " <<
-      // 	m.getAtomDensity() << " " << m.getMacroDensity() << ELog::endDiag;
     }
 
   std::ostringstream cx;
   for (const size_t &za : setZA)
     {
       if (!za) continue;
-      cx << "MATERIAL " << za / 1000 << " - " << " 1.0 " << " - - " << za % 1000 << " E"+std::to_string(za) << " ";
+      cx<<"MATERIAL "<<za / 1000<<". - "<<" 1.0 "<<" - - "<<
+	za%1000<<". E"+std::to_string(za)<<" ";
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
