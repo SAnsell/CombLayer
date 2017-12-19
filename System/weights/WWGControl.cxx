@@ -439,9 +439,6 @@ WWGControl::wwgCombine(const Simulation& System,
       WeightControl::processPtString(TUnit,sndPtType,sndPtIndex,sndAdjointFlag);
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
 
-      ELog::EM<<"PTS "<<(long int) sourceFlux<<ELog::endDiag;
-      ELog::EM<<"PTS "<<(long int) adjointFlux<<ELog::endDiag;
-      ELog::EM<<"PTS "<<ptIndex<<" "<<sndPtIndex<<ELog::endDiag;
       
       if (ptType=="Plane" && sndPtType=="Plane")
 	{
