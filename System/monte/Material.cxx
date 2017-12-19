@@ -866,16 +866,16 @@ Material::writeFLUKA(std::ostream& OX) const
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
-  cx<<"*\n* Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc";
+  cx<<"*\n* Material : "<<Name<<" rho="<<getMacroDensity()<<" g/cc";
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx << "MATERIAL" << " -  - "  << std::setprecision(3)<<atomDensity <<
-    " -  -  - " << "M"+std::to_string(Mnum) << std::endl;
+  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<"M"+std::to_string(Mnum)<<std::endl;
 
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
   cx<<"COMPOUND ";
+  cx<<std::setprecision(5);
   size_t i(0);
   const size_t n(zaidVec.size());
   for(const Zaid& ZItem: zaidVec)
