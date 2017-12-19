@@ -677,7 +677,5 @@ Quaternion::basisRotate(const Vec3D& xa,const Vec3D& xb,
     Out[i]=EigenVec[i][0];
   return Out;
 }
-  
-
 
 }  // NAMESPACE Geometry
