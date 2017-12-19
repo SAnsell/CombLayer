@@ -556,6 +556,7 @@ WWGWeight::CADISnorm(const Simulation& System,
   ELog::RegMethod RegA("WWGWeight","CADISnorm");
 
   double* SData=WGrid.data();
+
   const double* AData=Adjoint.WGrid.data();
   const size_t NData=WGrid.num_elements();
   const size_t ANData=WGrid.num_elements();
@@ -572,6 +573,7 @@ WWGWeight::CADISnorm(const Simulation& System,
 
 
   const size_t EnergyStride(static_cast<size_t>(WE));
+
   std::vector<double> sumR(EnergyStride);
   std::vector<double> sumRA(EnergyStride);
   
@@ -582,12 +584,11 @@ WWGWeight::CADISnorm(const Simulation& System,
       // STILL in log space
       for(size_t i=0;i<gridPts.size();i++)
 	{
-	  for(size_t j=0;i<static_cast<size_t>(WE);j++)
+	  for(size_t j=0;j<EnergyStride;j++)
 	    {
 	      const double EVal=1e-6+EBand[j];
 	      const double W=distTrack(System,sourcePt,EVal,
 				       gridPts[i],1.0,1.0,2.0);
-	      
 	      sumR[j]=(i) ? mathFunc::logAdd(sumR[j],SData[i*EnergyStride+j]+W) :
 		SData[i*EnergyStride+j]+W;
 	      
@@ -616,7 +617,7 @@ WWGWeight::CADISnorm(const Simulation& System,
       
       // SETS THIS
       for(size_t i=0;i<gridPts.size();i++)
-	for(size_t j=0;i<static_cast<size_t>(WE);j++)
+	for(size_t j=0;j<EnergyStride;j++)
 	  SData[i*EnergyStride+j]=sumR[j]-AData[i*EnergyStride+j];
     }
   return;
