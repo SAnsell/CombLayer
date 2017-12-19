@@ -840,21 +840,21 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 */
 {
   std::istringstream iss(Line);
-  std::vector<std::string> splt(std::istream_iterator<std::string>{iss},
-				std::istream_iterator<std::string>());
+  std::vector<std::string> whats(std::istream_iterator<std::string>{iss},
+				 std::istream_iterator<std::string>());
 
   size_t i(0);
+  const size_t n=whats.size();
   OX << std::left;
-  for (std::string& s : splt)
+  for (std::string& w : whats)
     {
-      if (s=="-") s=" ";
-      OX<<std::setw(10)<<s<<std::right;
+      if (w=="-") w=" ";
+      OX<<std::setw(10)<<w<<std::right;
 
-      if (!((i+1)%8))
+      if ((!((i+1)%8)) || (i+1==n))
 	OX<<std::endl<<std::left;
       i++;
     }
-  OX<<std::endl;
 
   return;
 }
