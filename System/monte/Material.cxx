@@ -817,7 +817,7 @@ Material::writePHITS(std::ostream& OX) const
   const Element& EL(Element::Instance());
 
   std::ostringstream cx;
-  OX<<"$ Material : "<<Name<<" rho="<<atomDensity<<std::endl;
+  OX<<"$ Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc"<<std::endl;
   OX<<"mat["<<Mnum<<"]\n";
 
   
@@ -867,7 +867,7 @@ Material::writeFLUKA(std::ostream& OX) const
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
-  cx<<"*\n* Material : "<<Name<<" rho="<<atomDensity;
+  cx<<"*\n* Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc";
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
@@ -954,7 +954,7 @@ Material::write(std::ostream& OX) const
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
-  cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity;
+  cx<<"c\nc Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc";
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
   
