@@ -1315,6 +1315,7 @@ Object::writeFLUKA(std::ostream& OX) const
       if (objName.empty())
 	objName="global";
       std::ostringstream cx;
+      cx<<"* "<<objName<<" "<<ObjName<<std::endl;
       cx.precision(10);
 
       cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
