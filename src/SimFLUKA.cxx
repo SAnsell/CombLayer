@@ -373,10 +373,7 @@ SimFLUKA::write(const std::string& Fname) const
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
   writeMaterial(OX);
-  writeTransform(OX);
-  writeWeights(OX);
-  writeTally(OX);
-  writePhysics(OX);
+  OX<<"END"<<std::endl;
   OX.close();
   return;
 }
