@@ -862,7 +862,8 @@ Material::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Material","writeFLUKA");
-  
+
+  const std::string mat(" M"+std::to_string(Mnum));
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
@@ -870,7 +871,7 @@ Material::writeFLUKA(std::ostream& OX) const
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<"M"+std::to_string(Mnum)<<std::endl;
+  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<mat<<std::endl;
 
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
@@ -885,9 +886,8 @@ Material::writeFLUKA(std::ostream& OX) const
     i++;
     if (!(i%3))
       {
-	cx<<" M"+std::to_string(Mnum);
-	if (i!=n)
-	  cx<<" COMPOUND ";
+	cx<<mat;
+	if (i!=n) cx<<" COMPOUND ";
       }
     }
 
@@ -897,7 +897,7 @@ Material::writeFLUKA(std::ostream& OX) const
     {
       while (i++%3)
 	  cx<< " - - ";
-      cx<<" M"+std::to_string(Mnum);
+      cx<<mat;
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
