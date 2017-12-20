@@ -109,7 +109,7 @@ Zaid::operator==(const Zaid& A) const
 }
 
 bool
-Zaid::isEquavilent(const size_t Z,const size_t T,const char C) const
+Zaid::isEquivalent(const size_t Z,const size_t T,const char C) const
   /*!
     Determine if the numbers are equivilent
     \param Z :: Zaid number [0 to ignore]

@@ -117,8 +117,10 @@ WWGControl::operator=(const WWGControl& A)
     {
       WeightControl::operator=(A);
       nMarkov=A.nMarkov;
-      *sourceFlux= *A.sourceFlux;
-      *adjointFlux= *A.adjointFlux;
+      delete sourceFlux;
+      delete adjointFlux;
+      sourceFlux=(A.sourceFlux) ? new WWGWeight(*A.sourceFlux) : 0;
+      adjointFlux=(A.adjointFlux) ? new WWGWeight(*A.adjointFlux) : 0;
     }
   return *this;
 }
@@ -434,9 +436,10 @@ WWGControl::wwgCombine(const Simulation& System,
       size_t ptIndex,sndPtIndex;
       bool adjointFlag,sndAdjointFlag;
       WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
-      WeightControl::processPtString(SUnit,sndPtType,sndPtIndex,sndAdjointFlag);
+      WeightControl::processPtString(TUnit,sndPtType,sndPtIndex,sndAdjointFlag);
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
 
+      
       if (ptType=="Plane" && sndPtType=="Plane")
 	{
 	  sourceFlux->CADISnorm(System,*adjointFlux,
@@ -445,6 +448,7 @@ WWGControl::wwgCombine(const Simulation& System,
 	}
       else if (ptType=="Source" && sndPtType=="Source")
 	{
+	  ELog::EM<<"S "<<(long int )sourceFlux<<ELog::endDiag;
 	  sourceFlux->CADISnorm(System,*adjointFlux,
 				EBand,GridMidPt,sourcePt[ptIndex],
                                 sourcePt[sndPtIndex]);
@@ -487,11 +491,10 @@ WWGControl::processWeights(Simulation& System,
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);
-      
       wwgCombine(System,IParam);
       wwgNormalize(IParam);
+      
       wwgVTK(IParam);	    
-
       for(const std::string& P : activeParticles)
 	{
 	  // don't write a wwp:particle card

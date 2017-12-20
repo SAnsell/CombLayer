@@ -526,7 +526,10 @@ WCells::writePHITS(std::ostream& OX) const
   ELog::RegMethod RegA("WCells","writePHITS");
 
   for(const ItemTYPE::value_type& wf : WVal)
-    wf.second.write(OX);
+    {
+      if (!wf.second.isNegative())
+	wf.second.write(OX);
+    }
 
   return;
 }

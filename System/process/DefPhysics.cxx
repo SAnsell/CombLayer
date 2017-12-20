@@ -439,7 +439,7 @@ setDefaultPhysics(Simulation& System,
     IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
   if (PList=="empty" || PList=="Empty")
     {
-      ELog::EM<<"ASDFSADFSDAF "<<ELog::endDiag;
+      ELog::EM<<"WARNING:: plist empty"<<ELog::endWarn; 
       PC.addPhysCard<physicsSystem::PSimple>(std::string("mphys"),std::string(""));
       PList=" ";
     }
