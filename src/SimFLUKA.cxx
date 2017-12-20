@@ -357,13 +357,12 @@ SimFLUKA::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
-  boost::format FmtStr("%1%%|71t|%2%\n");  
 
   std::ofstream OX(Fname.c_str()); 
-  OX<<"TITLE "<<std::endl;
-  OX<<" Fluka model from CombLayer"<<std::endl;
+  OX<<"TITLE"<<std::endl;
+  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
-  OX<<FmtStr % "GEOBEGIN" % "COMBNAME";
+  StrFunc::writeFLUKA("GEOBEGIN - - - - - - COMBNAME",OX);
   OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);
