@@ -345,9 +345,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
     }
 
   // Remaining Physics cards
-  PhysPtr->write(OX,cellOutOrder,voidCells);
-  OX<<alignment<<std::endl;
-  OX<<std::endl;  // MCNPX requires a blank line to terminate
+  PhysPtr->writeFLUKA(OX);
   return;
 }
 
@@ -371,7 +369,7 @@ SimFLUKA::write(const std::string& Fname) const
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
   writeMaterial(OX);
-  OX<<"END"<<std::endl;
+  writePhysics(OX);
   OX.close();
   return;
 }

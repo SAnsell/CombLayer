@@ -985,7 +985,7 @@ PhysicsCards::writeHelp(const std::string& keyName) const
 void
 PhysicsCards::writeFLUKA(std::ostream& OX) const
   /*!
-    Write out each of the PHYSICS-related cards
+    Write out each of the physics-related cards
     \param OX :: Output stream
   */
 {
