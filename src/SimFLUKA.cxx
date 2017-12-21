@@ -243,15 +243,18 @@ SimFLUKA::writeElements(std::ostream& OX) const
 	}
     }
 
-  std::ostringstream cx;
+  std::ostringstream cx,lowmat;
   for (const size_t &za : setZA)
     {
       if (!za) continue;
-      cx<<"MATERIAL "<<za / 1000<<". - "<<" 1.0 "<<" - - "<<
-	za%1000<<". E"+std::to_string(za)<<" ";
+      const std::string mat("E"+std::to_string(za));
+      cx<<"MATERIAL "<<za / 1000<<". - "<<" 1."<<" - - "<<
+	za%1000<<". "<<mat<<" ";
+      lowmat<<"LOW-MAT "<<mat<<" - - - - - - "; // \todo define it correctly
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
+  //  StrFunc::writeFLUKA(lowmat.str(),OX);
 
   OX<<alignment<<std::endl;
 
@@ -362,6 +365,8 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
+  StrFunc::writeFLUKA("DEFAULTS - - - - - - EM-CASCADE",OX);
+  ELog::EM<<"FLUKA defaults is EM-CASCADE. No low energy neutrons transported."<<ELog::endCrit;
   StrFunc::writeFLUKA("GEOBEGIN - - - - - - COMBNAME",OX);
   OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
