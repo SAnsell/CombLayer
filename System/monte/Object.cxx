@@ -1285,11 +1285,12 @@ Object::writeFLUKAmat(std::ostream& OX) const
       std::string objName=OR.inRenumberRange(ObjName);
       std::ostringstream cx;
       cx<<"ASSIGNMAT ";
-      if (!MatN)
-	cx<<"VACUUM";
-      else
+
+      if (MatN)
 	cx<<"M"+std::to_string(MatN);
-      
+      else
+	cx<<((ObjName==1)?"BLCKHOLE":"VACUUM");
+
       cx<<" R"+std::to_string(ObjName);
       StrFunc::writeFLUKA(cx.str(),OX);
     }
