@@ -845,14 +845,15 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 
   size_t i(0);
   const size_t n=whats.size();
-  OX << std::left;
   for (std::string& w : whats)
     {
       if (w=="-") w=" ";
-      OX<<std::setw(10)<<w<<std::right;
+      OX<<std::setw(10)
+	<<((((i+1)%8==0)||((i+1)%8==1)) ? std::left : std::right)
+	<<w;
 
-      if ((!((i+1)%8)) || (i+1==n))
-	OX<<std::endl<<std::left;
+      if (((i+1)%8==0)||(i+1==n))
+	OX<<std::endl;
       i++;
     }
 
