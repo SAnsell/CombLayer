@@ -361,7 +361,17 @@ SimFLUKA::write(const std::string& Fname) const
 {
   ELog::RegMethod RegA("SimFLUKA","write");
 
-  std::ofstream OX(Fname.c_str()); 
+  std::ofstream OX(Fname.c_str());
+  const size_t nCells(OList.size());
+  const size_t maxCells(20000);
+  if (nCells>maxCells)
+    {
+      ELog::EM<<"Number of regions in geometry exceeds FLUKA max: "<<nCells
+	      <<" > "<<maxCells<<ELog::endCrit;
+      ELog::EM<<"See the GLOBAL card documentation"<<ELog::endCrit;
+    }
+
+  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells),OX);
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
