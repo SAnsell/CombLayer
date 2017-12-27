@@ -1403,19 +1403,23 @@ Object::writePHITS(std::ostream& OX) const
   */
 {
   std::ostringstream cx;
-  cx.precision(10);
-  cx<<str();
-  if (fill)
-    cx<<" "<<"fill="<<fill;
-  if (trcl)
-    cx<<" "<<"trcl="<<trcl;
-  if (universe)
-    cx<<" "<<"u="<<universe;
 
+  cx.precision(10);
   if (placehold)
-    StrFunc::writeMCNPXcomment(cx.str(),OX);
-  else
-    StrFunc::writeMCNPX(cx.str(),OX);
+    {
+      cx<<str();
+      StrFunc::writeMCNPXcomment(cx.str(),OX);
+    }
+  else if (ObjName==1 && imp==0)
+    {
+      cx<<ObjName<<" -1 "<<HRule.display();
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  else 
+    {
+      cx<<str();
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
   return;
 }
 

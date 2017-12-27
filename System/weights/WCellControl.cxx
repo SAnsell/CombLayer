@@ -200,7 +200,6 @@ WCellControl::procObject(const Simulation& System,
       processPtString(sourceKey,ptType,ptIndex,adjointFlag);
       procParam(IParam,"weightObject",iSet,2);
       
-      ELog::EM<<"ObjCell== "<<objectKey<<ELog::endDiag;
       objectList.insert(objectKey);      
       const std::vector<int> objCells=OR.getObjectRange(objectKey);
     
@@ -215,6 +214,7 @@ WCellControl::procObject(const Simulation& System,
                                              "planePt.size() < activePtIndex");
           CellWeight CW;
           calcCellTrack(System,planePt[ptIndex],objCells,CW);
+	  ELog::EM<<"ADJOINT == "<<adjointFlag<<ELog::endDiag;
           if (!adjointFlag)
             CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
           else

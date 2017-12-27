@@ -109,7 +109,7 @@ FCLConstructor::processUnit(Simulation& System,
     ModelSupport::objectRegister::Instance();
     
   physicsSystem::PhysicsCards& PC=System.getPC();
-  \
+  
   const double value=IParam.getValueError<double>
     ("wFCL",index,0,"No fractional for wFCL");
   const std::string key=IParam.getValueError<std::string>

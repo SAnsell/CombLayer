@@ -110,7 +110,7 @@ sourceSelection(Simulation& System,
   if (!StrFunc::convert(Dist,DOffsetStep) && 
       !StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
-
+  
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
     *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
@@ -168,6 +168,7 @@ sourceSelection(Simulation& System,
   else if (sdefType=="Laser" || sdefType=="laser")
     sName=SDef::createGammaSource(Control,"laserSource",
 				  FC,linkIndex);
+  
   else if (sdefType=="Activation" || sdefType=="activation")
     activationSelection(System,IParam);
 
@@ -246,71 +247,94 @@ activationSelection(Simulation& System,
   Geometry::Vec3D weightPt;
   double weightDist(-1.0);
   double scale(1.0);
-  
-  for(size_t index=0;index<nP;index++)
+
+  if (nP)
     {
-      std::string eMess
-	("Insufficient item for activation["+StrFunc::makeString(index)+"]");
-      const std::string key=
-	IParam.getValueError<std::string>("activation",index,0,eMess);
-      eMess+=" at key "+key;
-      if (key=="help")
-        {
-          ELog::EM<<"activation help:"<<ELog::endBasic;
-          ELog::EM<<"-- timeStep index :: sets the time step from cinder\n"
-                  <<"-- box Vec3D Vec3D :: corner points of box to sample\n"
-                  <<"-- out string :: output file [def:Data.ssw]\n"
-                  <<"-- cell string :: cell header name [def: Cell]\n"
-                  <<"-- nVol size :: number of point for vol sample [def: npts]"
-		  <<"-- weightPoint :: Point dist :: Scale to distance "
-                  <<ELog::endBasic;
-        }
-      else if (key=="box")
-        {
-          size_t ptI(1);
-          APt=IParam.getCntVec3D("activation",index,ptI,
-                               "Start point of box not defined");
-          BPt=IParam.getCntVec3D("activation",index,ptI,
-                               "End point of box not defined");
-        }
-      else if (key=="out")
-        {
-          OName=IParam.getValueError<std::string>("activation",index,1,eMess);
-        }
-      else if (key=="cell" || key=="cellDir")
-        {
-          cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
-        }
-      else if (key=="timeStep")
-        {
-          timeSeg=IParam.getValueError<size_t>("activation",index,1,eMess);
-        }
-      else if (key=="weightPoint")
-        {
-	  size_t itemIndex(1);
-          weightPt=IParam.getCntVec3D("activation",index,itemIndex,eMess);
-	  weightDist=IParam.getValueError<double>
-	    ("activation",index,itemIndex,eMess);
-        }
-      else if (key=="scale")
-        {
-          scale=IParam.getValueError<double>("activation",index,1,eMess);
-        }
-      else if (key=="nVol")
-        {
-          nVol=IParam.getValueError<size_t>("activation",index,1,eMess);
-        }
-      else
-        {
-          throw ColErr::InContainerError<std::string>
-            (key,"Key not found for activation");
-        }
+      std::shared_ptr<SDef::ActivationSource> AS =
+	std::dynamic_pointer_cast<SDef::ActivationSource>
+	(SDef::makeActivationSource("ActivationSource"));
+      if (!AS)
+	throw ColErr::DynamicConv("SourceBase","ActivationSource",
+				  " convertion ");
+    
+  
+      for(size_t index=0;index<nP;index++)
+	{
+	  std::string eMess
+	    ("Insufficient item for activation["+StrFunc::makeString(index)+"]");
+	  const std::string key=
+	    IParam.getValueError<std::string>("activation",index,0,eMess);
+	  eMess+=" at key "+key;
+	  if (key=="help")
+	    {
+	      ELog::EM<<"activation help:"<<ELog::endBasic;
+	      ELog::EM<<"-- timeStep index :: sets the time step from cinder\n"
+		      <<"-- box Vec3D Vec3D :: corner points of box to sample\n"
+		      <<"-- out string :: output file [def:Data.ssw]\n"
+		      <<"-- cell string :: cell header name [def: Cell]\n"
+		      <<"-- nVol size :: number of point for vol sample [def: npts]"
+		      <<"-- weightPoint :: Point dist :: Scale to distance "
+		      <<"-- weightPlane :: Vec3D : Axis3D "
+		      <<ELog::endBasic;
+	    }
+	  else if (key=="box")
+	    {
+	      size_t ptI(1);
+	      APt=IParam.getCntVec3D("activation",index,ptI,
+				     "Start point of box not defined");
+	      BPt=IParam.getCntVec3D("activation",index,ptI,
+				     "End point of box not defined");
+	    }
+	  else if (key=="out")
+	    {
+	      OName=IParam.getValueError<std::string>("activation",index,1,eMess);
+	    }
+	  else if (key=="cell" || key=="cellDir")
+	    {
+	      cellDir=IParam.getValueError<std::string>("activation",index,1,eMess);
+	    }
+	  else if (key=="timeStep")
+	    {
+	      timeSeg=IParam.getValueError<size_t>("activation",index,1,eMess);
+	    }
+	  else if (key=="weightPoint")
+	    {
+	      size_t itemIndex(1);
+	      weightPt=IParam.getCntVec3D("activation",index,itemIndex,eMess);
+	      weightDist=IParam.getValueError<double>
+		("activation",index,itemIndex,eMess);
+	    }
+	  else if (key=="scale")
+	    {
+	      scale=IParam.getValueError<double>("activation",index,1,eMess);
+	    }
+	  else if (key=="nVol")
+	    {
+	      nVol=IParam.getValueError<size_t>("activation",index,1,eMess);
+	    }
+	  else if (key=="weightPlane")
+	    {
+	      size_t itemCnt(1);
+	      const Geometry::Vec3D PPt=
+		IParam.getCntVec3D("activation",index,itemCnt,eMess);
+	      const Geometry::Vec3D PAxis=
+		IParam.getCntVec3D("activation",index,itemCnt,eMess);
+	      AS->setPlane(PPt,PAxis,2.0);
+	    }
+	  else
+	    {
+	      throw ColErr::InContainerError<std::string>
+		(key,"Key not found for activation");
+	    }
+	}
+            
+      AS->setBox(APt,BPt);
+      AS->setTimeSegment(timeSeg);
+      AS->setNPoints(nVol);
+      AS->setWeightPoint(weightPt,weightDist);
+      AS->setScale(scale);
+      AS->createAll(System,cellDir,OName);
     }
-
-  createActivationSource(System,cellDir,OName,
-			 timeSeg,APt,BPt,nVol,
-			 scale,weightPt,weightDist);
-
 
   return;
 }

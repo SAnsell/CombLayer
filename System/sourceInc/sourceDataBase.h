@@ -43,13 +43,12 @@ class sourceDataBase
  private:
 
   /// Storage of soures
-  typedef std::shared_ptr<SourceBase> STYPE;
+  typedef std::shared_ptr<SDef::SourceBase> STYPE;
 
   /// Storage type : name : startPt : size 
   typedef std::map<std::string,STYPE> SMAP;
 
   SMAP Components;             ///< Pointer to real objects
-
 
   sourceDataBase();
   ///\cond SINGLETON
@@ -75,7 +74,10 @@ class sourceDataBase
     getSource(const std::string&);
   template<typename T> T*
     getSourceThrow(const std::string&,const std::string&);
+  
+  STYPE getSharedThrow(const std::string&,const std::string&);
 
+  
   void reset();
   
   bool hasSource(const std::string&) const;

@@ -362,9 +362,11 @@ ParabolicSource::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","write");
+  ELog::RegMethod RegA("ParabolicSource","writePHITS");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+    const long int nStep(20);
+  
   return;
 }
 

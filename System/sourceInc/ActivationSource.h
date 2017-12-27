@@ -22,14 +22,15 @@
 #ifndef SDef_ActivationSource_h
 #define SDef_ActivationSource_h
 
-namespace SDef
+namespace Geometry
 {
-  class Source;
+  class Plane;
 }
 
 namespace SDef
 {
-
+  class Source;
+  
 /*!
   \class ActivationSource
   \version 1.0
@@ -54,6 +55,10 @@ class ActivationSource :
   std::map<int,activeUnit> cellFlux;    ///< cell[active] : flux data
   std::vector<activeFluxPt> fluxPt;     ///< Flux emmision points [nps values]
 
+  Geometry::Plane* PPtr;          ///< Plane point
+  Geometry::Vec3D PlanePt;        ///< Plane point
+  Geometry::Vec3D PlaneAxis;      ///< Plane axis
+  double r2Power;                 ///< R power value
 
   Geometry::Vec3D weightPt;       ///< Centre weight intensity
   double weightDist;              ///< Centre weight scalar
@@ -86,7 +91,8 @@ class ActivationSource :
   void setScale(const double S) { externalScale=S; }  
   void setWeightPoint(const Geometry::Vec3D&,const double);
   
-
+  void setPlane(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		const double);
   void createOutput(const std::string&);
 
   void createAll(const Simulation&,const std::string&,

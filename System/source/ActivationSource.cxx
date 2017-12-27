@@ -54,6 +54,9 @@
 #include "Triple.h"
 #include "NRange.h"
 #include "NList.h"
+#include "Surface.h"
+#include "Quadratic.h"
+#include "Plane.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -86,8 +89,8 @@ namespace SDef
 
 ActivationSource::ActivationSource() :
   SourceBase(),
-  timeStep(2),nPoints(0),nTotal(0),
-  weightDist(-1.0),externalScale(1.0)
+  timeStep(2),nPoints(0),nTotal(0),PPtr(0),
+  r2Power(2.0),weightDist(-1.0),externalScale(1.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
   */
@@ -98,7 +101,8 @@ ActivationSource::ActivationSource(const ActivationSource& A) :
   timeStep(A.timeStep),nPoints(A.nPoints),nTotal(A.nTotal),
   ABoxPt(A.ABoxPt),BBoxPt(A.BBoxPt),
   volCorrection(A.volCorrection),cellFlux(A.cellFlux),
-  fluxPt(A.fluxPt),weightPt(A.weightPt),
+  fluxPt(A.fluxPt),PPtr((A.PPtr) ? A.PPtr->clone() : 0),
+  r2Power(A.r2Power),weightPt(A.weightPt),
   weightDist(A.weightDist),externalScale(A.externalScale)
   /*!
     Copy constructor
@@ -125,6 +129,9 @@ ActivationSource::operator=(const ActivationSource& A)
       volCorrection=A.volCorrection;
       cellFlux=A.cellFlux;
       fluxPt=A.fluxPt;
+      delete PPtr;
+      PPtr=(A.PPtr) ? A.PPtr->clone() : 0;
+      r2Power=A.r2Power;
       weightPt=A.weightPt;
       weightDist=A.weightDist;
       externalScale=A.externalScale;
@@ -136,7 +143,9 @@ ActivationSource::~ActivationSource()
   /*!
     Destructor
   */
-{}
+{
+  delete PPtr;
+}
 
 ActivationSource*
 ActivationSource::clone() const
@@ -148,7 +157,27 @@ ActivationSource::clone() const
   return new ActivationSource(*this);
 }
   
+void
+ActivationSource::setPlane(const Geometry::Vec3D& APt,
+			   const Geometry::Vec3D& AAxis,
+			   const double rPower)
+  /*!
+    Build the plane if needed
+    \param APt :: Point on plane
+    \param AAxis :: Normal
+   */
+{
+  ELog::RegMethod Rega("ActivationSource","setPlane");
 
+  if (AAxis.abs()<Geometry::zeroTol)
+    throw ColErr::NumericalAbort("AAxis has zero value");
+  PPtr=new Geometry::Plane();
+  PPtr->setPlane(APt,AAxis);
+  r2Power=rPower;
+  return;
+}
+  
+  
 void
 ActivationSource::setBox(const Geometry::Vec3D& APt,
 			 const Geometry::Vec3D& BPt)
@@ -259,7 +288,8 @@ ActivationSource::createFluxVolumes(const Simulation& System)
 
   // correct volumes by correct count
   // volcorrection has good count : divide by total count and multiply by total volume
-  const double boxVol= BDiff.volume()/static_cast<double>(nTotal);
+  const double boxVol=
+    BDiff.volume()/static_cast<double>(nTotal);
 
   // normalisze cellFlux
   // The volume self cancels since flux was per volume and this is not:
@@ -418,13 +448,14 @@ ActivationSource::calcWeight(const Geometry::Vec3D& Pt) const
     \return base weight
   */
 {
-  
-  if (weightDist<Geometry::zeroTol)
-    return 1.0;
+  double D=1.0;
+  if (PPtr)
+    D=PPtr->distance(Pt);
 
-  double D=(weightPt.Distance(Pt))/weightDist;
+  else if (weightDist>Geometry::zeroTol)
+    D=(weightPt.Distance(Pt))/weightDist;
 
-  return (D<0.1) ? 100.0 : 1/(D*D);
+  return (D<0.1) ? 100.0 : 1/std::pow(D,r2Power);
 }
 
 void
@@ -442,7 +473,6 @@ ActivationSource::normalizeScale()
 	VT.second.zeroScale();
     }
   
-
   for(const activeFluxPt& Pt : fluxPt)
     {
       std::map<int,activeUnit>::iterator mc=

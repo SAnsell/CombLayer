@@ -117,8 +117,10 @@ WWGControl::operator=(const WWGControl& A)
     {
       WeightControl::operator=(A);
       nMarkov=A.nMarkov;
-      *sourceFlux= *A.sourceFlux;
-      *adjointFlux= *A.adjointFlux;
+      delete sourceFlux;
+      delete adjointFlux;
+      sourceFlux=(A.sourceFlux) ? new WWGWeight(*A.sourceFlux) : 0;
+      adjointFlux=(A.adjointFlux) ? new WWGWeight(*A.adjointFlux) : 0;
     }
   return *this;
 }
@@ -274,12 +276,12 @@ WWGControl::wwgCreate(const Simulation& System,
 	}
       else if (ptType=="Plane")   
 	{
-	  wSet.wTrack(System,planePt[ptIndex],GridMidPt,
+	  wSet.wTrack(System,planePt[ptIndex],EBand,GridMidPt,
 		      density,r2Length,r2Power);
 	}
       else if (ptType=="Source")
         {
-          wSet.wTrack(System,sourcePt[ptIndex],GridMidPt,
+          wSet.wTrack(System,sourcePt[ptIndex],EBand,GridMidPt,
 		      density,r2Length,r2Power);
         }
       else 
@@ -321,11 +323,15 @@ WWGControl::wwgMarkov(const Simulation& System,
   
   for(size_t index=0;index<NSetCnt;index++)
     {
-      procMarkov(IParam,"wwgMarkov",index);
+      const size_t nMult=IParam.getValueError<size_t>
+	("wwgMarkov",index,0,"Mult count not set");
       if (nMarkov)
 	{
 	  MarkovProcess MCalc;
 	  MCalc.initializeData(wwg);
+	  MCalc.computeMatrix(System,wwg,density,r2Length,r2Power);
+	  MCalc.multiplyOut(nMult);
+	  MCalc.rePopulateWWG();
 	}
     }
 
@@ -403,19 +409,6 @@ WWGControl::wwgVTK(const mainSystem::inputParam& IParam)
 }
 
 void
-WWGControl::procMarkov(const mainSystem::inputParam&,
-                       const std::string&,
-                       const size_t)
-  /*!
-    Markov update -- 
-   */
-{
-  ELog::RegMethod RegA("WWGControl","procMarkov");
-  ELog::EM<<"Calling placeholder"<<ELog::endDiag;
-  return;
-}
-
-void
 WWGControl::wwgCombine(const Simulation& System,
 		       const mainSystem::inputParam& IParam)
   /*!
@@ -443,19 +436,21 @@ WWGControl::wwgCombine(const Simulation& System,
       size_t ptIndex,sndPtIndex;
       bool adjointFlag,sndAdjointFlag;
       WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
-      WeightControl::processPtString(SUnit,sndPtType,sndPtIndex,sndAdjointFlag);
+      WeightControl::processPtString(TUnit,sndPtType,sndPtIndex,sndAdjointFlag);
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
 
+      
       if (ptType=="Plane" && sndPtType=="Plane")
 	{
 	  sourceFlux->CADISnorm(System,*adjointFlux,
-				GridMidPt,planePt[ptIndex],
+				EBand,GridMidPt,planePt[ptIndex],
                                 planePt[sndPtIndex]);      
 	}
       else if (ptType=="Source" && sndPtType=="Source")
 	{
+	  ELog::EM<<"S "<<(long int )sourceFlux<<ELog::endDiag;
 	  sourceFlux->CADISnorm(System,*adjointFlux,
-				GridMidPt,sourcePt[ptIndex],
+				EBand,GridMidPt,sourcePt[ptIndex],
                                 sourcePt[sndPtIndex]);
 	}
       else
@@ -496,13 +491,10 @@ WWGControl::processWeights(Simulation& System,
       wwgInitWeight();               // Zero arrays etc
       wwgCreate(System,IParam);      // LOG space
       wwgMarkov(System,IParam);
-      
       wwgCombine(System,IParam);
-      wwgVTK(IParam);
-      wwgNormalize(IParam); 
-      //      wwgVTK(IParam);
-
-
+      wwgNormalize(IParam);
+      
+      wwgVTK(IParam);	    
       for(const std::string& P : activeParticles)
 	{
 	  // don't write a wwp:particle card
