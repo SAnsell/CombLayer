@@ -27,8 +27,8 @@ namespace tallySystem
 /*!
   \class F5Calc
   \version 1.0
-  \author K. Batkov. 
-  \date May 2015
+  \author Konstantin Batkov / Tibor Reiss
+  \date May 2015-2017
   \brief F5 collimator system projection calculation system
 */
 

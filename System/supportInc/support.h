@@ -90,6 +90,9 @@ template<typename T> int itemize(std::string&,std::string&,T&);
 void writeControl(const std::string&,std::ostream&,
 		  const size_t,const int);
 
+/// Write file in standard FLUKA input form 
+void writeFLUKA(const std::string&,std::ostream&);
+
 /// Write file in standard MCNPX input form 
 void writeMCNPX(const std::string&,std::ostream&);
 void writeMCNPXcont(const std::string&,std::ostream&);
