@@ -814,7 +814,7 @@ Material::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("Material","writeFLUKA");
+  ELog::RegMethod RegA("Material","writePHITS");
   
 
   const Element& EL(Element::Instance());
@@ -944,7 +944,8 @@ Material::write(std::ostream& OX) const
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
-  cx<<"c\nc Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc";
+  cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity<<"\n";
+  cx<<"c           (rho="<<getMacroDensity()<<" g/cc)";
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
   

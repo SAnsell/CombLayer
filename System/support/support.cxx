@@ -832,12 +832,12 @@ sectionCINDER(std::string& A,double& out)
 
 void
 writeFLUKA(const std::string& Line,std::ostream& OX)
-/*!
-  Write out the line in the fixed FLUKA format WHAT(1-6).
-  Replace " - " by space to write empty WHAT cards.
-  \param Line :: full MCNPX line
-  \param OX :: ostream to write to
-*/
+  /*!
+    Write out the line in the fixed FLUKA format WHAT(1-6).
+    Replace " - " by space to write empty WHAT cards.
+    \param Line :: full MCNPX line
+    \param OX :: ostream to write to
+  */
 {
   std::istringstream iss(Line);
   std::vector<std::string> whats(std::istream_iterator<std::string>{iss},
@@ -848,8 +848,9 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
   for (std::string& w : whats)
     {
       if (w=="-") w=" ";
+
       OX<<std::setw(10)
-	<<((((i+1)%8==0)||((i+1)%8==1)) ? std::left : std::right)
+	<< ((((i+1)%8==0) || ((i+1)%8==1)) ? std::left : std::right)
 	<<w;
 
       if (((i+1)%8==0)||(i+1==n))
