@@ -1,0 +1,68 @@
+\begin{tikzpicture}
+  [transform canvas={xshift=0cm,yshift=0cm,scale=1.0},
+    x={(\xx cm,\xy cm)},
+    y={(\yx cm,\yy cm)},
+    z={(\zx cm,\zy cm)},
+  ]
+
+
+\begin{scope}{scale=1.0}
+  
+\foreach \a in {1,...,\dimension}
+{ 
+  \draw[canvas is xz plane at y=3,  black!10,line width=0.4mm] (\a,0) -- (\a,\dimension);
+  \draw[canvas is xz plane at y=3,  black!10,line width=0.4mm] (0,\a) -- (\dimension,\a);
+  
+  \draw[canvas is xy plane at z=0, black!10 ,line width=0.4mm] (\a,0) -- (\a,\dimension);
+  \draw[canvas is xy plane at z=0, black!10 ,line width=0.4mm] (0,\a) -- (\dimension,\a);
+  
+  \draw[canvas is yz plane at x=3,black!10, line width=0.4mm] (\a,0) -- (\a,\dimension);
+  \draw[canvas is yz plane at x=3,black!10, line width=0.4mm] (0,\a) -- (\dimension,\a);
+
+}
+
+\draw[canvas is xz plane at y=3,  black!10,line width=0.4mm] (0,0) -- (\dimension,0);
+\draw[canvas is xy plane at z=0, black!10 ,line width=0.4mm] (0,0) -- (\dimension,0);
+\draw[canvas is yz plane at x=3, black!10,line width=0.4mm] (0,0) -- (0,\dimension);
+
+
+\foreach \a in {1,...,\dimension}
+{ 
+  \draw[canvas is yz plane at x=0,line width=0.4mm] (\a,0) -- (\a,\dimension);
+  \draw[canvas is yz plane at x=0,line width=0.4mm] (0,\a) -- (\dimension,\a);
+
+  \draw[canvas is xy plane at z=3, ,line width=0.4mm] (\a,0) -- (\a,\dimension);
+  \draw[canvas is xy plane at z=3, ,line width=0.4mm] (0,\a) -- (\dimension,\a);
+
+  \draw[canvas is xz plane at y=0,line width=0.4mm] (\a,0) -- (\a,\dimension);
+  \draw[canvas is xz plane at y=0,line width=0.4mm] (0,\a) -- (\dimension,\a);
+}
+
+\draw[canvas is xz plane at y=0, ,line width=0.4mm] (0,0) -- (\dimension,0);
+\draw[canvas is yz plane at x=0,line width=0.4mm] (0,0) -- (\dimension,0);
+\draw[canvas is yz plane at x=0,line width=0.4mm] (0,0) -- (0,\dimension);
+
+\draw[canvas is xz plane at y=1, red,line width=0.4mm] (1,1) -- (2,1);
+\draw[canvas is xz plane at y=1, red,line width=0.4mm] (2,1) -- (2,2);
+
+\draw[canvas is xz plane at y=1, red,line width=0.4mm] (1,1) -- (1,2);
+\draw[canvas is xz plane at y=1, red,line width=0.4mm] (1,2) -- (2,2);
+\draw[canvas is xz plane at y=1, red,line width=0.4mm] (2,2) -- (2,1);
+\draw[canvas is xz plane at y=1, red,line width=0.4mm] (2,1) -- (1,1);
+
+\draw[canvas is xz plane at y=2, red,line width=0.4mm] (1,1) -- (1,2);
+\draw[canvas is xz plane at y=2, red,line width=0.4mm] (1,2) -- (2,2);
+\draw[canvas is xz plane at y=2, red,line width=0.4mm] (2,2) -- (2,1);
+\draw[canvas is xz plane at y=2, red,line width=0.4mm] (2,1) -- (1,1);
+
+\draw[canvas is yz plane at x=2, red,line width=0.4mm] (2,2) -- (1,2);
+\draw[canvas is yz plane at x=1, red,line width=0.4mm] (2,2) -- (1,2);
+
+\draw[canvas is yz plane at x=2, red,line width=0.4mm] (2,1) -- (1,1);
+\draw[canvas is yz plane at x=1, red,line width=0.4mm] (2,1) -- (1,1);
+
+\end{scope}
+\node at (-0.7,0.7) {\LARGE i};
+\node at (6,8) {\LARGE j};
+
+\end{tikzpicture}
