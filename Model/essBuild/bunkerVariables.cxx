@@ -362,7 +362,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake0XGap",6.5);
   Control.addVariable("ABunkerQuake0ZGap",100.0);
   
-  Control.addVariable("ABunkerQuakeNPath",3);
+  Control.addVariable("ABunkerQuakeNPath",5);
 
   Control.addVariable("ABunkerQuake0NPoint",11);
   Control.addVariable("ABunkerQuake0XGap",6.5);
@@ -418,6 +418,28 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake2PtA5",Geometry::Vec3D(1017,923,0));
   Control.addVariable("ABunkerQuake2PtA6",Geometry::Vec3D(1490,1344,0));
   Control.addVariable("ABunkerQuake2PtA7",Geometry::Vec3D(917,1784,0));
+
+  // Top Gaps
+  Control.addVariable("ABunkerQuake3NPoint",2);
+  Control.addVariable("ABunkerQuake3XGap",2.5);
+  Control.addVariable("ABunkerQuake3ZGap",45.0);
+  Control.addVariable("ABunkerQuake3XStep",0.0);
+  Control.addVariable("ABunkerQuake3YStep",0.0);
+  Control.addVariable("ABunkerQuake3ZStep",130.0);
+
+  Control.addVariable("ABunkerQuake3PtA0",Geometry::Vec3D(600,0.0,0.0));
+  Control.addVariable("ABunkerQuake3PtA1",Geometry::Vec3D(1350,0.0,0.0));
+
+  Control.addVariable("ABunkerQuake4NPoint",2);
+  Control.addVariable("ABunkerQuake4XGap",2.5);
+  Control.addVariable("ABunkerQuake4ZGap",45.0);
+  Control.addVariable("ABunkerQuake4XStep",0.0);
+  Control.addVariable("ABunkerQuake4YStep",0.0);
+  Control.addVariable("ABunkerQuake4ZStep",130.0);
+
+  Control.addVariable("ABunkerQuake4PtA0",
+		      Geometry::Vec3D(600.0*cos(60.0/8.0),							 600.0*sin(60.0/8.0),0));
+  Control.addVariable("ABunkerQuake4PtA1",Geometry::Vec3D(1350,0.0,0.0));
 
   
   // BBUNKER : 

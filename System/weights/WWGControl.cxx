@@ -438,7 +438,6 @@ WWGControl::wwgCombine(const Simulation& System,
       WeightControl::processPtString(SUnit,ptType,ptIndex,adjointFlag);
       WeightControl::processPtString(TUnit,sndPtType,sndPtIndex,sndAdjointFlag);
       const std::vector<Geometry::Vec3D>& GridMidPt=wwg.getMidPoints();
-
       
       if (ptType=="Plane" && sndPtType=="Plane")
 	{
@@ -465,7 +464,6 @@ WWGControl::wwgCombine(const Simulation& System,
   return;
 }
   
-
 void
 WWGControl::processWeights(Simulation& System,
 			   const mainSystem::inputParam& IParam)
