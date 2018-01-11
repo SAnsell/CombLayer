@@ -839,25 +839,26 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
     \param OX :: ostream to write to
   */
 {
+  // this is expensive
   std::istringstream iss(Line);
   std::vector<std::string> whats(std::istream_iterator<std::string>{iss},
 				 std::istream_iterator<std::string>());
 
-  size_t i(0);
-  const size_t n=whats.size();
+  size_t i(1);
   for (std::string& w : whats)
     {
       if (w=="-") w=" ";
 
-      OX<<std::setw(10)
-	<< ((((i+1)%8==0) || ((i+1)%8==1)) ? std::left : std::right)
-	<<w;
-
-      if (((i+1)%8==0)||(i+1==n))
-	OX<<std::endl;
+      if (i % 8==0)
+	OX<<std::setw(10)<<std::left<<w<<std::endl;
+      else if (i % 8==1)
+	OX<<std::setw(10)<<std::left<<w;	
+      else 
+	OX<<std::setw(10)<<std::right<<w;	
       i++;
     }
-
+  
+  if (i % 8 != 1) OX<<std::endl;
   return;
 }
 
