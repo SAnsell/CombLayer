@@ -80,7 +80,8 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "commonVar","simpleItem","physics","simMC",
 			     "essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			     "insertUnit","tally","source","instrument","work"
+			     "insertUnit","tally","source","instrument",
+			     "work"
     	 	             ]);
 
 #$gM->addDepUnit("linac",
@@ -95,26 +96,23 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 #		]);
 
 $gM->addDepUnit("essBeamline",
-		             ["essBuild","visit","src","simMC",
-			     "beamline","physics","support",
-			     "input","instrument","source","monte",
-			     "funcBase","log","tally","construct",
-			     "crystal","transport","scatMat","md5",
-			     "endf","process","world","work","insertUnit",
-			     "monte","geometry","mersenne","src","xml","poly",
-     		             "weights","global","attachComp","visit",
-       		             "essConstruct",
-			     "beer","bifrost","cspec","dream","estia",
+                             ["essBuild","beamline","support","input",
+			     "funcBase","log","construct","md5",
+			     "process","world","monte","geometry",
+                             "mersenne","src","xml","poly","weights",
+			      "global","attachComp","visit","essConstruct",
+                             "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
-			     "nmx","nnbar","odin","skadi","testBeam","trex",
-			     "vor","vespa","common","shortDream",
-			     "shortNmx","shortOdin",
-			     "physics","simMC","transport","scatMat",
-      			     "essConstruct","source","tally","work",
+			     "nmx","nnbar","odin","skadi","testBeam",
+			     "trex","vor","vespa","common",
+			     "shortDream","shortNmx","shortOdin","longLoki",
+			     "commonVar","simpleItem","physics","simMC",
+			     "essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-                             "instrument","longLoki","commonVar",
-			      "simpleItem","construct"
+			     "insertUnit","tally","source","instrument",
+			     "work"
     	 	             ]);
+
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
 			   "construct","physics","input","process",
@@ -123,7 +121,7 @@ $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
 			   "tally","geometry","mersenne","src","world",
 			   "work","xml","poly","support","weights",
    		           "physics","simMC","transport","scatMat",
-			   "endf","crystal",
+			   "endf","crystal","work",
 			   "insertUnit","md5","global","attachComp",
 			   "visit","poly"]);
 
