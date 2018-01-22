@@ -33,7 +33,6 @@
 #include <iterator>
 #include <memory>
 
-
 #include "Exception.h"
 #include "FileReport.h"
 #include "GTKreport.h"
@@ -584,54 +583,6 @@ createLinacInputs(inputParam& IParam)
   return;
 }
   
-void
-createESSInputs(inputParam& IParam)
-  /*!
-    Set the specialise inputs for the ESS
-    \param IParam :: Input Parameters
-  */
-{
-  ELog::RegMethod RegA("MainProcess::","createESSInputs");
-  createInputs(IParam);
-  
-  //  IParam.setValue("sdefEnergy",2503.0);    
-  IParam.setValue("sdefType",std::string("ess"));  
-  IParam.setValue("targetType",std::string("Bilbao"));
-  
-  IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("None"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("Butterfly"));
-  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("iradLine","iradLineType",1,
-                                 std::string("void"));
-  
-  IParam.regMulti("bunkerChicane","bunkerChicane",1000,1);
-  IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
-  IParam.regMulti("bunkerPillars","bunkerPillars",1000,1);
-  IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
-  IParam.regMulti("iradObj","iradObject",1000,3);
-  
-  IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
-  IParam.regMulti("beamlines","beamlines",1000);
-  IParam.regDefItem<int>("nF5", "nF5", 1,0);
-
-
-  IParam.setDesc("bunkerFeed","Creates feedthroughs in bunker");
-  IParam.setDesc("beamlines","Creates beamlines on the main model");
-  IParam.setDesc("lowMod","Type of low moderator to be built");
-  IParam.setDesc("topMod","Type of top moderator to be built");
-  IParam.setDesc("lowPipe","Type of low moderator pipework");
-  IParam.setDesc("topPipe","Type of top moderator pipework");
-  IParam.setDesc("iradLine","Build an irradiation line [void for none]");
-  IParam.setDesc("iradObj","Build an irradiation object [void for none]");
-  IParam.setDesc("beamlines","Build beamlines [void for none]");
-  IParam.setDesc("bunker","Build bunker [void for none [A-D]");
-  IParam.setDesc("nF5","Number of F5 collimators to build. \n"
-		 "  -- The collimators will be named as F5, F15, etc.\n"
-		 "  -- The corresponding variables must exist.");
-
-  return;
-}
 
 void
 createSingleItemInputs(inputParam& IParam)

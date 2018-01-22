@@ -362,7 +362,7 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake0XGap",6.5);
   Control.addVariable("ABunkerQuake0ZGap",100.0);
   
-  Control.addVariable("ABunkerQuakeNPath",5);
+  Control.addVariable("ABunkerQuakeNPath",24);
 
   Control.addVariable("ABunkerQuake0NPoint",11);
   Control.addVariable("ABunkerQuake0XGap",6.5);
@@ -430,18 +430,79 @@ EssBunkerVariables(FuncDataBase& Control)
   Control.addVariable("ABunkerQuake3PtA0",Geometry::Vec3D(600,0.0,0.0));
   Control.addVariable("ABunkerQuake3PtA1",Geometry::Vec3D(1350,0.0,0.0));
 
-  Control.addVariable("ABunkerQuake4NPoint",2);
-  Control.addVariable("ABunkerQuake4XGap",2.5);
-  Control.addVariable("ABunkerQuake4ZGap",45.0);
-  Control.addVariable("ABunkerQuake4XStep",0.0);
-  Control.addVariable("ABunkerQuake4YStep",0.0);
-  Control.addVariable("ABunkerQuake4ZStep",130.0);
+  std::vector<int> index({0,7,14});
+  std::vector<double> ZStep({20.0,70.0,130.0});
+  std::vector<double> ZGap({50,60,45.0});
+  std::vector<double> AOffset({30.0,33.75,30.0});
+  for(size_t i=0;i<3;i++)
+    {
+      const std::vector<double> AVec({AOffset[i]-60.0/16.0,AOffset[i]+60.0/16.0});
+      std::string QP="ABunkerQuake"+std::to_string(index[i]+4);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      Geometry::Vec3D AAxis(cos(M_PI*AVec[0]/180.0),sin(M_PI*AVec[0]/180.0),0);
+      Control.addVariable(QP+"PtA0",AAxis*600.0);
+      Control.addVariable(QP+"PtA1",AAxis*2750.0);
 
-  Control.addVariable("ABunkerQuake4PtA0",
-		      Geometry::Vec3D(600.0*cos(60.0/8.0),							 600.0*sin(60.0/8.0),0));
-  Control.addVariable("ABunkerQuake4PtA1",Geometry::Vec3D(1350,0.0,0.0));
-
+      QP="ABunkerQuake"+std::to_string(index[i]+5);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      
+      Geometry::Vec3D BAxis(cos(M_PI*AVec[1]/180.0),sin(M_PI*AVec[1]/180.0),0);
+      Control.addVariable(QP+"PtA0",BAxis*600.0);
+      Control.addVariable(QP+"PtA1",BAxis*2750.0);
+      
+      QP="ABunkerQuake6";
+      QP="ABunkerQuake"+std::to_string(index[i]+6);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      Control.addVariable(QP+"PtA0",AAxis*900.0);
+      Control.addVariable(QP+"PtA1",BAxis*900.0);
+      
+      QP="ABunkerQuake7";
+      QP="ABunkerQuake"+std::to_string(index[i]+7);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      Control.addVariable(QP+"PtA0",AAxis*1200.0);
+      Control.addVariable(QP+"PtA1",BAxis*1200.0);
+      
+      QP="ABunkerQuake8";
+      QP="ABunkerQuake"+std::to_string(index[i]+8);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      Control.addVariable(QP+"PtA0",AAxis*1500.0);
+      Control.addVariable(QP+"PtA1",BAxis*1500.0);
+      
+      QP="ABunkerQuake9";
+      QP="ABunkerQuake"+std::to_string(index[i]+9);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      Control.addVariable(QP+"PtA0",AAxis*1800.0);
+      Control.addVariable(QP+"PtA1",BAxis*1800.0);
+      
+      QP="ABunkerQuake10";
+      QP="ABunkerQuake"+std::to_string(index[i]+10);
+      Control.addVariable(QP+"NPoint",2);
+      Control.addVariable(QP+"XGap",2.5);
+      Control.addVariable(QP+"ZGap",ZGap[i]);
+      Control.addVariable(QP+"ZStep",ZStep[i]);
+      Control.addVariable(QP+"PtA0",AAxis*2100.0);
+      Control.addVariable(QP+"PtA1",BAxis*2100.0);
+    }
   
+
   // BBUNKER : 
   Control.addVariable("BBunkerQuakeNPath",1);
   Control.addVariable("BBunkerQuake0NPoint",2);

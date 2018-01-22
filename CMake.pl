@@ -8,7 +8,7 @@ use strict;
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","essBeamline","bilbau",
-		"filter","singleItem","testMain"); 
+		"filter","singleItem","balder","testMain"); 
 
 
 
@@ -112,6 +112,14 @@ $gM->addDepUnit("essBeamline",
 			     "insertUnit","tally","source","instrument",
 			     "work"
     	 	             ]);
+$gM->addDepUnit("balder", ["balder","visit","src","simMC",
+			   "construct","physics","input","process",
+			   "transport","scatMat","endf","crystal",
+			   "source","monte","funcBase","log","monte",
+			   "tally","geometry","mersenne","src","world",
+			   "work","xml","poly","support","weights",
+			   "insertUnit","md5","global",
+			   "attachComp","visit","poly"]);
 
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
