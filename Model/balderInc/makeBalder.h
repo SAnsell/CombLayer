@@ -39,6 +39,7 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class CrossPipe;
   class OpticsHutch;  
   /*!
     \class makeBalder
@@ -55,6 +56,8 @@ class makeBalder
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
 
+  /// Trigger Unit (pipe):
+  std::shared_ptr<CrossPipe> triggerPipe;
 
  public:
   

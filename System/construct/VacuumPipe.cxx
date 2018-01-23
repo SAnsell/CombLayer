@@ -3,7 +3,7 @@
  
  * File:   construct/VacuumPipe.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -321,6 +321,7 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	  
 	  return;
 	}
+      
       const Geometry::Cylinder* CPtr=
 	dynamic_cast<const Geometry::Cylinder*>(SPtr);
       // Cylinder case:
@@ -332,11 +333,12 @@ VacuumPipe::getShiftedSurf(const HeadRule& HR,
 	       CPtr->getNormal(),CPtr->getRadius());
 	  else
 	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()-Y*flangeLength,
+	      (SMap,vacIndex+index,CPtr->getCentre()-Y*length,
 	       CPtr->getNormal(),CPtr->getRadius());
 	  return;
 	}
     }
+  
   throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
 } 
 

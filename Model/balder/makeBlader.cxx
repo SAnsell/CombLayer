@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/makeBalder.cxx
+ * File: balder/makeBalder.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -65,17 +65,21 @@
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurfMap.h"
+#include "FrontBackCut.h"
 #include "World.h"
 #include "AttachSupport.h"
 
 #include "OpticsHutch.h"
+#include "CrossPipe.h"
 #include "makeBalder.h"
 
 namespace xraySystem
 {
 
 makeBalder::makeBalder() :
-  opticsHut(new OpticsHutch("Optics"))  
+  opticsHut(new OpticsHutch("Optics")),
+  triggerPipe(new CrossPipe("TriggerPipe")) 
   /*!
     Constructor
   */
@@ -84,6 +88,7 @@ makeBalder::makeBalder() :
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(opticsHut);
+  OR.addObject(triggerPipe);
 
 }
 
@@ -112,6 +117,10 @@ makeBalder::build(Simulation& System,
  
   opticsHut->addInsertCell(voidCell);
   opticsHut->createAll(System,World::masterOrigin(),0);
+
+  triggerPipe->addInsertCell(opticsHut->getCell("Void"));
+  triggerPipe->createAll(System,*opticsHut,0);
+
   return;
 }
 

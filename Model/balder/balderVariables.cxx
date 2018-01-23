@@ -76,8 +76,23 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("OpticsSkinMat","Stainless304");
   Control.addVariable("OpticsPbMat","Lead");
   Control.addVariable("OpticsFloorMat","Concrete");
+
+  Control.addVariable("TriggerPipeYStep",22.0);
+  Control.addVariable("TriggerPipeHorrRadius",1.60);
+  Control.addVariable("TriggerPipeVertRadius",5.0);
+  Control.addVariable("TriggerPipeHeight",10.0);
+  Control.addVariable("TriggerPipeDepth",26.5);
+  Control.addVariable("TriggerPipeLength",21.5);
+
+  Control.addVariable("TriggerPipeFeThick",0.5);
+
+  Control.addVariable("TriggerPipeBasePlate",1.0);
+  Control.addVariable("TriggerPipeTopPlate",1.0);
+  Control.addVariable("TriggerPipeFlangeLength",0.6);
+  Control.addVariable("TriggerPipeFlangeRadius",1.0);
   
-  
+  Control.addVariable("TriggerPipeFeMat","Stainless304");
+
   return;
 }
 

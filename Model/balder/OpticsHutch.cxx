@@ -244,7 +244,7 @@ OpticsHutch::createObjects(Simulation& System)
   // floor
   Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -2M 3M (-4M:-104M) 15 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
-  setCell("Void",cellIndex-1);
+  setCell("Floor",cellIndex-1);
 
   
   // Exclude:
