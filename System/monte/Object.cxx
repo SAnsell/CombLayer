@@ -1286,10 +1286,12 @@ Object::writeFLUKAmat(std::ostream& OX) const
       std::ostringstream cx;
       cx<<"ASSIGNMAT ";
 
-      if (MatN)
+      if (!imp)
+	cx<<"BLCKHOLE";
+      else if (MatN)
 	cx<<"M"+std::to_string(MatN);
-      else   // this should test imp:0 and imp:-1
-	cx<<((ObjName==1)?"BLCKHOLE":"VACUUM");
+      else
+	cx<<"VACUUM";
 
       cx<<" R"+std::to_string(ObjName);
       StrFunc::writeFLUKA(cx.str(),OX);
