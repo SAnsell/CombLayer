@@ -544,8 +544,8 @@ Cylinder::writeFLUKA(std::ostream& OX) const
   else if (Ndir==-2 || Ndir==2)
     {
       cx<<"YCC s"<<getName()<<" "
-	<<MW.Num(Centre[0])<<" "
 	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Centre[0])<<" "
 	<<MW.Num(Radius);
     }
   else if (Ndir==-3 || Ndir==3)
