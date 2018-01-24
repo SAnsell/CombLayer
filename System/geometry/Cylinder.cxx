@@ -543,6 +543,7 @@ Cylinder::writeFLUKA(std::ostream& OX) const
     }
   else if (Ndir==-2 || Ndir==2)
     {
+      // note the reversed order -- see sec 8.2.4.12 of the fluka manual.
       cx<<"YCC s"<<getName()<<" "
 	<<MW.Num(Centre[2])<<" "
 	<<MW.Num(Centre[0])<<" "
