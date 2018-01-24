@@ -387,6 +387,7 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"GEOEND"<<std::endl;
   writeMaterial(OX);
   writePhysics(OX);
+  OX<<"STOP"<<std::endl;
   OX.close();
   return;
 }
