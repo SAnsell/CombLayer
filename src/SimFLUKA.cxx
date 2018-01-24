@@ -229,28 +229,27 @@ SimFLUKA::writeElements(std::ostream& OX) const
   OX<<alignment<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
-  size_t za;
-  std::set<size_t> setZA;
-  //  for(mp=OList.begin();mp!=OList.end();mp++)
+  std::set<std::string> setZA;
+  boost::format FMTstr("%1$d.%2$02d%3$c");
+
   for(const OTYPE::value_type& mp : OList)
     {
       MonteCarlo::Material m = DB.getMaterial(mp.second->getMat());
       std::vector<MonteCarlo::Zaid> zaidVec = m.getZaidVec();
       for (const MonteCarlo::Zaid& ZC : zaidVec)
 	{
-	  za = ZC.getZaidNum();
-	  setZA.insert(za);
+	  setZA.insert(ZC.getZaid());
 	}
     }
 
   std::ostringstream cx,lowmat;
-  for (const size_t &za : setZA)
+  MonteCarlo::Zaid ZC;
+  for (const std::string &za : setZA)
     {
-      if (!za) continue;
-      const std::string mat("E"+std::to_string(za));
-      cx<<"MATERIAL "<<za / 1000<<". - "<<" 1."<<" - - "<<
-	za%1000<<". "<<mat<<" ";
-      lowmat<<"LOW-MAT "<<mat<<" - - - - - - "; // \todo define it correctly
+      if (za.empty()) continue;
+      ZC.setZaid(za);
+      cx<<"MATERIAL "<<ZC.getZ()<<". - "<<" 1."<<" - - "<<ZC.getIso()<<". "<<za<<" ";
+      lowmat<<"LOW-MAT "<<za<<" - - - - - - "; // \todo define it correctly
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
