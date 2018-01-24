@@ -173,7 +173,6 @@ OpticsHutch::createSurfaces()
   // Walls
   double extraThick(0.0);
   int HI(hutIndex+10);
-  ELog::EM<<"RPoint == "<<RPoint<<ELog::endDiag;
   for(const double T : {innerThick,pbThick,outerThick})
     {
       extraThick+=T;
@@ -191,7 +190,6 @@ OpticsHutch::createSurfaces()
 	  ModelSupport::buildPlaneRotAxis
 	    (SMap,HI+104,RPoint,X,-Z,ringWallAngle);
 	}
-      ELog::EM<<"NRPoint == "<<RPoint<<ELog::endDiag;
       HI+=10;
     }
 
@@ -232,26 +230,26 @@ OpticsHutch::createObjects(Simulation& System)
       setCell(layer+"Wall",cellIndex-1);
       
       //back wall
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"2M -12M 13 (-14M:-114M) 5 -6 ");
+      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"2M -12M 33 (-34:-134) 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
       setCell(layer+"BackWall",cellIndex-1);
       
       // roof
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -12M 13M (-14M:-114M) 6 -16 ");
+      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -32 33 (-34:-134) 6M -16M ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
       setCell(layer+"Roof",cellIndex-1);
       HI+=10;
     }
   
   // floor
-  Out=ModelSupport::getSetComposite(SMap,hutIndex,"1 -12 13 (-14:-114) 15 -5 ");
+  Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -2M 3M (-4M:-104M) 15 -5 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
   setCell("Void",cellIndex-1);
 
   
   // Exclude:
   Out=ModelSupport::getComposite
-    (SMap,hutIndex," 1 -12 13 (-14:-114) 15 -16 ");
+    (SMap,hutIndex,HI," 1 -2M 3M (-4M:-104M) 15 -6M ");
   addOuterSurf(Out);      
 
   return;
