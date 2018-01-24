@@ -117,8 +117,10 @@ CrossPipe::populate(const FuncDataBase& Control)
   vertRadius=Control.EvalVar<double>(keyName+"VertRadius");
   height=Control.EvalVar<double>(keyName+"Height");
   depth=Control.EvalVar<double>(keyName+"Depth");
-  
-  length=Control.EvalVar<double>(keyName+"Length");
+
+  const double length=Control.EvalDefVar<double>(keyName+"Length",0.0);
+  frontLength=Control.EvalDefVar<double>(keyName+"FrontLength",length/2.0);
+  backLength=Control.EvalDefVar<double>(keyName+"BackLength",length/2.0);
 
   feThick=Control.EvalVar<double>(keyName+"FeThick");
   topPlate=Control.EvalVar<double>(keyName+"TopPlate");
@@ -145,64 +147,12 @@ CrossPipe::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("CrossPipe","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
-  yStep+=length/2.0;
+  yStep+=(frontLength+backLength)/2.0;
   applyOffset();
 
   return;
 }
 
-  
-void
-CrossPipe::getShiftedSurf(const HeadRule& HR,
-			   const int index,
-			   const int dFlag,
-			   const double length)
-  /*!
-    Support function to calculate the shifted surface
-    \param HR :: HeadRule to extract plane surf
-    \param index :: offset index
-    \param dFlag :: direction flag
-    \param length :: length to shift by
-  */
-{
-  ELog::RegMethod RegA("CrossPipe","getShiftedSurf");
-  
-  std::set<int> FS=HR.getSurfSet();
-  for(const int& SN : FS)
-    {
-      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
-
-      const Geometry::Plane* PPtr=
-	dynamic_cast<const Geometry::Plane*>(SPtr);
-      if (PPtr)
-	{
-	  if (SN*dFlag>0)
-	    ModelSupport::buildShiftedPlane
-	      (SMap,vacIndex+index,PPtr,dFlag*length);
-	  else
-	    ModelSupport::buildShiftedPlaneReversed
-	      (SMap,vacIndex+index,PPtr,dFlag*length);
-	  
-	  return;
-	}
-      const Geometry::Cylinder* CPtr=
-	dynamic_cast<const Geometry::Cylinder*>(SPtr);
-      // Cylinder case:
-      if (CPtr)
-	{
-	  if (SN>0)
-	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()+Y*length,
-	       CPtr->getNormal(),CPtr->getRadius());
-	  else
-	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()-Y*flangeLength,
-	       CPtr->getNormal(),CPtr->getRadius());
-	  return;
-	}
-    }
-  throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
-} 
 
 void
 CrossPipe::createSurfaces()
@@ -218,23 +168,24 @@ CrossPipe::createSurfaces()
   // Inner void
   if (frontActive())
     // create surface 101:
-    getShiftedSurf(getFrontRule(),101,1,flangeLength);
+    FrontBackCut::getShiftedFront(SMap,vacIndex+101,1,Y,flangeLength);
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-      ModelSupport::buildPlane(SMap,vacIndex+101,Origin-Y*(length/2.0-flangeLength),Y);
+      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*frontLength,Y);
+      ModelSupport::buildPlane
+	(SMap,vacIndex+101,Origin-Y*(frontLength-flangeLength),Y);
       FrontBackCut::setFront(SMap.realSurf(vacIndex+1));
     }
   
   // Inner void
   if (backActive())
     // create surface 102:
-    getShiftedSurf(getBackRule(),102,-1,flangeLength);
+    FrontBackCut::getShiftedFront(SMap,vacIndex+102,-1,Y,flangeLength);
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-      ModelSupport::buildPlane(SMap,vacIndex+102,
-			       Origin+Y*(length/2.0-flangeLength),Y);
+      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*backLength,Y);
+      ModelSupport::buildPlane
+	(SMap,vacIndex+102,Origin+Y*(backLength-flangeLength),Y);
       FrontBackCut::setBack(-SMap.realSurf(vacIndex+2));
     }
 
@@ -245,7 +196,8 @@ CrossPipe::createSurfaces()
 
   // FLANGE SURFACES:
   if (flangeRadius>Geometry::zeroTol && flangeLength>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,horrRadius+flangeRadius);
+    ModelSupport::buildCylinder(SMap,vacIndex+107,
+				Origin,Y,horrRadius+flangeRadius);
 
   // Secondary SURFACES:
   ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Z,vertRadius);
@@ -267,7 +219,7 @@ CrossPipe::createObjects(Simulation& System)
   /*!
     Adds the vacuum box
     \param System :: Simulation to create objects in
-   */
+  */
 {
   ELog::RegMethod RegA("CrossPipe","createObjects");
 

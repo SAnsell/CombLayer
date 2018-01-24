@@ -51,7 +51,8 @@ class CrossPipe :
   double vertRadius;            ///< vertical radius [inner]
   double height;                ///< void height
   double depth;                 ///< void depth
-  double length;                ///< void length [horr]
+  double frontLength;           ///< void length [from centre]
+  double backLength;            ///< void length [from centre]
 
   double feThick;               ///< pipe thickness
   double topPlate;              ///< Top plate thickness
@@ -68,9 +69,6 @@ class CrossPipe :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
-  void getShiftedSurf(const HeadRule&,const int,const int,const double);
-  void createDivision(Simulation&);
   
  public:
 

@@ -48,6 +48,7 @@
 #include "variableSetup.h"
 
 #include "PipeGenerator.h"
+#include "CrossGenerator.h"
 #include "VacBoxGenerator.h"
 
 namespace setVariable
@@ -63,6 +64,7 @@ balderVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
   setVariable::PipeGenerator PipeGen;
+  setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
   
   Control.addVariable("OpticsDepth",100.0);
@@ -82,22 +84,13 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("OpticsPbMat","Lead");
   Control.addVariable("OpticsFloorMat","Concrete");
 
-  Control.addVariable("TriggerPipeYStep",22.0);
-  Control.addVariable("TriggerPipeHorrRadius",1.60);
-  Control.addVariable("TriggerPipeVertRadius",5.0);
-  Control.addVariable("TriggerPipeHeight",10.0);
-  Control.addVariable("TriggerPipeDepth",26.5);
-  Control.addVariable("TriggerPipeLength",21.5);
-
-  Control.addVariable("TriggerPipeFeThick",0.5);
-
-  Control.addVariable("TriggerPipeBasePlate",1.0);
-  Control.addVariable("TriggerPipeTopPlate",1.0);
-  Control.addVariable("TriggerPipeFlangeLength",1.0);
-  Control.addVariable("TriggerPipeFlangeRadius",2.0);
+  CrossGen.setPlates(0.5,1.0,1.0);
+  CrossGen.setPorts(10.75,10.75);
+  CrossGen.setFlange(2.0,1.0);
+  CrossGen.setMat("Stainless304");
+  CrossGen.generateCross(Control,"TriggerPipe",22.0,
+			  1.60,5.0,10.0,26.5);
   
-  Control.addVariable("TriggerPipeFeMat","Stainless304");
-
   PipeGen.setPipe(1.6,0.5);      // 8cm radius / 0.5cm wall
   PipeGen.setWindow(-2.0,0.0); 
   PipeGen.setFlange(-2.7,1.0);
@@ -111,7 +104,9 @@ balderVariables(FuncDataBase& Control)
   // ystep/width/height/depth/length
   VBoxGen.generateBox(Control,"FilterBox",0.0,48.5,4.7,4.7,54.0);
 
-  PipeGen.generatePipe(Control,"BellowB",0,16.0);
+  PipeGen.generatePipe(Control,"BellowB",0,10.0);
+
+  
   return;
 }
 

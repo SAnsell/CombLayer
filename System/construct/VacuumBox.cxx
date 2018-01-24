@@ -93,6 +93,60 @@ VacuumBox::VacuumBox(const std::string& Key,
   */
 {}
 
+VacuumBox::VacuumBox(const VacuumBox& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  centreOrigin(A.centreOrigin),vacIndex(A.vacIndex),
+  cellIndex(A.cellIndex),voidHeight(A.voidHeight),
+  voidWidth(A.voidWidth),voidDepth(A.voidDepth),
+  voidLength(A.voidLength),feHeight(A.feHeight),
+  feDepth(A.feDepth),feWidth(A.feWidth),feFront(A.feFront),
+  feBack(A.feBack),portWallThick(A.portWallThick),
+  portTubeLength(A.portTubeLength),portTubeRadius(A.portTubeRadius),
+  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength),
+  voidMat(A.voidMat),feMat(A.feMat)
+  /*!
+    Copy constructor
+    \param A :: VacuumBox to copy
+  */
+{}
+
+VacuumBox&
+VacuumBox::operator=(const VacuumBox& A)
+  /*!
+    Assignment operator
+    \param A :: VacuumBox to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      cellIndex=A.cellIndex;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidLength=A.voidLength;
+      feHeight=A.feHeight;
+      feDepth=A.feDepth;
+      feWidth=A.feWidth;
+      feFront=A.feFront;
+      feBack=A.feBack;
+      portWallThick=A.portWallThick;
+      portTubeLength=A.portTubeLength;
+      portTubeRadius=A.portTubeRadius;
+      flangeRadius=A.flangeRadius;
+      flangeLength=A.flangeLength;
+      voidMat=A.voidMat;
+      feMat=A.feMat;
+    }
+  return *this;
+}
+
+  
 VacuumBox::~VacuumBox() 
   /*!
     Destructor

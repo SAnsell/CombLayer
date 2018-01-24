@@ -91,6 +91,38 @@ VacBoxGenerator::VacBoxGenerator() :
   */
 {}
 
+VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) : 
+  wallThick(A.wallThick),portWallThick(A.portWallThick),
+  portTubeLength(A.portTubeLength),portTubeRadius(A.portTubeRadius),
+  flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
+  voidMat(A.voidMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: VacBoxGenerator to copy
+  */
+{}
+
+VacBoxGenerator&
+VacBoxGenerator::operator=(const VacBoxGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: VacBoxGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      wallThick=A.wallThick;
+      portWallThick=A.portWallThick;
+      portTubeLength=A.portTubeLength;
+      portTubeRadius=A.portTubeRadius;
+      flangeLen=A.flangeLen;
+      flangeRadius=A.flangeRadius;
+      voidMat=A.voidMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
   
 VacBoxGenerator::~VacBoxGenerator() 
  /*!
