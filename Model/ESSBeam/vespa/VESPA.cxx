@@ -3,7 +3,7 @@
 
  * File:   ESSBeam/vespa/VESPA.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@
 #include "DiskChopper.h"
 #include "VacuumBox.h"
 #include "VacuumPipe.h"
+#include "LightShutter.h"
 #include "Bunker.h"
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
@@ -110,7 +111,8 @@ VESPA::VESPA(const std::string& keyName) :
   attachSystem::CopiedComp("vespa",keyName),
   startPoint(0),stopPoint(0),
   vespaAxis(new attachSystem::FixedOffset(newName+"Axis",4)),
-
+  
+  // Guide into the monolith
   FocusA(new beamlineSystem::GuideLine(newName+"FA")),
 
   VPipeA(new constructSystem::VacuumPipe(newName+"PipeA")),

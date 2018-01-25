@@ -70,6 +70,11 @@
 #include "World.h"
 #include "AttachSupport.h"
 
+#include "VacuumPipe.h"
+#include "VacuumPipe.h"
+#include "VacuumPipe.h"
+
+
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "makeBalder.h"
@@ -79,27 +84,25 @@ namespace xraySystem
 
 makeBalder::makeBalder() :
   opticsHut(new OpticsHutch("Optics")),
-  triggerPipe(new CrossPipe("TriggerPipe")) 
+  triggerPipe(new CrossPipe("TriggerPipe")),
+  pipeA(new constructSystem::VacuumPipe("BellowA"))
   /*!
     Constructor
   */
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+  
   OR.addObject(opticsHut);
   OR.addObject(triggerPipe);
-
+  OR.addObject(pipeA);
 }
-
-
 
 makeBalder::~makeBalder()
   /*!
     Destructor
    */
 {}
-
 
 void 
 makeBalder::build(Simulation& System,
@@ -121,6 +124,9 @@ makeBalder::build(Simulation& System,
   triggerPipe->addInsertCell(opticsHut->getCell("Void"));
   triggerPipe->createAll(System,*opticsHut,0);
 
+  pipeA->addInsertCell(opticsHut->getCell("Void"));
+  pipeA->setFront(*triggerPipe,2);
+  pipeA->createAll(System,*triggerPipe,2);
   return;
 }
 

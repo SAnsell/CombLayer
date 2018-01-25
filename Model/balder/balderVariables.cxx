@@ -47,6 +47,8 @@
 #include "FuncDataBase.h"
 #include "variableSetup.h"
 
+#include "PipeGenerator.h"
+
 namespace setVariable
 {
 
@@ -59,7 +61,11 @@ balderVariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
-
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setWindow(-2.0,0.5); 
+  PipeGen.setFlange(-4.0,1.0);
+  
   Control.addVariable("OpticsDepth",100.0);
   Control.addVariable("OpticsHeight",200.0);
   Control.addVariable("OpticsLength",800.0);
@@ -93,6 +99,9 @@ balderVariables(FuncDataBase& Control)
   
   Control.addVariable("TriggerPipeFeMat","Stainless304");
 
+  PipeGen.setMat("Stainless304");
+  PipeGen.generatePipe(Control,"BellowA",0,16.0);
+  
   return;
 }
 

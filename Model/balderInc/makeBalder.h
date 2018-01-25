@@ -25,6 +25,8 @@
 namespace constructSystem
 {
   class SupplyPipe;
+  class VacuumPipe;
+  class Motor;
 }
 
 
@@ -59,6 +61,9 @@ class makeBalder
   /// Trigger Unit (pipe):
   std::shared_ptr<CrossPipe> triggerPipe;
 
+  /// Joining Bellows (pipe):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  
  public:
   
   makeBalder();

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVar/PipeGenerator.cxx
+ * File:   constructVar/PipeGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ void
 PipeGenerator::setWindow(const double R,const double T)
   /*!
     Set all the window values
-    \param R :: radius of window
+    \param R :: radius of window [-ve to be bigger than main rad]
     \param T :: Thickness
    */
 {

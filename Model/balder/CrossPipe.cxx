@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/CrossPipe.cxx
+ * File:   balder/CrossPipe.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
