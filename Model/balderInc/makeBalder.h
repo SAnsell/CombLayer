@@ -26,6 +26,7 @@ namespace constructSystem
 {
   class SupplyPipe;
   class VacuumPipe;
+  class VacuumBox;
   class Motor;
 }
 
@@ -42,7 +43,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class CrossPipe;
-  class OpticsHutch;  
+  class OpticsHutch;
   /*!
     \class makeBalder
     \version 1.0
@@ -63,7 +64,13 @@ class makeBalder
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-  
+
+  /// Filter box
+  std::shared_ptr<constructSystem::VacuumBox> filterBox;
+
+  /// Joining Bellows (pipe):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
  public:
   
   makeBalder();

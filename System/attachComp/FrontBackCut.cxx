@@ -382,5 +382,103 @@ FrontBackCut::createBackLinks(attachSystem::FixedComp& FC,
   return;
 }
 
+void
+FrontBackCut::getShiftedFront(ModelSupport::surfRegister& SMap,
+			      const int surfIndex,
+			      const int dFlag,
+			      const Geometry::Vec3D& YAxis,
+			      const double length) const
+  /*!
+    Support function to calculate the shifted surface fo the front
+    \param SMap :: Surface register
+    \param index :: offset index
+    \param dFlag :: direction flag
+    \param YAxis :: Axid for shift of sphere/cylinder
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
+  getShiftedSurf(SMap,frontCut,surfIndex,dFlag,YAxis,length);
+  return;
+}
+
+void
+FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
+			     const int surfIndex,
+			     const int dFlag,
+			     const Geometry::Vec3D& YAxis,
+			     const double length) const
+  /*!
+    Support function to calculate the shifted surface fo the back
+    \param SMap :: Surface register
+    \param index :: offset index
+    \param dFlag :: direction flag
+    \param YAxis :: Axid for shift of sphere/cylinder
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getShiftedBack");
+  
+  getShiftedSurf(SMap,backCut,surfIndex,dFlag,YAxis,length);
+  return;
+}
+
+
+void
+FrontBackCut::getShiftedSurf(ModelSupport::surfRegister& SMap,
+			     const HeadRule& HR,
+			     const int index,
+			     const int dFlag,
+			     const Geometry::Vec3D& YAxis,
+			     const double length)
+  /*!
+    Support function to calculate the shifted surface
+    \param HR :: HeadRule to extract plane surf
+    \param index :: offset index
+    \param dFlag :: direction flag
+    \param YAxis :: Direction of cylindical shift
+    \param length :: length to shift by
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","getShiftedSurf");
+  
+  std::set<int> FS=HR.getSurfSet();
+  for(const int& SN : FS)
+    {
+      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
+
+      const Geometry::Plane* PPtr=
+	dynamic_cast<const Geometry::Plane*>(SPtr);
+      if (PPtr)
+	{
+	  if (SN*dFlag>0)
+	    ModelSupport::buildShiftedPlane(SMap,index,PPtr,dFlag*length);
+	  else
+	    ModelSupport::buildShiftedPlaneReversed(SMap,index,PPtr,dFlag*length);
+	  
+	  return;
+	}
+      
+      const Geometry::Cylinder* CPtr=
+	dynamic_cast<const Geometry::Cylinder*>(SPtr);
+      // Cylinder case:
+      if (CPtr)
+	{
+	  if (SN>0)
+	    ModelSupport::buildCylinder
+	      (SMap,index,CPtr->getCentre()+YAxis*length,
+	       CPtr->getNormal(),CPtr->getRadius());
+	  else
+	    ModelSupport::buildCylinder
+	      (SMap,index,CPtr->getCentre()-YAxis*length,
+	       CPtr->getNormal(),CPtr->getRadius());
+	  return;
+	}
+    }
+  
+  throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
+} 
+  
+
   
 }  // NAMESPACE attachSystem

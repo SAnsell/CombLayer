@@ -48,6 +48,7 @@
 #include "variableSetup.h"
 
 #include "PipeGenerator.h"
+#include "VacBoxGenerator.h"
 
 namespace setVariable
 {
@@ -62,9 +63,7 @@ balderVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
   setVariable::PipeGenerator PipeGen;
-  PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
-  PipeGen.setWindow(-2.0,0.5); 
-  PipeGen.setFlange(-4.0,1.0);
+  setVariable::VacBoxGenerator VBoxGen;
   
   Control.addVariable("OpticsDepth",100.0);
   Control.addVariable("OpticsHeight",200.0);
@@ -94,14 +93,25 @@ balderVariables(FuncDataBase& Control)
 
   Control.addVariable("TriggerPipeBasePlate",1.0);
   Control.addVariable("TriggerPipeTopPlate",1.0);
-  Control.addVariable("TriggerPipeFlangeLength",0.6);
-  Control.addVariable("TriggerPipeFlangeRadius",1.0);
+  Control.addVariable("TriggerPipeFlangeLength",1.0);
+  Control.addVariable("TriggerPipeFlangeRadius",2.0);
   
   Control.addVariable("TriggerPipeFeMat","Stainless304");
 
+  PipeGen.setPipe(1.6,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setWindow(-2.0,0.0); 
+  PipeGen.setFlange(-2.7,1.0);
+
   PipeGen.setMat("Stainless304");
   PipeGen.generatePipe(Control,"BellowA",0,16.0);
-  
+
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setPort(3.3,10.7,0.5);
+  VBoxGen.setFlange(0.5,0.8);
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,"FilterBox",0.0,48.5,4.7,4.7,54.0);
+
+  PipeGen.generatePipe(Control,"BellowB",0,16.0);
   return;
 }
 

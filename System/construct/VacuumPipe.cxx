@@ -288,59 +288,6 @@ VacuumPipe::applyActiveFrontBack()
   return;
 }
   
-void
-VacuumPipe::getShiftedSurf(const HeadRule& HR,
-			   const int index,
-			   const int dFlag,
-			   const double length)
-  /*!
-    Support function to calculate the shifted surface
-    \param HR :: HeadRule to extract plane surf
-    \param index :: offset index
-    \param dFlag :: direction flag
-    \param length :: length to shift by
-  */
-{
-  ELog::RegMethod RegA("VacuumPipe","getShiftedSurf");
-  
-  std::set<int> FS=HR.getSurfSet();
-  for(const int& SN : FS)
-    {
-      const Geometry::Surface* SPtr=SMap.realSurfPtr(SN);
-
-      const Geometry::Plane* PPtr=
-	dynamic_cast<const Geometry::Plane*>(SPtr);
-      if (PPtr)
-	{
-	  if (SN*dFlag>0)
-	    ModelSupport::buildShiftedPlane
-	      (SMap,vacIndex+index,PPtr,dFlag*length);
-	  else
-	    ModelSupport::buildShiftedPlaneReversed
-	      (SMap,vacIndex+index,PPtr,dFlag*length);
-	  
-	  return;
-	}
-      
-      const Geometry::Cylinder* CPtr=
-	dynamic_cast<const Geometry::Cylinder*>(SPtr);
-      // Cylinder case:
-      if (CPtr)
-	{
-	  if (SN>0)
-	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()+Y*length,
-	       CPtr->getNormal(),CPtr->getRadius());
-	  else
-	    ModelSupport::buildCylinder
-	      (SMap,vacIndex+index,CPtr->getCentre()-Y*length,
-	       CPtr->getNormal(),CPtr->getRadius());
-	  return;
-	}
-    }
-  
-  throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
-} 
 
 void
 VacuumPipe::createSurfaces()
@@ -356,12 +303,12 @@ VacuumPipe::createSurfaces()
   // Inner void
   if (frontActive())
     {
-      getShiftedSurf(getFrontRule(),101,1,flangeLength);
+      getShiftedFront(SMap,vacIndex+101,1,Y,flangeLength);
       if (activeWindow & 1)
 	{
-	  getShiftedSurf(getFrontRule(),1001,1,
+	  getShiftedFront(SMap,vacIndex+1001,1,Y,
 			 (flangeLength-windowFront.thick)/2.0);
-	  getShiftedSurf(getFrontRule(),1002,1,
+	  getShiftedFront(SMap,vacIndex+1002,1,Y,
 			 (flangeLength+windowFront.thick)/2.0);
 	}
     }
@@ -389,12 +336,12 @@ VacuumPipe::createSurfaces()
     // Inner void
   if (backActive())
     {
-      getShiftedSurf(getBackRule(),102,-1,flangeLength);
+      FrontBackCut::getShiftedBack(SMap,vacIndex+102,-1,Y,flangeLength);
       if (activeWindow & 2)
 	{
-	  getShiftedSurf(getBackRule(),1101,-1,
+	  getShiftedBack(SMap,vacIndex+1101,-1,Y,
 			 (flangeLength-windowBack.thick)/2.0);
-	  getShiftedSurf(getBackRule(),1102,-1,
+	  getShiftedBack(SMap,vacIndex+1102,-1,Y,
 			 (flangeLength+windowBack.thick)/2.0);
 	}
     }

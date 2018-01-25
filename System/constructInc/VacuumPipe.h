@@ -101,7 +101,6 @@ class VacuumPipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void getShiftedSurf(const HeadRule&,const int,const int,const double);
   void applyActiveFrontBack();
   void createDivision(Simulation&);
   
