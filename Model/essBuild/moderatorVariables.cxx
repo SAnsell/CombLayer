@@ -403,7 +403,64 @@ EssButterflyModerator(FuncDataBase& Control)
 
   Control.copyVarSet("TopLeftPreWing", "TopRightPreWing");
   Control.addVariable("TopRightPreWingXYAngle",180.0);
-  
+
+  // Pancake
+  Control.addVariable("TopCakeXYAngle",90.0);
+  Control.addVariable("TopCakeWallMat","Aluminium");
+
+  Control.addVariable("TopCakeMidH2NLayers",4);
+
+  Control.addVariable("TopCakeMidH2Height0",1.5);
+  Control.addParse<double>("TopCakeMidH2Depth0", "TopCakeMidH2Height0");
+  Control.addVariable("TopCakeMidH2Thick0",10);
+  Control.addVariable("TopCakeMidH2Mat0","HPARA");
+  Control.addVariable("TopCakeMidH2Temp0",20.0);
+
+  Control.addVariable("TopCakeMidH2Height1",0.3);
+  Control.addParse<double>("TopCakeMidH2Depth1","TopCakeMidH2Height1");
+  Control.addParse<double>("TopCakeMidH2Thick1","TopCakeMidH2Height1");
+  Control.addVariable("TopCakeMidH2Mat1","Aluminium20K");
+  Control.addVariable("TopCakeMidH2Temp1",20.0);
+
+  Control.addVariable("TopCakeMidH2Height2",0.5);
+  Control.addParse<double>("TopCakeMidH2Depth2","TopCakeMidH2Height2");
+  Control.addParse<double>("TopCakeMidH2Thick2","TopCakeMidH2Height2");
+  Control.addVariable("TopCakeMidH2Mat2","Void");
+
+  Control.addVariable("TopCakeMidH2Height3",0.3);
+  Control.addParse<double>("TopCakeMidH2Depth3","TopCakeMidH2Height3");
+  Control.addParse<double>("TopCakeMidH2Thick3","TopCakeMidH2Height3");
+  Control.addVariable("TopCakeMidH2Mat3","Aluminium");
+
+  Control.addParse<double>("TopCakeTotalHeight",
+			   "TopCakeMidH2Height0+TopCakeMidH2Depth0+TopCakeMidH2Height1+TopCakeMidH2Depth1+TopCakeMidH2Height2+TopCakeMidH2Depth2+TopCakeMidH2Height3+TopCakeMidH2Depth3");
+  Control.addParse<double>("TopCakeMidH2ZStep","-TopCakeTotalHeight/2.0");
+
+  Control.addVariable("TopCakeLeftWaterWidth",30);
+  Control.addVariable("TopCakeLeftWaterWallThick",0.347);
+  Control.addVariable("TopCakeLeftWaterCutAngle",30.0);
+  Control.addVariable("TopCakeLeftWaterCutWidth",6);
+  Control.addVariable("TopCakeLeftWaterModMat","H2O");
+  Control.addVariable("TopCakeLeftWaterWallMat","Aluminium");
+  Control.addVariable("TopCakeLeftWaterModTemp",300.0);
+  Control.addVariable("TopCakeLeftWaterMidWallThick",0.0);
+  Control.copyVarSet("TopCakeLeftWater", "TopCakeRightWater");
+
+    // onion cooling
+  Control.addVariable("TopCakeMidH2FlowGuideType","Onion");
+  Control.addParse<double>("TopCakeMidH2OnionCoolingHeight",
+			   "TopCakeMidH2Height0+TopCakeMidH2Depth0");
+  Control.addVariable("TopCakeMidH2OnionCoolingWallThick", 0.3);
+  Control.addVariable("TopCakeMidH2OnionCoolingWallMat",   "Aluminium20K");
+  Control.addVariable("TopCakeMidH2OnionCoolingWallTemp",   20.0);
+  Control.addVariable("TopCakeMidH2OnionCoolingNRings", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingRadius1", 4);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateWidth1", 1);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateLength1", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingRadius2", 8);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateWidth2", 2);
+  Control.addVariable("TopCakeMidH2OnionCoolingGateLength2", 1.5);
+
   return;
 }
 
