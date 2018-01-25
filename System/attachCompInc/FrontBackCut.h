@@ -86,6 +86,9 @@ class FrontBackCut
   std::string frontRule() const;
   std::string backRule() const;
 
+  std::string frontComplement() const;
+  std::string backComplement() const;
+
   std::string frontBridgeRule() const;
   std::string backBridgeRule() const;
 

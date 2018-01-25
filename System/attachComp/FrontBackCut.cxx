@@ -285,6 +285,17 @@ FrontBackCut::frontRule() const
 }
 
 std::string
+FrontBackCut::frontComplement() const
+  /*!
+    Accessor to front rule (complement)
+    \return frontRule.cmp with divider
+  */
+{
+  return (activeFront) ?
+    frontCut.complement().display()+frontDivider.display() : "" ;    
+}
+
+std::string
 FrontBackCut::backRule() const
   /*!
     Accessor to back rule
@@ -293,6 +304,17 @@ FrontBackCut::backRule() const
 {
   return (activeBack) ?
     backCut.display()+backDivider.display() : "";    
+}
+
+std::string
+FrontBackCut::backComplement() const
+  /*!
+    Accessor to back rule
+    \return backRule with divider
+  */
+{
+  return (activeBack) ?
+    backCut.complement().display()+backDivider.display() : "";    
 }
 
 std::string
@@ -435,7 +457,7 @@ FrontBackCut::getShiftedSurf(ModelSupport::surfRegister& SMap,
     Support function to calculate the shifted surface
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
-    \param dFlag :: direction flag
+    \param dFlag :: direction of surface axis (relative to HR.Plane)
     \param YAxis :: Direction of cylindical shift
     \param length :: length to shift by
   */

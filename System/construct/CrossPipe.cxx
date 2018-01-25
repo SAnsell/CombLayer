@@ -94,6 +94,54 @@ CrossPipe::CrossPipe(const std::string& Key) :
   */
 {}
 
+CrossPipe::CrossPipe(const CrossPipe& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FrontBackCut(A),
+  vacIndex(A.vacIndex),cellIndex(A.cellIndex),horrRadius(A.horrRadius),
+  vertRadius(A.vertRadius),height(A.height),depth(A.depth),
+  frontLength(A.frontLength),backLength(A.backLength),
+  feThick(A.feThick),topPlate(A.topPlate),basePlate(A.basePlate),
+  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength),
+  voidMat(A.voidMat),feMat(A.feMat)
+  /*!
+    Copy constructor
+    \param A :: CrossPipe to copy
+  */
+{}
+
+CrossPipe&
+CrossPipe::operator=(const CrossPipe& A)
+  /*!
+    Assignment operator
+    \param A :: CrossPipe to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      cellIndex=A.cellIndex;
+      horrRadius=A.horrRadius;
+      vertRadius=A.vertRadius;
+      height=A.height;
+      depth=A.depth;
+      frontLength=A.frontLength;
+      backLength=A.backLength;
+      feThick=A.feThick;
+      topPlate=A.topPlate;
+      basePlate=A.basePlate;
+      flangeRadius=A.flangeRadius;
+      flangeLength=A.flangeLength;
+      voidMat=A.voidMat;
+      feMat=A.feMat;
+    }
+  return *this;
+}
 
 CrossPipe::~CrossPipe() 
   /*!
