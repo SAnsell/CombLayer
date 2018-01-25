@@ -38,7 +38,7 @@ namespace essSystem
 
 class DiskPreMod : public attachSystem::ContainedComp,
   public attachSystem::LayerComp,
-  public attachSystem::FixedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
@@ -47,7 +47,6 @@ class DiskPreMod : public attachSystem::ContainedComp,
   const int modIndex;             ///< Index of surface offset
   int cellIndex;                  ///< Cell index
 
-  double zStep;                   ///< Step away from target
   double outerRadius;             ///< Outer radius of Be Zone
 
   std::vector<double> radius;         ///< cylinder radii [additive]
@@ -66,7 +65,8 @@ class DiskPreMod : public attachSystem::ContainedComp,
   std::shared_ptr<OnionCooling> onion;
   std::string sideRule; ///< side rule
 
-  void populate(const FuncDataBase&,const double,const double);
+  using FixedOffset::populate;
+  void populate(const FuncDataBase&,const double&);
   void createUnitVector(const attachSystem::FixedComp&,const long int,
 			const bool);
 
@@ -94,7 +94,7 @@ class DiskPreMod : public attachSystem::ContainedComp,
     { return (depth.empty()) ? 0.0 : depth.back()+height.back(); }
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int,const bool,const double,const double);
+		 const long int,const bool,const double&);
 
 };
 

@@ -23,7 +23,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <cmath>
 #include <complex>
 #include <list>
 #include <vector>
@@ -66,6 +65,7 @@
 #include "stringCombine.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "LayerComp.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -82,7 +82,7 @@ namespace essSystem
 DiskPreMod::DiskPreMod(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::LayerComp(0),
-  attachSystem::FixedComp(Key,9),
+  attachSystem::FixedOffset(Key,9),
   attachSystem::CellMap(),attachSystem::SurfMap(),  
   modIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(modIndex+1),NWidth(0),
@@ -101,7 +101,7 @@ DiskPreMod::DiskPreMod(const std::string& Key) :
 
 DiskPreMod::DiskPreMod(const DiskPreMod& A) : 
   attachSystem::ContainedComp(A),
-  attachSystem::LayerComp(A),attachSystem::FixedComp(A),
+  attachSystem::LayerComp(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   modIndex(A.modIndex),cellIndex(A.cellIndex),radius(A.radius),
   height(A.height),depth(A.depth),width(A.width),
@@ -128,7 +128,7 @@ DiskPreMod::operator=(const DiskPreMod& A)
     {
       attachSystem::ContainedComp::operator=(A);
       attachSystem::LayerComp::operator=(A);
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
@@ -165,21 +165,20 @@ DiskPreMod::~DiskPreMod()
 
 void
 DiskPreMod::populate(const FuncDataBase& Control,
-		     const double zShift,
-		     const double outRadius)
+		     const double& outRadius)
   /*!
     Populate all the variables
     \param Control :: Variable table to use
-    \param zShift :: Default offset height 
     \param outRadius :: Outer radius of reflector [for void fill]
   */
 {
   ELog::RegMethod RegA("DiskPreMod","populate");
 
+  FixedOffset::populate(Control);
+
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
   flowGuideType=Control.EvalVar<std::string>(keyName+"FlowGuideType");
 
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",zShift);
   outerRadius=outRadius;
 
   // clear stuff 
@@ -247,7 +246,9 @@ DiskPreMod::createUnitVector(const attachSystem::FixedComp& refCentre,
       Z*=-1;
     }
   const double D=(depth.empty()) ? 0.0 : depth.back();
-  applyShift(0,0,zStep+D);
+
+  zStep += D;
+  applyOffset();
 
   return;
 }
@@ -526,21 +527,19 @@ DiskPreMod::createAll(Simulation& System,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex,
 		      const bool zRotate,
-		      const double VOffset,
-		      const double ORad)
+		      const double& ORad)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: Attachment point	       
     \param sideIndex :: side of object
     \param zRotate :: Rotate to -ve Z
-    \param VOffset :: Vertical offset from target
     \param ORad :: Outer radius of zone
    */
 {
   ELog::RegMethod RegA("DiskPreMod","createAll");
 
-  populate(System.getDataBase(),VOffset,ORad);
+  populate(System.getDataBase(),ORad);
   createUnitVector(FC,sideIndex,zRotate);
 
   createSurfaces();
