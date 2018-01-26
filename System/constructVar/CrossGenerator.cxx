@@ -142,19 +142,20 @@ CrossGenerator::setPlates(const double WT,const double TT,const double BT)
   wallThick=WT;
   topThick=TT;
   baseThick=BT;
+  return;
 }
 
 
 void
 CrossGenerator::setPorts(const double LenF,const double LenB)
   /*!
-    Set both the ports
+    Set both the ports extension on horrizontal
     \param LenF :: lenght of port tube
     \param LenB :: Thickness of port tube
    */
 {
-  frontLen=LenF;
-  backLen=LenB;
+  frontLen= -LenF;
+  backLen=  -LenB;
   return;
 }
 
@@ -198,8 +199,10 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   
   Control.addVariable(keyName+"Height",height);
   Control.addVariable(keyName+"Depth",depth);
-  Control.addVariable(keyName+"FrontLength",frontLen);
-  Control.addVariable(keyName+"BackLength",backLen);
+  const double FL=(frontLen<0.0) ? VRad-frontLen : frontLen;
+  const double BL=(backLen<0.0) ? VRad-backLen : backLen;
+  Control.addVariable(keyName+"FrontLength",FL);
+  Control.addVariable(keyName+"BackLength",BL);
 
   Control.addVariable(keyName+"FeThick",wallThick);
   Control.addVariable(keyName+"TopPlate",topThick);

@@ -59,11 +59,14 @@ class VacBoxGenerator
   ~VacBoxGenerator();
 
 
+  /// set wall thickness
+  void setWallThick(const double T) { wallThick=T; }
+
   void setPort(const double,const double,const double);
   void setFlange(const double,const double);
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }
-  /// set pipe material
+  /// set wall material
   void setMat(const std::string& M) { wallMat=M; }
 
   

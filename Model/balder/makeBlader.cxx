@@ -82,10 +82,13 @@ namespace xraySystem
 
 makeBalder::makeBalder() :
   opticsHut(new OpticsHutch("Optics")),
-  triggerPipe(new CrossPipe("TriggerPipe")),
+  triggerPipe(new constructSystem::CrossPipe("TriggerPipe")),
   pipeA(new constructSystem::VacuumPipe("BellowA")),
   filterBox(new constructSystem::VacuumBox("FilterBox")),
-  pipeB(new constructSystem::VacuumPipe("BellowB"))
+  pipeB(new constructSystem::VacuumPipe("BellowB")),
+  ionPumpA(new constructSystem::CrossPipe("IonPumpA")),
+  mirrorBox(new constructSystem::VacuumBox("MirrorBox")),
+  ionPumpB(new constructSystem::CrossPipe("IonPumpB"))
   /*!
     Constructor
   */
@@ -98,6 +101,10 @@ makeBalder::makeBalder() :
   OR.addObject(pipeA);
   OR.addObject(filterBox);
   OR.addObject(pipeB);
+  OR.addObject(ionPumpA);
+  OR.addObject(mirrorBox);
+  OR.addObject(ionPumpB);
+
 }
 
 makeBalder::~makeBalder()
@@ -109,7 +116,7 @@ makeBalder::~makeBalder()
 void 
 makeBalder::build(Simulation& System,
 		  const mainSystem::inputParam& IParam)
-/*!
+  /*!
     Carry out the full build
     \param System :: Simulation system
     \param IParam :: Input parameters
@@ -138,6 +145,18 @@ makeBalder::build(Simulation& System,
   pipeB->setFront(*filterBox,2);
   pipeB->createAll(System,*filterBox,2);
 
+  ionPumpA->addInsertCell(opticsHut->getCell("Void"));
+  ionPumpA->setFront(*pipeB,2);
+  ionPumpA->createAll(System,*pipeB,2);
+
+  mirrorBox->addInsertCell(opticsHut->getCell("Void"));
+  mirrorBox->setFront(*ionPumpA,2);
+  mirrorBox->createAll(System,*ionPumpA,2);
+
+  ionPumpB->addInsertCell(opticsHut->getCell("Void"));
+  ionPumpB->setFront(*mirrorBox,2);
+  ionPumpB->createAll(System,*mirrorBox,2);
+  
   return;
 }
 

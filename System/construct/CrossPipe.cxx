@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/CrossPipe.cxx
+ * File:   construct/CrossPipe.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -77,9 +77,9 @@
 #include "SurfMap.h"
 #include "SurInter.h"
 
-#include "CrossPipe.h"
+#include "CrossPipe.h" 
 
-namespace xraySystem
+namespace constructSystem
 {
 
 CrossPipe::CrossPipe(const std::string& Key) : 
@@ -357,4 +357,4 @@ CrossPipe::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE xraySystem
+}  // NAMESPACE constructSystem

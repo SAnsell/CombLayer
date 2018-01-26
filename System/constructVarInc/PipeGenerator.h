@@ -45,8 +45,10 @@ class PipeGenerator
   double pipeWidth;             ///< main width
   double pipeThick;             ///< metal thickness
   double claddingThick;         ///< cladding radius
-  double flangeRadius;          ///< flange Radius (>radius)
-  double flangeLen;             ///< flange Length
+  double flangeARadius;          ///< flange Radius (>radius)
+  double flangeALen;             ///< flange Length
+  double flangeBRadius;          ///< flange Radius (>radius)
+  double flangeBLen;             ///< flange Length
   double windowRadius;          ///< window radius (radius > WR > flangeR)
   double windowThick;           ///< window thickness
   
@@ -67,6 +69,7 @@ class PipeGenerator
   void setRectPipe(const double,const double,const double);
   void setWindow(const double,const double);
   void setFlange(const double,const double);
+  void setFlangePair(const double,const double,const double,const double);
   /// set pipe material
   void setMat(const std::string& M) { pipeMat=M; }
   void setWindowMat(const std::string&);

@@ -85,7 +85,7 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("OpticsFloorMat","Concrete");
 
   CrossGen.setPlates(0.5,1.0,1.0);
-  CrossGen.setPorts(10.75,10.75);
+  CrossGen.setPorts(5.75,5.75);
   CrossGen.setFlange(2.0,1.0);
   CrossGen.setMat("Stainless304");
   CrossGen.generateCross(Control,"TriggerPipe",22.0,
@@ -106,7 +106,21 @@ balderVariables(FuncDataBase& Control)
 
   PipeGen.generatePipe(Control,"BellowB",0,10.0);
 
+  CrossGen.setPlates(0.5,1.0,1.0);
+  CrossGen.setPorts(1.1,1.1);
+  CrossGen.setFlange(2.0,0.3);
+  CrossGen.generateCross(Control,"IonPumpA",0.0,2.0,3.5,10.0,7.5);
+
   
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setPort(2.0,5.0,0.6);  // R/Len/thickness
+  VBoxGen.setFlange(0.5,0.8);
+  // ystep/width/height/depth/length
+  // [length is 177.4cm total]
+  VBoxGen.generateBox(Control,"MirrorBox",0.0,54.0,15.3,31.3,167.4);
+
+  CrossGen.generateCross(Control,"IonPumpB",0.0,2.0,3.5,10.0,7.5);
   return;
 }
 

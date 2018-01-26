@@ -80,10 +80,15 @@ class VacuumPipe :
   double feThick;               ///< pipe thickness
   double claddingThick;         ///< cladding thickness
 
-  double flangeRadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeHeight;          ///< Joining Flange height
-  double flangeWidth;           ///< Joining Flange width
-  double flangeLength;          ///< Joining Flange length
+  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeAHeight;          ///< Joining Flange height
+  double flangeAWidth;           ///< Joining Flange width
+  double flangeALength;          ///< Joining Flange length
+
+  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeBHeight;          ///< Joining Flange height
+  double flangeBWidth;           ///< Joining Flange width
+  double flangeBLength;          ///< Joining Flange length
 
   int activeWindow;             ///< Flag on window activity
   windowInfo windowFront;       ///< Front window info

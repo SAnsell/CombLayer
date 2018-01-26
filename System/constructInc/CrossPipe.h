@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/CrossPipe.h
+ * File:   constructInc/CrossPipe.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_CrossPipe_h
-#define xraySystem_CrossPipe_h
+#ifndef constructSystem_CrossPipe_h
+#define constructSystem_CrossPipe_h
 
 class Simulation;
 
-namespace xraySystem
+namespace constructSystem
 {
   
 /*!
@@ -77,9 +77,6 @@ class CrossPipe :
   CrossPipe& operator=(const CrossPipe&);
   virtual ~CrossPipe();
 
-  void setFront(const attachSystem::FixedComp&,const long int,const bool =0);
-  void setBack(const attachSystem::FixedComp&,const long int,const bool =0);
-  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

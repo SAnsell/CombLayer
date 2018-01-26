@@ -25,9 +25,9 @@
 namespace constructSystem
 {
   class SupplyPipe;
+  class CrossPipe;
   class VacuumPipe;
   class VacuumBox;
-  class Motor;
 }
 
 
@@ -42,7 +42,6 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class CrossPipe;
   class OpticsHutch;
   /*!
     \class makeBalder
@@ -60,7 +59,7 @@ class makeBalder
   std::shared_ptr<OpticsHutch> opticsHut;
 
   /// Trigger Unit (pipe):
-  std::shared_ptr<CrossPipe> triggerPipe;
+  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
@@ -70,6 +69,15 @@ class makeBalder
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::CrossPipe> ionPumpA;
+
+  /// Vertical mirror box
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBox;
+
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::CrossPipe> ionPumpB;
 
  public:
   
