@@ -55,6 +55,43 @@ namespace setVariable
 {
 
 void
+monoVariables(FuncDataBase& Control)
+  /*!
+    Set the variables for the mono
+    \param Control :: DataBase to use
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","monoVariables");
+  
+  Control.addVariable("MonoVacYStep",100.0);
+  Control.addVariable("MonoVacZStep",2.0);
+  Control.addVariable("MonoVacRadius",33.0);
+  Control.addVariable("MonoVacRingWidth",21.5);
+  Control.addVariable("MonoVacOutWidth",16.5);
+  Control.addVariable("MonoVacWallThick",1.0);
+  Control.addVariable("MonoVacDoorThick",2.54);
+  Control.addVariable("MonoVacBackThick",2.54);
+  Control.addVariable("MonoVacDoorFlangeRad",4.0);
+  Control.addVariable("MonoVacRingFlangeRad",4.0);
+  Control.addVariable("MonoVacDoorFlangeLen",2.54);
+  Control.addVariable("MonoVacRingFlangeLen",2.54);
+
+  Control.addVariable("MonoVacInPortZStep",-2.0);
+  Control.addVariable("MonoVacOutPortZStep",2.0);
+  
+  Control.addVariable("MonoVacPortRadius",5.0);
+  Control.addVariable("MonoVacPortLen",4.65);
+  Control.addVariable("MonoVacPortThick",0.3);
+  Control.addVariable("MonoVacPortFlangeLen",1.5);
+  Control.addVariable("MonoVacPortFlangeRad",2.5);
+
+  Control.addVariable("MonoVacWallMat","Stainless304");
+
+  return;
+}
+
+  
+void
 balderVariables(FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
@@ -121,6 +158,21 @@ balderVariables(FuncDataBase& Control)
   VBoxGen.generateBox(Control,"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
   CrossGen.generateCross(Control,"IonPumpB",0.0,2.0,3.5,10.0,7.5);
+
+  PipeGen.setPipe(2.0,0.5);      // 2cm radius / 0.5cm wall
+  PipeGen.setFlangePair(-0.8,0.8,-5.7,1.0);
+  // [length is 10cm total]
+  PipeGen.generatePipe(Control,"BellowC",0,10.0); 
+
+  PipeGen.setPipe(5.0,0.5);      // 2cm radius / 0.5cm wall
+  PipeGen.setFlange(-2.7,1.0);
+  // [length is 38.3cm total]
+  PipeGen.generatePipe(Control,"DriftA",0,38.3); 
+
+  monoVariables(Control);
+
+
+  
   return;
 }
 

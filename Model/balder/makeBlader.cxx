@@ -75,6 +75,7 @@
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
+#include "MonoVessel.h"
 #include "makeBalder.h"
 
 namespace xraySystem
@@ -88,7 +89,10 @@ makeBalder::makeBalder() :
   pipeB(new constructSystem::VacuumPipe("BellowB")),
   ionPumpA(new constructSystem::CrossPipe("IonPumpA")),
   mirrorBox(new constructSystem::VacuumBox("MirrorBox")),
-  ionPumpB(new constructSystem::CrossPipe("IonPumpB"))
+  ionPumpB(new constructSystem::CrossPipe("IonPumpB")),
+  pipeC(new constructSystem::VacuumPipe("BellowC")),
+  driftA(new constructSystem::VacuumPipe("DriftA")),
+  monoV(new xraySystem::MonoVessel("MonoVac"))
   /*!
     Constructor
   */
@@ -104,6 +108,9 @@ makeBalder::makeBalder() :
   OR.addObject(ionPumpA);
   OR.addObject(mirrorBox);
   OR.addObject(ionPumpB);
+  OR.addObject(pipeC);
+  OR.addObject(driftA);
+  OR.addObject(monoV);
 
 }
 
@@ -156,7 +163,19 @@ makeBalder::build(Simulation& System,
   ionPumpB->addInsertCell(opticsHut->getCell("Void"));
   ionPumpB->setFront(*mirrorBox,2);
   ionPumpB->createAll(System,*mirrorBox,2);
-  
+
+  pipeC->addInsertCell(opticsHut->getCell("Void"));
+  pipeC->setFront(*ionPumpB,2);
+  pipeC->createAll(System,*ionPumpB,2);
+
+  driftA->addInsertCell(opticsHut->getCell("Void"));
+  driftA->setFront(*pipeC,2);
+  driftA->createAll(System,*pipeC,2);
+
+ 
+  monoV->addInsertCell(opticsHut->getCell("Void"));
+  monoV->createAll(System,*driftA,2);
+
   return;
 }
 

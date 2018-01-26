@@ -43,6 +43,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
+  class MonoVessel;
   /*!
     \class makeBalder
     \version 1.0
@@ -79,6 +80,20 @@ class makeBalder
   /// Straight value cross piece (ion pump)
   std::shared_ptr<constructSystem::CrossPipe> ionPumpB;
 
+  /// Joining Bellows from mirror box
+  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+
+  /// Large drift chamber
+  std::shared_ptr<constructSystem::VacuumPipe> driftA;
+
+  /// Huge Bellows to Mono
+  std::shared_ptr<constructSystem::VacuumPipe> monoBellowA;
+  /// Huge Bellows from Mono
+  std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
+
+  /// Mono Vessel
+  std::shared_ptr<xraySystem::MonoVessel> monoV;
+      
  public:
   
   makeBalder();
