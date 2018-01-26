@@ -3,7 +3,7 @@
  
  * File:   source/SourceCreate.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,8 +156,8 @@ createESSSource(const FuncDataBase& Control,
   
   const double E=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double yStart=Control.EvalDefVar<double>("sdefYPos",-30.0);
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",8.0);
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",3.0);
+  const double xRange=Control.EvalDefVar<double>("sdefWidth",14.0);
+  const double zRange=Control.EvalDefVar<double>("sdefHeight",3.2);
  
   ParabolicSource PSource("essSource");
   
@@ -166,6 +166,7 @@ createESSSource(const FuncDataBase& Control,
   PSource.setOffset(0,yStart,0);
   PSource.setRectangle(xRange,zRange);
   PSource.setPower(0.0);
+  PSource.setNPts(1,1);
   PSource.createAll(Control,FC,sideIndex);
   
   SDB.registerSource(PSource.getKeyName(),PSource);

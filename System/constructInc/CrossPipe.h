@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/ChopperHousing.h
+ * File:   constructInc/CrossPipe.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_ChopperHousing_h
-#define constructSystem_ChopperHousing_h
+#ifndef constructSystem_CrossPipe_h
+#define constructSystem_CrossPipe_h
 
 class Simulation;
 
@@ -28,46 +28,54 @@ namespace constructSystem
 {
   
 /*!
-  \class ChopperHousing
+  \class CrossPipe
   \version 1.0
   \author S. Ansell
-  \date July 2015
-  \brief ChopperHousing unit  
-  
-  This piece aligns away from the chopper axis. Using
-  the chopper origin [bearing position]
+  \date January 2018
+  \brief CrossPipe unit  
 */
 
-class ChopperHousing :
+class CrossPipe :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap,
+  public attachSystem::FrontBackCut
 {
  private:
   
-  const int houseIndex;         ///< Index of surface offset
+  const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double voidHeight;            ///< void height from chopper rot centre
-  double voidWidth;             ///< void width [across]
-  double voidDepth;             ///< void depth 
-  double voidThick;             ///< void length [total]
-  
-  double wallThick;             ///< wall thickness  
-  int wallMat;                  ///< Wall material layer
+  double horrRadius;            ///< horrizontal radius [inner]
+  double vertRadius;            ///< vertical radius [inner]
+  double height;                ///< void height
+  double depth;                 ///< void depth
+  double frontLength;           ///< void length [from centre]
+  double backLength;            ///< void length [from centre]
+
+  double feThick;               ///< pipe thickness
+  double topPlate;              ///< Top plate thickness
+  double basePlate;             ///< base plate thickness
+
+  double flangeRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeLength;          ///< Joining Flange length
+    
+  int voidMat;                  ///< Void material
+  int feMat;                    ///< Pipe material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  
  public:
 
-  ChopperHousing(const std::string&);
-  ChopperHousing(const ChopperHousing&);
-  ChopperHousing& operator=(const ChopperHousing&);
-  virtual ~ChopperHousing();
+  CrossPipe(const std::string&);
+  CrossPipe(const CrossPipe&);
+  CrossPipe& operator=(const CrossPipe&);
+  virtual ~CrossPipe();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

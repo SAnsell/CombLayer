@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/ChopperHousing.h
+ * File:   constructInc/GateValve.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_ChopperHousing_h
-#define constructSystem_ChopperHousing_h
+#ifndef constructSystem_GateValve_h
+#define constructSystem_GateValve_h
 
 class Simulation;
 
@@ -28,46 +28,56 @@ namespace constructSystem
 {
   
 /*!
-  \class ChopperHousing
+  \class GateValve
   \version 1.0
   \author S. Ansell
-  \date July 2015
-  \brief ChopperHousing unit  
-  
-  This piece aligns away from the chopper axis. Using
-  the chopper origin [bearing position]
+  \date January 2018
+  \brief GateValve unit  
 */
 
-class ChopperHousing :
+class GateValve :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap,
+  public attachSystem::FrontBackCut
 {
  private:
   
-  const int houseIndex;         ///< Index of surface offset
+  const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double voidHeight;            ///< void height from chopper rot centre
-  double voidWidth;             ///< void width [across]
-  double voidDepth;             ///< void depth 
-  double voidThick;             ///< void length [total]
+    double length;                ///< Void length
+  double width;                 ///< Void width (full)
+  double height;                ///< height 
+  double depth;                 ///< depth
   
-  double wallThick;             ///< wall thickness  
-  int wallMat;                  ///< Wall material layer
+  double wallThick;             ///< Wall thickness
+  double portRadius;            ///< Port inner radius (opening)
+  double portThick;             ///< Port outer ring
+  double portLen;               ///< Forward step of port
+  
+  bool closed;                  ///< Shutter closed
+  double bladeLift;             ///< Height of blade up
+  double bladeThick;            ///< moving blade thickness
+  double bladeRadius;           ///< moving blade radius
+  
+  int voidMat;                  ///< Void material
+  int bladeMat;                  ///< Void material
+  int wallMat;                    ///< Pipe material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  
  public:
 
-  ChopperHousing(const std::string&);
-  ChopperHousing(const ChopperHousing&);
-  ChopperHousing& operator=(const ChopperHousing&);
-  virtual ~ChopperHousing();
+  GateValve(const std::string&);
+  GateValve(const GateValve&);
+  GateValve& operator=(const GateValve&);
+  virtual ~GateValve();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

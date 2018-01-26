@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/OpticsHutch.h
+ * File:   balderInc/OpticsHutch.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

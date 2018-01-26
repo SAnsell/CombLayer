@@ -3,7 +3,7 @@
  
  * File:   src/Simulation.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -533,9 +533,29 @@ Simulation::addCell(const int Index,const int MatNum,
    */
 {
   ELog::RegMethod RegA("Simulation","addCell(int,int,string)");
+  return addCell(Index,MatNum,0.0,RuleLine);
+}
+
+int
+Simulation::addCell(const int Index,const int matNum,
+		    const double matTemp,
+		    const std::string& RuleLine)
+  /*!
+    From the information try to add a new cell
+    \param Index :: Identifier of cell
+    \param matNum :: Material number 
+    \param matTemp :: Material temperature
+    \param RuleLine :: List of rules
+    \retval -1 :: failure [no new cell etc]
+    \retval 0 :: success
+   */
+{
+  ELog::RegMethod RegA("Simulation","addCell(int,int,double,string)");
+  
   MonteCarlo::Qhull TX;
   TX.setName(Index);
-  TX.setMaterial(MatNum);  
+  TX.setMaterial(matNum);
+  TX.setTemp(matTemp);  
   TX.procString(RuleLine);         // This always is successful. 
   return addCell(Index,TX);
 }
