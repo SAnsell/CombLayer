@@ -123,10 +123,9 @@ Material::operator*=(const double V)
    */
 {
   ELog::RegMethod RegA("Material","operator*=");
-  
-  std::vector<Zaid>::iterator vc;
-  for(vc=zaidVec.begin();vc!=zaidVec.end();vc++)
-    vc->setDensity(vc->getDensity()*V);
+
+  for(Zaid& ZR : zaidVec)
+    ZR.setDensity(ZR.getDensity()*V);
   
   return *this;
 }
@@ -207,7 +206,8 @@ Material::operator+=(const Material& A)
       if (sqSet.find(LItem)==sqSet.end())
 	Libs.push_back(LItem);
     }
-
+  
+  calcAtomicDensity();
   return *this;
 }
 
@@ -237,7 +237,7 @@ Material::getZaidIndex(const size_t ZNum,const size_t TNum,const char C) const
   */
 {
   for(size_t i=0;i<zaidVec.size();i++)
-    if (zaidVec[i].isEquavilent(ZNum,TNum,C))
+    if (zaidVec[i].isEquivalent(ZNum,TNum,C))
       return i;
   
   return ULONG_MAX;
@@ -681,7 +681,10 @@ Material::calcAtomicDensity()
 {
   atomDensity=0.0;
   for(const Zaid& ZC : zaidVec)
-    atomDensity+=ZC.getDensity();
+    {
+      if (ZC.getZ())
+	atomDensity+=ZC.getDensity();
+    }
 
   return;
 }
@@ -811,13 +814,13 @@ Material::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("Material","writeFLUKA");
+  ELog::RegMethod RegA("Material","writePHITS");
   
 
   const Element& EL(Element::Instance());
 
   std::ostringstream cx;
-  OX<<"c Material : "<<Name<<" rho="<<atomDensity<<std::endl;
+  OX<<"$ Material : "<<Name<<" rho="<<getMacroDensity() << " g/cc"<<std::endl;
   OX<<"mat["<<Mnum<<"]\n";
 
   
@@ -857,53 +860,50 @@ Material::writePHITS(std::ostream& OX) const
 void 
 Material::writeFLUKA(std::ostream& OX) const
   /*!
-    Write out the information about the material
-    in a humman readable form (same as mcnpx file)
+    Write out material definitions in the fixed FLUKA format
     \param OX :: Output stream
   */
 {
   ELog::RegMethod RegA("Material","writeFLUKA");
-  
+
+  const std::string mat(" M"+std::to_string(Mnum));
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
-  cx<<"*\n* Material : "<<Name<<" rho="<<atomDensity;
+  cx<<"*\n* Material : "<<Name<<" rho="<<getMacroDensity()<<" g/cc";
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL 0 0"<<
-  
-  cx.precision(10);
-  cx<<"m"<<Mnum<<"     ";
-  if (Mnum<10) cx<<" ";
+  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<mat<<std::endl;
+
   std::vector<Zaid>::const_iterator zc;
   std::vector<std::string>::const_iterator vc;
+  cx<<"COMPOUND ";
+  cx<<std::setprecision(5);
+  size_t i(0);
+  const size_t n(zaidVec.size());
   for(const Zaid& ZItem: zaidVec)
-    cx<<ZItem<<" ";
+    {
+      cx<<ZItem.getDensity()<<
+	" E"+std::to_string(ZItem.getZaidNum())+" ";
+    i++;
+    if (!(i%3))
+      {
+	cx<<mat;
+	if (i!=n) cx<<" COMPOUND ";
+      }
+    }
 
-  for(const std::string& libItem : Libs)
-    cx<<libItem<<"  ";
-  StrFunc::writeMCNPX(cx.str(),OX);
-  
-  cx.str("");
-  MXTYPE::const_iterator mc;
-  for(mc=mxCards.begin();mc!=mxCards.end();mc++)
+  // Add additional empty WHAT cards and SDEF in the end
+  // if the COMPOUND line is not complete
+  if (i%3)
     {
-      cx<<"mx"<<Mnum;
-      mc->second.write(cx,zaidVec);
-      StrFunc::writeMCNPX(cx.str(),OX);
+      while (i++%3)
+	  cx<< " - - ";
+      cx<<mat;
     }
-  // avoid having to reset flags/precision in cx
-  std::ostringstream rx;
-  if (!SQW.empty())
-    {
-      rx.str("");
-      rx<<"mt"<<Mnum<<"    ";
-      if (Mnum<10) rx<<" ";
-      std::copy(SQW.begin(),SQW.end(),
-		std::ostream_iterator<std::string>(rx," "));
-      StrFunc::writeMCNPX(rx.str(),OX);
-    }
+
+  StrFunc::writeFLUKA(cx.str(),OX);
 
   return;
 } 
@@ -944,8 +944,9 @@ Material::write(std::ostream& OX) const
   typedef std::map<std::string,MXcards> MXTYPE;
   
   std::ostringstream cx;
-  cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity;
-  StrFunc::writeMCNPX(cx.str(),OX);
+  cx<<"c\nc Material : "<<Name<<" rho="<<atomDensity<<"\n";
+  cx<<"c           (rho="<<getMacroDensity()<<" g/cc)";
+  StrFunc::writeMCNPXcomment(cx.str(),OX);
   cx.str("");
   
   cx.precision(10);

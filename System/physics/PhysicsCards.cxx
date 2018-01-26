@@ -51,6 +51,7 @@
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
+#include "PSimple.h"
 #include "LSwitchCard.h"
 #include "NList.h"
 #include "nameCard.h"
@@ -980,8 +981,24 @@ PhysicsCards::writeHelp(const std::string& keyName) const
   ELog::EM<<ELog::endDiag;
   return;
 }
-  
-   
+
+void
+PhysicsCards::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out each of the physics-related cards
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("PhyiscsCards","write");
+
+  dbCard->write(OX);
+
+  StrFunc::writeFLUKA("RANDOMIZE 1.0",OX);
+  StrFunc::writeFLUKA("START "+std::to_string(nps),OX);
+
+  return;
+}
+
 void 
 PhysicsCards::writePHITS(std::ostream& OX)
   /*!
@@ -1115,6 +1132,9 @@ PhysicsCards::setDBCN(const std::string&,
 
   
 template PStandard*
+PhysicsCards::addPhysCard(const std::string&,const std::string&);
+
+template PSimple*
 PhysicsCards::addPhysCard(const std::string&,const std::string&);
 
 ///\endcond TEMPLATE

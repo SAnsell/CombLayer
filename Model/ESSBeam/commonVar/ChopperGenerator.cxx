@@ -184,6 +184,16 @@ ChopperGenerator::setMotorRadius(const double R)
   return;
 }
 
+void
+ChopperGenerator::setReverseMotor(const bool A)
+  /*!
+    Reverse the motors from -ve Y direction
+    \param A :: Reverse Motor 
+  */
+{
+  motorRevFlag=A;
+  return;
+}
   
 void
 ChopperGenerator::setFrame(const double H,const double W)
@@ -260,7 +270,8 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MotorSealRadius",(motorInner+motorOuter)/2.0);
   Control.addVariable(keyName+"MotorSealThick",0.2);  
   Control.addVariable(keyName+"MotorSealMat","Poly");
-
+  Control.addVariable(keyName+"MotorReverse",static_cast<int>(motorRevFlag));
+  
   Control.addVariable(keyName+"FrontFlangeNBolts",24); 
   Control.addVariable(keyName+"FrontFlangeBoltRadius",0.40); 
   Control.addVariable(keyName+"FrontFlangeInnerRadius",portRadius); // [5691.2]

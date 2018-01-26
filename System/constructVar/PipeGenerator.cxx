@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   commonVar/PipeGenerator.cxx
+ * File:   constructVar/PipeGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,8 @@ namespace setVariable
 PipeGenerator::PipeGenerator() :
   pipeType(0),pipeRadius(8.0),
   pipeHeight(16.0),pipeWidth(16.0),pipeThick(0.5),
-  claddingThick(0.0),flangeRadius(12.0),flangeLen(1.0),
+  claddingThick(0.0),flangeARadius(12.0),flangeALen(1.0),
+  flangeBRadius(12.0),flangeBLen(1.0),
   windowRadius(10.0),windowThick(0.5),
   pipeMat("Aluminium"),frontWindowMat("Silicon300K"),
   backWindowMat("Silicon300K"),
@@ -137,7 +138,7 @@ void
 PipeGenerator::setWindow(const double R,const double T)
   /*!
     Set all the window values
-    \param R :: radius of window
+    \param R :: radius of window [-ve to be bigger than main rad]
     \param T :: Thickness
    */
 {
@@ -155,8 +156,29 @@ PipeGenerator::setFlange(const double R,const double L)
     \param L :: length
    */
 {
-  flangeRadius=R;
-  flangeLen=L;
+  flangeARadius=R;
+  flangeALen=L;
+  flangeBRadius=R;
+  flangeBLen=L;
+  return;
+}
+
+void
+PipeGenerator::setFlangePair(const double AR,const double AL,
+			     const double BR,const double BL)
+  /*!
+    Set all the flange values
+    \param AR :: radius of front flange
+    \param AL :: front flange length
+    \param BR :: radius of back flange
+    \param BL :: back flange length
+   */
+{
+  flangeARadius=AR;
+  flangeALen=AL;
+  flangeBRadius=BR;
+  flangeBLen=BL;
+
   return;
 }
 
@@ -217,9 +239,14 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
                          pipeRadius);
   double realWindowRadius=(windowRadius<0.0) ?
     minRadius-windowRadius : windowRadius;
-  const double realFlangeRadius=(flangeRadius<0.0) ?
-    minRadius-flangeRadius : flangeRadius;
-  realWindowRadius=std::min(realWindowRadius,realFlangeRadius);
+
+  const double realFlangeARadius=(flangeARadius<0.0) ?
+    minRadius-flangeARadius : flangeARadius;
+  const double realFlangeBRadius=(flangeBRadius<0.0) ?
+    minRadius-flangeBRadius : flangeBRadius;
+
+  realWindowRadius=std::min(realWindowRadius,realFlangeARadius);
+  realWindowRadius=std::min(realWindowRadius,realFlangeBRadius);
 
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
@@ -232,8 +259,10 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
     }
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"FeThick",pipeThick);
-  Control.addVariable(keyName+"FlangeRadius",realFlangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLen);
+  Control.addVariable(keyName+"FlangeFrontRadius",realFlangeARadius);
+  Control.addVariable(keyName+"FlangeBackRadius",realFlangeBRadius);
+  Control.addVariable(keyName+"FlangeFrontLength",flangeALen);
+  Control.addVariable(keyName+"FlangeBackLength",flangeBLen);
   Control.addVariable(keyName+"FeMat",pipeMat);
   Control.addVariable(keyName+"WindowActive",3);
 

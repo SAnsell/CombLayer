@@ -1,0 +1,22 @@
+\subsubsection{ESS}
+\label{sec:model:ess}
+
+\paragraph{Beam lines}
+\label{sec:model:ess:beam-lines}
+
+\subparagraph{StopPoint variable}
+\label{sec:model:ess:beam-lines:StopPoint}
+The {\tt StopPoint} variable stops building a beam line at a given point:
+\begin{description}
+\item[0] builds the whole beam line
+\item[1] builds nothing more than a bit up to the \SI{5.5}{\meter} mark
+\item[2] builds everything in the bunker but not through the bunker wall
+\item[3] builds up to the end of the Bunker
+\item[4] builds up to the cave %hatch
+\item[5] bulds everything beyond the cave (object where the sample/detector are located)
+\end{description}
+
+If you use the {\tt essBeamLine} executable then you can also give the start point
+and then you will only get a fragment of your instrument.
+Obviously, you would get nothing if the start and end point are the same.
+\alert{syntax of ./essBeamline?}

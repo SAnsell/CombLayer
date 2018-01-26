@@ -47,6 +47,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"

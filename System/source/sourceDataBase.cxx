@@ -222,6 +222,27 @@ sourceDataBase::getSourceThrow(const std::string& Name,
   return SPtr;
 }
 
+std::shared_ptr<SourceBase>
+sourceDataBase::getSharedThrow(const std::string& Name,
+                               const std::string& Err)
+  /*!
+    Find a source 
+    Throws InContainerError if not present in correct type
+    \param Name :: Name
+    \param Err :: Error string for exception
+    \return SourcePtr 
+  */
+{
+  ELog::RegMethod RegA("sourceDataBase","getSharedThrow");
+  
+  SMAP::const_iterator mc=Components.find(Name);
+  if (mc==Components.end())
+    throw ColErr::InContainerError<std::string>(Name,Err);
+      
+  return mc->second;
+}
+
+  
 void
 sourceDataBase::write(const std::string&,
                       std::ostream&) const

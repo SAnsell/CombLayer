@@ -533,7 +533,6 @@ Cylinder::writeFLUKA(std::ostream& OX) const
 
   std::ostringstream cx;
 
-  Surface::writeHeader(cx);
   cx.precision(Geometry::Nprecision);  
   if (Ndir==-1 || Ndir==1)
     {
@@ -544,9 +543,10 @@ Cylinder::writeFLUKA(std::ostream& OX) const
     }
   else if (Ndir==-2 || Ndir==2)
     {
+      // note the reversed order -- see sec 8.2.4.12 of the fluka manual.
       cx<<"YCC s"<<getName()<<" "
-	<<MW.Num(Centre[0])<<" "
 	<<MW.Num(Centre[2])<<" "
+	<<MW.Num(Centre[0])<<" "
 	<<MW.Num(Radius);
     }
   else if (Ndir==-3 || Ndir==3)

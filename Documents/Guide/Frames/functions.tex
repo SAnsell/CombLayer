@@ -54,6 +54,26 @@
 \newcommand{\figref}[1]{Fig.\,\ref{#1}}
 \newcommand{\figrefp}[1]{Fig.\,\ref{#1} on page~\pageref{#1}}
 
+\newcommand{\secref}[1]{Sec.\,\ref{#1}}
+\newcommand{\secrefp}[1]{Sec.\,\ref{#1} on page~\pageref{#1}}
+
+\newcommand{\git}[1]{\marginpar{Git hash:\\ \href{http://github.com/SAnsell/CombLayer/commit/#1}{#1}}}
+
+
+\newcommand{\xangle}{15}
+\newcommand{\yangle}{153}
+\newcommand{\zangle}{90}
+\newcommand{\xlength}{1}
+\newcommand{\ylength}{1}
+\newcommand{\zlength}{1}
+\pgfmathsetmacro{\xx}{\xlength*cos(\xangle)}
+\pgfmathsetmacro{\xy}{\xlength*sin(\xangle)}
+\pgfmathsetmacro{\yx}{\ylength*cos(\yangle)}
+\pgfmathsetmacro{\yy}{\ylength*sin(\yangle)}
+\pgfmathsetmacro{\zx}{\zlength*cos(\zangle)}
+\pgfmathsetmacro{\zy}{\zlength*sin(\zangle)}
+\newcommand{\dimension}{3}% actually dimension-1
+\newcommand{\dimensionZ}{7}% actually dimension-1
 
 \newcommand{\drawMug}[3]{
   \def\width{4};

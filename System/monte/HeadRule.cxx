@@ -1465,7 +1465,7 @@ HeadRule::displayFluka() const
   
   // union test
   return (HeadNode->type()== -1) ? 
-    "|"+HeadNode->displayFluka()+"|" :
+    "("+HeadNode->displayFluka()+")" :
     " "+HeadNode->displayFluka()+" ";
 }
 

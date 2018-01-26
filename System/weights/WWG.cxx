@@ -330,7 +330,8 @@ WWG::writeWWINP(const std::string& FName) const
   OX.open(FName.c_str());
   
   // IF[1] : timeIndependent : No. particleType : 10(rectangular) : date
-  OX<<(TopFMT % 1 % 1  % pType.size() % 10 % date);
+  OX<<(TopFMT % 1 % 1  % nParticle % 10 % date);
+
 
   for(size_t i=0;i<nParticle;i++)
     {
@@ -349,8 +350,6 @@ WWG::writeWWINP(const std::string& FName) const
 	OX<<std::endl;
       WMesh.writeWWINP(OX);
     }
-
-
   
   OX.close();
 		       
@@ -368,14 +367,13 @@ WWG::writeVTK(const std::string& FName,
 {
   ELog::RegMethod RegA("WWG","writeVTK");
 
-
   if (FName.empty()) return;
   std::ofstream OX(FName.c_str());
 
   const long int XSize=WMesh.getXSize();
   const long int YSize=WMesh.getYSize();
   const long int ZSize=WMesh.getZSize();
-
+  
   boost::format fFMT("%1$11.6g%|14t|");  
   OX<<"# vtk DataFile Version 2.0"<<std::endl;
   OX<<"WWG-MESH Data"<<std::endl;

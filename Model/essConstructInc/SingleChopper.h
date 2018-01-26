@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/SingleChopper.h
+ * File:   essConstructInc/SingleChopper.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,12 +68,12 @@ class SingleChopper :
   int boltMat;                  ///< Bolt material
   int wallMat;                  ///< Wall material layer
 
-  std::shared_ptr<Motor> motor;           ///< Motor 
+  std::shared_ptr<Motor> motor;            ///< Motor 
   std::shared_ptr<boltRing> frontFlange;   ///< Front flange
   std::shared_ptr<boltRing> backFlange;    ///< Back flange
-  std::shared_ptr<RingSeal> RS;   ///< ringseal for main system
-  std::shared_ptr<InnerPort> IPA; ///< inner port
-  std::shared_ptr<InnerPort> IPB; ///< inner port
+  std::shared_ptr<RingSeal> RS;            ///< ringseal for main system
+  std::shared_ptr<InnerPort> IPA;          ///< inner port
+  std::shared_ptr<InnerPort> IPB;          ///< inner port
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

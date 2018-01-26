@@ -106,6 +106,7 @@ class Material
   void setENDF7();
   void setDensity(const double);
   bool hasZaid(const size_t,const size_t,const char) const;
+  std::vector<Zaid> getZaidVec() const { return zaidVec; }
 
   /// remove mt cards
   void removeSQW() { SQW.clear(); }

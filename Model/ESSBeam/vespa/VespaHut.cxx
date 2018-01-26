@@ -170,12 +170,6 @@ VespaHut::createSurfaces()
   ModelSupport::buildPlane(SMap,hutIndex+4,Origin+X*(voidWidth/2.0),X);
   ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*voidDepth,Z);
   ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*voidHeight,Z);  
-  
-
-  ELog::EM<<"Origin  == "<<Origin.abs()<<ELog::endDiag;
-  ELog::EM<<"Wall A  == "<<(Origin-Y*(voidLength/2.0)).abs()<<ELog::endDiag;
-  ELog::EM<<"Wall B  == "<<(Origin+Y*(voidLength/2.0)).abs()<<ELog::endDiag;
-
 
   // FE WALLS:
   ModelSupport::buildPlane(SMap,hutIndex+11,

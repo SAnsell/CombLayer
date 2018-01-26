@@ -3,7 +3,7 @@
  
  * File:   essBuild/BilbaoWheel.cxx
  *
- * Copyright (c) 2015-2016 by Konstantin Batkov
+ * Copyright (c) 2004-2018 by Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -459,12 +459,11 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+2317,Origin,Z,R);
 
   int SJ(wheelIndex+2300);
-  double theta, x0, y0;
+  double theta(0.0), x0, y0;
   const double dTheta = 360.0/static_cast<double>(nSectors);
   R = circlePipesBigRad;
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta;
       x0 = R*sin(theta * M_PI/180.0);
       y0 = -R*cos(theta * M_PI/180.0);
       ModelSupport::buildCylinder(SMap,SJ+8,Origin+X*x0+Y*y0,Z,circlePipesRad);
@@ -473,6 +472,7 @@ BilbaoWheel::makeShaftSurfaces()
       // dummy plane to separate voids between circles:
       ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Z, theta);
 
+      theta += dTheta;
       SJ+=10;
     }
   // add 1st surface again with reversed normal - to simplify building cells
@@ -805,7 +805,9 @@ BilbaoWheel::buildHoles(Simulation& System,
   // create surfaces
   int SI(SI0);
   double theta(0.0);
-  const double dTheta = 360.0/nSectors; // angular length of hole+mat
+
+  // angular length of hole+mat
+  const double dTheta = 360.0/static_cast<double>(nSectors); 
   const double dThetaHole = dTheta * hs; // angular length of the hole
 
   for (size_t j=0; j<nSectors; j++)
@@ -869,13 +871,13 @@ BilbaoWheel::buildCirclePipes(Simulation& System,
 			      const std::string& sides,
 			      const std::string& bottop,
 			      const int mat)
-/*!
-  Build circle of pipes
-  \param System :: Simulation
-  \param sides  :: side surfaces
-  \param bottop :: bottom and top surfaces
-  \param mat    :: material between pipes
- */
+  /*!
+    Build circle of pipes
+    \param System :: Simulation
+    \param sides  :: side surfaces
+    \param bottop :: bottom and top surfaces
+    \param mat    :: material between pipes
+  */
 {
   ELog::RegMethod RegA("BilbaoWheel","buildCirclePipes");
   std::string Out;

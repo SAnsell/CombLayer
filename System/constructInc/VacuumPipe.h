@@ -3,7 +3,7 @@
  
  * File:   constructInc/VacuumPipe.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,10 +80,15 @@ class VacuumPipe :
   double feThick;               ///< pipe thickness
   double claddingThick;         ///< cladding thickness
 
-  double flangeRadius;          ///< Joining Flange radius [-ve for rect]
-  double flangeHeight;          ///< Joining Flange height
-  double flangeWidth;           ///< Joining Flange width
-  double flangeLength;          ///< Joining Flange length
+  double flangeARadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeAHeight;          ///< Joining Flange height
+  double flangeAWidth;           ///< Joining Flange width
+  double flangeALength;          ///< Joining Flange length
+
+  double flangeBRadius;          ///< Joining Flange radius [-ve for rect]
+  double flangeBHeight;          ///< Joining Flange height
+  double flangeBWidth;           ///< Joining Flange width
+  double flangeBLength;          ///< Joining Flange length
 
   int activeWindow;             ///< Flag on window activity
   windowInfo windowFront;       ///< Front window info
@@ -101,7 +106,6 @@ class VacuumPipe :
   void createObjects(Simulation&);
   void createLinks();
 
-  void getShiftedSurf(const HeadRule&,const int,const int,const double);
   void applyActiveFrontBack();
   void createDivision(Simulation&);
   

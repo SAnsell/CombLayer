@@ -1278,23 +1278,21 @@ Object::writeFLUKAmat(std::ostream& OX) const
 {
   ELog::RegMethod RegA("Object","writeFLUKAmat");
 
-  
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   if (!placehold)
     {
       std::string objName=OR.inRenumberRange(ObjName);
-      if (objName.empty())
-	objName="global";
       std::ostringstream cx;
-      cx<<"ASSIGNMA    ";
-      if (!MatN)
-	cx<<" VACUUM";
-      else
-	cx<<"    M"<<MatN;
-      
-      cx<<"    "<<objName<<"_"<<ObjName;
-      StrFunc::writeMCNPX(cx.str(),OX);
+      cx<<"ASSIGNMAT ";
+
+      if (MatN)
+	cx<<"M"+std::to_string(MatN);
+      else   // this should test imp:0 and imp:-1
+	cx<<((ObjName==1)?"BLCKHOLE":"VACUUM");
+
+      cx<<" R"+std::to_string(ObjName);
+      StrFunc::writeFLUKA(cx.str(),OX);
     }
   
   return;
@@ -1318,10 +1316,10 @@ Object::writeFLUKA(std::ostream& OX) const
       if (objName.empty())
 	objName="global";
       std::ostringstream cx;
+      cx<<"* "<<objName<<" "<<ObjName<<std::endl;
       cx.precision(10);
 
-
-      cx<<objName<<"_"<<ObjName<<" "<<SurList.size()<<" ";
+      cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);
     }
@@ -1403,19 +1401,23 @@ Object::writePHITS(std::ostream& OX) const
   */
 {
   std::ostringstream cx;
-  cx.precision(10);
-  cx<<str();
-  if (fill)
-    cx<<" "<<"fill="<<fill;
-  if (trcl)
-    cx<<" "<<"trcl="<<trcl;
-  if (universe)
-    cx<<" "<<"u="<<universe;
 
+  cx.precision(10);
   if (placehold)
-    StrFunc::writeMCNPXcomment(cx.str(),OX);
-  else
-    StrFunc::writeMCNPX(cx.str(),OX);
+    {
+      cx<<str();
+      StrFunc::writeMCNPXcomment(cx.str(),OX);
+    }
+  else if (ObjName==1 && imp==0)
+    {
+      cx<<ObjName<<" -1 "<<HRule.display();
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
+  else 
+    {
+      cx<<str();
+      StrFunc::writeMCNPX(cx.str(),OX);
+    }
   return;
 }
 
