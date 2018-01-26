@@ -55,7 +55,8 @@ namespace setVariable
 {
 
 void
-monoVariables(FuncDataBase& Control)
+monoVariables(FuncDataBase& Control,
+	      const double YStep)
   /*!
     Set the variables for the mono
     \param Control :: DataBase to use
@@ -63,7 +64,7 @@ monoVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("balderVariables[F]","monoVariables");
   
-  Control.addVariable("MonoVacYStep",100.0);
+  Control.addVariable("MonoVacYStep",YStep);
   Control.addVariable("MonoVacZStep",2.0);
   Control.addVariable("MonoVacRadius",33.0);
   Control.addVariable("MonoVacRingWidth",21.5);
@@ -167,9 +168,17 @@ balderVariables(FuncDataBase& Control)
   PipeGen.setPipe(5.0,0.5);      // 2cm radius / 0.5cm wall
   PipeGen.setFlange(-2.7,1.0);
   // [length is 38.3cm total]
-  PipeGen.generatePipe(Control,"DriftA",0,38.3); 
+  PipeGen.generatePipe(Control,"DriftA",0,38.3);
+  // Length ignored  as joined front/back
+  PipeGen.generatePipe(Control,"MonoBellowA",0,50.0);   
+  PipeGen.generatePipe(Control,"MonoBellowB",0,50.0);
+  
+  // [length is 72.9cm total]
+  // [offset is 119.1cm ]
+  PipeGen.generatePipe(Control,"DriftB",119.1,72.9); 
+  //  Control.addVariable("DriftBZStep",4.0);
 
-  monoVariables(Control);
+  monoVariables(Control,119.1/2.0);  // mono middle of drift chamber
 
 
   

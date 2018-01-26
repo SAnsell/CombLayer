@@ -298,13 +298,24 @@ VacuumPipe::applyActiveFrontBack()
   const Geometry::Vec3D curBP=(backJoin) ? BPt : Origin+Y*length;
 
   Origin=(curFP+curBP)/2.0;
-  Geometry::Vec3D YAxis=(curBP-curFP).unit();
-  const Geometry::Quaternion QR=
-    Geometry::Quaternion::calcQVRot(Y,YAxis,Z);
-  QR.rotate(X);
-  QR.rotate(Z);
-  Y=YAxis;
-  
+  const Geometry::Vec3D YAxis=(curBP-curFP).unit();
+  Geometry::Vec3D RotAxis=(YAxis*Y).unit();   // need unit for numerical acc.
+  if (!RotAxis.nullVector())
+    {
+      ELog::EM<<"R == "<<keyName<<" "<<curFP<<ELog::endDiag;
+      ELog::EM<<"R == "<<keyName<<" "<<curBP<<ELog::endDiag;
+      const Geometry::Quaternion QR=
+	Geometry::Quaternion::calcQVRot(Y,YAxis,RotAxis);
+      Y=YAxis;
+      QR.rotate(X);
+      QR.rotate(Z);
+    }
+  else if (Y.dotProd(YAxis) < -0.5) // (reversed
+    {
+      Y=YAxis;
+      X*=-1.0;
+      Z*=-1.0;
+    }
   return;
 }
   

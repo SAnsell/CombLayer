@@ -92,7 +92,11 @@ makeBalder::makeBalder() :
   ionPumpB(new constructSystem::CrossPipe("IonPumpB")),
   pipeC(new constructSystem::VacuumPipe("BellowC")),
   driftA(new constructSystem::VacuumPipe("DriftA")),
-  monoV(new xraySystem::MonoVessel("MonoVac"))
+  driftB(new constructSystem::VacuumPipe("DriftB")),
+  monoV(new xraySystem::MonoVessel("MonoVac")),
+  monoBellowA(new constructSystem::VacuumPipe("MonoBellowA")),
+  monoBellowB(new constructSystem::VacuumPipe("MonoBellowB"))
+
   /*!
     Constructor
   */
@@ -110,7 +114,10 @@ makeBalder::makeBalder() :
   OR.addObject(ionPumpB);
   OR.addObject(pipeC);
   OR.addObject(driftA);
+  OR.addObject(driftB);
   OR.addObject(monoV);
+  OR.addObject(monoBellowA);
+  OR.addObject(monoBellowB);
 
 }
 
@@ -172,10 +179,24 @@ makeBalder::build(Simulation& System,
   driftA->setFront(*pipeC,2);
   driftA->createAll(System,*pipeC,2);
 
- 
+  driftB->addInsertCell(opticsHut->getCell("Void"));
+  driftB->createAll(System,*driftA,2);
+  
   monoV->addInsertCell(opticsHut->getCell("Void"));
   monoV->createAll(System,*driftA,2);
 
+  // Note : join flag so can rotate on front/back
+  monoBellowA->addInsertCell(opticsHut->getCell("Void"));
+  monoBellowA->setFront(*driftA,2,1);
+  monoBellowA->setBack(*monoV,1,1);
+  monoBellowA->createAll(System,*driftA,2);
+
+  // Note : join flag so can rotate on front/back
+  monoBellowB->addInsertCell(opticsHut->getCell("Void"));
+  monoBellowB->setFront(*monoV,2,1); 
+  monoBellowB->setBack(*driftB,1,1); 
+  monoBellowB->createAll(System,*driftB,-1);
+  
   return;
 }
 

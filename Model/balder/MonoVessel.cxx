@@ -320,7 +320,10 @@ MonoVessel::createLinks()
 {
   ELog::RegMethod RegA("MonoVessel","createLinks");
 
-  
+  FixedComp::setConnect(0,inPortPt-Y*inPortLen,Y);
+  FixedComp::setLinkSurf(0,-SMap.realSurf(monoIndex+101));
+  FixedComp::setConnect(1,outPortPt+Y*outPortLen,Y);
+  FixedComp::setLinkSurf(1,SMap.realSurf(monoIndex+201));
   return;
 }
 

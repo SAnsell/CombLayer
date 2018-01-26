@@ -86,13 +86,17 @@ class makeBalder
   /// Large drift chamber
   std::shared_ptr<constructSystem::VacuumPipe> driftA;
 
+  /// Large drift chamber post mono
+  std::shared_ptr<constructSystem::VacuumPipe> driftB;
+
+  /// Mono Vessel
+  std::shared_ptr<xraySystem::MonoVessel> monoV;
+  
   /// Huge Bellows to Mono
   std::shared_ptr<constructSystem::VacuumPipe> monoBellowA;
   /// Huge Bellows from Mono
   std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
 
-  /// Mono Vessel
-  std::shared_ptr<xraySystem::MonoVessel> monoV;
       
  public:
   

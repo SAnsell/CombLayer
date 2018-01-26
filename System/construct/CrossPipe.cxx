@@ -302,34 +302,6 @@ CrossPipe::createLinks()
   FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+5));
   FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+6));
 
-  /*
-  FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
-  FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+17));
-  FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+17));
-      
-  
-  // MID Point: [NO SURF]
-  const Geometry::Vec3D midPt=
-    (getLinkPt(1)+getLinkPt(2))/2.0;
-  FixedComp::setConnect(6,midPt,Y);
-
-  if (flangeRadius>0.0)
-    {
-      FixedComp::setConnect(9,Origin-Z*horrRadius+flangeRadius,-Z);
-      FixedComp::setConnect(10,Origin+Z*horrRadius+flangeRadius,Z);
-      
-      FixedComp::setLinkSurf(9,SMap.realSurf(vacIndex+107));
-      FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+107));
-    }
-  else
-    {
-      FixedComp::setConnect(9,Origin-Z*(flangeHeight/2.0),-Z);
-      FixedComp::setConnect(10,Origin+Z*(flangeHeight/2.0),Z);
-      FixedComp::setLinkSurf(9,-SMap.realSurf(vacIndex+105));
-      FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+106));
-    }
-  */
   return;
 }
   
