@@ -151,7 +151,7 @@ addESSMaterial()
 
   ELog::RegMethod RegA("DBModify[F]","addESSMaterial");
 
-  const std::string MLib="hlib=.70h pnlib=70u";
+  const std::string MLib="plib=.05p pnlib=.70u elib=.03e hlib=.70h";
   ModelSupport::DBMaterial& MDB=ModelSupport::DBMaterial::Instance();
 
   MonteCarlo::Material MObj;
