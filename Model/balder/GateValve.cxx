@@ -79,7 +79,7 @@
 
 #include "GateValve.h" 
 
-namespace constructSystem
+namespace xraySystem
 {
 
 GateValve::GateValve(const std::string& Key) : 
@@ -127,6 +127,8 @@ GateValve::populate(const FuncDataBase& Control)
   closed=Control.EvalDefVar<int>(keyName+"Closed",closed);
   bladeLift=Control.EvalVar<double>(keyName+"BladeLift");
   bladeThick=Control.EvalVar<double>(keyName+"BladeThick");
+  bladeRadius=Control.EvalVar<double>(keyName+"BladeRadius");
+
 
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   bladeMat=ModelSupport::EvalMat<int>(Control,keyName+"BladeMat");
@@ -200,6 +202,7 @@ GateValve::createSurfaces()
   ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*(height+wallThick),Z);
 
   // flange
+
   ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,portRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+117,Origin,Y,portRadius+portThick);
 
@@ -207,7 +210,7 @@ GateValve::createSurfaces()
   // Blade
   ModelSupport::buildPlane(SMap,vacIndex+201,Origin-Y*(bladeThick/2.0),Y);
   ModelSupport::buildPlane(SMap,vacIndex+202,Origin+Y*(bladeThick/2.0),Y);
-  
+
   if (closed)
     ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Y,bladeRadius);
   else
@@ -230,11 +233,10 @@ GateValve::createObjects(Simulation& System)
 
   const bool portExtends(wallThick<=portLen);  // port extends
 
-  const std::string frontStr=frontRule();  // -101
-  const std::string backStr=backRule();    // 102
+  const std::string frontStr=frontRule();  // 101
+  const std::string backStr=backRule();    // -102
   const std::string frontComp=frontComplement();  // -101
   const std::string backComp=backComplement();    // 102
-
   // Void 
   Out=ModelSupport::getComposite(SMap,vacIndex,
 				 " 1 -2 3 -4 5 -6 (207:-201:202) ");
@@ -242,43 +244,53 @@ GateValve::createObjects(Simulation& System)
 
   // Main body
   Out=ModelSupport::getComposite(SMap,vacIndex,
-				 " 1 -2 13 -14 5 -16 (-3:4:-5:6) ");
+				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
 
+  // blade
+  Out=ModelSupport::getComposite(SMap,vacIndex," -207 201 -202 ");
+  makeCell("Void",System,cellIndex++,bladeMat,0.0,Out);
+
   // front plate
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 13 -14 5 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 13 -14 15 -16 117 ");
   makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 101 107 -117 ");
-  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex," -1 107 -117 ");
+  makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 101 -107 ");
-  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex," -1 -107 ");
+  makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
   if (!portExtends)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," -101 11 -117 ");
-      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,vacIndex," 11 -117 ");
+      makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
     }
        
-
   // back plate
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 13 -14 5 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 13 -14 15 -16 117 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 102 107 -117 ");
-  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 107 -117 ");
+  makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 102 -107 ");
-  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -107 ");
+  makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
   
   if (!portExtends)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," 102 -12 -117 ");
-      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,vacIndex," -12 -117 ");
+      makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
 
-  addOuterSurf(Out+frontStr+backStr);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 13 -14 15 -16 ");
+  addOuterSurf(Out);
+  if (portExtends)
+    {
+      Out=ModelSupport::getComposite(SMap,vacIndex," -117 ");
+      addOuterUnionSurf(Out+frontStr+backStr);
+    }
+      
 
   return;
 }

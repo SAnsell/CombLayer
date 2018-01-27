@@ -48,34 +48,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "surfExpand.h"
 #include "PipeGenerator.h"
 
 namespace setVariable
@@ -95,7 +70,53 @@ PipeGenerator::PipeGenerator() :
   */
 {}
 
-  
+PipeGenerator::PipeGenerator(const PipeGenerator& A) : 
+  pipeType(A.pipeType),pipeRadius(A.pipeRadius),
+  pipeHeight(A.pipeHeight),pipeWidth(A.pipeWidth),
+  pipeThick(A.pipeThick),claddingThick(A.claddingThick),
+  flangeARadius(A.flangeARadius),flangeALen(A.flangeALen),
+  flangeBRadius(A.flangeBRadius),flangeBLen(A.flangeBLen),
+  windowRadius(A.windowRadius),windowThick(A.windowThick),
+  pipeMat(A.pipeMat),frontWindowMat(A.frontWindowMat),
+  backWindowMat(A.backWindowMat),voidMat(A.voidMat),
+  claddingMat(A.claddingMat)
+  /*!
+    Copy constructor
+    \param A :: PipeGenerator to copy
+  */
+{}
+
+PipeGenerator&
+PipeGenerator::operator=(const PipeGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: PipeGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      pipeType=A.pipeType;
+      pipeRadius=A.pipeRadius;
+      pipeHeight=A.pipeHeight;
+      pipeWidth=A.pipeWidth;
+      pipeThick=A.pipeThick;
+      claddingThick=A.claddingThick;
+      flangeARadius=A.flangeARadius;
+      flangeALen=A.flangeALen;
+      flangeBRadius=A.flangeBRadius;
+      flangeBLen=A.flangeBLen;
+      windowRadius=A.windowRadius;
+      windowThick=A.windowThick;
+      pipeMat=A.pipeMat;
+      frontWindowMat=A.frontWindowMat;
+      backWindowMat=A.backWindowMat;
+      voidMat=A.voidMat;
+      claddingMat=A.claddingMat;
+    }
+  return *this;
+}
+
 PipeGenerator::~PipeGenerator() 
  /*!
    Destructor

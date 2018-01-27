@@ -43,6 +43,7 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
+  class GateValve;
   class MonoVessel;
   /*!
     \class makeBalder
@@ -97,7 +98,12 @@ class makeBalder
   /// Huge Bellows from Mono
   std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
 
-      
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::CrossPipe> ionPumpC;
+
+  /// Gate valve
+  std::shared_ptr<xraySystem::GateValve> gateValveA;
+
  public:
   
   makeBalder();

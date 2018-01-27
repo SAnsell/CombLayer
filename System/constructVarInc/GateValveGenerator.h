@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/GateValve.h
+ * File:   constructVarInc/GateValveGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,33 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_GateValve_h
-#define xraySystem_GateValve_h
+#ifndef setVariable_GateValveGenerator_h
+#define setVariable_GateValveGenerator_h
 
-class Simulation;
+class FuncDataBase;
 
-namespace xraySystem
+namespace setVariable
 {
-  
+
 /*!
-  \class GateValve
+  \class GateValveGenerator
   \version 1.0
   \author S. Ansell
-  \date January 2018
-  \brief GateValve unit  
+  \date May 2016
+  \brief GateValveGenerator for variables
 */
 
-class GateValve :
-  public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
-  public attachSystem::CellMap,
-  public attachSystem::SurfMap,
-  public attachSystem::FrontBackCut
+class GateValveGenerator
 {
  private:
-  
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double length;                ///< Void length
   double width;                 ///< Void width (full)
@@ -62,25 +54,32 @@ class GateValve :
   double bladeThick;            ///< moving blade thickness
   double bladeRadius;           ///< moving blade radius
   
-  int voidMat;                  ///< Void material
-  int bladeMat;                  ///< Void material
-  int wallMat;                    ///< Pipe material
-  
-  void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
-  
+  std::string voidMat;          ///< Void material
+  std::string bladeMat;         ///< Void material
+  std::string wallMat;          ///< Pipe material
+    
+
  public:
 
-  GateValve(const std::string&);
-  GateValve(const GateValve&);
-  GateValve& operator=(const GateValve&);
-  virtual ~GateValve();
+  GateValveGenerator();
+  GateValveGenerator(const GateValveGenerator&);
+  GateValveGenerator& operator=(const GateValveGenerator&);
+  ~GateValveGenerator();
 
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const long int);
+
+  /// set wall thickness
+  void setWallThick(const double T) { wallThick=T; }
+
+  void setPort(const double,const double,const double);
+  /// set void material
+  void setVoidMat(const std::string& M) { voidMat=M; }
+  /// set wall material
+  void setWallMat(const std::string& M) { wallMat=M; }
+  /// set wall material
+  void setBladeMat(const std::string& M) { bladeMat=M; }
+  
+  void generateValve(FuncDataBase&,const std::string&,
+		     const double,const int) const;
 
 };
 

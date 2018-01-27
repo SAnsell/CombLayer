@@ -76,6 +76,7 @@
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
+#include "GateValve.h"
 #include "makeBalder.h"
 
 namespace xraySystem
@@ -95,7 +96,8 @@ makeBalder::makeBalder() :
   driftB(new constructSystem::VacuumPipe("DriftB")),
   monoV(new xraySystem::MonoVessel("MonoVac")),
   monoBellowA(new constructSystem::VacuumPipe("MonoBellowA")),
-  monoBellowB(new constructSystem::VacuumPipe("MonoBellowB"))
+  monoBellowB(new constructSystem::VacuumPipe("MonoBellowB")),
+  gateValveA(new xraySystem::GateValve("GateValveA"))
 
   /*!
     Constructor
@@ -118,6 +120,7 @@ makeBalder::makeBalder() :
   OR.addObject(monoV);
   OR.addObject(monoBellowA);
   OR.addObject(monoBellowB);
+  OR.addObject(gateValveA);
 
 }
 
@@ -196,7 +199,11 @@ makeBalder::build(Simulation& System,
   monoBellowB->setFront(*monoV,2,1); 
   monoBellowB->setBack(*driftB,1,1); 
   monoBellowB->createAll(System,*driftB,-1);
-  
+
+  gateValveA->addInsertCell(opticsHut->getCell("Void"));
+  gateValveA->setFront(*driftB,2);
+  gateValveA->createAll(System,*driftB,2);
+
   return;
 }
 

@@ -49,6 +49,7 @@
 
 #include "PipeGenerator.h"
 #include "CrossGenerator.h"
+#include "GateValveGenerator.h"
 #include "VacBoxGenerator.h"
 
 namespace setVariable
@@ -104,6 +105,7 @@ balderVariables(FuncDataBase& Control)
   setVariable::PipeGenerator PipeGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
+  setVariable::GateValveGenerator GateGen;
   
   Control.addVariable("OpticsDepth",100.0);
   Control.addVariable("OpticsHeight",200.0);
@@ -147,7 +149,7 @@ balderVariables(FuncDataBase& Control)
   CrossGen.setPlates(0.5,1.0,1.0);
   CrossGen.setPorts(1.1,1.1);
   CrossGen.setFlange(2.0,0.3);
-  CrossGen.generateCross(Control,"IonPumpA",0.0,2.0,3.5,10.0,7.5);
+  CrossGen.generateCross(Control,"IonPumpA",0.0,2.0,3.15,10.0,7.5);
 
   
   VBoxGen.setMat("Stainless304");
@@ -158,7 +160,7 @@ balderVariables(FuncDataBase& Control)
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
-  CrossGen.generateCross(Control,"IonPumpB",0.0,2.0,3.5,10.0,7.5);
+  CrossGen.generateCross(Control,"IonPumpB",0.0,2.0,3.15,10.0,7.5);
 
   PipeGen.setPipe(2.0,0.5);      // 2cm radius / 0.5cm wall
   PipeGen.setFlangePair(-0.8,0.8,-5.7,1.0);
@@ -178,10 +180,16 @@ balderVariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"DriftB",119.1,72.9); 
   //  Control.addVariable("DriftBZStep",4.0);
 
-  monoVariables(Control,119.1/2.0);  // mono middle of drift chamber
+  monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
 
+  CrossGen.setPlates(0.5,1.0,1.0);
+  CrossGen.setPorts(1.1,1.1);
+  CrossGen.setFlange(5.0,0.3);
+  CrossGen.generateCross(Control,"IonPumpC",0.0,2.0,3.15,10.0,7.5);  
 
-  
+  // join and open
+  GateGen.setPort(5.0,1.0,2.7);
+  GateGen.generateValve(Control,"GateValveA",0.0,0);
   return;
 }
 
