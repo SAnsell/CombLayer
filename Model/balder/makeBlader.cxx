@@ -71,6 +71,7 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
+#include "Bellows.h"
 #include "VacuumBox.h"
 
 #include "OpticsHutch.h"
@@ -86,7 +87,7 @@ makeBalder::makeBalder() :
   opticsHut(new OpticsHutch("Optics")),
   ionPA(new constructSystem::CrossPipe("IonPA")),
   triggerPipe(new constructSystem::CrossPipe("TriggerPipe")),
-  pipeA(new constructSystem::VacuumPipe("BellowA")),
+  pipeA(new constructSystem::Bellows("BellowA")),
   filterBox(new constructSystem::VacuumBox("FilterBox")),
   pipeB(new constructSystem::VacuumPipe("BellowB")),
   gateA(new constructSystem::GateValve("GateA")),

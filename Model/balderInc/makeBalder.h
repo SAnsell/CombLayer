@@ -27,6 +27,7 @@ namespace constructSystem
   class SupplyPipe;
   class CrossPipe;
   class VacuumPipe;
+  class Bellows;
   class VacuumBox;
   class GateValve;
     
@@ -68,7 +69,7 @@ class makeBalder
   std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
 
   /// Joining Bellows (pipe):
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+  std::shared_ptr<constructSystem::Bellows> pipeA;
 
 
   /// Filter box

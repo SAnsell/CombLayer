@@ -48,6 +48,7 @@
 #include "variableSetup.h"
 
 #include "PipeGenerator.h"
+#include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "VacBoxGenerator.h"
@@ -103,7 +104,7 @@ balderVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
   setVariable::PipeGenerator PipeGen;
-  setVariable::PipeGenerator BellowGen;
+  setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::GateValveGenerator GateGen;
@@ -147,8 +148,10 @@ balderVariables(FuncDataBase& Control)
   PipeGen.setWindow(-2.0,0.0); 
   PipeGen.setFlange(-2.7,1.0);
 
-  PipeGen.setMat("Stainless304");
-  PipeGen.generatePipe(Control,"BellowA",0,16.0);
+  BellowGen.setPipe(1.25,0.5,1.0,1.0);
+  BellowGen.setFlange(-2.7,1.0);
+  BellowGen.setMat("Stainless304",50.0);
+  BellowGen.generateBellow(Control,"BellowA",0,16.0);
 
   // ACTUALL ROUND PIPE + 4 filter tubles and 1 base tube [large]
   VBoxGen.setMat("Stainless304");
