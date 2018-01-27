@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/GateValve
+ * File:   construct/GateValve
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -79,7 +79,7 @@
 
 #include "GateValve.h" 
 
-namespace xraySystem
+namespace constructSystem
 {
 
 GateValve::GateValve(const std::string& Key) : 
@@ -93,6 +93,58 @@ GateValve::GateValve(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+GateValve::GateValve(const GateValve& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FrontBackCut(A),  
+  vacIndex(A.vacIndex),cellIndex(A.cellIndex),length(A.length),
+  width(A.width),height(A.height),depth(A.depth),
+  wallThick(A.wallThick),portRadius(A.portRadius),
+  portThick(A.portThick),portLen(A.portLen),closed(A.closed),
+  bladeLift(A.bladeLift),bladeThick(A.bladeThick),
+  bladeRadius(A.bladeRadius),voidMat(A.voidMat),
+  bladeMat(A.bladeMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: GateValve to copy
+  */
+{}
+
+GateValve&
+GateValve::operator=(const GateValve& A)
+  /*!
+    Assignment operator
+    \param A :: GateValve to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      cellIndex=A.cellIndex;
+      length=A.length;
+      width=A.width;
+      height=A.height;
+      depth=A.depth;
+      wallThick=A.wallThick;
+      portRadius=A.portRadius;
+      portThick=A.portThick;
+      portLen=A.portLen;
+      closed=A.closed;
+      bladeLift=A.bladeLift;
+      bladeThick=A.bladeThick;
+      bladeRadius=A.bladeRadius;
+      voidMat=A.voidMat;
+      bladeMat=A.bladeMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
 
 
 GateValve::~GateValve() 

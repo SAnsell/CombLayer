@@ -28,6 +28,8 @@ namespace constructSystem
   class CrossPipe;
   class VacuumPipe;
   class VacuumBox;
+  class GateValve;
+    
 }
 
 
@@ -43,7 +45,6 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
-  class GateValve;
   class MonoVessel;
   /*!
     \class makeBalder
@@ -60,11 +61,15 @@ class makeBalder
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
 
+  /// Real Ion pump (KF40) 10cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPA;
+
   /// Trigger Unit (pipe):
   std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::VacuumPipe> pipeA;
+
 
   /// Filter box
   std::shared_ptr<constructSystem::VacuumBox> filterBox;
@@ -72,14 +77,14 @@ class makeBalder
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;
 
-  /// Straight value cross piece (ion pump)
-  std::shared_ptr<constructSystem::CrossPipe> ionPumpA;
+  /// CF40 gate valve
+  std::shared_ptr<constructSystem::GateValve> gateA;
 
   /// Vertical mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBox;
 
   /// Straight value cross piece (ion pump)
-  std::shared_ptr<constructSystem::CrossPipe> ionPumpB;
+  std::shared_ptr<constructSystem::GateValve> gateB;
 
   /// Joining Bellows from mirror box
   std::shared_ptr<constructSystem::VacuumPipe> pipeC;
@@ -98,23 +103,34 @@ class makeBalder
   /// Huge Bellows from Mono
   std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
   
-  /// Gate valve
-  std::shared_ptr<xraySystem::GateValve> gateValveA;
+  /// Gate valve after mono [large]
+  std::shared_ptr<constructSystem::GateValve> gateC;
+
+
+  /// Large drift chamber post mono
+  std::shared_ptr<constructSystem::VacuumPipe> driftC;
+
 
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
 
-  /// Large drift chamber post mono
-  std::shared_ptr<constructSystem::VacuumPipe> driftC;
-  
   /// Joining Bellows (pipe small):
   std::shared_ptr<constructSystem::VacuumPipe> pipeE;
 
   /// Straight value cross piece (ion pump)
   std::shared_ptr<constructSystem::CrossPipe> ionPumpC;
-
+  
   /// FocusBox
   std::shared_ptr<constructSystem::VacuumBox> focusBox;
+
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::CrossPipe> ionPumpD;
+
+  /// Joining Bellows (pipe small):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
+
+  /// Large drift chamber post mirrorB
+  std::shared_ptr<constructSystem::VacuumPipe> driftD;
 
  public:
   

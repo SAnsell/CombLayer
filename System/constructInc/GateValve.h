@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/GateValve.h
+ * File:   constructInc/GateValve.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -24,7 +24,7 @@
 
 class Simulation;
 
-namespace xraySystem
+namespace constructSystem
 {
   
 /*!
