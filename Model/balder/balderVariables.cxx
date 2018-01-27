@@ -109,12 +109,12 @@ balderVariables(FuncDataBase& Control)
   
   Control.addVariable("OpticsDepth",100.0);
   Control.addVariable("OpticsHeight",200.0);
-  Control.addVariable("OpticsLength",800.0);
-  Control.addVariable("OpticsOutWidth",120.0);
+  Control.addVariable("OpticsLength",1000.0);
+  Control.addVariable("OpticsOutWidth",250.0);
   Control.addVariable("OpticsRingWidth",60.0);
   Control.addVariable("OpticsRingLength",200.0);
-  Control.addVariable("OpticsRingWallLen",200.0);
-  Control.addVariable("OpticsRingWallAngle",20.0);
+  Control.addVariable("OpticsRingWallLen",105.0);
+  Control.addVariable("OpticsRingWallAngle",18.50);
   Control.addVariable("OpticsInnerThick",0.5);
   Control.addVariable("OpticsPbThick",5.0);
   Control.addVariable("OpticsOuterThick",0.5);
@@ -129,9 +129,9 @@ balderVariables(FuncDataBase& Control)
   CrossGen.setFlange(2.0,1.0);
   CrossGen.setMat("Stainless304");
   CrossGen.generateCross(Control,"TriggerPipe",22.0,
-			  1.60,5.0,10.0,26.5);
+			  1.25,5.0,10.0,26.5);
   
-  PipeGen.setPipe(1.6,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setPipe(2.5,0.5);      // 1.cm radius / 0.5cm wall
   PipeGen.setWindow(-2.0,0.0); 
   PipeGen.setFlange(-2.7,1.0);
 
@@ -176,20 +176,43 @@ balderVariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"MonoBellowB",0,50.0);
   
   // [length is 72.9cm total]
-  // [offset is 119.1cm ]
+  // [offset from mono is 119.1cm ]
   PipeGen.generatePipe(Control,"DriftB",119.1,72.9); 
-  //  Control.addVariable("DriftBZStep",4.0);
+  Control.addVariable("DriftBZStep",4.0);
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
 
-  CrossGen.setPlates(0.5,1.0,1.0);
-  CrossGen.setPorts(1.1,1.1);
-  CrossGen.setFlange(5.0,0.3);
-  CrossGen.generateCross(Control,"IonPumpC",0.0,2.0,3.15,10.0,7.5);  
 
-  // join and open
+  // joined and open
   GateGen.setPort(5.0,1.0,2.7);
   GateGen.generateValve(Control,"GateValveA",0.0,0);
+
+  // large bellows
+  PipeGen.generatePipe(Control,"BellowD",0,10.0);
+  
+  // [length is 54.4cm total]
+  PipeGen.generatePipe(Control,"DriftC",0,54.4); 
+
+  // small flange bellows
+  PipeGen.setPipe(1.25,0.5);      // 8cm radius / 0.5cm wall
+  PipeGen.setFlangePair(-6.45,1.0,-1.45,0.8);   //[cf40 MKS dimentions]
+  PipeGen.generatePipe(Control,"BellowE",0,10.0);
+
+  CrossGen.setPlates(0.5,1.0,1.0);
+  CrossGen.setPorts(1.1,1.1);
+  CrossGen.setFlange(1.45,0.4);
+  CrossGen.generateCross(Control,"IonPumpC",0.0,1.25,3.15,10.0,7.5);  
+
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setAPort(2.0,5.0,0.6);  // R/Len/thickness
+  VBoxGen.setBPort(2.0,5.0,0.6);  // R/Len/thickness
+  VBoxGen.setFlange(0.5,0.8);
+  // ystep/width/height/depth/length
+  // [length is 177.4cm total]
+  VBoxGen.setBPortOffset(0,-20);
+  VBoxGen.generateBox(Control,"FocusBox",0.0,54.0,15.3,31.3,167.4);
+
   return;
 }
 

@@ -41,9 +41,17 @@ class VacBoxGenerator
 
   double wallThick;          ///< Wall thick [generic]
 
-  double portWallThick;     ///< Flange wall thickness
-  double portTubeLength;    ///< Port tube
-  double portTubeRadius;    ///< Port tube length
+  double portAXStep;
+  double portAZStep;
+  double portAWallThick;     ///< Flange wall thickness
+  double portATubeLength;    ///< Port tube
+  double portATubeRadius;    ///< Port tube length
+
+  double portBXStep;
+  double portBZStep;
+  double portBWallThick;     ///< Flange wall thickness
+  double portBTubeLength;    ///< Port tube
+  double portBTubeRadius;    ///< Port tube length
   
   double flangeLen;          ///< Flange length
   double flangeRadius;       ///< Flange radius
@@ -63,6 +71,10 @@ class VacBoxGenerator
   void setWallThick(const double T) { wallThick=T; }
 
   void setPort(const double,const double,const double);
+  void setAPort(const double,const double,const double);
+  void setBPort(const double,const double,const double);
+  void setAPortOffset(const double,const double);
+  void setBPortOffset(const double,const double);
   void setFlange(const double,const double);
   /// set void material
   void setVoidMat(const std::string& M) { voidMat=M; }

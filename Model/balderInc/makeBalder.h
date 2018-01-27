@@ -97,12 +97,24 @@ class makeBalder
   std::shared_ptr<constructSystem::VacuumPipe> monoBellowA;
   /// Huge Bellows from Mono
   std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
+  
+  /// Gate valve
+  std::shared_ptr<xraySystem::GateValve> gateValveA;
+
+  /// Joining Bellows (pipe large):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+
+  /// Large drift chamber post mono
+  std::shared_ptr<constructSystem::VacuumPipe> driftC;
+  
+  /// Joining Bellows (pipe small):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
 
   /// Straight value cross piece (ion pump)
   std::shared_ptr<constructSystem::CrossPipe> ionPumpC;
 
-  /// Gate valve
-  std::shared_ptr<xraySystem::GateValve> gateValveA;
+  /// FocusBox
+  std::shared_ptr<constructSystem::VacuumBox> focusBox;
 
  public:
   

@@ -58,10 +58,19 @@ class VacuumBox :
   double feFront;             ///< fe front 
   double feBack;              ///< fe back
 
-  double portWallThick;     ///< Flange wall thickness
-  double portTubeLength;    ///< Port tube
-  double portTubeRadius;    ///< Port tube length
-  
+  double portAXStep;          ///< XStep of port
+  double portAZStep;          ///< ZStep of port
+  double portAWallThick;     ///< Flange wall thickness
+  double portATubeLength;    ///< Port tube
+  double portATubeRadius;    ///< Port tube length
+
+
+  double portBXStep;          ///< XStep of port
+  double portBZStep;          ///< ZStep of port
+  double portBWallThick;     ///< Flange wall thickness
+  double portBTubeLength;    ///< Port tube
+  double portBTubeRadius;    ///< Port tube length
+
   double flangeRadius;        ///< Joining Flange radius
   double flangeLength;        ///< Joining Flange length
   

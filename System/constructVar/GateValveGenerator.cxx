@@ -168,7 +168,7 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"BladeRadius",bladeRadius);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"BladeMat",voidMat);
+  Control.addVariable(keyName+"BladeMat",bladeMat);
   Control.addVariable(keyName+"WallMat",wallMat);
        
   return;

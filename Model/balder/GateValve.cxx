@@ -249,7 +249,7 @@ GateValve::createObjects(Simulation& System)
 
   // blade
   Out=ModelSupport::getComposite(SMap,vacIndex," -207 201 -202 ");
-  makeCell("Void",System,cellIndex++,bladeMat,0.0,Out);
+  makeCell("Blade",System,cellIndex++,bladeMat,0.0,Out);
 
   // front plate
   Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 13 -14 15 -16 117 ");
