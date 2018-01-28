@@ -213,6 +213,9 @@ portItem::constructTrack(Simulation& System)
 {
   ELog::RegMethod RegA("portItem","constructTrack");
 
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
   if ((statusFlag & 1)!=1)
     {
       ELog::EM<<"Failed to set in port:"<<keyName<<ELog::endCrit;
@@ -225,12 +228,14 @@ portItem::constructTrack(Simulation& System)
   LT.calculate(System);
   
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
-  std::vector<MonteCarlo::Object*>::const_iterator oc;
-  
-  for(MonteCarlo::Object* oc : OVec)
+
+  for(const MonteCarlo::Object* oPtr : OVec)
     {	  
-      const int ONum=oc->getName();
-      ELog::EM<<"Cell == "<<ONum<<ELog::endDiag;
+      const int ONum=oPtr->getName();
+      if (OR.hasCell(refComp,ONum))
+	{
+	  ELog::EM<<"Cell == "<<ONum<<ELog::endDiag;
+	}
       //      if (OMap.find(ONum)==OMap.end())
       //	OMap.emplace(ONum,oc);
     }

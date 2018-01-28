@@ -79,6 +79,8 @@ class objectRegister
   int getRange(const std::string&) const;
   
   std::string inRange(const int) const;
+  bool hasCell(const std::string&,const int) const;
+
 
   int getRenumberCell(const std::string&) const;
   int getRenumberLast(const std::string&) const;
