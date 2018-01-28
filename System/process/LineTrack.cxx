@@ -3,7 +3,7 @@
  
  * File:   process/LineTrack.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,8 @@ LineTrack::LineTrack(const Geometry::Vec3D& IP,
 LineTrack::LineTrack(const Geometry::Vec3D& IP,
 		     const Geometry::Vec3D& UVec,
 		     const double ADist) :
-  InitPt(IP),EndPt(IP+UVec),aimDist(ADist),
+  InitPt(IP),EndPt(IP+UVec),
+  aimDist(ADist>=0 ? ADist : 1e10),
   TDist(0.0)
   /*! 
     Constructor 

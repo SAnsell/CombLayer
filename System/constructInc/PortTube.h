@@ -1,0 +1,94 @@
+/********************************************************************* 
+  CombLayer : MCNP(X) Input builder
+ 
+ * File:   constructInc/PortTube.h
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ ****************************************************************************/
+#ifndef constructSystem_PortTube_h
+#define constructSystem_PortTube_h
+
+class Simulation;
+
+namespace constructSystem
+{
+  
+/*!
+  \class PortTube
+  \version 1.0
+  \author S. Ansell
+  \date July 2015
+  \brief PortTube unit  
+*/
+
+class PortTube :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::FrontBackCut
+{
+ private:
+
+  const int vacIndex;         ///< Index of surface offset
+  int cellIndex;              ///< Cell index  
+
+  double radius;              ///< radius of main tube
+  double wallThick;           ///< wall thickness of main tube
+  double length;              ///< Main length
+  
+  double inPortXStep;       ///< Out Port
+  double inPortZStep;       ///< Out Port
+  double inPortRadius;       ///< Out Port
+  double inPortLen;       ///< Out Port
+  double inPortThick;       ///< Out Port
+
+  double outPortXStep;       ///< Out Port
+  double outPortZStep;       ///< Out Port
+  double outPortRadius;       ///< Out Port
+  double outPortLen;       ///< Out Port
+  double outPortThick;       ///< Out Port
+
+  double flangeRadius;        ///< Joining Flange radius
+  double flangeLength;        ///< Joining Flange length
+
+  int voidMat;                ///< void material
+  int wallMat;                  ///< Fe material layer
+
+  std::vector<portItem> Ports;  ///< Vector of ports
+  
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
+
+ public:
+
+  PortTube(const std::string&);
+  PortTube(const PortTube&);
+  PortTube& operator=(const PortTube&);
+  virtual ~PortTube();
+
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
+
+};
+
+}
+
+#endif
+ 

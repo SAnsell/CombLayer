@@ -72,6 +72,7 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
+#include "portItem.h"
 
 #include "MonoVessel.h"
 
@@ -348,7 +349,10 @@ MonoVessel::createAll(Simulation& System,
   
   createLinks();
   insertObjects(System);   
-  
+
+  constructSystem::portItem windowPort("windowPort");
+  windowPort.createUnitVector(*this,0);
+  windowPort.constructTrack(System);
   return;
 }
   

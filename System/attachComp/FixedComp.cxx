@@ -226,8 +226,8 @@ FixedComp::createUnitVector(const FixedComp& FC,
   /*!
     Create the unit vectors
     \param FC :: Fixed unit for link points
-    \param orgIndex :: SIGNED +1 side index
-    \param basisIndex :: SIGNED +1 side index
+    \param orgIndex :: SIGNED +1 side index for origin
+    \param basisIndex :: SIGNED +1 side index for directoin
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
@@ -368,7 +368,7 @@ FixedComp::reOrientate(const size_t index,
 {
   ELog::RegMethod RegA("FixedComp","reorientate");
   
-  if (index>3)
+  if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
   
   Geometry::Vec3D axisDir(ADir.unit());  
