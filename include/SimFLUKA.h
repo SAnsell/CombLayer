@@ -44,6 +44,9 @@ class SimFLUKA : public Simulation
   void writeTally(std::ostream&) const;
   void writePhysics(std::ostream&) const;
   void writeVariables(std::ostream&) const;
+
+  std::string getLowMatName(const size_t&) const;
+  std::string getLowMat(const size_t&,const size_t&,const std::string&) const;
   
  public:
   

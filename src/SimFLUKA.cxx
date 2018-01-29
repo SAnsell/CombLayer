@@ -248,13 +248,14 @@ SimFLUKA::writeElements(std::ostream& OX) const
     {
       if (!za) continue;
       const std::string mat("E"+std::to_string(za));
-      cx<<"MATERIAL "<<za / 1000<<". - "<<" 1."<<" - - "<<
-	za%1000<<". "<<mat<<" ";
-      lowmat<<"LOW-MAT "<<mat<<" - - - - - - "; // \todo define it correctly
+      const size_t Z(za/1000);
+      const size_t A(za%1000);
+      cx<<"MATERIAL "<<Z<<". - "<<" 1."<<" - - "<<A<<". "<<mat<<" ";
+      lowmat<<getLowMat(Z,A,mat);
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
-  //  StrFunc::writeFLUKA(lowmat.str(),OX);
+  StrFunc::writeFLUKA(lowmat.str(),OX);
 
   OX<<alignment<<std::endl;
 
@@ -350,6 +351,83 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   // Remaining Physics cards
   PhysPtr->writeFLUKA(OX);
   return;
+}
+
+std::string
+SimFLUKA::getLowMatName(const size_t& Z) const
+/*!
+  Return low energy FLUKA material name for the given Z
+  \param Z :: Atomic number
+  \todo : Currently this function return the standard low material name
+    as if standard FLUKA names were used without the LOW-MAT card.
+    This is fine for most of the cases.
+    However, this name actually sometimes depends on temperature and mass
+    number - to be implemented.
+ */
+{
+  ELog::RegMethod RegA("SimFLUKA","getLowMat");
+
+  std::vector<std::string> lm = {
+    "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
+    "CARBON",   "NITROGEN", "OXYGEN",   "FLUORINE", "NEON",
+    "SODIUM",   "MAGNESIU", "ALUMINUM", "SILICON",  "PHOSPHO",
+    "SULFUR",   "CHLORINE", "ARGON",    "POTASSIU", "CALCIUM",
+    "SCANDIUM", "TITANIUM", "VANADIUM", "CHROMIUM", "MANGANES",
+    "IRON",     "COBALT",   "NICKEL",   "COPPER",   "ZINC",
+    "GALLIUM",  "GERMANIU", "ARSENIC",  "",         "BROMINE",
+    "KRYPTON",  "",         "STRONTIU", "YTTRIUM",  "ZIRCONIU",
+    "NIOBIUM",  "MOLYBDEN", "99-TC",    "",         "",
+    "PALLADIU", "SILVER",   "CADMIUM",  "INDIUM",   "TIN",     // 50
+    "ANTIMONY", "",         "IODINE",   "XENON",    "CESIUM",
+    "BARIUM",   "LANTHANU", "CERIUM",   "",         "NEODYMIU",
+    "",         "SAMARIUM", "EUROPIUM", "GADOLINI", "TERBIUM", // 65
+    "",         "",         "",         "",         "",
+    "LUTETIUM", "HAFNIUM",  "TANTALUM", "TUNGSTEN", "RHENIUM",
+    "",         "IRIDIUM",  "PLATINUM", "GOLD",     "MERCURY", // 80
+    "",         "LEAD",     "BISMUTH",  "",         "",
+    "",         "",         "",         "",         "230-TH", // 90
+    "",         "233-U",    "",         "239-PU",   "241-AM"
+  };
+
+  if((Z==34)||(Z==37)||(Z==44)||(Z==45)||(Z==52)||(Z==59)||(Z==61)||
+     ((Z>=66)&&(Z<=70))||(Z==76)||(Z==81)||((Z>=84)&&(Z<=89))||(Z==91)||
+     (Z==93))
+    {
+      ELog::EM << "No low energy FLUKA material for Z="<<Z<<ELog::endCrit;
+    }
+
+  if (Z>lm.size())
+    {
+      ELog::EM << "No low energy FLUKA material for Z="<<Z
+	       <<"\nZ is too large"<<ELog::endErr;
+    }
+
+  std::string name(lm[Z-1]);
+
+  if (name.empty())
+    {
+      ELog::EM << "FLUKA name for material with Z="<<Z<<" undefined" << ELog::endCrit;
+      name = " - ";
+    }
+
+  return name;
+}
+
+std::string
+SimFLUKA::getLowMat(const size_t& Z,const size_t& A,const std::string& mat) const
+/*!
+  Return the LOW-MAT card definition for the given Element
+  \param Z :: Atomic number
+  \param A :: Mass number
+  \param mat :: Material name in the MATERIAL card
+ */
+{
+  ELog::RegMethod RegA("SimFLUKA","getLowMat");
+  std::string str;
+
+  str = "LOW-MAT "+mat+" - - - - - "+getLowMatName(Z)+" ";
+
+  return str;
 }
 
 void
