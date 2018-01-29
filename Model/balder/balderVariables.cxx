@@ -51,6 +51,7 @@
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
+#include "PortTubeGenerator.h"
 #include "VacBoxGenerator.h"
 
 namespace setVariable
@@ -107,6 +108,7 @@ balderVariables(FuncDataBase& Control)
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
+  setVariable::PortTubeGenerator PTubeGen;
   setVariable::GateValveGenerator GateGen;
   
   Control.addVariable("OpticsDepth",100.0);
@@ -154,11 +156,11 @@ balderVariables(FuncDataBase& Control)
   BellowGen.generateBellow(Control,"BellowA",0,16.0);
 
   // ACTUALL ROUND PIPE + 4 filter tubles and 1 base tube [large]
-  VBoxGen.setMat("Stainless304");
-  VBoxGen.setPort(3.3,10.7,0.5);
-  VBoxGen.setFlange(0.5,0.8);
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setPort(3.3,10.7,0.5);
+  PTubeGen.setFlange(0.5,0.8);
   // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,"FilterBox",0.0,48.5,4.7,4.7,54.0);
+  PTubeGen.generateTube(Control,"FilterBox",0.0,9.0,54.0);
 
   PipeGen.generatePipe(Control,"BellowB",0,10.0);
 

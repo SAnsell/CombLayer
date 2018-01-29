@@ -60,9 +60,11 @@ class portItem :
   double wall;               ///< wall thick
   double flangeRadius;       ///< flange radius
   double flangeThick;        ///< flange thick
-
+  double plateThick;         ///< Plate on flange [if thick>0]
+  
   int voidMat;               ///< Void material
   int wallMat;               ///< Wall material
+  int plateMat;              ///< plate Material
 
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
@@ -92,6 +94,7 @@ class portItem :
   void setMain(const double,const double,const double);
   void setMaterial(const int,const int);
   void setFlange(const double,const double);
+  void setCoverPlate(const double,const int= -1);
 
   void constructTrack(Simulation&);
   

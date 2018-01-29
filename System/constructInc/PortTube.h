@@ -52,14 +52,14 @@ class PortTube :
   
   double inPortXStep;       ///< Out Port
   double inPortZStep;       ///< Out Port
-  double inPortRadius;       ///< Out Port
-  double inPortLen;       ///< Out Port
+  double inPortRadius;      ///< Out Port
+  double inPortLen;         ///< Out Port
   double inPortThick;       ///< Out Port
 
   double outPortXStep;       ///< Out Port
   double outPortZStep;       ///< Out Port
-  double outPortRadius;       ///< Out Port
-  double outPortLen;       ///< Out Port
+  double outPortRadius;      ///< Out Port
+  double outPortLen;         ///< Out Port
   double outPortThick;       ///< Out Port
 
   double flangeRadius;        ///< Joining Flange radius
@@ -68,6 +68,8 @@ class PortTube :
   int voidMat;                ///< void material
   int wallMat;                  ///< Fe material layer
 
+  std::vector<Geometry::Vec3D> PCentre;
+  std::vector<Geometry::Vec3D> PAxis;
   std::vector<portItem> Ports;  ///< Vector of ports
   
   void populate(const FuncDataBase&);

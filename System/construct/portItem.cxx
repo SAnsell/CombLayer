@@ -94,6 +94,49 @@ portItem::portItem(const std::string& Key) :
   */
 {}
 
+portItem::portItem(const portItem& A) : 
+  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  statusFlag(A.statusFlag),portIndex(A.portIndex),
+  cellIndex(A.cellIndex),externalLength(A.externalLength),
+  radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
+  flangeThick(A.flangeThick),plateThick(A.plateThick),
+  voidMat(A.voidMat),wallMat(A.wallMat),plateMat(A.plateMat),
+  refComp(A.refComp),exitPoint(A.exitPoint)
+  /*!
+    Copy constructor
+    \param A :: portItem to copy
+  */
+{}
+
+portItem&
+portItem::operator=(const portItem& A)
+  /*!
+    Assignment operator
+    \param A :: portItem to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedComp::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      statusFlag=A.statusFlag;
+      portIndex=A.portIndex;
+      cellIndex=A.cellIndex;
+      externalLength=A.externalLength;
+      radius=A.radius;
+      wall=A.wall;
+      flangeRadius=A.flangeRadius;
+      flangeThick=A.flangeThick;
+      plateThick=A.plateThick;
+      voidMat=A.voidMat;
+      wallMat=A.wallMat;
+      plateMat=A.plateMat;
+      refComp=A.refComp;
+      exitPoint=A.exitPoint;
+    }
+  return *this;
+}
   
 portItem::~portItem() 
   /*!
@@ -127,6 +170,20 @@ portItem::setFlange(const double FR,const double FT)
 {
   flangeRadius=FR;
   flangeThick=FT;
+  return;
+}
+
+void
+portItem::setCoverPlate(const double T,const int M)
+  /*!
+    Set flange parameters
+    \param T :: Plate thickness
+    \param M :: cover plate material [-ve for wall Mat]
+  */
+{
+  plateThick=T;
+  if (M<0)
+    plateMat=wallMat;
   return;
 }
 
@@ -196,7 +253,7 @@ portItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,portIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,portIndex+27,Origin,Y,
 			      radius+wall+flangeThick);
-  
+
   return;
 }
 
@@ -230,9 +287,17 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
     }
 
   const Geometry::Vec3D exitPoint=LT.getPoint(BIndex+1);
-  
-  FixedComp::setConnect(1,exitPoint+Y*externalLength,Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(portIndex+2));
+
+  if (plateThick>Geometry::zeroTol)
+    {
+      FixedComp::setConnect(1,exitPoint+Y*(externalLength+plateThick),Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(portIndex+202));
+    }
+  else
+    {
+      FixedComp::setConnect(1,exitPoint+Y*externalLength,Y);
+      FixedComp::setLinkSurf(1,SMap.realSurf(portIndex+2));
+    }
   return;
 }
 
@@ -259,6 +324,10 @@ portItem::constructOuterFlange(Simulation& System,
   ModelSupport::buildPlane(SMap,portIndex+102,
 			   exitPoint+Y*(externalLength-flangeThick),Y);
 
+  if (plateThick>Geometry::zeroTol)
+    ModelSupport::buildPlane(SMap,portIndex+202,
+			     exitPoint+Y*(externalLength+plateThick),Y);
+  
   // determine start surface:
   std::string frontSurf;
   if (startIndex!=0)
@@ -277,7 +346,15 @@ portItem::constructOuterFlange(Simulation& System,
   Out=ModelSupport::getComposite(SMap,portIndex," 102 -27 17 -2 ");
   System.addCell(cellIndex++,wallMat,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,portIndex," -2 -27 (102:-17) 1 ");
+  if (plateThick>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,portIndex," -27 202 2 ");
+      System.addCell(cellIndex++,plateMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,portIndex," -202 -27 (102:-17) 1 ");
+    }
+  else
+    Out=ModelSupport::getComposite(SMap,portIndex," -2 -27 (102:-17) 1 ");
+  
   addOuterSurf(Out);
 
   // Mid port exclude

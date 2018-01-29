@@ -29,6 +29,8 @@ namespace constructSystem
   class VacuumPipe;
   class Bellows;
   class VacuumBox;
+  class portItem;
+  class PortTube;
   class GateValve;
     
 }
@@ -71,9 +73,8 @@ class makeBalder
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::Bellows> pipeA;
 
-
   /// Filter box
-  std::shared_ptr<constructSystem::VacuumBox> filterBox;
+  std::shared_ptr<constructSystem::PortTube> filterBox;
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::VacuumPipe> pipeB;

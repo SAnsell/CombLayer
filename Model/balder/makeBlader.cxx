@@ -73,6 +73,8 @@
 #include "VacuumPipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
+#include "portItem.h"
+#include "PortTube.h"
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
@@ -88,7 +90,7 @@ makeBalder::makeBalder() :
   ionPA(new constructSystem::CrossPipe("IonPA")),
   triggerPipe(new constructSystem::CrossPipe("TriggerPipe")),
   pipeA(new constructSystem::Bellows("BellowA")),
-  filterBox(new constructSystem::VacuumBox("FilterBox")),
+  filterBox(new constructSystem::PortTube("FilterBox")),
   pipeB(new constructSystem::VacuumPipe("BellowB")),
   gateA(new constructSystem::GateValve("GateA")),
   mirrorBox(new constructSystem::VacuumBox("MirrorBox")),

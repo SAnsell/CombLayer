@@ -111,20 +111,64 @@ PortTube::populate(const FuncDataBase& Control)
 
   // Void + Fe special:
   radius=Control.EvalVar<double>(keyName+"Radius");
+  length=Control.EvalVar<double>(keyName+"Length");
   wallThick=Control.EvalVar<double>(keyName+"WallThick");
   
+  inPortXStep=Control.EvalDefVar<double>(keyName+"InPortXStep",0.0);
+  inPortZStep=Control.EvalDefVar<double>(keyName+"InPortZStep",0.0);
+  inPortRadius=Control.EvalPair<double>(keyName+"InPortRadius",
+				       keyName+"PortRadius");
+  inPortLen=Control.EvalPair<double>(keyName+"InPortLen",
+				       keyName+"PortLen");
+  inPortThick=Control.EvalPair<double>(keyName+"InPortThick",
+				       keyName+"PortThick");
+
+  outPortXStep=Control.EvalDefVar<double>(keyName+"OutPortXStep",0.0);
+  outPortZStep=Control.EvalDefVar<double>(keyName+"OutPortZStep",0.0);
+  outPortRadius=Control.EvalPair<double>(keyName+"OutPortRadius",
+				       keyName+"PortRadius");
+  outPortLen=Control.EvalPair<double>(keyName+"OutPortLen",
+				       keyName+"PortLen");
+  outPortThick=Control.EvalPair<double>(keyName+"OutPortThick",
+				       keyName+"PortThick");
+
+
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  
+
+  const size_t NPorts=Control.EvalVar<size_t>(keyName+"NPorts");
+  const std::string portBase=keyName+"Port";
+  double L,R,W,FR,FT;
+  for(size_t i=0;i<NPorts;i++)
+    {
+      const std::string portName=portBase+std::to_string(i);
+      portItem windowPort(portName);
+      const Geometry::Vec3D Centre=
+	Control.EvalVar<Geometry::Vec3D>(portName+"Centre");
+      const Geometry::Vec3D Axis=
+	Control.EvalPair<Geometry::Vec3D>(portName,portBase,"Axis");
+      
+      L=Control.EvalPair<double>(portName,portBase,"Length");
+      R=Control.EvalPair<double>(portName,portBase,"Radius");
+      W=Control.EvalPair<double>(portName,portBase,"Wall");
+      FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
+      FT=Control.EvalPair<double>(portName,portBase,"FlangeThick");
+      windowPort.setMain(L,R,W);
+      windowPort.setFlange(FR,FT);
+      windowPort.setMaterial(voidMat,wallMat);
+      PCentre.push_back(Centre);
+      PAxis.push_back(Axis);
+      Ports.push_back(windowPort);
+    }					    
   return;
 }
 
 void
 PortTube::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+			   const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -152,16 +196,50 @@ PortTube::createSurfaces()
   // Do outer surfaces (vacuum ports)
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-      setFront(SMap.realSurf(vacIndex+1));
+      ModelSupport::buildPlane(SMap,vacIndex+101,
+			       Origin-Y*(inPortLen+wallThick+length/2.0),Y);
+      setFront(SMap.realSurf(vacIndex+101));
     }
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-      setBack(-SMap.realSurf(vacIndex+2));
+      ModelSupport::buildPlane(SMap,vacIndex+202,
+			       Origin+Y*(outPortLen+wallThick+length/2.0),Y);
+      setBack(-SMap.realSurf(vacIndex+202));
     }
-  
 
+  // void space:
+  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
+
+  // metal
+  ModelSupport::buildPlane(SMap,vacIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,vacIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+wallThick);
+
+  // port
+  const Geometry::Vec3D inOrg=Origin+X*inPortXStep+Z*inPortZStep;
+  const Geometry::Vec3D outOrg=Origin+X*outPortXStep+Z*outPortZStep;
+
+  ModelSupport::buildCylinder(SMap,vacIndex+107,inOrg,Y,inPortRadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+207,outOrg,Y,outPortRadius);
+
+  ModelSupport::buildCylinder(SMap,vacIndex+117,inOrg,Y,
+			      inPortRadius+inPortThick);
+  ModelSupport::buildCylinder(SMap,vacIndex+217,outOrg,Y,
+			      outPortRadius+outPortThick);
+
+  ModelSupport::buildPlane(SMap,vacIndex+111,Origin-
+			   Y*(inPortLen+wallThick-flangeLength+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,vacIndex+212,Origin+
+			   Y*(outPortLen+wallThick-flangeLength+length/2.0),Y);
+
+  // flange:
+  ModelSupport::buildCylinder(SMap,vacIndex+127,inOrg,Y,
+			      inPortRadius+inPortThick+flangeRadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+227,outOrg,Y,
+			      outPortRadius+outPortThick+flangeRadius);
+  
   return;
 }
 
@@ -175,6 +253,48 @@ PortTube::createObjects(Simulation& System)
   ELog::RegMethod RegA("PortTube","createObjects");
 
   std::string Out;
+  
+  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -2 -7 ");
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
+
+  // main walls
+  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -17 7 -2 ");
+  makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
+
+  // plates front/back
+  Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 -17 117 ");
+  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -17 217 ");
+  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+
+  // port:
+  const std::string frontSurf(frontRule());
+  const std::string backSurf(backRule());
+  
+  Out=ModelSupport::getComposite(SMap,vacIndex," -1  -107 ");
+  makeCell("FrontPortVoid",System,cellIndex++,voidMat,0.0,Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -207 ");
+  makeCell("BackPortVoid",System,cellIndex++,voidMat,0.0,Out+backSurf);
+
+  Out=ModelSupport::getComposite(SMap,vacIndex," -1 107 -117");
+  makeCell("FrontPortWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 207 -217 ");
+  makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,Out+backSurf);
+
+  // flanges
+  Out=ModelSupport::getComposite(SMap,vacIndex," -111 117 -127 ");
+  makeCell("FrontPortWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
+  Out=ModelSupport::getComposite(SMap,vacIndex," 212 217 -227 ");
+  makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,Out+backSurf);
+
+
+  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 -17 ");
+  addOuterSurf(Out);
+  Out=ModelSupport::getComposite(SMap,vacIndex,"-11 -127 (-117:-111) ");
+  addOuterUnionSurf(Out+frontSurf);
+
+  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -227 ( -217:212 ) ");
+  addOuterUnionSurf(Out+backSurf);
   return;
 }
 
@@ -189,9 +309,12 @@ PortTube::createLinks()
 {
   ELog::RegMethod RegA("PortTube","createLinks");
 
+  // port centre
+  const Geometry::Vec3D inOrg=Origin+X*inPortXStep+Z*inPortZStep;
+  const Geometry::Vec3D outOrg=Origin+X*outPortXStep+Z*outPortZStep;
   
-  //  FrontBackCut::createFrontLinks(*this,ACentre,Y); 
-  //  FrontBackCut::createBackLinks(*this,BCentre,Y);  
+  FrontBackCut::createFrontLinks(*this,inOrg,Y); 
+  FrontBackCut::createBackLinks(*this,outOrg,Y);  
   
   return;
 }
