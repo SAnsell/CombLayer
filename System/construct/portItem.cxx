@@ -87,7 +87,7 @@ portItem::portItem(const std::string& Key) :
   attachSystem::ContainedComp(),statusFlag(0),
   portIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(portIndex+1),radius(0.0),wall(0.0),
-  flangeRadius(0.0),flangeThick(0.0),voidMat(0),wallMat(0)
+  flangeRadius(0.0),flangeLength(0.0),voidMat(0),wallMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -99,7 +99,7 @@ portItem::portItem(const portItem& A) :
   statusFlag(A.statusFlag),portIndex(A.portIndex),
   cellIndex(A.cellIndex),externalLength(A.externalLength),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
-  flangeThick(A.flangeThick),plateThick(A.plateThick),
+  flangeLength(A.flangeLength),plateThick(A.plateThick),
   voidMat(A.voidMat),wallMat(A.wallMat),plateMat(A.plateMat),
   refComp(A.refComp),exitPoint(A.exitPoint)
   /*!
@@ -127,7 +127,7 @@ portItem::operator=(const portItem& A)
       radius=A.radius;
       wall=A.wall;
       flangeRadius=A.flangeRadius;
-      flangeThick=A.flangeThick;
+      flangeLength=A.flangeLength;
       plateThick=A.plateThick;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
@@ -169,7 +169,7 @@ portItem::setFlange(const double FR,const double FT)
   */
 {
   flangeRadius=FR;
-  flangeThick=FT;
+  flangeLength=FT;
   return;
 }
 
@@ -252,7 +252,7 @@ portItem::createSurfaces()
   ModelSupport::buildCylinder(SMap,portIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,portIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,portIndex+27,Origin,Y,
-			      radius+wall+flangeThick);
+			      radius+wall+flangeLength);
 
   return;
 }
@@ -316,13 +316,15 @@ portItem::constructOuterFlange(Simulation& System,
   ELog::RegMethod RegA("portItem","constructOuterFlange");
 
   const Geometry::Vec3D exitPoint=LT.getPoint(lastIndex+1);
+  ELog::EM<<"R == "<<keyName<<" "<<radius<<" "<<externalLength<<ELog::endDiag;
+  ELog::EM<<"PT == "<<keyName<<":"<<Origin<<" :: "<<exitPoint<<ELog::endDiag;
 
   // Final outer
   ModelSupport::buildPlane(SMap,portIndex+2,
 			   exitPoint+Y*externalLength,Y);
 
   ModelSupport::buildPlane(SMap,portIndex+102,
-			   exitPoint+Y*(externalLength-flangeThick),Y);
+			   exitPoint+Y*(externalLength-flangeLength),Y);
 
   if (plateThick>Geometry::zeroTol)
     ModelSupport::buildPlane(SMap,portIndex+202,
@@ -370,7 +372,7 @@ portItem::constructOuterFlange(Simulation& System,
       if (i>lastIndex)   
 	T+=Track[i];
 
-      if (T>=externalLength-flangeThick)
+      if (T>=externalLength-flangeLength)
 	OPtr->addSurfString(getExclude());
       else
 	{

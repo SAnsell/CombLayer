@@ -59,7 +59,7 @@ class portItem :
   double radius;             ///< radius of pipe
   double wall;               ///< wall thick
   double flangeRadius;       ///< flange radius
-  double flangeThick;        ///< flange thick
+  double flangeLength;       ///< flange thick(length)
   double plateThick;         ///< Plate on flange [if thick>0]
   
   int voidMat;               ///< Void material

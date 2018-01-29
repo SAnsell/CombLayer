@@ -52,6 +52,7 @@
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "PortTubeGenerator.h"
+#include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
 
 namespace setVariable
@@ -109,6 +110,7 @@ balderVariables(FuncDataBase& Control)
   setVariable::CrossGenerator CrossGen;
   setVariable::VacBoxGenerator VBoxGen;
   setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   
   Control.addVariable("OpticsDepth",100.0);
@@ -161,7 +163,20 @@ balderVariables(FuncDataBase& Control)
   PTubeGen.setFlange(0.5,0.8);
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,"FilterBox",0.0,9.0,54.0);
+  Control.addVariable("FilterBoxNPorts",4);
 
+  PItemGen.setPort(20.0,2.5,0.3);
+  // centre of mid point
+  Geometry::Vec3D CPos(0,-1.5*11.0,0);
+  Geometry::Vec3D ZVec(0,0,1);
+  for(size_t i=0;i<4;i++)
+    {
+      const std::string name="FilterBoxPort"+std::to_string(i);
+      PItemGen.generatePort(Control,name,CPos,ZVec);
+      CPos+=Geometry::Vec3D(0,11,0);
+    }
+
+      
   PipeGen.generatePipe(Control,"BellowB",0,10.0);
 
   GateGen.setPort(1.25,1.0,2.7);

@@ -155,7 +155,7 @@ PortTube::populate(const FuncDataBase& Control)
       R=Control.EvalPair<double>(portName,portBase,"Radius");
       W=Control.EvalPair<double>(portName,portBase,"Wall");
       FR=Control.EvalPair<double>(portName,portBase,"FlangeRadius");
-      FT=Control.EvalPair<double>(portName,portBase,"FlangeThick");
+      FT=Control.EvalPair<double>(portName,portBase,"FlangeLength");
       windowPort.setMain(L,R,W);
       windowPort.setFlange(FR,FT);
       windowPort.setMaterial(voidMat,wallMat);
@@ -319,6 +319,24 @@ PortTube::createLinks()
   return;
 }
 
+
+void
+PortTube::createPorts(Simulation& System)
+  /*!
+    Simple function to create ports
+    \param System :: Simulation to use
+   */
+{
+  ELog::RegMethod RegA("PortTube","createPorts");
+
+  for(size_t i=0;i<Ports.size();i++)
+    {
+      Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
+      Ports[i].constructTrack(System);
+    }
+  return;
+}
+  
 void
 PortTube::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,
@@ -339,7 +357,7 @@ PortTube::createAll(Simulation& System,
   
   createLinks();
   insertObjects(System);   
-  
+  createPorts(System);
   return;
 }
   

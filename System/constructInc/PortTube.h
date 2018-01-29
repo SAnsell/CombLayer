@@ -77,7 +77,8 @@ class PortTube :
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void createPorts(Simulation&);
+  
  public:
 
   PortTube(const std::string&);

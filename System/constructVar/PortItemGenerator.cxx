@@ -104,7 +104,7 @@ PortItemGenerator::~PortItemGenerator()
 
   
 void
-PortItemGenerator::setPort(const double R,const double L,
+PortItemGenerator::setPort(const double L,const double R,
 			   const double T)
   /*!
     Set both the ports

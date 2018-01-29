@@ -352,7 +352,7 @@ MonoVessel::createAll(Simulation& System,
 
   constructSystem::portItem windowPort("windowPort");
   windowPort.createUnitVector(*this,0);
-  windowPort.setMain(4.0,5.0,0.5);
+  windowPort.setMain(5.0,4.0,0.5);
   windowPort.setFlange(1.0,0.5);
   windowPort.setMaterial(voidMat,wallMat);
   windowPort.setCentLine(*this,Geometry::Vec3D(0,0,0),
