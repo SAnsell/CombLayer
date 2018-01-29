@@ -282,8 +282,8 @@ lineIntersect(Simulation& System,
 	      const FixedComp& FC,
 	      std::map<int,MonteCarlo::Object*>& OMap)
   /*!
-    For the line from APt to BPt Axis find all the intercepts
-    in the model and add them to cells
+    For all the tracks between fixed points in the FC 
+    find the cell in the model the tracks intersect.
     \param System :: Simualation to use
     \param FC :: Fixed Comp
     \param OMap :: Object map to add extra units to
@@ -340,8 +340,5 @@ lineIntersect(Simulation& System,
     }
   return;
 }
-	      
-	      
 
-  
 }  // NAMESPACE attachSystem

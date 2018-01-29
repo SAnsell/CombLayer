@@ -23,9 +23,14 @@
 #define constructSystem_portItem_h
 
 class Simulation;
+namespace ModelSupport
+{
+  class LineTrack;
+}
 
 namespace constructSystem
 {
+  
   /*!
     \class portItem
     \brief Calculates the intersection port with an object
@@ -62,10 +67,16 @@ class portItem :
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
 
+  
   void createSurfaces();
-  void createObjects(Simulation&);
-  void createLinks();
+  void createLinks(const ModelSupport::LineTrack&,
+		   const size_t,const size_t);
 
+  void constructOuterFlange(Simulation&,
+			    const ModelSupport::LineTrack&,
+			    const size_t,const size_t);
+  void calcBoundaryCrossing(const ModelSupport::LineTrack&,
+			    size_t&,size_t&) const;
   
  public:
 
@@ -75,9 +86,11 @@ class portItem :
   ~portItem();
 
   void createUnitVector(const attachSystem::FixedComp&,const long int);
-  void setCentLine(const Geometry::Vec3D&,const Geometry::Vec3D&);
+  void setCentLine(const attachSystem::FixedComp&,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
 
   void setMain(const double,const double,const double);
+  void setMaterial(const int,const int);
   void setFlange(const double,const double);
 
   void constructTrack(Simulation&);

@@ -169,16 +169,10 @@ ObjSurfMap::addSurfaces(MonteCarlo::Object* OPtr)
   
   // signed set
   const std::set<int>& sSet=OPtr->getSurfSet();
+
   std::set<int>::const_iterator sc;
   for(sc=sSet.begin();sc!=sSet.end();sc++)
-    {
-      addSurface(*sc,OPtr);
-      /* Remove for simple test [REVSURF]
-       const int oSurf= -SurI.hasOpposite(*sc);
-       if (oSurf)
-       	addSurface(oSurf,OPtr);
-      */
-    }
+    addSurface(*sc,OPtr);
 
   return;
 }
