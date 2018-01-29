@@ -453,7 +453,7 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
-  StrFunc::writeFLUKA("DEFAULTS - - - - - - EM-CASCADE",OX);
+  StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   ELog::EM<<"FLUKA defaults is EM-CASCADE. No low energy neutrons transported."<<ELog::endCrit;
   StrFunc::writeFLUKA("BEAM -2.0 - - 14.0 3.2 1.0 PROTON",OX);
   StrFunc::writeFLUKA("BEAMPOS 0.0 -30.0 0.0 0.0 1.0 0.0",OX);
