@@ -365,7 +365,7 @@ SimFLUKA::getLowMatName(const size_t& Z) const
     number - to be implemented.
  */
 {
-  ELog::RegMethod RegA("SimFLUKA","getLowMat");
+  ELog::RegMethod RegA("SimFLUKA","getLowMatName");
 
   std::vector<std::string> lm = {
     "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
