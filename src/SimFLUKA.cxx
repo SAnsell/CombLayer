@@ -229,7 +229,7 @@ SimFLUKA::writeElements(std::ostream& OX) const
   OX<<alignment<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
-  std::set<std::string> setZA;
+  std::set<MonteCarlo::Zaid> setZA;
   boost::format FMTstr("%1$d.%2$02d%3$c");
 
   for(const OTYPE::value_type& mp : OList)
@@ -238,18 +238,17 @@ SimFLUKA::writeElements(std::ostream& OX) const
       std::vector<MonteCarlo::Zaid> zaidVec = m.getZaidVec();
       for (const MonteCarlo::Zaid& ZC : zaidVec)
 	{
-	  setZA.insert(ZC.getZaid());
+	  setZA.insert(ZC);
 	}
     }
 
   std::ostringstream cx,lowmat;
   MonteCarlo::Zaid ZC;
-  for (const std::string &za : setZA)
+  for (const MonteCarlo::Zaid &za : setZA)
     {
-      if (za.empty()) continue;
-      ZC.setZaid(za);
-      cx<<"MATERIAL "<<ZC.getZ()<<". - "<<" 1."<<" - - "<<ZC.getIso()<<". "<<za<<" ";
-      lowmat<<getLowMat(ZC.getZ(),ZC.getIso(),za);
+      if (za.getZaid().empty()) continue;
+      cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."<<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
+      lowmat<<getLowMat(za.getZ(),za.getIso(),za.getFlukaName());
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
@@ -365,7 +364,7 @@ SimFLUKA::getLowMatName(const size_t& Z) const
 {
   ELog::RegMethod RegA("SimFLUKA","getLowMatName");
 
-  std::vector<std::string> lm = {
+  std::vector<std::string> lm = {"z=0",
     "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
     "CARBON",   "NITROGEN", "OXYGEN",   "FLUORINE", "NEON",
     "SODIUM",   "MAGNESIU", "ALUMINUM", "SILICON",  "PHOSPHO",
@@ -400,7 +399,7 @@ SimFLUKA::getLowMatName(const size_t& Z) const
 	       <<"\nZ is too large"<<ELog::endErr;
     }
 
-  std::string name(lm[Z-1]);
+  std::string name(lm[Z]);
 
   if (name.empty())
     {
@@ -452,7 +451,6 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
   Simulation::writeVariables(OX,'*');
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
-  ELog::EM<<"FLUKA defaults is EM-CASCADE. No low energy neutrons transported."<<ELog::endCrit;
   StrFunc::writeFLUKA("BEAM -2.0 - - 14.0 3.2 1.0 PROTON",OX);
   StrFunc::writeFLUKA("BEAMPOS 0.0 -30.0 0.0 0.0 1.0 0.0",OX);
 

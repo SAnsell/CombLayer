@@ -885,7 +885,7 @@ Material::writeFLUKA(std::ostream& OX) const
   for(const Zaid& ZItem: zaidVec)
     {
       cx<<ZItem.getDensity()<<
-	" "+ZItem.getZaid()+" ";
+	" "+ZItem.getFlukaName()+" ";
     i++;
     if (!(i%3))
       {
