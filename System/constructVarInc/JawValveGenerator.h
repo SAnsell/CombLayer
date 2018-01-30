@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/GateValveGenerator.h
+ * File:   constructVarInc/JawValveGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_GateValveGenerator_h
-#define setVariable_GateValveGenerator_h
+#ifndef setVariable_JawValveGenerator_h
+#define setVariable_JawValveGenerator_h
 
 class FuncDataBase;
 
@@ -28,14 +28,14 @@ namespace setVariable
 {
 
 /*!
-  \class GateValveGenerator
+  \class JawValveGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief GateValveGenerator for variables
+  \brief JawValveGenerator for variables
 */
 
-class GateValveGenerator
+class JawValveGenerator
 {
  private:
 
@@ -48,26 +48,28 @@ class GateValveGenerator
   double portRadius;            ///< Port inner radius (opening)
   double portThick;             ///< Port outer ring
   double portLen;               ///< Forward step of port
-  
-  bool closed;                  ///< Shutter closed
-  double bladeLift;             ///< Height of blade up
-  double bladeThick;            ///< moving blade thickness
-  double bladeRadius;           ///< moving blade radius
-  
-  std::string voidMat;          ///< Void material
-  std::string bladeMat;         ///< Void material
-  std::string wallMat;          ///< Pipe material
     
+  std::string voidMat;          ///< Void material
+  std::string wallMat;          ///< Pipe material
+
+  double jawWidth;              ///< Width of both jaws  (xbeam)
+  double jawHeight;             ///< height of both jaws (above beam)
+  double jawThick;              ///< thickness [in beam]
+  double jawGap;                ///< separation [if any]
+  
+  std::string jawMat;           ///< Jaw material
+
 
  public:
 
-  GateValveGenerator();
-  GateValveGenerator(const GateValveGenerator&);
-  GateValveGenerator& operator=(const GateValveGenerator&);
-  ~GateValveGenerator();
+  JawValveGenerator();
+  JawValveGenerator(const JawValveGenerator&);
+  JawValveGenerator& operator=(const JawValveGenerator&);
+  ~JawValveGenerator();
 
-  template<typename CF> void setCF();
-  
+  void setCF40();
+  void setCF100();
+
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }
 
@@ -76,11 +78,10 @@ class GateValveGenerator
   void setVoidMat(const std::string& M) { voidMat=M; }
   /// set wall material
   void setWallMat(const std::string& M) { wallMat=M; }
-  /// set wall material
-  void setBladeMat(const std::string& M) { bladeMat=M; }
   
-  void generateValve(FuncDataBase&,const std::string&,
-		     const double,const int) const;
+  void generateSlits(FuncDataBase&,const std::string&,
+		     const double,const double,
+		     const double) const;
 
 };
 

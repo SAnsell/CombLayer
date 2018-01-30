@@ -52,6 +52,7 @@
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
+#include "JawValveGenerator.h"
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
@@ -174,7 +175,7 @@ balderVariables(FuncDataBase& Control)
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,"BellowB",0,10.0);    
 
-  GateGen.setCF40();
+  GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,"GateA",0.0,0);
     
   VBoxGen.setMat("Stainless304");
@@ -203,16 +204,18 @@ balderVariables(FuncDataBase& Control)
   
   // [length is 72.9cm total]
   // [offset after mono is 119.1cm ]
-  PipeGen.generatePipe(Control,"DriftB",119.1,72.9); 
+  PipeGen.setCF<setVariable::CF100>();    
+  PipeGen.generatePipe(Control,"DriftB",119.1,72.5); 
   Control.addVariable("DriftBZStep",4.0);
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
 
   // joined and open
-  GateGen.setPort(5.0,1.0,2.7);
+  GateGen.setCF<setVariable::CF100>();
   GateGen.generateValve(Control,"GateC",0.0,0);
 
   // [length is 54.4cm total]
+  PipeGen.setCF<setVariable::CF100>();    
   PipeGen.generatePipe(Control,"DriftC",0,54.4); 
 
   // SLITS

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/GateValveGenerator.cxx
+ * File:   constructVar/JawValveGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -52,40 +52,38 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "CFFlanges.h"
-#include "GateValveGenerator.h"
+#include "JawValveGenerator.h"
 
 namespace setVariable
 {
 
-GateValveGenerator::GateValveGenerator() :
+JawValveGenerator::JawValveGenerator() :
   length(7.0),width(24.0),height(46.0),depth(10.5),
   wallThick(0.5),portRadius(5.0),portThick(1.0),portLen(1.0),
-  bladeLift(12.0),bladeThick(1.0),bladeRadius(5.5),voidMat("Void"),
-  bladeMat("Tungsten"),wallMat("Stainless304")
+  voidMat("Void"),wallMat("Stainless304"),jawWidth(2.0),
+  jawHeight(1.0),jawThick(0.2),jawGap(0.0)
   /*!
     Constructor and defaults
   */
 {}
 
-GateValveGenerator::GateValveGenerator(const GateValveGenerator& A) : 
+JawValveGenerator::JawValveGenerator(const JawValveGenerator& A) : 
   length(A.length),width(A.width),height(A.height),
   depth(A.depth),wallThick(A.wallThick),portRadius(A.portRadius),
-  portThick(A.portThick),portLen(A.portLen),closed(A.closed),
-  bladeLift(A.bladeLift),bladeThick(A.bladeThick),
-  bladeRadius(A.bladeRadius),voidMat(A.voidMat),
-  bladeMat(A.bladeMat),wallMat(A.wallMat)
+  portThick(A.portThick),portLen(A.portLen),voidMat(A.voidMat),
+  wallMat(A.wallMat),jawWidth(A.jawWidth),jawHeight(A.jawHeight),
+  jawThick(A.jawThick),jawGap(A.jawGap),jawMat(A.jawMat)
   /*!
     Copy constructor
-    \param A :: GateValveGenerator to copy
+    \param A :: JawValveGenerator to copy
   */
 {}
 
-GateValveGenerator&
-GateValveGenerator::operator=(const GateValveGenerator& A)
+JawValveGenerator&
+JawValveGenerator::operator=(const JawValveGenerator& A)
   /*!
     Assignment operator
-    \param A :: GateValveGenerator to copy
+    \param A :: JawValveGenerator to copy
     \return *this
   */
 {
@@ -99,39 +97,28 @@ GateValveGenerator::operator=(const GateValveGenerator& A)
       portRadius=A.portRadius;
       portThick=A.portThick;
       portLen=A.portLen;
-      closed=A.closed;
-      bladeLift=A.bladeLift;
-      bladeThick=A.bladeThick;
-      bladeRadius=A.bladeRadius;
       voidMat=A.voidMat;
-      bladeMat=A.bladeMat;
       wallMat=A.wallMat;
+      jawWidth=A.jawWidth;
+      jawHeight=A.jawHeight;
+      jawThick=A.jawThick;
+      jawGap=A.jawGap;
+      jawMat=A.jawMat;
     }
   return *this;
 }
 
-GateValveGenerator::~GateValveGenerator() 
+JawValveGenerator::~JawValveGenerator() 
  /*!
    Destructor
  */
 {}
 
-template<typename CF>
-void
-GateValveGenerator::setCF()
-  /*!
-    Set pipe/flange to CF format
-  */
-{
-  portRadius=CF::innerRadius;
-  portThick=CF::flangeRadius-CF::innerRadius;   //  total 2.7cm radius
-  portLen=CF::flangeLength;
-  return;
-}
+
 
 void
-GateValveGenerator::setPort(const double R,const double L,
-			    const double T)
+JawValveGenerator::setPort(const double R,const double L,
+			 const double T)
   /*!
     Set both the ports
     \param R :: radius of port tube
@@ -147,9 +134,11 @@ GateValveGenerator::setPort(const double R,const double L,
 
 
 void
-GateValveGenerator::generateValve(FuncDataBase& Control,
-				  const std::string& keyName,
-				  const double yStep,const int closedFlag) const
+JawValveGenerator::generateSlits(FuncDataBase& Control,
+				 const std::string& keyName,
+				 const double yStep,
+				 const double xOpen,
+				 const double zOpen) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -158,7 +147,7 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
     \param closedFlag :: true if valve closed
   */
 {
-  ELog::RegMethod RegA("GateValveGenerator","generatorValve");
+  ELog::RegMethod RegA("JawValveGenerator","generatorValve");
   
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
@@ -174,24 +163,31 @@ GateValveGenerator::generateValve(FuncDataBase& Control,
   Control.addVariable(keyName+"PortThick",portThick);
   Control.addVariable(keyName+"PortLen",portLen);
 
-  Control.addVariable(keyName+"Closed",closedFlag);
-
-  Control.addVariable(keyName+"BladeLift",bladeLift);
-  Control.addVariable(keyName+"BladeThick",bladeThick);
-  Control.addVariable(keyName+"BladeRadius",bladeRadius);
-
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"BladeMat",bladeMat);
   Control.addVariable(keyName+"WallMat",wallMat);
-       
+
+  // stuff for jaws:
+
+  Control.addVariable(keyName+"Gap",jawGap);
+  Control.addVariable(keyName+"XOpen",xOpen);
+  Control.addVariable(keyName+"XOpen",xOpen);
+  Control.addVariable(keyName+"XOffset",0.0);
+  Control.addVariable(keyName+"XThick",jawThick);
+  Control.addVariable(keyName+"XHeight",jawWidth);  // note reverse
+  Control.addVariable(keyName+"XWdith",jawHeight);  // note reverse
+
+  Control.addVariable(keyName+"ZOpen",zOpen);
+  Control.addVariable(keyName+"ZOffset",0.0);
+  Control.addVariable(keyName+"ZThick",jawThick);
+  Control.addVariable(keyName+"ZHeight",jawHeight); 
+  Control.addVariable(keyName+"ZWdith",jawWidth);  
+  
+  
+  Control.addVariable(keyName+"xJawMat",jawMat);
+  Control.addVariable(keyName+"zJawMat",jawMat);
+
   return;
 
 }
-
-///\cond TEMPLATE
-
-template void GateValveGenerator::setCF<CF40>();
-template void GateValveGenerator::setCF<CF63>();
-template void GateValveGenerator::setCF<CF100>();
 
 }  // NAMESPACE setVariable

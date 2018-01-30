@@ -153,19 +153,23 @@ JawUnit::populate(const FuncDataBase& Control)
   FixedOffset::populate(Control);
   
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
+  zOffset=Control.EvalVar<double>(keyName+"ZOffset");
   zThick=Control.EvalVar<double>(keyName+"ZThick");
   zHeight=Control.EvalVar<double>(keyName+"ZHeight");
   zWidth=Control.EvalVar<double>(keyName+"ZWidth");
 
   xOpen=Control.EvalVar<double>(keyName+"XOpen");
+  xOffset=Control.EvalVar<double>(keyName+"XOffset");
   xThick=Control.EvalVar<double>(keyName+"XThick");
   xHeight=Control.EvalVar<double>(keyName+"XHeight");
   xWidth=Control.EvalVar<double>(keyName+"XWidth");
 
   jawGap=Control.EvalVar<double>(keyName+"Gap");
 
-  zJawMat=ModelSupport::EvalMat<int>(Control,keyName+"zJawMat");
-  xJawMat=ModelSupport::EvalMat<int>(Control,keyName+"xJawMat");
+  zJawMat=ModelSupport::EvalMat<int>(Control,keyName+"zJawMat",
+				     keyName+"JawMat");
+  xJawMat=ModelSupport::EvalMat<int>(Control,keyName+"xJawMat",
+				     keyName+"JawMat");
   
   return;
 }
