@@ -52,6 +52,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "CFFlanges.h"
 #include "VacBoxGenerator.h"
 
 namespace setVariable
@@ -325,4 +326,18 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 
 }
 
+///\cond  TEMPLATE
+  template void VacBoxGenerator::setCF<CF40>();
+  template void VacBoxGenerator::setCF<CF63>();
+  template void VacBoxGenerator::setCF<CF100>();
+  template void VacBoxGenerator::setAPortCF<CF40>();
+  template void VacBoxGenerator::setAPortCF<CF63>();
+  template void VacBoxGenerator::setAPortCF<CF100>();
+  template void VacBoxGenerator::setBPortCF<CF40>();
+  template void VacBoxGenerator::setBPortCF<CF63>();
+  template void VacBoxGenerator::setBPortCF<CF100>();
+
+///\endcond  TEMPLATE
+
+  
 }  // NAMESPACE setVariable

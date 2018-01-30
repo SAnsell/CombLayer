@@ -243,9 +243,8 @@ CrossPipe::createSurfaces()
   ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,horrRadius+feThick);
 
   // FLANGE SURFACES:
-  if (flangeRadius>Geometry::zeroTol && flangeLength>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,vacIndex+107,
-				Origin,Y,horrRadius+flangeRadius);
+  if (flangeRadius>horrRadius && flangeLength>Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeRadius);
 
   // Secondary SURFACES:
   ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Z,vertRadius);

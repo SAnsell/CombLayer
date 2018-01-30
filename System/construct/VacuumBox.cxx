@@ -93,6 +93,72 @@ VacuumBox::VacuumBox(const std::string& Key,
   */
 {}
 
+VacuumBox::VacuumBox(const VacuumBox& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  centreOrigin(A.centreOrigin),vacIndex(A.vacIndex),
+  cellIndex(A.cellIndex),voidHeight(A.voidHeight),
+  voidWidth(A.voidWidth),voidDepth(A.voidDepth),
+  voidLength(A.voidLength),feHeight(A.feHeight),
+  feDepth(A.feDepth),feWidth(A.feWidth),feFront(A.feFront),
+  feBack(A.feBack),portAXStep(A.portAXStep),portAZStep(A.portAZStep),
+  portAWallThick(A.portAWallThick),portATubeLength(A.portATubeLength),
+  portATubeRadius(A.portATubeRadius),portBXStep(A.portBXStep),
+  portBZStep(A.portBZStep),portBWallThick(A.portBWallThick),
+  portBTubeLength(A.portBTubeLength),portBTubeRadius(A.portBTubeRadius),
+  flangeARadius(A.flangeARadius),flangeALength(A.flangeALength),
+  flangeBRadius(A.flangeBRadius),flangeBLength(A.flangeBLength),
+  voidMat(A.voidMat),feMat(A.feMat)
+  /*!
+    Copy constructor
+    \param A :: VacuumBox to copy
+  */
+{}
+
+VacuumBox&
+VacuumBox::operator=(const VacuumBox& A)
+  /*!
+    Assignment operator
+    \param A :: VacuumBox to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      cellIndex=A.cellIndex;
+      voidHeight=A.voidHeight;
+      voidWidth=A.voidWidth;
+      voidDepth=A.voidDepth;
+      voidLength=A.voidLength;
+      feHeight=A.feHeight;
+      feDepth=A.feDepth;
+      feWidth=A.feWidth;
+      feFront=A.feFront;
+      feBack=A.feBack;
+      portAXStep=A.portAXStep;
+      portAZStep=A.portAZStep;
+      portAWallThick=A.portAWallThick;
+      portATubeLength=A.portATubeLength;
+      portATubeRadius=A.portATubeRadius;
+      portBXStep=A.portBXStep;
+      portBZStep=A.portBZStep;
+      portBWallThick=A.portBWallThick;
+      portBTubeLength=A.portBTubeLength;
+      portBTubeRadius=A.portBTubeRadius;
+      flangeARadius=A.flangeARadius;
+      flangeALength=A.flangeALength;
+      flangeBRadius=A.flangeBRadius;
+      flangeBLength=A.flangeBLength;
+      voidMat=A.voidMat;
+      feMat=A.feMat;
+    }
+  return *this;
+}
+
   
 VacuumBox::~VacuumBox() 
   /*!
@@ -144,8 +210,14 @@ VacuumBox::populate(const FuncDataBase& Control)
   portBTubeRadius=Control.EvalPair<double>(keyName+"PortBTubeRadius",
 					   keyName+"PortTubeRadius");
   
-  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
-  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
+					 keyName+"FlangeRadius");
+  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
+					 keyName+"FlangeLength");
+  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
+					 keyName+"FlangeRadius");
+  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
+					 keyName+"FlangeLength");
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
@@ -155,7 +227,7 @@ VacuumBox::populate(const FuncDataBase& Control)
 
 void
 VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+			    const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -224,7 +296,7 @@ VacuumBox::createSurfaces()
   ModelSupport::buildCylinder(SMap,vacIndex+117,ACentre,Y,
 			      portATubeRadius+portAWallThick);
   ModelSupport::buildCylinder(SMap,vacIndex+127,ACentre,Y,
-			      portATubeRadius+portAWallThick+flangeRadius);
+			      portATubeRadius+portAWallThick+flangeARadius);
 
 
   // BACK PORT
@@ -234,11 +306,11 @@ VacuumBox::createSurfaces()
   ModelSupport::buildCylinder(SMap,vacIndex+217,BCentre,Y,
 			      portBTubeRadius+portBWallThick);
   ModelSupport::buildCylinder(SMap,vacIndex+227,BCentre,Y,
-			      portBTubeRadius+portBWallThick+flangeRadius);
+			      portBTubeRadius+portBWallThick+flangeBRadius);
 
   // Flange cut
-  FrontBackCut::getShiftedFront(SMap,vacIndex+111,1,Y,flangeLength);
-  FrontBackCut::getShiftedBack(SMap,vacIndex+211,-1,Y,flangeLength);
+  FrontBackCut::getShiftedFront(SMap,vacIndex+111,1,Y,flangeALength);
+  FrontBackCut::getShiftedBack(SMap,vacIndex+211,-1,Y,flangeBLength);
   //ModelSupport::buildPlane(SMap,vacIndex+211,
   //ACentre+Y*(portTubeLength+voidLength/2.0-flangeLength),Y);
 

@@ -62,20 +62,8 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "surfExpand.h"
+
+#include "CFFlanges.h"
 #include "CrossGenerator.h"
 
 namespace setVariable
@@ -172,6 +160,60 @@ CrossGenerator::setFlange(const double R,const double L)
   return;
 }
 
+
+
+
+template<typename HCF>
+void
+CrossGenerator::generateCF
+    (FuncDataBase& Control,const std::string& keyName,
+     const double yStep,const double VRad,
+     const double height,const double depth) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+    \param yStep :: y-offset 
+    \param VRad :: vertical radius
+    \param height :: height of box
+    \param depth :: depth of box
+    \param width :: width of box (full)
+  */
+{
+  ELog::RegMethod RegA("CrossGenerator","generatorCF");
+
+  flangeRadius=HCF::flangeRadius;
+  flangeLen=HCF::flangeLength;
+  generateCross(Control,keyName,yStep,
+		HCF::innerRadius,VRad,
+		height,depth);
+  return;
+}
+
+template<typename HCF,typename VCF>
+void
+CrossGenerator::generateDoubleCF
+    (FuncDataBase& Control,const std::string& keyName,
+     const double yStep, const double height,const double depth) 
+  /*!
+    Primary funciton for setting the variables
+    \param Control :: Database to add variables 
+    \param keyName :: head name for variable
+    \param yStep :: y-offset 
+    \param height :: height of box
+    \param depth :: depth of box
+    \param width :: width of box (full)
+  */
+{
+  ELog::RegMethod RegA("CrossGenerator","generatorDoubleCF");
+
+  flangeRadius=HCF::flangeRadius;
+  flangeLen=HCF::flangeLength;
+  generateCross(Control,keyName,yStep,HCF::innerRadius,
+		VCF::innerRadius,height,depth);
+  return;
+}
+  
 void
 CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 			      const double yStep,const double HRad,
@@ -191,7 +233,6 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 {
   ELog::RegMethod RegA("CrossGenerator","generatorCross");
   
-
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
   Control.addVariable(keyName+"HorrRadius",HRad);
@@ -207,7 +248,8 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"FeThick",wallThick);
   Control.addVariable(keyName+"TopPlate",topThick);
   Control.addVariable(keyName+"BasePlate",baseThick);
-  	
+
+  ELog::EM<<"FL["<<keyName<<"] == "<<flangeRadius<<ELog::endDiag;
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
 
@@ -218,4 +260,22 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
 
 }
 
+///\cond TEMPLATE
+
+  template void CrossGenerator::generateCF<CF40>
+  (FuncDataBase&,const std::string&,const double,const double,
+   const double,const double);
+  template void CrossGenerator::generateCF<CF63>
+  (FuncDataBase&,const std::string&,const double,const double,
+   const double,const double);
+  template void CrossGenerator::generateCF<CF100>
+  (FuncDataBase&,const std::string&,const double,const double,
+   const double,const double);
+  
+  template void CrossGenerator::generateDoubleCF<CF40,CF63>
+  (FuncDataBase&,const std::string&,const double,const double,const double);
+
+  
+///\endcond TEMPLATE
+  
 }  // NAMESPACE setVariable

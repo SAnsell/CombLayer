@@ -380,6 +380,8 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   ELog::RegMethod RegA("WeightControl","procParam");
 
   const size_t nItem=IParam.setCnt(unitName);
+
+
   if (iSet>nItem)
     throw ColErr::IndexError<size_t>(iSet,nItem,"iSet/nItem:"+unitName);
     
@@ -391,16 +393,18 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
-  ELog::EM<<"SCALE == "<<energyCut<<" "<<scaleFactor<<" "
-	  <<density<<ELog::endDiag;
-  if (scaleFactor>1.0)
-    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
+  const size_t nIndex=IParam.itemCnt(unitName,iSet);
+  const size_t nIndexB=IParam.itemCnt("WObject",iSet);
   
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
     	  <<" rho:"<<density
     	  <<" r2Len:"<<r2Length
 	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
+  if (r2Power>0.1)
+    weightPower=1.0/r2Power;
+  if (scaleFactor>1.0)
+    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
   return;
 }
     

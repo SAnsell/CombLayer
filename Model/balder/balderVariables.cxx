@@ -113,7 +113,10 @@ balderVariables(FuncDataBase& Control)
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
-  
+
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  CrossGen.setMat("Stainless304");
+    
   Control.addVariable("OpticsDepth",100.0);
   Control.addVariable("OpticsHeight",200.0);
   Control.addVariable("OpticsLength",1000.0);
@@ -134,23 +137,17 @@ balderVariables(FuncDataBase& Control)
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
-  CrossGen.setFlange(2.0,1.0);
-  CrossGen.setMat("Stainless304");
-  // hor rad / vert rad / heigh / depth
-  CrossGen.generateCross(Control,"IonPA",22.0,1.25,5.0,10.0,26.5);
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
+    (Control,"IonPA",22.0,10.0,26.5);
 
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
-  CrossGen.setFlange(2.0,1.0);
-  CrossGen.setMat("Stainless304");
-  // hor rad / vert rad / heigh / depth
-  CrossGen.generateCross(Control,"TriggerPipe",0.0,
-			  1.25,3.5,15.0,10.0);
-
-  PipeGen.setWindow(-2.0,0.0);   // no window
+  CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
+    (Control,"TriggerPipe",0.0,15.0,10.0);  // ystep/height/depth
 
   BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setBFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,"BellowA",0,16.0);
 
   // ACTUALL ROUND PIPE + 4 filter tubles and 1 base tube [large]
@@ -182,8 +179,8 @@ balderVariables(FuncDataBase& Control)
     
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
-  VBoxGen.setPort(2.0,5.0,0.6);  // R/Len/thickness
-  VBoxGen.setFlange(0.5,0.8);
+  VBoxGen.setCF<CF40>();
+  VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,"MirrorBox",0.0,54.0,15.3,31.3,167.4);
