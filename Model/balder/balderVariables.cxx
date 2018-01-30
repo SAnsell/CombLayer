@@ -88,7 +88,7 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable("MonoVacPortLen",4.65);
   Control.addVariable("MonoVacPortThick",0.3);
   Control.addVariable("MonoVacPortFlangeLen",1.5);
-  Control.addVariable("MonoVacPortFlangeRad",2.5);
+  Control.addVariable("MonoVacPortFlangeRad",2.7);
 
   Control.addVariable("MonoVacWallMat","Stainless304");
 
@@ -159,8 +159,8 @@ balderVariables(FuncDataBase& Control)
 
   // ACTUALL ROUND PIPE + 4 filter tubles and 1 base tube [large]
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setPort(3.3,10.7,0.5);
-  PTubeGen.setFlange(0.5,0.8);
+  PTubeGen.setPort(3.3,10.7,0.5);  // Radius ,Len , Thick
+  PTubeGen.setFlange(1.7,0.8);       // R/L
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,"FilterBox",0.0,9.0,54.0);
   Control.addVariable("FilterBoxNPorts",4);
@@ -176,18 +176,12 @@ balderVariables(FuncDataBase& Control)
       CPos+=Geometry::Vec3D(0,11,0);
     }
 
-      
-  PipeGen.generatePipe(Control,"BellowB",0,10.0);
+  BellowGen.setFlangePair(5.5,1.0,-2.7,1.0);
+  BellowGen.generateBellow(Control,"BellowB",0,10.0);    
 
   GateGen.setPort(1.25,1.0,2.7);
   GateGen.generateValve(Control,"GateA",0.0,0);
-  
-  // CrossGen.setPlates(0.5,1.0,1.0);
-  // CrossGen.setPorts(1.1,1.1);
-  // CrossGen.setFlange(2.0,0.3);
-  // CrossGen.generateCross(Control,"IonPumpA",0.0,2.0,3.15,10.0,7.5);
-
-  
+    
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
   VBoxGen.setPort(2.0,5.0,0.6);  // R/Len/thickness
@@ -199,19 +193,19 @@ balderVariables(FuncDataBase& Control)
   GateGen.setPort(1.25,1.0,2.7);
   GateGen.generateValve(Control,"GateB",0.0,0);
 
-
-  PipeGen.setPipe(2.0,0.5);      // 2cm radius / 0.5cm wall
-  PipeGen.setFlangePair(-0.8,0.8,-5.7,1.0);
-  // [length is 10cm total]
-  PipeGen.generatePipe(Control,"BellowC",0,10.0); 
+  BellowGen.setFlangePair(-0.8,0.8,-5.7,1.0);
+  BellowGen.generateBellow(Control,"BellowC",0,10.0);    
 
   PipeGen.setPipe(5.0,0.5);      // 2cm radius / 0.5cm wall
   PipeGen.setFlange(-2.7,1.0);
+  PipeGen.setMat("Stainless304");
   // [length is 38.3cm total]
   PipeGen.generatePipe(Control,"DriftA",0,38.3);
   // Length ignored  as joined front/back
-  PipeGen.generatePipe(Control,"MonoBellowA",0,50.0);   
-  PipeGen.generatePipe(Control,"MonoBellowB",0,50.0);
+
+  BellowGen.setFlange(7.65,1.0);            // cf large
+  BellowGen.generateBellow(Control,"MonoBellowA",0,50.0);   
+  BellowGen.generateBellow(Control,"MonoBellowB",0,50.0);
   
   // [length is 72.9cm total]
   // [offset after mono is 119.1cm ]

@@ -77,7 +77,7 @@ class makeBalder
   std::shared_ptr<constructSystem::PortTube> filterBox;
 
   /// Joining Bellows (pipe):
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
+  std::shared_ptr<constructSystem::Bellows> pipeB;
 
   /// CF40 gate valve
   std::shared_ptr<constructSystem::GateValve> gateA;
@@ -89,7 +89,7 @@ class makeBalder
   std::shared_ptr<constructSystem::GateValve> gateB;
 
   /// Joining Bellows from mirror box
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
+  std::shared_ptr<constructSystem:: Bellows> pipeC;
 
   /// Large drift chamber
   std::shared_ptr<constructSystem::VacuumPipe> driftA;
@@ -101,9 +101,9 @@ class makeBalder
   std::shared_ptr<xraySystem::MonoVessel> monoV;
   
   /// Huge Bellows to Mono
-  std::shared_ptr<constructSystem::VacuumPipe> monoBellowA;
+  std::shared_ptr<constructSystem::Bellows> monoBellowA;
   /// Huge Bellows from Mono
-  std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
+  std::shared_ptr<constructSystem::Bellows> monoBellowB;
   
   /// Gate valve after mono [large]
   std::shared_ptr<constructSystem::GateValve> gateC;

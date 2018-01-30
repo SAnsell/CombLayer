@@ -316,8 +316,6 @@ portItem::constructOuterFlange(Simulation& System,
   ELog::RegMethod RegA("portItem","constructOuterFlange");
 
   const Geometry::Vec3D exitPoint=LT.getPoint(lastIndex+1);
-  ELog::EM<<"R == "<<keyName<<" "<<radius<<" "<<externalLength<<ELog::endDiag;
-  ELog::EM<<"PT == "<<keyName<<":"<<Origin<<" :: "<<exitPoint<<ELog::endDiag;
 
   // Final outer
   ModelSupport::buildPlane(SMap,portIndex+2,
