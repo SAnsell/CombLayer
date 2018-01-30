@@ -63,8 +63,8 @@ class GateValve :
   double bladeRadius;           ///< moving blade radius
   
   int voidMat;                  ///< Void material
-  int bladeMat;                  ///< Void material
-  int wallMat;                    ///< Pipe material
+  int bladeMat;                 ///< blade material
+  int wallMat;                  ///< Pipe material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
