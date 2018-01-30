@@ -109,6 +109,30 @@ Zaid::operator==(const Zaid& A) const
 }
 
 bool
+Zaid::operator<(const Zaid& A) const
+  /*!
+    Check if this is less than A [excluding density]
+    \param A :: Object to check
+    \return true if matched
+   */
+{
+  if (index<A.index)
+    return 1;
+  else if (index>A.index)
+    return 0;
+  else // if (index==A.index)
+    {
+      if (tag<A.tag)
+	return 1;
+      else if (tag>A.tag)
+	return 0;
+      else // if (tag==A.tag)
+	return (type<A.type) ? 1 : 0;
+    }
+  return 0;
+}
+
+bool
 Zaid::isEquivalent(const size_t Z,const size_t T,const char C) const
   /*!
     Determine if the numbers are equivilent
@@ -152,9 +176,29 @@ Zaid::setZaid(const std::string& A)
 }
 
 std::string
+Zaid::getFlukaName() const
+/*!
+  Return FLUKA-compatible name
+  In FLUKA, max length of the SDUM card is 8 characters,
+  but len(ZZZAAA.abX) is 10 characters.
+  Therefore we can remove dot to reduce it to 9 symbols,
+  and since it most cases Z<100 than the total length
+  is 8 characters.
+  \todo Make it work for for Z>=100
+ */
+{
+  ELog::RegMethod RegA("Zaid","getFlukaName");
+
+  std::string V(getZaid());
+  V.erase(std::remove(V.begin(),V.end(),'.'),V.end());
+
+  return V;
+}
+
+std::string
 Zaid::getZaid() const
 /*!
-  Return zaid string
+  Return zaid string (ZZZAAA.abX)
  */
 {
   boost::format FMTstr("%1$d.%2$02d%3$c");
