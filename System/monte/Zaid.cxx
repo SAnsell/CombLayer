@@ -150,6 +150,22 @@ Zaid::setZaid(const std::string& A)
   type=A[pos+3];
   return 1;
 }
+
+std::string
+Zaid::getZaid() const
+/*!
+  Return zaid string
+ */
+{
+  boost::format FMTstr("%1$d.%2$02d%3$c");
+  std::ostringstream OX;
+
+  if (index)  // avoid writing 00000 zaid
+    OX << FMTstr % index % tag % type;
+
+  return OX.str();
+
+}
   
     
 void
@@ -190,12 +206,11 @@ Zaid::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTstr("%1$d.%2$02d%3$c");
   boost::format FMTnum("%1$.6g");
 
   if (index)  // avoid writing 00000 zaid
     {
-      OX<<FMTstr % index % tag % type;
+      OX<<getZaid();
       if (type=='c')
         OX<<" "<<FMTnum % density;
     }

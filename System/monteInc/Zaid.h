@@ -53,6 +53,7 @@ class Zaid
 
   bool isEquivalent(const size_t,const size_t,const char) const;
   size_t setZaid(const std::string&);
+  std::string getZaid() const;
   void setDensity(const double); 
   /// Set a tag number
   void setTag(const size_t T) { tag=T % 100; }
