@@ -93,59 +93,6 @@ VacuumBox::VacuumBox(const std::string& Key,
   */
 {}
 
-VacuumBox::VacuumBox(const VacuumBox& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
-  centreOrigin(A.centreOrigin),vacIndex(A.vacIndex),
-  cellIndex(A.cellIndex),voidHeight(A.voidHeight),
-  voidWidth(A.voidWidth),voidDepth(A.voidDepth),
-  voidLength(A.voidLength),feHeight(A.feHeight),
-  feDepth(A.feDepth),feWidth(A.feWidth),feFront(A.feFront),
-  feBack(A.feBack),portWallThick(A.portWallThick),
-  portTubeLength(A.portTubeLength),portTubeRadius(A.portTubeRadius),
-  flangeRadius(A.flangeRadius),flangeLength(A.flangeLength),
-  voidMat(A.voidMat),feMat(A.feMat)
-  /*!
-    Copy constructor
-    \param A :: VacuumBox to copy
-  */
-{}
-
-VacuumBox&
-VacuumBox::operator=(const VacuumBox& A)
-  /*!
-    Assignment operator
-    \param A :: VacuumBox to copy
-    \return *this
-  */
-{
-  if (this!=&A)
-    {
-      attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
-      attachSystem::CellMap::operator=(A);
-      attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
-      voidHeight=A.voidHeight;
-      voidWidth=A.voidWidth;
-      voidDepth=A.voidDepth;
-      voidLength=A.voidLength;
-      feHeight=A.feHeight;
-      feDepth=A.feDepth;
-      feWidth=A.feWidth;
-      feFront=A.feFront;
-      feBack=A.feBack;
-      portWallThick=A.portWallThick;
-      portTubeLength=A.portTubeLength;
-      portTubeRadius=A.portTubeRadius;
-      flangeRadius=A.flangeRadius;
-      flangeLength=A.flangeLength;
-      voidMat=A.voidMat;
-      feMat=A.feMat;
-    }
-  return *this;
-}
-
   
 VacuumBox::~VacuumBox() 
   /*!
@@ -178,9 +125,24 @@ VacuumBox::populate(const FuncDataBase& Control)
   feFront=Control.EvalDefVar<double>(keyName+"FeFront",wallThick);
   feBack=Control.EvalDefVar<double>(keyName+"FeBack",wallThick);
 
-  portWallThick=Control.EvalVar<double>(keyName+"PortWallThick");
-  portTubeLength=Control.EvalVar<double>(keyName+"PortTubeLength");
-  portTubeRadius=Control.EvalVar<double>(keyName+"PortTubeRadius");
+  portAXStep=Control.EvalDefVar<double>(keyName+"PortAXStep",0.0);
+  portAZStep=Control.EvalDefVar<double>(keyName+"PortAZStep",0.0);
+  portAWallThick=Control.EvalPair<double>(keyName+"PortAWallThick",
+					  keyName+"PortWallThick");
+  portATubeLength=Control.EvalPair<double>(keyName+"PortATubeLength",
+					   keyName+"PortTubeLength");
+  portATubeRadius=Control.EvalPair<double>(keyName+"PortATubeRadius",
+					   keyName+"PortTubeRadius");
+
+  portBXStep=Control.EvalDefVar<double>(keyName+"PortBXStep",0.0);
+  portBZStep=Control.EvalDefVar<double>(keyName+"PortBZStep",0.0);
+
+  portBWallThick=Control.EvalPair<double>(keyName+"PortBWallThick",
+					  keyName+"PortWallThick");
+  portBTubeLength=Control.EvalPair<double>(keyName+"PortBTubeLength",
+					   keyName+"PortTubeLength");
+  portBTubeRadius=Control.EvalPair<double>(keyName+"PortBTubeRadius",
+					   keyName+"PortTubeRadius");
   
   flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
   flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
@@ -206,7 +168,7 @@ VacuumBox::createUnitVector(const attachSystem::FixedComp& FC,
   applyOffset();
   // after rotation
   if (!centreOrigin)
-    Origin+=Y*(portTubeLength+feFront+voidLength/2.0);
+    Origin+=Y*(portATubeLength+feFront+voidLength/2.0);
   return;
 }
 
@@ -223,13 +185,13 @@ VacuumBox::createSurfaces()
   if (!frontActive())
     {
       ModelSupport::buildPlane(SMap,vacIndex+101,
-			       Origin-Y*(portTubeLength+voidLength/2.0),Y);
+			       Origin-Y*(portATubeLength+voidLength/2.0),Y);
       setFront(SMap.realSurf(vacIndex+101));
     }
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,vacIndex+102,
-			       Origin+Y*(portTubeLength+voidLength/2.0),Y);
+			       Origin+Y*(portBTubeLength+voidLength/2.0),Y);
       setBack(-SMap.realSurf(vacIndex+102));
     }
   
@@ -255,24 +217,31 @@ VacuumBox::createSurfaces()
   ModelSupport::buildPlane(SMap,vacIndex+16,
 			   Origin+Z*(voidHeight+feHeight),Z);
 
-  // Ports 
-  ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,portTubeRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+117,Origin,Y,
-			      portTubeRadius+portWallThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+127,Origin,Y,
-			      portTubeRadius+portWallThick+flangeRadius);
+  // FRONT PORT
+  const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
 
+  ModelSupport::buildCylinder(SMap,vacIndex+107,ACentre,Y,portATubeRadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+117,ACentre,Y,
+			      portATubeRadius+portAWallThick);
+  ModelSupport::buildCylinder(SMap,vacIndex+127,ACentre,Y,
+			      portATubeRadius+portAWallThick+flangeRadius);
+
+
+  // BACK PORT
+  const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
+
+  ModelSupport::buildCylinder(SMap,vacIndex+207,BCentre,Y,portBTubeRadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+217,BCentre,Y,
+			      portBTubeRadius+portBWallThick);
+  ModelSupport::buildCylinder(SMap,vacIndex+227,BCentre,Y,
+			      portBTubeRadius+portBWallThick+flangeRadius);
 
   // Flange cut
   FrontBackCut::getShiftedFront(SMap,vacIndex+111,1,Y,flangeLength);
-  //  FrontBackCut::getShiftedBack(SMap,vacIndex+12,1,Y,feBack);
+  FrontBackCut::getShiftedBack(SMap,vacIndex+211,-1,Y,flangeLength);
+  //ModelSupport::buildPlane(SMap,vacIndex+211,
+  //ACentre+Y*(portTubeLength+voidLength/2.0-flangeLength),Y);
 
-  // ModelSupport::buildPlane(SMap,vacIndex+111,
-  //    Origin-Y*(portTubeLength+voidLength/2.0-flangeLength),Y);
-
-  ModelSupport::buildPlane(SMap,vacIndex+112,
-     Origin+Y*(portTubeLength+voidLength/2.0-flangeLength),Y);
-  
   return;
 }
 
@@ -298,41 +267,44 @@ VacuumBox::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,vacIndex," -1 -107 ");
   CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -107 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -207 ");
   CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
 
   // Main metal
   Out=ModelSupport::getComposite
-    (SMap,vacIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) 107 ");
+    (SMap,vacIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:107) (-2:207) ");
   CellMap::makeCell("MainWall",System,cellIndex++,feMat,0.0,Out);
 
   // Port metal
   Out=ModelSupport::getComposite(SMap,vacIndex," -11 107 -117 ");
   CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex," 12 207 -217 ");
   CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,Out+BPortStr);
 
   // Flange
   Out=ModelSupport::getComposite(SMap,vacIndex," -111 117 -127 ");
   CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 112 117 -127 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex," 211 217 -227 ");
   CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,Out+BPortStr);
 
   // Flange Voids
   Out=ModelSupport::getComposite(SMap,vacIndex," 111 -11 117 -127 ");
   CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -112 117 -127 ");
+  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -211 217 -227 ");
   CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
   
 
   Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," -127 ");
-  addOuterUnionSurf(Out+FPortStr+BPortStr);      
+  Out=ModelSupport::getComposite(SMap,vacIndex," -11 -127 ");
+  addOuterUnionSurf(Out+FPortStr);      
+
+  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -227 ");
+  addOuterUnionSurf(Out+BPortStr);      
   return;
 }
 
@@ -340,13 +312,18 @@ void
 VacuumBox::createLinks()
   /*!
     Determines the link point on the outgoing plane.
-    It must follow the beamline, but exit at the plane
+    It must follow the beamline, but exit at the plane.
+    Port position are used for first two link points
     Note that 0/1 are the flange surfaces
   */
 {
   ELog::RegMethod RegA("VacuumBox","createLinks");
 
-  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
+  const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
+  
+  FrontBackCut::createFrontLinks(*this,ACentre,Y); 
+  FrontBackCut::createBackLinks(*this,BCentre,Y);  
   FixedComp::setConnect(2,Origin-X*((feWidth+voidWidth)/2.0),-X);
   FixedComp::setConnect(3,Origin+X*((feWidth+voidWidth)/2.0),X);
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);

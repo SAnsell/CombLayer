@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_VacBoxGenerator_h
-#define setVariable_VacBoxGenerator_h
+#ifndef setVariable_PortTubeGenerator_h
+#define setVariable_PortTubeGenerator_h
 
 class FuncDataBase;
 
@@ -28,21 +28,21 @@ namespace setVariable
 {
 
 /*!
-  \class VacBoxGenerator
+  \class PortTubeGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief VacBoxGenerator for variables
+  \brief PortTubeGenerator for variables
 */
 
-class VacBoxGenerator
+class PortTubeGenerator
 {
  private:
 
   double wallThick;          ///< Wall thick [generic]
 
-  double portAXStep;
-  double portAZStep;
+  double portAXStep;         ///< Step on in-port
+  double portAZStep;         ///< Step of in-port
   double portAWallThick;     ///< Flange wall thickness
   double portATubeLength;    ///< Port tube
   double portATubeRadius;    ///< Port tube length
@@ -61,10 +61,10 @@ class VacBoxGenerator
 
  public:
 
-  VacBoxGenerator();
-  VacBoxGenerator(const VacBoxGenerator&);
-  VacBoxGenerator& operator=(const VacBoxGenerator&);
-  ~VacBoxGenerator();
+  PortTubeGenerator();
+  PortTubeGenerator(const PortTubeGenerator&);
+  PortTubeGenerator& operator=(const PortTubeGenerator&);
+  ~PortTubeGenerator();
 
 
   /// set wall thickness
@@ -82,9 +82,8 @@ class VacBoxGenerator
   void setMat(const std::string& M) { wallMat=M; }
 
   
-  void generateBox(FuncDataBase&,const std::string&,
-		   const double,const double,const double,
-		   const double,const double) const;
+  void generateTube(FuncDataBase&,const std::string&,
+		   const double,const double,const double) const;
 
 };
 

@@ -52,12 +52,12 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
-#include "VacBoxGenerator.h"
+#include "PortTubeGenerator.h"
 
 namespace setVariable
 {
 
-VacBoxGenerator::VacBoxGenerator() :
+PortTubeGenerator::PortTubeGenerator() :
   wallThick(0.5),
   portAXStep(0.0),portAZStep(0.0),
   portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
@@ -70,7 +70,7 @@ VacBoxGenerator::VacBoxGenerator() :
   */
 {}
 
-VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) : 
+PortTubeGenerator::PortTubeGenerator(const PortTubeGenerator& A) : 
   wallThick(A.wallThick),portAXStep(A.portAXStep),
   portAZStep(A.portAZStep),portAWallThick(A.portAWallThick),
   portATubeLength(A.portATubeLength),portATubeRadius(A.portATubeRadius),
@@ -81,15 +81,15 @@ VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) :
   wallMat(A.wallMat)
   /*!
     Copy constructor
-    \param A :: VacBoxGenerator to copy
+    \param A :: PortTubeGenerator to copy
   */
 {}
 
-VacBoxGenerator&
-VacBoxGenerator::operator=(const VacBoxGenerator& A)
+PortTubeGenerator&
+PortTubeGenerator::operator=(const PortTubeGenerator& A)
   /*!
     Assignment operator
-    \param A :: VacBoxGenerator to copy
+    \param A :: PortTubeGenerator to copy
     \return *this
   */
 {
@@ -114,7 +114,7 @@ VacBoxGenerator::operator=(const VacBoxGenerator& A)
   return *this;
 }
 
-VacBoxGenerator::~VacBoxGenerator() 
+PortTubeGenerator::~PortTubeGenerator() 
  /*!
    Destructor
  */
@@ -122,7 +122,7 @@ VacBoxGenerator::~VacBoxGenerator()
 
 
 void
-VacBoxGenerator::setPort(const double R,const double L,
+PortTubeGenerator::setPort(const double R,const double L,
 			 const double T)
   /*!
     Set both the ports
@@ -141,7 +141,7 @@ VacBoxGenerator::setPort(const double R,const double L,
 }
 
 void
-VacBoxGenerator::setAPort(const double R,const double L,
+PortTubeGenerator::setAPort(const double R,const double L,
 			  const double T)
   /*!
     Set both the ports
@@ -157,7 +157,7 @@ VacBoxGenerator::setAPort(const double R,const double L,
 }
 
 void
-VacBoxGenerator::setBPort(const double R,const double L,
+PortTubeGenerator::setBPort(const double R,const double L,
 			  const double T)
   /*!
     Set both the ports
@@ -173,7 +173,7 @@ VacBoxGenerator::setBPort(const double R,const double L,
 }
 
 void
-VacBoxGenerator::setAPortOffset(const double XS,const double ZS)
+PortTubeGenerator::setAPortOffset(const double XS,const double ZS)
   /*!
     Set the port offset relative to the origin line
     \param XS :: X Step
@@ -186,7 +186,7 @@ VacBoxGenerator::setAPortOffset(const double XS,const double ZS)
 }
 
 void
-VacBoxGenerator::setBPortOffset(const double XS,const double ZS)
+PortTubeGenerator::setBPortOffset(const double XS,const double ZS)
   /*!
     Set the port offset relative to the origin line
     \param XS :: X Step
@@ -199,7 +199,7 @@ VacBoxGenerator::setBPortOffset(const double XS,const double ZS)
 }
   
 void
-VacBoxGenerator::setFlange(const double R,const double L)
+PortTubeGenerator::setFlange(const double R,const double L)
   /*!
     Set all the flange values
     \param R :: radius of flange
@@ -212,50 +212,47 @@ VacBoxGenerator::setFlange(const double R,const double L)
 }
 
 void
-VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
-			     const double yStep,const double width,const
-			     double height,const double depth,
-			     const double length) const
-  /*!
+PortTubeGenerator::generateTube(FuncDataBase& Control,
+				const std::string& keyName,
+				const double yStep,const double radius,
+				const double length) const
+ /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
     \param keyName :: head name for variable
     \param yStep :: y-offset 
-    \param height :: height of box
-    \param depth :: depth of box
-    \param width :: width of box (full)
+    \param radius :: radius of inner void
     \param length :: length of box - ports
   */
 {
-  ELog::RegMethod RegA("VacBoxGenerator","generatorBox");
+  ELog::RegMethod RegA("PortTubeGenerator","generatorBox");
   
 
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
 
-  Control.addVariable(keyName+"VoidHeight",height);
-  Control.addVariable(keyName+"VoidDepth",depth);
-  Control.addVariable(keyName+"VoidWidth",width);
-  Control.addVariable(keyName+"VoidLength",length);
-
+  Control.addVariable(keyName+"Radius",radius);
+  Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"WallThick",wallThick);
-	
-  Control.addVariable(keyName+"PortAXStep",portAXStep);
-  Control.addVariable(keyName+"PortAZStep",portAZStep);
-  Control.addVariable(keyName+"PortAWallThick",portAWallThick);
-  Control.addVariable(keyName+"PortATubeRadius",portATubeRadius);
-  Control.addVariable(keyName+"PortATubeLength",portATubeLength);
 
-  Control.addVariable(keyName+"PortBXStep",portBXStep);
-  Control.addVariable(keyName+"PortBZStep",portBZStep);
-  Control.addVariable(keyName+"PortBWallThick",portBWallThick);
-  Control.addVariable(keyName+"PortBTubeRadius",portBTubeRadius);
-  Control.addVariable(keyName+"PortBTubeLength",portBTubeLength);
+
+	
+  Control.addVariable(keyName+"InPortXStep",portAXStep);
+  Control.addVariable(keyName+"InPortZStep",portAZStep);
+  Control.addVariable(keyName+"InPortThick",portAWallThick);
+  Control.addVariable(keyName+"InPortRadius",portATubeRadius);
+  Control.addVariable(keyName+"InPortLen",portATubeLength);
+
+  Control.addVariable(keyName+"OutPortXStep",portBXStep);
+  Control.addVariable(keyName+"OutPortZStep",portBZStep);
+  Control.addVariable(keyName+"OutPortThick",portBWallThick);
+  Control.addVariable(keyName+"OutPortRadius",portBTubeRadius);
+  Control.addVariable(keyName+"OutPortLen",portBTubeLength);
 
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
-  Control.addVariable(keyName+"FeMat",wallMat);
+  Control.addVariable(keyName+"WallMat",wallMat);
        
   return;
 

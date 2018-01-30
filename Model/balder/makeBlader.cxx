@@ -71,11 +71,15 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
+#include "Bellows.h"
 #include "VacuumBox.h"
+#include "portItem.h"
+#include "PortTube.h"
 
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
+#include "GateValve.h"
 #include "makeBalder.h"
 
 namespace xraySystem
@@ -83,20 +87,31 @@ namespace xraySystem
 
 makeBalder::makeBalder() :
   opticsHut(new OpticsHutch("Optics")),
+  ionPA(new constructSystem::CrossPipe("IonPA")),
   triggerPipe(new constructSystem::CrossPipe("TriggerPipe")),
-  pipeA(new constructSystem::VacuumPipe("BellowA")),
-  filterBox(new constructSystem::VacuumBox("FilterBox")),
-  pipeB(new constructSystem::VacuumPipe("BellowB")),
-  ionPumpA(new constructSystem::CrossPipe("IonPumpA")),
+  pipeA(new constructSystem::Bellows("BellowA")),
+  filterBox(new constructSystem::PortTube("FilterBox")),
+  pipeB(new constructSystem::Bellows("BellowB")),
+  gateA(new constructSystem::GateValve("GateA")),
   mirrorBox(new constructSystem::VacuumBox("MirrorBox")),
-  ionPumpB(new constructSystem::CrossPipe("IonPumpB")),
-  pipeC(new constructSystem::VacuumPipe("BellowC")),
+  gateB(new constructSystem::GateValve("GateB")),
+  pipeC(new constructSystem::Bellows("BellowC")),
   driftA(new constructSystem::VacuumPipe("DriftA")),
+  
   driftB(new constructSystem::VacuumPipe("DriftB")),
   monoV(new xraySystem::MonoVessel("MonoVac")),
-  monoBellowA(new constructSystem::VacuumPipe("MonoBellowA")),
-  monoBellowB(new constructSystem::VacuumPipe("MonoBellowB"))
-
+  monoBellowA(new constructSystem::Bellows("MonoBellowA")),
+  monoBellowB(new constructSystem::Bellows("MonoBellowB")),
+  gateC(new constructSystem::GateValve("GateC")),
+  driftC(new constructSystem::VacuumPipe("DriftC")),
+  // SLITS
+  pipeD(new constructSystem::VacuumPipe("BellowD")),
+  pipeE(new constructSystem::VacuumPipe("BellowE")),
+  ionPumpC(new constructSystem::CrossPipe("IonPumpC")),
+  focusBox(new constructSystem::VacuumBox("FocusBox")),
+  ionPumpD(new constructSystem::CrossPipe("IonPumpD")),
+  pipeF(new constructSystem::VacuumPipe("BellowF")),
+  driftD(new constructSystem::VacuumPipe("DriftD"))
   /*!
     Constructor
   */
@@ -105,20 +120,29 @@ makeBalder::makeBalder() :
     ModelSupport::objectRegister::Instance();
   
   OR.addObject(opticsHut);
+  OR.addObject(ionPA);
   OR.addObject(triggerPipe);
   OR.addObject(pipeA);
   OR.addObject(filterBox);
   OR.addObject(pipeB);
-  OR.addObject(ionPumpA);
+  OR.addObject(gateA);
   OR.addObject(mirrorBox);
-  OR.addObject(ionPumpB);
+  OR.addObject(gateB);
   OR.addObject(pipeC);
   OR.addObject(driftA);
   OR.addObject(driftB);
   OR.addObject(monoV);
   OR.addObject(monoBellowA);
   OR.addObject(monoBellowB);
-
+  OR.addObject(gateC);
+  OR.addObject(pipeD);
+  OR.addObject(driftC);
+  OR.addObject(pipeE);
+  OR.addObject(ionPumpC);
+  OR.addObject(focusBox);
+  OR.addObject(ionPumpD);
+  OR.addObject(pipeF);
+  OR.addObject(driftD);
 }
 
 makeBalder::~makeBalder()
@@ -144,8 +168,12 @@ makeBalder::build(Simulation& System,
   opticsHut->addInsertCell(voidCell);
   opticsHut->createAll(System,World::masterOrigin(),0);
 
+  ionPA->addInsertCell(opticsHut->getCell("Void"));
+  ionPA->createAll(System,*opticsHut,0);
+
   triggerPipe->addInsertCell(opticsHut->getCell("Void"));
-  triggerPipe->createAll(System,*opticsHut,0);
+  triggerPipe->setFront(*ionPA,2);
+  triggerPipe->createAll(System,*ionPA,2);
 
   pipeA->addInsertCell(opticsHut->getCell("Void"));
   pipeA->setFront(*triggerPipe,2);
@@ -159,21 +187,21 @@ makeBalder::build(Simulation& System,
   pipeB->setFront(*filterBox,2);
   pipeB->createAll(System,*filterBox,2);
 
-  ionPumpA->addInsertCell(opticsHut->getCell("Void"));
-  ionPumpA->setFront(*pipeB,2);
-  ionPumpA->createAll(System,*pipeB,2);
+  gateA->addInsertCell(opticsHut->getCell("Void"));
+  gateA->setFront(*pipeB,2);
+  gateA->createAll(System,*pipeB,2);
 
   mirrorBox->addInsertCell(opticsHut->getCell("Void"));
-  mirrorBox->setFront(*ionPumpA,2);
-  mirrorBox->createAll(System,*ionPumpA,2);
+  mirrorBox->setFront(*gateA,2);
+  mirrorBox->createAll(System,*gateA,2);
 
-  ionPumpB->addInsertCell(opticsHut->getCell("Void"));
-  ionPumpB->setFront(*mirrorBox,2);
-  ionPumpB->createAll(System,*mirrorBox,2);
+  gateB->addInsertCell(opticsHut->getCell("Void"));
+  gateB->setFront(*mirrorBox,2);
+  gateB->createAll(System,*mirrorBox,2);
 
   pipeC->addInsertCell(opticsHut->getCell("Void"));
-  pipeC->setFront(*ionPumpB,2);
-  pipeC->createAll(System,*ionPumpB,2);
+  pipeC->setFront(*gateB,2);
+  pipeC->createAll(System,*gateB,2);
 
   driftA->addInsertCell(opticsHut->getCell("Void"));
   driftA->setFront(*pipeC,2);
@@ -196,7 +224,49 @@ makeBalder::build(Simulation& System,
   monoBellowB->setFront(*monoV,2,1); 
   monoBellowB->setBack(*driftB,1,1); 
   monoBellowB->createAll(System,*driftB,-1);
+
+  gateC->addInsertCell(opticsHut->getCell("Void"));
+  gateC->setFront(*driftB,2);
+  gateC->createAll(System,*driftB,2);
+
+  driftC->addInsertCell(opticsHut->getCell("Void"));
+  driftC->setFront(*gateC,2);
+  driftC->createAll(System,*gateC,2);
+  return;
+  // SLIT
   
+  pipeD->addInsertCell(opticsHut->getCell("Void"));
+  pipeD->setFront(*gateC,2);
+  pipeD->createAll(System,*gateC,2);
+
+
+
+
+
+  pipeE->addInsertCell(opticsHut->getCell("Void"));
+  pipeE->setFront(*driftC,2);
+  pipeE->createAll(System,*driftC,2);
+
+  ionPumpC->addInsertCell(opticsHut->getCell("Void"));
+  ionPumpC->setFront(*pipeE,2);
+  ionPumpC->createAll(System,*pipeE,2);
+  
+  focusBox->addInsertCell(opticsHut->getCell("Void"));
+  focusBox->setFront(*ionPumpC,2);
+  focusBox->createAll(System,*ionPumpC,2);
+
+  ionPumpD->addInsertCell(opticsHut->getCell("Void"));
+  ionPumpD->setFront(*focusBox,2);
+  ionPumpD->createAll(System,*focusBox,2);
+
+  pipeF->addInsertCell(opticsHut->getCell("Void"));
+  pipeF->setFront(*ionPumpD,2);
+  pipeF->createAll(System,*ionPumpD,2);
+
+  driftD->addInsertCell(opticsHut->getCell("Void"));
+  driftD->setFront(*pipeF,2);
+  driftD->createAll(System,*pipeF,2);
+
   return;
 }
 

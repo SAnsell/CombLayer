@@ -1279,7 +1279,6 @@ Simulation::validateObjSurfMap()
 {
   ELog::RegMethod RegA("Simulation","validateObjSurfMap");
   OTYPE::iterator mc;
-  //  ELog::EM<<"Call validate "<<++debugNum<<ELog::endDebug;
 
   for(mc=OList.begin();mc!=OList.end();mc++)
     {
@@ -1302,7 +1301,6 @@ Simulation::createObjSurfMap()
     Creates all the object surface mappings.
   */
 {
-
   ELog::RegMethod RegA("Simulation","createObjSurfMap");
 
   OSMPtr->clearAll();  

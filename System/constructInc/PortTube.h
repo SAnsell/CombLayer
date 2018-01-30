@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/VacuumBox.h
+ * File:   constructInc/PortTube.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_VacuumBox_h
-#define constructSystem_VacuumBox_h
+#ifndef constructSystem_PortTube_h
+#define constructSystem_PortTube_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
   
 /*!
-  \class VacuumBox
+  \class PortTube
   \version 1.0
   \author S. Ansell
   \date July 2015
-  \brief VacuumBox unit  
+  \brief PortTube unit  
 */
 
-class VacuumBox :
+class PortTube :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -43,52 +43,48 @@ class VacuumBox :
 {
  private:
 
-  const bool centreOrigin;      ///< Construct on the centre line
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
+  const int vacIndex;         ///< Index of surface offset
+  int cellIndex;              ///< Cell index  
 
-  double voidHeight;            ///< void height [top only]
-  double voidWidth;             ///< void width [total]
-  double voidDepth;             ///< void depth [low only]
-  double voidLength;            ///< void length [total]
+  double radius;              ///< radius of main tube
+  double wallThick;           ///< wall thickness of main tube
+  double length;              ///< Main length
+  
+  double inPortXStep;       ///< Out Port
+  double inPortZStep;       ///< Out Port
+  double inPortRadius;      ///< Out Port
+  double inPortLen;         ///< Out Port
+  double inPortThick;       ///< Out Port
 
-  double feHeight;            ///< fe height [top only]
-  double feDepth;             ///< fe depth [low only]
-  double feWidth;             ///< fe width [total]
-  double feFront;             ///< fe front 
-  double feBack;              ///< fe back
-
-  double portAXStep;          ///< XStep of port
-  double portAZStep;          ///< ZStep of port
-  double portAWallThick;     ///< Flange wall thickness
-  double portATubeLength;    ///< Port tube
-  double portATubeRadius;    ///< Port tube length
-
-
-  double portBXStep;          ///< XStep of port
-  double portBZStep;          ///< ZStep of port
-  double portBWallThick;     ///< Flange wall thickness
-  double portBTubeLength;    ///< Port tube
-  double portBTubeRadius;    ///< Port tube length
+  double outPortXStep;       ///< Out Port
+  double outPortZStep;       ///< Out Port
+  double outPortRadius;      ///< Out Port
+  double outPortLen;         ///< Out Port
+  double outPortThick;       ///< Out Port
 
   double flangeRadius;        ///< Joining Flange radius
   double flangeLength;        ///< Joining Flange length
-  
+
   int voidMat;                ///< void material
-  int feMat;                  ///< Fe material layer
+  int wallMat;                  ///< Fe material layer
+
+  std::vector<Geometry::Vec3D> PCentre;
+  std::vector<Geometry::Vec3D> PAxis;
+  std::vector<portItem> Ports;  ///< Vector of ports
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-
+  void createPorts(Simulation&);
+  
  public:
 
-  VacuumBox(const std::string&,const bool =0);
-  VacuumBox(const VacuumBox&);
-  VacuumBox& operator=(const VacuumBox&);
-  virtual ~VacuumBox();
+  PortTube(const std::string&);
+  PortTube(const PortTube&);
+  PortTube& operator=(const PortTube&);
+  virtual ~PortTube();
 
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

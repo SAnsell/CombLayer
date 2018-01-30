@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/GateValve.h
+ * File:   constructInc/FlangePlate.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_GateValve_h
-#define constructSystem_GateValve_h
+#ifndef constructSystem_FlangePlate_h
+#define constructSystem_FlangePlate_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
   
 /*!
-  \class GateValve
+  \class FlangePlate
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief GateValve unit  
+  \brief FlangePlate for capping ports/vac-tubes etc
 */
 
-class GateValve :
+class FlangePlate :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap,
@@ -44,41 +44,31 @@ class GateValve :
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
+  const int plateIndex;         ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-    double length;                ///< Void length
-  double width;                 ///< Void width (full)
-  double height;                ///< height 
-  double depth;                 ///< depth
+  double radius;                ///< void radius [inner] 
+  double thick;                 ///< Flange thickness
+ 
+  double innerRadius;           ///< Inner window if present
+
+  int plateMat;                    ///< Pipe material
+  int innerMat;                    ///< Pipe cladding material 
   
-  double wallThick;             ///< Wall thickness
-  double portRadius;            ///< Port inner radius (opening)
-  double portThick;             ///< Port outer ring
-  double portLen;               ///< Forward step of port
-  
-  bool closed;                  ///< Shutter closed
-  double bladeLift;             ///< Height of blade up
-  double bladeThick;            ///< moving blade thickness
-  double bladeRadius;           ///< moving blade radius
-  
-  int voidMat;                  ///< Void material
-  int bladeMat;                  ///< Void material
-  int wallMat;                    ///< Pipe material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  
+
  public:
 
-  GateValve(const std::string&);
-  GateValve(const GateValve&);
-  GateValve& operator=(const GateValve&);
-  virtual ~GateValve();
-
+  FlangePlate(const std::string&);
+  FlangePlate(const FlangePlate&);
+  FlangePlate& operator=(const FlangePlate&);
+  virtual ~FlangePlate();
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
