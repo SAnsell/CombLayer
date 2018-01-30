@@ -119,7 +119,7 @@ $gM->addDepUnit("balder", ["balder","visit","src","simMC",
 			   "tally","geometry","mersenne","src","world",
 			   "work","xml","poly","support","weights",
 			   "insertUnit","md5","global","constructVar",
-			   "attachComp","visit","poly"]);
+			   "physics","attachComp","visit","poly"]);
 
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",

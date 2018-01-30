@@ -67,13 +67,14 @@ class PBIP : public attachSystem::ContainedGroup,
   int foilMat; ///< foil material
 
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
 
   void createSurfaces();
   void createLinks();
   void createObjects(Simulation&,
-		     const attachSystem::FixedComp&,const long int&,
-		     const attachSystem::FixedComp&,const long int&);
+		     const attachSystem::FixedComp&,const long int,
+		     const attachSystem::FixedComp&,const long int);
 
 
  public:
@@ -85,9 +86,9 @@ class PBIP : public attachSystem::ContainedGroup,
   virtual ~PBIP();
 
   void createAll(Simulation&,
-		 const attachSystem::FixedComp&,const long int&,
-		 const attachSystem::FixedComp&,const long int&,
-		 const attachSystem::FixedComp&,const long int&);
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int,
+		 const attachSystem::FixedComp&,const long int);
 
 };
 
