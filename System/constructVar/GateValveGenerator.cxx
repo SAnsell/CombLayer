@@ -115,6 +115,28 @@ GateValveGenerator::~GateValveGenerator()
  */
 {}
 
+void
+GateValveGenerator::setCF40()
+  /*!
+    Set pipe/flange to CF40 format
+   */
+{
+  portRadius=1.25;
+  portThick=1.45;   //  total 2.7cm radius
+  return;
+}
+
+void
+GateValveGenerator::setCF100()
+  /*!
+    Set pipe/flange to CF100 format
+   */
+{
+  portRadius=5.1;
+  portThick=2.6;   //  total 7.7 cm radius
+  return;
+}
+
 
 void
 GateValveGenerator::setPort(const double R,const double L,

@@ -51,6 +51,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "BellowGenerator.h"
 
 namespace setVariable
@@ -74,6 +75,47 @@ BellowGenerator::~BellowGenerator()
  */
 {}
 
+template<typename CF>
+void
+BellowGenerator::setAFlangeCF()
+  /*!
+    Setter for flange A
+   */
+{
+  flangeARadius=CF::flangeRadius;
+  flangeALen=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+BellowGenerator::setBFlangeCF()
+  /*!
+    Setter for flange B
+   */
+{
+  flangeBRadius=CF::flangeRadius;
+  flangeBLen=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+BellowGenerator::setCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  pipeRadius=CF::innerRadius;
+  pipeThick=CF::wallThick;
+  setAFlangeCF<CF>();
+  setBFlangeCF<CF>();
+  
+  bellowStep=CF::bellowStep;
+  bellowThick=CF::bellowThick;
+  setMat(pipeMat,CF::bellowThick/CF::wallThick);
+  return;
+}
 
 void
 BellowGenerator::setPipe(const double R,const double T,
@@ -108,10 +150,10 @@ BellowGenerator::setFlange(const double R,const double L)
   flangeBLen=L;
   return;
 }
-
+  
 void
 BellowGenerator::setFlangePair(const double AR,const double AL,
-			     const double BR,const double BL)
+			       const double BR,const double BL)
   /*!
     Set all the flange values
     \param AR :: radius of front flange
@@ -183,4 +225,17 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 
 }
 
+///\cond TEMPLATE
+  template void BellowGenerator::setCF<CF40>();
+  template void BellowGenerator::setCF<CF63>();
+  template void BellowGenerator::setCF<CF100>();
+  template void BellowGenerator::setAFlangeCF<CF40>();
+  template void BellowGenerator::setAFlangeCF<CF63>();
+  template void BellowGenerator::setAFlangeCF<CF100>();
+  template void BellowGenerator::setBFlangeCF<CF40>();
+  template void BellowGenerator::setBFlangeCF<CF63>();
+  template void BellowGenerator::setBFlangeCF<CF100>();
+  
+///\end TEMPLATE
+  
 }  // NAMESPACE setVariable

@@ -31,7 +31,7 @@ namespace constructSystem
   \class PortTube
   \version 1.0
   \author S. Ansell
-  \date July 2015
+  \date January 2018
   \brief PortTube unit  
 */
 
@@ -62,15 +62,17 @@ class PortTube :
   double outPortLen;         ///< Out Port
   double outPortThick;       ///< Out Port
 
-  double flangeRadius;        ///< Joining Flange radius
-  double flangeLength;        ///< Joining Flange length
+  double flangeARadius;        ///< Joining Flange radius
+  double flangeALength;        ///< Joining Flange length
+  double flangeBRadius;        ///< Joining Flange radius
+  double flangeBLength;        ///< Joining Flange length
 
   int voidMat;                ///< void material
   int wallMat;                  ///< Fe material layer
 
-  std::vector<Geometry::Vec3D> PCentre;
-  std::vector<Geometry::Vec3D> PAxis;
-  std::vector<portItem> Ports;  ///< Vector of ports
+  std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
+  std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
+  std::vector<portItem> Ports;  ///< Vector of ports FixedComp
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);

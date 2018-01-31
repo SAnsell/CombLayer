@@ -52,6 +52,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "CFFlanges.h"
 #include "PortTubeGenerator.h"
 
 namespace setVariable
@@ -63,7 +64,8 @@ PortTubeGenerator::PortTubeGenerator() :
   portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
   portBXStep(0.0),portBZStep(0.0),
   portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
-  flangeLen(1.0),flangeRadius(1.0),
+  flangeALen(1.0),flangeARadius(1.0),
+  flangeBLen(1.0),flangeBRadius(1.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -76,8 +78,10 @@ PortTubeGenerator::PortTubeGenerator(const PortTubeGenerator& A) :
   portATubeLength(A.portATubeLength),portATubeRadius(A.portATubeRadius),
   portBXStep(A.portBXStep),portBZStep(A.portBZStep),
   portBWallThick(A.portBWallThick),portBTubeLength(A.portBTubeLength),
-  portBTubeRadius(A.portBTubeRadius),flangeLen(A.flangeLen),
-  flangeRadius(A.flangeRadius),voidMat(A.voidMat),
+  portBTubeRadius(A.portBTubeRadius),flangeALen(A.flangeALen),
+  flangeARadius(A.flangeARadius),flangeBLen(A.flangeBLen),
+  flangeBRadius(A.flangeBRadius),
+  voidMat(A.voidMat),
   wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -106,8 +110,10 @@ PortTubeGenerator::operator=(const PortTubeGenerator& A)
       portBWallThick=A.portBWallThick;
       portBTubeLength=A.portBTubeLength;
       portBTubeRadius=A.portBTubeRadius;
-      flangeLen=A.flangeLen;
-      flangeRadius=A.flangeRadius;
+      flangeALen=A.flangeALen;
+      flangeARadius=A.flangeARadius;
+      flangeBLen=A.flangeBLen;
+      flangeBRadius=A.flangeBRadius;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
     }
@@ -121,9 +127,10 @@ PortTubeGenerator::~PortTubeGenerator()
 {}
 
 
+  
 void
 PortTubeGenerator::setPort(const double R,const double L,
-			 const double T)
+			   const double T)
   /*!
     Set both the ports
     \param R :: radius of port tube
@@ -137,6 +144,19 @@ PortTubeGenerator::setPort(const double R,const double L,
   portBTubeRadius=R;
   portBTubeLength=L;
   portBWallThick=T;
+  return;
+}
+
+void
+PortTubeGenerator::setPortLength(const double LA,const double LB)
+  /*!
+    Set both the port lengths
+    \param LA :: length of in-port tube
+    \param LB :: length of out-port tube
+   */
+{
+  portATubeLength=LA;
+  portBTubeLength=LB;
   return;
 }
 
@@ -199,18 +219,75 @@ PortTubeGenerator::setBPortOffset(const double XS,const double ZS)
 }
   
 void
-PortTubeGenerator::setFlange(const double R,const double L)
+PortTubeGenerator::setAFlange(const double R,const double L)
   /*!
     Set all the flange values
     \param R :: radius of flange
     \param L :: length
    */
 {
-  flangeRadius=R;
-  flangeLen=L;
+  flangeARadius=R;
+  flangeALen=L;
   return;
 }
 
+void
+PortTubeGenerator::setBFlange(const double R,const double L)
+  /*!
+    Set all the flange values
+    \param R :: radius of flange
+    \param L :: length
+   */
+{
+  flangeBRadius=R;
+  flangeBLen=L;
+  return;
+}
+
+template<typename CF>
+void
+PortTubeGenerator::setAPortCF()
+  /*!
+    Setter for Port A
+   */
+{
+  portATubeRadius=CF::innerRadius;
+  portAWallThick=CF::wallThick;
+  // extra only 
+  flangeARadius=CF::flangeRadius-CF::innerRadius; 
+  flangeALen=CF::flangeLength;
+  
+  return;
+}
+
+template<typename CF>
+void
+PortTubeGenerator::setBPortCF()
+  /*!
+    Setter for prot B
+   */
+{
+  portBTubeRadius=CF::innerRadius;
+  portBWallThick=CF::wallThick;
+  // extra only 
+  flangeBRadius=CF::flangeRadius-CF::innerRadius; 
+  flangeBLen=CF::flangeLength;
+  
+  return;
+}
+
+template<typename CF>
+void
+PortTubeGenerator::setCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  setAPortCF<CF>();
+  setBPortCF<CF>();
+  return;
+}
+  
 void
 PortTubeGenerator::generateTube(FuncDataBase& Control,
 				const std::string& keyName,
@@ -248,8 +325,10 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"OutPortRadius",portBTubeRadius);
   Control.addVariable(keyName+"OutPortLen",portBTubeLength);
 
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLen);
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALen);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLen);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"WallMat",wallMat);
@@ -257,5 +336,18 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   return;
 
 }
+
+///\cond TEMPLATE
+  template void PortTubeGenerator::setCF<CF40>();
+  template void PortTubeGenerator::setCF<CF63>();
+  template void PortTubeGenerator::setCF<CF100>();
+  template void PortTubeGenerator::setAPortCF<CF40>();
+  template void PortTubeGenerator::setAPortCF<CF63>();
+  template void PortTubeGenerator::setAPortCF<CF100>();
+  template void PortTubeGenerator::setBPortCF<CF40>();
+  template void PortTubeGenerator::setBPortCF<CF63>();
+  template void PortTubeGenerator::setBPortCF<CF100>();
+  
+///\end TEMPLATE
 
 }  // NAMESPACE setVariable

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/GateValveGenerator.h
+ * File:   constructInc/JawValve.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,25 +19,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_GateValveGenerator_h
-#define setVariable_GateValveGenerator_h
+#ifndef xraySystem_JawValve_h
+#define xraySystem_JawValve_h
 
-class FuncDataBase;
+class Simulation;
 
-namespace setVariable
+namespace constructSystem
 {
-
+  
 /*!
-  \class GateValveGenerator
+  \class JawValve
   \version 1.0
   \author S. Ansell
-  \date May 2016
-  \brief GateValveGenerator for variables
+  \date January 2018
+  \brief JawValve unit  
 */
 
-class GateValveGenerator
+class JawValve :
+  public attachSystem::FixedOffset,
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap,
+  public attachSystem::FrontBackCut
 {
  private:
+  
+  const int vacIndex;           ///< Index of surface offset
+  int cellIndex;                ///< Cell index  
 
   double length;                ///< Void length
   double width;                 ///< Void width (full)
@@ -48,40 +56,29 @@ class GateValveGenerator
   double portRadius;            ///< Port inner radius (opening)
   double portThick;             ///< Port outer ring
   double portLen;               ///< Forward step of port
-  
-  bool closed;                  ///< Shutter closed
-  double bladeLift;             ///< Height of blade up
-  double bladeThick;            ///< moving blade thickness
-  double bladeRadius;           ///< moving blade radius
-  
-  std::string voidMat;          ///< Void material
-  std::string bladeMat;         ///< Void material
-  std::string wallMat;          ///< Pipe material
-    
 
+  JawUnit JItem;                ///< Paired Jaw [contolled by this]
+  
+  int voidMat;                  ///< Void material
+  int wallMat;                  ///< Pipe material
+  
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createSurfaces();
+  void createObjects(Simulation&);
+  void createLinks();
+
+  void createJaws(Simulation&);
+  
  public:
 
-  GateValveGenerator();
-  GateValveGenerator(const GateValveGenerator&);
-  GateValveGenerator& operator=(const GateValveGenerator&);
-  ~GateValveGenerator();
+  JawValve(const std::string&);
+  JawValve(const JawValve&);
+  JawValve& operator=(const JawValve&);
+  virtual ~JawValve();
 
-  void setCF40();
-  void setCF100();
-
-  /// set wall thickness
-  void setWallThick(const double T) { wallThick=T; }
-
-  void setPort(const double,const double,const double);
-  /// set void material
-  void setVoidMat(const std::string& M) { voidMat=M; }
-  /// set wall material
-  void setWallMat(const std::string& M) { wallMat=M; }
-  /// set wall material
-  void setBladeMat(const std::string& M) { bladeMat=M; }
-  
-  void generateValve(FuncDataBase&,const std::string&,
-		     const double,const int) const;
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

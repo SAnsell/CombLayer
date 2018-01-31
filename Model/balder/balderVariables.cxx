@@ -47,6 +47,7 @@
 #include "FuncDataBase.h"
 #include "variableSetup.h"
 
+#include "CFFlanges.h"
 #include "PipeGenerator.h"
 #include "BellowGenerator.h"
 #include "CrossGenerator.h"
@@ -136,8 +137,7 @@ balderVariables(FuncDataBase& Control)
   CrossGen.setFlange(2.0,1.0);
   CrossGen.setMat("Stainless304");
   // hor rad / vert rad / heigh / depth
-  CrossGen.generateCross(Control,"IonPA",22.0,
-			  1.25,5.0,10.0,26.5);
+  CrossGen.generateCross(Control,"IonPA",22.0,1.25,5.0,10.0,26.5);
 
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
@@ -148,19 +148,16 @@ balderVariables(FuncDataBase& Control)
   CrossGen.generateCross(Control,"TriggerPipe",0.0,
 			  1.25,3.5,15.0,10.0);
 
-  PipeGen.setPipe(2.5,0.5);      // 1.cm radius / 0.5cm wall
-  PipeGen.setWindow(-2.0,0.0); 
-  PipeGen.setFlange(-2.7,1.0);
+  PipeGen.setWindow(-2.0,0.0);   // no window
 
-  BellowGen.setPipe(1.25,0.5,1.0,1.0);
-  BellowGen.setFlange(-2.7,1.0);
-  BellowGen.setMat("Stainless304",50.0);
+  BellowGen.setCF<setVariable::CF40>();
   BellowGen.generateBellow(Control,"BellowA",0,16.0);
 
   // ACTUALL ROUND PIPE + 4 filter tubles and 1 base tube [large]
+  
   PTubeGen.setMat("Stainless304");
-  PTubeGen.setPort(3.3,10.7,0.5);  // Radius ,Len , Thick
-  PTubeGen.setFlange(1.7,0.8);       // R/L
+  PTubeGen.setCF<CF63>();
+  PTubeGen.setPortLength(10.7,10.7);
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,"FilterBox",0.0,9.0,54.0);
   Control.addVariable("FilterBoxNPorts",4);
@@ -176,10 +173,11 @@ balderVariables(FuncDataBase& Control)
       CPos+=Geometry::Vec3D(0,11,0);
     }
 
-  BellowGen.setFlangePair(5.5,1.0,-2.7,1.0);
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,"BellowB",0,10.0);    
 
-  GateGen.setPort(1.25,1.0,2.7);
+  GateGen.setCF40();
   GateGen.generateValve(Control,"GateA",0.0,0);
     
   VBoxGen.setMat("Stainless304");
@@ -193,17 +191,16 @@ balderVariables(FuncDataBase& Control)
   GateGen.setPort(1.25,1.0,2.7);
   GateGen.generateValve(Control,"GateB",0.0,0);
 
-  BellowGen.setFlangePair(-0.8,0.8,-5.7,1.0);
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,"BellowC",0,10.0);    
 
-  PipeGen.setPipe(5.0,0.5);      // 2cm radius / 0.5cm wall
-  PipeGen.setFlange(-2.7,1.0);
-  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
   // [length is 38.3cm total]
   PipeGen.generatePipe(Control,"DriftA",0,38.3);
   // Length ignored  as joined front/back
 
-  BellowGen.setFlange(7.65,1.0);            // cf large
+  BellowGen.setCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,"MonoBellowA",0,50.0);   
   BellowGen.generateBellow(Control,"MonoBellowB",0,50.0);
   
@@ -226,10 +223,9 @@ balderVariables(FuncDataBase& Control)
   // large bellows
   PipeGen.generatePipe(Control,"BellowD",0,10.0);
   
-
   // small flange bellows
-  PipeGen.setPipe(1.25,0.5);      // 8cm radius / 0.5cm wall
-  PipeGen.setFlangePair(-6.45,1.0,-1.45,0.8);   //[cf40 MKS dimentions]
+  PipeGen.setCF<setVariable::CF40>(); 
+  PipeGen.setAFlangeCF<setVariable::CF100>(); 
   PipeGen.generatePipe(Control,"BellowE",0,10.0);
 
   CrossGen.setPlates(0.5,1.0,1.0);

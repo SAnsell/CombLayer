@@ -60,6 +60,10 @@ class BellowGenerator
   BellowGenerator& operator=(const BellowGenerator&);
   ~BellowGenerator();
 
+  template<typename CF> void setCF();
+  template<typename CF> void setAFlangeCF();
+  template<typename CF> void setBFlangeCF();
+
   void setPipe(const double,const double,const double,const double);
   void setFlange(const double,const double);
   void setFlangePair(const double,const double,const double,const double);

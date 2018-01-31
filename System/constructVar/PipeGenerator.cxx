@@ -51,6 +51,7 @@
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
+#include "CFFlanges.h"
 #include "PipeGenerator.h"
 
 namespace setVariable
@@ -241,7 +242,48 @@ PipeGenerator::setCladding(const double T,const std::string& M)
   claddingMat=M;
   return;
 }
+
+template<typename CF>
+void
+PipeGenerator::setCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  pipeType=0;
+  pipeRadius=CF::innerRadius;
+  pipeThick=CF::wallThick;
+  setAFlangeCF<CF>();
+  setBFlangeCF<CF>();
   
+  return;
+}
+
+template<typename CF>
+void
+PipeGenerator::setAFlangeCF()
+  /*!
+    Setter for flange A
+   */
+{
+  flangeARadius=CF::flangeRadius;
+  flangeALen=CF::flangeLength;
+  return;
+}
+
+template<typename CF>
+void
+PipeGenerator::setBFlangeCF()
+  /*!
+    Setter for flange B
+   */
+{
+  flangeBRadius=CF::flangeRadius;
+  flangeBLen=CF::flangeLength;
+  return;
+}
+
+
 void
 PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
                             const double yStep,const double length) const
@@ -300,5 +342,19 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   return;
 
 }
+
+///\cond TEMPLATE
+  template void PipeGenerator::setCF<CF40>();
+  template void PipeGenerator::setCF<CF63>();
+  template void PipeGenerator::setCF<CF100>();
+  template void PipeGenerator::setAFlangeCF<CF40>();
+  template void PipeGenerator::setAFlangeCF<CF63>();
+  template void PipeGenerator::setAFlangeCF<CF100>();
+  template void PipeGenerator::setBFlangeCF<CF40>();
+  template void PipeGenerator::setBFlangeCF<CF63>();
+  template void PipeGenerator::setBFlangeCF<CF100>();
+  
+///\end TEMPLATE
+
 
 }  // NAMESPACE setVariable

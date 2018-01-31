@@ -222,8 +222,6 @@ Bellows::createSurfaces()
   ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+feThick);
   ModelSupport::buildCylinder(SMap,vacIndex+27,Origin,Y,radius+feThick+bellowThick);
 
-  ELog::EM<<"radids "<<radius<<" "<<feThick<<" "<<bellowThick<<ELog::endDiag;
-  ELog::EM<<"at "<<bellowMat<<ELog::endDiag;
   // FLANGE SURFACES FRONT/BACK:
   ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeARadius);
   ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Y,flangeBRadius);

@@ -63,7 +63,7 @@ VacBoxGenerator::VacBoxGenerator() :
   portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
   portBXStep(0.0),portBZStep(0.0),
   portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
-  flangeLen(1.0),flangeRadius(1.0),
+  flangeALen(1.0),flangeARadius(1.0),flangeBLen(1.0),flangeBRadius(1.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -76,8 +76,9 @@ VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) :
   portATubeLength(A.portATubeLength),portATubeRadius(A.portATubeRadius),
   portBXStep(A.portBXStep),portBZStep(A.portBZStep),
   portBWallThick(A.portBWallThick),portBTubeLength(A.portBTubeLength),
-  portBTubeRadius(A.portBTubeRadius),flangeLen(A.flangeLen),
-  flangeRadius(A.flangeRadius),voidMat(A.voidMat),
+  portBTubeRadius(A.portBTubeRadius),flangeALen(A.flangeALen),
+  flangeARadius(A.flangeARadius),flangeBLen(A.flangeBLen),
+  flangeBRadius(A.flangeBRadius),voidMat(A.voidMat),
   wallMat(A.wallMat)
   /*!
     Copy constructor
@@ -106,8 +107,10 @@ VacBoxGenerator::operator=(const VacBoxGenerator& A)
       portBWallThick=A.portBWallThick;
       portBTubeLength=A.portBTubeLength;
       portBTubeRadius=A.portBTubeRadius;
-      flangeLen=A.flangeLen;
-      flangeRadius=A.flangeRadius;
+      flangeALen=A.flangeALen;
+      flangeARadius=A.flangeARadius;
+      flangeBLen=A.flangeBLen;
+      flangeBRadius=A.flangeBRadius;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
     }
@@ -120,6 +123,63 @@ VacBoxGenerator::~VacBoxGenerator()
  */
 {}
 
+template<typename CF>
+void
+VacBoxGenerator::setAPortCF()
+  /*!
+    Setter for Port A
+   */
+{
+  portATubeRadius=CF::innerRadius;
+  portAWallThick=CF::wallThick;
+  // extra only 
+  flangeARadius=CF::flangeRadius-CF::innerRadius; 
+  flangeALen=CF::flangeLength;
+  
+  return;
+}
+
+template<typename CF>
+void
+VacBoxGenerator::setBPortCF()
+  /*!
+    Setter for prot B
+   */
+{
+  portBTubeRadius=CF::innerRadius;
+  portBWallThick=CF::wallThick;
+  // extra only 
+  flangeBRadius=CF::flangeRadius-CF::innerRadius; 
+  flangeBLen=CF::flangeLength;
+  
+  return;
+}
+
+template<typename CF>
+void
+VacBoxGenerator::setCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  setAPortCF<CF>();
+  setBPortCF<CF>();
+  return;
+}
+
+void
+VacBoxGenerator::setPortLength(const double LA,const double LB)
+  /*!
+    Set both the ports lengths
+    \param LA :: Length of port A
+    \param LB :: Length of port A
+
+   */
+{
+  portATubeLength=LA;
+  portBTubeLength=LB;
+  return;
+}
 
 void
 VacBoxGenerator::setPort(const double R,const double L,
@@ -206,8 +266,10 @@ VacBoxGenerator::setFlange(const double R,const double L)
     \param L :: length
    */
 {
-  flangeRadius=R;
-  flangeLen=L;
+  flangeARadius=R;
+  flangeALen=L;
+  flangeBRadius=R;
+  flangeBLen=L;
   return;
 }
 
@@ -251,8 +313,10 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"PortBTubeRadius",portBTubeRadius);
   Control.addVariable(keyName+"PortBTubeLength",portBTubeLength);
 
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLen);
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALen);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLen);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"FeMat",wallMat);

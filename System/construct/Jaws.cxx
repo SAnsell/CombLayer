@@ -3,7 +3,7 @@
  
  * File:   construct/Jaws.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
+#include "FixedOffset.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "ContainedComp.h"
@@ -81,7 +82,7 @@ namespace constructSystem
 {
 
 Jaws::Jaws(const std::string& Key) : 
-  attachSystem::FixedComp(Key,6),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(Key,6),attachSystem::ContainedComp(),
   attachSystem::CellMap(),
   jawIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(jawIndex+1)
@@ -92,11 +93,9 @@ Jaws::Jaws(const std::string& Key) :
 {}
 
 Jaws::Jaws(const Jaws& A) : 
-  attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
   attachSystem::CellMap(A),
-  jawIndex(A.jawIndex),cellIndex(A.cellIndex),xStep(A.xStep),
-  yStep(A.yStep),zStep(A.zStep),xAngle(A.xAngle),
-  yAngle(A.yAngle),zAngle(A.zAngle),zOpen(A.zOpen),
+  jawIndex(A.jawIndex),cellIndex(A.cellIndex),zOpen(A.zOpen),
   zThick(A.zThick),zCross(A.zCross),zLen(A.zLen),
   xOpen(A.xOpen),xThick(A.xThick),xCross(A.xCross),
   xLen(A.xLen),jawGap(A.jawGap),XHeight(A.XHeight),
@@ -118,16 +117,10 @@ Jaws::operator=(const Jaws& A)
 {
   if (this!=&A)
     {
-      attachSystem::FixedComp::operator=(A);
+      attachSystem::FixedOffset::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
-      xStep=A.xStep;
-      yStep=A.yStep;
-      zStep=A.zStep;
-      xAngle=A.xAngle;
-      yAngle=A.yAngle;
-      zAngle=A.zAngle;
       zOpen=A.zOpen;
       zThick=A.zThick;
       zCross=A.zCross;
@@ -167,13 +160,8 @@ Jaws::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("Jaws","populate");
 
-  xStep=Control.EvalDefVar<double>(keyName+"XStep",0.0);
-  yStep=Control.EvalDefVar<double>(keyName+"YStep",0.0);
-  zStep=Control.EvalDefVar<double>(keyName+"ZStep",0.0);
-  xAngle=Control.EvalDefVar<double>(keyName+"XAngle",0.0);
-  yAngle=Control.EvalDefVar<double>(keyName+"YAngle",0.0);
-  zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",0.0);
-
+  FixedOffset::populate(Control);
+  
   zOpen=Control.EvalVar<double>(keyName+"ZOpen");
   zThick=Control.EvalVar<double>(keyName+"ZThick");
   zCross=Control.EvalVar<double>(keyName+"ZCross");
@@ -226,9 +214,7 @@ Jaws::createUnitVector(const attachSystem::FixedComp& FC,
   ELog::RegMethod RegA("Jaws","createUnitVector");
   
   FixedComp::createUnitVector(FC,sideIndex);
-
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xAngle,yAngle,zAngle);
+  applyOffset();
 
   return;
 }

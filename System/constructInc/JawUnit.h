@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/Jaws.h
+ * File:   constructInc/JawUnit.h
  *
  * Copyright (c) 2004-2017 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_Jaws_h
-#define constructSystem_Jaws_h
+#ifndef constructSystem_JawUnit_h
+#define constructSystem_JawUnit_h
 
 class Simulation;
 
@@ -28,14 +28,14 @@ namespace constructSystem
 {
   
 /*!
-  \class Jaws
+  \class JawUnit
   \version 1.0
   \author S. Ansell
   \date January 2015
-  \brief Jaws unit  
+  \brief JawUnit unit  
 */
 
-class Jaws : public attachSystem::FixedOffset,
+class JawUnit : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
@@ -45,50 +45,34 @@ class Jaws : public attachSystem::FixedOffset,
   int cellIndex;                ///< Cell index
   
   double zOpen;                 ///< Z-opening
-  double zThick;                ///< Blade thickness
-  double zCross;                ///< Z-cross distance [height]
-  double zLen;                  ///< Z-length [away from beam]
+  double zOffset;                 ///< Z-opening
+  double zThick;                ///< Blade thickness [beam]
+  double zHeight;               ///< Z-cross distance [vert]
+  double zWidth;                ///< Z-length [away from beam]
   
   double xOpen;                 ///< X-opening
+  double xOffset;               ///< X-opening
   double xThick;                ///< X-thickness
-  double xCross;                ///< X-cross distance [height]
-  double xLen;                  ///< X-length [away from beam]
+  double xHeight;               ///< X-cross distance [height]
+  double xWidth;                ///< X-length [away from beam]
 
   double jawGap;                ///< Gap of the jaws
 
-  double XHeight;               ///< Global box space [X]
-  double YHeight;               ///< Global box space [Y]
-  double ZHeight;               ///< Global box space [Z]
-
-  double linerThick;            ///< Simple X/Z liner
-  double wallThick;             ///< Simple X/Z walls
-  
   int zJawMat;                  ///< Z material
   int xJawMat;                  ///< X material
-
-  int linerMat;                 ///< Liner material
-  int wallMat;                  ///< Wall material
-
-  // Layers
-  size_t nLayers;                 ///< number of layers
-  std::vector<double> jawXFrac;   ///< Layer thicknesss (fractions)
-  std::vector<int> jawXMatVec;    ///<  Layer materials
-  std::vector<double> jawZFrac;   ///< Layer thicknesss (fractions)
-  std::vector<int> jawZMatVec;    ///<  Layer materials
-
+  
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
-  void layerProcess(Simulation&);
   
  public:
 
-  Jaws(const std::string&);
-  Jaws(const Jaws&);
-  Jaws& operator=(const Jaws&);
-  virtual ~Jaws();
+  JawUnit(const std::string&);
+  JawUnit(const JawUnit&);
+  JawUnit& operator=(const JawUnit&);
+  virtual ~JawUnit();
 
 
   void createAll(Simulation&,const attachSystem::FixedComp&,

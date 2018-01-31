@@ -53,8 +53,10 @@ class VacBoxGenerator
   double portBTubeLength;    ///< Port tube
   double portBTubeRadius;    ///< Port tube length
   
-  double flangeLen;          ///< Flange length
-  double flangeRadius;       ///< Flange radius
+  double flangeALen;          ///< Flange length
+  double flangeARadius;       ///< Flange radius
+  double flangeBLen;          ///< Flange length
+  double flangeBRadius;       ///< Flange radius
     
   std::string voidMat;          ///< Primary default mat
   std::string wallMat;          ///< Primary default mat
@@ -70,6 +72,11 @@ class VacBoxGenerator
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }
 
+  template<typename CF> void setCF();
+  template<typename CF> void setAPortCF();
+  template<typename CF> void setBPortCF();
+
+  void setPortLength(const double,const double);
   void setPort(const double,const double,const double);
   void setAPort(const double,const double,const double);
   void setBPort(const double,const double,const double);

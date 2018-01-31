@@ -133,8 +133,16 @@ PortTube::populate(const FuncDataBase& Control)
 				       keyName+"PortThick");
 
 
-  flangeRadius=Control.EvalVar<double>(keyName+"FlangeRadius");
-  flangeLength=Control.EvalVar<double>(keyName+"FlangeLength");
+  flangeARadius=Control.EvalPair<double>(keyName+"FlangeARadius",
+					 keyName+"FlangeRadius");
+
+  flangeALength=Control.EvalPair<double>(keyName+"FlangeALength",
+					 keyName+"FlangeLength");
+  flangeBRadius=Control.EvalPair<double>(keyName+"FlangeBRadius",
+					 keyName+"FlangeRadius");
+
+  flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
+					 keyName+"FlangeLength");
   
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
@@ -230,15 +238,15 @@ PortTube::createSurfaces()
 			      outPortRadius+outPortThick);
 
   ModelSupport::buildPlane(SMap,vacIndex+111,Origin-
-			   Y*(inPortLen+wallThick-flangeLength+length/2.0),Y);
+			   Y*(inPortLen+wallThick-flangeALength+length/2.0),Y);
   ModelSupport::buildPlane(SMap,vacIndex+212,Origin+
-			   Y*(outPortLen+wallThick-flangeLength+length/2.0),Y);
+			   Y*(outPortLen+wallThick-flangeBLength+length/2.0),Y);
 
   // flange:
   ModelSupport::buildCylinder(SMap,vacIndex+127,inOrg,Y,
-			      inPortRadius+inPortThick+flangeRadius);
+			      inPortRadius+inPortThick+flangeARadius);
   ModelSupport::buildCylinder(SMap,vacIndex+227,outOrg,Y,
-			      outPortRadius+outPortThick+flangeRadius);
+			      outPortRadius+outPortThick+flangeBRadius);
   
   return;
 }
