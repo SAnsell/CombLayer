@@ -370,6 +370,7 @@ JawValve::createAll(Simulation& System,
   createObjects(System);
   createLinks();
   insertObjects(System);   
+  createJaws(System);
   
   return;
 }

@@ -80,6 +80,8 @@
 #include "CrossPipe.h"
 #include "MonoVessel.h"
 #include "GateValve.h"
+#include "JawUnit.h"
+#include "JawValve.h"
 #include "makeBalder.h"
 
 namespace xraySystem
@@ -111,7 +113,8 @@ makeBalder::makeBalder() :
   focusBox(new constructSystem::VacuumBox("FocusBox")),
   ionPumpD(new constructSystem::CrossPipe("IonPumpD")),
   pipeF(new constructSystem::VacuumPipe("BellowF")),
-  driftD(new constructSystem::VacuumPipe("DriftD"))
+  driftD(new constructSystem::VacuumPipe("DriftD")),
+  slitsA(new constructSystem::JawValve("SlitsA"))
   /*!
     Constructor
   */
@@ -143,6 +146,7 @@ makeBalder::makeBalder() :
   OR.addObject(ionPumpD);
   OR.addObject(pipeF);
   OR.addObject(driftD);
+  OR.addObject(slitsA);
 }
 
 makeBalder::~makeBalder()
@@ -232,6 +236,11 @@ makeBalder::build(Simulation& System,
   driftC->addInsertCell(opticsHut->getCell("Void"));
   driftC->setFront(*gateC,2);
   driftC->createAll(System,*gateC,2);
+
+  slitsA->addInsertCell(opticsHut->getCell("Void"));
+  slitsA->setFront(*driftC,2);
+  slitsA->createAll(System,*driftC,2);
+
   return;
   // SLIT
   
@@ -266,6 +275,7 @@ makeBalder::build(Simulation& System,
   driftD->addInsertCell(opticsHut->getCell("Void"));
   driftD->setFront(*pipeF,2);
   driftD->createAll(System,*pipeF,2);
+
 
   return;
 }

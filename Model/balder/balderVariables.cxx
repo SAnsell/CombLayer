@@ -114,6 +114,7 @@ balderVariables(FuncDataBase& Control)
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
+  setVariable::JawValveGenerator JawGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   CrossGen.setMat("Stainless304");
@@ -219,7 +220,9 @@ balderVariables(FuncDataBase& Control)
   PipeGen.generatePipe(Control,"DriftC",0,54.4); 
 
   // SLITS
-  
+  JawGen.setCF<setVariable::CF100>();
+  JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
+  JawGen.generateSlits(Control,"SlitsA",0.0,0.8,0.8);
   // large bellows
   PipeGen.generatePipe(Control,"BellowD",0,10.0);
   

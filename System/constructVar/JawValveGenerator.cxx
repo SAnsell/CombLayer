@@ -52,6 +52,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "CFFlanges.h"
 #include "JawValveGenerator.h"
 
 namespace setVariable
@@ -61,7 +62,7 @@ JawValveGenerator::JawValveGenerator() :
   length(7.0),width(24.0),height(46.0),depth(10.5),
   wallThick(0.5),portRadius(5.0),portThick(1.0),portLen(1.0),
   voidMat("Void"),wallMat("Stainless304"),jawWidth(2.0),
-  jawHeight(1.0),jawThick(0.2),jawGap(0.0)
+  jawHeight(1.0),jawThick(0.2),jawGap(0.1)
   /*!
     Constructor and defaults
   */
@@ -115,7 +116,24 @@ JawValveGenerator::~JawValveGenerator()
 {}
 
 
-
+void
+JawValveGenerator::setSlits(const double W,const double H,
+			    const double T,const std::string& Mat)
+  /*!
+    Set the jaw valve generator
+    \param W :: Width					       
+    \param H :: Height
+    \param T :: thickness
+    \param Mat :: Material
+   */
+{
+  jawWidth=W;
+  jawHeight=H;
+  jawThick=T;
+  jawMat=Mat;
+  return;
+}
+  
 void
 JawValveGenerator::setPort(const double R,const double L,
 			 const double T)
@@ -132,6 +150,20 @@ JawValveGenerator::setPort(const double R,const double L,
   return;
 }
 
+template<typename CF>
+void
+JawValveGenerator::setCF()
+  /*!
+    Set pipe/flange to CF format
+  */
+{
+  portRadius=CF::innerRadius;
+  portThick=CF::flangeRadius-CF::innerRadius;   //  total 
+  portLen=CF::flangeLength;
+  return;
+}
+
+  
 
 void
 JawValveGenerator::generateSlits(FuncDataBase& Control,
@@ -167,27 +199,37 @@ JawValveGenerator::generateSlits(FuncDataBase& Control,
   Control.addVariable(keyName+"WallMat",wallMat);
 
   // stuff for jaws:
+  const std::string jawName=keyName+"Jaw";
+  Control.addVariable(jawName+"Gap",jawGap);
+  Control.addVariable(jawName+"XOpen",xOpen);
+  Control.addVariable(jawName+"XOpen",xOpen);
+  Control.addVariable(jawName+"XOffset",0.0);
+  Control.addVariable(jawName+"XThick",jawThick);
+  Control.addVariable(jawName+"XHeight",jawWidth);  // note reverse
+  Control.addVariable(jawName+"XWidth",jawHeight);  // note reverse
 
-  Control.addVariable(keyName+"Gap",jawGap);
-  Control.addVariable(keyName+"XOpen",xOpen);
-  Control.addVariable(keyName+"XOpen",xOpen);
-  Control.addVariable(keyName+"XOffset",0.0);
-  Control.addVariable(keyName+"XThick",jawThick);
-  Control.addVariable(keyName+"XHeight",jawWidth);  // note reverse
-  Control.addVariable(keyName+"XWdith",jawHeight);  // note reverse
-
-  Control.addVariable(keyName+"ZOpen",zOpen);
-  Control.addVariable(keyName+"ZOffset",0.0);
-  Control.addVariable(keyName+"ZThick",jawThick);
-  Control.addVariable(keyName+"ZHeight",jawHeight); 
-  Control.addVariable(keyName+"ZWdith",jawWidth);  
+  Control.addVariable(jawName+"ZOpen",zOpen);
+  Control.addVariable(jawName+"ZOffset",0.0);
+  Control.addVariable(jawName+"ZThick",jawThick);
+  Control.addVariable(jawName+"ZHeight",jawHeight); 
+  Control.addVariable(jawName+"ZWidth",jawWidth);  
   
   
-  Control.addVariable(keyName+"xJawMat",jawMat);
-  Control.addVariable(keyName+"zJawMat",jawMat);
+  Control.addVariable(jawName+"XJawMat",jawMat);
+  Control.addVariable(jawName+"ZJawMat",jawMat);
 
   return;
 
 }
 
+///\cond TEMPLATE
+
+  template void JawValveGenerator::setCF<CF40>();
+  template void JawValveGenerator::setCF<CF63>();
+  template void JawValveGenerator::setCF<CF100>();
+
+
+///\endcond TEMPLATE
+
+  
 }  // NAMESPACE setVariable

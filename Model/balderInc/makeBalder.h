@@ -32,6 +32,7 @@ namespace constructSystem
   class portItem;
   class PortTube;
   class GateValve;
+  class JawValve;
     
 }
 
@@ -134,6 +135,9 @@ class makeBalder
   /// Large drift chamber post mirrorB
   std::shared_ptr<constructSystem::VacuumPipe> driftD;
 
+  /// Slits [first pair]
+  std::shared_ptr<constructSystem::JawValve> slitsA;
+  
  public:
   
   makeBalder();

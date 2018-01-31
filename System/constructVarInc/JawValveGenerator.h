@@ -67,9 +67,9 @@ class JawValveGenerator
   JawValveGenerator& operator=(const JawValveGenerator&);
   ~JawValveGenerator();
 
-  void setCF40();
-  void setCF100();
-
+  template<typename CF> void setCF();
+  
+  void setSlits(const double,const double,const double,const std::string&);
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }
 
