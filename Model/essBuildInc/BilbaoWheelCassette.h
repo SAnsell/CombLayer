@@ -46,7 +46,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
-  bool bricksActive;            ///< True if bricks are active
+  int bricksActive;            ///< True if bricks are active
 
   double wallThick;             ///< Side wall thickness
   double delta;                 ///< Angular width [deg]

@@ -447,7 +447,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 	}
       else // build the bricks
 	{
-	  const double L(getBrickGapThick(j)); // total space for bricks in the current segment
+	  // total space for bricks in the current segment along the x-axis:
+	  const double L(getBrickGapThick(j));
 	  ModelSupport::buildPlane(SMap,SJ+13,Origin-X*L/2.0,X);
 	  ModelSupport::buildPlane(SMap,SJ+14,Origin+X*L/2.0,X);
 
