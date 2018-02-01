@@ -998,11 +998,6 @@ makeESS::build(Simulation& System,
   makeTarget(System,targetType);
   Reflector->globalPopulate(Control);
 
-  // lower moderator
-  if (lowModType != "None")
-    LowPreMod->createAll(System,World::masterOrigin(),0,true,
-			 Target->wheelHeight()/2.0,
-			 Reflector->getRadius());
 
   TopPreMod->createAll(System,World::masterOrigin(),0,false,
 		       Target->wheelHeight()/2.0,
@@ -1090,50 +1085,6 @@ makeESS::build(Simulation& System,
   createGuides(System);
   makeBunker(System,IParam);
 
-  // THIS CANNOT BE RIGHT--- VERY INEFFICIENT
-  /*
-  TSMainBuildingObj->addInsertCell(74123);
-  TSMainBuildingObj->createAll(System,World::masterOrigin(),0);
-  attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *BBunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CBunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *DBunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Top"));
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Mid"));
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Lower"));
-  attachSystem::addToInsertForced(System, *TSMainBuildingObj,   Target->getCC("Shaft"));
-
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABHighBay);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CDHighBay);
-  */
-  
-  // PROTON BEAMLINE
-
-  //  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
-  //  Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
-
-  PBeam->setFront(*Reflector,1);
-  PBeam->setBack(*ShutterBayObj,-1);
-  PBeam->createAll(System,*Reflector,1);  
-  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,PBeam->getCC("Full"));
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,PBeam->getCC("Full"));
-
-  if (engActive)
-    buildTwister(System);
-  else
-    {
-      // if no -eng flag then Twister is not built -> must insert into Bulk
-      //   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
-    }
-
-  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
-  // been completed. Otherwize we can't find the pipe in the volume.
-
-  
-  ModPipes->buildTopPipes(System,topPipeType);
   buildPillars(System,IParam);
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
@@ -1142,13 +1093,8 @@ makeESS::build(Simulation& System,
   if (IParam.flag("bunkerChicane"))
     buildBunkerChicane(System,IParam);
 
-  if (lowModType != "None")
-    ModPipes->buildLowPipes(System,lowPipeType);
-
   makeBeamLine(System,IParam);
 
-  buildF5Collimator(System, nF5);
-  ELog::EM<<"=Finished beamlines="<<ELog::endDiag;
   return;
 }
 
