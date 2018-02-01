@@ -355,30 +355,6 @@ makeESS::buildFocusPoints(Simulation& System)
 }
   
 void
-makeESS::buildTopButterfly(Simulation& System)
-  /*!
-    Build the top butterfly moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<ButterflyModerator> BM
-    (new essSystem::ButterflyModerator("TopFly"));
-  BM->setRadiusX(Reflector->getRadius());
-
-  TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
-
-  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-  return;
-}
-      
-
-void
 makeESS::buildBunkerFeedThrough(Simulation& System,
                                 const mainSystem::inputParam& IParam)
   /*!
@@ -816,31 +792,6 @@ makeESS::build(Simulation& System,
   
   buildFocusPoints(System);
   makeTarget(System,targetType);
-  Reflector->globalPopulate(Control);
-
-
-  TopPreMod->createAll(System,World::masterOrigin(),0,false,
-		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
-
-  buildTopButterfly(System);
-
-  const double LMHeight=(lowModType == "None")
-    ? 0.0 : LowMod->getLinkDistance(5,6);
-  const double TMHeight=TopMod->getLinkDistance(5,6);
-
-  
-  // Cap moderator DOES not span whole unit
-  TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
-
-
-  buildPreWings(System);
-
-  const double LMAssembly=
-    LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight();
-  const double TMAssembly=
-    TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight();
 
   Bulk->createAll(System,World::masterOrigin());
 
