@@ -416,9 +416,9 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
 
   int SI(surfIndex+100);
 
-  // detailed wall
-  Geometry::Cylinder *backCyl =
-    SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
+  // // detailed wall
+  // Geometry::Cylinder *backCyl =
+  //   SMap.realPtr<Geometry::Cylinder>(FC.getLinkSurf(back));
 
   const double d2(M_PI*wallSegDelta/180.0); // half of the sector opening angle
   double R(innerCylRadius);
@@ -435,7 +435,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
       R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
-
+      ModelSupport::buildPlane(SMap,SJ+12,offset-Y*brickLength,Y);
+ 
       if (j==0) // for the inner segment with no bricks
 	{
 	  ModelSupport::buildPlaneRotAxis(SMap,SJ+13,
@@ -537,15 +538,19 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
   int SI(surfIndex+100);
   int SJ(SI);
 
+  std::string backFront; // back-front surfaces of each segment
+  std::string backFrontBrick; // back-front surfaces of bricks
   for (size_t j=0; j<nWallSeg; j++)
     {
 
-      std::string backFront; // back-front surfaces
       if (j==0)
 	backFront = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
 	  FC.getLinkString(back);
       else
-	backFront = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
+	{
+	  backFront = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
+	  backFrontBrick = ModelSupport::getComposite(SMap,SJ-1000," 12 -11 ");
+	}
 
       /// create side walls
       Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + backFront;
@@ -569,7 +574,8 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 		{
 		  // gap
 		  Out=ModelSupport::getComposite(SMap,SBricks," 3 -4 ");
-		  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+backFront+tb));
+		  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,
+						   Out+backFrontBrick+tb));
 		  // brick
 		  Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
 		}
@@ -578,12 +584,15 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,
 					       j<=nSteelRows?brickSteelMat:brickWMat,
-					       temp,Out+backFront+tb));
+					       temp,Out+backFrontBrick+tb));
 
 	      prev = ModelSupport::getComposite(SMap,SBricks," 4 ");
 
 	      SBricks += 10;
 	    }
+	  // gap b/w bricks in y-direction
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 11 -12M ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 	}
       SJ += 1000;
     }
