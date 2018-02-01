@@ -106,12 +106,15 @@ class CellMap  : public BaseMap
 		       const std::string&) const;
   void insertComponent(Simulation&,const std::string&,
 		       const FixedComp&,const long int) const;
+
+  void makeCell(const std::string&,
+		    Simulation&,const int,const int,const double,
+		    const std::string&);
+  void deleteCell(Simulation&,const std::string&,const size_t =0);
+
+  std::pair<int,double>
+    deleteCellWithData(Simulation&,const std::string&,const size_t =0);
   
- void deleteCell(Simulation&,const std::string&,const size_t =0);
-
- std::pair<int,double>
-   deleteCellWithData(Simulation&,const std::string&,const size_t =0);
-
 };
 
 }

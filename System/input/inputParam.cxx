@@ -457,11 +457,11 @@ inputParam::getDefValue(const T& DefVal,
 {
   ELog::RegMethod RegA("inputParam","getDefValue(setIndex,index)");
 
-  const IItem* IPtr=getIndex(K);
-  if (!IPtr)
-    return DefVal;
+  const IItem* IPtr=getIndex(K);  
+  if (!IPtr) return DefVal;
+  
   const size_t NItems=IPtr->getNItems(setIndex);
-
+  
   return (NItems>itemIndex) ?
     IPtr->getObj<T>(setIndex,itemIndex) : DefVal;
 }

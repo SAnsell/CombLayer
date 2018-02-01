@@ -222,8 +222,7 @@ BulkModule::createSurfaces()
 }
 
 void
-BulkModule::createObjects(Simulation& System,
-			  const attachSystem::ContainedComp& CC)
+BulkModule::createObjects(Simulation& System)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -239,8 +238,6 @@ BulkModule::createObjects(Simulation& System,
       Out=ModelSupport::getComposite(SMap,RI,"5 -6 -7 ");
       if (i)
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
-      else
-	OutX=CC.getExclude();
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out+OutX));
       RI+=10;
     }
@@ -341,8 +338,7 @@ BulkModule::addFlightUnit(Simulation& System,
 
 void
 BulkModule::createAll(Simulation& System,
-		      const attachSystem::FixedComp& FC,
-		      const attachSystem::ContainedComp& CC)
+		      const attachSystem::FixedComp& FC)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -356,7 +352,7 @@ BulkModule::createAll(Simulation& System,
   createUnitVector(FC,0);
   createSurfaces();
   createLinks();
-  createObjects(System,CC);
+  createObjects(System);
   insertObjects(System);              
 
   return;

@@ -57,7 +57,7 @@ class BulkModule : public attachSystem::ContainedComp,
 
   void createSurfaces();
   void createLinks();
-  void createObjects(Simulation&,const attachSystem::ContainedComp&);
+  void createObjects(Simulation&);
 
  public:
 
@@ -69,8 +69,7 @@ class BulkModule : public attachSystem::ContainedComp,
   std::string getComposite(const std::string&) const;
 
   void addFlightUnit(Simulation&,const attachSystem::FixedComp&);
-  void createAll(Simulation&,const attachSystem::FixedComp&,
-		 const attachSystem::ContainedComp&);
+  void createAll(Simulation&,const attachSystem::FixedComp&);
 
 };
 

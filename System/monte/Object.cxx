@@ -902,12 +902,13 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
 
     \param IP :: Initial point
     \param UV :: Forward going vector
-    \return True(1)  / Fail(0)
+    \return True(1) / Fail(0)
   */
 {
   ELog::RegMethod RegA("Object","hadIntercept");
 
   MonteCarlo::LineIntersectVisit LI(IP,UV);
+ 
   std::vector<const Geometry::Surface*>::const_iterator vc;
   for(vc=SurList.begin();vc!=SurList.end();vc++)
     (*vc)->acceptVisitor(LI);

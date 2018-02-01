@@ -3,7 +3,7 @@
  
  * File:   attachComp/CellMap.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -262,6 +262,26 @@ CellMap::insertComponent(Simulation& System,
   return;
 }
 
+void
+CellMap::makeCell(const std::string& Key,Simulation& System,
+		  const int cellIndex,const int matNumber,
+		  const double matTemp,const std::string& Out)
+
+  /*!
+    Builds a new cell in Simulation and registers it with the CellMap
+    \param System :: Simulation to obtain cell from
+    \param Key :: KeyName for cell
+    \param cellIndex :: Cell index
+    \param matNumber :: Material number
+    \param matTemp :: Temperature
+    \param Out :: Boolean surface string
+  */
+{
+  ELog::RegMethod RegA("CellMap","makeCell");
+  System.addCell(cellIndex,matNumber,matTemp,Out);
+  addCell(Key,cellIndex);
+  return;
+}
 void
 CellMap::deleteCell(Simulation& System,
 		    const std::string& Key,

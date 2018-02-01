@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essInc/PipeGenerator.h
+ * File:   constructVarInc/PipeGenerator.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +45,10 @@ class PipeGenerator
   double pipeWidth;             ///< main width
   double pipeThick;             ///< metal thickness
   double claddingThick;         ///< cladding radius
-  double flangeRadius;          ///< flange Radius (>radius)
-  double flangeLen;             ///< flange Length
+  double flangeARadius;          ///< flange Radius (>radius)
+  double flangeALen;             ///< flange Length
+  double flangeBRadius;          ///< flange Radius (>radius)
+  double flangeBLen;             ///< flange Length
   double windowRadius;          ///< window radius (radius > WR > flangeR)
   double windowThick;           ///< window thickness
   
@@ -67,7 +69,14 @@ class PipeGenerator
   void setRectPipe(const double,const double,const double);
   void setWindow(const double,const double);
   void setFlange(const double,const double);
+  void setFlangePair(const double,const double,const double,const double);
   /// set pipe material
+
+  template<typename CF> void setCF();
+  template<typename CF> void setAFlangeCF();
+  template<typename CF> void setBFlangeCF();
+
+  
   void setMat(const std::string& M) { pipeMat=M; }
   void setWindowMat(const std::string&);
   void setWindowMat(const std::string&,const std::string&);

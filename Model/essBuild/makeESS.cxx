@@ -273,15 +273,13 @@ makeESS::createGuides(Simulation& System)
 			 ShutterBayObj->getLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);  
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
     }
   
-  GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[0]->createGuideItems(System,"Low",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Low",Target->getKeyName());
+  GBArray[0]->createGuideItems(System,"Top");
+  GBArray[0]->createGuideItems(System,"Low");
+  GBArray[1]->createGuideItems(System,"Top");
+  GBArray[1]->createGuideItems(System,"Low");
 
   return;
 }
@@ -354,168 +352,6 @@ makeESS::buildFocusPoints(Simulation& System)
   return;
 }
   
-void
-makeESS::buildLowButterfly(Simulation& System)
-  /*!
-    Build the lower butterfly moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<ButterflyModerator> BM
-    (new essSystem::ButterflyModerator("LowFly"));
-  
-  BM->setRadiusX(Reflector->getRadius());
-  
-  LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
-  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  
-  return;
-}
-
-void
-makeESS::buildTopButterfly(Simulation& System)
-  /*!
-    Build the top butterfly moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopButteflyMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<ButterflyModerator> BM
-    (new essSystem::ButterflyModerator("TopFly"));
-  BM->setRadiusX(Reflector->getRadius());
-
-  TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
-
-  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-  return;
-}
-      
-void
-makeESS::buildLowPancake(Simulation& System)
-  /*!
-    Build the lower pancake moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowPancake");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<PancakeModerator> BM
-    (new essSystem::PancakeModerator("LowCake"));
-  BM->setRadiusX(Reflector->getRadius());
-
-  LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
-  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  return;
-}
-
-  
-void
-makeESS::buildTopPancake(Simulation& System)
-  /*!
-    Build the top pancake moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopPancake");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<PancakeModerator> BM
-    (new essSystem::PancakeModerator("TopCake"));
-  BM->setRadiusX(Reflector->getRadius());
-  TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
-  
-  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-  return;
-}
-
-void
-makeESS::buildLowBox(Simulation& System)
-  /*!
-    Build the lower box moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowBox");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<BoxModerator> BM
-    (new essSystem::BoxModerator("LowBox"));
-  BM->setRadiusX(Reflector->getRadius());
-  LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
-  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  return;
-}
-
-  
-void
-makeESS::buildTopBox(Simulation& System)
-  /*!
-    Build the top box moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopBox");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<BoxModerator> BM
-    (new essSystem::BoxModerator("TopBox"));
-  BM->setRadiusX(Reflector->getRadius());
-  TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
-  
-  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-  return;
-}
-
-void
-makeESS::buildF5Collimator(Simulation& System,const size_t nF5)
- /*!
-   Build F5 collimators
-   \param System :: Stardard simulation
-   \param nF5 :: number of collimators to build
- */
-{
-  ELog::RegMethod RegA("makeESS", "buildF5Collimator");
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-
-  for (size_t i=0; i<nF5; i++)
-    {
-      std::shared_ptr<F5Collimator>
-        F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-      OR.addObject(F5);
-      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-      F5->createAll(System,World::masterOrigin());
-      attachSystem::addToInsertSurfCtrl(System,*ABunker,*F5);
-      F5array.push_back(F5);
-    }
-
-  return;
-}
-
-
 void
 makeESS::buildBunkerFeedThrough(Simulation& System,
                                 const mainSystem::inputParam& IParam)
@@ -917,48 +753,6 @@ makeESS::buildPreWings(Simulation& System)
   return;
 }
 
-void
-makeESS::buildTwister(Simulation& System)
-  /*!
-    Adds a twister to the main system
-    \param System :: Simulation 
-   */
-{
-  ELog::RegMethod RegA("makeESS","buildTwister");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
-  OR.addObject(Twister);
-
-  Twister->createAll(System,*Bulk,0);
-
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
-  
-  attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
-  attachSystem::addToInsertControl(System, *Twister, *Reflector);
-
-  // split Twister by components
-  // for (const ContainedComp & CC : Twister->getCC()) ...
-  // use LineControl for intersections with flight lines
-  
-  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
-
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
-
-  return;
-}
-
 void 
 makeESS::build(Simulation& System,
 	       const mainSystem::inputParam& IParam)
@@ -995,145 +789,19 @@ makeESS::build(Simulation& System,
     }
   
   buildFocusPoints(System);
-  makeTarget(System,targetType);
-  Reflector->globalPopulate(Control);
+  //  makeTarget(System,targetType);
 
-  // lower moderator
-  if (lowModType != "None")
-    LowPreMod->createAll(System,World::masterOrigin(),0,true,
-			 Target->wheelHeight()/2.0,
-			 Reflector->getRadius());
-
-  TopPreMod->createAll(System,World::masterOrigin(),0,false,
-		       Target->wheelHeight()/2.0,
-		       Reflector->getRadius());
-
-
-  if (lowModType == "Butterfly")
-    buildLowButterfly(System);
-  else if (lowModType == "Pancake")
-    buildLowPancake(System);
-  else if (lowModType == "Box")
-    buildLowBox(System);
-  else if (lowModType != "None")
-    throw ColErr::InContainerError<std::string>(lowModType,"Low Mod Type");
-
-  if (topModType == "Butterfly")
-    buildTopButterfly(System);
-  else if (topModType == "Pancake")
-    buildTopPancake(System);
-  else if (topModType == "Box")
-    buildTopBox(System);
-  else 
-    throw ColErr::InContainerError<std::string>(topModType,"Top Mod Type");
-
-  const double LMHeight=(lowModType == "None")
-    ? 0.0 : LowMod->getLinkDistance(5,6);
-  const double TMHeight=TopMod->getLinkDistance(5,6);
-
-  
-  // Cap moderator DOES not span whole unit
-  TopCapMod->createAll(System,*TopMod,6,false,
-   		       0.0,Reflector->getRadius());
-
-  if (lowModType != "None")
-    LowCapMod->createAll(System,*LowMod,6,false,
-			 0.0,Reflector->getRadius());
-
-  buildPreWings(System);
-
-  const double LMAssembly=
-    LowPreMod->getHeight()+LMHeight+LowCapMod->getHeight();
-  const double TMAssembly=
-    TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight();
-
-  Reflector->createAll(System,World::masterOrigin(),0,
-		       Target->wheelHeight(),LMAssembly,TMAssembly);
-  
-  Reflector->insertComponent(System,"targetVoid",*Target,1);
-  Bulk->createAll(System,*Reflector,*Reflector);
-
-  // Build flightlines after bulk
-  Reflector->deleteCell(System,"topVoid");
-  TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
-  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
-
-  if (lowModType != "None")
-    {
-      Reflector->deleteCell(System,"lowVoid");
-      LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-      LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
-    }
-
-  
-  // THESE calls correct the MAIN volume so pipe work MUST be after here:
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
-  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
-  if (lowModType != "None")
-    {
-      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
-    }
-  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
+  Bulk->createAll(System,World::masterOrigin());
 
   buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
-  attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getCC("Wheel"));
-  attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getCC("Shaft"));
 
 
   createGuides(System);
   makeBunker(System,IParam);
 
-  // THIS CANNOT BE RIGHT--- VERY INEFFICIENT
-  /*
-  TSMainBuildingObj->addInsertCell(74123);
-  TSMainBuildingObj->createAll(System,World::masterOrigin(),0);
-  attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *BBunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CBunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *DBunker);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Top"));
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Mid"));
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, TopCurtain->getCC("Lower"));
-  attachSystem::addToInsertForced(System, *TSMainBuildingObj,   Target->getCC("Shaft"));
-
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABHighBay);
-  attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *CDHighBay);
-  */
-  
-  // PROTON BEAMLINE
-
-  //  pbip->createAll(System,World::masterOrigin(),0,*Bulk,3,*Target,1);
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
-  //  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
-  //  Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
-
-  PBeam->setFront(*Reflector,1);
-  PBeam->setBack(*ShutterBayObj,-1);
-  PBeam->createAll(System,*Reflector,1);  
-  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,PBeam->getCC("Full"));
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,PBeam->getCC("Full"));
-
-  if (engActive)
-    buildTwister(System);
-  else
-    {
-      // if no -eng flag then Twister is not built -> must insert into Bulk
-      //   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
-    }
-
-  // WARNING: THESE CALL MUST GO AFTER the main void (74123) has
-  // been completed. Otherwize we can't find the pipe in the volume.
-
-  
-  ModPipes->buildTopPipes(System,topPipeType);
   buildPillars(System,IParam);
   if (IParam.flag("bunkerFeed"))
     buildBunkerFeedThrough(System,IParam);
@@ -1142,13 +810,8 @@ makeESS::build(Simulation& System,
   if (IParam.flag("bunkerChicane"))
     buildBunkerChicane(System,IParam);
 
-  if (lowModType != "None")
-    ModPipes->buildLowPipes(System,lowPipeType);
-
   makeBeamLine(System,IParam);
 
-  buildF5Collimator(System, nF5);
-  ELog::EM<<"=Finished beamlines="<<ELog::endDiag;
   return;
 }
 

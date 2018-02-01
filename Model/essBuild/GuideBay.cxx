@@ -368,13 +368,11 @@ GuideBay::outerMerge(Simulation& System,
   
 void
 GuideBay::createGuideItems(Simulation& System,
-                           const std::string& modName,
-			   const std::string& wheelName)
+                           const std::string& modName)
   /*!
     Create the guide items
     \param System :: Simulation to link
     \param modName :: Moderator name (top/low)
-    \param wheelName :: Wheel object [if used]
   */
 {
   ELog::RegMethod RegA("GuideBay","createGuideItems");
@@ -394,12 +392,7 @@ GuideBay::createGuideItems(Simulation& System,
 
   const GuideItem* GB(0);  // guides can intersect
 
-  
-  attachSystem::ContainedGroup* CG=
-    (!wheelName.empty()) ?
-    OR.getObjectThrow<attachSystem::ContainedGroup>
-    (wheelName,"Wheel unit not found") : 0;
-    
+      
   for(size_t i=0;i<nItems;i++)
     {
       const long int FI((i>=nItems/2) ? rFocusIndex : lFocusIndex);
@@ -413,14 +406,6 @@ GuideBay::createGuideItems(Simulation& System,
       GUnit.push_back(GA);
       OR.addObject(GUnit.back());
 
-      // Add wheel to inner cell if required
-      if (GA->hasItem("BodyMetal"))
-	{
-	  GA->insertComponent(System,"Body",CG->getCC("Wheel"));
-     //	  attachSystem::addToInsertSurfCtrl(System,*GA,"BodyMetal",
-     //					    CG->getCC("Wheel"));
-	}
-      
       GB=GA.get();
     }
   
