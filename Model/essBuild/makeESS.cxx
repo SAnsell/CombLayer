@@ -1003,16 +1003,6 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
 
-
-  if (lowModType == "Butterfly")
-    buildLowButterfly(System);
-  else if (lowModType == "Pancake")
-    buildLowPancake(System);
-  else if (lowModType == "Box")
-    buildLowBox(System);
-  else if (lowModType != "None")
-    throw ColErr::InContainerError<std::string>(lowModType,"Low Mod Type");
-
   if (topModType == "Butterfly")
     buildTopButterfly(System);
   else if (topModType == "Pancake")
@@ -1031,9 +1021,6 @@ makeESS::build(Simulation& System,
   TopCapMod->createAll(System,*TopMod,6,false,
    		       0.0,Reflector->getRadius());
 
-  if (lowModType != "None")
-    LowCapMod->createAll(System,*LowMod,6,false,
-			 0.0,Reflector->getRadius());
 
   buildPreWings(System);
 
@@ -1046,7 +1033,7 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight(),LMAssembly,TMAssembly);
   
   Reflector->insertComponent(System,"targetVoid",*Target,1);
-  Bulk->createAll(System,*Reflector,*Reflector);
+  Bulk->createAll(System,World::masterOrigin(),*Reflector);
 
   // Build flightlines after bulk
   Reflector->deleteCell(System,"topVoid");
