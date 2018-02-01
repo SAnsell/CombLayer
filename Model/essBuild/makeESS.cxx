@@ -273,15 +273,13 @@ makeESS::createGuides(Simulation& System)
 			 ShutterBayObj->getLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);  
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));      
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
     }
   
-  GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[0]->createGuideItems(System,"Low",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Low",Target->getKeyName());
+  GBArray[0]->createGuideItems(System,"Top");
+  GBArray[0]->createGuideItems(System,"Low");
+  GBArray[1]->createGuideItems(System,"Top");
+  GBArray[1]->createGuideItems(System,"Low");
 
   return;
 }
@@ -791,22 +789,14 @@ makeESS::build(Simulation& System,
     }
   
   buildFocusPoints(System);
-  makeTarget(System,targetType);
+  //  makeTarget(System,targetType);
 
   Bulk->createAll(System,World::masterOrigin());
-
-  // THESE calls correct the MAIN volume so pipe work MUST be after here:
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
-  attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
 
   buildIradComponent(System,IParam);
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
-  attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getCC("Wheel"));
-  attachSystem::addToInsertForced(System,*ShutterBayObj,
-				  Target->getCC("Shaft"));
 
 
   createGuides(System);
