@@ -168,12 +168,6 @@ class makeESS
 
   void buildIradComponent(Simulation&,const mainSystem::inputParam&);
 
-  void buildLowBox(Simulation&);
-  void buildTopBox(Simulation&);
-
-  void buildLowPancake(Simulation&);
-  void buildTopPancake(Simulation&);
-
   void buildTopButterfly(Simulation&);
   void buildToperPipe(Simulation&,const std::string&);
 
@@ -193,8 +187,6 @@ class makeESS
 			const mainSystem::inputParam&);
   void buildPreWings(Simulation&);
   void buildTwister(Simulation&);
-
-  void buildF5Collimator(Simulation&,const size_t);
 
   void optionSummary(Simulation&);
 

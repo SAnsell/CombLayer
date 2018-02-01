@@ -401,120 +401,6 @@ makeESS::buildTopButterfly(Simulation& System)
   return;
 }
       
-void
-makeESS::buildLowPancake(Simulation& System)
-  /*!
-    Build the lower pancake moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowPancake");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<PancakeModerator> BM
-    (new essSystem::PancakeModerator("LowCake"));
-  BM->setRadiusX(Reflector->getRadius());
-
-  LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
-  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  return;
-}
-
-  
-void
-makeESS::buildTopPancake(Simulation& System)
-  /*!
-    Build the top pancake moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopPancake");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<PancakeModerator> BM
-    (new essSystem::PancakeModerator("TopCake"));
-  BM->setRadiusX(Reflector->getRadius());
-  TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
-  
-  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-  return;
-}
-
-void
-makeESS::buildLowBox(Simulation& System)
-  /*!
-    Build the lower box moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowBox");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<BoxModerator> BM
-    (new essSystem::BoxModerator("LowBox"));
-  BM->setRadiusX(Reflector->getRadius());
-  LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
-  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  return;
-}
-
-  
-void
-makeESS::buildTopBox(Simulation& System)
-  /*!
-    Build the top box moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildTopBox");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<BoxModerator> BM
-    (new essSystem::BoxModerator("TopBox"));
-  BM->setRadiusX(Reflector->getRadius());
-  TopMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(TopMod);
-  
-  TopMod->createAll(System,*TopPreMod,6,*Reflector,0);
-  return;
-}
-
-void
-makeESS::buildF5Collimator(Simulation& System,const size_t nF5)
- /*!
-   Build F5 collimators
-   \param System :: Stardard simulation
-   \param nF5 :: number of collimators to build
- */
-{
-  ELog::RegMethod RegA("makeESS", "buildF5Collimator");
-  ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
-
-  for (size_t i=0; i<nF5; i++)
-    {
-      std::shared_ptr<F5Collimator>
-        F5(new F5Collimator(StrFunc::makeString("F", i*10+5).c_str()));
-      OR.addObject(F5);
-      F5->addInsertCell(74123); // !!! 74123=voidCell // SA: how to exclude F5 from any cells?
-      F5->createAll(System,World::masterOrigin());
-      attachSystem::addToInsertSurfCtrl(System,*ABunker,*F5);
-      F5array.push_back(F5);
-    }
-
-  return;
-}
-
 
 void
 makeESS::buildBunkerFeedThrough(Simulation& System,
@@ -1003,14 +889,7 @@ makeESS::build(Simulation& System,
 		       Target->wheelHeight()/2.0,
 		       Reflector->getRadius());
 
-  if (topModType == "Butterfly")
-    buildTopButterfly(System);
-  else if (topModType == "Pancake")
-    buildTopPancake(System);
-  else if (topModType == "Box")
-    buildTopBox(System);
-  else 
-    throw ColErr::InContainerError<std::string>(topModType,"Top Mod Type");
+  buildTopButterfly(System);
 
   const double LMHeight=(lowModType == "None")
     ? 0.0 : LowMod->getLinkDistance(5,6);
@@ -1029,35 +908,11 @@ makeESS::build(Simulation& System,
   const double TMAssembly=
     TopPreMod->getHeight()+TMHeight+TopCapMod->getHeight();
 
-  Reflector->createAll(System,World::masterOrigin(),0,
-		       Target->wheelHeight(),LMAssembly,TMAssembly);
-  
-  Reflector->insertComponent(System,"targetVoid",*Target,1);
-  Bulk->createAll(System,World::masterOrigin(),*Reflector);
+  Bulk->createAll(System,World::masterOrigin());
 
-  // Build flightlines after bulk
-  Reflector->deleteCell(System,"topVoid");
-  TopAFL->createAll(System,*TopMod,0,*Reflector,4,*Bulk,-3);
-  TopBFL->createAll(System,*TopMod,0,*Reflector,3,*Bulk,-3);
-
-  if (lowModType != "None")
-    {
-      Reflector->deleteCell(System,"lowVoid");
-      LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
-      LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
-    }
-
-  
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
-  if (lowModType != "None")
-    {
-      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
-    }
-  attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
   buildIradComponent(System,IParam);
   // Full surround object
