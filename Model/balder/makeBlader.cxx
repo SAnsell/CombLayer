@@ -82,6 +82,7 @@
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValve.h"
+#include "FlangeMount.h"
 #include "makeBalder.h"
 
 namespace xraySystem
@@ -121,6 +122,14 @@ makeBalder::makeBalder() :
 {
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
+
+  // can this be in an initializer??
+  for(size_t i=0;i<4;i++)
+    {
+      filters[i]=std::make_shared<xraySystem::FlangeMount>
+	("Filter"+std::to_string(i));
+      OR.addObject(filters[i]);
+    }
   
   OR.addObject(opticsHut);
   OR.addObject(ionPA);
@@ -187,6 +196,16 @@ makeBalder::build(Simulation& System,
   filterBox->setFront(*pipeA,2);
   filterBox->createAll(System,*pipeA,2);
 
+  for(size_t i=0;i<4;i++)
+    {
+      const constructSystem::portItem& PI=filterBox->getPort(i);
+      filters[i]->addInsertCell("Flange",opticsHut->getCell("Void"));
+      filters[i]->addInsertCell("Body",PI.getCell("Void"));
+      filters[i]->addInsertCell("Body",filterBox->getCell("Void"));
+      filters[i]->setBladeCentre(PI,0);
+      filters[i]->createAll(System,PI,2);
+    }
+
   pipeB->addInsertCell(opticsHut->getCell("Void"));
   pipeB->setFront(*filterBox,2);
   pipeB->createAll(System,*filterBox,2);
@@ -242,7 +261,6 @@ makeBalder::build(Simulation& System,
   slitsA->createAll(System,*driftC,2);
 
   return;
-  // SLIT
   
   pipeD->addInsertCell(opticsHut->getCell("Void"));
   pipeD->setFront(*gateC,2);

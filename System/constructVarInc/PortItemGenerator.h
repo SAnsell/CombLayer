@@ -52,8 +52,9 @@ class PortItemGenerator
   PortItemGenerator(const PortItemGenerator&);
   PortItemGenerator& operator=(const PortItemGenerator&);
   ~PortItemGenerator();
+  
 
-
+  template<typename CF> void setCF(const double);
   // set L,R,WT
   void setPort(const double,const double,const double);
   // set flangeLen,flangeRad

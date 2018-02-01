@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/makeBalder.h
+ * File:   balderInc/makeBalder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -50,6 +50,8 @@ namespace xraySystem
 {
   class OpticsHutch;
   class MonoVessel;
+  class FlangeMount;
+    
   /*!
     \class makeBalder
     \version 1.0
@@ -76,6 +78,9 @@ class makeBalder
 
   /// Filter box
   std::shared_ptr<constructSystem::PortTube> filterBox;
+
+  /// Filter box
+  std::shared_ptr<xraySystem::FlangeMount> filters[4];
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::Bellows> pipeB;

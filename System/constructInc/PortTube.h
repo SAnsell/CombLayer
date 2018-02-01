@@ -72,7 +72,7 @@ class PortTube :
 
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
-  std::vector<portItem> Ports;  ///< Vector of ports FixedComp
+  std::vector<portItem> Ports;           ///< Vector of ports FixedComp
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -88,6 +88,7 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
+  const portItem& getPort(const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

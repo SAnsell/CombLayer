@@ -56,6 +56,7 @@
 #include "PortTubeGenerator.h"
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
+#include "FlangeMountGenerator.h"
 
 namespace setVariable
 {
@@ -115,6 +116,7 @@ balderVariables(FuncDataBase& Control)
   setVariable::PortItemGenerator PItemGen;
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
+  setVariable::FlangeMountGenerator FlangeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
   CrossGen.setMat("Stainless304");
@@ -161,17 +163,26 @@ balderVariables(FuncDataBase& Control)
   PTubeGen.generateTube(Control,"FilterBox",0.0,9.0,54.0);
   Control.addVariable("FilterBoxNPorts",4);
 
-  PItemGen.setPort(20.0,2.5,0.3);
+
+  PItemGen.setCF<setVariable::CF63>(20.0);
+  FlangeGen.setCF<setVariable::CF63>();
+  FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten");  // 22 rotation
+
   // centre of mid point
   Geometry::Vec3D CPos(0,-1.5*11.0,0);
-  Geometry::Vec3D ZVec(0,0,1);
+  const Geometry::Vec3D ZVec(0,0,1);
   for(size_t i=0;i<4;i++)
     {
       const std::string name="FilterBoxPort"+std::to_string(i);
+      const std::string fname="Filter"+std::to_string(i);      
       PItemGen.generatePort(Control,name,CPos,ZVec);
       CPos+=Geometry::Vec3D(0,11,0);
+      const int upFlag((i) ? 0 : 1);
+      FlangeGen.generateMount(Control,fname,upFlag);  // in beam
     }
 
+  // filters:
+  
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,"BellowB",0,10.0);    

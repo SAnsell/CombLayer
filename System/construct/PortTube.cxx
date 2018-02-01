@@ -344,7 +344,26 @@ PortTube::createPorts(Simulation& System)
     }
   return;
 }
-  
+
+const portItem&
+PortTube::getPort(const size_t index) const
+  /*!
+    Accessor to ports
+    \param index :: index point
+    \return port
+  */
+{
+  ELog::RegMethod RegA("PortTube","getPort");
+
+  if (index>=Ports.size())
+    throw ColErr::IndexError<size_t>(index,Ports.size(),"index/Ports size");
+
+      
+  return Ports[index];
+}
+
+
+
 void
 PortTube::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,

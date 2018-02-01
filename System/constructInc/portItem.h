@@ -47,7 +47,8 @@ namespace constructSystem
 
 class portItem :
   public attachSystem::FixedComp,
-  public attachSystem::ContainedComp
+  public attachSystem::ContainedComp,
+  public attachSystem::CellMap
 {
  private:
 

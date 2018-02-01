@@ -52,6 +52,7 @@
 #include "Code.h"
 #include "FuncDataBase.h"
 
+#include "CFFlanges.h"
 #include "PortItemGenerator.h"
 
 namespace setVariable
@@ -101,6 +102,22 @@ PortItemGenerator::~PortItemGenerator()
  */
 {}
 
+template<typename CF>
+void
+PortItemGenerator::setCF(const double L)
+  /*!
+    Set pipe/flange to CF-X format
+    \param L :: length of tube
+  */
+{
+  length=L;
+  radius=CF::innerRadius;
+  wallThick=CF::wallThick;
+  flangeLen=CF::flangeLength;
+  flangeRadius=CF::flangeRadius;
+  
+  return;
+}
 
   
 void
@@ -160,5 +177,15 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
   return;
 
 }
+
+
+///\cond TEMPLATE
+
+template void PortItemGenerator::setCF<CF40>(const double);
+template void PortItemGenerator::setCF<CF63>(const double);
+template void PortItemGenerator::setCF<CF100>(const double);
+
+///\endcond  TEMPLATE
+  
 
 }  // NAMESPACE setVariable

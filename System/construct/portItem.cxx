@@ -84,7 +84,8 @@ namespace constructSystem
 
 portItem::portItem(const std::string& Key) :
   attachSystem::FixedComp(Key,2),
-  attachSystem::ContainedComp(),statusFlag(0),
+  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  statusFlag(0),
   portIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(portIndex+1),radius(0.0),wall(0.0),
   flangeRadius(0.0),flangeLength(0.0),voidMat(0),wallMat(0)
@@ -96,6 +97,7 @@ portItem::portItem(const std::string& Key) :
 
 portItem::portItem(const portItem& A) : 
   attachSystem::FixedComp(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),
   statusFlag(A.statusFlag),portIndex(A.portIndex),
   cellIndex(A.cellIndex),externalLength(A.externalLength),
   radius(A.radius),wall(A.wall),flangeRadius(A.flangeRadius),
@@ -120,6 +122,8 @@ portItem::operator=(const portItem& A)
     {
       attachSystem::FixedComp::operator=(A);
       attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      
       statusFlag=A.statusFlag;
       portIndex=A.portIndex;
       cellIndex=A.cellIndex;
@@ -269,8 +273,8 @@ portItem::createLinks(const ModelSupport::LineTrack& LT,
     Port position are used for first two link points
     Note that 0/1 are the flange surfaces
     \param LT :: Line track
-    \param AIndex :: start of highdensity material 
-    \param BIndex :: end of highdensity material 
+    \param AIndex :: start of high density material 
+    \param BIndex :: end of high density material 
   */
 {
   ELog::RegMethod RegA("portItem","createLinks");
@@ -338,7 +342,7 @@ portItem::constructOuterFlange(Simulation& System,
 
   
   Out=ModelSupport::getComposite(SMap,portIndex," 1 -7 -2 ");
-  System.addCell(cellIndex++,voidMat,0.0,Out+frontSurf);
+  makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
 
   Out=ModelSupport::getComposite(SMap,portIndex," 1 -17 7 -2 ");
   System.addCell(cellIndex++,wallMat,0.0,Out+frontSurf);
@@ -349,7 +353,7 @@ portItem::constructOuterFlange(Simulation& System,
   if (plateThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,portIndex," -27 202 2 ");
-      System.addCell(cellIndex++,plateMat,0.0,Out);
+      makeCell("Plate",System,cellIndex++,plateMat,0.0,Out);
       Out=ModelSupport::getComposite(SMap,portIndex," -202 -27 (102:-17) 1 ");
     }
   else
@@ -359,7 +363,7 @@ portItem::constructOuterFlange(Simulation& System,
 
   // Mid port exclude
   const std::string tubeExclude=
-    ModelSupport::getComposite(SMap,portIndex," 17 1 ");
+    ModelSupport::getComposite(SMap,portIndex," ( 17 : -1 )");
  
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
   const std::vector<double>& Track=LT.getTrack();
@@ -372,12 +376,8 @@ portItem::constructOuterFlange(Simulation& System,
 
       if (T>=externalLength-flangeLength)
 	OPtr->addSurfString(getExclude());
-      else
-	{
-	  OPtr->addSurfString(getExclude());
-	  //	  OPtr->addSurfString(tubeExclude);
-	}
-
+      else 
+	OPtr->addSurfString(tubeExclude);
     }
   
   return;

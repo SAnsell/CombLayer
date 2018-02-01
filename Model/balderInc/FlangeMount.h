@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/GateValve.h
+ * File:   constructInc/FlangeMount.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_GateValve_h
-#define constructSystem_GateValve_h
+#ifndef xraySystem_FlangeMount_h
+#define xraySystem_FlangeMount_h
 
 class Simulation;
 
-namespace constructSystem
+namespace xraySystem
 {
   
 /*!
-  \class GateValve
+  \class FlangeMount
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief GateValve unit  
+  \brief FlangeMount unit  
 */
 
-class GateValve :
+class FlangeMount :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedGroup,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
@@ -47,24 +47,28 @@ class GateValve :
   const int vacIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double length;                ///< Void length
-  double width;                 ///< Void width (full)
-  double height;                ///< height 
-  double depth;                 ///< depth
-  
-  double wallThick;             ///< Wall thickness
-  double portRadius;            ///< Port inner radius (opening)
-  double portThick;             ///< Port outer ring
-  double portLen;               ///< Forward step of port
-  
-  bool closed;                  ///< Shutter closed
+  double plateThick;            ///< Top plate thickness
+  double plateRadius;           ///< plate radius
+
+  double threadRadius;          ///< support thread
+  double threadLength;          ///< Length of thread [full]
+
+  int inBeam;                   ///< In beam
+  double bladeXYAngle;          ///< Angle of blade
   double bladeLift;             ///< Height of blade up
   double bladeThick;            ///< moving blade thickness
-  double bladeRadius;           ///< moving blade radius
+  double bladeWidth;            ///< moving blade radius
+  double bladeHeight;           ///< moving blade radius
   
-  int voidMat;                  ///< Void material
+  int threadMat;                ///< thread material
   int bladeMat;                 ///< blade material
-  int wallMat;                  ///< Pipe material
+  int plateMat;                 ///< plate material
+
+  int bladeCentreActive;        ///< Flag to use bladeCentre
+  /// Norminal point to get centre from [over-writes threadLength]
+  Geometry::Vec3D bladeCentre;
+
+  void calcThreadLength();
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -74,11 +78,14 @@ class GateValve :
   
  public:
 
-  GateValve(const std::string&);
-  GateValve(const GateValve&);
-  GateValve& operator=(const GateValve&);
-  virtual ~GateValve();
+  FlangeMount(const std::string&);
+  FlangeMount(const FlangeMount&);
+  FlangeMount& operator=(const FlangeMount&);
+  virtual ~FlangeMount();
 
+  void setBladeCentre(const attachSystem::FixedComp&,const long int);
+  void setBladeCentre(const Geometry::Vec3D&);
+  
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 
