@@ -186,7 +186,6 @@ class makeESS
   void buildBunkerQuake(Simulation&,
 			const mainSystem::inputParam&);
   void buildPreWings(Simulation&);
-  void buildTwister(Simulation&);
 
   void optionSummary(Simulation&);
 

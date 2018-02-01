@@ -355,30 +355,6 @@ makeESS::buildFocusPoints(Simulation& System)
 }
   
 void
-makeESS::buildLowButterfly(Simulation& System)
-  /*!
-    Build the lower butterfly moderator
-    \param System :: Stardard simulation
-  */
-{
-  ELog::RegMethod RegA("makeESS","buildLowButteflyMod");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  std::shared_ptr<ButterflyModerator> BM
-    (new essSystem::ButterflyModerator("LowFly"));
-  
-  BM->setRadiusX(Reflector->getRadius());
-  
-  LowMod=std::shared_ptr<EssModBase>(BM);
-  OR.addObject(LowMod);
-  LowMod->createAll(System,*LowPreMod,6,*Reflector,0);
-  
-  return;
-}
-
-void
 makeESS::buildTopButterfly(Simulation& System)
   /*!
     Build the top butterfly moderator
@@ -799,48 +775,6 @@ makeESS::buildPreWings(Simulation& System)
       TopPreWingB->addInsertCell(TMod->getCells("MainVoid"));
       TopPreWingB->createAll(System,*TMod,0);
     }
-
-  return;
-}
-
-void
-makeESS::buildTwister(Simulation& System)
-  /*!
-    Adds a twister to the main system
-    \param System :: Simulation 
-   */
-{
-  ELog::RegMethod RegA("makeESS","buildTwister");
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  Twister = std::shared_ptr<TwisterModule>(new TwisterModule("Twister"));
-  OR.addObject(Twister);
-
-  Twister->createAll(System,*Bulk,0);
-
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
-  
-  attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
-  attachSystem::addToInsertControl(System, *Twister, *Reflector);
-
-  // split Twister by components
-  // for (const ContainedComp & CC : Twister->getCC()) ...
-  // use LineControl for intersections with flight lines
-  
-  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
-
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
   return;
 }
