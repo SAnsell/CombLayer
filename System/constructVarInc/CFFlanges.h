@@ -44,6 +44,17 @@ struct CF40
   static constexpr double bellowThick=1.0;
 };
 
+struct CF50
+{
+  static constexpr double innerRadius=2.55;
+  static constexpr double wallThick=0.5;
+  static constexpr double flangeRadius=4.3;
+  static constexpr double flangeLength=1.0;
+  static constexpr double bellowStep=1.0;
+  static constexpr double bellowThick=1.0;
+};
+
+
 struct CF63
 {
   static constexpr double innerRadius=3.2;

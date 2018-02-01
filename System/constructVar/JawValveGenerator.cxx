@@ -133,6 +133,23 @@ JawValveGenerator::setSlits(const double W,const double H,
   jawMat=Mat;
   return;
 }
+
+void
+JawValveGenerator::setOuter(const double L,const double W,
+			    const double H,const double D)
+  /*!
+    set outer dimentions
+    \param L :: Length
+    \param W :: Width
+    \param H :: Height
+   */
+{
+  length=L;
+  width=W;
+  height=H;
+  depth=D;
+  return;
+}
   
 void
 JawValveGenerator::setPort(const double R,const double L,
@@ -160,6 +177,10 @@ JawValveGenerator::setCF()
   portRadius=CF::innerRadius;
   portThick=CF::flangeRadius-CF::innerRadius;   //  total 
   portLen=CF::flangeLength;
+  depth=1.1*CF::flangeRadius;
+  height=2.5*CF::flangeRadius;
+  width=2.1*CF::flangeRadius;
+  
   return;
 }
 

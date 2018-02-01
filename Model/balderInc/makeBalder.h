@@ -50,6 +50,7 @@ namespace xraySystem
 {
   class OpticsHutch;
   class MonoVessel;
+  class MonoCrystals;
   class FlangeMount;
     
   /*!
@@ -105,6 +106,8 @@ class makeBalder
 
   /// Mono Vessel
   std::shared_ptr<xraySystem::MonoVessel> monoV;
+  /// Mono crystal
+  std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
   
   /// Huge Bellows to Mono
   std::shared_ptr<constructSystem::Bellows> monoBellowA;
@@ -114,11 +117,18 @@ class makeBalder
   /// Gate valve after mono [large]
   std::shared_ptr<constructSystem::GateValve> gateC;
 
-
   /// Large drift chamber post mono
   std::shared_ptr<constructSystem::VacuumPipe> driftC;
 
+  /// Slits [first pair]
+  std::shared_ptr<constructSystem::JawValve> slitsA;
 
+  /// Tungsten shield pipe
+  std::shared_ptr<constructSystem::PortTube> shieldPipe;
+
+
+
+  
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::VacuumPipe> pipeD;
 
@@ -140,8 +150,6 @@ class makeBalder
   /// Large drift chamber post mirrorB
   std::shared_ptr<constructSystem::VacuumPipe> driftD;
 
-  /// Slits [first pair]
-  std::shared_ptr<constructSystem::JawValve> slitsA;
   
  public:
   

@@ -244,9 +244,9 @@ PortTube::createSurfaces()
 
   // flange:
   ModelSupport::buildCylinder(SMap,vacIndex+127,inOrg,Y,
-			      inPortRadius+inPortThick+flangeARadius);
+			      flangeARadius);
   ModelSupport::buildCylinder(SMap,vacIndex+227,outOrg,Y,
-			      outPortRadius+outPortThick+flangeBRadius);
+			      flangeBRadius);
   
   return;
 }

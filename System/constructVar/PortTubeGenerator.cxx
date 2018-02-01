@@ -253,8 +253,7 @@ PortTubeGenerator::setAPortCF()
 {
   portATubeRadius=CF::innerRadius;
   portAWallThick=CF::wallThick;
-  // extra only 
-  flangeARadius=CF::flangeRadius-CF::innerRadius; 
+  flangeARadius=CF::flangeRadius;
   flangeALen=CF::flangeLength;
   
   return;
@@ -269,8 +268,7 @@ PortTubeGenerator::setBPortCF()
 {
   portBTubeRadius=CF::innerRadius;
   portBWallThick=CF::wallThick;
-  // extra only 
-  flangeBRadius=CF::flangeRadius-CF::innerRadius; 
+  flangeBRadius=CF::flangeRadius;
   flangeBLen=CF::flangeLength;
   
   return;

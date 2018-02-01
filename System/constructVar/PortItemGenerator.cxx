@@ -182,6 +182,7 @@ PortItemGenerator::generatePort(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void PortItemGenerator::setCF<CF40>(const double);
+template void PortItemGenerator::setCF<CF50>(const double);
 template void PortItemGenerator::setCF<CF63>(const double);
 template void PortItemGenerator::setCF<CF100>(const double);
 

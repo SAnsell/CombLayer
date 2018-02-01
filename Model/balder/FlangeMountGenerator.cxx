@@ -196,6 +196,7 @@ FlangeMountGenerator::generateMount(FuncDataBase& Control,
 ///\cond TEMPLATE
 
 template void FlangeMountGenerator::setCF<CF40>();
+template void FlangeMountGenerator::setCF<CF50>();
 template void FlangeMountGenerator::setCF<CF63>();
 template void FlangeMountGenerator::setCF<CF100>();
 

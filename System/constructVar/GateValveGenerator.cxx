@@ -126,6 +126,30 @@ GateValveGenerator::setCF()
   portRadius=CF::innerRadius;
   portThick=CF::flangeRadius-CF::innerRadius;   //  total 2.7cm radius
   portLen=CF::flangeLength;
+  depth=1.1*CF::flangeRadius;
+  height=3.5*CF::flangeRadius;
+  width=2.1*CF::flangeRadius;
+  bladeRadius=1.1*CF::innerRadius;
+  bladeLift=2.2*CF::innerRadius;
+  
+  return;
+}
+
+void
+GateValveGenerator::setOuter(const double L,const double W,
+			     const double H,const double D)
+  /*!
+    set outer dimentions
+    \param L :: Length
+    \param W :: Width
+    \param H :: Height
+    \param D :: Depth
+   */
+{
+  length=L;
+  width=W;
+  height=H;
+  depth=D;
   return;
 }
 

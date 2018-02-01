@@ -94,6 +94,22 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable("MonoVacPortFlangeRad",2.7);
 
   Control.addVariable("MonoVacWallMat","Stainless304");
+  // CRYSTALS:
+  Control.addVariable("MonoXtalZStep",-2.0);
+  Control.addVariable("MonoXtalGap",4.0);
+  Control.addVariable("MonoXtalTheta",10.0);
+  Control.addVariable("MonoXtalPhiA",0.0);
+  Control.addVariable("MonoXtalPhiA",0.0);
+  Control.addVariable("MonoXtalWidth",10.0);
+  Control.addVariable("MonoXtalLengthA",8.0);
+  Control.addVariable("MonoXtalLengthB",12.0);
+  Control.addVariable("MonoXtalThickA",4.0);
+  Control.addVariable("MonoXtalThickB",3.0);
+  Control.addVariable("MonoXtalBaseThick",5.0);
+  Control.addVariable("MonoXtalBaseExtra",2.0);
+  
+  Control.addVariable("MonoXtalMat","Silicon80K");
+  Control.addVariable("MonoXtalBaseMat","Copper");
 
   return;
 }
@@ -163,9 +179,8 @@ balderVariables(FuncDataBase& Control)
   PTubeGen.generateTube(Control,"FilterBox",0.0,9.0,54.0);
   Control.addVariable("FilterBoxNPorts",4);
 
-
-  PItemGen.setCF<setVariable::CF63>(20.0);
-  FlangeGen.setCF<setVariable::CF63>();
+  PItemGen.setCF<setVariable::CF50>(20.0);
+  FlangeGen.setCF<setVariable::CF50>();
   FlangeGen.setBlade(3.0,5.0,0.5,22.0,"Tungsten");  // 22 rotation
 
   // centre of mid point
@@ -187,6 +202,7 @@ balderVariables(FuncDataBase& Control)
   BellowGen.setAFlangeCF<setVariable::CF63>();
   BellowGen.generateBellow(Control,"BellowB",0,10.0);    
 
+  GateGen.setLength(4.0);
   GateGen.setCF<setVariable::CF40>();
   GateGen.generateValve(Control,"GateA",0.0,0);
     
@@ -198,14 +214,14 @@ balderVariables(FuncDataBase& Control)
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,"MirrorBox",0.0,54.0,15.3,31.3,167.4);
 
-  GateGen.setPort(1.25,1.0,2.7);
   GateGen.generateValve(Control,"GateB",0.0,0);
 
   BellowGen.setCF<setVariable::CF40>();
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,"BellowC",0,10.0);    
 
-  PipeGen.setCF<setVariable::CF40>(); // was 2cm (why?)
+  PipeGen.setMat("Stainless304"); // was 2cm (why?)
+  PipeGen.setCF<setVariable::CF100>(); // was 2cm (why?)
   // [length is 38.3cm total]
   PipeGen.generatePipe(Control,"DriftA",0,38.3);
   // Length ignored  as joined front/back
@@ -232,8 +248,35 @@ balderVariables(FuncDataBase& Control)
 
   // SLITS
   JawGen.setCF<setVariable::CF100>();
+  JawGen.setLength(4.0);
   JawGen.setSlits(3.0,2.0,0.2,"Tantalum");
   JawGen.generateSlits(Control,"SlitsA",0.0,0.8,0.8);
+
+
+  PTubeGen.setCF<CF100>();
+  PTubeGen.setPortLength(1.0,1.0);
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,"ShieldPipe",0.0,9.0,54.0);
+
+  Control.addVariable("ShieldPipeNPorts",2);
+
+  PItemGen.setCF<setVariable::CF100>(20.0);
+  // centre of mid point
+  CPos=Geometry::Vec3D(0,-15.0,0);
+  const std::string nameShield="ShieldPipePort";
+
+  PItemGen.generatePort(Control,nameShield+"0",CPos,ZVec);
+  PItemGen.generatePort(Control,nameShield+"1",CPos,-ZVec);
+
+
+
+
+
+
+
+
+
+
   // large bellows
   PipeGen.generatePipe(Control,"BellowD",0,10.0);
   

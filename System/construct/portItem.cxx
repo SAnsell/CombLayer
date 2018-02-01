@@ -255,8 +255,7 @@ portItem::createSurfaces()
   
   ModelSupport::buildCylinder(SMap,portIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,portIndex+17,Origin,Y,radius+wall);
-  ModelSupport::buildCylinder(SMap,portIndex+27,Origin,Y,
-			      radius+wall+flangeLength);
+  ModelSupport::buildCylinder(SMap,portIndex+27,Origin,Y,flangeRadius);
 
   return;
 }

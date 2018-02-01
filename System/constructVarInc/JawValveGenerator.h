@@ -68,8 +68,11 @@ class JawValveGenerator
   ~JawValveGenerator();
 
   template<typename CF> void setCF();
-  
+
+  void setLength(const double L) { length=L; }
   void setSlits(const double,const double,const double,const std::string&);
+  void setOuter(const double,const double,const double,
+		const double);
   /// set wall thickness
   void setWallThick(const double T) { wallThick=T; }
 

@@ -79,6 +79,7 @@
 #include "OpticsHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
+#include "MonoCrystals.h"
 #include "GateValve.h"
 #include "JawUnit.h"
 #include "JawValve.h"
@@ -103,19 +104,23 @@ makeBalder::makeBalder() :
   
   driftB(new constructSystem::VacuumPipe("DriftB")),
   monoV(new xraySystem::MonoVessel("MonoVac")),
+  monoXtal(new xraySystem::MonoCrystals("MonoXtal")),
   monoBellowA(new constructSystem::Bellows("MonoBellowA")),
   monoBellowB(new constructSystem::Bellows("MonoBellowB")),
   gateC(new constructSystem::GateValve("GateC")),
   driftC(new constructSystem::VacuumPipe("DriftC")),
-  // SLITS
+  slitsA(new constructSystem::JawValve("SlitsA")),
+  shieldPipe(new constructSystem::PortTube("ShieldPipe")),
+
+  // JUNK
   pipeD(new constructSystem::VacuumPipe("BellowD")),
   pipeE(new constructSystem::VacuumPipe("BellowE")),
   ionPumpC(new constructSystem::CrossPipe("IonPumpC")),
   focusBox(new constructSystem::VacuumBox("FocusBox")),
   ionPumpD(new constructSystem::CrossPipe("IonPumpD")),
   pipeF(new constructSystem::VacuumPipe("BellowF")),
-  driftD(new constructSystem::VacuumPipe("DriftD")),
-  slitsA(new constructSystem::JawValve("SlitsA"))
+  driftD(new constructSystem::VacuumPipe("DriftD"))
+
   /*!
     Constructor
   */
@@ -144,6 +149,7 @@ makeBalder::makeBalder() :
   OR.addObject(driftA);
   OR.addObject(driftB);
   OR.addObject(monoV);
+  OR.addObject(monoXtal);
   OR.addObject(monoBellowA);
   OR.addObject(monoBellowB);
   OR.addObject(gateC);
@@ -156,6 +162,7 @@ makeBalder::makeBalder() :
   OR.addObject(pipeF);
   OR.addObject(driftD);
   OR.addObject(slitsA);
+  OR.addObject(shieldPipe);
 }
 
 makeBalder::~makeBalder()
@@ -236,6 +243,9 @@ makeBalder::build(Simulation& System,
   monoV->addInsertCell(opticsHut->getCell("Void"));
   monoV->createAll(System,*driftA,2);
 
+  monoXtal->addInsertCell(monoV->getCell("Void"));
+  monoXtal->createAll(System,*monoV,0);
+
   // Note : join flag so can rotate on front/back
   monoBellowA->addInsertCell(opticsHut->getCell("Void"));
   monoBellowA->setFront(*driftA,2,1);
@@ -259,6 +269,11 @@ makeBalder::build(Simulation& System,
   slitsA->addInsertCell(opticsHut->getCell("Void"));
   slitsA->setFront(*driftC,2);
   slitsA->createAll(System,*driftC,2);
+
+  
+  shieldPipe->addInsertCell(opticsHut->getCell("Void"));
+  shieldPipe->setFront(*slitsA,2);
+  shieldPipe->createAll(System,*slitsA,2);
 
   return;
   
