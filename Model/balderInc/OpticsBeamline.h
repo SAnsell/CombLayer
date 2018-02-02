@@ -145,6 +145,9 @@ class OpticsBeamline :
   /// Pipe for diamond filter
   std::shared_ptr<constructSystem::PortTube> viewPipe;
 
+  /// Joining Bellows (pipe large):
+  std::shared_ptr<constructSystem::Bellows> pipeE;
+
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);

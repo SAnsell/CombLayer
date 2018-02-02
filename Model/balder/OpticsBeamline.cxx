@@ -122,7 +122,8 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
-  viewPipe(new constructSystem::PortTube(newName+"ViewTube"))
+  viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
+  pipeF(new constructSystem::Bellows(newName+"BellowF"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -165,7 +166,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(pipeE);
   OR.addObject(slitsB);
   OR.addObject(viewPipe);
-  
+  OR.addObject(pipeF);
 }
 
 OpticsBeamline::~OpticsBeamline()
@@ -325,6 +326,10 @@ OpticsBeamline::buildObjects(Simulation& System)
   viewPipe->addInsertCell(ContainedComp::getInsertCells());
   viewPipe->setFront(*slitsB,2);
   viewPipe->createAll(System,*slitsB,2);
+
+  pipeF->addInsertCell(ContainedComp::getInsertCells());
+  pipeF->setFront(*viewPipe,2);
+  pipeF->createAll(System,*viewPipe,2);
 
   return;
 }

@@ -320,8 +320,11 @@ balderVariables(FuncDataBase& Control)
   PItemGen.generatePort(Control,nameView+"2",-YAxis*2.0,ZAxis);
   PItemGen.generatePort(Control,nameView+"3",-YAxis*2.0,
 			Geometry::Vec3D(1,-1,0));
-  
-
+    
+  // small flange bellows
+  BellowGen.setCF<setVariable::CF63>(); 
+  BellowGen.setAFlangeCF<setVariable::CF100>(); 
+  BellowGen.generateBellow(Control,"BalderBellowF",0,10.0);
 
 
 

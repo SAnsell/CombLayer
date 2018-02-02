@@ -94,7 +94,7 @@ Hut::Hut(const std::string& Key) :
 
 Hut::Hut(const Hut& A) : 
   attachSystem::FixedOffsetGroup(A),attachSystem::ContainedComp(A),
-  attachSystem::CellMap(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
   hutIndex(A.hutIndex),cellIndex(A.cellIndex),
   voidHeight(A.voidHeight),voidWidth(A.voidWidth),
   voidDepth(A.voidDepth),voidLength(A.voidLength),
@@ -127,6 +127,7 @@ Hut::operator=(const Hut& A)
       attachSystem::FixedOffsetGroup::operator=(A);
       attachSystem::ContainedComp::operator=(A);
       attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
       cellIndex=A.cellIndex;
       voidHeight=A.voidHeight;
       voidWidth=A.voidWidth;
