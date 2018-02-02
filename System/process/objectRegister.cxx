@@ -3,7 +3,7 @@
  
  * File:   process/objectRegister.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,6 +145,24 @@ objectRegister::getLast(const std::string& Name) const
   return (mc!=regionMap.end()) ?
     mc->second.second : 0;
 }
+
+bool
+objectRegister::hasCell(const std::string& Name,
+			const int cellN) const
+  /*!
+    Determine if a cell is within a range
+    \param Name :: object name    
+    \param cellN :: cell number
+    \return true if cellN is registered to region
+  */
+{
+  ELog::RegMethod RegA("objectRegister","hasCell");
+  MTYPE::const_iterator mc=regionMap.find(Name);
+  if (mc==regionMap.end()) return 0;
+  const MTYPE::mapped_type& PI(mc->second);
+  return (cellN>=PI.first && cellN<=PI.second) ? 1 : 0;
+}
+  
   
 std::string
 objectRegister::inRange(const int Index) const

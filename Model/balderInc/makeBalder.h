@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/makeBalder.h
+ * File:   balderInc/makeBalder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -25,6 +25,15 @@
 namespace constructSystem
 {
   class SupplyPipe;
+  class CrossPipe;
+  class VacuumPipe;
+  class Bellows;
+  class VacuumBox;
+  class portItem;
+  class PortTube;
+  class GateValve;
+  class JawValve;
+    
 }
 
 
@@ -39,7 +48,11 @@ namespace constructSystem
 
 namespace xraySystem
 {
-  class OpticsHutch;  
+  class OpticsHutch;
+  class MonoVessel;
+  class MonoCrystals;
+  class FlangeMount;
+    
   /*!
     \class makeBalder
     \version 1.0
@@ -55,7 +68,89 @@ class makeBalder
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
 
+  /// Real Ion pump (KF40) 10cm vertioal
+  std::shared_ptr<constructSystem::CrossPipe> ionPA;
 
+  /// Trigger Unit (pipe):
+  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
+
+  /// Joining Bellows (pipe):
+  std::shared_ptr<constructSystem::Bellows> pipeA;
+
+  /// Filter box
+  std::shared_ptr<constructSystem::PortTube> filterBox;
+
+  /// Filter box
+  std::shared_ptr<xraySystem::FlangeMount> filters[4];
+
+  /// Joining Bellows (pipe):
+  std::shared_ptr<constructSystem::Bellows> pipeB;
+
+  /// CF40 gate valve
+  std::shared_ptr<constructSystem::GateValve> gateA;
+
+  /// Vertical mirror box
+  std::shared_ptr<constructSystem::VacuumBox> mirrorBox;
+
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::GateValve> gateB;
+
+  /// Joining Bellows from mirror box
+  std::shared_ptr<constructSystem:: Bellows> pipeC;
+
+  /// Large drift chamber
+  std::shared_ptr<constructSystem::VacuumPipe> driftA;
+
+  /// Large drift chamber post mono
+  std::shared_ptr<constructSystem::VacuumPipe> driftB;
+
+  /// Mono Vessel
+  std::shared_ptr<xraySystem::MonoVessel> monoV;
+  /// Mono crystal
+  std::shared_ptr<xraySystem::MonoCrystals> monoXtal;
+  
+  /// Huge Bellows to Mono
+  std::shared_ptr<constructSystem::Bellows> monoBellowA;
+  /// Huge Bellows from Mono
+  std::shared_ptr<constructSystem::Bellows> monoBellowB;
+  
+  /// Gate valve after mono [large]
+  std::shared_ptr<constructSystem::GateValve> gateC;
+
+  /// Large drift chamber post mono
+  std::shared_ptr<constructSystem::VacuumPipe> driftC;
+
+  /// Slits [first pair]
+  std::shared_ptr<constructSystem::JawValve> slitsA;
+
+  /// Tungsten shield pipe
+  std::shared_ptr<constructSystem::PortTube> shieldPipe;
+
+
+
+  
+  /// Joining Bellows (pipe large):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeD;
+
+  /// Joining Bellows (pipe small):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeE;
+
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::CrossPipe> ionPumpC;
+  
+  /// FocusBox
+  std::shared_ptr<constructSystem::VacuumBox> focusBox;
+
+  /// Straight value cross piece (ion pump)
+  std::shared_ptr<constructSystem::CrossPipe> ionPumpD;
+
+  /// Joining Bellows (pipe small):
+  std::shared_ptr<constructSystem::VacuumPipe> pipeF;
+
+  /// Large drift chamber post mirrorB
+  std::shared_ptr<constructSystem::VacuumPipe> driftD;
+
+  
  public:
   
   makeBalder();

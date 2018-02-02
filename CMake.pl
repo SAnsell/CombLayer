@@ -78,7 +78,7 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "trex","vor","vespa","common",
 			     "shortDream","shortNmx","shortOdin","longLoki",
 			     "commonVar","simpleItem","physics","simMC",
-			     "essConstruct","construct",
+			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
 			     "insertUnit","tally","source","instrument",
 			     "work"
@@ -107,7 +107,7 @@ $gM->addDepUnit("essBeamline",
 			     "trex","vor","vespa","common",
 			     "shortDream","shortNmx","shortOdin","longLoki",
 			     "commonVar","simpleItem","physics","simMC",
-			     "essConstruct","construct",
+			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
 			     "insertUnit","tally","source","instrument",
 			     "work"
@@ -118,8 +118,8 @@ $gM->addDepUnit("balder", ["balder","visit","src","simMC",
 			   "source","monte","funcBase","log","monte",
 			   "tally","geometry","mersenne","src","world",
 			   "work","xml","poly","support","weights",
-			   "insertUnit","md5","global",
-			   "attachComp","visit","poly"]);
+			   "insertUnit","md5","global","constructVar",
+			   "physics","simMC","transport","attachComp","visit","poly"]);
 
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",

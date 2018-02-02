@@ -2,24 +2,7 @@
 language: cpp
 matrix:
    include:
-     # linux - g++ 4.9
-     - os: linux
-       addons:
-         apt:
-           sources:
-             - ubuntu-toolchain-r-test
-             - george-edison55-precise-backports
-           packages:
-             - g++-4.9
-             - cmake
-             - cmake-data
-             - libgsl0-dev
-             - libboost-dev
-             - libboost-regex-dev
-             - libboost-filesystem-dev
-       env:
-          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-     # linux - g++ 5
+    # linux - g++ 5
      - os: linux
        addons:
          apt:
@@ -36,24 +19,7 @@ matrix:
              - libboost-filesystem-dev
        env:
           - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-     # linux - g++ 6
-     - os: linux
-       addons:
-         apt:
-           sources:
-             - ubuntu-toolchain-r-test
-             - george-edison55-precise-backports
-           packages:
-             - g++-6
-             - cmake
-             - cmake-data
-             - libgsl0-dev
-             - libboost-dev
-             - libboost-regex-dev
-             - libboost-filesystem-dev
-       env:
-          - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-     # linux - g++ 7
+    # linux - g++ 7
      - os: linux
        addons:
          apt:
@@ -183,7 +149,7 @@ script:
   - ./reactor -r reactor_test
   - ./muBeam -r mu_test
   - ./pipe -r pipe_test
-  - ./photonMod2 -r photon_test
+  - ./balder -r balder_test
   - ./singleItem -r single_test
   - ./t1MarkII -r t1_test1
   - ./t1Real -r t1_test2 

@@ -209,7 +209,8 @@ PBIP::populate(const FuncDataBase& Control)
 }
 
 void
-PBIP::createUnitVector(const attachSystem::FixedComp& FC)
+PBIP::createUnitVector(const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: object for origin
@@ -217,9 +218,8 @@ PBIP::createUnitVector(const attachSystem::FixedComp& FC)
 {
   ELog::RegMethod RegA("PBIP","createUnitVector");
 
-  FixedComp::createUnitVector(FC);
-  applyShift(xStep,yStep,zStep);
-  applyAngleRotate(xyAngle,zAngle);
+  FixedComp::createUnitVector(FC,sideIndex);
+  applyOffset();
 
   return;
 }
@@ -293,9 +293,9 @@ PBIP::createSurfaces()
 void
 PBIP::createObjects(Simulation& System,
 		    const attachSystem::FixedComp& FCstart,
-		    const long int& lpStart,
+		    const long int lpStart,
 		    const attachSystem::FixedComp& FCend,
-		    const long int& lpEnd)
+		    const long int lpEnd)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -392,14 +392,14 @@ PBIP::createLinks()
 
 void
 PBIP::createAll(Simulation& System,
-		const attachSystem::FixedComp& FC,const long int& lp,
-		const attachSystem::FixedComp& FCstart,const long int& lpStart,
-		const attachSystem::FixedComp& FCend,const long int& lpEnd)
+		const attachSystem::FixedComp& FC,const long int linkIndex,
+		const attachSystem::FixedComp& FCstart,const long int lpStart,
+		const attachSystem::FixedComp& FCend,const long int lpEnd)
   /*!
     Generic function to create everything
     \param System :: Simulation item
     \param FC :: Central origin
-    \param lp :: link point
+    \param linkIndex :: link point for axis orientation
     \param FCstart :: FC at the start (Bulk)
     \param lpBulk :: side link point of start
     \param FCend :: FC at the end (BeRef)
@@ -409,7 +409,7 @@ PBIP::createAll(Simulation& System,
   ELog::RegMethod RegA("PBIP","createAll");
 
   populate(System.getDataBase());
-  createUnitVector(FC);
+  createUnitVector(FC,linkIndex);
   createSurfaces();
   createLinks();
   createObjects(System,FCstart,lpStart,FCend,lpEnd);

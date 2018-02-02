@@ -3,7 +3,7 @@
  
  * File:   processInc/objectRegister.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,8 @@ class objectRegister
   int getRange(const std::string&) const;
   
   std::string inRange(const int) const;
+  bool hasCell(const std::string&,const int) const;
+
 
   int getRenumberCell(const std::string&) const;
   int getRenumberLast(const std::string&) const;

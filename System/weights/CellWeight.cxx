@@ -214,8 +214,7 @@ CellWeight::updateWM(const double eCut,
       double W=exp(-cv.second.weight*sigmaScale*scaleFactor*factor);
       if (W<minWeight) W=1.0;    // avoid sqrt(-ve number etc)
       W=std::pow(W,weightPower);
-
-
+      ELog::EM<<"weightPower "<<weightPower<<ELog::endDiag;
       if (W>=minWeight)
         {
           for(size_t i=0;i<EVec.size();i++)

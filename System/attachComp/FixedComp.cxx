@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedComp.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,8 +226,8 @@ FixedComp::createUnitVector(const FixedComp& FC,
   /*!
     Create the unit vectors
     \param FC :: Fixed unit for link points
-    \param orgIndex :: SIGNED +1 side index
-    \param basisIndex :: SIGNED +1 side index
+    \param orgIndex :: SIGNED +1 side index for origin
+    \param basisIndex :: SIGNED +1 side index for directoin
   */
 {
   ELog::RegMethod RegA("FixedComp","createUnitVector(FixedComp,org,basis)");
@@ -368,7 +368,7 @@ FixedComp::reOrientate(const size_t index,
 {
   ELog::RegMethod RegA("FixedComp","reorientate");
   
-  if (index>3)
+  if (index>=3)
     throw ColErr::IndexError<size_t>(index,3,"index -- 3D vectors required");
   
   Geometry::Vec3D axisDir(ADir.unit());  
