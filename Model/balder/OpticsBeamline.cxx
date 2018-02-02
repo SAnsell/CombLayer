@@ -168,7 +168,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(viewPipe);
   OR.addObject(pipeF);
 }
-
+  
 OpticsBeamline::~OpticsBeamline()
   /*!
     Destructor

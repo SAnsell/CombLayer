@@ -146,7 +146,7 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::PortTube> viewPipe;
 
   /// Joining Bellows (pipe large):
-  std::shared_ptr<constructSystem::Bellows> pipeE;
+  std::shared_ptr<constructSystem::Bellows> pipeF;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

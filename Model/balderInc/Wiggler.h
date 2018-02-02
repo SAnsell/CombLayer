@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/OpticsHutch.h
+ * File:   balderInc/OpticsWall.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_OpticsHutch_h
-#define xraySystem_OpticsHutch_h
+#ifndef xraySystem_OpticsWall_h
+#define xraySystem_OpticsWall_h
 
 class Simulation;
 
@@ -28,41 +28,42 @@ namespace xraySystem
 {
   
 /*!
-  \class OpticsHutch
+  \class OpticsWall
   \version 1.0
   \author S. Ansell
   \date July 2016
-  \brief OpticsHutch unit  
+  \brief OpticsWall unit  
 
   Built around the central beam axis
 */
 
-class OpticsHutch :
+class OpticsWall :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
+  
 {
  private:
   
-  const int hutIndex;           ///< Index of surface offset
+  const int wigIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index  
 
-  double depth;                 ///< void height 
-  double height;                ///< void deptth
-  double length;                ///< void out side width
-  double ringWidth;             ///< void flat part to ring
-  double ringWallLen;           ///< void flat length [before angle]
-  double ringWallAngle;         ///< angle on ring side wall
-  double outWidth;              ///< out side width
+  double frontWallThicks;         ///< front wall depth
 
-  double innerThick;            ///< Inner wall/roof skin
-  double pbThick;               ///< Thickness of lead in walls
-  double outerThick;            ///< Outer wall/roof skin
-  double floorThick;            ///< Floor thickness
-  
-  int skinMat;                ///< Fe layer material for walls
-  int pbMat;                  ///< pb layer material for walls 
-  int floorMat;               ///< Floor layer
+  double length;                  ///< Main length
+  double ringGap;                 ///< Gap to ring wall
+  double ringRadius;              ///< roof thickness
+  double ringThick;               ///< Gap to ring wall
+  double outerGap;                ///< Gap to ring wall
+  double outerThick;              ///< Gap to ring wall
+  double floorDepth;              ///< floor distance from centre
+  double roofHeight;              ///< roof distance from centre
+  double floorThick;              ///< floor thickness
+  double roofThick;               ///< roof thickness
+
+  int wallMat;               ///< Wall material
+  int roofMat;               ///< Roof material
+  int floorMat;              ///< Floor material
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,const long int);
@@ -72,10 +73,10 @@ class OpticsHutch :
 
  public:
 
-  OpticsHutch(const std::string&);
-  OpticsHutch(const OpticsHutch&);
-  OpticsHutch& operator=(const OpticsHutch&);
-  virtual ~OpticsHutch();
+  OpticsWall(const std::string&);
+  OpticsWall(const OpticsWall&);
+  OpticsWall& operator=(const OpticsWall&);
+  virtual ~OpticsWall();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

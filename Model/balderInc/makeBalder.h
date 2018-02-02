@@ -53,7 +53,8 @@ namespace xraySystem
   class MonoCrystals;
   class FlangeMount;
   class OpticsBeamline;
-    
+  class Wiggler;
+  
   /*!
     \class makeBalder
     \version 1.0
@@ -66,6 +67,8 @@ class makeBalder
 {
  private:
 
+  /// Optics hutch
+  std::shared_ptr<Wigger> frontEnd;
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
 

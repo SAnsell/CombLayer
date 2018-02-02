@@ -85,6 +85,7 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "Wiggler.h"
 #include "OpticsBeamline.h"
 #include "makeBalder.h"
 
@@ -92,6 +93,7 @@ namespace xraySystem
 {
 
 makeBalder::makeBalder() :
+  frontEnd(new Wiggler("FrontEnd")),
   opticsHut(new OpticsHutch("BalderOptics")),
   opticsBeam(new OpticsBeamline("Balder"))
   /*!
@@ -101,6 +103,7 @@ makeBalder::makeBalder() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
+  OR.addObject(frontEnd);
   OR.addObject(opticsHut);
   
 }
@@ -125,8 +128,12 @@ makeBalder::build(Simulation& System,
 
   int voidCell(74123);
  
+  frontEnd->addInsertCell(voidCell);
+  froneEnd->createAll(System,World::masterOrigin(),0);
+ 
   opticsHut->addInsertCell(voidCell);
-  opticsHut->createAll(System,World::masterOrigin(),0);
+  //  opticsHut->setFront(
+  opticsHut->createAll(System,*frontEnd,2);
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,World::masterOrigin(),0);
