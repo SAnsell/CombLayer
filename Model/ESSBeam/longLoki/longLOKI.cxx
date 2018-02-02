@@ -219,11 +219,11 @@ longLOKI::setBeamAxis(const FuncDataBase& Control,
 
   lokiAxis->populate(Control);
   lokiAxis->createUnitVector(GItem);
-  lokiAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  lokiAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+  lokiAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
+  lokiAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
 
-  lokiAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  lokiAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  lokiAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
+  lokiAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
   // BEAM needs to be rotated:
   lokiAxis->linkAngleRotate(3);
   lokiAxis->linkAngleRotate(4);

@@ -958,9 +958,9 @@ FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
 }
 
 void
-FixedComp::setLinkComponent(const size_t Index,
-			    const FixedComp& FC,
-			    const size_t sideIndex)
+FixedComp::setUSLinkComplement(const size_t Index,
+			       const FixedComp& FC,
+			       const size_t sideIndex)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -969,7 +969,7 @@ FixedComp::setLinkComponent(const size_t Index,
     \param sideIndex :: link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkComplement");
+  ELog::RegMethod RegA("FixedComp","setUSLinkComplement");
 
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
@@ -982,7 +982,7 @@ FixedComp::setLinkComponent(const size_t Index,
 }
 
 void
-FixedComp::setLinkCopy(const size_t Index,
+FixedComp::setUSLinkCopy(const size_t Index,
 		       const FixedComp& FC,
 		       const size_t sideIndex)
   /*!
@@ -993,7 +993,7 @@ FixedComp::setLinkCopy(const size_t Index,
     \param sideIndex :: link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  ELog::RegMethod RegA("FixedComp","setUSLinkCopy");
   if (Index>=LU.size())
     throw ColErr::IndexError<size_t>(Index,LU.size(),"LU size/index");
   if (sideIndex>=FC.LU.size())
@@ -1017,9 +1017,9 @@ FixedComp::setLinkSignedCopy(const size_t Index,
 {
   ELog::RegMethod RegA("FixedComp","setLinkSurf");
   if (sideIndex>0)
-    setLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
+    setUSLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
   else if (sideIndex<0)   // complement form
-    setLinkComponent(Index,FC,static_cast<size_t>(-1-sideIndex));
+    setUSLinkComplement(Index,FC,static_cast<size_t>(-1-sideIndex));
   else
     throw ColErr::IndexError<long int>
       (sideIndex,static_cast<long int>(FC.LU.size()),"FC/index");

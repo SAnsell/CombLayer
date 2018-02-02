@@ -75,6 +75,9 @@ class FixedComp
 
   const HeadRule& getUSMainRule(const size_t) const;
   const HeadRule& getUSCommonRule(const size_t) const;
+  
+  void setUSLinkComplement(const size_t,const FixedComp&,const size_t);
+  void setUSLinkCopy(const size_t,const FixedComp&,const size_t);
 
  public:
 
@@ -144,8 +147,6 @@ class FixedComp
   void addBridgeSurf(const size_t,const int);
   void addBridgeSurf(const size_t,const std::string&);
 
-  void setLinkComponent(const size_t,const FixedComp&,const size_t);
-  void setLinkCopy(const size_t,const FixedComp&,const size_t);
   void setLinkSignedCopy(const size_t,const FixedComp&,const long int);
 
 

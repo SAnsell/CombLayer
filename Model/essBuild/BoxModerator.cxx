@@ -343,8 +343,8 @@ BoxModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Orign from center
   
-  FixedComp::setLinkCopy(4,*MidH2,4);
-  FixedComp::setLinkCopy(5,*MidH2,5);
+  FixedComp::setLinkSignedCopy(4,*MidH2,5);
+  FixedComp::setLinkSignedCopy(5,*MidH2,6);
   const double LowV= LU[4].getConnectPt().Z()-wallDepth*Z[2];
   const double HighV= LU[5].getConnectPt().Z()+wallHeight*Z[2];
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);

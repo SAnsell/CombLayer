@@ -312,9 +312,9 @@ PBIP::createObjects(Simulation& System,
 
   const size_t lIndex(static_cast<size_t>(std::abs(lpEnd)-1));
 
-  std::string BSurf=(lpEnd>0) ?
-    FCend.getLinkString(lIndex+1) : FCend.getCommonRule(lIndex+1).display() ;
-  FixedComp::setLinkComponent(0,FCend,lIndex);
+  const std::string BSurf=(lpEnd>0) ?
+    FCend.getLinkString(lpEnd) : FCend.getCommonRule(lIndex+1).display() ;
+  FixedComp::setLinkSignedCopy(0,FCend,-lpEnd);
 
   std::string Out;
   // main

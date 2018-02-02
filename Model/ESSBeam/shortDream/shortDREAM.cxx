@@ -233,10 +233,10 @@ shortDREAM::setBeamAxis(const GuideItem& GItem,
   ELog::RegMethod RegA("shortDREAM","setBeamAxis");
 
   dreamAxis->createUnitVector(GItem);
-  dreamAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  dreamAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  dreamAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  dreamAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  dreamAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
+  dreamAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
+  dreamAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
+  dreamAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
 
   if (reverseZ)
     dreamAxis->reverseZ();

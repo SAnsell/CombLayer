@@ -130,11 +130,11 @@ simpleITEM::setBeamAxis(const FuncDataBase& Control,
 
   simpleAxis->populate(Control);
   simpleAxis->createUnitVector(GItem);
-  simpleAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  simpleAxis->setLinkCopy(1,GItem.getKey("Main"),1);
+  simpleAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
+  simpleAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
 
-  simpleAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  simpleAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  simpleAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
+  simpleAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
   // BEAM needs to be rotated:
   simpleAxis->linkAngleRotate(3);
   simpleAxis->linkAngleRotate(4);

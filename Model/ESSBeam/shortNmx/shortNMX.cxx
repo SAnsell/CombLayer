@@ -150,10 +150,10 @@ shortNMX::setBeamAxis(const FuncDataBase& Control,
 
   nmxAxis->populate(Control);
   nmxAxis->createUnitVector(GItem);
-  nmxAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  nmxAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-  nmxAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  nmxAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
+  nmxAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
+  nmxAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
+  nmxAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
+  nmxAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
 
   // BEAM needs to be rotated:
   nmxAxis->linkAngleRotate(3);
