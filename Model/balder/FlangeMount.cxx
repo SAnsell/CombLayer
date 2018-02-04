@@ -193,7 +193,6 @@ FlangeMount::createSurfaces()
     }
   ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*plateThick,Y);
   ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,plateRadius);
-  ELog::EM<<"Plate Radius == "<<plateRadius<<ELog::endDiag;
   
   ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,threadRadius);
 

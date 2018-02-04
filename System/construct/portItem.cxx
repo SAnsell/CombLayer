@@ -252,7 +252,9 @@ portItem::createSurfaces()
   // divider surface if needeed :
 
   ModelSupport::buildPlane(SMap,portIndex+1,Origin,Y);
-  
+  if (flangeRadius-Geometry::zeroTol<=radius+wall)
+    throw ColErr::SizeError<double>(flangeRadius,wall+radius,
+				    "Wall Radius<FlangeRadius");
   ModelSupport::buildCylinder(SMap,portIndex+7,Origin,Y,radius);
   ModelSupport::buildCylinder(SMap,portIndex+17,Origin,Y,radius+wall);
   ModelSupport::buildCylinder(SMap,portIndex+27,Origin,Y,flangeRadius);
@@ -373,6 +375,10 @@ portItem::constructOuterFlange(Simulation& System,
       if (i>lastIndex)   
 	T+=Track[i];
 
+      if (keyName == "windowPort" || keyName=="BalderShieldPipePort0")
+	ELog::EM<<"P["<<keyName<<"] == "<<OPtr->getName()
+		<<":::"<<T<<" "<<externalLength<<ELog::endDiag;
+
       if (T>=externalLength-flangeLength)
 	OPtr->addSurfString(getExclude());
       else 
@@ -407,7 +413,6 @@ portItem::calcBoundaryCrossing(const ModelSupport::LineTrack& LT,
   for(size_t i=1;i<OVec.size();i++)
     {
       const MonteCarlo::Object* oPtr=OVec[i];
-      
       const int ONum=oPtr->getName();
       if (OR.hasCell(refComp,ONum))
 	{

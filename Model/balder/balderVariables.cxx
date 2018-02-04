@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photon/balderVariables.cxx
+ * File:   balder/balderVariables.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -62,6 +62,69 @@ namespace setVariable
 {
 
 void
+frontEndVariables(FuncDataBase& Control,
+		  const double YStep)
+/*!
+    Set the variables for the mono
+    \param Control :: DataBase to use
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","frontEndVariables");
+  setVariable::VacBoxGenerator VBoxGen;
+  
+  Control.addVariable("BalderFrontEndWallYStep",YStep);
+  Control.addVariable("BalderFrontEndFrontWallThick",60.0);
+  
+  Control.addVariable("BalderFrontEndLength",200.0);
+  Control.addVariable("BalderFrontEndRingGap",75.0);
+  Control.addVariable("BalderFrontEndRingRadius",400.0);
+  Control.addVariable("BalderFrontEndRingThick",80.0);
+
+  Control.addVariable("BalderFrontEndOuterGap",75.0);
+  Control.addVariable("BalderFrontEndOuterThick",80.0);
+
+  Control.addVariable("BalderFrontEndFloorDepth",75.0);
+  Control.addVariable("BalderFrontEndFloorThick",80.0);
+
+  Control.addVariable("BalderFrontEndRoofHeight",75.0);
+  Control.addVariable("BalderFrontEndRoofThick",80.0);
+
+  Control.addVariable("BalderFrontEndFrontHoleRadius",7.0);
+
+  
+  Control.addVariable("BalderFrontEndFrontWallMat","Concrete");
+  Control.addVariable("BalderFrontEndWallMat","Concrete");
+  Control.addVariable("BalderFrontEndFloorMat","Concrete");
+  Control.addVariable("BalderFrontEndRoofMat","Concrete");
+
+  VBoxGen.setMat("Stainless304");
+  VBoxGen.setWallThick(1.0);
+  VBoxGen.setCF<CF63>();
+  VBoxGen.setPortLength(5.0,5.0); // La/Lb
+  // ystep/width/height/depth/length
+  VBoxGen.generateBox(Control,"BalderWigglerBox",0.0,30.0,15.0,15.0,160.0);
+
+
+  // Wiggler
+  Control.addVariable("BalderWigglerLength",150.0);
+  Control.addVariable("BalderWigglerBlockWidth",10.0);
+  Control.addVariable("BalderWigglerBlockHeight",8.0);
+  Control.addVariable("BalderWigglerBlockDepth",8.0);
+  Control.addVariable("BalderWigglerBlockHGap",0.2);
+  Control.addVariable("BalderWigglerBlockVGap",0.96);
+
+  Control.addVariable("BalderWigglerBlockVCorner",1.0);
+  Control.addVariable("BalderWigglerBlockHCorner",2.0);
+
+  
+  Control.addVariable("BalderWigglerVoidMat",0);
+  Control.addVariable("BalderWigglerBlockMat","Iron_10H2O");
+	
+
+  return;
+}
+
+void
 monoVariables(FuncDataBase& Control,
 	      const double YStep)
   /*!
@@ -114,16 +177,14 @@ monoVariables(FuncDataBase& Control,
   return;
 }
 
-  
 void
-balderVariables(FuncDataBase& Control)
-  /*!
-    Function to set the control variables and constants
-    -- This version is for Photon Moderator
-    \param Control :: Function data base to add constants too
+opticsVariables(FuncDataBase& Control)
+  /*
+    Vacuum optics components in the 
+    optics hutch
+    \param Control :: Function data base
   */
 {
-  ELog::RegMethod RegA("balderVariables[F]","balderVariables");
   setVariable::PipeGenerator PipeGen;
   setVariable::BellowGenerator BellowGen;
   setVariable::CrossGenerator CrossGen;
@@ -135,28 +196,12 @@ balderVariables(FuncDataBase& Control)
   setVariable::FlangeMountGenerator FlangeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
-  CrossGen.setMat("Stainless304");
-    
-  Control.addVariable("BalderOpticsDepth",100.0);
-  Control.addVariable("BalderOpticsHeight",200.0);
-  Control.addVariable("BalderOpticsLength",1000.0);
-  Control.addVariable("BalderOpticsOutWidth",250.0);
-  Control.addVariable("BalderOpticsRingWidth",60.0);
-  Control.addVariable("BalderOpticsRingLength",200.0);
-  Control.addVariable("BalderOpticsRingWallLen",105.0);
-  Control.addVariable("BalderOpticsRingWallAngle",18.50);
-  Control.addVariable("BalderOpticsInnerThick",0.5);
-  Control.addVariable("BalderOpticsPbThick",5.0);
-  Control.addVariable("BalderOpticsOuterThick",0.5);
-  Control.addVariable("BalderOpticsFloorThick",50.0);
-
-  Control.addVariable("BalderOpticsSkinMat","Stainless304");
-  Control.addVariable("BalderOpticsPbMat","Lead");
-  Control.addVariable("BalderOpticsFloorMat","Concrete");
 
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
+    CrossGen.setMat("Stainless304");
+
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
     (Control,"BalderIonPA",22.0,10.0,26.5);
 
@@ -237,6 +282,7 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("BalderDriftBZStep",4.0);
 
   monoVariables(Control,119.1/2.0);  // mono middle of drift chambers A/B
+  
 
   // joined and open
   GateGen.setCF<setVariable::CF100>();
@@ -326,7 +372,44 @@ balderVariables(FuncDataBase& Control)
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
   BellowGen.generateBellow(Control,"BalderBellowF",0,10.0);
 
+  return;
+}
+  
+void
+balderVariables(FuncDataBase& Control)
+  /*!
+    Function to set the control variables and constants
+    -- This version is for Photon Moderator
+    \param Control :: Function data base to add constants too
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","balderVariables");
+  setVariable::PipeGenerator PipeGen;
+  PipeGen.setWindow(-2.0,0.0);   // no window
+  
+  Control.addVariable("BalderOpticsDepth",100.0);
+  Control.addVariable("BalderOpticsHeight",200.0);
+  Control.addVariable("BalderOpticsLength",1000.0);
+  Control.addVariable("BalderOpticsOutWidth",250.0);
+  Control.addVariable("BalderOpticsRingWidth",60.0);
+  Control.addVariable("BalderOpticsRingLength",200.0);
+  Control.addVariable("BalderOpticsRingWallLen",105.0);
+  Control.addVariable("BalderOpticsRingWallAngle",18.50);
+  Control.addVariable("BalderOpticsInnerThick",0.5);
+  Control.addVariable("BalderOpticsPbThick",5.0);
+  Control.addVariable("BalderOpticsOuterThick",0.5);
+  Control.addVariable("BalderOpticsFloorThick",50.0);
 
+  Control.addVariable("BalderOpticsSkinMat","Stainless304");
+  Control.addVariable("BalderOpticsPbMat","Lead");
+  Control.addVariable("BalderOpticsFloorMat","Concrete");
+
+  frontEndVariables(Control,100.0);  // Set to middle
+
+  PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,88.0);
+  
+  opticsVariables(Control);
 
   return;
 }

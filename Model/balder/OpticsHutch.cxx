@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/OpticsHutch.cxx
+ * File:   balder/OpticsHutch.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

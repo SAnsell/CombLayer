@@ -53,6 +53,7 @@ namespace xraySystem
   class MonoCrystals;
   class FlangeMount;
   class OpticsBeamline;
+  class FrontEndCave;
   class Wiggler;
   
   /*!
@@ -67,10 +68,19 @@ class makeBalder
 {
  private:
 
-  /// Optics hutch
-  std::shared_ptr<Wigger> frontEnd;
+  /// Front end cave volume
+  std::shared_ptr<FrontEndCave> frontEnd;
+  /// Wiggler in vacuum box
+  std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
+  /// Wiggler in vacuum box
+  std::shared_ptr<Wiggler> wiggler;
+
+  /// Pipe joining frontend to optics hut
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
+
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
+
 
   /// Beamline
   std::shared_ptr<OpticsBeamline> opticsBeam;

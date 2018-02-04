@@ -85,6 +85,7 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "FrontEndCave.h"
 #include "Wiggler.h"
 #include "OpticsBeamline.h"
 #include "makeBalder.h"
@@ -93,7 +94,10 @@ namespace xraySystem
 {
 
 makeBalder::makeBalder() :
-  frontEnd(new Wiggler("FrontEnd")),
+  frontEnd(new FrontEndCave("BalderFrontEnd")),
+  wigglerBox(new constructSystem::VacuumBox("BalderWigglerBox",1)),
+  wiggler(new Wiggler("BalderWiggler")),
+  joinPipe(new constructSystem::VacuumPipe("BalderJoinPipe")),
   opticsHut(new OpticsHutch("BalderOptics")),
   opticsBeam(new OpticsBeamline("Balder"))
   /*!
@@ -104,6 +108,9 @@ makeBalder::makeBalder() :
     ModelSupport::objectRegister::Instance();
   
   OR.addObject(frontEnd);
+  OR.addObject(wigglerBox);
+  OR.addObject(wiggler);
+  OR.addObject(joinPipe);
   OR.addObject(opticsHut);
   
 }
@@ -129,14 +136,25 @@ makeBalder::build(Simulation& System,
   int voidCell(74123);
  
   frontEnd->addInsertCell(voidCell);
-  froneEnd->createAll(System,World::masterOrigin(),0);
- 
+  frontEnd->createAll(System,World::masterOrigin(),0);
+
+  wigglerBox->addInsertCell(frontEnd->getCell("Void"));
+  wigglerBox->createAll(System,*frontEnd,0);
+
+  wiggler->addInsertCell(wigglerBox->getCell("Void"));
+  wiggler->createAll(System,*wigglerBox,0);
+
   opticsHut->addInsertCell(voidCell);
-  //  opticsHut->setFront(
   opticsHut->createAll(System,*frontEnd,2);
 
+  joinPipe->addInsertCell(frontEnd->getCell("Void"));
+  joinPipe->addInsertCell(frontEnd->getCell("FrontWallHole"));
+  joinPipe->addInsertCell(opticsHut->getCell("Void"));
+  joinPipe->setFront(*wigglerBox,2);
+  joinPipe->createAll(System,*wigglerBox,2);
+
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
-  opticsBeam->createAll(System,World::masterOrigin(),0);
+  opticsBeam->createAll(System,*joinPipe,2);
   
   return;
 }

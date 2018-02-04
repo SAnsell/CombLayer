@@ -1,8 +1,8 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/FrontEndCave.h
- *
+ * File:   constructInc/Mirror.h
+*
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,64 +19,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_Wiggler_h
-#define xraySystem_Wiggle_h
+#ifndef xraySystem_Mirror_h
+#define xraySystem_Mirror_h
 
 class Simulation;
 
 namespace xraySystem
 {
-  
-/*!
-  \class Wiggler
-  \version 1.0
-  \author S. Ansell
-  \date February 2018
-  \brief Wiggler magnetic chicane
 
-  Built around the central beam axis
+/*!
+  \class Mirror
+  \author S. Ansell
+  \version 1.0
+  \date January 2018
+  \brief Paired Mono-crystal constant exit gap
 */
 
-class Wiggler :
-  public attachSystem::FixedOffset,
+class Mirror :
   public attachSystem::ContainedComp,
-  public attachSystem::CellMap
-  
+  public attachSystem::FixedOffset,
+  public attachSystem::CellMap,
+  public attachSystem::SurfMap
 {
  private:
-  
-  const int wigIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
-  double length;                  ///< Main length
-  double blockWidth;              ///< Block [quad unit] width
-  double blockDepth;              ///< Depth of unit
-  double blockHGap;               ///< mid horrizontal gap
-  double blockVGap;               ///< vertical gap
-  double blockHCorner;            ///< horrizontal corner cut
-  double blockVCorner;            ///< vertical corner cut
+  const int mirrIndex;     ///< Index of surface offset
+  int cellIndex;           ///< Cell index
 
-  int voidMat;                    ///< Void material
-  int blockMat;                   ///< Block material
-  
-  
+  double theta;            ///< Theta angle
+  double phi;              ///< phi angle
+
+  double radius;           ///< Radius of surface cylinder
+  double width;            ///< width accross beam
+  double thick;            ///< Thickness in normal direction to reflection
+  double length;           ///< length along beam
+
+  double baseThick;        ///< Base thickness
+  double baseExtra;        ///< Extra width/lenght of base
+
+  int mirrMat;             ///< XStal material
+  int baseMat;             ///< Base material
+
+  // Functions:
+
   void populate(const FuncDataBase&);
-  void createUnitVector(const attachSystem::FixedComp&,const long int);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+
   void createSurfaces();
   void createObjects(Simulation&);
   void createLinks();
 
  public:
 
-  Wiggler(const std::string&);
-  Wiggler(const Wiggler&);
-  Wiggler& operator=(const Wiggler&);
-  virtual ~Wiggler();
+  Mirror(const std::string&);
+  Mirror(const Mirror&);
+  Mirror& operator=(const Mirror&);
+  virtual ~Mirror();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
 		 const long int);
-
+  
 };
 
 }

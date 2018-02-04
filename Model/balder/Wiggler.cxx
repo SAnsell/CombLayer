@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essModel/Wiggler.cxx
+ * File:   balderWiggler.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -106,31 +106,25 @@ Wiggler::populate(const FuncDataBase& Control)
   
   FixedOffset::populate(Control);
 
-  frontWallThick=Control.EvalVar<double>(keyName+"FrontWallThick");
-  
   // Void + Fe special:
   length=Control.EvalVar<double>(keyName+"Length");
-  ringGap=Control.EvalVar<double>(keyName+"RingGap");
-  ringRadius=Control.EvalVar<double>(keyName+"RingRadius");
-  ringThick=Control.EvalVar<double>(keyName+"RingThick");
-  outGap=Control.EvalVar<double>(keyName+"OutGap");
-  outThick=Control.EvalVar<double>(keyName+"OutThick");
-  floorDepth=Control.EvalVar<double>(keyName+"FloorDepth");
-  floorThick=Control.EvalVar<double>(keyName+"FloorThick");
-  roofHeight=Control.EvalVar<double>(keyName+"RoofHeight");
-  roofThick=Control.EvalVar<double>(keyName+"RoofThick");
+  blockWidth=Control.EvalVar<double>(keyName+"BlockWidth");
+  blockDepth=Control.EvalVar<double>(keyName+"BlockDepth");
+  blockHGap=Control.EvalVar<double>(keyName+"BlockHGap");
+  blockVGap=Control.EvalVar<double>(keyName+"BlockVGap");
 
+  blockVCorner=Control.EvalDefVar<double>(keyName+"BlockVCorner",-1.0);
+  blockHCorner=Control.EvalDefVar<double>(keyName+"BlockHCorner",-1.0);
 
-  wallMat=ModelSupport::EvalMat<int>(Control,keyName+"WallMat");
-  floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
-  roofMat=ModelSupport::EvalMat<int>(Control,keyName+"RoofMat");
+  voidMat=ModelSupport::EvalMat<int>(Control,keyName+"VoidMat");
+  blockMat=ModelSupport::EvalMat<int>(Control,keyName+"BlockMat");
 
   return;
 }
 
 void
 Wiggler::createUnitVector(const attachSystem::FixedComp& FC,
-			      const long int sideIndex)
+			  const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: Fixed component to link to
@@ -152,28 +146,59 @@ Wiggler::createSurfaces()
 {
   ELog::RegMethod RegA("Wiggler","createSurfaces");
 
-  // Inner void
+  // Outer surf
   ModelSupport::buildPlane(SMap,wigIndex+1,Origin-Y*(length/2.0),Y);
   ModelSupport::buildPlane(SMap,wigIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,wigIndex+3,Origin-X*outerGap,X);
-  ModelSupport::buildPlane(SMap,wigIndex+4,Origin+
-			   X*(ringRadius+ringGap),X); // mid line divider
-  ModelSupport::buildCylinder(SMap,wigIndex+7,
-			      Origin+X*(ringRadius+ringGap),Z,ringRadius); 
-  ModelSupport::buildPlane(SMap,wigIndex+5,Origin-Z*floorDepth,Z);
-  ModelSupport::buildPlane(SMap,wigIndex+6,Origin+Z*roofHeight,Z);  
+  ModelSupport::buildPlane(SMap,wigIndex+3,
+			   Origin-X*(blockWidth+blockHGap/2.0),X);
+  ModelSupport::buildPlane(SMap,wigIndex+4,
+			   Origin+X*(blockWidth+blockHGap/2.0),X);
 
-  // Walls
-  ModelSupport::buildPlane(SMap,wigIndex+12,
-			   Origin+Y*(frontWallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,wigIndex+13,Origin-X*(outerGap+outerThick),X);
-  ModelSupport::buildCylinder(SMap,wigIndex+17,
-		       Origin+X*(ringRadius+ringGap+ringThick),Z,ringRadius); 
-  ModelSupport::buildPlane(SMap,wigIndex+15,Origin-
-			   Z*(floorDepth+floorThick),Z);
-  ModelSupport::buildPlane(SMap,wigIndex+16,Origin+
-			   Z*(roofHeight+roofThick),Z);  
+  ModelSupport::buildPlane(SMap,wigIndex+5,
+			   Origin-Z*(blockDepth+blockVGap/2.0),Z);
+  ModelSupport::buildPlane(SMap,wigIndex+6,
+			   Origin+Z*(blockDepth+blockVGap/2.0),Z);
 
+
+  // Inner block surf:
+  ModelSupport::buildPlane(SMap,wigIndex+13,Origin-X*(blockHGap/2.0),X);
+  ModelSupport::buildPlane(SMap,wigIndex+14,Origin+X*(blockHGap/2.0),X);
+
+  ModelSupport::buildPlane(SMap,wigIndex+15,Origin-Z*(blockVGap/2.0),Z);
+  ModelSupport::buildPlane(SMap,wigIndex+16,Origin+Z*(blockVGap/2.0),Z);
+
+  // care here because undefined behavour if either VCorner / HCorner
+  // equal zero.
+  if (blockVCorner>Geometry::zeroTol &&
+      blockHCorner>Geometry::zeroTol)
+    {
+      // All normalize into centre:
+      Geometry::Vec3D CX(Origin-X*(blockHGap/2.0)-Z*(blockVGap/2.0));
+      ModelSupport::buildPlane(SMap,wigIndex+103,
+			       CX-X*blockHCorner,
+			       CX-Z*blockVCorner,
+			       CX-Z*blockVCorner+Y*length,
+			       Origin-CX);
+      CX=Origin+X*(blockHGap/2.0)-Z*(blockVGap/2.0);
+      ModelSupport::buildPlane(SMap,wigIndex+104,
+			       CX+X*blockHCorner,
+			       CX-Z*blockVCorner,
+			       CX-Z*blockVCorner+Y*length,
+			       Origin-CX);
+      CX=Origin-X*(blockHGap/2.0)+Z*(blockVGap/2.0);
+      ModelSupport::buildPlane(SMap,wigIndex+113,
+			       CX-X*blockHCorner,
+			       CX+Z*blockVCorner,
+			       CX+Z*blockVCorner+Y*length,
+			       Origin-CX);
+      CX=Origin+X*(blockHGap/2.0)+Z*(blockVGap/2.0);
+      ModelSupport::buildPlane(SMap,wigIndex+114,
+			       CX+X*blockHCorner,
+			       CX+Z*blockVCorner,
+			       CX+Z*blockVCorner+Y*length,
+			       Origin-CX);
+    }			       
+  
   return;
 }
 
@@ -188,26 +213,52 @@ Wiggler::createObjects(Simulation& System)
 
   std::string Out;
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex,"1 -2 3 (-4:7) 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  // four blocks
+  Out=ModelSupport::getSetComposite(SMap,wigIndex,"1 -2 3 -13 5 -15 -103 ");
+  makeCell("BlockDL",System,cellIndex++,blockMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex," 2 -12 3 (-4:7) 5 -6 ");
-  makeCell("FrontWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,wigIndex,"1 -2 14 -4 5 -15 -104 ");
+  makeCell("BlockDR",System,cellIndex++,blockMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex," 1 -12 -7 (4:17) 5 -6 ");
-  makeCell("RingWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,wigIndex,"1 -2 3 -13 16 -6 -113 ");
+  makeCell("BlockUL",System,cellIndex++,blockMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex," 1 -12 -3 13 5 -6 ");
-  makeCell("OutWall",System,cellIndex++,wallMat,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,wigIndex,"1 -2 14 -4 16 -6 -114 ");
+  makeCell("BlockUR",System,cellIndex++,blockMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex," 1 -12 -13 (-4:17) 15 -5 ");
-  makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
+  // care here because undefined behavour if either VCorner / HCorner
+  // equal zero.
+  if (blockVCorner>Geometry::zeroTol &&
+      blockHCorner>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 103 -13 -15 ");
+      makeCell("CornerDL",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 104 14 -15 ");
+      makeCell("CornerDR",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 113 -13 16 ");
+      makeCell("CornerUL",System,cellIndex++,voidMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 114 14 16 ");
+      makeCell("CornerUR",System,cellIndex++,voidMat,0.0,Out);
+    }
+  
+  if (blockHGap>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 13 -14 5 -15 ");
+      makeCell("HGap",System,cellIndex++,voidMat,0.0,Out);
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex," 1 -12 -13 (-4:17) 6 -16 ");
-  makeCell("Floor",System,cellIndex++,roofMat,0.0,Out);
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 13 -14 16 -6 ");
+      makeCell("HGap",System,cellIndex++,voidMat,0.0,Out);
+    }
+  if (blockVGap>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 3 -4 15 -16 ");
+      makeCell("VGap",System,cellIndex++,voidMat,0.0,Out);
+    }
 
-  Out=ModelSupport::getSetComposite(SMap,wigIndex,"1 -12 13 (-4:17) 15 -16 ");
+  
+  Out=ModelSupport::getComposite(SMap,wigIndex,"1 -2 3 -4 5 -6 ");
   addOuterSurf(Out);      
+
   return;
 }
 
@@ -221,10 +272,10 @@ Wiggler::createLinks()
   ELog::RegMethod RegA("Wiggler","createLinks");
   
   setConnect(0,Origin-Y*(length/2.0),-Y);
-  setConnect(1,Origin+Y*(frontWallThick+length/2.0),Y);
+  setConnect(1,Origin+Y*(length/2.0),Y);
   
-  setLinkSurf(0,-SMap.realSurf(wagIndex+1));
-  setLinkSurf(1,SMap.realSurf(wagIndex+12));
+  setLinkSurf(0,-SMap.realSurf(wigIndex+1));
+  setLinkSurf(1,SMap.realSurf(wigIndex+2));
 
   return;
 }
@@ -254,4 +305,4 @@ Wiggler::createAll(Simulation& System,
   return;
 }
   
-}  // NAMESPACE essSystem
+}  // NAMESPACE xraySystem

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/OpticsHutch.h
+ * File:   balderInc/OpticsWall.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_OpticsHutch_h
-#define xraySystem_OpticsHutch_h
+#ifndef xraySystem_OpticsWall_h
+#define xraySystem_OpticsWall_h
 
 class Simulation;
 
@@ -28,19 +28,20 @@ namespace xraySystem
 {
   
 /*!
-  \class OpticsHutch
+  \class OpticsWall
   \version 1.0
   \author S. Ansell
-  \date January 2018
-  \brief OpticsHutch unit  
+  \date July 2016
+  \brief OpticsWall unit  
 
   Built around the central beam axis
 */
 
-class OpticsHutch :
+class OpticsWall :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
+  
 {
  private:
   
@@ -72,10 +73,10 @@ class OpticsHutch :
 
  public:
 
-  OpticsHutch(const std::string&);
-  OpticsHutch(const OpticsHutch&);
-  OpticsHutch& operator=(const OpticsHutch&);
-  virtual ~OpticsHutch();
+  OpticsWall(const std::string&);
+  OpticsWall(const OpticsWall&);
+  OpticsWall& operator=(const OpticsWall&);
+  virtual ~OpticsWall();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,
