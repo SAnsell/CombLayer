@@ -52,6 +52,7 @@ namespace xraySystem
   class MonoVessel;
   class MonoCrystals;
   class FlangeMount;
+  class Mirror;
     
   /*!
     \class OpticsBeamline
@@ -92,6 +93,9 @@ class OpticsBeamline :
 
   /// Vertical mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBox;
+
+  /// Vertical mirror
+  std::shared_ptr<xraySystem::Mirror> mirror;
 
   /// Straight value cross piece (ion pump)
   std::shared_ptr<constructSystem::GateValve> gateB;
@@ -135,7 +139,10 @@ class OpticsBeamline :
 
   /// Vertical mirror box
   std::shared_ptr<constructSystem::VacuumBox> mirrorBoxB;
-  
+
+  /// Vertical mirror
+  std::shared_ptr<xraySystem::Mirror> mirrorB;
+
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeE;
 

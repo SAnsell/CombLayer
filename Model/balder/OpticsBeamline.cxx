@@ -85,6 +85,7 @@
 #include "JawUnit.h"
 #include "JawValve.h"
 #include "FlangeMount.h"
+#include "Mirror.h"
 #include "OpticsBeamline.h"
 
 namespace xraySystem
@@ -104,6 +105,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   pipeB(new constructSystem::Bellows(newName+"BellowB")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
   mirrorBox(new constructSystem::VacuumBox(newName+"MirrorBox")),
+  mirror(new xraySystem::Mirror(newName+"Mirror")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   pipeC(new constructSystem::Bellows(newName+"BellowC")),
   driftA(new constructSystem::VacuumPipe(newName+"DriftA")),
@@ -120,6 +122,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   pipeD(new constructSystem::Bellows(newName+"BellowD")),
   gateD(new constructSystem::GateValve(newName+"GateD")),
   mirrorBoxB(new constructSystem::VacuumBox(newName+"MirrorBoxB")),
+  mirrorB(new xraySystem::Mirror(newName+"MirrorB")),
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
   viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
@@ -148,6 +151,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(pipeB);
   OR.addObject(gateA);
   OR.addObject(mirrorBox);
+  OR.addObject(mirror);
   OR.addObject(gateB);
   OR.addObject(pipeC);
   OR.addObject(driftA);
@@ -163,6 +167,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   OR.addObject(pipeD);
   OR.addObject(gateD);
   OR.addObject(mirrorBoxB);
+  OR.addObject(mirrorB);
   OR.addObject(pipeE);
   OR.addObject(slitsB);
   OR.addObject(viewPipe);
@@ -253,6 +258,9 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirrorBox->setFront(*gateA,2);
   mirrorBox->createAll(System,*gateA,2);
 
+  mirror->addInsertCell(mirrorBox->getCell("Void"));
+  mirror->createAll(System,*mirrorBox,0);
+
   gateB->addInsertCell(ContainedComp::getInsertCells());
   gateB->setFront(*mirrorBox,2);
   gateB->createAll(System,*mirrorBox,2);
@@ -314,6 +322,9 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirrorBoxB->addInsertCell(ContainedComp::getInsertCells());
   mirrorBoxB->setFront(*gateD,2);
   mirrorBoxB->createAll(System,*gateD,2);
+
+  mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
+  mirrorB->createAll(System,*mirrorBoxB,0);
 
   pipeE->addInsertCell(ContainedComp::getInsertCells());
   pipeE->setFront(*mirrorBoxB,2);

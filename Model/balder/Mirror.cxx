@@ -111,15 +111,15 @@ Mirror::populate(const FuncDataBase& Control)
   theta=Control.EvalVar<double>(keyName+"Theta");
   phi=Control.EvalDefVar<double>(keyName+"Phi",0.0);
   
-  radius=Control.EvalDefVal<double>(keyName+"Radius",0.0);
-  width=Control.EvalVal<double>(keyName+"Width");
-  thick=Control.EvalVal<double>(keyName+"Thick");
-  length==Control.EvalVal<double>(keyName+"Length");
+  radius=Control.EvalDefVar<double>(keyName+"Radius",0.0);
+  width=Control.EvalVar<double>(keyName+"Width");
+  thick=Control.EvalVar<double>(keyName+"Thick");
+  length=Control.EvalVar<double>(keyName+"Length");
   
   baseThick=Control.EvalVar<double>(keyName+"BaseThick");
   baseExtra=Control.EvalVar<double>(keyName+"BaseExtra");
 
-  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
+  mirrMat=ModelSupport::EvalMat<int>(Control,keyName+"MirrorMat");
   baseMat=ModelSupport::EvalMat<int>(Control,keyName+"BaseMat");
 
   return;
@@ -151,7 +151,7 @@ Mirror::createSurfaces()
 
   // main xstal CENTRE AT ORIGIN 
   const Geometry::Quaternion QXA
-    (Geometry::Quaternion::calcQRotDeg(theta,X));
+    (Geometry::Quaternion::calcQRotDeg(-theta,X));
 
   Geometry::Vec3D PX(X);
   Geometry::Vec3D PY(Y);

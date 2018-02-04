@@ -57,6 +57,7 @@
 #include "PortItemGenerator.h"
 #include "VacBoxGenerator.h"
 #include "FlangeMountGenerator.h"
+#include "MirrorGenerator.h"
 
 namespace setVariable
 {
@@ -194,6 +195,7 @@ opticsVariables(FuncDataBase& Control)
   setVariable::GateValveGenerator GateGen;
   setVariable::JawValveGenerator JawGen;
   setVariable::FlangeMountGenerator FlangeGen;
+  setVariable::MirrorGenerator MirrGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -258,6 +260,12 @@ opticsVariables(FuncDataBase& Control)
   // ystep/width/height/depth/length
   // [length is 177.4cm total]
   VBoxGen.generateBox(Control,"BalderMirrorBox",0.0,54.0,15.3,31.3,167.4);
+
+  // y/z/theta/phi
+  MirrGen.generateMirror(Control,"BalderMirror",0.0, 0.0, 5.0, 0.0);
+
+  // y/z/theta/phi
+  MirrGen.generateMirror(Control,"BalderMirrorB",0.0, 0.0, 5.0, 0.0);
 
   GateGen.generateValve(Control,"BalderGateB",0.0,0);
 
