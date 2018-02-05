@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/BellowGenerator.h
+ * File:   constructVarInc/LeadPipeGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_BellowGenerator_h
-#define setVariable_BellowGenerator_h
+#ifndef setVariable_LeadPipeGenerator_h
+#define setVariable_LeadPipeGenerator_h
 
 class FuncDataBase;
 
@@ -28,38 +28,40 @@ namespace setVariable
 {
 
 /*!
-  \class BellowGenerator
+  \class LeadPipeGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief BellowGenerator for variables
+  \brief LeadPipeGenerator for variables
 */
 
-class BellowGenerator :
+class LeadPipeGenerator :
   public SplitPipeGenerator
 {
  private:
 
-  double bellowStep;              ///< bellow step from flange
-  double bellowThick;             ///< bellow thickness.
+  double cladStep;              ///< clad step from flange
+  double cladThick;             ///< clad thickness.
   
-  std::string bellowMat;        ///< Primary bellow material
+  std::string cladMat;        ///< Primary bellow material
     
  public:
 
-  BellowGenerator();
-  BellowGenerator(const BellowGenerator&);
-  BellowGenerator& operator=(const BellowGenerator&);
-  ~BellowGenerator();
+  LeadPipeGenerator();
+  LeadPipeGenerator(const LeadPipeGenerator&);
+  LeadPipeGenerator& operator=(const LeadPipeGenerator&);
+  ~LeadPipeGenerator();
 
   template<typename CF> void setCF();
+  
   void setPipe(const double,const double,const double,const double);
-  void setMat(const std::string&,const double);
+  void setCladding(const double,const double);
+  void setCladdingThick(const double T) { cladThick=T; }
   void setMat(const std::string&,const std::string&);
 
   
-  void generateBellow(FuncDataBase&,const std::string&,
-		      const double,const double) const;
+  void generateCladPipe(FuncDataBase&,const std::string&,
+			const double,const double) const;
 
 };
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/OpticsHutch.h
+ * File:   balderInc/ExperimentalHutch.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_OpticsHutch_h
-#define xraySystem_OpticsHutch_h
+#ifndef xraySystem_ExperimentalHutch_h
+#define xraySystem_ExperimentalHutch_h
 
 class Simulation;
 
@@ -28,16 +28,16 @@ namespace xraySystem
 {
   
 /*!
-  \class OpticsHutch
+  \class ExperimentalHutch
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief OpticsHutch unit  
+  \brief ExperimentalHutch unit  
 
   Built around the central beam axis
 */
 
-class OpticsHutch :
+class ExperimentalHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
@@ -48,11 +48,9 @@ class OpticsHutch :
   int cellIndex;                ///< Cell index  
 
   double depth;                 ///< void height 
-  double height;                ///< void deptth
+  double height;                ///< void depth
   double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
-  double ringWallLen;           ///< void flat length [before angle]
-  double ringWallAngle;         ///< angle on ring side wall
   double outWidth;              ///< out side width
 
   double innerThick;            ///< Inner wall/roof skin
@@ -60,7 +58,7 @@ class OpticsHutch :
   double outerThick;            ///< Outer wall/roof skin
   double floorThick;            ///< Floor thickness
 
-  double holeXStep;            ///< Hole XStep
+  double holeXStep;            ///< Hole XStep [front wall]
   double holeZStep;            ///< Hole ZStep  
   double holeRadius;           ///< Hole radius
   
@@ -76,10 +74,10 @@ class OpticsHutch :
 
  public:
 
-  OpticsHutch(const std::string&);
-  OpticsHutch(const OpticsHutch&);
-  OpticsHutch& operator=(const OpticsHutch&);
-  virtual ~OpticsHutch();
+  ExperimentalHutch(const std::string&);
+  ExperimentalHutch(const ExperimentalHutch&);
+  ExperimentalHutch& operator=(const ExperimentalHutch&);
+  virtual ~ExperimentalHutch();
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,

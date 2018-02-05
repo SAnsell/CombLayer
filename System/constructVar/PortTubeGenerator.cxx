@@ -308,8 +308,6 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   Control.addVariable(keyName+"Radius",radius);
   Control.addVariable(keyName+"Length",length);
   Control.addVariable(keyName+"WallThick",wallThick);
-
-
 	
   Control.addVariable(keyName+"InPortXStep",portAXStep);
   Control.addVariable(keyName+"InPortZStep",portAZStep);

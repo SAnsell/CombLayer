@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balder/OpticsHutch.cxx
+ * File:   balder/ExperimentalHutch.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -73,12 +73,12 @@
 #include "BaseMap.h"
 #include "CellMap.h"
 
-#include "OpticsHutch.h"
+#include "ExperimentalHutch.h"
 
 namespace xraySystem
 {
 
-OpticsHutch::OpticsHutch(const std::string& Key) : 
+ExperimentalHutch::ExperimentalHutch(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   hutIndex(ModelSupport::objectRegister::Instance().cell(Key)),
@@ -89,20 +89,20 @@ OpticsHutch::OpticsHutch(const std::string& Key) :
   */
 {}
 
-OpticsHutch::~OpticsHutch() 
+ExperimentalHutch::~ExperimentalHutch() 
   /*!
     Destructor
   */
 {}
 
 void
-OpticsHutch::populate(const FuncDataBase& Control)
+ExperimentalHutch::populate(const FuncDataBase& Control)
   /*!
     Populate all the variables
     \param Control :: DataBase of variables
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","populate");
+  ELog::RegMethod RegA("ExperimentalHutch","populate");
   
   FixedOffset::populate(Control);
 
@@ -112,8 +112,6 @@ OpticsHutch::populate(const FuncDataBase& Control)
   length=Control.EvalVar<double>(keyName+"Length");
   outWidth=Control.EvalVar<double>(keyName+"OutWidth");
   ringWidth=Control.EvalVar<double>(keyName+"RingWidth");
-  ringWallLen=Control.EvalVar<double>(keyName+"RingWallLen");
-  ringWallAngle=Control.EvalVar<double>(keyName+"RingWallAngle");
 
   innerThick=Control.EvalVar<double>(keyName+"InnerThick");
   pbThick=Control.EvalVar<double>(keyName+"PbThick");
@@ -125,6 +123,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
   holeZStep=Control.EvalDefVar<double>(keyName+"HoleZStep",0.0);
   holeRadius=Control.EvalDefVar<double>(keyName+"HoleRadius",0.0);
 
+
   skinMat=ModelSupport::EvalMat<int>(Control,keyName+"SkinMat");
   pbMat=ModelSupport::EvalMat<int>(Control,keyName+"PbMat");
   floorMat=ModelSupport::EvalMat<int>(Control,keyName+"FloorMat");
@@ -133,7 +132,7 @@ OpticsHutch::populate(const FuncDataBase& Control)
 }
 
 void
-OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
+ExperimentalHutch::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int sideIndex)
   /*!
     Create the unit vectors
@@ -141,7 +140,7 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
     \param sideIndex :: Link point and direction [0 for origin]
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createUnitVector");
+  ELog::RegMethod RegA("ExperimentalHutch","createUnitVector");
 
   FixedComp::createUnitVector(FC,sideIndex);
   applyOffset();
@@ -149,12 +148,12 @@ OpticsHutch::createUnitVector(const attachSystem::FixedComp& FC,
 }
  
 void
-OpticsHutch::createSurfaces()
+ExperimentalHutch::createSurfaces()
   /*!
     Create the surfaces
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createSurfaces");
+  ELog::RegMethod RegA("ExperimentalHutch","createSurfaces");
 
   // Inner void
   ModelSupport::buildPlane(SMap,hutIndex+1,Origin,Y);
@@ -164,13 +163,6 @@ OpticsHutch::createSurfaces()
   ModelSupport::buildPlane(SMap,hutIndex+5,Origin-Z*depth,Z);
   ModelSupport::buildPlane(SMap,hutIndex+6,Origin+Z*height,Z);  
 
-  Geometry::Vec3D RPoint(Origin+X*ringWidth+Y*ringWallLen);
-  if (std::abs(ringWallAngle)>Geometry::zeroTol)
-    {
-      ModelSupport::buildPlaneRotAxis
-	(SMap,hutIndex+104,RPoint,X,-Z,ringWallAngle);
-    }
-
   ModelSupport::buildPlane(SMap,hutIndex+15,Origin-Z*(depth+floorThick),Z);
 
   // Walls
@@ -179,6 +171,8 @@ OpticsHutch::createSurfaces()
   for(const double T : {innerThick,pbThick,outerThick})
     {
       extraThick+=T;
+      ModelSupport::buildPlane(SMap,HI+1,
+			       Origin-Y*extraThick,Y);
       ModelSupport::buildPlane(SMap,HI+2,
 			       Origin+Y*(length+extraThick),Y);
       ModelSupport::buildPlane(SMap,HI+3,
@@ -187,12 +181,6 @@ OpticsHutch::createSurfaces()
 			       Origin+X*(ringWidth+extraThick),X);
       ModelSupport::buildPlane(SMap,HI+6,
 			       Origin+Z*(height+extraThick),Z);  
-      if (std::abs(ringWallAngle)>Geometry::zeroTol)
-	{
-	  RPoint += X*T;
-	  ModelSupport::buildPlaneRotAxis
-	    (SMap,HI+104,RPoint,X,-Z,ringWallAngle);
-	}
       HI+=10;
     }
 
@@ -204,18 +192,19 @@ OpticsHutch::createSurfaces()
 }
 
 void
-OpticsHutch::createObjects(Simulation& System)
+ExperimentalHutch::createObjects(Simulation& System)
   /*!
     Adds the main objects
     \param System :: Simulation to create objects in
-   */
+  */
 {
-  ELog::RegMethod RegA("OpticsHutch","createObjects");
+  ELog::RegMethod RegA("ExperimentalHutch","createObjects");
 
   std::string Out;
 
-  Out=ModelSupport::getSetComposite(SMap,hutIndex,"1 -2 3 (-4:-104) 5 -6 ");
-  makeCell("Void",System,cellIndex++,0,0.0,Out);
+  Out=ModelSupport::getSetComposite(SMap,hutIndex,"1 -2 3 -4 5 -6 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+  setCell("Void",cellIndex-1);
 
   // walls:
   int HI(hutIndex);
@@ -229,53 +218,59 @@ OpticsHutch::createObjects(Simulation& System)
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
 
       Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
-					"1 -2  4M  104M  (-14M:-114M) 5 -6 ");
+					"1 -2  4M -14M 5 -6 ");
       makeCell(layer+"Wall",System,cellIndex++,mat,0.0,Out);
       
       //back wall
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"2M -12M 33 (-34:-134) 5 -6 107 ");
+      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+					"2M -12M 33 -34 5 -6 ");
       makeCell(layer+"BackWall",System,cellIndex++,mat,0.0,Out);
+
+      //front wall
+      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+					" 11M -1M  33 -34 5 -6 107 ");
+      makeCell(layer+"FrontWall",System,cellIndex++,mat,0.0,Out);
       
       // roof
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,"1 -32 33 (-34:-134) 6M -16M ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
-      setCell(layer+"Roof",cellIndex-1);
+      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
+					" 31 -32 33 -34 6M -16M ");
+      makeCell(layer+"Roof",System,cellIndex++,mat,0.0,Out);
       HI+=10;
     }
 
   if (holeRadius>Geometry::zeroTol)
     {
-      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI," 2 -2M -107 ");
-      makeCell("ExitHole",System,cellIndex++,0,0.0,Out);
+      Out=ModelSupport::getSetComposite(SMap,hutIndex,HI," 1M -1 -107 ");
+      makeCell("EnteranceHole",System,cellIndex++,0,0.0,Out);
     }
   
   // floor
   Out=ModelSupport::getSetComposite(SMap,hutIndex,HI,
-				    "1 -2M 3M (-4M:-104M) 15 -5 ");
+				    " 1M -2M 3M -4M 15 -5 ");
   makeCell("Floor",System,cellIndex++,floorMat,0.0,Out);
   
   // Exclude:
-  Out=ModelSupport::getComposite
-    (SMap,hutIndex,HI," 1 -2M 3M (-4M:-104M) 15 -6M ");
+  Out=ModelSupport::getComposite(SMap,hutIndex,HI," 1M -2M 3M -4M 15 -6M ");
   addOuterSurf(Out);      
 
   return;
 }
 
 void
-OpticsHutch::createLinks()
+ExperimentalHutch::createLinks()
   /*!
     Determines the link point on the outgoing plane.
     It must follow the beamline, but exit at the plane
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createLinks");
+  ELog::RegMethod RegA("ExperimentalHutch","createLinks");
 
   const double extraT(innerThick+outerThick+pbThick);
-  setConnect(0,Origin-Y,-Y);
+  
+  setConnect(0,Origin-Y*extraT,-Y);
   setConnect(1,Origin+Y*(length+extraT),Y);
   
-  setLinkSurf(0,-SMap.realSurf(hutIndex+1));
+  setLinkSurf(0,-SMap.realSurf(hutIndex+31));
   setLinkSurf(1,SMap.realSurf(hutIndex+32));
 
   
@@ -283,7 +278,7 @@ OpticsHutch::createLinks()
 }
 
 void
-OpticsHutch::createAll(Simulation& System,
+ExperimentalHutch::createAll(Simulation& System,
 		       const attachSystem::FixedComp& FC,
 		       const long int FIndex)
   /*!
@@ -293,7 +288,7 @@ OpticsHutch::createAll(Simulation& System,
     \param FIndex :: Fixed Index
   */
 {
-  ELog::RegMethod RegA("OpticsHutch","createAll(FC)");
+  ELog::RegMethod RegA("ExperimentalHutch","createAll(FC)");
 
   populate(System.getDataBase());
   createUnitVector(FC,FIndex);

@@ -218,7 +218,17 @@ VacuumBox::populate(const FuncDataBase& Control)
 					 keyName+"FlangeRadius");
   flangeBLength=Control.EvalPair<double>(keyName+"FlangeBLength",
 					 keyName+"FlangeLength");
-  
+
+  if (flangeARadius<(portAWallThick+portATubeRadius+Geometry::zeroTol))
+    throw ColErr::SizeError<double>
+      (flangeARadius,portAWallThick+portATubeRadius,
+       "Flange to small for "+keyName+" port A");
+
+  if (flangeBRadius<(portBWallThick+portBTubeRadius+Geometry::zeroTol))
+    throw ColErr::SizeError<double>
+      (flangeBRadius,portBWallThick+portBTubeRadius,
+       "Flange to small for "+keyName+" port B");
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
 
@@ -295,8 +305,7 @@ VacuumBox::createSurfaces()
   ModelSupport::buildCylinder(SMap,vacIndex+107,ACentre,Y,portATubeRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+117,ACentre,Y,
 			      portATubeRadius+portAWallThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+127,ACentre,Y,
-			      portATubeRadius+portAWallThick+flangeARadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+127,ACentre,Y,flangeARadius);
 
 
   // BACK PORT
@@ -305,8 +314,7 @@ VacuumBox::createSurfaces()
   ModelSupport::buildCylinder(SMap,vacIndex+207,BCentre,Y,portBTubeRadius);
   ModelSupport::buildCylinder(SMap,vacIndex+217,BCentre,Y,
 			      portBTubeRadius+portBWallThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+227,BCentre,Y,
-			      portBTubeRadius+portBWallThick+flangeBRadius);
+  ModelSupport::buildCylinder(SMap,vacIndex+227,BCentre,Y,flangeBRadius);
 
   // Flange cut
   FrontBackCut::getShiftedFront(SMap,vacIndex+111,1,Y,flangeALength);

@@ -71,6 +71,9 @@ class OpticsBeamline :
 
 
   /// Real Ion pump (KF40) 10cm vertioal
+  std::shared_ptr<constructSystem::VacuumPipe> pipeInit;
+
+  /// Real Ion pump (KF40) 10cm vertioal
   std::shared_ptr<constructSystem::CrossPipe> ionPA;
 
   /// Trigger Unit (pipe):
@@ -154,6 +157,15 @@ class OpticsBeamline :
 
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeF;
+
+  /// Shutter pipe
+  std::shared_ptr<constructSystem::CrossPipe> shutterPipe;
+
+  /// Joining Bellows (pipe large):
+  std::shared_ptr<constructSystem::Bellows> pipeG;
+
+  /// Last gate valve:
+  std::shared_ptr<constructSystem::GateValve> gateE;
 
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,

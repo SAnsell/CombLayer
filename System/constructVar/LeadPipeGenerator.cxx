@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVar/BellowGenerator.cxx
+ * File:   constructVar/LeadPipeGenerator.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -53,21 +53,21 @@
 #include "FuncDataBase.h"
 #include "CFFlanges.h"
 #include "SplitPipeGenerator.h"
-#include "BellowGenerator.h"
+#include "LeadPipeGenerator.h"
 
 namespace setVariable
 {
 
-BellowGenerator::BellowGenerator() :
+LeadPipeGenerator::LeadPipeGenerator() :
   SplitPipeGenerator(),
-  bellowStep(1.0),bellowThick(1.0),
-  bellowMat("Stainless304%Void%50")
+  cladStep(1.0),cladThick(1.0),
+  cladMat("Lead")
   /*!
     Constructor and defaults
   */
 {}
 
-BellowGenerator::~BellowGenerator() 
+LeadPipeGenerator::~LeadPipeGenerator() 
  /*!
    Destructor
  */
@@ -75,55 +75,51 @@ BellowGenerator::~BellowGenerator()
 
 template<typename CF>
 void
-BellowGenerator::setCF()
+LeadPipeGenerator::setCF()
   /*!
     Set pipe/flange to CF-X format
   */
 {
   SplitPipeGenerator::setCF<CF>();
   
-  bellowStep=CF::bellowStep;
-  bellowThick=CF::bellowThick;
-
-  setMat(SplitPipeGenerator::getPipeMat(),CF::bellowThick/CF::wallThick);
+  cladStep=CF::bellowStep;
+  cladThick=CF::bellowThick;
   return;
 }
 
 void
-BellowGenerator::setPipe(const double R,const double T,
-			 const double S,const double BT)
+LeadPipeGenerator::setCladding(const double S,const double BT)
+  /*!
+    Cladding
+    \param S :: Clad step
+    \param BT :: Clad Thickness
+  */
+{
+  cladStep=S;
+  cladThick=BT;
+  return;
+}  
+  
+void
+LeadPipeGenerator::setPipe(const double R,const double T,
+			   const double S,const double BT)
   /*!
     Set all the pipe values
     \param R :: radius of main pipe
     \param T :: Thickness
-    \parma S :: Bellow step
-    \param BT :: Bellow Thickness
+    \param S :: Clad step
+    \param BT :: Clad Thickness
    */
 {
   SplitPipeGenerator::setPipe(R,T);
-  bellowStep=S;
-  bellowThick=BT;
+  setCladding(S,BT);
   return;
 }
 
 
 void
-BellowGenerator::setMat(const std::string& M,const double T)
-  /*!
-    Set teh material and the bellow material as a fractional
-    void material
-    \param M :: Main material
-    \param T :: Fractional material
-  */
-{
-  SplitPipeGenerator::setMat(M);
-  bellowMat=M+"%Void%"+std::to_string(T);
-  return;
-}
-
-void
-BellowGenerator::setMat(const std::string& PMat,
-			const std::string& CMat)
+LeadPipeGenerator::setMat(const std::string& PMat,
+			  const std::string& CMat)
   /*!
     Set teh material and the bellow material as a fractional
     void material
@@ -131,16 +127,18 @@ BellowGenerator::setMat(const std::string& PMat,
     \param CMat :: cladding
   */
 {
+  ELog::RegMethod RegA("LeadPipeGenerator","setMat");
+  
   SplitPipeGenerator::setMat(PMat);
-  bellowMat=CMat;
+  cladMat=CMat;
   return;
 }
   
 void
-BellowGenerator::generateBellow(FuncDataBase& Control,
-				const std::string& keyName,
-				const double yStep,
-				const double length) const
+LeadPipeGenerator::generateCladPipe(FuncDataBase& Control,
+				    const std::string& keyName,
+				    const double yStep,
+				    const double length) const
   /*!
     Primary funciton for setting the variables
     \param Control :: Database to add variables 
@@ -149,13 +147,14 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
     \param length :: length of pipe
   */
 {
-  ELog::RegMethod RegA("BellowGenerator","generatorBellow");
+  ELog::RegMethod RegA("LeadPipeGenerator","generatorCladPipe");
 
   SplitPipeGenerator::generatePipe(Control,keyName,yStep,length);
+  
   // VACUUM PIPES:
-  Control.addVariable(keyName+"BellowThick",bellowThick);
-  Control.addVariable(keyName+"BellowStep",bellowStep);
-  Control.addVariable(keyName+"BellowMat",bellowMat);
+  Control.addVariable(keyName+"CladThick",cladThick);
+  Control.addVariable(keyName+"CladStep",cladStep);
+  Control.addVariable(keyName+"CladMat",cladMat);
       
   return;
 
@@ -163,12 +162,12 @@ BellowGenerator::generateBellow(FuncDataBase& Control,
 
 ///\cond TEMPLATE
 
-  template void BellowGenerator::setCF<CF40>();
-  template void BellowGenerator::setCF<CF63>();
-  template void BellowGenerator::setCF<CF100>();
+template void LeadPipeGenerator::setCF<CF40>();
+template void LeadPipeGenerator::setCF<CF63>();
+template void LeadPipeGenerator::setCF<CF100>();
   
 ///\end TEMPLATE
 
-
+  
   
 }  // NAMESPACE setVariable

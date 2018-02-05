@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructInc/Bellows.h
+ * File:   constructInc/LeadPipe.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef constructSystem_Bellows_h
-#define constructSystem_Bellows_h
+#ifndef constructSystem_LeadPipe_h
+#define constructSystem_LeadPipe_h
 
 class Simulation;
 
@@ -28,23 +28,23 @@ namespace constructSystem
 {
 
 /*!
-  \class Bellows
+  \class LeadPipe
   \version 1.0
   \author S. Ansell
   \date January 2018
-  \brief Bellows unit [simplified round pipe]
+  \brief LeadPipe unit [simplified round pipe]
 */
 
-class Bellows :
+class LeadPipe :
   public SplitFlangePipe
 {
   
  public:
 
-  Bellows(const std::string&);
-  Bellows(const Bellows&);
-  Bellows& operator=(const Bellows&);
-  virtual ~Bellows();
+  LeadPipe(const std::string&);
+  LeadPipe(const LeadPipe&);
+  LeadPipe& operator=(const LeadPipe&);
+  virtual ~LeadPipe();
   
 };
 

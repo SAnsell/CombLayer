@@ -49,7 +49,9 @@
 
 #include "CFFlanges.h"
 #include "PipeGenerator.h"
+#include "SplitPipeGenerator.h"
 #include "BellowGenerator.h"
+#include "LeadPipeGenerator.h"
 #include "CrossGenerator.h"
 #include "GateValveGenerator.h"
 #include "JawValveGenerator.h"
@@ -199,13 +201,18 @@ opticsVariables(FuncDataBase& Control)
 
   PipeGen.setWindow(-2.0,0.0);   // no window
 
+  // addaptor flange at beginning: [check]
+  PipeGen.setCF<CF40>();
+  PipeGen.setAFlangeCF<CF63>(); 
+  PipeGen.generatePipe(Control,"BalderInitPipe",0,10.0);
+  
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
   CrossGen.setPorts(5.75,5.75);     // len of ports (after main)
-    CrossGen.setMat("Stainless304");
+  CrossGen.setMat("Stainless304");
 
   CrossGen.generateDoubleCF<setVariable::CF40,setVariable::CF63>
-    (Control,"BalderIonPA",22.0,10.0,26.5);
+    (Control,"BalderIonPA",0.0,10.0,26.5);
 
   // flange if possible
   CrossGen.setPlates(0.5,2.0,2.0);  // wall/Top/base
@@ -273,7 +280,6 @@ opticsVariables(FuncDataBase& Control)
   BellowGen.setBFlangeCF<setVariable::CF100>();
   BellowGen.generateBellow(Control,"BalderBellowC",0,10.0);    
 
-  PipeGen.setMat("Stainless304"); // was 2cm (why?)
   PipeGen.setCF<setVariable::CF100>(); // was 2cm (why?)
   // [length is 38.3cm total]
   PipeGen.generatePipe(Control,"BalderDriftA",0,38.3);
@@ -378,7 +384,75 @@ opticsVariables(FuncDataBase& Control)
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 
-  BellowGen.generateBellow(Control,"BalderBellowF",0,10.0);
+  BellowGen.generateBellow(Control,"BalderBellowF",0,23.0);
+
+  // Shuter pipe
+  CrossGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
+  CrossGen.setPorts(2.0,2.0);     // len of ports (after main)
+  CrossGen.setPorts(2.0,2.0);     // len of ports (after main)
+  CrossGen.generateCF<setVariable::CF63>
+    (Control,"BalderShutterPipe",0.0,8.0,13.5,13.5);
+
+  // bellows on shield block
+  BellowGen.setCF<setVariable::CF40>();
+  BellowGen.setAFlangeCF<setVariable::CF63>();
+  BellowGen.generateBellow(Control,"BalderBellowG",0,10.0);    
+
+    // joined and open
+  GateGen.setCF<setVariable::CF40>();
+  GateGen.generateValve(Control,"BalderGateE",0.0,0);
+
+  return;
+}
+
+void
+connectingVariables(FuncDataBase& Control)
+  /*!
+    Variables for the connecting region
+    \param Control :: DataBase
+  */
+{
+  ELog::RegMethod RegA("balderVariables[F]","connectingVariables");
+  const std::string baseName="BalderConnect";
+  const Geometry::Vec3D OPos(0,0,0);
+  const Geometry::Vec3D ZVec(0,0,-1);
+  
+  setVariable::BellowGenerator BellowGen;
+  setVariable::LeadPipeGenerator LeadPipeGen;
+  setVariable::PortTubeGenerator PTubeGen;
+  setVariable::PortItemGenerator PItemGen;
+  PItemGen.setCF<setVariable::CF40>(3.0);
+
+  
+  BellowGen.setCF<CF40>();  
+  BellowGen.generateBellow(Control,baseName+"BellowA",0,10.0);
+
+  LeadPipeGen.setCF<CF40>();
+  LeadPipeGen.setCladdingThick(0.5);
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeA",0,172.0);
+  
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setCF<CF40>();
+  PTubeGen.setPortLength(3.0,3.0);
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,CF40::innerRadius,3.0);
+  Control.addVariable(baseName+"IonPumpANPorts",1);
+  PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
+
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeB",0,188.0);
+  
+  BellowGen.generateBellow(Control,baseName+"BellowB",0,10.0);
+
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",0,188.0);
+
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,CF40::innerRadius,3.0);
+  Control.addVariable(baseName+"IonPumpBNPorts",1);
+  PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
+
+  LeadPipeGen.generateCladPipe(Control,baseName+"PipeD",0,172.0);
+
+  BellowGen.generateBellow(Control,baseName+"BellowC",0,10.0);
 
   return;
 }
@@ -393,14 +467,15 @@ balderVariables(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
   setVariable::PipeGenerator PipeGen;
+  setVariable::LeadPipeGenerator LeadPipeGen;
+
   PipeGen.setWindow(-2.0,0.0);   // no window
   
   Control.addVariable("BalderOpticsDepth",100.0);
   Control.addVariable("BalderOpticsHeight",200.0);
-  Control.addVariable("BalderOpticsLength",1000.0);
+  Control.addVariable("BalderOpticsLength",1034.6);
   Control.addVariable("BalderOpticsOutWidth",250.0);
   Control.addVariable("BalderOpticsRingWidth",60.0);
-  Control.addVariable("BalderOpticsRingLength",200.0);
   Control.addVariable("BalderOpticsRingWallLen",105.0);
   Control.addVariable("BalderOpticsRingWallAngle",18.50);
   Control.addVariable("BalderOpticsInnerThick",0.5);
@@ -412,13 +487,47 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsPbMat","Lead");
   Control.addVariable("BalderOpticsFloorMat","Concrete");
 
+  Control.addVariable("BalderOpticsHoleXStep",0.0);
+  Control.addVariable("BalderOpticsHoleZStep",5.0);
+  Control.addVariable("BalderOpticsHoleRadius",7.0);
+
   frontEndVariables(Control,100.0);  // Set to middle
 
+  PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
   PipeGen.generatePipe(Control,"BalderJoinPipe",0,88.0);
   
   opticsVariables(Control);
 
+  LeadPipeGen.setCF<setVariable::CF40>();
+  LeadPipeGen.setCladdingThick(0.5);
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeB",0,34.0);
+
+  connectingVariables(Control);
+
+
+  LeadPipeGen.generateCladPipe(Control,"BalderJoinPipeC",0,80.0);
+
+  Control.addVariable("BalderExptYStep",1850.0);
+  Control.addVariable("BalderExptDepth",120.0);
+  Control.addVariable("BalderExptHeight",200.0);
+  Control.addVariable("BalderExptLength",858.4);
+  Control.addVariable("BalderExptOutWidth",198.50);
+  Control.addVariable("BalderExptRingWidth",248.6);
+  Control.addVariable("BalderExptInnerThick",0.5);
+  Control.addVariable("BalderExptPbThick",5.0);
+  Control.addVariable("BalderExptOuterThick",0.5);
+  Control.addVariable("BalderExptFloorThick",50.0);
+
+  Control.addVariable("BalderExptSkinMat","Stainless304");
+  Control.addVariable("BalderExptPbMat","Lead");
+  Control.addVariable("BalderExptFloorMat","Concrete");
+
+  Control.addVariable("BalderExptHoleXStep",0.0);
+  Control.addVariable("BalderExptHoleZStep",5.0);
+  Control.addVariable("BalderExptHoleRadius",7.0);
+
+  
   return;
 }
 

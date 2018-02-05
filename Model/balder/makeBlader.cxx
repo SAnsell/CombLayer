@@ -72,12 +72,15 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
+#include "SplitFlangePipe.h"
 #include "Bellows.h"
+#include "LeadPipe.h"
 #include "VacuumBox.h"
 #include "portItem.h"
 #include "PortTube.h"
 
 #include "OpticsHutch.h"
+#include "ExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
 #include "MonoCrystals.h"
@@ -88,6 +91,7 @@
 #include "FrontEndCave.h"
 #include "Wiggler.h"
 #include "OpticsBeamline.h"
+#include "ConnectZone.h"
 #include "makeBalder.h"
 
 namespace xraySystem
@@ -99,7 +103,11 @@ makeBalder::makeBalder() :
   wiggler(new Wiggler("BalderWiggler")),
   joinPipe(new constructSystem::VacuumPipe("BalderJoinPipe")),
   opticsHut(new OpticsHutch("BalderOptics")),
-  opticsBeam(new OpticsBeamline("Balder"))
+  opticsBeam(new OpticsBeamline("Balder")),
+  joinPipeB(new constructSystem::LeadPipe("BalderJoinPipeB")),
+  connectZone(new ConnectZone("BalderConnect")),
+  joinPipeC(new constructSystem::LeadPipe("BalderJoinPipeC")),
+  exptHut(new ExperimentalHutch("BalderExpt"))
   /*!
     Constructor
   */
@@ -112,7 +120,9 @@ makeBalder::makeBalder() :
   OR.addObject(wiggler);
   OR.addObject(joinPipe);
   OR.addObject(opticsHut);
-  
+  OR.addObject(joinPipeB);
+  OR.addObject(joinPipeC);
+  OR.addObject(exptHut);
 }
 
 makeBalder::~makeBalder()
@@ -155,7 +165,25 @@ makeBalder::build(Simulation& System,
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
+
+  joinPipeB->addInsertCell(voidCell);
+  joinPipeB->addInsertCell(opticsHut->getCell("Void"));
+  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->createAll(System,*opticsBeam,2);
+
+  connectZone->addInsertCell(voidCell);
+  connectZone->createAll(System,*joinPipeB,2);
+
+  exptHut->addInsertCell(voidCell);
+  exptHut->createAll(System,*frontEnd,2);
   
+  joinPipeC->addInsertCell(voidCell);
+  joinPipeC->addInsertCell(exptHut->getCell("Void"));
+  joinPipeC->addInsertCell(exptHut->getCell("EnteranceHole"));
+  joinPipeC->setFront(*connectZone,2);
+  joinPipeC->createAll(System,*connectZone,2);
+
   return;
 }
 

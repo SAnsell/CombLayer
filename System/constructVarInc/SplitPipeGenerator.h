@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   constructVarInc/PipeGenerator.h
+ * File:   constructVarInc/SplitPipeGenerator.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef setVariable_PipeGenerator_h
-#define setVariable_PipeGenerator_h
+#ifndef setVariable_SplitPipeGenerator_h
+#define setVariable_SplitPipeGenerator_h
 
 class FuncDataBase;
 
@@ -28,61 +28,44 @@ namespace setVariable
 {
 
 /*!
-  \class PipeGenerator
+  \class SplitPipeGenerator
   \version 1.0
   \author S. Ansell
   \date May 2016
-  \brief PipeGenerator for variables
+  \brief SplitPipeGenerator for variables
 */
 
-class PipeGenerator
+class SplitPipeGenerator
 {
  private:
 
-  int pipeType;                 ///< type [0 for round / 1 for square]
-  double pipeRadius;            ///< main radius
-  double pipeHeight;            ///< main height
-  double pipeWidth;             ///< main width
-  double pipeThick;             ///< metal thickness
-  double claddingThick;         ///< cladding radius
+  double pipeRadius;             ///< main radius
+  double pipeThick;              ///< metal thickness
   double flangeARadius;          ///< flange Radius (>radius)
   double flangeALen;             ///< flange Length
   double flangeBRadius;          ///< flange Radius (>radius)
   double flangeBLen;             ///< flange Length
-  double windowRadius;          ///< window radius (radius > WR > flangeR)
-  double windowThick;           ///< window thickness
   
   std::string pipeMat;          ///< Primary default mat
-  std::string frontWindowMat;   ///< window mat
-  std::string backWindowMat;    ///< window mat
   std::string voidMat;          ///< void mat
-  std::string claddingMat;      ///< Primary default mat
     
  public:
 
-  PipeGenerator();
-  PipeGenerator(const PipeGenerator&);
-  PipeGenerator& operator=(const PipeGenerator&);
-  ~PipeGenerator();
-
-  void setPipe(const double,const double);
-  void setRectPipe(const double,const double,const double);
-  void setWindow(const double,const double);
-  void setFlange(const double,const double);
-  void setFlangePair(const double,const double,const double,const double);
-  /// set pipe material
+  SplitPipeGenerator();
+  SplitPipeGenerator(const SplitPipeGenerator&);
+  SplitPipeGenerator& operator=(const SplitPipeGenerator&);
+  ~SplitPipeGenerator();
 
   template<typename CF> void setCF();
   template<typename CF> void setAFlangeCF();
   template<typename CF> void setBFlangeCF();
 
+  void setPipe(const double,const double);
+  void setFlange(const double,const double);
+  void setFlangePair(const double,const double,const double,const double);
+  void setMat(const std::string&);
 
-  /// setter for material name
-  void setMat(const std::string& M) { pipeMat=M; }
-  void setWindowMat(const std::string&);
-  void setWindowMat(const std::string&,const std::string&);
-  void setCladding(const double,const std::string&);
-  
+  const std::string& getPipeMat() const { return pipeMat; }
   void generatePipe(FuncDataBase&,const std::string&,
 		    const double,const double) const;
 

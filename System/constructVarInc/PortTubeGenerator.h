@@ -47,8 +47,8 @@ class PortTubeGenerator
   double portATubeLength;    ///< Port tube
   double portATubeRadius;    ///< Port tube length
 
-  double portBXStep;
-  double portBZStep;
+  double portBXStep;         ///< Step on out-port
+  double portBZStep;         ///< Step on out-port
   double portBWallThick;     ///< Flange wall thickness
   double portBTubeLength;    ///< Port tube
   double portBTubeRadius;    ///< Port tube length

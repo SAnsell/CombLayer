@@ -138,7 +138,7 @@ void
 CrossGenerator::setPorts(const double LenF,const double LenB)
   /*!
     Set both the ports extension on horrizontal
-    \param LenF :: lenght of port tube
+    \param LenF :: length of port tube
     \param LenB :: Thickness of port tube
    */
 {

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/Bellows.cxx
+ * File:   construct/LeadPipe.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -77,16 +77,16 @@
 #include "SurfMap.h"
 
 #include "SplitFlangePipe.h"
-#include "Bellows.h"
+#include "LeadPipe.h"
 
 namespace constructSystem
 {
 
-Bellows::Bellows(const std::string& Key) :
-  SplitFlangePipe(Key,0)
+LeadPipe::LeadPipe(const std::string& Key) :
+  SplitFlangePipe(Key,1)
 {}
 
-Bellows::~Bellows() 
+LeadPipe::~LeadPipe() 
   /*!
     Destructor
   */

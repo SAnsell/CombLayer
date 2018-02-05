@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   balderInc/makeBalder.h
+ * File:   balderInc/ConnectZone.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef xraySystem_makeBalder_h
-#define xraySystem_makeBalder_h
+#ifndef xraySystem_ConnectZone_h
+#define xraySystem_ConnectZone_h
 
 namespace constructSystem
 {
@@ -28,7 +28,6 @@ namespace constructSystem
   class CrossPipe;
   class VacuumPipe;
   class Bellows;
-  class LeadPipe;
   class VacuumBox;
   class portItem;
   class PortTube;
@@ -50,64 +49,54 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
-  class ExperimentalHutch;
   class MonoVessel;
   class MonoCrystals;
   class FlangeMount;
-  class OpticsBeamline;
-  class FrontEndCave;
-  class ConnectZone;
-  class Wiggler;
-  
+  class Mirror;
+    
   /*!
-    \class makeBalder
+    \class ConnectZone
     \version 1.0
     \author S. Ansell
     \date January 2018
     \brief General constructor for the xray system
   */
 
-class makeBalder
+class ConnectZone :
+  public attachSystem::CopiedComp,
+  public attachSystem::ContainedComp,
+  public attachSystem::FixedOffset
 {
  private:
 
-  /// Front end cave volume
-  std::shared_ptr<FrontEndCave> frontEnd;
-  /// Wiggler in vacuum box
-  std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
-  /// Wiggler in vacuum box
-  std::shared_ptr<Wiggler> wiggler;
-
-  /// Pipe joining frontend to optics hut
-  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
-
-  /// Optics hutch
-  std::shared_ptr<OpticsHutch> opticsHut;
+  /// First bellow
+  std::shared_ptr<constructSystem::Bellows> bellowA;
+  std::shared_ptr<constructSystem::LeadPipe> pipeA;
+  std::shared_ptr<constructSystem::PortTube> ionPumpA;
+  std::shared_ptr<constructSystem::LeadPipe> pipeB;
+  std::shared_ptr<constructSystem::Bellows> bellowB;
+  std::shared_ptr<constructSystem::LeadPipe> pipeC;
+  std::shared_ptr<constructSystem::PortTube> ionPumpB;
+  std::shared_ptr<constructSystem::LeadPipe> pipeD;
+  std::shared_ptr<constructSystem::Bellows> bellowC;
   
-  /// Beamline
-  std::shared_ptr<OpticsBeamline> opticsBeam;
+  void populate(const FuncDataBase&);
+  void createUnitVector(const attachSystem::FixedComp&,
+			const long int);
+  void buildObjects(Simulation&,const attachSystem::FixedComp&,
+		    const long int);
 
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
-
-  /// Connection between hutches
-  std::shared_ptr<xraySystem::ConnectZone> connectZone;
-
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<constructSystem::LeadPipe> joinPipeC;
-
-  /// Pipe joining optics hut to outer 
-  std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
-  
+  void createLinks();
   
  public:
   
-  makeBalder();
-  makeBalder(const makeBalder&);
-  makeBalder& operator=(const makeBalder&);
-  ~makeBalder();
+  ConnectZone(const std::string&);
+  ConnectZone(const ConnectZone&);
+  ConnectZone& operator=(const ConnectZone&);
+  ~ConnectZone();
   
-  void build(Simulation&,const mainSystem::inputParam&);
+  void createAll(Simulation&,const attachSystem::FixedComp&,
+		 const long int);
 
 };
 

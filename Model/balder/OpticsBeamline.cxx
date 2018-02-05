@@ -72,6 +72,7 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
+#include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
 #include "portItem.h"
@@ -98,6 +99,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
   
+  pipeInit(new constructSystem::VacuumPipe(newName+"InitPipe")),
   ionPA(new constructSystem::CrossPipe(newName+"IonPA")),
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   pipeA(new constructSystem::Bellows(newName+"BellowA")),
@@ -126,7 +128,10 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
   viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
-  pipeF(new constructSystem::Bellows(newName+"BellowF"))
+  pipeF(new constructSystem::Bellows(newName+"BellowF")),
+  shutterPipe(new constructSystem::CrossPipe(newName+"ShutterPipe")),
+  pipeG(new constructSystem::Bellows(newName+"BellowG")),
+  gateE(new constructSystem::GateValve(newName+"GateE"))
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -144,6 +149,7 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
       OR.addObject(filters[i]);
     }
   
+  OR.addObject(pipeInit);
   OR.addObject(ionPA);
   OR.addObject(triggerPipe);
   OR.addObject(pipeA);
@@ -221,8 +227,12 @@ OpticsBeamline::buildObjects(Simulation& System)
 {
   ELog::RegMethod RegA("OpticsBeamline","buildObjects");
 
+  pipeInit->addInsertCell(ContainedComp::getInsertCells());
+  pipeInit->createAll(System,*this,0);
+
   ionPA->addInsertCell(ContainedComp::getInsertCells());
-  ionPA->createAll(System,*this,0);
+  ionPA->setFront(*pipeInit,2);
+  ionPA->createAll(System,*pipeInit,2);
 
   triggerPipe->addInsertCell(ContainedComp::getInsertCells());
   triggerPipe->setFront(*ionPA,2);
@@ -342,6 +352,18 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeF->setFront(*viewPipe,2);
   pipeF->createAll(System,*viewPipe,2);
 
+  shutterPipe->addInsertCell(ContainedComp::getInsertCells());
+  shutterPipe->setFront(*pipeF,2);
+  shutterPipe->createAll(System,*pipeF,2);
+
+  pipeG->addInsertCell(ContainedComp::getInsertCells());
+  pipeG->setFront(*shutterPipe,2);
+  pipeG->createAll(System,*shutterPipe,2);
+
+  gateE->addInsertCell(ContainedComp::getInsertCells());
+  gateE->setFront(*pipeG,2);
+  gateE->createAll(System,*pipeG,2);
+
   return;
 }
 
@@ -351,8 +373,8 @@ OpticsBeamline::createLinks()
     Create a front/back link
    */
 {
-  setLinkSignedCopy(0,*ionPA,1);
-  setLinkSignedCopy(1,*viewPipe,2);
+  setLinkSignedCopy(0,*pipeInit,1);
+  setLinkSignedCopy(1,*gateE,2);
   return;
 }
   
