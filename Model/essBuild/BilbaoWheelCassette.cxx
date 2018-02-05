@@ -257,10 +257,11 @@ BilbaoWheelCassette::getSegWallThick() const
 }
 
 double
-BilbaoWheelCassette::getBrickGapThick(size_t& j) const
+BilbaoWheelCassette::getBrickGapThick(const size_t& j) const
   /*!
     Calculate total thick of bricks + gaps in the given segment
     Used to calculate wall thickness when bricksActive is true.
+    \param j :: segment number
    */
 {
   ELog::RegMethod RegA("BilbaoWheelCassette","getBrickGapThick(size_t&)");
@@ -435,8 +436,8 @@ BilbaoWheelCassette::createSurfacesBricks(const attachSystem::FixedComp& FC)
       R += std::abs(wallSegLength[j])*cos(wallSegDelta*M_PI/180.0);
       Geometry::Vec3D offset = Origin-Y*(R);
       ModelSupport::buildPlane(SMap,SJ+11,offset,Y);
-      ModelSupport::buildPlane(SMap,SJ+12,offset-Y*brickLength,Y);
- 
+      ModelSupport::buildPlane(SMap,SJ+12,offset-Y*brickGap,Y);
+
       if (j==0) // for the inner segment with no bricks
 	{
 	  ModelSupport::buildPlaneRotAxis(SMap,SJ+13,
@@ -549,7 +550,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
       else
 	{
 	  backFront = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
-	  backFrontBrick = ModelSupport::getComposite(SMap,SJ-1000," 12 -11 ");
+	  backFrontBrick = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -12M ");
 	}
 
       /// create side walls
@@ -591,7 +592,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	      SBricks += 10;
 	    }
 	  // gap b/w bricks in y-direction
-	  Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 11 -12M ");
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 12M -11M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 	}
       SJ += 1000;

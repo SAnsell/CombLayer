@@ -85,7 +85,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
 
   double getSegWallArea() const;
   double getSegWallThick() const;
-  double getBrickGapThick(size_t&) const;
+  double getBrickGapThick(const size_t&) const;
   void   buildBricks();
 
   void populate(const FuncDataBase&);
