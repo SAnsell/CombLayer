@@ -548,33 +548,28 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 
       if (j==0)
 	{
-	backFront = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
-	  FC.getLinkString(back);
-	} else if (j==nWallSeg-1)
-	{
-	  backFront = ModelSupport::getComposite(SMap,SJ-1000," -11 ") +
-	    FC.getLinkString(front);
-	  backFrontBrick =  ModelSupport::getComposite(SMap,SJ-1000," 21 -12 ");
-	} else
-	{
-	  backFront = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
-	  backFrontBrick=ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -12M ");
-	}
-
-      /// create side walls
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + backFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
-
-      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + backFront;
-      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
-
-      if (j==0)
-	{
+	  backFront = ModelSupport::getComposite(SMap,surfIndex,SJ," 11M -1 ") +
+	    FC.getLinkString(back);
 	  Out=ModelSupport::getComposite(SMap,SJ," 13 -14 ") + backFront;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
-	}
-      else // build bricks
+	} else
 	{
+	  if (j==nWallSeg-1)
+	    {
+	      backFront = ModelSupport::getComposite(SMap,SJ-1000," -11 ") +
+		FC.getLinkString(front);
+	      backFrontBrick =  ModelSupport::getComposite(SMap,SJ-1000," 21 -12 ");
+
+	      Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 -21M ") +
+		FC.getLinkString(front);
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,
+					       Out+tb));
+	    } else
+	    {
+	      backFront = ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -11M ");
+	      backFrontBrick=ModelSupport::getComposite(SMap,SJ,SJ-1000," 11 -12M ");
+	    }
+
 	  int SBricks(SJ+100);
 	  std::string prev = ModelSupport::getComposite(SMap,SJ," 13 ");
 	  for (size_t i=0; i<nBricks[j]; i++) // create brick cells
@@ -589,7 +584,7 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 		  Out=ModelSupport::getComposite(SMap,SBricks," -3 ") + prev;
 		}
 	      else // build only brick
-		  Out=ModelSupport::getComposite(SMap,SJ," -14 ") + prev;
+		Out=ModelSupport::getComposite(SMap,SJ," -14 ") + prev;
 
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,
 					       j<=nSteelRows?brickSteelMat:brickWMat,
@@ -602,22 +597,17 @@ BilbaoWheelCassette::createObjectsBricks(Simulation& System,
 	  // gap b/w bricks in y-direction
 	  Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 12M -11M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
-
-	  if (j==nWallSeg-1)
-	    {
-	      Out=ModelSupport::getComposite(SMap,SJ,SJ-1000," 13 -14 -21M ") +
-		FC.getLinkString(front);
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,pipeCellMat,temp,
-					       Out+tb));
-	    }
 	}
+
+      /// create side walls
+      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 3 -13M ") + backFront;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+
+      Out=ModelSupport::getComposite(SMap,surfIndex,SJ," 14M -4 ") + backFront;
+      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat,temp,Out+tb));
+
       SJ += 1000;
     }
-
-  // Part from the left (remove)
-  Out=ModelSupport::getComposite(SMap,surfIndex,SJ-1000," 3 -4 -11M ") +
-    FC.getLinkString(front);
-  System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,temp,Out+tb));
 
   const std::string outer = tb + FC.getLinkString(front) + FC.getLinkString(back);
 
