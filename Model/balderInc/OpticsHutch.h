@@ -56,7 +56,9 @@ class OpticsHutch :
   double outWidth;              ///< out side width
 
   double innerThick;            ///< Inner wall/roof skin
-  double pbThick;               ///< Thickness of lead in walls
+  double pbWallThick;           ///< Thickness of lead in walls
+  double pbBackThick;           ///< Thickness of lead in back plate
+  double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
   double floorThick;            ///< Floor thickness
 

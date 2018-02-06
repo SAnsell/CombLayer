@@ -62,8 +62,8 @@ ChopperGenerator::ChopperGenerator() :
   mainRadius(38.122),windowThick(0.3),
   ringRadius(40.0),motorRadius(10.0),
   motorInner(12.0),motorOuter(15.20),
-  portRadius(10.0),
-  portOuter(12.65),portWidth(11.6),
+  portRadius(10.0),portOuter(12.65),
+  motorRevFlag(0),portWidth(11.6),
   portHeight(11.6),portBoltStep(1.0),
   wallMat("Aluminium"),portMat("Aluminium"),
   sealMat("Poly"),windowMat("Aluminium")

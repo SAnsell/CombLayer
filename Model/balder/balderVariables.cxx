@@ -484,9 +484,11 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsRingWidth",60.0);
   Control.addVariable("BalderOpticsRingWallLen",105.0);
   Control.addVariable("BalderOpticsRingWallAngle",18.50);
-  Control.addVariable("BalderOpticsInnerThick",0.5);
-  Control.addVariable("BalderOpticsPbThick",5.0);
-  Control.addVariable("BalderOpticsOuterThick",0.5);
+  Control.addVariable("BalderOpticsInnerThick",0.3);
+  Control.addVariable("BalderOpticsPbWallThick",10.0);
+  Control.addVariable("BalderOpticsPbRoofThick",2.0);
+  Control.addVariable("BalderOpticsPbBackThick",2.0);
+  Control.addVariable("BalderOpticsOuterThick",0.3);
   Control.addVariable("BalderOpticsFloorThick",50.0);
 
   Control.addVariable("BalderOpticsSkinMat","Stainless304");
