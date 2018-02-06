@@ -3,7 +3,7 @@
  
  * File:   weights/WeightControl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -393,9 +393,6 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
-  const size_t nIndex=IParam.itemCnt(unitName,iSet);
-  const size_t nIndexB=IParam.itemCnt("WObject",iSet);
-  
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
     	  <<" rho:"<<density
