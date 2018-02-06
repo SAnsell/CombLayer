@@ -375,9 +375,6 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+13,Origin+X*(dw),X,Z,-delta/2.0);
   ModelSupport::buildPlaneRotAxis(SMap,surfIndex+14,Origin-X*(dw),X,Z,delta/2.0);
 
-  // front plane
-  double d = FC.getLinkDistance(back, front);
-
   const double R(innerCylRadius);
 
   // bircks start from this cylinder:
@@ -389,7 +386,9 @@ BilbaoWheelCassette::createSurfaces(const attachSystem::FixedComp& FC)
     rSteel += std::abs(wallSegLength[i+1]);
   ModelSupport::buildCylinder(SMap, surfIndex+17, Origin, Z, rSteel);
 
-  // d *= cos(delta*M_PI/180.0); //< distance from backCyl to the front plane
+  // front plane
+  const double d = FC.getLinkDistance(back, front);
+
   Geometry::Vec3D offset = Origin-Y*(R+d);
   ModelSupport::buildPlane(SMap,surfIndex+11,offset,Y);
 
