@@ -78,10 +78,10 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionHeight;///< height of the 2nd step connection thickness
   double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
-  double shaftConnectionFlangeRingHeight; ///< connection flange ring height
-  double shaftConnectionFlangeRingDist; ///< vertical location of the connection flange ring
-  double shaftConnectionFlangeRingRadius; ///< connection flange ring radius
-  double shaftConnectionFlangeStiffenerLength; ///< connection flange stiffener length
+  double shaftCFRingHeight; ///< connection flange ring height
+  double shaftCFRingDist; ///< vertical location of the connection flange ring
+  double shaftCFRingRadius; ///< connection flange ring radius
+  double shaftCFStiffLength; ///< connection flange stiffener length
 
   double shaftHoleHeight;        ///< Vent hole height at the shaft radius
   double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)

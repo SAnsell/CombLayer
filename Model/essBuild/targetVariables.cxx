@@ -86,7 +86,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftConnectionFlangeRingHeight",3.0); // TSV31-TargetUpdate02
   Control.addVariable("BilbaoWheelShaftConnectionFlangeRingRadius",31.0); // ESS-0124024 page 23
 
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffenerLength",20.0); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",20.0); // ESS-0124024 page 19
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
