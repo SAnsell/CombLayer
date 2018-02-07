@@ -124,6 +124,30 @@ particleConv::getPItem(const std::string& MC) const
   return mc->second;
 }
 
+const pName&
+particleConv::getNamedPItem(const std::string& particleName) const
+  /*!
+    Get  the PName item from the system
+    \param particleName :: Particle name [full]
+    \return pName found
+  */
+{
+
+  typedef std::map<std::string,pName>  PMAP;
+  PMAP::const_iterator mc=
+    std::find_if(indexLookup.begin(),indexLookup.end(),
+		 [&particleName](const PMAP::value_type& PN) -> bool
+		 {
+		   return (particleName == PN.second.phitsName);
+		 } );
+
+  if (mc==indexLookup.end())
+    throw ColErr::InContainerError<std::string>
+      (particleName,"ParticleName number not in particle list");
+
+  return mc->second;
+}
+
 const std::string&
 particleConv::phitsType(const char MChar) const
   /*
@@ -191,6 +215,20 @@ particleConv::nucleon(const std::string& MC) const
 {
   const pName& PN = getPItem(MC);
   return PN.nucleon;
+}
+
+int 
+particleConv::mcnpITYP(const std::string& particleName) const
+  /*
+    Accessor to mcnpITYP number by full name
+    \param particleName :: full name
+    \return mcnpITYP
+  */
+{
+  typedef std::map<std::string,pName>  PMAP;
+
+  const pName& PN=getNamedPItem(particleName);
+  return PN.mcnpITYP;
 }
 
 const std::string&

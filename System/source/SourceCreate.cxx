@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "World.h"
+#include "particleConv.h"
 #include "SourceBase.h"
 #include "BeamSource.h"
 #include "GammaSource.h"
@@ -173,6 +174,76 @@ createESSSource(const FuncDataBase& Control,
   return PSource.getKeyName();
 }
 
+
+std::string
+createWigglerSource(const FuncDataBase& Control,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
+  /*!
+    Creates a wiggler spectrum and position source
+    Currenly linear distribution and exp energy decay.
+    \param Control :: Control system
+    \param FC :: Link point
+    \param sideIndex :: Link point [signed] 
+    \return keyName of source
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createWigglerSource");
+
+  const particleConv& PC=particleConv::Instance();
+  
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  // These are very stange min/max.
+  // fit from prob = exp(a+b energy)
+
+  
+  const size_t EN=Control.EvalDefVar<size_t>("sdefEnergyBin",100);
+
+  // units of eV
+  const double PB=Control.EvalDefVar<double>("sdefEnergyPB",-9.6e-5);
+  
+  const double Emin=Control.EvalDefVar<double>("sdefEnergyMin",1e-3); // 1keV
+  const double Emax=Control.EvalDefVar<double>("sdefEnergyMax",1e-4); // 10keV
+  
+  const double yStart=Control.EvalDefVar<double>("sdefYPos",0.0);
+  const double xRange=Control.EvalDefVar<double>("sdefWidth",1.09);
+  const double zRange=Control.EvalDefVar<double>("sdefHeight",0.27);
+ 
+  ParabolicSource PSource("wigglerSource");
+  
+  //  TKEFLK (NPFLKA) = 1.0E-9 * (1.0/WHASOU(3)) * 
+  //     & LOG( FLRNDM(XDUMMY) *  ( 
+  //     & EXP( WHASOU(3)*WHASOU(2) ) - EXP( WHASOU(3) * WHASOU(1) ) ) + 
+  //     & EXP( WHASOU(3)*WHASOU(1) ) ) 
+
+  // Ebin ( y = exp(-be)
+  std::vector<double> EBin;
+  std::vector<double> EP;
+  const double EStep((Emax-Emin)/static_cast<double>(EN));
+  double EValue(Emin);
+  
+  EBin.push_back(Emin);
+  for(size_t i=1;i<EN;i++)
+    {
+      EValue+=EStep;
+      EBin.push_back(EValue);
+      EP.push_back(exp(1e6 * PB * (EValue-0.5*EStep)));
+    }
+  PSource.setEnergy(EBin,EP);
+  
+  PSource.setParticle(PC.mcnpITYP("photon"));
+  PSource.setOffset(0,yStart,0);
+  PSource.setRectangle(xRange,zRange);
+  PSource.setPower(0.0);
+  PSource.setNPts(1,1);
+  PSource.createAll(Control,FC,sideIndex);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
+  return PSource.getKeyName();
+}
+
+  
 std::string
 createESSPortSource(const FuncDataBase& Control,
 		    const attachSystem::FixedComp& FC,

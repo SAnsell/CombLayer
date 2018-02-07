@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceBase.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,8 +73,10 @@ class SourceBase
   /// Set cut energy
   void setCutEnergy(const double E) { cutEnergy=E; }
   void setEnergy(const double);
+  void setEnergy(const std::vector<double>&,const std::vector<double>&);
   void createEnergySource(SDef::Source&) const;
 
+  
   /// No-op to substitue
   virtual void substituteSurface(const int,const int) {}
   /// No-op to rotate

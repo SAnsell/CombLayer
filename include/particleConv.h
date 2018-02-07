@@ -3,7 +3,7 @@
  
  * File:   include/particleConv.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@ class particleConv
   particleConv& operator=(const particleConv&);
 
   const pName& getPItem(const std::string&) const;
+  const pName& getNamedPItem(const std::string&) const;
   
  public:
 
@@ -80,6 +81,8 @@ class particleConv
   int phitsITYP(const std::string&) const;
   int nucleon(const std::string&) const;
 
+  int mcnpITYP(const std::string&) const;
+  
   const std::string& mcnpToPhits(const int) const;
 
 };

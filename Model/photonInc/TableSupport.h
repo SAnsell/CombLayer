@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/Table.h
+ * File:   photonInc/TableSupport.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef photonSystem_Table_h
-#define photonSystem_Table_h
+#ifndef photonSystem_TableSupport_h
+#define photonSystem_TableSupport_h
 
 class Simulation;
 
@@ -50,9 +50,9 @@ class TableSupport : public attachSystem::ContainedComp,
  private:
 
   const int tabIndex;         ///< Index of surface offset
-  int cellIndex;                ///< Cell index
+  int cellIndex;              ///< Cell index
 
-  double length;            ///< Outer thickenss
+  double length;              ///< Outer thickenss
   double width;               ///< width of back volume
   double height;              ///< height of back volume
  

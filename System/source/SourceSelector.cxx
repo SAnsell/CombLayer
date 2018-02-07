@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "objectRegister.h"
+#include "particleConv.h"
 #include "SourceBase.h"
 #include "WorkData.h"
 #include "World.h"
@@ -149,6 +150,9 @@ sourceSelection(Simulation& System,
   else if (sdefType=="Bilbao")                    // bilbauSource
     sName=SDef::createBilbaoSource(Control,FC,linkIndex);
 
+  else if (sdefType=="Wiggler")                       // blader wiggler
+    sName=SDef::createWigglerSource(Control,FC,linkIndex);
+
   else if (sdefType=="ess")                       // essSource
     sName=SDef::createESSSource(Control,FC,linkIndex);
 
@@ -216,6 +220,7 @@ sourceSelection(Simulation& System,
 	"Laser :: Laser D/T fussion source\n"
 	"Point :: Test point source\n"
 	"Beam :: Test Beam [Radial] source \n"
+	"Wiggler :: Wiggler Source for balder \n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 

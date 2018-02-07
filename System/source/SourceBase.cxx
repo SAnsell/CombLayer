@@ -3,7 +3,7 @@
  
  * File:   source/SourceBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,7 +309,42 @@ SourceBase::setEnergy(const double E)
   ELog::EM<<"Single Energy Source == "<<E<<ELog::endDiag;
   return;
 }
-    
+
+void
+SourceBase::setEnergy(const std::vector<double>& EBin,
+		      const std::vector<double>& EProb)
+  /*!
+    Set a range of energies
+    \param EBin :: energy bins
+    \param EProb :: energy probability 
+  */
+{
+  ELog::RegMethod RegA("SourceBase","setEnergy(Vec,Vec)");
+
+  
+  if (EBin.empty() || EProb.empty())
+    throw ColErr::EmptyContainer("EBin/EProb empty");
+  
+  if (EBin.size()==EProb.size())
+    {
+      Energy=EBin;
+      EWeight=EProb;
+    }
+  else if (EBin.size()==EProb.size()+1)
+    {
+      Energy=EBin;
+      EWeight.clear();
+      EWeight.push_back(0.0);
+      EWeight.insert(EWeight.end(),EProb.begin(),EProb.end());
+    }
+  else
+    {
+      throw ColErr::MisMatch<size_t>(EBin.size(),EProb.size(),
+				     "Energy Bin mismatch");
+    }
+  return;
+}
+
 void
 SourceBase::createEnergySource(SDef::Source& sourceCard) const
   /*!
@@ -321,7 +356,6 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
   
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
     
-
   // Energy:
   if (Energy.size()>1)
     {

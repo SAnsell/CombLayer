@@ -466,10 +466,16 @@ balderVariables(FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","balderVariables");
+
+  Control.addVariable("sdefType","Wiggler");
+
+  
   setVariable::PipeGenerator PipeGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
 
   PipeGen.setWindow(-2.0,0.0);   // no window
+
+
   
   Control.addVariable("BalderOpticsDepth",100.0);
   Control.addVariable("BalderOpticsHeight",200.0);
