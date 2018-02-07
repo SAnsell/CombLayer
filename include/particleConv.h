@@ -34,12 +34,13 @@ struct pName
 {
   const std::string mcnpName;         ///< MCNP [single charactor]
   const int mcnpITYP;                 ///< MCNP particle number
-  const std::string phitsName;        ///< PHITS word name
+  const std::string flukaName;        ///< FLUKA word name
+  const std::string phitsName;        ///< PHITS word namea
   const int phitsITYP;                ///< iTyp number from phits
   const int mcplNumber;               ///< MCPL number
   const int nucleon;                  ///< number of nucleons
   
-  pName(const std::string&,const int,
+  pName(const std::string&,const int,const std::string&,
 	const std::string&,const int,const int,
 	const int );
 
@@ -67,7 +68,9 @@ class particleConv
   particleConv& operator=(const particleConv&);
 
   const pName& getPItem(const std::string&) const;
-  const pName& getNamedPItem(const std::string&) const;
+  const pName& getMCNPitypePItem(const int) const;
+  const pName& getPHITSPItem(const std::string&) const;
+  const pName& getFLUKAPItem(const std::string&) const;
   
  public:
 
@@ -76,14 +79,15 @@ class particleConv
   const std::string& phitsType(const char) const;
   int phitsITYP(const char) const;
   int nucleon(const char) const;
-    
+
   const std::string& phitsType(const std::string&) const;
   int phitsITYP(const std::string&) const;
   int nucleon(const std::string&) const;
 
   int mcnpITYP(const std::string&) const;
   
-  const std::string& mcnpToPhits(const int) const;
+  const std::string& mcnpToPHITS(const int) const;
+  const std::string& mcnpToFluka(const int) const;
 
 };
 

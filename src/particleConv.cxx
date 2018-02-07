@@ -3,7 +3,7 @@
  
  * File:   src/particleConv.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,17 +42,19 @@
 #include "particleConv.h"
 
 pName::pName(const std::string& MChar,const int mcnpN,
-	     const std::string& PhitsN,const int pI,
+	     const std::string& flukaN,
+	     const std::string& phitsN,const int pI,
 	     const int mcplN,const int N) :
-      mcnpName(MChar),mcnpITYP(mcnpN),
-      phitsName(PhitsN),phitsITYP(pI),
+  mcnpName(MChar),mcnpITYP(mcnpN),flukaName(flukaN),
+      phitsName(phitsN),phitsITYP(pI),
       mcplNumber(mcplN),nucleon(N)
   /*
     Constructor 
     \param MChar :: MCNP Name
     \param mcnpN :: MCNP number
-    \param PhitsN :: Phits name
-    \param pI :: phits ityp number
+    \param flukaN :: FLUKA name
+    \param phitsN :: PHITS name
+    \param pI :: PHITS ityp number
     \param mcplN :: kf/mcpl number
     \param N :: nucleon number
   */
@@ -60,36 +62,38 @@ pName::pName(const std::string& MChar,const int mcnpN,
 
 pName::pName(const pName& A) :
       mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
-      phitsName(A.phitsName),phitsITYP(A.phitsITYP),
-      mcplNumber(A.mcplNumber),nucleon(A.nucleon)
+      flukaName(A.flukaName),phitsName(A.phitsName),
+      phitsITYP(A.phitsITYP),mcplNumber(A.mcplNumber),
+      nucleon(A.nucleon)
   /*
     Copy Constructor 
     \param A :: Object to copy
   */
 {}
 
+// mcnpChar : mcnpI : fluka : phits : phitsI : mcplNumber : nucleons
 particleConv::particleConv() : 
   indexLookup{
-  {"h",{"h", 9,  "proton",   1,  2212,     1}},
-  {"n",{"n", 1,  "neutron",  2,  2112,     1}},   
-  {"/",{"/", 20, "pion+",    3,  211,      1}},
-  {"z",{"z", 21, "pion0",    4,  111,      1}},
-  {"*",{"*", 1,  "pion-",    5,  -211,     1}},
-  {"!",{"!", 16, "muon+",    6,  -13,      1}},
-  {"|",{"|", 4,  "muon-",    7,  13,       1}},
-  {"k",{"k", 22, "kaon+",    8,  321,      1}},
-  {"%",{"%", 23, "kaon0",    9,  311,      1}},  // short version
-  {"^",{"^", 24, "kaon0",    9,  311,      1}},  // long version
-  {"?",{"?", 36, "kaon-",    10, -321,     1}},
-  {"e",{"e", 3,  "electron", 11, 11,       1}},
-  {"f",{"f", 8,  "positron", 13, -11,      1}},
-  {"p",{"p", 2,  "photon",   14, 22,       1}},
-  {"d",{"d", 31, "deuteron", 15, 1000002,  2}},
-  {"t",{"t", 32, "triton",   16, 1000003,  3}},
-  {"s",{"s", 33, "3he",      17, 2000003,  3}},
-  {"a",{"a", 34, "alpha",    18, 2000004,  4}},
+  {"h",{"h", 9,  "proton",  "proton",   1,  2212,     1}},
+  {"n",{"n", 1,  "neutron", "neutron",  2,  2112,     1}},   
+  {"/",{"/", 20, "pion+",   "pion+",    3,  211,      1}},
+  {"z",{"z", 21, "pion0",   "pion0",    4,  111,      1}},
+  {"*",{"*", 1,  "pion-",   "pion-",    5,  -211,     1}},
+  {"!",{"!", 16, "muon+",   "muon+",    6,  -13,      1}},
+  {"|",{"|", 4,  "muon-",   "muon-",    7,  13,       1}},
+  {"k",{"k", 22, "kaon+",   "kaon+",    8,  321,      1}},
+  {"%",{"%", 23, "kaon0",   "kaon0",    9,  311,      1}},  // short version
+  {"^",{"^", 24, "kaon0",   "kaon0",    9,  311,      1}},  // long version
+  {"?",{"?", 36, "kaon-",   "kaon-",    10, -321,     1}},
+  {"e",{"e", 3,  "electron","electron", 11, 11,       1}},
+  {"f",{"f", 8,  "positron","positron", 13, -11,      1}},
+  {"p",{"p", 2,  "photon",  "photon",   14, 22,       1}},
+  {"d",{"d", 31, "deuteron","deuteron", 15, 1000002,  2}},
+  {"t",{"t", 32, "triton",  "triton",   16, 1000003,  3}},
+  {"s",{"s", 33, "3he",     "3he",      17, 2000003,  3}},
+  {"a",{"a", 34, "alpha",   "alpha",    18, 2000004,  4}},
 
-  {"g",{"g",19,"antiproton",11,-2212,1}}       // no direct phits
+   {"g",{"g",19,"antiproton","antiproton", 11, -2212, 1}}       // no direct phits
 
 }
   /*!
@@ -108,11 +112,12 @@ particleConv::Instance()
   return MR;
 }
 
+ // MCNP CHAR:
 const pName&
 particleConv::getPItem(const std::string& MC) const
   /*!
     Get  the PName item from the system
-    \param MC :: Particle name [mcnp]
+    \param MC :: Particle char [mcnp]
     \return pName found
   */
 {
@@ -124,11 +129,12 @@ particleConv::getPItem(const std::string& MC) const
   return mc->second;
 }
 
+  
 const pName&
-particleConv::getNamedPItem(const std::string& particleName) const
+particleConv::getPHITSPItem(const std::string& particleName) const
   /*!
     Get  the PName item from the system
-    \param particleName :: Particle name [full]
+    \param particleName :: PHITS 
     \return pName found
   */
 {
@@ -148,6 +154,54 @@ particleConv::getNamedPItem(const std::string& particleName) const
   return mc->second;
 }
 
+const pName&
+particleConv::getFLUKAPItem(const std::string& particleName) const
+  /*!
+    Get  the PName item from the system
+    \param particleName :: FLUKA name
+    \return pName found
+  */
+{
+
+  typedef std::map<std::string,pName>  PMAP;
+  PMAP::const_iterator mc=
+    std::find_if(indexLookup.begin(),indexLookup.end(),
+		 [&particleName](const PMAP::value_type& PN) -> bool
+		 {
+		   return (particleName == PN.second.flukaName);
+		 } );
+
+  if (mc==indexLookup.end())
+    throw ColErr::InContainerError<std::string>
+      (particleName,"ParticleName number not in particle list");
+
+  return mc->second;
+}
+
+const pName&
+particleConv::getMCNPitypePItem(const int particleID) const
+  /*!
+    Get  the PName item from the system
+    \param particleID :: mcnpITYPE number
+    \return pName found
+  */
+{
+
+  typedef std::map<std::string,pName>  PMAP;
+  PMAP::const_iterator mc=
+    std::find_if(indexLookup.begin(),indexLookup.end(),
+		 [&particleID](const PMAP::value_type& PN) -> bool
+		 {
+		   return (particleID == PN.second.mcnpITYP);
+		 } );
+
+  if (mc==indexLookup.end())
+    throw ColErr::InContainerError<int>
+      (particleID,"ParticleID number not in particle list");
+
+  return mc->second;
+}
+  
 const std::string&
 particleConv::phitsType(const char MChar) const
   /*
@@ -227,19 +281,19 @@ particleConv::mcnpITYP(const std::string& particleName) const
 {
   typedef std::map<std::string,pName>  PMAP;
 
-  const pName& PN=getNamedPItem(particleName);
+  const pName& PN=getPHITSPItem(particleName);
   return PN.mcnpITYP;
 }
 
 const std::string&
-particleConv::mcnpToPhits(const int mcnpNum) const
+particleConv::mcnpToPHITS(const int mcnpNum) const
   /*!
     Convert mcnp number to Phits
     \param mcnpNum :: mcnpNumber
     \return phits string
   */
 {
-  ELog::RegMethod RegA("particleConv","mcnpToPhits");
+  ELog::RegMethod RegA("particleConv","mcnpToPHITS");
 
   typedef std::map<std::string,pName>  PMAP;
 

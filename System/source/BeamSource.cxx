@@ -64,6 +64,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "particleConv.h"
 
 #include "SourceBase.h"
 #include "BeamSource.h"
@@ -211,6 +212,11 @@ BeamSource::createSource(SDef::Source& sourceCard) const
 void
 BeamSource::createAll(const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
+  /*!
+    Create all with out using Control variables
+    \param FC :: Fixed Point for origin/axis of beam
+    \param linkIndex :: link Index				
+  */
 {
   ELog::RegMethod RegA("BeamSource","createAll(FC)");
   createUnitVector(FC,linkIndex);
@@ -287,10 +293,17 @@ BeamSource::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","writePHITS");
+  ELog::RegMethod RegA("ParabolicSource","writeFLUKA");
+  boost::format FMTnum("%1$.4g");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
-    const long int nStep(20);
+  const particleConv& PC=particleConv::Instance();
+
+  // beam : -energy X X X X X  : Partiles
+  //  std::istringstream cx;
+  //  cx<<(FMTnum % -energy);
+  //  StrFunc::writeFLUKAhead("BEAM",PC.mcnpToPhits(particleType),cx.str(),OX)
+  //  cx.str("");
+  
   
   return;
 }

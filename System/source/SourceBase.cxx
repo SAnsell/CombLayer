@@ -385,7 +385,7 @@ SourceBase::writePHITS(std::ostream& OX) const
 
   const particleConv& partCV=particleConv::Instance();
  
-  OX<<"    proj = "<<partCV.mcnpToPhits(particleType)<<std::endl;
+  OX<<"    proj = "<<partCV.mcnpToPHITS(particleType)<<std::endl;
   OX<<"    wgt  = "<<weight<<std::endl;
   if (Energy.size()==1)
     OX<<"    e0  = "<<Energy.front()<<std::endl;

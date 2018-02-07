@@ -123,8 +123,6 @@ sourceSelection(Simulation& System,
   const std::string sdefType=IParam.getValue<std::string>("sdefType");
   std::string sName;
   
-  
-
 
   if (sdefType.empty() && IParam.hasKey("kcode") &&
       IParam.flag("kcode"))
