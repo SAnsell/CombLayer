@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuildInc/BilbaoWheel.h
  *
  * Copyright (c) 2015-2016 Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #ifndef essSystem_BilbaoWheel_h
@@ -38,9 +38,9 @@ namespace essSystem
 class BilbaoWheel : public WheelBase
 {
  private:
-  
+
   int engActive;                 ///< Engineering active flag
-  
+
   double targetHeight;           ///< Total height of target
   double targetInnerHeight;      ///< Inner height of target wheel (R<Tungsten)
   double targetInnerHeightRadius; ///< Radius of the inner height of target wheel (R<Tungsten)
@@ -51,7 +51,7 @@ class BilbaoWheel : public WheelBase
   double coolantThick;           ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
   double voidThick;              ///< void surrounding thickness
-  
+
   double innerRadius;            ///< Inner core
   double innerHoleHeight;        ///< Vent hole height at the inner radius
   double innerHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
@@ -62,8 +62,8 @@ class BilbaoWheel : public WheelBase
   double voidRadius;             ///< Final outer radius
   double aspectRatio;            ///< Defines curvature in the yz view
 
-  double mainTemp;                  ///< Main temperature 
-  
+  double mainTemp;                  ///< Main temperature
+
   size_t nSectors;                  ///< number of sectors for LayerDivide3D
   size_t nLayers;                   ///< number of radial layers
   std::vector<double> radius;       ///< cylinder radii
@@ -78,12 +78,15 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionHeight;///< height of the 2nd step connection thickness
   double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
+  double shaftConnectionFlangeRingHeight; ///< connection flange ring height
+  double shaftConnectionFlangeRingDist; ///< vertical location of the connection flange ring
+  double shaftConnectionFlangeRingRadius; ///< connection flange ring radius
 
   double shaftHoleHeight;        ///< Vent hole height at the shaft radius
   double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
   double shaftHoleXYangle;       ///< XY angle offset of shaft holes
 
-  
+
   double shaftBaseDepth;            ///< shaft depth (below origin)
   double catcherTopSteelThick; ///< thickness of top steel plate
   double catcherHeight;    ///< catcher total height
@@ -99,12 +102,12 @@ class BilbaoWheel : public WheelBase
   double circlePipesBigRad;   /// Big radius of circle of pipes]
   double circlePipesRad;      /// Radius of pipes in the circle of pipes
   double circlePipesWallThick; /// Thickness of pipes in the circle of pipes
-  
+
   int homoWMat;                     ///< homogenized W material
   int heMat;                        ///< He material
   int steelMat;                     ///< Steel mat
-  int ssVoidMat;                    ///< Mixture of SS316L and void 
-  
+  int ssVoidMat;                    ///< Mixture of SS316L and void
+
   int innerMat;                     ///< Inner Material block
 
   // Functions:
@@ -152,10 +155,10 @@ class BilbaoWheel : public WheelBase
   virtual void createAll(Simulation&,
 			 const attachSystem::FixedComp&,
 			 const long int);
-  
+
 };
 
 }
 
 #endif
- 
+

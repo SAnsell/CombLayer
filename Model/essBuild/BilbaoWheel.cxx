@@ -1,6 +1,6 @@
-/********************************************************************* 
+/*********************************************************************
   CombLayer : MCNP(X) Input builder
- 
+
  * File:   essBuild/BilbaoWheel.cxx
  *
  * Copyright (c) 2004-2018 by Konstantin Batkov
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  ****************************************************************************/
 #include <fstream>
@@ -89,7 +89,7 @@ BilbaoWheel::BilbaoWheel(const std::string& Key) :
   */
 {}
 
-BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) : 
+BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   WheelBase(A),
   engActive(A.engActive),
   targetHeight(A.targetHeight),
@@ -116,6 +116,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionHeight(A.shaft2StepConnectionHeight),
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
+  shaftConnectionFlangeRingHeight(A.shaftConnectionFlangeRingHeight),
+  shaftConnectionFlangeRingDist(A.shaftConnectionFlangeRingDist),
+  shaftConnectionFlangeRingRadius(A.shaftConnectionFlangeRingRadius),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
@@ -186,6 +189,9 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionHeight=A.shaft2StepConnectionHeight;
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
+      shaftConnectionFlangeRingHeight=A.shaftConnectionFlangeRingHeight;
+      shaftConnectionFlangeRingDist=A.shaftConnectionFlangeRingDist;
+      shaftConnectionFlangeRingRadius=A.shaftConnectionFlangeRingRadius;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
@@ -239,18 +245,18 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   // Master values
   FixedOffset::populate(Control);
-  
+
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   nSectors=Control.EvalDefVar<size_t>(keyName+"NSectors",3);
-  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");   
+  nLayers=Control.EvalVar<size_t>(keyName+"NLayers");
   double R;
   int M;
   for(size_t i=0;i<nLayers;i++)
     {
       const std::string nStr=StrFunc::makeString(i+1);
       R=Control.EvalVar<double>(keyName+"Radius"+nStr);
-      M = Control.EvalVar<int>(keyName+"MatTYPE"+nStr);   
+      M = Control.EvalVar<int>(keyName+"MatTYPE"+nStr);
 
       if (i && R-radius.back()<Geometry::zeroTol)
 	ELog::EM<<"Radius["<<i+1<<"] not ordered "
@@ -269,9 +275,9 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 				     " hole+steel length.");
   innerHoleXYangle=Control.EvalVar<double>(keyName+"InnerHoleXYangle");
 
-  coolantRadiusIn=Control.EvalVar<double>(keyName+"CoolantRadiusIn");  
-  coolantRadiusOut=Control.EvalVar<double>(keyName+"CoolantRadiusOut");  
-  caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");  
+  coolantRadiusIn=Control.EvalVar<double>(keyName+"CoolantRadiusIn");
+  coolantRadiusOut=Control.EvalVar<double>(keyName+"CoolantRadiusOut");
+  caseRadius=Control.EvalVar<double>(keyName+"CaseRadius");
   voidRadius=Control.EvalVar<double>(keyName+"VoidRadius");
   aspectRatio=Control.EvalVar<double>(keyName+"AspectRatio");
   mainTemp=Control.EvalVar<double>(keyName+"Temp");
@@ -284,12 +290,12 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
   steelTungstenThick=Control.EvalVar<double>(keyName+"SteelTungstenThick");
   steelTungstenInnerThick=Control.EvalVar<double>(keyName+"SteelTungstenInnerThick");
-  caseThickIn=Control.EvalVar<double>(keyName+"CaseThickIn");  
-  coolantThick=Control.EvalVar<double>(keyName+"CoolantThick");  
-  caseThick=Control.EvalVar<double>(keyName+"CaseThick");  
-  voidThick=Control.EvalVar<double>(keyName+"VoidThick");  
+  caseThickIn=Control.EvalVar<double>(keyName+"CaseThickIn");
+  coolantThick=Control.EvalVar<double>(keyName+"CoolantThick");
+  caseThick=Control.EvalVar<double>(keyName+"CaseThick");
+  voidThick=Control.EvalVar<double>(keyName+"VoidThick");
 
-  nShaftLayers=Control.EvalVar<size_t>(keyName+"NShaftLayers"); 
+  nShaftLayers=Control.EvalVar<size_t>(keyName+"NShaftLayers");
   for (size_t i=0; i<nShaftLayers; i++)
     {
       const std::string nStr=StrFunc::makeString(i+1);
@@ -308,6 +314,9 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaft2StepConnectionHeight=Control.EvalVar<double>(keyName+"Shaft2StepConnectionHeight");
   shaft2StepConnectionDist=Control.EvalVar<double>(keyName+"Shaft2StepConnectionDist");
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
+  shaftConnectionFlangeRingHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingHeight");
+  shaftConnectionFlangeRingDist=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingDist");
+  shaftConnectionFlangeRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
@@ -322,7 +331,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
 
   catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
-  
+
   catcherHeight=Control.EvalVar<double>(keyName+"CatcherHeight");
   catcherRadius=Control.EvalVar<double>(keyName+"CatcherRadius");
   if (catcherRadius>radius[0]+voidThick)
@@ -352,11 +361,11 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   circlePipesRad=Control.EvalVar<double>(keyName+"CirclePipesRad");
   circlePipesWallThick=Control.EvalVar<double>(keyName+"CirclePipesWallThick");
 
-  homoWMat=ModelSupport::EvalMat<int>(Control,keyName+"HomoWMat");  
-  heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");  
-  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");  
+  homoWMat=ModelSupport::EvalMat<int>(Control,keyName+"HomoWMat");
+  heMat=ModelSupport::EvalMat<int>(Control,keyName+"HeMat");
+  steelMat=ModelSupport::EvalMat<int>(Control,keyName+"SteelMat");
   ssVoidMat=ModelSupport::EvalMat<int>(Control,keyName+"SS316LVoidMat");
-  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");  
+  innerMat=ModelSupport::EvalMat<int>(Control,keyName+"InnerMat");
 
   return;
 }
@@ -369,7 +378,7 @@ BilbaoWheel::makeShaftSurfaces()
 {
   ELog::RegMethod RegA("BilbaoWheel","makeShaftSurfaces");
 
-  ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);
 
   int SI(wheelIndex);
   for (size_t i=0; i<nShaftLayers; i++)
@@ -405,11 +414,15 @@ BilbaoWheel::makeShaftSurfaces()
   double R = radius[0]+voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
 
-  // here
-  //  ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
-  //  ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
+  // Connection flange ring [ESS-0124024 pages 22-23 (DW-TRGT-ESS-0102)]
+  H = H1-voidThick;
+  H += shaftConnectionFlangeRingDist;
+  ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
+  H += shaftConnectionFlangeRingHeight;
+  ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
+  R = shaftConnectionFlangeRingRadius;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2147,Origin,Z,R);
 
-  
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
   ModelSupport::buildPlane(SMap,wheelIndex+2166,Origin+Z*H,Z);
@@ -430,7 +443,7 @@ BilbaoWheel::makeShaftSurfaces()
   H = 0.0;
   H += shaftBaseDepth;
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
-  
+
   // shaft base - catcher
   H -= catcherHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
@@ -517,7 +530,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // layer after (outside) circle of pipes
   //  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 2317 -7 ");
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-  
+
   // steel above
   buildCirclePipes(System,
 		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
@@ -531,7 +544,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 					      " -7 2007M "),
 		   ModelSupport::getComposite(SMap,wheelIndex," -105 115 "),steelMat);
 
-  
+
   // void below
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 35 -115 2127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
@@ -608,13 +621,23 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " -2127 2007M 2166 -2176 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-				 " -2118 2007M 2116 -2166 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out)); // here
 
+  // shaft outer surface
+  const std::string Rsurf(ModelSupport::getComposite(SMap,
+			       wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
+						     " 2007 "));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2118 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+Rsurf)); // lower (here)
 
-  
+  // flange ring
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 -2147 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 2147 -2118");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 2156 -2166 -2118 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+Rsurf)); // upper
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 " 2127 -2118 2166 -2186 ");
@@ -634,7 +657,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2237 2217 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  
+
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2225 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
@@ -654,7 +677,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 -2245 2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  
+
   // shaft layers
   int SI(wheelIndex);
   for (size_t i=0; i<nShaftLayers; i++)
@@ -695,7 +718,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
       SI += 10;
     }
-  
+
   return;
 }
 
@@ -709,7 +732,7 @@ BilbaoWheel::getSQSurface(const double R, const double e)
     StrFunc::makeString(1./std::pow(R,2)) + " " +
     StrFunc::makeString(e) + " 0 0 0 -1 " +
     StrFunc::makeString(Origin[0]) + " " + // X
-    StrFunc::makeString(Origin[1]) + " " + // Y 
+    StrFunc::makeString(Origin[1]) + " " + // Y
     StrFunc::makeString(Origin[2]);        // Z
 
   return surf;
@@ -737,7 +760,7 @@ BilbaoWheel::createRadialSurfaces()
     }
   // add 1st surface again with reversed normal - to simplify building cells
   SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+3001));
-  return; 
+  return;
 }
 
 
@@ -765,7 +788,7 @@ BilbaoWheel::divideRadial(Simulation& System,
   for(size_t j=0;j<nSectors;j++)
     {
       Out=ModelSupport::getComposite(SMap,SJ," 1 -11 ");
-      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));  
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
       SJ+=10;
     }
   return;
@@ -805,13 +828,13 @@ BilbaoWheel::buildHoles(Simulation& System,
     }
   const int SI0(wheelIndex+30000+surfOffset);
   const int SIstep(10);
-  
+
   // create surfaces
   int SI(SI0);
   double theta(0.0);
 
   // angular length of hole+mat
-  const double dTheta = 360.0/static_cast<double>(nSectors); 
+  const double dTheta = 360.0/static_cast<double>(nSectors);
   const double dThetaHole = dTheta * hs; // angular length of the hole
 
   for (size_t j=0; j<nSectors; j++)
@@ -867,7 +890,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 	  SI+=SIstep;
 	}
     }
-  return; 
+  return;
 }
 
 void
@@ -938,20 +961,20 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2,Origin,X);
 
   double H(targetHeight/2.0);
-  ModelSupport::buildPlane(SMap,wheelIndex+5,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+5,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+6,Origin+Z*H,Z);
 
   H+= voidTungstenThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);  
-  
+  ModelSupport::buildPlane(SMap,wheelIndex+15,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+16,Origin+Z*H,Z);
+
   H+= steelTungstenThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+25,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+26,Origin+Z*H,Z);  
-  
+  ModelSupport::buildPlane(SMap,wheelIndex+25,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+26,Origin+Z*H,Z);
+
   H+=coolantThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+35,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+36,Origin+Z*H,Z);
 
   H+=caseThick;
   ModelSupport::buildPlane(SMap,wheelIndex+245,Origin-Z*H,Z);
@@ -965,8 +988,8 @@ BilbaoWheel::createSurfaces()
   H-=caseThickIn;
   H+=caseThick;
   H+=voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);  
-  ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);  
+  ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);
 
   // dummy planes (same ase 55,56) to attach shaft outer void
   // they will be revised when the inner void step is implemented
@@ -985,17 +1008,17 @@ BilbaoWheel::createSurfaces()
   H += steelTungstenThick;
   H += coolantThick;
   H += caseThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+125,Origin-Z*H,Z);  // 22 : 23 
+  ModelSupport::buildPlane(SMap,wheelIndex+125,Origin-Z*H,Z);  // 22 : 23
   ModelSupport::buildPlane(SMap,wheelIndex+126,Origin+Z*H,Z);
-  
-  
+
+
   int SI(wheelIndex+10);
   for(size_t i=0;i<nLayers;i++)
     {
       ModelSupport::buildCylinder(SMap,SI+7,Origin,Z,radius[i]);
       SI+=10;
     }
-  
+
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   Geometry::General *GA;
 
@@ -1016,8 +1039,8 @@ BilbaoWheel::createSurfaces()
   //  ELog::EM<<"ASPECT ="<<1/aspectRatio<<ELog::endDiag;
   ECPtr->normalizeGEQ(0);
   //  ELog::EM<<"YY ="<<*ECPtr<<ELog::endDiag;
-  
-  ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);  
+
+  ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);
 
   createRadialSurfaces();
 
@@ -1035,7 +1058,7 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+117,Origin,Z,
 			      targetInnerHeightRadius+steelTungstenInnerThick);
 
-  return; 
+  return;
 }
 
 void
@@ -1049,9 +1072,9 @@ BilbaoWheel::createObjects(Simulation& System)
 
   const int matNum[4]={0,steelMat,heMat,homoWMat};
   std::string Out, Out1;
-  // 
+  //
   // Loop through each item and build inner section
-  // 
+  //
 
   int SI(wheelIndex);
   int nInner(0); // number of inner cells (must be 1)
@@ -1080,7 +1103,7 @@ BilbaoWheel::createObjects(Simulation& System)
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 5000);
 
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -25 35 ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
@@ -1091,7 +1114,7 @@ BilbaoWheel::createObjects(Simulation& System)
 		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
 		     0.0, 0);
 	}
-      
+
       if (i==1)
 	{
 	  // Layer before Tungsten bricks:
@@ -1180,25 +1203,25 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
   // Metal front:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 35 -36");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 517 35 -36");
   divideRadial(System, Out, steelMat);
 
   // forward Main sections:
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 36");	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -35");	
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -35");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 "2107 55 -56 -537 (-125:126:527)");
   divideRadial(System, Out, 0);
-  
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");	
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");
   addOuterSurf("Wheel",Out);
 
-  return; 
+  return;
 }
 
 
@@ -1250,7 +1273,7 @@ BilbaoWheel::createLinks()
       if (matTYPE[i]==3) // Tungsten layer
 	{
 	  // 8 and 9 - the layer before Tungsten (He)
-	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius + 
+	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
 					     steelTungstenInnerThick), -Y);
 	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
 
@@ -1316,8 +1339,8 @@ BilbaoWheel::createAll(Simulation& System,
   createLinks();
   if (engActive)
     buildSectors(System);
-  
-  insertObjects(System);       
+
+  insertObjects(System);
 
   return;
 }
