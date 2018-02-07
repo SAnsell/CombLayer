@@ -593,12 +593,8 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " 6 -2136 -2007M  " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  // upper cell - void around inner steel - horizontal part
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 " -17 2116 -2126 2137 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // upper cell - void around inner steel - vertical part
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 17 46 -2126 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 17 46 -2116 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // upper/lower connection
@@ -609,11 +605,11 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-				 " -2137 2007M 2116 -2146 ");
+				 " -2118 2007M 2116 -2146 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 " 2127 -2137 2146 -2166 ");
+				 " 2127 -2118 2146 -2166 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
@@ -684,7 +680,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
 					 " (((-2007M -2006) : " // top
                                          "   (-2107  -2106) : " // 1st step
-                                         "   (-2137 -2166)) 2105) : " // connection
+                                         "   (-2118 -2166)) 2105) : " // connection
 					 " (-2118 -2126 2205) "); // 2nd step and base
 	  addOuterSurf("Shaft",Out);
 	}
