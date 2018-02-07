@@ -405,15 +405,20 @@ BilbaoWheel::makeShaftSurfaces()
   double R = radius[0]+voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2118,Origin,Z,R);
 
+  // here
+  //  ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
+  //  ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
+
+  
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
-  ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2166,Origin+Z*H,Z);
 
   H += shaft2StepConnectionHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2176,Origin+Z*H,Z);
 
   H += voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+2166,Origin+Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2186,Origin+Z*H,Z);
 
   R = shaft2StepConnectionRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2127,Origin,Z,R);
@@ -600,21 +605,24 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // upper/lower connection
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-				 " -2127 2007M 2146 -2156 " );
+				 " -2127 2007M 2166 -2176 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-				 " -2118 2007M 2116 -2146 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+				 " -2118 2007M 2116 -2166 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out)); // here
+
+
+  
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 " 2127 -2118 2146 -2166 ");
+				 " 2127 -2118 2166 -2186 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
 				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-				 " -2127 2007M 2156 -2166 ");
+				 " -2127 2007M 2176 -2186 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // wheel catcher
@@ -668,7 +676,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	} else if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite
-	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 2166N -2006N ");
+	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 2186N -2006N ");
 	} else
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
@@ -680,7 +688,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
 					 " (((-2007M -2006) : " // top
                                          "   (-2107  -2106) : " // 1st step
-                                         "   (-2118 -2166)) 2105) : " // connection
+                                         "   (-2118 -2186)) 2105) : " // connection
 					 " (-2118 -2126 2205) "); // 2nd step and base
 	  addOuterSurf("Shaft",Out);
 	}
