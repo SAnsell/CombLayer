@@ -119,6 +119,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftConnectionFlangeRingHeight(A.shaftConnectionFlangeRingHeight),
   shaftConnectionFlangeRingDist(A.shaftConnectionFlangeRingDist),
   shaftConnectionFlangeRingRadius(A.shaftConnectionFlangeRingRadius),
+  shaftConnectionFlangeStiffenerLength(A.shaftConnectionFlangeStiffenerLength),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
@@ -192,6 +193,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftConnectionFlangeRingHeight=A.shaftConnectionFlangeRingHeight;
       shaftConnectionFlangeRingDist=A.shaftConnectionFlangeRingDist;
       shaftConnectionFlangeRingRadius=A.shaftConnectionFlangeRingRadius;
+      shaftConnectionFlangeStiffenerLength=A.shaftConnectionFlangeStiffenerLength;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
@@ -317,6 +319,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftConnectionFlangeRingHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingHeight");
   shaftConnectionFlangeRingDist=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingDist");
   shaftConnectionFlangeRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
+  shaftConnectionFlangeStiffenerLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffenerLength");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
@@ -422,6 +425,13 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
   R = shaftConnectionFlangeRingRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2147,Origin,Z,R);
+
+  // Connection flange stiffeners
+  // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
+  const double stifTheta(atan(shaftConnectionFlangeRingDist/shaftConnectionFlangeStiffenerLength)*180.0/M_PI);
+  ELog::EM << "add cone variables" << ELog::endDiag;
+  ModelSupport::buildCone(SMap, wheelIndex+2148, Origin+Z*(50.0),
+			  Z, 90-stifTheta, -1);
 
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
@@ -626,10 +636,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   const std::string Rsurf(ModelSupport::getComposite(SMap,
 			       wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
 						     " 2007 "));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2118 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+Rsurf)); // lower (here)
+  // Connection flange:
+  //   stiffener
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
 
-  // flange ring
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 2148 -2118 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out)); // lower
+
+  //   ring
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 -2147 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
 
