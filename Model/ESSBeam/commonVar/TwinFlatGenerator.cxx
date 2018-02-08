@@ -3,7 +3,7 @@
  
  * File:   commonVar/TwinFlatGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,37 @@ TwinFlatGenerator::TwinFlatGenerator() :
   */
 {}
 
+TwinFlatGenerator::TwinFlatGenerator(const TwinFlatGenerator& A) : 
+  TwinBaseGenerator(A),
+  portIW(A.portIW),portIH(A.portIH),portOW(A.portOW),
+  portOH(A.portOH),portNBolt(A.portNBolt),portBoltRadius(A.portBoltRadius)
+  /*!
+    Copy constructor
+    \param A :: TwinFlatGenerator to copy
+  */
+{}
+
+TwinFlatGenerator&
+TwinFlatGenerator::operator=(const TwinFlatGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: TwinFlatGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      TwinBaseGenerator::operator=(A);
+      portIW=A.portIW;
+      portIH=A.portIH;
+      portOW=A.portOW;
+      portOH=A.portOH;
+      portNBolt=A.portNBolt;
+      portBoltRadius=A.portBoltRadius;
+    }
+  return *this;
+}
+
 
 TwinFlatGenerator::~TwinFlatGenerator() 
  /*!
@@ -89,8 +120,8 @@ TwinFlatGenerator::setMainRadius(const double R)
 
 void
 TwinFlatGenerator::setMaterial(const std::string& wMat,
-			   const std::string& )
-  /*!
+			       const std::string& )
+/*!
     Set material/port material
     \param wMat :: Main wall material
     \param pMat :: Port material
