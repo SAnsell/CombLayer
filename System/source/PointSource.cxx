@@ -3,7 +3,7 @@
  
  * File:   source/PointSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -227,7 +227,20 @@ PointSource::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("PointSource","write");
+  ELog::RegMethod RegA("PointSource","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+PointSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("PointSource","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;

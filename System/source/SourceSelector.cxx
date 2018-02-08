@@ -120,8 +120,9 @@ sourceSelection(Simulation& System,
     attachSystem::getLinkIndex(DSnd)/1000;
 
   // NOTE: No return to allow active SSW systems  
-  std::string sdefType=IParam.getValue<std::string>("sdefType");
+  const std::string sdefType=IParam.getValue<std::string>("sdefType");
   std::string sName;
+  
   
 
 

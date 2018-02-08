@@ -3,7 +3,7 @@
  
  * File:   sourceInc/GaussBeamSource.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,6 +69,7 @@ class GaussBeamSource :
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
     
 };
 

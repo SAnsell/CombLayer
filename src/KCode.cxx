@@ -167,7 +167,20 @@ KCode::writePHITS(std::ostream&) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("KCode","write");
+  ELog::RegMethod RegA("KCode","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+KCode::writeFLUKA(std::ostream&) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("KCode","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;

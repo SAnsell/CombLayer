@@ -83,6 +83,7 @@ class SourceBase
   virtual void rotate(const localRotate&) { } 
   virtual void createSource(SDef::Source&) const =0;
   virtual void writePHITS(std::ostream&) const =0;
+  virtual void writeFLUKA(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;
 };
 

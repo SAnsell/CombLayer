@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SurfNormSource.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@ class SurfNormSource :
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
   virtual void write(std::ostream&) const;
 
   

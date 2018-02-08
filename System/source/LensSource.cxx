@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   lensModel/LensSource.cxx
+ * File:   source/LensSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -547,6 +547,19 @@ LensSource::writePHITS(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("LensSource","write");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+LensSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("LensSource","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;

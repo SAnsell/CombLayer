@@ -3,7 +3,7 @@
  
  * File:   source/BeamSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,6 +279,22 @@ BeamSource::writePHITS(std::ostream& OX) const
   OX<<std::endl;
   return;
 }
+
+void
+BeamSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("ParabolicSource","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+    const long int nStep(20);
+  
+  return;
+}
+
 
 
 
