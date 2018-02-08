@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,13 +43,12 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Track.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
@@ -59,7 +58,7 @@
 #include "HeadRule.h"
 #include "Token.h"
 #include "neutron.h"
-#include "RuleCheck.h"
+//#include "RuleCheck.h"
 #include "objectRegister.h"
 #include "masterWrite.h"
 #include "Element.h"

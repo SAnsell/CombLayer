@@ -3,7 +3,7 @@
  
  * File:   delft/ReactorGrid.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -519,9 +519,9 @@ ReactorGrid::getCellOrigin(const size_t i,const size_t j) const
   if (i>=NX || j>=NY) 
     throw ColErr::IndexError<size_t>(i,j,"i/j in NX/NY");
 
-  const double halfWidth=static_cast<double>(2.0*(i+1))-
+  const double halfWidth=2.0*static_cast<double>(i+1)-
     static_cast<double>(NX+1);
-  const double halfDepth=static_cast<double>(2.0*(j+1))-
+  const double halfDepth=2.0*static_cast<double>(j+1)-
     static_cast<double>(NY+1);
   
   return Origin+
@@ -813,4 +813,4 @@ ReactorGrid::getDefElement(const FuncDataBase&,const std::string&,
 
 ///\endcond TEMPLATE
 
-}  // NAMESPACE shutterSystem
+}  // NAMESPACE delftSystem

@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedComp.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -205,7 +205,7 @@ ContainedComp::addOuterSurf(const int SN)
 {
   ELog::RegMethod RegA("ContainedComp","addOuterSurf");
   
-  outerSurf.addIntersection(StrFunc::makeString(SN));
+  outerSurf.addIntersection(std::to_string(SN));
   outerSurf.populateSurf();
   return;
 }
@@ -248,7 +248,7 @@ ContainedComp::addBoundarySurf(const int SN)
 {
   ELog::RegMethod RegA("ContainedComp","addBoundarySurf(int)");
 
-  boundary.addIntersection(StrFunc::makeString(SN));
+  boundary.addIntersection(std::to_string(SN));
   boundary.populateSurf();
   return;
 }
@@ -276,7 +276,7 @@ ContainedComp::addBoundaryUnionSurf(const int SN)
   */
 {
   ELog::RegMethod RegA("ContainedComp","addBoundaryUnionSurf(int)");
-  boundary.addUnion(StrFunc::makeString(SN));
+  boundary.addUnion(std::to_string(SN));
   boundary.populateSurf();
   return;
 }

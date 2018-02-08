@@ -3,7 +3,7 @@
  
  * File:   physics/DXTControl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +42,12 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "stringCombine.h"
 #include "MapRange.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
-#include "NRange.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"

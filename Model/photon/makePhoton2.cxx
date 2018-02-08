@@ -3,7 +3,7 @@
  
  * File:   photon/makePhoton2.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,8 @@ makePhoton2::buildWings(Simulation& System)
    */
 {
   ELog::RegMethod RegA("makePhoton2","buildWings");
-    int voidCell(74123);
+
+  int voidCell(74123);
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
@@ -149,7 +150,7 @@ makePhoton2::buildWings(Simulation& System)
   const Geometry::Vec3D ZB=PModObj->getLinkPt(6);
   
   const double DX=XA.Distance(XB)/2.0;
-  const double DY=YA.Distance(YB);   // Not dividde
+  const double DY=YA.Distance(YB);   // Not divided
   const double DZ=ZA.Distance(ZB)/2.0;
   
   for(size_t i=0;i<4;i++)
@@ -157,7 +158,7 @@ makePhoton2::buildWings(Simulation& System)
       SPlate.push_back
 	(std::shared_ptr<insertSystem::insertPlate>
 	 (new insertSystem::insertPlate
-	  ("SPlate"+StrFunc::makeString(i))));
+	  ("SPlate"+std::to_string(i))));
 
       if (i>1)
 	SPlate[i]->setValues(5.0,H,DY,"Lead");

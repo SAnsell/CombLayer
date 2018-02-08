@@ -46,6 +46,7 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "version.h"
 #include "Element.h"
 #include "Zaid.h"

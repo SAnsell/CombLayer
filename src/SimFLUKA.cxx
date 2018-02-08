@@ -3,7 +3,7 @@
  
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "version.h"
 #include "Element.h"
-#include "MapSupport.h"
 #include "MXcards.h"
 #include "Element.h"
 #include "Zaid.h"
@@ -66,32 +66,15 @@
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "ArbPoly.h"
-#include "Cylinder.h"
-#include "Cone.h"
-#include "MBrect.h"
-#include "NullSurface.h"
-#include "Sphere.h"
-#include "Torus.h"
-#include "General.h"
-#include "surfaceFactory.h"
-#include "surfProg.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "SurInter.h"
-#include "Debug.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -303,7 +286,7 @@ SimFLUKA::writeWeights(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"[weight]"<<std::endl;
+  OX<<"* [weight]"<<std::endl;
   WM.write(OX);
   return;
 }
