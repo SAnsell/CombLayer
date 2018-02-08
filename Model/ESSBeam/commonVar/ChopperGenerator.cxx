@@ -241,7 +241,8 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("ChopperGenerator","generateChopper");
-
+  const double boltRad(0.5);
+  
   Control.addVariable(keyName+"YStep",yStep);
   Control.addVariable(keyName+"MainZStep",mainZStep);   // drawing [5962.2]
   Control.addVariable(keyName+"Height",height);
@@ -262,12 +263,14 @@ ChopperGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"MotorPlateMat",wallMat);    
   Control.addVariable(keyName+"MotorInnerRadius",motorInner); // [5691.2]
   Control.addVariable(keyName+"MotorOuterRadius",motorOuter); // [5691.2]
-  Control.addVariable(keyName+"MotorBoltRadius",0.50);       //M10 inc thread
+  Control.addVariable(keyName+"MotorBoltRadius",boltRad);       //M10 inc thread
   Control.addVariable(keyName+"MotorMainMat",wallMat);
   Control.addVariable(keyName+"MotorBoltMat","ChipIRSteel");  
   Control.addVariable(keyName+"MotorSealMat","Poly");
   Control.addVariable(keyName+"MotorNBolts",24);
-  Control.addVariable(keyName+"MotorSealRadius",(motorInner+motorOuter)/2.0);
+  const double sealRad=(motorInner+motorOuter)/2.0-2.0*boltRad;
+  Control.addVariable(keyName+"MotorSealRadius",sealRad);
+		      
   Control.addVariable(keyName+"MotorSealThick",0.2);  
   Control.addVariable(keyName+"MotorSealMat","Poly");
   Control.addVariable(keyName+"MotorReverse",static_cast<int>(motorRevFlag));

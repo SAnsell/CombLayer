@@ -501,6 +501,34 @@ FrontBackCut::getShiftedSurf(ModelSupport::surfRegister& SMap,
   throw ColErr::EmptyValue<int>("HeadRule contains no planes/cylinder");
 } 
   
+Geometry::Vec3D
+FrontBackCut::frontInterPoint(const Geometry::Vec3D& Centre,
+			      const Geometry::Vec3D& CAxis) const
+  /*!
+    Calculate the intersection point on the front  points
+    \param Centre :: Centre point of line
+    \param CAxis :: Axis of line
+    \return intersection point
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","frontInterPoint");
 
+  return SurInter::getLinePoint(Centre,CAxis,frontCut,frontDivider);  
+}
+
+Geometry::Vec3D
+FrontBackCut::backInterPoint(const Geometry::Vec3D& Centre,
+			      const Geometry::Vec3D& CAxis) const
+  /*!
+    Calculate the intersection point on the  back points
+    \param Centre :: Centre point of line
+    \param CAxis :: Axis of line
+    \return intersection point
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","backInterPoint");
+
+  return SurInter::getLinePoint(Centre,CAxis,backCut,backDivider);  
+}
   
 }  // NAMESPACE attachSystem
