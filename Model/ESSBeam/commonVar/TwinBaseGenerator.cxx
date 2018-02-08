@@ -238,8 +238,8 @@ TwinBaseGenerator::generateChopper(FuncDataBase& Control,
       Control.addVariable(keyName+itemName+"BoltMat","ChipIRSteel");  
       Control.addVariable(keyName+itemName+"SealMat","Poly");
       Control.addVariable(keyName+itemName+"NBolts",24);
-      const double sealRad=(motorInner+motorOuter)/2.0-
-	2.0*motorBoltRad-0.2;
+      const double sealRad=(motorRadius+motorOuter)/2.0-
+	2.0*motorBoltRadius-0.2;
       Control.addVariable(keyName+itemName+"SealRadius",sealRad);
 
       Control.addVariable(keyName+itemName+"SealThick",0.2);  
