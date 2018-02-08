@@ -233,13 +233,15 @@ TwinBaseGenerator::generateChopper(FuncDataBase& Control,
       Control.addVariable(keyName+itemName+"PlateMat",wallMat);    
       Control.addVariable(keyName+itemName+"InnerRadius",motorFlangeInner); // [5691.2]
       Control.addVariable(keyName+itemName+"OuterRadius",motorFlangeOuter); // [5691.2]
-      Control.addVariable(keyName+itemName+"BoltRadius",0.50);       //M10 inc thread
+      Control.addVariable(keyName+itemName+"BoltRadius",motorBoltRadius);   //M10 inc thread
       Control.addVariable(keyName+itemName+"MainMat",wallMat);
       Control.addVariable(keyName+itemName+"BoltMat","ChipIRSteel");  
       Control.addVariable(keyName+itemName+"SealMat","Poly");
       Control.addVariable(keyName+itemName+"NBolts",24);
-      Control.addVariable(keyName+itemName+"SealRadius",
-			  (motorRadius+motorOuter)/2.0);
+      const double sealRad=(motorInner+motorOuter)/2.0-
+	2.0*motorBoltRad-0.2;
+      Control.addVariable(keyName+itemName+"SealRadius",sealRad);
+
       Control.addVariable(keyName+itemName+"SealThick",0.2);  
       Control.addVariable(keyName+itemName+"SealMat",motorSealMat);
     }
