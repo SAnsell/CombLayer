@@ -433,6 +433,9 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCone(SMap, wheelIndex+2148, Origin+Z*(50.0),
 			  Z, 90-stifTheta, -1);
 
+  ELog::EM << "add stiffener variables" << ELog::endDiag;
+  createRadialSurfaces(wheelIndex+3000, 18, 2.0);
+
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
   ModelSupport::buildPlane(SMap,wheelIndex+2166,Origin+Z*H,Z);
@@ -639,7 +642,9 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // Connection flange:
   //   stiffener
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
+  //  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
+  buildStiffeners(System,Out+Rsurf,wheelIndex+3000,18,steelMat);
+  ELog::EM << "use nStiffeners" << ELog::endDiag;
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 2148 -2118 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out)); // lower
@@ -763,7 +768,7 @@ BilbaoWheel::createRadialSurfaces(const int SI, const size_t n,const double w)
   \param w  :: plate width (if 0 then only surfaces for sectors are defined)
  */
 {
-  ELog::RegMethod RegA("BilbaoWheel","createRadialPlateSurfaces");
+  ELog::RegMethod RegA("BilbaoWheel","createRadialSurfaces");
 
   if (n<2) return;
 
@@ -776,17 +781,17 @@ BilbaoWheel::createRadialSurfaces(const int SI, const size_t n,const double w)
       if (w<Geometry::zeroTol) // just divide radial
 	{
 	  ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Z, theta);
-	  // Geometry::Vec3D myX(X);
-	  // Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(myX);
-	  // ModelSupport::buildPlane(SMap,SJ+1,Origin,myX);
 	}
       else // plates
 	{
 	  Geometry::Vec3D myX(X);
+	  Geometry::Vec3D divider(-Y);
 	  Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(myX);
+	  Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(divider);
 
-	  ModelSupport::buildPlaneRotAxis(SMap, SJ+3, Origin-X*w, X, Z, theta);
-	  ModelSupport::buildPlaneRotAxis(SMap, SJ+4, Origin+X*w, X, Z, theta);
+	  ModelSupport::buildPlane(SMap,SJ+2,Origin,divider);
+	  ModelSupport::buildPlane(SMap,SJ+3,Origin-myX*w/2.0,myX);
+	  ModelSupport::buildPlane(SMap,SJ+4,Origin+myX*w/2.0,myX);
 	}
       theta += dTheta;
       SJ += 10;
@@ -809,7 +814,7 @@ BilbaoWheel::divideRadial(Simulation& System,
   /*!
     Divide wheel by sectors to help cell splitting
     \param System :: Simulation
-    \param sides :: top/bottom and side cylinders
+    \param sides :: top/bottom and side surfaces
     \param mat :: material
   */
 {
@@ -827,6 +832,43 @@ BilbaoWheel::divideRadial(Simulation& System,
     {
       Out=ModelSupport::getComposite(SMap,SJ," 1 -11 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+      SJ+=10;
+    }
+  return;
+}
+
+void
+BilbaoWheel::buildStiffeners(Simulation& System,
+			     const std::string& sides,
+			     const int SI,const size_t n,
+			     const int mat)
+  /*!
+    Divide wheel by sectors to help cell splitting
+    \param System :: Simulation
+    \param sides :: top/bottom and side surfaces
+    \param SI :: surface offset
+    \param n  :: number of sectors/plates
+    \param mat :: material
+  */
+{
+  ELog::RegMethod RegA("BilbaoWheel","buildStiffeners");
+
+  if (nSectors<2)
+    {
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,sides));
+      return;
+    }
+
+  std::string Out;
+  int SJ(SI);
+  for(size_t j=0;j<n;j++)
+    {
+      Out=ModelSupport::getComposite(SMap,SJ," 2 3 -4 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out+sides));
+
+      Out=ModelSupport::getComposite(SMap,SJ," 2 4 -13 ");
+      System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out+sides));
+
       SJ+=10;
     }
   return;
