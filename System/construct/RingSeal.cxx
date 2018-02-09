@@ -3,7 +3,7 @@
  
  * File:   construct/RingSeal.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -230,7 +230,6 @@ RingSeal::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("RingSeal","createObjects");
-
   
   std::string Out,SealStr;
 
@@ -291,9 +290,13 @@ RingSeal::generateInsert(Simulation& System)
       cellActive.insert(OPtr->getName());
       QSeg.rotate(BAxis);
     }
-  
+
+  ELog::EM<<"RING SEAL "<<ELog::endDiag;
   for(const int CN : cellActive)
-    addInsertCell(CN);
+    {
+      ELog::EM<<"RING SEAL "<<CN<<ELog::endDiag;
+      addInsertCell(CN);
+    }
 
   return;
 }  
