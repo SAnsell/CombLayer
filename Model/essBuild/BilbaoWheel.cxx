@@ -753,31 +753,54 @@ BilbaoWheel::getSQSurface(const double R, const double e)
   return surf;
 }
 
+
 void
-BilbaoWheel::createRadialSurfaces()
-  /*!
-    Create planes for the inner structure inside BilbaoWheel
-  */
+BilbaoWheel::createRadialSurfaces(const int SI, const size_t n,const double w)
+/*!
+  Create planes for radial plate surfaces (stiffeners)
+  \param SI :: surface offset
+  \param n  :: number of sectors/plates
+  \param w  :: plate width (if 0 then only surfaces for sectors are defined)
+ */
 {
-  ELog::RegMethod RegA("BilbaoWheel","createRadialSurfaces");
+  ELog::RegMethod RegA("BilbaoWheel","createRadialPlateSurfaces");
 
-  if (nSectors<2) return;
+  if (n<2) return;
 
-  int SI(wheelIndex+3000);
+  int SJ(SI);
   double theta(0.0);
-  const double dTheta = 360.0/nSectors;
+  const double dTheta = 360.0/n;
 
-  for (size_t j=0; j<nSectors; j++)
+  for (size_t j=0; j<n; j++)
     {
-      ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
+      if (w<Geometry::zeroTol) // just divide radial
+	{
+	  ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Z, theta);
+	  // Geometry::Vec3D myX(X);
+	  // Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(myX);
+	  // ModelSupport::buildPlane(SMap,SJ+1,Origin,myX);
+	}
+      else // plates
+	{
+	  Geometry::Vec3D myX(X);
+	  Geometry::Quaternion::calcQRotDeg(theta,Z).rotate(myX);
+
+	  ModelSupport::buildPlaneRotAxis(SMap, SJ+3, Origin-X*w, X, Z, theta);
+	  ModelSupport::buildPlaneRotAxis(SMap, SJ+4, Origin+X*w, X, Z, theta);
+	}
       theta += dTheta;
-      SI += 10;
+      SJ += 10;
     }
-  // add 1st surface again with reversed normal - to simplify building cells
-  SMap.addMatch(SI+1,SMap.realSurf(wheelIndex+3001));
+  // add 1st surface(s) again with reversed normal - to simplify building cells
+  if (w<Geometry::zeroTol)
+    SMap.addMatch(SJ+1,SMap.realSurf(SI+1));
+  else
+    {
+      SMap.addMatch(SJ+3,SMap.realSurf(SI+3));
+      SMap.addMatch(SJ+4,SMap.realSurf(SI+4));
+    }
   return;
 }
-
 
 void
 BilbaoWheel::divideRadial(Simulation& System,
@@ -1057,7 +1080,7 @@ BilbaoWheel::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,wheelIndex+537,Origin,Z,voidRadius);
 
-  createRadialSurfaces();
+  createRadialSurfaces(wheelIndex+3000, nSectors);
 
 
   // inner vertical layers

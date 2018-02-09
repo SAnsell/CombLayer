@@ -124,7 +124,7 @@ class BilbaoWheel : public WheelBase
   void makeShaftObjects(Simulation&);
   std::string getSQSurface(const double,const double);
 
-  void createRadialSurfaces();
+  void createRadialSurfaces(const int,const size_t,const double w=0.0);
   void divideRadial(Simulation&,const std::string&,const int);
 
   void buildHoles(Simulation&,
