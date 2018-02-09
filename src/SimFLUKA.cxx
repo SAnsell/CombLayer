@@ -201,10 +201,11 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
 
 void
 SimFLUKA::writeElements(std::ostream& OX) const
-/*!
-  Write all the used isotopes.
-  To be used by material definitions in the COMPOUND cards.
- */
+  /*!
+    Write all the used isotopes.
+    To be used by material definitions in the COMPOUND cards.
+    \param OX :: Output stream
+  */
 {
   ELog::RegMethod RegA("SimFLUKA","writeElements");
 
@@ -217,8 +218,8 @@ SimFLUKA::writeElements(std::ostream& OX) const
 
   for(const OTYPE::value_type& mp : OList)
     {
-      MonteCarlo::Material m = DB.getMaterial(mp.second->getMat());
-      std::vector<MonteCarlo::Zaid> zaidVec = m.getZaidVec();
+      const MonteCarlo::Material& m = DB.getMaterial(mp.second->getMat());
+      const std::vector<MonteCarlo::Zaid>& zaidVec = m.getZaidVec();
       for (const MonteCarlo::Zaid& ZC : zaidVec)
 	{
 	  setZA.insert(ZC);
@@ -226,11 +227,11 @@ SimFLUKA::writeElements(std::ostream& OX) const
     }
 
   std::ostringstream cx,lowmat;
-  MonteCarlo::Zaid ZC;
-  for (const MonteCarlo::Zaid &za : setZA)
+  for (const MonteCarlo::Zaid& za : setZA)
     {
       if (za.getZaid().empty()) continue;
-      cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."<<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
+      cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
+	<<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
       lowmat<<getLowMat(za.getZ(),za.getIso(),za.getFlukaName());
     }
 
@@ -333,8 +334,8 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   return;
 }
 
-std::string
-SimFLUKA::getLowMatName(const size_t& Z) const
+const std::string&
+SimFLUKA::getLowMatName(const size_t Z) const
 /*!
   Return low energy FLUKA material name for the given Z
   \param Z :: Atomic number
@@ -347,7 +348,8 @@ SimFLUKA::getLowMatName(const size_t& Z) const
 {
   ELog::RegMethod RegA("SimFLUKA","getLowMatName");
 
-  std::vector<std::string> lm = {"z=0",
+  const static std::string empty(" - ");
+  const static std::vector<std::string> lm = {"z=0",
     "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
     "CARBON",   "NITROGEN", "OXYGEN",   "FLUORINE", "NEON",
     "SODIUM",   "MAGNESIU", "ALUMINUM", "SILICON",  "PHOSPHO",
@@ -369,45 +371,36 @@ SimFLUKA::getLowMatName(const size_t& Z) const
     "",         "233-U",    "",         "239-PU",   "241-AM"
   };
 
-  if((Z==34)||(Z==37)||(Z==44)||(Z==45)||(Z==52)||(Z==59)||(Z==61)||
-     ((Z>=66)&&(Z<=70))||(Z==76)||(Z==81)||((Z>=84)&&(Z<=89))||(Z==91)||
-     (Z==93))
+  const static std::set<size_t> excludeLM
+    ( { 34,37,44,45,52,59,61,66,67,68,69,70,
+	76,81,84,85,86,87,88,89,91,93});
+
+  if (excludeLM.find(Z)!=excludeLM.end())
     {
       ELog::EM << "No low energy FLUKA material for Z="<<Z<<ELog::endCrit;
+      return empty;
     }
 
-  if (Z>lm.size())
-    {
-      ELog::EM << "No low energy FLUKA material for Z="<<Z
-	       <<"\nZ is too large"<<ELog::endErr;
-    }
+  if (Z>=lm.size())
+    throw ColErr::IndexError<size_t>
+      (Z,lm.size(),"No low energy FLUKA material for Z>lm.size");
 
-  std::string name(lm[Z]);
-
-  if (name.empty())
-    {
-      ELog::EM << "FLUKA name for material with Z="<<Z<<" undefined" << ELog::endCrit;
-      name = " - ";
-    }
-
-  return name;
+  return lm[Z];
 }
 
 std::string
-SimFLUKA::getLowMat(const size_t& Z,const size_t& A,const std::string& mat) const
-/*!
-  Return the LOW-MAT card definition for the given Element
-  \param Z :: Atomic number
-  \param A :: Mass number
-  \param mat :: Material name in the MATERIAL card
- */
+SimFLUKA::getLowMat(const size_t Z,const size_t A,
+		    const std::string& mat) const
+  /*!
+    Return the LOW-MAT card definition for the given Element
+    \param Z :: Atomic number
+    \param A :: Mass number
+    \param mat :: Material name in the MATERIAL card
+  */
 {
   ELog::RegMethod RegA("SimFLUKA","getLowMat");
-  std::string str;
 
-  str = "LOW-MAT "+mat+" - - - - - "+getLowMatName(Z)+" ";
-
-  return str;
+  return std::string("LOW-MAT "+mat+" - - - - - "+getLowMatName(Z)+" ");  
 }
 
 void

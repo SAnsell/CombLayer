@@ -118,8 +118,11 @@ writeFLUKAhead(const std::string& HeadUnit,
     }
   
   if (i)
-    for(;i<NItem;i++)
-      OX<<std::string(10,' ')<<std::endl;
+    {
+      for(;i<NItem;i++)
+	OX<<std::string(10,' ');
+      OX<<EndUnit<<std::endl;
+    }
   
   return;
 }
