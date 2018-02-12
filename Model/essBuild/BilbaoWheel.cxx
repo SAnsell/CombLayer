@@ -479,20 +479,26 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
   
   const Geometry::Vec3D nearPt(0,0,0);
-  const Geometry::Vec3D A = SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
-					       SMap.realSurfPtr(wheelIndex+2218),
-					       px,nearPt);
-  const Geometry::Vec3D B = SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
-					       SMap.realSurfPtr(wheelIndex+2217),
-					       px,nearPt);
+  const Geometry::Vec3D A(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
+					     SMap.realSurfPtr(wheelIndex+2218),
+					     px,nearPt));
+  const Geometry::Vec3D B(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
+					     SMap.realSurfPtr(wheelIndex+2217),
+					     px,nearPt));
   R += (B-A).abs();
   ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
-
 
   R = catcherNotchBaseRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
 
-  
+  const Geometry::Vec3D C(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2225),
+					     SMap.realSurfPtr(wheelIndex+2237),
+					     px,nearPt));
+
+  const double L(Origin.Y()-C.Y());
+  H = L * tan(catcherBaseAngle*M_PI/180)-C.Z();
+  ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
+			  -Z, 90-catcherBaseAngle, -1);
 
   
 
@@ -684,7 +690,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // wheel catcher
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2237 2215 -2115 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2237 2238 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   //     floor gap
@@ -710,7 +716,10 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2227 -2237 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
 
-  
+  // notch: big conical cell
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2238 2237 2225 -2115 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
+
 
   
 
