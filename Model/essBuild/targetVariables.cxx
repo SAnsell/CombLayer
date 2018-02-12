@@ -92,11 +92,11 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
   Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
   
-  Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaftBaseDepth",34.0); // TSV31-TargetUpdate02
 
   Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);
   
-  Control.addVariable("BilbaoWheelCatcherHeight",10.0);
+  Control.addVariable("BilbaoWheelCatcherGap",10.0);
   Control.addVariable("BilbaoWheelCatcherRadius",42.0);
   Control.addVariable("BilbaoWheelCatcherMiddleHeight",10.0);
   Control.addVariable("BilbaoWheelCatcherMiddleRadius",32.0);

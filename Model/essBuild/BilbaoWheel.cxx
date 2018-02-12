@@ -126,7 +126,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftHoleXYangle(A.shaftHoleXYangle),
   shaftBaseDepth(A.shaftBaseDepth),
   catcherTopSteelThick(A.catcherTopSteelThick),
-  catcherHeight(A.catcherHeight),
+  catcherGap(A.catcherGap),
   catcherRadius(A.catcherRadius),
   catcherMiddleHeight(A.catcherMiddleHeight),
   catcherMiddleRadius(A.catcherMiddleRadius),
@@ -200,7 +200,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftHoleXYangle=A.shaftHoleXYangle;
       shaftBaseDepth=A.shaftBaseDepth;
       catcherTopSteelThick=A.catcherTopSteelThick;
-      catcherHeight=A.catcherHeight;
+      catcherGap=A.catcherGap;
       catcherRadius=A.catcherRadius;
       catcherMiddleHeight=A.catcherMiddleHeight;
       catcherMiddleRadius=A.catcherMiddleRadius;
@@ -336,7 +336,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
 
-  catcherHeight=Control.EvalVar<double>(keyName+"CatcherHeight");
+  catcherGap=Control.EvalVar<double>(keyName+"CatcherGap");
   catcherRadius=Control.EvalVar<double>(keyName+"CatcherRadius");
   if (catcherRadius>radius[0]+voidThick)
     throw ColErr::RangeError<double>(catcherRadius, 0, radius[0]+voidThick,
@@ -459,7 +459,7 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
 
   // shaft base - catcher
-  H -= catcherHeight;
+  H -= catcherGap;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
   R = catcherRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
