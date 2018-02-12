@@ -128,11 +128,11 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   catcherTopSteelThick(A.catcherTopSteelThick),
   catcherGap(A.catcherGap),
   catcherRadius(A.catcherRadius),
-  catcherMiddleHeight(A.catcherMiddleHeight),
-  catcherMiddleRadius(A.catcherMiddleRadius),
-  catcherNotchDepth(A.catcherNotchDepth),
+  catcherBaseHeight(A.catcherBaseHeight),
+  catcherBaseRadius(A.catcherBaseRadius),
+  catcherBaseAngle(A.catcherBaseAngle),
   catcherNotchRadius(A.catcherNotchRadius),
-  catcherRingRadius(A.catcherRingRadius),
+  catcherNotchThick(A.catcherNotchThick),
   catcherRingDepth(A.catcherRingDepth),
   catcherRingThick(A.catcherRingThick),
   circlePipesBigRad(A.circlePipesBigRad),
@@ -202,11 +202,11 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       catcherTopSteelThick=A.catcherTopSteelThick;
       catcherGap=A.catcherGap;
       catcherRadius=A.catcherRadius;
-      catcherMiddleHeight=A.catcherMiddleHeight;
-      catcherMiddleRadius=A.catcherMiddleRadius;
-      catcherNotchDepth=A.catcherNotchDepth;
+      catcherBaseHeight=A.catcherBaseHeight;
+      catcherBaseRadius=A.catcherBaseRadius;
+      catcherBaseAngle=A.catcherBaseAngle;
       catcherNotchRadius=A.catcherNotchRadius;
-      catcherRingRadius=A.catcherRingRadius;
+      catcherNotchThick=A.catcherNotchThick;
       catcherRingDepth=A.catcherRingDepth;
       catcherRingThick=A.catcherRingThick;
       circlePipesBigRad=A.circlePipesBigRad;
@@ -342,22 +342,13 @@ BilbaoWheel::populate(const FuncDataBase& Control)
     throw ColErr::RangeError<double>(catcherRadius, 0, radius[0]+voidThick,
 				     "CatcherRadius must not exceed Radius1 + VoidThick");
 
-  catcherMiddleHeight=Control.EvalVar<double>(keyName+"CatcherMiddleHeight");
-  catcherMiddleRadius=Control.EvalVar<double>(keyName+"CatcherMiddleRadius");
-  if (catcherMiddleRadius>catcherRadius)
-    throw ColErr::RangeError<double>(catcherMiddleRadius, 0, catcherRadius,
-				     "CatcherMiddleRadius must not exceed CatcherRadius");
+  catcherBaseHeight=Control.EvalVar<double>(keyName+"CatcherBaseHeight");
+  catcherBaseRadius=Control.EvalVar<double>(keyName+"CatcherBaseRadius");
 
-  catcherNotchDepth=Control.EvalVar<double>(keyName+"CatcherNotchDepth");
-  if (catcherNotchDepth>catcherMiddleHeight)
-    throw ColErr::RangeError<double>(catcherNotchDepth, 0, catcherMiddleHeight,
-				     "CatcherNotchDepth must not exceed CatcherMiddleHeight");
+  catcherBaseAngle=Control.EvalVar<double>(keyName+"CatcherBaseAngle");
   catcherNotchRadius=Control.EvalVar<double>(keyName+"CatcherNotchRadius");
-  if (catcherNotchRadius>catcherMiddleRadius)
-    throw ColErr::RangeError<double>(catcherNotchRadius, 0, catcherMiddleRadius,
-				     "CatcherNotchRadius must not exceed CatcherMiddleRadius");
 
-  catcherRingRadius=Control.EvalVar<double>(keyName+"CatcherRingRadius");
+  catcherNotchThick=Control.EvalVar<double>(keyName+"CatcherNotchThick");
   catcherRingDepth=Control.EvalVar<double>(keyName+"CatcherRingDepth");
   catcherRingThick=Control.EvalVar<double>(keyName+"CatcherRingThick");
 
@@ -454,34 +445,42 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+2137,Origin,Z,R);
 
   // shaft base
-  H = 0.0;
-  H += shaftBaseDepth;
+  H = shaftBaseDepth;
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
 
   // shaft base - catcher
   H -= catcherGap;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
-  R = catcherRadius;
+
+  H = shaftBaseDepth-caseThickIn;
+  ModelSupport::buildPlane(SMap,wheelIndex+2235,Origin-Z*H,Z);
+
+  H = shaftBaseDepth-catcherBaseHeight;
+  ModelSupport::buildPlane(SMap,wheelIndex+2245,Origin-Z*H,Z);
+
+  R = catcherBaseRadius-2*catcherBaseHeight/tan(catcherBaseAngle*M_PI/180);
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
 
-  H -= catcherMiddleHeight;
-  ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
-  R = catcherMiddleRadius;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
+  H = catcherBaseRadius*tan(catcherBaseAngle*M_PI/180);
+  H = shaftBaseDepth-H;
+  ModelSupport::buildCone(SMap, wheelIndex+2208, Origin-Z*(H),
+			  Z, 90-catcherBaseAngle, -1);
 
-  // catcher notch
-  H += catcherNotchDepth;
-  ModelSupport::buildPlane(SMap,wheelIndex+2235,Origin-Z*H,Z);
+  H -= catcherGap/sin(catcherBaseAngle*M_PI/180);
+  ModelSupport::buildCone(SMap, wheelIndex+2218, Origin-Z*(H),
+			  Z, 90-catcherBaseAngle, -1);
+
   R = catcherNotchRadius;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
+  
+  R += catcherNotchThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
 
-  // catcher ring
-  H = catcherRingDepth;
-  ModelSupport::buildPlane(SMap,wheelIndex+2245,Origin-Z*H,Z);
-  R = catcherRingRadius;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
-  R += catcherRingThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
+
+  
+
+  
+
 
 
   // circle of pipes
@@ -670,35 +669,34 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // wheel catcher
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2207 2205 -2115 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2227 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  // two cells are needed since there is CatcherRing between them
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2247 2215 -2115 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2237 2217 2215 -2115 ");
+  //     floor gap
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2208 2205 -2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2225 -2115 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2205 -2245 -2208 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2205 -2245 2208 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  // shaft base catcher
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2207 2205 -2215 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  // shaft base catcher - middle part
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2215 -2235 "); // -2217 2215 -2225
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2227 2235 -2225 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  // notch
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2227 2235 -2225 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  // ring
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2245 -2115 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 -2245 2215 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2217 2205 2245 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2227 2217 2215 -2115 2218 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
+
+  // small cell between base cones
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2217 -2218 2208 2215 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+
+
+
+
+  
   // shaft layers
   int SI(wheelIndex);
   for (size_t i=0; i<nShaftLayers; i++)

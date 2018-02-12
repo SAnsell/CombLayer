@@ -92,11 +92,11 @@ class BilbaoWheel : public WheelBase
   double catcherTopSteelThick; ///< thickness of top steel plate
   double catcherGap;    ///< vertical clearance below catcher
   double catcherRadius;    ///< catcher rotal radius
-  double catcherMiddleHeight;///< catcher mid height
-  double catcherMiddleRadius;///< catchr mid radius
-  double catcherNotchDepth; ///< catcher notch depth
+  double catcherBaseHeight;///< catcher base truncated cone height
+  double catcherBaseRadius;///< catchr base truncated cone lower radius
+  double catcherBaseAngle; ///< catcher base truncated cone angle
   double catcherNotchRadius; ///< catcher notch radius
-  double catcherRingRadius; ///< catcher ring radius
+  double catcherNotchThick; ///< catcher notch thickness
   double catcherRingDepth; ///< catcher ring depth (below origin)
   double catcherRingThick; ///< catcher ring thickness
 

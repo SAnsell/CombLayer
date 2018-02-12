@@ -92,17 +92,17 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
   Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
   
-  Control.addVariable("BilbaoWheelShaftBaseDepth",34.0); // TSV31-TargetUpdate02
+  Control.addVariable("BilbaoWheelShaftBaseDepth",33.8); // TSV32IS
 
   Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);
   
-  Control.addVariable("BilbaoWheelCatcherGap",10.0);
+  Control.addVariable("BilbaoWheelCatcherGap",0.8);
   Control.addVariable("BilbaoWheelCatcherRadius",42.0);
-  Control.addVariable("BilbaoWheelCatcherMiddleHeight",10.0);
-  Control.addVariable("BilbaoWheelCatcherMiddleRadius",32.0);
-  Control.addVariable("BilbaoWheelCatcherNotchDepth",5.0);
-  Control.addVariable("BilbaoWheelCatcherNotchRadius",22.0);
-  Control.addVariable("BilbaoWheelCatcherRingRadius",34.0);
+  Control.addVariable("BilbaoWheelCatcherBaseHeight",8.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelCatcherBaseRadius",21.25);  // TSV32IS
+  Control.addVariable("BilbaoWheelCatcherBaseAngle",45.0);  // TSV32IS + ESS-0038811
+  Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelCatcherNotchThick",3.0);
   Control.addVariable("BilbaoWheelCatcherRingDepth",24.0);
   Control.addVariable("BilbaoWheelCatcherRingThick",2.0);
 
