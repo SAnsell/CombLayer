@@ -46,6 +46,12 @@ double normalDist(const double); ///< convert a number 0->1 into a normal distri
 double invErf(const double);    ///< Inverse error function
 
 template<typename T>
+size_t
+inUnorderedRange(const std::vector<T>&,
+		 const std::vector<T>&,
+		 const T&);
+
+template<typename T>
 int 
 sign(const T& V)
   /*!

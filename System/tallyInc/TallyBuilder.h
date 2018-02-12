@@ -23,11 +23,12 @@
 #define TallyBuilder_h
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
    
-  void tallySelection(Simulation&,const mainSystem::inputParam&);
+  void tallySelection(SimMCNP&,const mainSystem::inputParam&);
   void helpTallyType(const std::string&);
 
 }

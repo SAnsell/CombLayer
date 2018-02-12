@@ -91,12 +91,12 @@ namespace tallySystem
 {
 
 void
-gridConstruct::processGrid(Simulation& System,
+gridConstruct::processGrid(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
 			   const size_t Index) 
   /*!
     Add grid tally as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -221,7 +221,7 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
 			     
 
 void
-gridConstruct::applyMultiGrid(Simulation& System,
+gridConstruct::applyMultiGrid(SimMCNP& System,
 			      const size_t initNPD,
 			      const size_t NPD,
 			      const Geometry::Vec3D& TOrigin,

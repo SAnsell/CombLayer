@@ -62,6 +62,7 @@
 #include "BaseMap.h"
 #include "SurfMap.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "NList.h"
 #include "NRange.h"
@@ -76,13 +77,13 @@ namespace tallySystem
 
   
 void
-surfaceConstruct::processSurface(Simulation& System,
+surfaceConstruct::processSurface(SimMCNP& System,
 				 const int idType,
 				 const mainSystem::inputParam& IParam,
 				 const size_t Index)
   /*!
     Add surface tally as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
@@ -156,14 +157,14 @@ surfaceConstruct::processSurface(Simulation& System,
 
 
 int
-surfaceConstruct::processSurfObject(Simulation& System,
+surfaceConstruct::processSurfObject(SimMCNP& System,
 				    const int idType,
 				    const std::string& FObject,
 				    const long int linkPt,
 				    const std::vector<std::string>& linkN)
   /*!
     Process a surface tally on a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param linkN :: surface exclude number for making a region of interest
@@ -194,14 +195,14 @@ surfaceConstruct::processSurfObject(Simulation& System,
 }
 
 int
-surfaceConstruct::processSurfMap(Simulation& System,
+surfaceConstruct::processSurfMap(SimMCNP& System,
 				 const int idType,
 				 const std::string& SObject,
 				 const std::string& SurfUnit,
 				 const long int linkIndex) 
   /*!
     Process a surface tally on a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param SObject :: SurfMap object for surfaces
     \param SurfUnit :: Object within surfMap
     \param linkIndex :: Index of surface [or -ve for all]
@@ -231,12 +232,12 @@ surfaceConstruct::processSurfMap(Simulation& System,
 }
 
 void
-surfaceConstruct::processSurfaceCurrent(Simulation& System,
+surfaceConstruct::processSurfaceCurrent(SimMCNP& System,
                                         const mainSystem::inputParam& IParam,
                                         const size_t Index) 
 /*!
     Add surface tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
     \return 1 on success / 0 on failure 
@@ -248,12 +249,12 @@ surfaceConstruct::processSurfaceCurrent(Simulation& System,
 }
 
 void
-surfaceConstruct::processSurfaceFlux(Simulation& System,
+surfaceConstruct::processSurfaceFlux(SimMCNP& System,
                                      const mainSystem::inputParam& IParam,
                                      const size_t Index) 
 /*!
     Add surface tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */

@@ -55,6 +55,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "Element.h"
 #include "Zaid.h"
 #include "MXcards.h"
@@ -75,12 +76,12 @@ namespace tallySystem
 
 
 void
-heatConstruct::processHeat(Simulation& System,
+heatConstruct::processHeat(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
 			   const size_t Index) 
   /*!
     Add heat tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */

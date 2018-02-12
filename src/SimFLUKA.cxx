@@ -136,8 +136,8 @@ SimFLUKA::writeTally(std::ostream& OX) const
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
   // _1 refers back to the TItem pair<int,tally*>
-  for(const TallyTYPE::value_type& TI : TItem)
-    TI.second->write(OX);
+//  for(const TallyTYPE::value_type& TI : TItem)
+//    TI.second->write(OX);
 
   return;
 }
@@ -304,31 +304,6 @@ SimFLUKA::writePhysics(std::ostream& OX) const
 
 {  
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
-  // Processing for point tallies
-  std::map<int,tallySystem::Tally*>::const_iterator mc;
-  std::vector<int> Idum;
-  std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::pointTally* Ptr=
-	dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-	  Idum.push_back(Ptr->getKey());
-	  for(size_t i=0;i<4;i++)
-	    Rdum.push_back(Ptr->getWindowPt(i));
-	}
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      for(const Geometry::Vec3D& rN : Rdum)
-	OX<<"           "<<rN<<std::endl;	
-    }
-
   // Remaining Physics cards
   PhysPtr->writeFLUKA(OX);
   return;
@@ -425,6 +400,7 @@ SimFLUKA::write(const std::string& Fname) const
   StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells),OX);
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
+
   Simulation::writeVariables(OX,'*');
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   StrFunc::writeFLUKA("BEAM -2.0 - - 14.0 3.2 1.0 PROTON",OX);

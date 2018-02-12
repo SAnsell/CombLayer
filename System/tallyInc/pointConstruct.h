@@ -34,6 +34,7 @@ namespace mainSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -63,15 +64,15 @@ class pointConstruct
 			const Geometry::Vec3D&);
 
   // Point Stuff
-  static void processPoint(Simulation&,const mainSystem::inputParam&,
+  static void processPoint(SimMCNP&,const mainSystem::inputParam&,
 			   const size_t);
-  static void processPointFree(Simulation&,const Geometry::Vec3D&,
+  static void processPointFree(SimMCNP&,const Geometry::Vec3D&,
 			const std::vector<Geometry::Vec3D>&);
-  static void processPointFree(Simulation&,const std::string&,
+  static void processPointFree(SimMCNP&,const std::string&,
 			  const long int,const double);
-  static void processPointFree(Simulation&,const std::string&,
+  static void processPointFree(SimMCNP&,const std::string&,
 			const long int,const Geometry::Vec3D&);
-  static void processPointWindow(Simulation&,const std::string&,
+  static void processPointWindow(SimMCNP&,const std::string&,
 			  long int,const double,
 			  const double,const double);
 

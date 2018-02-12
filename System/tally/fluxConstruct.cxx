@@ -67,6 +67,7 @@
 #include "Material.h"
 #include "DBMaterial.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 
 #include "inputParam.h"
 #include "objectSupport.h" 
@@ -77,12 +78,12 @@ namespace tallySystem
 {
 
 int
-fluxConstruct::processFlux(Simulation& System,
+fluxConstruct::processFlux(SimMCNP& System,
 			   const mainSystem::inputParam& IParam,
 			   const size_t Index) 
   /*!
     Add flux tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */

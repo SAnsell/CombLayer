@@ -126,7 +126,7 @@ createInputs(inputParam& IParam)
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti("T","tally",1000,0);
-  IParam.regMulti("TAdd","tallyAdd",1000);
+  IParam.regMulti("OAdd","objectAddition",1000);
   IParam.regMulti("TC","tallyCells",10000,2,3);
   IParam.regMulti("TGrid","TGrid",10000,2,3);
   IParam.regMulti("TMod","tallyMod",8,1);
@@ -242,7 +242,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
-  IParam.setDesc("TAdd","Add a component (cell)");
+  IParam.setDesc("OAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");

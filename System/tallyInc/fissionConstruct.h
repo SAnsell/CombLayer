@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -56,7 +57,7 @@ class fissionConstruct
 
 
 
-  static int processPower(Simulation&,const mainSystem::inputParam&,
+  static int processPower(SimMCNP&,const mainSystem::inputParam&,
 			   const size_t);
 
   static void writeHelp(std::ostream&);

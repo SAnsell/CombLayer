@@ -57,6 +57,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "LinkSupport.h"
@@ -77,12 +78,12 @@ namespace tallySystem
 
 
 void
-fmeshConstruct::processMesh(Simulation& System,
+fmeshConstruct::processMesh(SimMCNP& System,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
   /*!
     Add mesh tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -122,7 +123,7 @@ fmeshConstruct::processMesh(Simulation& System,
 }
 
 void 
-fmeshConstruct::rectangleMesh(Simulation& System,const int type,
+fmeshConstruct::rectangleMesh(SimMCNP& System,const int type,
 			      const std::string& KeyWords,
 			      const Geometry::Vec3D& APt,
 			      const Geometry::Vec3D& BPt,
@@ -130,7 +131,7 @@ fmeshConstruct::rectangleMesh(Simulation& System,const int type,
   /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param type :: type of tally[1,2,3]
     \param KeyWords :: KeyWords to add to the tally
     \param APt :: Lower point 

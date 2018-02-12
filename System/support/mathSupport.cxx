@@ -329,6 +329,29 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   return;
 }
 
+
+template<typename T>
+size_t
+inUnorderedRange(const std::vector<T>& VOffset,
+		 const std::vector<T>& VRange,
+		 const T& Item)
+  /*!
+    Determine if the Item is in the range VOffset[] + VRange[]
+    \param VOffset :: start values						
+    \param VRange :: range values
+    \param Item :: test value
+    \return index point+1 [or 0 on failure]
+   */
+{
+  for(size_t i=0;i<VOffset.size() && i<VRange.size();i++)
+    {
+      if (Item>=VOffset[i] &&  Item<=VOffset[i]+VRange[i])
+	return i+1;
+    }
+  return 0;
+}
+
+
 template<typename T> 
 typename std::vector<T>::const_iterator
 iteratorPos(const std::vector<T>& xArray,const T& Aim)
@@ -859,4 +882,8 @@ template long int mathFunc::binSearch(
 template double mathFunc::minDifference(const std::vector<double>&,
 					const double&);
 
+
+template
+size_t inUnorderedRange(const std::vector<int>&,const std::vector<int>&,
+			const int&);
 ///\endcond TEMPLATE

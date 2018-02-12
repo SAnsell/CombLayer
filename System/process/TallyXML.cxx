@@ -66,6 +66,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LineTrack.h"
 #include "ObjectTrackAct.h"
 #include "ObjectTrackPoint.h"
@@ -86,7 +87,8 @@ namespace tallySystem
 {
   
 void
-addXMLtally(Simulation& System,const std::string& FName)
+addXMLtally(Simulation& System,
+	    const std::string& FName)
   /*!
     Tally from an XML file
     \param System :: Simuation object 
@@ -134,7 +136,10 @@ addXMLtally(Simulation& System,const std::string& FName)
 	    break;
 	  }
       
-      if (TX) System.addTally(*TX);
+      SimMCNP* SM=dynamic_cast<SimMCNP*>(&System);
+      if (SM)
+	SM->addTally(*TX);
+
       delete TX;
       CO.deleteObj(AR);   
       AR=CO.findObj("tally");

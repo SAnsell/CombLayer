@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -47,17 +48,17 @@ class surfaceConstruct
 {
  private:
 
-  static int processSurfObject(Simulation&,const int,
+  static int processSurfObject(SimMCNP&,const int,
 			       const std::string&,
 			       const long int,
 			       const std::vector<std::string>&);
   
-  static int processSurfMap(Simulation&,const int,
+  static int processSurfMap(SimMCNP&,const int,
 			    const std::string&,
 			    const std::string&,
 			    const long int);
 
-  static void processSurface(Simulation&,const int,
+  static void processSurface(SimMCNP&,const int,
 			    const mainSystem::inputParam&,
 			    const size_t);
 
@@ -69,9 +70,9 @@ class surfaceConstruct
 
 
 
-  static void processSurfaceCurrent(Simulation&,const mainSystem::inputParam&,
+  static void processSurfaceCurrent(SimMCNP&,const mainSystem::inputParam&,
 			       const size_t);
-  static void processSurfaceFlux(Simulation&,const mainSystem::inputParam&,
+  static void processSurfaceFlux(SimMCNP&,const mainSystem::inputParam&,
 			    const size_t);
 
   static void writeHelp(std::ostream&);

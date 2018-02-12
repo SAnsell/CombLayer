@@ -33,6 +33,7 @@ namespace mainSystem
 }
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -54,12 +55,12 @@ class tmeshConstruct : public meshConstruct
 	         
  public:
 
-  static void processMesh(Simulation&,
+  static void processMesh(SimMCNP&,
 			  const mainSystem::inputParam&,
 			  const size_t);  
   
   
-  static void rectangleMesh(Simulation&,const int,
+  static void rectangleMesh(SimMCNP&,const int,
 			     const std::string&,
 			     const Geometry::Vec3D&,
 			     const Geometry::Vec3D&,

@@ -3,7 +3,7 @@
  
  * File:   src/mainJobs.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,7 +84,7 @@ createVTK(const mainSystem::inputParam& IParam,
   */
 {
   ELog::RegMethod RegA("createVTK","createVTK");
-
+  /*
   if (IParam.flag("md5") || IParam.flag("vtk"))
     {
       const tallySystem::tmeshTally* MPtr=
@@ -140,5 +140,6 @@ createVTK(const mainSystem::inputParam& IParam,
 	  return 2;
 	}
     }
+  */
   return 0;
 }

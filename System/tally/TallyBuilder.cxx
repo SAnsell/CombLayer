@@ -72,12 +72,12 @@ namespace tallySystem
 {
 
 void
-tallySelection(Simulation& System,
+tallySelection(SimMCNP& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     An amalgumation of values to determine what sort of tallies to put
     in the system.
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IP :: InputParam
   */
 {
@@ -123,8 +123,9 @@ tallySelection(Simulation& System,
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }
-  if (IParam.flag("Txml"))
-    tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
+
+  //if (IParam.flag("Txml"))
+    //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
       
   return;
 }

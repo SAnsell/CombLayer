@@ -80,8 +80,8 @@
 
 extern MTRand RNG;
 
-SimMonte::SimMonte() : Simulation(),
-       TCount(0),MSActive(0),B(0),DUnit()
+SimMonte::SimMonte() :
+  Simulation(),TCount(0),MSActive(0),B(0),DUnit()
   /*!
     Start of simulation Object
     Initialise currentSample to Sample 
@@ -332,7 +332,8 @@ SimMonte::write(const std::string& outName) const
     \param outName :: head name
   */
 {
-  Simulation::write(outName+".x");
+  ELog::EM<<"SimMonte not writing .x file currently"<<ELog::endDiag;
+  
   writeDetectors(outName,1.0);
   return;
 }

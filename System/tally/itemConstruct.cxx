@@ -74,6 +74,7 @@
 #include "SecondTrack.h"
 #include "TwinComp.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 
 #include "TallySelector.h" 
@@ -86,12 +87,12 @@ namespace tallySystem
 
 
 void
-itemConstruct::processItem(Simulation& System,
+itemConstruct::processItem(SimMCNP& System,
 			     const mainSystem::inputParam& IParam,
 			     const size_t Index)
   /*!
     Add point tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -129,7 +130,7 @@ itemConstruct::processItem(Simulation& System,
 }
 
 void 
-itemConstruct::addBeamLineItem(Simulation& System,
+itemConstruct::addBeamLineItem(SimMCNP& System,
 			       const int beamNum,
 			       const double beamDist,
 			       const std::string& modName,
@@ -138,7 +139,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
 			       const double pointZRot) 
 /*!
     Adds a beamline tally Item to the system
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view

@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -46,7 +47,7 @@ class gridConstruct
 {
  private:
 
-  static void applyMultiGrid(Simulation&,const size_t,const size_t,
+  static void applyMultiGrid(SimMCNP&,const size_t,const size_t,
 		      const Geometry::Vec3D&,
 		      const Geometry::Vec3D&,
 		      const Geometry::Vec3D&);
@@ -62,7 +63,7 @@ class gridConstruct
 
   
   // Point Stuff
-  static void processGrid(Simulation&,const mainSystem::inputParam&,
+  static void processGrid(SimMCNP&,const mainSystem::inputParam&,
 			  const size_t);
 
 

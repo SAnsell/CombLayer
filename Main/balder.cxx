@@ -65,7 +65,8 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
-#include "Simulation.h" 
+#include "Simulation.h"
+#include "SimMCNP.h" 
 #include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
@@ -118,7 +119,7 @@ main(int argc,char* argv[])
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
-      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+
       
       xraySystem::makeBalder BObj;
       World::createOuterObjects(*SimPtr);
@@ -127,6 +128,7 @@ main(int argc,char* argv[])
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
           
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
+      	
       ModelSupport::calcVolumes(SimPtr,IParam);
 
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");

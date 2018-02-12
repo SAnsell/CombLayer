@@ -3,7 +3,7 @@
  
  * File:   tallyInc/fmeshConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ namespace mainSystem
 }
 
 class Simulation;
+class SimMCNPx;
 
 namespace tallySystem
 {
@@ -56,11 +57,11 @@ class fmeshConstruct : public meshConstruct
  public:
 
 
-  static void processMesh(Simulation&,
+  static void processMesh(SimMCNP&,
 			  const mainSystem::inputParam&,
 			  const size_t);
 
-  static void rectangleMesh(Simulation&,const int,
+  static void rectangleMesh(SimMCNP&,const int,
 			    const std::string&,
 			    const Geometry::Vec3D&,
 			    const Geometry::Vec3D&,

@@ -57,6 +57,7 @@
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
 #include "SimPOVRay.h"
+#include "SimMCNP.h"
 #include "neutron.h"
 #include "Detector.h"
 #include "DetGroup.h"
@@ -73,6 +74,7 @@
 #include "SimInput.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "ObjectAddition.h"
 
 #include "MainProcess.h"
 
@@ -404,8 +406,13 @@ createSimulation(inputParam& IParam,
     SimPtr=new SimPOVRay;
   else if (IParam.flag("Monte"))
     SimPtr=new SimMonte; 
-  else 
-    SimPtr=new Simulation;
+  else
+    {
+      // do so setup that in necessary
+      SimMCNP* SMCPtr=new SimMCNP;
+      SMCPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+      SimPtr=SMCPtr;
+    }
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 
@@ -505,7 +512,8 @@ buildFullSimulation(Simulation* SimPtr,
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
 
-  tallyAddition(*SimPtr,IParam);
+  ModelSupport::objectAddition(*SimPtr,IParam);
+  
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);         
   ModelSupport::setDefaultPhysics(*SimPtr,IParam);
@@ -513,14 +521,19 @@ buildFullSimulation(Simulation* SimPtr,
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
-  tallySystem::tallySelection(*SimPtr,IParam);
+  SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
+  if (SimMCPtr)
+    tallySystem::tallySelection(*SimMCPtr,IParam);
+
+  
   reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;
   // 
   SimProcess::importanceSim(*SimPtr,IParam);
   SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-  tallyModification(*SimPtr,IParam);
+  if (SimMCPtr)
+    tallyModification(*SimMCPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);
   SimPtr->masterPhysicsRotation();
@@ -534,7 +547,9 @@ buildFullSimulation(Simulation* SimPtr,
 
   return;
 }
-  
+
+
+
                       
 }  // NAMESPACE mainSystem
 

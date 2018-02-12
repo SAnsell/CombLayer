@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -40,14 +41,13 @@ namespace tallySystem
   \date April 2012
   \brief Holds everthing for tallies
 
-  Provides linkage to its outside on FixedComp[0]
 */
 
 class fluxConstruct 
 {
  private:
   
-  static std::vector<int> getCell(const Simulation&,
+  static std::vector<int> getCell(const SimMCNP&,
 				  const mainSystem::inputParam&,
 				  const size_t,
 				  const int);
@@ -58,7 +58,7 @@ class fluxConstruct
  public:
 
 
-  static int processFlux(Simulation&,const mainSystem::inputParam&,
+  static int processFlux(SimMCNP&,const mainSystem::inputParam&,
 			 const size_t);
 
   static void writeHelp(std::ostream&);

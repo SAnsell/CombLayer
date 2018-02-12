@@ -73,6 +73,7 @@
 #include "SecondTrack.h"
 #include "LinkSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "Line.h"
 #include "SurfLine.h"
@@ -85,12 +86,12 @@ namespace tallySystem
 {
 
 void
-pointConstruct::processPoint(Simulation& System,
+pointConstruct::processPoint(SimMCNP& System,
 			     const mainSystem::inputParam& IParam,
 			     const size_t Index)
   /*!
     Add point tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -205,7 +206,7 @@ pointConstruct::processPoint(Simulation& System,
 }
 
 void
-pointConstruct::processPointWindow(Simulation& System,
+pointConstruct::processPointWindow(SimMCNP& System,
 				   const std::string& FObject,
 				   long int linkPt,
 				   const double beamDist,
@@ -213,7 +214,7 @@ pointConstruct::processPointWindow(Simulation& System,
 				   const double windowOffset)
   /*!
     Process a point tally in a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param beamDist :: Out distance Distance
@@ -271,13 +272,13 @@ pointConstruct::processPointWindow(Simulation& System,
 }
 
 void
-pointConstruct::processPointFree(Simulation& System,
+pointConstruct::processPointFree(SimMCNP& System,
 				 const std::string& FObject,
 				 const long int linkPt,
 				 const double OD)
   /*!
     Process a point tally in a registered object
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param FObject :: Fixed/Twin name
     \param linkPt :: Link point [-ve for beam object]
     \param OD :: Out distance Distance
@@ -302,13 +303,13 @@ pointConstruct::processPointFree(Simulation& System,
 }
 
 void
-pointConstruct::processPointFree(Simulation& System,
+pointConstruct::processPointFree(SimMCNP& System,
 				 const std::string& FObject,
 				 const long int linkPt,
 				 const Geometry::Vec3D& DVec)
 /*!
   Process a point tally in a registered object
-  \param System :: Simulation to add tallies
+  \param System :: SimMCNP to add tallies
   \param FObject :: Fixed/Twin name
   \param linkPt :: Link point [-ve for beam object]
   \param DVec :: Out distance Distance
@@ -337,12 +338,12 @@ pointConstruct::processPointFree(Simulation& System,
 }
 
 void
-pointConstruct::processPointFree(Simulation& System,
+pointConstruct::processPointFree(SimMCNP& System,
 				 const Geometry::Vec3D& Point,
 				 const std::vector<Geometry::Vec3D>& VList)
   /*!
     Processes a grid tally : Requires variables and informaton 
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param Point :: Point deterctor Point
     \param VList :: Window vectors
   */

@@ -3,7 +3,7 @@
  
  * File:   tallyInc/sswConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMNCP;
 
 namespace tallySystem
 {
@@ -38,9 +39,8 @@ namespace tallySystem
   \version 1.0
   \author S. Ansell
   \date October 2016
-  \brief Constructs an SSW 
+  \brief Constructs an SSW tally 
 
-  Provides linkage to its outside on FixedComp[0]
 */
 
 class sswConstruct 
@@ -52,7 +52,7 @@ class sswConstruct
 
  public:
 
-  static void processSSW(Simulation&,const mainSystem::inputParam&,
+  static void processSSW(SimMCNP&,const mainSystem::inputParam&,
 			 const size_t);
 
   static void writeHelp(std::ostream&);

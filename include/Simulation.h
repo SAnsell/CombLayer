@@ -85,14 +85,12 @@ class Simulation
 
   // UGLY
   typedef std::map<int,MonteCarlo::Qhull*> OTYPE;      ///< Object type
-  typedef std::map<int,tallySystem::Tally*> TallyTYPE; ///< Tally type
 
  protected:
 
-  int mcnpVersion;                      ///< version of mcnp
   std::string inputFile;                ///< Input file
   std::string cmdLine;                  ///< Command line : historical recall 
-  int CNum;                             ///< Number of complementary components
+
   FuncDataBase DB;                      ///< DataBase of variables
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
 
@@ -102,7 +100,6 @@ class Simulation
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
 
-  TallyTYPE TItem;                        ///< Tally Items
   physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
 
   std::string sourceName;                 ///< Source name
@@ -110,27 +107,15 @@ class Simulation
   // METHODS:
 
   void deleteObjects();
-  void deleteTally();
   
-
-  // ALL THE sub-write stuff
-  void writeCells(std::ostream&) const;
-  void writeSurfaces(std::ostream&) const;
-  void writeMaterial(std::ostream&) const;
-  void writeWeights(std::ostream&) const;
-  void writeTransform(std::ostream&) const;
-  void writeTally(std::ostream&) const;
-  void writeSource(std::ostream&) const;
-  void writePhysics(std::ostream&) const;
-  void writeVariables(std::ostream&,const char ='c') const;
-
-  // The Cinder Write stuff
-  void writeCinderMat() const;
 
   int checkInsert(const MonteCarlo::Qhull&);       ///< Inserts (and test) new hull into Olist map 
   int removeNullSurfaces();
   int removeComplement(MonteCarlo::Qhull&) const;
   void addObjSurfMap(MonteCarlo::Qhull*);
+
+  std::map<int,int> calcCellRenumber(const std::vector<int>&,
+				     const std::vector<int>&) const;
 
  public:
 
@@ -141,13 +126,10 @@ class Simulation
   
   /// set the command line
   void setCmdLine(const std::string& S) { cmdLine=S; }
-  void resetAll();
-  int applyTransforms();  
+  virtual void resetAll();
+  int applyTransforms();
+  
   int isValidCell(const int,const Geometry::Vec3D&) const;
-
-
-  /// is the system MCNP6
-  bool isMCNP6() const { return mcnpVersion!=10; }
   
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
@@ -157,7 +139,6 @@ class Simulation
 
   int existCell(const int) const;              ///< check if cell exist
   int getCellMaterial(const int) const;        ///< return cell material
-  int bindCell(const int,const int);
   int setMaterialDensity(OTYPE&);
   int setMaterialDensity(const int);
 
@@ -208,13 +189,12 @@ class Simulation
   std::vector<int> getCellWithZaid(const size_t) const;
 
   void processCellsImp();           
-  int makeVirtual(const int);
 
   int removeDeadSurfaces(const int); 
   int removeCells(const int,const int); 
   void removeCell(const int);
   int removeAllSurface(const int);
-  int substituteAllSurface(const int,const int);
+
   void voidObject(const std::string&);
   void updateSurface(const int,const std::string&);
 
@@ -225,31 +205,22 @@ class Simulation
 
   // Tally processing
 
-  void removeAllTally();
-  int removeTally(const int);
-
-  int addTally(const tallySystem::Tally&);
-  tallySystem::Tally* getTally(const int) const;
-  tallySystem::sswTally* getSSWTally() const;
-  /// Access tally items
-  TallyTYPE& getTallyMap() { return TItem; }
-  /// Access constant
-  const TallyTYPE& getTallyMap() const { return TItem; }
-  void setForCinder();
-  int nextTallyNum(int) const;
-
-  void setEnergy(const double);
+  virtual void setEnergy(const double);
   void setENDF7();
-  /// set MCNPversion
-  void setMCNPversion(const int);
   
   void renumberAll();
-  void renumberCells(const std::vector<int>&,const std::vector<int>&);
-  void renumberSurfaces(const std::vector<int>&,const std::vector<int>&);
+  void renumberSurfaces(const std::vector<int>&,
+			const std::vector<int>&);
   void prepareWrite();
-  void writeCinder() const;          
 
-  virtual void write(const std::string&) const;  
+  virtual void substituteAllSurface(const int,const int);
+  virtual std::map<int,int> renumberCells(const std::vector<int>&,
+					  const std::vector<int>&);
+  /// no-op call
+  virtual void writeCinder() const {}
+
+  void writeVariables(std::ostream&,const char ='c') const;
+  virtual void write(const std::string&) const =0;  
     
   // Debug stuff
   

@@ -29,6 +29,7 @@ namespace attachSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
@@ -55,7 +56,7 @@ class heatConstruct
 
 
 
-  static void processHeat(Simulation&,const mainSystem::inputParam&,
+  static void processHeat(SimMCNP&,const mainSystem::inputParam&,
 			  const size_t);
 
   static void writeHelp(std::ostream&);

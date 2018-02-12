@@ -408,25 +408,6 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
 
 
 void
-WeightControl::normWeights(Simulation& System,
-                           const mainSystem::inputParam& IParam)
-  /*!
-    Normalize the weights after the main processing event
-    \param System :: simulation to use
-    \param IParam :: Parameter
-  */
-    
-{
-  ELog::RegMethod RegA("WeightControl","normWeights");
-  
-  // This shoudl be elsewhere
-  if (IParam.flag("tallyWeight"))
-    tallySystem::addPointPD(System);
-
-  return;
-}
-
-void
 WeightControl::processWeights(Simulation& System,
 			      const mainSystem::inputParam& IParam)
   /*!
