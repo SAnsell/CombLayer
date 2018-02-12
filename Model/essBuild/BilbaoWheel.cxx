@@ -112,7 +112,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),
   nShaftLayers(A.nShaftLayers),shaftRadius(A.shaftRadius),
-  shaftMat(A.shaftMat),shaft2StepHeight(A.shaft2StepHeight),
+  shaftMat(A.shaftMat),
   shaft2StepConnectionHeight(A.shaft2StepConnectionHeight),
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
@@ -120,6 +120,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftCFRingDist(A.shaftCFRingDist),
   shaftCFRingRadius(A.shaftCFRingRadius),
   shaftCFStiffLength(A.shaftCFStiffLength),
+  shaftCFStiffHeight(A.shaftCFStiffHeight),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
@@ -186,7 +187,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       nShaftLayers=A.nShaftLayers;
       shaftRadius=A.shaftRadius;
       shaftMat=A.shaftMat;
-      shaft2StepHeight=A.shaft2StepHeight;
       shaft2StepConnectionHeight=A.shaft2StepConnectionHeight;
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
@@ -194,6 +194,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftCFRingDist=A.shaftCFRingDist;
       shaftCFRingRadius=A.shaftCFRingRadius;
       shaftCFStiffLength=A.shaftCFStiffLength;
+      shaftCFStiffHeight=A.shaftCFStiffHeight;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
@@ -312,7 +313,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
 
   shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");
-  shaft2StepHeight=Control.EvalVar<double>(keyName+"Shaft2StepHeight");
   shaft2StepConnectionHeight=Control.EvalVar<double>(keyName+"Shaft2StepConnectionHeight");
   shaft2StepConnectionDist=Control.EvalVar<double>(keyName+"Shaft2StepConnectionDist");
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
@@ -320,6 +320,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftCFRingDist=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingDist");
   shaftCFRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
   shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
+  shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
@@ -401,7 +402,7 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*(H+catcherTopSteelThick),Z);
 
   // 2nd void step
-  H = shaft2StepHeight;
+  H = shaftCFStiffHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;
