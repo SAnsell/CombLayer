@@ -72,6 +72,7 @@
 #include "Plane.h"
 #include "BaseMap.h"
 #include "CellMap.h"
+#include "SurInter.h"
 
 #include "BilbaoWheelCassette.h"
 #include "WheelBase.h"
@@ -132,8 +133,8 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   catcherBaseRadius(A.catcherBaseRadius),
   catcherBaseAngle(A.catcherBaseAngle),
   catcherNotchRadius(A.catcherNotchRadius),
-  catcherNotchThick(A.catcherNotchThick),
-  catcherRingDepth(A.catcherRingDepth),
+  catcherNotchBaseThick(A.catcherNotchBaseThick),
+  catcherNotchBaseRadius(A.catcherNotchBaseRadius),
   catcherRingThick(A.catcherRingThick),
   circlePipesBigRad(A.circlePipesBigRad),
   circlePipesRad(A.circlePipesRad),
@@ -206,8 +207,8 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       catcherBaseRadius=A.catcherBaseRadius;
       catcherBaseAngle=A.catcherBaseAngle;
       catcherNotchRadius=A.catcherNotchRadius;
-      catcherNotchThick=A.catcherNotchThick;
-      catcherRingDepth=A.catcherRingDepth;
+      catcherNotchBaseThick=A.catcherNotchBaseThick;
+      catcherNotchBaseRadius=A.catcherNotchBaseRadius;
       catcherRingThick=A.catcherRingThick;
       circlePipesBigRad=A.circlePipesBigRad;
       circlePipesRad=A.circlePipesRad;
@@ -348,8 +349,8 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   catcherBaseAngle=Control.EvalVar<double>(keyName+"CatcherBaseAngle");
   catcherNotchRadius=Control.EvalVar<double>(keyName+"CatcherNotchRadius");
 
-  catcherNotchThick=Control.EvalVar<double>(keyName+"CatcherNotchThick");
-  catcherRingDepth=Control.EvalVar<double>(keyName+"CatcherRingDepth");
+  catcherNotchBaseThick=Control.EvalVar<double>(keyName+"CatcherNotchBaseThick");
+  catcherNotchBaseRadius=Control.EvalVar<double>(keyName+"CatcherNotchBaseRadius");
   catcherRingThick=Control.EvalVar<double>(keyName+"CatcherRingThick");
 
   circlePipesBigRad=Control.EvalVar<double>(keyName+"CirclePipesBigRad");
@@ -373,6 +374,10 @@ BilbaoWheel::makeShaftSurfaces()
 {
   ELog::RegMethod RegA("BilbaoWheel","makeShaftSurfaces");
 
+  // divider
+  const Geometry::Plane *px = ModelSupport::buildPlane(SMap,wheelIndex+3,Origin,X);
+
+  
   ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);
 
   int SI(wheelIndex);
@@ -452,8 +457,8 @@ BilbaoWheel::makeShaftSurfaces()
   H -= catcherGap;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
 
-  H = shaftBaseDepth-caseThickIn;
-  ModelSupport::buildPlane(SMap,wheelIndex+2235,Origin-Z*H,Z);
+  H -= catcherNotchBaseThick;
+  ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
 
   H = shaftBaseDepth-catcherBaseHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2245,Origin-Z*H,Z);
@@ -473,9 +478,19 @@ BilbaoWheel::makeShaftSurfaces()
   R = catcherNotchRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
   
-  R += catcherNotchThick;
+  const Geometry::Vec3D nearPt(0,0,0);
+  const Geometry::Vec3D A = SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
+					       SMap.realSurfPtr(wheelIndex+2218),
+					       px,nearPt);
+  const Geometry::Vec3D B = SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
+					       SMap.realSurfPtr(wheelIndex+2217),
+					       px,nearPt);
+  R += (B-A).abs();
   ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
 
+
+  R = catcherNotchBaseRadius;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
 
   
 
@@ -669,7 +684,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // wheel catcher
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2227 2215 -2115 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2237 2215 -2115 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   //     floor gap
@@ -691,6 +706,13 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // small cell between base cones
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2217 -2218 2208 2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2227 -2237 2215 -2115 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
+
+  
+
+  
 
 
 

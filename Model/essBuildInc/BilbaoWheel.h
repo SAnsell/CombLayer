@@ -96,8 +96,8 @@ class BilbaoWheel : public WheelBase
   double catcherBaseRadius;///< catchr base truncated cone lower radius
   double catcherBaseAngle; ///< catcher base truncated cone angle
   double catcherNotchRadius; ///< catcher notch radius
-  double catcherNotchThick; ///< catcher notch thickness
-  double catcherRingDepth; ///< catcher ring depth (below origin)
+  double catcherNotchBaseThick; ///< catcher notch lower non-inclined part vertical thickness
+  double catcherNotchBaseRadius; ///< catcher notch lower part radius
   double catcherRingThick; ///< catcher ring thickness
 
   double circlePipesBigRad;   /// Big radius of circle of pipes]
