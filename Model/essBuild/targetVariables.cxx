@@ -87,6 +87,8 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",20.0); // ESS-0124024 page 19
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffHeight",15); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",2.0); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftNStiffeners",18);
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
@@ -104,7 +106,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCatcherNotchBaseThick",3.0);// TSV32IS
   Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);  // TSV32IS
   Control.addVariable("BilbaoWheelCatcherNotchBaseRadius",31.0);  // TSV32IS
-  Control.addVariable("BilbaoWheelShaftNStiffeners",18);
 
   Control.addVariable("BilbaoWheelCirclePipesBigRad",30.0);
   Control.addVariable("BilbaoWheelCirclePipesRad",1.5);

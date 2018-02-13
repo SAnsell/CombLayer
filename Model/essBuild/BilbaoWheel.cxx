@@ -122,6 +122,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftCFRingRadius(A.shaftCFRingRadius),
   shaftCFStiffLength(A.shaftCFStiffLength),
   shaftCFStiffHeight(A.shaftCFStiffHeight),
+  shaftCFStiffThick(A.shaftCFStiffThick),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
@@ -196,6 +197,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftCFRingRadius=A.shaftCFRingRadius;
       shaftCFStiffLength=A.shaftCFStiffLength;
       shaftCFStiffHeight=A.shaftCFStiffHeight;
+      shaftCFStiffThick=A.shaftCFStiffThick;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
@@ -322,6 +324,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftCFRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
   shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
   shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
+  shaftCFStiffThick=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffThick");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
@@ -377,7 +380,7 @@ BilbaoWheel::makeShaftSurfaces()
   // divider
   const Geometry::Plane *px = ModelSupport::buildPlane(SMap,wheelIndex+3,Origin,X);
 
-  
+
   ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);
 
   int SI(wheelIndex);
@@ -432,7 +435,7 @@ BilbaoWheel::makeShaftSurfaces()
 			  Z, 90-stifTheta, -1);
 
   ELog::EM << "add stiffener variables" << ELog::endDiag;
-  createRadialSurfaces(wheelIndex+3000, 18, 2.0);
+  createRadialSurfaces(wheelIndex+3000, shaftNStiffeners, shaftCFStiffThick);
 
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
@@ -478,7 +481,7 @@ BilbaoWheel::makeShaftSurfaces()
 
   R = catcherNotchRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2217,Origin,Z,R);
-  
+
   const Geometry::Vec3D nearPt(0,0,0);
   const Geometry::Vec3D A(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2215),
 					     SMap.realSurfPtr(wheelIndex+2218),
@@ -501,7 +504,7 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
 			  -Z, 90-catcherBaseAngle, -1);
 
-  
+
 
 
 
@@ -728,13 +731,13 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   buildStiffeners(System,Out,wheelIndex+3000,shaftNStiffeners,steelMat);
 
 
-  
 
 
 
 
 
-  
+
+
   // shaft layers
   int SI(wheelIndex);
   for (size_t i=0; i<nShaftLayers; i++)
@@ -828,7 +831,7 @@ BilbaoWheel::createRadialSurfaces(const int SI, const size_t n,const double w)
 
 	  ModelSupport::buildPlane(SMap,SJ+2,Origin,divider);
 	  ModelSupport::buildPlane(SMap,SJ+3,Origin-myX*w/2.0,myX);
-	  ModelSupport::buildPlane(SMap,SJ+4,Origin+myX*w/2.0,myX);
+	  ModelSupport::buildPlane(SMap,SJ+4, Origin+myX*w/2.0,myX);
 	}
       theta += dTheta;
       SJ += 10;
