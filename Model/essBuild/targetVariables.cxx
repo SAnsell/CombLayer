@@ -104,7 +104,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCatcherNotchBaseThick",3.0);// TSV32IS
   Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);  // TSV32IS
   Control.addVariable("BilbaoWheelCatcherNotchBaseRadius",31.0);  // TSV32IS
-  Control.addVariable("BilbaoWheelCatcherRingThick",2.0);
+  Control.addVariable("BilbaoWheelShaftNStiffeners",18);
 
   Control.addVariable("BilbaoWheelCirclePipesBigRad",30.0);
   Control.addVariable("BilbaoWheelCirclePipesRad",1.5);

@@ -86,9 +86,9 @@ class BilbaoWheel : public WheelBase
   double shaftHoleHeight;        ///< Vent hole height at the shaft radius
   double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
   double shaftHoleXYangle;       ///< XY angle offset of shaft holes
-
-
   double shaftBaseDepth;            ///< shaft depth (below origin)
+  size_t shaftNStiffeners; ///< number of stiffeners
+
   double catcherTopSteelThick; ///< thickness of top steel plate
   double catcherGap;    ///< vertical clearance below catcher
   double catcherRadius;    ///< catcher rotal radius
@@ -98,7 +98,6 @@ class BilbaoWheel : public WheelBase
   double catcherNotchRadius; ///< catcher notch radius
   double catcherNotchBaseThick; ///< catcher notch lower non-inclined part vertical thickness
   double catcherNotchBaseRadius; ///< catcher notch lower part radius
-  double catcherRingThick; ///< catcher ring thickness
 
   double circlePipesBigRad;   /// Big radius of circle of pipes]
   double circlePipesRad;      /// Radius of pipes in the circle of pipes

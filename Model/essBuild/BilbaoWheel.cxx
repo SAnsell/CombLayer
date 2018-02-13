@@ -126,6 +126,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
   shaftBaseDepth(A.shaftBaseDepth),
+  shaftNStiffeners(A.shaftNStiffeners),
   catcherTopSteelThick(A.catcherTopSteelThick),
   catcherGap(A.catcherGap),
   catcherRadius(A.catcherRadius),
@@ -135,7 +136,6 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   catcherNotchRadius(A.catcherNotchRadius),
   catcherNotchBaseThick(A.catcherNotchBaseThick),
   catcherNotchBaseRadius(A.catcherNotchBaseRadius),
-  catcherRingThick(A.catcherRingThick),
   circlePipesBigRad(A.circlePipesBigRad),
   circlePipesRad(A.circlePipesRad),
   circlePipesWallThick(A.circlePipesWallThick),
@@ -200,6 +200,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
       shaftBaseDepth=A.shaftBaseDepth;
+      shaftNStiffeners=A.shaftNStiffeners;
       catcherTopSteelThick=A.catcherTopSteelThick;
       catcherGap=A.catcherGap;
       catcherRadius=A.catcherRadius;
@@ -209,7 +210,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       catcherNotchRadius=A.catcherNotchRadius;
       catcherNotchBaseThick=A.catcherNotchBaseThick;
       catcherNotchBaseRadius=A.catcherNotchBaseRadius;
-      catcherRingThick=A.catcherRingThick;
       circlePipesBigRad=A.circlePipesBigRad;
       circlePipesRad=A.circlePipesRad;
       circlePipesWallThick=A.circlePipesWallThick;
@@ -334,6 +334,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftHoleXYangle=Control.EvalVar<double>(keyName+"ShaftHoleXYangle");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
+  shaftNStiffeners=Control.EvalVar<size_t>(keyName+"ShaftNStiffeners");
 
   catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
 
@@ -351,7 +352,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   catcherNotchBaseThick=Control.EvalVar<double>(keyName+"CatcherNotchBaseThick");
   catcherNotchBaseRadius=Control.EvalVar<double>(keyName+"CatcherNotchBaseRadius");
-  catcherRingThick=Control.EvalVar<double>(keyName+"CatcherRingThick");
 
   circlePipesBigRad=Control.EvalVar<double>(keyName+"CirclePipesBigRad");
   circlePipesRad=Control.EvalVar<double>(keyName+"CirclePipesRad");
@@ -672,8 +672,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   //   stiffener
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
-  buildStiffeners(System,Out+Rsurf,wheelIndex+3000,18,steelMat);
-  ELog::EM << "use nStiffeners" << ELog::endDiag;
+  buildStiffeners(System,Out+Rsurf,wheelIndex+3000,shaftNStiffeners,steelMat);
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 2148 -2118 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out)); // lower
