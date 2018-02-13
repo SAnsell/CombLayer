@@ -395,10 +395,10 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCylinder(SMap,wheelIndex+2107,Origin,Z,
 			      coolantRadiusIn+voidThick);
 
-  ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*(H+catcherTopSteelThick),Z);
 
   // 2nd void step
   H = shaftCFStiffHeight;
+  ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;
@@ -409,6 +409,7 @@ BilbaoWheel::makeShaftSurfaces()
 
   H -= voidThick;
   H -= radius[0]-innerRadius;
+  ModelSupport::buildPlane(SMap,wheelIndex+2135,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2136,Origin+Z*H,Z);
 
   double R = radius[0]+voidThick;
@@ -600,7 +601,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // lower cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex," -1027 45 -35" );
+    (SMap,wheelIndex," 7 -1027 45 -35" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void (which connects to the Wheel void)
@@ -616,8 +617,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // lower cell
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 17 2105 -45" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -17 2115 -45" );
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -17 2115 -2135" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2135 -35" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 7 -17 2135 -45" );
+  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
+
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 17 -2118 2115 -2105 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
   // side
