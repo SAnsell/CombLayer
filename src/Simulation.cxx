@@ -480,36 +480,36 @@ Simulation::removeAllSurface(const int KeyN)
 }
 
 void
-Simulation::substituteAllSurface(const int KeyN,const int NsurfN)
+Simulation::substituteAllSurface(const int oldSurfN,const int newSurfN)
   /*!
-    Remove all the surface of name KeyN
+    Remove all the surface of name oldSurfN
     from the simulation. Then remove
     surface KeyN from the surface map.
-    \param KeyN :: Number of surface to alter
-    \param NsurfN :: Number of new surface + sign to swap KeyN sign.
+    \param oldSurfN :: Number of surface to alter
+    \param newSurfN :: Number of new surface + sign to swap KeyN sign.
     \throw IncontainerError if the key does not exist
-    \returns Number of surface removed (will do)
   */
 {
   ELog::RegMethod RegA("Simulation","substituteAllSurface");
-  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
   
-  const int NS(NsurfN>0 ? NsurfN : -NsurfN);
+  SDef::sourceDataBase& SDB=SDef::sourceDataBase::Instance();
+
+  // SurfaceIndex and surfaces already updated
+  const int NS(newSurfN>0 ? newSurfN : -newSurfN);
   Geometry::Surface* XPtr=ModelSupport::surfIndex::Instance().getSurf(NS);
   if (!XPtr)
-    throw ColErr::InContainerError<int>
-      (NsurfN,"Surface number not found");
+    throw ColErr::InContainerError<int>(newSurfN,"Surface number not found");
 
   OTYPE::iterator oc;
   for(oc=OList.begin();oc!=OList.end();oc++)
-    oc->second->substituteSurf(KeyN,NsurfN,XPtr);
+    oc->second->substituteSurf(oldSurfN,newSurfN,XPtr);
 
   // Source:
   if (!sourceName.empty())
     {
       SDef::SourceBase* SPtr=
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
-      SPtr->substituteSurface(KeyN,NsurfN);
+      SPtr->substituteSurface(oldSurfN,newSurfN);
     }
   
   return;
@@ -1499,8 +1499,7 @@ Simulation::voidObject(const std::string& ObjName)
   for(int i=1;i<=cellRange;i++)
     {
       MonteCarlo::Qhull* QH=findQhull(cellN+i);
-      if (!QH)
-	return;
+      if (!QH) return;
       QH->setMaterial(0);
     }
   return;
@@ -1527,8 +1526,6 @@ Simulation::prepareWrite()
 	    voidCells.insert(OVal.first);
 	}
     }
-  
-  
   return;
 }
 

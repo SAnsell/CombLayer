@@ -67,6 +67,7 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 #include "objectSupport.h"
 #include "FuelLoad.h"
@@ -79,9 +80,9 @@ namespace tallySystem
 {
  
 void
-reactorTallyConstruct::processPower
-        (Simulation& System,const mainSystem::inputParam& IParam,
-	 const size_t Index)
+reactorTallyConstruct::processPower(SimMCNP& System,
+				    const mainSystem::inputParam& IParam,
+				    const size_t Index)
   /*!
     Add point tally (s) as needed
     \param System :: Simulation to add tallies

@@ -3,7 +3,7 @@
  
  * File:   d4cModel/DetectorBank.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "ModelSupport.h"
 #include "MaterialSupport.h"
 #include "generateSurf.h"
@@ -155,12 +156,6 @@ DetectorBank::populate(const FuncDataBase& Control)
   ELog::RegMethod RegA("DetectorBank","populate");
 
   FixedOffset::populate(Control);
-    // Master values
-  xStep=Control.EvalPair<double>(keyName,baseName,"XStep");
-  yStep=Control.EvalPair<double>(keyName,baseName,"YStep");
-  zStep=Control.EvalPair<double>(keyName,baseName,"ZStep");
-  xyAngle=Control.EvalPair<double>(keyName,baseName,"XYangle");
-  zAngle=Control.EvalPair<double>(keyName,baseName,"Zangle");
 
   centreOffset=Control.EvalPair<double>(keyName,baseName,"CentreOffset");
   centreAngle=Control.EvalPair<double>(keyName,baseName,"CentreAngle");
@@ -185,16 +180,17 @@ DetectorBank::populate(const FuncDataBase& Control)
 }
 
 void
-DetectorBank::createUnitVector(const attachSystem::FixedComp& FC)
+DetectorBank::createUnitVector(const attachSystem::FixedComp& FC,
+			       const long int sideIndex)
   /*!
     Create the unit vectors
     \param FC :: FixedComp for origin
   */
 {
   ELog::RegMethod RegA("DetectorBank","createUnitVector");
-  attachSystem::FixedComp::createUnitVector(FC);
+  attachSystem::FixedComp::createUnitVector(FC,sideIndex);
   
-  Origin=Origin+(X*sin(centreAngle)+Y*cos(centreAngle))*centreOffset;
+  Origin += (X*sin(centreAngle)+Y*cos(centreAngle))*centreOffset;
   applyShift(xStep,yStep,zStep);
   applyAngleRotate(xyAngle,zAngle);
 
@@ -293,18 +289,22 @@ DetectorBank::createTally(Simulation& System) const
   ELog::RegMethod RegA("DetectorBank","createTally");
   if (!nDet) return;
 
-  int tNum(5);
-  const double XStep=detLength/static_cast<double>(nDet+1);
-  double XPos=(-detLength/2.0);
-  for(size_t i=0;i<nDet;i++)
+  SimMCNP* SimPTR=dynamic_cast<SimMCNP*>(&System);
+  if (SimPTR)
     {
-      tNum=System.nextTallyNum(tNum);
-      const Geometry::Vec3D DPt=Origin+X*XPos;
-      tallySystem::addF5Tally(System,tNum);      
-      tallySystem::setF5Position(System,tNum,DPt);
-      tallySystem::setTallyTime(System,tNum,"");
-      tallySystem::setEnergy(System,tNum,"");
-      XPos+=XStep;
+      int tNum(5);
+      const double XStep=detLength/static_cast<double>(nDet+1);
+      double XPos=(-detLength/2.0);
+      for(size_t i=0;i<nDet;i++)
+	{
+	  tNum=SimPTR->nextTallyNum(tNum);
+	  const Geometry::Vec3D DPt=Origin+X*XPos;
+	  tallySystem::addF5Tally(*SimPTR,tNum);      
+	  tallySystem::setF5Position(*SimPTR,tNum,DPt);
+	  tallySystem::setTallyTime(*SimPTR,tNum,"");
+	  tallySystem::setEnergy(*SimPTR,tNum,"");
+	  XPos+=XStep;
+	}
     }
 
   return;
@@ -340,17 +340,19 @@ DetectorBank::createTally(Transport::DetGroup& DU) const
 }
 
 void
-DetectorBank::createAll(Simulation& System,const attachSystem::FixedComp& FC)
+DetectorBank::createAll(Simulation& System,const attachSystem::FixedComp& FC,
+			const long int sideIndex)
   /*!
     Extrenal build everything
     \param System :: Simulation
     \param FC :: FixedComp to add
+    \param sideIndx :: link point
    */
 {
   ELog::RegMethod RegA("DetectorBank","createAll");
   populate(System.getDataBase());
 
-  createUnitVector(FC);
+  createUnitVector(FC,sideIndex);
   createSurfaces();
   createObjects(System);
   createLinks();

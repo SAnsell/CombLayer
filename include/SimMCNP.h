@@ -136,7 +136,6 @@ class SimMCNP : public Simulation
 					  const std::vector<int>&);
 
   
-  void prepareWrite();
   virtual void writeCinder() const;          
 
   virtual void write(const std::string&) const;  

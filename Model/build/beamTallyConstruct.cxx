@@ -76,6 +76,7 @@
 #include "LinearComp.h"
 #include "PositionSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "Line.h"
@@ -98,8 +99,8 @@ namespace tallySystem
 
 void
 beamTallyConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
-					Geometry::Vec3D& BOrigin,
-					Geometry::Vec3D& BAxis)
+				      Geometry::Vec3D& BOrigin,
+				      Geometry::Vec3D& BAxis)
   /*!
     Calculate the beam direction and origin given a shutter component
     \param FC :: Component that might be TwinComp
@@ -121,12 +122,12 @@ beamTallyConstruct::calcBeamDirection(const attachSystem::FixedComp& FC,
 }
 
 void
-beamTallyConstruct::processPoint(Simulation& System,
-			     const mainSystem::inputParam& IParam,
-			     const size_t Index)
+beamTallyConstruct::processPoint(SimMCNP& System,
+				 const mainSystem::inputParam& IParam,
+				 const size_t Index)
   /*!
     Add point tally (s) as needed
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
    */
@@ -209,12 +210,13 @@ beamTallyConstruct::processPoint(Simulation& System,
 			windowOffset,pointZRot);
       return;
     }
+
   pointConstruct::processPoint(System,IParam,Index);
   return;
 }
 
 void 
-beamTallyConstruct::addBeamLineTally(Simulation& System,
+beamTallyConstruct::addBeamLineTally(SimMCNP& System,
 				 const int beamNum,
 				 const double beamDist,
 				 const std::string& modName,
@@ -223,7 +225,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 				 const double pointZRot)
   /*!
     Adds a beamline tally to the system
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
@@ -341,7 +343,7 @@ beamTallyConstruct::addBeamLineTally(Simulation& System,
 }
 
 void 
-beamTallyConstruct::addShutterTally(Simulation& System,
+beamTallyConstruct::addShutterTally(SimMCNP& System,
 				const int beamNum,
 				const double beamDist,
 				const std::string& modName,
@@ -350,7 +352,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 				const double pointZRot)
   /*!
     Adds a Shutterline tally to the system
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param modName :: Moderator Name to view
@@ -439,7 +441,7 @@ beamTallyConstruct::addShutterTally(Simulation& System,
 }
 
 void 
-beamTallyConstruct::addViewLineTally(Simulation& System,
+beamTallyConstruct::addViewLineTally(SimMCNP& System,
 				     const int beamNum,
 				     const double beamDist,
 				     const double timeOffset,
@@ -447,7 +449,7 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
 				     const double pointZRot)
   /*!
     Adds a beamline tally to the system
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
     \param beamDist :: Distance from moderator face
     \param timeOffset :: Time back step for tally
@@ -518,7 +520,7 @@ beamTallyConstruct::addViewLineTally(Simulation& System,
 }
 
 void 
-beamTallyConstruct::addViewInnerTally(Simulation& System,
+beamTallyConstruct::addViewInnerTally(SimMCNP& System,
 				 const int beamNum,
 				 const long int faceFlag,     
 				 const double beamDist,
@@ -527,7 +529,7 @@ beamTallyConstruct::addViewInnerTally(Simulation& System,
 				 const double pointZRot)
   /*!
     Adds a beamline tally to the system
-    \param System :: Simulation to add tallies
+    \param System :: SimMCNP to add tallies
     \param beamNum :: Beamline to use [1-18]
     \param faceFlag :: Face -- Front/Back
     \param beamDist :: Distance from moderator face

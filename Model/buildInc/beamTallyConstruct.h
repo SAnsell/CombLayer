@@ -57,22 +57,22 @@ class beamTallyConstruct
  public:
 
 
-  static void processPoint(Simulation&,
+  static void processPoint(SimMCNP&,
 			   const mainSystem::inputParam&,
 			   const size_t);
 
 
   // Additions:
 
-  static void addBeamLineTally(Simulation&,const int,const double,
+  static void addBeamLineTally(SimMCNP&,const int,const double,
 			       const std::string&,const long int,
 			       const double,const double);
-  static void addViewLineTally(Simulation&,const int,const double,
+  static void addViewLineTally(SimMCNP&,const int,const double,
 			       const double,const double,const double);
-  static void addViewInnerTally(Simulation&,const int,const long int,
+  static void addViewInnerTally(SimMCNP&,const int,const long int,
 				const double,const double,
 				const double,const double);
-  static void addShutterTally(Simulation&,const int,const double,
+  static void addShutterTally(SimMCNP&,const int,const double,
 			      const std::string&,const long int,
 			      const double,const double);
 

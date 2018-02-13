@@ -22,6 +22,8 @@
 #ifndef lensSystem_makeLens_h
 #define lensSystem_makeLens_h
 
+class SimMCNP;
+
 namespace lensSystem
 {
   class siModerator;
@@ -54,7 +56,7 @@ class makeLens
   ~makeLens();
   
   void build(Simulation* SimPtr);
-  void createTally(Simulation&,const mainSystem::inputParam&);
+  void createTally(SimMCNP&,const mainSystem::inputParam&);
   
   const FlightCluster& getFC() const;
 };

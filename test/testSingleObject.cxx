@@ -3,7 +3,7 @@
  
  * File:   test/testSingleObject.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,7 @@
 #include "ModelSupport.h"
 #include "neutron.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
@@ -114,7 +115,7 @@ testSingleObject::cylModVariables(FuncDataBase& Control)
   /*
     Set the variables for the lower moderators
     \param Control :: DataBase to put variables
-   */
+  */
 {
   ELog::RegMethod RegA("testSingleObject","cylModVariable");
 

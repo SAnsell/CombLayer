@@ -52,7 +52,7 @@ class reactorTallyConstruct
 
 
 
-  static void processPower(Simulation&,const mainSystem::inputParam&,
+  static void processPower(SimMCNP&,const mainSystem::inputParam&,
 			    const size_t);
 
   static void writeHelp(std::ostream&);
