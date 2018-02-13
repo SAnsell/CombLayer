@@ -563,25 +563,10 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   buildCirclePipes(System,
 		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
 					      " 2007M -7 "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 105 -106 "),0);
-
-  // layer after (outside) circle of pipes
-  //  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 2317 -7 ");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-
-  // steel above
-  buildCirclePipes(System,
-		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
-					      " -7 2007M "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 106 -116 "),steelMat);
-  // steel below
-  //  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 -105 115 2007M");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-  buildCirclePipes(System,
-		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
-					      " -7 2007M "),
-		   ModelSupport::getComposite(SMap,wheelIndex," -105 115 "),steelMat);
-
+		   ModelSupport::getComposite(SMap,wheelIndex," 115 -105 "),
+		   ModelSupport::getComposite(SMap,wheelIndex," 106 -116 "),
+		   ModelSupport::getComposite(SMap,wheelIndex," 105 -106 "),
+		   ModelSupport::getComposite(SMap,wheelIndex," 115 -116 "));
 
   // void below
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 35 -115 2127 ");
@@ -1016,14 +1001,18 @@ BilbaoWheel::buildHoles(Simulation& System,
 void
 BilbaoWheel::buildCirclePipes(Simulation& System,
 			      const std::string& sides,
-			      const std::string& bottop,
-			      const int mat)
+			      const std::string& floor,
+			      const std::string& roof,
+			      const std::string& inner,
+			      const std::string& outer)
   /*!
     Build circle of pipes
     \param System :: Simulation
     \param sides  :: side surfaces
-    \param bottop :: bottom and top surfaces
-    \param mat    :: material between pipes
+    \param floor :: floor rule (top+bottom)
+    \param roof :: roof rule (top+bottom)
+    \param inner :: inner rule (top+bottom)
+    \param outer :: outer rule (top+bottom)
   */
 {
   ELog::RegMethod RegA("BilbaoWheel","buildCirclePipes");
@@ -1031,19 +1020,27 @@ BilbaoWheel::buildCirclePipes(Simulation& System,
   int SJ(wheelIndex+2300);
   if (nSectors<2)
     {
-      Out=sides+bottop;
+      Out=sides+inner;
       System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
     } else
     {
       for (size_t j=0; j<nSectors; j++)
 	{
-	  Out=ModelSupport::getComposite(SMap,SJ," -8 ") + bottop;
+	  Out=ModelSupport::getComposite(SMap,SJ," -8 ") + outer;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,SJ," 8 -9 ") + bottop;
+	  Out=ModelSupport::getComposite(SMap,SJ," 8 -9 ") + outer;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,
-					   Out+bottop+sides));
+
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + inner;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,
+					   Out+sides));
+
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + floor;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,
+					   Out+sides));
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ") + roof;
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,
+					   Out+sides));
 	  SJ+=10;
 	}
     }

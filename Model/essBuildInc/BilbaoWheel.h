@@ -132,8 +132,9 @@ class BilbaoWheel : public WheelBase
 		  const int, const double, const double,const double,
 		  const double,const int);
 
-  void buildCirclePipes(Simulation&,const std::string&,const std::string&,
-			const int);
+  void buildCirclePipes(Simulation&,const std::string&,
+			const std::string&,const std::string&,
+			const std::string&,const std::string&);
   void buildSectors(Simulation&) const;
 
   public:
