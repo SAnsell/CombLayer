@@ -3,7 +3,7 @@
  
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,11 @@
 #ifndef SimFLUKA_h
 #define SimFLUKA_h
 
+namespace flukaSystem
+{
+  class userTally;
+}
+
 /*!
   \class SimFLUKA
   \brief Modifides Simulation to output a Fluka input file
@@ -32,8 +37,15 @@
 class SimFLUKA : public Simulation
 {
  private:
-  const std::string alignment;
 
+  /// Tally type
+  typedef std::map<std::string,flukaSystem::userTally*> flukaTTYPE; 
+
+  /// horrific string for fluka input file
+  const std::string alignment;   
+
+  std::map<std::string,flukaTTYPE> UTMap;       ///< User tally map
+  
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;
@@ -47,6 +59,7 @@ class SimFLUKA : public Simulation
 
   const std::string& getLowMatName(const size_t) const;
   std::string getLowMat(const size_t,const size_t,const std::string&) const;
+
   
  public:
   
@@ -54,6 +67,9 @@ class SimFLUKA : public Simulation
   SimFLUKA(const SimFLUKA&);
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA() {}           ///< Destructor
+
+  void addTally(const flukaSystem::userTally&);
+  flukaSystem::userTally* getTally(const std::string&) const;
 
   virtual void write(const std::string&) const;
 

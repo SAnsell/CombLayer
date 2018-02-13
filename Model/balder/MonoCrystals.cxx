@@ -172,6 +172,19 @@ MonoCrystals::createSurfaces()
   ModelSupport::buildPlane(SMap,xtalIndex+105,Origin-PZ*thickA,PZ);
   ModelSupport::buildPlane(SMap,xtalIndex+106,Origin,PZ);
 
+  ModelSupport::buildPlane(SMap,xtalIndex+111,
+			   Origin-PY*(baseExtra+lengthA/2.0),PY);
+  ModelSupport::buildPlane(SMap,xtalIndex+112,
+			   Origin+PY*(baseExtra+lengthA/2.0),PY);
+  ModelSupport::buildPlane(SMap,xtalIndex+113,
+			   Origin-PX*(baseExtra+widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,xtalIndex+114,
+			   Origin+PX*(baseExtra+widthA/2.0),PX);
+  ModelSupport::buildPlane(SMap,xtalIndex+115,
+			   Origin-PZ*(thickA+baseThick),PZ);
+
+
+  
   const Geometry::Vec3D BOrg=
     Origin+Y*(gap/tan(theta*2.0*M_PI/180.0))+Z*gap;
   
@@ -182,6 +195,16 @@ MonoCrystals::createSurfaces()
   ModelSupport::buildPlane(SMap,xtalIndex+205,BOrg,PZ);
   ModelSupport::buildPlane(SMap,xtalIndex+206,BOrg+PZ*thickB,PZ);
   
+  ModelSupport::buildPlane(SMap,xtalIndex+211,
+			   BOrg-PY*(baseExtra+lengthB/2.0),PY);
+  ModelSupport::buildPlane(SMap,xtalIndex+212,
+			   BOrg+PY*(baseExtra+lengthB/2.0),PY);
+  ModelSupport::buildPlane(SMap,xtalIndex+213,
+			   BOrg-PX*(baseExtra+widthB/2.0),PX);
+  ModelSupport::buildPlane(SMap,xtalIndex+214,
+			   BOrg+PX*(baseExtra+widthB/2.0),PX);
+  ModelSupport::buildPlane(SMap,xtalIndex+216,
+			   BOrg-PZ*(thickB+baseThick),PZ);
   
   return; 
 }
@@ -199,9 +222,30 @@ MonoCrystals::createObjects(Simulation& System)
   // xstal A
   Out=ModelSupport::getComposite(SMap,xtalIndex," 101 -102 103 -104 105 -106 ");
   makeCell("XtalA",System,cellIndex++,xtalMat,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,xtalIndex," 111 -112 113 -114 115 -105 ");
+  makeCell("XtraABase",System,cellIndex++,baseMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,xtalIndex,
+				 " 111 -112 113 -114 105 -106 "
+				 "(-101:102:-103:104) ");
+  makeCell("XtraAEdgeVoid",System,cellIndex++,0,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,xtalIndex," 111 -112 113 -114 115 -106 ");
   addOuterSurf(Out);
+
+  // second xtal
   Out=ModelSupport::getComposite(SMap,xtalIndex," 201 -202 203 -204 205 -206 ");
   makeCell("XtalB",System,cellIndex++,xtalMat,0.0,Out);
+  Out=ModelSupport::getComposite(SMap,xtalIndex," 211 -212 213 -214 205 -216 ");
+  makeCell("XtraBBase",System,cellIndex++,baseMat,0.0,Out);
+  
+  Out=ModelSupport::getComposite(SMap,xtalIndex,
+				 " 211 -212 213 -214 205 -206 "
+				 "(-201:202:-203:204) ");
+  makeCell("XtraBEdgeVoid",System,cellIndex++,0,0.0,Out);
+
+  Out=ModelSupport::getComposite(SMap,xtalIndex," 211 -212 213 -214 205 -216 ");
   addOuterUnionSurf(Out);
   
   return; 
