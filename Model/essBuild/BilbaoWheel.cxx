@@ -516,7 +516,7 @@ BilbaoWheel::makeShaftSurfaces()
 
   int SJ(wheelIndex+2300);
   double theta(0.0), x0, y0;
-  const double dTheta = 360.0/static_cast<double>(nSectors);
+  const double dTheta(360.0/static_cast<double>(nSectors));
   R = circlePipesBigRad;
   for (size_t j=0; j<nSectors; j++)
     {
@@ -526,7 +526,7 @@ BilbaoWheel::makeShaftSurfaces()
       ModelSupport::buildCylinder(SMap,SJ+9,Origin+X*x0+Y*y0,Z,
 				  circlePipesRad+circlePipesWallThick);
       // dummy plane to separate voids between circles:
-      ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Z, theta);
+      ModelSupport::buildPlaneRotAxis(SMap, SJ+1, Origin, X, Z, theta-dTheta/2);
 
       theta += dTheta;
       SJ+=10;
@@ -1041,7 +1041,7 @@ BilbaoWheel::buildCirclePipes(Simulation& System,
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 	  Out=ModelSupport::getComposite(SMap,SJ," 8 -9 ") + bottop;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," (9 1) (9M -1M)");
+	  Out=ModelSupport::getComposite(SMap,SJ,SJ+10," 9 1 -1M ");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,
 					   Out+bottop+sides));
 	  SJ+=10;
