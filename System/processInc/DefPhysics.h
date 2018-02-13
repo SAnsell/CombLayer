@@ -3,7 +3,7 @@
  
  * File:   processInc/DefPhysics.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,12 +39,16 @@ namespace ModelSupport
   void procAngle(const mainSystem::inputParam&,const size_t);
   
   void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
-  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
-  void setNeutronPhysics(Simulation&); 
-  void setReactorPhysics(Simulation&,const mainSystem::inputParam&); 
-  void setUFissionPhysics(Simulation&,const mainSystem::inputParam&); 
+
+  void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&); 
+  void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
+			 const mainSystem::inputParam&); 
   void setDefRotation(const mainSystem::inputParam&);
-  void setItemRotate(const attachSystem::FixedComp&,const std::string&);
+
+  
+  void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
+  //  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
+  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&) {}
 }
 
 

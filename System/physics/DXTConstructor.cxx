@@ -3,7 +3,7 @@
  
  * File:   physics/DXTConstructor.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "FixedComp.h"
 #include "LinkSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "inputParam.h"
 
 #include "ModeCard.h"
@@ -90,12 +91,12 @@ DXTConstructor::DXTConstructor()
 {}
   
 void
-DXTConstructor::processDD(Simulation& System,
+DXTConstructor::processDD(PhysicsCards& PC,
 			  const mainSystem::inputParam& IParam,
 			  const size_t Index) 
   /*!
     Add a simple dd card
-    \param System :: Simulation to get physics/fixed points
+    \param PC :: Physics system
     \param IParam :: Main input parameters
     \param Index :: index of the -wDXT card
    */
@@ -107,7 +108,7 @@ DXTConstructor::processDD(Simulation& System,
     throw ColErr::IndexError<size_t>(NParam,2,"Insufficient items wDXT");
 
   // Get all values:
-  DXTControl& DXT=System.getPC().getDXTCard();
+  DXTControl& DXT=PC.getDXTCard();
   for(size_t j=1;j<NParam;j+=2)
     {
       
@@ -119,12 +120,12 @@ DXTConstructor::processDD(Simulation& System,
 }
  
 void
-DXTConstructor::processUnit(Simulation& System,
+DXTConstructor::processUnit(PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
  /*!
    Add dxtran component 
-   \param System :: Simulation to get physics/fixed points
+   \param PC :: Physics/fixed points
    \param IParam :: Main input parameters
    \param Index :: index of the -wDXT card
  */
@@ -144,7 +145,8 @@ DXTConstructor::processUnit(Simulation& System,
       ELog::EM<<ELog::endBasic;
       return;
     }
-  DXTControl& DXT=System.getPC().getDXTCard();
+  
+  DXTControl& DXT=PC.getDXTCard();
   double RI,RO;
   if (dxtName=="object" || dxtName=="objOffset")
     {

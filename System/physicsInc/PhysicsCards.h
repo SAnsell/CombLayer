@@ -100,6 +100,7 @@ class PhysicsCards
 
   // ALL systems setup
   void setCellNumbers(const std::vector<int>&,const std::vector<double>&);
+  void setCellNumbers(const std::vector<std::pair<int,int>>&);
 
   // General [All particles] :
   void setCells(const std::string&,const std::vector<int>&,const double =1.0);

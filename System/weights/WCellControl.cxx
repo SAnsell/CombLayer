@@ -65,6 +65,7 @@
 #include "WCells.h"
 #include "CellWeight.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "PositionSupport.h"
@@ -534,6 +535,7 @@ WCellControl::calcCellTrack(const Simulation& System,
   cTrack(System,initPt,Pts,index,CTrack);
   return;
 }
+
 void
 WCellControl::setWeights(Simulation& System,
 			 const std::string& particleType)
@@ -562,7 +564,11 @@ WCellControl::setWeights(Simulation& System,
   WF->maskCell(1);
 
   // mask imp:n etc
-  setWImp(System,particleType);
+
+  SimMCNP* SimPtr=dynamic_cast<SimMCNP*>(&System);
+  if (SimPtr)
+    setWImp(SimPtr->getPC(),particleType);
+  
   
   return;
 }

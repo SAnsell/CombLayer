@@ -567,30 +567,27 @@ Simulation::setMaterialDensity(const int cellNum)
   return 0;
 }
 
-void
-Simulation::processCellsImp()
+std::vector<std::pair<int,int>>
+Simulation::getCellImp() const
   /*!
     Now process Physics so importance/volume cards can be set.
-    \todo : What is the official score on cookie-cutter cells??
+    \return pair of cellNumber : importance in cell 
   */
 {
-  ELog::RegMethod RegA("Simulation","processCellsImp");
+  ELog::RegMethod RegA("Simulation","getCellsImp");
 
-  std::vector<int> cellOrder;
-  std::vector<double> impValue;
+  std::vector<std::pair<int,double>> cellImp;
 
-  OTYPE::const_iterator vc;
-  for(vc=OList.begin();vc!=OList.end();vc++)
+  for(const OTYPE::value_type& VC: OList)
     {
-      if (!vc->second->isPlaceHold())
+      if (!VC.second->isPlaceHold())
 	{
-	  cellOrder.push_back(vc->first);
-	  impValue.push_back( (vc->second->getImp()>0) ? 1.0 : 0.0);
+	  cellImp.push_back
+	    (std::pair<int,int>(VC.first,(VC.second->getImp()>0) ? 1 : 0));
 	}
     }
-  
-  PhysPtr->setCellNumbers(cellOrder,impValue);
-  return;
+  return cellImp;
+
 }
 
 int
@@ -1561,7 +1558,7 @@ Simulation::masterRotation()
 }
 
 void
-Simulation::masterPhysicsRotation()
+Simulation::masterSourceRotation()
   /*!
     Apply master rotations to the physics system
    */

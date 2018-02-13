@@ -80,7 +80,7 @@ namespace SimProcess
 {
 
 void
-importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
+importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
   /*!
     Apply importances/renumber and weights
     \param System :: Simuation object 
@@ -89,18 +89,21 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("SimInput","importanceSim");
 
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  
   System.populateCells();
   System.createObjSurfMap();
 
-  WeightSystem::simulationImp(System,IParam);
+  WeightSystem::simulationImp(PC,System,IParam);
 
-  WeightSystem::ExtField(System,IParam);
-  WeightSystem::FCL(System,IParam);
-  WeightSystem::IMP(System,IParam);
-  WeightSystem::DXT(System,IParam);
-  WeightSystem::PWT(System,IParam);
-  WeightSystem::EnergyCellCut(System,IParam);
+  WeightSystem::ExtField(PC,IParam);
+  WeightSystem::FCL(PC,System,IParam);
+  WeightSystem::IMP(PC,System,IParam);
+  WeightSystem::DXT(PC,IParam);
+  WeightSystem::PWT(PC,IParam);
+  WeightSystem::EnergyCellCut(PC,System,IParam);
   mainSystem::renumberCells(System,IParam);
+
   WeightSystem::WCellControl WCell;
   WeightSystem::WWGControl WWGC;
   WCell.processWeights(System,IParam);

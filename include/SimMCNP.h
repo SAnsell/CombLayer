@@ -84,6 +84,9 @@ class SimMCNP : public Simulation
 
   TallyTYPE TItem;                        ///< Tally Items
 
+  physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
+
+
   void deleteTally();
   
   // ALL THE sub-write stuff
@@ -135,6 +138,8 @@ class SimMCNP : public Simulation
   virtual std::map<int,int> renumberCells(const std::vector<int>&,
 					  const std::vector<int>&);
 
+  /// Get PhysicsCards
+  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
   
   virtual void writeCinder() const;          
 

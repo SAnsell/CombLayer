@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/FCLConstructor.h
+ * File:   weightsInc/IMPConstructor.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef WeightSystem_FCLConstructor_h
-#define WeightSystem_FCLConstructor_h
+#ifndef physicsSystem_IMPConstructor_h
+#define physicsSystem_IMPConstructor_h
 
-
+///\file 
 
 class Simulation;
 namespace Geometry
 {
   class Plane;
 }
-class Simluation;
 
 namespace mainSystem
 {
@@ -38,15 +37,16 @@ namespace mainSystem
 
 namespace physicsSystem
 {
-  /*!
-    \class FCLConstructor
-    \version 1.0
-    \author S. Ansell
-    \date January 2017
-    \brief Builds the Forced Collision physics card
-  */
+  class PhysicsCards;
+/*!
+  \class IMPConstructor
+  \brief Controls importance of cells
+  \author S. Ansell
+  \version 1.0
+  \date April 2016
+*/
 
-class FCLConstructor 
+class IMPConstructor 
 {
  private:
 
@@ -54,13 +54,13 @@ class FCLConstructor
     
  public:
 
-  FCLConstructor() {}
-  FCLConstructor(const FCLConstructor&) {}
-  FCLConstructor& operator=(const FCLConstructor&) { return *this; }
-  ~FCLConstructor() {}  ///< Destructor
+  IMPConstructor() {}
+  IMPConstructor(const IMPConstructor&) {}
+  IMPConstructor& operator=(const IMPConstructor&) { return *this; }
+  ~IMPConstructor() {}  ///< Destructor
 
-  void init(Simulation&);
-  void processUnit(Simulation&,const mainSystem::inputParam&,
+  void processUnit(PhysicsCards&,Simulation&,
+		   const mainSystem::inputParam&,
 		   const size_t);
 };
 

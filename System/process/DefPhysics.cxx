@@ -3,7 +3,7 @@
  
  * File:   process/DefPhysics.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,12 +70,12 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
-#include "SecondTrack.h"
 #include "AttachSupport.h"
 #include "LinkSupport.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "PhysImp.h"
 #include "PhysCard.h"
 #include "PStandard.h"
@@ -90,60 +90,42 @@ namespace ModelSupport
 {
 
 void
-setItemRotate(const attachSystem::FixedComp& WMaster,
-	      const std::string& ItemName)
+setDefRotation(const mainSystem::inputParam& IParam)
   /*!
-    Add a specific rotation
-    \param WMaster :: ??
-    \param ItemName :: Item name for fixedComp
-  */
+    Apply a standard rotation to the simulation
+    \param IParam :: Parameter set
+   */
 {
-  ELog::RegMethod RegA("DefPhysics[F]","setItemRotate");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefRotation");
 
-  if (ItemName.empty())
-    return;
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
   masterRotate& MR = masterRotate::Instance();
-
-  Geometry::Vec3D newOrigin;
-  Geometry::Quaternion QA;
-
-  const attachSystem::SecondTrack*
-    TwinPtr=OR.getObject<attachSystem::SecondTrack>(ItemName);  
-  if (!TwinPtr)
+  if (IParam.flag("axis"))
     {
-      const attachSystem::FixedComp* ItemPtr=
-	OR.getObjectThrow<attachSystem::FixedComp>(ItemName,"FixedComp");  
-      
-      newOrigin=ItemPtr->getCentre();
-      QA=Geometry::Quaternion::basisRotate(WMaster.getX(),
-					   WMaster.getY(),
-					   WMaster.getZ(),
-					   ItemPtr->getX(),
-					   ItemPtr->getY(),
-					   ItemPtr->getZ());
+      // Move X to Z:
+      MR.addRotation(Geometry::Vec3D(0,1,0),
+		     Geometry::Vec3D(0,0,0),
+		     90.0);
+      //Move XY to -X-Y 
+      MR.addRotation(Geometry::Vec3D(0,0,1),
+		     Geometry::Vec3D(0,0,0),
+		     -90.0);
+      MR.addMirror(Geometry::Plane
+		   (1,0,Geometry::Vec3D(0,0,0),
+		    Geometry::Vec3D(1,0,0)));
     }
-  else 
+
+  if (IParam.flag("offset"))
     {
-      //      const attachSystem::FixedComp* 
-      //	ItemPtr=OR.getObject<attachSystem::FixedComp>(ItemName);  
-      newOrigin=TwinPtr->getBeamStart();
-      QA=Geometry::Quaternion::basisRotate(WMaster.getX(),
-					   WMaster.getY(),
-					   WMaster.getZ(),
-					   TwinPtr->getBZ(),
-					   TwinPtr->getBY(),
-					   TwinPtr->getBX());
+      const size_t nP=IParam.setCnt("offset");
+      for(size_t i=0;i<nP;i++)
+        procOffset(IParam,i);
     }
-  
-  MR.reset();
-  MR.addRotation(QA.getAxis(),
-		 newOrigin,
-		 180.0*QA.getTheta()/M_PI);
-  MR.addDisplace(-newOrigin);
-  
+  if (IParam.flag("angle"))
+    {
+      const size_t nP=IParam.setCnt("angle");
+      for(size_t i=0;i<nP;i++)
+        procAngle(IParam,i);
+    }
   return;
 }
 
@@ -306,45 +288,6 @@ procOffset(const mainSystem::inputParam& IParam,
   return;
 }
   
-void
-setDefRotation(const mainSystem::inputParam& IParam)
-  /*!
-    Apply a standard rotation to the simulation
-    \param IParam :: Parameter set
-   */
-{
-  ELog::RegMethod RegA("DefPhysics[F]","setDefRotation");
-
-  masterRotate& MR = masterRotate::Instance();
-  if (IParam.flag("axis"))
-    {
-      // Move X to Z:
-      MR.addRotation(Geometry::Vec3D(0,1,0),
-		     Geometry::Vec3D(0,0,0),
-		     90.0);
-      //Move XY to -X-Y 
-      MR.addRotation(Geometry::Vec3D(0,0,1),
-		     Geometry::Vec3D(0,0,0),
-		     -90.0);
-      MR.addMirror(Geometry::Plane
-		   (1,0,Geometry::Vec3D(0,0,0),
-		    Geometry::Vec3D(1,0,0)));
-    }
-
-  if (IParam.flag("offset"))
-    {
-      const size_t nP=IParam.setCnt("offset");
-      for(size_t i=0;i<nP;i++)
-        procOffset(IParam,i);
-    }
-  if (IParam.flag("angle"))
-    {
-      const size_t nP=IParam.setCnt("angle");
-      for(size_t i=0;i<nP;i++)
-        procAngle(IParam,i);
-    }
-  return;
-}
 
 void
 setPhysicsModel(physicsSystem::LSwitchCard& lea,
@@ -396,7 +339,105 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
 }
 
 void 
-setDefaultPhysics(Simulation& System,
+setNeutronPhysics(physicsSystem::PhysicsCards& PC,
+		  const FuncDataBase& Control)
+  /*!
+    Set the neutron Physics for MCNP run
+    \param PC :: Physcis cards
+    \param Control :: Databae of variables
+  */
+{
+  ELog::RegMethod RegA("DefPhysics","setNeutronPhysics");
+
+  
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
+  const std::string EMax=std::to_string(maxEnergy);
+
+  PC.setMode("n");
+  PC.setPrintNum("10 20 50 110 120");
+  
+  physicsSystem::PStandard* NCut=
+    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
+  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
+  // Process physics
+  physicsSystem::PStandard* pn=
+    PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+  pn->setValues(EMax+" 0.0 j j j");
+  
+  return; 
+}
+
+
+void 
+setReactorPhysics(physicsSystem::PhysicsCards& PC,
+		  const FuncDataBase& Control,
+		  const mainSystem::inputParam& IParam)
+  /*!
+    Set the neutron Physics for MCNP run on a reactor
+    \param PC :: Physcis cards
+    \param Control :: Databae of variables
+  */
+{
+  ELog::RegMethod RegA("DefPhysics","setReactorPhysics");
+  
+  std::string PList("");
+  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",20.0);
+  
+  const double elcEnergy=IParam.getValue<double>("electron");
+  const double phtEnergy=IParam.getValue<double>("photon");
+  const double phtModel=IParam.getValue<double>("photonModel");
+  
+  const std::string elcAdd((elcEnergy>0 ? " e" : ""));
+
+  PC.setMode("n p "+PList+elcAdd);
+  PC.setPrintNum("10 110");
+  
+  physicsSystem::PStandard* NCut=
+    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
+  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
+  
+  physicsSystem::PStandard* allCut=
+     PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
+  allCut->setValues(2,1e+8,0.0);
+  physicsSystem::PStandard* photonCut=
+     PC.addPhysCard<physicsSystem::PStandard>("cut","p");
+  photonCut->setValues(2,1e+8,phtEnergy);
+
+  if (elcEnergy>=0.0)
+    {
+      physicsSystem::PStandard* elcCut=
+	PC.addPhysCard<physicsSystem::PStandard>("cut","e");
+      elcCut->setValues(2,1e+8,elcEnergy);
+    }
+
+  
+  const std::string EMax=std::to_string(maxEnergy);
+  const std::string PHMax=std::to_string(phtModel);
+  physicsSystem::PStandard* pn=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+  pn->setValues(EMax+" 0.0 j j j");
+  
+  physicsSystem::PStandard* pp=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","p");
+  if (elcEnergy>=0.0)
+    pp->setValues(PHMax+" j j 1");
+  else
+    pp->setValues(PHMax);
+
+  physicsSystem::PStandard* pa=
+    PC.addPhysCard<physicsSystem::PStandard>("phys","/ d t s a "+elcAdd);
+  pa->setValues(EMax);
+  
+  physicsSystem::PStandard* ph=
+    PC.addPhysCard<physicsSystem::PStandard>("phys","h");
+  ph->setValues(EMax);
+  
+  return; 
+}
+
+
+void 
+setDefaultPhysics(SimMCNP& System,
 		  const mainSystem::inputParam& IParam)
   /*!
     Set the default Physics
@@ -408,9 +449,16 @@ setDefaultPhysics(Simulation& System,
 
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
+
+  const FuncDataBase& Control=System.getDataBase();
+  
   physicsSystem::PhysicsCards& PC=System.getPC();
   physicsSystem::LSwitchCard& lea=PC.getLEA();
 
+  const std::vector<std::pair<int,int>> cellImp=System.getCellImp();
+  PC.setCellNumbers(cellImp);
+  PC.setCells("imp",1,0);            // Set a zero cell 
+  
   const std::string PModel=IParam.getValue<std::string>("physModel");
   setPhysicsModel(lea,PModel);
 
@@ -423,17 +471,19 @@ setDefaultPhysics(Simulation& System,
   // If Reactor stuff set and void
   if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
     {
-      setReactorPhysics(System,IParam);
+      setReactorPhysics(PC,Control,IParam);
+      PC.setCellNumbers(cellImp);
+      PC.setCells("imp",1,0);            // Set a zero cell
       return;
     }
 
   if (IParam.hasKey("neutronOnly"))
     {
-      setNeutronPhysics(System);
+      setNeutronPhysics(PC,Control);
+      PC.setCellNumbers(cellImp);
+      PC.setCells("imp",1,0);            // Set a zero cell
       return;
     }
-
-  const FuncDataBase& Control=System.getDataBase();
   
   std::string PList=
     IParam.getDefValue<std::string>("h / d t s a z / * k ?","mode",0);
@@ -460,10 +510,9 @@ setDefaultPhysics(Simulation& System,
        "<="+StrFunc::makeString(cutMin));
   
   PC.setMode("n p "+PList+elcAdd);
-  System.processCellsImp();
-
-
-  PC.setCells("imp",1,0);            // Set a zero cell	  
+  PC.setCellNumbers(cellImp);
+  PC.setCells("imp",1,0);            // Set a zero cell
+  
   physicsSystem::PStandard* NCut=
     PC.addPhysCard<physicsSystem::PStandard>("cut","n");
   NCut->setValues(4,cutTime,0.0,0.4,-0.1);
@@ -499,7 +548,7 @@ setDefaultPhysics(Simulation& System,
   
   if (!PList.empty())
     {
-      std::string::size_type hpos=PList.find("h");
+      const std::string::size_type hpos=PList.find("h");
       if (PList.find("h")!=std::string::npos)
         {
           physicsSystem::PStandard* ph=
@@ -516,107 +565,5 @@ setDefaultPhysics(Simulation& System,
   return; 
 }
 
-
-void 
-setNeutronPhysics(Simulation& System)
-  /*!
-    Set the neutron Physics
-    \param System :: Simulation
-  */
-{
-  ELog::RegMethod RegA("DefPhysics","setNeutronPhysics");
-
-  const FuncDataBase& Control=System.getDataBase();
-  
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
-  const std::string EMax=StrFunc::makeString(maxEnergy);
-  
-  physicsSystem::PhysicsCards& PC=System.getPC();
-  PC.setMode("n");
-  PC.setPrintNum("10 20 50 110 120");
-  System.processCellsImp();
-  PC.setCells("imp",1,0);            // Set a zero cell
-  
-  physicsSystem::PStandard* NCut=
-    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
-  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
-  // Process physics
-  physicsSystem::PStandard* pn=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
-  pn->setValues(EMax+" 0.0 j j j");
-  
-  return; 
-}
-
-
-void 
-setReactorPhysics(Simulation& System,
-		  const mainSystem::inputParam& IParam)
-  /*!
-    Set the default Physics
-    \param System :: Simulation
-    \param IParam :: Input parameter
-  */
-{
-  ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
-
-  const FuncDataBase& Control=System.getDataBase();
-
-  physicsSystem::PhysicsCards& PC=System.getPC();
-  
-  std::string PList("");
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",20.0);
-  const double elcEnergy=IParam.getValue<double>("electron");
-  const double phtEnergy=IParam.getValue<double>("photon");
-  const double phtModel=IParam.getValue<double>("photonModel");
-  const std::string elcAdd((elcEnergy>0 ? " e" : ""));
-
-  PC.setMode("n p "+PList+elcAdd);
-  PC.setPrintNum("10 110");
-  System.processCellsImp();
-  PC.setCells("imp",1,0);            // Set a zero cell
-  
-  physicsSystem::PStandard* NCut=
-    PC.addPhysCard<physicsSystem::PStandard>("cut","n");
-  NCut->setValues(4,1.0e+8,0.0,0.4,-0.1);
-  
-  physicsSystem::PStandard* allCut=
-     PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
-  allCut->setValues(2,1e+8,0.0);
-  physicsSystem::PStandard* photonCut=
-     PC.addPhysCard<physicsSystem::PStandard>("cut","p");
-  photonCut->setValues(2,1e+8,phtEnergy);
-
-  if (elcEnergy>=0.0)
-    {
-      physicsSystem::PStandard* elcCut=
-	PC.addPhysCard<physicsSystem::PStandard>("cut","e");
-      elcCut->setValues(2,1e+8,elcEnergy);
-    }
-
-  
-  const std::string EMax=StrFunc::makeString(maxEnergy);
-  const std::string PHMax=StrFunc::makeString(phtModel);
-  physicsSystem::PStandard* pn=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
-  pn->setValues(EMax+" 0.0 j j j");
-  
-  physicsSystem::PStandard* pp=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","p");
-  if (elcEnergy>=0.0)
-    pp->setValues(PHMax+" j j 1");
-  else
-    pp->setValues(PHMax);
-
-  physicsSystem::PStandard* pa=
-    PC.addPhysCard<physicsSystem::PStandard>("phys","/ d t s a "+elcAdd);
-  pa->setValues(EMax);
-  
-  physicsSystem::PStandard* ph=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","h");
-  ph->setValues(EMax);
-  
-  return; 
-}
 
 } // NAMESPACE ModelSupport

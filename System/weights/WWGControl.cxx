@@ -65,6 +65,7 @@
 #include "WCells.h"
 #include "CellWeight.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "PositionSupport.h"
@@ -497,7 +498,10 @@ WWGControl::processWeights(Simulation& System,
 	{
 	  // don't write a wwp:particle card
 	  WM.getParticle(P)->setActiveWWP(0);
-	  clearWImp(System,P);
+	  SimMCNP* SimPtr=dynamic_cast<SimMCNP*>(&System);
+	  if (SimPtr)
+	    clearWImp(SimPtr->getPC(),P);
+
 	}
     }
 

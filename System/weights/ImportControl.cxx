@@ -82,51 +82,53 @@ namespace WeightSystem
 {
 
 void
-setWImp(Simulation& System,const std::string& particleType)
+setWImp(physicsSystem::PhysicsCards& PC,const std::string& particleType)
   /*!
-    control neutron importance for wwn/cell cards
-    \param System :: Simulation
+    Control neutron importance for wwn/cell cards
+    \param PC :: PhysicsCards
     \param particleType :: Particle type
   */
 {    
   ELog::RegMethod RegA("ImportControl[F]","setWImp");
-  System.getPC().setWImpFlag(particleType);
+  PC.setWImpFlag(particleType);
   return;
 }
 
 void
-clearWImp(Simulation& System,const std::string& particleType)
+clearWImp(physicsSystem::PhysicsCards& PC,const std::string& particleType)
   /*!
     control neutron importance for wwg cards
-    \param System :: Simulation
+    \param PC :: Physics Cards
     \param particleType :: Particle type
   */
 {    
   ELog::RegMethod RegA("ImportControl[F]","clearWImp");
-  System.getPC().clearWImpFlag(particleType);
+  PC.clearWImpFlag(particleType);
   return;
 }
 
 void
-removePhysImp(Simulation& System,const std::string& pType)
+removePhysImp(physicsSystem::PhysicsCards& PC,const std::string& pType)
   /*!
     Removes particle importance if cell based system dominates
-    \param System :: Simulation
+    \param PC :: Physics Cards
     \param pType :: Particle type
   */
 {
   ELog::RegMethod RegA("ImportControl[F]","removePhysImp");
 
-  System.getPC().removePhysImp("imp",pType);
+  PC.removePhysImp("imp",pType);
   return;
 }
 
   
 void
-zeroImp(Simulation& System,const int initCell,
+zeroImp(physicsSystem::PhysicsCards& PC,
+	Simulation& System,const int initCell,
 	const int cellRange)
   /*!
     Zero cell importances in a range
+    \param PC :: Physics Cards
     \param System :: Simulation 
     \param initCell :: inital cell to searcha
     \param cellRange :: range of cells to zero 
@@ -135,11 +137,9 @@ zeroImp(Simulation& System,const int initCell,
 {
   ELog::RegMethod RegA("ImportControl[F]","zeroImp");
 
-  physicsSystem::PhysicsCards& PC=System.getPC();  
   for(int cellNum=initCell;cellNum<initCell+cellRange;cellNum++)
     {
-      MonteCarlo::Qhull* Obj=
-	System.findQhull(cellNum);
+      MonteCarlo::Qhull* Obj=System.findQhull(cellNum);
       if (Obj)
 	{
 	  PC.setCells("imp",cellNum,0); 
@@ -151,10 +151,11 @@ zeroImp(Simulation& System,const int initCell,
 }
 
 void
-simulationImp(Simulation& System,
+simulationImp(physicsSystem::PhysicsCards& PC,Simulation& System,
 	      const mainSystem::inputParam& IParam)
   /*!
     Control importances in individual cells
+    \param PC :: PhysicsCards
     \param System :: Simulation
     \param IParam :: input stream
    */
@@ -164,12 +165,12 @@ simulationImp(Simulation& System,
   if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
     {
       System.findQhull(74123)->setImp(0);
-      System.getPC().setCells("imp",74123,0);  // outer void to z	
+      PC.setCells("imp",74123,0);  // outer void to z	
     }
   
   if (IParam.flag("volCard"))
     {
-      System.getPC().clearVolume();
+      PC.clearVolume();
     }
   
   // WEIGHTS:
@@ -185,7 +186,7 @@ simulationImp(Simulation& System,
 	{
 	  int cellNum=OR.getCell("void")+1;	  
 	  const int cellRange=OR.getRange("void");	      
-	  zeroImp(System,cellNum,cellRange);
+	  zeroImp(PC,System,cellNum,cellRange);
 	}
 
       int bNum(0);
@@ -211,7 +212,7 @@ simulationImp(Simulation& System,
 		      int cellNum=
                         OR.getCell(bName+bNum)+1;
 		      const int cellRange=OR.getRange(bName+bNum);
-		      zeroImp(System,cellNum,cellRange);
+		      zeroImp(PC,System,cellNum,cellRange);
 		    }
 		}
 	    }
@@ -222,11 +223,13 @@ simulationImp(Simulation& System,
 
   
 void
-EnergyCellCut(Simulation& System,
+EnergyCellCut(physicsSystem::PhysicsCards& PC,
+	      const Simulation& System,
               const mainSystem::inputParam& IParam)
   /*!
     Create the energy cell cutting system [ELPT] 
-    \param System :: Simulation
+    \param PC :: Physics Cards
+    \param System :: Simulation 
     \param IParam :: input stream
   */
 {
@@ -239,17 +242,17 @@ EnergyCellCut(Simulation& System,
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ELPTConstructor A;
-      A.processUnit(System,IParam,grpIndex);
+      A.processUnit(PC,System,IParam,grpIndex);
     }
   return;
 }
 
 void
-ExtField(Simulation& System,
+ExtField(physicsSystem::PhysicsCards& PC,
 	 const mainSystem::inputParam& IParam)
   /*!
     Control Ext card on the in individual cells
-    \param System :: Simulation
+    \param PC :: Physics Cards
     \param IParam :: input stream
   */
 {
@@ -262,17 +265,19 @@ ExtField(Simulation& System,
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ExtConstructor A;
-      A.processUnit(System,IParam,grpIndex);
+      A.processUnit(PC,IParam,grpIndex);
     }
   return;
 }
 
 void
-FCL(Simulation& System,
+FCL(physicsSystem::PhysicsCards& PC,
+    const Simulation& System,
     const mainSystem::inputParam& IParam)
   /*!
     Control FCL card on the in individual cells
-    \param System :: Simulation
+    \param PC :: Physics Cards
+    \param System :: Simulation 
     \param IParam :: input stream
   */
 {
@@ -284,15 +289,16 @@ FCL(Simulation& System,
   if (nSet)
     {
       physicsSystem::FCLConstructor A;
-      A.init(System);
+      A.init(PC,System);
       for(size_t index=0;index<nSet;index++)
-        A.processUnit(System,IParam,index);
+        A.processUnit(PC,IParam,index);
     }
   return;
 }
 
 void
-IMP(Simulation& System,
+IMP(physicsSystem::PhysicsCards& PC,
+    Simulation& System,
     const mainSystem::inputParam& IParam)
   /*!
     Control IMP card on the in individual cells
@@ -309,17 +315,17 @@ IMP(Simulation& System,
     {
       physicsSystem::IMPConstructor A;
       for(size_t index=0;index<nSet;index++)
-        A.processUnit(System,IParam,index);
+        A.processUnit(PC,System,IParam,index);
     }
   return;
 }
   
 void
-SBias(Simulation& System,
+SBias(physicsSystem::PhysicsCards& PC,
       const mainSystem::inputParam& IParam)
   /*!
     Control SBIAS card(s) on the 
-    \param System :: Simulation
+    \param PC :: Physics System
     \param IParam :: input stream
   */
 {
@@ -332,17 +338,17 @@ SBias(Simulation& System,
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
       physicsSystem::ExtConstructor A;
-      A.processUnit(System,IParam,grpIndex);
+      A.processUnit(PC,IParam,grpIndex);
     }
   return;
 }
 
 void
-DXT(Simulation& System,
+DXT(physicsSystem::PhysicsCards& PC,
     const mainSystem::inputParam& IParam)
   /*!
     Control DXT card(s) on the 
-    \param System :: Simulation
+    \param PC :: Physics System
     \param IParam :: input stream
   */
 {
@@ -350,39 +356,39 @@ DXT(Simulation& System,
 
   // currently only first item / get all
   physicsSystem::DXTConstructor A;
-  std::vector<std::string> StrItem;
+  
   const size_t NGrp=IParam.setCnt("wDXT");
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
-    A.processUnit(System,IParam,grpIndex);
+    A.processUnit(PC,IParam,grpIndex);
 
   const size_t NGrpD=IParam.setCnt("wDD");
   for(size_t grpIndex=0;grpIndex<NGrpD;grpIndex++)
-    A.processDD(System,IParam,grpIndex);
+    A.processDD(PC,IParam,grpIndex);
 
   return;
 }
 
   
 void
-PWT(Simulation& System,
+PWT(physicsSystem::PhysicsCards& PC,
     const mainSystem::inputParam& IParam)
   /*!
     Control PWT card(s) on the 
-    \param System :: Simulation
+    \param PC :: Physics System
     \param IParam :: input stream
   */
 {
   ELog::RegMethod RegA("ImportControl","PWT");
 
   // currently only first item / get all
-  std::vector<std::string> StrItem;
+
   const size_t NGrp=IParam.setCnt("wPWT");
   for(size_t grpIndex=0;grpIndex<NGrp;grpIndex++)
     {
 
       physicsSystem::PWTConstructor A;
       
-      A.processUnit(System,IParam,grpIndex);
+      A.processUnit(PC,IParam,grpIndex);
     }
   return;
 }

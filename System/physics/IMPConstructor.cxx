@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weight/IMPConstructor.cxx
+ * File:   physics/IMPConstructor.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,14 +69,15 @@
 
 namespace physicsSystem
 {
-
   
 void
-IMPConstructor::processUnit(Simulation& System,
+IMPConstructor::processUnit(PhysicsCards& PC,
+			    Simulation& System,
                             const mainSystem::inputParam& IParam,
                             const size_t setIndex)
   /*!
     Set individual IMP based on Iparam
+    \param PC :: PhysicsCards
     \param System :: Simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
@@ -87,10 +88,6 @@ IMPConstructor::processUnit(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  physicsSystem::PhysicsCards& PC=System.getPC();
-
-  
-  
   int value;
   std::string particle=IParam.getValueError<std::string>
     ("wIMP",setIndex,0,"No particle for wIMP ");
@@ -127,7 +124,7 @@ IMPConstructor::processUnit(Simulation& System,
   if (particle.empty())
     {
       Simulation::OTYPE& CellObjects=System.getCells();
-      // Special to set cells in OBJECT
+      // Special to set cells in OBJECT  [REMOVE]
       for(const int CN : Cells)
         {
           PC.setCells("imp",CN,value);

@@ -598,6 +598,27 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
   return;
 }
 
+
+void
+PhysicsCards::setCellNumbers(const std::vector<std::pair<int,int>>& cellInfo)
+
+  /*!
+    Process the list of the valid cells 
+    over each importance group.
+    \param cellInfo :: list of cells/importance
+  */
+
+{
+  ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
+  
+  for(PhysImp& PI : ImpCards)
+    PI.setAllCells(cellInfo);
+
+  Volume.setAllCells(cellInfo);
+  Volume.setAllCells(1.0);
+  return;
+}
+
 // General object [All Particles]:
 void
 PhysicsCards::setCells(const std::string& Type,

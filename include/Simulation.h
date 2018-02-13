@@ -38,13 +38,6 @@ namespace Surface
   class Surface;
 }
 
-namespace physicsSystem
-{
-  class PhysicsCards;
-}
-
-class RemoveCell;
-
 namespace ModelSupport
 {
   class ObjSurfMap;
@@ -100,7 +93,6 @@ class Simulation
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
 
-  physicsSystem::PhysicsCards* PhysPtr;   ///< Physics Cards
 
   std::string sourceName;                 ///< Source name
   
@@ -146,8 +138,6 @@ class Simulation
   FuncDataBase& getDataBase() { return DB; }  
   /// Gets the data base
   const FuncDataBase& getDataBase() const { return DB; }
-  /// Get PhysicsCards
-  physicsSystem::PhysicsCards& getPC() { return *PhysPtr; }
 
   /// set Source name
   void setSourceName(const std::string&);
@@ -164,7 +154,7 @@ class Simulation
   void calcAllVertex();
   
   void masterRotation();
-  void masterPhysicsRotation();
+  void masterSourceRotation();
 
   // ADD Objects
   int addCell(const MonteCarlo::Qhull&);         
@@ -188,7 +178,7 @@ class Simulation
   std::vector<int> getCellWithMaterial(const int) const;
   std::vector<int> getCellWithZaid(const size_t) const;
 
-  void processCellsImp();           
+  std::vector<std::pair<int,int>> getCellImp() const;            
 
   int removeDeadSurfaces(const int); 
   int removeCells(const int,const int); 

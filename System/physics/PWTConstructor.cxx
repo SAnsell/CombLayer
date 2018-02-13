@@ -3,7 +3,7 @@
  
  * File:   physics/PWTConstructor.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -232,12 +232,12 @@ PWTConstructor::sortZone()
 
 
 void
-PWTConstructor::processUnit(Simulation& System,
+PWTConstructor::processUnit(PhysicsCards& PC,
 			    const mainSystem::inputParam& IParam,
 			    const size_t Index) 
 /*!
-    Add ext component 
-    \param System :: Simulation to get physics/fixed points
+    Add pwt component 
+    \param PC :: Simulation to get physics/fixed points
     \param IParam :: Main input parameters
     \param Index :: index of the -wPWT card
    */
@@ -266,7 +266,7 @@ PWTConstructor::processUnit(Simulation& System,
       ("procZone ==> StrItems","-wPWT "+IParam.getFull("wPWT",Index),0);	
 
   sortZone();
-  PWTControl& PWT=System.getPC().getPWTCard();
+  PWTControl& PWT=PC.getPWTCard();
     
   if (!procType(StrItem,PWT))
     throw ColErr::InvalidLine

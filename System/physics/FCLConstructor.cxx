@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weight/FCLConstructor.cxx
+ * File:   physics/FCLConstructor.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,15 +72,15 @@ namespace physicsSystem
 
 
 void
-FCLConstructor::init(Simulation& System)
+FCLConstructor::init(PhysicsCards& PC,const Simulation& System)
   /*!
     Initialize the FCL card
+    \param PC : Physics cards
     \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("FCLConstructor","init");
   
-  physicsSystem::PhysicsCards& PC=System.getPC();
   physicsSystem::PhysImp& FLCImp=PC.addPhysImp("fcl","n");
   if (FLCImp.isEmpty()) 
     {
@@ -94,13 +94,14 @@ FCLConstructor::init(Simulation& System)
 
   
 void
-FCLConstructor::processUnit(Simulation& System,
+FCLConstructor::processUnit(PhysicsCards& PC,
                             const mainSystem::inputParam& IParam,
                             const size_t index)
   /*!
     Set individual FCL based on Iparam
-    \param System :: Simulation
+    \param PC :: Simulation
     \param IParam :: input stream
+    \param index :: wFCL set card
   */
 {
   ELog::RegMethod RegA("FCLConstructor","processUnit");
@@ -108,8 +109,6 @@ FCLConstructor::processUnit(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
     
-  physicsSystem::PhysicsCards& PC=System.getPC();
-  
   const double value=IParam.getValueError<double>
     ("wFCL",index,0,"No fractional for wFCL");
   const std::string key=IParam.getValueError<std::string>
