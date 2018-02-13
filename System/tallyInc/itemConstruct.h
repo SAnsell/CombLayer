@@ -45,22 +45,25 @@ namespace tallySystem
 
 class itemConstruct 
 {
+ private:
+
+  /// private constructor
+  itemConstruct() {}
+
+  
  public:
 
-  itemConstruct();
-  itemConstruct(const itemConstruct&);
-  itemConstruct& operator=(const itemConstruct&);
-  virtual ~itemConstruct() {}  ///< Destructor
 
-  void processItem(Simulation&,
+
+  static void processItem(Simulation&,
 		   const mainSystem::inputParam&,
-		   const size_t) const;
+		   const size_t);
   
-  void addBeamLineItem(Simulation&,const int,const double,
+  static void addBeamLineItem(Simulation&,const int,const double,
 			const std::string&,const long int,
-			const double,const double) const;
+			const double,const double);
 
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

@@ -3,7 +3,7 @@
  
  * File:   tally/itemConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,25 +84,11 @@
 namespace tallySystem
 {
 
-itemConstruct::itemConstruct() 
-  /// Constructor
-{}
-
-itemConstruct::itemConstruct(const itemConstruct&) 
-  /// Copy Constructor
-{}
-
-itemConstruct&
-itemConstruct::operator=(const itemConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
 
 void
 itemConstruct::processItem(Simulation& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) const
+			     const size_t Index)
   /*!
     Add point tally (s) as needed
     \param System :: Simulation to add tallies
@@ -149,7 +135,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
 			       const std::string& modName,
 			       const long int viewSurface,
 			       const double windowOffset,
-			       const double pointZRot) const
+			       const double pointZRot) 
 /*!
     Adds a beamline tally Item to the system
     \param System :: Simulation to add tallies
@@ -235,7 +221,7 @@ itemConstruct::addBeamLineItem(Simulation& System,
 
 
 void
-itemConstruct::writeHelp(std::ostream& OX) const
+itemConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream

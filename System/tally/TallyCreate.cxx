@@ -3,7 +3,7 @@
  
  * File:   tally/TallyCreate.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "fissionTally.h"
 #include "surfaceTally.h"
 #include "sswTally.h"
-#include "tallyFactory.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "SurInter.h"
@@ -115,8 +114,7 @@ addF1Tally(Simulation& System,const int tNum,
 	   const int surfNum,
 	   const std::vector<int>& SDividers)
   /*!
-    Addition of a tally to the mcnpx
-    deck
+    Addition of a tally to the mcnp deck
     \param System :: Simulation class
     \param tNum :: tally number
     \param surfNum :: surface to tally

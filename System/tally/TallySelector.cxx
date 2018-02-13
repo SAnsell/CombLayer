@@ -54,7 +54,8 @@
 #include "MainProcess.h"
 #include "inputParam.h"
 #include "addInsertObj.h"
-#include "TallySelector.h"
+#include "Simulation.h"
+
 
 #include "pointConstruct.h"
 #include "meshConstruct.h"
@@ -66,28 +67,8 @@
 #include "itemConstruct.h"
 #include "surfaceConstruct.h"
 #include "sswConstruct.h"
-#include "tallyConstructFactory.h"
-#include "tallyConstruct.h"
 
-int
-tallySelection(Simulation& System,const mainSystem::inputParam& IParam)
-  /*!
-    An amalgumation of values to determine what sort of tallies to put
-    in the system.
-    \param System :: Simulation to add tallies
-    \param IP :: InputParam
-    \return flag to indicate that more work is required after renumbering
-  */
-{
-  ELog::RegMethod RegA("TallySelector","tallySelection(basic)");
-
-  tallySystem::tallyConstructFactory FC;
-  tallySystem::tallyConstruct& TallyBuilder=
-    tallySystem::tallyConstruct::Instance(&FC);
-
-  return TallyBuilder.tallySelection(System,IParam);
-}
-
+#include "TallySelector.h"
 
 void
 tallyAddition(Simulation& System,

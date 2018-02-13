@@ -103,25 +103,10 @@ fissionConstruct::convertRange(const std::string& Word,
   return 1;
 }
 
-fissionConstruct::fissionConstruct() 
-  /// Constructor
-{}
-
-fissionConstruct::fissionConstruct(const fissionConstruct&) 
-  /// Copy Constructor
-{}
-
-fissionConstruct&
-fissionConstruct::operator=(const fissionConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 int
 fissionConstruct::processPower(Simulation& System,
 			       const mainSystem::inputParam& IParam,
-			       const size_t Index) const
+			       const size_t Index) 
   /*!
     Process a fission power on a cell
     \param System :: Simulation to use
@@ -188,7 +173,7 @@ fissionConstruct::processPower(Simulation& System,
 }
 
 void
-fissionConstruct::writeHelp(std::ostream& OX) const
+fissionConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out the help
     \param OX :: Output stream

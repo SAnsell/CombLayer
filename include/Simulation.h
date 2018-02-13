@@ -112,8 +112,6 @@ class Simulation
   void deleteObjects();
   void deleteTally();
   
-  int readTransform(std::istream&);    
-  int readTally(std::istream&);        
 
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -144,7 +142,6 @@ class Simulation
   /// set the command line
   void setCmdLine(const std::string& S) { cmdLine=S; }
   void resetAll();
-  void readMaster(const std::string&);   
   int applyTransforms();  
   int isValidCell(const int,const Geometry::Vec3D&) const;
 

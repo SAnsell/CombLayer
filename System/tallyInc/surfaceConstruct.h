@@ -3,7 +3,7 @@
  
  * File:   tallyInc/surfaceConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,31 +47,34 @@ class surfaceConstruct
 {
  private:
 
-  int idType;    ///< type of surface construct
+  static int processSurfObject(Simulation&,const int,
+			       const std::string&,
+			       const long int,
+			       const std::vector<std::string>&);
   
-  int processSurfObject(Simulation&,const std::string&,
-			const long int,
-			const std::vector<std::string>&) const;
-  int processSurfMap(Simulation&,const std::string&,
-		     const std::string&,const long int) const;
+  static int processSurfMap(Simulation&,const int,
+			    const std::string&,
+			    const std::string&,
+			    const long int);
 
-  int processSurface(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
+  static void processSurface(Simulation&,const int,
+			    const mainSystem::inputParam&,
+			    const size_t);
 
+  /// private constructor 
+  surfaceConstruct();
+  
  public:
 
-  surfaceConstruct();
-  surfaceConstruct(const surfaceConstruct&);
-  surfaceConstruct& operator=(const surfaceConstruct&);
-  virtual ~surfaceConstruct() {}  ///< Destructor
 
 
-  int processSurfaceCurrent(Simulation&,const mainSystem::inputParam&,
+
+  static void processSurfaceCurrent(Simulation&,const mainSystem::inputParam&,
+			       const size_t);
+  static void processSurfaceFlux(Simulation&,const mainSystem::inputParam&,
 			    const size_t);
-  int processSurfaceFlux(Simulation&,const mainSystem::inputParam&,
-			 const size_t);
 
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

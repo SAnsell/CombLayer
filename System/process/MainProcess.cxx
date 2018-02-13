@@ -3,7 +3,7 @@
  
  * File:   process/MainProcess.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "SimProcess.h"
 #include "DefPhysics.h"
 #include "TallySelector.h"
+#include "TallyBuilder.h"
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
@@ -512,7 +513,7 @@ buildFullSimulation(Simulation* SimPtr,
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
-  tallySelection(*SimPtr,IParam);
+  tallySystem::tallySelection(*SimPtr,IParam);
   reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;

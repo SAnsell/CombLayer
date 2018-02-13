@@ -83,25 +83,10 @@
 namespace tallySystem
 {
 
-sswConstruct::sswConstruct() 
-  /// Constructor
-{}
-
-sswConstruct::sswConstruct(const sswConstruct&) 
-  /// Copy Constructor
-{}
-
-sswConstruct&
-sswConstruct::operator=(const sswConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
-int
+void
 sswConstruct::processSSW(Simulation& System,
 			 const mainSystem::inputParam& IParam,
-			 const size_t Index) const
+			 const size_t Index) 
 /*!
     Add ssw tally as needed
     \param System :: Simulation to add tallies
@@ -164,13 +149,13 @@ sswConstruct::processSSW(Simulation& System,
 
   tallySystem::sswTally* SSWX=tallySystem::addSSWTally(System);
   SSWX->addSurfaces(SList);
-  // additional work needed on renumbering (?)
-  return 1;
+
+  return;
 }
 
 
 void
-sswConstruct::writeHelp(std::ostream& OX) const
+sswConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: output stream

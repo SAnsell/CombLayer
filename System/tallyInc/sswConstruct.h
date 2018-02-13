@@ -45,17 +45,17 @@ namespace tallySystem
 
 class sswConstruct 
 {
+ private:
+
+  /// private constructor
+  sswConstruct() {}
+
  public:
 
-  sswConstruct();
-  sswConstruct(const sswConstruct&);
-  sswConstruct& operator=(const sswConstruct&);
-  virtual ~sswConstruct() {}  ///< Destructor
+  static void processSSW(Simulation&,const mainSystem::inputParam&,
+			 const size_t);
 
-  int processSSW(Simulation&,const mainSystem::inputParam&,
-		  const size_t) const;
-
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

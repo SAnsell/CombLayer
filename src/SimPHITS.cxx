@@ -65,7 +65,6 @@
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"

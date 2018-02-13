@@ -3,7 +3,7 @@
  
  * File:   tally/gridConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,25 +90,10 @@
 namespace tallySystem
 {
 
-gridConstruct::gridConstruct() 
-  /// Constructor
-{}
-
-gridConstruct::gridConstruct(const gridConstruct&) 
-  /// Copy Constructor
-{}
-
-gridConstruct&
-gridConstruct::operator=(const gridConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 void
 gridConstruct::processGrid(Simulation& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+			   const size_t Index) 
   /*!
     Add grid tally as needed
     \param System :: Simulation to add tallies
@@ -197,7 +182,7 @@ gridConstruct::calcGlobalCXY(const std::string& Place,
 			     const long int linkNumber,
 			     Geometry::Vec3D& Centre,
 			     Geometry::Vec3D& XVec,
-			     Geometry::Vec3D& YVec) const
+			     Geometry::Vec3D& YVec) 
 /*!
   Calculate the global Center/XY axis based on C/X/Y which
   are currently in the local frame
@@ -241,7 +226,7 @@ gridConstruct::applyMultiGrid(Simulation& System,
 			      const size_t NPD,
 			      const Geometry::Vec3D& TOrigin,
 			      const Geometry::Vec3D& Xv,
-			      const Geometry::Vec3D& Yv) const
+			      const Geometry::Vec3D& Yv) 
   /*!
     Actually proces the grid system based on the input mesh
     \param System :: simulation to add tallies
@@ -292,7 +277,7 @@ gridConstruct::applyMultiGrid(Simulation& System,
 
   
 void
-gridConstruct::writeHelp(std::ostream& OX) const
+gridConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: Output stream

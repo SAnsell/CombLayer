@@ -3,7 +3,7 @@
  
  * File:   process/TallyXML.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,6 @@
 #include "cellFluxTally.h"
 #include "surfaceTally.h"
 #include "textTally.h"
-#include "tallyFactory.h"
 #include "Surface.h"
 #include "Rules.h"
 #include "Code.h"
@@ -116,7 +115,7 @@ addXMLtally(Simulation& System,const std::string& FName)
       Tally* TX(0);
       try
 	{
-	  TX=tallyFactory::Instance()->createTally(tNumber);
+	  // TX=tallyFactory::Instance()->createTally(tNumber);
 	}
       catch (ColErr::InContainerError<int>&)
 	{

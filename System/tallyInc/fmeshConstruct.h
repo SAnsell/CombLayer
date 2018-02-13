@@ -41,7 +41,7 @@ namespace tallySystem
   \class fmeshConstruct
   \version 1.0
   \author S. Ansell
-  \date September 2017
+  \date September 2018
   \brief Constructs a mesh tally from inputParam
 */
 
@@ -49,20 +49,24 @@ class fmeshConstruct : public meshConstruct
 {
  private:
 
+  /// private constructor
+  
+  fmeshConstruct() {}
+  
  public:
 
-  fmeshConstruct();
-  fmeshConstruct(const fmeshConstruct&);
-  fmeshConstruct& operator=(const fmeshConstruct&);
-  virtual ~fmeshConstruct() {}  ///< Destructor
 
-  virtual void rectangleMesh(Simulation&,const int,
-			     const std::string&,
-			     const Geometry::Vec3D&,
-			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&) const;
+  static void processMesh(Simulation&,
+			  const mainSystem::inputParam&,
+			  const size_t);
+
+  static void rectangleMesh(Simulation&,const int,
+			    const std::string&,
+			    const Geometry::Vec3D&,
+			    const Geometry::Vec3D&,
+			    const std::array<size_t,3>&);
   
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

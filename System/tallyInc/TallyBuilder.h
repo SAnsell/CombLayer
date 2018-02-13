@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/tmeshConstruct.h
+ * File:   tallyInc/TallyBuilder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,56 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef tallySystem_tmeshConstruct_h
-#define tallySystem_tmeshConstruct_h
-
-namespace attachSystem
-{
-  class FixedComp;
-}
-
-namespace mainSystem
-{
-  class inputParam;
-}
+#ifndef TallyBuilder_h
+#define TallyBuilder_h
 
 class Simulation;
 
 namespace tallySystem
 {
-
-/*!
-  \class tmeshConstruct
-  \version 1.0
-  \author S. Ansell
-  \date July 2012
-  \brief Constructs a tmesh tally from inputParam
-*/
-
-class tmeshConstruct : public meshConstruct
-{
- private:
-
-  /// private constructor
-  tmeshConstruct() {}
-	         
- public:
-
-  static void processMesh(Simulation&,
-			  const mainSystem::inputParam&,
-			  const size_t);  
-  
-  
-  static void rectangleMesh(Simulation&,const int,
-			     const std::string&,
-			     const Geometry::Vec3D&,
-			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&);
-
-  static void writeHelp(std::ostream&);
-};
+   
+  void tallySelection(Simulation&,const mainSystem::inputParam&);
+  void helpTallyType(const std::string&);
 
 }
+  
 
 #endif
  

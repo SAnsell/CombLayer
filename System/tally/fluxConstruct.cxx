@@ -3,7 +3,7 @@
  
  * File:   tally/fluxConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,25 +76,10 @@
 namespace tallySystem
 {
 
-fluxConstruct::fluxConstruct() 
-  /// Constructor
-{}
-
-fluxConstruct::fluxConstruct(const fluxConstruct&) 
-  /// Copy Constructor
-{}
-
-fluxConstruct&
-fluxConstruct::operator=(const fluxConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 int
 fluxConstruct::processFlux(Simulation& System,
 			   const mainSystem::inputParam& IParam,
-			   const size_t Index) const
+			   const size_t Index) 
   /*!
     Add flux tally (s) as needed
     \param System :: Simulation to add tallies
@@ -149,7 +134,7 @@ fluxConstruct::processFlux(Simulation& System,
 
 
 void
-fluxConstruct::writeHelp(std::ostream& OX) const
+fluxConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX :: output stream

@@ -3,7 +3,7 @@
  
  * File:   tally/pointConstruct.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,25 +84,10 @@
 namespace tallySystem
 {
 
-pointConstruct::pointConstruct() 
-  /// Constructor
-{}
-
-pointConstruct::pointConstruct(const pointConstruct&) 
-  /// Copy Constructor
-{}
-
-pointConstruct&
-pointConstruct::operator=(const pointConstruct&) 
-  /// Assignment operator
-{
-  return *this;
-}
-
 void
 pointConstruct::processPoint(Simulation& System,
 			     const mainSystem::inputParam& IParam,
-			     const size_t Index) const
+			     const size_t Index)
   /*!
     Add point tally (s) as needed
     \param System :: Simulation to add tallies
@@ -225,7 +210,7 @@ pointConstruct::processPointWindow(Simulation& System,
 				   long int linkPt,
 				   const double beamDist,
 				   const double timeStep,
-				   const double windowOffset) const
+				   const double windowOffset)
   /*!
     Process a point tally in a registered object
     \param System :: Simulation to add tallies
@@ -289,7 +274,7 @@ void
 pointConstruct::processPointFree(Simulation& System,
 				 const std::string& FObject,
 				 const long int linkPt,
-				 const double OD) const
+				 const double OD)
   /*!
     Process a point tally in a registered object
     \param System :: Simulation to add tallies
@@ -320,7 +305,7 @@ void
 pointConstruct::processPointFree(Simulation& System,
 				 const std::string& FObject,
 				 const long int linkPt,
-				 const Geometry::Vec3D& DVec) const
+				 const Geometry::Vec3D& DVec)
 /*!
   Process a point tally in a registered object
   \param System :: Simulation to add tallies
@@ -354,7 +339,7 @@ pointConstruct::processPointFree(Simulation& System,
 void
 pointConstruct::processPointFree(Simulation& System,
 				 const Geometry::Vec3D& Point,
-				 const std::vector<Geometry::Vec3D>& VList) const
+				 const std::vector<Geometry::Vec3D>& VList)
   /*!
     Processes a grid tally : Requires variables and informaton 
     \param System :: Simulation to add tallies
@@ -410,7 +395,7 @@ pointConstruct::calcWindowIntercept(const int bPlane,
 }
 
 void
-pointConstruct::writeHelp(std::ostream& OX) const
+pointConstruct::writeHelp(std::ostream& OX) 
   /*!
     Write out help
     \param OX:: Output stream

@@ -3,7 +3,7 @@
  
  * File:   tallyInc/heatConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,17 +47,18 @@ class heatConstruct
 {
  private:  
 
+
+  // private constructor
+  heatConstruct() {}
+  
  public:
 
-  heatConstruct();
-  heatConstruct(const heatConstruct&);
-  heatConstruct& operator=(const heatConstruct&);
-  virtual ~heatConstruct() {}  ///< Destructor
 
-  void processHeat(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
 
-  virtual void writeHelp(std::ostream&) const;
+  static void processHeat(Simulation&,const mainSystem::inputParam&,
+			  const size_t);
+
+  static void writeHelp(std::ostream&);
 };
 
 }
