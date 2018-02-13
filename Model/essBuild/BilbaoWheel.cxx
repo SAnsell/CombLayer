@@ -725,7 +725,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
   // notch: big conical cell
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2238 2237 2225 -2115 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
+  buildStiffeners(System,Out,wheelIndex+3000,shaftNStiffeners,steelMat);
 
 
   
