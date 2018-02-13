@@ -3,7 +3,7 @@
  
  * File:   process/SimProcess.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,13 +64,15 @@
 #include "LSwitchCard.h"
 #include "PhysicsCards.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
+#include "SimPHITS.h"
 #include "SimProcess.h"
 
 namespace SimProcess
 {
 
 void
-writeMany(Simulation& System,const std::string& FName,const int Number)
+writeMany(SimMCNP& System,const std::string& FName,const int Number)
    /*!
      Writes out many different files, each with a new random
      number
@@ -93,7 +95,7 @@ writeMany(Simulation& System,const std::string& FName,const int Number)
 
 
 void
-writeIndexSim(Simulation& System,const std::string& FName,const int Number)
+writeIndexSim(SimMCNP& System,const std::string& FName,const int Number)
    /*!
      Writes out many different files, each with a new random
      number
@@ -116,7 +118,7 @@ writeIndexSim(Simulation& System,const std::string& FName,const int Number)
 }
   
 void
-writeIndexSimPHITS(Simulation& System,const std::string& FName,
+writeIndexSimPHITS(SimPHITS& System,const std::string& FName,
 		   const int Number)
   /*!
     Writes out many different files, each with a new random
@@ -126,8 +128,8 @@ writeIndexSimPHITS(Simulation& System,const std::string& FName,
     \param Number :: number to write
   */
 {
-  physicsSystem::PhysicsCards& PC=System.getPC();
-  PC.setRND(PC.getRNDseed()+Number*10);
+  //  physicsSystem::PhysicsCards& PC=System.getPC();
+  //  PC.setRND(PC.getRNDseed()+Number*10);
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.write(cx.str());

@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysicsCards.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,8 +150,10 @@ class PhysicsCards
   
   void setPWT(const std::vector<int>&,const double =1.0);
   void setPWT(const int,const double);
+
   void setNPS(const size_t N) { nps=N; }      ///< Set the Number of particles
   void setRND(const long int,const long int =0);
+  
   template<typename T>
   void setPTRAC(const std::string&,const T&);
   template<typename T>

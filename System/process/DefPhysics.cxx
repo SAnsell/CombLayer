@@ -435,6 +435,16 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   return; 
 }
 
+void
+setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
+  /*!
+    Catch all for non-specialized Simulation units
+   */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
+  ELog::EM<<"NO OP in base call"<<ELog::endDiag;
+  return;
+}
 
 void 
 setDefaultPhysics(SimMCNP& System,
@@ -445,7 +455,7 @@ setDefaultPhysics(SimMCNP& System,
     \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("DefPhysics","setDefaultPhysics");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
 
   // LCA ielas ipreq iexisa ichoic jcoul nexite npidk noact icem ilaq 
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis

@@ -540,7 +540,8 @@ buildFullSimulation(Simulation* SimPtr,
   // Ensure we done loop
   do
     {
-      SimProcess::writeIndexSim(*SimPtr,OName,MCIndex);
+      if (SimMCPtr)
+	SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
       MCIndex++;
     }
   while(MCIndex<multi);

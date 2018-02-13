@@ -1113,7 +1113,8 @@ addPointPD(SimMCNP& ASim)
 	  ModelSupport::pointDetOpt 
 	    PD(MR.reverseRotate(PTptr->getCentre()));
 	  PD.createObjAct(ASim);
-	  PD.addTallyOpt(PTptr->getKey(),ASim);
+	  PD.addTallyOpt(PTptr->getKey(),ASim,
+			 ASim.getPC());
 	}
     }
   

@@ -48,7 +48,7 @@ namespace ModelSupport
   
   void setDefaultPhysics(SimMCNP&,const mainSystem::inputParam&);
   //  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
-  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&) {}
+  void setDefaultPhysics(Simulation&,const mainSystem::inputParam&);
 }
 
 

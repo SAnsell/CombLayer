@@ -305,7 +305,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
 {  
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
   // Remaining Physics cards
-  PhysPtr->writeFLUKA(OX);
+  //  PhysPtr->writeFLUKA(OX);
   return;
 }
 

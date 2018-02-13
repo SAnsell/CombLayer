@@ -3,7 +3,7 @@
  
  * File:   process/pointDetOpt.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,18 +129,20 @@ pointDetOpt::createObjAct(const Simulation& ASim)
 }
 
 void
-pointDetOpt::addTallyOpt(const int tallyN,Simulation& ASim)
+pointDetOpt::addTallyOpt(const int tallyN,const Simulation& ASim,
+			 physicsSystem::PhysicsCards& PC)
   /*!
     Adds an importance card to the physics of type PD
     with the corresponding weights for the distance
     \param tallyN :: tally nubmer
     \param ASim :: Simulation to add component to
+    \param PC :: Physics cards
   */
 {
   ELog::RegMethod RegA("pointDetOpt","addTallyOpt");
 
   // First get the physcis
-  physicsSystem::PhysicsCards& PC=ASim.getPC();
+
   std::ostringstream cx;
   cx<<"pd"<<tallyN;
   physicsSystem::PhysImp& PD=PC.addPhysImp(cx.str(),"");

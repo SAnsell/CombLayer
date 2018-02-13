@@ -3,7 +3,7 @@
  
  * File:   include/SimPHITS.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@ class SimPHITS : public Simulation
 {
  private:
 
+  size_t nps;                          ///< number of particles to run
+  long int rndSeed;                    ///< RND seed
+  
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
   void writeSurfaces(std::ostream&) const;

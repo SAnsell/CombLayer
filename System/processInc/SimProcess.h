@@ -23,6 +23,8 @@
 #define SimProcess_SimProcess_h
 
 class Simulation;
+class SimMCNP;
+class SimPHITS;
 class FuncDataBase;
 
 /*!
@@ -36,9 +38,9 @@ class FuncDataBase;
 namespace SimProcess
 {
 
-  void writeMany(Simulation&,const std::string&,const int);
-  void writeIndexSim(Simulation&,const std::string&,const int);
-  void writeIndexSimPHITS(Simulation&,const std::string&,const int);
+  void writeMany(SimMCNP&,const std::string&,const int);
+  void writeIndexSim(SimMCNP&,const std::string&,const int);
+  void writeIndexSimPHITS(SimPHITS&,const std::string&,const int);
 
   template<typename T>
   T getDefVar(const FuncDataBase&,const std::string&,const T&);
