@@ -601,7 +601,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // lower cell
   Out=ModelSupport::getComposite
-    (SMap,wheelIndex," 7 -1027 45 -35" );
+    (SMap,wheelIndex," 17 -1027 45 -35" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // void (which connects to the Wheel void)
@@ -618,12 +618,12 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 17 2105 -45" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -17 2115 -2135" );
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2115 -2135" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2135 -35" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 7 -17 2135 -45" );
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 7 -17 2115 -25" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 17 -2118 2115 -2105 " );
@@ -1211,9 +1211,6 @@ BilbaoWheel::createObjects(Simulation& System)
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 4000);
 
-
-	  //	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -115 25 ");
-	  //	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
 	  buildHoles(System,Out,
 		     ModelSupport::getComposite(SMap,wheelIndex," 25 "),
@@ -1221,9 +1218,6 @@ BilbaoWheel::createObjects(Simulation& System)
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 5000);
 
-
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M -25 35 ");
-	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
 	  buildHoles(System,Out,
