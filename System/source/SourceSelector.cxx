@@ -247,7 +247,8 @@ activationSelection(Simulation& System,
   std::string OName="Data.ssw";
   std::string cellDir="Cell";
   size_t timeSeg(1);
-  size_t nVol=System.getPC().getNPS();
+
+  size_t nVol=IParam.getValue<size_t>("nps");
   Geometry::Vec3D weightPt;
   double weightDist(-1.0);
   double scale(1.0);

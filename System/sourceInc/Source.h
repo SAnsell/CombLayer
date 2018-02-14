@@ -3,7 +3,7 @@
  
  * File:   include/Source.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ class Source
 
   SrcBase* getBase(const std::string&);
 
+  
   void cleanGroups();
   void setTransform(const Geometry::Vec3D [3]);
 
@@ -85,6 +86,8 @@ class Source
   Source& operator=(const Source&);
   ~Source();
 
+  size_t getFreeDataIndex() const;
+    
   template<typename T>
   void setComp(const std::string&,const T&);
   void setData(const std::string&,const SrcData&);

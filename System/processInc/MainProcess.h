@@ -3,7 +3,7 @@
  
  * File:   processInc/MainProcess.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 #define mainSystem_MainProcess_h
 
 class Simulation;
+class SimPHITS;
+class SimFLUKA;
+class SimMCNP;
 class FuncDataBase;
 
 /*!
@@ -65,6 +68,7 @@ namespace mainSystem
   void InputModifications(Simulation*,inputParam&,
 			  std::vector<std::string>&);
 
+  void buildFullSimMCNP(SimMCNP*,const inputParam&,const std::string&);
   void buildFullSimulation(Simulation*,const inputParam&,const std::string&);
   void exitDelete(Simulation*);
 }

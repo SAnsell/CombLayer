@@ -156,7 +156,7 @@ WCellControl::procRebase(const Simulation& System,
 
 void
 WCellControl::procObject(const Simulation& System,
-                          const mainSystem::inputParam& IParam)
+			 const mainSystem::inputParam& IParam)
 
 /*!
   Function to set up the weights system.

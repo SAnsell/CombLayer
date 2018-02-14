@@ -61,6 +61,7 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "SimImportance.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"

@@ -78,7 +78,6 @@
 
 #include "MainProcess.h"
 
-
 #include "surfRegister.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
@@ -394,7 +393,9 @@ createSimulation(inputParam& IParam,
   // DEBUG
   if (IParam.flag("debug"))
     ELog::EM.setActive(IParam.getValue<size_t>("debug"));
-  
+
+
+
   IParam.processMainInput(Names);
 
   Simulation* SimPtr;
@@ -408,7 +409,7 @@ createSimulation(inputParam& IParam,
     SimPtr=new SimMonte; 
   else
     {
-      // do so setup that in necessary
+      ELog::EM<<"ASFDSADFSADF "<<ELog::endDiag;
       SimMCNP* SMCPtr=new SimMCNP;
       SMCPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
       SimPtr=SMCPtr;
@@ -494,6 +495,82 @@ exitDelete(Simulation* SimPtr)
   return;
 }
 
+
+void
+buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
+		 const mainSystem::inputParam& IParam,
+		 const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimFLUKAPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+  
+  //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+
+  //  tallySystem::tallySelection(*SimMCPtr,IParam);
+   // 
+  //  SimProcess::importanceSim(*SimMCPtr,IParam);
+  //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
+  //  tallyModification(*SimMCPtr,IParam);
+
+  //  SDef::sourceSelection(*SimMCPtr,IParam);
+  SimFLUKAPtr->masterSourceRotation();
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSimFLUKA(*SimFLUKAPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+
+void
+buildFullSimMCNP(SimMCNP* SimMCPtr,
+		 const mainSystem::inputParam& IParam,
+		 const std::string& OName)
+  /*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
+  
+  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+
+  tallySystem::tallySelection(*SimMCPtr,IParam);
+   // 
+  SimProcess::importanceSim(*SimMCPtr,IParam);
+  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
+  tallyModification(*SimMCPtr,IParam);
+
+  SDef::sourceSelection(*SimMCPtr,IParam);
+  SimMCPtr->masterSourceRotation();
+  // Ensure we done loop
+  do
+    {
+      SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
+      MCIndex++;
+    }
+  while(MCIndex<multi);
+
+  return;
+}
+
+
 void
 buildFullSimulation(Simulation* SimPtr,
                     const mainSystem::inputParam& IParam,
@@ -508,40 +585,44 @@ buildFullSimulation(Simulation* SimPtr,
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimulation");
 
-  // Definitions section 
-  int MCIndex(0);
-  const int multi=IParam.getValue<int>("multi");
-
   ModelSupport::objectAddition(*SimPtr,IParam);
   
   SimPtr->removeComplements();
-  SimPtr->removeDeadSurfaces(0);         
-  ModelSupport::setDefaultPhysics(*SimPtr,IParam);
-
+  SimPtr->removeDeadSurfaces(0);
+  
   ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
-  SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
-  if (SimMCPtr)
-    tallySystem::tallySelection(*SimMCPtr,IParam);
-
-  
   reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;
+  
+  SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
+  if (SimMCPtr)
+    {
+      buildFullSimMCNP(SimMCPtr,IParam,OName);
+      return;
+    }
+  SimFLUKA* SimFLUKAPtr=dynamic_cast<SimFLUKA*>(SimPtr);
+  if (SimFLUKAPtr)
+    {
+      buildFullSimFLUKA(SimFLUKAPtr,IParam,OName);
+      return;
+    }
+  
+  // Definitions section 
+  int MCIndex(0);
+  const int multi=IParam.getValue<int>("multi");
   // 
   SimProcess::importanceSim(*SimPtr,IParam);
   SimProcess::inputProcessForSim(*SimPtr,IParam); // energy cut etc
-  if (SimMCPtr)
-    tallyModification(*SimMCPtr,IParam);
 
   SDef::sourceSelection(*SimPtr,IParam);
   SimPtr->masterSourceRotation();
   // Ensure we done loop
   do
     {
-      if (SimMCPtr)
-	SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
+      //SimProcess::writeIndexSim(*SimMCPtr,OName,MCIndex);
       MCIndex++;
     }
   while(MCIndex<multi);

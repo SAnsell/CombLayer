@@ -138,7 +138,8 @@ particleConv::getPHITSPItem(const std::string& particleName) const
     \return pName found
   */
 {
-
+  ELog::RegMethod RegA("particleConv","getPHITSItem");
+  
   typedef std::map<std::string,pName>  PMAP;
   PMAP::const_iterator mc=
     std::find_if(indexLookup.begin(),indexLookup.end(),
@@ -162,7 +163,8 @@ particleConv::getFLUKAPItem(const std::string& particleName) const
     \return pName found
   */
 {
-
+  ELog::RegMethod RegA("particleConv","getFLUKAItem");
+  
   typedef std::map<std::string,pName>  PMAP;
   PMAP::const_iterator mc=
     std::find_if(indexLookup.begin(),indexLookup.end(),
@@ -186,7 +188,8 @@ particleConv::getMCNPitypePItem(const int particleID) const
     \return pName found
   */
 {
-
+  ELog::RegMethod RegA("particleConv","getMCNPitypePItem");
+  
   typedef std::map<std::string,pName>  PMAP;
   PMAP::const_iterator mc=
     std::find_if(indexLookup.begin(),indexLookup.end(),
@@ -279,8 +282,6 @@ particleConv::mcnpITYP(const std::string& particleName) const
     \return mcnpITYP
   */
 {
-  typedef std::map<std::string,pName>  PMAP;
-
   const pName& PN=getPHITSPItem(particleName);
   return PN.mcnpITYP;
 }

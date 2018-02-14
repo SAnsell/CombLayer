@@ -442,7 +442,7 @@ setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
    */
 {
   ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
-  ELog::EM<<"NO OP in base call"<<ELog::endDiag;
+  ELog::EM<<"NO OP in base call"<<ELog::endErr;
   return;
 }
 

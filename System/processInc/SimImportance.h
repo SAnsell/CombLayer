@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   processInc/SimProcess.h
+ * File:   processInc/SimImportance.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,44 +19,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef SimProcess_SimProcess_h
-#define SimProcess_SimProcess_h
+#ifndef SimProcess_SimImportance_h
+#define SimProcess_SimImportance_h
 
 class Simulation;
 class SimMCNP;
 class SimPHITS;
 class SimFLUKA;
-class FuncDataBase;
 
 /*!
   \namespace SimProcess
   \version 1.0
   \author S. Ansell
-  \date September 2008
+  \date February 2018
   \brief Process functions to act on a Simuation instance
  */
 
 namespace SimProcess
 {
+  void importanceSim(Simulation&,const mainSystem::inputParam&);
+  void importanceSim(SimMCNP&,const mainSystem::inputParam&);
 
-  void writeMany(SimMCNP&,const std::string&,const int);
-  void writeIndexSim(SimMCNP&,const std::string&,const int);
-  void writeIndexSimPHITS(SimPHITS&,const std::string&,const int);
-  void writeIndexSimFLUKA(SimFLUKA&,const std::string&,const int);
-
-  template<typename T>
-  T getDefVar(const FuncDataBase&,const std::string&,const T&);
-
-  template<typename T,typename U>
-  T getDefIndexVar(const FuncDataBase&,const std::string&,
-		   const std::string&,const U&,const T&);
-
-
-  template<typename T>
-  std::vector<T> getVarVec(const FuncDataBase&,const std::string&);
-  
-  void registerOuter(Simulation&,const int,const int);
-
-}  // namespace SimProcess
+}  // namespace SimImportance
 
 #endif

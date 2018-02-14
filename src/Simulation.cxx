@@ -101,8 +101,7 @@
 #include "Simulation.h"
 
 Simulation::Simulation()  :
-  OSMPtr(new ModelSupport::ObjSurfMap),
-  PhysPtr(new physicsSystem::PhysicsCards)
+  OSMPtr(new ModelSupport::ObjSurfMap)
   /*!
     Start of simulation Object
   */
@@ -156,7 +155,6 @@ Simulation::~Simulation()
 {
   ELog::RegMethod RegA("Simulation","delete operator");
 
-  delete PhysPtr;
   delete OSMPtr;
   deleteObjects();
   ModelSupport::SimTrack::Instance().clearSim(this);
@@ -172,7 +170,6 @@ Simulation::resetAll()
   ModelSupport::surfIndex::Instance().reset();
   TList.erase(TList.begin(),TList.end());
   OSMPtr->clearAll();
-  PhysPtr->clearAll();
   deleteObjects();
   cellOutOrder.clear();
   masterRotate& MR = masterRotate::Instance();
@@ -279,14 +276,7 @@ Simulation::addCell(const int cellNumber,const MonteCarlo::Qhull& A)
       ELog::EM<<"Cell==:"<<*QHptr<<ELog::endCrit;
       ELog::EM<<"Cell==:"<<QHptr->hasComplement()<<ELog::endCrit;
     }
-      
-  // Add Volume unit [default]:
-  PhysPtr->setVolume(cellNumber,1.0);
   OR.addActiveCell(cellNumber);
-
-  // Add surfaces to OSMPtr:
-  //  OSMPtr->addSurfaces(QHptr);
-
   return 1;
 }
 
@@ -391,45 +381,6 @@ Simulation::removeDeadSurfaces(const int placeFlag)
   return 0;
 }
 
-int
-Simulation::removeCells(const int startN,const int endN)
-  /*!
-    Removes the cells in the range
-    \param startN :: First cell to remove
-    \param endN :: Last cell to remove [if -1 use max number]
-    \return 1 on success  0 on failure
-  */
-{
-  ELog::RegMethod RegItem("Simulation","removeCells");
-  ModelSupport::SimTrack& ST(ModelSupport::SimTrack::Instance());
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  // It seems quicker to create a new map and copy
-  OTYPE newOList;
-  OTYPE::iterator vc;
-  for(vc=OList.begin();vc!=OList.end();vc++)
-    {
-      // Replace if not placeholder / and in range
-      if (!vc->second->isPlaceHold() &&
-	  (vc->first>=startN && (endN<0 || vc->first<=endN)))
-	{
-	  ST.checkDelete(this,vc->second);
-          PhysPtr->removeCell(vc->first);
-          OR.removeActiveCell(vc->first);
-	  delete vc->second;
-	}
-      else
-	newOList.insert(OTYPE::value_type(vc->first,vc->second));
-    }
-  OList=newOList;
-
-// Now process Physics so importance/volume cards can be set
-//  processCellsImp();
-//  ELog::CellM.processReport(std::cout);
-  return 1;
-}
-
 void
 Simulation::removeCell(const int cellNumber)
   /*!
@@ -450,8 +401,6 @@ Simulation::removeCell(const int cellNumber)
   delete vc->second;
   OList.erase(vc);
 
-  // Add Volume unit [default]:
-  PhysPtr->removeCell(cellNumber);
   OR.removeActiveCell(cellNumber);
 
   return;
@@ -574,9 +523,9 @@ Simulation::getCellImp() const
     \return pair of cellNumber : importance in cell 
   */
 {
-  ELog::RegMethod RegA("Simulation","getCellsImp");
+  ELog::RegMethod RegA("Simulation","getCellImp");
 
-  std::vector<std::pair<int,double>> cellImp;
+  std::vector<std::pair<int,int>> cellImp;
 
   for(const OTYPE::value_type& VC: OList)
     {
@@ -587,7 +536,6 @@ Simulation::getCellImp() const
 	}
     }
   return cellImp;
-
 }
 
 int
@@ -966,7 +914,7 @@ Simulation::setEnergy(const double EMin)
   ELog::RegMethod RegA("Simulation","setEnergy");
 
   // cut source + weight window (?)
-  PhysPtr->setEnergyCut(EMin);
+  //  PhysPtr->setEnergyCut(EMin);
 
 
   return;

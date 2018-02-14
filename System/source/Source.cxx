@@ -234,6 +234,22 @@ Source::addComp(const std::string& Key,const SrcBase* BPtr)
   return;
 }
 
+size_t
+Source::getFreeDataIndex() const
+  /*!
+    Determine the next free number
+    \return max number+1
+  */
+{
+  size_t maxN(0);
+  for(const dvecTYPE::value_type& DPtr : DVec)
+    {
+      if (DPtr->getIndex()>maxN)
+	maxN=DPtr->getIndex();
+    }
+  return maxN+1;
+}
+
 
 void
 Source::cleanGroups()

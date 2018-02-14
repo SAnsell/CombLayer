@@ -181,8 +181,7 @@ class Simulation
   std::vector<std::pair<int,int>> getCellImp() const;            
 
   int removeDeadSurfaces(const int); 
-  int removeCells(const int,const int); 
-  void removeCell(const int);
+  virtual void removeCell(const int);
   int removeAllSurface(const int);
 
   void voidObject(const std::string&);

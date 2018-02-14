@@ -65,6 +65,8 @@
 #include "MainProcess.h"
 #include "MainInputs.h"
 #include "SimProcess.h"
+#include "SimImportance.h"
+#include "SimInput.h"
 #include "Simulation.h"
 #include "SimMCNP.h" 
 #include "SimPHITS.h"
@@ -77,7 +79,7 @@
 #include "variableSetup.h"
 #include "ImportControl.h"
 #include "World.h"
-#include "SimInput.h"
+
 
 #include "makeBalder.h"
 
@@ -110,7 +112,7 @@ main(int argc,char* argv[])
       InputControl::mainVector(argc,argv,Names);
       mainSystem::inputParam IParam;
       createXrayInputs(IParam);
-
+      
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
 

@@ -23,6 +23,7 @@
 #define ModelSupport_DefPhysics_h
 
 class Simulation;
+class SimMCNP;
 namespace mainSystem
 {
   class inputParam;
@@ -31,6 +32,7 @@ namespace mainSystem
 namespace physicsSystem
 {
   class LSwitchCard;
+  class PhysicsCards;
 }
 
 namespace ModelSupport

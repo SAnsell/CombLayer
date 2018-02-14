@@ -66,11 +66,12 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 #include "SimPHITS.h"
+#include "SimFLUKA.h"
 #include "SimProcess.h"
 
 namespace SimProcess
 {
-
+  
 void
 writeMany(SimMCNP& System,const std::string& FName,const int Number)
    /*!
@@ -109,6 +110,28 @@ writeIndexSim(SimMCNP& System,const std::string& FName,const int Number)
   physicsSystem::PhysicsCards& PC=System.getPC();
   // increase the RND seed by N*10 [10,20,40,etc]
   PC.setRND(PC.getRNDseed()+Number*10);
+  std::ostringstream cx;
+  cx<<FName<<Number+1<<".x";
+  System.prepareWrite();
+  System.write(cx.str());
+  
+  return;
+}
+
+void
+writeIndexSimFLUKA(SimFLUKA& System,
+		   const std::string& FName,
+		   const int Number)
+   /*!
+     Writes out many different files, each with a new random
+     number
+     \param System :: Simuation object 
+     \param FName :: basic filename
+     \param Number :: number to write
+   */
+{
+  ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
+  
   std::ostringstream cx;
   cx<<FName<<Number+1<<".x";
   System.prepareWrite();

@@ -253,6 +253,23 @@ PhysImp::setAllCells(const std::vector<int>& cellOrder,
 }
 
 void
+PhysImp::setAllCells(const std::vector<std::pair<int,int>>& cellImp)
+  /*!
+    Process the ordered list of the cells.
+    If the cell number does not exists a default value
+    of 1 is added.
+    \param cellImp :: list of cells / 0:1 flag on importance
+  */
+{
+  std::map<int,double> newMap;
+  for(const std::pair<int,int>& cIndex : cellImp)
+    newMap.emplace(cIndex.first,static_cast<double>(cIndex.second));
+
+  impNum=newMap;
+  return;
+}
+
+void
 PhysImp::addElm(const std::string& EN) 
   /*!
     Adds an element to the particles list

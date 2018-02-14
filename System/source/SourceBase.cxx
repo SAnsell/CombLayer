@@ -355,11 +355,12 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
   ELog::RegMethod RegA("SourceBase","createSource");
   
   sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
-    
+  
   // Energy:
   if (Energy.size()>1)
     {
-      SDef::SrcData D2(2);
+      const size_t ND=sourceCard.getFreeDataIndex();
+      SDef::SrcData D2(ND);
       SDef::SrcInfo SI2('A');
       SDef::SrcProb SP2;
       SP2.setData(EWeight);

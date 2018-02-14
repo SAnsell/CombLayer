@@ -43,8 +43,6 @@ namespace physicsSystem
   class PhysicsCards;
 }
 
-class RemoveCell;
-
 namespace ModelSupport
 {
   class ObjSurfMap;
@@ -115,6 +113,9 @@ class SimMCNP : public Simulation
   /// is the system MCNP6
   bool isMCNP6() const { return mcnpVersion!=10; }
 
+  // processing for Simulation
+  virtual void removeCell(const int);
+  
   // Tally processing
 
   void removeAllTally();

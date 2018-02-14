@@ -109,7 +109,10 @@
 #include "SimMCNP.h"
 
 SimMCNP::SimMCNP()  :
-  mcnpVersion(6)
+  Simulation(),
+  mcnpVersion(6),
+  PhysPtr(new physicsSystem::PhysicsCards)
+  
   /*!
     Start of simulation Object
   */
@@ -227,7 +230,24 @@ SimMCNP::setEnergy(const double EMin)
   for(TallyTYPE::value_type& mc : TItem)
     mc.second->cutEnergy(EMin);
 
-  Simulation::setEnergy(EMin);
+  PhysPtr->setEnergyCut(EMin);
+  
+  //  Simulation::setEnergy(EMin);
+  return;
+}
+
+void
+SimMCNP::removeCell(const int cellNumber)
+  /*!
+    Removes the cell [Must exist]
+    \param cellNumber :: cell to remove
+   */
+{
+  ELog::RegMethod RegItem("SimMCNP","removeCell");
+
+  Simulation::removeCell(cellNumber);
+  PhysPtr->removeCell(cellNumber);
+
   return;
 }
 
