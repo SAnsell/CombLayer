@@ -78,7 +78,6 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
   double shaftCFRingHeight; ///< connection flange ring height
-  double shaftCFRingDist; ///< vertical location of the connection flange ring
   double shaftCFRingRadius; ///< connection flange ring radius
   double shaftCFStiffLength; ///< connection flange stiffener length
   double shaftCFStiffHeight;          ///< connection flange stiffener height

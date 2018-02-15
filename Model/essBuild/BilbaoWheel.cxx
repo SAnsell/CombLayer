@@ -118,7 +118,6 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
   shaftCFRingHeight(A.shaftCFRingHeight),
-  shaftCFRingDist(A.shaftCFRingDist),
   shaftCFRingRadius(A.shaftCFRingRadius),
   shaftCFStiffLength(A.shaftCFStiffLength),
   shaftCFStiffHeight(A.shaftCFStiffHeight),
@@ -193,7 +192,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       shaftCFRingHeight=A.shaftCFRingHeight;
-      shaftCFRingDist=A.shaftCFRingDist;
       shaftCFRingRadius=A.shaftCFRingRadius;
       shaftCFStiffLength=A.shaftCFStiffLength;
       shaftCFStiffHeight=A.shaftCFStiffHeight;
@@ -320,7 +318,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaft2StepConnectionDist=Control.EvalVar<double>(keyName+"Shaft2StepConnectionDist");
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
   shaftCFRingHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingHeight");
-  shaftCFRingDist=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingDist");
   shaftCFRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
   shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
   shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
@@ -420,7 +417,7 @@ BilbaoWheel::makeShaftSurfaces()
 
   // Connection flange ring [ESS-0124024 pages 22-23 (DW-TRGT-ESS-0102)]
   H = H1-voidThick;
-  H += shaftCFRingDist;
+  H += shaftCFStiffHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
   H += shaftCFRingHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
@@ -429,12 +426,11 @@ BilbaoWheel::makeShaftSurfaces()
 
   // Connection flange stiffeners
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
-  const double stifTheta(atan(shaftCFRingDist/shaftCFStiffLength)*180.0/M_PI);
+  const double stifTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
   ELog::EM << "add cone variables" << ELog::endDiag;
   ModelSupport::buildCone(SMap, wheelIndex+2148, Origin+Z*(50.0),
 			  Z, 90-stifTheta, -1);
 
-  ELog::EM << "add stiffener variables" << ELog::endDiag;
   createRadialSurfaces(wheelIndex+3000, shaftNStiffeners, shaftCFStiffThick);
 
   H = H1-voidThick;
@@ -470,8 +466,7 @@ BilbaoWheel::makeShaftSurfaces()
   R = catcherBaseRadius-2*catcherBaseHeight/tan(catcherBaseAngle*M_PI/180);
   ModelSupport::buildCylinder(SMap,wheelIndex+2207,Origin,Z,R);
 
-  H = catcherBaseRadius*tan(catcherBaseAngle*M_PI/180);
-  H = shaftBaseDepth-H;
+  H = shaftBaseDepth-catcherBaseRadius*tan(catcherBaseAngle*M_PI/180);
   ModelSupport::buildCone(SMap, wheelIndex+2208, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 

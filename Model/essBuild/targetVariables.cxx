@@ -81,7 +81,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 25);  // TSV31-TargetUpdate02
   Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 28.25);  // ESS-0124024 page 2 + TSV31-TargetUpdate02
   
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeRingDist", 15.0); // TSV31-TargetUpdate02
   Control.addVariable("BilbaoWheelShaftConnectionFlangeRingHeight",3.0); // TSV31-TargetUpdate02
   Control.addVariable("BilbaoWheelShaftConnectionFlangeRingRadius",31.0); // ESS-0124024 page 23
 
