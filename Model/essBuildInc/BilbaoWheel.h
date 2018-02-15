@@ -74,6 +74,7 @@ class BilbaoWheel : public WheelBase
   size_t nShaftLayers;              ///< Number of shaft layers
   std::vector<double> shaftRadius;  ///< shaft radii
   std::vector<int> shaftMat;        ///< shaft materials
+  double shaft2StepHeight;          ///< height of the 2nd step
   double shaft2StepConnectionHeight;///< height of the 2nd step connection thickness
   double shaft2StepConnectionDist;  ///< vertical distance of the 2nd step connection with shaft
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft

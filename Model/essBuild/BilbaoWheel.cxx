@@ -113,7 +113,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   nLayers(A.nLayers),radius(A.radius),
   matTYPE(A.matTYPE),shaftHeight(A.shaftHeight),
   nShaftLayers(A.nShaftLayers),shaftRadius(A.shaftRadius),
-  shaftMat(A.shaftMat),
+  shaftMat(A.shaftMat),shaft2StepHeight(A.shaft2StepHeight),
   shaft2StepConnectionHeight(A.shaft2StepConnectionHeight),
   shaft2StepConnectionDist(A.shaft2StepConnectionDist),
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
@@ -188,6 +188,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       nShaftLayers=A.nShaftLayers;
       shaftRadius=A.shaftRadius;
       shaftMat=A.shaftMat;
+      shaft2StepHeight=A.shaft2StepHeight;
       shaft2StepConnectionHeight=A.shaft2StepConnectionHeight;
       shaft2StepConnectionDist=A.shaft2StepConnectionDist;
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
@@ -314,6 +315,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
 
   shaftHeight=Control.EvalVar<double>(keyName+"ShaftHeight");
+  shaft2StepHeight=Control.EvalVar<double>(keyName+"Shaft2StepHeight");
   shaft2StepConnectionHeight=Control.EvalVar<double>(keyName+"Shaft2StepConnectionHeight");
   shaft2StepConnectionDist=Control.EvalVar<double>(keyName+"Shaft2StepConnectionDist");
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
@@ -397,7 +399,7 @@ BilbaoWheel::makeShaftSurfaces()
 
 
   // 2nd void step
-  H = shaftCFStiffHeight;
+  H = shaft2StepHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2115,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
@@ -428,7 +430,7 @@ BilbaoWheel::makeShaftSurfaces()
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
   const double stifTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
   ELog::EM << "add cone variables" << ELog::endDiag;
-  ModelSupport::buildCone(SMap, wheelIndex+2148, Origin+Z*(50.0),
+  ModelSupport::buildCone(SMap, wheelIndex+2148, Origin+Z*(50),
 			  Z, 90-stifTheta, -1);
 
   createRadialSurfaces(wheelIndex+3000, shaftNStiffeners, shaftCFStiffThick);
