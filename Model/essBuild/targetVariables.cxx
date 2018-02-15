@@ -85,6 +85,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftConnectionFlangeRingHeight",3.0); // TSV31-TargetUpdate02
   Control.addVariable("BilbaoWheelShaftConnectionFlangeRingRadius",31.0); // ESS-0124024 page 23
 
+  // Upper Stiffener shape and dimensions correspond to
+  // ESS-0153983
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",20.0); // ESS-0124024 page 19
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffHeight",15); // ESS-0124024 page 19
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",2.0); // ESS-0124024 page 19

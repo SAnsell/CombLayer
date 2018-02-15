@@ -429,9 +429,9 @@ BilbaoWheel::makeShaftSurfaces()
   // Connection flange stiffeners
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
   const double stifTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
-  ELog::EM << "add cone variables" << ELog::endDiag;
-  ModelSupport::buildCone(SMap, wheelIndex+2148, Origin+Z*(50),
-			  Z, 90-stifTheta, -1);
+  const double stiffL(shaftRadius[nShaftLayers-2]+shaftCFStiffLength);
+  const double stiffH(tan(stifTheta*M_PI/180)*stiffL+shaft2StepHeight);
+  ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stifTheta,-1);
 
   createRadialSurfaces(wheelIndex+3000, shaftNStiffeners, shaftCFStiffThick);
 
