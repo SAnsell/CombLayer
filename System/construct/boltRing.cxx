@@ -350,12 +350,6 @@ boltRing::createSurfaces()
       const Geometry::Vec3D MidPt((FPoint+BPoint)/2.0);
       const Geometry::Vec3D MidAxis((BPoint-FPoint).unit());
 
-      ELog::EM<<"Radius["<<ringIndex<<"] == "<<sealRadius<<ELog::endDiag;
-      ELog::EM<<"IO["<<ringIndex<<"] == "<<innerRadius<<" "<<outerRadius<<ELog::endDiag;
-      ELog::EM<<"MI["<<ringIndex<<"] == "<<FPoint<<ELog::endDiag;
-      ELog::EM<<"MI["<<ringIndex<<"] == "<<BPoint<<ELog::endDiag;
-      ELog::EM<<"MI["<<ringIndex<<"] == "<<MidPt<<ELog::endDiag;
-
       ModelSupport::buildCylinder(SMap,ringIndex+1007,Origin,Y,sealRadius);
       ModelSupport::buildCylinder(SMap,ringIndex+1017,Origin,Y,
 				  sealRadius+sealThick);      

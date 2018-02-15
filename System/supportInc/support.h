@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,11 @@ long int hasComment(const std::string&);
 long int hasComment(const std::string&,const std::string&,const std::string&);
 /// strip trialing comments
 int stripComment(std::string&);
-/// make lower
+
+void upperString(std::string&);
 void lowerString(std::string&);
+std::string toUpperString(const std::string&);
+std::string toLowerString(const std::string&);
 /// Determines if a string is only spaces
 int isEmpty(const std::string&);
 /// Get a line 

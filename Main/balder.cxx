@@ -120,8 +120,6 @@ main(int argc,char* argv[])
       setVariable::balderVariables(SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
-
-
       
       xraySystem::makeBalder BObj;
       World::createOuterObjects(*SimPtr);

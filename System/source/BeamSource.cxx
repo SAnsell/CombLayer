@@ -265,7 +265,7 @@ BeamSource::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("BeamSource","write");
+  ELog::RegMethod RegA("BeamSource","writePHIS");
 
   boost::format fFMT("%1$11.6g%|14t|");
 
@@ -275,7 +275,7 @@ BeamSource::writePHITS(std::ostream& OX) const
   OX<<"  r0 =   "<<(fFMT % radius)   <<"   # radius [cm]\n";
   OX<<"  x0 =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
   OX<<"  y0 =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
-  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  miniumu of z-axis [cm]\n";
+  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
   OX<<"  z1 =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
   OX<<" dir =   "<<(fFMT % Y[2])     <<" dir cosine direction of Z\n";
   OX<<" phi =   "<<(fFMT % phi)      <<" phi angle to X axis [deg]\n";

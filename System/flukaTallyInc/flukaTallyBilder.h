@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   supportInc/stringWrite.h
+ * File:   tallyInc/flukaTallyBuilder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,28 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef StrFunc_stringWrite_h
-#define StrFunc_stringWrite_h
+#ifndef flukaTallyBuilder_h
+#define flukaTallyBuilder_h
 
-namespace StrFunc
+class Simulation;
+class SimFLUKA;
+
+namespace tallySystem
 {
+   
+  void tallySelection(SimFLUKA&,const mainSystem::inputParam&);
+  void helpTallyType(const std::string&);
+
+}
   
-template<typename T>
-std::string
-stringWrite(const T& A) 
-  /*!
-    Process to convert an object into a string 
-    using its write operator.
-    \param A :: Object
-    \return sting
-   */
-{
-  std::ostringstream cx;
-  cx<<A;
-  return cx.str();
-}
- 
-}
-
 
 #endif
+ 

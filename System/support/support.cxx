@@ -322,9 +322,48 @@ lowerString(std::string& LN)
   */
 {
   for(size_t i=0;i<LN.length();i++)
-    LN[i]=static_cast<char>(tolower(LN[i]));
+    LN[i]=static_cast<char>(std::tolower(LN[i]));
   
   return;
+}
+
+void
+upperString(std::string& LN) 
+  /*!
+    raisze the words in the string
+    \param LN :: String to change
+  */
+{
+  for(size_t i=0;i<LN.length();i++)
+    LN[i]=static_cast<char>(std::toupper(LN[i]));
+  
+  return;
+}
+
+std::string
+toUpperString(const std::string& LN) 
+  /*!
+    raisze the words in the string
+    \param LN :: String to change
+    \return upper case string
+  */
+{
+  std::string Out(LN);
+  upperString(Out);
+  return Out;
+}
+
+std::string
+toLowerString(const std::string& LN) 
+  /*!
+    Lowers the words in the string
+    \param LN :: String to change
+    \return lower case string
+  */
+{
+  std::string Out(LN);
+  lowerString(Out);
+  return Out;
 }
 
 int

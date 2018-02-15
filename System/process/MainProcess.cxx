@@ -551,6 +551,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   
   ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
 
+  // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);
    // 
   SimProcess::importanceSim(*SimMCPtr,IParam);
@@ -596,13 +597,15 @@ buildFullSimulation(Simulation* SimPtr,
   reportSelection(*SimPtr,IParam);
   if (createVTK(IParam,SimPtr,OName))
     return;
-  
+
+  //  UGLY CASTS to be removed
   SimMCNP* SimMCPtr=dynamic_cast<SimMCNP*>(SimPtr);
   if (SimMCPtr)
     {
       buildFullSimMCNP(SimMCPtr,IParam,OName);
       return;
     }
+  
   SimFLUKA* SimFLUKAPtr=dynamic_cast<SimFLUKA*>(SimPtr);
   if (SimFLUKAPtr)
     {

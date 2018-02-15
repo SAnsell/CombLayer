@@ -85,6 +85,8 @@ class particleConv
   int nucleon(const std::string&) const;
 
   int mcnpITYP(const std::string&) const;
+
+  bool hasFlukaName(const std::string&) const;
   
   const std::string& mcnpToPHITS(const int) const;
   const std::string& mcnpToFluka(const int) const;

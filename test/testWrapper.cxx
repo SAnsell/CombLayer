@@ -3,7 +3,7 @@
  
  * File:   test/testWrapper.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,6 +199,7 @@ testWrapper::testBox()
 	}
       Geometry::Surface* SPtrN=SurI.getSurf(100+std::get<2>(tc));
       Geometry::Surface* SPtrO=SurI.getSurf(std::get<2>(tc));
+
       std::string Out =StrFunc::stringWrite(*SPtrN);
       if (StrFunc::fullBlock(Out)!=std::get<3>(tc))
 	{

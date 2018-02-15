@@ -274,11 +274,6 @@ tallyRenumberWork(SimMCNP&,const mainSystem::inputParam&)
   */
 {
   ELog::RegMethod RegA("TallySelector","tallyRenumberWork");
-
-
-  // tallySystem::tallyConstructFactory FC;
-  // tallySystem::tallyConstruct TallyBuilder(FC);
-  // TallyBuilder.tallyRenumber(System,IParam);
  
   return;
 }

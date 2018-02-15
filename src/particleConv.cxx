@@ -180,6 +180,29 @@ particleConv::getFLUKAPItem(const std::string& particleName) const
   return mc->second;
 }
 
+int
+particleConv::hasFlukaName(const std::string& particleName) const
+  /*!
+    Get  the PName item from the 
+    \param particleName :: FLUKA name
+    \return true if found
+  */
+{
+  ELog::RegMethod RegA("particleConv","hasFlukaName");
+  
+  typedef std::map<std::string,pName> PMAP;
+  PMAP::const_iterator mc=
+    std::find_if(indexLookup.begin(),indexLookup.end(),
+		 [&particleName](const PMAP::value_type& PN) -> bool
+		 {
+		   return (particleName == PN.second.flukaName);
+		 } );
+
+  return (mc==indexLookup.end()) ? 0 : 1;
+}
+
+
+
 const pName&
 particleConv::getMCNPitypePItem(const int particleID) const
   /*!

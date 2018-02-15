@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   supportInc/stringWrite.h
+ * File:   tallyInc/userBinConstruct.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,28 +19,57 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef StrFunc_stringWrite_h
-#define StrFunc_stringWrite_h
+#ifndef tallySystem_userBinConstruct_h
+#define tallySystem_userBinConstruct_h
 
-namespace StrFunc
+namespace attachSystem
 {
+  class FixedComp;
+}
+
+namespace mainSystem
+{
+  class inputParam;
+}
+
+class Simulation;
+
+namespace tallySystem
+{
+
+/*!
+  \class userBinConstruct
+  \version 1.0
+  \author S. Ansell
+  \date July 2012
+  \brief Constructs a mesh tally from inputParam
+*/
+
+class userBinConstruct 
+{
+  private:
   
-template<typename T>
-std::string
-stringWrite(const T& A) 
-  /*!
-    Process to convert an object into a string 
-    using its write operator.
-    \param A :: Object
-    \return sting
-   */
-{
-  std::ostringstream cx;
-  cx<<A;
-  return cx.str();
-}
- 
-}
+  /// Private constructor
+  userBinConstruct() {}
 
+  createTally(SimFLUKA&,
+	      const std::string&,
+	      const int,
+	      const Geometry::Vec3D&,const Geometry::Vec3D&
+	      const std::array<size_t,3>&);
+  
+
+  static int convertTallyType(const std::string&);
+  
+ public:
+
+  static void processMesh(SimFLUKA&,const mainSystem::inputParam&
+			  const size_t);
+  
+  static void writeHelp(std::ostream&);
+};
+
+}
 
 #endif
+ 
