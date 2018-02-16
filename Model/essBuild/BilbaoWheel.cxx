@@ -448,9 +448,6 @@ BilbaoWheel::makeShaftSurfaces()
   R = shaft2StepConnectionRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2127,Origin,Z,R);
 
-  R += voidThick;
-  ModelSupport::buildCylinder(SMap,wheelIndex+2137,Origin,Z,R);
-
   // shaft base
   H = shaftBaseDepth;
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
