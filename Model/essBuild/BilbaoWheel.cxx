@@ -426,14 +426,20 @@ BilbaoWheel::makeShaftSurfaces()
   R = shaftCFRingRadius;
   ModelSupport::buildCylinder(SMap,wheelIndex+2147,Origin,Z,R);
 
+  R = std::max(shaftCFRingRadius,shaft2StepConnectionRadius)+voidThick;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2157,Origin,Z,R);
+
   // Connection flange stiffeners
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
-  const double stifTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
+  const double stiffTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
   const double stiffL(shaftRadius[nShaftLayers-2]+shaftCFStiffLength);
-  const double stiffH(tan(stifTheta*M_PI/180)*stiffL+shaft2StepHeight);
-  ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stifTheta,-1);
+  const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
+  ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
 
   createRadialSurfaces(wheelIndex+3000, shaftNStiffeners, shaftCFStiffThick);
+
+  H = stiffH+voidThick/cos(stiffTheta);
+  ModelSupport::buildCone(SMap,wheelIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
 
   H = H1-voidThick;
   H += shaft2StepConnectionDist;
@@ -655,21 +661,25 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
   buildStiffeners(System,Out+Rsurf,wheelIndex+3000,shaftNStiffeners,steelMat);
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 2148 -2118 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out)); // lower
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2126 2148 -2118 2157 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2126 2148 -2149 2157 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 2148 -2157 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   //   ring
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 -2147 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 2147 -2118");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2146 -2156 2147 -2157");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex," 2156 -2166 -2118 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+Rsurf)); // upper
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 2156 -2166 -2157 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out+Rsurf));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 " 2127 -2118 2166 -2186 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 2166 -2186 2127 -2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,
@@ -713,13 +723,6 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   buildStiffeners(System,Out,wheelIndex+3000,shaftNStiffeners,steelMat);
 
 
-
-
-
-
-
-
-
   // shaft layers
   int SI(wheelIndex);
   for (size_t i=0; i<nShaftLayers; i++)
@@ -752,8 +755,9 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 	{
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
 					 " (((-2007M -2006) : " // top
-                                         "   (-2107  -2106) : " // 1st step
-                                         "   (-2118 -2186)) 2105) : " // connection
+                                         "   (-2107  -2106) ) 2105) : " // connection
+					 " (2126 -2149 ) : " // upper stiffeners
+					 " (2126 -2186 -2157 ) : "  // above upper stiffeners
 					 " (-2118 2115 -2126 ) : " // 2nd step
 					 " ((-2239:-2247) 2205 -2115 ) "); // base
 	  addOuterSurf("Shaft",Out);
