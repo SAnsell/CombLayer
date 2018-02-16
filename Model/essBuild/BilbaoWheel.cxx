@@ -492,7 +492,12 @@ BilbaoWheel::makeShaftSurfaces()
   ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
 			  -Z, 90-catcherBaseAngle, -1);
 
+  H+= voidThick/cos(catcherBaseAngle*M_PI/180);
+  ModelSupport::buildCone(SMap, wheelIndex+2239, Origin-Z*(H),
+			  -Z, 90-catcherBaseAngle, -1);
 
+  R += voidThick;
+  ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
 
 
 
@@ -673,11 +678,15 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // wheel catcher
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2237 2238 2215 -2115 ");
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2247 2238 -2239 -2115 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2238 2205 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   //     floor gap
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2118 2208 2205 -2215 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " -2147 2208 2205 -2215 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2205 -2245 -2208 ");
@@ -745,7 +754,8 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 					 " (((-2007M -2006) : " // top
                                          "   (-2107  -2106) : " // 1st step
                                          "   (-2118 -2186)) 2105) : " // connection
-					 " (-2118 -2126 2205) "); // 2nd step and base
+					 " (-2118 2115 -2126 ) : " // 2nd step
+					 " ((-2239:-2247) 2205 -2115 ) "); // base
 	  addOuterSurf("Shaft",Out);
 	}
 
