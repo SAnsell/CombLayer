@@ -70,15 +70,17 @@ class SimFLUKA : public Simulation
   virtual ~SimFLUKA() {}           ///< Destructor
 
   // TALLY PROcessing 
-  int addTally(const flukaSystem::flukaTally&);
+  void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
 
   /// Access tally items
   FTallyTYPE& getTallyMap() { return FTItem; }
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
+  int getNextFTape() const;
+
   void setForCinder();
-  int nextTallyNum(int) const;
+
   
   virtual void write(const std::string&) const;
 

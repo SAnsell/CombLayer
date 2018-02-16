@@ -184,8 +184,26 @@ userBin::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  //  masterWrite& MW=masterWrite::Instance();
+  boost::format FMTint("%1$.01f");
+  boost::format FMTnum("%1$.4g");
+
   std::ostringstream cx;
+  
+
+  OX<<std::setw(10)<<std::left<<"USRBIN";
+  OX<<(FMTint % meshType);
+  OX<<(FMTint % outputUnit);
+  OX<<std::setw(10)<<std::right<<particle;
+  for(size_t i=0;i<3;i++)
+    OX<<(FMTnum % maxCoord[i]);
+  OX<<std::endl;
+  
+  OX<<std::setw(10)<<std::left<<"USRBIN";
+  for(size_t i=0;i<3;i++)
+    OX<<(FMTnum % minCoord[i]);
+  for(size_t i=0;i<3;i++)
+    OX<<(FMTint % Pts[i]);
+  OX<<"  & "<<std::endl;
   
   return;
 }

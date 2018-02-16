@@ -69,6 +69,7 @@
 #include "DefPhysics.h"
 #include "TallySelector.h"
 #include "TallyBuilder.h"
+#include "flukaTallyBuilder.h"
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
@@ -508,18 +509,21 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
     \param OName :: output file name
    */
 {
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
-  
+
+  ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
   //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
 
-  //  tallySystem::tallySelection(*SimMCPtr,IParam);
+  flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
    // 
   //  SimProcess::importanceSim(*SimMCPtr,IParam);
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   //  tallyModification(*SimMCPtr,IParam);
 
+  ELog::EM<<"FLUKA MODEL DOES NOT SET SOURCES"<<ELog::endCrit;
   //  SDef::sourceSelection(*SimMCPtr,IParam);
   SimFLUKAPtr->masterSourceRotation();
   // Ensure we done loop

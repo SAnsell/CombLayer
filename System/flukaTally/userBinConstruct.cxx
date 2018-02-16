@@ -95,10 +95,13 @@ userBinConstruct::createTally(SimFLUKA& System,
   ELog::RegMethod RegA("userBinConstruct","createTally");
 
 
-  userBin* UB=new userBin(fortranTape);
-  
-  // Find next available number
-  
+  userBin UB(fortranTape);
+  UB.setParticle(PType);
+  UB.setCoordinates(APt,BPt);
+  UB.setIndex(MPts);
+  System.addTally(UB);
+
+  return;
 }
 
 std::string
@@ -152,8 +155,7 @@ userBinConstruct::processMesh(SimFLUKA& System,
   const std::string what2Number=userBinConstruct::convertTallyType(tallyType);
 
   // This needs to be more sophisticated
-  const int nextId=static_cast<int>(Index)+25;
-
+  const int nextId=System.getNextFTape();
   
   const std::string PType=
     IParam.getValueError<std::string>("tally",Index,2,"object/free"); 

@@ -50,7 +50,8 @@ class flukaTally
   virtual ~flukaTally();
   
   void setComment(const std::string&);
-
+  int getOutUnit() const { return outputUnit; }
+  
   virtual void write(std::ostream&) const;
 };
 

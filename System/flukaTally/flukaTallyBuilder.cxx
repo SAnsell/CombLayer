@@ -65,7 +65,7 @@ tallySelection(SimFLUKA& System,
     An amalgumation of values to determine what sort of tallies to put
     in the system.
     \param System :: SimFLUKA to add tallies
-    \param IP :: InputParam
+    \param IParam :: Input Parameters
   */
 {
   ELog::RegMethod RegA("flukaTallyBuilder","tallySelection(basic)");

@@ -79,11 +79,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
-#include "ModeCard.h"
-#include "LSwitchCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "PhysicsCards.h"
+#include "flukaTally.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
@@ -120,6 +116,44 @@ SimFLUKA::operator=(const SimFLUKA& A)
   return *this;
 }
 
+int
+SimFLUKA::getNextFTape() const
+ /*! 
+   Horrible function to find the next availabe ftape unit 
+   note that we should start from >25 
+   \return available number
+ */
+{
+  ELog::RegMethod RegA("SimFLUKA","getNextFTape");
+  
+  // max for fortran output stream 98 ??
+  for(int i=25;i<98;i++)
+    {
+      if (FTItem.find(i)==FTItem.end())
+	return i;
+    }
+  throw ColErr::InContainerError<int>
+    (98,"Tallies have exhaused available ftapes [25-98]");
+
+}
+  
+void
+SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
+  /*!
+    Add a tally to main stack
+    \param TI :: Fluka tally to add
+  */
+{
+  ELog::RegMethod RegA("SimFluka","addTally");
+
+  // Fluka cannot share output [and fOutput > 25 ]
+  const int fOutput=std::abs(TI.getOutUnit());
+  if (FTItem.find(fOutput)!=FTItem.end())
+    throw ColErr::InContainerError<int>(fOutput,"Foutput for tally");
+  FTItem.emplace(fOutput,TI.clone());
+  return;
+}
+  
 
 void
 SimFLUKA::writeTally(std::ostream& OX) const
@@ -129,15 +163,15 @@ SimFLUKA::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
-//  for(const TallyTYPE::value_type& TI : TItem)
-//    TI.second->write(OX);
+  ELog::RegMethod RegA("SimFluka","addTally");
+  
+  OX<<"* ------------------------------------------------------"<<std::endl;
+  OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;
+  OX<<"* ------------------------------------------------------"<<std::endl;
+
+  ELog::EM<<"TALLY Size == :"<<FTItem.size()<<ELog::endDiag;
+  for(const FTallyTYPE::value_type& TI : FTItem)
+    TI.second->write(OX);
 
   return;
 }
@@ -412,7 +446,9 @@ SimFLUKA::write(const std::string& Fname) const
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
   writeMaterial(OX);
+  writeTally(OX);
   writePhysics(OX);
+
   OX<<"STOP"<<std::endl;
   OX.close();
   return;

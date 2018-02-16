@@ -375,9 +375,6 @@ portItem::constructOuterFlange(Simulation& System,
       if (i>lastIndex)   
 	T+=Track[i];
 
-      if (keyName == "windowPort" || keyName=="BalderShieldPipePort0")
-	ELog::EM<<"P["<<keyName<<"] == "<<OPtr->getName()
-		<<":::"<<T<<" "<<externalLength<<ELog::endDiag;
 
       if (T>=externalLength-flangeLength)
 	OPtr->addSurfString(getExclude());
