@@ -34,7 +34,7 @@ namespace mainSystem
 
 class Simulation;
 
-namespace tallySystem
+namespace flukaSystem
 {
 
 /*!
@@ -52,18 +52,18 @@ class userBinConstruct
   /// Private constructor
   userBinConstruct() {}
 
-  createTally(SimFLUKA&,
-	      const std::string&,
-	      const int,
-	      const Geometry::Vec3D&,const Geometry::Vec3D&
-	      const std::array<size_t,3>&);
+  static void createTally(SimFLUKA&,
+			  const std::string&,
+			  const int,
+			  const Geometry::Vec3D&,const Geometry::Vec3D&,
+			  const std::array<size_t,3>&);
   
 
-  static int convertTallyType(const std::string&);
+  static std::string convertTallyType(const std::string&);
   
  public:
 
-  static void processMesh(SimFLUKA&,const mainSystem::inputParam&
+  static void processMesh(SimFLUKA&,const mainSystem::inputParam&,
 			  const size_t);
   
   static void writeHelp(std::ostream&);

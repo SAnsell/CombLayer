@@ -180,7 +180,7 @@ particleConv::getFLUKAPItem(const std::string& particleName) const
   return mc->second;
 }
 
-int
+bool
 particleConv::hasFlukaName(const std::string& particleName) const
   /*!
     Get  the PName item from the 

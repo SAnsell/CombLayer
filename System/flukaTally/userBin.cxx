@@ -43,6 +43,7 @@
 #include "BaseModVisit.h"
 #include "support.h"
 #include "writeSupport.h"
+#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -55,15 +56,49 @@
 namespace flukaSystem
 {
 
-userBin::userBin(const int ID) :
-  Tally(ID),
-  requireRotation(0)
+userBin::userBin(const int outID) :
+  flukaTally(outID),
+  outputUnit(outID),meshType(10),
+  particle("208")                  // energy
   /*!
     Constructor
-    \param ID :: Identity number of tally
+    \param ID :: Identity number of tally [fortranOut]
   */
 {}
 
+userBin::userBin(const userBin& A) : 
+  flukaTally(A),
+  outputUnit(A.outputUnit),meshType(A.meshType),
+  particle(A.particle),Pts(A.Pts),minCoord(A.minCoord),
+  maxCoord(A.maxCoord)
+  /*!
+    Copy constructor
+    \param A :: userBin to copy
+  */
+{}
+
+userBin&
+userBin::operator=(const userBin& A)
+  /*!
+    Assignment operator
+    \param A :: userBin to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      flukaTally::operator=(A);
+      outputUnit=A.outputUnit;
+      meshType=A.meshType;
+      particle=A.particle;
+      Pts=A.Pts;
+      minCoord=A.minCoord;
+      maxCoord=A.maxCoord;
+    }
+  return *this;
+}
+
+  
 userBin*
 userBin::clone() const
   /*!
@@ -80,25 +115,17 @@ userBin::~userBin()
   */
 {}
 
-void
-userBin::setType(const int T)
-  /*!
-    Set the mesh typeID values
-    \param T :: Type to set [1,2,3]
-  */
-{
-  if (T<1 || T>3)
-    throw ColErr::RangeError<int>(T,1,4,"userBin::setType");
-  return;
-}
 
+
+  
 void
-userBin::setKeyWords(const std::string&)
+userBin::setParticle(const std::string& P)
   /*!
-    Set the mesh keywords
-    \param K :: Keyword to add
+    Set the mesh particle
+    \param P :: Partile
   */
 {
+  particle=P;
   return;
 }
   
@@ -120,19 +147,10 @@ userBin::setIndex(const std::array<size_t,3>& IDX)
   return;
 }
 
-int
-userBin::addLine(const std::string& LX)
-  /*!
-    Add a line
-    \param LX :: Line to add
-   */
-{
-  return Tally::addLine(LX);
-}
 
 void
 userBin::setCoordinates(const Geometry::Vec3D& A,
-                           const Geometry::Vec3D& B)
+			const Geometry::Vec3D& B)
   /*!
     Sets the min/max coordinates
     \param A :: First coordinate
@@ -158,62 +176,6 @@ userBin::setCoordinates(const Geometry::Vec3D& A,
   return;
 }
 
-void 
-userBin::setResponse(const std::string&)
-  /*!
-    Set the mesh response function based on the input line
-    \param Line :: Line to process
-  */
-{
-  ELog::RegMethod RegA("userBin","setResponse");
-  //  if (mshmf.processString(Line))
-    // {
-    //   ELog::EM<<"Failed to set response line :"<<ELog::endCrit;
-    //   ELog::EM<<Line<<ELog::endErr;
-    // }
-  return;
-}
-
-void
-userBin::rotateMaster()
-  /*!
-    Rotate the points [if required]
-  */
-{
-  ELog::RegMethod RegA("userBin","rotateMaster");
-  
-  if (requireRotation)
-    {
-      ELog::EM<<"Rotation required"<<ELog::endDiag;
-      const masterRotate& MR=masterRotate::Instance(); 
-      MR.applyFull(minCoord);
-      MR.applyFull(maxCoord);
-      requireRotation=0;
-    }
-  return;
-}
-
-void
-userBin::writeCoordinates(std::ostream& OX) const
-  /*!
-    Function to write out the coordinates for the user
-    \param OX :: Oupt stream
-  */
-{
-  const static char abc[]="ijk";
-  
-  std::ostringstream cx;
-  for(size_t i=0;i<3;i++)
-    {
-      cx.str("");
-      cx<<abc[i]<<"mesh "<<maxCoord[i]<<" "
-	<<abc[i]<<"ints "<<Pts[i];
-      StrFunc::writeMCNPXcont(cx.str(),OX);
-    }
-
-  
-  return;
-}
   
 void
 userBin::write(std::ostream& OX) const
@@ -222,37 +184,11 @@ userBin::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  masterWrite& MW=masterWrite::Instance();
-  if (isActive())
-    {
-      std::ostringstream cx;
-      cx<<"fmesh"<<IDnum;
-      writeParticles(cx);
-      //GEOMETRY:
-      cx<<"GEOM="<<"xyz"<<" ";
-      cx<<"ORIGIN="<<MW.Num(minCoord)<<" ";
-      StrFunc::writeMCNPX(cx.str(),OX);
-      cx.str("");
-
-      std::vector<double> EPts;
-      const size_t EN=getEnergy().writeVector(EPts);
-      if (EN)
-	{
-	  StrFunc::writeMCNPX(cx.str(),OX);
-	  cx.str("");
-	}					 
-      // if (!mshmf.empty())
-      //   {
-      //     cx.str("");
-      //     cx<<"mshmf"<<IDnum<<" "<<mshmf;
-      //     StrFunc::writeMCNPX(cx.str(),OX);
-      //   }
-      writeCoordinates(OX);
-      OX<<"endmd"<<std::endl;
-    }
-
+  //  masterWrite& MW=masterWrite::Instance();
+  std::ostringstream cx;
+  
   return;
 }
 
-}  // NAMESPACE tallySystem
+}  // NAMESPACE flukaSystem
 

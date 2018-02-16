@@ -58,6 +58,10 @@ class meshConstruct
   static void calcXYZ(const std::string&,const std::string&,
 		      Geometry::Vec3D&,Geometry::Vec3D&) ;
 
+
+
+ public:
+
   static void getObjectMesh(const mainSystem::inputParam&,
 			    const size_t,const size_t,
 			    Geometry::Vec3D&,
@@ -69,10 +73,6 @@ class meshConstruct
 			    Geometry::Vec3D&,
 			    Geometry::Vec3D&,
 			    std::array<size_t,3>&);
-
-
- public:
-
 
   
   static void writeHelp(std::ostream&);

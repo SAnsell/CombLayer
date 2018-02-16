@@ -61,13 +61,17 @@
 #include "LinkSupport.h"
 #include "inputParam.h"
 
+#include "SimFLUKA.h"
+#include "particleConv.h"
 #include "TallySelector.h"
-#include "meshConstrut.h"
+#include "meshConstruct.h"
+#include "flukaTally.h"
+#include "userBin.h"
 #include "userBinConstruct.h" 
 
 
 
-namespace flukaTallySystem
+namespace flukaSystem
 {
 
 void 
@@ -81,7 +85,8 @@ userBinConstruct::createTally(SimFLUKA& System,
     An amalgamation of values to determine what sort of mesh to put
     in the system.
     \param System :: SimFLUKA to add tallies
-    \param KeyWords :: KeyWords to add to the tally
+    \param PType :: processed particle type
+    \param fortranTape :: output stream
     \param APt :: Lower point 
     \param BPt :: Upper point 
     \param MPts :: Points ot use
@@ -89,9 +94,11 @@ userBinConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userBinConstruct","createTally");
 
-  userBin* UB=new userBin();
-  // Find next available number
 
+  userBin* UB=new userBin(fortranTape);
+  
+  // Find next available number
+  
 }
 
 std::string
@@ -103,20 +110,21 @@ userBinConstruct::convertTallyType(const std::string& TType)
   */
 {
   ELog::RegMethod RegA("userBinConstruct","convertTallyType");
+  const particleConv& pConv=particleConv::Instance();
   
   static const std::map<std::string,int> tMap
-    ( { "energy",      208 },              // energy 
+    ( {{ "energy",      208 },              // energy 
       { "em-energy",   211 },           // electro magnetic energy
       { "dose"     ,   228 },
       { "unb-energy",  229 },           // ????
-      { "dose-eq",     240 }            // Dose equivilent [needs auxscore]
+      { "dose-eq",     240 }}            // Dose equivilent [needs auxscore]
       );
 
   std::map<std::string,int>::const_iterator tc=tMap.find(TType);
-  std::istringstream cx;
+  std::ostringstream cx;
   if (tc!=tMap.end())
     cx<<std::setw(10)<<std::right<<std::to_string(tc->second)+".0";
-  else if (particleConv::hasFlukaName(TType))
+  else if (pConv.hasFlukaName(TType))
     cx<<std::setw(10)<<std::right<<StrFunc::toUpperString(TType);
   else
     throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
@@ -141,10 +149,10 @@ userBinConstruct::processMesh(SimFLUKA& System,
   
   const std::string tallyType=
     IParam.getValueError<std::string>("tally",Index,1,"tallyType");
-  const int what2Number=userBinConstruct::convertTallyType(tallyType);
+  const std::string what2Number=userBinConstruct::convertTallyType(tallyType);
 
   // This needs to be more sophisticated
-  const size_t nextId=Index+25;
+  const int nextId=static_cast<int>(Index)+25;
 
   
   const std::string PType=
@@ -153,11 +161,11 @@ userBinConstruct::processMesh(SimFLUKA& System,
   std::array<size_t,3> Nxyz;
   
   if (PType=="object")
-    meshConstruct::getObjectMesh(IParam,Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getObjectMesh(IParam,Index,3,APt,BPt,Nxyz);
   else if (PType=="free")
-    meshConstruct::getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
+    tallySystem::meshConstruct::getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
 
-  userbinConstruct::createTally(System,tallyType,APt,BPt,Nxyz);
+  userBinConstruct::createTally(System,tallyType,nextId,APt,BPt,Nxyz);
   
   return;      
 }
@@ -173,7 +181,7 @@ userBinConstruct::writeHelp(std::ostream& OX)
     "tallyType free Vec3D Vec3D Nx Ny Nz \n"
     "tallyType object objectName LinkPt  Vec3D Vec3D Nx Ny Nz \n"
     "  -- Object-link point is used to construct basis set \n"
-    "     Then the Vec3D are used as the offset points "
+    "     Then the Vec3D are used as the offset points ";
 
   return;
 }

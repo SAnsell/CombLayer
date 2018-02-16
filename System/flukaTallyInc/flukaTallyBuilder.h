@@ -25,7 +25,7 @@
 class Simulation;
 class SimFLUKA;
 
-namespace tallySystem
+namespace flukaSystem
 {
    
   void tallySelection(SimFLUKA&,const mainSystem::inputParam&);

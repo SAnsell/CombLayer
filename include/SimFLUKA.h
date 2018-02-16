@@ -22,6 +22,11 @@
 #ifndef SimFLUKA_h
 #define SimFLUKA_h
 
+namespace flukaSystem
+{
+  class flukaTally;
+}
+
 /*!
   \class SimFLUKA
   \brief Modifides Simulation to output a Fluka input file
@@ -31,8 +36,17 @@
  */
 class SimFLUKA : public Simulation
 {
+ public:
+
+  /// Tally fortranIO : tally
+  typedef std::map<int,flukaSystem::flukaTally*> FTallyTYPE; 
+
  private:
-  const std::string alignment;
+
+  const std::string alignment;    ///< the alignemnt string
+
+  FTallyTYPE FTItem;              ///< Fluka tally map
+
 
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -55,6 +69,17 @@ class SimFLUKA : public Simulation
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA() {}           ///< Destructor
 
+  // TALLY PROcessing 
+  int addTally(const flukaSystem::flukaTally&);
+  flukaSystem::flukaTally* getTally(const int) const;
+
+  /// Access tally items
+  FTallyTYPE& getTallyMap() { return FTItem; }
+  /// Access constant
+  const FTallyTYPE& getTallyMap() const { return FTItem; }
+  void setForCinder();
+  int nextTallyNum(int) const;
+  
   virtual void write(const std::string&) const;
 
 };

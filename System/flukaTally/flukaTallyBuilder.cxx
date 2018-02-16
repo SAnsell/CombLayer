@@ -46,22 +46,20 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
-#include "stringCombine.h"
-#include "TallyCreate.h"
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
 
-
+#include "userBinConstruct.h"
 #include "flukaTallyBuilder.h"
 
-namespace tallySystem
+namespace flukaSystem
 {
 
 void
-tallySelection(SimMCNP& System,
+tallySelection(SimFLUKA& System,
 	       const mainSystem::inputParam& IParam)
   /*!
     An amalgumation of values to determine what sort of tallies to put
@@ -84,11 +82,9 @@ tallySelection(SimMCNP& System,
       
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
-      else if (HType=="help" || HType=="?")
-	helpTallyType(TType);
-
+      
       else if (TType=="mesh")
-	tmeshConstruct::processMesh(System,IParam,i);
+	userBinConstruct::processMesh(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }
@@ -109,19 +105,12 @@ helpTallyType(const std::string& HType)
   ELog::RegMethod("TallyConstructor","helpTallyType");
 
   if (HType=="mesh")
-    //    tmeshConstruct::writeHelp(ELog::EM.Estream());
+    //    userBinConstruct::writeHelp(ELog::EM.Estream());
     {}
   else
     {
       ELog::EM<<"Tally Types:\n\n";
-      ELog::EM<<"-- grid : \n";
       ELog::EM<<"-- mesh : \n";
-      ELog::EM<<"-- point : \n";
-      ELog::EM<<"-- surface : \n";
-      ELog::EM<<"-- flux : \n";
-      ELog::EM<<"-- heat : \n";
-      ELog::EM<<"-- fission : \n";
-      ELog::EM<<"-- SSW : \n";
     }
   
   ELog::EM<<ELog::endBasic;
@@ -129,4 +118,4 @@ helpTallyType(const std::string& HType)
 }
 
 
-} // NAMESPACE tallySystem
+} // NAMESPACE flukaSystem
