@@ -80,7 +80,8 @@ namespace SimProcess
 {
 
 int
-processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
+processExitChecks(Simulation& System,
+		  const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 

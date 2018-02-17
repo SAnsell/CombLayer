@@ -180,6 +180,7 @@
 #include "testVolumes.h"
 #include "testWorkData.h"
 #include "testWrapper.h"
+#include "testWriteSupport.h"
 #include "testXML.h"
 
 //
@@ -1155,6 +1156,7 @@ supportTest(const int type,const int extra)
       std::cout<<"testModelSupport        (5)"<<std::endl;
       std::cout<<"testSimpson             (6)"<<std::endl;
       std::cout<<"testSupport             (7)"<<std::endl;
+      std::cout<<"testWriteSupport        (8)"<<std::endl;
       return 0;
     }
 
@@ -1200,6 +1202,12 @@ supportTest(const int type,const int extra)
   if(type==7 || type<0)
     {
       testSupport A;
+      int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==8 || type<0)
+    {
+      testWriteSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }

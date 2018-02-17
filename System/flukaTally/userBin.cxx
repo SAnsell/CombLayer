@@ -184,7 +184,7 @@ userBin::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTint("%1$.01f");
+  boost::format FMTint("%1$.1f");
   boost::format FMTnum("%1$.4g");
 
   std::ostringstream cx;

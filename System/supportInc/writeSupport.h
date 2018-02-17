@@ -27,6 +27,7 @@
 namespace StrFunc
 {
 
+std::string flukaNumber(const double);
 
 // Write file in standard MCNPX input form
 void writeControl(const std::string&,std::ostream&,

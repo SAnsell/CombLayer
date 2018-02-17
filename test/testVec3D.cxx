@@ -85,7 +85,7 @@ testVec3D::applyTest(const int extra)
       "Read"
     };
   
-  const int TSize(sizeof(TPtr)/sizeof(testPtr));
+  const size_t TSize(sizeof(TPtr)/sizeof(testPtr));
   if (!extra) 
     {
       TestFunc::writeTests(TestName);

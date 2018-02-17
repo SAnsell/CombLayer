@@ -73,21 +73,19 @@ namespace SimProcess
 {
   
 void
-writeMany(SimMCNP& System,const std::string& FName,const int Number)
+writeMany(SimMCNP& System,const std::string& OName,const int Number)
    /*!
      Writes out many different files, each with a new random
      number
      \param System :: Simuation object 
-     \param FName :: basic filename
+     \param OName :: basic filename
      \param Number :: number to write
    */
 {
   physicsSystem::PhysicsCards& PC=System.getPC();
   for(int i=0;i<Number;i++)
     {
-      std::ostringstream cx;
-      cx<<FName<<i+1<<".x";
-      System.write(cx.str());
+      System.write(OName+std::to_string(i+1)+".x");
       // increase the RND seed by 10
       PC.setRND(PC.getRNDseed()+10);
     }
@@ -96,46 +94,43 @@ writeMany(SimMCNP& System,const std::string& FName,const int Number)
 
 
 void
-writeIndexSim(SimMCNP& System,const std::string& FName,const int Number)
-   /*!
-     Writes out many different files, each with a new random
-     number
-     \param System :: Simuation object 
-     \param FName :: basic filename
-     \param Number :: number to write
-   */
+writeIndexSim(SimMCNP& System,
+	      const std::string& OName,const int Number)
+  /*!
+    Writes out many different files, each with a new random
+    number
+    \param System :: Simuation object 
+    \param FName :: basic filename
+    \param Number :: number to write
+  */
 {
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSim");
   
   physicsSystem::PhysicsCards& PC=System.getPC();
   // increase the RND seed by N*10 [10,20,40,etc]
   PC.setRND(PC.getRNDseed()+Number*10);
-  std::ostringstream cx;
-  cx<<FName<<Number+1<<".x";
   System.prepareWrite();
-  System.write(cx.str());
+  System.write(OName+std::to_string(Number+1)+".x");
   
   return;
 }
 
 void
 writeIndexSimFLUKA(SimFLUKA& System,
-		   const std::string& FName,
+		   const std::string& OName,
 		   const int Number)
    /*!
      Writes out many different files, each with a new random
      number
      \param System :: Simuation object 
-     \param FName :: basic filename
+     \param OName :: basic filename
      \param Number :: number to write
    */
 {
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
   
-  std::ostringstream cx;
-  cx<<FName<<Number+1<<".x";
   System.prepareWrite();
-  System.write(cx.str());
+  System.write(OName+std::to_string(Number+1)+".inp");
   
   return;
 }
