@@ -3,7 +3,7 @@
  
  * File:   test/testObject.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -188,7 +188,8 @@ testObject::applyTest(const int extra)
       &testObject::testRemoveComplement,
       &testObject::testSetObject,
       &testObject::testSetObjectExtra,
-      &testObject::testTrackCell
+      &testObject::testTrackCell,
+      &testObject::testWriteFluka
     };
   const std::string TestName[]=
     {
@@ -200,7 +201,8 @@ testObject::applyTest(const int extra)
       "RemoveComplement",
       "SetObject",
       "SetObjectExtra",
-      "TrackCell"
+      "TrackCell",
+      "WriteFluka"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -241,16 +243,18 @@ testObject::testCellStr()
   populateMObj();
 
   typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-
-  Tests.push_back(TTYPE("4 10 0.0552 -5 8 60 (-61:62) -63 #3",
-			"#(-60006 60005 -60004 60003 -60002 60001)"
-			"  -63 ( -61 : 62 ) 60 8 -5"));
-  Tests.push_back(TTYPE("5 1 0.05524655 18 45 #(45 (57 : 56))",
-			"#( ( 57 : 56 ) 45 ) 45 18"));
-
-  Tests.push_back(TTYPE("5 1 0.05524655 18 45 #(45 (57 : 56))",
-			"#( ( 57 : 56 ) 45 ) 45 18"));
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE("4 10 0.0552 -5 60006 60005 60003 ",
+	    "60006 60005 60003 "),
+      TTYPE("4 10 0.0552 -5 8 60 (-61:62) -63 #3",
+	    "#(-60006 60005 -60004 60003 -60002 60001)"
+	    "  -63 ( -61 : 62 ) 60 8 -5"),
+      TTYPE("5 1 0.05524655 18 45 #(45 (57 : 56))",
+	    "#( ( 57 : 56 ) 45 ) 45 18"),
+      TTYPE("5 1 0.05524655 18 45 #(45 (57 : 56))",
+	    "#( ( 57 : 56 ) 45 ) 45 18")
+    };
 
   // quick way to make a long long list:
   std::ostringstream cx;
@@ -268,11 +272,12 @@ testObject::testCellStr()
   for(const TTYPE& tc : Tests)
     {
       A.setObject(std::get<0>(tc));
-      const std::string Xstr =A.cellStr(MObj);
-      if (Xstr!=std::get<1>(tc))
+      const std::string XStr =A.cellStr(MObj);
+      ELog::EM<<" - ------------------- "<<ELog::endDiag;
+      if (XStr!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Init Obj:"<<std::get<0>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Out Obj:"<<Xstr<<ELog::endDiag;
+	  ELog::EM<<"Out Obj :"<<XStr<<ELog::endDiag;
 	  return -1;
 	}
     }
@@ -706,3 +711,12 @@ testObject::testRemoveComplement()
   return 0;
 }
 
+
+int
+testObject::testWriteFluka() 
+  /*!
+    Going to test writing out the fluka cell without brackets
+  */
+{
+  return 0;
+}

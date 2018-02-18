@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,9 @@ struct IncSeq{
   size_t operator()(){return v++;}   ///< increment
 IncSeq():v(0){}                      ///< Constructor
 };
+
+template<typename T,typename U>
+void signSplit(const T,U&,U&);
 
 size_t lowBitIndex(const unsigned int&);
 size_t lowBitIndex(const size_t&);

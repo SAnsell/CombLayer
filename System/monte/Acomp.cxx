@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -631,7 +631,8 @@ Acomp::copySimilar(const Acomp& A)
 }
 
 void
-Acomp::addUnit(const std::vector<int>& Index,const BnId& BX)
+Acomp::addUnit(const std::vector<int>& Index,
+	       const BnId& BX)
   /*!
     Given a single BnId unit and an index
     adds it to the main Units object.
@@ -647,9 +648,9 @@ Acomp::addUnit(const std::vector<int>& Index,const BnId& BX)
       if (flag)
         {
 	  signSplit(flag,S,V); // sets S and V
-	  if (V>=Index.size())
+	  if (V>Index.size())
 	    throw ColErr::IndexError<size_t>(V,Index.size(),
-					       "Acomp::addUnit ");
+					     "Acomp::addUnit ");
 	  Units.push_back(S*Index[i]);
 	}
     }
@@ -985,11 +986,12 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
   std::vector<BnId>::iterator uend;     // itor to remove unique
   // Need to make an initial copy.
   Work=DNFobj;
-  
+  ELog::EM<<"ASDFSAFSAFSDF == "<<ELog::endDiag;
   int cnt(0);
   do
     {
       cnt++;
+      ELog::EM<<"Cnt == "<<cnt<<ELog::endDiag;
       // Deal with tri-state objects ??
       sort(Work.begin(),Work.end());
       uend=unique(Work.begin(),Work.end());
@@ -1033,7 +1035,8 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
       
     } while (!Tmod.empty());
   // Copy over the unit.
-  
+
+
   return makeEPI(DNFobj,PIComp);
 }
 
@@ -1249,8 +1252,10 @@ Acomp::getDNFobject(std::vector<int>& keyNumbers,
 
   DNFobj.clear();
   BnId State(Base.size(),0);                 //zero base
+  int cnt=0;
   do
     {
+      cnt++;
       State.mapState(keyNumbers,Base);
       if (isTrue(Base))
         {
@@ -1631,7 +1636,7 @@ Acomp::setString(const std::string& Line)
     \param Line :: string of for abc'.
   */
 {
-  ELog::RegMethod RegA("AComp","setString");
+  ELog::RegMethod RegA("Acomp","setString");
 
   Acomp CM(Union);            /// Complementary object
   // DELETE ALL

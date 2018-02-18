@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,32 @@
 /*! 
   \file mathSupport.cxx 
 */
+
+template<typename T,typename U>
+void
+signSplit(const T A,U& S,U& V)
+  /*!
+    Split a number into the sign and
+    positive value
+    \param A :: number to split
+    \param S :: sign value +/- 1
+    \param V :: abs(A) 
+  */
+{
+  if (A>=0)
+    {
+      S=1;
+      V=static_cast<U>(A);
+    }
+  else
+    {
+      S=-1;
+      V=static_cast<U>(-A);
+    }
+  return;
+}
+
+
 
 double
 mathFunc::logFromLinear(const double A,const double B,const size_t N,
@@ -886,4 +912,11 @@ template double mathFunc::minDifference(const std::vector<double>&,
 template
 size_t inUnorderedRange(const std::vector<int>&,const std::vector<int>&,
 			const int&);
+
+
+template void signSplit(const int&,size_t&,size_t&);
+template void signSplit(const long int&,size_t&,size_t&);
+template void signSplit(const long int&,long int&,long int&);
+template void signSplit(const int&,int&,int&);
+
 ///\endcond TEMPLATE
