@@ -99,7 +99,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   voidTungstenThick(A.voidTungstenThick),
   steelTungstenThick(A.steelTungstenThick),
   steelTungstenInnerThick(A.steelTungstenInnerThick),
-  caseThickIn(A.caseThickIn),coolantThick(A.coolantThick),
+  coolantThick(A.coolantThick),
   caseThick(A.caseThick),voidThick(A.voidThick),
   innerRadius(A.innerRadius),
   innerHoleHeight(A.innerHoleHeight),
@@ -166,7 +166,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       voidTungstenThick=A.voidTungstenThick;
       steelTungstenThick=A.steelTungstenThick;
       steelTungstenInnerThick=A.steelTungstenInnerThick;
-      caseThickIn=A.caseThickIn;
       coolantThick=A.coolantThick;
       caseThick=A.caseThick;
       voidThick=A.voidThick;
@@ -295,7 +294,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   voidTungstenThick=Control.EvalVar<double>(keyName+"VoidTungstenThick");
   steelTungstenThick=Control.EvalVar<double>(keyName+"SteelTungstenThick");
   steelTungstenInnerThick=Control.EvalVar<double>(keyName+"SteelTungstenInnerThick");
-  caseThickIn=Control.EvalVar<double>(keyName+"CaseThickIn");
   coolantThick=Control.EvalVar<double>(keyName+"CoolantThick");
   caseThick=Control.EvalVar<double>(keyName+"CaseThick");
   voidThick=Control.EvalVar<double>(keyName+"VoidThick");
@@ -390,13 +388,7 @@ BilbaoWheel::makeShaftSurfaces()
     }
 
   // '-1.0' is needed - overwise TopAFlight will cut the outer void:
-  double H(wheelHeight()/2.0-caseThick+caseThickIn-1.0);
-  // first void step in the inner part
-  ModelSupport::buildPlane(SMap,wheelIndex+2105,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+2106,Origin+Z*H,Z);
-  ModelSupport::buildCylinder(SMap,wheelIndex+2107,Origin,Z,
-			      coolantRadiusIn+voidThick);
-
+  double H(wheelHeight()/2.0+caseThick);
 
   // 2nd void step
   H = shaft2StepHeight;
@@ -723,7 +715,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
       if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-					 " (-2007M -2006 2105) : " // connection
+					 " (-2007M -2006 2115) : " // connection
 					 " (2126 -2149) : " // upper stiffeners
 					 " (2126 -2186 -2157) : "  // above upper stiffeners
 					 " (-2118 2115 -2126) : " // 2nd step
@@ -1067,28 +1059,11 @@ BilbaoWheel::createSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+245,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+246,Origin+Z*H,Z);
 
-  H-=caseThick;
-  H+=caseThickIn;
+  H+=voidThick;
   ModelSupport::buildPlane(SMap,wheelIndex+45,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+46,Origin+Z*H,Z);
 
-  H-=caseThickIn;
-  H+=caseThick;
-  H+=voidThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+55,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+56,Origin+Z*H,Z);
-
-  // dummy planes (same ase 55,56) to attach shaft outer void
-  // they will be revised when the inner void step is implemented
-  ModelSupport::buildPlane(SMap,wheelIndex+65,Origin-Z*H,Z);
-  ModelSupport::buildPlane(SMap,wheelIndex+66,Origin+Z*H,Z);
-
   ModelSupport::buildCylinder(SMap,wheelIndex+7,Origin,Z,innerRadius);
-
-  // step to outer radius:
-  ModelSupport::buildCylinder(SMap,wheelIndex+1027,Origin,
-			      Z,coolantRadiusIn);
-
 
   H  = targetHeight/2.0;
   H += voidTungstenThick;
@@ -1296,10 +1271,10 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 "17 55 -56 -537 (-125:126:527)");
+				 "17 45 -46 -537 (-125:126:527)");
   divideRadial(System, Out, 0);
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 45 -46");
   addOuterSurf("Wheel",Out);
 
   return;
@@ -1332,12 +1307,12 @@ BilbaoWheel::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
   FixedComp::setBridgeSurf(3,SMap.realSurf(wheelIndex+1));
 
-  const double H=wheelHeight()/2.0;
-  FixedComp::setConnect(4,Origin-Z*H,-Z);
-  FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+55));
+  // const double H=wheelHeight()/2.0;
+  // FixedComp::setConnect(4,Origin-Z*H,-Z);
+  // FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+55));
 
-  FixedComp::setConnect(5,Origin+Z*H,Z);
-  FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+56));
+  // FixedComp::setConnect(5,Origin+Z*H,Z);
+  // FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+56));
 
     // inner links (normally) point towards
   // top/bottom of the spallation material (innet cell)

@@ -47,7 +47,6 @@ class BilbaoWheel : public WheelBase
   double voidTungstenThick;      ///< Void thickness below/above Tungsten
   double steelTungstenThick;     ///< Steel thickness below/above Tungsten
   double steelTungstenInnerThick; ///< Steel thickness below/above Tungsten in the inner part
-  double caseThickIn;            ///< Thickness of coolant (inner wheel)
   double coolantThick;           ///< Thickness of coolant (outer wheel)
   double caseThick;              ///< Case Thickness
   double voidThick;              ///< void surrounding thickness
