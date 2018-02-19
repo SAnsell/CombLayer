@@ -81,6 +81,8 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testCNF,
       &testAlgebra::testComplementary,
       &testAlgebra::testDNF,
+      &testAlgebra::testExpand,
+      &testAlgebra::testExpandBracket,
       &testAlgebra::testMakeString,
       &testAlgebra::testMult,
       &testAlgebra::testSetFunction,
@@ -95,6 +97,8 @@ testAlgebra::applyTest(const int extra)
       "CNF",
       "Complementary",
       "DNF",
+      "Expand",
+      "ExpandBracket",
       "MakeString",
       "Mult",
       "SetFunction",
@@ -204,6 +208,97 @@ testAlgebra::testDNF()
 }
 
 int
+testAlgebra::testExpand()
+  /*!
+    Expand the bracket form 
+    \retval 0 :: success (there is no fail!!!)
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testExpand");
+
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("(ab+xy)","cd","cdab+cdxy"),
+      TTYPE("ab","cd","cdab"),
+      TTYPE("abxy","cd","cdabxy"),
+      TTYPE("ab","(c+d)","abc+abd"),
+      TTYPE("(c+d)","ab","abc+abd"),
+      TTYPE("(a+b)","(c+de)","ac+dea+bc+deb"),
+      TTYPE("(a+d)","(b+c)","ab+ac+db+dc"),
+      TTYPE("(a+c+d)","(b+c)","ab+ac+cb+cc+db+dc"),
+      TTYPE("(c+de)","(a+b)","ca+cb+dea+deb"),
+      TTYPE("(c+de+gh)","(a+b)","ca+cb+dea+gha+deb+ghb"),
+      TTYPE("(c+de+gh)","(a+bx)","ca+bxc+dea+gha+bxde+bxgh")
+    };
+
+  for(const TTYPE& tc : Tests)
+    {
+      Algebra A;
+      A.setFunction(std::get<0>(tc));
+      Algebra B;
+      B.setFunction(std::get<1>(tc));
+      const Acomp& AC=A.getComp();
+      const Acomp& BC=B.getComp();
+
+      const Acomp CC=AC.expand(1,BC);
+      std::string Out=CC.display();
+      if (Out!=std::get<2>(tc))
+	{
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Expect     :"<<std::get<2>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testAlgebra::testExpandBracket()
+  /*!
+    Expand the bracket form 
+    \retval 0 :: success (there is no fail!!!)
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testExpandBracket");
+
+  typedef std::tuple<std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      //      TTYPE("a(b+c)","ab+ac"),
+      TTYPE("(a+d)(hb+c)","ab+ac+db+dc"),
+      TTYPE("(a+b)(c+d)(e+f)","ab+ac+db+dc"),
+      TTYPE("(a+d)(b+c+e)","ab+ac+ae+db+dc+de"),
+      TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+db+dc+de+fb+fc+fe"),
+      TTYPE("x(a+d+f)(b+c)","(xa+xd+xf)(b+c)"),
+      TTYPE("x+a'bcd+a(cd+ff(x+y+z))","x"),
+      TTYPE("a(b+c)","ab+ac")
+
+    };
+
+  for(const TTYPE& tc : Tests)
+    {
+      Algebra A;
+      A.setFunction(std::get<0>(tc));
+      const std::string preOut=A.display();
+      A.expandBracket();
+      
+      std::string Out=A.display();
+      if (Out!=std::get<1>(tc))
+	{
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
+	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+
+int
 testAlgebra::testCNF()
   /*!
     Test the CNF/DNF Structure 
@@ -213,15 +308,18 @@ testAlgebra::testCNF()
   ELog::RegMethod RegA("testAlgebra","testCNF");
 
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("(f+x)(x+y+z)","(f+x)(x+y+z)","x+fy+fz"));
-  Tests.push_back(TTYPE("aq+acp+ace","a(c+q)(e+p+q)","ace+acp+aq"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("(f+x)(x+y+z)","(f+x)(x+y+z)","x+fy+fz"),
+      TTYPE("aq+acp+ace","a(c+q)(e+p+q)","ace+acp+aq")
+    };
 
   for(const TTYPE& tc : Tests)
     {
       Algebra A;
       A.setFunction(std::get<0>(tc));
       A.makeCNF();
+
       std::string Out=A.display();
       if (Out!=std::get<1>(tc))
 	{
@@ -240,6 +338,7 @@ testAlgebra::testCNF()
     }
   return 0;
 }
+
 int 
 testAlgebra::testAdditions()
   /*!

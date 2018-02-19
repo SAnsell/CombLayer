@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/Algebra.cxx
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -201,6 +201,13 @@ Algebra::operator*(const Algebra& M) const
 }
 
 void
+Algebra::expandBracket()
+{
+  F.expandBracket();
+  return;
+}
+  
+void
 Algebra::Complement()
   /*!
     Takes the complement of the algebric
@@ -208,6 +215,7 @@ Algebra::Complement()
   */
 {
   F.complement();
+  return;
 }
 
 std::pair<Algebra,Algebra>

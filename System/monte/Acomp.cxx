@@ -42,6 +42,8 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
+#include "mathSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "RotCounter.h"
@@ -65,29 +67,6 @@ operator<<(std::ostream& OX,const Acomp& A)
   return OX;
 }
  
-template<typename T>
-void 
-signSplit(const int A,int& S,T& V)
-  /*!
-    Split a number into the sign and
-    positive value
-    \param A :: number to split
-    \param S :: sign value +/- 1
-    \param V :: abs(A) 
-  */
-{
-  if (A>=0)
-    {
-      S=1;
-      V=static_cast<T>(A);
-    }
-  else
-    {
-      S=-1;
-      V=static_cast<T>(-A);
-    }
-  return;
-}
 
 //
 // ------------- ACOMP ---------------- 
@@ -97,7 +76,15 @@ Acomp::Acomp(const JoinForm Tx) :
   Intersect((Tx==Union) ? 0 : 1)
   /*!
     Standard Constructor 
-    \param Tx :: 1 it means intersect 0 it meanse union
+    \param Tx :: 0 it means intersect 1 it means union
+  */
+{}
+
+Acomp::Acomp(const int Tx) :
+  Intersect(Tx ? 1 : 0)
+  /*!
+    Standard Constructor 
+    \param Tx :: 0 intersect / 1 union
   */
 {}
 
@@ -1792,6 +1779,239 @@ Acomp::itemC(const size_t Index) const
   return &Comp[Index];
 }
 
+Acomp
+Acomp::expandEqual(const int interFlag,const Acomp& A) const
+  /*!
+    Intersect A and This
+    \param interFlag == Intersection / Union flag    
+    \param A :: Object to intersect
+    \return *this
+  */
+{
+  ELog::RegMethod RegA("Acomp","expandEqual");
+
+  Acomp combinedComp(interFlag);
+  std::vector<Acomp>& Out=combinedComp.Comp;	
+  
+  // U x a.U 
+  ELog::EM<<"A == "<<Intersect<<":"<<Units.size()
+	  <<" "<<Comp.size()
+	  <<"::"<<display()<<ELog::endDiag;
+  ELog::EM<<"B == "<<A.Intersect<<":"<<A.Units.size()
+	  <<" "<<A.Comp.size()
+  	  <<"::"<<A.display()<<ELog::endDiag;
+
+  // U * A.U
+  Acomp N(interFlag);
+  N.Units=Units;
+  N.Units.insert(N.Units.begin(),A.Units.begin(),A.Units.end());
+  Out.push_back(N);
+  
+  // U * AComp
+  for(const Acomp& AC : A.Comp)  
+    {
+      Acomp N(AC);
+      N.Units.insert(N.Units.begin(),Units.begin(),Units.end());
+      Out.push_back(N);
+    }
+  
+  // Comp . A.U
+  for(const Acomp& TC : Comp)
+    {
+      Acomp N(TC);
+      N.Units.insert(N.Units.begin(),A.Units.begin(),A.Units.end());
+      Out.push_back(N);
+    }
+
+  for(const Acomp& TC : Comp)
+    {
+      for(const Acomp& AC : A.Comp)
+	{
+	  Out.push_back(TC.expand(interFlag,AC));
+	}
+    }
+  return combinedComp;
+}
+
+Acomp
+Acomp::expandOpposite(const int interFlag,const Acomp& A) const
+  /*!
+    Intersect A and This
+    \param interFlag == Intersection / Union flag    
+    \param A :: Object to intersect
+    \return *this
+  */
+{
+  ELog::RegMethod RegA("Acomp","expandOpposite");
+
+  if (interFlag!=Intersect)
+    return A.expandOpposite(interFlag,*this);
+
+  Acomp combinedComp(1-interFlag);
+  std::vector<Acomp>& Out=combinedComp.Comp;	
+
+  // U x a.U 
+  ELog::EM<<"A == "<<Intersect<<":"<<Units.size()
+	  <<" "<<Comp.size()
+	  <<"::"<<display()<<ELog::endDiag;
+  ELog::EM<<"B == "<<A.Intersect<<":"<<A.Units.size()
+	  <<" "<<A.Comp.size()
+	  <<"::"<<A.display()<<ELog::endDiag;
+
+  for(const int AUI : A.Units)
+    {
+      Acomp N(interFlag);
+      N.Units=Units;
+      N.Units.push_back(AUI);
+      Out.push_back(N);
+    }
+  
+  // U * AComp
+  if (!Units.empty())
+    {
+      for(const Acomp& AC : A.Comp)  // we
+	{
+	  for(const int UI : Units)
+	    {
+	      Acomp N(interFlag);
+	      N.Units=Units;
+	      N.Units.push_back(AUI);
+	      Out.push_back(N);
+	    }
+	  if (!AC.Comp.empty())
+	    {
+	      Acomp N(AC.Comp);
+	      Acomp NX(Intersect);
+	      NX.Units=Units;
+	      N.Comp.push_back(AC.expand(interFlag,N));
+	    }
+	}
+    }
+  
+  // Comp . A.U
+  for(const int UI : A.Units)
+    {
+      for(const Acomp& TC : Comp)
+	{
+	  Acomp N(interFlag);
+	  N.Units=TC.Units;
+	  N.Units.push_back(UI);
+	  Acomp NX(TC);   // ????
+	  NX.Units.push_back(UI);
+	  N.Comp.push_back(TC.expand(interFlag,NX));
+	  Out.push_back(N);
+	}
+    }
+  for(const Acomp& TC : Comp)
+    {
+      for(const Acomp& AC : A.Comp)
+	{
+	  Out.push_back(TC.expand(interFlag,AC));
+	}
+    }
+  return combinedComp;
+}
+
+Acomp
+Acomp::expand(const int interFlag,const Acomp& A) const
+  /*!
+    Intersect A and This
+    \param interFlag == Intersection / Union flag    
+    \param A :: Object to intersect
+    \return *this
+  */
+{
+  if (A.Units.size()==0 && A.Comp.size()==0)
+    ELog::EM<<"ERROR "<<ELog::endErr;
+  if (A.Intersect!=Intersect)
+    return expandOpposite(interFlag,A);
+
+  if (A.Intersect==interFlag)
+    return expandEqual(interFlag,A);
+
+  Acomp combinedComp(1-interFlag);
+
+  std::vector<Acomp>& Out=combinedComp.Comp;	
+
+  // U x a.U
+  ELog::EM<<"I == "<<Intersect<<" "<<A.Intersect<<" :: "<<interFlag<<ELog::endDiag;
+  ELog::EM<<"A == "<<Intersect<<":"<<Units.size()
+	  <<" "<<Comp.size()<<"::"<<display()<<ELog::endDiag;
+  ELog::EM<<"B == "<<A.Intersect<<":"<<A.Units.size()
+	  <<" "<<A.Comp.size()<<"::"<<A.display()<<ELog::endDiag;
+
+  for(const int UI : Units)
+    {
+      for(const int AUI : A.Units)
+	{
+	  Acomp N(interFlag);
+	  N.Units.push_back(UI);
+	  N.Units.push_back(AUI);
+	  Out.push_back(N);
+	}
+      
+      // U * AComp
+      for(const Acomp& AC : A.Comp)
+	{
+	  Acomp N(interFlag);
+	  N.Units=AC.Units;
+	  N.Units.push_back(UI);
+	  Acomp NX(interFlag);    /// ????
+	  NX.Units.push_back(UI);
+	  for(const Acomp& ACC : AC.Comp)
+	    N.Comp.push_back(ACC.expand(interFlag,NX));
+	  Out.push_back(N);
+	}
+      
+    }
+  
+  // Comp . A.U
+  for(const int UI : A.Units)
+    {
+      
+      for(const Acomp& TC : Comp)
+	{
+	  Acomp N(interFlag);
+	  N.Units=TC.Units;
+	  N.Units.push_back(UI);
+	  Acomp NX(interFlag);   // ????
+	  NX.Units.push_back(UI);
+	  for(const Acomp& ACC : TC.Comp)
+	    N.Comp.push_back(ACC.expand(interFlag,NX));
+	  Out.push_back(N);
+	}
+    }
+  for(const Acomp& TC : Comp)
+    {
+      for(const Acomp& AC : A.Comp)
+	{
+	  ELog::EM<<"TC ==  "<<TC.display()<<ELog::endDiag;
+	  ELog::EM<<"AC == "<<AC.display()<<ELog::endDiag;
+	  Out.push_back(TC.expand(interFlag,AC));
+	  ELog::EM<<"XX == "<<TC.expand(1-interFlag,AC)<<ELog::endDiag;
+	  ELog::EM<<"YX == "<<TC.expand(interFlag,AC)<<ELog::endDiag;
+	}
+    }
+  return combinedComp;
+}
+
+
+void
+Acomp::expandBracket()
+  /*!
+    Recursively expand the brackets
+   */
+{
+  ELog::RegMethod RegA("Acomp","expandBracket");
+
+  if (Comp.empty()) return;
+
+  
+  Intersect=1-Intersect;
+  Units.clear();
+  return;
+}
+
 
 void
 Acomp::complement() 
@@ -1836,6 +2056,33 @@ Acomp::writeFull(std::ostream& OXF,const int Indent) const
       vc->writeFull(OXF,Indent+2);
     }
   return;
+}
+
+std::string
+Acomp::unitsDisplay() const
+  /*!
+    Real pretty print out statement  
+    \returns Head only string of the output in abc+efg type form
+  */
+{
+  std::stringstream cx;
+  std::vector<int>::const_iterator ic;
+  int sign,val;      // sign and value of unit
+  std::string unionPlus;
+  
+  for(const int IC : Units)
+    {
+      cx<<unionPlus;
+      signSplit(IC,sign,val);
+      if (val>52)
+	cx<<"%"<<val-52;
+      else
+	cx<<StrFunc::indexToRevAlpha(val-1);
+
+     if (sign<0) cx<<'\'';
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
 }
 
 std::string
