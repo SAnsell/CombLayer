@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monteInc/Acomp.h
-*
- * Copyright (c) 2004-2013 by Stuart Ansell
+ *
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,46 +99,80 @@ class Acomp
 
  public:
 
-  Acomp(const JoinForm);   
+  Acomp(const JoinForm);
+  Acomp(const int);   
   Acomp(const Acomp&);
   Acomp& operator=(const Acomp&); 
   int operator==(const Acomp&) const; 
-  int operator!=(const Acomp&) const;         ///< Complementary operator
+  int operator!=(const Acomp&) const;  
   int operator<(const Acomp&) const;       
   int operator>(const Acomp&) const;
   Acomp& operator+=(const Acomp&);
   Acomp& operator-=(const Acomp&);
   Acomp& operator*=(const Acomp&);
+
+  Acomp expandOpposite(const int,const Acomp&) const;
+  Acomp expandEqual(const int,const Acomp&) const;
+  Acomp expand(const int,const Acomp&) const;
   ~Acomp();
 
+  // ACOMP2:
+  void primativeAddItem(const Acomp&);
+
+  Acomp expandIII(const Acomp&) const;
+  Acomp expandIIU(const Acomp&) const;
+  Acomp expandUII(const Acomp&) const;
+  Acomp expandUIU(const Acomp&) const;
+
+  Acomp expandIUI(const Acomp&) const;
+  Acomp expandIUU(const Acomp&) const;
+  Acomp expandUUI(const Acomp&) const;
+  Acomp expandUUU(const Acomp&) const;
+  
+  static Acomp interCombine(const int,const int);
+  static Acomp unionCombine(const int,const int);
+  static Acomp interCombine(const int,const Acomp&);
+  static Acomp unionCombine(const int,const Acomp&);
+  static Acomp interCombine(const Acomp&,const Acomp&);
+  static Acomp unionCombine(const Acomp&,const Acomp&);
+  Acomp componentExpand(const int,const Acomp&) const;
+
+  void expandInter(const Acomp&);
+
+  int getSinglet() const;   
   const Acomp* itemC(const size_t) const;
   int itemN(const size_t) const;   
 
-  std::pair<int,int> size() const; ///< get the size of the units and the Acomp sub-comp
-  int isSimple() const;            ///< true if only Units
+  std::pair<int,int> size() const;
+  int isSimple() const; 
   int isDNF() const;               
   int isCNF() const;               
   int isNull() const;              
-  int isSingle() const;            
-  int contains(const Acomp&) const;  
-  int isInter() const { return Intersect; }   ///< Deterimine if inter/union
-  int isTrue(const std::map<int,int>&) const;   ///< Determine if the rule is true.
+  int isSingle() const;
+  int isSingleIndex() const;            
+  int contains(const Acomp&) const;
+  /// Deterimine if inter/union
+  int isInter() const { return Intersect; }  
+  int isTrue(const std::map<int,int>&) const;   
 
-  void Sort();                                     ///< Sort the Units+Comp items
-  void getLiterals(std::map<int,int>&) const;      ///< Get literals (+/- different)
-  void getAbsLiterals(std::map<int,int>&) const;   ///< Get literals (positve)
+  void Sort();                                    
+  void getLiterals(std::map<int,int>&) const;     
+  void getAbsLiterals(std::map<int,int>&) const;  
   std::vector<int> getKeys() const;      
   int logicalEqual(const Acomp&) const;
 
-  int makeDNFobject();                 ///< Make the object into DNF form (Sum of Products)
-  int makeCNFobject();                 ///< Make the object into CNF form (Product of Sums)
+  int makeDNFobject();                
+  int makeCNFobject();                
 
-  void complement();                                  ///< Take complement of component
-  std::pair<Acomp,Acomp> algDiv(const Acomp&);        ///< Carry out Algebric division
-  void setString(const std::string&);                 ///< Processes a line of type abc'+efg
-  void writeFull(std::ostream&,const int =0) const;   ///< Full write out to determine state
-  std::string display() const;                        ///< Pretty print statment
-  std::string displayDepth(const int =0) const;       ///< Really pretty print statment of tree
+
+  void expandBracket();                                
+  void complement();
+  std::pair<Acomp,Acomp> algDiv(const Acomp&); 
+  void setString(const std::string&);          
+  void writeFull(std::ostream&,const int =0) const; 
+  std::string unitsDisplay() const;
+  std::string display() const;                      
+  std::string displayDepth(const int =0) const;     
 
   void orString(const std::string&);
 
