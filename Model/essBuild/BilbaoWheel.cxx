@@ -554,10 +554,6 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " -2007M 5 -6");
   System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
 
-  // layer before (inside) circle of pipes
-  //  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20," 105 -106 2007M -2307 ");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-
   // layer with circle of pipes
   buildCirclePipes(System,
 		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
@@ -581,30 +577,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 				 " 35 -5 -2007M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  // steel : inner shroud above/below
-  // upper cell
-  Out=ModelSupport::getComposite
-    (SMap,wheelIndex," -1027 -46 36 17" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // lower cell
-  Out=ModelSupport::getComposite
-    (SMap,wheelIndex," 17 -1027 45 -35" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-
-  // void (which connects to the Wheel void)
-  // upper cell
-  Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -1027 -2106 46 2118" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  // side
-  Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -2107 1027 -2106 246 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-
-  // lower cell
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " -1027 17 2105 -45" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2115 -2135" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -7 2135 -35" );
@@ -613,11 +586,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 7 -17 2115 -25" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 17 -2118 2115 -2105 " );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
-  // side
-  Out=ModelSupport::getComposite
-    (SMap,wheelIndex, " -2107 1027 2105 -245 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 17 -2118 2115 -45 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
 
   // 2nd void step
@@ -754,12 +723,11 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
       if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-					 " (((-2007M -2006) : " // top
-                                         "   (-2107  -2106) ) 2105) : " // connection
-					 " (2126 -2149 ) : " // upper stiffeners
-					 " (2126 -2186 -2157 ) : "  // above upper stiffeners
-					 " (-2118 2115 -2126 ) : " // 2nd step
-					 " ((-2239:-2247) 2205 -2115 ) "); // base
+					 " (-2007M -2006 2105) : " // connection
+					 " (2126 -2149) : " // upper stiffeners
+					 " (2126 -2186 -2157) : "  // above upper stiffeners
+					 " (-2118 2115 -2126) : " // 2nd step
+					 " ((-2239:-2247) 2205 -2115) "); // base
 	  addOuterSurf("Shaft",Out);
 	}
 
@@ -1320,15 +1288,15 @@ BilbaoWheel::createObjects(Simulation& System)
   divideRadial(System, Out, steelMat);
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 -126 36");	 // outer above W
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 -126 36");	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 1027 125 -35");
+  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 125 -35");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
   Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 "2107 55 -56 -537 (-125:126:527)");
+				 "17 55 -56 -537 (-125:126:527)");
   divideRadial(System, Out, 0);
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,"-537 55 -56");
