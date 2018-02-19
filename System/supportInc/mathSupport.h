@@ -36,7 +36,7 @@ IncSeq():v(0){}                      ///< Constructor
 };
 
 template<typename T,typename U>
-void signSplit(const T,U&,U&);
+void signSplit(const T&,T&,U&);
 
 size_t lowBitIndex(const unsigned int&);
 size_t lowBitIndex(const size_t&);

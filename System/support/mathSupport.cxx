@@ -40,24 +40,24 @@
 
 template<typename T,typename U>
 void
-signSplit(const T A,U& S,U& V)
+signSplit(const T& aNumber,T& aSign,U& aValue)
   /*!
     Split a number into the sign and
     positive value
-    \param A :: number to split
-    \param S :: sign value +/- 1
-    \param V :: abs(A) 
+    \param aNumber :: number to split
+    \param aSign :: sign value +/- 1
+    \param aValue :: abs(A) 
   */
 {
-  if (A>=0)
+  if (aNumber>=0)
     {
-      S=1;
-      V=static_cast<U>(A);
+      aSign = 1;
+      aValue=static_cast<U>(aNumber);
     }
   else
     {
-      S=-1;
-      V=static_cast<U>(-A);
+      aSign = -1;
+      aValue=static_cast<U>(-aNumber);
     }
   return;
 }
@@ -914,9 +914,9 @@ size_t inUnorderedRange(const std::vector<int>&,const std::vector<int>&,
 			const int&);
 
 
-template void signSplit(const int&,size_t&,size_t&);
-template void signSplit(const long int&,size_t&,size_t&);
+template void signSplit(const long int&,long int&,size_t&);
 template void signSplit(const long int&,long int&,long int&);
+template void signSplit(const int&,int&,size_t&);
 template void signSplit(const int&,int&,int&);
 
 ///\endcond TEMPLATE
