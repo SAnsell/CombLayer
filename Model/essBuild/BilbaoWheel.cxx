@@ -122,6 +122,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftCFStiffLength(A.shaftCFStiffLength),
   shaftCFStiffHeight(A.shaftCFStiffHeight),
   shaftCFStiffThick(A.shaftCFStiffThick),
+  shaftUpperBigStiffHomoMat(A.shaftUpperBigStiffHomoMat),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
@@ -195,6 +196,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftCFStiffLength=A.shaftCFStiffLength;
       shaftCFStiffHeight=A.shaftCFStiffHeight;
       shaftCFStiffThick=A.shaftCFStiffThick;
+      shaftUpperBigStiffHomoMat=A.shaftUpperBigStiffHomoMat;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
@@ -320,6 +322,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
   shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
   shaftCFStiffThick=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffThick");
+  shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,keyName+"ShaftUpperBigStiffHomoMat");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
@@ -425,7 +428,8 @@ BilbaoWheel::makeShaftSurfaces()
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
   ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
 
-  createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftCFStiffThick);
+  if (engActive) // create surfaces for large upper/lower stiffeners
+    createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftCFStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
   ModelSupport::buildCone(SMap,wheelIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
@@ -616,8 +620,10 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   // Connection flange:
   //   stiffener
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
-  //  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
-  buildStiffeners(System,Out+Rsurf,wheelIndex+3000,nSectors/2,steelMat);
+  if (engActive)
+    buildStiffeners(System,Out+Rsurf,wheelIndex+3000,nSectors/2,steelMat);
+  else
+    System.addCell(MonteCarlo::Qhull(cellIndex++,shaftUpperBigStiffHomoMat,0,Out+Rsurf));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2126 2148 -2118 2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
@@ -678,7 +684,10 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
   // notch: big conical cell
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2238 2227 2225 -2115 ");
-  buildStiffeners(System,Out,wheelIndex+3000,nSectors/2,steelMat);
+  if (engActive)
+    buildStiffeners(System,Out,wheelIndex+3000,nSectors/2,steelMat);
+  else
+    System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out));
 
 
   // shaft layers

@@ -62,6 +62,10 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
   Control.addVariable("BilbaoWheelEngineeringActive", 1);
   ELog::EM << "Why geometry problems if BilbaoWheelEngineeringActive=0 ?" << ELog::endCrit;
+
+  const size_t nSectors(36);
+  const std::string ss316l("SS316L");
+
   
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
@@ -72,7 +76,8 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftMat3","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius4",20.0); // ESS-0124024 page 23 (diam 400)
   Control.addVariable("BilbaoWheelShaftMat4","SS316L3925");
-  Control.addVariable("BilbaoWheelShaftRadius5",23.0);
+  const double shaftR5(23.0);
+  Control.addVariable("BilbaoWheelShaftRadius5",shaftR5);
   Control.addVariable("BilbaoWheelShaftMat5","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius6",25.0);
   Control.addVariable("BilbaoWheelShaftMat6","Void");
@@ -87,9 +92,16 @@ EssWheel(FuncDataBase& Control)
 
   // Upper Stiffener shape and dimensions correspond to
   // ESS-0153983
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",20.0); // ESS-0124024 page 19
+  const double ubsLength(20.0);
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",ubsLength); // ESS-0124024 page 19
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffHeight",15); // ESS-0124024 page 19
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",2.0); // ESS-0124024 page 19
+  const double ubsThick(2.0);
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",ubsThick); // ESS-0124024 page 19
+
+  // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
+  const double frac(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
+		      ss316l + "%Void%" + std::to_string(frac));
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
@@ -148,7 +160,7 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCaseRadius",131); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
   Control.addVariable("BilbaoWheelVoidRadius",131.2); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
-  Control.addVariable("BilbaoWheelNSectors", 36);
+  Control.addVariable("BilbaoWheelNSectors", nSectors);
   Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
   Control.addVariable("BilbaoWheelSectorSepMat", "SS316L");
   Control.addVariable("BilbaoWheelTemperature", 600);
@@ -157,7 +169,7 @@ EssWheel(FuncDataBase& Control)
   // calculated to have the same density fraction with respect to
   // SS316L as Tungsten/Tungsten_15.3g = 1.26131
   Control.addVariable("BilbaoWheelHomoSteelMat","SS316L_6.22g");
-  Control.addVariable("BilbaoWheelSteelMat","SS316L");
+  Control.addVariable("BilbaoWheelSteelMat",ss316l);
   Control.addVariable("BilbaoWheelHeMat","Void"); // TSM141108V3000
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
   Control.addVariable("BilbaoWheelInnerMat","Void");

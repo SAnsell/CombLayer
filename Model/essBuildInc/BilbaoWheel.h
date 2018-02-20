@@ -82,6 +82,7 @@ class BilbaoWheel : public WheelBase
   double shaftCFStiffLength; ///< connection flange stiffener length
   double shaftCFStiffHeight;          ///< connection flange stiffener height
   double shaftCFStiffThick; ///< connection flange stiffener thickness
+  int shaftUpperBigStiffHomoMat; ///< Homogenised material of the upper large stiffener cell
 
   double shaftHoleHeight;        ///< Vent hole height at the shaft radius
   double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
