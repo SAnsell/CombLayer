@@ -60,8 +60,6 @@ EssWheel(FuncDataBase& Control)
    */
 {
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
-  Control.addVariable("BilbaoWheelEngineeringActive", 1);
-  ELog::EM << "Why geometry problems if BilbaoWheelEngineeringActive=0 ?" << ELog::endCrit;
 
   const size_t nSectors(36);
   const std::string ss316l("SS316L");
