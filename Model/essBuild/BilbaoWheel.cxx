@@ -126,7 +126,6 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
   shaftBaseDepth(A.shaftBaseDepth),
-  shaftNStiffeners(A.shaftNStiffeners),
   catcherTopSteelThick(A.catcherTopSteelThick),
   catcherGap(A.catcherGap),
   catcherRadius(A.catcherRadius),
@@ -200,7 +199,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
       shaftBaseDepth=A.shaftBaseDepth;
-      shaftNStiffeners=A.shaftNStiffeners;
       catcherTopSteelThick=A.catcherTopSteelThick;
       catcherGap=A.catcherGap;
       catcherRadius=A.catcherRadius;
@@ -334,7 +332,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftHoleXYangle=Control.EvalVar<double>(keyName+"ShaftHoleXYangle");
 
   shaftBaseDepth=Control.EvalVar<double>(keyName+"ShaftBaseDepth");
-  shaftNStiffeners=Control.EvalVar<size_t>(keyName+"ShaftNStiffeners");
 
   catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
 
@@ -428,7 +425,7 @@ BilbaoWheel::makeShaftSurfaces()
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
   ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
 
-  createRadialSurfaces(wheelIndex+3000, shaftNStiffeners, shaftCFStiffThick);
+  createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftCFStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
   ModelSupport::buildCone(SMap,wheelIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
@@ -620,7 +617,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
   //   stiffener
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
   //  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,0,Out+Rsurf));
-  buildStiffeners(System,Out+Rsurf,wheelIndex+3000,shaftNStiffeners,steelMat);
+  buildStiffeners(System,Out+Rsurf,wheelIndex+3000,nSectors/2,steelMat);
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2126 2148 -2118 2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,0,Out));
@@ -681,7 +678,7 @@ BilbaoWheel::makeShaftObjects(Simulation& System)
 
   // notch: big conical cell
   Out=ModelSupport::getComposite(SMap,wheelIndex, " -2238 2227 2225 -2115 ");
-  buildStiffeners(System,Out,wheelIndex+3000,shaftNStiffeners,steelMat);
+  buildStiffeners(System,Out,wheelIndex+3000,nSectors/2,steelMat);
 
 
   // shaft layers

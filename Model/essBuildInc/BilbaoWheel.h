@@ -87,7 +87,6 @@ class BilbaoWheel : public WheelBase
   double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
   double shaftHoleXYangle;       ///< XY angle offset of shaft holes
   double shaftBaseDepth;            ///< shaft depth (below origin)
-  size_t shaftNStiffeners; ///< number of stiffeners
 
   double catcherTopSteelThick; ///< thickness of top steel plate
   double catcherGap;    ///< vertical clearance below catcher
