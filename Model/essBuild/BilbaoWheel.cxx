@@ -1180,9 +1180,12 @@ BilbaoWheel::createObjects(Simulation& System)
       if (i==1)
 	{
 	  // Layer before Tungsten bricks:
-	  // (do not build it since the cassette goes there)
-	  // Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 117 -17M 5 -6 ");
-	  // System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  // Do not build it with engActive=1 since the cassette goes there
+	  if (!engActive)
+	    {
+	      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 117 -17M 5 -6 ");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	    }
 
 	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 105 -106 ");
 	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
