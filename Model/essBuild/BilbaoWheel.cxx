@@ -1121,8 +1121,8 @@ BilbaoWheel::createSurfaces()
 void
 BilbaoWheel::createObjects(Simulation& System)
   /*!
-    Create the vaned moderator
-    \param System :: Simulation to add results
+    Create the wheel cells
+    \param System :: Simulation
    */
 {
   ELog::RegMethod RegA("BilbaoWheel","createObjects");
@@ -1139,27 +1139,25 @@ BilbaoWheel::createObjects(Simulation& System)
   for(size_t i=0;i<nLayers;i++)
     {
       mat = matNum[matTYPE[i]];
+      std::string side(ModelSupport::getComposite(SMap,SI," 7 -17 "));
 
-      Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -17M 5 -6 ");
+      Out=side+ModelSupport::getComposite(SMap,wheelIndex,SI," 5 -6 ");
       if (i==0)
 	{
-	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
-	  buildHoles(System,Out,
+	  buildHoles(System,side,
 		     ModelSupport::getComposite(SMap,wheelIndex," 116 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -26 "),
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 4000);
 
-	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 ");
-	  buildHoles(System,Out,
+	  buildHoles(System,side,
 		     ModelSupport::getComposite(SMap,wheelIndex," 25 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -115 "),
 		     mat,innerHoleSize,innerHoleXYangle,-1,
 		     0.0, 5000);
 
 
-	  Out=ModelSupport::getComposite(SMap,SI," 7 -17 "); // sides
-	  buildHoles(System,Out,
+	  buildHoles(System,side,
 		     ModelSupport::getComposite(SMap,wheelIndex," 115 "),
 		     ModelSupport::getComposite(SMap,wheelIndex," -116 "),
 		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
@@ -1175,30 +1173,38 @@ BilbaoWheel::createObjects(Simulation& System)
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	    }
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 105 -106 ");
+	  side=ModelSupport::getComposite(SMap,wheelIndex," -117 107 ");
+	  
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 106 -26 ");
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -26 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 -105 25 ");
+	  
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,"-105 25 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 -25 35 ");
+	  
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," -25 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 26 -36 ");
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," 26 -36 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 105 -106 ");
+	  side=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 ");
+
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 106 -116 ");
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -116 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -105 115 ");
+	  
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," -105 115 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 116 -36 ");
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," 116 -36 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -115 35 ");
+	  
+	  Out=ModelSupport::getComposite(SMap,wheelIndex," -115 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
       else if (mat==homoWMat)
