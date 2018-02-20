@@ -367,12 +367,12 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 }
 
 void
-BilbaoWheel::makeShaftSurfaces()
+BilbaoWheel::createShaftSurfaces()
   /*!
     Construct surfaces for the inner shaft
   */
 {
-  ELog::RegMethod RegA("BilbaoWheel","makeShaftSurfaces");
+  ELog::RegMethod RegA("BilbaoWheel","createShaftSurfaces");
 
   // divider
   const Geometry::Plane *px = ModelSupport::buildPlane(SMap,wheelIndex+3,Origin,X);
@@ -531,13 +531,13 @@ BilbaoWheel::makeShaftSurfaces()
 }
 
 void
-BilbaoWheel::makeShaftObjects(Simulation& System)
+BilbaoWheel::createShaftObjects(Simulation& System)
   /*!
     Construct the objects
     \param System :: Simulation object
    */
 {
-  ELog::RegMethod RegA("BilbaoWheel","makeShaftObjects");
+  ELog::RegMethod RegA("BilbaoWheel","createShaftObjects");
   std::string Out;
 
   // Main body [disk]
@@ -1403,10 +1403,10 @@ BilbaoWheel::createAll(Simulation& System,
 
   createUnitVector(FC,sideIndex);
   createSurfaces();
-  makeShaftSurfaces();
+  createShaftSurfaces();
 
   createObjects(System);
-  makeShaftObjects(System);
+  createShaftObjects(System);
 
   createLinks();
   if (engActive)
