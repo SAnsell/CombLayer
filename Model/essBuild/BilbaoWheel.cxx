@@ -1220,18 +1220,18 @@ BilbaoWheel::createObjects(Simulation& System)
 	  // Do not build the layer with Tungsten if !engActive
 	  // It is created by the buildSectors() method later.
 	  // In order to build this layer as a single cell,
-	  // comment out buildSectors and uncomment next two lines
+	  // comment out divideRadial and uncomment the addCell line
 	  if (!engActive)
 	    {
-	      divideRadial(System, Out, mat);
-	      //System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	      //CellMap::setCell("Inner",cellIndex-1);
+	      //divideRadial(System, Out, mat);
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	    }
 	  nInner++;
 	}
-      else if (i!=0)
+      else // never actually called with standard geometry since nLayers=3
 	{
-	  divideRadial(System, Out, mat);
+	  //divideRadial(System, Out, mat);
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
 
       SI+=10;
