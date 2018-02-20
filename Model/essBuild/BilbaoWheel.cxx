@@ -682,54 +682,44 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // shaft layers
   int SI(wheelIndex);
+  const std::string roof(ModelSupport::getComposite(SMap,wheelIndex," -2006 "));
+  std::string floor;
   for (size_t i=0; i<nShaftLayers; i++)
     {
-      if (i==0)
-	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 5 -2006M ");
-      else if (i==1)
-	{
-	Out=ModelSupport::getComposite(SMap,SI,SI-10,wheelIndex,
-				       " -2007 2007M 5N -2006N ");
-	}
-      else if (i==2)
-	{
-	Out=ModelSupport::getComposite
-	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 5N -2006N "); // layer with holes
-	buildHoles(System,
-		   ModelSupport::getComposite(SMap,SI,SI-10," -2007 2007M "),
-		   ModelSupport::getComposite(SMap,wheelIndex," 5 "),
-		   ModelSupport::getComposite(SMap,wheelIndex," -2006 "),
-		   shaftMat[i],shaftHoleSize,shaftHoleXYangle,shaftHoleHeight,
-		   0.0, 1000);
-	SI += 10;
-	continue;
-	}
+      const std::string outer(ModelSupport::getComposite(SMap,SI," -2007 "));
+      const std::string inner(i==0?"":ModelSupport::getComposite(SMap,SI-10,
+								 " 2007 "));
+
+      if (i<3)
+	floor = " 5 ";
       else if (i==nShaftLayers-1)
-	{
-	  Out=ModelSupport::getComposite
-	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 2186N -2006N ");
-	}
+	floor = " 2186 ";
       else
+	floor = " 2136 ";
+
+      floor = ModelSupport::getComposite(SMap,wheelIndex,floor);
+
+      if (i==2)
 	{
-	Out=ModelSupport::getComposite
-	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
+	  buildHoles(System,inner+outer,floor,roof,
+		     shaftMat[i],shaftHoleSize,shaftHoleXYangle,shaftHoleHeight,
+		     0.0, 1000);
+	  SI += 10;
+	  continue;
 	}
 
-      System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
-
-      if (i==nShaftLayers-1)
-	{
-	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI,
-					 " (-2007M -2006 2115) : " // connection
-					 " (2126 -2149) : " // upper stiffeners
-					 " (2126 -2186 -2157) : "  // above upper stiffeners
-					 " (-2118 2115 -2126) : " // 2nd step
-					 " ((-2239:-2247) 2205 -2115) "); // base
-	  addOuterSurf("Shaft",Out);
-	}
-
+      System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,
+				       inner+outer+floor+roof));
       SI += 10;
     }
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SI-10,
+				 " (-2007M -2006 2115) : " // connection
+				 " (2126 -2149) : " // upper stiffeners
+				 " (2126 -2186 -2157) : "  // above upper stiffeners
+				 " (-2118 2115 -2126) : " // 2nd step
+				 " ((-2239:-2247) 2205 -2115) "); // base
+  addOuterSurf("Shaft",Out);
 
   return;
 }
