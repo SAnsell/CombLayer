@@ -116,6 +116,30 @@ class Acomp
   Acomp expand(const int,const Acomp&) const;
   ~Acomp();
 
+  // ACOMP2:
+  void primativeAddItem(const Acomp&);
+
+  Acomp expandIII(const Acomp&) const;
+  Acomp expandIIU(const Acomp&) const;
+  Acomp expandUII(const Acomp&) const;
+  Acomp expandUIU(const Acomp&) const;
+
+  Acomp expandIUI(const Acomp&) const;
+  Acomp expandIUU(const Acomp&) const;
+  Acomp expandUUI(const Acomp&) const;
+  Acomp expandUUU(const Acomp&) const;
+  
+  static Acomp interCombine(const int,const int);
+  static Acomp unionCombine(const int,const int);
+  static Acomp interCombine(const int,const Acomp&);
+  static Acomp unionCombine(const int,const Acomp&);
+  static Acomp interCombine(const Acomp&,const Acomp&);
+  static Acomp unionCombine(const Acomp&,const Acomp&);
+  Acomp componentExpand(const int,const Acomp&) const;
+
+  void expandInter(const Acomp&);
+
+  int getSinglet() const;   
   const Acomp* itemC(const size_t) const;
   int itemN(const size_t) const;   
 
@@ -124,7 +148,8 @@ class Acomp
   int isDNF() const;               
   int isCNF() const;               
   int isNull() const;              
-  int isSingle() const;            
+  int isSingle() const;
+  int isSingleIndex() const;            
   int contains(const Acomp&) const;
   /// Deterimine if inter/union
   int isInter() const { return Intersect; }  

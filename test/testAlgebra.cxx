@@ -80,6 +80,7 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testCountLiterals,
       &testAlgebra::testCNF,
       &testAlgebra::testComplementary,
+      &testAlgebra::testComponentExpand,      
       &testAlgebra::testDNF,
       &testAlgebra::testExpand,
       &testAlgebra::testExpandBracket,
@@ -96,6 +97,7 @@ testAlgebra::applyTest(const int extra)
       "CountLiterals",
       "CNF",
       "Complementary",
+      "ComponentExpand",
       "DNF",
       "Expand",
       "ExpandBracket",
@@ -201,6 +203,56 @@ testAlgebra::testDNF()
 	  ELog::EM<<"Original "<<*sv<<" == "<<ELog::endErr;
 	  ELog::EM<<"Function "<<B<<ELog::endErr;
 	  ELog::EM<<"DNF == "<<A<<ELog::endErr;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testAlgebra::testComponentExpand()
+  /*!
+    Expand the bracket form 
+    \retval 0 :: success (there is no fail!!!)
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testComponentExpand");
+
+  typedef std::tuple<std::string,int,std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("a+bx(f+g)",1,"d+ey","ad+aey+dbx(f+g)+bx(f+g)ey"),
+      TTYPE("a+bx",1,"d+ey","ad+aey+dbx+bxey"),
+      TTYPE("a+bx",1,"d+e","ad+ae+dbx+ebx"),
+      TTYPE("a+b",1,"d+e","ad+ae+bd+be"),
+      
+      TTYPE("ab",1,"d+e","dab+eab"),
+      TTYPE("a+b",0,"d+e","a+b+d+e"),   // union
+      
+      TTYPE("ab",1,"cd","abcd"),
+      TTYPE("ab",1,"d","abd"),
+      TTYPE("ab",1,"def","abdef")
+      
+      
+    };
+
+  for(const TTYPE& tc : Tests)
+    {
+      Algebra A;
+      A.setFunction(std::get<0>(tc));
+      Algebra B;
+      B.setFunction(std::get<2>(tc));
+      const Acomp& AC=A.getComp();
+      const Acomp& BC=B.getComp();
+
+      const Acomp CC=AC.componentExpand(std::get<1>(tc),BC);
+      std::string Out=CC.display();
+      if (Out!=std::get<3>(tc))
+	{
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<2>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Expect     :"<<std::get<3>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
 	  return -1;
 	}
     }

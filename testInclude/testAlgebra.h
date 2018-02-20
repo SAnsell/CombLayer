@@ -41,6 +41,7 @@ private:
   int testAdditions();
   int testCNF();
   int testComplementary();
+  int testComponentExpand();
   int testCountLiterals();
   int testDNF();
   int testExpand();
