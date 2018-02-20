@@ -540,13 +540,6 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   ELog::RegMethod RegA("BilbaoWheel","createShaftObjects");
   std::string Out;
 
-  // Main body [disk]
-  // central voids. There is the layer with holes between them -
-  // it is added in the for.. loop below (if (i==2))
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+10,
-				 " -2007M 5 -6");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,innerMat,mainTemp,Out));
-
   // layer with circle of pipes
   buildCirclePipes(System,
 		   ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
@@ -597,9 +590,6 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   // upper cell - inner steel - inner void
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
 				 " -7 116 -2136 2007M" );
-  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+10,
-				 " 6 -2136 -2007M  " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // upper cell - void around inner steel - vertical part
@@ -695,7 +685,12 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   for (size_t i=0; i<nShaftLayers; i++)
     {
       if (i==0)
-	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 2136 -2006M ");
+	  Out=ModelSupport::getComposite(SMap,SI,wheelIndex," -2007 5 -2006M ");
+      else if (i==1)
+	{
+	Out=ModelSupport::getComposite(SMap,SI,SI-10,wheelIndex,
+				       " -2007 2007M 5N -2006N ");
+	}
       else if (i==2)
 	{
 	Out=ModelSupport::getComposite
@@ -708,13 +703,17 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 		   0.0, 1000);
 	SI += 10;
 	continue;
-	} else if (i==nShaftLayers-1)
+	}
+      else if (i==nShaftLayers-1)
 	{
 	  Out=ModelSupport::getComposite
 	    (SMap,SI,SI-10,wheelIndex," -2007 2007M 2186N -2006N ");
-	} else
+	}
+      else
+	{
 	Out=ModelSupport::getComposite
 	  (SMap,SI,SI-10,wheelIndex," -2007 2007M 2136N -2006N ");
+	}
 
       System.addCell(MonteCarlo::Qhull(cellIndex++,shaftMat[i],mainTemp,Out));
 
