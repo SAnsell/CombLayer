@@ -1176,8 +1176,7 @@ BilbaoWheel::createObjects(Simulation& System)
 		     mat,innerHoleSize,innerHoleXYangle,innerHoleHeight,
 		     0.0, 0);
 	}
-
-      if (i==1)
+      else if (i==1)
 	{
 	  // Layer before Tungsten bricks:
 	  // Do not build it with engActive=1 since the cassette goes there
@@ -1187,31 +1186,31 @@ BilbaoWheel::createObjects(Simulation& System)
 	      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	    }
 
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 105 -106 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 105 -106 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 106 -26 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 -105 25 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 -25 35 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 106 -26 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 -105 25 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 -25 35 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 26 -36 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -117 107 26 -36 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 105 -106 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 105 -106 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 106 -116 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -105 115 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 106 -116 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -105 115 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 116 -36 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -115 35 ");
-	System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 116 -36 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
+	  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," 7M -107 -115 35 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
       else if (mat==homoWMat)
 	{
@@ -1229,7 +1228,8 @@ BilbaoWheel::createObjects(Simulation& System)
 	      //CellMap::setCell("Inner",cellIndex-1);
 	    }
 	  nInner++;
-	} else if (i!=0)
+	}
+      else if (i!=0)
 	{
 	  divideRadial(System, Out, mat);
 	}
