@@ -111,6 +111,7 @@ class Acomp
 
   // AcompExtra
   void upMoveComp();
+  void upMoveCompDEBUG();
   int merge();
   Acomp componentExpand(const int,const Acomp&) const;
   void primativeAddItem(const Acomp&);

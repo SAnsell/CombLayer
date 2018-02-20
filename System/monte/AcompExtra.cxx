@@ -411,7 +411,10 @@ Acomp::expandBracket()
 	}
     }
   upMoveComp();
+  merge();
+  Sort();
   return;
 }
+
   
 } // NAMESPACE MonteCarlo

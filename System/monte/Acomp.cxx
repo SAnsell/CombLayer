@@ -1760,8 +1760,9 @@ void
 Acomp::upMoveComp()
   /*!
     Move the comp unit up if it is signular
-   */
+  */
 {
+
   if (Comp.size()==1 && Units.empty())
     {
       const Acomp& AC=Comp[0];
@@ -1771,15 +1772,10 @@ Acomp::upMoveComp()
       Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
       Comp.erase(Comp.begin());
       Sort();
-      ELog::EM<<"SORT "<<*this<<ELog::endDiag;
-      while (merge())
-	{
-	  merege();
-	  ELog::EM<<"Merge REDONE:"<<*this<<ELog::endDiag;
-	}
     }
   return;
 }
+
 
 
 void
@@ -1827,115 +1823,6 @@ Acomp::writeFull(std::ostream& OXF,const int Indent) const
   return;
 }
 
-std::string
-Acomp::unitsDisplay() const
-  /*!
-    Real pretty print out statement  
-    \returns Head only string of the output in abc+efg type form
-  */
-{
-  std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-  int sign,val;      // sign and value of unit
-  std::string unionPlus;
-  
-  for(const int IC : Units)
-    {
-      cx<<unionPlus;
-      signSplit(IC,sign,val);
-      if (val>52)
-	cx<<"%"<<val-52;
-      else
-	cx<<StrFunc::indexToRevAlpha(val-1);
-
-     if (sign<0) cx<<'\'';
-     if (!Intersect) unionPlus="+";
-    }
-  return cx.str();
-}
-
-std::string
-Acomp::compDisplay(std::string unionPlus) const
-  /*!
-    Real pretty print out statement  
-    \param unionPlus :: extra join flag
-    \returns Just the component part
-  */
-{
-  // Now do composites
-  std::ostringstream cx;
-  for(const Acomp& AC : Comp)
-    {
-      cx<<unionPlus;
-      if ( !AC.Intersect )           // UNION
-	cx<<'('<<AC.display()<<')';
-      else
-	cx<<AC.display();
-     if (!Intersect) unionPlus="+";
-    }
-  return cx.str();
-}
-
-std::string
-Acomp::display() const
-  /*!
-    Real pretty print out statement  
-    \returns Full string of the output in abc+efg type form
-  */
-{
-  std::stringstream cx;
-  
-  cx<<unitsDisplay();
-  if ( Intersect==0 && !Units.empty() )
-    cx<<compDisplay("+");
-  else
-    cx<<compDisplay();
-  
-    
-  return cx.str();
-}
-
-std::string
-Acomp::displayDepth(const int dval) const
-  /*!
-    Real pretty print out statement  :-)
-    \param dval :: parameter to keep track of depth
-    \returns Full string of print line
-  */
-{
-  std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-  int sign,val;      // sign and value of unit
-  for(ic=Units.begin();ic!=Units.end();ic++)
-    {
-      if (!Intersect && ic!=Units.begin())
-	cx<<'+';
-      signSplit(*ic,sign,val);
-      if (val<27)
-	cx<<static_cast<char>(static_cast<int>('a')+(val-1));
-      else if (val<53)
-	cx<<static_cast<char>(static_cast<int>('A')+(val-27));
-      else
-	cx<<"%"<<val-52;
-      if (sign<0)
-	cx<<'\'';
-    }
-  // Now do composites
-  std::vector<Acomp>::const_iterator vc;
-  for(vc=Comp.begin();vc!=Comp.end();vc++)
-    {
-      if (!Intersect && (vc!=Comp.begin() || !Units.empty()))
-	cx<<'+';
-      //      if ( join && (*vc)->type() )
-      if ( !vc->Intersect )
-	cx<<"Dc"<<dval<<" "<<
-	  '('<<vc->displayDepth(dval+1)<<')'<<" "<<dval<<"Ec";
-      else
-	cx<<"Dc"<<dval<<" "<<vc->displayDepth(dval+1)<<" "<<dval<<"Ec";
-
-    }
-  return cx.str();
-}
 
 void
 Acomp::printImplicates(const std::vector<BnId>& PIform,
@@ -2083,5 +1970,109 @@ Acomp::checkWrongChar(const std::string& Ln)
   return (percent==1) ? Ln.size()-1 : 0;
 }
 
+std::string
+Acomp::unitsDisplay() const
+  /*!
+    Real pretty print out statement  
+    \returns Head only string of the output in abc+efg type form
+  */
+{
+  std::stringstream cx;
+  std::vector<int>::const_iterator ic;
+  int sign,val;      // sign and value of unit
+  std::string unionPlus;
+  
+  for(const int IC : Units)
+    {
+      cx<<unionPlus;
+      signSplit(IC,sign,val);
+      if (val>52)
+	cx<<"%"<<val-52;
+      else
+	cx<<StrFunc::indexToRevAlpha(val-1);
+
+     if (sign<0) cx<<'\'';
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
+
+std::string
+Acomp::compDisplay(std::string unionPlus) const
+  /*!
+    Real pretty print out statement  
+    \param unionPlus :: extra join flag
+    \returns Just the component part
+  */
+{
+  // Now do composites
+  std::ostringstream cx;
+  for(const Acomp& AC : Comp)
+    {
+      cx<<unionPlus;
+      if ( !AC.Intersect )           // UNION
+	cx<<'('<<AC.display()<<')';
+      else
+	cx<<AC.display();
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
+
+std::string
+Acomp::display() const
+  /*!
+    Real pretty print out statement  
+    \returns Full string of the output in abc+efg type form
+  */
+{
+  std::stringstream cx;
+  
+  cx<<unitsDisplay();
+  if ( Intersect==0 && !Units.empty() )
+    cx<<compDisplay("+");
+  else
+    cx<<compDisplay();
+  
+    
+  return cx.str();
+}
+
+std::string
+Acomp::displayDepth(const int dval) const
+  /*!
+    Real pretty print out statement  :-)
+    \param dval :: parameter to keep track of depth
+    \returns Full string of print line
+  */
+{
+  std::stringstream cx;
+  std::vector<int>::const_iterator ic;
+
+
+  cx<<unitsDisplay();
+
+  // Now do composites
+  std::string unionPlus;
+  if ( Intersect==0 && !Units.empty() )
+    unionPlus="+";
+
+  for(const Acomp& AC : Comp)
+    {
+
+      cx<<unionPlus;
+      //      if ( join && (*vc)->type() )
+      if ( !AC.Intersect )
+	cx<<"D["<<dval<<"][U]"
+	  <<'('<<AC.displayDepth(dval+1)<<')';
+      else
+	cx<<"D["<<dval<<"][I]"
+	  <<AC.displayDepth(dval+1);
+
+      cx<<" EEE["<<dval<<"]";
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
 
 } // NAMESPACE MonteCarlo

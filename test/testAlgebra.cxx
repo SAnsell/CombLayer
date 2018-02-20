@@ -346,6 +346,9 @@ testAlgebra::testExpandBracket()
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
 	  ELog::EM<<" MERGE == "<<A.display()<<ELog::endDiag;
+	  const Acomp& AC=A.getComp();
+
+	  ELog::EM<<" MERGE == "<<AC.displayDepth(0)<<ELog::endDiag;
 	  A.merge();
 	  ELog::EM<<" MERGE == "<<A.display()<<ELog::endDiag;
 
