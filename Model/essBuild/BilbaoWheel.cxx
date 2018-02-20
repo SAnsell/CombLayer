@@ -377,7 +377,6 @@ BilbaoWheel::createShaftSurfaces()
   // divider
   const Geometry::Plane *px = ModelSupport::buildPlane(SMap,wheelIndex+3,Origin,X);
 
-
   ModelSupport::buildPlane(SMap,wheelIndex+2006,Origin+Z*shaftHeight,Z);
 
   int SI(wheelIndex);
@@ -387,7 +386,6 @@ BilbaoWheel::createShaftSurfaces()
       SI+=10;
     }
 
-  // '-1.0' is needed - overwise TopAFlight will cut the outer void:
   double H(wheelHeight()/2.0+caseThick);
 
   // 2nd void step
@@ -498,8 +496,6 @@ BilbaoWheel::createShaftSurfaces()
   R += voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
 
-
-
   // circle of pipes
   R = circlePipesBigRad-circlePipesRad-circlePipesWallThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2307,Origin,Z,R);
@@ -524,7 +520,6 @@ BilbaoWheel::createShaftSurfaces()
       SJ+=10;
     }
   // add 1st surface again with reversed normal - to simplify building cells
-  SMap.addMatch(SJ+9,SMap.realSurf(wheelIndex+2309));
   SMap.addMatch(SJ+1,SMap.realSurf(wheelIndex+2301));
 
   return;
@@ -1136,10 +1131,11 @@ BilbaoWheel::createObjects(Simulation& System)
   int SI(wheelIndex);
   int nInner(0); // number of inner cells (must be 1)
   int mat(0);
+  std::string side;
   for(size_t i=0;i<nLayers;i++)
     {
       mat = matNum[matTYPE[i]];
-      std::string side(ModelSupport::getComposite(SMap,SI," 7 -17 "));
+      side = ModelSupport::getComposite(SMap,SI," 7 -17 ");
 
       Out=side+ModelSupport::getComposite(SMap,wheelIndex,SI," 5 -6 ");
       if (i==0)
@@ -1237,29 +1233,30 @@ BilbaoWheel::createObjects(Simulation& System)
   else
     System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
+  side = ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 117" );
+  
   // Void above W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 6 -16 117" );
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -16 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
   // Void below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 15 -5 117 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 15 -5 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // Steel above W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 16 -26 117 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 16 -26 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // Steel below W
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 25 -15 117 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 25 -15 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-
   // Coolant above steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI, " -7M 26 -36 117 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 26 -36 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
   CellMap::setCell("CoolantAboveSteel",cellIndex-1);
 
   // Coolant below steel
-  Out=ModelSupport::getComposite(SMap,wheelIndex,SI, " -7M 35 -25 117 " );
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 35 -25 " )+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,ssVoidMat,mainTemp,Out));
 
   // Metal surround [ UNACCEPTABLE JUNK CELL]
@@ -1271,10 +1268,12 @@ BilbaoWheel::createObjects(Simulation& System)
     System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // forward Main sections:
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 -126 36");	 // outer above W
+  side=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 ");
+  
+  Out=ModelSupport::getComposite(SMap,wheelIndex," -126 36 ")+side;	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 125 -35");
+  Out=ModelSupport::getComposite(SMap,wheelIndex," 125 -35 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out)); // outer below W
 
   // Void surround
