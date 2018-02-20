@@ -547,14 +547,15 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   // void below
   Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,"-7 35 -115 2127 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+
+  const int SJ(wheelIndex+(static_cast<int>(nShaftLayers)-1)*10);
+
   // steel inside - outer radial part
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,SJ-10,
 				 " 35 -115 -2127 2007M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // steel inside - central part
-  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,wheelIndex+20,SJ-10,
 				 " 35 -5 -2007M ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
@@ -572,14 +573,11 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // 2nd void step
   // upper cell - inner steel - outer side layer
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-1)*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ,
 				 " 7 -17 26 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
   // upper cell - inner steel - top layer
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-				 " -7 2136 -2116 2007M" );
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ-10," -7 2136 -2116 2007M" );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
   // upper cell - inner steel - inner void
@@ -592,16 +590,13 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   // upper/lower connection
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ-10,
 				 " -2127 2007M 2166 -2176 " );
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
-
   // shaft outer surface
-  const std::string Rsurf(ModelSupport::getComposite(SMap,
-			       wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
-						     " 2007 "));
+  const std::string Rsurf(ModelSupport::getComposite(SMap,SJ-10," 2007 "));
+
   // Connection flange:
   //   stiffener
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2116 -2146 -2148 ");
@@ -631,8 +626,7 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,wheelIndex," 2166 -2186 2127 -2157 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex,
-				 wheelIndex+(static_cast<int>(nShaftLayers)-2)*10,
+  Out=ModelSupport::getComposite(SMap,wheelIndex,SJ-10,
 				 " -2127 2007M 2176 -2186 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
