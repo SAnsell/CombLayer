@@ -178,7 +178,7 @@ Acomp::operator==(const Acomp& A) const
 	*xcv==*acv ;xcv++,acv++) ;
   return (xcv==Comp.end()) ? 1 : 0;
 }
-
+  
 int
 Acomp::operator<(const Acomp& A) const
   /*!
@@ -313,13 +313,9 @@ Acomp::operator*=(const Acomp& A)
     }
 
   if (A.Intersect)                  // can add components
-    {
-      copySimilar(A);
-    }
+    copySimilar(A);
   else 
-    {
-      addComp(A);       // combine components
-    }
+    addComp(A);       // combine components
   removeEqComp();
   joinDepth();  
   return *this;
@@ -393,79 +389,6 @@ Acomp::addUnitItem(const int Item)
   ipt=lower_bound(Units.begin(),Units.end(),Item);
   if (ipt==Units.end() || *ipt!=Item)                       // Only insert if new
     Units.insert(ipt,Item);
-  return;
-}
-
-void
-Acomp::processIntersection2(const std::string& Ln)
-  /*!
-    Helper function :: assumes that Ln has been
-    checked for bracket consistency.
-    Units are sorted after this function is returned.
-    \param Ln :: String to processed as an intersection
-    must not contain a toplevel +
-    \throws ExBase on failure to pass string
-  */
-{
-  ELog::RegMethod RegA("Acomp","processIntersection_Original");
-
-  std::string Bexpress;           // bracket expression
-  int blevel=0;                       // this should already be zero!!
-  // find first Component to add 
-  //  std::cerr<<"Process Inter:"<<Ln<<std::endl;
-  int numItem(0);
-  for(size_t iu=0;iu<Ln.length();iu++)
-    {
-      if (blevel)       // we are in a bracket then...
-	{
-	  if (Ln[iu]==')')        // maybe closing outward..
-	    blevel--;
-	  else if (Ln[iu]=='(')
-	    blevel++;
-	  if (blevel)
-	    Bexpress+=Ln[iu];
-	  else           // Process end: of Brackets 
-	    {
-	      Acomp AX(Union);   
-	      AX.setString(Bexpress);
-	      Bexpress="";     // reset string
-	      addComp(AX);          // add components
-	    }
-	}
-      else               // Not in a bracket (currently)
-	{
-	  if (Ln[iu]=='(')
-	    blevel++;
-	  else if (isalpha(Ln[iu]) || Ln[iu]=='%')
-	    {
-	      if (Ln[iu]=='%')
-	        {
-		  iu++;
-		  const size_t Nmove=StrFunc::convPartNum(Ln.substr(iu),numItem);
-		  if (!Nmove)
-		    throw ColErr::InvalidLine(Ln,"Ln",iu);
-		  numItem+=52;
-		  iu+=Nmove;
-		}
-	      else
-	        {
-		  numItem=(islower(Ln[iu])) ?
-		    static_cast<int>(1+Ln[iu]-'a') :
-		    static_cast<int>(27+Ln[iu]-'A');
-		  iu++;
-		}
-	      if (iu<Ln.length() && Ln[iu]=='\'')
-	        {
-		  addUnitItem(-numItem);
-		}
-	      else
-	        {
-		  addUnitItem(numItem);
-		  iu--;
-		}
-	    }
-	}
-    }
   return;
 }
 
@@ -582,11 +505,51 @@ Acomp::processUnion(const std::string& Ln)
 	    Express[i].substr(1,Express[i].length()-2) : Express[i];
 	  Acomp AX(Inter);
 	  AX.setString(StrField);   // throws:
-	  addComp(AX);       // add components
+	  addComp(AX);              // add components
 	}
     }
   
   return;
+}
+
+int
+Acomp::merge()
+  /*!
+    If a comp / (this Inter) are same type then
+    a merge is possible
+    \return number of successful level moves
+  */
+{
+  // First remove local numbers and units:
+
+  std::vector<Acomp> extraComp;
+  int Out(0);
+  for(Acomp& AC : Comp)
+    {
+      Out+=AC.merge();
+      if (AC.Intersect==Intersect)
+	{
+	  Out++;
+	  Units.insert(Units.end(),AC.Units.begin(),AC.Units.end());
+	  AC.Units.clear();
+
+	  // move up AC.comp units
+	  if (!AC.Comp.empty())
+	    {
+	      extraComp.insert(extraComp.end(),AC.Comp.begin(),AC.Comp.end());
+	      AC.Comp.clear();
+	    }
+	}
+
+    }
+  Comp.insert(Comp.end(),extraComp.begin(),extraComp.end());
+  // remove nulls
+  std::vector<Acomp>::iterator ac=
+    std::remove_if(Comp.begin(),Comp.end(),
+		   [&](const Acomp& AC)->bool
+		     { return AC.isNull();});
+  Comp.erase(ac,Comp.end());
+  return Out;
 }
 
 int
@@ -609,10 +572,9 @@ Acomp::copySimilar(const Acomp& A)
       sort(Units.begin(),Units.end());
     }
 
-  // Add components 
-  std::vector<Acomp>::const_iterator vc;
-  for(vc=A.Comp.begin();vc!=A.Comp.end();vc++)
-    addComp(*vc);
+  // Add components
+  for(const Acomp& AC : A.Comp)
+    addComp(AC);
   return 0;
 }
 
@@ -724,8 +686,10 @@ Acomp::Sort()
 {
   std::sort(Units.begin(),Units.end());
   // Sort each decending object first
-  for_each(Comp.begin(),Comp.end(),std::mem_fun_ref(&Acomp::Sort));
-  // use the sorted components to sort our component list
+  for(Acomp& AC : Comp)
+    AC.Sort();
+
+  // comparative on unit
   std::sort(Comp.begin(),Comp.end());
   return;
 }
@@ -934,6 +898,7 @@ Acomp::removeEqComp()
   // First check all the Comp units:
   long int cnt(0);
   std::vector<Acomp>::iterator dx;
+
   sort(Comp.begin(),Comp.end());
   dx=unique(Comp.begin(),Comp.end());
   cnt+=std::distance(dx,Comp.end());
@@ -1791,133 +1756,28 @@ Acomp::itemC(const size_t Index) const
   return &Comp[Index];
 }
 
-Acomp
-Acomp::expandEqual(const int interFlag,const Acomp&) const
-  /*!
-    Combined This [interFlag] A
-    \param interFlag == Intersection / Union flag    
-    \param A :: Object to intersect
-    \return *this
-  */
-{
-  ELog::RegMethod RegA("Acomp","expandEqual");
-  Acomp combinedComp(interFlag);
-  return combinedComp;
-}
-
-Acomp
-Acomp::expandOpposite(const int interFlag,const Acomp&) const
-  /*!
-    Intersect A and This
-    \param interFlag == Intersection / Union flag    
-    \param A :: Object to intersect
-    \return *this
-  */
-{
-  ELog::RegMethod RegA("Acomp","expandOpposite");
-  Acomp combinedComp(interFlag);
-  return combinedComp;
-}
-
-Acomp
-Acomp::expand(const int interFlag,const Acomp& A) const
-  /*!
-    Intersect A and This
-    \param interFlag == Intersection / Union flag    
-    \param A :: Object to intersect
-    \return *this
-  */
-{
-  if (A.Intersect==interFlag)
-    return expandEqual(interFlag,A);
-    
-  if (A.Intersect!=Intersect)
-    return expandOpposite(interFlag,A);
-
-
-  Acomp combinedComp(1-interFlag);
-
-  std::vector<Acomp>& Out=combinedComp.Comp;	
-
-  // U x a.U
-  ELog::EM<<"I == "<<Intersect<<" "<<A.Intersect<<" :: "<<interFlag<<ELog::endDiag;
-  ELog::EM<<"A == "<<Intersect<<":"<<Units.size()
-	  <<" "<<Comp.size()<<"::"<<display()<<ELog::endDiag;
-  ELog::EM<<"B == "<<A.Intersect<<":"<<A.Units.size()
-	  <<" "<<A.Comp.size()<<"::"<<A.display()<<ELog::endDiag;
-
-  for(const int UI : Units)
-    {
-      for(const int AUI : A.Units)
-	{
-	  Acomp N(interFlag);
-	  N.Units.push_back(UI);
-	  N.Units.push_back(AUI);
-	  Out.push_back(N);
-	}
-      
-      // U * AComp
-      for(const Acomp& AC : A.Comp)
-	{
-	  Acomp N(interFlag);
-	  N.Units=AC.Units;
-	  N.Units.push_back(UI);
-	  Acomp NX(interFlag);    /// ????
-	  NX.Units.push_back(UI);
-	  for(const Acomp& ACC : AC.Comp)
-	    N.Comp.push_back(ACC.expand(interFlag,NX));
-	  Out.push_back(N);
-	}
-      
-    }
-  
-  // Comp . A.U
-  for(const int UI : A.Units)
-    {
-      
-      for(const Acomp& TC : Comp)
-	{
-	  Acomp N(interFlag);
-	  N.Units=TC.Units;
-	  N.Units.push_back(UI);
-	  Acomp NX(interFlag);   // ????
-	  NX.Units.push_back(UI);
-	  for(const Acomp& ACC : TC.Comp)
-	    N.Comp.push_back(ACC.expand(interFlag,NX));
-	  Out.push_back(N);
-	}
-    }
-  for(const Acomp& TC : Comp)
-    {
-      for(const Acomp& AC : A.Comp)
-	{
-	  ELog::EM<<"TC ==  "<<TC.display()<<ELog::endDiag;
-	  ELog::EM<<"AC == "<<AC.display()<<ELog::endDiag;
-	  Out.push_back(TC.expand(interFlag,AC));
-	  ELog::EM<<"XX == "<<TC.expand(1-interFlag,AC)<<ELog::endDiag;
-	  ELog::EM<<"YX == "<<TC.expand(interFlag,AC)<<ELog::endDiag;
-	}
-    }
-  return combinedComp;
-}
-
-
-  
-
-  
 void
-Acomp::expandBracket()
+Acomp::upMoveComp()
   /*!
-    Recursively expand the brackets
+    Move the comp unit up if it is signular
    */
 {
-  ELog::RegMethod RegA("Acomp","expandBracket");
-
-  if (Comp.empty()) return;
-
-  
-  Intersect=1-Intersect;
-  Units.clear();
+  if (Comp.size()==1 && Units.empty())
+    {
+      const Acomp& AC=Comp[0];
+      Units=AC.Units;
+      // add in and then remove first [necessary ??]
+      Intersect=AC.Intersect;
+      Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
+      Comp.erase(Comp.begin());
+      Sort();
+      ELog::EM<<"SORT "<<*this<<ELog::endDiag;
+      while (merge())
+	{
+	  merege();
+	  ELog::EM<<"Merge REDONE:"<<*this<<ELog::endDiag;
+	}
+    }
   return;
 }
 
@@ -1995,6 +1855,28 @@ Acomp::unitsDisplay() const
 }
 
 std::string
+Acomp::compDisplay(std::string unionPlus) const
+  /*!
+    Real pretty print out statement  
+    \param unionPlus :: extra join flag
+    \returns Just the component part
+  */
+{
+  // Now do composites
+  std::ostringstream cx;
+  for(const Acomp& AC : Comp)
+    {
+      cx<<unionPlus;
+      if ( !AC.Intersect )           // UNION
+	cx<<'('<<AC.display()<<')';
+      else
+	cx<<AC.display();
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
+
+std::string
 Acomp::display() const
   /*!
     Real pretty print out statement  
@@ -2002,36 +1884,14 @@ Acomp::display() const
   */
 {
   std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-  int sign,val;      // sign and value of unit
-  for(ic=Units.begin();ic!=Units.end();ic++)
-    {
-      if (!Intersect && ic!=Units.begin())
-	cx<<'+';
-      signSplit(*ic,sign,val);
-      if (val<27)
-	cx<<static_cast<char>(static_cast<int>('a')+(val-1));
-      else if (val<53)
-	cx<<static_cast<char>(static_cast<int>('A')+(val-27));
-      else
-	cx<<"%"<<val-52;
-      if (sign<0)
-	cx<<'\'';
-    }
-
-  // Now do composites
-  std::vector<Acomp>::const_iterator vc;
-  for(vc=Comp.begin();vc!=Comp.end();vc++)
-    {
-      if (!Intersect && (vc!=Comp.begin() || !Units.empty()))
-	cx<<'+';
-      //      if ( join && (*vc)->type() )
-      if ( !vc->Intersect )
-	cx<<'('<<vc->display()<<')';
-      else
-	//	cx<<'('<<vc->display()<<')';
-	cx<<vc->display();
-    }
+  
+  cx<<unitsDisplay();
+  if ( Intersect==0 && !Units.empty() )
+    cx<<compDisplay("+");
+  else
+    cx<<compDisplay();
+  
+    
   return cx.str();
 }
 

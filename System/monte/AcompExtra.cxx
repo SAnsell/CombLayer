@@ -78,12 +78,12 @@ Acomp::expandIIU(const Acomp& A) const
     \param A :: Other object to add
     \return A
    */
-{
+{	
   Acomp Out(0);     // union
   for(const int AI : A.Units)
     {
       const Acomp addItem=interCombine(AI,*this);
-      Out.primativeAddItem(addItem);
+      Out.primativeAddItem(addItem);	
     }
   for(const Acomp& AC : A.Comp)
     {
@@ -231,16 +231,16 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
   /*
     Triplet pair expanded
     \param interFlag :: Intersection (1) or Union (0)
+    \param A :: Component to multiply by
   */
 {
-  
   // Case by case:
   Acomp Out(0);
-       if (Intersect==1 && interFlag==1 && A.Intersect==1)
+  if (Intersect==1 && interFlag==1 && A.Intersect==1)
     Out=expandIII(A);
   else if (Intersect==1 && interFlag==1 && A.Intersect==0)
     Out=expandIIU(A);
-  else if (Intersect==1 && interFlag==1 && A.Intersect==1)
+  else if (Intersect==0 && interFlag==1 && A.Intersect==1)
     Out=expandUII(A);
   else if (Intersect==0 && interFlag==1 && A.Intersect==0)
     Out=expandUIU(A);
@@ -302,7 +302,7 @@ Acomp::interCombine(const int A,const Acomp& B)
     Intersection combine of two integers
     \param A :: Index A 
     \param B :: Component
-    \return 0 [Nothing] / or iterm
+    \return 0 [Nothing] / or Acomp units
   */
 {
   Acomp Out(1);  // inter
@@ -343,7 +343,6 @@ Acomp::interCombine(const Acomp& A,const Acomp& B)
     \return 0 [Nothing] / or iterm
   */
 {
-
   if (A.isNull()) return B;
   if (B.isNull()) return A;
   
@@ -355,7 +354,7 @@ Acomp::interCombine(const Acomp& A,const Acomp& B)
     }
 
   if (A.isSingle() && A.isSimple())
-    return interCombine(B,A.getSinglet());
+    return interCombine(A.getSinglet(),B);
       
   if (A.Intersect)
     return A.expandIIU(B);
@@ -381,6 +380,37 @@ Acomp::primativeAddItem(const Acomp& AC)
       else
 	Units.push_back(AC.itemN(0));
     }
+  return;
+}
+
+void
+Acomp::expandBracket()
+  /*!
+    Expand all the Intersection brackets
+  */
+{
+  ELog::RegMethod RegA("Acomp","expandBracket");
+
+  // all lower units
+  for(Acomp& AC : Comp)
+    AC.expandBracket();
+
+  if (this->Intersect)
+    {
+      if (!Units.empty() && !Comp.empty())
+	{
+	  Acomp N(1);  // intersect
+	  N.Units=Units;
+	  Comp[0]=N.componentExpand(1,Comp[0]);
+	  Units.clear();
+	}
+      while (Comp.size()>1)
+	{
+	  Comp[0]=Comp[0].componentExpand(1,Comp[1]);
+	  Comp.erase(Comp.begin()+1);
+	}
+    }
+  upMoveComp();
   return;
 }
   

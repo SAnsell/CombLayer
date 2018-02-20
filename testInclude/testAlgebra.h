@@ -44,9 +44,9 @@ private:
   int testComponentExpand();
   int testCountLiterals();
   int testDNF();
-  int testExpand();
   int testExpandBracket();
   int testMakeString();
+  int testMerge();
   int testMult();
   int testSetFunction();
   int testSetFunctionObjStr();

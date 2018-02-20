@@ -66,6 +66,7 @@ class Algebra
   int logicalEqual(const Algebra&) const;
 
   void expandBracket();
+  void merge();
   void Complement();
   void makeDNF() { F.makeDNFobject(); }  ///< assessor to makeDNFobj
   void makeCNF() { F.makeCNFobject(); }  ///< assessor to makeCNFobj

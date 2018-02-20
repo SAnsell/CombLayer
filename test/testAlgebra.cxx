@@ -82,9 +82,9 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testComplementary,
       &testAlgebra::testComponentExpand,      
       &testAlgebra::testDNF,
-      &testAlgebra::testExpand,
       &testAlgebra::testExpandBracket,
       &testAlgebra::testMakeString,
+      &testAlgebra::testMerge,
       &testAlgebra::testMult,
       &testAlgebra::testSetFunction,
       &testAlgebra::testSetFunctionObjStr,
@@ -99,9 +99,9 @@ testAlgebra::applyTest(const int extra)
       "Complementary",
       "ComponentExpand",
       "DNF",
-      "Expand",
       "ExpandBracket",
       "MakeString",
+      "Merge",
       "Mult",
       "SetFunction",
       "SetFunctionObjStr",
@@ -221,6 +221,10 @@ testAlgebra::testComponentExpand()
   typedef std::tuple<std::string,int,std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
+      TTYPE("a",1,"cd+(fx+fy+fz)","acd+afx+afy+afz"),  
+      TTYPE("af",1,"cd+(fx+fy+fz)","afcd+affx+affy+affz"),	    
+      TTYPE("cd+f(x+y+z)",1,"a","acd+af(x+y+z)"),
+      TTYPE("a",1,"cd+(fx+fy+fz)","acd+afx+afy+afz"),
       TTYPE("a+bx(f+g)",1,"d+ey","ad+aey+dbx(f+g)+bx(f+g)ey"),
       TTYPE("a+bx",1,"d+ey","ad+aey+dbx+bxey"),
       TTYPE("a+bx",1,"d+e","ad+ae+dbx+ebx"),
@@ -243,6 +247,7 @@ testAlgebra::testComponentExpand()
       Algebra B;
       B.setFunction(std::get<2>(tc));
       const Acomp& AC=A.getComp();
+      ELog::EM<<"AC= "<<AC.isInter()<<ELog::endDiag;
       const Acomp& BC=B.getComp();
 
       const Acomp CC=AC.componentExpand(std::get<1>(tc),BC);
@@ -259,47 +264,39 @@ testAlgebra::testComponentExpand()
   return 0;
 }
 
+
 int
-testAlgebra::testExpand()
+testAlgebra::testMerge()
   /*!
     Expand the bracket form 
     \retval 0 :: success (there is no fail!!!)
    */
 {
-  ELog::RegMethod RegA("testAlgebra","testExpand");
+  ELog::RegMethod RegA("testAlgebra","testMerge");
 
-  typedef std::tuple<std::string,std::string,std::string> TTYPE;
+  typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("(ab+xy)","cd","cdab+cdxy"),
-      TTYPE("ab","cd","cdab"),
-      TTYPE("abxy","cd","cdabxy"),
-      TTYPE("ab","(c+d)","abc+abd"),
-      TTYPE("(c+d)","ab","abc+abd"),
-      TTYPE("(a+b)","(c+de)","ac+dea+bc+deb"),
-      TTYPE("(a+d)","(b+c)","ab+ac+db+dc"),
-      TTYPE("(a+c+d)","(b+c)","ab+ac+cb+cc+db+dc"),
-      TTYPE("(c+de)","(a+b)","ca+cb+dea+deb"),
-      TTYPE("(c+de+gh)","(a+b)","ca+cb+dea+gha+deb+ghb"),
-      TTYPE("(c+de+gh)","(a+bx)","ca+bxc+dea+gha+bxde+bxgh")
+      TTYPE("acd+(afx+afy+afz)","acd+afx+afy+afz"),
+      TTYPE("a(b+c)","ab+ac")
     };
+
 
   for(const TTYPE& tc : Tests)
     {
       Algebra A;
       A.setFunction(std::get<0>(tc));
-      Algebra B;
-      B.setFunction(std::get<1>(tc));
-      const Acomp& AC=A.getComp();
-      const Acomp& BC=B.getComp();
-
-      const Acomp CC=AC.expand(1,BC);
-      std::string Out=CC.display();
-      if (Out!=std::get<2>(tc))
+      const Acomp& AC = A.getComp();
+      const std::string preOut=A.display();
+      A.merge();
+      //      const Acomp& AC = A.getComp();
+      
+      std::string Out=AC.display();
+      if (Out!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Failed on  :"<<std::get<1>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Expect     :"<<std::get<2>(tc)<<ELog::endDiag;
+	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
+	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
 	  return -1;
 	}
@@ -320,12 +317,14 @@ testAlgebra::testExpandBracket()
   const std::vector<TTYPE> Tests=
     {
       //      TTYPE("a(b+c)","ab+ac"),
-      TTYPE("(a+d)(hb+c)","ab+ac+db+dc"),
-      TTYPE("(a+b)(c+d)(e+f)","ab+ac+db+dc"),
-      TTYPE("(a+d)(b+c+e)","ab+ac+ae+db+dc+de"),
-      TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+db+dc+de+fb+fc+fe"),
-      TTYPE("x(a+d+f)(b+c)","(xa+xd+xf)(b+c)"),
-      TTYPE("x+a'bcd+a(cd+ff(x+y+z))","x"),
+      TTYPE("a(cd+f(x+y+z))","acd+afx+afy+afz"),
+      TTYPE("x+a'bcd+a(cd+f(x+y+z))","x+a'bcd+acd+afx+afy+afz"),
+      TTYPE("(a+d)(hb+c)","abh+ac+bdh+cd"),
+      TTYPE("(a+b)(c+d)(e+f)","ace+acf+ade+adf+bce+bcf+bde+bdf"),
+      TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
+      TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+bd+bf+cd+cf+de+ef"),
+      TTYPE("x(a+d+f)(b+c)","abx+acx+bdx+bfx+cdx+cfx"),
+
       TTYPE("a(b+c)","ab+ac")
 
     };
@@ -336,13 +335,20 @@ testAlgebra::testExpandBracket()
       A.setFunction(std::get<0>(tc));
       const std::string preOut=A.display();
       A.expandBracket();
+      A.expandBracket();
+
       
       std::string Out=A.display();
       if (Out!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
+	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
+	  ELog::EM<<" MERGE == "<<A.display()<<ELog::endDiag;
+	  A.merge();
+	  ELog::EM<<" MERGE == "<<A.display()<<ELog::endDiag;
+
 	  return -1;
 	}
     }

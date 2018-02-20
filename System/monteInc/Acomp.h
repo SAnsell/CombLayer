@@ -68,7 +68,6 @@ class Acomp
   //  void addCompPtr(Acomp*);      ///< add a Component intellegently
   void addUnitItem(const int);      ///< add an Unit intellgently
   void processIntersection(const std::string&);
-  void processIntersection2(const std::string&);
   void processUnion(const std::string&);
   int joinDepth();                      
   int removeEqComp();                   
@@ -95,12 +94,10 @@ class Acomp
   static size_t checkWrongChar(const std::string&);
   void addTokens(const std::string&);
   
-
-
  public:
 
   Acomp(const JoinForm);
-  Acomp(const int);   
+  explicit Acomp(const int);   
   Acomp(const Acomp&);
   Acomp& operator=(const Acomp&); 
   int operator==(const Acomp&) const; 
@@ -110,13 +107,12 @@ class Acomp
   Acomp& operator+=(const Acomp&);
   Acomp& operator-=(const Acomp&);
   Acomp& operator*=(const Acomp&);
-
-  Acomp expandOpposite(const int,const Acomp&) const;
-  Acomp expandEqual(const int,const Acomp&) const;
-  Acomp expand(const int,const Acomp&) const;
   ~Acomp();
 
-  // ACOMP2:
+  // AcompExtra
+  void upMoveComp();
+  int merge();
+  Acomp componentExpand(const int,const Acomp&) const;
   void primativeAddItem(const Acomp&);
 
   Acomp expandIII(const Acomp&) const;
@@ -135,21 +131,19 @@ class Acomp
   static Acomp unionCombine(const int,const Acomp&);
   static Acomp interCombine(const Acomp&,const Acomp&);
   static Acomp unionCombine(const Acomp&,const Acomp&);
-  Acomp componentExpand(const int,const Acomp&) const;
 
-  void expandInter(const Acomp&);
-
+  
   int getSinglet() const;   
   const Acomp* itemC(const size_t) const;
   int itemN(const size_t) const;   
 
   std::pair<int,int> size() const;
-  int isSimple() const; 
+  int isSimple() const;
   int isDNF() const;               
   int isCNF() const;               
   int isNull() const;              
-  int isSingle() const;
-  int isSingleIndex() const;            
+  int isSingle() const;        // one item
+
   int contains(const Acomp&) const;
   /// Deterimine if inter/union
   int isInter() const { return Intersect; }  
@@ -164,13 +158,13 @@ class Acomp
   int makeDNFobject();                
   int makeCNFobject();                
 
-
   void expandBracket();                                
   void complement();
   std::pair<Acomp,Acomp> algDiv(const Acomp&); 
   void setString(const std::string&);          
   void writeFull(std::ostream&,const int =0) const; 
   std::string unitsDisplay() const;
+  std::string compDisplay(std::string = "") const;
   std::string display() const;                      
   std::string displayDepth(const int =0) const;     
 

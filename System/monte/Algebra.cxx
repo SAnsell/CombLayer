@@ -202,8 +202,21 @@ Algebra::operator*(const Algebra& M) const
 
 void
 Algebra::expandBracket()
+  /*!
+    Expand all the brackets into DNF form
+  */
 {
   F.expandBracket();
+  return;
+}
+
+void
+Algebra::merge()
+  /*!
+    MERGE all the brackets into DNF form
+  */
+{
+  F.merge();
   return;
 }
   
