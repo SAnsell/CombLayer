@@ -147,7 +147,7 @@ makeBalder::build(Simulation& System,
  
   frontEnd->addInsertCell(voidCell);
   frontEnd->createAll(System,World::masterOrigin(),0);
-  return;
+
   wigglerBox->addInsertCell(frontEnd->getCell("Void"));
   wigglerBox->createAll(System,*frontEnd,0);
 
@@ -156,7 +156,7 @@ makeBalder::build(Simulation& System,
 
   opticsHut->addInsertCell(voidCell);
   opticsHut->createAll(System,*frontEnd,2);
-  return;
+
   joinPipe->addInsertCell(frontEnd->getCell("Void"));
   joinPipe->addInsertCell(frontEnd->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Void"));

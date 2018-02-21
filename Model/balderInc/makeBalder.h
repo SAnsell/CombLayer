@@ -71,6 +71,8 @@ class makeBalder
 {
  private:
 
+  std::string startPoint;       ///< Start point
+  std::string stopPoint;        ///< End point
   /// Front end cave volume
   std::shared_ptr<FrontEndCave> frontEnd;
   /// Wiggler in vacuum box
