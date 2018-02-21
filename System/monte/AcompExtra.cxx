@@ -48,6 +48,8 @@
 #include "Matrix.h"
 #include "RotCounter.h"
 #include "BnId.h"
+
+#include "AcompTools.h"
 #include "Acomp.h"
 
 namespace MonteCarlo 
@@ -256,6 +258,8 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
   else
     throw ColErr::InContainerError<int>(Intersect,
 					"Intersect/interflag not correct");
+  AcompTools::unitSort(Out.Units);    
+
   return  Out;
 }
 
@@ -419,6 +423,8 @@ Acomp::expandBracket()
 
   upMoveComp();
   merge();
+  makeNull();
+
 
   
   return;

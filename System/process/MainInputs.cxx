@@ -70,6 +70,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
   IParam.regFlag("cinder","cinder");
+  IParam.regItem("cellDNF","cellDNF");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
   IParam.regItem("defaultConfig","defaultConfig");
@@ -92,6 +93,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("MB","meshB");
   IParam.regItem("MN","meshNPS",3,3);
   IParam.regFlag("md5","md5");
+  IParam.regItem("md5Mesh","md5Mesh");
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
   IParam.regFlag("p","PHITS");
@@ -144,6 +146,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("volCell","volCells",100,1,100);
     
   IParam.regFlag("void","void");
+  IParam.regItem("vtkMesh","vtkMesh",1);
   IParam.regFlag("vtk","vtk");
   IParam.regFlag("vcell","vcell");
   std::vector<std::string> VItems(15,"");
@@ -214,6 +217,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("MB","Upper Point in mesh tally");
   IParam.setDesc("MN","Number of points [3]");
   IParam.setDesc("md5","MD5 track of cells");
+  IParam.setDesc("md5Mesh","Define mesh for MD5/VTK");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
   IParam.setDesc("MCNP","MCNP version");
@@ -254,6 +258,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
+  IParam.setDesc("vtkMesh","Define mesh for MD5/VTK");
   IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");

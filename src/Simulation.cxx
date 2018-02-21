@@ -101,7 +101,8 @@
 #include "Simulation.h"
 
 Simulation::Simulation()  :
-  OSMPtr(new ModelSupport::ObjSurfMap)
+  OSMPtr(new ModelSupport::ObjSurfMap),
+  cellDNF(0)
   /*!
     Start of simulation Object
   */
@@ -113,7 +114,7 @@ Simulation::Simulation(const Simulation& A) :
   inputFile(A.inputFile),
   cmdLine(A.cmdLine),DB(A.DB),
   OSMPtr(new ModelSupport::ObjSurfMap(*A.OSMPtr)),
-  TList(A.TList),cellOutOrder(A.cellOutOrder),
+  TList(A.TList),cellDNF(A.cellDNF),cellOutOrder(A.cellOutOrder),
   voidCells(A.voidCells),sourceName(A.sourceName)
   /*!
     Copy constructor
@@ -138,6 +139,7 @@ Simulation::operator=(const Simulation& A)
       cmdLine=A.cmdLine;
       DB=A.DB;
       TList=A.TList;
+      cellDNF=A.cellDNF;
       OList=A.OList;
       cellOutOrder=A.cellOutOrder;
       voidCells=A.voidCells;
@@ -1456,21 +1458,31 @@ Simulation::makeObjectsDNF()
 {
   ELog::RegMethod RegA("Simulation","makeObjectsDNF");
 
-  ELog::EM<<"MAKE OBJECT DNF"<<ELog::endDiag;
-  for(OTYPE::value_type& OC : OList)
+  if (cellDNF)
     {
-      MonteCarlo::Object* CPtr = OC.second;
-      ELog::EM<<"Cell -- "<<CPtr->str()<<ELog::endDiag;
-      MonteCarlo::Algebra AX;
-      AX.setFunctionObjStr(CPtr->cellCompStr());
-      AX.expandBracket();
-      if (!CPtr->procString(AX.writeMCNPX()))
-	throw ColErr::InvalidLine(AX.writeMCNPX(),"Algebra ExpandBracket");
-      ELog::EM<<"Cell -- "<<AX<<ELog::endDiag;
-      ELog::EM<<"Cell -- "<<CPtr->str()<<ELog::endDiag;
-      const HeadRule& HR=CPtr->getHeadRule();
-      ELog::EM<<"FLUK -- "<<HR.displayFluka()<<ELog::endDiag;
-	    
+      for(OTYPE::value_type& OC : OList)
+	{
+	  MonteCarlo::Object* CPtr = OC.second;
+	  if (!CPtr->isPlaceHold())
+	    {
+	      MonteCarlo::Algebra AX;
+	      AX.setFunctionObjStr(CPtr->cellCompStr());
+	      const size_t NE=AX.countComponents();
+	      if (NE<=cellDNF)
+		{
+		  ELog::EM<<"Cell "<<CPtr->getName()<<ELog::endDiag;
+		  AX.expandBracket();
+		  if (!CPtr->procString(AX.writeMCNPX()))
+		    {
+		      ELog::EM<<"Cell ="<<CPtr->str()<<ELog::endDiag;
+		      throw ColErr::InvalidLine(AX.writeMCNPX(),
+						"Algebra ExpandBracket");
+		    }
+		}
+	      else
+		  ELog::EM<<"NOT Cell "<<CPtr->getName()<<ELog::endDiag;
+	    }
+	}
     }
   return;
 }

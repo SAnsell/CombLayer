@@ -57,6 +57,7 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "TallyCreate.h"
 #include "NList.h"
 #include "NRange.h"
@@ -85,8 +86,22 @@ createVTK(const mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("createVTK","createVTK");
   /*
-  if (IParam.flag("md5") || IParam.flag("vtk"))
+  if (IParam.flag("md5"))
+    {}
+
+  if (IParam.flag("vtk"))
     {
+      if (
+
+
+
+
+    }
+
+
+      
+      if (IParam.
+      if (S
       const tallySystem::tmeshTally* MPtr=
 	dynamic_cast<const tallySystem::tmeshTally*>(SimPtr->getTally(1));
       if (!MPtr)

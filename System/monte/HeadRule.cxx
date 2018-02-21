@@ -3,7 +3,7 @@
  
  * File:   monte/HeadRule.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1462,11 +1462,13 @@ HeadRule::displayFluka() const
   */
 {
   if (!HeadNode) return "";
-  
+
+  // NOTE if HEADNode union no-need fo router bracket
   // union test
-  return (HeadNode->type()== -1) ? 
-    "("+HeadNode->displayFluka()+")" :
-    " "+HeadNode->displayFluka()+" ";
+  return HeadNode->displayFluka();
+  // return (HeadNode->type()== -1) ? 
+  //   "("+HeadNode->displayFluka()+")" :
+  //   " "+HeadNode->displayFluka()+" ";
 }
 
 std::string 

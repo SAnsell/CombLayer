@@ -58,7 +58,7 @@ enum JoinForm { Inter=0,Union=1 };
 class Acomp
 {
  private:
-  
+
   int Intersect;                ///<  Union/Intersection (0,1)
   std::vector<int> Units;       ///< Units in list
   std::vector<Acomp> Comp;      ///< Components in list
@@ -93,27 +93,9 @@ class Acomp
   static int hasPlus(const std::string&);
   static size_t checkWrongChar(const std::string&);
   void addTokens(const std::string&);
-  
- public:
 
-  Acomp(const JoinForm);
-  explicit Acomp(const int);   
-  Acomp(const Acomp&);
-  Acomp& operator=(const Acomp&); 
-  int operator==(const Acomp&) const; 
-  int operator!=(const Acomp&) const;  
-  int operator<(const Acomp&) const;       
-  int operator>(const Acomp&) const;
-  Acomp& operator+=(const Acomp&);
-  Acomp& operator-=(const Acomp&);
-  Acomp& operator*=(const Acomp&);
-  ~Acomp();
-
-  // AcompExtra
   void upMoveComp();
-  void upMoveCompDEBUG();
-  int merge();
-  Acomp componentExpand(const int,const Acomp&) const;
+  void removeNull();
   void primativeAddItem(const Acomp&);
 
   Acomp expandIII(const Acomp&) const;
@@ -134,11 +116,32 @@ class Acomp
   static Acomp unionCombine(const Acomp&,const Acomp&);
 
   
+ public:
+
+  Acomp(const JoinForm);
+  explicit Acomp(const int);   
+  Acomp(const Acomp&);
+  Acomp& operator=(const Acomp&); 
+  int operator==(const Acomp&) const; 
+  int operator!=(const Acomp&) const;  
+  int operator<(const Acomp&) const;       
+  int operator>(const Acomp&) const;
+  Acomp& operator+=(const Acomp&);
+  Acomp& operator-=(const Acomp&);
+  Acomp& operator*=(const Acomp&);
+  ~Acomp();
+
+  // AcompExtra
+  Acomp componentExpand(const int,const Acomp&) const;
+  int merge();
+  bool makeNull();
+  
   int getSinglet() const;   
   const Acomp* itemC(const size_t) const;
   int itemN(const size_t) const;   
 
-  std::pair<int,int> size() const;
+  size_t countComponents() const;
+  std::pair<size_t,size_t> size() const;
   int isSimple() const;
   int isDNF() const;               
   int isCNF() const;               
@@ -149,8 +152,10 @@ class Acomp
   /// Deterimine if inter/union
   int isInter() const { return Intersect; }  
   int isTrue(const std::map<int,int>&) const;   
+  bool isNumberSorted() const;
+  
+  void Sort();
 
-  void Sort();                                    
   void getLiterals(std::map<int,int>&) const;     
   void getAbsLiterals(std::map<int,int>&) const;  
   std::vector<int> getKeys() const;      

@@ -44,7 +44,7 @@ class SimFLUKA : public Simulation
  private:
 
   const std::string alignment;    ///< the alignemnt string
-
+  
   FTallyTYPE FTItem;              ///< Fluka tally map
 
 

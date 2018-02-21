@@ -229,7 +229,7 @@ OpticsBeamline::buildObjects(Simulation& System)
 
   pipeInit->addInsertCell(ContainedComp::getInsertCells());
   pipeInit->createAll(System,*this,0);
-  return;
+
   
   ionPA->addInsertCell(ContainedComp::getInsertCells());
   ionPA->setFront(*pipeInit,2);
@@ -242,8 +242,10 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeA->addInsertCell(ContainedComp::getInsertCells());
   pipeA->setFront(*triggerPipe,2);
   pipeA->createAll(System,*triggerPipe,2);
-
+  lastComp=pipeA;
+  
   return;
+  
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
   filterBox->createAll(System,*pipeA,2);
@@ -376,7 +378,7 @@ OpticsBeamline::createLinks()
    */
 {
   setLinkSignedCopy(0,*pipeInit,1);
-  setLinkSignedCopy(1,*gateE,2);
+  setLinkSignedCopy(1,*lastComp,2);
   return;
 }
   

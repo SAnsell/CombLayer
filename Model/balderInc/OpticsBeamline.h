@@ -33,7 +33,6 @@ namespace constructSystem
   class PortTube;
   class GateValve;
   class JawValve;
-    
 }
 
 
@@ -69,6 +68,8 @@ class OpticsBeamline :
 {
  private:
 
+  /// Shared point to use for last component:
+  std::shared_ptr<attachSystem::FixedComp> lastComp;
 
   /// Real Ion pump (KF40) 10cm vertioal
   std::shared_ptr<constructSystem::VacuumPipe> pipeInit;

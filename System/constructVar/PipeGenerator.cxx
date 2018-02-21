@@ -310,7 +310,8 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
 
   realWindowRadius=std::min(realWindowRadius,realFlangeARadius);
   realWindowRadius=std::min(realWindowRadius,realFlangeBRadius);
-
+  const size_t activeWFlag((windowThick<Geometry::zeroTol) ? 0 : 3);
+    
     // VACUUM PIPES:
   Control.addVariable(keyName+"YStep",yStep);   // step + flange
   if (!pipeType)
@@ -327,7 +328,9 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"FlangeFrontLength",flangeALen);
   Control.addVariable(keyName+"FlangeBackLength",flangeBLen);
   Control.addVariable(keyName+"FeMat",pipeMat);
-  Control.addVariable(keyName+"WindowActive",3);
+
+
+  Control.addVariable(keyName+"WindowActive",activeWFlag);
 
   Control.addVariable(keyName+"WindowRadius",realWindowRadius);
   

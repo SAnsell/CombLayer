@@ -410,11 +410,14 @@ createSimulation(inputParam& IParam,
     SimPtr=new SimMonte; 
   else
     {
-      ELog::EM<<"ASFDSADFSADF "<<ELog::endDiag;
       SimMCNP* SMCPtr=new SimMCNP;
       SMCPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
       SimPtr=SMCPtr;
     }
+
+  // DNF split the cells
+  SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
+		     
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 

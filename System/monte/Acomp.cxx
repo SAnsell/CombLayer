@@ -48,6 +48,7 @@
 #include "Matrix.h"
 #include "RotCounter.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 
 namespace MonteCarlo 
@@ -66,7 +67,6 @@ operator<<(std::ostream& OX,const Acomp& A)
   OX<<A.display();
   return OX;
 }
- 
 
 //
 // ------------- ACOMP ---------------- 
@@ -345,7 +345,7 @@ Acomp::addComp(const Acomp& AX)
     \param AX :: Acomp component to add
   */
 {
-  std::pair<int,int> Stype=AX.size();
+  const std::pair<size_t,size_t> Stype=AX.size();
   if (Stype.first+Stype.second==0)
     throw ColErr::ExBase(-2,"Acomp::addComp Pair Count zero");
 
@@ -532,6 +532,8 @@ Acomp::merge()
 	  Out++;
 	  Units.insert(Units.end(),AC.Units.begin(),AC.Units.end());
 	  AC.Units.clear();
+	  AcompTools::unitSort(Units);
+
 
 	  // move up AC.comp units
 	  if (!AC.Comp.empty())
@@ -569,7 +571,7 @@ Acomp::copySimilar(const Acomp& A)
   if (!A.Units.empty())
     {
       Units.insert(Units.end(),A.Units.begin(),A.Units.end());
-      sort(Units.begin(),Units.end());
+      AcompTools::unitSort(Units);
     }
 
   // Add components
@@ -602,7 +604,7 @@ Acomp::addUnit(const std::vector<int>& Index,
 	  Units.push_back(S*Index[i]);
 	}
     }
-  sort(Units.begin(),Units.end());
+  AcompTools::unitSort(Units);
   return;
 }
 
@@ -677,6 +679,30 @@ Acomp::assignCNF(const std::vector<int>& Index,const std::vector<BnId>& A)
 //   PUBLIC FUNCTIONS 
 // -------------------------------------
 
+bool
+Acomp::isNumberSorted() const
+  /*!
+    Fast check to determine if system is sorted
+  */
+{
+  int prev(0);
+  for(const int& A : Units)
+    {
+      if (!AcompTools::unitsLessOrder(prev,A))
+	{
+	  ELog::EM<<"Failed on "<<*this<<ELog::endErr;
+	  return 0;
+	}
+      prev=A;
+    }
+  
+  for(const Acomp& AC : Comp)
+    if (!AC.isNumberSorted())
+      return 0;
+  
+  return 1;
+}
+
 void
 Acomp::Sort()
   /*!
@@ -684,7 +710,7 @@ Acomp::Sort()
     Decends down the Comp Tree.
   */
 {
-  std::sort(Units.begin(),Units.end());
+  AcompTools::unitSort(Units);
   // Sort each decending object first
   for(Acomp& AC : Comp)
     AC.Sort();
@@ -906,7 +932,7 @@ Acomp::removeEqComp()
 
   // Units are sorted
 
-  sort(Units.begin(),Units.end());
+  AcompTools::unitSort(Units);
   std::vector<int>::iterator ux=unique(Units.begin(),Units.end());
   cnt+=std::distance(ux,Units.end());
   Units.erase(ux,Units.end());
@@ -937,7 +963,7 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
   std::vector<BnId>::iterator uend;     // itor to remove unique
   // Need to make an initial copy.
   Work=DNFobj;
-  ELog::EM<<"ASDFSAFSAFSDF == "<<ELog::endDiag;
+
   int cnt(0);
   do
     {
@@ -1514,7 +1540,7 @@ Acomp::joinDepth()
   ELog::RegMethod RegA("Acomp","joinDepth");
   
   // Deal with case that this is a singular object::
-  const std::pair<int,int> topSize(this->size());
+  const std::pair<size_t,size_t> topSize(this->size());
   if ((topSize.first+topSize.second)==0)
     throw ColErr::ExBase(-2,"Pair Count wrong");
    //SINGULAR
@@ -1536,7 +1562,7 @@ Acomp::joinDepth()
   for(size_t ix=0;ix<Comp.size();ix++)
     {
       const Acomp& AX=Comp[ix];
-      const std::pair<int,int> compSize(AX.size());
+      const std::pair<size_t,size_t> compSize(AX.size());
       if ((compSize.first+compSize.second)==0)      
 	throw ColErr::ExBase(-2,"Pair Count wrong");
 
@@ -1688,7 +1714,7 @@ Acomp::setString(const std::string& Line)
   else
     processUnion(Ln);
 
-  sort(Units.begin(),Units.end());      /// Resort the list.
+  AcompTools::unitSort(Units);
   return;
 }
 
@@ -1706,15 +1732,28 @@ Acomp::orString(const std::string& Line)
   return;
 }
 
-std::pair<int,int>
+size_t
+Acomp::countComponents() const
+  /*!
+    Recursive method of counting components
+    \return number of components
+  */
+{
+  size_t out(!Units.empty() ? 1 : 0);
+  for(const Acomp& AC : Comp)
+    out+=AC.countComponents();
+
+  return out;
+}    
+
+std::pair<size_t,size_t>
 Acomp::size() const
   /*!
     Gets the size of the Units and the Comp
     \returns size of Unit, Comp
   */
 {
-  return std::pair<int,int>(static_cast<int>(Units.size()),
-			    static_cast<int>(Comp.size()));
+  return std::pair<size_t,size_t>(Units.size(),Comp.size());
 }
 
 int
@@ -1762,17 +1801,53 @@ Acomp::upMoveComp()
     Move the comp unit up if it is signular
   */
 {
+  const Acomp& AC = Comp[0];
   if (Comp.size()==1 && Units.empty())
     {
-      const Acomp& AC=Comp[0];
       Units=AC.Units;
       // add in and then remove first [necessary ??]
       Intersect=AC.Intersect;
       Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
       Comp.erase(Comp.begin());
-      Sort();
     }
   return;
+}
+
+bool
+Acomp::makeNull()
+  /*!
+    Remove Null
+    Currently a very very simple system to remove null intersects
+    \return true if object is found null and all lower components are
+    deleted [necessary???]
+  */
+{
+  isNumberSorted();
+  // ASSUMES sorted
+  if (Intersect)
+    {
+      int prev(0);	      
+      for(const int N : Units)
+	{
+	  if (prev+N==0)
+	    {
+	      Units.clear();
+	      Comp.clear();
+	      return 1;
+	    }
+	  prev=N;
+	  
+	}
+    }
+  // this must be carried out since Acomp might be intersect
+  // even if above is not
+  std::vector<Acomp>::iterator ac=
+    std::remove_if(Comp.begin(),Comp.end(),
+		   [&](Acomp& AC)->bool
+		   { return AC.makeNull();});
+  Comp.erase(ac,Comp.end());
+
+  return 0;
 }
 
 
@@ -1790,7 +1865,7 @@ Acomp::complement()
   Intersect=1-Intersect;
   transform(Units.begin(),Units.end(),
             Units.begin(),std::bind2nd(std::multiplies<int>(),-1) );
-  sort(Units.begin(),Units.end());      /// Resort the list. use reverse?
+  AcompTools::unitSort(Units);    /// Resort the list. use reverse?
 
   for_each(Comp.begin(),Comp.end(),
 	    std::mem_fun_ref(&Acomp::complement) );

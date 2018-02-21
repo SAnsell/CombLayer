@@ -242,7 +242,13 @@ VacuumPipe::populate(const FuncDataBase& Control)
     (keyName+"WindowBackWidth",keyName+"WindowWidth",-1.0);
   windowBack.mat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"WindowBackMat",keyName+"WindowMat",0);
-  
+
+  if ((activeWindow & 1) && windowFront.thick<Geometry::zeroTol)
+    activeWindow ^= 1;
+  if ((activeWindow & 2) && windowBack.thick<Geometry::zeroTol)
+    activeWindow ^= 2;
+
+
   if ((activeWindow & 1) &&
       (windowFront.radius<0.0 &&
        (windowFront.width<0.0 || windowFront.height<0.0)))
@@ -254,7 +260,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
        (windowBack.width<0.0 || windowBack.height<0.0)))
     throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
                                  "windowBack:Radius or Height/Width");
-  
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
@@ -540,7 +546,6 @@ VacuumPipe::createObjects(Simulation& System)
       windowBackExclude=WHR.display();
     }
 
-  
   // Void
   Out=ModelSupport::getSetComposite(SMap,vacIndex," -7 3 -4 5 -6");
   HeadRule InnerVoid(Out);

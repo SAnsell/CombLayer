@@ -200,12 +200,26 @@ Algebra::operator*(const Algebra& M) const
   return T;
 }
 
+size_t
+Algebra::countComponents() const
+  /*!
+    Count the nubmer of components in the object
+    \return compennts size
+  */
+{
+  ELog::RegMethod RegA("Algebra","countComponents");
+  
+  return F.countComponents();
+}
+  
+  
 void
 Algebra::expandBracket()
   /*!
     Expand all the brackets into DNF form
   */
 {
+  F.Sort();
   F.expandBracket();
   return;
 }

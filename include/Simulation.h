@@ -83,12 +83,13 @@ class Simulation
 
   std::string inputFile;                ///< Input file
   std::string cmdLine;                  ///< Command line : historical recall 
-
+  
   FuncDataBase DB;                      ///< DataBase of variables
   ModelSupport::ObjSurfMap* OSMPtr;     ///< Object surface map [if required]
 
   TransTYPE TList;                      ///< Transforms List (key=Transform)
 
+  size_t cellDNF;                       ///< Cells to be converted into DNF
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
@@ -122,7 +123,9 @@ class Simulation
   int applyTransforms();
   
   int isValidCell(const int,const Geometry::Vec3D&) const;
-  
+
+  /// set cell DNF
+  void setCellDNF(const size_t C) { cellDNF=C; }
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,

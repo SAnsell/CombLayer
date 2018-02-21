@@ -65,6 +65,7 @@ class Algebra
   Algebra operator*(const Algebra&) const;
   int logicalEqual(const Algebra&) const;
 
+  size_t countComponents() const;
   void expandBracket();
   void merge();
   void Complement();
