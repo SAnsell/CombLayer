@@ -242,9 +242,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeA->addInsertCell(ContainedComp::getInsertCells());
   pipeA->setFront(*triggerPipe,2);
   pipeA->createAll(System,*triggerPipe,2);
-  lastComp=pipeA;
-  
-  return;
   
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
@@ -367,6 +364,8 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateE->addInsertCell(ContainedComp::getInsertCells());
   gateE->setFront(*pipeG,2);
   gateE->createAll(System,*pipeG,2);
+
+  lastComp=gateE;  
 
   return;
 }

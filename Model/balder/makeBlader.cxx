@@ -165,7 +165,7 @@ makeBalder::build(Simulation& System,
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
-  return;
+
   joinPipeB->addInsertCell(voidCell);
   joinPipeB->addInsertCell(opticsHut->getCell("Void"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));

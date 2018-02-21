@@ -200,8 +200,6 @@ createVTK(const mainSystem::inputParam& IParam,
       return 1;
     }
   
-      if (IParam.flag("vtk"))
-	{
     }
   */
   return 0;
