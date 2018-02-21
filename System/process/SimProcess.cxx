@@ -130,6 +130,7 @@ writeIndexSimFLUKA(SimFLUKA& System,
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
   
   System.prepareWrite();
+  System.makeObjectsDNF();
   System.write(OName+std::to_string(Number+1)+".inp");
   
   return;

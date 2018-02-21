@@ -200,6 +200,7 @@ class Simulation
   void renumberAll();
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
+  void makeObjectsDNF();
   void prepareWrite();
 
   virtual void substituteAllSurface(const int,const int);

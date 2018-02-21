@@ -1762,7 +1762,6 @@ Acomp::upMoveComp()
     Move the comp unit up if it is signular
   */
 {
-
   if (Comp.size()==1 && Units.empty())
     {
       const Acomp& AC=Comp[0];

@@ -580,11 +580,9 @@ Simulation::removeComplements()
 	      MonteCarlo::Algebra AX;
 	      AX.setFunctionObjStr(workObj.cellStr(OList));
 	      if (!workObj.procString(AX.writeMCNPX()))
-		{
-		  ELog::EM<<"Error processing Algebra Complement : "
-			  <<ELog::endErr;
-		  throw ColErr::ExitAbort(RegA.getFull());
-		}
+		throw ColErr::InvalidLine(AX.writeMCNPX(),
+					  "Algebra Complement");
+
 	      workObj.populate();
 	      workObj.createSurfaceList();
 	    }
@@ -1446,6 +1444,33 @@ Simulation::voidObject(const std::string& ObjName)
       MonteCarlo::Qhull* QH=findQhull(cellN+i);
       if (!QH) return;
       QH->setMaterial(0);
+    }
+  return;
+}
+
+void
+Simulation::makeObjectsDNF()
+   /*!
+     Expand the objects into DNF form
+   */
+{
+  ELog::RegMethod RegA("Simulation","makeObjectsDNF");
+
+  ELog::EM<<"MAKE OBJECT DNF"<<ELog::endDiag;
+  for(OTYPE::value_type& OC : OList)
+    {
+      MonteCarlo::Object* CPtr = OC.second;
+      ELog::EM<<"Cell -- "<<CPtr->str()<<ELog::endDiag;
+      MonteCarlo::Algebra AX;
+      AX.setFunctionObjStr(CPtr->cellCompStr());
+      AX.expandBracket();
+      if (!CPtr->procString(AX.writeMCNPX()))
+	throw ColErr::InvalidLine(AX.writeMCNPX(),"Algebra ExpandBracket");
+      ELog::EM<<"Cell -- "<<AX<<ELog::endDiag;
+      ELog::EM<<"Cell -- "<<CPtr->str()<<ELog::endDiag;
+      const HeadRule& HR=CPtr->getHeadRule();
+      ELog::EM<<"FLUK -- "<<HR.displayFluka()<<ELog::endDiag;
+	    
     }
   return;
 }

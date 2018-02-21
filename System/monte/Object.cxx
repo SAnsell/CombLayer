@@ -1320,25 +1320,9 @@ Object::writeFLUKA(std::ostream& OX) const
       std::string objName=OR.inRenumberRange(ObjName);
       if (objName.empty()) objName="global";
 
-      //      Algebra AX;
-      //      AX.setFunctionObjStr(HRule.display());
-      //      AX.makeDNF();
-
       std::ostringstream cx;
       cx<<"* "<<objName<<" "<<ObjName<<std::endl;
       cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
-      // const HeadRule AXHRule(HRule.display());
-      // ELog::EM<<"----"<<ELog::endDiag;
-      // ELog::EM<<HRule.display()<<ELog::endDiag;
-      // ELog::EM<<HRule.displayFluka()<<ELog::endDiag;
-      // ELog::EM<<AXHRule.displayFluka()<<ELog::endDiag;
-
-      // ELog::EM<<"MAKE DNF"<<ELog::endDiag;
-      // ELog::EM<<"MAKE DNF"<<ELog::endDiag;
-      // AX.makeDNF();
-      // ELog::EM<<AX.writeMCNPX()<<ELog::endDiag;
-
-      // ELog::EM<<"----"<<ELog::endDiag;
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);
     }

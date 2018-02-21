@@ -389,8 +389,11 @@ Acomp::expandBracket()
     Expand all the Intersection brackets
   */
 {
-  ELog::RegMethod RegA("Acomp","expandBracket");
 
+  ELog::RegMethod RegA("Acomp","expandBracket");
+  static int cnt(0);
+
+  cnt++;
   // all lower units
   for(Acomp& AC : Comp)
     AC.expandBracket();
@@ -404,15 +407,20 @@ Acomp::expandBracket()
 	  Comp[0]=N.componentExpand(1,Comp[0]);
 	  Units.clear();
 	}
+
       while (Comp.size()>1)
 	{
+	  if (Comp.size()>10)
+	    ELog::EM<<"Cmt == "<<Comp.size()<<ELog::endDiag;
 	  Comp[0]=Comp[0].componentExpand(1,Comp[1]);
 	  Comp.erase(Comp.begin()+1);
 	}
     }
+
   upMoveComp();
   merge();
-  Sort();
+
+  
   return;
 }
 

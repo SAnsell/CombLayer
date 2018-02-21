@@ -162,7 +162,7 @@ makeBalder::build(Simulation& System,
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
   joinPipe->setFront(*wigglerBox,2);
   joinPipe->createAll(System,*wigglerBox,2);
-
+  return;
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
 
