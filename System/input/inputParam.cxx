@@ -559,7 +559,7 @@ inputParam::getCntVec3D(const std::string& K,
   const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
-  
+
   return IPtr->getCntVec3D(setIndex,itemIndex);
 }
 
@@ -617,6 +617,7 @@ inputParam::outputItem(const std::string& K,
 		       const size_t itemIndex,
 		       const std::string& ErrMessage) const
   /*!
+    \todo REPLACE WITH getValueError
     Get a value based on key
     \param K :: Key to seach
     \param setIndex :: set Value
