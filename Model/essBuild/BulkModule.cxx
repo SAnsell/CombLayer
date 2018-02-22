@@ -78,6 +78,7 @@
 #include "ContainedComp.h"
 #include "BaseMap.h"
 #include "SurfMap.h"
+#include "CellMap.h"
 #include "World.h"
 #include "BulkModule.h"
 
@@ -86,7 +87,7 @@ namespace essSystem
 
 BulkModule::BulkModule(const std::string& Key)  :
   attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,9),
-  attachSystem::SurfMap(),
+  attachSystem::SurfMap(),attachSystem::CellMap(),
   bulkIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(bulkIndex+1)
   /*!
@@ -97,7 +98,7 @@ BulkModule::BulkModule(const std::string& Key)  :
 
 BulkModule::BulkModule(const BulkModule& A) : 
   attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
-  attachSystem::SurfMap(A),
+  attachSystem::SurfMap(A),attachSystem::CellMap(A),
   bulkIndex(A.bulkIndex),cellIndex(A.cellIndex),
   nLayer(A.nLayer),radius(A.radius),height(A.height),depth(A.depth),
   COffset(A.COffset),Mat(A.Mat)
@@ -120,6 +121,7 @@ BulkModule::operator=(const BulkModule& A)
       attachSystem::ContainedComp::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::SurfMap::operator=(A);
+      attachSystem::CellMap::operator=(A);
       cellIndex=A.cellIndex;
       nLayer=A.nLayer;
       radius=A.radius;
@@ -239,8 +241,12 @@ BulkModule::createObjects(Simulation& System,
       if (i)
 	OutX=ModelSupport::getComposite(SMap,RI-10,"(-5:6:7)");
       else
-	OutX=CC.getExclude();
+	{
+	  OutX=CC.getExclude();
+	  setCell("Inner", cellIndex);
+	}
       System.addCell(MonteCarlo::Qhull(cellIndex++,Mat[i],0.0,Out+OutX));
+
       RI+=10;
     }
   
