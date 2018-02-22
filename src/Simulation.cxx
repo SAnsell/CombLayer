@@ -1460,6 +1460,8 @@ Simulation::makeObjectsDNF()
 
   if (cellDNF)
     {
+      size_t cellIndex(0);
+      ELog::EM<<"Cells :"<<ELog::endDiag;;
       for(OTYPE::value_type& OC : OList)
 	{
 	  MonteCarlo::Object* CPtr = OC.second;
@@ -1467,22 +1469,33 @@ Simulation::makeObjectsDNF()
 	    {
 	      MonteCarlo::Algebra AX;
 	      AX.setFunctionObjStr(CPtr->cellCompStr());
-	      const size_t NE=AX.countComponents();
-	      if (NE<=cellDNF)
+	      //	      const size_t NE=AX.countComponents();
+	      const size_t NL=AX.countLiterals();
+	      if (NL<=cellDNF)
 		{
-		  ELog::EM<<"Cell "<<CPtr->getName()<<ELog::endDiag;
+		  cellIndex++;
+		  ELog::EM<<CPtr->getName()<<"["<<NL<<"] ";
+		  if (!(cellIndex % 8)) ELog::EM<<ELog::endDiag;
 		  AX.expandBracket();
 		  if (!CPtr->procString(AX.writeMCNPX()))
 		    {
-		      ELog::EM<<"Cell ="<<CPtr->str()<<ELog::endDiag;
+		      ELog::EM<<ELog::endDiag;
+		      ELog::EM<<"Empty Cell ="<<CPtr->str()<<ELog::endCrit;
 		      throw ColErr::InvalidLine(AX.writeMCNPX(),
 						"Algebra ExpandBracket");
 		    }
 		}
 	      else
-		  ELog::EM<<"NOT Cell "<<CPtr->getName()<<ELog::endDiag;
+		{
+		  if (cellIndex % 8) ELog::EM<<ELog::endDiag;
+		  ELog::EM<<"\nNOT Cell "<<CPtr->getName()
+			  <<"["<<NL<<"]"<<ELog::endCrit;
+		  ELog::EM<<"\n";
+		  cellIndex=0;
+		}
 	    }
 	}
+      ELog::EM<<"\n END DNF "<<ELog::endDiag;
     }
   return;
 }

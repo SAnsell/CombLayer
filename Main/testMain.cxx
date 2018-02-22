@@ -1,5 +1,5 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  Comblayer : MCNP(X) Input builder
  
  * File:   Main/testMain.cxx
  *
@@ -238,7 +238,7 @@ main(int argc,char* argv[])
       else
 	retVal=startTest(section,type,extra);
 
-      if (section*type*extra)
+      if ( section*type*extra != 0)
 	{
 	  ELog::EM<<ELog::endDiag;
       

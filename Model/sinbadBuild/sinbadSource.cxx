@@ -624,7 +624,7 @@ sinbadSource::createSourceSinbad(SDef::Source& sourceCard)
   // std::cout<< "EE  "<<Xerg7[1]<<" EEE "<<Yerg7[1]<< "AA "<<Xerg7[642]<< "AAA "<<Yerg7[642]<<std::endl;
   SDef::SrcData D1(1);
   SDef::SrcInfo SI1('A');
-  SDef::SrcProb SP1('  ');
+  SDef::SrcProb SP1(' ');
 
  for(unsigned ii=1;ii<=642;ii++) 
    {  

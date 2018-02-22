@@ -270,10 +270,16 @@ PortTube::createObjects(Simulation& System)
   makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
 
   // plates front/back
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 -17 117 ");
-  makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -17 217 ");
-  makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+  if ((inPortRadius+inPortThick-radius-wallThick)>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 -17 117 ");
+      makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
+    }
+  if ((outPortRadius+outPortThick-radius-wallThick)>Geometry::zeroTol)
+    {
+      Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -17 217 ");
+      makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
+    }
 
   // port:
   const std::string frontSurf(frontRule());
