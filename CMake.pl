@@ -8,7 +8,7 @@ use strict;
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
 		"sns","reactor","t1MarkII","essBeamline","bilbau",
-		"filter","singleItem","testMain"); 
+		"filter","singleItem","balder","testMain"); 
 
 
 
@@ -78,9 +78,10 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "trex","vor","vespa","common",
 			     "shortDream","shortNmx","shortOdin","longLoki",
 			     "commonVar","simpleItem","physics","simMC",
-			     "essConstruct",
+			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-			     "insertUnit","tally","source","instrument","work"
+			     "insertUnit","tally","source","instrument",
+			     "work"
     	 	             ]);
 
 #$gM->addDepUnit("linac",
@@ -95,27 +96,31 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 #		]);
 
 $gM->addDepUnit("essBeamline",
-		             ["essBuild","visit","src","simMC",
-			     "beamline","physics","support",
-			     "input","instrument","source","monte",
-			     "funcBase","log","tally","construct",
-			     "crystal","transport","scatMat","md5",
-			     "endf","process","world","work","insertUnit",
-			     "monte","geometry","mersenne","src","xml","poly",
-     		             "weights","global","attachComp","visit",
-			      "essConstruct",
-			     "beer","bifrost","cspec","dream","estia",
+                             ["essBuild","beamline","support","input",
+			     "funcBase","log","construct","md5",
+			     "process","world","monte","geometry",
+                             "mersenne","src","xml","poly","weights",
+			      "global","attachComp","visit","essConstruct",
+                             "beer","bifrost","cspec","dream","estia",
 			     "freia","heimdal","loki","magic","miracles",
-			     "nmx","nnbar","odin","skadi","testBeam","trex",
-			     "vor","vespa","common",
-			      "shortDream","shortNmx","shortOdin",
-  
-     		            "physics","simMC","transport","scatMat",
-      			     "essConstruct","source","tally","work",
+			     "nmx","nnbar","odin","skadi","testBeam",
+			     "trex","vor","vespa","common",
+			     "shortDream","shortNmx","shortOdin","longLoki",
+			     "commonVar","simpleItem","physics","simMC",
+			     "constructVar","essConstruct","construct",
 			     "transport","scatMat","endf","crystal",
-                             "instrument",
-			     "longLoki","commonVar","simpleItem"
+			     "insertUnit","tally","source","instrument",
+			     "work"
     	 	             ]);
+$gM->addDepUnit("balder", ["balder","visit","src","simMC",
+			   "construct","physics","input","process",
+			   "transport","scatMat","endf","crystal",
+			   "source","monte","funcBase","log","monte",
+			   "tally","geometry","mersenne","src","world",
+			   "work","xml","poly","support","weights",
+			   "insertUnit","md5","global","constructVar",
+			   "attachComp","visit","poly"]);
+
 
 $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
 			   "construct","physics","input","process",
@@ -124,7 +129,7 @@ $gM->addDepUnit("filter", ["filter","photon","visit","src","simMC",
 			   "tally","geometry","mersenne","src","world",
 			   "work","xml","poly","support","weights",
    		           "physics","simMC","transport","scatMat",
-			   "endf","crystal",
+			   "endf","crystal","work",
 			   "insertUnit","md5","global","attachComp",
 			   "visit","poly"]);
 
@@ -260,7 +265,7 @@ $gM->addDepUnit("pipe", ["pipeBuild","visit","src","simMC",
 		         "physics","simMC",
                          "transport","scatMat","endf","crystal",
 			 "insertUnit","md5","global",
-			 "attachComp","visit","poly"]);
+			 "attachComp","visit","poly","construct"]);
 
 $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src",
 			       "construct","physics","input","process",
@@ -271,7 +276,8 @@ $gM->addDepUnit("singleItem", ["singleItemBuild","visit","src",
 			       "physics","simMC","transport","scatMat",
 			       "endf","crystal",
 			       "md5","global","attachComp","visit","poly",
-			       "essConstruct","insertUnit","commonVar"]);
+			       "essConstruct","insertUnit","commonVar",
+		               "construct"]);
 
 $gM->addDepUnit("ts1layer", ["build","visit","chip","moderator","build",
 			     "zoom","src","physics","input","process",
@@ -294,13 +300,13 @@ $gM->addDepUnit("t1Real",   ["t1Build","build","visit",
 
 $gM->addDepUnit("reactor",  ["delft","visit","src","simMC","physics",
 			     "input","source","monte","funcBase","log",
-			     "construct","transport",
-			     "scatMat","crystal","endf","process","tally",
-			     "world","monte","geometry","mersenne","src",
-      		             "physics","simMC","transport","scatMat",
-			     "endf","crystal","source",
-			     "xml","poly","support","weights","md5","work",
-			     "insertUnit","global","attachComp","visit"]);
+			     "construct","transport","scatMat","crystal",
+			     "endf","process","tally","world","monte",
+			     "geometry","mersenne","src","physics",
+			     "simMC","transport","scatMat","endf",
+			     "crystal","source","xml","poly","support",
+			     "weights","md5","work","insertUnit","global",
+			     "attachComp","visit"]);
 
 $gM->addDepUnit("siMod",    ["visit","src","physics","input","source","monte",
 			     "funcBase","log","tally","construct","crystal",

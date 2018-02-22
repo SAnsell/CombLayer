@@ -294,7 +294,7 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("GaussBeamSource","write");
+  ELog::RegMethod RegA("GaussBeamSource","writePHITS");
 
   const long int nStep(20);
   
@@ -302,12 +302,9 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
   // PHITS are z axis sources
 
   // Construct a transform to build the source
-
-
   
   const double xStep=3.0*xWidth/static_cast<double>(nStep);
   const double zStep=3.0*zWidth/static_cast<double>(nStep);
-
 
   const double xSigma = sqrt(8.0*std::log(2.0)) * xWidth;
   const double zSigma = sqrt(8.0*std::log(2.0)) * zWidth;

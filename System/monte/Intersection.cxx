@@ -350,14 +350,14 @@ Intersection::displayFluka() const
   if (!A || !B)
     throw ColErr::ExBase(2,"Intersection::displayFluka incomplete type");
   if (A->type()==-1)
-    out="( "+A->displayFluka()+" )";
+    out="+( "+A->displayFluka()+" )";
   else
     out=A->displayFluka();
 
   out+=" ";
   
   if (B->type()==-1)
-    out+="( "+B->displayFluka()+" )";
+    out+="+( "+B->displayFluka()+" )";
   else
     out+=B->displayFluka();
   return out;

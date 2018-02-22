@@ -1,0 +1,39 @@
+title_lines
+  BIFROST chopper Windows
+  test 
+
+files
+  mat_file     ChopA1.o
+  mcnpx_outp   ChopA*.o 
+  mcnpx_histp  ChopA1*.h 
+  htape_exe    /path/to/htape3x
+  cinder_exe   /path/to/cinder
+  tabcode_exe  /path/to/tabcode
+  library      /path/to/c90lib0742
+
+run_options
+  dname    Cell
+  dcounter 1
+
+cinder_options
+  tst      1e-5
+  signif   1e-16
+  kchn     0
+  klib     0
+  nfe      3
+  nosame   0
+  russ     1
+
+normalization
+  snorm  2.66e10
+  hnorm  1.2e9 
+
+history
+1 1.0E+00 5000 h 
+4 0.0E+00 1.0 h -1.0 d  -7.0 d -30.0 d -1.0 y
+
+
+cell_list  
+  A tally ChopA1.x 4
+  A tally ChopA1.x 14
+

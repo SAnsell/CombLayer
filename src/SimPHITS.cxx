@@ -49,6 +49,7 @@
 #include "support.h"
 #include "version.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -168,9 +169,9 @@ SimPHITS::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
+  OX<<"$ -----------------------------------------------------------"<<std::endl;
+  OX<<"$ ------------------- TALLY CARDS ---------------------------"<<std::endl;
+  OX<<"$ -----------------------------------------------------------"<<std::endl;
   // The totally insane line below does the following
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
@@ -221,12 +222,13 @@ SimPHITS::writeCells(std::ostream& OX) const
   for(mp=OList.begin();mp!=OList.end();mp++)
     {
       const double T=mp->second->getTemp();
-      if (std::abs(T-300.0)>1.0 || std::abs<double>(T)>1e-6)
+      if (std::abs(T-300.0)>1.0 && std::abs<double>(T)>1e-6)
 	{
 	  OX<<FmtStr % mp->second->getName() % (T*8.6173422e-5);
 	}
     }
-
+  OX<<std::endl;
+  
   return;
 }
 
@@ -330,7 +332,7 @@ SimPHITS::writePhysics(std::ostream& OX) const
       NWForm->writePHITSHead(OX);
     }
   
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"$ ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
 
   
   OX<<std::endl;  // MCNPX requires a blank line to terminate

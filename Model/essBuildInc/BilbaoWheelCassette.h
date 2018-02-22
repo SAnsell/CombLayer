@@ -46,7 +46,7 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   int cellIndex;                ///< Cell index
 
   int engActive;                ///< Engineering active flag
-  bool bricksActive;            ///< True if bricks are active
+  int bricksActive;            ///< True if bricks are active
 
   double wallThick;             ///< Side wall thickness
   double delta;                 ///< Angular width [deg]
@@ -63,7 +63,8 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double wallSegDelta;          ///< Wall angular width [deg] (for detailed wall geometry)
   double wallSegThick;          ///< Wall base thickness (for detailed wall geometry)
 
-  int mainMat;                  ///< main material
+  int homoWMat;     ///< Tungsten material for homogenized W bricks
+  int homoSteelMat; ///< Steel material for homogenized steel bricks
   int wallMat;                  ///< wall material
   int heMat;                    ///< Helium material
   long floor;                   ///< Floor link point
@@ -74,12 +75,17 @@ class BilbaoWheelCassette : public attachSystem::ContainedComp,
   double brickWidth; ///< Brick width
   double brickLength; ///< Brick length
   double brickGap; ///< Distance between bricks in the given segment
-  int brickMat; ///< Brick material
+  int brickSteelMat; ///< Steel Brick material
+  int brickWMat; ///< Tungsten Brick material
+  size_t nSteelRows; ///< Number of brick rows made from steel
   double pipeCellThick; ///< Thickness of the pipe cell
   int pipeCellMat; ///< Pipe cell homogenized material
 
+  double innerCylRadius; // radius of inner cylinder
+
   double getSegWallArea() const;
   double getSegWallThick() const;
+  double getBrickGapThick(const size_t&) const;
   void   buildBricks();
 
   void populate(const FuncDataBase&);

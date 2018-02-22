@@ -51,7 +51,7 @@ class Zaid
 
   bool operator==(const Zaid&) const;
 
-  bool isEquavilent(const size_t,const size_t,const char) const;
+  bool isEquivalent(const size_t,const size_t,const char) const;
   size_t setZaid(const std::string&);
   void setDensity(const double); 
   /// Set a tag number

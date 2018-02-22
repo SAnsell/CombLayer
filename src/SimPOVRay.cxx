@@ -48,6 +48,7 @@
 #include "mathSupport.h"
 #include "support.h"
 #include "Element.h"
+#include "Zaid.h"
 #include "MapSupport.h"
 #include "MXcards.h"
 #include "Material.h"
@@ -77,7 +78,6 @@ SimPOVRay::SimPOVRay() : Simulation()
   */
 {}
 
-
 SimPOVRay::SimPOVRay(const SimPOVRay& A) : Simulation(A)
  /*! 
    Copy constructor
@@ -99,8 +99,6 @@ SimPOVRay::operator=(const SimPOVRay& A)
     }
   return *this;
 }
-
-
 
 void
 SimPOVRay::writeCells(std::ostream& OX) const
@@ -158,6 +156,11 @@ SimPOVRay::writeMaterial(std::ostream& OX) const
 
   DB.writePOVRay(OX);
   
+  // Overwrite textures by a user-provided file
+  OX << "#if (file_exists(\"materials.inc\"))" << std::endl;
+  OX << "#include \"materials.inc\"" << std::endl;
+  OX << "#end"  << std::endl;
+
   return;
 }
   

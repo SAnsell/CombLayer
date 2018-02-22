@@ -1484,6 +1484,7 @@ DBMaterial::createMix(const std::string& Name,
   MA+=MB;
   MA.setNumber(matNum);
   MA.setName(Name);
+
   setMaterial(MA);
   return matNum;
 }

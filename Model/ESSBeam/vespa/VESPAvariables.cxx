@@ -91,6 +91,7 @@ VESPAvariables(FuncDataBase& Control)
 
   Control.addVariable("vespaAxisXStep",1.523);
   Control.addVariable("vespaAxisZStep",0.0);
+  Control.addVariable("vespaAxisXYAngle",-0.9);
   
   PipeGen.setPipe(8.0,0.5);      // 8cm radius / 0.5cm wall
   PipeGen.setWindow(-2.0,0.5); 
@@ -192,8 +193,9 @@ VESPAvariables(FuncDataBase& Control)
 
   PGen.setFeLayer(15.0);
   PGen.setConcLayer(40.0);
-  PGen.generatePit(Control,"vespaOutPitT0",0.0,25.0,220.0,210.0,40.0);
+  PGen.generatePit(Control,"vespaOutPitT0",0.0,28.0,120.0,88.0,40.0);
 
+  
   CGen.setMainRadius(33.0);
   CGen.setFrame(80.0,80.0);
   CGen.generateChopper(Control,"vespaChopperT0",20.0,15.0,9.55);
@@ -202,7 +204,6 @@ VESPAvariables(FuncDataBase& Control)
   BGen.setThick({3.4});
   BGen.setInnerThick({5.4});
   BGen.setMaterials("Inconnel","Tungsten");
-  //  BGen.addPhase({95,275},{30.0,30.0});
   BGen.addPhase({-15,165},{30.0,30.0});   // chopper open
   BGen.generateBlades(Control,"vespaT0Disk",2.0,20.0,30.0);
 
@@ -211,7 +212,7 @@ VESPAvariables(FuncDataBase& Control)
   // Guide in wall
 
   FGen.clearYOffset();
-  FGen.generateTaper(Control,"vespaFWall",344.0,9.0,9.0,8.5,8.5);
+  FGen.generateTaper(Control,"vespaFWall",348.0,4.0,4.0,4.0,4.0);
 
   PGen.setFeLayer(15.0);
   PGen.setConcLayer(40.0);

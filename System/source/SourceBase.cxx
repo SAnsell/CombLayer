@@ -298,15 +298,15 @@ SourceBase::createTransform(const Geometry::Vec3D& Origin,
 void
 SourceBase::setEnergy(const double E)
   /*!
-    Set the energy set
-   */
+    Set a signle energy set
+    \param E :: energy
+  */
 {
   ELog::RegMethod RegA("SourceBase","setEnergy");
 
-
   Energy={E};
   EWeight={1.0};
-  ELog::EM<<"Energy == "<<Energy.size()<<ELog::endDiag;
+  ELog::EM<<"Single Energy Source == "<<E<<ELog::endDiag;
   return;
 }
     

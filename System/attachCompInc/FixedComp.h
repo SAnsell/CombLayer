@@ -57,7 +57,7 @@ class FixedComp
   const std::string keyName;       ///< Key Name
   ModelSupport::surfRegister SMap; ///< Surface register
 
-  std::map<std::string,int> keyMap; ///< Keynames to index
+  std::map<std::string,size_t> keyMap; ///< Keynames to linkpt index
   
   Geometry::Vec3D X;            ///< X-coordinate 
   Geometry::Vec3D Y;            ///< Y-coordinate 
@@ -67,7 +67,7 @@ class FixedComp
   Geometry::Vec3D beamOrigin;    ///< Neutron origin [if different]
   Geometry::Vec3D beamAxis;      ///< Neutron direction [if different]
   Geometry::Vec3D orientateAxis; ///< Axis for reorientation
-  long int primeAxis;      ///< X/Y/Z Axis for reorientation [-ve for delay]
+  long int primeAxis;            ///< X/Y/Z Axis for reorientation 
 
   std::vector<LinkUnit> LU;     ///< Linked unit items
   
@@ -165,6 +165,7 @@ class FixedComp
   virtual int getExitWindow(const long int,std::vector<int>&) const;
 
 
+  void nameSideIndex(const size_t,const std::string&);
   void copyLinkObjects(const FixedComp&);
   /// How many connections
   size_t NConnect() const { return LU.size(); }
@@ -173,8 +174,15 @@ class FixedComp
   
   LinkUnit& getSignedLU(const long int);
   const LinkUnit& getSignedLU(const long int)  const; 
+  long int getSideIndex(const std::string&) const;
 
+  
   std::vector<Geometry::Vec3D> getAllLinkPts() const;
+
+  Geometry::Vec3D getLinkPt(const std::string&) const;
+  Geometry::Vec3D getLinkAxis(const std::string&) const;
+  int getLinkSurf(const std::string&) const;
+  
   virtual Geometry::Vec3D getLinkPt(const long int) const;
   virtual Geometry::Vec3D getLinkAxis(const long int) const;
   virtual std::string getLinkString(const long int) const;

@@ -94,6 +94,8 @@ NMXvariables(FuncDataBase& Control)
   Control.addVariable("nmxGABeamZAngle",0.0);         // -1.0 [BEND]
 
   FGen.setLayer(1,0.5,"Aluminium");
+  FGen.setLayer(2,0.5,"B4C");
+  FGen.setLayer(3,0.5,"Void");
   FGen.clearYOffset();
   
   const double bendAngle(90.0);

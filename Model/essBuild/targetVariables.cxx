@@ -60,8 +60,10 @@ EssWheel(FuncDataBase& Control)
    */
 {
   Control.addVariable("BilbaoWheelShaftHeight",435.0);
-  Control.addVariable("BilbaoWheelEngineeringActive", 1);
-  ELog::EM << "Why geometry problems if BilbaoWheelEngineeringActive=0 ?" << ELog::endCrit;
+
+  const size_t nSectors(36);
+  const std::string ss316l("SS316L");
+
   
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
@@ -70,35 +72,51 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftMat2","SS316L3925");
   Control.addVariable("BilbaoWheelShaftRadius3",14.0);
   Control.addVariable("BilbaoWheelShaftMat3","SS316L");
-  Control.addVariable("BilbaoWheelShaftRadius4",20.0);
+  Control.addVariable("BilbaoWheelShaftRadius4",20.0); // ESS-0124024 page 23 (diam 400)
   Control.addVariable("BilbaoWheelShaftMat4","SS316L3925");
-  Control.addVariable("BilbaoWheelShaftRadius5",23.0);
+  const double shaftR5(23.0);
+  Control.addVariable("BilbaoWheelShaftRadius5",shaftR5);
   Control.addVariable("BilbaoWheelShaftMat5","SS316L");
   Control.addVariable("BilbaoWheelShaftRadius6",25.0);
   Control.addVariable("BilbaoWheelShaftMat6","Void");
 
   Control.addVariable("BilbaoWheelShaft2StepHeight",15);  // TSM141108V3000
-  Control.addVariable("BilbaoWheelShaft2StepConnectionHeight",4);  // TSM141108V3000
-  Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 5);  // TSM141108V3000
-  Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 27.5);  // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaft2StepConnectionHeight",6.4);  // TSV31-TargetUpdate02
+  Control.addVariable("BilbaoWheelShaft2StepConnectionDist", 25);  // TSV31-TargetUpdate02
+  Control.addVariable("BilbaoWheelShaft2StepConnectionRadius", 28.25);  // ESS-0124024 page 2 + TSV31-TargetUpdate02
+  
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeRingHeight",3.0); // TSV31-TargetUpdate02
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeRingRadius",31.0); // ESS-0124024 page 23
+
+  // Upper Stiffener shape and dimensions correspond to
+  // ESS-0153983
+  const double ubsLength(20.0);
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",ubsLength); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffHeight",15); // ESS-0124024 page 19
+  const double ubsThick(2.0);
+  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",ubsThick); // ESS-0124024 page 19
+
+  // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
+  const double frac(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
+		      ss316l + "%Void%" + std::to_string(frac));
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
   Control.addVariable("BilbaoWheelShaftHoleXYangle",-1.0);  // value not known=>approx to put a hole
   
-  Control.addVariable("BilbaoWheelShaftBaseDepth",35.0); // TSM141108V3000
+  Control.addVariable("BilbaoWheelShaftBaseDepth",33.8); // TSV32IS
 
   Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);
   
-  Control.addVariable("BilbaoWheelCatcherHeight",10.0);
+  Control.addVariable("BilbaoWheelCatcherGap",0.8);
   Control.addVariable("BilbaoWheelCatcherRadius",42.0);
-  Control.addVariable("BilbaoWheelCatcherMiddleHeight",10.0);
-  Control.addVariable("BilbaoWheelCatcherMiddleRadius",32.0);
-  Control.addVariable("BilbaoWheelCatcherNotchDepth",5.0);
-  Control.addVariable("BilbaoWheelCatcherNotchRadius",22.0);
-  Control.addVariable("BilbaoWheelCatcherRingRadius",34.0);
-  Control.addVariable("BilbaoWheelCatcherRingDepth",24.0);
-  Control.addVariable("BilbaoWheelCatcherRingThick",2.0);
+  Control.addVariable("BilbaoWheelCatcherBaseHeight",8.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelCatcherBaseRadius",21.25);  // TSV32IS
+  Control.addVariable("BilbaoWheelCatcherBaseAngle",45.0);  // TSV32IS + ESS-0038811
+  Control.addVariable("BilbaoWheelCatcherNotchBaseThick",3.0);// TSV32IS
+  Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelCatcherNotchBaseRadius",31.0);  // TSV32IS
 
   Control.addVariable("BilbaoWheelCirclePipesBigRad",30.0);
   Control.addVariable("BilbaoWheelCirclePipesRad",1.5);
@@ -118,7 +136,9 @@ EssWheel(FuncDataBase& Control)
   // 2.2: detail B in  TRGT-ESS-0106 page 1
   // In the lower sector plate:
   // 77.2 = R74.5 + 2.7
-  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",76.7);
+
+  // 71.8 = 76.7-4.9 (BilbaoWheelSecWallSegLength0)
+  Control.addVariable("BilbaoWheelTargetInnerHeightRadius",71.8);
 
   Control.addVariable("BilbaoWheelVoidTungstenThick", 0.1);
   Control.addVariable("BilbaoWheelSteelTungstenThick", 0.2); // TSM141108V3000: upper 0.2, lower 0.3
@@ -126,7 +146,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelTemp",600.0);
   Control.addVariable("BilbaoWheelCoolantThick",0.5);
   Control.addVariable("BilbaoWheelCaseThick",1.0);
-  Control.addVariable("BilbaoWheelCaseThickIn",3.0);  // TSM141108V3000
   Control.addVariable("BilbaoWheelVoidThick",2.0);
 
   Control.addVariable("BilbaoWheelInnerRadius",45); // TSM141108V3000
@@ -139,13 +158,16 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCaseRadius",131); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
   Control.addVariable("BilbaoWheelVoidRadius",131.2); // Bilbao-MCNP-geometry.inp (received from LZ 3 Aug 2017)
   Control.addVariable("BilbaoWheelAspectRatio", 0.00138);
-  Control.addVariable("BilbaoWheelNSectors", 36);
+  Control.addVariable("BilbaoWheelNSectors", nSectors);
   Control.addVariable("BilbaoWheelSectorSepThick", 1.0);
   Control.addVariable("BilbaoWheelSectorSepMat", "SS316L");
   Control.addVariable("BilbaoWheelTemperature", 600);
 
-  Control.addVariable("BilbaoWheelWMat","Tungsten_15.3g"); // email from LZ 25 Oct 2017
-  Control.addVariable("BilbaoWheelSteelMat","SS316L");
+  Control.addVariable("BilbaoWheelHomoWMat","Tungsten_15.3g"); // email from LZ 25 Oct 2017
+  // calculated to have the same density fraction with respect to
+  // SS316L as Tungsten/Tungsten_15.3g = 1.26131
+  Control.addVariable("BilbaoWheelHomoSteelMat","SS316L_6.22g");
+  Control.addVariable("BilbaoWheelSteelMat",ss316l);
   Control.addVariable("BilbaoWheelHeMat","Void"); // TSM141108V3000
   Control.addVariable("BilbaoWheelSS316LVoidMat","M2644"); // !!! use appropriate name
   Control.addVariable("BilbaoWheelInnerMat","Void");
@@ -163,35 +185,35 @@ EssWheel(FuncDataBase& Control)
 
   // Sectors
   Control.addVariable("BilbaoWheelSecWallMat","SS316L");
-  Control.addVariable("BilbaoWheelSecWallThick",1.0);
+  Control.addVariable("BilbaoWheelSecWallThick",0.0);
 
   // The sector variables are based on the
   // ESS-Bilbao drawing TRGT-ESS-0106.01.03 rev.4
   // The same drawings in CHESS: ESS-0102065
   // 3D project: ESS-0017676
   // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/target/cassette-side-steel/view
-  Control.addVariable("BilbaoWheelSecNWallSeg",15); // 15 layers of bricks + 1
-  //  Control.addVariable("BilbaoWheelSecWallSegLength0",4.9);
-  Control.addVariable("BilbaoWheelSecWallSegLength0",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength1",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength2",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength3",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength4",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength5",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength6",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength7",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength8",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength9",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength10",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength11",-3.2);
-  Control.addVariable("BilbaoWheelSecWallSegLength12",-3.4);
-  Control.addVariable("BilbaoWheelSecWallSegLength13",3.0);
-  Control.addVariable("BilbaoWheelSecWallSegLength14",-4-1.2+2);
-  Control.addVariable("BilbaoWheelSecWallSegThick",0.6);
+
+  const std::vector<size_t> nBricks({0,9,10,11,10,11,12,11,12,13,14,13,14,15,16,15});
+  const std::vector<double> segLen({4.9,-3.2,-3.4,3.0,-3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-3.2,-3.2,-3.4,3.0,-4-1.2});
+  const size_t NB(nBricks.size());
+  Control.addVariable("BilbaoWheelSecNWallSeg",NB); // 15 layers of bricks + 1
+  if (segLen.size() != NB)
+    ELog::EM << "Different lengths of vectors segLen and nBricks" << ELog::endCrit;
+
+  for (size_t i=0; i<NB; i++)
+    {
+      const std::string si(std::to_string(i));
+      Control.addVariable("BilbaoWheelSecWallSegLength"+si,segLen[i]);
+      Control.addVariable("BilbaoWheelSecWallSegNBricks"+si,nBricks[i]);
+    }
+
+  Control.addVariable("BilbaoWheelSecWallSegThick",1.6); // 1st segment only - thickness of the others depends on total number of bircks and gaps
   Control.addVariable("BilbaoWheelSecBrickWidth",1.0);
   Control.addVariable("BilbaoWheelSecBrickLength",3.0);
   Control.addVariable("BilbaoWheelSecBrickGap",0.2);
-  Control.addVariable("BilbaoWheelSecBrickMat","Tungsten");
+  Control.addVariable("BilbaoWheelSecBrickSteelMat","SS316L");
+  Control.addVariable("BilbaoWheelSecBrickWMat","Tungsten");
+  Control.addVariable("BilbaoWheelSecNSteelRows",2);
   Control.addVariable("BilbaoWheelSecPipeCellThick", 1.2);
   Control.addVariable("BilbaoWheelSecPipeCellMat", "SS316LBilbaoWheelPipeCellMat");
 
