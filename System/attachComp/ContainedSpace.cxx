@@ -313,7 +313,6 @@ ContainedSpace::buildWrapCell(Simulation& System,
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
 
   outerSurf=inwardCut;
-
   return;
 }
 
