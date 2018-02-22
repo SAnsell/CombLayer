@@ -801,7 +801,7 @@ FixedComp::setLinkSurf(const size_t Index,const HeadRule& HR,
 		       const bool bridgeCompFlag) 
   /*!
     Set a link surface based on both a rule and
-    a bridgin rule
+    a bridging rule
     \param Index :: Link number
     \param HR :: HeadRule to add
     \param compFlag :: make primary rule complementary
@@ -936,7 +936,8 @@ void
 FixedComp::setLineConnect(const size_t Index,const Geometry::Vec3D& C,
 			  const Geometry::Vec3D& A)
  /*!
-   Set the axis of the linked component
+   Set the axis of the linked component by intersecting
+   a line with the surface
    \param Index :: Link number
    \param C :: Centre coordinate
    \param A :: Axis direciton
@@ -1015,14 +1016,15 @@ FixedComp::setLinkSignedCopy(const size_t Index,
     \param sideIndex :: signed link unit of other object
   */
 {
-  ELog::RegMethod RegA("FixedComp","setLinkSurf");
+  ELog::RegMethod RegA("FixedComp","setLinkSignedSurf");
+
   if (sideIndex>0)
     setUSLinkCopy(Index,FC,static_cast<size_t>(sideIndex-1));
   else if (sideIndex<0)   // complement form
     setUSLinkComplement(Index,FC,static_cast<size_t>(-1-sideIndex));
   else
     throw ColErr::IndexError<long int>
-      (sideIndex,static_cast<long int>(FC.LU.size()),"FC/index");
+      (sideIndex,static_cast<long int>(FC.LU.size()),"FC/sideIndex");
 
   return;
 }

@@ -45,7 +45,7 @@ namespace attachSystem
 
 class ContainedComp  
 {
- private:
+ protected:
 
   HeadRule boundary;        ///< Boundary object [Imposed containment]
   HeadRule outerSurf;       ///< Outer surfaces [Excluding boundary]
@@ -109,9 +109,9 @@ class ContainedComp
   void setInsertCell(const int);
   void setInsertCell(const std::vector<int>&);
 
-  void insertObjects(Simulation&);
   void insertInCell(Simulation&,const int) const;
   void insertInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertObjects(Simulation&);
 
   /// Accessor to surface [ugly]
   std::vector<Geometry::Surface*> getSurfaces() const;

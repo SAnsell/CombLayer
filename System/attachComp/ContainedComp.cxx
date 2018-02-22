@@ -54,9 +54,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Qhull.h"
@@ -320,11 +317,7 @@ ContainedComp::getExclude() const
   ELog::RegMethod RegA("ContainedComp","getExclude");
   
   if (outerSurf.hasRule())
-    {
-      MonteCarlo::Algebra AX;
-      AX.setFunctionObjStr("#("+outerSurf.display()+")");
-      return AX.writeMCNPX();
-    }
+    return outerSurf.complement().display();
   return "";
 }
 
@@ -353,11 +346,7 @@ ContainedComp::getCompContainer() const
   ELog::RegMethod RegA("ContainedComp","getCompContainer");
 
   if (boundary.hasRule())
-    {
-      MonteCarlo::Algebra AX;
-      AX.setFunctionObjStr("#("+boundary.display()+")");
-      return AX.writeMCNPX();
-    }
+    return boundary.complement().display();
   return "";
 }
 

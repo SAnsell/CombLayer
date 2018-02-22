@@ -1904,7 +1904,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     \param Org :: Origin of line
     \param Unit :: Direction of line
     \param D :: Distance travelled to surface
-    \return exit surface
+    \return exit surface [signed??]
   */
 {
   ELog::RegMethod RegA("HeadRule","trackSurf");
@@ -1925,7 +1925,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
   D= std::numeric_limits<double>::max();
   const Geometry::Surface* surfPtr=0;
   // NOTE: we only check for and exiting surface by going
-  // along the line.
+  // along the line in the positive direction.
   int bestPairValid(0);
   for(size_t i=0;i<dPts.size();i++)
     {

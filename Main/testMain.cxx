@@ -111,6 +111,7 @@
 #include "testBoxLine.h"
 #include "testCone.h"
 #include "testContained.h"
+#include "testContainedSpace.h"
 #include "testConvex.h"
 #include "testConvex2D.h"
 #include "testCylinder.h"
@@ -877,6 +878,7 @@ attachCompTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testAttachSupport          (1)"<<std::endl;
       std::cout<<"testContained              (2)"<<std::endl;
+      std::cout<<"testContainedSpace         (3)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -887,6 +889,12 @@ attachCompTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testContained A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==3 || type<0)
+    {
+      testContainedSpace A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
