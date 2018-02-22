@@ -55,8 +55,10 @@ class FixedComp
   
   const std::string keyName;       ///< Key Name
   ModelSupport::surfRegister SMap; ///< Surface register
+  const int buildIndex;            ///< Index of surface offset
+  int cellIndex;                   ///< Cell index    
 
-  std::map<std::string,size_t> keyMap; ///< Keynames to linkpt index
+  std::map<std::string,size_t> keyMap; ///< Keynames to linkPt index
   
   Geometry::Vec3D X;            ///< X-coordinate 
   Geometry::Vec3D Y;            ///< Y-coordinate 
@@ -196,6 +198,10 @@ class FixedComp
   
   size_t findLinkAxis(const Geometry::Vec3D&) const;
 
+  /// access next cell if need
+  int nextCell() { return cellIndex++; }
+  /// access next cell as neede
+  int getNextCell() const { return cellIndex; }
 
   const Geometry::Vec3D& getExit() const;
   const Geometry::Vec3D& getExitNorm() const;

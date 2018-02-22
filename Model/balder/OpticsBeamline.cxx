@@ -246,9 +246,10 @@ OpticsBeamline::buildObjects(Simulation& System)
   
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
-  filterBox->registerSpaceCut(1,2,filterBox->getCellIndex());
+  filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
   lastComp=filterBox;
+  
   ELog::EM<<"This -- "<<ELog::endDiag;
   return;
   

@@ -54,6 +54,7 @@
 #include "surfEqual.h"
 #include "Rules.h"
 #include "HeadRule.h"
+#include "objectRegister.h"
 #include "SurInter.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -62,7 +63,10 @@ namespace attachSystem
 {
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL) :
-  keyName(KN),X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
+  keyName(KN),
+  buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
+  cellIndex(buildIndex+1),
+  X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),primeAxis(0),LU(NL)
  /*!
     Constructor 
@@ -73,7 +77,10 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL) :
 
 FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& O) :
-  keyName(KN),X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
+  keyName(KN),
+  buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
+  cellIndex(buildIndex+1),
+  X(Geometry::Vec3D(1,0,0)),Y(Geometry::Vec3D(0,1,0)),
   Z(Geometry::Vec3D(0,0,1)),Origin(O),primeAxis(0),LU(NL)
   /*!
     Constructor 
@@ -88,7 +95,10 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 		     const Geometry::Vec3D& xV,
 		     const Geometry::Vec3D& yV,
 		     const Geometry::Vec3D& zV) :
-  keyName(KN),X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
+  keyName(KN),
+  buildIndex(ModelSupport::objectRegister::Instance().cell(KN)),
+  cellIndex(buildIndex+1),
+  X(xV.unit()),Y(yV.unit()),Z(zV.unit()),
   Origin(O),primeAxis(0),LU(NL)
   /*!
     Constructor with defined axis / origin
@@ -102,7 +112,10 @@ FixedComp::FixedComp(const std::string& KN,const size_t NL,
 {}
 
 FixedComp::FixedComp(const FixedComp& A) : 
-  keyName(A.keyName),SMap(A.SMap),keyMap(A.keyMap),
+  keyName(A.keyName),SMap(A.SMap),
+  buildIndex(A.buildIndex),
+  cellIndex(cellIndex),
+  keyMap(A.keyMap),
   X(A.X),Y(A.Y),Z(A.Z),
   Origin(A.Origin),beamAxis(A.beamAxis),
   orientateAxis(A.orientateAxis),primeAxis(A.primeAxis),
@@ -117,6 +130,7 @@ FixedComp&
 FixedComp::operator=(const FixedComp& A)
   /*!
     Assignment operator
+    [Note don't copy cellIndex]
     \param A :: FixedComp to copy
     \return *this
   */

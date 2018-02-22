@@ -43,7 +43,9 @@ private:
   void createObjects();
 
   //Tests 
+
   int testBoundary();
+  int testInsert();
 
 public:
   

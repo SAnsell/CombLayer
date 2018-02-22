@@ -247,8 +247,6 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
 	objHR.removeItems(SN);
     }
 
-  ELog::EM<<"NEW SURF == "<<objHR<<ELog::endDiag;
-  ELog::EM<<ELog::endErr;
   
   // Check for no negative repeats:
   BBox.reset();
@@ -256,29 +254,28 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
     {
       if (SN==0 || (SN<0 && surfN.find(-SN)!=surfN.end()))
 	throw ColErr::InContainerError<int>(SN,"Surf repeated");
-      
-      BBox.addIntersection(-SN);
+      BBox.addIntersection(SN);
     }
   return;
 }
 
 void
-ContainedSpace::registerSpaceCut(const long int linkA,const long int linkB,
-				 int* cellIndexPtr)
+ContainedSpace::registerSpaceCut(const long int linkA,const long int linkB)
+				
   /*!
     Register the surface space
+    \param 
   */
 {
   ABLink.first=linkA;
   ABLink.second=linkB;
-  buildCell=cellIndexPtr;
   return;
 }
 
 void
 ContainedSpace::buildWrapCell(Simulation& System,
-			     const int pCell,
-			     int& cCell)
+			      const int pCell,
+			      const int cCell)
   /*!
     Build the cells within the bounding space that
     contains the complex outerSurf
@@ -288,25 +285,35 @@ ContainedSpace::buildWrapCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedSpace","buildWrapCell");
 
-  MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+  const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
   if (!outerObj)
     throw ColErr::InContainerError<int>(pCell,"Primary cell does not exist");
 
   const int matN=outerObj->getMat();
   const double matTemp=outerObj->getTemp();
-  outerObj->addSurfString(BBox.complement().display());
 
-  // Now construct new cell
-  HeadRule Out(outerSurf);
-  outerSurf.reset();
-      
-  // cutters point outwards:
+  // First make inner vacuum
+  // removeing front/back surfaces
+
+
+  HeadRule inwardCut;  
+  HeadRule innerVacuum(outerSurf);
   for(const LinkUnit& LU : LCutters)
-    outerSurf.addUnion(LU.getMainRule());
+    {
+      const int SN=LU.getLinkSurf();
+      innerVacuum.removeItems(-SN);
+      inwardCut.addIntersection(-SN);
+    }
   
-  Out.addIntersection(BBox);   // bbox inwards
-  Out.addIntersection(outerSurf.complement());
-  System.addCell(cCell++,matN,matTemp,Out.display());
+  // Make new outer void
+  HeadRule newOuterVoid(BBox);
+  for(const LinkUnit& LU : LCutters)
+    newOuterVoid.addIntersection(-LU.getLinkSurf());
+  newOuterVoid.addIntersection(innerVacuum.complement());
+  System.addCell(cCell,matN,matTemp,newOuterVoid.display());
+
+  outerSurf=inwardCut;
+
   return;
 }
 
@@ -318,11 +325,13 @@ ContainedSpace::initialize()
 {
   if (ABLink.first && ABLink.second)
     {
-      const FixedComp& FC=dynamic_cast<const FixedComp&>(*this);
+      FixedComp& FC=dynamic_cast<FixedComp&>(*this);
       ContainedSpace::setLinkCopy(0,FC,ABLink.first);
       ContainedSpace::setLinkCopy(1,FC,ABLink.second);
       if (!primaryCell && !insertCells.empty())
-	primaryCell=insertCells.front();	
+	primaryCell=insertCells.front();
+      if (!buildCell)
+	buildCell=FC.nextCell();
     }
   return;
 }
@@ -341,14 +350,15 @@ ContainedSpace::insertObjects(Simulation& System)
 
   System.populateCells();
   initialize();
-  if (primaryCell)
+
+  if (primaryCell && buildCell)
     {
       calcBoundary(System,primaryCell,nDirection);
-      buildWrapCell(System,primaryCell,*buildCell);
+      buildWrapCell(System,primaryCell,buildCell);
       primaryCell=0;
     }
+
   ContainedComp::insertObjects(System);
-  ELog::EM<<"HERE "<<ELog::endDiag;
 	
   return;
 }

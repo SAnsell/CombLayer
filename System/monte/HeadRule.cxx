@@ -973,7 +973,7 @@ HeadRule::removeItems(const int SN)
 	      const SurfPoint* SurX=dynamic_cast<const SurfPoint*>(tmpA);
 	      if (SurX)
 		{
-		  if (SurX->getKeyN()==SN)
+		  if (SurX->getSignKeyN()==SN)
 		    {
 		      removeItem(tmpA);
 		      cnt++;
@@ -989,7 +989,7 @@ const SurfPoint*
 HeadRule::findSurf(const int SN) const
   /*!
     Find a surface
-    \param SN :: Surface number
+    \param SN :: Surface number [unsigned]
     \return 0 if no pointer / first point found
   */
 {

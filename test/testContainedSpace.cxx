@@ -111,28 +111,26 @@ testContainedSpace::createSurfaces()
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
   
-  // First box :
-  SurI.createSurface(1,"px -1");
-  SurI.createSurface(2,"px 1");
-  SurI.createSurface(3,"py -1");
-  SurI.createSurface(4,"py 1");
+
+  // Second box :
+  SurI.createSurface(1,"py -2");
+  SurI.createSurface(2,"py 2");
+  SurI.createSurface(3,"px -1");
+  SurI.createSurface(4,"px 1");
   SurI.createSurface(5,"pz -1");
   SurI.createSurface(6,"pz 1");
 
   // Second box :
-  SurI.createSurface(11,"px -3");
-  SurI.createSurface(12,"px 3");
-  SurI.createSurface(13,"py -3");
-  SurI.createSurface(14,"py 3");
-  SurI.createSurface(15,"pz -3");
-  SurI.createSurface(16,"pz 3");
+  SurI.createSurface(11,"py -30");
+  SurI.createSurface(12,"py 30");
+  SurI.createSurface(13,"px -30");
+  SurI.createSurface(14,"px 30");
+  SurI.createSurface(15,"pz -30");
+  SurI.createSurface(16,"pz 30");
 
-  // Far box :
-  SurI.createSurface(21,"px 10");
-  SurI.createSurface(22,"px 15");
 
   // Sphere :
-  SurI.createSurface(100,"so 25");
+  SurI.createSurface(100,"so 200");
   
   return;
 }
@@ -149,20 +147,13 @@ testContainedSpace::createObjects()
   Out=ModelSupport::getComposite(surIndex,"100");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Outside void Void
 
-  Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
-
   Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
+  ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Al container
 
-  Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
-  ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
-
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
-				 " #4");
+  Out=ModelSupport::getComposite(surIndex,
+				 " -100 (-11 : 12 : -13 : 14 : -15 : 16)");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
   
-  ASim.removeComplements();
 
   return;
 }
@@ -184,11 +175,13 @@ testContainedSpace::applyTest(const int extra)
   typedef int (testContainedSpace::*testPtr)();
   testPtr TPtr[]=
     {
-      &testContainedSpace::testBoundary
+      &testContainedSpace::testBoundary,
+      &testContainedSpace::testInsert
     };
   const std::string TestName[]=
     {
-      "Boundary"
+      "Boundary",
+      "Insert"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -226,14 +219,14 @@ testContainedSpace::testBoundary()
   ELog::RegMethod RegA("testContainedSpace","testBoundary");
 
 
-  ModelSupport::setGenericPhysics(ASim,"CEM03");
-  ASim.prepareWrite();
-  ASim.write("testCC1.x");
+  // ModelSupport::setGenericPhysics(ASim,"CEM03");
+  // ASim.prepareWrite();
+  // ASim.write("testCC1.x");
 
   typedef std::tuple<int,std::string>  TTYPE;
   std::vector<TTYPE> Tests=
     {
-      TTYPE(3," 15 -12 11 -16 ")
+      TTYPE(2," -16 11 -12 15 ")
     };
   
   // Calculate all cells
@@ -254,9 +247,47 @@ testContainedSpace::testBoundary()
 	  return -1;
 	}
     }
+
+  return 0;
+}
+
+
+int
+testContainedSpace::testInsert()
+  /*!
+    Tests placing a ContainedSpace in an object
+    \return 0 on success and -1 on error
+  */
+{
+  ELog::RegMethod RegA("testContainedSpace","testInsert");
+
+
+  // ModelSupport::setGenericPhysics(ASim,"CEM03");
+  // ASim.prepareWrite();
+  // ASim.write("testCC1.x");
+
+  //  (a) insert a "mini object" in model
+  //  (b) add outer boundary to ContainedSpace and then allow division
+  const int surIndex(0);
+  std::string Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
+  ASim.addCell(10,5,0.0,Out);      
+
+  ContainedSpace CSx;
+  CSx.addOuterSurf(Out);
+  CSx.setConnect(0,Geometry::Vec3D(0,-2,0),Geometry::Vec3D(0,-1,0));
+  CSx.setLinkSurf(0,-1);
+  CSx.setConnect(1,Geometry::Vec3D(0,2,0),Geometry::Vec3D(0,1,0));
+  CSx.setLinkSurf(1,2);
+  CSx.setPrimaryCell(2);  // cell 2
+  CSx.setBuildCell(20);  // cell 2
+
+  CSx.addInsertCell(2);
+  CSx.insertObjects(ASim);
+
   ModelSupport::setGenericPhysics(ASim,"CEM03");
   ASim.prepareWrite();
-  ASim.write("testCD1.x");
+  ASim.write("testCC1.x");
+  
 
   return 0;
 }

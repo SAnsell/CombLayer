@@ -83,9 +83,7 @@ namespace constructSystem
 PortTube::PortTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
   attachSystem::ContainedSpace(),attachSystem::CellMap(),
-  attachSystem::FrontBackCut(),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1)
+  attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,7 +93,7 @@ PortTube::PortTube(const std::string& Key) :
 PortTube::PortTube(const PortTube& A) : 
   attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),radius(A.radius),
+  radius(A.radius),
   wallThick(A.wallThick),length(A.length),inPortXStep(A.inPortXStep),
   inPortZStep(A.inPortZStep),inPortRadius(A.inPortRadius),
   inPortLen(A.inPortLen),inPortThick(A.inPortThick),
@@ -267,48 +265,48 @@ PortTube::createSurfaces()
   // Do outer surfaces (vacuum ports)
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+101,
+      ModelSupport::buildPlane(SMap,buildIndex+101,
 			       Origin-Y*(inPortLen+wallThick+length/2.0),Y);
-      setFront(SMap.realSurf(vacIndex+101));
+      setFront(SMap.realSurf(buildIndex+101));
     }
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+202,
+      ModelSupport::buildPlane(SMap,buildIndex+202,
 			       Origin+Y*(outPortLen+wallThick+length/2.0),Y);
-      setBack(-SMap.realSurf(vacIndex+202));
+      setBack(-SMap.realSurf(buildIndex+202));
     }
 
   // void space:
-  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
 
   // metal
-  ModelSupport::buildPlane(SMap,vacIndex+11,Origin-Y*(wallThick+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+12,Origin+Y*(wallThick+length/2.0),Y);
-  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+wallThick);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+wallThick);
 
   // port
   const Geometry::Vec3D inOrg=Origin+X*inPortXStep+Z*inPortZStep;
   const Geometry::Vec3D outOrg=Origin+X*outPortXStep+Z*outPortZStep;
 
-  ModelSupport::buildCylinder(SMap,vacIndex+107,inOrg,Y,inPortRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+207,outOrg,Y,outPortRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,inOrg,Y,inPortRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,outOrg,Y,outPortRadius);
 
-  ModelSupport::buildCylinder(SMap,vacIndex+117,inOrg,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+117,inOrg,Y,
 			      inPortRadius+inPortThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+217,outOrg,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+217,outOrg,Y,
 			      outPortRadius+outPortThick);
 
-  ModelSupport::buildPlane(SMap,vacIndex+111,Origin-
+  ModelSupport::buildPlane(SMap,buildIndex+111,Origin-
 			   Y*(inPortLen+wallThick-flangeALength+length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+212,Origin+
+  ModelSupport::buildPlane(SMap,buildIndex+212,Origin+
 			   Y*(outPortLen+wallThick-flangeBLength+length/2.0),Y);
 
   // flange:
-  ModelSupport::buildCylinder(SMap,vacIndex+127,inOrg,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+127,inOrg,Y,
 			      flangeARadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+227,outOrg,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+227,outOrg,Y,
 			      flangeBRadius);
   
   return;
@@ -325,22 +323,22 @@ PortTube::createObjects(Simulation& System)
 
   std::string Out;
   
-  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -2 -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // main walls
-  Out=ModelSupport::getComposite(SMap,vacIndex," 1 -17 7 -2 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
   makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
 
   // plates front/back
   if ((inPortRadius+inPortThick-(radius+wallThick))<Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 -17 117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 -17 117 ");
       makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
     }
   if ((outPortRadius+outPortThick-radius-wallThick)<Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -17 217 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 -17 217 ");
       makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
     }
 
@@ -348,29 +346,29 @@ PortTube::createObjects(Simulation& System)
   const std::string frontSurf(frontRule());
   const std::string backSurf(backRule());
   
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1  -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1  -107 ");
   makeCell("FrontPortVoid",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
   makeCell("BackPortVoid",System,cellIndex++,voidMat,0.0,Out+backSurf);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 107 -117");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117");
   makeCell("FrontPortWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 207 -217 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 207 -217 ");
   makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,Out+backSurf);
 
   // flanges
-  Out=ModelSupport::getComposite(SMap,vacIndex," -111 117 -127 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
   makeCell("FrontPortWall",System,cellIndex++,wallMat,0.0,Out+frontSurf);
-  Out=ModelSupport::getComposite(SMap,vacIndex," 212 217 -227 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 212 217 -227 ");
   makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,Out+backSurf);
 
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 -17 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
   addOuterSurf(Out);
-  Out=ModelSupport::getComposite(SMap,vacIndex,"-11 -127 (-117:-111) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -127 (-117:-111) ");
   addOuterUnionSurf(Out+frontSurf);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -227 ( -217:212 ) ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ( -217:212 ) ");
   addOuterUnionSurf(Out+backSurf);
   return;
 }

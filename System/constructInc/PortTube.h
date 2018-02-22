@@ -43,9 +43,6 @@ class PortTube :
 {
  private:
 
-  const int vacIndex;         ///< Index of surface offset
-  int cellIndex;              ///< Cell index    [
-
   double radius;              ///< radius of main tube
   double wallThick;           ///< wall thickness of main tube
   double length;              ///< Main length
@@ -88,7 +85,6 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
-  int* getCellIndex() { return &cellIndex; }
   const portItem& getPort(const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
