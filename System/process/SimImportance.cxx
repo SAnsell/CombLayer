@@ -111,10 +111,9 @@ importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
 {
   ELog::RegMethod RegA("SimImportance","importanceSim");
 
-
-  physicsSystem::PhysicsCards& PC=System.getPC();
+  physicsSystem::PhysicsCards& PC=System.getPC();      
   WeightSystem::simulationImp(PC,System,IParam);
-  
+
   WeightSystem::ExtField(PC,IParam);
   WeightSystem::FCL(PC,System,IParam);
   WeightSystem::IMP(PC,System,IParam);

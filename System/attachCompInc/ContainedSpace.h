@@ -46,10 +46,14 @@ class ContainedSpace  : public ContainedComp
 
   size_t nDirection;                   ///< No of direction of cut
   int primaryCell;                     ///< Master cell
-  int cellIndex;                       ///< Space for new cell(s)
+  int* buildCell;                      ///< Space for new cell(s)
   HeadRule BBox;                       ///< Bounding box
   std::vector<LinkUnit> LCutters;      ///< Cutting dividers
-  
+
+  std::pair<long int,long int> ABLink; ///< Link surfaces if set
+
+  void initialize();
+    
  public:
 
   ContainedSpace();
@@ -57,16 +61,23 @@ class ContainedSpace  : public ContainedComp
   ContainedSpace& operator=(const ContainedSpace&);
   virtual ~ContainedSpace();
 
-  void setPrimaryCell(const int);
+
   void setConnect(const size_t,const Geometry::Vec3D&,
 		      const Geometry::Vec3D&);
   void setLinkSurf(const size_t,const int);
   void setLinkSurf(const size_t,const HeadRule&);
   void setLinkCopy(const size_t,const FixedComp&,const long int);
 
+  /// set primary cell
+  void setPrimaryCell(const int C) { primaryCell=C; }
+  
   /// Get bounding box
   const HeadRule& getBBox() const { return BBox; }
-  
+
+  void registerSpaceCut(const long int,const long int,
+			int*);
+  void buildWrapCell(Simulation&,const int,int&);
+      
   void calcBoundary(Simulation&,const int,const size_t =6);
   void insertObjects(Simulation&);
 

@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -81,7 +82,7 @@ namespace constructSystem
 
 PortTube::PortTube(const std::string& Key) :
   attachSystem::FixedOffset(Key,2),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
   vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(vacIndex+1)
@@ -90,6 +91,68 @@ PortTube::PortTube(const std::string& Key) :
     \param Key :: KeyName
   */
 {}
+
+PortTube::PortTube(const PortTube& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
+  attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
+  vacIndex(A.vacIndex),cellIndex(A.cellIndex),radius(A.radius),
+  wallThick(A.wallThick),length(A.length),inPortXStep(A.inPortXStep),
+  inPortZStep(A.inPortZStep),inPortRadius(A.inPortRadius),
+  inPortLen(A.inPortLen),inPortThick(A.inPortThick),
+  outPortXStep(A.outPortXStep),outPortZStep(A.outPortZStep),
+  outPortRadius(A.outPortRadius),outPortLen(A.outPortLen),
+  outPortThick(A.outPortThick),flangeARadius(A.flangeARadius),
+  flangeALength(A.flangeALength),flangeBRadius(A.flangeBRadius),
+  flangeBLength(A.flangeBLength),voidMat(A.voidMat),
+  wallMat(A.wallMat),PCentre(A.PCentre),PAxis(A.PAxis),
+  Ports(A.Ports)
+  /*!
+    Copy constructor
+    \param A :: PortTube to copy
+  */
+{}
+
+PortTube&
+PortTube::operator=(const PortTube& A)
+  /*!
+    Assignment operator
+    \param A :: PortTube to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      cellIndex=A.cellIndex;
+      radius=A.radius;
+      wallThick=A.wallThick;
+      length=A.length;
+      inPortXStep=A.inPortXStep;
+      inPortZStep=A.inPortZStep;
+      inPortRadius=A.inPortRadius;
+      inPortLen=A.inPortLen;
+      inPortThick=A.inPortThick;
+      outPortXStep=A.outPortXStep;
+      outPortZStep=A.outPortZStep;
+      outPortRadius=A.outPortRadius;
+      outPortLen=A.outPortLen;
+      outPortThick=A.outPortThick;
+      flangeARadius=A.flangeARadius;
+      flangeALength=A.flangeALength;
+      flangeBRadius=A.flangeBRadius;
+      flangeBLength=A.flangeBLength;
+      voidMat=A.voidMat;
+      wallMat=A.wallMat;
+      PCentre=A.PCentre;
+      PAxis=A.PAxis;
+      Ports=A.Ports;
+    }
+  return *this;
+}
+
 
   
 PortTube::~PortTube() 
@@ -270,12 +333,12 @@ PortTube::createObjects(Simulation& System)
   makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
 
   // plates front/back
-  if ((inPortRadius+inPortThick-radius-wallThick)>Geometry::zeroTol)
+  if ((inPortRadius+inPortThick-(radius+wallThick))<Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 -17 117 ");
       makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
     }
-  if ((outPortRadius+outPortThick-radius-wallThick)>Geometry::zeroTol)
+  if ((outPortRadius+outPortThick-radius-wallThick)<Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 -17 217 ");
       makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
@@ -389,8 +452,10 @@ PortTube::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
+  
   insertObjects(System);   
-  createPorts(System);
+  //  createPorts(System);
+
   return;
 }
   

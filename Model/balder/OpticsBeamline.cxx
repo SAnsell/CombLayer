@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -245,8 +246,12 @@ OpticsBeamline::buildObjects(Simulation& System)
   
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
+  filterBox->registerSpaceCut(1,2,filterBox->getCellIndex());
   filterBox->createAll(System,*pipeA,2);
-
+  lastComp=filterBox;
+  ELog::EM<<"This -- "<<ELog::endDiag;
+  return;
+  
   for(size_t i=0;i<4;i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);

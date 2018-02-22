@@ -555,13 +555,18 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
+
   
   ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
+  SimMCPtr->prepareWrite();
+  SimMCPtr->write("testCE1.x");
 
   // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);
-   // 
+   //
+
   SimProcess::importanceSim(*SimMCPtr,IParam);
+
   SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   tallyModification(*SimMCPtr,IParam);
 

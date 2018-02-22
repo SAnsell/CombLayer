@@ -124,7 +124,7 @@ main(int argc,char* argv[])
       xraySystem::makeBalder BObj;
       World::createOuterObjects(*SimPtr);
       BObj.build(*SimPtr,IParam);
-      
+
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
           
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);

@@ -253,7 +253,21 @@ PhysicsCards::hasWImpFlag(const std::string& particleType) const
   return (wImpOut.find(particleType) == wImpOut.end()) ? 0 : 1;
 }
 
-  
+bool
+PhysicsCards::hasImpFlag(const std::string& particleType) const
+  /*!
+    Find the imp than are in the imp
+    \param particleType :: particle type
+    \return true if particle exists
+  */
+{
+  for(const PhysImp& PI : ImpCards)
+    if (PI.getType()=="imp" && PI.hasElm(particleType))
+      return 1;
+
+  return 0;
+}
+
 void
 PhysicsCards::addHistpCells(const std::vector<int>& AL)
   /*!
@@ -954,8 +968,24 @@ PhysicsCards::setMode(std::string Particles)
 	  addPhysImp("imp",item);
 	}
     }
+  else
+    {
+      // complex as we need to keep importance for each 
+      const std::string AItem=mode.getFirstElm();
+      PhysImp& PI=getPhysImp("imp",AItem);
+      mode.clear();
+
+      std::string item;
+      while(StrFunc::section(Particles,item))
+	{
+	  mode.addElm(item);
+	  if (!hasImpFlag(item))
+	    PI.addElm(item);
+	}
+    }
   return;
 }
+      
 
 void
 PhysicsCards::rotateMaster()

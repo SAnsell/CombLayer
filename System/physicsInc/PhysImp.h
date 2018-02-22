@@ -77,6 +77,8 @@ class PhysImp
   void setAllCells(const std::vector<int>&,const std::vector<double>&);
   void setAllCells(const std::vector<std::pair<int,int>>&);
   void setCells(const std::vector<int>&,const double =1.0);
+
+  std::vector<int> getCellVector() const;
   
   void updateCells(const ZoneUnit<double>&);
   void modifyCells(const std::vector<int>&,const double =1.0);

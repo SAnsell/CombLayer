@@ -24,6 +24,8 @@
 
 class Simulation;
 class SimMCNP;
+class FuncDataBase;
+
 namespace mainSystem
 {
   class inputParam;
@@ -37,10 +39,13 @@ namespace physicsSystem
 
 namespace ModelSupport
 {
+  void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
+  void setGenericPhysics(SimMCNP&,const std::string&);
+  
   void procOffset(const mainSystem::inputParam&,const size_t);
   void procAngle(const mainSystem::inputParam&,const size_t);
-  
-  void setPhysicsModel(physicsSystem::LSwitchCard&,const std::string&);
+
+
 
   void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&); 
   void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,

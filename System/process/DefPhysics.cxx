@@ -446,6 +446,30 @@ setDefaultPhysics(Simulation&,const mainSystem::inputParam&)
   return;
 }
 
+void
+setGenericPhysics(SimMCNP& System,
+		  const std::string& PModel)
+  /*!
+    Set general default imp/mode
+    \param System :: Simulation to use
+    \param PModel :: Model
+   */
+{
+  ELog::RegMethod RegA("DefPhysics[F]","setGenericPhysics");
+  
+  physicsSystem::PhysicsCards& PC=System.getPC();
+  physicsSystem::LSwitchCard& lea=PC.getLEA();
+
+  PC.setMode("n");
+  setPhysicsModel(lea,PModel);
+  const std::vector<std::pair<int,int>> cellImp=System.getCellImp();
+  PC.setCellNumbers(cellImp);
+  PC.setCells("imp",1,0);            // Set a zero cell 
+
+
+  return;
+}
+
 void 
 setDefaultPhysics(SimMCNP& System,
 		  const mainSystem::inputParam& IParam)
@@ -461,17 +485,11 @@ setDefaultPhysics(SimMCNP& System,
   // LEA ipht icc nobalc nobale ifbrk ilvden ievap nofis
 
   const FuncDataBase& Control=System.getDataBase();
-  
   physicsSystem::PhysicsCards& PC=System.getPC();
-  physicsSystem::LSwitchCard& lea=PC.getLEA();
-
-  const std::vector<std::pair<int,int>> cellImp=System.getCellImp();
-  PC.setCellNumbers(cellImp);
-  PC.setCells("imp",1,0);            // Set a zero cell 
   
   const std::string PModel=IParam.getValue<std::string>("physModel");
-  setPhysicsModel(lea,PModel);
-
+  setGenericPhysics(System,PModel);
+  
   PC.setNPS(IParam.getValue<size_t>("nps"));
   PC.setRND(IParam.getValue<long int>("random"));	
   PC.setVoidCard(IParam.flag("void"));
@@ -482,16 +500,16 @@ setDefaultPhysics(SimMCNP& System,
   if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
     {
       setReactorPhysics(PC,Control,IParam);
-      PC.setCellNumbers(cellImp);
-      PC.setCells("imp",1,0);            // Set a zero cell
+      //      PC.setCellNumbers(cellImp);
+      //      PC.setCells("imp",1,0);            // Set a zero cell
       return;
     }
 
   if (IParam.hasKey("neutronOnly"))
     {
       setNeutronPhysics(PC,Control);
-      PC.setCellNumbers(cellImp);
-      PC.setCells("imp",1,0);            // Set a zero cell
+      //      PC.setCellNumbers(cellImp);
+      //      PC.setCells("imp",1,0);            // Set a zero cell
       return;
     }
   
@@ -500,7 +518,8 @@ setDefaultPhysics(SimMCNP& System,
   if (PList=="empty" || PList=="Empty")
     {
       ELog::EM<<"WARNING:: plist empty"<<ELog::endWarn; 
-      PC.addPhysCard<physicsSystem::PSimple>(std::string("mphys"),std::string(""));
+      PC.addPhysCard<physicsSystem::PSimple>
+	(std::string("mphys"),std::string(""));
       PList=" ";
     }
   
@@ -520,8 +539,8 @@ setDefaultPhysics(SimMCNP& System,
        "<="+StrFunc::makeString(cutMin));
   
   PC.setMode("n p "+PList+elcAdd);
-  PC.setCellNumbers(cellImp);
-  PC.setCells("imp",1,0);            // Set a zero cell
+  //  PC.setCellNumbers(cellImp);
+  //  PC.setCells("imp",1,0);            // Set a zero cell
   
   physicsSystem::PStandard* NCut=
     PC.addPhysCard<physicsSystem::PStandard>("cut","n");

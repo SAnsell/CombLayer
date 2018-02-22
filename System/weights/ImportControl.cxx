@@ -163,7 +163,7 @@ simulationImp(physicsSystem::PhysicsCards& PC,Simulation& System,
   ELog::RegMethod RegA("ImportControl[F]","simulationImport");
 
   if (!IParam.flag("voidUnMask") && !IParam.flag("mesh"))
-    {
+    {      
       System.findQhull(74123)->setImp(0);
       PC.setCells("imp",74123,0);  // outer void to z	
     }

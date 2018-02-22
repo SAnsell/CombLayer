@@ -62,6 +62,7 @@
 #include "SimMCNP.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "DefPhysics.h"
 
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -225,6 +226,9 @@ testContainedSpace::testBoundary()
   ELog::RegMethod RegA("testContainedSpace","testBoundary");
 
 
+  ModelSupport::setGenericPhysics(ASim,"CEM03");
+  ASim.prepareWrite();
+  ASim.write("testCC1.x");
 
   typedef std::tuple<int,std::string>  TTYPE;
   std::vector<TTYPE> Tests=
@@ -249,9 +253,11 @@ testContainedSpace::testBoundary()
 	  ELog::EM<<"Expect -- "<<std::get<1>(tc)<<ELog::endDiag;
 	  return -1;
 	}
-      
     }
-  
+  ModelSupport::setGenericPhysics(ASim,"CEM03");
+  ASim.prepareWrite();
+  ASim.write("testCD1.x");
+
   return 0;
 }
 

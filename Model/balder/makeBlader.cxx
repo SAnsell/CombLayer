@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
@@ -166,6 +167,8 @@ makeBalder::build(Simulation& System,
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
 
+  ELog::EM<<"AS<DFSAFD"<<ELog::endDiag;
+  return;
   joinPipeB->addInsertCell(voidCell);
   joinPipeB->addInsertCell(opticsHut->getCell("Void"));
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));

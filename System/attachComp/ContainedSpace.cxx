@@ -75,34 +75,51 @@ namespace attachSystem
 
 ContainedSpace::ContainedSpace()  :
   ContainedComp(),nDirection(8),
-  primaryCell(0),LCutters(2)
+  primaryCell(0),buildCell(0),LCutters(2)
   /*!
     Constructor 
   */
 {}
+
+ContainedSpace::ContainedSpace(const ContainedSpace& A) : 
+  ContainedComp(A),
+  nDirection(A.nDirection),primaryCell(A.primaryCell),
+  buildCell(0),BBox(A.BBox),LCutters(A.LCutters)
+  /*!
+    Copy constructor
+    \param A :: ContainedSpace to copy
+  */
+{}
+
+ContainedSpace&
+ContainedSpace::operator=(const ContainedSpace& A)
+  /*!
+    Assignment operator
+    \param A :: ContainedSpace to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      ContainedComp::operator=(A);
+      nDirection=A.nDirection;
+      primaryCell=A.primaryCell;
+      BBox=A.BBox;
+      LCutters=A.LCutters;
+    }
+  return *this;
+}
 
 ContainedSpace::~ContainedSpace()
   /*!
     Deletion operator
   */
 {}
-
-void
-ContainedSpace::setPrimaryCell(const int CN)
-  /*!
-    Set primary cell [is this enough?]
-    \param CN :: Cell number
-  */
-{
-  primaryCell=CN;
-  return;
-}
-
   
 void
 ContainedSpace::setConnect(const size_t Index,
-			     const Geometry::Vec3D& C,
-			     const Geometry::Vec3D& A)
+			   const Geometry::Vec3D& C,
+			   const Geometry::Vec3D& A)
  /*!
    Set the axis of the linked component
    \param Index :: Link number
@@ -191,15 +208,16 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
 
+  HeadRule objHR=outerObj->getHeadRule();
   std::set<int> surfN;
   for(const LinkUnit& LU : LCutters)
     {
-
-      const Geometry::Vec3D& OPt=LU.getConnectPt();
+      
+      Geometry::Vec3D OPt=LU.getConnectPt();
       const Geometry::Vec3D& YY=LU.getAxis();
       const Geometry::Vec3D XX=YY.crossNormal();
       const Geometry::Vec3D ZZ=YY*XX;
-
+      OPt-=YY*0.1;
 
       if (!outerObj->isValid(OPt))
 	{
@@ -208,8 +226,6 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
 	  throw ColErr::InContainerError<Geometry::Vec3D>
 	    (OPt,"Point out of object");
 	}
-      const HeadRule& objHR=outerObj->getHeadRule();
-
 
       const double angleStep=2.0*M_PI/static_cast<double>(NDivide);
       double angle(0.0);
@@ -219,10 +235,21 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
 	  double D;
 	  // Outgoing sign
 	  const int SN=objHR.trackSurf(OPt,Axis,D);
-	  surfN.insert(SN);
+	  surfN.insert(-SN);
 	  angle+=angleStep;
 	}
     }
+  // NOW eliminate all surfaces NOT in surfN
+  const std::set<int> fullSurfN=objHR.getSurfSet();
+  for(const int SN : fullSurfN)
+    {
+      if (surfN.find(SN) == surfN.end())
+	objHR.removeItems(SN);
+    }
+
+  ELog::EM<<"NEW SURF == "<<objHR<<ELog::endDiag;
+  ELog::EM<<ELog::endErr;
+  
   // Check for no negative repeats:
   BBox.reset();
   for(const int SN : surfN)
@@ -231,6 +258,71 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
 	throw ColErr::InContainerError<int>(SN,"Surf repeated");
       
       BBox.addIntersection(-SN);
+    }
+  return;
+}
+
+void
+ContainedSpace::registerSpaceCut(const long int linkA,const long int linkB,
+				 int* cellIndexPtr)
+  /*!
+    Register the surface space
+  */
+{
+  ABLink.first=linkA;
+  ABLink.second=linkB;
+  buildCell=cellIndexPtr;
+  return;
+}
+
+void
+ContainedSpace::buildWrapCell(Simulation& System,
+			     const int pCell,
+			     int& cCell)
+  /*!
+    Build the cells within the bounding space that
+    contains the complex outerSurf
+    \param pCell :: Primary cell
+    \param cCell :: Contained cell
+  */
+{
+  ELog::RegMethod RegA("ContainedSpace","buildWrapCell");
+
+  MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+  if (!outerObj)
+    throw ColErr::InContainerError<int>(pCell,"Primary cell does not exist");
+
+  const int matN=outerObj->getMat();
+  const double matTemp=outerObj->getTemp();
+  outerObj->addSurfString(BBox.complement().display());
+
+  // Now construct new cell
+  HeadRule Out(outerSurf);
+  outerSurf.reset();
+      
+  // cutters point outwards:
+  for(const LinkUnit& LU : LCutters)
+    outerSurf.addUnion(LU.getMainRule());
+  
+  Out.addIntersection(BBox);   // bbox inwards
+  Out.addIntersection(outerSurf.complement());
+  System.addCell(cCell++,matN,matTemp,Out.display());
+  return;
+}
+
+void
+ContainedSpace::initialize()
+  /*!
+    Initializer to be run after object is built
+  */
+{
+  if (ABLink.first && ABLink.second)
+    {
+      const FixedComp& FC=dynamic_cast<const FixedComp&>(*this);
+      ContainedSpace::setLinkCopy(0,FC,ABLink.first);
+      ContainedSpace::setLinkCopy(1,FC,ABLink.second);
+      if (!primaryCell && !insertCells.empty())
+	primaryCell=insertCells.front();	
     }
   return;
 }
@@ -245,34 +337,19 @@ ContainedSpace::insertObjects(Simulation& System)
     \param System :: simulation system
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","insertObject");
+  ELog::RegMethod RegA("ContainedSpace","insertObjects");
 
+  System.populateCells();
+  initialize();
   if (primaryCell)
     {
       calcBoundary(System,primaryCell,nDirection);
-
-      MonteCarlo::Qhull* outerObj=System.findQhull(primaryCell); 
-      const int matN=outerObj->getMat();
-      const double matTemp=outerObj->getTemp();
-      outerObj->addSurfString(BBox.complement().display());
-      // Now construct new cell
-
-      
-      // keep copy and reset
-      HeadRule Out(outerSurf);
-      outerSurf.reset();
-      
-      // cutters point outwards:
-      for(const LinkUnit& LU : LCutters)
-	outerSurf.addUnion(LU.getMainRule());
-
-      Out.addIntersection(BBox);   // bbox inwards
-      Out.addIntersection(outerSurf.complement());
-      System.addCell(cellIndex++,matN,matTemp,Out.display()); 
-
+      buildWrapCell(System,primaryCell,*buildCell);
       primaryCell=0;
     }
   ContainedComp::insertObjects(System);
+  ELog::EM<<"HERE "<<ELog::endDiag;
+	
   return;
 }
 

@@ -124,6 +124,7 @@ class PhysicsCards
   void clearWImpFlag(const std::string&);
   void setWImpFlag(const std::string&);
   bool hasWImpFlag(const std::string&) const;
+  bool hasImpFlag(const std::string&) const;
   
   template<typename T>
   T* addPhysCard(const std::string&,const std::string&);

@@ -230,7 +230,7 @@ opticsVariables(FuncDataBase& Control)
   PTubeGen.setCF<CF63>();
   PTubeGen.setPortLength(10.7,10.7);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,"BalderFilterBox",0.0,3.0,54.0);
+  PTubeGen.generateTube(Control,"BalderFilterBox",0.0,9.0,54.0);
   Control.addVariable("BalderFilterBoxNPorts",4);
 
   PItemGen.setCF<setVariable::CF50>(20.0);
