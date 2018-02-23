@@ -3,7 +3,7 @@
  
  * File:   test/testRules.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -375,10 +375,11 @@ testRules::testRemoveComplement()
   ELog::RegMethod RegA("TestRules","testRemoveComplement");
   
   typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-
-  Tests.push_back(TTYPE("1 -2","-1 : 2"));
-  Tests.push_back(TTYPE("-8 : (-7 5 -6) ","( -5 : 7 : 6 ) 8"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("1 -2","-1 : 2"),
+      TTYPE("-8 : (-7 5 -6) ","( 7 : -5 : 6 ) 8")
+    };
 
   int cnt(1);
   for(const TTYPE& tc : Tests)

@@ -76,7 +76,6 @@ unitSort(std::vector<int>& A)
     \param A :: Vector to sort
   */
 {
-  
   std::sort(A.begin(),A.end(),unitsLessOrder);
   std::vector<int>::iterator vc=
     std::unique(A.begin(),A.end());

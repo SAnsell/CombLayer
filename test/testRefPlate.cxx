@@ -299,7 +299,6 @@ testRefPlate::testArrayBlocks()
   
   for(size_t i=4;i<6;i++)
     {
-      ELog::EM<<"RVE == "<<i<<ELog::endDiag;
       RVec[i]->setOrigin(*SObj,static_cast<long int>(i));
       RVec[i]->setPlane("-X",*RVec[0],4);
       RVec[i]->setPlane("X",*RVec[2],4);
@@ -310,7 +309,6 @@ testRefPlate::testArrayBlocks()
 
   for(size_t i=0;i<6;i++)
     {
-      ELog::EM<<"ITEM:"<<i<<ELog::endDiag;
       RVec[i]->setInsertCell(SObj->getCell());
       RVec[i]->createAll(ASim);
     }

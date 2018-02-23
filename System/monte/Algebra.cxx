@@ -217,10 +217,12 @@ void
 Algebra::expandBracket()
   /*!
     Expand all the brackets into DNF form
+    Not need full sort before /after
   */
 {
   F.Sort();
   F.expandBracket();
+  F.Sort();
   return;
 }
 

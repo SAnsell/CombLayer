@@ -226,7 +226,7 @@ testContainedSpace::testBoundary()
   typedef std::tuple<int,std::string>  TTYPE;
   std::vector<TTYPE> Tests=
     {
-      TTYPE(2," -16 11 -12 15 ")
+      TTYPE(2," -16 13 -14 15 ")
     };
   
   // Calculate all cells

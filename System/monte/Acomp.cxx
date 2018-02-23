@@ -690,7 +690,8 @@ Acomp::isNumberSorted() const
     {
       if (!AcompTools::unitsLessOrder(prev,A))
 	{
-	  ELog::EM<<"Failed on "<<*this<<ELog::endErr;
+	  ELog::EM<<"Acomp::isNumbersorted:: Failed on "
+		  <<*this<<ELog::endErr;
 	  return 0;
 	}
       prev=A;
@@ -964,11 +965,8 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
   // Need to make an initial copy.
   Work=DNFobj;
 
-  int cnt(0);
   do
     {
-      cnt++;
-      ELog::EM<<"Cnt == "<<cnt<<ELog::endDiag;
       // Deal with tri-state objects ??
       sort(Work.begin(),Work.end());
       uend=unique(Work.begin(),Work.end());

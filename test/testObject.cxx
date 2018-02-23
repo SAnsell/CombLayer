@@ -246,7 +246,7 @@ testObject::testCellStr()
   std::vector<TTYPE> Tests=
     {
       TTYPE("4 10 0.0552 -5 60006 60005 60003 ",
-	    "60006 60005 60003 "),
+	    "60003 60005 60006 -5"),
       TTYPE("4 10 0.0552 -5 8 60 (-61:62) -63 #3",
 	    "#(-60006 60005 -60004 60003 -60002 60001)"
 	    "  -63 ( -61 : 62 ) 60 8 -5"),
@@ -278,6 +278,7 @@ testObject::testCellStr()
 	{
 	  ELog::EM<<"Init Obj:"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Out Obj :"<<XStr<<ELog::endDiag;
+	  ELog::EM<<"Expect  :"<<std::get<1>(tc)<<ELog::endDiag;
 	  return -1;
 	}
     }
@@ -379,14 +380,17 @@ testObject::testComplement()
   populateMObj();
 
   typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6  #12",
-			"i'g'e'fhj(d'+c'+ab)"));
-  Tests.push_back(TTYPE("5 10 0.05524655  #(1 2 3 4)","d'+c'+b'+a'"));
-  Tests.push_back(TTYPE("5 10 0.05524655  #(34 44 (-84 : 82))","d'+c'+b'a"));
-  Tests.push_back(TTYPE("5 10 0.05524655  #(-34 -44)","a+b"));
-  Tests.push_back(TTYPE("5 10 0.05524655  #(-8 (-9 : 19) 3 -4)",
-			"b'+a+e+d'c"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("4 10 0.05524655  1 -2 3 -4 5 -6  #12",
+	    "e'fg'hi'j(c'+d'+ab)"),
+
+      TTYPE("5 10 0.05524655  #(1 2 3 4)","a'+b'+c'+d'"),
+      TTYPE("5 10 0.05524655  #(34 44 (-84 : 82))","c'+d'+ab'"),
+      TTYPE("5 10 0.05524655  #(-34 -44)","a+b"),
+      TTYPE("5 10 0.05524655  #(-8 (-9 : 19) 3 -4)",
+	    "a+b'+e+cd'")
+    };
   
   for(const TTYPE& tc : Tests)
     {
@@ -624,9 +628,11 @@ testObject::testMakeComplement()
   populateMObj();
 
   typedef std::tuple<int,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-
-  Tests.push_back(TTYPE(2,"2 12 0.099 (-5 : -60 : -62 : 63 : 61 : 4)"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE(2,"2 12 0.099 (63 : -62 : 61 : -60 : -5 : 4)")
+    };
+  
   for(const TTYPE& tc : Tests)
     {
       std::ostringstream ocx;
@@ -656,10 +662,12 @@ testObject::testRemoveComplement()
   ELog::RegMethod RegA("testObject","removeComplement");
   
   typedef std::tuple<std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("3 0 5 ","3 0 -5"));
-  Tests.push_back(TTYPE("4 0 5 ((1 -2 ) : (13 -14))",
-			"4 0 (-5 : ( ( -1 : 2 ) ( -13 : 14 ) ))"));
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE("3 0 5 ","3 0 -5"),
+      TTYPE("4 0 5 ((1 -2 ) : (13 -14))",
+	    "4 0 (-5 : ( ( 2 : -1 ) ( 14 : -13 ) ))")
+    };
 
   // quick way to make a long long list:
   std::ostringstream cx;

@@ -247,7 +247,6 @@ testAlgebra::testComponentExpand()
       Algebra B;
       B.setFunction(std::get<2>(tc));
       const Acomp& AC=A.getComp();
-      ELog::EM<<"AC= "<<AC.isInter()<<ELog::endDiag;
       const Acomp& BC=B.getComp();
 
       const Acomp CC=AC.componentExpand(std::get<1>(tc),BC);
@@ -277,8 +276,9 @@ testAlgebra::testMerge()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("acd+(afx+afy+afz)","acd+afx+afy+afz"),
-      TTYPE("a(b+c)","ab+ac")
+      TTYPE("a(bc)","abc"),
+      TTYPE("a(b+c)","a(b+c)"),
+      TTYPE("acd+(afx+afy+afz)","acd+afx+afy+afz")
     };
 
 
@@ -317,30 +317,32 @@ testAlgebra::testExpandBracket()
   const std::vector<TTYPE> Tests=
     {
       //      TTYPE("a(b+c)","ab+ac"),
+      TTYPE("a(b+c)","ab+ac"),
+	    
       TTYPE("a(cd+f(x+y+z))","acd+afx+afy+afz"),
       TTYPE("x+a'bcd+a(cd+f(x+y+z))","x+a'bcd+acd+afx+afy+afz"),
       TTYPE("(a+d)(hb+c)","abh+ac+bdh+cd"),
       TTYPE("(a+b)(c+d)(e+f)","ace+acf+ade+adf+bce+bcf+bde+bdf"),
       TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
       TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+bd+bf+cd+cf+de+ef"),
-      TTYPE("x(a+d+f)(b+c)","abx+acx+bdx+bfx+cdx+cfx"),
+      TTYPE("x(a+d+f)(b+c)","abx+acx+bdx+bfx+cdx+cfx")
 
-      TTYPE("a(b+c)","ab+ac")
 
     };
 
+  size_t cnt(0);
   for(const TTYPE& tc : Tests)
     {
+      cnt++;
       Algebra A;
       A.setFunction(std::get<0>(tc));
       const std::string preOut=A.display();
       A.expandBracket();
-      A.expandBracket();
-
       
       std::string Out=A.display();
       if (Out!=std::get<1>(tc))
 	{
+	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
@@ -454,20 +456,21 @@ testAlgebra::testMakeString()
   ELog::RegMethod RegA("testAlgebra","testMakeString");
 
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("(a:b)",
-   			"a+b",
-   			"b'a'"));
-  Tests.push_back(TTYPE("a+bc",
-   			"a+bc",
-   			"a'(c'+b')"));
-  Tests.push_back(TTYPE("a+(b+c)(e+d)",
-			"a+(b+c)(d+e)",
-			"a'(e'd'+c'b')"));
-  Tests.push_back(TTYPE("a'bcd+a(cd+ff(x+y+z))",
-			"a'bcd+a(cd+f(x+y+z))",
-			"(d'+c'+b'+a)(a'+(f'+z'y'x')(d'+c'))"));
-  Tests.push_back(TTYPE("(cd+ff)+b","b+f+cd","f'b'(d'+c')"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("(a:b)","a+b","a'b'"),
+      TTYPE("a+bc","a+bc","a'(b'+c')"),
+
+      TTYPE("a+(b+c)(e+d)",
+	    "a+(b+c)(d+e)",
+	    "a'(d'e'+b'c')"),
+      
+      TTYPE("a'bcd+a(cd+ff(x+y+z))",
+	    "a'bcd+a(cd+f(x+y+z))",
+	    "(a'+(f'+x'y'z')(c'+d'))(a+b'+c'+d')"),
+      
+      TTYPE("(cd+ff)+b","b+f+cd","b'f'(c'+d')")
+    };
 
   Algebra A;
   for(const TTYPE& tc : Tests)
@@ -505,9 +508,10 @@ testAlgebra::testMult()
 
   // A * B == C
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
-  std::vector<TTYPE> Tests;
-
-  Tests.push_back(TTYPE("a+b'+(c)","a+b","(b'+a+c)(a+b)"));
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("a+b'+(c)","a+b","(a+b'+c)(a+b)")
+    };
 
   Algebra A,B,C,D;
   for(const TTYPE& tc : Tests)
@@ -592,9 +596,9 @@ testAlgebra::testComplementary()
 
   typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("(a+b)","b'a'"));
+  Tests.push_back(TTYPE("(a+b)","a'b'"));
   Tests.push_back(TTYPE("ab((c'(d+e+f')g'h'i')+(gj'(k+l')(m+n)))",
-			"b'+a'+(g'+j+n'm'+k'l)(c+g+h+i+e'd'f)"));
+			"a'+b'+(g'+j+m'n'+k'l)(c+g+h+i+d'e'f)"));
 
   for(const TTYPE& tc : Tests)
     {
@@ -624,7 +628,7 @@ testAlgebra::testSetFunctionObjStr()
 
   typedef std::tuple<std::string,std::string> TTYPE;
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("(1 : -2 : 3 : -4)","d'+b'+a+c"));
+  Tests.push_back(TTYPE("(1 : -2 : 3 : -4)","a+b'+c+d'"));
 
   for(const TTYPE& tc : Tests)
     {
@@ -648,12 +652,12 @@ testAlgebra::testSetFunction()
     \return 0 on success
    */
 {
-  ELog::RegMethod RegA("testAlgebra","testSetFunctionObjStr");
+  ELog::RegMethod RegA("testAlgebra","testSetFunction");
 
 
   typedef std::tuple<std::string,std::string> TTYPE; 
   std::vector<TTYPE> Tests;
-  Tests.push_back(TTYPE("#(f+i)(xy)","i'f'xy"));
+  Tests.push_back(TTYPE("#(f+i)(xy)","f'i'xy"));
 
   for(const TTYPE& tc : Tests)
     {

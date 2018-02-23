@@ -84,12 +84,14 @@ Acomp::expandIIU(const Acomp& A) const
   Acomp Out(0);     // union
   for(const int AI : A.Units)
     {
-      const Acomp addItem=interCombine(AI,*this);
+      Acomp addItem=interCombine(AI,*this);
+      AcompTools::unitSort(addItem.Units);
       Out.primativeAddItem(addItem);	
     }
   for(const Acomp& AC : A.Comp)
     {
-      const Acomp addItem=interCombine(*this,AC);
+      Acomp addItem=interCombine(*this,AC);
+      AcompTools::unitSort(addItem.Units);
       Out.primativeAddItem(addItem);
     }
   
@@ -121,13 +123,15 @@ Acomp::expandUIU(const Acomp& A) const
       // N.aN
       for(const int BI : A.Units)
 	{
-	  const Acomp addItem=interCombine(AI,BI);
+	  Acomp addItem=interCombine(AI,BI);
+	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
-	  const Acomp addItem=interCombine(AI,AC);
+	  Acomp addItem=interCombine(AI,AC);
+	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -136,13 +140,15 @@ Acomp::expandUIU(const Acomp& A) const
       // C.aN
       for(const int BI : A.Units)
 	{
-	  const Acomp addItem=interCombine(BI,AC);
+	  Acomp addItem=interCombine(BI,AC);
+	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
       // C.aC
       for(const Acomp& BC : A.Comp)
 	{
-	  const Acomp addItem=interCombine(AC,BC);
+	  Acomp addItem=interCombine(AC,BC);
+	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -182,7 +188,6 @@ Acomp::expandIUU(const Acomp& A) const
    */
 {
   Acomp Out(0);   // Union
-
   
   if (this->isSingle() && this->isSimple())
     Out.Units.push_back(this->getSinglet());
@@ -236,6 +241,8 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
     \param A :: Component to multiply by
   */
 {
+  ELog::RegMethod RegA("Acomp","componentExpand");
+
   // Case by case:
   Acomp Out(0);
   if (Intersect==1 && interFlag==1 && A.Intersect==1)
@@ -258,7 +265,8 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
   else
     throw ColErr::InContainerError<int>(Intersect,
 					"Intersect/interflag not correct");
-  AcompTools::unitSort(Out.Units);    
+  
+  AcompTools::unitSort(Out.Units);
 
   return  Out;
 }
@@ -393,9 +401,9 @@ Acomp::expandBracket()
     Expand all the Intersection brackets
   */
 {
-
-  ELog::RegMethod RegA("Acomp","expandBracket");
   static int cnt(0);
+
+  isNumberSorted();
 
   cnt++;
   // all lower units
@@ -409,24 +417,19 @@ Acomp::expandBracket()
 	  Acomp N(1);  // intersect
 	  N.Units=Units;
 	  Comp[0]=N.componentExpand(1,Comp[0]);
+	  Comp[0].isNumberSorted();
 	  Units.clear();
 	}
-
       while (Comp.size()>1)
 	{
-	  if (Comp.size()>10)
-	    ELog::EM<<"Cmt == "<<Comp.size()<<ELog::endDiag;
 	  Comp[0]=Comp[0].componentExpand(1,Comp[1]);
 	  Comp.erase(Comp.begin()+1);
 	}
     }
-
+  
   upMoveComp();
   merge();
   makeNull();
-
-
-  
   return;
 }
 
