@@ -85,6 +85,7 @@
 #include "WheelBase.h"
 #include "Wheel.h"
 #include "BilbaoWheel.h"
+#include "EmptyCyl.h"
 #include "BeRef.h"
 #include "TelescopicPipe.h"
 #include "ProtonTube.h"
@@ -274,6 +275,7 @@ makeESS::createGuides(Simulation& System)
 
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       GBArray.push_back(GB);
     }
   
@@ -1209,6 +1211,19 @@ makeESS::build(Simulation& System,
 				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Shaft"));
+
+  // Empty area above target
+  TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
+  TargetTopClearance->createAll(System, *Target, 6, 3, 13,*Bulk,"Radius0");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
 
   createGuides(System);
   makeBunker(System,IParam);

@@ -64,6 +64,8 @@ EssWheel(FuncDataBase& Control)
   const size_t nSectors(36);
   const std::string ss316l("SS316L");
 
+  Control.addVariable("TargetTopClearanceHeight", 3.0);
+  Control.addVariable("TargetTopClearanceMat", "Void");
   
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
