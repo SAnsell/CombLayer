@@ -1469,13 +1469,9 @@ Simulation::makeObjectsDNF()
 	    {
 	      MonteCarlo::Algebra AX;
 	      AX.setFunctionObjStr(CPtr->cellCompStr());
-	      //	      const size_t NE=AX.countComponents();
 	      const size_t NL=AX.countLiterals();
 	      if (NL<=cellDNF)
 		{
-		  cellIndex++;
-		  ELog::EM<<CPtr->getName()<<"["<<NL<<"] ";
-		  if (!(cellIndex % 8)) ELog::EM<<ELog::endDiag;
 		  AX.expandBracket();
 		  if (!CPtr->procString(AX.writeMCNPX()))
 		    {
@@ -1484,6 +1480,14 @@ Simulation::makeObjectsDNF()
 		      throw ColErr::InvalidLine(AX.writeMCNPX(),
 						"Algebra ExpandBracket");
 		    }
+		  const size_t NLX=AX.countLiterals();
+		  if (NLX !=NL)
+		    {
+		      ELog::EM<<CPtr->getName()<<"["<<NL<<","<<NLX<<"] ";
+		      cellIndex++;
+		      if (!(cellIndex % 8)) ELog::EM<<ELog::endDiag;
+		    }
+		  
 		}
 	      else
 		{

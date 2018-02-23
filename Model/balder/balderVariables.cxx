@@ -183,8 +183,7 @@ monoVariables(FuncDataBase& Control,
 void
 opticsVariables(FuncDataBase& Control)
   /*
-    Vacuum optics components in the 
-    optics hutch
+    Vacuum optics components in the optics hutch
     \param Control :: Function data base
   */
 {
