@@ -275,7 +275,6 @@ makeESS::createGuides(Simulation& System)
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
     }
   
   GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
@@ -1069,10 +1068,7 @@ makeESS::buildTwister(Simulation& System)
   ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
 
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
   attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
