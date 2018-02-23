@@ -85,6 +85,7 @@
 #include "WheelBase.h"
 #include "Wheel.h"
 #include "BilbaoWheel.h"
+#include "EmptyCyl.h"
 #include "BeRef.h"
 #include "TelescopicPipe.h"
 #include "ProtonTube.h"
@@ -225,9 +226,7 @@ makeESS::makeTarget(Simulation& System,
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  const int voidCell(74123);  
 
-  
   // Best place to put this to allow simple call
   if (targetType=="help")
     {
@@ -237,7 +236,6 @@ makeESS::makeTarget(Simulation& System,
       return;
     }
 
-
   if (targetType=="Wheel")
     Target=std::shared_ptr<WheelBase>(new Wheel("Wheel"));
   else if (targetType=="Bilbao")
@@ -246,8 +244,9 @@ makeESS::makeTarget(Simulation& System,
     throw ColErr::InContainerError<std::string>
       (targetType,"Unknown target type");
   
-  Target->addInsertCell("Shaft",voidCell);
-  Target->addInsertCell("Wheel",voidCell);
+  // const int voidCell(74123);
+  // Target->addInsertCell("Shaft",voidCell);
+  // Target->addInsertCell("Wheel",voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
   OR.addObject(Target);
@@ -275,9 +274,9 @@ makeESS::createGuides(Simulation& System)
 			 ShutterBayObj->getLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
+      attachSystem::addToInsertSurfCtrl(System,*GB,Target->getCC("Wheel"));
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       GBArray.push_back(GB);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
     }
   
   GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
@@ -1071,10 +1070,7 @@ makeESS::buildTwister(Simulation& System)
   ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,LowBFL->getCC("outer"));
 
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
   attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
@@ -1215,6 +1211,19 @@ makeESS::build(Simulation& System,
 				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Shaft"));
+
+  // Empty area above target
+  TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
+  TargetTopClearance->createAll(System, *Target, 6, 3, 13,*Bulk,"Radius0");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
 
   createGuides(System);
   makeBunker(System,IParam);

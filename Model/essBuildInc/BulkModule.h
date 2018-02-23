@@ -37,7 +37,8 @@ namespace essSystem
 
 class BulkModule : public attachSystem::ContainedComp,
   public attachSystem::FixedOffset,
-  public attachSystem::SurfMap
+  public attachSystem::SurfMap,
+  public attachSystem::CellMap
 {
  private:
   

@@ -53,6 +53,7 @@ namespace essSystem
   class WheelBase;
   class Wheel;
   class BilbaoWheel;
+  class EmptyCyl;
   class BeRef;
   class essMod;
   class ESSPipes;
@@ -96,6 +97,7 @@ class makeESS
  private:
 
   std::shared_ptr<WheelBase> Target;   ///< target object
+  std::shared_ptr<EmptyCyl>  TargetTopClearance; ///< empty cell above target
   std::shared_ptr<BeRef> Reflector;    ///< reflector object
   std::shared_ptr<ProtonTube> PBeam;   ///< Proton Void
   std::shared_ptr<PBIP> pbip; ///< proton beam instrumentation plug

@@ -1304,21 +1304,21 @@ BilbaoWheel::createLinks()
   FixedComp::setBridgeSurf(1,SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(2,Origin-Y*voidRadius,-Y);
-  FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+1037));
+  FixedComp::setLinkSurf(2,SMap.realSurf(wheelIndex+537));
   FixedComp::setBridgeSurf(2,-SMap.realSurf(wheelIndex+1));
 
   FixedComp::setConnect(3,Origin+Y*voidRadius,Y);
-  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+1037));
+  FixedComp::setLinkSurf(3,SMap.realSurf(wheelIndex+537));
   FixedComp::setBridgeSurf(3,SMap.realSurf(wheelIndex+1));
 
-  // const double H=wheelHeight()/2.0;
-  // FixedComp::setConnect(4,Origin-Z*H,-Z);
-  // FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+55));
+  const double H=wheelHeight()/2.0;
+  FixedComp::setConnect(4,Origin-Z*H,-Z);
+  FixedComp::setLinkSurf(4,-SMap.realSurf(wheelIndex+45));
 
-  // FixedComp::setConnect(5,Origin+Z*H,Z);
-  // FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+56));
+  FixedComp::setConnect(5,Origin+Z*H,Z);
+  FixedComp::setLinkSurf(5,SMap.realSurf(wheelIndex+46));
 
-    // inner links (normally) point towards
+  // inner links (normally) point towards
   // top/bottom of the spallation material (innet cell)
   const double TH=targetHeight/2.0;
   FixedComp::setConnect(6,Origin-Z*TH,Z);
@@ -1327,30 +1327,34 @@ BilbaoWheel::createLinks()
   FixedComp::setConnect(7,Origin+Z*TH,-Z);
   FixedComp::setLinkSurf(7,-SMap.realSurf(wheelIndex+6));
 
-  int SI(wheelIndex);
-  for (size_t i=0; i<nLayers; i++)
-    {
-      if (matTYPE[i]==3) // Tungsten layer
-	{
-	  // 8 and 9 - the layer before Tungsten (He)
-	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
-					     steelTungstenInnerThick), -Y);
-	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
+  // int SI(wheelIndex);
+  // for (size_t i=0; i<nLayers; i++)
+  //   {
+  //     if (matTYPE[i]==3) // Tungsten layer
+  // 	{
+  // 	  // 8 and 9 - the layer before Tungsten (He)
+  // 	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
+  // 					     steelTungstenInnerThick), -Y);
+  // 	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
 
-	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
-	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
+  // 	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
+  // 	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
 
-	  // 10 and 11 - Tungsten layer
-	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
-	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
+  // 	  // 10 and 11 - Tungsten layer
+  // 	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
+  // 	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
 
-	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
-	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
+  // 	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
+  // 	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
 
-	  return; // !!! we assume that there is only one Tungsten layer
-	}
-      SI+=10;
-    }
+  // 	  return; // !!! we assume that there is only one Tungsten layer
+  // 	}
+  //     SI+=10;
+  //   }
+
+  FixedComp::setConnect(12, Origin-Y*(radius[0]+voidThick),-Y);
+  FixedComp::setLinkSurf(12, SMap.realSurf(wheelIndex+2118));
+  FixedComp::setBridgeSurf(12,-SMap.realSurf(wheelIndex+1));
 
   return;
 }
