@@ -225,9 +225,7 @@ makeESS::makeTarget(Simulation& System,
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  const int voidCell(74123);  
 
-  
   // Best place to put this to allow simple call
   if (targetType=="help")
     {
@@ -237,7 +235,6 @@ makeESS::makeTarget(Simulation& System,
       return;
     }
 
-
   if (targetType=="Wheel")
     Target=std::shared_ptr<WheelBase>(new Wheel("Wheel"));
   else if (targetType=="Bilbao")
@@ -246,8 +243,9 @@ makeESS::makeTarget(Simulation& System,
     throw ColErr::InContainerError<std::string>
       (targetType,"Unknown target type");
   
-  Target->addInsertCell("Shaft",voidCell);
-  Target->addInsertCell("Wheel",voidCell);
+  // const int voidCell(74123);
+  // Target->addInsertCell("Shaft",voidCell);
+  // Target->addInsertCell("Wheel",voidCell);
   Target->createAll(System,World::masterOrigin(),0);
 
   OR.addObject(Target);
