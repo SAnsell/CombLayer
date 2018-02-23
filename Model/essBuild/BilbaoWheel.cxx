@@ -1327,34 +1327,34 @@ BilbaoWheel::createLinks()
   FixedComp::setConnect(7,Origin+Z*TH,-Z);
   FixedComp::setLinkSurf(7,-SMap.realSurf(wheelIndex+6));
 
-  // int SI(wheelIndex);
-  // for (size_t i=0; i<nLayers; i++)
-  //   {
-  //     if (matTYPE[i]==3) // Tungsten layer
-  // 	{
-  // 	  // 8 and 9 - the layer before Tungsten (He)
-  // 	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
-  // 					     steelTungstenInnerThick), -Y);
-  // 	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
-
-  // 	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
-  // 	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
-
-  // 	  // 10 and 11 - Tungsten layer
-  // 	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
-  // 	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
-
-  // 	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
-  // 	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
-
-  // 	  return; // !!! we assume that there is only one Tungsten layer
-  // 	}
-  //     SI+=10;
-  //   }
-
   FixedComp::setConnect(12, Origin-Y*(radius[0]+voidThick),-Y);
   FixedComp::setLinkSurf(12, SMap.realSurf(wheelIndex+2118));
   FixedComp::setBridgeSurf(12,-SMap.realSurf(wheelIndex+1));
+
+  int SI(wheelIndex);
+  for (size_t i=0; i<nLayers; i++)
+    {
+      if (matTYPE[i]==3) // Tungsten layer
+  	{
+  	  // 8 and 9 - the layer before Tungsten (He)
+  	  FixedComp::setConnect(8, Origin-Y*(targetInnerHeightRadius +
+  					     steelTungstenInnerThick), -Y);
+  	  FixedComp::setLinkSurf(8, SMap.realSurf(wheelIndex+117));
+
+  	  FixedComp::setConnect(9, Origin-Y*radius[i-2], Y);
+  	  FixedComp::setLinkSurf(9, -SMap.realSurf(SI-10+7));
+
+  	  // 10 and 11 - Tungsten layer
+  	  FixedComp::setConnect(10, Origin-Y*radius[i-1], -Y);
+  	  FixedComp::setLinkSurf(10, SMap.realSurf(SI+7));
+
+  	  FixedComp::setConnect(11, Origin-Y*radius[i], Y);
+  	  FixedComp::setLinkSurf(11, -SMap.realSurf(SI+17));
+
+  	  return; // !!! we assume that there is only one Tungsten layer
+  	}
+      SI+=10;
+    }
 
   return;
 }
