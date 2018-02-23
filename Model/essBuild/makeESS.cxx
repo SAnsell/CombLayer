@@ -274,7 +274,7 @@ makeESS::createGuides(Simulation& System)
 			 ShutterBayObj->getLinkSurf(7));
 
       GB->createAll(System,*ShutterBayObj,0);
-      attachSystem::addToInsertForced(System,*GB,Target->getCC("Wheel"));
+      attachSystem::addToInsertSurfCtrl(System,*GB,Target->getCC("Wheel"));
       attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       GBArray.push_back(GB);
     }
