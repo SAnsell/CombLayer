@@ -1076,6 +1076,8 @@ makeESS::buildTwister(Simulation& System)
   attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
   attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
 
+  attachSystem::addToInsertSurfCtrl(System,*Twister,*TargetTopClearance);
+
   return;
 }
 
