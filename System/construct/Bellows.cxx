@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -85,6 +86,29 @@ namespace constructSystem
 Bellows::Bellows(const std::string& Key) :
   SplitFlangePipe(Key,0)
 {}
+  
+Bellows::Bellows(const Bellows& A) : 
+  SplitFlangePipe(A)
+  /*!
+    Copy constructor
+    \param A :: Bellows to copy
+  */
+{}
+
+Bellows&
+Bellows::operator=(const Bellows& A)
+  /*!
+    Assignment operator
+    \param A :: Bellows to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      SplitFlangePipe::operator=(A);
+    }
+  return *this;
+}
 
 Bellows::~Bellows() 
   /*!

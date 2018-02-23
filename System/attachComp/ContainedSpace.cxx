@@ -82,7 +82,7 @@ ContainedSpace::ContainedSpace()  :
 {}
 
 ContainedSpace::ContainedSpace(const ContainedSpace& A) : 
-  ContainedComp(A),
+  ContainedComp(A),FCName(A.FCName),
   nDirection(A.nDirection),primaryCell(A.primaryCell),
   buildCell(0),BBox(A.BBox),LCutters(A.LCutters)
   /*!
@@ -102,6 +102,7 @@ ContainedSpace::operator=(const ContainedSpace& A)
   if (this!=&A)
     {
       ContainedComp::operator=(A);
+      FCName=A.FCName;
       nDirection=A.nDirection;
       primaryCell=A.primaryCell;
       BBox=A.BBox;
@@ -241,20 +242,18 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
     }
   // NOW eliminate all surfaces NOT in surfN
   const std::set<int> fullSurfN=objHR.getSurfSet();
+  BBox=objHR;
   for(const int SN : fullSurfN)
     {
       if (surfN.find(SN) == surfN.end())
-	objHR.removeItems(SN);
+	BBox.removeItems(SN);
     }
-
   
   // Check for no negative repeats:
-  BBox.reset();
   for(const int SN : surfN)
     {
       if (SN==0 || (SN<0 && surfN.find(-SN)!=surfN.end()))
 	throw ColErr::InContainerError<int>(SN,"Surf repeated");
-      BBox.addIntersection(SN);
     }
   return;
 }
@@ -264,7 +263,8 @@ ContainedSpace::registerSpaceCut(const long int linkA,const long int linkB)
 				
   /*!
     Register the surface space
-    \param 
+    \param linkA :: Signed link point
+    \param linkB :: Signed link point
   */
 {
   ABLink.first=linkA;
@@ -309,6 +309,7 @@ ContainedSpace::buildWrapCell(Simulation& System,
   HeadRule newOuterVoid(BBox);
   for(const LinkUnit& LU : LCutters)
     newOuterVoid.addIntersection(-LU.getLinkSurf());
+  
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
 
@@ -325,6 +326,7 @@ ContainedSpace::initialize()
   if (ABLink.first && ABLink.second)
     {
       FixedComp& FC=dynamic_cast<FixedComp&>(*this);
+      FCName=FC.getKeyName();
       ContainedSpace::setLinkCopy(0,FC,ABLink.first);
       ContainedSpace::setLinkCopy(1,FC,ABLink.second);
       if (!primaryCell && !insertCells.empty())
@@ -354,11 +356,19 @@ ContainedSpace::insertObjects(Simulation& System)
     {
       calcBoundary(System,primaryCell,nDirection);
       buildWrapCell(System,primaryCell,buildCell);
-      primaryCell=0;
     }
 
+  std::vector<int> IHold(insertCells);
+
   ContainedComp::insertObjects(System);
-	
+  if (primaryCell && buildCell)
+    {
+      for(const int CN : IHold)
+	if (CN!=primaryCell)
+	  insertCells.push_back(CN);
+      insertCells.push_back(buildCell);
+      primaryCell=0;
+    }
   return;
 }
 

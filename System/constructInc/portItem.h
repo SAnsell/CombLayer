@@ -67,8 +67,10 @@ class portItem :
   int wallMat;               ///< Wall material
   int plateMat;              ///< plate Material
 
+  std::set<int> outerCell;   ///< Extra cell to add outer to
   std::string refComp;       ///< Name of reference object
   Geometry::Vec3D exitPoint; ///< exit point of object
+
 
   
   void createSurfaces();
@@ -92,6 +94,7 @@ class portItem :
   void setCentLine(const attachSystem::FixedComp&,
 		   const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+  void addOuterCell(const int);
   void setMain(const double,const double,const double);
   void setMaterial(const int,const int);
   void setFlange(const double,const double);

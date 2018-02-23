@@ -241,7 +241,17 @@ portItem::setCentLine(const attachSystem::FixedComp& FC,
   return;
 }
 
-  
+void
+portItem::addOuterCell(const int ON)
+  /*!
+    Add outer cell(s)
+    \param ON :: cell number
+   */
+{
+  outerCell.insert(ON);
+  return;
+}
+
 void
 portItem::createSurfaces()
   /*!
@@ -315,6 +325,7 @@ portItem::constructOuterFlange(Simulation& System,
     Find the length and outer fangge
     \parma System :: Simulation to use
     \param LT :: Line track out of object
+    \param startIndex :: index of last point
     \param lastIndex :: index of last point
   */
 {
@@ -340,11 +351,10 @@ portItem::constructOuterFlange(Simulation& System,
 
   // construct inner volume:
   std::string Out;
-
   
   Out=ModelSupport::getComposite(SMap,portIndex," 1 -7 -2 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontSurf);
-
+  
   Out=ModelSupport::getComposite(SMap,portIndex," 1 -17 7 -2 ");
   System.addCell(cellIndex++,wallMat,0.0,Out+frontSurf);
 
@@ -365,21 +375,38 @@ portItem::constructOuterFlange(Simulation& System,
   // Mid port exclude
   const std::string tubeExclude=
     ModelSupport::getComposite(SMap,portIndex," ( 17 : -1 )");
- 
+
+  std::set<int> activeCell;
   const std::vector<MonteCarlo::Object*>& OVec=LT.getObjVec();
   const std::vector<double>& Track=LT.getTrack();
   double T(0.0);   // extention base out point
   for(size_t i=startIndex;i<OVec.size() && T<externalLength;i++)
     {
       MonteCarlo::Object* OPtr=OVec[i];
+      const int OName=OPtr->getName();
+
       if (i>lastIndex)   
 	T+=Track[i];
 
-
-      if (T>=externalLength-flangeLength)
-	OPtr->addSurfString(getExclude());
+      if (T>=externalLength-flangeLength ||
+	  outerCell.find(OName)!=outerCell.end())
+	{
+	  OPtr->addSurfString(getExclude());
+	  activeCell.insert(OName);
+	}
       else 
 	OPtr->addSurfString(tubeExclude);
+    }
+  // do essential outerCells
+  for(const int ON : outerCell)
+    {
+      if (activeCell.find(ON)==activeCell.end())
+	{
+	  MonteCarlo::Object* OPtr=System.findQhull(ON);
+	  if (!OPtr)
+	    throw ColErr::InContainerError<int>(ON,"Cell not found");
+	  OPtr->addSurfString(getExclude());
+	}
     }
   
   return;

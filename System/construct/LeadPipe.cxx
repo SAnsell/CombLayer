@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -53,23 +52,18 @@
 #include "surfRegister.h"
 #include "objectRegister.h"
 #include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "Qhull.h"
 #include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
 #include "LinkUnit.h"  
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -84,7 +78,34 @@ namespace constructSystem
 
 LeadPipe::LeadPipe(const std::string& Key) :
   SplitFlangePipe(Key,1)
+  /*!
+    Build a lead pipe
+    \param Key :: Keyname
+  */
 {}
+
+LeadPipe::LeadPipe(const LeadPipe& A) : 
+  SplitFlangePipe(A)
+  /*!
+    Copy constructor
+    \param A :: LeadPipe to copy
+  */
+{}
+
+LeadPipe&
+LeadPipe::operator=(const LeadPipe& A)
+  /*!
+    Assignment operator
+    \param A :: LeadPipe to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      SplitFlangePipe::operator=(A);
+    }
+  return *this;
+}
 
 LeadPipe::~LeadPipe() 
   /*!

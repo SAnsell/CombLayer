@@ -102,12 +102,23 @@ processExitChecks(Simulation& System,
 	{
 	  const Geometry::Vec3D CPoint=
 	    IParam.getValue<Geometry::Vec3D>("validPoint");
+
 	  if (!SValidCheck.runPoint(System,CPoint,
 				    IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
 	}
-    }
+      else if (IParam.flag("validFC"))
+	{
 
+	}
+      else 
+	{
+	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),
+				    IParam.getValue<size_t>("validCheck")))
+	    errFlag += -1;
+	}
+
+    }
   
   const size_t NLine = IParam.setCnt("validLine");
   for(size_t i=0;i<NLine;i++)

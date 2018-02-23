@@ -137,6 +137,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regItem("validFC","validFC",1);
   IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");

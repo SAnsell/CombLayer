@@ -39,19 +39,15 @@ namespace xraySystem
 
 class MonoVessel :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
-  
-  const int monoIndex;          ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double radius;                 ///< void radius
   double ringWidth;              ///< void width to ring side
   double outWidth;               ///< void width to door
-
 
   double wallThick;             ///< steel wall (round)
   double doorThick;             ///< door side thickness
@@ -62,7 +58,6 @@ class MonoVessel :
 
   double ringFlangeLen;         ///< Flange length on ring side
   double ringFlangeRad;         ///< Flange extra radius on ring side
-
 
   double inPortZStep;           ///< Drop of inport
   double inPortRadius;          ///< Incomming port size

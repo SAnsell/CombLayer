@@ -37,15 +37,13 @@ namespace constructSystem
 
 class VacuumBox :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
  private:
 
   const bool centreOrigin;      ///< Construct on the centre line
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -63,7 +61,6 @@ class VacuumBox :
   double portAWallThick;      ///< Flange wall thickness
   double portATubeLength;     ///< Port tube
   double portATubeRadius;     ///< Port tube length
-
 
   double portBXStep;          ///< XStep of port
   double portBZStep;          ///< ZStep of port

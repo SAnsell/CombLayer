@@ -325,7 +325,6 @@ PortTube::createObjects(Simulation& System)
   
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -2 -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
-
   // main walls
   Out=ModelSupport::getComposite(SMap,buildIndex," 1 -17 7 -2 ");
   makeCell("MainCylinder",System,cellIndex++,wallMat,0.0,Out);
@@ -406,6 +405,9 @@ PortTube::createPorts(Simulation& System)
 
   for(size_t i=0;i<Ports.size();i++)
     {
+      for(const int CN : insertCells)
+	Ports[i].addOuterCell(CN);
+      
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
       Ports[i].constructTrack(System);
     }
@@ -452,7 +454,7 @@ PortTube::createAll(Simulation& System,
   createLinks();
   
   insertObjects(System);   
-  //  createPorts(System);
+  createPorts(System);
 
   return;
 }

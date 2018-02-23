@@ -69,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
@@ -81,11 +82,9 @@ namespace constructSystem
 VacuumBox::VacuumBox(const std::string& Key,
 		       const bool flag) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::FrontBackCut(),
-  centreOrigin(flag),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1)
+  centreOrigin(flag)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -94,10 +93,9 @@ VacuumBox::VacuumBox(const std::string& Key,
 {}
 
 VacuumBox::VacuumBox(const VacuumBox& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::FrontBackCut(A),
-  centreOrigin(A.centreOrigin),vacIndex(A.vacIndex),
-  cellIndex(A.cellIndex),voidHeight(A.voidHeight),
+  centreOrigin(A.centreOrigin),voidHeight(A.voidHeight),
   voidWidth(A.voidWidth),voidDepth(A.voidDepth),
   voidLength(A.voidLength),feHeight(A.feHeight),
   feDepth(A.feDepth),feWidth(A.feWidth),feFront(A.feFront),
@@ -126,10 +124,9 @@ VacuumBox::operator=(const VacuumBox& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       voidHeight=A.voidHeight;
       voidWidth=A.voidWidth;
       voidDepth=A.voidDepth;
@@ -266,60 +263,60 @@ VacuumBox::createSurfaces()
   // Do outer surfaces (vacuum ports)
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+101,
+      ModelSupport::buildPlane(SMap,buildIndex+101,
 			       Origin-Y*(portATubeLength+voidLength/2.0),Y);
-      setFront(SMap.realSurf(vacIndex+101));
+      setFront(SMap.realSurf(buildIndex+101));
     }
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+102,
+      ModelSupport::buildPlane(SMap,buildIndex+102,
 			       Origin+Y*(portBTubeLength+voidLength/2.0),Y);
-      setBack(-SMap.realSurf(vacIndex+102));
+      setBack(-SMap.realSurf(buildIndex+102));
     }
   
   // Inner void
-  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+3,Origin-X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+4,Origin+X*(voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+5,Origin-Z*voidDepth,Z);
-  ModelSupport::buildPlane(SMap,vacIndex+6,Origin+Z*voidHeight,Z);  
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(voidLength/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(voidWidth/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*voidDepth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*voidHeight,Z);  
 
   // Fe system [front face is link surf]
-  ModelSupport::buildPlane(SMap,vacIndex+11,
+  ModelSupport::buildPlane(SMap,buildIndex+11,
    			   Origin-Y*(feFront+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+12,
+  ModelSupport::buildPlane(SMap,buildIndex+12,
 			   Origin+Y*(feBack+voidLength/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+13,
+  ModelSupport::buildPlane(SMap,buildIndex+13,
 			   Origin-X*(feWidth+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+14,
+  ModelSupport::buildPlane(SMap,buildIndex+14,
 			   Origin+X*(feWidth+voidWidth/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+15,
+  ModelSupport::buildPlane(SMap,buildIndex+15,
 			   Origin-Z*(voidDepth+feDepth),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+16,
+  ModelSupport::buildPlane(SMap,buildIndex+16,
 			   Origin+Z*(voidHeight+feHeight),Z);
 
   // FRONT PORT
   const Geometry::Vec3D ACentre(Origin+X*portAXStep+Z*portAZStep);
 
-  ModelSupport::buildCylinder(SMap,vacIndex+107,ACentre,Y,portATubeRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+117,ACentre,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+107,ACentre,Y,portATubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,ACentre,Y,
 			      portATubeRadius+portAWallThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+127,ACentre,Y,flangeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+127,ACentre,Y,flangeARadius);
 
 
   // BACK PORT
   const Geometry::Vec3D BCentre(Origin+X*portBXStep+Z*portBZStep);
 
-  ModelSupport::buildCylinder(SMap,vacIndex+207,BCentre,Y,portBTubeRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+217,BCentre,Y,
+  ModelSupport::buildCylinder(SMap,buildIndex+207,BCentre,Y,portBTubeRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,BCentre,Y,
 			      portBTubeRadius+portBWallThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+227,BCentre,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+227,BCentre,Y,flangeBRadius);
 
   // Flange cut
-  FrontBackCut::getShiftedFront(SMap,vacIndex+111,1,Y,flangeALength);
-  FrontBackCut::getShiftedBack(SMap,vacIndex+211,-1,Y,flangeBLength);
-  //ModelSupport::buildPlane(SMap,vacIndex+211,
+  FrontBackCut::getShiftedFront(SMap,buildIndex+111,1,Y,flangeALength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+211,-1,Y,flangeBLength);
+  //ModelSupport::buildPlane(SMap,buildIndex+211,
   //ACentre+Y*(portTubeLength+voidLength/2.0-flangeLength),Y);
 
   return;
@@ -340,50 +337,50 @@ VacuumBox::createObjects(Simulation& System)
   const std::string BPortStr(backRule());
   
   // Main Void 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"1 -2 3 -4 5 -6");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2 3 -4 5 -6");
   CellMap::makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // PortVoids
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
   CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -207 ");
   CellMap::makeCell("PortVoid",System,cellIndex++,voidMat,0.0,Out+BPortStr);
 
   // Main metal
   Out=ModelSupport::getComposite
-    (SMap,vacIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:107) (-2:207) ");
+    (SMap,buildIndex," 11 -12 13 -14 15 -16 (-1:2:-3:4:-5:6) (1:107) (-2:207) ");
   CellMap::makeCell("MainWall",System,cellIndex++,feMat,0.0,Out);
 
   // Port metal
-  Out=ModelSupport::getComposite(SMap,vacIndex," -11 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 107 -117 ");
   CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 207 -217 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 207 -217 ");
   CellMap::makeCell("PortWall",System,cellIndex++,feMat,0.0,Out+BPortStr);
 
   // Flange
-  Out=ModelSupport::getComposite(SMap,vacIndex," -111 117 -127 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -111 117 -127 ");
   CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,Out+FPortStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 211 217 -227 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 211 217 -227 ");
   CellMap::makeCell("Flange",System,cellIndex++,feMat,0.0,Out+BPortStr);
 
   // Flange Voids
-  Out=ModelSupport::getComposite(SMap,vacIndex," 111 -11 117 -127 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 111 -11 117 -127 ");
   CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -211 217 -227 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -211 217 -227 ");
   CellMap::makeCell("FlangeVoid",System,cellIndex++,0,0.0,Out);
   
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," -11 -127 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -127 ");
   addOuterUnionSurf(Out+FPortStr);      
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -227 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -227 ");
   addOuterUnionSurf(Out+BPortStr);      
   return;
 }
@@ -409,10 +406,10 @@ VacuumBox::createLinks()
   FixedComp::setConnect(4,Origin-Z*(feDepth+voidDepth),-Z);
   FixedComp::setConnect(5,Origin+Z*(feHeight+voidHeight),Z);  
 
-  FixedComp::setLinkSurf(2,-SMap.realSurf(vacIndex+13));
-  FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+14));
-  FixedComp::setLinkSurf(4,-SMap.realSurf(vacIndex+15));
-  FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+16));
+  FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+13));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+14));
+  FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+15));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+16));
   
   return;
 }

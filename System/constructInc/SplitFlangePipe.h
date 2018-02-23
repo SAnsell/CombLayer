@@ -37,7 +37,7 @@ namespace constructSystem
 
 class SplitFlangePipe :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
@@ -46,9 +46,6 @@ class SplitFlangePipe :
 
   const bool innerLayer;        ///< inner Fe layer [flag] -- make template
   
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   bool frontJoin;               ///< Flag for front join
   Geometry::Vec3D FPt;          ///< Front point
   Geometry::Vec3D FAxis;        ///< Front point

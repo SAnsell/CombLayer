@@ -37,16 +37,13 @@ namespace constructSystem
 
 class JawValve :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double length;                ///< Void length
   double width;                 ///< Void width (full)
   double height;                ///< height 

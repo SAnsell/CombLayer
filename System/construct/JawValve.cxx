@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -70,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -85,10 +85,9 @@ namespace constructSystem
 
 JawValve::JawValve(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1),JItem(Key+"Jaw")
+  JItem(Key+"Jaw")
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -96,10 +95,10 @@ JawValve::JawValve(const std::string& Key) :
 {}
 
 JawValve::JawValve(const JawValve& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),length(A.length),
+  length(A.length),
   width(A.width),height(A.height),depth(A.depth),
   wallThick(A.wallThick),portRadius(A.portRadius),
   portThick(A.portThick),portLen(A.portLen),JItem(A.JItem),
@@ -121,11 +120,10 @@ JawValve::operator=(const JawValve& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       length=A.length;
       width=A.width;
       height=A.height;
@@ -211,40 +209,40 @@ JawValve::createSurfaces()
   ELog::RegMethod RegA("JawValve","createSurfaces");
 
   // front planes
-  ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+11,Origin-Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+11,Origin-Y*(wallThick+length/2.0),Y);
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+101,
+      ModelSupport::buildPlane(SMap,buildIndex+101,
 			       Origin-Y*(portLen+length/2.0),Y);
-      FrontBackCut::setFront(SMap.realSurf(vacIndex+101));
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+101));
     }
   
   // back planes
-  ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,vacIndex+12,Origin+Y*(wallThick+length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+12,Origin+Y*(wallThick+length/2.0),Y);
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+102,
+      ModelSupport::buildPlane(SMap,buildIndex+102,
 			       Origin+Y*(portLen+length/2.0),Y);
-      FrontBackCut::setBack(-SMap.realSurf(vacIndex+102));
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+102));
     }
 
   // sides
-  ModelSupport::buildPlane(SMap,vacIndex+3,Origin-X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+4,Origin+X*(width/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+5,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,vacIndex+6,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*(width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*height,Z);
 
-  ModelSupport::buildPlane(SMap,vacIndex+13,Origin-X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+14,Origin+X*(wallThick+width/2.0),X);
-  ModelSupport::buildPlane(SMap,vacIndex+15,Origin-Z*(depth+wallThick),Z);
-  ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*(height+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*(wallThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*(wallThick+width/2.0),X);
+  ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*(depth+wallThick),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*(height+wallThick),Z);
 
   // flange
 
-  ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,portRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+117,Origin,Y,portRadius+portThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,portRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+117,Origin,Y,portRadius+portThick);
 
   return;
 }
@@ -267,56 +265,54 @@ JawValve::createObjects(Simulation& System)
   const std::string frontComp=frontComplement();  // -101
   const std::string backComp=backComplement();    // 102
   // Void 
-  Out=ModelSupport::getComposite(SMap,vacIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 3 -4 5 -6 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out);
 
   // Main body
-  Out=ModelSupport::getComposite(SMap,vacIndex,
+  Out=ModelSupport::getComposite(SMap,buildIndex,
 				 " 1 -2 13 -14 15 -16 (-3:4:-5:6) ");
   makeCell("Body",System,cellIndex++,wallMat,0.0,Out);
 
   // front plate
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 11 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 11 13 -14 15 -16 117 ");
   makeCell("FrontPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 107 -117 ");
   makeCell("FrontSeal",System,cellIndex++,wallMat,0.0,Out+frontStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," -1 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -1 -107 ");
   makeCell("FrontVoid",System,cellIndex++,voidMat,0.0,Out+frontStr);
   
   if (!portExtends)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," 11 -117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -117 ");
       makeCell("FrontVoidExtra",System,cellIndex++,voidMat,0.0,Out+frontComp);
     }
        
   // back plate
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -12 13 -14 15 -16 117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -12 13 -14 15 -16 117 ");
   makeCell("BackPlate",System,cellIndex++,wallMat,0.0,Out);
   // seal ring
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 107 -117 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 107 -117 ");
   makeCell("BackSeal",System,cellIndex++,wallMat,0.0,Out+backStr);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 2 -107 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 2 -107 ");
   makeCell("BackVoid",System,cellIndex++,voidMat,0.0,Out+backStr);
   
   if (!portExtends)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," -12 -117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -12 -117 ");
       makeCell("BackVoidExtra",System,cellIndex++,voidMat,0.0,Out+backComp);
     }
 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 13 -14 15 -16 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 13 -14 15 -16 ");
   addOuterSurf(Out);
   if (portExtends)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," -117 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -117 ");
       addOuterUnionSurf(Out+frontStr+backStr);
     }
-      
-
   return;
 }
   

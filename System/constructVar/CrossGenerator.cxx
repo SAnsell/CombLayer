@@ -242,6 +242,7 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"Depth",depth);
   const double FL=(frontLen<0.0) ? VRad-frontLen : frontLen;
   const double BL=(backLen<0.0) ? VRad-backLen : backLen;
+
   Control.addVariable(keyName+"FrontLength",FL);
   Control.addVariable(keyName+"BackLength",BL);
 
@@ -249,7 +250,6 @@ CrossGenerator::generateCross(FuncDataBase& Control,const std::string& keyName,
   Control.addVariable(keyName+"TopPlate",topThick);
   Control.addVariable(keyName+"BasePlate",baseThick);
 
-  ELog::EM<<"FL["<<keyName<<"] == "<<flangeRadius<<ELog::endDiag;
   Control.addVariable(keyName+"FlangeRadius",flangeRadius);
   Control.addVariable(keyName+"FlangeLength",flangeLen);
 

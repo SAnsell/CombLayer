@@ -388,8 +388,7 @@ opticsVariables(FuncDataBase& Control)
 
   // Shuter pipe
   CrossGen.setPlates(1.0,2.5,2.5);  // wall/Top/base
-  CrossGen.setPorts(2.0,2.0);     // len of ports (after main)
-  CrossGen.setPorts(2.0,2.0);     // len of ports (after main)
+  CrossGen.setPorts(3.0,3.0);     // len of ports (after main)
   CrossGen.generateCF<setVariable::CF63>
     (Control,"BalderShutterPipe",0.0,8.0,13.5,13.5);
 

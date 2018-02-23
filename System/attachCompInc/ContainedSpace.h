@@ -44,6 +44,7 @@ class ContainedSpace  : public ContainedComp
 {
  private:
 
+  std::string FCName;                  ///< Fixed comp name [if available]
   size_t nDirection;                   ///< No of direction of cut
   int primaryCell;                     ///< Master cell
   int buildCell;                       ///< Space for new cell
@@ -72,6 +73,8 @@ class ContainedSpace  : public ContainedComp
   void setPrimaryCell(const int C) { primaryCell=C; }
   /// set primary cell
   void setBuildCell(const int C) { buildCell=C; }
+  /// access build cell
+  int getBuildCell() const { return buildCell; }
   
   /// Get bounding box
   const HeadRule& getBBox() const { return BBox; }
@@ -79,7 +82,6 @@ class ContainedSpace  : public ContainedComp
   void registerSpaceCut(const long int,const long int);
 
   void buildWrapCell(Simulation&,const int,const int);
-      
   void calcBoundary(Simulation&,const int,const size_t =6);
   void insertObjects(Simulation&);
 

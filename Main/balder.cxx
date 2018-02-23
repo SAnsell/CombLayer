@@ -133,6 +133,7 @@ main(int argc,char* argv[])
 
       ModelSupport::objectRegister::Instance().write("ObjectRegister.txt");
     }
+  
   catch (ColErr::ExitAbort& EA)
     {
       if (!EA.pathFlag())

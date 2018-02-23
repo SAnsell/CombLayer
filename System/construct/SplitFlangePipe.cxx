@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -84,11 +85,9 @@ namespace constructSystem
 SplitFlangePipe::SplitFlangePipe(const std::string& Key,
 				 const bool IF) : 
   attachSystem::FixedOffset(Key,9),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  innerLayer(IF),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1),frontJoin(0),backJoin(0)
+  innerLayer(IF),frontJoin(0),backJoin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -96,11 +95,10 @@ SplitFlangePipe::SplitFlangePipe(const std::string& Key,
 {}
 
 SplitFlangePipe::SplitFlangePipe(const SplitFlangePipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  innerLayer(A.innerLayer),vacIndex(A.vacIndex),
-  cellIndex(A.cellIndex),frontJoin(A.frontJoin),
+  innerLayer(A.innerLayer),frontJoin(A.frontJoin),
   FPt(A.FPt),FAxis(A.FAxis),backJoin(A.backJoin),
   BPt(A.BPt),BAxis(A.BAxis),radius(A.radius),length(A.length),
   feThick(A.feThick),bellowThick(A.bellowThick),
@@ -125,11 +123,10 @@ SplitFlangePipe::operator=(const SplitFlangePipe& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       frontJoin=A.frontJoin;
       FPt=A.FPt;
       FAxis=A.FAxis;
@@ -273,29 +270,29 @@ SplitFlangePipe::createSurfaces()
   // Inner void
   if (!frontActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);    
-      FrontBackCut::setFront(SMap.realSurf(vacIndex+1));
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);    
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
-  getShiftedFront(SMap,vacIndex+11,1,Y,flangeALength);
-  getShiftedFront(SMap,vacIndex+21,1,Y,flangeALength+bellowStep);
+  getShiftedFront(SMap,buildIndex+11,1,Y,flangeALength);
+  getShiftedFront(SMap,buildIndex+21,1,Y,flangeALength+bellowStep);
   
   if (!backActive())
     {
-      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-      FrontBackCut::setBack(-SMap.realSurf(vacIndex+2));
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
-  FrontBackCut::getShiftedBack(SMap,vacIndex+12,-1,Y,flangeBLength);
-  FrontBackCut::getShiftedBack(SMap,vacIndex+22,-1,Y,
+  FrontBackCut::getShiftedBack(SMap,buildIndex+12,-1,Y,flangeBLength);
+  FrontBackCut::getShiftedBack(SMap,buildIndex+22,-1,Y,
 			       flangeBLength+bellowStep);
   
-  ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
-  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+feThick);
-  ModelSupport::buildCylinder(SMap,vacIndex+27,Origin,Y,radius+feThick+bellowThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,radius+feThick+bellowThick);
 
   // FLANGE SURFACES FRONT/BACK:
-  ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeARadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Y,flangeBRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
   
   return;
 }
@@ -315,15 +312,15 @@ SplitFlangePipe::createObjects(Simulation& System)
   const std::string backStr=backRule();
   
   // Void
-  Out=ModelSupport::getComposite(SMap,vacIndex," -7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
   makeCell("Void",System,cellIndex++,voidMat,0.0,Out+frontStr+backStr);
 
   // FLANGE Front: 
-  Out=ModelSupport::getComposite(SMap,vacIndex," -11 -107 7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -11 -107 7 ");
   makeCell("FrontFlange",System,cellIndex++,feMat,0.0,Out+frontStr);
 
   // FLANGE Back: 
-  Out=ModelSupport::getComposite(SMap,vacIndex," 12 -207 7 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 12 -207 7 ");
   makeCell("BackFlange",System,cellIndex++,feMat,0.0,Out+backStr);
 
   // Inner clip if present
@@ -332,45 +329,45 @@ SplitFlangePipe::createObjects(Simulation& System)
 
       if (innerLayer)
 	{
-	  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -12 -17 7");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 7");
 	  makeCell("MainPipe",System,cellIndex++,feMat,0.0,Out);
-	  Out=ModelSupport::getComposite(SMap,vacIndex," 21 -22 -27 17");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 17");
 	  makeCell("Cladding",System,cellIndex++,bellowMat,0.0,Out);
 	}
       else
 	{
-	  Out=ModelSupport::getComposite(SMap,vacIndex," 11 -21 -17 7 ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -17 7 ");
 	  makeCell("FrontClip",System,cellIndex++,feMat,0.0,Out);
 	  
-	  Out=ModelSupport::getComposite(SMap,vacIndex," -12 22 -17 7 ");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," -12 22 -17 7 ");
 	  makeCell("BackClip",System,cellIndex++,feMat,0.0,Out);
 	  
-	  Out=ModelSupport::getComposite(SMap,vacIndex," 21 -22 -27 7");
+	  Out=ModelSupport::getComposite(SMap,buildIndex," 21 -22 -27 7");
 	  makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
 	}
  
-      Out=ModelSupport::getComposite(SMap,vacIndex," 11 -21 -27 17");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -21 -27 17");
       makeCell("FrontSpaceVoid",System,cellIndex++,0,0.0,Out);
 
-      Out=ModelSupport::getComposite(SMap,vacIndex," -12 22 -27 17");
+      Out=ModelSupport::getComposite(SMap,buildIndex," -12 22 -27 17");
       makeCell("BackSpaceVoid",System,cellIndex++,0,0.0,Out);
     }
   else
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," 11 -22 -27 7 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 11 -22 -27 7 ");
       makeCell("Bellow",System,cellIndex++,bellowMat,0.0,Out);
     }
   
   
   // outer boundary [flange front]
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," -11 -107 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -11 -107 ");
   addOuterSurf(Out+frontStr);
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," 12 -207 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 12 -207 ");
   addOuterUnionSurf(Out+backStr);
 
   
   // outer boundary mid tube
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," 11 -12 -27");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 11 -12 -27");
   addOuterUnionSurf(Out);
 
   return;
@@ -395,15 +392,15 @@ SplitFlangePipe::createLinks()
   FixedComp::setConnect(3,Origin+X*radius,X);
   FixedComp::setConnect(4,Origin-Z*radius,-Z);
   FixedComp::setConnect(5,Origin+Z*radius,Z);
-  FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+7));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
   
   FixedComp::setConnect(7,Origin-Z*(radius+bellowThick),-Z);
   FixedComp::setConnect(8,Origin+Z*(radius+bellowThick),Z);
-  FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+27));
-  FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+27));
+  FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+27));
+  FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+27));
   
 
   return;

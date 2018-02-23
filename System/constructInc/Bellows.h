@@ -38,7 +38,7 @@ namespace constructSystem
 class Bellows :
   public SplitFlangePipe
 {
-  
+
  public:
 
   Bellows(const std::string&);
