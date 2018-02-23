@@ -377,9 +377,9 @@ $gM->addDepUnit("muBeam",   ["muon","visit","src","physics",
 			     "scatMat","md5","process","world",
 			     "work","monte","geometry","mersenne","src",
      			     "physics","simMC","transport","scatMat",
-			     "source","tally","work","endf","crystal",
-			     "xml","poly","support","weights","global",
-			     "insertUnit","attachComp","visit"]);
+			     "source","tally","flukaTally","work","endf",
+			     "crystal","xml","poly","support","weights",
+			     "global","insertUnit","attachComp","visit"]);
 
 
 $gM->addDepUnit("bnct",     ["bnctBuild","t1Build","imat","chip","build",
