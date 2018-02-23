@@ -53,16 +53,13 @@ struct windowInfo
 
 class VacuumPipe :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   bool frontJoin;               ///< Flag for front join
   Geometry::Vec3D FPt;          ///< Front point
   Geometry::Vec3D FAxis;        ///< Front point

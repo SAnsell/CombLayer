@@ -296,12 +296,9 @@ RingSeal::generateInsert(Simulation& System)
       QSeg.rotate(BAxis);
     }
 
-  ELog::EM<<"RING SEAL "<<ELog::endDiag;
+
   for(const int CN : cellActive)
-    {
-      ELog::EM<<"RING SEAL "<<CN<<ELog::endDiag;
-      addInsertCell(CN);
-    }
+    addInsertCell(CN);
 
   return;
 }  

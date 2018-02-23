@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/trex/TREX.cxx
  *
- * Copyright (c) 2004-2017 by Tsitohaina Randriamalala/Stuart Ansell
+ * Copyright (c) 2004-2018 by Tsitohaina Randriamalala/Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,6 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "SecondTrack.h"
 #include "CopiedComp.h"

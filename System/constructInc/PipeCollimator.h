@@ -34,14 +34,11 @@ namespace constructSystem
     \brief Variable detemine hole type
   */
   
-class PipeCollimator : public attachSystem::ContainedComp,
+class PipeCollimator : public attachSystem::ContainedSpace,
   public attachSystem::FixedOffset,public attachSystem::CellMap,
   public attachSystem::SurfMap
 {
  private:
-
-  const int collIndex;          ///< Hole index
-  int cellIndex;                ///< Cell index
 
   int setFlag;                  ///< Structures set
   HeadRule innerStruct;         ///< Front face
