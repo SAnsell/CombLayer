@@ -45,6 +45,7 @@ class ContainedSpace  : public ContainedComp
  private:
 
   std::string FCName;                  ///< Fixed comp name [if available]
+  bool noInsert;                       ///< Dont modify contained cell
   size_t nDirection;                   ///< No of direction of cut
   int primaryCell;                     ///< Master cell
   int buildCell;                       ///< Space for new cell
@@ -66,6 +67,10 @@ class ContainedSpace  : public ContainedComp
     calcBoundary(Simulation&,const int,
 		 const size_t,const LinkUnit&,
 		 const LinkUnit&);
+  static HeadRule
+    calcBoundary(const HeadRule&,
+		 const size_t,const LinkUnit&,
+		 const LinkUnit&);
 
 
   void setConnect(const size_t,const Geometry::Vec3D&,
@@ -84,6 +89,8 @@ class ContainedSpace  : public ContainedComp
   /// Get bounding box
   const HeadRule& getBBox() const { return BBox; }
 
+  /// Do not cut containedCell
+  void setNoInsert() { noInsert=1; }
   void registerSpaceCut(const long int,const long int);
 
   void buildWrapCell(Simulation&,const int,const int);

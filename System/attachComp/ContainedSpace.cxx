@@ -74,7 +74,7 @@ namespace attachSystem
 {
 
 ContainedSpace::ContainedSpace()  :
-  ContainedComp(),nDirection(8),
+  ContainedComp(),noInsert(0),nDirection(8),
   primaryCell(0),buildCell(0),LCutters(2)
   /*!
     Constructor 
@@ -215,7 +215,28 @@ ContainedSpace::calcBoundary(Simulation& System,
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
 
-  HeadRule objHR=outerObj->getHeadRule();
+  const HeadRule objHR=outerObj->getHeadRule();
+
+  return calcBoundary(objHR,NDivide,ALink,BLink);
+}
+
+HeadRule
+ContainedSpace::calcBoundary(const HeadRule& objHR,
+			     const size_t NDivide,
+			     const LinkUnit& ALink,
+			     const LinkUnit& BLink)
+  /*!
+    Construct a bounding box in a cell based on the 
+    link surfaces
+    \param System :: Simulation to use
+    \param cellN :: Cell number
+    \param NDivide :: division in link point
+    \param ALink :: first link point
+    \param bLink :: second link point
+    \return HeadRule of bounding box [- link surf]
+  */
+{
+  ELog::RegMethod RegA("ContainedSpace","calcBoundary");
 
   std::set<int> linkSN;
   for(const LinkUnit& LU : {ALink,BLink})
@@ -235,13 +256,14 @@ ContainedSpace::calcBoundary(Simulation& System,
   const Geometry::Vec3D XX=YY.crossNormal();
   const Geometry::Vec3D ZZ=YY*XX;
   
-  if (!outerObj->isValid(CPoint))
+  if (!objHR.isValid(CPoint))
     {
-      ELog::EM<<"Object == "<<*outerObj<<ELog::endDiag;
+      ELog::EM<<"Object == "<<objHR<<ELog::endDiag;
       ELog::EM<<"Point == "<<CPoint<<ELog::endDiag;
       throw ColErr::InContainerError<Geometry::Vec3D>
 	(CPoint,"Point out of object");
     }
+  
   const std::vector<Geometry::Vec3D> CP=
     {
       CPoint,
@@ -396,14 +418,17 @@ ContainedSpace::insertObjects(Simulation& System)
 
   std::vector<int> IHold(insertCells);
 
-  ContainedComp::insertObjects(System);
-  if (primaryCell && buildCell)
+  if (!noInsert)
     {
-      for(const int CN : IHold)
-	if (CN!=primaryCell)
-	  insertCells.push_back(CN);
-      insertCells.push_back(buildCell);
-      primaryCell=0;
+      ContainedComp::insertObjects(System);
+      if (primaryCell && buildCell)
+	{
+	  for(const int CN : IHold)
+	    if (CN!=primaryCell)
+	      insertCells.push_back(CN);
+	  insertCells.push_back(buildCell);
+	  primaryCell=0;
+	}
     }
   return;
 }

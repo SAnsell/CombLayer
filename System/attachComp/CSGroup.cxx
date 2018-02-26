@@ -213,7 +213,6 @@ CSGroup::registerFC(const std::shared_ptr<FixedComp>& FCPtr)
   return;
 }
 
-  
 
 void
 CSGroup::buildWrapCell(Simulation& System,
@@ -291,6 +290,7 @@ CSGroup::insertAllObjects(Simulation& System)
       buildWrapCell(System,primaryCell,buildCell);
     }
 
+  ELog::EM<<"PP == "<<primaryCell<<" "<<buildCell<<ELog::endDiag;
   if (primaryCell)
     {
       MonteCarlo::Object* outerObj=System.findQhull(primaryCell);

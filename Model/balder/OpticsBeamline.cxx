@@ -272,8 +272,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateA->setFront(*pipeB,2);
   gateA->createAll(System,*pipeB,2);
 
-
-  
   mirrorBox->addInsertCell(ContainedComp::getInsertCells());
   mirrorBox->registerSpaceCut(1,2);
   mirrorBox->setFront(*gateA,2);
@@ -303,7 +301,7 @@ OpticsBeamline::buildObjects(Simulation& System)
 
   attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
   UnitA.setPrimaryCell(ContainedComp::getMainCell());
-  
+
   monoV->createAll(System,*driftA,2);
   monoXtal->addInsertCell(monoV->getCell("Void"));
   monoXtal->createAll(System,*monoV,0);
@@ -318,6 +316,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   monoBellowB->setBack(*driftB,1,1);
   monoBellowB->createAll(System,*driftB,-1);
 
+  UnitA.setBuildCell(monoV->nextCell());
   UnitA.setLinkCopy(0,*monoBellowA,1);
   UnitA.setLinkCopy(1,*monoBellowB,2);
   UnitA.insertAllObjects(System);
