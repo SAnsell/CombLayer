@@ -92,6 +92,7 @@ class MonoVessel :
   MonoVessel& operator=(const MonoVessel&);
   virtual ~MonoVessel();
 
+  void constructPorts(Simulation&);
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);
 

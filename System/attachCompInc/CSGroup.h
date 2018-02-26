@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   attachCompInc/ContainedSpace.h
+ * File:   attachCompInc/CSGroup.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef attachSystem_ContainedSpace_h
-#define attachSystem_ContainedSpace_h
+#ifndef attachSystem_CSGroup_h
+#define attachSystem_CSGroup_h
 
 class Simulation;
 
@@ -32,7 +32,7 @@ namespace Geometry
 namespace attachSystem
 {
 /*!
-  \class ContainedSpace
+  \class CSGroup
   \version 1.0
   \author S. Ansell
   \date Febrary 2018
@@ -40,34 +40,33 @@ namespace attachSystem
          within the Contained space
 */
 
-class ContainedSpace  : public ContainedComp
+class CSGroup 
 {
  private:
 
-  std::string FCName;                  ///< Fixed comp name [if available]
+  typedef std::shared_ptr<attachSystem::FixedComp> FCTYPE;
+  typedef std::map<std::string,FCTYPE> FCMAP;
+  
+  ///< FC object that can be made into Countainedcop
+  FCMAP FCobjects;
+
   size_t nDirection;                   ///< No of direction of cut
   int primaryCell;                     ///< Master cell
   int buildCell;                       ///< Space for new cell
+
+  HeadRule inwardCut;                  ///< Outer surface
   HeadRule BBox;                       ///< Bounding box
   std::vector<LinkUnit> LCutters;      ///< Cutting dividers
 
-  std::pair<long int,long int> ABLink; ///< Link surfaces if set
-
-  void initialize();
-    
+  
  public:
 
-  ContainedSpace();
-  ContainedSpace(const ContainedSpace&);
-  ContainedSpace& operator=(const ContainedSpace&);
-  virtual ~ContainedSpace();
+  CSGroup();
+  CSGroup(const CSGroup&);
+  CSGroup& operator=(const CSGroup&);
+  virtual ~CSGroup();
 
-  static HeadRule
-    calcBoundary(Simulation&,const int,
-		 const size_t,const LinkUnit&,
-		 const LinkUnit&);
-
-
+  
   void setConnect(const size_t,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&);
   void setLinkSurf(const size_t,const int);
@@ -80,15 +79,16 @@ class ContainedSpace  : public ContainedComp
   void setBuildCell(const int C) { buildCell=C; }
   /// access build cell
   int getBuildCell() const { return buildCell; }
-
+  
   /// Get bounding box
   const HeadRule& getBBox() const { return BBox; }
 
-  void registerSpaceCut(const long int,const long int);
+  void registerFC(const std::shared_ptr<attachSystem::FixedComp>&);
 
   void buildWrapCell(Simulation&,const int,const int);
-  void calcBoundaryBox(Simulation&);
-  void insertObjects(Simulation&);
+  void calcBoundary(Simulation&,const int,const size_t =6);
+
+  void insertAllObjects(Simulation&);
 
 
   

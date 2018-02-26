@@ -128,7 +128,7 @@ ContainedSpace::setConnect(const size_t Index,
    \param A :: Axis direciton
  */
 {
-  ELog::RegMethod RegA("ContainedComp","setConnect");
+  ELog::RegMethod RegA("ContainedSpace","setConnect");
   if (Index>=LCutters.size())
     throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU.size/index");
 
@@ -192,61 +192,83 @@ ContainedSpace::setLinkCopy(const size_t Index,
   
   return;
 }
-  
-void
-ContainedSpace::calcBoundary(Simulation& System,const int cellN,
-			    const size_t NDivide)
+
+
+HeadRule
+ContainedSpace::calcBoundary(Simulation& System,
+			     const int cellN,
+			     const size_t NDivide,
+			     const LinkUnit& ALink,
+			     const LinkUnit& BLink)
   /*!
-    Boundary calculator
-    \param System :: Simulation
+    Construct a bounding box in a cell based on the 
+    link surfaces
+    \param System :: Simulation to use
     \param cellN :: Cell number
-    \param NDivide :: Number to divide
+    \param NDivide :: division in link point
+    \param ALink :: first link point
+    \param bLink :: second link point
+    \return HeadRule of bounding box [- link surf]
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","calcBoundary");
-  
   const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
   if (!outerObj)
     throw ColErr::InContainerError<int>(cellN,"cellN on found");
 
   HeadRule objHR=outerObj->getHeadRule();
-  std::set<int> surfN;
-  for(const LinkUnit& LU : LCutters)
+
+  std::set<int> linkSN;
+  for(const LinkUnit& LU : {ALink,BLink})
     {
-      
-      Geometry::Vec3D OPt=LU.getConnectPt();
-      const Geometry::Vec3D& YY=LU.getAxis();
-      const Geometry::Vec3D XX=YY.crossNormal();
-      const Geometry::Vec3D ZZ=YY*XX;
-      OPt-=YY*0.1;
+      const int SN=LU.getLinkSurf();
+      linkSN.insert(SN);
+    }
 
-      if (!outerObj->isValid(OPt))
-	{
-	  ELog::EM<<"Object == "<<*outerObj<<ELog::endDiag;
-	  ELog::EM<<"Point == "<<OPt<<ELog::endDiag;
-	  throw ColErr::InContainerError<Geometry::Vec3D>
-	    (OPt,"Point out of object");
-	}
-
+  std::set<int> surfN;
+  // mid points moved in by 10% of distance
+  const Geometry::Vec3D CPoint=
+    (ALink.getConnectPt()+BLink.getConnectPt())/2.0;
+  const Geometry::Vec3D& YA=ALink.getAxis();
+  const Geometry::Vec3D& YB=BLink.getAxis();
+  const Geometry::Vec3D YY= (YA.dotProd(YB)>0.0) ?
+    (YA+YB).unit() : YA-YB.unit();
+  const Geometry::Vec3D XX=YY.crossNormal();
+  const Geometry::Vec3D ZZ=YY*XX;
+  
+  if (!outerObj->isValid(CPoint))
+    {
+      ELog::EM<<"Object == "<<*outerObj<<ELog::endDiag;
+      ELog::EM<<"Point == "<<CPoint<<ELog::endDiag;
+      throw ColErr::InContainerError<Geometry::Vec3D>
+	(CPoint,"Point out of object");
+    }
+  const std::vector<Geometry::Vec3D> CP=
+    {
+      CPoint,
+      ALink.getConnectPt()*0.95+CPoint*0.05,
+      BLink.getConnectPt()*0.95+CPoint*0.05
+    };
+  for(const Geometry::Vec3D& Org : CP)
+    {
       const double angleStep=2.0*M_PI/static_cast<double>(NDivide);
       double angle(0.0);
       for(size_t i=0;i<NDivide;i++)
 	{
 	  const Geometry::Vec3D Axis=XX*cos(angle)+ZZ*sin(angle);
 	  double D;
-	  // Outgoing sign
-	  const int SN=objHR.trackSurf(OPt,Axis,D);
-	  surfN.insert(-SN);
+	  const int SN=objHR.trackSurf(Org,Axis,D,linkSN);
+	  if (SN)
+	    surfN.insert(-SN);
 	  angle+=angleStep;
 	}
     }
   // NOW eliminate all surfaces NOT in surfN
   const std::set<int> fullSurfN=objHR.getSurfSet();
-  BBox=objHR;
+  HeadRule outBox=objHR;
   for(const int SN : fullSurfN)
     {
       if (surfN.find(SN) == surfN.end())
-	BBox.removeItems(SN);
+	outBox.removeItems(SN);
     }
   
   // Check for no negative repeats:
@@ -255,6 +277,19 @@ ContainedSpace::calcBoundary(Simulation& System,const int cellN,
       if (SN==0 || (SN<0 && surfN.find(-SN)!=surfN.end()))
 	throw ColErr::InContainerError<int>(SN,"Surf repeated");
     }
+  return outBox;
+}
+  
+void
+ContainedSpace::calcBoundaryBox(Simulation& System)
+  /*!
+    Boundary calculator
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("ContainedSpace","calcBoundaryBox");
+
+  BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
   return;
 }
 
@@ -296,7 +331,8 @@ ContainedSpace::buildWrapCell(Simulation& System,
   // removeing front/back surfaces
 
 
-  HeadRule inwardCut;  
+  HeadRule inwardCut;
+  
   HeadRule innerVacuum(outerSurf);
   for(const LinkUnit& LU : LCutters)
     {
@@ -354,7 +390,7 @@ ContainedSpace::insertObjects(Simulation& System)
 
   if (primaryCell && buildCell)
     {
-      calcBoundary(System,primaryCell,nDirection);
+      calcBoundaryBox(System);
       buildWrapCell(System,primaryCell,buildCell);
     }
 

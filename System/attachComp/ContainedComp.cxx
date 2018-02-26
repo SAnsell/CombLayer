@@ -291,6 +291,17 @@ ContainedComp::addBoundaryUnionSurf(const std::string& SList)
   return;
 }
 
+const HeadRule&
+ContainedComp::getOuterSurf() const
+  /*!
+    Care here because this can return a referenece
+    due to ContainedGroup not having a complete outer surf
+    \retrun Outer headRule
+  */
+{
+  return outerSurf;
+}
+  
 std::string
 ContainedComp::getCompExclude() const
   /*!

@@ -3,7 +3,7 @@
  
  * File:   attachComp/ContainedGroup.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -328,6 +328,21 @@ ContainedGroup::addBoundaryUnionSurf(const std::string& Key,
   return;
 }
 
+const HeadRule&
+ContainedGroup::getOuterSurf(const std::string& Key) const
+  /*!
+    Calculate the write out the excluded surface.
+    This allows the object to be inserted in a larger
+    object.
+    \param Key :: Key name for rule
+    \return outer surf
+  */
+{
+  ELog::RegMethod RegA("ContainedGroup","getOuterSurf");
+  
+  return getCC(Key).getOuterSurf();
+}
+  
 std::string
 ContainedGroup::getExclude(const std::string& Key) const
   /*!

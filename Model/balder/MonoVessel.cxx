@@ -413,8 +413,27 @@ MonoVessel::createAll(Simulation& System,
   createObjects(System);
   
   createLinks();
-  insertObjects(System);   
+  if (!ContainedComp::insertCells.empty())
+    {
+      insertObjects(System);   
+      constructPorts(System);
+    }
+  
+  return;
+}
 
+
+void
+MonoVessel::constructPorts(Simulation& System)
+  /*!
+    Separate call teo construct port because it may 
+    need to be called late
+    \param System :: Simulation to use
+  */
+{
+  ELog::RegMethod RegA("MonoVessel","constructPorts");
+
+  
   constructSystem::portItem windowPort("windowPort");
 
   windowPort.createUnitVector(*this,0);

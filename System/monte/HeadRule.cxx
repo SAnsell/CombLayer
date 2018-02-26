@@ -1898,6 +1898,35 @@ HeadRule::procString(const std::string& Line)
 int
 HeadRule::trackSurf(const Geometry::Vec3D& Org,
 		    const Geometry::Vec3D& Unit,
+		    double& D,const std::set<int>& activeNull) const
+  /*!
+    Calculate a track of a line to a change in state surface
+    \param Org :: Origin of line
+    \param Unit :: Direction of line
+    \param D :: Distance travelled to surface
+    \param activeSurf :: signed avoid surf
+    \return exit surface [signed??]
+  */
+{
+  ELog::RegMethod RegA("HeadRule","trackSurf");
+
+  Geometry::Vec3D Pt(Org);
+  D=0.0;
+  double DD;
+  int SN=trackSurf(Pt,Unit,DD);
+  while (SN && activeNull.find(SN)!=activeNull.end())
+    {
+      Pt+=Unit*DD;
+      SN=trackSurf(Pt,Unit,DD);
+      D+=DD;
+    }
+  D+=DD;
+  return SN;
+}
+
+int
+HeadRule::trackSurf(const Geometry::Vec3D& Org,
+		    const Geometry::Vec3D& Unit,
 		    double& D) const
   /*!
     Calculate a track of a line to a change in state surface
@@ -1945,7 +1974,8 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
 	      surfPtr=surfIndex[i];
 	    }
 	}
-    }    
+    }
+      
   return (!surfPtr) ? 0 : bestPairValid*surfPtr->getName();
 }
 

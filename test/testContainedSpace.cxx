@@ -237,7 +237,9 @@ testContainedSpace::testBoundary()
       CSx.setLinkSurf(0,1);
       CSx.setConnect(1,Geometry::Vec3D(0,2,0),Geometry::Vec3D(0,1,0));
       CSx.setLinkSurf(1,2);
-      CSx.calcBoundary(ASim,std::get<0>(tc),4);
+      CSx.setPrimaryCell(std::get<0>(tc));
+      CSx.calcBoundaryBox(ASim);
+      
       const std::string Out=CSx.getBBox().display();
       if( Out!=std::get<1>(tc))
 	{
