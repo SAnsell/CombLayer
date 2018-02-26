@@ -62,6 +62,9 @@ class CSGroup
  public:
 
   CSGroup();
+  CSGroup(const FCTYPE&);
+  CSGroup(const FCTYPE&,const FCTYPE&);
+  CSGroup(const FCTYPE&,const FCTYPE&,const FCTYPE&);
   CSGroup(const CSGroup&);
   CSGroup& operator=(const CSGroup&);
   virtual ~CSGroup();

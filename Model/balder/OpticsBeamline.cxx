@@ -301,45 +301,29 @@ OpticsBeamline::buildObjects(Simulation& System)
   driftB->registerSpaceCut(1,2);
   driftB->createAll(System,*driftA,2);
 
-  attachSystem::CSGroup UnitA;
+  attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
+  UnitA.setPrimaryCell(ContainedComp::getMainCell());
   
-  //  monoV->addInsertCell(ContainedComp::getInsertCells());
-  //  monoV->registerSpaceCut(1,2);
   monoV->createAll(System,*driftA,2);
   monoXtal->addInsertCell(monoV->getCell("Void"));
   monoXtal->createAll(System,*monoV,0);
 
   // Note : join flag so can rotate on front/back
-  //  monoBellowA->addInsertCell(ContainedComp::getInsertCells());
   monoBellowA->setFront(*driftA,2,1);
   monoBellowA->setBack(*monoV,1,1);
-  //  monoBellowA->registerSpaceCut(1,2);
   monoBellowA->createAll(System,*driftA,2);
 
   // Note : join flag so can rotate on front/back
-  //  monoBellowB->addInsertCell(ContainedComp::getInsertCells());
   monoBellowB->setFront(*monoV,2,1); 
   monoBellowB->setBack(*driftB,1,1);
-  ///  monoBellowB->registerSpaceCut(1,2);
   monoBellowB->createAll(System,*driftB,-1);
 
-  UnitA.registerFC(monoV);
-  UnitA.registerFC(monoBellowA);
-  UnitA.registerFC(monoBellowB);
-  UnitA.setPrimaryCell(ContainedComp::getInsertCells()[0]);
   UnitA.setLinkCopy(0,*monoBellowA,1);
   UnitA.setLinkCopy(1,*monoBellowB,2);
   UnitA.insertAllObjects(System);
-  monoV->constructPorts(System);
 
-  
-  // //extra:
-  // monoV->setLinkCopy(0,*monoBellowA,1);
-  // monoV->setLinkCopy(1,*monoBellowB,2);
-  // monoV->setPrimaryCell(ContainedComp.getInsertCell());
-  // monoV->addInsertCell(ContainedComp::getInsertCells());
-  // monoBellowA->insert
-  
+  monoV->constructPorts(System);
+   
   gateC->addInsertCell(ContainedComp::getInsertCells());
   gateC->setFront(*driftB,2);
   gateC->registerSpaceCut(1,2);

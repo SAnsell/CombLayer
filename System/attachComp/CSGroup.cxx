@@ -83,6 +83,38 @@ CSGroup::CSGroup()  :
   */
 {}
 
+CSGroup::CSGroup(const FCTYPE& FA)  :
+  FCobjects({{FA->getKeyName(),FA}}),
+  nDirection(8),primaryCell(0),buildCell(0),
+  LCutters(2)
+  /*!
+    Constructor 
+  */
+{}
+
+CSGroup::CSGroup(const FCTYPE& FA,const FCTYPE& FB)  :
+  FCobjects({{FA->getKeyName(),FA},
+	{FB->getKeyName(),FB}}),
+  nDirection(8),primaryCell(0),buildCell(0),
+  LCutters(2)
+  /*!
+    Constructor 
+  */
+{}
+
+CSGroup::CSGroup(const FCTYPE& FA,const FCTYPE& FB,
+		 const FCTYPE& FC)  :
+  FCobjects({
+      {FA->getKeyName(),FA},
+      {FB->getKeyName(),FB},
+      {FC->getKeyName(),FC}}),
+  nDirection(8),primaryCell(0),buildCell(0),
+  LCutters(2)
+  /*!
+    Constructor 
+  */
+{}
+
 
 CSGroup::~CSGroup()
   /*!

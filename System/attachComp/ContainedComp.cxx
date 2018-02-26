@@ -193,6 +193,21 @@ ContainedComp::getConstSurfaces() const
   return outerSurf.getTopRule()->getConstSurfVector();
 }
   
+int
+ContainedComp::getMainCell() const
+  /*!
+    Get first cell if required
+    \todo [is it better to delete this cell?]
+    \return cell name
+   */
+{
+  ELog::RegMethod RegA("ContainedComp","getMainCell");
+  
+  if (insertCells.empty())
+    throw ColErr::EmptyContainer("insertCells");
+  return insertCells.front();
+}
+
 void
 ContainedComp::addOuterSurf(const int SN) 
   /*!
