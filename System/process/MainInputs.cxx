@@ -96,6 +96,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("md5Mesh","md5Mesh");
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
+  IParam.regItem("noVariables","noVariables");
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
   IParam.regItem("povray","PovRay");
@@ -221,6 +222,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("md5Mesh","Define mesh for MD5/VTK");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
+  IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PovRay","PovRay output");

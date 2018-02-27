@@ -44,6 +44,7 @@ class SimFLUKA : public Simulation
  private:
 
   const std::string alignment;    ///< the alignemnt string
+  bool writeVariable;             ///< Prevent the writing of variables
   
   FTallyTYPE FTItem;              ///< Fluka tally map
 
@@ -57,6 +58,7 @@ class SimFLUKA : public Simulation
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
   void writePhysics(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writeVariables(std::ostream&) const;
 
   const std::string& getLowMatName(const size_t) const;
@@ -75,10 +77,13 @@ class SimFLUKA : public Simulation
 
   /// Access tally items
   FTallyTYPE& getTallyMap() { return FTItem; }
+
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
   int getNextFTape() const;
 
+  /// no write variable
+  void setNoVariables() { writeVariable=0; }
   void setForCinder();
 
   

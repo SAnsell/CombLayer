@@ -1582,7 +1582,7 @@ Simulation::masterSourceRotation()
 
 void
 Simulation::writeVariables(std::ostream& OX,
-			const char commentChar) const
+			   const char commentChar) const
   /*!
     Write all the variables in standard MCNPX output format
     \param OX :: Output stream

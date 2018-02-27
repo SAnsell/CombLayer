@@ -79,6 +79,9 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
+#include "Source.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
 #include "flukaTally.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
@@ -94,7 +97,8 @@ SimFLUKA::SimFLUKA() :
 
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
-  alignment(A.alignment)
+  alignment(A.alignment),
+  writeVariable(1)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -112,6 +116,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
   if (this!=&A)
     {
       Simulation::operator=(A);
+      writeVariable=A.writeVariable;
     }
   return *this;
 }
@@ -343,6 +348,36 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   return;
 }
 
+
+void
+SimFLUKA::writeSource(std::ostream& OX) const
+  /*!
+    Write the source into standard FLUKA format.
+    Most of these sources are limited. 
+    \param OX :: Output stream
+  */
+
+{
+  ELog::RegMethod RegA("SimFLUKA","writeSource");
+  
+  SDef::sourceDataBase& SDB=
+    SDef::sourceDataBase::Instance();
+
+  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"* --------------- SOURCE CARDS --------------------------"<<std::endl;
+  OX<<"* -------------------------------------------------------"<<std::endl;
+
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->write(OX);
+    }
+  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  return;
+}
+
+
 const std::string&
 SimFLUKA::getLowMatName(const size_t Z) const
 /*!
@@ -433,9 +468,12 @@ SimFLUKA::write(const std::string& Fname) const
 
   StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells),OX);
   OX<<"TITLE"<<std::endl;
-  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
+  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
+    <<std::endl;
 
-  Simulation::writeVariables(OX,'*');
+  if (writeVariable)
+    Simulation::writeVariables(OX,'*');
+  
   StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   StrFunc::writeFLUKA("BEAM -2.0 - - 14.0 3.2 1.0 PROTON",OX);
   StrFunc::writeFLUKA("BEAMPOS 0.0 -30.0 0.0 0.0 1.0 0.0",OX);

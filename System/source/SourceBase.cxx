@@ -374,7 +374,7 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
 
   return;
 }  
-  
+
 void
 SourceBase::writePHITS(std::ostream& OX) const
   /*!

@@ -94,8 +94,7 @@ class Simulation
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
 
-
-  std::string sourceName;                 ///< Source name
+  std::string sourceName;               ///< Source name
   
   // METHODS:
 

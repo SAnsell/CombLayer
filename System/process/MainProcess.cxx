@@ -500,6 +500,7 @@ exitDelete(Simulation* SimPtr)
 
 
 void
+
 buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 		 const mainSystem::inputParam& IParam,
 		 const std::string& OName)
@@ -515,6 +516,10 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
+  if (IParam.flag("noVariables"))
+    {
+      SimFLUKAPtr->setNoVariables();
+    }
 
   ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
   //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
@@ -602,7 +607,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
   
-  ModelSupport::setDefRotation(IParam);
+  
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);
@@ -619,7 +624,7 @@ buildFullSimulation(Simulation* SimPtr,
   
   SimFLUKA* SimFLUKAPtr=dynamic_cast<SimFLUKA*>(SimPtr);
   if (SimFLUKAPtr)
-    {
+    {      
       buildFullSimFLUKA(SimFLUKAPtr,IParam,OName);
       return;
     }

@@ -293,11 +293,13 @@ BeamSource::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","writeFLUKA");
+  ELog::RegMethod RegA("BeamSource","writeFLUKA");
   boost::format FMTnum("%1$.4g");
 
   const particleConv& PC=particleConv::Instance();
-
+  
+  std::ostringstream cx;
+  cx<<"BEAMAXIS ";
   // beam : -energy X X X X X  : Partiles
   //  std::istringstream cx;
   //  cx<<(FMTnum % -energy);
