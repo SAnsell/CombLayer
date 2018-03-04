@@ -61,7 +61,7 @@ namespace setVariable
 BellowGenerator::BellowGenerator() :
   SplitPipeGenerator(),
   bellowStep(1.0),bellowThick(1.0),
-  bellowMat("Stainless304%Void%50")
+  bellowMat("Stainless304%Void%50.0")
   /*!
     Constructor and defaults
   */
@@ -80,12 +80,13 @@ BellowGenerator::setCF()
     Set pipe/flange to CF-X format
   */
 {
+  ELog::RegMethod RegA("BellowGenerator","setCF");
   SplitPipeGenerator::setCF<CF>();
   
   bellowStep=CF::bellowStep;
   bellowThick=CF::bellowThick;
 
-  setMat(SplitPipeGenerator::getPipeMat(),CF::bellowThick/CF::wallThick);
+  setMat(SplitPipeGenerator::getPipeMat(),100.0*CF::wallThick/CF::bellowThick);
   return;
 }
 

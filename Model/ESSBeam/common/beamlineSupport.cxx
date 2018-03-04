@@ -89,6 +89,7 @@ setBeamAxis(attachSystem::FixedOffset& beamAxis,
 	    const int reverseZ)
   /*!
     Set the primary direction object
+    \param beamAxis :: axis to rotate
     \param Control :: Database of variables
     \param GItem :: Guide Item to copy
     \param reverseZ :: Reverse axis [-1 Z is -ve / 0 no change / 1 Z is +ve]
@@ -102,11 +103,12 @@ setBeamAxis(attachSystem::FixedOffset& beamAxis,
   beamAxis.setLinkSignedCopy(1,GItem.getKey("Main"),2);
   beamAxis.setLinkSignedCopy(2,GItem.getKey("Beam"),1);
   beamAxis.setLinkSignedCopy(3,GItem.getKey("Beam"),2);
-  
+
+  // change to unsigned !!!
+  beamAxis.linkShift(2); 
   beamAxis.linkShift(3);
-  beamAxis.linkShift(4);
+  beamAxis.linkAngleRotate(2);
   beamAxis.linkAngleRotate(3);
-  beamAxis.linkAngleRotate(4);
 
   beamAxis.applyOffset();
 

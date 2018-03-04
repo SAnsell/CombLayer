@@ -45,11 +45,16 @@ class ContainedSpace  : public ContainedComp
  private:
 
   std::string FCName;                  ///< Fixed comp name [if available]
-  bool noInsert;                       ///< Dont modify contained cell
+  bool active;                         ///< Space active
+  bool noPrimaryInsert;                ///< Dont plcace BBox into primary
+
   size_t nDirection;                   ///< No of direction of cut
-  int primaryCell;                     ///< Master cell
+  double instepFrac;                   ///< Step between FC points
+  int primaryCell;                     ///< Master cell [for BBox]
   int buildCell;                       ///< Space for new cell
   HeadRule BBox;                       ///< Bounding box
+  HeadRule outerCut;                   ///< Outer Cut surfaces
+  
   std::vector<LinkUnit> LCutters;      ///< Cutting dividers
 
   std::pair<long int,long int> ABLink; ///< Link surfaces if set
@@ -81,7 +86,7 @@ class ContainedSpace  : public ContainedComp
 
   /// set primary cell
   void setPrimaryCell(const int C) { primaryCell=C; }
-  /// set primary cell
+  /// set build cell
   void setBuildCell(const int C) { buildCell=C; }
   /// access build cell
   int getBuildCell() const { return buildCell; }
@@ -89,14 +94,18 @@ class ContainedSpace  : public ContainedComp
   /// Get bounding box
   const HeadRule& getBBox() const { return BBox; }
 
-  /// Do not cut containedCell
-  void setNoInsert() { noInsert=1; }
+  /// Do not cut of primary
+  void setNoPrimInsert() { noPrimaryInsert=1; }
+  
   void registerSpaceCut(const long int,const long int);
+  void registerSpaceIsolation(const long int,const long int);
 
   void buildWrapCell(Simulation&,const int,const int);
   void calcBoundaryBox(Simulation&);
   void insertObjects(Simulation&);
 
+  static void insertPair(Simulation&,const std::vector<int>&,const FixedComp&,
+		  const long int,const FixedComp&,const long int);
 
   
 };

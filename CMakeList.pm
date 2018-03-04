@@ -72,7 +72,9 @@ sub findSubSrcDir
 {
   my $self=shift;
   my $tName=shift;  ## Top directory name
-
+  my @EXCL;
+  push(@EXCL,@_) if (@_);
+  
   my $topDirName=($tName) ? $tName : "./";
   
   my $dirAll=`ls -d ./$topDirName/*/ 2> /dev/null`;
@@ -83,7 +85,21 @@ sub findSubSrcDir
       if ($dname=~/$topDirName\/(.*)\// &&
 	  $dname!~/\/Main\//)
         {
-	  push(@subDir,$1) if (hasCPPFiles($dname));
+	  my $flag=0;
+	  foreach my $exclude (@EXCL)
+	    {
+	      if ($dname=~/$exclude/)
+	      {
+		$flag=1;
+		print STDERR $dname,"\n";
+		
+		last;
+	      }
+	    }
+	  if (!$flag)
+	  {
+	    push(@subDir,$1) if (hasCPPFiles($dname));
+	  }
 	}
     }
 

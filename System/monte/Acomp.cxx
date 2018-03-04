@@ -773,7 +773,10 @@ Acomp::logicalEqual(const Acomp& A) const
     {
       State.mapState(keyNumbers,Base);
       if (isTrue(Base) != A.isTrue(Base))
+	{
+	  ELog::EM<<"Base == "<<State<<ELog::endDiag;
 	  return 0;
+	}
     } while(++State);
   return 1;
 }

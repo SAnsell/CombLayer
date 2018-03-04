@@ -362,6 +362,8 @@ PortTube::createObjects(Simulation& System)
   makeCell("BackPortWall",System,cellIndex++,wallMat,0.0,Out+backSurf);
 
 
+
+  
   Out=ModelSupport::getComposite(SMap,buildIndex," 11 -12 -17 ");
   addOuterSurf(Out);
   Out=ModelSupport::getComposite(SMap,buildIndex,"-11 -127 (-117:-111) ");
@@ -393,7 +395,7 @@ PortTube::createLinks()
   return;
 }
 
-
+  
 void
 PortTube::createPorts(Simulation& System)
   /*!
@@ -405,7 +407,13 @@ PortTube::createPorts(Simulation& System)
 
   for(size_t i=0;i<Ports.size();i++)
     {
-      for(const int CN : insertCells)
+      if (getBuildCell())
+	Ports[i].addOuterCell(getBuildCell());
+      else
+	for(const int CN : insertCells)
+	  Ports[i].addOuterCell(CN);
+
+      for(const int CN : portCells)
 	Ports[i].addOuterCell(CN);
       
       Ports[i].setCentLine(*this,PCentre[i],PAxis[i]);
@@ -432,7 +440,17 @@ PortTube::getPort(const size_t index) const
 }
 
 
-
+void
+PortTube::addInsertPortCells(const int CN)
+  /*!
+    Add a cell to the ports insert list
+    \param CN :: Cell number
+  */
+{
+  portCells.insert(CN);
+  return;
+}
+  
 void
 PortTube::createAll(Simulation& System,
 		     const attachSystem::FixedComp& FC,

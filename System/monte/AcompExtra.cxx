@@ -159,46 +159,100 @@ Acomp::expandUIU(const Acomp& A) const
 Acomp
 Acomp::expandIUI(const Acomp& A) const
   /*!
-    Addition to an intersection unit with an intersection via UNIION
+    Addition to an intersection unit with an intersection via UNION
     \param A :: Other object to add
     \return A
    */
 {
-  Acomp Out(0);   // Union
+  Acomp Out(1);   // Union
+  for(const int AI : Units)
+    {
+      // N.aN
+      for(const int BI : A.Units)
+	{
+	  Acomp addItem=unionCombine(AI,BI);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
 
-  if (this->isSingle() && this->isSimple())
-    Out.Units.push_back(this->getSinglet());
-  else
-    Out.Comp.push_back(*this);
-
-  if (A.isSingle() && A.isSimple())
-    Out.Units.push_back(A.getSinglet());
-  else
-    Out.Comp.push_back(A);
-
+      // N.ac
+      for(const Acomp& AC : A.Comp)
+	{
+	  Acomp addItem=unionCombine(AI,AC);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+    }
+  for(const Acomp& AC : Comp)
+    {
+      // C.aN
+      for(const int BI : A.Units)
+	{
+	  Acomp addItem=unionCombine(BI,AC);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+      // C.aC
+      for(const Acomp& BC : A.Comp)
+	{
+	  Acomp addItem=unionCombine(AC,BC);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+    }
   return Out;
-}
+} 
 
 Acomp
 Acomp::expandIUU(const Acomp& A) const
   /*!
     Addition to an intersection unit with a union via UNION
+    UPDATED
     \param A :: Other object to add
-    \return A
+    \return grouped object
    */
-{
-  Acomp Out(0);   // Union
-  
-  if (this->isSingle() && this->isSimple())
-    Out.Units.push_back(this->getSinglet());
-  else
-    Out.Comp.push_back(*this);
-
-  
-  Out.Units.insert(Out.Units.end(),A.Units.begin(),A.Units.end());
-  Out.Comp.insert(Out.Comp.end(),A.Comp.begin(),A.Comp.end());
+{  
+  Acomp Out(1);  // intersect
+  for(const int AI : Units)
+    {
+      // N.aN
+      ELog::EM<<"AI == "<<AI<<ELog::endDiag;
+      for(const int BI : A.Units)
+	{
+	  ELog::EM<<"BI == "<<BI<<ELog::endDiag;
+	  Acomp addItem=unionCombine(AI,BI);
+	  ELog::EM<<"COMP == "<<addItem<<ELog::endDiag;
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+      // N.ac
+      for(const Acomp& AC : A.Comp)
+	{
+	  Acomp addItem=unionCombine(AI,AC);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+    }
+  ELog::EM<<"OutX == "<<Out<<ELog::endDiag;
+  for(const Acomp& AC : Comp)
+    {
+      // C.aN
+      for(const int BI : A.Units)
+	{
+	  Acomp addItem=unionCombine(BI,AC);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+      // C.aC
+      for(const Acomp& BC : A.Comp)
+	{
+	  Acomp addItem=unionCombine(AC,BC);
+	  AcompTools::unitSort(addItem.Units);
+	  Out.primativeAddItem(addItem);
+	}
+    }
   return Out;
-}
+} 
 
 Acomp
 Acomp::expandUUI(const Acomp& A) const
@@ -222,7 +276,7 @@ Acomp::expandUUU(const Acomp& A) const
 {
   Acomp Out(0);   // Union
 
-    
+  ELog::EM<<"UUU"<<ELog::endDiag;
   Out.Units.insert(Out.Units.end(),Units.begin(),Units.end());
   Out.Comp.insert(Out.Comp.end(),Comp.begin(),Comp.end());
   
@@ -253,15 +307,27 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
     Out=expandUII(A);
   else if (Intersect==0 && interFlag==1 && A.Intersect==0)
     Out=expandUIU(A);
-       
+  
   else if (Intersect==1 && interFlag==0 && A.Intersect==1)
-    Out=expandIUI(A);
+    {
+      ELog::EM<<"IUI"<<ELog::endDiag;
+      Out=expandIUI(A);
+    }
   else if (Intersect==1 && interFlag==0 && A.Intersect==0)
-    Out=expandIUU(A);
+    {
+      ELog::EM<<"IUU"<<ELog::endDiag;
+      Out=expandIUU(A);
+    }
   else if (Intersect==0 && interFlag==0 && A.Intersect==1)
-    Out=expandUUI(A);
+    {
+      ELog::EM<<"UUI"<<ELog::endDiag;
+      Out=expandUUI(A);
+    }
   else if (Intersect==0 && interFlag==0 && A.Intersect==0)
-    Out=expandUUU(A);
+    {
+      ELog::EM<<"UUU"<<ELog::endDiag;
+      Out=expandUUU(A);
+    }
   else
     throw ColErr::InContainerError<int>(Intersect,
 					"Intersect/interflag not correct");
@@ -375,6 +441,38 @@ Acomp::interCombine(const Acomp& A,const Acomp& B)
   
   return Acomp(1);
 } 
+
+Acomp
+Acomp::unionCombine(const Acomp& A,const Acomp& B)
+  /*!
+    Intersection combine of one comp/one comp
+    \param A :: Component A 
+    \param B :: Component B
+    \return 0 [Nothing] / or iterm
+  */
+{
+  if (A.isNull()) return B;
+  if (B.isNull()) return A;
+  
+  if (A.Intersect==0 && B.Intersect==0)
+    {
+      Acomp Out(A);
+      Out.primativeAddItem(B);
+      return Out;
+    }
+
+  if (A.isSingle() && A.isSimple())
+    return unionCombine(A.getSinglet(),B);
+      
+  if (A.Intersect)
+    return A.expandUUU(B);
+  else
+    return A.expandUUI(B);
+  
+  ELog::EM<<"Failure "<<ELog::endErr;
+  
+  return Acomp(0);
+} 
   
  
 void
@@ -427,6 +525,45 @@ Acomp::expandBracket()
 	}
     }
   
+  upMoveComp();
+  merge();
+  makeNull();
+  return;
+}
+
+
+void
+Acomp::expandCNFBracket()
+  /*!
+    Expand all the Uninio brackets
+  */
+{
+  ELog::RegMethod RegA("Acomp","expandCNFBracket");
+
+  static int cnt(0);
+
+  isNumberSorted();
+  cnt++;
+  // all lower units
+  for(Acomp& AC : Comp)
+    AC.expandCNFBracket();
+
+  if (!this->Intersect)
+    {
+      if (!Units.empty() && !Comp.empty())
+	{
+	  Acomp N(0);  // union
+	  N.Units=Units;
+	  Comp[0]=N.componentExpand(0,Comp[0]);
+	  Comp[0].isNumberSorted();
+	  Units.clear();
+	}
+      while (Comp.size()>1)
+	{
+	  Comp[0]=Comp[0].componentExpand(0,Comp[1]);
+	  Comp.erase(Comp.begin()+1);
+	}
+    }
   upMoveComp();
   merge();
   makeNull();

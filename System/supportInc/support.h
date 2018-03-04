@@ -33,6 +33,7 @@
 
 namespace StrFunc
 {
+  
 /// determine if a character group exists in a string
 int confirmStr(const std::string&,const std::string&);
 /// Get a word from a string
@@ -96,6 +97,10 @@ void writeControl(const std::string&,std::ostream&,
 template<typename T> void writeLine(std::ostream&,const T&,
 				     size_t&,const size_t);
 
+
+template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
+bool removeItem(V<T,Alloc>&,const T&);
+ 
 std::vector<std::string> StrParts(std::string);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);

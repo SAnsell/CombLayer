@@ -228,14 +228,16 @@ OpticsBeamline::buildObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("OpticsBeamline","buildObjects");
-
-  pipeInit->addInsertCell(ContainedComp::getInsertCells());
-  pipeInit->createAll(System,*this,0);
   
+  pipeInit->addInsertCell(ContainedComp::getInsertCells());
+  pipeInit->registerSpaceCut(1,2);
+  pipeInit->createAll(System,*this,0);
+    
   ionPA->addInsertCell(ContainedComp::getInsertCells());
   ionPA->setFront(*pipeInit,2);
   ionPA->registerSpaceCut(1,2);
   ionPA->createAll(System,*pipeInit,2);
+
 
   triggerPipe->addInsertCell(ContainedComp::getInsertCells());
   triggerPipe->setFront(*ionPA,2);
@@ -246,16 +248,21 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeA->setFront(*triggerPipe,2);
   pipeA->registerSpaceCut(1,2);
   pipeA->createAll(System,*triggerPipe,2);
+
+  
   
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
   filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
-   
+
+  lastComp=filterBox;
+  return;
+
   for(size_t i=0;i<4;i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
-      filters[i]->addInsertCell("Flange",filterBox->getInsertCells());
+      filters[i]->addInsertCell("Flange",filterBox->getBuildCell());
       filters[i]->addInsertCell("Body",PI.getCell("Void"));
       filters[i]->addInsertCell("Body",filterBox->getCell("Void"));
       filters[i]->setBladeCentre(PI,0);
@@ -298,6 +305,8 @@ OpticsBeamline::buildObjects(Simulation& System)
   driftB->addInsertCell(ContainedComp::getInsertCells());
   driftB->registerSpaceCut(1,2);
   driftB->createAll(System,*driftA,2);
+  lastComp=driftB;  
+  return;
 
   attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
   UnitA.setPrimaryCell(ContainedComp::getMainCell());
@@ -328,7 +337,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateC->registerSpaceCut(1,2);
   gateC->createAll(System,*driftB,2);
 
-
   driftC->addInsertCell(ContainedComp::getInsertCells());
   driftC->setFront(*gateC,2);
   driftC->registerSpaceCut(1,2);
@@ -343,12 +351,12 @@ OpticsBeamline::buildObjects(Simulation& System)
   shieldPipe->setFront(*slitsA,2);
   shieldPipe->registerSpaceCut(1,2);
   shieldPipe->createAll(System,*slitsA,2);
-
+  return;
   pipeD->addInsertCell(ContainedComp::getInsertCells());
   pipeD->setFront(*shieldPipe,2);
   pipeD->registerSpaceCut(1,2);
   pipeD->createAll(System,*shieldPipe,2);
-
+  return;
   gateD->addInsertCell(ContainedComp::getInsertCells());
   gateD->setFront(*pipeD,2);
   gateD->registerSpaceCut(1,2);
@@ -373,7 +381,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   slitsB->createAll(System,*pipeE,2);
 
   viewPipe->addInsertCell(ContainedComp::getInsertCells());
-  viewPipe->addInsertCell(slitsB->getBuildCell());
+  viewPipe->addInsertPortCells(slitsB->getBuildCell());
   viewPipe->setFront(*slitsB,2);
   viewPipe->registerSpaceCut(1,2);
   viewPipe->createAll(System,*slitsB,2);
@@ -398,6 +406,9 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateE->registerSpaceCut(1,2);
   gateE->createAll(System,*pipeG,2);
 
+  attachSystem::ContainedSpace::insertPair
+    (System,ContainedComp::getInsertCells(),*pipeInit,1,*gateE,2);
+  
   lastComp=gateE;  
 
   return;

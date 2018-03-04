@@ -107,14 +107,14 @@ class Acomp
   Acomp expandIUU(const Acomp&) const;
   Acomp expandUUI(const Acomp&) const;
   Acomp expandUUU(const Acomp&) const;
-  
+
+ 
   static Acomp interCombine(const int,const int);
   static Acomp unionCombine(const int,const int);
   static Acomp interCombine(const int,const Acomp&);
   static Acomp unionCombine(const int,const Acomp&);
   static Acomp interCombine(const Acomp&,const Acomp&);
   static Acomp unionCombine(const Acomp&,const Acomp&);
-
   
  public:
 
@@ -164,7 +164,8 @@ class Acomp
   int makeDNFobject();                
   int makeCNFobject();                
 
-  void expandBracket();                                
+  void expandBracket();
+  void expandCNFBracket();
   void complement();
   std::pair<Acomp,Acomp> algDiv(const Acomp&); 
   void setString(const std::string&);          

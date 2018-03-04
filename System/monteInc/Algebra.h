@@ -43,7 +43,6 @@ class Algebra
 
   std::map<int,std::string> SurfMap;    ///< Surface Map 
   Acomp F;                              ///< Factor
-  Acomp FplusImpl;                      ///< Factor with implicates
   
  public:
 
@@ -67,6 +66,7 @@ class Algebra
 
   size_t countComponents() const;
   void expandBracket();
+  void expandCNFBracket();
   void merge();
   void Complement();
   void makeDNF() { F.makeDNFobject(); }  ///< assessor to makeDNFobj
@@ -75,8 +75,6 @@ class Algebra
   int setFunctionObjStr(const std::string&);
   int setFunction(const std::string&);
   int setFunction(const Acomp&);
-
-  void addImplicate(const int,const int);
 
   std::string display() const;
   std::ostream& write(std::ostream&) const;

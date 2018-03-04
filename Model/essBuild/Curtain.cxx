@@ -3,7 +3,7 @@
  
  * File:   essBuild/Curtain.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -402,7 +402,7 @@ Curtain::layerProcess(Simulation& System,
     }
   if (nBaseLayers>1)
     {
-      const int topSurf=FC.getSignedLU(topIndex).getLinkSurf();
+      const int topSurf=FC.getLinkSurf(topIndex);
       ModelSupport::surfDivide DA;
             
       for(size_t i=1;i<nBaseLayers;i++)
@@ -445,7 +445,7 @@ Curtain::createLinks()
 {
   ELog::RegMethod RegA("Curtain","createLinks");
 
-  attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
+  //  attachSystem::FixedComp& topFC=FixedGroup::getKey("Top");
   attachSystem::FixedComp& baseFC=FixedGroup::getKey("Lower");
 
   // Lower first:

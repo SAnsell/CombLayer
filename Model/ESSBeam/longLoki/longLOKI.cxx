@@ -93,6 +93,7 @@
 #include "RentrantBS.h"
 #include "LokiHut.h"
 #include "VacTank.h"
+#include "beamlineSupport.h"
 
 #include "longLOKI.h"
 
@@ -205,33 +206,6 @@ longLOKI::~longLOKI()
   */
 {}
 
-void
-longLOKI::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("longLOKI","setBeamAxis");
-
-  lokiAxis->populate(Control);
-  lokiAxis->createUnitVector(GItem);
-  lokiAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
-  lokiAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
-
-  lokiAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
-  lokiAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
-  // BEAM needs to be rotated:
-  lokiAxis->linkAngleRotate(3);
-  lokiAxis->linkAngleRotate(4);
-  
-    if (reverseZ)
-      lokiAxis->reverseZ();
-  return;
-}
   
 void 
 longLOKI::build(Simulation& System,
@@ -250,7 +224,7 @@ longLOKI::build(Simulation& System,
   ELog::RegMethod RegA("longLOKI","build");
   ELog::EM<<"\nBuilding longLOKI on : "<<GItem.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*lokiAxis,System.getDataBase(),GItem,0);
   ELog::EM<<"SET LOKI AXIS"<<ELog::endDiag;
   BendA->addInsertCell(GItem.getCells("Void"));
   BendA->addInsertCell(bunkerObj.getCell("MainVoid"));

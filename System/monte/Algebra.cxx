@@ -63,15 +63,14 @@ operator<<(std::ostream& OX,const Algebra& A)
 }
 
 Algebra::Algebra() :
-  F(Union),FplusImpl(Union)
+  F(Union)
   /*!
     Constructor
   */
 {}
 
 Algebra::Algebra(const Algebra& A) :
-  SurfMap(A.SurfMap),F(A.F),
-  FplusImpl(A.FplusImpl)
+  SurfMap(A.SurfMap),F(A.F)
   /*!
     Copy Constructor 
     \param A :: Algebra to copy
@@ -90,7 +89,6 @@ Algebra::operator=(const Algebra& A)
     {
       SurfMap=A.SurfMap;
       F=A.F;
-      FplusImpl=A.FplusImpl;
     }
   return *this;
 }
@@ -222,6 +220,19 @@ Algebra::expandBracket()
 {
   F.Sort();
   F.expandBracket();
+  F.Sort();
+  return;
+}
+
+void
+Algebra::expandCNFBracket()
+  /*!
+    Expand all the brackets into DNF form
+    Not need full sort before /after
+  */
+{
+  F.Sort();
+  F.expandCNFBracket();
   F.Sort();
   return;
 }
@@ -516,18 +527,6 @@ Algebra::countLiterals() const
   std::map<int,int> Lit;
   F.getLiterals(Lit);
   return static_cast<int>(Lit.size());
-}
-
-void
-Algebra::addImplicate(const int,const int)
-  /*!
-    Adds an implication to the algebra
-    A->B
-    \param  :: first surface
-    \param  :: second surface
-  */
-{
-//  FplusImpl.
 }
 
 int

@@ -84,6 +84,7 @@
 #include "BunkerInsert.h"
 #include "ChopperPit.h"
 #include "LineShield.h"
+#include "beamlineSupport.h"
 
 #include "shortNMX.h"
 
@@ -136,33 +137,6 @@ shortNMX::~shortNMX()
   */
 {}
 
-void
-shortNMX::setBeamAxis(const FuncDataBase& Control,
-		 const GuideItem& GItem,
-		 const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-   */
-{
-  ELog::RegMethod RegA("shortNMX","setBeamAxis");
-
-  nmxAxis->populate(Control);
-  nmxAxis->createUnitVector(GItem);
-  nmxAxis->setLinkSignedCopy(0,GItem.getKey("Main"),1);
-  nmxAxis->setLinkSignedCopy(1,GItem.getKey("Main"),2);
-  nmxAxis->setLinkSignedCopy(2,GItem.getKey("Beam"),1);
-  nmxAxis->setLinkSignedCopy(3,GItem.getKey("Beam"),2);
-
-  // BEAM needs to be rotated:
-  nmxAxis->linkAngleRotate(3);
-  nmxAxis->linkAngleRotate(4);
-
-  if (reverseZ)
-    nmxAxis->reverseZ();
-  return;
-}
   
 void 
 shortNMX::build(Simulation& System,
@@ -188,7 +162,7 @@ shortNMX::build(Simulation& System,
   ELog::EM<<"GItem == "<<GItem.getKey("Beam").getLinkPt(-1)
 	  <<" in bunker: "<<bunkerObj.getKeyName()<<ELog::endDiag;
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*nmxAxis,System.getDataBase(),GItem,0);
 
   ELog::EM<<"Beam axis == "<<nmxAxis->getLinkPt(3)<<ELog::endDiag;
   FocusA->addInsertCell(GItem.getCells("Void"));

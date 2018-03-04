@@ -106,7 +106,8 @@ class LinkUnit
   void addBridgeSurf(const HeadRule&);
 
   void applyRotation(const localRotate&);
-  void populateSurf(); 
+  void populateSurf();
+  
 };
 
 }

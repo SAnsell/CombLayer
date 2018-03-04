@@ -45,6 +45,7 @@ private:
   int testCountLiterals();
   int testDNF();
   int testExpandBracket();
+  int testExpandCNFBracket();
   int testMakeString();
   int testMerge();
   int testMult();

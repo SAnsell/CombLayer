@@ -228,7 +228,7 @@ FixedOffset::applyOffset()
 }
 
 void
-FixedOffset::linkShift(const long int sideIndex)
+FixedOffset::linkShift(const size_t sideIndex)
   /*!
     Apply a rotation to a link point axis
     \param sideIndex :: link point index [signed]
@@ -241,7 +241,7 @@ FixedOffset::linkShift(const long int sideIndex)
 }
 
 void
-FixedOffset::linkAngleRotate(const long int sideIndex)
+FixedOffset::linkAngleRotate(const size_t sideIndex)
   /*!
     Apply a rotation to a link point axis
     \param sideIndex :: link point index [signed]

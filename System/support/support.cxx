@@ -1114,6 +1114,26 @@ sliceVector(V<T,Alloc>& A,const T& indexA,const T& indexB)
   return 0;
 }
 
+template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
+bool
+removeItem(V<T,Alloc>& A,const T& indexA)
+  /*!
+    Given values indexA , indexB : 
+    Find the values in the list and
+    return just that bit. 
+    \param A :: vect/list to slice
+    \param indexA :: Component to find
+    \param indexB :: Component to find
+    \return true if item removed / false otherwize
+   */
+{
+  typename V<T,Alloc>::iterator ac=find(A.begin(),A.end(),indexA);
+
+  if (ac==A.end()) return 0;
+  A.erase(ac);
+  return 1;
+}
+
 std::vector<std::string>
 splitParts(const std::string& Line,const char delim)
   /*!
@@ -1266,6 +1286,7 @@ template int setValues(const std::string&,const std::vector<int>&,
 		      std::vector<double>&);
 
 template int sliceVector(std::vector<int>&,const int&,const int&);
+template bool removeItem(std::vector<int>&,const int&);
 
 /// \endcond TEMPLATE 
 

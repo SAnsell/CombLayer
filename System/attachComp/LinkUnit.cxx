@@ -107,12 +107,12 @@ void
 LinkUnit::complement()
   /*!
     Convert the object into complement form
-   */
+  */
 {
   ELog::RegMethod RegA("LinkUnit","complement");
   Axis*= -1.0;  // reverse axis
   linkSurf*=-1;
-  bridgeSurf.makeComplement();
+  mainSurf.makeComplement();
   return;
 }
 

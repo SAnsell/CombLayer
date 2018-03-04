@@ -67,6 +67,7 @@ class PortTube :
   int voidMat;                ///< void material
   int wallMat;                  ///< Fe material layer
 
+  std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
   std::vector<Geometry::Vec3D> PAxis;    ///< Port centre Axis
   std::vector<portItem> Ports;           ///< Vector of ports FixedComp
@@ -85,6 +86,7 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
+  void addInsertPortCells(const int);
   const portItem& getPort(const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int);

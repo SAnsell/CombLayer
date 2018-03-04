@@ -354,6 +354,11 @@ OpticsHutch::createLinks()
   setLinkSurf(0,-SMap.realSurf(hutIndex+1));
   setLinkSurf(1,SMap.realSurf(hutIndex+32));
 
+  // inner surf
+  setConnect(2,Origin+Y*length,-Y);
+  setLinkSurf(2,-SMap.realSurf(hutIndex+2));
+  nameSideIndex(2,"innerBack");
+
   
   return;
 }

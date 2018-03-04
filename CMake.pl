@@ -66,7 +66,7 @@ $gM->findSubIncDir("Model/ESSBeam");
 $gM->findSubSrcDir("Model");
 $gM->findSubSrcDir("System");
 $gM->findSubSrcDir("Model/ESSBeam");
-$gM->findSubSrcDir("");
+$gM->findSubSrcDir("","Aunit");
 
 $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "funcBase","log","construct","md5",

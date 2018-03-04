@@ -59,8 +59,9 @@ class FixedOffset  : public FixedComp
   void setPreRotation(const double,const double);
   void setRotation(const double,const double);
   void applyOffset();
-  void linkShift(const long int);
-  void linkAngleRotate(const long int);
+
+  void linkShift(const size_t);
+  void linkAngleRotate(const size_t);
   
 };
 
