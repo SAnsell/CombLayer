@@ -105,6 +105,7 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelShaftLowerBigStiffShortLength",8.0);  // TSV32IS
   Control.addVariable("BilbaoWheelShaftLowerBigStiffLongLength",20.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffHeight",15.0);  // TSV32IS
 
   const double fracLow(50.0); // !!! a dummy number
   Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",

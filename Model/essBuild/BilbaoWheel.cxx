@@ -125,6 +125,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftUpperBigStiffHomoMat(A.shaftUpperBigStiffHomoMat),
   shaftLowerBigStiffShortLength(A.shaftLowerBigStiffShortLength),
   shaftLowerBigStiffLongLength(A.shaftLowerBigStiffLongLength),
+  shaftLowerBigStiffHeight(A.shaftLowerBigStiffHeight),
   shaftLowerBigStiffHomoMat(A.shaftLowerBigStiffHomoMat),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
@@ -201,6 +202,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftUpperBigStiffHomoMat=A.shaftUpperBigStiffHomoMat;
       shaftLowerBigStiffShortLength=A.shaftLowerBigStiffShortLength;
       shaftLowerBigStiffLongLength=A.shaftLowerBigStiffLongLength;
+      shaftLowerBigStiffHeight=A.shaftLowerBigStiffHeight;
       shaftLowerBigStiffHomoMat=A.shaftLowerBigStiffHomoMat;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
@@ -331,6 +333,7 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   shaftLowerBigStiffShortLength=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffShortLength");
   shaftLowerBigStiffLongLength=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffLongLength");
+  shaftLowerBigStiffHeight=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffHeight");
   shaftLowerBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
 						       keyName+"ShaftLowerBigStiffHomoMat");
 
@@ -465,7 +468,8 @@ BilbaoWheel::createShaftSurfaces()
   H -= catcherGap;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
 
-  H -= catcherNotchBaseThick;
+  //  H -= catcherNotchBaseThick;
+  H = shaft2StepHeight + shaftLowerBigStiffHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
 
   H = shaftBaseDepth-catcherBaseHeight;
