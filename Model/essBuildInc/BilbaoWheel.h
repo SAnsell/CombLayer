@@ -79,9 +79,9 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
   double shaftCFRingHeight; ///< connection flange ring height
   double shaftCFRingRadius; ///< connection flange ring radius
-  double shaftCFStiffLength; ///< connection flange stiffener length
-  double shaftCFStiffHeight;          ///< connection flange stiffener height
-  double shaftCFStiffThick; ///< connection flange stiffener thickness
+  double shaftUpperBigStiffLength; ///< connection flange stiffener length
+  double shaftUpperBigStiffHeight; ///< connection flange stiffener height
+  double shaftUpperBigStiffThick;  ///< connection flange stiffener thickness
   /// Homogenised material of the upper large stiffener cell (used if engActive=0)
   int shaftUpperBigStiffHomoMat;
   /// Homogenised material of the lower large stiffener cell (used if engActive=0)

@@ -119,9 +119,9 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
   shaftCFRingHeight(A.shaftCFRingHeight),
   shaftCFRingRadius(A.shaftCFRingRadius),
-  shaftCFStiffLength(A.shaftCFStiffLength),
-  shaftCFStiffHeight(A.shaftCFStiffHeight),
-  shaftCFStiffThick(A.shaftCFStiffThick),
+  shaftUpperBigStiffLength(A.shaftUpperBigStiffLength),
+  shaftUpperBigStiffHeight(A.shaftUpperBigStiffHeight),
+  shaftUpperBigStiffThick(A.shaftUpperBigStiffThick),
   shaftUpperBigStiffHomoMat(A.shaftUpperBigStiffHomoMat),
   shaftLowerBigStiffHomoMat(A.shaftLowerBigStiffHomoMat),
   shaftHoleHeight(A.shaftHoleHeight),
@@ -194,9 +194,9 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       shaftCFRingHeight=A.shaftCFRingHeight;
       shaftCFRingRadius=A.shaftCFRingRadius;
-      shaftCFStiffLength=A.shaftCFStiffLength;
-      shaftCFStiffHeight=A.shaftCFStiffHeight;
-      shaftCFStiffThick=A.shaftCFStiffThick;
+      shaftUpperBigStiffLength=A.shaftUpperBigStiffLength;
+      shaftUpperBigStiffHeight=A.shaftUpperBigStiffHeight;
+      shaftUpperBigStiffThick=A.shaftUpperBigStiffThick;
       shaftUpperBigStiffHomoMat=A.shaftUpperBigStiffHomoMat;
       shaftLowerBigStiffHomoMat=A.shaftLowerBigStiffHomoMat;
       shaftHoleHeight=A.shaftHoleHeight;
@@ -321,9 +321,9 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
   shaftCFRingHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingHeight");
   shaftCFRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
-  shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
-  shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
-  shaftCFStiffThick=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffThick");
+  shaftUpperBigStiffLength=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffLength");
+  shaftUpperBigStiffHeight=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffHeight");
+  shaftUpperBigStiffThick=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffThick");
   shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
 						       keyName+"ShaftUpperBigStiffHomoMat");
   shaftLowerBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
@@ -416,7 +416,7 @@ BilbaoWheel::createShaftSurfaces()
 
   // Connection flange ring [ESS-0124024 pages 22-23 (DW-TRGT-ESS-0102)]
   H = H1-voidThick;
-  H += shaftCFStiffHeight;
+  H += shaftUpperBigStiffHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
   H += shaftCFRingHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
@@ -428,13 +428,13 @@ BilbaoWheel::createShaftSurfaces()
 
   // Connection flange stiffeners
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
-  const double stiffTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
-  const double stiffL(shaftRadius[nShaftLayers-2]+shaftCFStiffLength);
+  const double stiffTheta(atan(shaftUpperBigStiffHeight/shaftUpperBigStiffLength)*180.0/M_PI);
+  const double stiffL(shaftRadius[nShaftLayers-2]+shaftUpperBigStiffLength);
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
   ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
 
   if (engActive) // create surfaces for large upper/lower stiffeners
-    createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftCFStiffThick);
+    createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftUpperBigStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
   ModelSupport::buildCone(SMap,wheelIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);

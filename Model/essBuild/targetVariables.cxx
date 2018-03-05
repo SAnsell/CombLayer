@@ -93,10 +93,10 @@ EssWheel(FuncDataBase& Control)
   // Upper Stiffener shape and dimensions correspond to
   // ESS-0153983
   const double ubsLength(20.0);
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",ubsLength); // ESS-0124024 page 19
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffHeight",15); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffLength",ubsLength); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffHeight",15); // ESS-0124024 page 19
   const double ubsThick(2.0);
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",ubsThick); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffThick",ubsThick); // ESS-0124024 page 19
 
   // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
   const double fracUp(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
