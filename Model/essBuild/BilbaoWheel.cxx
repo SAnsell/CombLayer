@@ -501,13 +501,16 @@ BilbaoWheel::createShaftSurfaces()
 					     px,nearPt));
 
   const double L(Origin.Y()-C.Y());
-  H = L * tan(catcherBaseAngle*M_PI/180)-C.Z();
-  ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
-			  -Z, 90-catcherBaseAngle, -1);
+  const double lowerBigStiffTheta(atan(shaftLowerBigStiffHeight/
+      (shaftLowerBigStiffLongLength-shaftLowerBigStiffShortLength))*180/M_PI);
 
-  H+= voidThick/cos(catcherBaseAngle*M_PI/180);
+  H = L * tan(lowerBigStiffTheta*M_PI/180)-C.Z();
+  ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
+			  -Z, 90-lowerBigStiffTheta, -1);
+
+  H+= voidThick/cos(lowerBigStiffTheta*M_PI/180);
   ModelSupport::buildCone(SMap, wheelIndex+2239, Origin-Z*(H),
-			  -Z, 90-catcherBaseAngle, -1);
+			  -Z, 90-lowerBigStiffTheta, -1);
 
   R += voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
