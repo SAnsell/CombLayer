@@ -96,7 +96,6 @@ class BilbaoWheel : public WheelBase
   double shaftBaseDepth;            ///< shaft depth (below origin)
 
   double catcherTopSteelThick; ///< thickness of top steel plate
-  double catcherGap;    ///< vertical clearance below catcher
   double catcherRadius;    ///< catcher rotal radius
   double catcherBaseHeight;///< catcher base truncated cone height
   double catcherBaseRadius;///< catchr base truncated cone lower radius

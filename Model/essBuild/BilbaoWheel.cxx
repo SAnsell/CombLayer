@@ -132,7 +132,6 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftHoleXYangle(A.shaftHoleXYangle),
   shaftBaseDepth(A.shaftBaseDepth),
   catcherTopSteelThick(A.catcherTopSteelThick),
-  catcherGap(A.catcherGap),
   catcherRadius(A.catcherRadius),
   catcherBaseHeight(A.catcherBaseHeight),
   catcherBaseRadius(A.catcherBaseRadius),
@@ -209,7 +208,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftHoleXYangle=A.shaftHoleXYangle;
       shaftBaseDepth=A.shaftBaseDepth;
       catcherTopSteelThick=A.catcherTopSteelThick;
-      catcherGap=A.catcherGap;
       catcherRadius=A.catcherRadius;
       catcherBaseHeight=A.catcherBaseHeight;
       catcherBaseRadius=A.catcherBaseRadius;
@@ -354,7 +352,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
 
-  catcherGap=Control.EvalVar<double>(keyName+"CatcherGap");
   catcherRadius=Control.EvalVar<double>(keyName+"CatcherRadius");
   if (catcherRadius>radius[0]+voidThick)
     throw ColErr::RangeError<double>(catcherRadius, 0, radius[0]+voidThick,
@@ -462,11 +459,13 @@ BilbaoWheel::createShaftSurfaces()
 
   // shaft base
   H = shaftBaseDepth;
-  ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
+  const Geometry::Plane *p2205 =
+    ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
 
   // shaft base - catcher
   H = shaft2StepHeight + shaftLowerBigStiffHeight + catcherNotchBaseThick;
-  ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
+  const Geometry::Plane *p2215 =
+    ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
 
   //  H -= catcherNotchBaseThick;
   H = shaft2StepHeight + shaftLowerBigStiffHeight;
@@ -482,7 +481,8 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildCone(SMap, wheelIndex+2208, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 
-  H -= catcherGap/sin(catcherBaseAngle*M_PI/180);
+  const double gap(p2215->getDistance()-p2205->getDistance());
+  H -= gap/sin(catcherBaseAngle*M_PI/180);
   ModelSupport::buildCone(SMap, wheelIndex+2218, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 
