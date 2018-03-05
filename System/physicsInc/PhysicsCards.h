@@ -110,6 +110,8 @@ class PhysicsCards
 		const int, const double);
   double getValue(const std::string&,const std::string&,const int) const;
 
+  void isolateCell(const std::string&,const std::string&);
+  
   /// Get Mode card
   ModeCard& getMode() { return mode; }
   /// Get LEA card

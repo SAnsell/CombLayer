@@ -418,7 +418,7 @@ createSimulation(inputParam& IParam,
   // DNF split the cells
   SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellDNF"));
   // DNF split the cells
-  SimPtr->setCellDNF(IParam.getDefValue<size_t>(0,"cellCNF"));
+  SimPtr->setCellCNF(IParam.getDefValue<size_t>(0,"cellCNF"));
 
   SimPtr->setCmdLine(cmdLine.str());        // set full command line
 

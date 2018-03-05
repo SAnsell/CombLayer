@@ -89,6 +89,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("matDB","materialDatabase",1,
                                  std::string("shielding"));  
   IParam.regItem("matFile","matFile");
+  IParam.regItem("maxEnergy","maxEnergy");   // default max energy
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");

@@ -62,6 +62,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "SourceBase.h"
+#include "particleConv.h"
 #include "LensSource.h"
 
 namespace SDef
@@ -194,7 +195,10 @@ LensSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("LensSource","createSource");
 
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
+
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
   sourceCard.setComp("ara",M_PI*radialArea*radialArea);         

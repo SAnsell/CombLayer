@@ -686,6 +686,39 @@ PhysicsCards::setCells(const std::string& Type,
 // Specific : Particle + Type
 
 void
+PhysicsCards::isolateCell(const std::string& Type,
+			  const std::string& Particle)
+  /*!
+    Build a PhysImp card for a given particle 
+    If it already exists as a equal value then remove
+    \param Type :: imp type (vol/imp)
+    \param Particle :: particle naem
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","isolateCells");
+
+  ELog::EM<<"CALL == "<<Particle<<" "<<Type<<ELog::endDiag;
+  for(PhysImp& PI : ImpCards)
+    {
+      if (PI.getType()==Type &&
+	  PI.hasElm(Particle))
+	{
+
+	  if (PI.particleCount()!=1)
+	    {
+	      PhysImp isoPI(PI);
+	      isoPI.setParticle(Particle);
+	      PI.removeParticle(Particle);
+	      ImpCards.push_back(isoPI);
+	    }
+	  return;
+	}
+    }
+  throw ColErr::InContainerError<std::string>(Particle+":"+Type,
+					      "Particle not in list");
+}
+  
+void
 PhysicsCards::setCells(const std::string& Type,
 		       const std::string& Particle,
 		       const int cellID,const double V)

@@ -135,9 +135,11 @@ IMPConstructor::processUnit(PhysicsCards& PC,
         }
     }
   else
-    for(const int CN : Cells)
-      PC.setCells("imp",particle,CN,value);
-      
+    {
+      PC.isolateCell("imp",particle);
+      for(const int CN : Cells)
+	PC.setCells("imp",particle,CN,value);
+    }      
   return;
 }
 

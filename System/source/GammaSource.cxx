@@ -66,6 +66,7 @@
 #include "WorkData.h"
 #include "World.h"
 #include "SourceBase.h"
+#include "particleConv.h"
 #include "GammaSource.h"
 
 namespace SDef
@@ -270,7 +271,10 @@ GammaSource::createSource(SDef::Source& sourceCard) const
 
   ELog::EM<<"Source shape ::"<<shape<<ELog::endDiag;
 
-  sourceCard.setComp("par",particleType);            
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
+
   SourceBase::createEnergySource(sourceCard);    
 
   ELog::EM<<"AngleSPread == "<<angleSpread<<ELog::endDiag;

@@ -32,10 +32,10 @@
 
 struct pName
 {
-  const std::string mcnpName;         ///< MCNP [single charactor]
+  const std::string mcnpName;         ///< MCNP [single character]
   const int mcnpITYP;                 ///< MCNP particle number
   const std::string flukaName;        ///< FLUKA word name
-  const std::string phitsName;        ///< PHITS word namea
+  const std::string phitsName;        ///< PHITS word name 
   const int phitsITYP;                ///< iTyp number from phits
   const int mcplNumber;               ///< MCPL number
   const int nucleon;                  ///< number of nucleons

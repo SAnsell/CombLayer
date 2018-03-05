@@ -175,7 +175,7 @@ PStandard::setValue(const size_t ID,const double value)
 
 void
 PStandard::setValues(const size_t NVal,const double A,const double B,
-		   const double C,const double D,const double E)
+		     const double C,const double D,const double E)
   /*!
     Set the values
     \param NVal :: Number of values

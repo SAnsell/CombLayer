@@ -68,6 +68,7 @@ class PhysImp
   size_t particleCount() const { return particles.size(); }
   bool isEmpty() const { return impNum.empty(); }
   int removeParticle(const std::string&);
+  void setParticle(const std::string&);
   
   double getValue(const int) const;
   void setValue(const int,const double);

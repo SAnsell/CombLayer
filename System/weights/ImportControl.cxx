@@ -314,6 +314,7 @@ IMP(physicsSystem::PhysicsCards& PC,
   if (nSet)
     {
       physicsSystem::IMPConstructor A;
+      ELog::EM<<"NS == "<<nSet<<ELog::endDiag;
       for(size_t index=0;index<nSet;index++)
         A.processUnit(PC,System,IParam,index);
     }

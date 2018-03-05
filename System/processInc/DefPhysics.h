@@ -47,7 +47,8 @@ namespace ModelSupport
 
 
 
-  void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&); 
+  void setNeutronPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
+			 const double); 
   void setReactorPhysics(physicsSystem::PhysicsCards&,const FuncDataBase&,
 			 const mainSystem::inputParam&); 
   void setDefRotation(const mainSystem::inputParam&);

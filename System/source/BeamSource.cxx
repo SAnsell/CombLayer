@@ -157,7 +157,6 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
-
   return;
 }
 
@@ -182,16 +181,16 @@ BeamSource::createSource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("BeamSource","createSource");
-  
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
   sourceCard.setComp("ara",M_PI*radius*radius);         
     
-  sourceCard.setComp("x",Origin[0]);
-  sourceCard.setComp("y",Origin[1]);
-  sourceCard.setComp("z",Origin[2]);
+  sourceCard.setComp("pos",Origin);
   
   // RAD
   SDef::SrcData D1(1);

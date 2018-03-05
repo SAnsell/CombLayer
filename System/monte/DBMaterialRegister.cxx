@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterialRegister.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1178,6 +1178,12 @@ DBMaterial::initMaterial()
 		   "8016.70c 0.0451349 ","",MLib);
   setMaterial(MObj);
   
+
+  // Material #140: Hydrogen gas for vacuum pipes (Brem production)
+  //Total atom density 0.041957 -  19 K; 0.07021 grams per cc
+  MObj.setMaterial(140,"H2Gas","1001.70c 0.001","",MLib);
+  setMaterial(MObj);
+
   return;
 }
 

@@ -340,17 +340,18 @@ setPhysicsModel(physicsSystem::LSwitchCard& lea,
 
 void 
 setNeutronPhysics(physicsSystem::PhysicsCards& PC,
-		  const FuncDataBase& Control)
+		  const FuncDataBase& Control,
+		  const double maxEnergy)
   /*!
     Set the neutron Physics for MCNP run
     \param PC :: Physcis cards
-    \param Control :: Databae of variables
+    \param Control :: Database of variables
+    \param maxEnergy :: max energy cut
   */
 {
   ELog::RegMethod RegA("DefPhysics","setNeutronPhysics");
 
   
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const std::string EMax=std::to_string(maxEnergy);
 
   PC.setMode("n");
@@ -386,7 +387,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   const double elcEnergy=IParam.getValue<double>("electron");
   const double phtEnergy=IParam.getValue<double>("photon");
   const double phtModel=IParam.getValue<double>("photonModel");
-  
+
   const std::string elcAdd((elcEnergy>0 ? " e" : ""));
 
   PC.setMode("n p "+PList+elcAdd);
@@ -413,8 +414,9 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   
   const std::string EMax=std::to_string(maxEnergy);
   const std::string PHMax=std::to_string(phtModel);
+  
   physicsSystem::PStandard* pn=
-	PC.addPhysCard<physicsSystem::PStandard>("phys","n");
+    PC.addPhysCard<physicsSystem::PStandard>("phys","n");
   pn->setValues(EMax+" 0.0 j j j");
   
   physicsSystem::PStandard* pp=
@@ -431,7 +433,14 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
   physicsSystem::PStandard* ph=
     PC.addPhysCard<physicsSystem::PStandard>("phys","h");
   ph->setValues(EMax);
-  
+
+  if (elcEnergy>0.0)
+    {
+      physicsSystem::PStandard* pe=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","e");
+      pe->setValues(std::to_string(elcEnergy));
+    }
+
   return; 
 }
 
@@ -488,6 +497,9 @@ setDefaultPhysics(SimMCNP& System,
   physicsSystem::PhysicsCards& PC=System.getPC();
   
   const std::string PModel=IParam.getValue<std::string>("physModel");
+  const double maxEnergy=IParam.getDefValue<double>
+    (2000.0,"maxEnergy");
+
   setGenericPhysics(System,PModel);
   
   PC.setNPS(IParam.getValue<size_t>("nps"));
@@ -500,16 +512,12 @@ setDefaultPhysics(SimMCNP& System,
   if (IParam.hasKey("kcode") && IParam.dataCnt("kcode"))
     {
       setReactorPhysics(PC,Control,IParam);
-      //      PC.setCellNumbers(cellImp);
-      //      PC.setCells("imp",1,0);            // Set a zero cell
       return;
     }
 
   if (IParam.hasKey("neutronOnly"))
     {
-      setNeutronPhysics(PC,Control);
-      //      PC.setCellNumbers(cellImp);
-      //      PC.setCells("imp",1,0);            // Set a zero cell
+      setNeutronPhysics(PC,Control,maxEnergy);
       return;
     }
   
@@ -523,7 +531,6 @@ setDefaultPhysics(SimMCNP& System,
       PList=" ";
     }
   
-  const double maxEnergy=Control.EvalDefVar<double>("sdefEnergy",2000.0);
   const double cutUp=IParam.getValue<double>("cutWeight",0);  // [1keV
   const double cutMin=IParam.getValue<double>("cutWeight",1);  // [1keV def]
   const double cutTime=IParam.getDefValue<double>(1e8,"cutTime",0); 
@@ -555,10 +562,13 @@ setDefaultPhysics(SimMCNP& System,
 
   if (elcEnergy>=0.0)
     {
+      ELog::EM<<"ELC == "<<elcEnergy<<ELog::endDiag;
       physicsSystem::PStandard* elcCut=
 	PC.addPhysCard<physicsSystem::PStandard>("cut","e");
       elcCut->setValues(2,1e+8,elcEnergy);
     }
+
+
   
   const std::string EMax=StrFunc::makeString(maxEnergy);
   const std::string PHMax=StrFunc::makeString(phtModel);
@@ -570,7 +580,7 @@ setDefaultPhysics(SimMCNP& System,
   physicsSystem::PStandard* pp=
     PC.addPhysCard<physicsSystem::PStandard>("phys","p");
   if (elcEnergy>=0.0)
-    pp->setValues(PHMax+" j j -1");
+    pp->setValues(PHMax+" j j -1");  // analog photonuclear
   else
     pp->setValues(PHMax);
 
@@ -586,8 +596,13 @@ setDefaultPhysics(SimMCNP& System,
           PList.erase(hpos,1);
         }
       physicsSystem::PStandard* pa=
-        PC.addPhysCard<physicsSystem::PStandard>("phys",PList+elcAdd);
+        PC.addPhysCard<physicsSystem::PStandard>("phys",PList);
       pa->setValues(EMax);
+
+      physicsSystem::PStandard* pe=
+	PC.addPhysCard<physicsSystem::PStandard>("phys","e");
+      pe->setValues(1,maxEnergy);
+
     }
 
   

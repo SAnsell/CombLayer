@@ -150,6 +150,18 @@ PhysImp::setAllCells(const double value)
 }
 
 void
+PhysImp::setParticle(const std::string& P)
+ /*!
+   Set the particles to be just P
+   \param P :: PArticle 
+ */
+{
+  particles.clear();
+  particles.push_back(P);
+  return;
+}
+  
+void
 PhysImp::removeCell(const int ID)
   /*!
     Remove cell form list

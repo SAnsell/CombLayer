@@ -44,7 +44,7 @@ class SourceBase
 {
  protected:
 
-  int particleType;             ///< Particle Type
+  std::string particleType;     ///< Particle Type
   double cutEnergy;             ///< Energy cut point
   
   std::vector<double> Energy;   ///< Energies [MeV]
@@ -69,7 +69,9 @@ class SourceBase
   void populate(const std::string&,const FuncDataBase&);
 
   /// Set particle type
-  void setParticle(const int T) { particleType=T; }
+  void setParticle(const int);
+  /// Set particle type
+  void setParticle(const std::string&);
   /// Set cut energy
   void setCutEnergy(const double E) { cutEnergy=E; }
   void setEnergy(const double);

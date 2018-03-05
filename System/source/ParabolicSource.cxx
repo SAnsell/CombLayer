@@ -65,6 +65,7 @@
 #include "WorkData.h"
 #include "World.h"
 #include "SourceBase.h"
+#include "particleConv.h"
 #include "ParabolicSource.h"
 
 namespace SDef
@@ -228,7 +229,10 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("ParabolicSource","createSource");
 
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
   
     // are we aligned on the master direction:

@@ -439,7 +439,7 @@ createBeamSource(const FuncDataBase& Control,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   BeamSource GX(keyName);
-  
+
   GX.createAll(Control,FC,sideIndex);
 
   SDB.registerSource(GX.getKeyName(),GX);  

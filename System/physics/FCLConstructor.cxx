@@ -111,23 +111,31 @@ FCLConstructor::processUnit(PhysicsCards& PC,
     
   const double value=IParam.getValueError<double>
     ("wFCL",index,0,"No fractional for wFCL");
-  const std::string key=IParam.getValueError<std::string>
-    ("wFCL",index,1,"No keyname for wFCL");
   if (std::abs<double>(value)>1.0+Geometry::zeroTol)
     throw ColErr::RangeError<double>(value,-1.0,1.0,"Value for FCL");
+
+  const std::string particle=IParam.getValueError<std::string>
+    ("wFCL",index,1,"No particle for wFCL");
+
+  const std::string key=IParam.getValueError<std::string>
+    ("wFCL",index,2,"No keyname for wFCL");
+
   if (key=="Object" || key=="object")
     {
       const std::string objName=
         IParam.getValueError<std::string>
-        ("wFCL",index,2,"No objName for wFCL");
+        ("wFCL",index,3,"No objName for wFCL");
+      
       const std::vector<int> Cells=
         OR.getObjectRange(objName);
+      
       if (Cells.empty())
         throw ColErr::InContainerError<std::string>
           (objName,"Empty cell");
-      
+
+      ELog::EM<<"Particle == "<<particle<<ELog::endDiag;
       for(const int CN : Cells)
-        PC.setCells("fcl","n",CN,value);
+        PC.setCells("fcl",particle,CN,value);
     }
   return;
 }

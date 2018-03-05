@@ -115,9 +115,10 @@ sourceSelection(Simulation& System,
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
     *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
-  
+
+
   const long int linkIndex=(DSnd.empty()) ?  0 :
-    attachSystem::getLinkIndex(DSnd)/1000;
+    attachSystem::getLinkIndex(DSnd) % 1000;
 
   // NOTE: No return to allow active SSW systems  
   const std::string sdefType=IParam.getValue<std::string>("sdefType");

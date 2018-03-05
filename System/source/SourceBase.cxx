@@ -72,7 +72,7 @@ namespace SDef
 {
 
 SourceBase::SourceBase() : 
-  particleType(1),cutEnergy(0.0),
+  particleType("neutron"),cutEnergy(0.0),
   Energy({14}),EWeight({1.0}),weight(1.0),
   TransPtr(0)
   /*!
@@ -209,6 +209,17 @@ SourceBase::populateEnergy(std::string EPts,std::string EProb)
     }
   return (EWeight.empty()) ? 0 : 1;
 }
+
+void
+SourceBase::setParticle(const int T)
+  /*!
+    Get particle type
+    \param T :: index
+  */
+{
+  particleType=particleConv::Instance().mcnpToPHITS(T);
+  return;
+}
   
 void
 SourceBase::populate(const std::string& keyName,
@@ -222,9 +233,9 @@ SourceBase::populate(const std::string& keyName,
   ELog::RegMethod RegA("SourceBase","populate");
 
   // default neutron
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",particleType);
-
-
+  particleType=Control.EvalDefVar<std::string>
+    (keyName+"ParticleType",particleType);
+  
   const std::string EList=
     Control.EvalDefVar<std::string>(keyName+"Energy","");
   const std::string EPList=
@@ -353,8 +364,10 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
   */
 {
   ELog::RegMethod RegA("SourceBase","createSource");
-  
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
   
   // Energy:
   if (Energy.size()>1)
@@ -386,7 +399,7 @@ SourceBase::writePHITS(std::ostream& OX) const
 
   const particleConv& partCV=particleConv::Instance();
  
-  OX<<"    proj = "<<partCV.mcnpToPHITS(particleType)<<std::endl;
+  OX<<"    proj = "<<particleType<<std::endl;
   OX<<"    wgt  = "<<weight<<std::endl;
   if (Energy.size()==1)
     OX<<"    e0  = "<<Energy.front()<<std::endl;
