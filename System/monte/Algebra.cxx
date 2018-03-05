@@ -209,7 +209,16 @@ Algebra::countComponents() const
   
   return F.countComponents();
 }
-  
+
+void
+Algebra::minimize()
+  /*!
+    Acessor to minimize
+   */
+{
+  F.minimize();
+  return;
+}
   
 void
 Algebra::expandBracket()

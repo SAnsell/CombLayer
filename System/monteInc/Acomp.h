@@ -175,6 +175,7 @@ class Acomp
 
   void expandBracket();
   void expandCNFBracket();
+  void minimize();
   void complement();
   std::pair<Acomp,Acomp> algDiv(const Acomp&); 
   void setString(const std::string&);          

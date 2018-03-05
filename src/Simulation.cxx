@@ -102,7 +102,7 @@
 
 Simulation::Simulation()  :
   OSMPtr(new ModelSupport::ObjSurfMap),
-  cellDNF(0)
+  cellDNF(0),cellCNF(0)
   /*!
     Start of simulation Object
   */
@@ -114,7 +114,8 @@ Simulation::Simulation(const Simulation& A) :
   inputFile(A.inputFile),
   cmdLine(A.cmdLine),DB(A.DB),
   OSMPtr(new ModelSupport::ObjSurfMap(*A.OSMPtr)),
-  TList(A.TList),cellDNF(A.cellDNF),cellOutOrder(A.cellOutOrder),
+  TList(A.TList),cellDNF(A.cellDNF),cellCNF(A.cellCNF),
+  cellOutOrder(A.cellOutOrder),
   voidCells(A.voidCells),sourceName(A.sourceName)
   /*!
     Copy constructor
@@ -140,6 +141,7 @@ Simulation::operator=(const Simulation& A)
       DB=A.DB;
       TList=A.TList;
       cellDNF=A.cellDNF;
+      cellCNF=A.cellCNF;
       OList=A.OList;
       cellOutOrder=A.cellOutOrder;
       voidCells=A.voidCells;
@@ -1450,7 +1452,36 @@ Simulation::voidObject(const std::string& ObjName)
   return;
 }
 
+void
+Simulation::minimizeObject(const int CN)
+  /*
+    Cally out minimization
+   */
+{
+  ELog::RegMethod RegA("Simualation","minimizeObject");
 
+  MonteCarlo::Object* CPtr = findQhull(CN);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CN,"Cell not found");
+  
+  if (!CPtr->isPlaceHold())
+    {
+      MonteCarlo::Algebra AX;
+      AX.setFunctionObjStr(CPtr->cellCompStr());
+      AX.minimize();
+      // // Note both together possible
+      // if (NL<=cellDNF)
+      // 	AX.expandBracket();
+      // if (NL<=cellCNF)
+      // 	AX.expandCNFBracket();
+	  
+      if (!CPtr->procString(AX.writeMCNPX()))
+	throw ColErr::InvalidLine(AX.writeMCNPX(),
+				  "Algebra ExpandD/CNFBracket");
+    }
+  return;
+}
+  
 void
 Simulation::makeObjectsDNForCNF()
    /*!
@@ -1476,7 +1507,7 @@ Simulation::makeObjectsDNForCNF()
 		  // Note both together possible
 		  if (NL<=cellDNF)
 		      AX.expandBracket();
-		  if (NL<=cellDNF)
+		  if (NL<=cellCNF)
 		    AX.expandCNFBracket();
 		  
 		  if (!CPtr->procString(AX.writeMCNPX()))

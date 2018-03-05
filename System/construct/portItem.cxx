@@ -345,9 +345,13 @@ portItem::constructOuterFlange(Simulation& System,
 			     exitPoint+Y*(externalLength+plateThick),Y);
   
   // determine start surface:
-  std::string frontSurf;
+  std::string frontSurf,midSurf;
   if (startIndex!=0)
     frontSurf=std::to_string(LT.getSurfIndex()[startIndex-1]);
+  if (startIndex+1<LT.getSurfIndex().size())
+    midSurf=std::to_string(LT.getSurfIndex()[startIndex]);
+  else
+    midSurf=frontSurf;
 
   // construct inner volume:
   std::string Out;
@@ -361,14 +365,19 @@ portItem::constructOuterFlange(Simulation& System,
   Out=ModelSupport::getComposite(SMap,portIndex," 102 -27 17 -2 ");
   System.addCell(cellIndex++,wallMat,0.0,Out);
 
+  Out=ModelSupport::getComposite(SMap,portIndex," 1 17 -27 -102  ");
+  makeCell("OutVoid",System,cellIndex++,0,0.0,Out+midSurf);
+
+
   if (plateThick>Geometry::zeroTol)
     {
       Out=ModelSupport::getComposite(SMap,portIndex," -27 202 2 ");
       makeCell("Plate",System,cellIndex++,plateMat,0.0,Out);
-      Out=ModelSupport::getComposite(SMap,portIndex," -202 -27 (102:-17) 1 ");
+      
+      Out=ModelSupport::getComposite(SMap,portIndex," -202 -27  1 ");
     }
   else
-    Out=ModelSupport::getComposite(SMap,portIndex," -2 -27 (102:-17) 1 ");
+    Out=ModelSupport::getComposite(SMap,portIndex," -2 -27  1 ");
   
   addOuterSurf(Out);
 

@@ -249,12 +249,12 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeA->registerSpaceCut(1,2);
   pipeA->createAll(System,*triggerPipe,2);
 
-  
-  
+    
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
   filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
+
 
   for(size_t i=0;i<4;i++)
     {
@@ -265,6 +265,8 @@ OpticsBeamline::buildObjects(Simulation& System)
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
+  lastComp=filterBox;
+  return;
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
   pipeB->registerSpaceCut(1,2);

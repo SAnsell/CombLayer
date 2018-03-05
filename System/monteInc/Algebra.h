@@ -65,6 +65,7 @@ class Algebra
   int logicalEqual(const Algebra&) const;
 
   size_t countComponents() const;
+  void minimize();
   void expandBracket();
   void expandCNFBracket();
   void merge();

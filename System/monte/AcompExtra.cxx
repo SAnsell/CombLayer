@@ -494,7 +494,6 @@ Acomp::expandBracket()
 {
   static int cnt(0);
 
-  isNumberSorted();
 
   cnt++;
   // all lower units
@@ -508,7 +507,6 @@ Acomp::expandBracket()
 	  Acomp N(1);  // intersect
 	  N.Units=Units;
 	  Comp[0]=N.componentExpand(1,Comp[0]);
-	  Comp[0].isNumberSorted();
 	  Units.clear();
 	}
       while (Comp.size()>1)
@@ -685,6 +683,23 @@ Acomp::expandCNFBracket()
     }
   while(removeUnionPair());
 
+  return;
+}
+
+void
+Acomp::minimize()
+  /*
+   */
+{
+  Sort();
+  do
+    {
+      upMoveComp();
+      merge();
+      makeNull();
+    }
+  while(removeUnionPair());
+  
   return;
 }
 
