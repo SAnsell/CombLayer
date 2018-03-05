@@ -71,26 +71,6 @@ namespace physicsSystem
 {
 
 
-void
-FCLConstructor::init(PhysicsCards& PC,const Simulation& System)
-  /*!
-    Initialize the FCL card
-    \param PC : Physics cards
-    \param System :: Simulation
-   */
-{
-  ELog::RegMethod RegA("FCLConstructor","init");
-  
-  physicsSystem::PhysImp& FLCImp=PC.addPhysImp("fcl","n");
-  if (FLCImp.isEmpty()) 
-    {
-      const std::vector<int> cellOrder=
-	System.getCellVector();
-      // Default is no cutting:
-      FLCImp.setCells(cellOrder,0.0);
-    }
-  return;
-}
 
   
 void
@@ -134,6 +114,7 @@ FCLConstructor::processUnit(PhysicsCards& PC,
           (objName,"Empty cell");
 
       ELog::EM<<"Particle == "<<particle<<ELog::endDiag;
+      PC.addPhysImp("fcl",particle,0.0);
       for(const int CN : Cells)
         PC.setCells("fcl",particle,CN,value);
     }

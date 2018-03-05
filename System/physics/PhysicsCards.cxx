@@ -455,13 +455,16 @@ PhysicsCards::setEnergyCut(const double E)
 }
 
 PhysImp&
-PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
+PhysicsCards::addPhysImp(const std::string& Type,
+			 const std::string& Particle,
+			 const double defValue)
   /*!
     Adds / returns the imporance and particle type
     This can also separate a particular particle from 
     a list
     \param Type :: Type to use [imp:vol etc]
     \param Particle :: Particle to add [n,p,e] etc
+    \param defValue :: default Value
     \return PhysImp item
   */
 {    
@@ -473,12 +476,21 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
 	return FImp;
       // remove particle so a new PhysImp can be specialised
       FImp.removeParticle(Particle);
+      PhysImp isoPI(FImp);
+      isoPI.setParticle(Particle);
+      ImpCards.push_back(isoPI);
+      return ImpCards.back();
     }
   catch (ColErr::InContainerError<std::string>&)
     { }       
-  // Create a new object
-  ImpCards.push_back(PhysImp(Type));
-  ImpCards.back().addElm(Particle);
+
+  // Create a new object (based on volume)
+  // use default value
+  PhysImp isoPI(Volume);
+  isoPI.setType(Type);
+  isoPI.setParticle(Particle);
+  isoPI.setAllCells(defValue);
+  ImpCards.push_back(isoPI);
   return ImpCards.back();
 }
 
@@ -661,7 +673,8 @@ PhysicsCards::setCells(const std::string& Type,
 
 void
 PhysicsCards::setCells(const std::string& Type,
-		       const int cellID,const double defValue)
+		       const int cellID,
+		       const double defValue)
   /*!
     Process the list of the valid cells 
     over each importance group.
@@ -697,13 +710,11 @@ PhysicsCards::isolateCell(const std::string& Type,
 {
   ELog::RegMethod RegA("PhysicsCards","isolateCells");
 
-  ELog::EM<<"CALL == "<<Particle<<" "<<Type<<ELog::endDiag;
   for(PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type &&
 	  PI.hasElm(Particle))
 	{
-
 	  if (PI.particleCount()!=1)
 	    {
 	      PhysImp isoPI(PI);

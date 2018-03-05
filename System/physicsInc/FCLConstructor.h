@@ -59,7 +59,6 @@ class FCLConstructor
   FCLConstructor& operator=(const FCLConstructor&) { return *this; }
   ~FCLConstructor() {}  ///< Destructor
 
-  void init(PhysicsCards&,const Simulation&);
   void processUnit(PhysicsCards&,const mainSystem::inputParam&,
 		   const size_t);
 };

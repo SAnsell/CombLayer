@@ -120,7 +120,7 @@ class PhysicsCards
   const PhysImp& getPhysImp(const std::string&,const std::string&) const;
   PhysImp& getPhysImp(const std::string&,const std::string&);
 
-  PhysImp& addPhysImp(const std::string&,const std::string&);
+  PhysImp& addPhysImp(const std::string&,const std::string&,const double =1.0);
   void removePhysImp(const std::string&,const std::string&);
   /// allows setting of flag
   void clearWImpFlag(const std::string&);

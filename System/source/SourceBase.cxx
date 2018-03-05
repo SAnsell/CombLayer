@@ -363,7 +363,7 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("SourceBase","createSource");
+  ELog::RegMethod RegA("SourceBase","createEnergySource");
 
   const particleConv& pConv=particleConv::Instance();
   const int mcnpPIndex=pConv.mcnpITYP(particleType);

@@ -182,9 +182,6 @@ BeamSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("BeamSource","createSource");
 
-  const particleConv& pConv=particleConv::Instance();
-  const int mcnpPIndex=pConv.mcnpITYP(particleType);
-  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);

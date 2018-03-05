@@ -542,8 +542,8 @@ setDefaultPhysics(SimMCNP& System,
 
   if (std::abs(cutUp)<=std::abs(cutMin))
     throw ColErr::NumericalAbort
-      ("CutUp<=cutMin: "+StrFunc::makeString(cutUp)+
-       "<="+StrFunc::makeString(cutMin));
+      ("CutUp<=cutMin: "+std::to_string(cutUp)+
+       "<="+std::to_string(cutMin));
   
   PC.setMode("n p "+PList+elcAdd);
   //  PC.setCellNumbers(cellImp);
@@ -555,7 +555,7 @@ setDefaultPhysics(SimMCNP& System,
   
   physicsSystem::PStandard* allCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut",PList);
-  allCut->setValues(4,cutTime,0.0,cutUp,cutMin);
+  allCut->setValues(4,cutTime,0.1,cutUp,cutMin);
   physicsSystem::PStandard* photonCut=
      PC.addPhysCard<physicsSystem::PStandard>("cut","p");
   photonCut->setValues(4,cutTime,phtEnergy,cutUp,cutMin);

@@ -608,9 +608,10 @@ Material::setDensity(const double D)
   for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
     FSum+=zcc->getDensity();
 
-  if (fabs(FSum)<1e-7)
+  if (std::abs(FSum)<1e-7)
     throw ColErr::NumericalAbort("Sum of zaidDensity: zero");
-      
+
+
   if (D>0.0)
     {
       for(Zaid& ZC : zaidVec)
@@ -632,6 +633,7 @@ Material::setDensity(const double D)
 
       atomDensity=aRho;
     }
+
   return;
 }
 

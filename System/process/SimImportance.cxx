@@ -85,7 +85,7 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
     \param IParam :: Input parameters
    */
 {
-  ELog::RegMethod RegA("SimImportance","importanceSim");
+  ELog::RegMethod RegA("SimImportance[F]","importanceSim");
 
   System.populateCells();
   System.createObjSurfMap();
@@ -109,7 +109,7 @@ importanceSim(SimMCNP& System,const mainSystem::inputParam& IParam)
     \param IParam :: Input parameters
    */
 {
-  ELog::RegMethod RegA("SimImportance","importanceSim");
+  ELog::RegMethod RegA("SimImportance[F]","importanceSim(MCNP)");
 
   physicsSystem::PhysicsCards& PC=System.getPC();      
   WeightSystem::simulationImp(PC,System,IParam);

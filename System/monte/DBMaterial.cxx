@@ -3,7 +3,7 @@
  
  * File:   monte/DBMaterial.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -227,6 +227,7 @@ bool
 DBMaterial::createMaterial(const std::string& MName)
   /*!
     Creates a material based on the name fraction
+    If # then new density
     \param MName :: Material name based on fraction load
     \return 0 if not possible / 1 on material existing or created
   */
@@ -393,7 +394,8 @@ DBMaterial::createNewDensity(const std::string& Name,
   MonteCarlo::Material MA=getMaterial(MatA);
   MA.setNumber(matNum);
   MA.setName(Name);
-  
+
+	  
   if (densityFrac>0.0)
     MA.setDensity(MA.getAtomDensity()*densityFrac);
   else if (densityFrac> -0.3)          // atom fraction
