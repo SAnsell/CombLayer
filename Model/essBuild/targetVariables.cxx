@@ -93,10 +93,14 @@ EssWheel(FuncDataBase& Control)
   // Upper Stiffener shape and dimensions correspond to
   // ESS-0153983
   const double ubsLength(20.0);
-  Control.addVariable("BilbaoWheelShaftUpperBigStiffLength",ubsLength); // ESS-0124024 page 19
-  Control.addVariable("BilbaoWheelShaftUpperBigStiffHeight",15); // ESS-0124024 page 19
   const double ubsThick(2.0);
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffLength",ubsLength); // ESS-0124024 page 19
   Control.addVariable("BilbaoWheelShaftUpperBigStiffThick",ubsThick); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffHeight",15); // ESS-0124024 page 19
+
+  // double V1tot = M_PI*15.0/2.0;
+  // V1tot *= pow(shaftR5+ubsLength,2)-pow(shaftR5,2);
+  // ELog::EM << "V1tot: " << V1tot << ELog::endDiag;
 
   // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
   const double fracUp(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
@@ -112,10 +116,21 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftLowerBigStiffHeight",lbsHeight);
   Control.addVariable("BilbaoWheelShaftLowerBigStiffThick",lbsThick);
 
-
-  const double fracLow(50.0); // !!! a dummy number
+  // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
+  const double R1(shaftR5);
+  const double R2(R1+lbsSL);
+  const double R3(R1+lbsLL);
+  const size_t N(nSectors/2);
+  double fracLow = N*lbsThick / 2.0 / M_PI;
+  fracLow *= 0.5*(R2+R3)-R1;
+  fracLow /= 0.5*(pow(R2,2)+pow(R3,2))-pow(R1,2);
+  fracLow *= 100;
   Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",
 		      ss316l + "%Void%" + std::to_string(fracLow));
+
+  // double Vtot = M_PI*lbsHeight;
+  // Vtot *= 0.5*(pow(R2,2)+pow(R3,2))-pow(R1,2);
+  // ELog::EM << "Vtot: " << Vtot << ELog::endDiag;
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
