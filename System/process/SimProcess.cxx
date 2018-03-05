@@ -110,7 +110,7 @@ writeIndexSim(SimMCNP& System,
   // increase the RND seed by N*10 [10,20,40,etc]
   PC.setRND(PC.getRNDseed()+Number*10);
   System.prepareWrite();
-  System.makeObjectsDNF();
+  System.makeObjectsDNForCNF();
   System.write(OName+std::to_string(Number+1)+".x");
   
   return;
@@ -131,7 +131,7 @@ writeIndexSimFLUKA(SimFLUKA& System,
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
   
   System.prepareWrite();
-  System.makeObjectsDNF();
+  System.makeObjectsDNForCNF();
   System.write(OName+std::to_string(Number+1)+".inp");
   
   return;

@@ -524,7 +524,7 @@ Algebra::countLiterals() const
     \returns number of literals found
   */
 {
-  std::map<int,int> Lit;
+  std::set<int> Lit;
   F.getLiterals(Lit);
   return static_cast<int>(Lit.size());
 }

@@ -71,6 +71,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("mode","mode");
   IParam.regFlag("cinder","cinder");
   IParam.regItem("cellDNF","cellDNF");
+  IParam.regItem("cellCNF","cellCNF");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
   IParam.regItem("defaultConfig","defaultConfig");

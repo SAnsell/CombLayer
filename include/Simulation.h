@@ -90,6 +90,7 @@ class Simulation
   TransTYPE TList;                      ///< Transforms List (key=Transform)
 
   size_t cellDNF;                       ///< Cells to be converted into DNF
+  size_t cellCNF;                       ///< Cells to be converted into CNF
   OTYPE OList;   ///< List of objects  (allow to become hulls)
   std::vector<int> cellOutOrder;        ///< List of cells [output order]
   std::set<int> voidCells;              ///< List of void cells
@@ -125,6 +126,8 @@ class Simulation
 
   /// set cell DNF
   void setCellDNF(const size_t C) { cellDNF=C; }
+  /// set cell CNF
+  void setCellCNF(const size_t C) { cellCNF=C; }
   MonteCarlo::Qhull* findQhull(const int);         
   const MonteCarlo::Qhull* findQhull(const int) const; 
   MonteCarlo::Object* findCell(const Geometry::Vec3D&,
@@ -202,7 +205,7 @@ class Simulation
   void renumberAll();
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
-  void makeObjectsDNF();
+  void makeObjectsDNForCNF();
   void prepareWrite();
 
   virtual void substituteAllSurface(const int,const int);

@@ -1450,15 +1450,16 @@ Simulation::voidObject(const std::string& ObjName)
   return;
 }
 
+
 void
-Simulation::makeObjectsDNF()
+Simulation::makeObjectsDNForCNF()
    /*!
-     Expand the objects into DNF form
+     Expand the objects into DNF form or CNF form
    */
 {
-  ELog::RegMethod RegA("Simulation","makeObjectsDNF");
+  ELog::RegMethod RegA("Simulation","makeObjectsDNForCNF");
 
-  if (cellDNF)
+  if (cellCNF || cellDNF)
     {
       size_t cellIndex(0);
       ELog::EM<<"Cells :"<<ELog::endDiag;;
@@ -1470,15 +1471,19 @@ Simulation::makeObjectsDNF()
 	      MonteCarlo::Algebra AX;
 	      AX.setFunctionObjStr(CPtr->cellCompStr());
 	      const size_t NL=AX.countLiterals();
-	      if (NL<=cellDNF)
+	      if (NL<=cellDNF || NL<=cellCNF)
 		{
-		  AX.expandBracket();
+		  // Note both together possible
+		  if (NL<=cellDNF)
+		      AX.expandBracket();
+		  if (NL<=cellDNF)
+		    AX.expandCNFBracket();
+		  
 		  if (!CPtr->procString(AX.writeMCNPX()))
 		    {
 		      ELog::EM<<ELog::endDiag;
-		      ELog::EM<<"Empty Cell ="<<CPtr->str()<<ELog::endCrit;
 		      throw ColErr::InvalidLine(AX.writeMCNPX(),
-						"Algebra ExpandBracket");
+						"Algebra ExpandD/CNFBracket");
 		    }
 		  const size_t NLX=AX.countLiterals();
 		  if (NLX !=NL)
@@ -1499,7 +1504,7 @@ Simulation::makeObjectsDNF()
 		}
 	    }
 	}
-      ELog::EM<<"\n END DNF "<<ELog::endDiag;
+      ELog::EM<<"\n END DNF/CNF "<<ELog::endDiag;
     }
   return;
 }

@@ -84,6 +84,7 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testDNF,
       &testAlgebra::testExpandBracket,
       &testAlgebra::testExpandCNFBracket,
+      &testAlgebra::testLogicalCover,
       &testAlgebra::testMakeString,
       &testAlgebra::testMerge,
       &testAlgebra::testMult,
@@ -102,6 +103,7 @@ testAlgebra::applyTest(const int extra)
       "DNF",
       "ExpandBracket",
       "ExpandCNFBracket",
+      "LogicalCover",
       "MakeString",
       "Merge",
       "Mult",
@@ -375,7 +377,7 @@ testAlgebra::testExpandCNFBracket()
     \retval 0 :: success (there is no fail!!!)
    */
 {
-  ELog::RegMethod RegA("testAlgebra","testExpandBracket");
+  ELog::RegMethod RegA("testAlgebra","testExpandCNFBracket");
 
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
@@ -387,11 +389,14 @@ testAlgebra::testExpandCNFBracket()
       TTYPE("a(cd+f(x+y+z))","a(c+f)(c+x+y+z)(d+f)(d+x+y+z)"),
       TTYPE("c+(de+f)","(c+d+f)(c+e+f)"),
       TTYPE("(a+b)(c+(de+f))","(a+b)(c+d+f)(c+e+f)"),
-
-      TTYPE("(a+b)(c+d)(e+f)","ace+acf+ade+adf+bce+bcf+bde+bdf"),
-      TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
-      TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+bd+bf+cd+cf+de+ef"),
-      TTYPE("x(a+d+f)(b+c)","abx+acx+bdx+bfx+cdx+cfx")
+      TTYPE("(a+bx)(c+d+f)","(a+b)(a+x)(c+d+f)"),
+      TTYPE("(a+bx)(c+d+f)(c+e+f)","(a+b)(a+x)(c+d+f)(c+e+f)"),
+      TTYPE("(a+bx)(c+(de+f))","(a+b)(a+x)(c+d+f)(c+e+f)"),
+      TTYPE("ac+ad+bc+bd+bd","(a+b)(c+d)")
+      //      TTYPE("ace+acf+ade+adf+bce+bcf+bde+bdf","(a+b)(c+d)(e+f)")
+      //      TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
+      //      TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+bd+bf+cd+cf+de+ef"),
+      //      TTYPE("x(a+d+f)(b+c)","abx+acx+bdx+bfx+cdx+cfx")
 
 
     };
@@ -402,26 +407,73 @@ testAlgebra::testExpandCNFBracket()
       cnt++;
       Algebra A;
       Algebra B;
+      Algebra C;
       A.setFunction(std::get<0>(tc));
       B.setFunction(std::get<0>(tc));
+      C.setFunction(std::get<1>(tc));
       const std::string preOut=A.display();
       A.expandCNFBracket();
       
       std::string Out=A.display();
 
+      const bool ABflag=A.logicalEqual(B);   // expand : original
+      const bool ACflag=A.logicalEqual(C);   // expand : result
+      const bool BCflag=B.logicalEqual(C);   // original : result
       
-      if (Out!=std::get<1>(tc) ||
-	  !A.logicalEqual(B))
+      if (Out!=std::get<1>(tc) || !ABflag)
 	{
 	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
-	  if (!A.logicalEqual(B))
-	    ELog::EM<<"Failed logic "<<ELog::endDiag;
-	  else
-	    ELog::EM<<"Failed good "<<ELog::endDiag;
+	  ELog::EM<<"logic AB "<<ABflag<<ELog::endDiag;
+	  ELog::EM<<"logic AC "<<ACflag<<ELog::endDiag;
+	  ELog::EM<<"logic CB "<<BCflag<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+
+int
+testAlgebra::testLogicalCover()
+  /*!
+    Expand the bracket int CNF form
+    \retval 0 :: success (there is no fail!!!)
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testLogicalCover");
+
+  typedef std::tuple<std::string,std::string,int> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("(a+b)","(a+b+c)",1),
+      TTYPE("(a+b+c+d)","(a+b+c+d)",3)
+    };
+
+  size_t cnt(0);
+  for(const TTYPE& tc : Tests)
+    {
+      cnt++;
+      Algebra A;
+      Algebra B;
+      A.setFunction(std::get<0>(tc));
+      B.setFunction(std::get<1>(tc));
+
+      const Acomp& AC=A.getComp();
+      const Acomp& BC=B.getComp();
+      const int flag=AC.logicalIntersectCover(BC);
+      if (flag!=std::get<2>(tc))
+	{
+	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<1>(tc)<<ELog::endDiag;
+
+	  ELog::EM<<"logic AC "<<AC<<ELog::endDiag;
+	  ELog::EM<<"logic BC "<<BC<<ELog::endDiag;
+	  ELog::EM<<"logicCover== "<<flag<<ELog::endDiag;
 	  return -1;
 	}
     }

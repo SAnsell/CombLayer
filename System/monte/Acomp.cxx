@@ -46,6 +46,7 @@
 #include "mathSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "MapSupport.h"
 #include "RotCounter.h"
 #include "BnId.h"
 #include "AcompTools.h"
@@ -321,9 +322,35 @@ Acomp::operator*=(const Acomp& A)
   return *this;
 }
 
+bool
+Acomp::isEmpty() const
+  /*!
+    Determine if empty
+    \return 1 if empty /  0 otherwize
+   */
+{
+  if (!Units.empty()) return 0;
+  for(const Acomp& AC : Comp)
+    if (!AC.isEmpty()) return 0;
+
+  return 1;
+}
+
+void
+Acomp::clear()
+  /*!
+    Deletes everything 
+  */
+{
+  Units.clear();
+  Comp.clear();
+  return;
+}
+
 // ---------------------------------------------------
 //  PRIVATE FUNCTIONS 
 // ---------------------------------------------------
+
 
 void
 Acomp::deleteComp()
@@ -731,8 +758,8 @@ Acomp::makeReadOnce()
     \retval 1 if success (and sets it into the appropiate form)
   */
 {
-  std::map<int,int> LitSet;
-  getLiterals(LitSet);
+  //  std::map<int,int> LitSet;
+  //  getLiterals(LitSet);
 /*  // Process DNF
   if (isDNF())
     return makeReadOnceForDNF();
@@ -743,8 +770,134 @@ Acomp::makeReadOnce()
   return 0;
 }
 
+int
+Acomp::logicalCover(const Acomp& A) const
+  /*!
+    Determine if this is a cover for A
+    i.e. if this is true then A is true and vis versa
+    \param A :: Logical state to set
+    \return -1 :: this is the cover
+    \retval 0 :: no cover
+    \retval 1 :: A is the cover
+  */
+{
+  std::set<int> ALit;
+  std::set<int> BLit;
+  this->getAbsLiterals(ALit);
+  A.getAbsLiterals(BLit);
+
+  std::vector<int> SSDiff;
+  std::set_symmetric_difference
+    (
+     ALit.begin(),ALit.end(),
+     BLit.begin(),BLit.end(),
+     std::back_inserter(SSDiff));
+  // not possible is mis-match symbols
+  bool Aflag(0),Bflag(0);
+  for(const int SN: SSDiff)
+    {
+      if (BLit.find(SN) == BLit.end())
+	{
+	  Bflag=1;
+	  if (Aflag) return 0;
+	}
+      else
+	{
+	  Aflag=1;
+	  if (Bflag) return 0;
+	}
+    } 
+
+  std::vector<int> keyNumbers;
+  if (Aflag)  // then 
+    keyNumbers.assign(BLit.begin(),BLit.end());
+  else
+    keyNumbers.assign(ALit.begin(),ALit.end());
+
+  std::map<int,int> Base;       // keynumber :: trueth value
+  for(const int CN : keyNumbers)
+    Base.emplace(CN,0);   // all false
+  do
+    {
+      if (isTrue(Base) != A.isTrue(Base))
+	return 0;
+    } while (!MapSupport::iterateBinMap(Base));
+  
+  return 1;
+}
+
 
 int
+Acomp::logicalIntersectCover(const Acomp& A) const
+  /*!
+    Determine if T/A is a cover for the intersection
+    of T.A
+    i.e. if this is true then A is true and vis versa
+    \param A :: Logical state to set
+    \retval 0 :: no cover
+    \retval 1 :: T is the cover
+    \retval 2 :: A is the cover
+    \retval 3 :: both self cover
+  */
+{
+  std::set<int> ALit;
+  std::set<int> BLit;
+  this->getAbsLiterals(ALit);
+  A.getAbsLiterals(BLit);
+
+  std::vector<int> SSDiff;
+  std::set_symmetric_difference
+    (
+     ALit.begin(),ALit.end(),
+     BLit.begin(),BLit.end(),
+     std::back_inserter(SSDiff));
+  // not possible is mis-match symbols
+  bool ADiffFlag(0),BDiffFlag(0);
+  for(const int SN: SSDiff)
+    {
+      if (BLit.find(SN) == BLit.end())
+	{
+	  BDiffFlag=1;
+	  if (ADiffFlag) return 0;
+	}
+      else
+	{
+	  ADiffFlag=1;
+	  if (BDiffFlag) return 0;
+	}
+    } 
+
+  std::vector<int> keyNumbers;
+  Acomp pairCC(1);
+  pairCC.Comp.push_back(*this);
+  pairCC.Comp.push_back(A);
+
+  if (ADiffFlag)  // then
+    keyNumbers.assign(BLit.begin(),BLit.end());
+  else
+    keyNumbers.assign(ALit.begin(),ALit.end());
+  
+  std::map<int,int> Base;       // keynumber :: trueth value
+  for(const int CN : keyNumbers)
+    Base.emplace(CN,0);   // all false
+
+  bool tOut(1),aOut(1);
+  do
+    {
+      const bool pairCCFlag=pairCC.isTrue(Base);
+      const bool TFlag=this->isTrue(Base);
+      const bool AFlag=A.isTrue(Base);
+
+      if (TFlag!=pairCCFlag) tOut=0;
+      if (AFlag!=pairCCFlag) aOut=0;
+      if (!aOut && !tOut) return 0;
+    } while (!MapSupport::iterateBinMap(Base));
+
+  return (tOut ? 1 : 0 ) | (aOut ? 2 : 0 );
+}
+
+  
+bool
 Acomp::logicalEqual(const Acomp& A) const
   /*!
     Test that the system that is logically the same:
@@ -753,30 +906,24 @@ Acomp::logicalEqual(const Acomp& A) const
     \retval 1 :: true
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
-  getAbsLiterals(litMap);
-  
-  A.getAbsLiterals(litMap);
-  std::map<int,int> Base;       // keynumber :: number of occurances
-  std::vector<int> keyNumbers;
+  std::set<int> ALitMap;
+  std::set<int> BLitMap;
+  getAbsLiterals(ALitMap);
+  A.getAbsLiterals(BLitMap);
+  if (ALitMap!=BLitMap)
+    return 0;
 
-
-  std::map<int,int>::const_iterator mc;
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    {
-      Base[mc->first]=1;          // Insert and Set to true
-      keyNumbers.push_back(mc->first);
-    }
+  const std::vector<int> keyNumbers(ALitMap.begin(),ALitMap.end());    
+  std::map<int,int> Base;       // keynumber :: trueth value
+  for(const int CN : ALitMap)
+    Base.emplace(CN,1);
 
   BnId State(Base.size(),0);                 //zero base
   do
     {
       State.mapState(keyNumbers,Base);
       if (isTrue(Base) != A.isTrue(Base))
-	{
-	  ELog::EM<<"Base == "<<State<<ELog::endDiag;
-	  return 0;
-	}
+	return 0;
     } while(++State);
   return 1;
 }
@@ -836,12 +983,12 @@ Acomp::isCNF() const
 }
 
 void
-Acomp::getAbsLiterals(std::map<int,int>& literalMap) const
+Acomp::getAbsLiterals(std::set<int>& literalMap) const
   /*!
     get a map of the literals and the frequency
     that they occur.
     This does not keep the +/- part of the literals separate
-    \param literalMap :: Map the get the frequency of the 
+    \param literalMap :: Set of leteral valuds
     literals 
   */
 {
@@ -851,46 +998,28 @@ Acomp::getAbsLiterals(std::map<int,int>& literalMap) const
   for(uc=Units.begin();uc!=Units.end();uc++)
     {
       signSplit(*uc,S,V);
-      mc=literalMap.find(V);
-      if (mc!=literalMap.end())
-	mc->second++;
-      else
-	literalMap.insert(std::pair<int,int>(V,1));
+      literalMap.insert(V);
     }
-  std::vector<Acomp>::const_iterator cc;
-  for(cc=Comp.begin();cc!=Comp.end();cc++)
-    cc->getAbsLiterals(literalMap);
+  for(const Acomp& CC : Comp)
+    CC.getAbsLiterals(literalMap);
   return;
 }
 
 void
-Acomp::getLiterals(std::map<int,int>& literalMap) const
+Acomp::getLiterals(std::set<int>& literalMap) const
   /*!
     Get a map of the literals and the frequency
     that they occur.
     This keeps + and - literals separate
-    \param literalMap :: Map the get the frequency of the 
-    literals 
+    \param literalMap :: Set the get the literals 
   */
 {
-  std::vector<int>::const_iterator uc;
-  std::map<int,int>::iterator mc;
-  for(uc=Units.begin();uc!=Units.end();uc++)
-    {
-      mc=literalMap.find(*uc);
-      if (mc!=literalMap.end())
-	mc->second++;
-      else
-	literalMap.insert(std::pair<int,int>(*uc,1));
-    }
-  std::vector<Acomp>::const_iterator cc;
-  for(cc=Comp.begin();cc!=Comp.end();cc++)
-    {
-      cc->getLiterals(literalMap);
-    }
-  // Doesn't work because literal map is a reference
-  //  for_each(Comp.begin(),Comp.end(),
-  // std::bind2nd(std::mem_fun(&Acomp::getLiterals),literalMap));
+  for(const int CN : Units)
+    literalMap.insert(CN);
+
+  for(const Acomp& CC : Comp)
+    CC.getLiterals(literalMap);
+
   return;
 }
 
@@ -1188,14 +1317,9 @@ Acomp::getKeys() const
     \return Key of literals
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
-  std::vector<int> keyNumbers;
+  std::set<int> litMap;       // keynumbers
   getAbsLiterals(litMap);
-  std::map<int,int>::const_iterator mc;
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    keyNumbers.push_back(mc->first);
-
-  return keyNumbers;
+  return std::vector<int>(litMap.begin(),litMap.end());
 }
 
 int
@@ -1213,32 +1337,28 @@ Acomp::getDNFobject(std::vector<int>& keyNumbers,
     \retval -1 :: on error.
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
+  std::set<int> litMap;       // keynumber
   std::map<int,int> Base;         // keynumber :: value
   getAbsLiterals(litMap);
   
   if (litMap.empty())
     return -1;
+  
+  keyNumbers.assign(litMap.begin(),litMap.end());
 
-  keyNumbers.clear();
-  std::map<int,int>::iterator mc;
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    {
-      Base[mc->first]=1;          // Set to true
-      keyNumbers.push_back(mc->first);
-    }
+  for(const int CN : litMap)
+    Base.emplace(CN,1);
 
   DNFobj.clear();
-  BnId State(Base.size(),0);                 //zero base
+  BnId State(keyNumbers.size(),0);                 //zero base
   int cnt=0;
   do
     {
       cnt++;
       State.mapState(keyNumbers,Base);
       if (isTrue(Base))
-        {
-	  DNFobj.push_back(State);
-	}
+	DNFobj.push_back(State);
+
     } while(++State);
   return 0;
 }
@@ -1348,27 +1468,20 @@ Acomp::getCNFobject(std::vector<int>& keyNumbers,
     \retval -1 :: on error.
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
+  std::set<int> litMap;       // keynumber :: number of occurances
   std::map<int,int> Base;         // keynumber :: value
   getAbsLiterals(litMap);
   
   if (litMap.size()<1)
     return -1;
 
-  keyNumbers.clear();
-  std::map<int,int>::iterator mc;
-  int cnt(0);
+  keyNumbers.assign(litMap.begin(),litMap.end());
 
-
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    {
-      mc->second=cnt++;
-      Base[mc->first]=1;          // Set to true
-      keyNumbers.push_back(mc->first);
-    }
+  for(const int CN : keyNumbers)
+    Base.emplace(CN,1);
   
   CNFobj.clear();
-  BnId State(Base.size(),0);    //zero base
+  BnId State(Base.size(),0);    //zero base  
   do
     {
       State.mapState(keyNumbers,Base);
@@ -1413,9 +1526,8 @@ Acomp::isTrue(const std::map<int,int>& Base) const
 	return retJoin;
     }
 
-  std::vector<Acomp>::const_iterator cc;
-  for(cc=Comp.begin();cc!=Comp.end();cc++)
-    if (cc->isTrue(Base)==retJoin)
+  for(const Acomp& CC : Comp)
+    if (CC.isTrue(Base)==retJoin)
       return retJoin;
   
   // Finally not true then
@@ -1438,7 +1550,7 @@ Acomp::algDiv(const Acomp& G)
   if (!isDNF() && !makeDNFobject())
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
 
-  std::map<int,int> Gmap; // get map of literals and frequency
+  std::set<int> Gmap; // get map of literals and frequency
   G.getLiterals(Gmap);
   if (Gmap.empty())
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
@@ -1448,23 +1560,25 @@ Acomp::algDiv(const Acomp& G)
   // U is ste to be 
   std::vector<Acomp> U;
   std::vector<Acomp> V;
+
   std::map<int,int>::const_iterator mc;
   // Only have First level components to consider
   std::vector<Acomp>::const_iterator cc; 
+
   int cell;
   
   std::vector<Acomp> Flist,Glist;
   if (!getDNFpart(Flist) || !G.getDNFpart(Glist))
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
 
-  for(cc=Flist.begin();cc!=Flist.end();cc++) 
+  for(const Acomp& CC : Flist)
     {
       size_t itemCnt(0);
       U.push_back(Acomp(Inter)); 
       V.push_back(Acomp(Inter)); 
       Acomp& Uitem= U.back();
       Acomp& Vitem= V.back();
-      while( (cell = cc->itemN(itemCnt)) )
+      while( (cell = CC.itemN(itemCnt)) )
         {
 	  if (Gmap.find(cell)!=Gmap.end())
 	    Uitem.addUnitItem(cell);
@@ -1476,13 +1590,13 @@ Acomp::algDiv(const Acomp& G)
 
   Acomp H(Inter);       // H is an intersection group
   Acomp Hpart(Union);    //Hpart is a union group
-  for(cc=Glist.begin();cc!=Glist.end();cc++)
+  for(const Acomp& CC : Glist)
     {
       std::vector<Acomp>::const_iterator ux,vx;
       vx=V.begin();
       for(ux=U.begin();ux!=U.end() && vx!=V.end();vx++,ux++)
 	{
-	  if (!vx->isNull() && ux->contains(*cc))
+	  if (!vx->isNull() && ux->contains(CC))
 	    {
 	      Hpart.addComp(*vx);
 	    }
@@ -2046,28 +2160,58 @@ Acomp::checkWrongChar(const std::string& Ln)
 }
 
 std::string
+Acomp::mapLogic(const std::map<int,int>& M)
+  /*!
+    Form a string of the logical state
+    \param M :: Map
+    \return :: letter map
+  */
+{
+  std::ostringstream cx;
+  for(const std::map<int,int>::value_type& mc : M)
+    {
+      const int MVal=(mc.second==0) ? -mc.first : mc.first;
+      cx<<Acomp::strUnit(MVal)<<" ";
+    }
+  return cx.str();
+}
+  
+std::string
+Acomp::strUnit(const int IC)
+  /*!
+    Place a index into a letter for easier viewing
+    \param IC :: Index 
+    \return :: letter index
+  */
+{
+  std::ostringstream cx;
+  int sign,val;
+  signSplit(IC,sign,val);
+  if (val>52)
+    cx<<"%"<<val-52;
+  else
+    cx<<StrFunc::indexToRevAlpha(val-1);
+  
+  if (sign<0) cx<<'\'';
+  return cx.str();
+}
+  
+std::string
 Acomp::unitsDisplay() const
   /*!
     Real pretty print out statement  
     \returns Head only string of the output in abc+efg type form
   */
 {
-  std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-  int sign,val;      // sign and value of unit
+  std::ostringstream cx;
+
   std::string unionPlus;
   
   for(const int IC : Units)
     {
       cx<<unionPlus;
-      signSplit(IC,sign,val);
-      if (val>52)
-	cx<<"%"<<val-52;
-      else
-	cx<<StrFunc::indexToRevAlpha(val-1);
-
-     if (sign<0) cx<<'\'';
-     if (!Intersect) unionPlus="+";
+      cx<<strUnit(IC);
+      if (!Intersect) unionPlus="+";
     }
   return cx.str();
 }

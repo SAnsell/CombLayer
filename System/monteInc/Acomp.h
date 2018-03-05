@@ -70,7 +70,9 @@ class Acomp
   void processIntersection(const std::string&);
   void processUnion(const std::string&);
   int joinDepth();                      
-  int removeEqComp();                   
+  int removeEqComp();
+  bool removeUnionPair();
+  bool removeEqUnion();                   
   int copySimilar(const Acomp&);        
 
   /// Adds a Binary state to the Component
@@ -95,7 +97,6 @@ class Acomp
   void addTokens(const std::string&);
 
   void upMoveComp();
-  void removeNull();
   void primativeAddItem(const Acomp&);
 
   Acomp expandIII(const Acomp&) const;
@@ -118,6 +119,9 @@ class Acomp
   
  public:
 
+  static std::string strUnit(const int);
+  static std::string mapLogic(const std::map<int,int>&);
+  
   Acomp(const JoinForm);
   explicit Acomp(const int);   
   Acomp(const Acomp&);
@@ -134,7 +138,10 @@ class Acomp
   // AcompExtra
   Acomp componentExpand(const int,const Acomp&) const;
   int merge();
-  bool makeNull();
+  bool makeNull();  // not what is exppected
+  void clear();     //  this deletec
+  bool isEmpty() const;
+
   
   int getSinglet() const;   
   const Acomp* itemC(const size_t) const;
@@ -156,10 +163,12 @@ class Acomp
   
   void Sort();
 
-  void getLiterals(std::map<int,int>&) const;     
-  void getAbsLiterals(std::map<int,int>&) const;  
+  void getLiterals(std::set<int>&) const;     
+  void getAbsLiterals(std::set<int>&) const;  
   std::vector<int> getKeys() const;      
-  int logicalEqual(const Acomp&) const;
+  bool logicalEqual(const Acomp&) const;
+  int logicalCover(const Acomp&) const;
+  int logicalIntersectCover(const Acomp&) const;
 
   int makeDNFobject();                
   int makeCNFobject();                
@@ -174,7 +183,7 @@ class Acomp
   std::string compDisplay(std::string = "") const;
   std::string display() const;                      
   std::string displayDepth(const int =0) const;     
-
+  
   void orString(const std::string&);
 
   void printImplicates(const std::vector<BnId>&,

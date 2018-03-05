@@ -216,15 +216,12 @@ Acomp::expandIUU(const Acomp& A) const
   for(const int AI : Units)
     {
       // N.aN
-      ELog::EM<<"AI == "<<AI<<ELog::endDiag;
-      for(const int BI : A.Units)
-	{
-	  ELog::EM<<"BI == "<<BI<<ELog::endDiag;
-	  Acomp addItem=unionCombine(AI,BI);
-	  ELog::EM<<"COMP == "<<addItem<<ELog::endDiag;
-	  AcompTools::unitSort(addItem.Units);
-	  Out.primativeAddItem(addItem);
-	}
+      Acomp addItem(0);  // union
+      addItem.Units=A.Units;
+      addItem.Units.push_back(AI);
+      AcompTools::unitSort(addItem.Units);
+      Out.primativeAddItem(addItem);
+    
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
@@ -233,7 +230,7 @@ Acomp::expandIUU(const Acomp& A) const
 	  Out.primativeAddItem(addItem);
 	}
     }
-  ELog::EM<<"OutX == "<<Out<<ELog::endDiag;
+  // this is not correct:
   for(const Acomp& AC : Comp)
     {
       // C.aN
@@ -310,22 +307,18 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
   
   else if (Intersect==1 && interFlag==0 && A.Intersect==1)
     {
-      ELog::EM<<"IUI"<<ELog::endDiag;
       Out=expandIUI(A);
     }
   else if (Intersect==1 && interFlag==0 && A.Intersect==0)
     {
-      ELog::EM<<"IUU"<<ELog::endDiag;
       Out=expandIUU(A);
     }
   else if (Intersect==0 && interFlag==0 && A.Intersect==1)
     {
-      ELog::EM<<"UUI"<<ELog::endDiag;
       Out=expandUUI(A);
     }
   else if (Intersect==0 && interFlag==0 && A.Intersect==0)
     {
-      ELog::EM<<"UUU"<<ELog::endDiag;
       Out=expandUUU(A);
     }
   else
@@ -531,11 +524,131 @@ Acomp::expandBracket()
   return;
 }
 
+bool
+Acomp::removeEqUnion()
+  /*!
+    Find if two Components can be replaced by one
+    Assume BOTH components are simple Union
+    \return true if something removed
+  */
+{
+  bool outFlag(0);
+  if (Intersect==1)
+    {
+      std::vector<int>::iterator au;
+      // remove units from literals
+      for(const int CN : Units)
+	{
+	  for(Acomp& AC : Comp)
+	    {
+	      au=std::remove(AC.Units.begin(),AC.Units.end(),CN);
+	      if (au!=AC.Units.end())
+		{
+		  outFlag=1;
+		  AC.Units.erase(au,AC.Units.end());
+		}
+	      if (std::find(AC.Units.begin(),AC.Units.end(),-CN)!=
+		  AC.Units.end() )        // union of a+ a'
+		{
+		  outFlag=1;
+		  AC.Units.clear();
+		  AC.Comp.clear();
+		}
+	    }
+	}
+      
+      // remove nulls
+      std::vector<Acomp>::iterator ac=
+	std::remove_if(Comp.begin(),Comp.end(),
+		       [&](const Acomp& AC)->bool
+		       { return AC.isNull();});
+      Comp.erase(ac,Comp.end());
+    }
+
+  return outFlag;
+}
+
+bool
+Acomp::removeUnionPair()
+  /*!
+    Find if two Components can be replaced by one
+    Assume BOTH components are simple Union
+    \return true if something removed
+  */
+{
+  Acomp Hold(*this);
+
+  bool outFlag(0);
+  if (Intersect==1)
+    {
+      std::vector<int>::iterator au;
+      // remove units from literals
+      for(const int CN : Units)
+	{
+	  for(Acomp& AC : Comp)
+	    {
+	      if (std::find(AC.Units.begin(),AC.Units.end(),-CN) !=
+		  AC.Units.end() )        // union of a+ a'
+		{
+		  outFlag=1;
+		  AC.Units.clear();
+		  AC.Comp.clear();
+		}
+	    }
+	}
+      // remove nulls
+      std::vector<Acomp>::iterator ac=
+	std::remove_if(Comp.begin(),Comp.end(),
+		       [&](const Acomp& AC)->bool
+		       { return AC.isNull();});
+      Comp.erase(ac,Comp.end());
+    }
+
+  std::set<size_t> removedComp;
+  for(size_t i=0;i<Comp.size();i++)
+    {
+      if (removedComp.find(i)==removedComp.end())
+	{
+	  Acomp& AC(Comp[i]);
+	  for(size_t j=i+1;j<Comp.size();j++)
+	    {
+	      if (removedComp.find(j)==removedComp.end())
+		{
+		  Acomp& BC(Comp[j]);
+		  const int lc=AC.logicalIntersectCover(BC);
+		  if (lc == 2 || lc == 3)
+		    {
+		      AC.clear();
+		      removedComp.insert(i);
+		      break;  // exit to outer loop
+		    }
+		  else if (lc == 1)
+		    {
+		      BC.clear();
+		      removedComp.insert(j);
+		    }
+		}
+	    }
+	}
+    }
+  // Now remove empty cells
+  if (!removedComp.empty())
+    {
+      outFlag=1;
+      std::vector<Acomp>::iterator ac=
+	std::remove_if(Comp.begin(),Comp.end(),
+		       [&](const Acomp& AC)->bool
+		       { return AC.isNull();});
+      Comp.erase(ac,Comp.end());
+    }
+  return outFlag;
+}
+  
 
 void
 Acomp::expandCNFBracket()
   /*!
-    Expand all the Uninio brackets
+    Expand all the Union brackets
   */
 {
   ELog::RegMethod RegA("Acomp","expandCNFBracket");
@@ -564,9 +677,14 @@ Acomp::expandCNFBracket()
 	  Comp.erase(Comp.begin()+1);
 	}
     }
-  upMoveComp();
-  merge();
-  makeNull();
+  do
+    {
+      upMoveComp();
+      merge();
+      makeNull();
+    }
+  while(removeUnionPair());
+
   return;
 }
 
