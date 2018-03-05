@@ -85,6 +85,7 @@ class BilbaoWheel : public WheelBase
   /// Homogenised material of the upper large stiffener cell (used if engActive=0)
   int shaftUpperBigStiffHomoMat;
   double shaftLowerBigStiffShortLength; ///< lower big stiffener short (=lower) length
+  double shaftLowerBigStiffLongLength; ///< lower big stiffeners long (=upper) length
   /// Homogenised material of the lower large stiffener cell (used if engActive=0)
   int shaftLowerBigStiffHomoMat;
 

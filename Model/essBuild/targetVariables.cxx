@@ -104,6 +104,7 @@ EssWheel(FuncDataBase& Control)
 		      ss316l + "%Void%" + std::to_string(fracUp));
 
   Control.addVariable("BilbaoWheelShaftLowerBigStiffShortLength",8.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffLongLength",20.0);  // TSV32IS
 
   const double fracLow(50.0); // !!! a dummy number
   Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",
