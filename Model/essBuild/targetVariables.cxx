@@ -102,6 +102,9 @@ EssWheel(FuncDataBase& Control)
   const double fracUp(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
   Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
 		      ss316l + "%Void%" + std::to_string(fracUp));
+
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffShortLength",8.0);  // TSV32IS
+
   const double fracLow(50.0); // !!! a dummy number
   Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",
 		      ss316l + "%Void%" + std::to_string(fracLow));
@@ -121,7 +124,6 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelCatcherBaseAngle",45.0);  // TSV32IS + ESS-0038811
   Control.addVariable("BilbaoWheelCatcherNotchBaseThick",3.0);// TSV32IS
   Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);  // TSV32IS
-  Control.addVariable("BilbaoWheelCatcherNotchBaseRadius",31.0);  // TSV32IS
 
   Control.addVariable("BilbaoWheelCirclePipesBigRad",30.0);
   Control.addVariable("BilbaoWheelCirclePipesRad",1.5);

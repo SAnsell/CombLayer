@@ -123,6 +123,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftUpperBigStiffHeight(A.shaftUpperBigStiffHeight),
   shaftUpperBigStiffThick(A.shaftUpperBigStiffThick),
   shaftUpperBigStiffHomoMat(A.shaftUpperBigStiffHomoMat),
+  shaftLowerBigStiffShortLength(A.shaftLowerBigStiffShortLength),
   shaftLowerBigStiffHomoMat(A.shaftLowerBigStiffHomoMat),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
@@ -136,7 +137,6 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   catcherBaseAngle(A.catcherBaseAngle),
   catcherNotchRadius(A.catcherNotchRadius),
   catcherNotchBaseThick(A.catcherNotchBaseThick),
-  catcherNotchBaseRadius(A.catcherNotchBaseRadius),
   circlePipesBigRad(A.circlePipesBigRad),
   circlePipesRad(A.circlePipesRad),
   circlePipesWallThick(A.circlePipesWallThick),
@@ -198,6 +198,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftUpperBigStiffHeight=A.shaftUpperBigStiffHeight;
       shaftUpperBigStiffThick=A.shaftUpperBigStiffThick;
       shaftUpperBigStiffHomoMat=A.shaftUpperBigStiffHomoMat;
+      shaftLowerBigStiffShortLength=A.shaftLowerBigStiffShortLength;
       shaftLowerBigStiffHomoMat=A.shaftLowerBigStiffHomoMat;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
@@ -211,7 +212,6 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       catcherBaseAngle=A.catcherBaseAngle;
       catcherNotchRadius=A.catcherNotchRadius;
       catcherNotchBaseThick=A.catcherNotchBaseThick;
-      catcherNotchBaseRadius=A.catcherNotchBaseRadius;
       circlePipesBigRad=A.circlePipesBigRad;
       circlePipesRad=A.circlePipesRad;
       circlePipesWallThick=A.circlePipesWallThick;
@@ -326,8 +326,11 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftUpperBigStiffThick=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffThick");
   shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
 						       keyName+"ShaftUpperBigStiffHomoMat");
+  
+  shaftLowerBigStiffShortLength=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffShortLength");
   shaftLowerBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
 						       keyName+"ShaftLowerBigStiffHomoMat");
+
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
     throw ColErr::RangeError<double>(shaft2StepConnectionRadius,shaftRadius[nShaftLayers-1],
 				     INFINITY,
@@ -358,7 +361,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   catcherNotchRadius=Control.EvalVar<double>(keyName+"CatcherNotchRadius");
 
   catcherNotchBaseThick=Control.EvalVar<double>(keyName+"CatcherNotchBaseThick");
-  catcherNotchBaseRadius=Control.EvalVar<double>(keyName+"CatcherNotchBaseRadius");
 
   circlePipesBigRad=Control.EvalVar<double>(keyName+"CirclePipesBigRad");
   circlePipesRad=Control.EvalVar<double>(keyName+"CirclePipesRad");
@@ -484,7 +486,7 @@ BilbaoWheel::createShaftSurfaces()
   R += catcherNotchBaseThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
 
-  R = catcherNotchBaseRadius;
+  R = shaftRadius[nShaftLayers-2] + shaftLowerBigStiffShortLength;
   ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
 
   const Geometry::Vec3D C(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2225),
