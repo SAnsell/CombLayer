@@ -465,7 +465,7 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
 
   // shaft base - catcher
-  H -= catcherGap;
+  H = shaft2StepHeight + shaftLowerBigStiffHeight + catcherNotchBaseThick;
   ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
 
   //  H -= catcherNotchBaseThick;
