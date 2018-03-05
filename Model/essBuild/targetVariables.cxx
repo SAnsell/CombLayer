@@ -99,9 +99,12 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",ubsThick); // ESS-0124024 page 19
 
   // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
-  const double frac(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
+  const double fracUp(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
   Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
-		      ss316l + "%Void%" + std::to_string(frac));
+		      ss316l + "%Void%" + std::to_string(fracUp));
+  const double fracLow(50.0); // !!! a dummy number
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",
+		      ss316l + "%Void%" + std::to_string(fracLow));
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx

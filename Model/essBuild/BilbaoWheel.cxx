@@ -123,6 +123,7 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaftCFStiffHeight(A.shaftCFStiffHeight),
   shaftCFStiffThick(A.shaftCFStiffThick),
   shaftUpperBigStiffHomoMat(A.shaftUpperBigStiffHomoMat),
+  shaftLowerBigStiffHomoMat(A.shaftLowerBigStiffHomoMat),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
@@ -197,6 +198,7 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaftCFStiffHeight=A.shaftCFStiffHeight;
       shaftCFStiffThick=A.shaftCFStiffThick;
       shaftUpperBigStiffHomoMat=A.shaftUpperBigStiffHomoMat;
+      shaftLowerBigStiffHomoMat=A.shaftLowerBigStiffHomoMat;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
@@ -322,9 +324,14 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
   shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
   shaftCFStiffThick=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffThick");
-  shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,keyName+"ShaftUpperBigStiffHomoMat");
+  shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
+						       keyName+"ShaftUpperBigStiffHomoMat");
+  shaftLowerBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
+						       keyName+"ShaftLowerBigStiffHomoMat");
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
-    throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
+    throw ColErr::RangeError<double>(shaft2StepConnectionRadius,shaftRadius[nShaftLayers-1],
+				     INFINITY,
+				     "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
   shaftHoleSize=Control.EvalVar<double>(keyName+"ShaftHoleSize");
   if (shaftHoleSize>1.0)
@@ -666,7 +673,7 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   if (engActive)
     buildStiffeners(System,Out,wheelIndex+3000,nSectors/2,steelMat);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
 
 
   // shaft layers
@@ -1164,16 +1171,16 @@ BilbaoWheel::createObjects(Simulation& System)
 	    }
 
 	  side=ModelSupport::getComposite(SMap,wheelIndex," -117 107 ");
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -26 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,"-105 25 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," -25 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
@@ -1187,13 +1194,13 @@ BilbaoWheel::createObjects(Simulation& System)
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -116 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," -105 115 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 116 -36 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," -115 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
@@ -1228,7 +1235,7 @@ BilbaoWheel::createObjects(Simulation& System)
     System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   side = ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 117" );
-  
+
   // Void above W
   Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -16 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
@@ -1263,7 +1270,7 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // forward Main sections:
   side=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 ");
-  
+
   Out=ModelSupport::getComposite(SMap,wheelIndex," -126 36 ")+side;	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
