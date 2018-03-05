@@ -256,9 +256,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
 
-  lastComp=filterBox;
-  return;
-
   for(size_t i=0;i<4;i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
@@ -306,7 +303,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   driftB->registerSpaceCut(1,2);
   driftB->createAll(System,*driftA,2);
   lastComp=driftB;  
-  return;
 
   attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
   UnitA.setPrimaryCell(ContainedComp::getMainCell());
@@ -351,12 +347,12 @@ OpticsBeamline::buildObjects(Simulation& System)
   shieldPipe->setFront(*slitsA,2);
   shieldPipe->registerSpaceCut(1,2);
   shieldPipe->createAll(System,*slitsA,2);
-  return;
+
   pipeD->addInsertCell(ContainedComp::getInsertCells());
   pipeD->setFront(*shieldPipe,2);
   pipeD->registerSpaceCut(1,2);
   pipeD->createAll(System,*shieldPipe,2);
-  return;
+
   gateD->addInsertCell(ContainedComp::getInsertCells());
   gateD->setFront(*pipeD,2);
   gateD->registerSpaceCut(1,2);

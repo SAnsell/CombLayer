@@ -183,7 +183,6 @@ makeBalder::build(Simulation& System,
   joinPipeB->createAll(System,*opticsBeam,2);
 
   System.removeCell(opticsHut->getCell("Void"));
-  return;
 
   connectZone->addInsertCell(voidCell);
   connectZone->createAll(System,*joinPipeB,2);
