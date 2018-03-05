@@ -103,9 +103,15 @@ EssWheel(FuncDataBase& Control)
   Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
 		      ss316l + "%Void%" + std::to_string(fracUp));
 
-  Control.addVariable("BilbaoWheelShaftLowerBigStiffShortLength",8.0);  // TSV32IS
-  Control.addVariable("BilbaoWheelShaftLowerBigStiffLongLength",20.0);  // TSV32IS
-  Control.addVariable("BilbaoWheelShaftLowerBigStiffHeight",15.0);  // TSV32IS
+  const double lbsThick(2.0); // ESS-0124024 page 19
+  const double lbsHeight(15.0);  // TSV32IS
+  const double lbsSL(8.0);  // TSV32IS
+  const double lbsLL(20.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffShortLength",lbsSL);
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffLongLength",lbsLL);
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffHeight",lbsHeight);
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffThick",lbsThick);
+
 
   const double fracLow(50.0); // !!! a dummy number
   Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",
