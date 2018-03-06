@@ -1250,6 +1250,7 @@ makeESS::build(Simulation& System,
   pbip->createAll(System,World::masterOrigin(),0,*Bulk,-4,*Target,1);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
   
   PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
@@ -1263,10 +1264,6 @@ makeESS::build(Simulation& System,
   
   if (engActive)
       buildTwister(System);
-  else {
-    // if no -eng flag then Twister is not built -> must insert into Bulk
-    attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
-  }
 
   makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);

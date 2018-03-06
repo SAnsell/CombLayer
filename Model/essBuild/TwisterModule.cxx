@@ -76,7 +76,7 @@ namespace essSystem
 
 TwisterModule::TwisterModule(const std::string& Key) :
   attachSystem::ContainedGroup("PlugFrame","Shaft","ShaftBearing"),
-  attachSystem::FixedOffset(Key,15),
+  attachSystem::FixedOffset(Key,16),
   attachSystem::CellMap(),
   tIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(tIndex+1)
@@ -296,10 +296,6 @@ TwisterModule::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 -21 1");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
 
-  // outside sector
-  Out=ModelSupport::getComposite(SMap,tIndex," -27 5 -6 17 (-2:21:-31)");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameMat,0.0,Out));
-
   //  inside sector wall x-
   Out=ModelSupport::getComposite(SMap,tIndex," -37 25 -26 17 2 31 -11");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugFrameWallMat,0.0,Out));
@@ -312,7 +308,9 @@ TwisterModule::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,tIndex," -17 47 5 -25 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,shaftWallMat,0.0,Out));
 
-  Out=ModelSupport::getComposite(SMap,tIndex, " -27 5 -6 ");
+  // Next line is DNF of " 5 -6  ((-17 31 -21) : (-27 31 -21 2))"
+  Out=ModelSupport::getComposite(SMap,tIndex,
+				 " 5 -6 -17 31 -21 : 5 -6 -27 2 31 -21 ");
   addOuterSurf("PlugFrame", Out);
 
   // shaft bearing
@@ -399,6 +397,11 @@ TwisterModule::createLinks()
 
   FixedComp::setConnect(14,Origin+Z*plugFrameHeight,Z);
   FixedComp::setLinkSurf(14,SMap.realSurf(tIndex+6));
+
+  // plug frame side rule
+  FixedComp::setConnect(15,Origin+Y*plugFrameRadius,Y);
+  FixedComp::setLinkSurf(15,-SMap.realSurf(tIndex+21));
+  FixedComp::addLinkSurf(15,SMap.realSurf(tIndex+31));
 
   return;
 }
