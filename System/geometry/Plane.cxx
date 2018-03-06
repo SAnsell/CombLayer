@@ -173,6 +173,22 @@ Plane::operator!=(const Plane& A) const
 }
 
 int
+Plane::isImplicate(const Plane& A) const
+  /*!
+    Determine if T determine that A is true
+    or A' is true.
+    \param A :: Plane to test
+    \return 1 or -1 if A or A' are implied
+  */
+{
+  if (A.NormV==NormV)
+    return Dist>A.Dist ? -1 : 1;
+  if (A.NormV== -NormV)
+    return Dist > A.Dist ? 1 : -1;
+  return 0;
+}
+
+int
 Plane::isEqual(const Plane& A) const
   /*!
     Determine if two plane are equal (within tolerance).
@@ -186,10 +202,10 @@ Plane::isEqual(const Plane& A) const
   if (&A==this) return 1;
 
 
-  if (fabs(A.Dist-Dist)<=Geometry::zeroTol)
+  if (std::abs(A.Dist-Dist)<=Geometry::zeroTol)
     {
       if (A.NormV==NormV) return 1;
-      if (fabs(A.Dist)<=Geometry::zeroTol &&
+      if (std::abs(A.Dist)<=Geometry::zeroTol &&
 	  A.NormV== -NormV)
 	return -1;
       return 0;

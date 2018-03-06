@@ -58,7 +58,6 @@
 #include "HeadRule.h"
 #include "Token.h"
 #include "neutron.h"
-//#include "RuleCheck.h"
 #include "objectRegister.h"
 #include "masterWrite.h"
 #include "Element.h"
@@ -66,9 +65,6 @@
 #include "MXcards.h"
 #include "Material.h"
 #include "DBMaterial.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Object.h"
 
 #include "Debug.h"
@@ -171,8 +167,8 @@ Object::startLine(const std::string& Line)
 }
 
 Object::Object() :
-  ObjName(0),listNum(-1),Tmp(300),MatN(-1),fill(0),trcl(0),
-  universe(0),imp(1),density(0.0),placehold(0),populated(0),
+  ObjName(0),listNum(-1),Tmp(300),MatN(-1),trcl(0),
+  imp(1),density(0.0),placehold(0),populated(0),
   objSurfValid(0)
  /*!
    Defaut constuctor, set temperature to 300C and material to vacuum
@@ -181,8 +177,8 @@ Object::Object() :
 
 Object::Object(const int N,const int M,const double T,
 	       const std::string& Line) :
-  ObjName(N),listNum(-1),Tmp(T),MatN(M),fill(0),trcl(0),
-  universe(0),imp(1),density(0.0),placehold(0),
+  ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
+  imp(1),density(0.0),placehold(0),
   populated(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -197,7 +193,7 @@ Object::Object(const int N,const int M,const double T,
 
 Object::Object(const Object& A) :
   ObjName(A.ObjName),listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
-  fill(A.fill),trcl(A.trcl),universe(A.universe),imp(A.imp),
+  trcl(A.trcl),imp(A.imp),
   density(A.density),placehold(A.placehold),populated(A.populated),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
@@ -220,9 +216,7 @@ Object::operator=(const Object& A)
       listNum=A.listNum;
       Tmp=A.Tmp;
       MatN=A.MatN;
-      fill=A.fill;
       trcl=A.trcl;
-      universe=A.universe;
       imp=A.imp;
       density=A.density;
       placehold=A.placehold;
@@ -373,15 +367,9 @@ Object::setObject(std::string Ln)
       if (Extract=="tmp" && 
 	  StrFunc::convert(Value,tval) && tval>=0.0)
 	Tmp=tval;
-      else if (Extract=="fill" && 
-	       StrFunc::convert(Value,iVal))
-	fill=iVal;
       else if (Extract=="trcl" && 
 	       StrFunc::convert(Value,iVal))
 	trcl=iVal;
-      else if (Extract=="u" && 
-	       StrFunc::convert(Value,iVal))
-	universe=iVal;
       else if (Extract=="imp:n" && 
 	       StrFunc::convert(Value,iVal))
 	imp=iVal;
@@ -673,6 +661,30 @@ Object::isValid(const Geometry::Vec3D& Pt,
 */
 {
   return HRule.isValid(Pt,ExSN);
+}
+
+std::map<int,int>
+Object::getImplicatePairs() const
+  /*!
+    Determine all the implicate pairs for the object
+    \return Map of surf -> surf
+  */
+{
+  ELog::RegMethod RegA("Object","getImplicatePairs");
+  std::map<int,int> Out;
+  for(size_t i=0;i<SurList.size();i++)
+    for(size_t j=1;j<SurList.size();j++)
+      {
+	const Geometry::Surface* APtr=SurList[i];
+	const Geometry::Surface* BPtr=SurList[j];
+	const int dirFlag=APtr->isImplicate(*BPtr);
+	if (dirFlag)
+	  {
+	    Out.emplace(-dirFlag*APtr->getName(),dirFlag*BPtr->getName());
+	    Out.emplace(dirFlag*BPtr->getName(),-dirFlag*APtr->getName());
+	  }
+      }
+  return Out;
 }
 
 int
@@ -1256,12 +1268,8 @@ Object::write(std::ostream& OX) const
   cx<<str();
   if (Tmp>1.0 && fabs(Tmp-300.0)>1.0)
     cx<<" "<<"tmp="<<Tmp*8.6173422e-11;
-  if (fill)
-    cx<<" "<<"fill="<<fill;
   if (trcl)
     cx<<" "<<"trcl="<<trcl;
-  if (universe)
-    cx<<" "<<"u="<<universe;
 
   if (placehold)
     StrFunc::writeMCNPXcomment(cx.str(),OX);

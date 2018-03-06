@@ -511,8 +511,12 @@ Acomp::expandBracket()
 	}
       while (Comp.size()>1)
 	{
-	  Comp[0]=Comp[0].componentExpand(1,Comp[1]);
-	  Comp.erase(Comp.begin()+1);
+	  for(size_t i=0;i<Comp.size();i+=2)
+	    if (i+1!=Comp.size())
+	      Comp[i/2]=Comp[i].componentExpand(1,Comp[i+1]);
+	    else
+	      Comp[i/2]=Comp[i];
+	  Comp.erase(Comp.begin()+Comp.size()/2+1,Comp.end());
 	}
     }
   
@@ -642,6 +646,17 @@ Acomp::removeUnionPair()
   return outFlag;
 }
   
+void
+Acomp::expandDNFBracket()
+  /*!
+    Expand all the Union brackets and then find DNF
+  */
+{
+  ELog::RegMethod RegA("Acomp","expandCNFBracket");
+  expandCNFBracket();
+  complement();
+  return;
+}
 
 void
 Acomp::expandCNFBracket()
@@ -687,19 +702,50 @@ Acomp::expandCNFBracket()
 }
 
 void
+Acomp::removeNotPresent(const int target)
+  /*!
+    If rule is not present remove
+    NOTE :: decends
+  */
+{
+  return;
+}
+
+void
+Acomp::removeTarget(const int target)
+  /*!
+    Set target to true and remove. 
+    NOTE: If this is a TOP Acomp we CANNOT remove
+    the target 
+    \param target :: target rule
+  */
+{
+  if (Intersect)
+    {
+      stlFunc::removeIfUnit(Units,target);
+      std::erase(
+		 std::remove_if(Comp.begin(),Comp.end(),
+				[&target](const Acomp& AC) -> bool
+				{
+				  return AC.hasUnitInUnit(target);
+				}),
+		 Comp.end());
+    }
+  for(Acomp& AC : Comp)
+    AC.removePlus(target);
+  return;
+}
+
+
+void
 Acomp::minimize()
   /*
-   */
+    Call out a simple minimization
+  */
 {
-  Sort();
-  do
-    {
-      upMoveComp();
-      merge();
-      makeNull();
-    }
-  while(removeUnionPair());
-  
+  // Assume CNF form
+  expandCNFBracket();
+  complement();  
   return;
 }
 

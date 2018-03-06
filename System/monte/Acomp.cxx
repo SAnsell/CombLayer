@@ -362,6 +362,16 @@ Acomp::deleteComp()
   return;
 }
 
+bool
+Acomp::hasUnitInUnit(const int T) const
+  /*!
+    Determine if Acomp has a unit 
+    \param 
+   */
+{
+  return (std::find(Units.begin(),Units.end(),T)!=Units.end());
+}
+
 void
 Acomp::addComp(const Acomp& AX)
   /*!
@@ -414,7 +424,7 @@ Acomp::addUnitItem(const int Item)
   // Quick and cheesy insertion if big.
   std::vector<int>::iterator ipt;
   ipt=lower_bound(Units.begin(),Units.end(),Item);
-  if (ipt==Units.end() || *ipt!=Item)                       // Only insert if new
+  if (ipt==Units.end() || *ipt!=Item)    // Only insert if new
     Units.insert(ipt,Item);
   return;
 }
@@ -2293,5 +2303,7 @@ Acomp::displayDepth(const int dval) const
     }
   return cx.str();
 }
+
+
 
 } // NAMESPACE MonteCarlo

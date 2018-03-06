@@ -210,6 +210,9 @@ Algebra::countComponents() const
   return F.countComponents();
 }
 
+
+
+  
 void
 Algebra::minimize()
   /*!
@@ -229,6 +232,19 @@ Algebra::expandBracket()
 {
   F.Sort();
   F.expandBracket();
+  F.Sort();
+  return;
+}
+
+void
+Algebra::expandDNFBracket()
+  /*!
+    Expand all the brackets into DNF form
+    Not need full sort before /after
+  */
+{
+  F.Sort();
+  F.expandDNFBracket();
   F.Sort();
   return;
 }
@@ -389,6 +405,32 @@ Algebra::display() const
   return F.display();
 }
 
+void
+Algebra::addImplicates(const std::map<int,int>& IM)
+  /*!
+    Adds the implicates to the 
+   */
+{
+  for(const std::map<int,int>::value_type& mc : IM)
+    {
+      
+      std::map<int,std::string>::const_iterator ac=
+	SurfMap.find(mc.first);
+      std::map<int,std::string>::const_iterator bc=
+	SurfMap.find(mc.second);
+      if (ac==SurfMap.end() || bc==SurfMap.end())
+	throw ColErr::InContainerError<int>(mc.first+100000*mc.second,
+					    "surf no in algebra");
+
+      const std::string A=ac->second;
+      const std::string B=ac->second;
+      Acomp Part(0);
+      Part.setString(A+"+"+B);
+      implicates.insert(Part);
+    }
+  return;
+}
+  
 int
 Algebra::setFunctionObjStr(const std::string& A)
   /*!
@@ -436,7 +478,8 @@ Algebra::setFunctionObjStr(const std::string& A)
 		    {
 		      SurfMap[N]=nLiteral;
 		      cx<<nLiteral;
-		      nLiteral[0]= (nLiteral[0]=='z') ? 'A' : static_cast<char>(nLiteral[0]+1);
+		      nLiteral[0]= (nLiteral[0]=='z') ? 'A' :
+			static_cast<char>(nLiteral[0]+1);
 		      bigFlag=(nLiteral[0]=='Z') ? 1 : 0;
 		    }
 		  else

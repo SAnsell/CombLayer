@@ -3,7 +3,7 @@
  
  * File:   geomInc/Surface.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,11 +96,17 @@ class Surface
   virtual void rotate(const Geometry::Matrix<double>&) =0;
   virtual void mirror(const Geometry::Plane&) =0; 
 
+  
   virtual void writeFLUKA(std::ostream&) const =0;
   virtual void writePOVRay(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;
+  
   /// \endcond ABSTRACT
 
+  /// T implies A(or A')
+  virtual int isImplicate(const Surface&) const
+    { return 0;}
+  
   virtual void rotate(const Geometry::Quaternion&);
 
   void writeHeader(std::ostream&) const;

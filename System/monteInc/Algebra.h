@@ -41,9 +41,13 @@ class Algebra
 {
  private:
 
-  std::map<int,std::string> SurfMap;    ///< Surface Map 
+
+  std::map<int,std::string> SurfMap;    ///< Surface Map
+
   Acomp F;                              ///< Factor
-  
+  ///< Additional implicates to  issue
+  std::set<Acomp> implicates;           
+
  public:
 
   Algebra();
@@ -67,6 +71,7 @@ class Algebra
   size_t countComponents() const;
   void minimize();
   void expandBracket();
+  void expandDNFBracket();
   void expandCNFBracket();
   void merge();
   void Complement();

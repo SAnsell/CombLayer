@@ -75,6 +75,7 @@ class Acomp
   bool removeEqUnion();                   
   int copySimilar(const Acomp&);        
 
+  bool hasUnitInUnit(const int) const;
   /// Adds a Binary state to the Component
   void addUnit(const std::vector<int>&,const BnId&);   
   void assignDNF(const std::vector<int>&,const std::vector<BnId>&);  
@@ -139,7 +140,7 @@ class Acomp
   Acomp componentExpand(const int,const Acomp&) const;
   int merge();
   bool makeNull();  // not what is exppected
-  void clear();     //  this deletec
+  void clear();     //  this delete all
   bool isEmpty() const;
 
   
@@ -155,6 +156,10 @@ class Acomp
   int isNull() const;              
   int isSingle() const;        // one item
 
+  void removeNotPresent(const int);
+  void removeTarget(const int);
+  
+  int contains(const int) const;
   int contains(const Acomp&) const;
   /// Deterimine if inter/union
   int isInter() const { return Intersect; }  
@@ -175,6 +180,7 @@ class Acomp
 
   void expandBracket();
   void expandCNFBracket();
+  void expandDNFBracket();
   void minimize();
   void complement();
   std::pair<Acomp,Acomp> algDiv(const Acomp&); 

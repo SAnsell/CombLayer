@@ -255,7 +255,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
 
-
+  
   for(size_t i=0;i<4;i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
@@ -265,7 +265,9 @@ OpticsBeamline::buildObjects(Simulation& System)
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-  lastComp=filterBox;
+  System.minimizeObject(filterBox->getCell("OuterSpace"));
+  System.minimizeObject(filterBox->getCell("Void"));
+  lastComp=filterBox;  
   return;
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
@@ -304,8 +306,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   driftB->addInsertCell(ContainedComp::getInsertCells());
   driftB->registerSpaceCut(1,2);
   driftB->createAll(System,*driftA,2);
-  lastComp=driftB;  
-
+  
   attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
   UnitA.setPrimaryCell(ContainedComp::getMainCell());
 
@@ -335,6 +336,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   gateC->registerSpaceCut(1,2);
   gateC->createAll(System,*driftB,2);
 
+
   driftC->addInsertCell(ContainedComp::getInsertCells());
   driftC->setFront(*gateC,2);
   driftC->registerSpaceCut(1,2);
@@ -355,6 +357,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeD->registerSpaceCut(1,2);
   pipeD->createAll(System,*shieldPipe,2);
 
+
   gateD->addInsertCell(ContainedComp::getInsertCells());
   gateD->setFront(*pipeD,2);
   gateD->registerSpaceCut(1,2);
@@ -368,6 +371,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
   mirrorB->createAll(System,*mirrorBoxB,0);
 
+  
   pipeE->addInsertCell(ContainedComp::getInsertCells());
   pipeE->setFront(*mirrorBoxB,2);
   pipeE->registerSpaceCut(1,2);
@@ -378,11 +382,14 @@ OpticsBeamline::buildObjects(Simulation& System)
   slitsB->registerSpaceCut(1,2);
   slitsB->createAll(System,*pipeE,2);
 
+
   viewPipe->addInsertCell(ContainedComp::getInsertCells());
   viewPipe->addInsertPortCells(slitsB->getBuildCell());
   viewPipe->setFront(*slitsB,2);
   viewPipe->registerSpaceCut(1,2);
   viewPipe->createAll(System,*slitsB,2);
+
+  
 
   pipeF->addInsertCell(ContainedComp::getInsertCells());
   pipeF->setFront(*viewPipe,2);

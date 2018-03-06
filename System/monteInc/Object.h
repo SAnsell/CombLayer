@@ -47,9 +47,7 @@ class Object
   int listNum;       ///< Creation number
   double Tmp;        ///< Starting temperature (if given)
   int MatN;          ///< Material Number 
-  int fill;          ///< fill number
   int trcl;          ///< transform number
-  int universe;      ///< universe number
   int imp;           ///< importance / 0 
   double density;    ///< Density
   int placehold;     ///< Is cell virtual (ie not in output)
@@ -155,6 +153,8 @@ class Object
   /// Access the surface list [of pointers]
   const std::vector<const Geometry::Surface*>& getSurList() const
     { return SurList; }
+
+  std::map<int,int> getImplicatePairs() const;
   
   ///\cond ABSTRACT
   virtual void displace(const Geometry::Vec3D&) {}

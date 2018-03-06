@@ -66,6 +66,8 @@
 #include "AttachSupport.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "BaseMap.h"
+#include "CellMap.h"
 #include "ContainedComp.h"
 #include "ContainedSpace.h"
 
@@ -377,7 +379,6 @@ ContainedSpace::buildWrapCell(Simulation& System,
   // First make inner vacuum
   // removeing front/back surfaces
 
-
   outerCut.reset();
   
   HeadRule innerVacuum(outerSurf);
@@ -395,6 +396,11 @@ ContainedSpace::buildWrapCell(Simulation& System,
   
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
+
+  CellMap* CMapPtr=dynamic_cast<CellMap*>(this);
+  if (CMapPtr)
+    CMapPtr->addCell("OuterSpace",cCell);
+
   
   return;
 }
