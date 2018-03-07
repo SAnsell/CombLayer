@@ -1216,7 +1216,7 @@ makeESS::build(Simulation& System,
 
   // Empty area above target
   TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
-  TargetTopClearance->createAll(System, *Target, 6, 3, 13,*Bulk,"Radius0");
+  TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9);
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();

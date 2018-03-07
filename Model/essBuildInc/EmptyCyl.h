@@ -53,7 +53,7 @@ class EmptyCyl : public attachSystem::ContainedComp,
   void createSurfaces();
   void createObjects(Simulation&,const attachSystem::FixedComp&,
 		     const long int,const long int,const long int,
-		     const attachSystem::FixedComp&,const std::string);
+		     const attachSystem::FixedComp&,const long int);
   void createLinks(const attachSystem::FixedComp&,const long int,const long int);
   
  public:
@@ -66,7 +66,7 @@ class EmptyCyl : public attachSystem::ContainedComp,
   
   void createAll(Simulation&,const attachSystem::FixedComp&,
 		 const long int,const long int,const long int,
-		 const attachSystem::FixedComp&,const std::string);
+		 const attachSystem::FixedComp&,const long int);
 
 };
 

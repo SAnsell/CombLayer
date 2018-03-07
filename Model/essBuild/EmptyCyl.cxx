@@ -79,7 +79,6 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
-#include "SurfMap.h"
 
 #include "EmptyCyl.h"
 
@@ -195,7 +194,7 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 			const long int floor,const long int side,
 			const long int inner,
 			const attachSystem::FixedComp& BC,
-			const std::string bulk)
+			const long int bulk)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -203,22 +202,20 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     \param floor  :: bottom link point
     \param side   :: outer side link point
     \param inner  :: shaft 1st step to exclude
-    \param BC     :: Bulk component
-    \param bulk   :: bulk side cylinder to exclude
+    \param BC     :: Bulk/Twister component
+    \param bulk   :: bulk/twister lp to exclude
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createObjects");
 
   std::string Out;
-  const attachSystem::SurfMap* SM=
-    dynamic_cast<const attachSystem::SurfMap*>(&BC);
 
   Out=ModelSupport::getComposite(SMap,surfIndex," -6 ");
   Out += std::to_string(FC.getLinkSurf(-side)) + " " +
     std::to_string(FC.getLinkSurf(floor)) + " " +
     std::to_string(FC.getLinkSurf(inner)) + " " +
-    std::to_string(SM->getSurf(bulk));
-  
+    BC.getLinkString(bulk);
+
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
   addOuterSurf(Out);
@@ -260,7 +257,7 @@ EmptyCyl::createAll(Simulation& System,
 		    const long int side,
 		    const long int inner,
 		    const attachSystem::FixedComp& BC,
-		    const std::string bulk)
+		    const long int bulk)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -268,8 +265,8 @@ EmptyCyl::createAll(Simulation& System,
     \param floor :: link point for origin (botom surf)
     \param side :: outer side link point
     \param inner :: shaft 1st step to exclude
-    \param BC :: Bulk component
-    \param bulk   :: bulk inner cell to exclude
+    \param BC :: Bulk/Twister component
+    \param bulk   :: bulk/twister lp to exclude
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createAll");
