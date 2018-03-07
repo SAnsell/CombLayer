@@ -233,10 +233,10 @@ testAlgebra::testComponentExpand()
       //      TTYPE("a",0,"bcd","(a+b)(a+c)(a+d)"),
       TTYPE("a",0,"b+c","(a+b+c)"),
       TTYPE("a",0,"bc+de","(a+bc)(a+de)"),
-      TTYPE("a",0,"bc+de","(a+bc)(a+dex)"),
+      TTYPE("a",0,"bc+de","(a+bc)(a+de)"),
       
-      TTYPE("a",0,"cd+(fx+fy+fz)","(a+c)(a+d)(a+fx+fy+fz)"),
-      TTYPE("af",0,"cd","af+cd"),
+      TTYPE("a",0,"cd+(fx+fy+fz)","(a+cd)(a+fx)(a+fy)(a+fz)"),
+      TTYPE("af",0,"cd","(a+c)(a+d)(c+f)(d+f)"),
       // stuff for DNF
       TTYPE("a",1,"cd+(fx+fy+fz)","acd+afx+afy+afz"),  
       TTYPE("af",1,"cd+(fx+fy+fz)","afcd+affx+affy+affz"),	    
@@ -392,7 +392,7 @@ testAlgebra::testExpandCNFBracket()
       TTYPE("ab+ac","a(a+b)(a+c)(b+c)"),
       TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
       TTYPE("a+bc","(a+b)(a+c)"),
-      TTYPE("a+(bc+de)","(a+b+d)(a+b+e)()"),
+      TTYPE("a+(bc+de)","(a+b+d)(a+b+e)(a+c+d)(a+c+e)"),
       TTYPE("a+b+c","a+b+c"),
       TTYPE("a(cd+f(x+y+z))","a(c+f)(c+x+y+z)(d+f)(d+x+y+z)"),
       TTYPE("c+(de+f)","(c+d+f)(c+e+f)"),
