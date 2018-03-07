@@ -202,16 +202,19 @@ Acomp::expandIUU(const Acomp& A) const
     \param A :: Other object to add
     \return grouped object
    */
-{  
+{
   Acomp Out(1);  // intersect
   for(const int AI : Units)
     {
       // N.aN
-      Acomp addItem(0);  // union
-      addItem.Units=A.Units;
-      addItem.Units.insert(AI);
-      Out.primativeAddItem(addItem);
-    
+      if (!A.Units.empty())
+	{
+	  Acomp addItem(0);  // union
+	  addItem.Units=A.Units;
+	  addItem.Units.insert(AI);
+	  Out.primativeAddItem(addItem);
+	}
+
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
@@ -290,7 +293,7 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
     Out=expandUII(A);
   else if (Intersect==0 && interFlag==1 && A.Intersect==0)
     Out=expandUIU(A);
-  
+
   else if (Intersect==1 && interFlag==0 && A.Intersect==1)
     Out=expandIUI(A);
   else if (Intersect==1 && interFlag==0 && A.Intersect==0)

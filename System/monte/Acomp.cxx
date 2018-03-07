@@ -625,10 +625,8 @@ Acomp::assignDNF(const std::vector<int>& Index,const std::vector<BnId>& A)
     \param A :: Vector of BnId's that are valid
   */
 {
-  Units.clear();
-  deleteComp();
-  if (A.empty())
-    return;
+  clear();
+  if (A.empty()) return;
   
   if (A.size()==1)  //special case for single intersection 
     {
@@ -1042,13 +1040,16 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
   // Need to make an initial copy.
   Work=DNFobj;
 
+  int cnt(0);
   do
     {
+      cnt++;
       // Deal with tri-state objects ??
       sort(Work.begin(),Work.end());
       uend=unique(Work.begin(),Work.end());
       Work.erase(uend,Work.end());
       Tmod.clear();                  // erase all at the start
+
       //set PI status to 1
       for_each( Work.begin(),Work.end(),
 		std::bind2nd(std::mem_fun_ref(&BnId::setPI),1) );
@@ -1061,9 +1062,12 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 	{
 	  const size_t GrpIndex(vc->TrueCount()+1);
 	  std::vector<BnId>::iterator oc=vc+1;
+
 	  for(oc=vc+1;oc!=Work.end();oc++)
 	    {
 	      const size_t OCnt=oc->TrueCount();
+			
+
 	      if (OCnt>GrpIndex)
 		break;
 	      if (OCnt==GrpIndex)
@@ -1079,15 +1083,14 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 		}
 	    }
 	}
+
+      for(const BnId& BI : Work)
+	if (BI.PIstatus()==1)
+	  PIComp.push_back(BI);
       
-      for(vc=Work.begin();vc!=Work.end();vc++)
-	if (vc->PIstatus()==1)
-	  PIComp.push_back(*vc);
       Work=Tmod;
-      
     } while (!Tmod.empty());
   // Copy over the unit.
-
 
   return makeEPI(DNFobj,PIComp);
 }
@@ -1126,11 +1129,11 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   //Populate
   for(size_t pc=0;pc!=PIform.size();pc++)
     PIactive[pc]=pc;
-
+  
   for(size_t ic=0;ic!=DNFobj.size();ic++)
     {
       DNFactive[ic]=ic;                            //populate (avoid a loop)
-      for(unsigned int pc=0;pc!=PIform.size();pc++)
+      for(size_t pc=0;pc!=PIform.size();pc++)
 	{
 	  if (PIform[pc].equivalent(DNFobj[ic]))
 	    {
@@ -1141,16 +1144,16 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       if (DNFscore[ic]==0)
 	{
 	  ELog::EM<<"PIForm:"<<ELog::endCrit;
-	  copy(PIform.begin(),PIform.end(),
-	       std::ostream_iterator<BnId>(ELog::EM.Estream(),"\n"));
+	  for(const BnId& BI : PIform)
+	    ELog::EM<<BI<<ELog::endDiag;
+
 	  ELog::EM<<"Error with DNF / EPI determination at "<<ic<<ELog::endCrit;
 	  ELog::EM<<" Items "<<DNFobj[ic]<<ELog::endCrit;
 	  return 0;
 	}
     }
   /// DEBUG PRINT 
-  if (debug)
-    printImplicates(PIform,Grid);
+  //  printImplicates(PIform,Grid);
   /// END DEBUG
 
   std::vector<size_t>::iterator dx;
@@ -1252,6 +1255,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   for(px=PIactive.begin();px!=PIactive.end();px++)
     EPI.push_back(PIform[*px]);
   DNFobj=EPI;
+
   return 1;
 }
 
@@ -1294,22 +1298,16 @@ Acomp::getDNFobject(std::vector<int>& keyNumbers,
   for(const int CN : litMap)
     Base.emplace(CN,0);
 
-  DNFobj.clear();
-  
+  DNFobj.clear();  
   BnId State(keyNumbers.size(),0);                 //zero base
-  ELog::EM<<"base == "<<Base.size()<<ELog::endDiag;
-  for(const int kn : keyNumbers)
-    ELog::EM<<"Kn == "<<kn<<ELog::endDiag;
+
   do
     {
       if (isTrue(Base))
 	{
 	  State.setState(keyNumbers,Base);
-	  ELog::EM<<"Tru == "<<State<<ELog::endDiag;
-		  
 	  DNFobj.push_back(State);
 	}
-      (!MapSupport::iterateBinMap(Base));
     } while (!MapSupport::iterateBinMap(Base));
 
   return 0;
@@ -1327,9 +1325,10 @@ Acomp::makeDNFobject()
   std::vector<BnId> DNFobj;
   std::vector<int> keyNumbers;
   if (!getDNFobject(keyNumbers,DNFobj))
-    {
+    {      
       if (makePI(DNFobj))
 	assignDNF(keyNumbers,DNFobj);
+
       return static_cast<int>(DNFobj.size());
     }
   return 0;
@@ -1388,12 +1387,11 @@ Acomp::getDNFpart(std::vector<Acomp>& Parts) const
     {
       if (makePI(DNFobj))
 	{
-	  std::vector<BnId>::const_iterator vc;
-	  for(vc=DNFobj.begin();vc!=DNFobj.end();vc++)
+	  for(const BnId& BI : DNFobj)
 	    {
 	      // make an intersection and add components
 	      Acomp Aitem(Inter); 
-	      Aitem.addUnit(keyNumbers,*vc);
+	      Aitem.addUnit(keyNumbers,BI);
 	      Parts.push_back(Aitem);
 	    }
 	}	  
@@ -1427,14 +1425,16 @@ Acomp::getCNFobject(std::vector<int>& keyNumbers,
   keyNumbers.assign(litMap.begin(),litMap.end());
   for(const int CN : keyNumbers)
     Base.emplace(CN,1);
-  
+
   CNFobj.clear();
   BnId State(Base.size(),0);    //zero base  
   do
     {
       State.mapState(keyNumbers,Base);
       if (!isTrue(Base))
-	CNFobj.push_back(State);
+	{
+	  CNFobj.push_back(State);
+	}
     } while(++State);
  
   return 0;
@@ -1478,7 +1478,7 @@ Acomp::isTrue(const std::map<int,int>& Base) const
     }
   // UNION
   // any must be true:
-  for(const	int uv : Units)
+  for(const int uv : Units)
     {
       signSplit(uv,S,V);
       mc=Base.find(V);
@@ -1486,15 +1486,15 @@ Acomp::isTrue(const std::map<int,int>& Base) const
       if (mc==Base.end())
 	throw ColErr::InContainerError<int>
 	  (uv,"Acomp::isTrue Base unit not found");
-      ELog::EM<<"S == "<<S<<" "<<V<<ELog::endDiag;
       
       if ((S>0 && mc->second) ||
 	  (S<0 && !mc->second)) return 1;
-      
-      for(const Acomp& AC : Comp)
-	if (AC.isTrue(Base))
-	  return 1;
     }
+
+  for(const Acomp& AC : Comp)
+    if (AC.isTrue(Base))
+      return 1;
+
   // Everything else false
   return 0;
 }

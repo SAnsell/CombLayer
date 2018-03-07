@@ -230,9 +230,12 @@ testAlgebra::testComponentExpand()
   const std::vector<TTYPE> Tests=
     {
       // stuff for CNF
-      TTYPE("a",0,"bcd","(a+b)(a+c)(a+d)"),
-      TTYPE("a",0,"b+c","a+b+c"),
-      TTYPE("a",0,"cd+(fx+fy+fz)","(a+c)(a+d)(a+fx+fy+fz"),
+      //      TTYPE("a",0,"bcd","(a+b)(a+c)(a+d)"),
+      TTYPE("a",0,"b+c","(a+b+c)"),
+      TTYPE("a",0,"bc+de","(a+bc)(a+de)"),
+      TTYPE("a",0,"bc+de","(a+bc)(a+dex)"),
+      
+      TTYPE("a",0,"cd+(fx+fy+fz)","(a+c)(a+d)(a+fx+fy+fz)"),
       TTYPE("af",0,"cd","af+cd"),
       // stuff for DNF
       TTYPE("a",1,"cd+(fx+fy+fz)","acd+afx+afy+afz"),  
@@ -270,6 +273,7 @@ testAlgebra::testComponentExpand()
 	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Failed on  :"<<std::get<2>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Expect     :"<<std::get<3>(tc)<<ELog::endDiag;
+	  
 	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
 	  return -1;
 	}
@@ -332,7 +336,6 @@ testAlgebra::testExpandBracket()
     {
       //      TTYPE("a(b+c)","ab+ac"),
       TTYPE("a(b+c)","ab+ac"),
-	    
       TTYPE("a(cd+f(x+y+z))","acd+afx+afy+afz"),
       TTYPE("x+a'bcd+a(cd+f(x+y+z))","x+a'bcd+acd+afx+afy+afz"),
       TTYPE("(a+d)(hb+c)","abh+ac+bdh+cd"),
@@ -388,7 +391,8 @@ testAlgebra::testExpandCNFBracket()
     {
       TTYPE("ab+ac","a(a+b)(a+c)(b+c)"),
       TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
-      TTYPE("a(b+c)","a(b+c)"),
+      TTYPE("a+bc","(a+b)(a+c)"),
+      TTYPE("a+(bc+de)","(a+b+d)(a+b+e)()"),
       TTYPE("a+b+c","a+b+c"),
       TTYPE("a(cd+f(x+y+z))","a(c+f)(c+x+y+z)(d+f)(d+x+y+z)"),
       TTYPE("c+(de+f)","(c+d+f)(c+e+f)"),
@@ -453,7 +457,14 @@ testAlgebra::testIsTrue()
   typedef std::tuple<std::string,Binary,int> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("(a+b)",Binary("00"),0)
+      TTYPE("(a+b)",Binary("00"),0),
+      TTYPE("(a+b)",Binary("01"),1),
+      TTYPE("(a+b)",Binary("11"),1),
+      TTYPE("c(a+b)",Binary("010"),0),
+      TTYPE("c(a+b)",Binary("101"),1),
+      TTYPE("(d+c)(abc)",Binary("1110"),1),
+      TTYPE("(a+b)(b+c+d)",Binary("1110"),1),
+      TTYPE("abc+abd+ae",Binary("11111"),1)
     };
 
   size_t cnt(0);
@@ -469,7 +480,7 @@ testAlgebra::testIsTrue()
       size_t BN=std::get<1>(tc).getNumber();	
       for(size_t i=0;i<BNlen;i++)
 	{
-	  BMap.emplace(static_cast<int>(i+1),BN % 2);
+	  BMap.emplace(static_cast<int>(BNlen-i),BN % 2);
 	  BN /= 2;
 	}
       const int flag=AC.isTrue(BMap);
@@ -477,8 +488,9 @@ testAlgebra::testIsTrue()
 	{
 	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Failed on  :"<<std::get<1>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Failed on  :"<<flag<<ELog::endDiag;
+	  ELog::EM<<"Algebra    :"<<A<<ELog::endDiag;
+	  ELog::EM<<"Binary     :"<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Flag       :"<<flag<<ELog::endDiag;
 	  return -1;
 	}
     }
@@ -534,6 +546,8 @@ testAlgebra::testCNF()
   /*!
     Test the CNF/DNF Structure 
     \retval 0 :: success (there is no fail!!!)
+    \retval -1 :: fail on CNF expansion
+    \retval -2 :: fail on DNF expansion
    */
 {
   ELog::RegMethod RegA("testAlgebra","testCNF");
@@ -555,7 +569,8 @@ testAlgebra::testCNF()
       if (Out!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Failed on CNF  :"<<std::get<0>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Function in CNF:"<<A<<ELog::endDiag;
+	  ELog::EM<<"Return value   :"<<Out<<ELog::endDiag;
+	  ELog::EM<<"Exprected      :"<<std::get<1>(tc)<<ELog::endDiag;
 	  return -1;
 	}
       
