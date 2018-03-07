@@ -1073,11 +1073,6 @@ makeESS::buildTwister(Simulation& System)
 
   attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
 
-  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
-
-  attachSystem::addToInsertSurfCtrl(System,*Twister,*TargetTopClearance);
-
   return;
 }
 
@@ -1216,7 +1211,17 @@ makeESS::build(Simulation& System,
 
   // Empty area above target
   TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
-  TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9);
+
+  if (engActive)
+    {
+      buildTwister(System);
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16);
+    }
+  else
+    {
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9);
+    }
+
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
@@ -1226,11 +1231,12 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
+  ///
 
   createGuides(System);
   makeBunker(System,IParam);
 
-  TSMainBuildingObj->addInsertCell(74123);
+  TSMainBuildingObj->addInsertCell(voidCell);
   TSMainBuildingObj->createAll(System,World::masterOrigin());
   attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABunker);
@@ -1261,9 +1267,8 @@ makeESS::build(Simulation& System,
   // 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
 				    PBeam->getCC("Sector3"));
-  
-  if (engActive)
-      buildTwister(System);
+  if (Twister)
+    attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
 
   makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);
