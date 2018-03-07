@@ -1054,24 +1054,23 @@ makeESS::buildTwister(Simulation& System)
 
   Twister->createAll(System,*Bulk,0);
 
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
 
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Twister->getCC("Shaft"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Twister->getCC("ShaftBearing"));
+
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
-  //attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
-  //  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
 
   // split Twister by components
   // for (const ContainedComp & CC : Twister->getCC()) ...
   // use LineControl for intersections with flight lines
 
-  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,TopAFL->getCC("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,TopBFL->getCC("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister, Target->getCC("Wheel"));
 
   return;
 }
