@@ -298,6 +298,9 @@ BulkModule::createLinks()
 
 	  index+=4;
 	}
+
+      FixedComp::setConnect(8,Origin+COffset[0]+Y*radius[0],-Y);
+      FixedComp::setLinkSurf(8,-SMap.realSurf(bulkIndex+7));
     }
   return;
 }
