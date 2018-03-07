@@ -194,7 +194,11 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 			const long int floor,const long int side,
 			const long int inner,
 			const attachSystem::FixedComp& BC,
-			const long int bulk)
+			const long int bulk,
+			const attachSystem::FixedComp& GB1,
+			const long int gb1lp,
+			const attachSystem::FixedComp& GB2,
+			const long int gb2lp)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -204,17 +208,25 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     \param inner  :: shaft 1st step to exclude
     \param BC     :: Bulk/Twister component
     \param bulk   :: bulk/twister lp to exclude
+    \param GB1     :: GuideBay1 object
+    \param gb1lp   :: GB1 link point
+    \param GB2     :: GuideBay2 object
+    \param gb2lp   :: GB2 link point
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createObjects");
 
   std::string Out;
 
+  ELog::EM << "Target inner lp not needed. Now this cylinder cuts EmptyCyl, but I have to increase the angle of triangle (adjust GuideBay)" << ELog::endDiag;
+
   Out=ModelSupport::getComposite(SMap,surfIndex," -6 ");
   Out += std::to_string(FC.getLinkSurf(-side)) + " " +
-    std::to_string(FC.getLinkSurf(floor)) + " " +
+    FC.getLinkString(floor) + " " +
     std::to_string(FC.getLinkSurf(inner)) + " " +
-    BC.getLinkString(bulk);
+    BC.getLinkString(bulk) + " (" +
+    GB1.getLinkString(gb1lp) + " : " +
+    GB2.getLinkString(gb2lp) + " )";
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
@@ -257,7 +269,11 @@ EmptyCyl::createAll(Simulation& System,
 		    const long int side,
 		    const long int inner,
 		    const attachSystem::FixedComp& BC,
-		    const long int bulk)
+		    const long int bulk,
+		    const attachSystem::FixedComp& GB1,
+		    const long int gb1lp,
+		    const attachSystem::FixedComp& GB2,
+		    const long int gb2lp)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -267,6 +283,10 @@ EmptyCyl::createAll(Simulation& System,
     \param inner :: shaft 1st step to exclude
     \param BC :: Bulk/Twister component
     \param bulk   :: bulk/twister lp to exclude
+    \param GB1     :: GuideBay1 object
+    \param gb1lp   :: GB1 link point
+    \param GB2     :: GuideBay2 object
+    \param gb2lp   :: GB2 link point
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createAll");
@@ -274,7 +294,9 @@ EmptyCyl::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,floor);
   createSurfaces();
-  createObjects(System,FC,floor,side,inner,BC,bulk);
+  createObjects(System,FC,floor,side,inner,
+		BC,bulk,
+		GB1,gb1lp,GB2,gb2lp);
   createLinks(FC,floor,side);
   insertObjects(System);              
 

@@ -275,7 +275,6 @@ makeESS::createGuides(Simulation& System)
 
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertSurfCtrl(System,*GB,Target->getCC("Wheel"));
-      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       GBArray.push_back(GB);
     }
   
@@ -1208,18 +1207,26 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Shaft"));
 
+  createGuides(System);
+
   // Empty area above target
   TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
 
   if (engActive)
     {
       buildTwister(System);
-      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16);
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
     }
   else
     {
-      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9);
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
     }
+  for (const std::shared_ptr<GuideBay> GB : GBArray)
+    attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
 
 
   ModelSupport::objectRegister& OR=
@@ -1227,12 +1234,10 @@ makeESS::build(Simulation& System,
 
   OR.addObject(TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
-  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
   ///
 
-  createGuides(System);
   makeBunker(System,IParam);
 
   TSMainBuildingObj->addInsertCell(voidCell);
