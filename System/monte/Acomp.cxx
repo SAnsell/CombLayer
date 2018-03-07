@@ -873,15 +873,14 @@ Acomp::logicalEqual(const Acomp& A) const
   const std::vector<int> keyNumbers(ALitMap.begin(),ALitMap.end());    
   std::map<int,int> Base;       // keynumber :: trueth value
   for(const int CN : ALitMap)
-    Base.emplace(CN,1);
+    Base.emplace(CN,0);
 
-  BnId State(Base.size(),0);                 //zero base
   do
     {
-      State.mapState(keyNumbers,Base);
       if (isTrue(Base) != A.isTrue(Base))
 	return 0;
-    } while(++State);
+    } while (!MapSupport::iterateBinMap(Base));
+
   return 1;
 }
 
@@ -1293,19 +1292,26 @@ Acomp::getDNFobject(std::vector<int>& keyNumbers,
   keyNumbers.assign(litMap.begin(),litMap.end());
 
   for(const int CN : litMap)
-    Base.emplace(CN,1);
+    Base.emplace(CN,0);
 
   DNFobj.clear();
+  
   BnId State(keyNumbers.size(),0);                 //zero base
-  int cnt=0;
+  ELog::EM<<"base == "<<Base.size()<<ELog::endDiag;
+  for(const int kn : keyNumbers)
+    ELog::EM<<"Kn == "<<kn<<ELog::endDiag;
   do
     {
-      cnt++;
-      State.mapState(keyNumbers,Base);
       if (isTrue(Base))
-	DNFobj.push_back(State);
+	{
+	  State.setState(keyNumbers,Base);
+	  ELog::EM<<"Tru == "<<State<<ELog::endDiag;
+		  
+	  DNFobj.push_back(State);
+	}
+      (!MapSupport::iterateBinMap(Base));
+    } while (!MapSupport::iterateBinMap(Base));
 
-    } while(++State);
   return 0;
 }
  
@@ -1445,7 +1451,10 @@ Acomp::isTrue(const std::map<int,int>& Base) const
 {
   int S,V;
   std::map<int,int>::const_iterator mc;
-  
+
+  if (Units.empty() && Comp.empty())
+    return (trueFlag == -1) ? 0 : 1;
+
   if (Intersect)
     {
       // all must be true:
@@ -1463,28 +1472,31 @@ Acomp::isTrue(const std::map<int,int>& Base) const
       for(const Acomp& AC : Comp)
 	if (!AC.isTrue(Base))
 	  return 0;
+
+      // everything else true
+      return 1;
     }
-  else
+  // UNION
+  // any must be true:
+  for(const	int uv : Units)
     {
-      // any must be true:
-      for(const	int uv : Units)
-	{
-	  signSplit(uv,S,V);
-	  mc=Base.find(V);
-
-	  if (mc==Base.end())
-	    throw ColErr::InContainerError<int>
-	      (uv,"Acomp::isTrue Base unit not found");
-
-	  if ((S>0 && mc->second) ||
-	      (S<0 && !mc->second)) return 1;
-	  for(const Acomp& AC : Comp)
-	    if (AC.isTrue(Base))
-	      return 1;
-	}
+      signSplit(uv,S,V);
+      mc=Base.find(V);
+      
+      if (mc==Base.end())
+	throw ColErr::InContainerError<int>
+	  (uv,"Acomp::isTrue Base unit not found");
+      ELog::EM<<"S == "<<S<<" "<<V<<ELog::endDiag;
+      
+      if ((S>0 && mc->second) ||
+	  (S<0 && !mc->second)) return 1;
+      
+      for(const Acomp& AC : Comp)
+	if (AC.isTrue(Base))
+	  return 1;
     }
-  // Empty set is true
-  return 1;
+  // Everything else false
+  return 0;
 }
 
 std::pair<Acomp,Acomp>

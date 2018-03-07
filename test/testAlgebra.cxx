@@ -44,6 +44,7 @@
 #include "Acomp.h"
 #include "Algebra.h"
 
+#include "Binary.h"
 #include "testFunc.h"
 #include "testAlgebra.h"
 
@@ -85,7 +86,8 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testDNF,
       &testAlgebra::testExpandBracket,
       &testAlgebra::testExpandCNFBracket,
-      &testAlgebra::testLogicalCover,
+      &testAlgebra::testIsTrue,
+      &testAlgebra::testLogicalCover,      
       &testAlgebra::testMakeString,
       &testAlgebra::testMerge,
       &testAlgebra::testMult,
@@ -104,6 +106,7 @@ testAlgebra::applyTest(const int extra)
       "DNF",
       "ExpandBracket",
       "ExpandCNFBracket",
+      "IsTrue",
       "LogicalCover",
       "MakeString",
       "Merge",
@@ -439,6 +442,50 @@ testAlgebra::testExpandCNFBracket()
 
 
 int
+testAlgebra::testIsTrue()
+  /*!
+    Just check the isTrue fuction
+    \retval 0 :: success  -1 on failrue
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testIsTrue");
+
+  typedef std::tuple<std::string,Binary,int> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("(a+b)",Binary("00"),0)
+    };
+
+  size_t cnt(0);
+  for(const TTYPE& tc : Tests)
+    {
+      cnt++;
+      Algebra A;
+      A.setFunction(std::get<0>(tc));
+      
+      const Acomp& AC=A.getComp();
+      std::map<int,int> BMap;
+      const size_t BNlen=std::get<1>(tc).getPad();
+      size_t BN=std::get<1>(tc).getNumber();	
+      for(size_t i=0;i<BNlen;i++)
+	{
+	  BMap.emplace(static_cast<int>(i+1),BN % 2);
+	  BN /= 2;
+	}
+      const int flag=AC.isTrue(BMap);
+      if (flag!=std::get<2>(tc))
+	{
+	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<flag<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
 testAlgebra::testLogicalCover()
   /*!
     Expand the bracket int CNF form
@@ -511,11 +558,14 @@ testAlgebra::testCNF()
 	  ELog::EM<<"Function in CNF:"<<A<<ELog::endDiag;
 	  return -1;
 	}
+      
       A.makeDNF();
       Out=A.display();
       if (Out!=std::get<2>(tc))
 	{
 	  ELog::EM<<"Failed on DNF  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Expected       :"<<std::get<2>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Result         :"<<Out<<ELog::endDiag;
 	  ELog::EM<<"Function in DNF:"<<A<<ELog::endDiag;
 	  return -2;
 	}

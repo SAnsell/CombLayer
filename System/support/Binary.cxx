@@ -3,7 +3,7 @@
  
  * File:   support/Binary.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ Binary::Binary() :
   */
 {}
 
-Binary::Binary(const unsigned long int& A,const int P) :
+Binary::Binary(const unsigned long int& A,const unsigned long int P) :
   num(A),pad(P)
   /*!
     Constructor
@@ -56,7 +56,7 @@ Binary::Binary(const unsigned long int& A,const int P) :
   */
 {}
 
-Binary::Binary(const std::string& A,const int P) :
+Binary::Binary(const std::string& A,const unsigned long int P) :
   pad(P)
   /*!
     Constructor 
@@ -77,9 +77,11 @@ Binary::Binary(const std::string& A,const int P) :
 	  num+=1;
 	}
     }
+  if (A.size()>pad)
+    pad=A.size();
 }
 
-Binary::Binary(const char* A,const unsigned int S,const int P) :
+Binary::Binary(const char* A,const unsigned int S,const unsigned long int P) :
   pad(P)
   /*!
     Constructor 
@@ -99,7 +101,7 @@ Binary::Binary(const char* A,const unsigned int S,const int P) :
     num*=256;
 }
 
-Binary::Binary(const unsigned char* A,const unsigned int S,const int P) :
+Binary::Binary(const unsigned char* A,const unsigned int S,const unsigned long int P) :
   pad(P)
   /*!
     Constructor 
@@ -119,7 +121,9 @@ Binary::Binary(const unsigned char* A,const unsigned int S,const int P) :
     num*=256;
 }
 
-Binary::Binary(const std::string& A,const unsigned int S,const int P) :
+Binary::Binary(const std::string& A,
+	       const unsigned int S,
+	       const unsigned long int P) :
   pad(P)
   /*!
     Constructor 
@@ -139,7 +143,7 @@ Binary::Binary(const std::string& A,const unsigned int S,const int P) :
     num*=256;
 }
 
-Binary::Binary(const std::vector<int>& A,const int P)  : 
+Binary::Binary(const std::vector<int>& A,const unsigned long int P)  : 
   pad(P)
   /*!  
     Sets parts on a vector of flags : 
@@ -158,6 +162,7 @@ Binary::Binary(const std::vector<int>& A,const int P)  :
 	num+=part;
       part >>= 1;
     }
+  if (A.size()>pad) pad=A.size();
 }
 
 Binary::Binary(const Binary& A) : 
@@ -233,7 +238,7 @@ Binary::write(std::ostream& OX) const
 }
 
 void
-Binary::write(std::ostream& OX,const int size) const
+Binary::write(std::ostream& OX,const unsigned long size) const
   /*!
     Write out to a stream (uses size)
     \param OX :: Output steam
@@ -250,7 +255,7 @@ Binary::write(std::ostream& OX,const int size) const
   const char* OutVal={"01"};
 
   if (size)
-    for(int i=0;i<size-static_cast<int>(Bits.size());i++)
+    for(unsigned long int i=0;i<size-Bits.size();i++)
       OX<<"0";
 
   std::vector<int>::reverse_iterator rc;

@@ -388,6 +388,25 @@ BnId::mapState(const std::vector<int>& Index,
   return;
 }
 
+void
+BnId::setState(const std::vector<int>& Index,
+	       const std::map<int,int>& Base) 
+  /*!
+    Sets the components within base with true/false
+    \param Index :: vector of Literal/Surface numbers
+    \param Base :: map to be used
+  */ 
+{
+  std::map<int,int>::const_iterator mc;
+  for(size_t i=0;i<Index.size() && Tval.size();i++)
+    {
+      mc=Base.find(Index[i]);
+      Tval[i]=mc->second;
+    }
+
+  return;
+}
+
 
 
 std::pair<int,BnId>

@@ -3,7 +3,7 @@
  
  * File:   monteInc/BnId.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,6 +92,7 @@ class BnId
   size_t TrueCount() const { return Tnum; }
   
   void mapState(const std::vector<int>&,std::map<int,int>&) const;
+  void setState(const std::vector<int>&,const std::map<int,int>&);
 
   /// Set output state
   static void setFullDisplay(const int I) { fullOut=I; }
