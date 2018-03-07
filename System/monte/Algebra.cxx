@@ -44,6 +44,7 @@
 #include "support.h"
 #include "MapSupport.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 
@@ -409,6 +410,7 @@ void
 Algebra::addImplicates(const std::map<int,int>& IM)
   /*!
     Adds the implicates to the 
+    \param IM :: Implicate list
    */
 {
   for(const std::map<int,int>::value_type& mc : IM)

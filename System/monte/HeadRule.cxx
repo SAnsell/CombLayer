@@ -51,6 +51,7 @@
 #include "Surface.h"
 #include "surfIndex.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "Rules.h"

@@ -67,6 +67,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "RuleBinary.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "surfRegister.h"

@@ -19,8 +19,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef AcompTools_h
-#define AcompTools_h
+#ifndef MonteCarlo_AcompTools_h
+#define MonteCarlo_AcompTools_h
 
 namespace Geometry
 {
@@ -40,8 +40,22 @@ namespace MonteCarlo
 */
   namespace AcompTools
     {
-      bool unitsLessOrder(const int&,const int&);
-      void unitSort(std::vector<int>&);
+      struct unitsLessOrder
+      {
+        bool operator()(const int& A,const int& B) const
+	  {
+	    /*!
+	      Process the sorting of units
+	      \param A :: Unit to sort
+	      \param B :: Unit to sort		       
+	      \return A>B
+	    */
+	    const int aPlus=std::abs(A);
+	    const int bPlus=std::abs(B);
+	    if (aPlus!=bPlus) return aPlus<bPlus;
+	    return (B<A);
+	  }
+      };
     }
 
 

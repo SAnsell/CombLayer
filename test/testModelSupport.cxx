@@ -3,7 +3,7 @@
  
  * File:   test/testModelSupport.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,9 +48,6 @@
 #include "Vec3D.h"
 #include "Surface.h"
 #include "Rules.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "surfIndex.h"
 #include "surfRegister.h"
 #include "HeadRule.h"

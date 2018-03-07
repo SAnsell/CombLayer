@@ -77,6 +77,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
@@ -1465,20 +1466,14 @@ Simulation::minimizeObject(const int CN)
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
 
-
   if (!CPtr->isPlaceHold())
     {
       const std::map<int,int> IP=CPtr->getImplicatePairs();
       MonteCarlo::Algebra AX;
       AX.setFunctionObjStr(CPtr->cellCompStr());
-      AX.addImplicates(IP)
+      AX.addImplicates(IP);
       AX.expandCNFBracket();
       AX.minimize();
-      // // Note both together possible
-      // if (NL<=cellDNF)
-
-      // if (NL<=cellCNF)
-      // 	AX.expandCNFBracket();
 	  
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),

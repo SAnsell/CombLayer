@@ -59,8 +59,12 @@ class Acomp
 {
  private:
 
+  /// Type of set for units
+  typedef std::set<int,AcompTools::unitsLessOrder> UTYPE; 
+
+  int trueFlag;                 ///< -1 : False : 0 [variable] : 1 True
   int Intersect;                ///<  Union/Intersection (0,1)
-  std::vector<int> Units;       ///< Units in list
+  UTYPE Units;       ///< Units in set
   std::vector<Acomp> Comp;      ///< Components in list
 
   void deleteComp();            ///< delete all of the Comp list
@@ -144,9 +148,8 @@ class Acomp
   bool isEmpty() const;
 
   
-  int getSinglet() const;   
+  int getSinglet() const;
   const Acomp* itemC(const size_t) const;
-  int itemN(const size_t) const;   
 
   size_t countComponents() const;
   std::pair<size_t,size_t> size() const;
@@ -157,14 +160,13 @@ class Acomp
   int isSingle() const;        // one item
 
   void removeNotPresent(const int);
-  void removeTarget(const int);
+  void resolveTrue(const int);
   
   int contains(const int) const;
   int contains(const Acomp&) const;
   /// Deterimine if inter/union
   int isInter() const { return Intersect; }  
   int isTrue(const std::map<int,int>&) const;   
-  bool isNumberSorted() const;
   
   void Sort();
 

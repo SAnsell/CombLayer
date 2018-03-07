@@ -74,7 +74,7 @@ operator<<(std::ostream& OX,const Acomp& A)
 //
 
 Acomp::Acomp(const JoinForm Tx) :
-  Intersect((Tx==Union) ? 0 : 1)
+  trueFlag(0),Intersect((Tx==Union) ? 0 : 1)
   /*!
     Standard Constructor 
     \param Tx :: 0 it means intersect 1 it means union
@@ -82,7 +82,7 @@ Acomp::Acomp(const JoinForm Tx) :
 {}
 
 Acomp::Acomp(const int Tx) :
-  Intersect(Tx ? 1 : 0)
+  trueFlag(0),Intersect(Tx ? 1 : 0)
   /*!
     Standard Constructor 
     \param Tx :: 0 intersect / 1 union
@@ -90,8 +90,8 @@ Acomp::Acomp(const int Tx) :
 {}
 
 Acomp::Acomp(const Acomp& A) :
-  Intersect(A.Intersect),Units(A.Units),
-  Comp(A.Comp)
+  trueFlag(A.trueFlag),Intersect(A.Intersect),
+  Units(A.Units),Comp(A.Comp)
   /*!
     Copy constructor
     \param A :: Acomp object to copy
@@ -109,6 +109,7 @@ Acomp::operator=(const Acomp& A)
 {
   if (this!=&A)
     {
+      trueFlag=A.trueFlag;
       Intersect=A.Intersect;
       Units=A.Units;
       Comp=A.Comp;
@@ -158,19 +159,12 @@ Acomp::operator==(const Acomp& A) const
     return 0;                               // if singular.
 
   // If Units not empty compare each and determine
-  // if equal. 
-  if (!Units.empty())
-    {
-      std::vector<int>::const_iterator vc,xc;
-      xc=A.Units.begin();
-      for(vc=Units.begin();vc!=Units.end();xc++,vc++)
-	if (*vc != *xc)
-	  return 0;
-    }
+  // if equal.
+  if (Units!=A.Units) return 0;
 
   // Both Empty :: thus equal
-  if (Comp.empty())    
-    return 1;
+  if (Comp.empty())
+    return A.trueFlag==trueFlag;
 
   // Assume that comp Units are sorted.
   std::vector<Acomp>::const_iterator acv,xcv;
@@ -206,19 +200,12 @@ Acomp::operator<(const Acomp& A) const
     return Intersect;                  // Union==0 therefore this > A 
   
   // PROCESS Units. (order : then size)
-  std::vector<int>::const_iterator uc,ac;
-  ac=A.Units.begin();
-  uc=Units.begin();
-  for(;ac!=A.Units.end() && uc!=Units.end();uc++,ac++)
-    if (*uc!=*ac)
-      return (*uc < *ac);
 
-  if (ac!=A.Units.end())
-    return 0;
-  if (uc!=Units.end())
-    return 1;
+  if (Units!=A.Units)
+    return Units<A.Units;
+  
 
-  // PROCESS CompUnits.
+  // PROCESS CompUnits.  
   std::vector<Acomp>::const_iterator ux,ax;
   ux=Comp.begin();
   ax=A.Comp.begin();
@@ -227,7 +214,7 @@ Acomp::operator<(const Acomp& A) const
       if (*ax!=*ux)
 	return (*ux < *ax);
     }
-  if (uc!=Units.end())
+  if (ux!=Comp.end())
     return 1;
   // everything idential or A.comp bigger:
   return 0;
@@ -241,10 +228,10 @@ Acomp::operator+=(const Acomp& A)
     \returns *this
   */
 {
-  if (Intersect)                // If this is an intersection
-    {                           // we need to have a union 
-      Acomp Ax=Acomp(*this);    //make copy
-      Units.clear();                    // remove everthing else
+  if (Intersect)                       // If this is an intersection
+    {                                  // we need to have a union 
+      Acomp Ax=Acomp(*this);           //make copy
+      Units.clear();                   // remove everthing else
       Comp.clear();
       Intersect=0;                      // make this into a Union
       addComp(Ax);                     // add oldThis to the list
@@ -369,48 +356,44 @@ Acomp::hasUnitInUnit(const int T) const
     \param 
    */
 {
-  return (std::find(Units.begin(),Units.end(),T)!=Units.end());
+  return (Units.find(T)!=Units.end());
 }
 
 void
-Acomp::addComp(const Acomp& AX)
+Acomp::addComp(const Acomp& AC)
   /*!
     Adds a pointer to the Comp list.
     If the pointer is singular, extracts the
     object and adds that componenet.
     Assumes that the component is sorted and inserts appropiately.
-    \param AX :: Acomp component to add
+    \param AC :: Acomp component to add
   */
 {
-  const std::pair<size_t,size_t> Stype=AX.size();
+  const std::pair<size_t,size_t> Stype=AC.size();
   if (Stype.first+Stype.second==0)
-    throw ColErr::ExBase(-2,"Acomp::addComp Pair Count zero");
+    return;
 
-  if (AX.isSingle() || AX.Intersect==Intersect)       //single unit component/Conjoint
+  trueFlag=0;
+  //single unit component/Conjoint
+  if (AC.isSingle() || AC.Intersect==Intersect)       
     {
-      std::vector<int>::const_iterator aup;
-      for(aup=AX.Units.begin();aup!=AX.Units.end();aup++)
-        {
-	  std::vector<int>::iterator ipt;
-	  ipt=lower_bound(Units.begin(),Units.end(),*aup);
-	  if (ipt==Units.end() || *ipt!=*aup)                       // Only insert if new
-	    Units.insert(ipt,*aup);
-	}
+      Units.insert(AC.Units.begin(),AC.Units.end());
+
       std::vector<Acomp>::const_iterator acp;
-      for(acp=AX.Comp.begin();acp!=AX.Comp.end();acp++)
+      for(acp=AC.Comp.begin();acp!=AC.Comp.end();acp++)
         {
 	  std::vector<Acomp>::iterator cpt;
 	  cpt=lower_bound(Comp.begin(),Comp.end(),*acp);
-	  if (cpt==Comp.end() || *cpt!=*acp)                       // Only insert if new
+	  if (cpt==Comp.end() || *cpt!=*acp)     // Only insert if new
 	    Comp.insert(cpt,*acp);
 	}
       return;
     }
   // Type different insertion
   std::vector<Acomp>::iterator cpt;
-  cpt=lower_bound(Comp.begin(),Comp.end(),AX);
-  if (cpt==Comp.end() || *cpt!=AX)                       // Only insert if new
-    Comp.insert(cpt,AX);
+  cpt=lower_bound(Comp.begin(),Comp.end(),AC);
+  if (cpt==Comp.end() || *cpt!=AC)                       // Only insert if new
+    Comp.insert(cpt,AC);
   return;
 }
 
@@ -421,11 +404,7 @@ Acomp::addUnitItem(const int Item)
     \param Item :: Unit to add
   */
 {
-  // Quick and cheesy insertion if big.
-  std::vector<int>::iterator ipt;
-  ipt=lower_bound(Units.begin(),Units.end(),Item);
-  if (ipt==Units.end() || *ipt!=Item)    // Only insert if new
-    Units.insert(ipt,Item);
+  Units.insert(Item);
   return;
 }
 
@@ -567,11 +546,9 @@ Acomp::merge()
       if (AC.Intersect==Intersect)
 	{
 	  Out++;
-	  Units.insert(Units.end(),AC.Units.begin(),AC.Units.end());
+	  
+	  Units.insert(AC.Units.begin(),AC.Units.end());
 	  AC.Units.clear();
-	  AcompTools::unitSort(Units);
-
-
 	  // move up AC.comp units
 	  if (!AC.Comp.empty())
 	    {
@@ -579,7 +556,6 @@ Acomp::merge()
 	      AC.Comp.clear();
 	    }
 	}
-
     }
   Comp.insert(Comp.end(),extraComp.begin(),extraComp.end());
   // remove nulls
@@ -605,11 +581,7 @@ Acomp::copySimilar(const Acomp& A)
   if (Intersect!=A.Intersect)
     return -1;
 
-  if (!A.Units.empty())
-    {
-      Units.insert(Units.end(),A.Units.begin(),A.Units.end());
-      AcompTools::unitSort(Units);
-    }
+  Units.insert(A.Units.begin(),A.Units.end());
 
   // Add components
   for(const Acomp& AC : A.Comp)
@@ -638,10 +610,9 @@ Acomp::addUnit(const std::vector<int>& Index,
 	  if (V>Index.size())
 	    throw ColErr::IndexError<size_t>(V,Index.size(),
 					     "Acomp::addUnit ");
-	  Units.push_back(S*Index[i]);
+	  Units.insert(S*Index[i]);
 	}
     }
-  AcompTools::unitSort(Units);
   return;
 }
 
@@ -678,7 +649,8 @@ Acomp::assignDNF(const std::vector<int>& Index,const std::vector<BnId>& A)
 }
 
 void
-Acomp::assignCNF(const std::vector<int>& Index,const std::vector<BnId>& A)
+Acomp::assignCNF(const std::vector<int>& Index,
+		 const std::vector<BnId>& A)
   /*!
     Assign the object to the Essentual PI in the vector
     A. This will make the form DNF.
@@ -716,30 +688,6 @@ Acomp::assignCNF(const std::vector<int>& Index,const std::vector<BnId>& A)
 //   PUBLIC FUNCTIONS 
 // -------------------------------------
 
-bool
-Acomp::isNumberSorted() const
-  /*!
-    Fast check to determine if system is sorted
-  */
-{
-  int prev(0);
-  for(const int& A : Units)
-    {
-      if (!AcompTools::unitsLessOrder(prev,A))
-	{
-	  ELog::EM<<"Acomp::isNumbersorted:: Failed on "
-		  <<*this<<ELog::endErr;
-	  return 0;
-	}
-      prev=A;
-    }
-  
-  for(const Acomp& AC : Comp)
-    if (!AC.isNumberSorted())
-      return 0;
-  
-  return 1;
-}
 
 void
 Acomp::Sort()
@@ -748,7 +696,6 @@ Acomp::Sort()
     Decends down the Comp Tree.
   */
 {
-  AcompTools::unitSort(Units);
   // Sort each decending object first
   for(Acomp& AC : Comp)
     AC.Sort();
@@ -1002,14 +949,9 @@ Acomp::getAbsLiterals(std::set<int>& literalMap) const
     literals 
   */
 {
-  std::vector<int>::const_iterator uc;
-  std::map<int,int>::iterator mc;
-  int S,V;
-  for(uc=Units.begin();uc!=Units.end();uc++)
-    {
-      signSplit(*uc,S,V);
-      literalMap.insert(V);
-    }
+  for(const int u : Units)
+    literalMap.insert(std::abs(u));
+
   for(const Acomp& CC : Comp)
     CC.getAbsLiterals(literalMap);
   return;
@@ -1024,8 +966,7 @@ Acomp::getLiterals(std::set<int>& literalMap) const
     \param literalMap :: Set the get the literals 
   */
 {
-  for(const int CN : Units)
-    literalMap.insert(CN);
+  literalMap.insert(Units.begin(),Units.end());
 
   for(const Acomp& CC : Comp)
     CC.getLiterals(literalMap);
@@ -1074,11 +1015,6 @@ Acomp::removeEqComp()
   Comp.erase(dx,Comp.end());
 
   // Units are sorted
-
-  AcompTools::unitSort(Units);
-  std::vector<int>::iterator ux=unique(Units.begin(),Units.end());
-  cnt+=std::distance(ux,Units.end());
-  Units.erase(ux,Units.end());
   return static_cast<int>(cnt);
 }
 
@@ -1428,18 +1364,15 @@ Acomp::getDNFpart(std::vector<Acomp>& Parts) const
   */
   if (isDNF())
     {
-      std::vector<int>::const_iterator vc;
-      std::vector<Acomp>::const_iterator xc;
-
       Parts.clear();
-      for(vc=Units.begin();vc!=Units.end();vc++)
+      for(const int v : Units)
 	{
 	  Acomp Aitem(Inter);  // Intersection (doesn't matter since 1 object)
-	  Aitem.addUnitItem(*vc);
+	  Aitem.addUnitItem(v);
 	  Parts.push_back(Aitem);
 	}
-      for(xc=Comp.begin();xc!=Comp.end();xc++)
-	Parts.push_back(*xc);
+      for(const Acomp& AC : Comp)
+	Parts.push_back(AC);
       return static_cast<int>(Parts.size());
     }
   
@@ -1486,7 +1419,6 @@ Acomp::getCNFobject(std::vector<int>& keyNumbers,
     return -1;
 
   keyNumbers.assign(litMap.begin(),litMap.end());
-
   for(const int CN : keyNumbers)
     Base.emplace(CN,1);
   
@@ -1511,37 +1443,48 @@ Acomp::isTrue(const std::map<int,int>& Base) const
     \returns 1 if true and 0 if false
   */
 {
-  if (Units.empty() &&  Comp.empty())
-    return 1;
-
-  // Deal with case of a single object (then join
-  // doesn't matter  (single unit is alway ok )
-  const int retJoin=
-    (Units.size()+Comp.size()!=1 && Intersect) ? 0 : 1;
-
-  long int aimTruth;
   int S,V;
-  std::map<int,int>::const_iterator bv;
-  std::vector<int>::const_iterator uc;
-  // e.g. a'b   1 1  (retJoin ==1)
-  for(uc=Units.begin();uc!=Units.end();uc++)
-    {
-      signSplit(*uc,S,V);
-      bv=Base.find(V);
-      if (bv==Base.end())
-	throw ColErr::ExBase(-10,"Acomp::isTrue Base unit not found");
-      aimTruth= (S<0) ? 1-retJoin : retJoin;
-      
-      if (bv->second == aimTruth)          // any true then return true
-	return retJoin;
-    }
-
-  for(const Acomp& CC : Comp)
-    if (CC.isTrue(Base)==retJoin)
-      return retJoin;
+  std::map<int,int>::const_iterator mc;
   
-  // Finally not true then
-  return 1-retJoin;    
+  if (Intersect)
+    {
+      // all must be true:
+      for(const	int uv : Units)
+	{
+	  signSplit(uv,S,V);
+	  mc=Base.find(V);
+
+	  if (mc==Base.end())
+	    throw ColErr::InContainerError<int>
+	      (uv,"Acomp::isTrue Base unit not found");
+	  if ((S>0 && !mc->second) ||
+	      (S<0 && mc->second)) return 0;
+	}
+      for(const Acomp& AC : Comp)
+	if (!AC.isTrue(Base))
+	  return 0;
+    }
+  else
+    {
+      // any must be true:
+      for(const	int uv : Units)
+	{
+	  signSplit(uv,S,V);
+	  mc=Base.find(V);
+
+	  if (mc==Base.end())
+	    throw ColErr::InContainerError<int>
+	      (uv,"Acomp::isTrue Base unit not found");
+
+	  if ((S>0 && mc->second) ||
+	      (S<0 && !mc->second)) return 1;
+	  for(const Acomp& AC : Comp)
+	    if (AC.isTrue(Base))
+	      return 1;
+	}
+    }
+  // Empty set is true
+  return 1;
 }
 
 std::pair<Acomp,Acomp>
@@ -1583,18 +1526,18 @@ Acomp::algDiv(const Acomp& G)
 
   for(const Acomp& CC : Flist)
     {
-      size_t itemCnt(0);
       U.push_back(Acomp(Inter)); 
       V.push_back(Acomp(Inter)); 
       Acomp& Uitem= U.back();
       Acomp& Vitem= V.back();
-      while( (cell = CC.itemN(itemCnt)) )
+      UTYPE::const_iterator ccItem=CC.Units.begin();
+      while( (cell = *ccItem) )
         {
 	  if (Gmap.find(cell)!=Gmap.end())
 	    Uitem.addUnitItem(cell);
 	  else
 	    Vitem.addUnitItem(cell);
-	  itemCnt++;
+	  ccItem++;
 	}
     }
 
@@ -1635,21 +1578,16 @@ int
 Acomp::contains(const Acomp& A) const
   /*!
     Checks the Units of A to  see if they are in this->Units.
-    Assumes that Units is sorted.
+    *this can contain MORE signed-literals than A.
     \param A :: Object to cross compare
-    \retval 0 :: all literals in A are in this
+    \retval 0 :: All literals in A are in this
     \retval 1 :: A is unique from this
   */
 {
-  std::vector<int>::const_iterator vc,tc;
-  tc=Units.begin();
-  for(vc=A.Units.begin();vc!=A.Units.end();vc++)
-    {
-      while(tc!=Units.end() && *tc<*vc)
-	tc++;
-      if (tc==Units.end() || *tc!=*vc)
-	return 0;
-    }
+  for(const int AU : A.Units)
+    if (Units.find(AU)==Units.end())
+      return 0;
+  
   return 1;
 }
 
@@ -1694,7 +1632,7 @@ Acomp::joinDepth()
       // If Singular then can be up premoted.
       if (compSize.first==1 && compSize.second==0)         // UNITS only
 	{
-	  Units.push_back(AX.itemN(0));
+	  Units.insert(AX.getSinglet());
 	  // delete memory and the component.
 	  Comp.erase(Comp.begin()+static_cast<long int>(ix));
 	  ix--;
@@ -1711,7 +1649,7 @@ Acomp::joinDepth()
       // Same type thus use the bits.
       else if (Intersect==AX.Intersect)    
 	{
-	  Units.insert(Units.end(),AX.Units.begin(),AX.Units.end());
+	  Units.insert(AX.Units.begin(),AX.Units.end());
 	  Comp.insert(Comp.end(),AX.Comp.begin(),AX.Comp.end());
 	  Comp.erase(Comp.begin()+static_cast<long int>(ix));
 	  ix--;
@@ -1839,7 +1777,6 @@ Acomp::setString(const std::string& Line)
   else
     processUnion(Ln);
 
-  AcompTools::unitSort(Units);
   return;
 }
 
@@ -1891,21 +1828,9 @@ Acomp::getSinglet() const
   if (Units.size()!=1 || !Comp.empty())
     throw ColErr::InContainerError<size_t>
       (Units.size(),"Units or Comp not sigular:"+display());
-  return Units[0];
+  return *Units.begin();
 }
   
-int
-Acomp::itemN(const size_t Index) const
-  /*!
-    Assessor function to get a unit number
-    \param Index :: Number of Unit to aquire
-    \returns Units[Index] or 0 on failure
-  */
-{
-  if (Index<Units.size())
-    return Units[Index];
-  return 0;
-}
 
 const Acomp*
 Acomp::itemC(const size_t Index) const
@@ -1947,23 +1872,33 @@ Acomp::makeNull()
     deleted [necessary???]
   */
 {
-  isNumberSorted();
   // ASSUMES sorted
   if (Intersect)
     {
-      int prev(0);	      
       for(const int N : Units)
 	{
-	  if (prev+N==0)
+	  if (Units.find(-N)!=Units.end())
 	    {
-	      Units.clear();
-	      Comp.clear();
+	      trueFlag=-1;
+	      clear();
 	      return 1;
 	    }
-	  prev=N;
-	  
 	}
     }
+  else // UNION
+    {
+      for(const int N : Units)
+	{
+	  // always true
+	  if (Units.find(-N)!=Units.end())
+	    {
+	      clear();
+	      trueFlag=1;
+	      return 1;
+	    }
+	}
+    }
+  
   // this must be carried out since Acomp might be intersect
   // even if above is not
   std::vector<Acomp>::iterator ac=
@@ -1988,12 +1923,15 @@ Acomp::complement()
 {
   ELog::RegMethod RegA("Acomp","complement");
   Intersect=1-Intersect;
-  transform(Units.begin(),Units.end(),
-            Units.begin(),std::bind2nd(std::multiplies<int>(),-1) );
-  AcompTools::unitSort(Units);    /// Resort the list. use reverse?
 
-  for_each(Comp.begin(),Comp.end(),
-	    std::mem_fun_ref(&Acomp::complement) );
+  UTYPE newUSet;
+  for(const int UN : Units)
+    newUSet.insert(-UN);
+  Units=newUSet;
+
+  for(Acomp& AC : Comp)
+    AC.complement();
+
   sort(Comp.begin(),Comp.end());
   return;
 }

@@ -51,6 +51,7 @@
 #include "Rules.h"
 #include "Debug.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "surfIndex.h"

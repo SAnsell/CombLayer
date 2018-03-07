@@ -45,7 +45,7 @@ class Algebra
   std::map<int,std::string> SurfMap;    ///< Surface Map
 
   Acomp F;                              ///< Factor
-  ///< Additional implicates to  issue
+  ///< Additional implicates to resolve/simplify Acomp
   std::set<Acomp> implicates;           
 
  public:
@@ -68,6 +68,8 @@ class Algebra
   Algebra operator*(const Algebra&) const;
   int logicalEqual(const Algebra&) const;
 
+  void addImplicates(const std::map<int,int>&);
+  
   size_t countComponents() const;
   void minimize();
   void expandBracket();

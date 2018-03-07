@@ -40,6 +40,7 @@
 #include "GTKreport.h"
 #include "OutputLog.h" 
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 

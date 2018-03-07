@@ -84,6 +84,7 @@
 #include "FuncDataBase.h"
 #include "SurInter.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"

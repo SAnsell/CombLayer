@@ -35,7 +35,7 @@ namespace stlFunc
 {
 
 template<typename T>
-void removeUnit(std::vector<T>&,const T&);
+void removeUnit(typename std::vector<T>&,const T&);
 
 }  // NAMESPACE stlFunc
 

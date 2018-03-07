@@ -53,35 +53,6 @@ namespace MonteCarlo
 namespace AcompTools
 {
     
-
-bool
-unitsLessOrder(const int& A,const int& B)
-  /*!
-    Process the sorting of units
-    \param A :: Unit to sort
-    \param B :: Unit to sort		       
-    
-   */
-{
-  const int aPlus=std::abs(A);
-  const int bPlus=std::abs(B);
-  if (aPlus!=bPlus) return aPlus<bPlus;
-  return (B<A);
-}
-
-void
-unitSort(std::vector<int>& A)
-  /*!
-    Sort vector and remove duplicates
-    \param A :: Vector to sort
-  */
-{
-  std::sort(A.begin(),A.end(),unitsLessOrder);
-  std::vector<int>::iterator vc=
-    std::unique(A.begin(),A.end());
-  A.erase(vc,A.end());
-  return;
-}
     
 }  // NAMESPACE AcompTools
 

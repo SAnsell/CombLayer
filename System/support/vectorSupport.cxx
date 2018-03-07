@@ -45,22 +45,22 @@ namespace  stlFunc
 
 template<typename T>
 void
-removeIfUnit(std::vector<T>& V,const T& aValue)
+removeUnit(typename std::vector<T>& V,const T& aValue)
   /*!
     Remove a unit from a vector
     \param V :: Vector
     \param aValue :: value
   */
 {
-  V.erase(std::remove_if(V.begin(),V.end(),T),V.end());
+  V.erase(std::remove(V.begin(),V.end(),aValue),V.end());
   return;
 }
     
 /// \cond TEMPLATE 
 
 template void
-removeIfUnit(std::vector<int>&,const int&);
+removeUnit(std::vector<int>&,const int&);
 
 /// \endcond TEMPLATE 
 
-}  // NAMESPACE StrFunc
+}  // NAMESPACE stlFunc

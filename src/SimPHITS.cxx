@@ -88,6 +88,7 @@
 #include "SurInter.h"
 #include "Debug.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"

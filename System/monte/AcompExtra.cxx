@@ -42,6 +42,7 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "vectorSupport.h"
 #include "stringCombine.h"
 #include "mathSupport.h"
 #include "MatrixBase.h"
@@ -64,10 +65,10 @@ Acomp::expandIII(const Acomp& A) const
    */
 {
   Acomp Out(1);   // Intersection
-  Out.Units.insert(Out.Units.end(),Units.begin(),Units.end());
+  Out.Units.insert(Units.begin(),Units.end());
   Out.Comp.insert(Out.Comp.end(),Comp.begin(),Comp.end());
 
-  Out.Units.insert(Out.Units.end(),A.Units.begin(),A.Units.end());
+  Out.Units.insert(A.Units.begin(),A.Units.end());
   Out.Comp.insert(Out.Comp.end(),A.Comp.begin(),A.Comp.end());
 
   return Out;
@@ -85,13 +86,11 @@ Acomp::expandIIU(const Acomp& A) const
   for(const int AI : A.Units)
     {
       Acomp addItem=interCombine(AI,*this);
-      AcompTools::unitSort(addItem.Units);
       Out.primativeAddItem(addItem);	
     }
   for(const Acomp& AC : A.Comp)
     {
       Acomp addItem=interCombine(*this,AC);
-      AcompTools::unitSort(addItem.Units);
       Out.primativeAddItem(addItem);
     }
   
@@ -124,14 +123,12 @@ Acomp::expandUIU(const Acomp& A) const
       for(const int BI : A.Units)
 	{
 	  Acomp addItem=interCombine(AI,BI);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
 	  Acomp addItem=interCombine(AI,AC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -141,14 +138,12 @@ Acomp::expandUIU(const Acomp& A) const
       for(const int BI : A.Units)
 	{
 	  Acomp addItem=interCombine(BI,AC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
       // C.aC
       for(const Acomp& BC : A.Comp)
 	{
 	  Acomp addItem=interCombine(AC,BC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -171,7 +166,6 @@ Acomp::expandIUI(const Acomp& A) const
       for(const int BI : A.Units)
 	{
 	  Acomp addItem=unionCombine(AI,BI);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
 
@@ -179,7 +173,6 @@ Acomp::expandIUI(const Acomp& A) const
       for(const Acomp& AC : A.Comp)
 	{
 	  Acomp addItem=unionCombine(AI,AC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -189,14 +182,12 @@ Acomp::expandIUI(const Acomp& A) const
       for(const int BI : A.Units)
 	{
 	  Acomp addItem=unionCombine(BI,AC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
       // C.aC
       for(const Acomp& BC : A.Comp)
 	{
 	  Acomp addItem=unionCombine(AC,BC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -218,15 +209,13 @@ Acomp::expandIUU(const Acomp& A) const
       // N.aN
       Acomp addItem(0);  // union
       addItem.Units=A.Units;
-      addItem.Units.push_back(AI);
-      AcompTools::unitSort(addItem.Units);
+      addItem.Units.insert(AI);
       Out.primativeAddItem(addItem);
     
       // N.ac
       for(const Acomp& AC : A.Comp)
 	{
 	  Acomp addItem=unionCombine(AI,AC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -237,14 +226,12 @@ Acomp::expandIUU(const Acomp& A) const
       for(const int BI : A.Units)
 	{
 	  Acomp addItem=unionCombine(BI,AC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
       // C.aC
       for(const Acomp& BC : A.Comp)
 	{
 	  Acomp addItem=unionCombine(AC,BC);
-	  AcompTools::unitSort(addItem.Units);
 	  Out.primativeAddItem(addItem);
 	}
     }
@@ -273,11 +260,10 @@ Acomp::expandUUU(const Acomp& A) const
 {
   Acomp Out(0);   // Union
 
-  ELog::EM<<"UUU"<<ELog::endDiag;
-  Out.Units.insert(Out.Units.end(),Units.begin(),Units.end());
+  Out.Units.insert(Units.begin(),Units.end());
   Out.Comp.insert(Out.Comp.end(),Comp.begin(),Comp.end());
   
-  Out.Units.insert(Out.Units.end(),A.Units.begin(),A.Units.end());
+  Out.Units.insert(A.Units.begin(),A.Units.end());
   Out.Comp.insert(Out.Comp.end(),A.Comp.begin(),A.Comp.end());
   return Out;
 }
@@ -306,27 +292,17 @@ Acomp::componentExpand(const int interFlag,const Acomp& A) const
     Out=expandUIU(A);
   
   else if (Intersect==1 && interFlag==0 && A.Intersect==1)
-    {
-      Out=expandIUI(A);
-    }
+    Out=expandIUI(A);
   else if (Intersect==1 && interFlag==0 && A.Intersect==0)
-    {
-      Out=expandIUU(A);
-    }
+    Out=expandIUU(A);
   else if (Intersect==0 && interFlag==0 && A.Intersect==1)
-    {
-      Out=expandUUI(A);
-    }
+    Out=expandUUI(A);
   else if (Intersect==0 && interFlag==0 && A.Intersect==0)
-    {
-      Out=expandUUU(A);
-    }
+    Out=expandUUU(A);
   else
     throw ColErr::InContainerError<int>(Intersect,
 					"Intersect/interflag not correct");
   
-  AcompTools::unitSort(Out.Units);
-
   return  Out;
 }
 
@@ -342,9 +318,8 @@ Acomp::interCombine(const int A,const int B)
   Acomp Out(1);  // inter
   if (A != -B)   // need a special for this
     {
-      Out.Units.push_back(A);
-      if (A!=B)
-	Out.Units.push_back(B);
+      Out.Units.insert(A);
+      Out.Units.insert(B);
     }
   return Out;
 } 
@@ -361,9 +336,8 @@ Acomp::unionCombine(const int A,const int B)
   Acomp Out(0);  // union
   if (A == -B)   // need a special for this
     ELog::EM<<"Totology"<<ELog::endDiag;
-  Out.Units.push_back(A);
-  if (A!=B)
-    Out.Units.push_back(B);
+  Out.Units.insert(A);
+  Out.Units.insert(B);
   return Out;
 } 
 
@@ -378,9 +352,9 @@ Acomp::interCombine(const int A,const Acomp& B)
 {
   Acomp Out(1);  // inter
   if (B.isSingle() && B.isSimple())
-    return interCombine(A,B.itemN(0));
+    return interCombine(A,B.getSinglet());
 
-  Out.Units.push_back(A);
+  Out.Units.insert(A);
   Out.Comp.push_back(B);
 
   return Out;
@@ -399,7 +373,7 @@ Acomp::unionCombine(const int A,const Acomp& B)
   if (B.isSingle() && B.isSimple())
     return unionCombine(A,B.getSinglet());
 
-  Out.Units.push_back(A);
+  Out.Units.insert(A);
   Out.Comp.push_back(B);
 
   return Out;
@@ -472,16 +446,17 @@ void
 Acomp::primativeAddItem(const Acomp& AC)
   /*!
     Primative addition based on AC size
+    There is no discussion of Intersection/Union
     \param AC :: Item to add
   */  
 {
 
   if (!AC.isNull())
     {
-      if (!AC.isSingle())
+      if (!AC.isSingle() || !AC.isSimple())
 	Comp.push_back(AC);
       else
-	Units.push_back(AC.itemN(0));
+	Units.insert(AC.getSinglet());
     }
   return;
 }
@@ -493,7 +468,6 @@ Acomp::expandBracket()
   */
 {
   static int cnt(0);
-
 
   cnt++;
   // all lower units
@@ -537,24 +511,52 @@ Acomp::removeEqUnion()
   bool outFlag(0);
   if (Intersect==1)
     {
-      std::vector<int>::iterator au;
       // remove units from literals
       for(const int CN : Units)
 	{
 	  for(Acomp& AC : Comp)
 	    {
-	      au=std::remove(AC.Units.begin(),AC.Units.end(),CN);
-	      if (au!=AC.Units.end())
+	      if (AC.Intersect==0)   // union
 		{
-		  outFlag=1;
-		  AC.Units.erase(au,AC.Units.end());
+		  if (AC.Units.erase(CN)) outFlag=1;
+		  if (AC.Units.erase(-CN)) outFlag=1;
 		}
-	      if (std::find(AC.Units.begin(),AC.Units.end(),-CN)!=
-		  AC.Units.end() )        // union of a+ a'
+	      else  // intersection
 		{
-		  outFlag=1;
-		  AC.Units.clear();
-		  AC.Comp.clear();
+		  if (AC.Units.erase(CN)) outFlag=1;
+		  if (AC.Units.erase(-CN))
+		    {
+		      AC.clear();
+		      outFlag=1;
+		    }
+		}
+	    }
+	}
+    }
+  else      // UNION
+    {
+      // remove units from literals
+      for(const int CN : Units)
+	{
+	  for(Acomp& AC : Comp)
+	    {
+	      if (AC.Intersect==1)   // intersect  
+		{
+		  if (AC.Units.erase(CN))
+		    {
+		      AC.clear();
+		      outFlag=1;
+		    }
+		  
+		  // can remove as consider (a+(a'b))
+		  //   a=true-> expr = treu
+		  //   a'=true  expr = b
+		  if (AC.Units.erase(-CN)) outFlag=1;
+		}
+	      else  // union
+		{
+		  if (AC.Units.erase(CN)) outFlag=1;
+		  //		  if (AC.units.find(-CN))  // problem!!!!
 		}
 	    }
 	}
@@ -668,7 +670,6 @@ Acomp::expandCNFBracket()
 
   static int cnt(0);
 
-  isNumberSorted();
   cnt++;
   // all lower units
   for(Acomp& AC : Comp)
@@ -681,7 +682,6 @@ Acomp::expandCNFBracket()
 	  Acomp N(0);  // union
 	  N.Units=Units;
 	  Comp[0]=N.componentExpand(0,Comp[0]);
-	  Comp[0].isNumberSorted();
 	  Units.clear();
 	}
       while (Comp.size()>1)
@@ -702,37 +702,41 @@ Acomp::expandCNFBracket()
 }
 
 void
-Acomp::removeNotPresent(const int target)
+Acomp::resolveTrue(const int T)
   /*!
-    If rule is not present remove
-    NOTE :: decends
-  */
-{
-  return;
-}
-
-void
-Acomp::removeTarget(const int target)
-  /*!
-    Set target to true and remove. 
+    Set target to true and remove. The rule is set 
+    to true so a' will be set to false an corrected
+    
     NOTE: If this is a TOP Acomp we CANNOT remove
-    the target 
-    \param target :: target rule
+    the target . 
+    \param T :: target rule
   */
 {
   if (Intersect)
     {
-      stlFunc::removeIfUnit(Units,target);
-      std::erase(
-		 std::remove_if(Comp.begin(),Comp.end(),
-				[&target](const Acomp& AC) -> bool
-				{
-				  return AC.hasUnitInUnit(target);
-				}),
-		 Comp.end());
+      Units.erase(T);
+      if (Units.find(-T)!=Units.end())
+	{
+	  clear();
+	  return;
+	}
+    }
+  else              // if Intersect
+    {
+      if (Units.find(T)!=Units.end())
+	{
+	  trueFlag=1;
+      	  clear();
+	}
+      Units.erase(-T);
     }
   for(Acomp& AC : Comp)
-    AC.removePlus(target);
+    AC.resolveTrue(T);
+  
+  upMoveComp();
+  merge();
+  makeNull();
+  
   return;
 }
 
