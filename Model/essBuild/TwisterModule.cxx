@@ -402,6 +402,7 @@ TwisterModule::createLinks()
   FixedComp::setConnect(15,Origin+Y*plugFrameRadius,Y);
   FixedComp::setLinkSurf(15,-SMap.realSurf(tIndex+21));
   FixedComp::addLinkSurf(15,SMap.realSurf(tIndex+31));
+  FixedComp::addLinkSurf(15,-SMap.realSurf(tIndex+27));
 
   return;
 }
