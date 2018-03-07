@@ -388,7 +388,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
   const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
 
-  const int TopAFlightNWedges = 0;
+  const int TopAFlightNWedges = 0; // originally 14
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
   const double t1 = 3.5+11.95*3; // Rickard Holmberg: slides 9-10
@@ -476,7 +476,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  const int TopBFlightNWedges = 0;
+  const int TopBFlightNWedges = 0; // originally 12
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
 
