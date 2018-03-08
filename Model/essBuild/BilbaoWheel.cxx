@@ -409,7 +409,7 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;
-  //  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2126,Origin+Z*H,Z);
 
   double H1 = H;
@@ -654,7 +654,10 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // wheel catcher
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2247 2238 -2239 -2115 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2247 2238 -2239 -2125 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2125 -2115  2238 -2118 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2238 2205 ");
@@ -725,11 +728,11 @@ BilbaoWheel::createShaftObjects(Simulation& System)
     }
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI-10,
-				 " (-2007M -2006 2115) : " // connection
+				 " (-2007M -2006 2125) : " // connection
 				 " (2126 -2149) : " // upper stiffeners
 				 " (2126 -2186 -2157) : "  // above upper stiffeners
-				 " (-2118 2115 -2126) : " // 2nd step
-				 " ((-2239:-2247) 2205 -2115) "); // base
+				 " (-2118 2125 -2126) : " // 2nd step
+				 " ((-2239:-2247) 2205 -2125) "); // base
   addOuterSurf("Shaft",Out);
 
   return;
