@@ -201,10 +201,10 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("GuideBay2NItems",21);  
 
   // Twister
-  Control.addVariable("TwisterXStep",11.0);
-  Control.addVariable("TwisterYStep",-62.0);
+  Control.addVariable("TwisterXStep",11.0); // TSV32IS
+  Control.addVariable("TwisterYStep",-62.0); // TSV32IS
   Control.addVariable("TwisterZStep",0.0);
-  Control.addVariable("TwisterXYAngle",10.0);
+  Control.addVariable("TwisterXYAngle",17.0); // TSV32IS
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
@@ -212,13 +212,16 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TwisterShaftWallThick",3.0);
   Control.addVariable("TwisterShaftWallMat","SS316L"); 
   Control.addVariable("TwisterShaftBearingRadius",4);
-  Control.addVariable("TwisterShaftBearingHeight",54.4);
-  Control.addVariable("TwisterShaftBearingWallThick",12.2);
-  Control.addVariable("TwisterPlugFrameRadius",105.0);
+  Control.addVariable("TwisterShaftBearingHeight",43.0); // TSV32IS
+  // TwisterShaftBearingWallThick adjusted in order
+  // to have the same outer bearing and shaft radii:
+  Control.addParse<double>("TwisterShaftBearingWallThick",
+			   "TwisterShaftRadius+TwisterShaftWallThick-TwisterShaftBearingRadius");
+  Control.addVariable("TwisterPlugFrameRadius",106.0); // TSV32IS
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameHeight",57.6);
   Control.addVariable("TwisterPlugFrameDepth",73); // to fit LowBeRef with dimensions communicated by LZ 10.10.2017
-  Control.addVariable("TwisterPlugFrameAngle",38.0);
+  Control.addVariable("TwisterPlugFrameAngle",49.0); // TSV32IS
   Control.addVariable("TwisterPlugFrameMat","SS316L_10H2O");
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameWallMat","SS316L");
