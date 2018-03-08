@@ -84,6 +84,8 @@ class Algebra
   int setFunction(const std::string&);
   int setFunction(const Acomp&);
 
+  void resolveTrue(const std::string&);
+  
   std::string display() const;
   std::ostream& write(std::ostream&) const;
   std::string writeMCNPX() const;

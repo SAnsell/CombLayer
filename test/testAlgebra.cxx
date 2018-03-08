@@ -91,6 +91,7 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testMakeString,
       &testAlgebra::testMerge,
       &testAlgebra::testMult,
+      &testAlgebra::testResolveTrue,
       &testAlgebra::testSetFunction,
       &testAlgebra::testSetFunctionObjStr,
       &testAlgebra::testSubtract,
@@ -111,6 +112,7 @@ testAlgebra::applyTest(const int extra)
       "MakeString",
       "Merge",
       "Mult",
+      "ResolveTrue",
       "SetFunction",
       "SetFunctionObjStr",
       "Subtract",
@@ -801,6 +803,45 @@ testAlgebra::testComplementary()
   return 0;
 }
 
+int
+testAlgebra::testResolveTrue()
+  /*!
+    Expand the bracket form 
+    \retval 0 :: success (there is no fail!!!)
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testResolveTrue");
+
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      // stuff for CNF
+      //      TTYPE("a",0,"bcd","(a+b)(a+c)(a+d)"),
+      TTYPE("a+b","b",""),
+      TTYPE("ab(c+d)","c","ab"),
+      TTYPE("ab(c+de)","c","ab"),
+      TTYPE("ab(c+de)","a'",""),
+      TTYPE("ab(c+de)","c'","abde")
+    };
+
+  for(const TTYPE& tc : Tests)
+    {
+      Algebra A;
+      A.setFunction(std::get<0>(tc));
+      A.resolveTrue(std::get<1>(tc));
+      std::string Out=A.display();
+      if (Out!=std::get<2>(tc))
+	{
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"True var   :"<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Expect     :"<<std::get<2>(tc)<<ELog::endDiag;
+	  
+	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
 
 int
 testAlgebra::testSetFunctionObjStr()

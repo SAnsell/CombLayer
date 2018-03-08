@@ -51,6 +51,7 @@ private:
   int testMakeString();
   int testMerge();
   int testMult();
+  int testResolveTrue();
   int testSetFunction();
   int testSetFunctionObjStr();
   int testSubtract();

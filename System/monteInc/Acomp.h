@@ -124,6 +124,7 @@ class Acomp
   
  public:
 
+  static int unitStr(std::string);
   static std::string strUnit(const int);
   static std::string mapLogic(const std::map<int,int>&);
   

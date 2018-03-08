@@ -72,6 +72,21 @@ indexToRevAlpha(const size_t index)
 
   return cmap[index % 52];
 }
+
+size_t
+revAlphaToIndex(const char C)
+  /*!
+    Convert an index to  a-z / A-Z
+    \param index :: index value
+    \return [a-Z] based on index 
+  */
+{
+  static const char cmap[]=
+    "abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  size_t pos=(strchr(cmap,C)-cmap);
+  return pos;
+}
     
   
 template<typename T>

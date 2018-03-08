@@ -2135,6 +2135,32 @@ Acomp::mapLogic(const std::map<int,int>& M)
     }
   return cx.str();
 }
+
+int
+Acomp::unitStr(std::string SR)
+  /*!
+    Convert a string into a literal
+    \param rule to convert
+  */
+{
+  if (SR.empty()) return 0;
+  int index;
+  if (SR[0]=='%')
+    {
+      SR[0]=' ';
+      const size_t id=StrFunc::convPartNum(SR,index);
+      if (id)
+	{
+	  if (SR.size()!=id && SR[id-1]=='\'')
+	    index*= -1;
+	}
+      return index;
+    }
+  index=static_cast<int>(StrFunc::revAlphaToIndex(SR[0])+1);
+  if (SR.size()>1 && SR[1]=='\'')
+    index*= -1;
+  return index;
+}
   
 std::string
 Acomp::strUnit(const int IC)

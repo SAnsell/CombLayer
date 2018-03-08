@@ -392,7 +392,6 @@ Algebra::write(std::ostream& Out) const
   */
 {
   Out<<"F == "<<F.display()<<std::endl;
-  //  Out<<F.displayDepth(0)<<std::endl;
   return Out;
 }
 
@@ -556,6 +555,20 @@ Algebra::setFunction(const std::string& A)
   return 0;
 }
 
+void
+Algebra::resolveTrue(const std::string& unit)
+  /*!
+    Given a string resolve for that unit to be removed
+    \param unit :: string in form a' or a
+   */
+{
+  if (unit.empty())
+    return;
+  const int index=Acomp::unitStr(unit);
+  F.resolveTrue(index);
+  return;
+}
+  
 int
 Algebra::setFunction(const Acomp& A)
   /*!

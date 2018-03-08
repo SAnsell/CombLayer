@@ -712,7 +712,7 @@ Acomp::resolveTrue(const int T)
     
     NOTE: If this is a TOP Acomp we CANNOT remove
     the target . 
-    \param T :: target rule
+    \param T :: target rule [use negative for false]
   */
 {
   if (Intersect)
