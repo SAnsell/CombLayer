@@ -936,10 +936,47 @@ Acomp::isCNF() const
   return 1;
 }
 
+bool
+Acomp::hasLiteral(const int literal) const
+  /*!
+    Determine if has the literals
+    \param literalMap :: Set of leteral valuds
+    literals 
+  */
+{
+  if (Units.find(literal)!=Units.end())
+    return 1;
+  for(const Acomp& AC : Comp)
+    if (AC.hasLiteral(literal))
+      return 1;
+
+  return 0;
+}
+
+bool
+Acomp::hasAbsLiteral(const int literal) const
+  /*!
+    Determine if has the literals
+    \param literalMap :: Set of leteral valuds
+    literals 
+    \param literal :: absolute literal value
+  */
+{
+  if (Units.find(literal)!=Units.end())
+    return 1;
+  if (Units.find(-literal)!=Units.end())
+    return 1;
+  for(const Acomp& AC : Comp)
+    if (AC.hasAbsLiteral(literal))
+      return 1;
+
+  return 0;
+}
+  
 void
 Acomp::getAbsLiterals(std::set<int>& literalMap) const
   /*!
-    get a map of the literals and the frequency
+    Get a map of the literals and the frequency
     that they occur.
     This does not keep the +/- part of the literals separate
     \param literalMap :: Set of leteral valuds
@@ -1860,25 +1897,34 @@ Acomp::itemC(const size_t Index) const
 void
 Acomp::upMoveComp()
   /*!
-    Move the comp unit up if it is signular
+    Move the comp unit up if it is singular
   */
 {
-  const Acomp& AC = Comp[0];
-  if (Comp.size()==1 && Units.empty())
+
+  if (Comp.size()==1)
     {
-      Units=AC.Units;
-      // add in and then remove first [necessary ??]
-      Intersect=AC.Intersect;
-      Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
-      Comp.erase(Comp.begin());
+      const Acomp& AC = Comp.front();
+      if (Units.empty())
+	{
+	  Units=AC.Units;
+	  // add in and then remove first [necessary ??]
+	  Intersect=AC.Intersect;
+	  Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
+	  Comp.erase(Comp.begin());
+	}
+      else if (AC.isSimple() && AC.isSingle())
+	{
+	  Units.insert(AC.getSinglet());
+	  Comp.erase(Comp.begin());
+	}
     }
   return;
 }
 
 bool
-Acomp::makeNull()
+Acomp::clearNulls()
   /*!
-    Remove Null
+    Remove Nulls
     Currently a very very simple system to remove null intersects
     \return true if object is found null and all lower components are
     deleted [necessary???]
@@ -1916,7 +1962,7 @@ Acomp::makeNull()
   std::vector<Acomp>::iterator ac=
     std::remove_if(Comp.begin(),Comp.end(),
 		   [&](Acomp& AC)->bool
-		   { return AC.makeNull();});
+		   { return AC.clearNulls();});
   Comp.erase(ac,Comp.end());
 
   return 0;

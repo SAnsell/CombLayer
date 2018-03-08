@@ -671,13 +671,17 @@ Object::getImplicatePairs() const
   */
 {
   ELog::RegMethod RegA("Object","getImplicatePairs");
+
   std::map<int,int> Out;
+
   for(size_t i=0;i<SurList.size();i++)
-    for(size_t j=1;j<SurList.size();j++)
+    for(size_t j=i+1;j<SurList.size();j++)
       {
 	const Geometry::Surface* APtr=SurList[i];
 	const Geometry::Surface* BPtr=SurList[j];
+
 	const int dirFlag=APtr->isImplicate(*BPtr);
+
 	if (dirFlag)
 	  {
 	    Out.emplace(-dirFlag*APtr->getName(),dirFlag*BPtr->getName());

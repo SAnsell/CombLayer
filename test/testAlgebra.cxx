@@ -86,6 +86,7 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testDNF,
       &testAlgebra::testExpandBracket,
       &testAlgebra::testExpandCNFBracket,
+      &testAlgebra::testInsert,
       &testAlgebra::testIsTrue,
       &testAlgebra::testLogicalCover,      
       &testAlgebra::testMakeString,
@@ -107,6 +108,7 @@ testAlgebra::applyTest(const int extra)
       "DNF",
       "ExpandBracket",
       "ExpandCNFBracket",
+      "Insert",
       "IsTrue",
       "LogicalCover",
       "MakeString",
@@ -391,8 +393,9 @@ testAlgebra::testExpandCNFBracket()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("ab+ac","a(a+b)(a+c)(b+c)"),
       TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
+      TTYPE("ab+ac","a(b+c)"),
+
       TTYPE("a+bc","(a+b)(a+c)"),
       TTYPE("a+(bc+de)","(a+b+d)(a+b+e)(a+c+d)(a+c+e)"),
       TTYPE("a+b+c","a+b+c"),
@@ -402,7 +405,9 @@ testAlgebra::testExpandCNFBracket()
       TTYPE("(a+bx)(c+d+f)","(a+b)(a+x)(c+d+f)"),
       TTYPE("(a+bx)(c+d+f)(c+e+f)","(a+b)(a+x)(c+d+f)(c+e+f)"),
       TTYPE("(a+bx)(c+(de+f))","(a+b)(a+x)(c+d+f)(c+e+f)"),
-      TTYPE("ac+ad+bc+bd+bd","(a+b)(c+d)")
+      TTYPE("ac+ad+bc+bd+bd","(a+b)(c+d)"),
+      TTYPE("f'(e'+f)","e'f'")
+      
       //      TTYPE("ace+acf+ade+adf+bce+bcf+bde+bdf","(a+b)(c+d)(e+f)")
       //      TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
       //      TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+bd+bf+cd+cf+de+ef"),
@@ -446,6 +451,50 @@ testAlgebra::testExpandCNFBracket()
   return 0;
 }
 
+
+int
+testAlgebra::testInsert()
+  /*!
+    Just check the insertion of a fucntion
+    \retval 0 :: success  -1 on failrue
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testIsTrue");
+
+  typedef std::tuple<std::string,std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("a","(b+c)","a(b+c)"),
+      TTYPE("bd","a(b+c)","abd(b+c)"),
+      TTYPE("(x+y')","abcde(b+c)","abcde(b+c)(x+y')"),
+      TTYPE("x+y'","abcde(b+c)","abcde(b+c)(x+y')"),
+      TTYPE("x+a","abcde(b+c)(fe+g)","abcde(a+x)(b+c)(g+ef)")
+    };
+
+  size_t cnt(0);
+  for(const TTYPE& tc : Tests)
+    {
+      cnt++;
+      Algebra A;
+      Algebra B;
+      A.setFunction(std::get<0>(tc));
+      B.setFunction(std::get<1>(tc));
+      
+      Acomp AC=A.getComp();
+      const Acomp& BC=B.getComp();
+      AC*=BC;
+      std::string Out=AC.display();
+      if (Out!=std::get<2>(tc))
+	{
+	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed x   :"<<std::get<1>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Algebra    :"<<Out<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
 
 int
 testAlgebra::testIsTrue()

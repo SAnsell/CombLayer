@@ -144,7 +144,7 @@ class Acomp
   // AcompExtra
   Acomp componentExpand(const int,const Acomp&) const;
   int merge();
-  bool makeNull();  // not what is exppected
+  bool clearNulls(); 
   void clear();     //  this delete all
   bool isEmpty() const;
 
@@ -162,6 +162,7 @@ class Acomp
 
   void removeNotPresent(const int);
   void resolveTrue(const int);
+  void removeNonCandidate(const int);
   
   int contains(const int) const;
   int contains(const Acomp&) const;
@@ -172,12 +173,15 @@ class Acomp
   void Sort();
 
   void getLiterals(std::set<int>&) const;     
-  void getAbsLiterals(std::set<int>&) const;  
+  void getAbsLiterals(std::set<int>&) const;
+  bool hasLiteral(const int) const;
+  bool hasAbsLiteral(const int) const;
+  
   std::vector<int> getKeys() const;      
   bool logicalEqual(const Acomp&) const;
   int logicalCover(const Acomp&) const;
   int logicalIntersectCover(const Acomp&) const;
-
+  
   int makeDNFobject();                
   int makeCNFobject();                
 

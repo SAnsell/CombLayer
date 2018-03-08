@@ -499,8 +499,26 @@ Acomp::expandBracket()
   
   upMoveComp();
   merge();
-  makeNull();
+  clearNulls();
   return;
+}
+
+void
+Acomp::removeNonCandidate(const int SN)
+  /*!
+    Care MUST not remove sub components
+    \param SN :: Surface to check
+  */
+{
+  for(Acomp& AC : Comp)
+    {
+      if (!AC.hasAbsLiteral(SN))
+	AC.clear();
+    }
+  merge();
+  
+  return;
+  
 }
 
 bool
@@ -584,7 +602,7 @@ Acomp::removeUnionPair()
   */
 {
   Acomp Hold(*this);
-
+  
   bool outFlag(0);
   if (Intersect==1)
     {
@@ -594,13 +612,9 @@ Acomp::removeUnionPair()
 	{
 	  for(Acomp& AC : Comp)
 	    {
-	      if (std::find(AC.Units.begin(),AC.Units.end(),-CN) !=
-		  AC.Units.end() )        // union of a+ a'
-		{
-		  outFlag=1;
-		  AC.Units.clear();
-		  AC.Comp.clear();
-		}
+	      // AC :: UNION
+	      if (AC.Units.erase(-CN)) outFlag=1;
+	      if (AC.Units.erase(CN)) outFlag=1;
 	    }
 	}
       // remove nulls
@@ -610,7 +624,28 @@ Acomp::removeUnionPair()
 		       { return AC.isNull();});
       Comp.erase(ac,Comp.end());
     }
-
+  else   // Union
+    { 
+      for(const int CN : Units)
+	{
+	  for(Acomp& AC : Comp)
+	    {
+	      // AC :: INTERSECT
+	      if (AC.Units.find(CN)!=AC.Units.end())
+		{
+		  AC.clear();
+		  outFlag=1;
+		}
+	      // e.g. f+f'x  => f+x
+	      if (AC.Units.erase(-CN))  
+		{
+		  AC.clear();
+		  outFlag=1;
+		}
+	    }
+	}
+    }
+  
   std::set<size_t> removedComp;
   for(size_t i=0;i<Comp.size();i++)
     {
@@ -697,7 +732,7 @@ Acomp::expandCNFBracket()
     {
       upMoveComp();
       merge();
-      makeNull();
+      clearNulls();
     }
   while(removeUnionPair());
 
@@ -738,7 +773,7 @@ Acomp::resolveTrue(const int T)
   
   upMoveComp();
   merge();
-  makeNull();
+  clearNulls();
   
   return;
 }

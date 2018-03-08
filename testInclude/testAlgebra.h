@@ -46,6 +46,7 @@ private:
   int testDNF();
   int testExpandBracket();
   int testExpandCNFBracket();
+  int testInsert();
   int testIsTrue();
   int testLogicalCover();
   int testMakeString();

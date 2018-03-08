@@ -41,11 +41,11 @@ class Algebra
 {
  private:
 
-
   std::map<int,std::string> SurfMap;    ///< Surface Map
 
   Acomp F;                              ///< Factor
-  ///< Additional implicates to resolve/simplify Acomp
+
+  /// Additional implicates to resolve/simplify Acomp
   std::set<Acomp> implicates;           
 
  public:
@@ -69,7 +69,7 @@ class Algebra
   int logicalEqual(const Algebra&) const;
 
   void addImplicates(const std::map<int,int>&);
-  
+  bool constructShannonExpansion();
   size_t countComponents() const;
   void minimize();
   void expandBracket();
@@ -85,6 +85,9 @@ class Algebra
   int setFunction(const Acomp&);
 
   void resolveTrue(const std::string&);
+
+  std::string getSurfKey(const int) const;
+  int getSurfIndex(std::string) const;
   
   std::string display() const;
   std::ostream& write(std::ostream&) const;

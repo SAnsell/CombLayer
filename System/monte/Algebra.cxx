@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "MapSupport.h"
 #include "BnId.h"
 #include "AcompTools.h"
@@ -71,7 +72,8 @@ Algebra::Algebra() :
 {}
 
 Algebra::Algebra(const Algebra& A) :
-  SurfMap(A.SurfMap),F(A.F)
+  SurfMap(A.SurfMap),F(A.F),
+  implicates(A.implicates)
   /*!
     Copy Constructor 
     \param A :: Algebra to copy
@@ -90,6 +92,7 @@ Algebra::operator=(const Algebra& A)
     {
       SurfMap=A.SurfMap;
       F=A.F;
+      implicates=A.implicates;
     }
   return *this;
 }
@@ -211,9 +214,6 @@ Algebra::countComponents() const
   return F.countComponents();
 }
 
-
-
-  
 void
 Algebra::minimize()
   /*!
@@ -346,30 +346,15 @@ Algebra::writeMCNPX() const
 	  else
 	    item=std::string(1,Out[i]);
 	  
-
-	  // Converts a character to a surface number
-	  std::map<int,std::string>::const_iterator vc=
-	    find_if(SurfMap.begin(),SurfMap.end(),
-		     MapSupport::valEqual<int,std::string>(item));
-
-	    
-	  // Error processing:
-	  if (vc==SurfMap.end())
-            {
-	      for_each(SurfMap.begin(),SurfMap.end(),
-		       MapSupport::mapWrite<std::map<int,std::string> >
-		       (ELog::EM.Estream()));
-	      throw ColErr::InContainerError<std::string>(std::string(1,Out[i]),
-							  "surfMap");
-	    }
+	  const int SN = getSurfIndex(item);	    
 
 	  if (Out[i+1]=='\'')
 	    {
-	      cx<<" -"<<vc->first;
+	      cx<<" "<<-SN;
 	      i++;
 	    }
 	  else
-	    cx<<" "<<vc->first;
+	    cx<<" "<<SN;
 	}
       else if (Out[i]=='+')
         {
@@ -412,24 +397,93 @@ Algebra::addImplicates(const std::map<int,int>& IM)
     \param IM :: Implicate list
    */
 {
+  ELog::RegMethod RegA("Algebra","addImplicates");
+  
   for(const std::map<int,int>::value_type& mc : IM)
     {
-      
       std::map<int,std::string>::const_iterator ac=
-	SurfMap.find(mc.first);
+	SurfMap.find(std::abs(mc.first));
       std::map<int,std::string>::const_iterator bc=
-	SurfMap.find(mc.second);
-      if (ac==SurfMap.end() || bc==SurfMap.end())
-	throw ColErr::InContainerError<int>(mc.first+100000*mc.second,
-					    "surf no in algebra");
+	SurfMap.find(std::abs(mc.second));
 
-      const std::string A=ac->second;
-      const std::string B=ac->second;
-      Acomp Part(0);
-      Part.setString(A+"+"+B);
-      implicates.insert(Part);
+      if (ac!=SurfMap.end() && bc!=SurfMap.end())
+	{
+	  std::string A=ac->second;
+	  std::string B=bc->second;
+	  if (mc.first<0) A+='\'';
+	  if (mc.second<0) B+='\'';
+		     
+	  Acomp Part(0);
+	  Part.setString(A+"+"+B);
+	  implicates.insert(Part);
+	}
     }
   return;
+}
+
+bool
+Algebra::constructShannonExpansion()
+  /*!
+    Overall schema -
+       - make algebra with ALL implicates
+       - for each +/- pair resolve shannon expansion
+       - if F(0) == F(1)
+           -- remove item from originl AND full-expansion
+       -- re-resolve for next literal
+   */
+{
+  ELog::RegMethod RegA("Algebra","constructShannonExpansion");
+
+  Acomp FX(F);
+  for(const Acomp& AC : implicates)
+    FX*=AC;
+  Acomp FTemp(FX);
+  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
+  FX.expandCNFBracket();
+  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
+  ELog::EM<<"BOOL == "<<FX.logicalEqual(FTemp)<<ELog::endDiag;
+
+  std::set<int> LitM;
+  F.getLiterals(LitM);
+  std::set<int>::const_iterator ac;
+  for(ac=LitM.begin();ac!=LitM.end() && *ac<0;ac++)
+    {
+      const int SN(std::abs(*ac));
+      if (LitM.find(-SN)!=LitM.end())
+	{
+	  Acomp FT(FX);
+	  //	  FT.removeNonCandidate(SN);
+	  Acomp FF(FT);
+	  
+	  FT.resolveTrue(SN);
+	  FF.resolveTrue(-SN);
+	  if (FT.logicalEqual(FF))
+	    {
+	      ELog::EM<<"AC == "<<FX<<ELog::endDiag;
+	      ELog::EM<<"BC == "<<FT<<ELog::endDiag;
+	      ELog::EM<<"CC == "<<FF<<ELog::endDiag;
+
+	      ELog::EM<<"CANDIDATE:"<<SN<<"::"
+		      <<Acomp::strUnit(SN)<<ELog::endDiag;
+
+	      Acomp Part(FX);
+	      Part.removeNonCandidate(SN);
+	      Acomp FTtt(Part);
+	      Acomp FFtt(FTtt);
+	      
+	      FTtt.resolveTrue(SN);
+	      FFtt.resolveTrue(-SN);
+	      ELog::EM<<"\n   == "<<ELog::endDiag;
+	      ELog::EM<<"ACX == "<<Part<<ELog::endDiag;
+	      ELog::EM<<"ACX == "<<FTtt<<ELog::endDiag;
+	      ELog::EM<<"BCX == "<<FFtt<<ELog::endDiag;
+	      ELog::EM<<"\n   == "<<ELog::endErr;
+
+	    }
+	}
+    }
+  
+  return 1;
 }
   
 int
@@ -582,6 +636,51 @@ Algebra::setFunction(const Acomp& A)
   return 0;
 }
 
+int
+Algebra::getSurfIndex(std::string SName) const
+  /*!
+     Convert a string into an index value
+     \param SName :: String name
+     \return signed value
+  */
+{
+  if (SName.empty()) return 0;
+
+  int signV(1);
+  std::string Item(SName);
+  if (SName.back()=='\'')
+    {
+      SName.pop_back();
+      signV=-1;
+    }
+  // Converts a character to a surface number
+  std::map<int,std::string>::const_iterator vc=
+    find_if(SurfMap.begin(),SurfMap.end(),
+	    MapSupport::valEqual<int,std::string>(SName));
+  if (vc==SurfMap.end())
+    throw ColErr::InContainerError<std::string>(SName,"Algebra::SurfMap");
+
+  return signV*vc->first;
+}
+
+std::string
+Algebra::getSurfKey(const int SN) const
+  /*!
+     Convert a string into an index value
+     \param SName :: String name
+     \return signed value
+  */
+{
+  std::map<int,std::string>::const_iterator vc=
+    SurfMap.find(std::abs(SN));
+  if (vc!=SurfMap.end())
+    {
+      return (SN<0) ? 
+	vc->second+"\'" : vc->second;
+    }
+  return "VOID";
+}
+  
 int
 Algebra::countLiterals() const
   /*!

@@ -1457,7 +1457,8 @@ Simulation::voidObject(const std::string& ObjName)
 void
 Simulation::minimizeObject(const int CN)
   /*
-    Cally out minimization
+    Carry out minimization
+    \param CN :: Cell to minimize
    */
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
@@ -1465,13 +1466,18 @@ Simulation::minimizeObject(const int CN)
   MonteCarlo::Object* CPtr = findQhull(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
-
+  
   if (!CPtr->isPlaceHold())
     {
+      CPtr->populate();
+      CPtr->createSurfaceList();
+      
       const std::map<int,int> IP=CPtr->getImplicatePairs();
+            
       MonteCarlo::Algebra AX;
       AX.setFunctionObjStr(CPtr->cellCompStr());
       AX.addImplicates(IP);
+      AX.constructShannonExpansion();
       AX.expandCNFBracket();
       AX.minimize();
 	  
