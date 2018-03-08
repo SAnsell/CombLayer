@@ -438,10 +438,15 @@ Algebra::constructShannonExpansion()
   for(const Acomp& AC : implicates)
     FX*=AC;
   Acomp FTemp(FX);
-  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
+
   FX.expandCNFBracket();
   ELog::EM<<"FX == "<<FX<<ELog::endDiag;
-  ELog::EM<<"BOOL == "<<FX.logicalEqual(FTemp)<<ELog::endDiag;
+  if (!FX.logicalEqual(FTemp))
+    {
+      ELog::EM<<"FTemp == "<<FTemp<<ELog::endDiag;
+      ELog::EM<<"FX == "<<FX<<ELog::endDiag;
+      ELog::EM<<"BOOL == "<<FX.logicalEqual(FTemp)<<ELog::endErr;
+    }
 
   std::set<int> LitM;
   F.getLiterals(LitM);
@@ -451,6 +456,7 @@ Algebra::constructShannonExpansion()
       const int SN(std::abs(*ac));
       if (LitM.find(-SN)!=LitM.end())
 	{
+	  
 	  Acomp FT(FX);
 	  //	  FT.removeNonCandidate(SN);
 	  Acomp FF(FT);
@@ -459,25 +465,30 @@ Algebra::constructShannonExpansion()
 	  FF.resolveTrue(-SN);
 	  if (FT.logicalEqual(FF))
 	    {
+	      ELog::EM<<"ORG == "<<FTemp<<ELog::endDiag;
 	      ELog::EM<<"AC == "<<FX<<ELog::endDiag;
 	      ELog::EM<<"BC == "<<FT<<ELog::endDiag;
 	      ELog::EM<<"CC == "<<FF<<ELog::endDiag;
 
-	      ELog::EM<<"CANDIDATE:"<<SN<<"::"
+	      ELog::EM<<"SOLUTION:"<<SN<<"::"
 		      <<Acomp::strUnit(SN)<<ELog::endDiag;
 
 	      Acomp Part(FX);
 	      Part.removeNonCandidate(SN);
+	      ELog::EM<<"Part == "<<Part<<ELog::endDiag;
 	      Acomp FTtt(Part);
 	      Acomp FFtt(FTtt);
 	      
 	      FTtt.resolveTrue(SN);
 	      FFtt.resolveTrue(-SN);
-	      ELog::EM<<"\n   == "<<ELog::endDiag;
-	      ELog::EM<<"ACX == "<<Part<<ELog::endDiag;
-	      ELog::EM<<"ACX == "<<FTtt<<ELog::endDiag;
-	      ELog::EM<<"BCX == "<<FFtt<<ELog::endDiag;
-	      ELog::EM<<"\n   == "<<ELog::endErr;
+	      if (!FTtt.logicalEqual(FFtt))
+		{
+		  ELog::EM<<"\n   == "<<ELog::endDiag;
+		  ELog::EM<<"ACX == "<<Part<<ELog::endDiag;
+		  ELog::EM<<"ACX == "<<FTtt<<ELog::endDiag;
+		  ELog::EM<<"BCX == "<<FFtt<<ELog::endDiag;
+		  ELog::EM<<"\n   == "<<ELog::endErr;
+		}
 
 	    }
 	}

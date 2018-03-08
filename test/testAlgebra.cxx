@@ -393,8 +393,9 @@ testAlgebra::testExpandCNFBracket()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
+      TTYPE("q(q'+r)(o+r)","qr"),
       TTYPE("ab+ac","a(b+c)"),
+      TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
 
       TTYPE("a+bc","(a+b)(a+c)"),
       TTYPE("a+(bc+de)","(a+b+d)(a+b+e)(a+c+d)(a+c+e)"),
@@ -442,9 +443,9 @@ testAlgebra::testExpandCNFBracket()
 	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
-	  ELog::EM<<"logic AB "<<ABflag<<ELog::endDiag;
-	  ELog::EM<<"logic AC "<<ACflag<<ELog::endDiag;
-	  ELog::EM<<"logic CB "<<BCflag<<ELog::endDiag;
+	  ELog::EM<<"logic E.orig    "<<ABflag<<ELog::endDiag;
+	  ELog::EM<<"logic E.expt    "<<ACflag<<ELog::endDiag;
+	  ELog::EM<<"logic orig.expt "<<BCflag<<ELog::endDiag;
 	  return -1;
 	}
     }

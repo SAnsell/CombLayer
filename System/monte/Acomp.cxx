@@ -861,13 +861,12 @@ Acomp::logicalEqual(const Acomp& A) const
     \retval 1 :: true
   */
 {
+  // Note can't compare set sizize because some rules may be redundent
   std::set<int> ALitMap;
-  std::set<int> BLitMap;
   getAbsLiterals(ALitMap);
-  A.getAbsLiterals(BLitMap);
-  if (ALitMap!=BLitMap)
-    return 0;
+  A.getAbsLiterals(ALitMap);
 
+  
   const std::vector<int> keyNumbers(ALitMap.begin(),ALitMap.end());    
   std::map<int,int> Base;       // keynumber :: trueth value
   for(const int CN : ALitMap)

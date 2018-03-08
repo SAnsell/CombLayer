@@ -602,7 +602,7 @@ Acomp::removeUnionPair()
   */
 {
   Acomp Hold(*this);
-  
+
   bool outFlag(0);
   if (Intersect==1)
     {
@@ -613,8 +613,14 @@ Acomp::removeUnionPair()
 	  for(Acomp& AC : Comp)
 	    {
 	      // AC :: UNION
+	      // a(a+xy) --> a.(1+xy) -> a
+	      // a(a'+xy) --> a(xy)
 	      if (AC.Units.erase(-CN)) outFlag=1;
-	      if (AC.Units.erase(CN)) outFlag=1;
+	      if (AC.Units.erase(CN))
+		{
+		  AC.clear();
+		  outFlag=1;
+		}
 	    }
 	}
       // remove nulls
@@ -631,12 +637,13 @@ Acomp::removeUnionPair()
 	  for(Acomp& AC : Comp)
 	    {
 	      // AC :: INTERSECT
+	      // f+(fxy) -> f
 	      if (AC.Units.find(CN)!=AC.Units.end())
 		{
 		  AC.clear();
 		  outFlag=1;
 		}
-	      // e.g. f+f'x  => f+x
+	      // e.g. f+f'xy  => f+xy
 	      if (AC.Units.erase(-CN))  
 		{
 		  AC.clear();
@@ -645,7 +652,7 @@ Acomp::removeUnionPair()
 	    }
 	}
     }
-  
+  // What is this:
   std::set<size_t> removedComp;
   for(size_t i=0;i<Comp.size();i++)
     {
