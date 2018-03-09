@@ -347,14 +347,13 @@ testAlgebra::testExpandBracket()
       TTYPE("(a+d)(b+c+e)","ab+ac+ae+bd+cd+de"),
       TTYPE("(a+d+f)(b+c+e)","ab+ac+ae+bd+bf+cd+cf+de+ef"),
       TTYPE("x(a+d+f)(b+c)","abx+acx+bdx+bfx+cdx+cfx")
-
-
     };
 
   size_t cnt(0);
   for(const TTYPE& tc : Tests)
     {
       cnt++;
+      ELog::EM<<"TEST "<<cnt<<ELog::endDiag;
       Algebra A;
       A.setFunction(std::get<0>(tc));
       const std::string preOut=A.display();

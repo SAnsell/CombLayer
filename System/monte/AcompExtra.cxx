@@ -488,15 +488,16 @@ Acomp::expandBracket()
 	}
       while (Comp.size()>1)
 	{
-	  for(size_t i=0;i<Comp.size();i+=2)
-	    if (i+1!=Comp.size())
+	  const size_t CS(Comp.size());
+	  for(size_t i=0;i<CS;i+=2)
+	    if (i+1!=CS)
 	      Comp[i/2]=Comp[i].componentExpand(1,Comp[i+1]);
 	    else
 	      Comp[i/2]=Comp[i];
-	  Comp.erase(Comp.begin()+Comp.size()/2+1,Comp.end());
+	  Comp.erase(Comp.begin()+CS/2+CS%2,Comp.end());
+	  ELog::EM<<"ComE = "<<*this<<ELog::endDiag;
 	}
     }
-  
   upMoveComp();
   merge();
   clearNulls();
