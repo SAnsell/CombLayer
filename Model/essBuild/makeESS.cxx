@@ -275,7 +275,6 @@ makeESS::createGuides(Simulation& System)
 
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertSurfCtrl(System,*GB,Target->getCC("Wheel"));
-      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
       GBArray.push_back(GB);
     }
   
@@ -1054,29 +1053,23 @@ makeESS::buildTwister(Simulation& System)
 
   Twister->createAll(System,*Bulk,0);
 
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("Shaft"));
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("PlugFrame"));
-  attachSystem::addToInsertForced(System,*Bulk,Twister->getCC("ShaftBearing"));
 
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Twister->getCC("Shaft"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,Twister->getCC("ShaftBearing"));
+
+  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
   attachSystem::addToInsertForced(System,*ShutterBayObj,Twister->getCC("Shaft"));
-  //attachSystem::addToInsertSurfCtrl(System,*Twister,PBeam->getCC("Sector0"));
-  //  attachSystem::addToInsertSurfCtrl(System,*Twister, PBeam->getCC("Sector1"));
   attachSystem::addToInsertControl(System, *Twister, *Reflector);
 
   // split Twister by components
   // for (const ContainedComp & CC : Twister->getCC()) ...
   // use LineControl for intersections with flight lines
 
-  ELog::EM<<"CALLING addInsertForce [INEFFICIENT] "<<ELog::endWarn;
-  attachSystem::addToInsertForced(System,*Twister,TopAFL->getCC("outer"));
-  attachSystem::addToInsertForced(System,*Twister,TopBFL->getCC("outer"));
-
-  attachSystem::addToInsertForced(System,*Twister, Target->getCC("Wheel"));
-
-  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("main"));
-  attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
-
-  attachSystem::addToInsertSurfCtrl(System,*Twister,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*Twister,TopAFL->getCC("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,TopBFL->getCC("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister, Target->getCC("Wheel"));
 
   return;
 }
@@ -1214,23 +1207,40 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Shaft"));
 
+  createGuides(System);
+
   // Empty area above target
   TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
-  TargetTopClearance->createAll(System, *Target, 6, 3, 13,*Bulk,"Radius0");
+
+  if (engActive)
+    {
+      buildTwister(System);
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+    }
+  else
+    {
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+    }
+  for (const std::shared_ptr<GuideBay> GB : GBArray)
+    attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
+
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
-  attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
+  ///
 
-  createGuides(System);
   makeBunker(System,IParam);
 
-  TSMainBuildingObj->addInsertCell(74123);
+  TSMainBuildingObj->addInsertCell(voidCell);
   TSMainBuildingObj->createAll(System,World::masterOrigin());
   attachSystem::addToInsertLineCtrl(System, *TSMainBuildingObj, *ShutterBayObj);
   attachSystem::addToInsertSurfCtrl(System, *TSMainBuildingObj, *ABunker);
@@ -1250,6 +1260,7 @@ makeESS::build(Simulation& System,
   pbip->createAll(System,World::masterOrigin(),0,*Bulk,-4,*Target,1);
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("before"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
   
   PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
@@ -1260,13 +1271,8 @@ makeESS::build(Simulation& System,
   // 				    PBeam->getCC("Full"));
   attachSystem::addToInsertSurfCtrl(System,*TSMainBuildingObj,
 				    PBeam->getCC("Sector3"));
-  
-  if (engActive)
-      buildTwister(System);
-  else {
-    // if no -eng flag then Twister is not built -> must insert into Bulk
-    attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
-  }
+  if (Twister)
+    attachSystem::addToInsertSurfCtrl(System,*Twister,pbip->getCC("after"));
 
   makeBeamLine(System,IParam);
   buildF5Collimator(System, IParam);

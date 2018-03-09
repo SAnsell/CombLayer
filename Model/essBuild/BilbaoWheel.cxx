@@ -119,23 +119,26 @@ BilbaoWheel::BilbaoWheel(const BilbaoWheel& A) :
   shaft2StepConnectionRadius(A.shaft2StepConnectionRadius),
   shaftCFRingHeight(A.shaftCFRingHeight),
   shaftCFRingRadius(A.shaftCFRingRadius),
-  shaftCFStiffLength(A.shaftCFStiffLength),
-  shaftCFStiffHeight(A.shaftCFStiffHeight),
-  shaftCFStiffThick(A.shaftCFStiffThick),
+  shaftUpperBigStiffLength(A.shaftUpperBigStiffLength),
+  shaftUpperBigStiffHeight(A.shaftUpperBigStiffHeight),
+  shaftUpperBigStiffThick(A.shaftUpperBigStiffThick),
   shaftUpperBigStiffHomoMat(A.shaftUpperBigStiffHomoMat),
+  shaftLowerBigStiffShortLength(A.shaftLowerBigStiffShortLength),
+  shaftLowerBigStiffLongLength(A.shaftLowerBigStiffLongLength),
+  shaftLowerBigStiffHeight(A.shaftLowerBigStiffHeight),
+  shaftLowerBigStiffThick(A.shaftLowerBigStiffThick),
+  shaftLowerBigStiffHomoMat(A.shaftLowerBigStiffHomoMat),
   shaftHoleHeight(A.shaftHoleHeight),
   shaftHoleSize(A.shaftHoleSize),
   shaftHoleXYangle(A.shaftHoleXYangle),
   shaftBaseDepth(A.shaftBaseDepth),
   catcherTopSteelThick(A.catcherTopSteelThick),
-  catcherGap(A.catcherGap),
   catcherRadius(A.catcherRadius),
   catcherBaseHeight(A.catcherBaseHeight),
   catcherBaseRadius(A.catcherBaseRadius),
   catcherBaseAngle(A.catcherBaseAngle),
   catcherNotchRadius(A.catcherNotchRadius),
   catcherNotchBaseThick(A.catcherNotchBaseThick),
-  catcherNotchBaseRadius(A.catcherNotchBaseRadius),
   circlePipesBigRad(A.circlePipesBigRad),
   circlePipesRad(A.circlePipesRad),
   circlePipesWallThick(A.circlePipesWallThick),
@@ -193,23 +196,26 @@ BilbaoWheel::operator=(const BilbaoWheel& A)
       shaft2StepConnectionRadius=A.shaft2StepConnectionRadius;
       shaftCFRingHeight=A.shaftCFRingHeight;
       shaftCFRingRadius=A.shaftCFRingRadius;
-      shaftCFStiffLength=A.shaftCFStiffLength;
-      shaftCFStiffHeight=A.shaftCFStiffHeight;
-      shaftCFStiffThick=A.shaftCFStiffThick;
+      shaftUpperBigStiffLength=A.shaftUpperBigStiffLength;
+      shaftUpperBigStiffHeight=A.shaftUpperBigStiffHeight;
+      shaftUpperBigStiffThick=A.shaftUpperBigStiffThick;
       shaftUpperBigStiffHomoMat=A.shaftUpperBigStiffHomoMat;
+      shaftLowerBigStiffShortLength=A.shaftLowerBigStiffShortLength;
+      shaftLowerBigStiffLongLength=A.shaftLowerBigStiffLongLength;
+      shaftLowerBigStiffHeight=A.shaftLowerBigStiffHeight;
+      shaftLowerBigStiffThick=A.shaftLowerBigStiffThick;
+      shaftLowerBigStiffHomoMat=A.shaftLowerBigStiffHomoMat;
       shaftHoleHeight=A.shaftHoleHeight;
       shaftHoleSize=A.shaftHoleSize;
       shaftHoleXYangle=A.shaftHoleXYangle;
       shaftBaseDepth=A.shaftBaseDepth;
       catcherTopSteelThick=A.catcherTopSteelThick;
-      catcherGap=A.catcherGap;
       catcherRadius=A.catcherRadius;
       catcherBaseHeight=A.catcherBaseHeight;
       catcherBaseRadius=A.catcherBaseRadius;
       catcherBaseAngle=A.catcherBaseAngle;
       catcherNotchRadius=A.catcherNotchRadius;
       catcherNotchBaseThick=A.catcherNotchBaseThick;
-      catcherNotchBaseRadius=A.catcherNotchBaseRadius;
       circlePipesBigRad=A.circlePipesBigRad;
       circlePipesRad=A.circlePipesRad;
       circlePipesWallThick=A.circlePipesWallThick;
@@ -319,12 +325,23 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   shaft2StepConnectionRadius=Control.EvalVar<double>(keyName+"Shaft2StepConnectionRadius");
   shaftCFRingHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingHeight");
   shaftCFRingRadius=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeRingRadius");
-  shaftCFStiffLength=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffLength");
-  shaftCFStiffHeight=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffHeight");
-  shaftCFStiffThick=Control.EvalVar<double>(keyName+"ShaftConnectionFlangeStiffThick");
-  shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,keyName+"ShaftUpperBigStiffHomoMat");
+  shaftUpperBigStiffLength=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffLength");
+  shaftUpperBigStiffHeight=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffHeight");
+  shaftUpperBigStiffThick=Control.EvalVar<double>(keyName+"ShaftUpperBigStiffThick");
+  shaftUpperBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
+						       keyName+"ShaftUpperBigStiffHomoMat");
+
+  shaftLowerBigStiffShortLength=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffShortLength");
+  shaftLowerBigStiffLongLength=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffLongLength");
+  shaftLowerBigStiffHeight=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffHeight");
+  shaftLowerBigStiffThick=Control.EvalVar<double>(keyName+"ShaftLowerBigStiffThick");
+  shaftLowerBigStiffHomoMat=ModelSupport::EvalMat<int>(Control,
+						       keyName+"ShaftLowerBigStiffHomoMat");
+
   if (shaft2StepConnectionRadius<shaftRadius[nShaftLayers-1])
-    throw ColErr::RangeError<double>(shaft2StepConnectionRadius, shaftRadius[nShaftLayers-1], INFINITY, "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
+    throw ColErr::RangeError<double>(shaft2StepConnectionRadius,shaftRadius[nShaftLayers-1],
+				     INFINITY,
+				     "Shaft2StepConnectionRadius must exceed outer ShaftRadius");
   shaftHoleHeight=Control.EvalVar<double>(keyName+"ShaftHoleHeight");
   shaftHoleSize=Control.EvalVar<double>(keyName+"ShaftHoleSize");
   if (shaftHoleSize>1.0)
@@ -338,7 +355,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
 
   catcherTopSteelThick=Control.EvalVar<double>(keyName+"CatcherTopSteelThick");
 
-  catcherGap=Control.EvalVar<double>(keyName+"CatcherGap");
   catcherRadius=Control.EvalVar<double>(keyName+"CatcherRadius");
   if (catcherRadius>radius[0]+voidThick)
     throw ColErr::RangeError<double>(catcherRadius, 0, radius[0]+voidThick,
@@ -351,7 +367,6 @@ BilbaoWheel::populate(const FuncDataBase& Control)
   catcherNotchRadius=Control.EvalVar<double>(keyName+"CatcherNotchRadius");
 
   catcherNotchBaseThick=Control.EvalVar<double>(keyName+"CatcherNotchBaseThick");
-  catcherNotchBaseRadius=Control.EvalVar<double>(keyName+"CatcherNotchBaseRadius");
 
   circlePipesBigRad=Control.EvalVar<double>(keyName+"CirclePipesBigRad");
   circlePipesRad=Control.EvalVar<double>(keyName+"CirclePipesRad");
@@ -394,7 +409,7 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildPlane(SMap,wheelIndex+2116,Origin+Z*H,Z);
 
   H += voidThick;
-  //  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
+  ModelSupport::buildPlane(SMap,wheelIndex+2125,Origin-Z*H,Z);
   ModelSupport::buildPlane(SMap,wheelIndex+2126,Origin+Z*H,Z);
 
   double H1 = H;
@@ -409,7 +424,7 @@ BilbaoWheel::createShaftSurfaces()
 
   // Connection flange ring [ESS-0124024 pages 22-23 (DW-TRGT-ESS-0102)]
   H = H1-voidThick;
-  H += shaftCFStiffHeight;
+  H += shaftUpperBigStiffHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2146,Origin+Z*H,Z);
   H += shaftCFRingHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2156,Origin+Z*H,Z);
@@ -421,13 +436,13 @@ BilbaoWheel::createShaftSurfaces()
 
   // Connection flange stiffeners
   // [ESS-0124024 page 19 (DW-TRGT-ESS-0102.05)]
-  const double stiffTheta(atan(shaftCFStiffHeight/shaftCFStiffLength)*180.0/M_PI);
-  const double stiffL(shaftRadius[nShaftLayers-2]+shaftCFStiffLength);
+  const double stiffTheta(atan(shaftUpperBigStiffHeight/shaftUpperBigStiffLength)*180.0/M_PI);
+  const double stiffL(shaftRadius[nShaftLayers-2]+shaftUpperBigStiffLength);
   const double stiffH(tan(stiffTheta*M_PI/180)*stiffL+shaft2StepHeight);
   ModelSupport::buildCone(SMap,wheelIndex+2148,Origin+Z*(stiffH),Z,90-stiffTheta,-1);
 
   if (engActive) // create surfaces for large upper/lower stiffeners
-    createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftCFStiffThick);
+    createRadialSurfaces(wheelIndex+3000, nSectors/2, shaftUpperBigStiffThick);
 
   H = stiffH+voidThick/cos(stiffTheta);
   ModelSupport::buildCone(SMap,wheelIndex+2149,Origin+Z*(H),Z,90-stiffTheta,-1);
@@ -447,13 +462,16 @@ BilbaoWheel::createShaftSurfaces()
 
   // shaft base
   H = shaftBaseDepth;
-  ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
+  const Geometry::Plane *p2205 =
+    ModelSupport::buildPlane(SMap,wheelIndex+2205,Origin-Z*H,Z);
 
   // shaft base - catcher
-  H -= catcherGap;
-  ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
+  H = shaft2StepHeight + shaftLowerBigStiffHeight + catcherNotchBaseThick;
+  const Geometry::Plane *p2215 =
+    ModelSupport::buildPlane(SMap,wheelIndex+2215,Origin-Z*H,Z);
 
-  H -= catcherNotchBaseThick;
+  //  H -= catcherNotchBaseThick;
+  H = shaft2StepHeight + shaftLowerBigStiffHeight;
   ModelSupport::buildPlane(SMap,wheelIndex+2225,Origin-Z*H,Z);
 
   H = shaftBaseDepth-catcherBaseHeight;
@@ -466,7 +484,8 @@ BilbaoWheel::createShaftSurfaces()
   ModelSupport::buildCone(SMap, wheelIndex+2208, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 
-  H -= catcherGap/sin(catcherBaseAngle*M_PI/180);
+  const double gap(p2215->getDistance()-p2205->getDistance());
+  H -= gap/sin(catcherBaseAngle*M_PI/180);
   ModelSupport::buildCone(SMap, wheelIndex+2218, Origin-Z*(H),
 			  Z, 90-catcherBaseAngle, -1);
 
@@ -477,7 +496,7 @@ BilbaoWheel::createShaftSurfaces()
   R += catcherNotchBaseThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2227,Origin,Z,R);
 
-  R = catcherNotchBaseRadius;
+  R = shaftRadius[nShaftLayers-2] + shaftLowerBigStiffShortLength;
   ModelSupport::buildCylinder(SMap,wheelIndex+2237,Origin,Z,R);
 
   const Geometry::Vec3D C(SurInter::getPoint(SMap.realSurfPtr(wheelIndex+2225),
@@ -485,13 +504,16 @@ BilbaoWheel::createShaftSurfaces()
 					     px,nearPt));
 
   const double L(Origin.Y()-C.Y());
-  H = L * tan(catcherBaseAngle*M_PI/180)-C.Z();
-  ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
-			  -Z, 90-catcherBaseAngle, -1);
+  const double lowerBigStiffTheta(atan(shaftLowerBigStiffHeight/
+      (shaftLowerBigStiffLongLength-shaftLowerBigStiffShortLength))*180/M_PI);
 
-  H+= voidThick/cos(catcherBaseAngle*M_PI/180);
+  H = L * tan(lowerBigStiffTheta*M_PI/180)-C.Z();
+  ModelSupport::buildCone(SMap, wheelIndex+2238, Origin-Z*(H),
+			  -Z, 90-lowerBigStiffTheta, -1);
+
+  H+= voidThick/cos(lowerBigStiffTheta*M_PI/180);
   ModelSupport::buildCone(SMap, wheelIndex+2239, Origin-Z*(H),
-			  -Z, 90-catcherBaseAngle, -1);
+			  -Z, 90-lowerBigStiffTheta, -1);
 
   R += voidThick;
   ModelSupport::buildCylinder(SMap,wheelIndex+2247,Origin,Z,R);
@@ -632,7 +654,10 @@ BilbaoWheel::createShaftObjects(Simulation& System)
 
   // wheel catcher
 
-  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2247 2238 -2239 -2115 ");
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2247 2238 -2239 -2125 ");
+  System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
+
+  Out=ModelSupport::getComposite(SMap,wheelIndex, " 2125 -2115  2238 -2118 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
 
   Out=ModelSupport::getComposite(SMap,wheelIndex, " 2237 -2247 2238 2205 ");
@@ -666,7 +691,7 @@ BilbaoWheel::createShaftObjects(Simulation& System)
   if (engActive)
     buildStiffeners(System,Out,wheelIndex+3000,nSectors/2,steelMat);
   else
-    System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
+    System.addCell(MonteCarlo::Qhull(cellIndex++,shaftLowerBigStiffHomoMat,mainTemp,Out));
 
 
   // shaft layers
@@ -703,11 +728,11 @@ BilbaoWheel::createShaftObjects(Simulation& System)
     }
 
   Out=ModelSupport::getComposite(SMap,wheelIndex,SI-10,
-				 " (-2007M -2006 2115) : " // connection
+				 " (-2007M -2006 2125) : " // connection
 				 " (2126 -2149) : " // upper stiffeners
 				 " (2126 -2186 -2157) : "  // above upper stiffeners
-				 " (-2118 2115 -2126) : " // 2nd step
-				 " ((-2239:-2247) 2205 -2115) "); // base
+				 " (-2118 2125 -2126) : " // 2nd step
+				 " ((-2239:-2247) 2205 -2125) "); // base
   addOuterSurf("Shaft",Out);
 
   return;
@@ -1164,16 +1189,16 @@ BilbaoWheel::createObjects(Simulation& System)
 	    }
 
 	  side=ModelSupport::getComposite(SMap,wheelIndex," -117 107 ");
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 105 -106 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -26 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex,"-105 25 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," -25 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 
@@ -1187,13 +1212,13 @@ BilbaoWheel::createObjects(Simulation& System)
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 106 -116 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," -105 115 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," 116 -36 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
-	  
+
 	  Out=ModelSupport::getComposite(SMap,wheelIndex," -115 35 ")+side;
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,mat,mainTemp,Out));
 	}
@@ -1228,7 +1253,7 @@ BilbaoWheel::createObjects(Simulation& System)
     System.addCell(MonteCarlo::Qhull(cellIndex++,heMat,mainTemp,Out));
 
   side = ModelSupport::getComposite(SMap,wheelIndex,SI," -7M 117" );
-  
+
   // Void above W
   Out=ModelSupport::getComposite(SMap,wheelIndex," 6 -16 ")+side;
   System.addCell(MonteCarlo::Qhull(cellIndex++,0,mainTemp,Out));
@@ -1263,7 +1288,7 @@ BilbaoWheel::createObjects(Simulation& System)
 
   // forward Main sections:
   side=ModelSupport::getComposite(SMap,wheelIndex,"-527 17 ");
-  
+
   Out=ModelSupport::getComposite(SMap,wheelIndex," -126 36 ")+side;	 // outer above W
   System.addCell(MonteCarlo::Qhull(cellIndex++,steelMat,mainTemp,Out));
 

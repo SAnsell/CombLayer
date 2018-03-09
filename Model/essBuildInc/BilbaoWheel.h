@@ -79,10 +79,17 @@ class BilbaoWheel : public WheelBase
   double shaft2StepConnectionRadius;///< radius of the 2nd step connection with shaft
   double shaftCFRingHeight; ///< connection flange ring height
   double shaftCFRingRadius; ///< connection flange ring radius
-  double shaftCFStiffLength; ///< connection flange stiffener length
-  double shaftCFStiffHeight;          ///< connection flange stiffener height
-  double shaftCFStiffThick; ///< connection flange stiffener thickness
-  int shaftUpperBigStiffHomoMat; ///< Homogenised material of the upper large stiffener cell
+  double shaftUpperBigStiffLength; ///< connection flange stiffener length
+  double shaftUpperBigStiffHeight; ///< connection flange stiffener height
+  double shaftUpperBigStiffThick;  ///< connection flange stiffener thickness
+  /// Homogenised material of the upper large stiffener cell (used if engActive=0)
+  int shaftUpperBigStiffHomoMat;
+  double shaftLowerBigStiffShortLength; ///< lower big stiffener short (=lower) length
+  double shaftLowerBigStiffLongLength; ///< lower big stiffeners long (=upper) length
+  double shaftLowerBigStiffHeight; ///< lower big stiffeners height
+  double shaftLowerBigStiffThick; ///< lower big stiffeners thickness
+  /// Homogenised material of the lower large stiffener cell (used if engActive=0)
+  int shaftLowerBigStiffHomoMat;
 
   double shaftHoleHeight;        ///< Vent hole height at the shaft radius
   double shaftHoleSize;          ///< Relative angular size of the hole with respect to hole+steel (<1)
@@ -90,14 +97,12 @@ class BilbaoWheel : public WheelBase
   double shaftBaseDepth;            ///< shaft depth (below origin)
 
   double catcherTopSteelThick; ///< thickness of top steel plate
-  double catcherGap;    ///< vertical clearance below catcher
   double catcherRadius;    ///< catcher rotal radius
   double catcherBaseHeight;///< catcher base truncated cone height
   double catcherBaseRadius;///< catchr base truncated cone lower radius
   double catcherBaseAngle; ///< catcher base truncated cone angle
   double catcherNotchRadius; ///< catcher notch radius
   double catcherNotchBaseThick; ///< catcher notch lower non-inclined part vertical thickness
-  double catcherNotchBaseRadius; ///< catcher notch lower part radius
 
   double circlePipesBigRad;   /// Big radius of circle of pipes]
   double circlePipesRad;      /// Radius of pipes in the circle of pipes

@@ -201,10 +201,10 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("GuideBay2NItems",21);  
 
   // Twister
-  Control.addVariable("TwisterXStep",11.0);
-  Control.addVariable("TwisterYStep",-62.0);
+  Control.addVariable("TwisterXStep",11.0); // TSV32IS
+  Control.addVariable("TwisterYStep",-62.0); // TSV32IS
   Control.addVariable("TwisterZStep",0.0);
-  Control.addVariable("TwisterXYAngle",10.0);
+  Control.addVariable("TwisterXYAngle",17.0); // TSV32IS
   Control.addVariable("TwisterZangle",0.0);
   Control.addVariable("TwisterShaftRadius",18.5);
   Control.addVariable("TwisterShaftHeight",120.0+222.4);
@@ -212,13 +212,16 @@ EssVariables(FuncDataBase& Control,
   Control.addVariable("TwisterShaftWallThick",3.0);
   Control.addVariable("TwisterShaftWallMat","SS316L"); 
   Control.addVariable("TwisterShaftBearingRadius",4);
-  Control.addVariable("TwisterShaftBearingHeight",54.4);
-  Control.addVariable("TwisterShaftBearingWallThick",12.2);
-  Control.addVariable("TwisterPlugFrameRadius",105.0);
+  Control.addVariable("TwisterShaftBearingHeight",43.0); // TSV32IS
+  // TwisterShaftBearingWallThick adjusted in order
+  // to have the same outer bearing and shaft radii:
+  Control.addParse<double>("TwisterShaftBearingWallThick",
+			   "TwisterShaftRadius+TwisterShaftWallThick-TwisterShaftBearingRadius");
+  Control.addVariable("TwisterPlugFrameRadius",106.0); // TSV32IS
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameHeight",57.6);
   Control.addVariable("TwisterPlugFrameDepth",73); // to fit LowBeRef with dimensions communicated by LZ 10.10.2017
-  Control.addVariable("TwisterPlugFrameAngle",38.0);
+  Control.addVariable("TwisterPlugFrameAngle",49.0); // TSV32IS
   Control.addVariable("TwisterPlugFrameMat","SS316L_10H2O");
   Control.addVariable("TwisterPlugFrameWallThick",3.0);
   Control.addVariable("TwisterPlugFrameWallMat","SS316L");
@@ -388,7 +391,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   const double wedgeFocusX = 8.0; // email from Rickard Holmberg 15 Sep 2016
   const double wedgeFocusY = 4.8; // email from Rickard Holmberg 15 Sep 2016
 
-  const int TopAFlightNWedges = 0;
+  const int TopAFlightNWedges = 0; // originally 14
   Control.addVariable("TopAFlightNWedges",TopAFlightNWedges);
 
   const double t1 = 3.5+11.95*3; // Rickard Holmberg: slides 9-10
@@ -476,7 +479,7 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("TopBFlightLinerThick1"); 
   Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
-  const int TopBFlightNWedges = 0;
+  const int TopBFlightNWedges = 0; // originally 12
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
 

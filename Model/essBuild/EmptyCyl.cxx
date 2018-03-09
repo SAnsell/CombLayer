@@ -79,7 +79,6 @@
 #include "surfDivide.h"
 #include "SurInter.h"
 #include "mergeTemplate.h"
-#include "SurfMap.h"
 
 #include "EmptyCyl.h"
 
@@ -195,7 +194,11 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 			const long int floor,const long int side,
 			const long int inner,
 			const attachSystem::FixedComp& BC,
-			const std::string bulk)
+			const long int bulk,
+			const attachSystem::FixedComp& GB1,
+			const long int gb1lp,
+			const attachSystem::FixedComp& GB2,
+			const long int gb2lp)
   /*!
     Adds the all the components
     \param System :: Simulation to create objects in
@@ -203,22 +206,28 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
     \param floor  :: bottom link point
     \param side   :: outer side link point
     \param inner  :: shaft 1st step to exclude
-    \param BC     :: Bulk component
-    \param bulk   :: bulk side cylinder to exclude
+    \param BC     :: Bulk/Twister component
+    \param bulk   :: bulk/twister lp to exclude
+    \param GB1     :: GuideBay1 object
+    \param gb1lp   :: GB1 link point
+    \param GB2     :: GuideBay2 object
+    \param gb2lp   :: GB2 link point
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createObjects");
 
   std::string Out;
-  const attachSystem::SurfMap* SM=
-    dynamic_cast<const attachSystem::SurfMap*>(&BC);
+
+  ELog::EM << "Target inner lp not needed. Now this cylinder cuts EmptyCyl, but I have to increase the angle of triangle (adjust GuideBay)" << ELog::endDiag;
 
   Out=ModelSupport::getComposite(SMap,surfIndex," -6 ");
   Out += std::to_string(FC.getLinkSurf(-side)) + " " +
-    std::to_string(FC.getLinkSurf(floor)) + " " +
+    FC.getLinkString(floor) + " " +
     std::to_string(FC.getLinkSurf(inner)) + " " +
-    std::to_string(SM->getSurf(bulk));
-  
+    BC.getLinkString(bulk) + " (" +
+    GB1.getLinkString(gb1lp) + " : " +
+    GB2.getLinkString(gb2lp) + " )";
+
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
   addOuterSurf(Out);
@@ -260,7 +269,11 @@ EmptyCyl::createAll(Simulation& System,
 		    const long int side,
 		    const long int inner,
 		    const attachSystem::FixedComp& BC,
-		    const std::string bulk)
+		    const long int bulk,
+		    const attachSystem::FixedComp& GB1,
+		    const long int gb1lp,
+		    const attachSystem::FixedComp& GB2,
+		    const long int gb2lp)
   /*!
     Generic function to create everything
     \param System :: Simulation item
@@ -268,8 +281,12 @@ EmptyCyl::createAll(Simulation& System,
     \param floor :: link point for origin (botom surf)
     \param side :: outer side link point
     \param inner :: shaft 1st step to exclude
-    \param BC :: Bulk component
-    \param bulk   :: bulk inner cell to exclude
+    \param BC :: Bulk/Twister component
+    \param bulk   :: bulk/twister lp to exclude
+    \param GB1     :: GuideBay1 object
+    \param gb1lp   :: GB1 link point
+    \param GB2     :: GuideBay2 object
+    \param gb2lp   :: GB2 link point
   */
 {
   ELog::RegMethod RegA("EmptyCyl","createAll");
@@ -277,7 +294,9 @@ EmptyCyl::createAll(Simulation& System,
   populate(System.getDataBase());
   createUnitVector(FC,floor);
   createSurfaces();
-  createObjects(System,FC,floor,side,inner,BC,bulk);
+  createObjects(System,FC,floor,side,inner,
+		BC,bulk,
+		GB1,gb1lp,GB2,gb2lp);
   createLinks(FC,floor,side);
   insertObjects(System);              
 

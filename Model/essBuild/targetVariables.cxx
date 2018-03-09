@@ -93,15 +93,35 @@ EssWheel(FuncDataBase& Control)
   // Upper Stiffener shape and dimensions correspond to
   // ESS-0153983
   const double ubsLength(20.0);
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffLength",ubsLength); // ESS-0124024 page 19
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffHeight",15); // ESS-0124024 page 19
   const double ubsThick(2.0);
-  Control.addVariable("BilbaoWheelShaftConnectionFlangeStiffThick",ubsThick); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffLength",ubsLength); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffThick",ubsThick); // ESS-0124024 page 19
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffHeight",15); // ESS-0124024 page 19
+
+  const double fracUp(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
+  Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
+		      ss316l + "%Void%" + std::to_string(fracUp));
+
+  const double lbsThick(2.0); // ESS-0124024 page 19
+  const double lbsHeight(15.0);  // TSV32IS
+  const double lbsSL(8.0);  // TSV32IS
+  const double lbsLL(20.0);  // TSV32IS
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffShortLength",lbsSL);
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffLongLength",lbsLL);
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffHeight",lbsHeight);
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffThick",lbsThick);
 
   // Fraction of total volume of stiffeners / total volume of (stiffeners + void between them)
-  const double frac(nSectors/2*ubsThick/M_PI/(2*shaftR5+ubsLength)*100.0);
-  Control.addVariable("BilbaoWheelShaftUpperBigStiffHomoMat",
-		      ss316l + "%Void%" + std::to_string(frac));
+  const double R1(shaftR5);
+  const double R2(R1+lbsSL);
+  const double R3(R1+lbsLL);
+  const size_t N(nSectors/2);
+  double fracLow = N*lbsThick / 2.0 / M_PI;
+  fracLow *= 0.5*(R2+R3)-R1;
+  fracLow /= 0.5*(pow(R2,2)+pow(R3,2))-pow(R1,2);
+  fracLow *= 100; // checked [total volume 3% above MonteCarlo estimate]
+  Control.addVariable("BilbaoWheelShaftLowerBigStiffHomoMat",
+		      ss316l + "%Void%" + std::to_string(fracLow));
 
   Control.addVariable("BilbaoWheelShaftHoleHeight",4.5); // TSM141108V3000
   Control.addVariable("BilbaoWheelShaftHoleSize",0.25); // value not known=>approx
@@ -111,14 +131,12 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("BilbaoWheelCatcherTopSteelThick",2.0);
   
-  Control.addVariable("BilbaoWheelCatcherGap",0.8);
   Control.addVariable("BilbaoWheelCatcherRadius",42.0);
   Control.addVariable("BilbaoWheelCatcherBaseHeight",8.0);  // TSV32IS
   Control.addVariable("BilbaoWheelCatcherBaseRadius",21.25);  // TSV32IS
   Control.addVariable("BilbaoWheelCatcherBaseAngle",45.0);  // TSV32IS + ESS-0038811
   Control.addVariable("BilbaoWheelCatcherNotchBaseThick",3.0);// TSV32IS
   Control.addVariable("BilbaoWheelCatcherNotchRadius",20.0);  // TSV32IS
-  Control.addVariable("BilbaoWheelCatcherNotchBaseRadius",31.0);  // TSV32IS
 
   Control.addVariable("BilbaoWheelCirclePipesBigRad",30.0);
   Control.addVariable("BilbaoWheelCirclePipesRad",1.5);
