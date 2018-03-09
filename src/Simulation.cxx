@@ -1478,12 +1478,12 @@ Simulation::minimizeObject(const int CN)
       AX.setFunctionObjStr(CPtr->cellCompStr());
       AX.addImplicates(IP);
       AX.constructShannonExpansion();
-      AX.expandCNFBracket();
-      AX.minimize();
-	  
+      ELog::EM<<"Pre == "<<CPtr->cellCompStr()<<ELog::endDiag;;
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
-				  "Algebra ExpandD/CNFBracket");
+				  "Algebra Export");
+      
+      ELog::EM<<"Post== "<<CPtr->cellCompStr()<<ELog::endDiag;
     }
   return;
 }
@@ -1512,7 +1512,7 @@ Simulation::makeObjectsDNForCNF()
 		{
 		  // Note both together possible
 		  if (NL<=cellDNF)
-		      AX.expandDNFBracket();
+		      AX.expandBracket();
 		  if (NL<=cellCNF)
 		    AX.expandCNFBracket();
 		  

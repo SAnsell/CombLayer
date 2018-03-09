@@ -75,6 +75,7 @@ class Acomp
   void processUnion(const std::string&);
   int joinDepth();                      
   int removeEqComp();
+  bool removeFalseComp();
   bool removeUnionPair();
   bool removeEqUnion();                   
   int copySimilar(const Acomp&);        
@@ -103,6 +104,7 @@ class Acomp
 
   void upMoveComp();
   void primativeAddItem(const Acomp&);
+  void processChange();
 
   Acomp expandIII(const Acomp&) const;
   Acomp expandIIU(const Acomp&) const;
@@ -132,10 +134,10 @@ class Acomp
   explicit Acomp(const int);   
   Acomp(const Acomp&);
   Acomp& operator=(const Acomp&); 
-  int operator==(const Acomp&) const; 
-  int operator!=(const Acomp&) const;  
-  int operator<(const Acomp&) const;       
-  int operator>(const Acomp&) const;
+  bool operator==(const Acomp&) const; 
+  bool operator!=(const Acomp&) const;  
+  bool operator<(const Acomp&) const;       
+  bool operator>(const Acomp&) const;
   Acomp& operator+=(const Acomp&);
   Acomp& operator-=(const Acomp&);
   Acomp& operator*=(const Acomp&);
@@ -149,20 +151,22 @@ class Acomp
   bool isEmpty() const;
 
   
+  
   int getSinglet() const;
   const Acomp* itemC(const size_t) const;
 
   size_t countComponents() const;
   std::pair<size_t,size_t> size() const;
-  int isSimple() const;
-  int isDNF() const;               
-  int isCNF() const;               
-  int isNull() const;              
-  int isSingle() const;        // one item
+  bool isSinglet() const;
+  bool isSimple() const;
+  bool isDNF() const;               
+  bool isCNF() const;               
+  bool isNull() const;              
+  bool isSingle() const;        // one item
 
-  void removeNotPresent(const int);
   void resolveTrue(const int);
   void removeNonCandidate(const int);
+  bool removeLiteral(const int);
   
   int contains(const int) const;
   int contains(const Acomp&) const;
@@ -187,8 +191,7 @@ class Acomp
 
   void expandBracket();
   void expandCNFBracket();
-  void expandDNFBracket();
-  void minimize();
+
   void complement();
   std::pair<Acomp,Acomp> algDiv(const Acomp&); 
   void setString(const std::string&);          

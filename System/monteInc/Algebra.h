@@ -58,22 +58,21 @@ class Algebra
   /// Accessor
   const Acomp& getComp() const { return F; }  
   
-  int operator==(const Algebra&) const;
-  int operator!=(const Algebra&) const;
+  bool operator==(const Algebra&) const;
+  bool operator!=(const Algebra&) const;
   Algebra& operator+=(const Algebra&);
   Algebra& operator-=(const Algebra&);
   Algebra& operator*=(const Algebra&);
   Algebra operator+(const Algebra&) const;
   Algebra operator-(const Algebra&) const;
   Algebra operator*(const Algebra&) const;
-  int logicalEqual(const Algebra&) const;
+  bool logicalEqual(const Algebra&) const;
 
   void addImplicates(const std::map<int,int>&);
   bool constructShannonExpansion();
   size_t countComponents() const;
-  void minimize();
+
   void expandBracket();
-  void expandDNFBracket();
   void expandCNFBracket();
   void merge();
   void Complement();

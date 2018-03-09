@@ -125,7 +125,7 @@ Acomp::~Acomp()
   */
 { }
 
-int
+bool
 Acomp::operator!=(const Acomp& A) const
   /*!
     Inequality operator
@@ -136,7 +136,7 @@ Acomp::operator!=(const Acomp& A) const
   return 1-(this->operator==(A));
 }
 
-int
+bool
 Acomp::operator==(const Acomp& A) const
   /*!
     Equals operator requires that the
@@ -173,8 +173,21 @@ Acomp::operator==(const Acomp& A) const
 	*xcv==*acv ;xcv++,acv++) ;
   return (xcv==Comp.end()) ? 1 : 0;
 }
-  
-int
+
+bool
+Acomp::operator>(const Acomp& A) const
+  /*! 
+    Operator> takes first to last precidence.
+    Uses operator<  to obtain value.
+    Note it does not uses 1-(A<this)
+    \param  A :: object to compare
+    \returns this>A
+  */
+{
+  return A.operator<(*this);
+}
+
+bool
 Acomp::operator<(const Acomp& A) const
   /*!
     Comparitor operator:: Comparies the 
@@ -266,18 +279,6 @@ Acomp::operator-=(const Acomp& A)
   return Acomp::operator*=(Aprime);
 }
 
-int
-Acomp::operator>(const Acomp& A) const
-  /*! 
-    Operator> takes first to last precidence.
-    Uses operator<  to obtain value.
-    Note it does not uses 1-(A<this)
-    \param  A :: object to compare
-    \returns this>A
-  */
-{
-  return A.operator<(*this);
-}
 
 
 Acomp&
@@ -876,13 +877,14 @@ Acomp::logicalEqual(const Acomp& A) const
     {
       if (isTrue(Base) != A.isTrue(Base))
 	return 0;
+
     } while (!MapSupport::iterateBinMap(Base));
 
   return 1;
 }
 
 
-int
+bool
 Acomp::isNull() const
   /*!
     \returns 1 if there are no memebers
@@ -891,7 +893,7 @@ Acomp::isNull() const
   return ((!Units.size() && !Comp.size()) ? 1 : 0);
 }
 
-int
+bool
 Acomp::isDNF() const
   /*!
     Determines if the component is in
@@ -913,7 +915,7 @@ Acomp::isDNF() const
   return 1;
 }
 
-int
+bool
 Acomp::isCNF() const
   /*!
     Determines if the component is in
@@ -1007,7 +1009,7 @@ Acomp::getLiterals(std::set<int>& literalMap) const
   return;
 }
 
-int
+bool
 Acomp::isSimple() const
   /*!
     Determines if there are not complex components.
@@ -1018,7 +1020,7 @@ Acomp::isSimple() const
   return (Comp.empty() ? 1 : 0);
 }
 
-int
+bool
 Acomp::isSingle() const
   /*!
     Deterimines if the item's singular
@@ -1728,8 +1730,22 @@ Acomp::setString(const std::string& Line)
 
   Acomp CM(Union);            /// Complementary object
   // DELETE ALL
+  trueFlag=0;
   deleteComp();
   Units.clear();
+  // Simple true/false
+  if (Line=="!!")
+    {
+      trueFlag=-1;
+      return;
+    }
+  if (Line=="~~")
+    {
+      trueFlag=1;
+      return;
+    }
+      
+
   // 
   // Process #( ) sub units
   // 
@@ -1866,6 +1882,16 @@ Acomp::size() const
   return std::pair<size_t,size_t>(Units.size(),Comp.size());
 }
 
+bool
+Acomp::isSinglet() const
+  /*!
+    Detemine if the constructoin is a true singlet
+    \return 1 if singlet / 0 if not
+  */
+{
+  return (Units.size()!=1 || !Comp.empty()) ? 0 : 1;
+}
+
 int
 Acomp::getSinglet() const
   /*!
@@ -1899,7 +1925,7 @@ Acomp::upMoveComp()
     Move the comp unit up if it is singular
   */
 {
-
+  ELog::RegMethod RegA("Acomp","upMoveComp");
   if (Comp.size()==1)
     {
       const Acomp& AC = Comp.front();
@@ -1911,7 +1937,7 @@ Acomp::upMoveComp()
 	  Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
 	  Comp.erase(Comp.begin());
 	}
-      else if (AC.isSimple() && AC.isSingle())
+      else if (AC.isSinglet())
 	{
 	  Units.insert(AC.getSinglet());
 	  Comp.erase(Comp.begin());
@@ -1949,6 +1975,7 @@ Acomp::clearNulls()
 	  // always true
 	  if (Units.find(-N)!=Units.end())
 	    {
+	      ELog::EM<<"T1 == "<<*this<<ELog::endDiag;
 	      clear();
 	      trueFlag=1;
 	      return 1;
@@ -2277,13 +2304,19 @@ Acomp::display() const
   */
 {
   std::stringstream cx;
-  
-  cx<<unitsDisplay();
-  if ( Intersect==0 && !Units.empty() )
-    cx<<compDisplay("+");
+
+  if (trueFlag==1)
+    cx<<"~~";
+  else if (trueFlag==-1)
+    cx<<"!!";
   else
+    {
+      cx<<unitsDisplay();
+      if ( Intersect==0 && !Units.empty() )
+	cx<<compDisplay("+");
+      else
     cx<<compDisplay();
-  
+    }
     
   return cx.str();
 }

@@ -89,6 +89,7 @@ testAlgebra::applyTest(const int extra)
       &testAlgebra::testInsert,
       &testAlgebra::testIsTrue,
       &testAlgebra::testLogicalCover,      
+      &testAlgebra::testLogicalEqual,
       &testAlgebra::testMakeString,
       &testAlgebra::testMerge,
       &testAlgebra::testMult,
@@ -111,6 +112,7 @@ testAlgebra::applyTest(const int extra)
       "Insert",
       "IsTrue",
       "LogicalCover",
+      "LogicalEqual",
       "MakeString",
       "Merge",
       "Mult",
@@ -353,7 +355,6 @@ testAlgebra::testExpandBracket()
   for(const TTYPE& tc : Tests)
     {
       cnt++;
-      ELog::EM<<"TEST "<<cnt<<ELog::endDiag;
       Algebra A;
       A.setFunction(std::get<0>(tc));
       const std::string preOut=A.display();
@@ -392,6 +393,12 @@ testAlgebra::testExpandCNFBracket()
   typedef std::tuple<std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
     {
+      //      TTYPE("a'b'c(b+c')","!!"),   // ALWAY FALSE
+      TTYPE("f+(a'b'c(b+c'))","f"),   
+
+      TTYPE("n'o'p(a+b+h)(o+p')",
+	    "n'o'p(a+b+h)"),
+      
       TTYPE("q(q'+r)(o+r)","qr"),
       TTYPE("ab+ac","a(b+c)"),
       TTYPE("ab+cd","(a+c)(a+d)(b+c)(b+d)"),
@@ -438,13 +445,13 @@ testAlgebra::testExpandCNFBracket()
       if (Out!=std::get<1>(tc) || !ABflag)
 	{
 	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
-	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
-	  ELog::EM<<"PreOut on  :"<<preOut<<ELog::endDiag;
+	  const bool Xflag=A.logicalEqual(B);   // expand : original
+	  ELog::EM<<"Original   :"<<std::get<0>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Expected== :"<<std::get<1>(tc)<<ELog::endDiag;
-	  ELog::EM<<"Display == :"<<Out<<ELog::endDiag;
-	  ELog::EM<<"logic E.orig    "<<ABflag<<ELog::endDiag;
-	  ELog::EM<<"logic E.expt    "<<ACflag<<ELog::endDiag;
-	  ELog::EM<<"logic orig.expt "<<BCflag<<ELog::endDiag;
+	  ELog::EM<<"CNFform == :"<<Out<<ELog::endDiag;
+	  ELog::EM<<"logic CNF.orig    "<<ABflag<<ELog::endDiag;
+	  ELog::EM<<"logic CNF.expect  "<<ACflag<<ELog::endDiag;
+	  ELog::EM<<"logic orig.expect "<<BCflag<<ELog::endDiag;
 	  return -1;
 	}
     }
@@ -459,7 +466,7 @@ testAlgebra::testInsert()
     \retval 0 :: success  -1 on failrue
    */
 {
-  ELog::RegMethod RegA("testAlgebra","testIsTrue");
+  ELog::RegMethod RegA("testAlgebra","testInsert");
 
   typedef std::tuple<std::string,std::string,std::string> TTYPE;
   const std::vector<TTYPE> Tests=
@@ -508,14 +515,18 @@ testAlgebra::testIsTrue()
   typedef std::tuple<std::string,Binary,int> TTYPE;
   const std::vector<TTYPE> Tests=
     {
-      TTYPE("(a+b)",Binary("00"),0),
-      TTYPE("(a+b)",Binary("01"),1),
-      TTYPE("(a+b)",Binary("11"),1),
-      TTYPE("c(a+b)",Binary("010"),0),
-      TTYPE("c(a+b)",Binary("101"),1),
-      TTYPE("(d+c)(abc)",Binary("1110"),1),
-      TTYPE("(a+b)(b+c+d)",Binary("1110"),1),
-      TTYPE("abc+abd+ae",Binary("11111"),1)
+      TTYPE("a'b'c(d+e+f)(b+c')",Binary("001000"),0),
+      TTYPE("a'b'c(d+e+f)(b+c')",Binary("001100"),0),
+      TTYPE("a'b'c(d+e+f)(b+c')",Binary("001001"),0)
+	    
+      // TTYPE("(a+b)",Binary("00"),0),
+      // TTYPE("(a+b)",Binary("01"),1),
+      // TTYPE("(a+b)",Binary("11"),1),
+      // TTYPE("c(a+b)",Binary("010"),0),
+      // TTYPE("c(a+b)",Binary("101"),1),
+      // TTYPE("(d+c)(abc)",Binary("1110"),1),
+      // TTYPE("(a+b)(b+c+d)",Binary("1110"),1),
+      // TTYPE("abc+abd+ae",Binary("11111"),1)
     };
 
   size_t cnt(0);
@@ -542,6 +553,48 @@ testAlgebra::testIsTrue()
 	  ELog::EM<<"Algebra    :"<<A<<ELog::endDiag;
 	  ELog::EM<<"Binary     :"<<std::get<1>(tc)<<ELog::endDiag;
 	  ELog::EM<<"Flag       :"<<flag<<ELog::endDiag;
+	  return -1;
+	}
+    }
+  return 0;
+}
+
+int
+testAlgebra::testLogicalEqual()
+  /*!
+    Expand the bracket int CNF form
+    \retval 0 :: success (there is no fail!!!)
+   */
+{
+  ELog::RegMethod RegA("testAlgebra","testLogicalEqual");
+
+  typedef std::tuple<std::string,std::string,int> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("a'b'c(d+e+f)(a+b')","a'b'c(d+e+f)",1)
+    };
+
+  size_t cnt(0);
+  for(const TTYPE& tc : Tests)
+    {
+      cnt++;
+      Algebra A;
+      Algebra B;
+      A.setFunction(std::get<0>(tc));
+      B.setFunction(std::get<1>(tc));
+
+      const Acomp& AC=A.getComp();
+      const Acomp& BC=B.getComp();
+      const int flag=AC.logicalEqual(BC);
+      if (flag!=std::get<2>(tc))
+	{
+	  ELog::EM<<"TEST == "<<cnt<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<0>(tc)<<ELog::endDiag;
+	  ELog::EM<<"Failed on  :"<<std::get<1>(tc)<<ELog::endDiag;
+
+	  ELog::EM<<"logic AC "<<AC<<ELog::endDiag;
+	  ELog::EM<<"logic BC "<<BC<<ELog::endDiag;
+	  ELog::EM<<"logicEqual== "<<flag<<ELog::endDiag;
 	  return -1;
 	}
     }

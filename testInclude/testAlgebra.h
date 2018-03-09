@@ -49,6 +49,7 @@ private:
   int testInsert();
   int testIsTrue();
   int testLogicalCover();
+  int testLogicalEqual();
   int testMakeString();
   int testMerge();
   int testMult();

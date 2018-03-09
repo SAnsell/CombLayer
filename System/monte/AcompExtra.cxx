@@ -495,7 +495,6 @@ Acomp::expandBracket()
 	    else
 	      Comp[i/2]=Comp[i];
 	  Comp.erase(Comp.begin()+CS/2+CS%2,Comp.end());
-	  ELog::EM<<"ComE = "<<*this<<ELog::endDiag;
 	}
     }
   upMoveComp();
@@ -520,6 +519,107 @@ Acomp::removeNonCandidate(const int SN)
   
   return;
   
+}
+
+void
+Acomp::processChange()
+  /*!
+    Assume that a cell has become zero/true/false
+    and deal with the result
+   */
+{
+  std::vector<Acomp>::iterator ac;
+  if (Intersect==1)
+    {
+      // FALSE -- TERMINATE
+      ac=std::find_if(Comp.begin(),Comp.end(),
+		      [](const Acomp& AC) -> bool
+		      {return AC.trueFlag== -1;});
+      if (ac!=Comp.end())
+	{
+	  Units.clear();
+	  Comp.clear();
+	  trueFlag=-1;
+	  return;
+	}
+      // Process singlets to delete later:
+      for(Acomp& AC : Comp)
+	if (AC.isSinglet())
+	  {
+	    Units.insert(AC.getSinglet());
+	    AC.clear();
+	    AC.trueFlag=1;
+	  }
+      // remove true
+      ac=std::remove_if(Comp.begin(),Comp.end(),
+		      [](const Acomp& AC) -> bool
+		      { return AC.trueFlag== 1; });
+      Comp.erase(ac,Comp.end());
+      upMoveComp();
+    }
+  else
+    {
+      // TRUE -- TERMINATE
+      ac=std::find_if(Comp.begin(),Comp.end(),
+		      [](const Acomp& AC) -> bool
+		      {return AC.trueFlag== 1;});
+      if (ac!=Comp.end())
+	{
+	  Comp.clear();
+	  Units.clear();
+	  trueFlag=1;
+	}
+      // Process singlets to delete later:
+      for(Acomp& AC : Comp)
+	if (AC.isSinglet())
+	  {
+	    Units.insert(AC.getSinglet());
+	    AC.clear();
+	    AC.trueFlag= -1;
+	  }
+      // remove true
+      ac=std::remove_if(Comp.begin(),Comp.end(),
+		      [](const Acomp& AC) -> bool
+		      { return AC.trueFlag== -1; });
+      Comp.erase(ac,Comp.end());
+      upMoveComp();
+    }
+  return;
+}
+
+bool
+Acomp::removeLiteral(const int SN)
+  /*!
+    Remove a single literal and then re-process
+    \param SN :: Surface to remove
+    \return Work done
+  */
+{
+  bool outFlag(0);
+  
+  if (Units.erase(SN)+Units.erase(-SN))
+    {
+      if (Units.empty())
+	{
+	  if (Comp.empty())
+	    {
+	      trueFlag=1;
+	      return 1;
+	    }
+	  processChange();
+	}
+      outFlag=1;
+    }
+  
+  for(Acomp& AC : Comp)
+    {
+      if (AC.removeLiteral(SN))
+	{
+	  processChange();
+	  outFlag=1;
+	}
+    }
+  return outFlag;
 }
 
 bool
@@ -595,6 +695,24 @@ Acomp::removeEqUnion()
 }
 
 bool
+Acomp::removeFalseComp()
+  /*!
+    removes false components
+    \return true if object found
+  */
+{
+  std::vector<Acomp>::iterator ac=
+    std::remove_if(Comp.begin(),Comp.end(),
+		   [](const Acomp& AC)->bool { return AC.trueFlag==-1; });
+  if (ac!=Comp.end())
+    {
+      Comp.erase(ac,Comp.end());
+      return 1;
+    }
+  return 0;
+}
+
+bool
 Acomp::removeUnionPair()
   /*!
     Find if two Components can be replaced by one
@@ -605,6 +723,7 @@ Acomp::removeUnionPair()
   Acomp Hold(*this);
 
   bool outFlag(0);
+  bool falseFlag(0);
   if (Intersect==1)
     {
       std::vector<int>::iterator au;
@@ -616,13 +735,25 @@ Acomp::removeUnionPair()
 	      // AC :: UNION
 	      // a(a+xy) --> a.(1+xy) -> a
 	      // a(a'+xy) --> a(xy)
-	      if (AC.Units.erase(-CN)) outFlag=1;
+	      if (AC.Units.erase(-CN))
+		{
+		  // SPECIAL CASE : if empty WHOLE rule is false
+		  if (AC.isEmpty())
+		    falseFlag=1;
+		  outFlag=1;
+		}
 	      if (AC.Units.erase(CN))
 		{
 		  AC.clear();
 		  outFlag=1;
 		}
 	    }
+	}
+      if (falseFlag)  // WHOLE IS FALSE
+	{
+	  trueFlag = -1;
+	  clear();
+	  return 1;
 	}
       // remove nulls
       std::vector<Acomp>::iterator ac=
@@ -653,7 +784,7 @@ Acomp::removeUnionPair()
 	    }
 	}
     }
-  // What is this:
+  // Remove covered pairs e.g. A B such that A covers B
   std::set<size_t> removedComp;
   for(size_t i=0;i<Comp.size();i++)
     {
@@ -695,18 +826,6 @@ Acomp::removeUnionPair()
 }
   
 void
-Acomp::expandDNFBracket()
-  /*!
-    Expand all the Union brackets and then find DNF
-  */
-{
-  ELog::RegMethod RegA("Acomp","expandCNFBracket");
-  expandCNFBracket();
-  complement();
-  return;
-}
-
-void
 Acomp::expandCNFBracket()
   /*!
     Expand all the Union brackets
@@ -723,6 +842,9 @@ Acomp::expandCNFBracket()
 
   if (!this->Intersect)
     {
+      // remove all true / all false
+      removeFalseComp();
+	
       if (!Units.empty() && !Comp.empty())
 	{
 	  Acomp N(0);  // union
@@ -736,14 +858,14 @@ Acomp::expandCNFBracket()
 	  Comp.erase(Comp.begin()+1);
 	}
     }
+
   do
-    {
+    {      
       upMoveComp();
       merge();
       clearNulls();
     }
   while(removeUnionPair());
-
   return;
 }
 
@@ -783,19 +905,6 @@ Acomp::resolveTrue(const int T)
   merge();
   clearNulls();
   
-  return;
-}
-
-
-void
-Acomp::minimize()
-  /*
-    Call out a simple minimization
-  */
-{
-  // Assume CNF form
-  expandCNFBracket();
-  complement();  
   return;
 }
 

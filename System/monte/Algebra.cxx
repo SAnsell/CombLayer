@@ -102,7 +102,7 @@ Algebra::~Algebra()
 { }
 
 
-int
+bool
 Algebra::operator==(const Algebra& A) const
   /*!
     Equality operator
@@ -115,7 +115,7 @@ Algebra::operator==(const Algebra& A) const
   return F==A.F;
 }
 
-int
+bool
 Algebra::operator!=(const Algebra& A) const
   /*!
     Inequality operator
@@ -213,16 +213,6 @@ Algebra::countComponents() const
   
   return F.countComponents();
 }
-
-void
-Algebra::minimize()
-  /*!
-    Acessor to minimize
-   */
-{
-  F.minimize();
-  return;
-}
   
 void
 Algebra::expandBracket()
@@ -237,18 +227,6 @@ Algebra::expandBracket()
   return;
 }
 
-void
-Algebra::expandDNFBracket()
-  /*!
-    Expand all the brackets into DNF form
-    Not need full sort before /after
-  */
-{
-  F.Sort();
-  F.expandDNFBracket();
-  F.Sort();
-  return;
-}
 
 void
 Algebra::expandCNFBracket()
@@ -368,28 +346,6 @@ Algebra::writeMCNPX() const
   return cx.str();
 }
 
-std::ostream&
-Algebra::write(std::ostream& Out) const
-  /*!
-    Output function
-    \param Out :: Ostream to write out
-    \return Out
-  */
-{
-  Out<<"F == "<<F.display()<<std::endl;
-  return Out;
-}
-
-std::string
-Algebra::display() const
-  /*!
-    Write out the algoritnm to a string
-    \return reduced form
-  */
-{
-  return F.display();
-}
-
 void
 Algebra::addImplicates(const std::map<int,int>& IM)
   /*!
@@ -437,63 +393,29 @@ Algebra::constructShannonExpansion()
   Acomp FX(F);
   for(const Acomp& AC : implicates)
     FX*=AC;
-  Acomp FTemp(FX);
 
   FX.expandCNFBracket();
-  ELog::EM<<"FX == "<<FX<<ELog::endDiag;
-  if (!FX.logicalEqual(FTemp))
-    {
-      ELog::EM<<"FTemp == "<<FTemp<<ELog::endDiag;
-      ELog::EM<<"FX == "<<FX<<ELog::endDiag;
-      ELog::EM<<"BOOL == "<<FX.logicalEqual(FTemp)<<ELog::endErr;
-    }
 
   std::set<int> LitM;
   F.getLiterals(LitM);
+
   std::set<int>::const_iterator ac;
   for(ac=LitM.begin();ac!=LitM.end() && *ac<0;ac++)
     {
       const int SN(std::abs(*ac));
-      if (LitM.find(-SN)!=LitM.end())
+      if (LitM.find(SN)!=LitM.end())
 	{
-	  
 	  Acomp FT(FX);
-	  //	  FT.removeNonCandidate(SN);
 	  Acomp FF(FT);
-	  
 	  FT.resolveTrue(SN);
 	  FF.resolveTrue(-SN);
 	  if (FT.logicalEqual(FF))
 	    {
-	      ELog::EM<<"ORG == "<<FTemp<<ELog::endDiag;
-	      ELog::EM<<"AC == "<<FX<<ELog::endDiag;
-	      ELog::EM<<"BC == "<<FT<<ELog::endDiag;
-	      ELog::EM<<"CC == "<<FF<<ELog::endDiag;
-
-	      ELog::EM<<"SOLUTION:"<<SN<<"::"
-		      <<Acomp::strUnit(SN)<<ELog::endDiag;
-
-	      Acomp Part(FX);
-	      Part.removeNonCandidate(SN);
-	      ELog::EM<<"Part == "<<Part<<ELog::endDiag;
-	      Acomp FTtt(Part);
-	      Acomp FFtt(FTtt);
-	      
-	      FTtt.resolveTrue(SN);
-	      FFtt.resolveTrue(-SN);
-	      if (!FTtt.logicalEqual(FFtt))
-		{
-		  ELog::EM<<"\n   == "<<ELog::endDiag;
-		  ELog::EM<<"ACX == "<<Part<<ELog::endDiag;
-		  ELog::EM<<"ACX == "<<FTtt<<ELog::endDiag;
-		  ELog::EM<<"BCX == "<<FFtt<<ELog::endDiag;
-		  ELog::EM<<"\n   == "<<ELog::endErr;
-		}
-
+	      ELog::EM<<"REMOVE == "<<SN<<ELog::endDiag;
+	      F.removeLiteral(SN);
 	    }
 	}
     }
-  
   return 1;
 }
   
@@ -706,7 +628,7 @@ Algebra::countLiterals() const
   return static_cast<int>(Lit.size());
 }
 
-int
+bool
 Algebra::logicalEqual(const Algebra& A) const
   /*!
     Calculate if two functions are logically
@@ -717,6 +639,29 @@ Algebra::logicalEqual(const Algebra& A) const
   
 {
   return F.logicalEqual(A.F);
+}
+
+
+std::string
+Algebra::display() const
+  /*!
+    Write out the algoritnm to a string
+    \return reduced form
+  */
+{
+  return F.display();
+}
+
+std::ostream&
+Algebra::write(std::ostream& Out) const
+  /*!
+    Output function
+    \param Out :: Ostream to write out
+    \return Out
+  */
+{
+  Out<<"F == "<<F.display()<<std::endl;
+  return Out;
 }
 
 } // NAMESPACE MonteCarlo
