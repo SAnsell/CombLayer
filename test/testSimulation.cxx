@@ -69,6 +69,7 @@
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "DefPhysics.h"
 #include "neutron.h"
 #include "Simulation.h"
 #include "SimMCNP.h"
@@ -231,7 +232,8 @@ testSimulation::testCreateObjSurfMap()
   */
 {
   ELog::RegMethod RegA("testSimulation","testCreateObjSurfMap");
-  
+
+
   ASim.createObjSurfMap();
   const ModelSupport::ObjSurfMap* OPtr=ASim.getOSM();
   if (!OPtr) return -1;
@@ -310,13 +312,27 @@ testSimulation::testSplitCell()
 {
   ELog::RegMethod RegA("testSimulation","testSplitCell");
 
-  initSim();
+  // divide plane : cell : OutName "
+  typedef std::tuple<std::string,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      //      TTYPE("px 0",2,"testA.x"),
+      TTYPE("px 0",3,"testB.x")
+    };
 
-  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
-  SurI.createSurface(1001,"px 0");
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  
+  for(const TTYPE& tc : Tests)
+    {
+      initSim();
+      SurI.createSurface(1001,std::get<0>(tc));
 
-  ASim.splitObject(2,1001);
-  ASim.write("test.x");
+      ASim.splitObject(std::get<1>(tc),1001);
+      ModelSupport::setGenericPhysics(ASim,"CEM03");
+      ASim.prepareWrite();
+      ASim.write(std::get<2>(tc));
+    }
   
   return 0;
 }

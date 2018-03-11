@@ -286,67 +286,6 @@ Algebra::algDiv(const Algebra& D) const
 }
 
 
-std::string
-Algebra::writeMCNPX() const
-  /*!
-    Writes out the string in terms
-    of surface numbers for MCNPX.
-    Note the ugly use of valEqual to find the cell
-    since the SurfMap is the wrong way round.
-    This also has the problem that Algebra uses
-    intersection as master but MCNPX uses union 
-    \return MCNPX string of algebra
-  */
-{
-  ELog::RegMethod RegA("Algebra","writeMCNPX");
-
-  // First wrap the function if it is a union.
-  std::string Out;  
-  Out = (F.isInter()) ? F.display() : "("+F.display()+")";
-  const size_t lenOut=Out.length();
-  Out+=" ";      // Guard string
-
-  std::ostringstream cx;
-  for(size_t i=0;i<lenOut;i++)
-    {
-      if (islower(Out[i]) || isupper(Out[i]) || Out[i]=='%')
-        {
-	  // Handle overflow
-	  std::string item;
-	  if (Out[i]=='%')
-	    {
-	      do
-		{
-		  item+=Out[i];
-		  i++;
-		}
-	      while (i<lenOut && isdigit(Out[i]));
-	      i--;
-	    }
-	  else
-	    item=std::string(1,Out[i]);
-	  
-	  const int SN = getSurfIndex(item);	    
-
-	  if (Out[i+1]=='\'')
-	    {
-	      cx<<" "<<-SN;
-	      i++;
-	    }
-	  else
-	    cx<<" "<<SN;
-	}
-      else if (Out[i]=='+')
-        {
-	  cx<<" :";
-	}
-      else       // brackets are constant
-        {
-	  cx<<" "<<Out[i];
-	}
-    }
-  return cx.str();
-}
 
 void
 Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
@@ -668,6 +607,69 @@ Algebra::write(std::ostream& Out) const
 {
   Out<<"F == "<<F.display()<<std::endl;
   return Out;
+}
+
+std::string
+Algebra::writeMCNPX() const
+  /*!
+    Writes out the string in terms
+    of surface numbers for MCNPX.
+    Note the ugly use of valEqual to find the cell
+    since the SurfMap is the wrong way round.
+    This also has the problem that Algebra uses
+    intersection as master but MCNPX uses union 
+    \return MCNPX string of algebra
+  */
+{
+  ELog::RegMethod RegA("Algebra","writeMCNPX");
+
+  // First wrap the function if it is a union.
+  std::string Out;
+  Out = (F.isInter()) ? F.display() : "("+F.display()+")";
+  const size_t lenOut=Out.length();
+  Out+=" ";      // Guard string
+
+  std::ostringstream cx;
+  for(size_t i=0;i<lenOut;i++)
+    {
+      if (islower(Out[i]) || isupper(Out[i]) || Out[i]=='%')
+        {
+	  // Handle overflow
+	  std::string item;
+	  if (Out[i]=='%')
+	    {
+	      do
+		{
+		  item+=Out[i];
+		  i++;
+		}
+	      while (i<lenOut && isdigit(Out[i]));
+	      i--;
+
+	    }
+	  else
+	    item=std::string(1,Out[i]);
+	  
+	  const int SN = getSurfIndex(item);	    
+
+	  if (Out[i+1]=='\'')
+	    {
+	      cx<<" "<<-SN;
+	      i++;
+	    }
+	  else
+	    cx<<" "<<SN;
+	}
+      else if (Out[i]=='+')
+        {
+	  cx<<" :";
+	}
+      else       // brackets are constant
+        {
+	  cx<<" "<<Out[i];
+	}
+    }
+  return cx.str();
 }
 
 } // NAMESPACE MonteCarlo

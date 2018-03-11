@@ -274,7 +274,6 @@ testObject::testCellStr()
     {
       A.setObject(std::get<0>(tc));
       const std::string XStr =A.cellStr(MObj);
-      ELog::EM<<" - ------------------- "<<ELog::endDiag;
       if (XStr!=std::get<1>(tc))
 	{
 	  ELog::EM<<"Init Obj:"<<std::get<0>(tc)<<ELog::endDiag;
@@ -666,8 +665,8 @@ testObject::testRemoveComplement()
   std::vector<TTYPE> Tests=
     {
       TTYPE("3 0 5 ","3 0 -5"),
-      TTYPE("4 0 5 ((1 -2 ) : (13 -14))",
-	    "4 0 (-5 : ( ( 2 : -1 ) ( 14 : -13 ) ))")
+      //      TTYPE("4 0 5 ((1 -2 ) : (13 -14))",
+      //	    "4 0 (-5 : ( ( 2 : -1 ) ( 14 : -13 ) ))")
     };
 
   // quick way to make a long long list:
@@ -699,11 +698,14 @@ testObject::testRemoveComplement()
       A.setObject(std::get<0>(tc));
       A.makeComplement();
       AX.setFunctionObjStr(A.cellStr(OList));
+	    
+	    
       A.procString(AX.writeMCNPX());
       cx<<A;
       if (StrFunc::singleLine(cx.str())!=std::get<1>(tc))
 	{
-	  ELog::EM<<"Failed on test "<<cnt<<ELog::endTrace;
+	  
+	  ELog::EM<<"Failed on test "<<cnt<<ELog::endDiag;
 	  ELog::EM<<"Ax == "<<AX<<ELog::endTrace;	  
 	  ELog::EM<<"Amc == "<<AX.writeMCNPX()<<ELog::endTrace;	  
 	  ELog::EM<<"A == "<<A.cellStr(OList)<<ELog::endTrace;

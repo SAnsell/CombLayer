@@ -1420,6 +1420,8 @@ HeadRule::makeComplement()
   if (!HeadNode) return;
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr("#( "+HeadNode->display()+") ");
+  //  AX.setFunctionObjStr(HeadNode->display());
+
   delete HeadNode;
   HeadNode=Rule::procString(AX.writeMCNPX());
   return;

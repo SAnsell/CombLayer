@@ -412,20 +412,22 @@ ContainedSpace::initialize()
   */
 {
   ELog::RegMethod RegA("ContainedSpace","initialize");
-  
-  FixedComp& FC=dynamic_cast<FixedComp&>(*this);
-  FCName=FC.getKeyName();
+
+  FixedComp* FC=dynamic_cast<FixedComp*>(this);
+  if (!FC) return;
+
+  FCName=FC->getKeyName();
   if (active)
     {
       if (ABLink.first)
-	ContainedSpace::setLinkCopy(0,FC,ABLink.first);
+	ContainedSpace::setLinkCopy(0,*FC,ABLink.first);
       if (ABLink.second)
-	ContainedSpace::setLinkCopy(1,FC,ABLink.second);
+	ContainedSpace::setLinkCopy(1,*FC,ABLink.second);
       
       if (!primaryCell && !insertCells.empty())
 	primaryCell=insertCells.front();
       if (!buildCell)
-	buildCell=FC.nextCell();
+	buildCell=FC->nextCell();
     }
 
   return;

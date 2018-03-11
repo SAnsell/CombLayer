@@ -313,7 +313,6 @@ testAlgebra::testMerge()
       const Acomp& AC = A.getComp();
       const std::string preOut=A.display();
       A.merge();
-      //      const Acomp& AC = A.getComp();
       
       std::string Out=AC.display();
       if (Out!=std::get<1>(tc))

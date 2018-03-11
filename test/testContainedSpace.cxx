@@ -1,7 +1,7 @@
  /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   test/testObjectTrackAct.cxx
+ * File:   test/testContainedSpace.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -226,7 +226,7 @@ testContainedSpace::testBoundary()
   typedef std::tuple<int,std::string>  TTYPE;
   std::vector<TTYPE> Tests=
     {
-      TTYPE(2," -16 13 -14 15 ")
+      TTYPE(2," -16 15 -14 13 ")
     };
   
   // Calculate all cells

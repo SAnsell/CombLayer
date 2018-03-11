@@ -422,6 +422,7 @@ Acomp::processIntersection(const std::string& Ln)
   */
 {
   ELog::RegMethod RegA("Acomp","processIntersection");
+
   if (Ln.empty()) return;
 
   // Split on first bracket level which is not the VERY first
@@ -444,9 +445,8 @@ Acomp::processIntersection(const std::string& Ln)
 		  addComp(AX);
 		}
 	      else
-		{
-		  addTokens(Express);
-		}
+		addTokens(Express);
+
 	      Express="";
 	    }
 	}
@@ -466,6 +466,7 @@ Acomp::processIntersection(const std::string& Ln)
   // Clean up at end
   if (!Express.empty())
     addTokens(Express);
+
 
   return;
 }
@@ -1767,6 +1768,7 @@ Acomp::setString(const std::string& Line)
 				  static_cast<size_t>(sPos));
 
       // std::string Part= Ln.substr(sPos,ePos-sPos);
+
       CM.setString(Ln.substr(sPos+2,ePos-sPos-3));
       CM.complement();
       Ln.replace(sPos,ePos-sPos,"("+CM.display()+")");
@@ -1972,7 +1974,6 @@ Acomp::clearNulls()
 	  // always true
 	  if (Units.find(-N)!=Units.end())
 	    {
-	      ELog::EM<<"T1 == "<<*this<<ELog::endDiag;
 	      clear();
 	      trueFlag=1;
 	      return 1;
@@ -2075,19 +2076,21 @@ Acomp::removeOuterBracket(std::string& Item)
   */
 {
   ELog::RegMethod RegA("Acomp","removeOuterBracket");
-  if (Item.size()>2 || Item[0]!='(')
+  if (Item.size()<2 || Item[0]!='(')
     return;
   
   int bLevel(1);
-  for(size_t i=1;i<Item.size()-1;i++)
+  for(size_t i=1;i+1<Item.size();i++)
     {
       if (Item[i]=='(')
 	bLevel++;
       else if (Item[i]==')')
 	{
+	  
 	  bLevel--;
-	  if (bLevel==0)       // Internal bracket 
+	  if (bLevel==0)       // Internal bracket
 	    return;
+	      
 	}
     }
   Item=Item.substr(1,Item.size()-2);
@@ -2103,41 +2106,27 @@ Acomp::addTokens(const std::string& Ln)
 {
   ELog::RegMethod RegA("Acomp","addTokens");
 
+  // no string/no work
+  if (Ln.empty()) return;
   int numItem;
-  size_t iu(0);
+  size_t iu(1);
+  std::string unit(1,Ln[0]);
+    
   while(iu<Ln.size())
     {
+      // new key [end old and process
       if (isalpha(Ln[iu]) || Ln[iu]=='%')
 	{
-	  if (Ln[iu]=='%')
-	    {
-	      iu++;
-	      const size_t Nmove=
-		StrFunc::convPartNum(Ln.substr(iu),numItem);
-	      if (!Nmove)
-		throw ColErr::InvalidLine(Ln,RegA.getFull(),
-					  static_cast<size_t>(iu));
-	      numItem+=52;
-	      iu+=Nmove; 
-	    }
-	  else
-	    {
-	      numItem=(islower(Ln[iu])) ?
-		static_cast<int>(1+Ln[iu]-'a') :
-		static_cast<int>(27+Ln[iu]-'A');
-	      iu++;
-	    }
-	  // iu looks at next item:
-	  if (iu<Ln.length() && Ln[iu]=='\'')   // neg item
-	    { 
-	      numItem*=-1;
-	      iu++;
-	    }
+	  numItem=Acomp::unitStr(unit);
 	  addUnitItem(numItem);
+	  unit="";
 	}
-      else
-	iu++;
+      unit+=Ln[iu];
+      iu++;
     }
+  if (!unit.empty())
+    addUnitItem(Acomp::unitStr(unit));
+  
   return;
 }
 
@@ -2213,14 +2202,15 @@ Acomp::unitStr(std::string SR)
   */
 {
   if (SR.empty()) return 0;
-  int index;
+  int index(0);
   if (SR[0]=='%')
     {
       SR[0]=' ';
       const size_t id=StrFunc::convPartNum(SR,index);
+      index+=52;
       if (id)
 	{
-	  if (SR.size()!=id && SR[id-1]=='\'')
+	  if (SR.size()!=id && SR[id]=='\'')
 	    index*= -1;
 	}
       return index;

@@ -1561,12 +1561,11 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
-  static int cnt(0);
   MonteCarlo::Object* CPtr = findQhull(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   
-  if (!CPtr->isPlaceHold() && cnt==1)
+  if (!CPtr->isPlaceHold())
     {
       ELog::EM<<"Cell == "<<CN<<ELog::endDiag;
       CPtr->populate();
@@ -1580,14 +1579,10 @@ Simulation::minimizeObject(const int CN)
       AX.addImplicates(IP);
       AX.constructShannonExpansion();
       
-      ELog::EM<<"Pre == "<<CPtr->cellCompStr()<<ELog::endDiag;;
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");
-      
-      ELog::EM<<"Post== "<<CPtr->cellCompStr()<<ELog::endDiag;
     }
-      cnt++;
       
   return;
 }
