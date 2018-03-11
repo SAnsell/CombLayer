@@ -102,6 +102,7 @@ class Object
   int setObject(std::string);
   int setObject(const int,const int,const std::vector<Token>&);
   int procString(const std::string&);
+  int procHeadRule(const HeadRule&);
   void setDensity(const double D) { density=D; }       ///< Set Density [Atom/A^3]
   void setMaterial(const int M) { MatN=M; }            ///< Set Material number
   void setPlaceHold(const int P) { placehold=P; }      ///< Set placeholder
@@ -154,7 +155,8 @@ class Object
   const std::vector<const Geometry::Surface*>& getSurList() const
     { return SurList; }
 
-  std::map<int,int> getImplicatePairs() const;
+  std::vector<std::pair<int,int>> getImplicatePairs(const int) const;
+  std::vector<std::pair<int,int>> getImplicatePairs() const;
   
   ///\cond ABSTRACT
   virtual void displace(const Geometry::Vec3D&) {}

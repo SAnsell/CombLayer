@@ -22,6 +22,8 @@
 #ifndef Simulation_h
 #define Simulation_h
 
+class HeadRule;
+
 namespace Geometry
 {
   class Transform;
@@ -161,11 +163,13 @@ class Simulation
   void masterRotation();
   void masterSourceRotation();
 
+  int getNextCell(int) const;
   // ADD Objects
   int addCell(const MonteCarlo::Qhull&);         
   int addCell(const int,const MonteCarlo::Qhull&);         
   int addCell(const int,const int,const std::string&);
   int addCell(const int,const int,const double,const std::string&);
+  int addCell(const int,const int,const double,const HeadRule&);
 
   // LIST Stuff
 
@@ -205,6 +209,7 @@ class Simulation
   void renumberAll();
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
+  void splitObject(const int,const int);
   void minimizeObject(const int);
   void makeObjectsDNForCNF();
   void prepareWrite();

@@ -45,6 +45,7 @@ private:
   //Tests 
   int testCreateObjSurfMap();
   int testInCell();
+  int testSplitCell();
 
 public:
   

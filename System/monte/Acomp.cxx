@@ -1552,7 +1552,7 @@ Acomp::algDiv(const Acomp& G)
   //First make completely DNF (if necessary)
   if (!isDNF() && !makeDNFobject())
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
-
+  
   std::set<int> Gmap; // get map of literals and frequency
   G.getLiterals(Gmap);
   if (Gmap.empty())
@@ -1568,7 +1568,6 @@ Acomp::algDiv(const Acomp& G)
   // Only have First level components to consider
   std::vector<Acomp>::const_iterator cc; 
 
-  int cell;
   
   std::vector<Acomp> Flist,Glist;
   if (!getDNFpart(Flist) || !G.getDNFpart(Glist))
@@ -1580,14 +1579,12 @@ Acomp::algDiv(const Acomp& G)
       V.push_back(Acomp(Inter)); 
       Acomp& Uitem= U.back();
       Acomp& Vitem= V.back();
-      UTYPE::const_iterator ccItem=CC.Units.begin();
-      while( (cell = *ccItem) )
-        {
+      for(const int cell : CC.Units)
+	{
 	  if (Gmap.find(cell)!=Gmap.end())
 	    Uitem.addUnitItem(cell);
 	  else
 	    Vitem.addUnitItem(cell);
-	  ccItem++;
 	}
     }
 
@@ -1611,7 +1608,7 @@ Acomp::algDiv(const Acomp& G)
 	  H.joinDepth();        // Up shift suitable objects.
 	  Hpart.Comp.clear();
 	  Hpart.Units.clear();   // Just in case
-
+	  
 	}
 
     }

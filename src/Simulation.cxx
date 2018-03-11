@@ -226,6 +226,21 @@ Simulation::checkInsert(const MonteCarlo::Qhull& A)
 }
 
 int
+Simulation::getNextCell(int CN) const
+  /*!
+    Get next cell
+    \param CN :: Cell number to start offset from
+    \return next free offset
+  */
+{
+  while (OList.find(CN)!=OList.end())
+    {
+      CN++;
+    }
+  return CN;
+}
+
+int
 Simulation::addCell(const MonteCarlo::Qhull& A)
   /*!
     Adds a cell the the simulation.
@@ -322,6 +337,31 @@ Simulation::addCell(const int Index,const int matNum,
   TX.setMaterial(matNum);
   TX.setTemp(matTemp);  
   TX.procString(RuleLine);         // This always is successful. 
+  return addCell(Index,TX);
+}
+
+int
+Simulation::addCell(const int Index,const int matNum,
+		    const double matTemp,
+		    const HeadRule& RuleItem)
+  /*!
+    From the information try to add a new cell
+    \param Index :: Identifier of cell
+    \param matNum :: Material number 
+    \param matTemp :: Material temperature
+    \param RuleItem :: List of rules
+    \retval -1 :: failure [no new cell etc]
+    \retval 0 :: success
+   */
+{
+  ELog::RegMethod RegA("Simulation","addCell(int,int,double,HeadRule)");
+  
+  MonteCarlo::Qhull TX;
+  TX.setName(Index);
+  TX.setMaterial(matNum);
+  TX.setTemp(matTemp);  
+  TX.procHeadRule(RuleItem);
+  
   return addCell(Index,TX);
 }
 
@@ -908,7 +948,7 @@ Simulation::printVertex(const int CellN) const
 }
 
 void
-Simulation::setEnergy(const double EMin) 
+Simulation::setEnergy(const double) 
   /*!
     Set the cut energy
     \param EMin :: Energy minimum
@@ -1430,7 +1470,7 @@ Simulation::renumberSurfaces(const std::vector<int>& rLow,
 void
 Simulation::voidObject(const std::string& ObjName)
   /*!
-    Given an object set remove it from system 
+    Given an object set the material void
     \param ObjName :: Object to void
   */
 {
@@ -1453,6 +1493,64 @@ Simulation::voidObject(const std::string& ObjName)
   return;
 }
 
+void
+Simulation::splitObject(const int CA,const int SN)
+  /*!
+    Split a cell into two based on surface 
+    \param CA :: Cell number
+    \param SN :: surface number
+   */
+{
+  ELog::RegMethod RegA("Simulation","splitObject");
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  MonteCarlo::Object* CPtr = findQhull(CA);
+  if (!CPtr)
+    throw ColErr::InContainerError<int>(CA,"Cell not found");
+
+  // get next cell
+  const int CB=getNextCell(CA);
+
+ 
+  // headrules +/- surface
+  HeadRule CHead=CPtr->getHeadRule();
+  HeadRule DHead(CHead);
+
+  CHead.addIntersection(-SN);
+  DHead.addIntersection(SN);
+  
+  addCell(CB,CPtr->getMat(),CPtr->getTemp(),DHead);
+  CPtr->procHeadRule(CHead);
+
+  MonteCarlo::Object* DPtr = findQhull(CB);  
+  CPtr->populate();
+  CPtr->createSurfaceList();
+
+  DPtr->populate();
+  DPtr->createSurfaceList();
+
+  // get implicates relative to a surface:
+  const std::vector<std::pair<int,int>>
+    IP=CPtr->getImplicatePairs(SN);
+
+  // Now make two cells and replace this cell with A + B
+  
+  MonteCarlo::Algebra AX;  
+  AX.setFunctionObjStr(CHead.display());
+  AX.addImplicates(IP);
+  if (AX.constructShannonExpansion())
+    CPtr->procString(AX.writeMCNPX());
+
+  AX.setFunctionObjStr(DHead.display());
+  if (AX.constructShannonExpansion())
+    DPtr->procString(AX.writeMCNPX());
+
+  
+  return;
+
+}
 
 void
 Simulation::minimizeObject(const int CN)
@@ -1463,21 +1561,25 @@ Simulation::minimizeObject(const int CN)
 {
   ELog::RegMethod RegA("Simualation","minimizeObject");
 
+  static int cnt(0);
   MonteCarlo::Object* CPtr = findQhull(CN);
   if (!CPtr)
     throw ColErr::InContainerError<int>(CN,"Cell not found");
   
-  if (!CPtr->isPlaceHold())
+  if (!CPtr->isPlaceHold() && cnt==1)
     {
+      ELog::EM<<"Cell == "<<CN<<ELog::endDiag;
       CPtr->populate();
       CPtr->createSurfaceList();
       
-      const std::map<int,int> IP=CPtr->getImplicatePairs();
+      const std::vector<std::pair<int,int>>
+	IP=CPtr->getImplicatePairs();
             
       MonteCarlo::Algebra AX;
       AX.setFunctionObjStr(CPtr->cellCompStr());
       AX.addImplicates(IP);
       AX.constructShannonExpansion();
+      
       ELog::EM<<"Pre == "<<CPtr->cellCompStr()<<ELog::endDiag;;
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
@@ -1485,6 +1587,8 @@ Simulation::minimizeObject(const int CN)
       
       ELog::EM<<"Post== "<<CPtr->cellCompStr()<<ELog::endDiag;
     }
+      cnt++;
+      
   return;
 }
   

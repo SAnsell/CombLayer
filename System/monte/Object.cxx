@@ -387,7 +387,7 @@ Object::setObject(std::string Ln)
     }
 
   populated=0;
-  if (HRule.procString(Ln))     // this currently does not fail:
+  if (HRule.procString(Ln))   // fails on empty
     {
       SurList.clear();
       SurSet.erase(SurSet.begin(),SurSet.end());
@@ -410,6 +410,19 @@ Object::procString(const std::string& cellStr)
 {
   populated=0;
   return HRule.procString(cellStr);
+}
+
+int
+Object::procHeadRule(const HeadRule& cellRule)
+  /*!
+    Process a cell string
+    \param cellStr :: Object string
+    \return -ve on error
+   */
+{
+  populated=0;
+  HRule=cellRule;
+  return 1;
 }
 
 int
@@ -663,16 +676,53 @@ Object::isValid(const Geometry::Vec3D& Pt,
   return HRule.isValid(Pt,ExSN);
 }
 
-std::map<int,int>
+std::vector<std::pair<int,int>>
+Object::getImplicatePairs(const int SN) const
+  /*!
+    Determine all the implicate pairs for the object
+    The map is plane A has (sign A) implies plane B has (sign B)
+    \return Map of surf -> surf
+  */
+{
+  ELog::RegMethod RegA("Object","getImplicatePairs(int)");
+
+  const ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+
+  std::vector<std::pair<int,int>> Out;
+
+  const Geometry::Surface* APtr=SurI.getSurf(SN);
+  if (!APtr)
+    throw ColErr::InContainerError<int>(SN,"Surface not found");
+
+  for(const Geometry::Surface* BPtr : SurList)
+    {
+      if (APtr!=BPtr)
+	{
+	  const int dirFlag=APtr->isImplicate(*BPtr);
+	  if (dirFlag)
+	    {
+	      Out.push_back
+		(std::pair<int,int>(dirFlag*BPtr->getName(),
+				    dirFlag*APtr->getName()));
+	    }
+	}
+    }
+
+  return Out;
+}
+
+std::vector<std::pair<int,int>>
 Object::getImplicatePairs() const
   /*!
     Determine all the implicate pairs for the object
+    The map is plane A has (sign A) implies plane B has (sign B)
     \return Map of surf -> surf
   */
 {
   ELog::RegMethod RegA("Object","getImplicatePairs");
 
-  std::map<int,int> Out;
+  std::vector<std::pair<int,int>> Out;
 
   for(size_t i=0;i<SurList.size();i++)
     for(size_t j=i+1;j<SurList.size();j++)
@@ -684,8 +734,12 @@ Object::getImplicatePairs() const
 
 	if (dirFlag)
 	  {
-	    Out.emplace(-dirFlag*APtr->getName(),dirFlag*BPtr->getName());
-	    Out.emplace(dirFlag*BPtr->getName(),-dirFlag*APtr->getName());
+	    Out.push_back
+	      (std::pair<int,int>(dirFlag*BPtr->getName(),
+				  dirFlag*APtr->getName()));
+	    Out.push_back
+	      (std::pair<int,int>(-dirFlag*APtr->getName(),
+				  -dirFlag*BPtr->getName()));
 	  }
       }
   return Out;

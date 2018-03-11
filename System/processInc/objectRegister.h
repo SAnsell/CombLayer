@@ -73,6 +73,8 @@ class objectRegister
 
   static objectRegister& Instance();
 
+  int getNextCell(const int) const;
+  
   int cell(const std::string&,const int = 10000);
   int getCell(const std::string&) const;
   int getLast(const std::string&) const;

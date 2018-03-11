@@ -149,7 +149,8 @@ class Acomp
   bool clearNulls(); 
   void clear();     //  this delete all
   bool isEmpty() const;
-
+  bool isFalse() const { return trueFlag==-1; }
+  bool isTrue() const { return trueFlag==1; }
   
   
   int getSinglet() const;
@@ -167,6 +168,7 @@ class Acomp
   void resolveTrue(const int);
   void removeNonCandidate(const int);
   bool removeLiteral(const int);
+  bool removeSignedLiteral(const int);
   
   int contains(const int) const;
   int contains(const Acomp&) const;

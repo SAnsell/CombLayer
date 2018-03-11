@@ -623,6 +623,41 @@ Acomp::removeLiteral(const int SN)
 }
 
 bool
+Acomp::removeSignedLiteral(const int SN)
+  /*!
+    Remove a single literal and then re-process
+    \param SN :: Surface to remove
+    \return Work done
+  */
+{
+  bool outFlag(0);
+  
+  if (Units.erase(SN))
+    {
+      if (Units.empty())
+	{
+	  if (Comp.empty())
+	    {
+	      trueFlag=1;
+	      return 1;
+	    }
+	  processChange();
+	}
+      outFlag=1;
+    }
+  
+  for(Acomp& AC : Comp)
+    {
+      if (AC.removeSignedLiteral(SN))
+	{
+	  processChange();
+	  outFlag=1;
+	}
+    }
+  return outFlag;
+}
+
+bool
 Acomp::removeEqUnion()
   /*!
     Find if two Components can be replaced by one
@@ -886,6 +921,7 @@ Acomp::resolveTrue(const int T)
       if (Units.find(-T)!=Units.end())
 	{
 	  clear();
+	  trueFlag=-1;
 	  return;
 	}
     }

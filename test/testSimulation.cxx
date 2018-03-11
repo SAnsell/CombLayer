@@ -111,6 +111,7 @@ testSimulation::createSurfaces()
   ELog::RegMethod RegA("testSimulation","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  SurI.reset();
   
   // First box :
   SurI.createSurface(1,"px -1");
@@ -187,12 +188,14 @@ testSimulation::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testSimulation::testCreateObjSurfMap,
-      &testSimulation::testInCell
+      &testSimulation::testInCell,
+      &testSimulation::testSplitCell
     };
   const std::string TestName[]=
     {
       "CreateObjSurfMap",
       "InCell",
+      "SplitCell"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -218,6 +221,7 @@ testSimulation::applyTest(const int extra)
     }
   return 0;
 }
+
 
 int
 testSimulation::testCreateObjSurfMap()
@@ -263,40 +267,56 @@ testSimulation::testInCell()
 {
   ELog::RegMethod RegA("testSimulation","testInCell");
 
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> CellN;
-  
-  Pts.push_back(Geometry::Vec3D(0,0,0));
-  Pts.push_back(Geometry::Vec3D(0,26,0));
-  Pts.push_back(Geometry::Vec3D(0,2,0));
-  Pts.push_back(Geometry::Vec3D(12.5,0.3,0));
-  Pts.push_back(Geometry::Vec3D(0,5,0));
-
-
-  CellN.push_back(2);
-  CellN.push_back(1);
-  CellN.push_back(3);
-  CellN.push_back(4);  
-  CellN.push_back(5);
-
-  for(size_t i=0;i<Pts.size();i++)
+  typedef std::tuple<Geometry::Vec3D,int> TTYPE;
+  const std::vector<TTYPE> Tests=
     {
-      MonteCarlo::Object* OPtr=ASim.findCell(Pts[i],0);
+      TTYPE(Geometry::Vec3D(0,0,0),2),
+      TTYPE(Geometry::Vec3D(0,26,0),1),
+      TTYPE(Geometry::Vec3D(0,2,0),3),
+      TTYPE(Geometry::Vec3D(12.5,0.3,0),4),
+      TTYPE(Geometry::Vec3D(0,5,0),5)
+    };
 
-      if (OPtr && CellN[i]!=OPtr->getName())
+  for(const TTYPE& tc : Tests)
+    {
+      const Geometry::Vec3D& Pt=std::get<0>(tc);
+      const int CN(std::get<1>(tc));
+      MonteCarlo::Object* OPtr=ASim.findCell(Pt,0);
+
+      if (OPtr && CN!=OPtr->getName())
 	{
-	  ELog::EM<<"Failed on point:"<<Pts[i]<<ELog::endWarn;
-	  ELog::EM<<"  Cell == "<<CellN[i]<<" != "
+	  ELog::EM<<"Failed on point:"<<Pt<<ELog::endWarn;
+	  ELog::EM<<"  Cell == "<<CN<<" != "
 		  <<*OPtr<<ELog::endDebug;
 	  return -1;
 	}
-      else if (!OPtr && CellN[i])
+      else if (!OPtr && CN)
 	{
-	  ELog::EM<<"Failed on point:"<<Pts[i]<<ELog::endWarn;
-	  ELog::EM<<"  Cell == "<<CellN[i]<<" != Null"<<ELog::endWarn;
+	  ELog::EM<<"Failed on point:"<<Pt<<ELog::endWarn;
+	  ELog::EM<<"  Cell == "<<CN<<" != Null"<<ELog::endWarn;
 	  return -1;
 	}
     }
       
+  return 0;
+}
+
+int
+testSimulation::testSplitCell()
+  /*!
+    Framework test to test splitting of a cell
+    \return 0 on success / -1 on failure
+  */
+{
+  ELog::RegMethod RegA("testSimulation","testSplitCell");
+
+  initSim();
+
+  ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  SurI.createSurface(1001,"px 0");
+
+  ASim.splitObject(2,1001);
+  ASim.write("test.x");
+  
   return 0;
 }

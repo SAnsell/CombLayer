@@ -396,8 +396,7 @@ testAlgebra::testExpandCNFBracket()
       //      TTYPE("a'b'c(b+c')","!!"),   // ALWAY FALSE
       TTYPE("f+(a'b'c(b+c'))","f"),   
 
-      TTYPE("n'o'p(a+b+h)(o+p')",
-	    "n'o'p(a+b+h)"),
+      TTYPE("n'o'p(a+b+h)(o+p')","!!"),
       
       TTYPE("q(q'+r)(o+r)","qr"),
       TTYPE("ab+ac","a(b+c)"),
@@ -834,41 +833,40 @@ testAlgebra::testWeakDiv()
 {
   ELog::RegMethod RegA("testAlgebra","testWeakDiv");
 
-  std::vector<std::string> mainFunc;
-  std::vector<std::string> dFunc;
-  mainFunc.push_back("ac+ad+bc+bd+ae'");
-  dFunc.push_back("a+b");
-  mainFunc.push_back("afbc(x+y+z)");
-  dFunc.push_back("abc");
-  mainFunc.push_back("afbc(x+y+z)");
-  dFunc.push_back("x+y");
-  
+  typedef std::tuple<std::string,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      TTYPE("ac+ad+bc+bd+ae'","a+b"),
+      TTYPE("afbc(x+y+z)","abc"),
+      TTYPE("afbc(x+y+z)","x+y") 
+    };
 
-  for(size_t i=0;i<mainFunc.size();i++)
+  
+  for(const TTYPE tc : Tests)
     {
       Algebra A;
-      A.setFunction(mainFunc[i]);
+      A.setFunction(std::get<0>(tc));
       Algebra B;
-      B.setFunction(dFunc[i]);
+      B.setFunction(std::get<1>(tc));
 
       std::pair<Algebra,Algebra> X=A.algDiv(B);
       // Check multiplication:
       Algebra XY=X.first*B;
       XY+=X.second;     
 
-      if (!XY.logicalEqual(A) || i==3)
+      if (!XY.logicalEqual(A))
 	{
-	  ELog::EM<<"A == "<<A<<ELog::endErr;
-	  ELog::EM<<"B == "<<B<<ELog::endErr;
-	  ELog::EM<<ELog::endErr;
-	  ELog::EM<<"A div == "<<X.first<<ELog::endErr;
-	  ELog::EM<<"A rem == "<<X.second<<ELog::endErr;
-	  ELog::EM<<ELog::endErr;
-	  ELog::EM<<"Multiplied "<<XY<<ELog::endErr;
-	  ELog::EM<<"Logic:"<<XY.logicalEqual(A)<<ELog::endErr;
-	  ELog::EM<<ELog::endErr;
+	  ELog::EM<<"A == "<<A<<ELog::endDiag;
+	  ELog::EM<<"B == "<<B<<ELog::endDiag;
+	  ELog::EM<<ELog::endDiag;
+	  ELog::EM<<"A div == "<<X.first<<ELog::endDiag;
+	  ELog::EM<<"A rem == "<<X.second<<ELog::endDiag;
+	  ELog::EM<<ELog::endDiag;
+	  ELog::EM<<"Multiplied "<<XY<<ELog::endDiag;
+	  ELog::EM<<"Logic:"<<XY.logicalEqual(A)<<ELog::endDiag;
+	  ELog::EM<<ELog::endDiag;
 	  XY.makeDNF();
-	  ELog::EM<<"XY(DNF):"<<XY<<ELog::endErr;      
+	  ELog::EM<<"XY(DNF):"<<XY<<ELog::endDiag;      
 	  return -1;
 	}
     }
@@ -919,10 +917,10 @@ testAlgebra::testResolveTrue()
     {
       // stuff for CNF
       //      TTYPE("a",0,"bcd","(a+b)(a+c)(a+d)"),
-      TTYPE("a+b","b",""),
+      TTYPE("a+b","b","~~"),
       TTYPE("ab(c+d)","c","ab"),
       TTYPE("ab(c+de)","c","ab"),
-      TTYPE("ab(c+de)","a'",""),
+      TTYPE("ab(c+de)","a'","!!"),
       TTYPE("ab(c+de)","c'","abde")
     };
 

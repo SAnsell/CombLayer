@@ -41,13 +41,14 @@ class Algebra
 {
  private:
 
-  std::map<int,std::string> SurfMap;    ///< Surface Map
+  std::map<int,int> SurfMap;    ///< Surface Map
 
   Acomp F;                              ///< Factor
 
   /// Additional implicates to resolve/simplify Acomp
   std::set<Acomp> implicates;           
-
+  std::vector<std::pair<int,int>> ImplicateVec;   ///< implicate vector
+  
  public:
 
   Algebra();
@@ -68,7 +69,7 @@ class Algebra
   Algebra operator*(const Algebra&) const;
   bool logicalEqual(const Algebra&) const;
 
-  void addImplicates(const std::map<int,int>&);
+  void addImplicates(const std::vector<std::pair<int,int>>&);
   bool constructShannonExpansion();
   size_t countComponents() const;
 
