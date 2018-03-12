@@ -608,7 +608,7 @@ buildFullSimPOVRay(SimPOVRay* SimPOVRayPtr,
   //   SimPOVRayPtr->setNoVariables();
 
   SimPOVRayPtr->prepareWrite();
-  SimPOVRayPtr->write(OName+".pov");
+  SimPOVRayPtr->write(OName+".x");
 
   return;
 }

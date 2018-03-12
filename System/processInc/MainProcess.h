@@ -24,7 +24,6 @@
 
 class Simulation;
 class SimPHITS;
-
 class SimFLUKA;
 class SimPOVRay;
 class SimMCNP;
