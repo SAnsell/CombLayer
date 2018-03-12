@@ -502,7 +502,6 @@ exitDelete(Simulation* SimPtr)
 
 
 void
-
 buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 		 const mainSystem::inputParam& IParam,
 		 const std::string& OName)
@@ -536,6 +535,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   //  SDef::sourceSelection(*SimMCPtr,IParam);
   SimFLUKAPtr->masterSourceRotation();
   // Ensure we done loop
+
   do
     {
       SimProcess::writeIndexSimFLUKA(*SimFLUKAPtr,OName,MCIndex);
@@ -589,6 +589,29 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   return;
 }
 
+void
+buildFullSimPOVRay(SimPOVRay* SimPOVRayPtr,
+		   const mainSystem::inputParam& IParam,
+		   const std::string& OName)
+/*!
+    Carry out the construction of the geometry
+    and wieght/tallies
+    \param SimPOVRayPtr :: Simulation point
+    \param IParam :: input pararmeter
+    \param OName :: output file name
+   */
+{
+  ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
+  // Definitions section 
+
+  // if (IParam.flag("noVariables"))
+  //   SimPOVRayPtr->setNoVariables();
+
+  SimPOVRayPtr->prepareWrite();
+  SimPOVRayPtr->write(OName+".pov");
+
+  return;
+}
 
 void
 buildFullSimulation(Simulation* SimPtr,
@@ -630,7 +653,14 @@ buildFullSimulation(Simulation* SimPtr,
       buildFullSimFLUKA(SimFLUKAPtr,IParam,OName);
       return;
     }
-  
+
+  SimPOVRay* SimPOVPtr=dynamic_cast<SimPOVRay*>(SimPtr);
+  if (SimPOVPtr)
+    {      
+      buildFullSimPOVRay(SimPOVPtr,IParam,OName);
+      return;
+    }
+
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");

@@ -24,7 +24,9 @@
 
 class Simulation;
 class SimPHITS;
+
 class SimFLUKA;
+class SimPOVRay;
 class SimMCNP;
 class FuncDataBase;
 
@@ -69,6 +71,7 @@ namespace mainSystem
 			  std::vector<std::string>&);
 
   void buildFullSimMCNP(SimMCNP*,const inputParam&,const std::string&);
+  void buildFullSimPOVRay(SimPOVRay*,const inputParam&,const std::string&);
   void buildFullSimulation(Simulation*,const inputParam&,const std::string&);
   void exitDelete(Simulation*);
 }

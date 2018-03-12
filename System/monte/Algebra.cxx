@@ -73,7 +73,6 @@ Algebra::Algebra() :
 
 Algebra::Algebra(const Algebra& A) :
   SurfMap(A.SurfMap),F(A.F),
-  implicates(A.implicates),
   ImplicateVec(A.ImplicateVec)
   /*!
     Copy Constructor 
@@ -93,7 +92,6 @@ Algebra::operator=(const Algebra& A)
     {
       SurfMap=A.SurfMap;
       F=A.F;
-      implicates=A.implicates;
       ImplicateVec=A.ImplicateVec;
     }
   return *this;
@@ -285,7 +283,20 @@ Algebra::algDiv(const Algebra& D) const
   return std::pair<Algebra,Algebra>(Q,R);
 }
 
-
+int
+Algebra::convertMCNPSurf(const int mcnpSN) const
+  /*!
+    Convert the surf number to interal index
+    \param mcnpSN :: mcnpSurf number
+    \return internal number
+  */
+{
+  std::map<int,int>::const_iterator ac=
+    SurfMap.find(std::abs(mcnpSN));
+  if (ac==SurfMap.end())
+    throw ColErr::InContainerError<int>(mcnpSN,"mcnpSN -> SurfMap");
+  return (mcnpSN>0) ? ac->second : -ac->second;
+}
 
 void
 Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
@@ -298,8 +309,6 @@ Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
 {
   ELog::RegMethod RegA("Algebra","addImplicates");
 
-
-
   for(const std::pair<int,int>& mc : IM)
     {
       std::map<int,int>::const_iterator ac=
@@ -309,22 +318,55 @@ Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
 
       if (ac!=SurfMap.end() && bc!=SurfMap.end())
 	{
-	  const int surfA=(mc.first>0) ? -ac->second  : ac->second;
-	  const int surfB=(mc.second<0) ? -bc->second  : bc->second;
+	  const int surfA=(mc.first>0) ? ac->second  : -ac->second;
+	  const int surfB=(mc.second>0) ? bc->second  : -bc->second;
 	  ImplicateVec.push_back(std::pair<int,int>(surfA,surfB));
-	  
-	  const std::string A=Acomp::strUnit(surfA);
-	  const std::string B=Acomp::strUnit(surfB);
-		     
-	  Acomp Part(0);
-	  Part.setString(A+"+"+B);
-	  implicates.insert(Part);
 	}
     }
 
   return;
 }
 
+
+bool
+Algebra::constructShannonDivision(const int mcnpSN)
+  /*!
+    Given a surface number SN [signed]
+    can we divide base on implicates of that surfac
+    removing the +/- part 
+    \parma mcnpSN :: Surface for divide and implicate
+    \return true if a surface can be removed
+  */
+{
+
+  const int SN=convertMCNPSurf(mcnpSN);
+  const int ASN(std::abs(SN));
+  Acomp FX(F);
+  FX.expandCNFBracket();
+  Acomp AD=FX;
+
+  for(const std::pair<int,int>& IP : ImplicateVec)
+    {
+      int SNA=IP.first;
+      int SNB=IP.second;
+      int ANA=std::abs(SNA);
+      int ANB=std::abs(SNB);
+      if (ANB==ASN)
+	{
+	  std::swap(ANA,ANB);
+	  std::swap(SNA,SNB);
+	  SNA*=-1;
+	  SNB*=-1;
+	}
+
+      if (SNA==SN)
+	AD.resolveTrue(SNB);
+    }
+  F=AD;
+
+  return 1;  
+}
+  
 bool
 Algebra::constructShannonExpansion()
   /*!
@@ -347,19 +389,17 @@ Algebra::constructShannonExpansion()
 
   const std::vector<int> signAV({-1,-1,1,1});
   const std::vector<int> signBV({-1,1,-1,1});
-	  
+  ELog::EM<<"F = "<<F<<ELog::endDiag;
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
       // now do shannon expansion about both literals [together?]
       const int SNA=std::abs(IP.first);
       const int SNB=std::abs(IP.second);
-
+      ELog::EM<<"TEST == "<<SNA<<" "<<getSurfIndex(SNA)<<ELog::endDiag;
+      ELog::EM<<"TEST == "<<SNB<<" "<<getSurfIndex(SNB)<<ELog::endDiag;
       Acomp abUnits[4]={FX,FX,FX,FX};
       size_t nullCount(0);
       size_t index(10);
-      ELog::EM<<"Calc "<<FX<<ELog::endDiag;
-      ELog::EM<<"A  == "<<SNA<<ELog::endDiag;
-      ELog::EM<<"B  == "<<SNB<<ELog::endDiag;
       for(size_t i=0;i<4;i++)
 	{
 	  Acomp& AC(abUnits[i]);
@@ -368,26 +408,54 @@ Algebra::constructShannonExpansion()
 	  AC.resolveTrue(signBV[i]*SNB);
 	  if (AC.isFalse())
 	    nullCount++;
-	  else
-	    index=i;
+	  index=i;
 	}
-      ELog::EM<<"Null count == "<<nullCount<<" "<<index<<ELog::endDiag;
+	
       if (nullCount==3)
 	{
-
-	  if (index==0) // b'-> a' so can remove b'
+	  ELog::EM<<"Null[3] == "<<index<<ELog::endDiag;
+	  int killSurf(0);
+	  if (index==0) // a'b' 
 	    {
-	      ELog::EM<<"REMOVE == "<<-SNA<<ELog::endDiag;
-	      F.removeSignedLiteral(-SNA);
+	      if (IP.first<0 && IP.second<0)
+		killSurf=-SNA;
+	      else if (IP.first>0 && IP.second>0)
+		killSurf=-SNB;
+	      // if a'->b we have a problems
 	    }
-	  else if (index==3) // b-> a so can remove b'
+	  else if (index==2) // ab'
 	    {
-	      ELog::EM<<"PLUS== "<<-SNA<<ELog::endDiag;
-	      F.removeSignedLiteral(SNA);
+	      if (IP.first<0 && IP.second>0)
+		killSurf=SNB;
+	      else if (IP.first>0 && IP.second<0)
+		killSurf=SNA;
+	    }
+	  else if (index==3) // ab 
+	    {
+	      if (IP.first<0 && IP.second<0)
+		killSurf=SNB;
+	      else if (IP.first>0 && IP.second>0)
+		killSurf=SNA;
+	      ELog::EM<<"IP[3] == "<<IP.first<<ELog::endDiag;
+	      // if a'->b we have a problems
+	    }
+
+	  // POST PROCESS
+	  if (killSurf)
+	    {
+	      if (!F.removeSignedLiteral(killSurf))
+		ELog::EM<<"FAILED TO --REMOVE "<<killSurf<<ELog::endDiag;
+	      else
+		{
+		  ELog::EM<<"REMOVED "<<killSurf<<" "
+			  <<getSurfIndex(killSurf)<<ELog::endDiag;
+		}
+	      
 	    }
 	}
 	      
     }
+
   return 1;
 }
   
@@ -520,6 +588,25 @@ Algebra::setFunction(const Acomp& A)
 }
 
 int
+Algebra::getSurfIndex(const int SN) const
+  /*!
+    Convert a surf index into a mcnp object surface number
+    \param SN :: Surface number						
+    \return mcnp surf number
+  */
+{  
+  const int ASN=std::abs(SN);
+  // Converts a character to a surface number
+  std::map<int,int>::const_iterator vc=
+    find_if(SurfMap.begin(),SurfMap.end(),
+	    MapSupport::valEqual<int,int>(ASN));
+  if (vc==SurfMap.end())
+    throw ColErr::InContainerError<int>(SN,"Algebra::SurfMap");
+
+  return (SN<0) ? -vc->first : vc->first;
+}
+  
+int
 Algebra::getSurfIndex(std::string SName) const
   /*!
      Convert a string into an index value
@@ -530,16 +617,7 @@ Algebra::getSurfIndex(std::string SName) const
   if (SName.empty()) return 0;
 
   const int SN = Acomp::unitStr(SName);
-  const int ASN=std::abs(SN);
-  
-  // Converts a character to a surface number
-  std::map<int,int>::const_iterator vc=
-    find_if(SurfMap.begin(),SurfMap.end(),
-	    MapSupport::valEqual<int,int>(ASN));
-  if (vc==SurfMap.end())
-    throw ColErr::InContainerError<std::string>(SName,"Algebra::SurfMap");
-
-  return (SN<0) ? -vc->first : vc->first;
+  return getSurfIndex(SN);
 }
 
 std::string

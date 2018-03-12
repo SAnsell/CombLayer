@@ -130,6 +130,8 @@ testSimulation::createSurfaces()
   SurI.createSurface(15,"pz -3");
   SurI.createSurface(16,"pz 3");
 
+  SurI.createSurface(17,"c/y 2.0 0.0 0.5");
+  SurI.createSurface(34,"py 10.0");
   // Far box :
   SurI.createSurface(21,"px 10");
   SurI.createSurface(22,"px 15");
@@ -155,15 +157,17 @@ testSimulation::createObjects()
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
+  Out=ModelSupport::getComposite(surIndex,"11 -12 (-17:-14) 13 -34 15 -16 "
 				 " (-1:2:-3:4:-5:6) ");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
+  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:34:-15:16:(17 14))"
 				 " #4");
+  Out=ModelSupport::getComposite(surIndex,"-100 #3 #4 #2");
+
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
@@ -317,7 +321,8 @@ testSimulation::testSplitCell()
   const std::vector<TTYPE> Tests=
     {
       //      TTYPE("px 0",2,"testA.x"),
-      TTYPE("px 0",3,"testB.x")
+      //      TTYPE("px 0",3,"testB.x"),
+      TTYPE("py 0",3,"testC.x")
     };
 
   ModelSupport::surfIndex& SurI=

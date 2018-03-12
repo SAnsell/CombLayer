@@ -702,6 +702,9 @@ Object::getImplicatePairs(const int SN) const
 	  const int dirFlag=APtr->isImplicate(*BPtr);
 	  if (dirFlag)
 	    {
+	      ELog::EM<<"PDir == "<<dirFlag*BPtr->getName()<<" "
+		      <<dirFlag*APtr->getName()<<ELog::endDiag;
+
 	      Out.push_back
 		(std::pair<int,int>(dirFlag*BPtr->getName(),
 				    dirFlag*APtr->getName()));
@@ -734,6 +737,8 @@ Object::getImplicatePairs() const
 
 	if (dirFlag)
 	  {
+	    ELog::EM<<"Dir == "<<dirFlag*BPtr->getName()<<" "
+		    <<dirFlag*APtr->getName()<<ELog::endDiag;
 	    Out.push_back
 	      (std::pair<int,int>(dirFlag*BPtr->getName(),
 				  dirFlag*APtr->getName()));

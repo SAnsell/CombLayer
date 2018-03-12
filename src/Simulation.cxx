@@ -1540,11 +1540,11 @@ Simulation::splitObject(const int CA,const int SN)
   MonteCarlo::Algebra AX;  
   AX.setFunctionObjStr(CHead.display());
   AX.addImplicates(IP);
-  if (AX.constructShannonExpansion())
+  if (AX.constructShannonDivision(-SN))
     CPtr->procString(AX.writeMCNPX());
 
   AX.setFunctionObjStr(DHead.display());
-  if (AX.constructShannonExpansion())
+  if (AX.constructShannonDivision(SN))
     DPtr->procString(AX.writeMCNPX());
 
   
@@ -1567,7 +1567,6 @@ Simulation::minimizeObject(const int CN)
   
   if (!CPtr->isPlaceHold())
     {
-      ELog::EM<<"Cell == "<<CN<<ELog::endDiag;
       CPtr->populate();
       CPtr->createSurfaceList();
       
@@ -1575,10 +1574,11 @@ Simulation::minimizeObject(const int CN)
 	IP=CPtr->getImplicatePairs();
             
       MonteCarlo::Algebra AX;
+
       AX.setFunctionObjStr(CPtr->cellCompStr());
       AX.addImplicates(IP);
       AX.constructShannonExpansion();
-      
+
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");

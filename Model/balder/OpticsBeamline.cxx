@@ -201,7 +201,7 @@ OpticsBeamline::populate(const FuncDataBase& Control)
 void
 OpticsBeamline::createUnitVector(const attachSystem::FixedComp& FC,
 			     const long int sideIndex)
-/*!
+  /*!
     Create the unit vectors
     Note that the FC:in and FC:out are tied to Main
     -- rotate position Main and then Out/In are moved relative
@@ -265,10 +265,8 @@ OpticsBeamline::buildObjects(Simulation& System)
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-  System.minimizeObject(filterBox->getCell("OuterSpace"));
-  System.minimizeObject(filterBox->getCell("Void"));
-  lastComp=filterBox;  
-  return;
+  //  filterBox->splitObject(filterBox->getCell("OuterSpace"),);
+  //  System.minimizeObject(filterBox->getCell("Void"));
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
   pipeB->registerSpaceCut(1,2);

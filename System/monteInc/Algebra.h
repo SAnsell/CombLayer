@@ -45,8 +45,6 @@ class Algebra
 
   Acomp F;                              ///< Factor
 
-  /// Additional implicates to resolve/simplify Acomp
-  std::set<Acomp> implicates;           
   std::vector<std::pair<int,int>> ImplicateVec;   ///< implicate vector
   
  public:
@@ -71,6 +69,7 @@ class Algebra
 
   void addImplicates(const std::vector<std::pair<int,int>>&);
   bool constructShannonExpansion();
+  bool constructShannonDivision(const int);
   size_t countComponents() const;
 
   void expandBracket();
@@ -87,8 +86,11 @@ class Algebra
   void resolveTrue(const std::string&);
 
   std::string getSurfKey(const int) const;
+  int getSurfIndex(const int) const;
   int getSurfIndex(std::string) const;
-  
+
+  int convertMCNPSurf(const int) const;
+
   std::string display() const;
   std::ostream& write(std::ostream&) const;
   std::string writeMCNPX() const;

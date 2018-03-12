@@ -472,6 +472,9 @@ ContainedSpace::insertObjects(Simulation& System)
   return;
 }
 
+
+			    
+  
 void
 ContainedSpace::insertPair(Simulation& System,
 			   const std::vector<int>& insertCells,

@@ -22,6 +22,7 @@
 #ifndef attachSystem_FixedComp_h
 #define attachSystem_FixedComp_h
 
+class Simulation;
 class localRotate;
 class HeadRule;
 /*!
@@ -219,6 +220,8 @@ class FixedComp
   virtual void applyRotation(const Geometry::Vec3D&,const double);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
+  void splitObject(Simulation&,const int,const int,
+		   const Geometry::Vec3D&,const Geometry::Vec3D&);
 };
 
 }
