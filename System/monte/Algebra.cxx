@@ -612,7 +612,7 @@ Algebra::getSurfKey(const int SN) const
   return "VOID";
 }
   
-int
+size_t
 Algebra::countLiterals() const
   /*!
     Count the number of different literals
@@ -623,7 +623,7 @@ Algebra::countLiterals() const
 {
   std::set<int> Lit;
   F.getLiterals(Lit);
-  return static_cast<int>(Lit.size());
+  return Lit.size();
 }
 
 bool

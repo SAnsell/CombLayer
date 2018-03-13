@@ -189,6 +189,7 @@ Plane::isImplicate(const Surface& A) const
       if (APlane->NormV== -NormV)
 	return Dist > APlane->Dist ? 1 : -1;
     }
+
   return 0;
 }
 

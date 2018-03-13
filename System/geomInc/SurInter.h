@@ -3,7 +3,7 @@
  
  * File:   geomInc/SurInter.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,11 @@ processPoint(const Geometry::Surface*,const Geometry::Surface*,
 
 Geometry::Vec3D
 getPoint(const Geometry::Surface*,const Geometry::Surface*,
+	 const Geometry::Surface*);
+
+Geometry::Vec3D
+getPoint(const Geometry::Surface*,const Geometry::Surface*,
+	 const Geometry::Surface*,const int,
 	 const Geometry::Surface*);
 
 Geometry::Vec3D

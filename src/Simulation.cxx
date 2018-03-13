@@ -1536,17 +1536,28 @@ Simulation::splitObject(const int CA,const int SN)
     IP=CPtr->getImplicatePairs(SN);
 
   // Now make two cells and replace this cell with A + B
-  
-  MonteCarlo::Algebra AX;  
+
+  MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
+
+  const size_t preLit=AX.countLiterals();
+  size_t minusLit(preLit);
+  size_t plusLit(preLit);
+  
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
-    CPtr->procString(AX.writeMCNPX());
+    {
+      minusLit=AX.countLiterals();
+      CPtr->procString(AX.writeMCNPX());
+    }
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
-    DPtr->procString(AX.writeMCNPX());
-
+    {
+      plusLit=AX.countLiterals();
+      DPtr->procString(AX.writeMCNPX());
+    }
+  ELog::EM<<"Lit count "<<preLit<<" "<<minusLit<<" "<<plusLit<<ELog::endDiag;
   
   return;
 

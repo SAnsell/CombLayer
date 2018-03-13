@@ -267,7 +267,11 @@ OpticsBeamline::buildObjects(Simulation& System)
     }
   //  filterBox->splitObject(filterBox->getCell("OuterSpace"),);
   //  System.minimizeObject(filterBox->getCell("Void"));
-  System.minimizeObject(filterBox->getCell("OuterSpace"));
+  //  System.minimizeObject(filterBox->getCell("OuterSpace"));
+  filterBox->splitObject(System,1001,
+			 filterBox->getCell("OuterSpace"),
+			 Geometry::Vec3D(0,0,0),
+			 Geometry::Vec3D(0,1,0));
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
   pipeB->registerSpaceCut(1,2);

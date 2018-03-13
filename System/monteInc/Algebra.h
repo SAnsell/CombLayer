@@ -95,8 +95,7 @@ class Algebra
   std::ostream& write(std::ostream&) const;
   std::string writeMCNPX() const;
 
-  // Debug Functions::
-  int countLiterals() const;
+  size_t countLiterals() const;
 
 };
 

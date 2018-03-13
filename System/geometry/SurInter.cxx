@@ -602,6 +602,33 @@ Geometry::Vec3D
 getPoint(const Geometry::Surface* A,
 	 const Geometry::Surface* B,
 	 const Geometry::Surface* C,
+	 const int signV,const Geometry::Surface* Control)
+  /*! 
+    Calculate the single intersection point of a set of surfaces [assuming only one]
+    \param A :: Surface to use
+    \param B :: Surface to use
+    \param C :: Surface to use
+    \param signV :: Sign of control surface
+    \param Control :: Control surface
+    \returns Intersection point
+  */
+{
+  ELog::RegMethod RegA("SurInter","getPoint(Control)");
+
+  if (!Control) return getPoint(A,B,C);
+
+  const std::vector<Geometry::Vec3D> Out=
+    processPoint(A,B,C);
+  for(const Geometry::Vec3D Pt : Out)
+    if (Control->side(Pt)*signV>0) return Pt;
+
+  throw ColErr::MisMatch<size_t>(Out.size(),1,"No matching points in Out");
+}
+
+Geometry::Vec3D
+getPoint(const Geometry::Surface* A,
+	 const Geometry::Surface* B,
+	 const Geometry::Surface* C,
 	 const Geometry::Vec3D& nearPt)
   /*! 
     Calculate the single intersection point of a set of surfaces [assuming only one]

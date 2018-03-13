@@ -61,7 +61,6 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"

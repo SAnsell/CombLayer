@@ -3,7 +3,7 @@
  
  * File:   chip/ChipIRGuide.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,6 @@
 #include "Plane.h"
 #include "Cylinder.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -935,27 +934,17 @@ ChipIRGuide::writeMasterPoints()
   // Calculate the points at the guides  [FrontSurf]
   for(size_t i=0;i<4;i++)
     {
-      std::vector<Geometry::Vec3D> PtOut=
-	SurInter::processPoint(boxSurf[i],boxSurf[(i+1) % 4],FSurf);
-      std::vector<Geometry::Vec3D>::iterator vc=
-	remove_if(PtOut.begin(),PtOut.end(),
-		  std::bind(&Geometry::surfaceCheck,-1,testSurf,
-			    std::placeholders::_1));
-      PtOut.erase(vc,PtOut.end());
-      Out.push_back(PtOut.front());
+      Out.push_back
+	(SurInter::getPoint(boxSurf[i],boxSurf[(i+1) % 4],
+			    FSurf,-1,testSurf));
     }  
 
   // Calculate the points at the guides [BackSurf]
   for(size_t i=0;i<4;i++)
     {
-      std::vector<Geometry::Vec3D> PtOut=
-	SurInter::processPoint(boxSurf[i],boxSurf[(i+1) % 4],BSurf);
-      std::vector<Geometry::Vec3D>::iterator vc=
-	remove_if(PtOut.begin(),PtOut.end(),
-		  std::bind(&Geometry::surfaceCheck,-1,testSurf,
-			    std::placeholders::_1));
-      PtOut.erase(vc,PtOut.end());
-      Out.push_back(PtOut.front());
+      Out.push_back
+	(SurInter::getPoint(boxSurf[i],boxSurf[(i+1) % 4],
+			    BSurf,-1,testSurf));
     }  
   // set points on the datum
   chipIRDatum::CPENUM A(chipIRDatum::guidePt1);
