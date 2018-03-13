@@ -390,7 +390,7 @@ Algebra::constructShannonExpansion()
   std::set<int> LitM;
   FX.getLiterals(LitM);
 
-  ELog::EM<<"F = "<<F<<ELog::endDiag;
+
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
       //
@@ -418,19 +418,12 @@ Algebra::constructShannonExpansion()
 	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
 	    {
 	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
-	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
-	      ELog::EM<<"FX PRE "<<FX<<ELog::endDiag;
-	      ELog::EM<<"FF "<<FaFbF<<ELog::endDiag;
-	      ELog::EM<<"TF "<<FaFbT<<ELog::endDiag;
-	      ELog::EM<<"TT "<<FaTbT<<ELog::endDiag;
-
 	      FX=FaTbT;
 	      FX.addIntersect(SNB);
-	      ELog::EM<<"FX Now "<<FX<<ELog::endErr;
 	    }
 	  if (FaTbT.isFalse())
 	    {
-	      ELog::EM<<"REMOVAL of "<<SNB<<ELog::endDiag;
+	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
 	      FX=FaFbF;
 	      FX.addIntersect(-SNA);	      
 	    }
