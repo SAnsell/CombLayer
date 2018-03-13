@@ -1574,11 +1574,13 @@ Simulation::minimizeObject(const int CN)
 	IP=CPtr->getImplicatePairs();
             
       MonteCarlo::Algebra AX;
-
       AX.setFunctionObjStr(CPtr->cellCompStr());
       AX.addImplicates(IP);
+      ELog::EM<<"PX == "<<AX<<ELog::endDiag;
+	    
       AX.constructShannonExpansion();
 
+      ELog::EM<<"AX == "<<AX<<ELog::endDiag;
       if (!CPtr->procString(AX.writeMCNPX()))
 	throw ColErr::InvalidLine(AX.writeMCNPX(),
 				  "Algebra Export");

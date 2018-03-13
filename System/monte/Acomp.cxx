@@ -280,7 +280,6 @@ Acomp::operator-=(const Acomp& A)
 }
 
 
-
 Acomp&
 Acomp::operator*=(const Acomp& A)
   /*!
@@ -302,14 +301,79 @@ Acomp::operator*=(const Acomp& A)
     }
 
   if (A.Intersect)                  // can add components
-    copySimilar(A);
+    {
+      copySimilar(A);
+    }
   else 
-    addComp(A);       // combine components
+    {
+      addComp(A);       // combine components
+    }
   removeEqComp();
   joinDepth();  
   return *this;
 }
 
+Acomp&
+Acomp::addIntersect(const int U)
+  /*!
+    This carries out the intersection operation 
+    with A. e.g. a * (ced+fg) == a(ced+fg).
+    The equivilent to making the statement [this AND A]
+    \param U :: Units to intersect
+    \returns *this
+  */
+{
+  ELog::RegMethod RegA("Acomp","addIntersect");
+  if (trueFlag==-1) return *this;     // false always return
+  if (Intersect)
+    Units.insert(U);
+  else
+    {
+      Acomp Ax=Acomp(*this);    //make copy
+      Units.clear();                    // remove everthing else
+      Comp.clear();
+      Intersect=1;                      
+      addComp(Ax);                     // add old=This to the list
+      Units.insert(U);
+    }
+  trueFlag=0;
+  removeEqComp();
+  joinDepth();  
+  return *this;
+}
+
+Acomp&
+Acomp::addUnion(const int U)
+  /*!
+    This carries out the union operation 
+    with U. e.g. a + (ced(f+g)) == a+(ced(f+g)).
+    The equivilent to making the statement [this AND A]
+    \param U :: Units to union
+    \returns *this
+  */
+{
+  ELog::RegMethod RegA("Acomp","addUnion");
+
+  if (trueFlag==1) return *this;     // true always return
+  
+  if (!Intersect)
+    Units.insert(U);
+  else
+    {
+      Acomp Ax=Acomp(*this);    //make copy
+      Units.clear();            // remove everthing else
+      Comp.clear();
+      Intersect=0;                      
+      addComp(Ax);               // add old=This to the list
+      Units.insert(U);
+    }  
+  trueFlag=0;
+  removeEqComp();
+  joinDepth();  
+  return *this;
+}
+
+  
 bool
 Acomp::isEmpty() const
   /*!

@@ -143,6 +143,9 @@ class Acomp
   Acomp& operator*=(const Acomp&);
   ~Acomp();
 
+  Acomp& addIntersect(const int);
+  Acomp& addUnion(const int);
+  
   // AcompExtra
   Acomp componentExpand(const int,const Acomp&) const;
   int merge();

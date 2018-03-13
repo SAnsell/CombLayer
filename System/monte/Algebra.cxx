@@ -323,7 +323,6 @@ Algebra::addImplicates(const std::vector<std::pair<int,int> > & IM)
 	  ImplicateVec.push_back(std::pair<int,int>(surfA,surfB));
 	}
     }
-
   return;
 }
 
@@ -338,7 +337,8 @@ Algebra::constructShannonDivision(const int mcnpSN)
     \return true if a surface can be removed
   */
 {
-
+  ELog::RegMethod RegA("Algebra","constructShannonDivision");
+  
   const int SN=convertMCNPSurf(mcnpSN);
   const int ASN(std::abs(SN));
   Acomp FX(F);
@@ -373,10 +373,13 @@ Algebra::constructShannonExpansion()
     Overall schema -
        - make algebra with ALL implicates
        - for each +/- pair resolve shannon expansion
-       - if F(0) == F(1)
-           -- remove item from originl AND full-expansion
+       - Compute F=a'F(00)+a'bF(01)+bF(11)
+          assuming that a->b is true 
+       -- if a -> -b then apply -1 to flag of b
+       - if F(01) is null and either F(11) or F(00) is null
+             then remove either/and  a and b from the equation.
        - re-resolve for next literal
-    \return true if a surface can be removed
+    \return true if a surface was removed
    */
 {
   ELog::RegMethod RegA("Algebra","constructShannonExpansion");
@@ -387,70 +390,49 @@ Algebra::constructShannonExpansion()
   std::set<int> LitM;
   FX.getLiterals(LitM);
 
-  const std::vector<int> signAV({-1,-1,1,1});
-  const std::vector<int> signBV({-1,1,-1,1});
   ELog::EM<<"F = "<<F<<ELog::endDiag;
   for(const std::pair<int,int>& IP : ImplicateVec)
     {
-      // now do shannon expansion about both literals [together?]
-      const int SNA=std::abs(IP.first);
-      const int SNB=std::abs(IP.second);
-      ELog::EM<<"TEST == "<<SNA<<" "<<getSurfIndex(SNA)<<ELog::endDiag;
-      ELog::EM<<"TEST == "<<SNB<<" "<<getSurfIndex(SNB)<<ELog::endDiag;
-      Acomp abUnits[4]={FX,FX,FX,FX};
-      size_t nullCount(0);
-      size_t index(10);
-      for(size_t i=0;i<4;i++)
+      //
+      // now do shannon expansion about both literals [together]
+      // if the literals are opposite signed then we reverse one nad
+      // continue/
+
+      const int& SNA=IP.first;
+      const int& SNB=IP.second;
+      
+      Acomp FaFbT(FX);
+      FaFbT.resolveTrue(-SNA);     // a=0
+      FaFbT.resolveTrue(SNB);    // b=1
+      if (FaFbT.isFalse())
 	{
-	  Acomp& AC(abUnits[i]);
-	  AC=FX;
-	  AC.resolveTrue(signAV[i]*SNA);
-	  AC.resolveTrue(signBV[i]*SNB);
-	  if (AC.isFalse())
-	    nullCount++;
-	  index=i;
-	}
-	
-      if (nullCount==3)
-	{
-	  ELog::EM<<"Null[3] == "<<index<<ELog::endDiag;
-	  int killSurf(0);
-	  if (index==0) // a'b' 
-	    {
-	      if (IP.first<0 && IP.second<0)
-		killSurf=-SNA;
-	      else if (IP.first>0 && IP.second>0)
-		killSurf=-SNB;
-	      // if a'->b we have a problems
-	    }
-	  else if (index==2) // ab'
-	    {
-	      if (IP.first<0 && IP.second>0)
-		killSurf=SNB;
-	      else if (IP.first>0 && IP.second<0)
-		killSurf=SNA;
-	    }
-	  else if (index==3) // ab 
-	    {
-	      if (IP.first<0 && IP.second<0)
-		killSurf=SNB;
-	      else if (IP.first>0 && IP.second>0)
-		killSurf=SNA;
-	      ELog::EM<<"IP[3] == "<<IP.first<<ELog::endDiag;
-	      // if a'->b we have a problems
-	    }
+	  Acomp FaFbF(FX);
+	  Acomp FaTbT(FX);
+	  FaFbF.resolveTrue(-SNA);
+	  FaFbF.resolveTrue(-SNB);
+
+	  FaTbT.resolveTrue(SNA);
+	  FaTbT.resolveTrue(SNB);
 
 	  // POST PROCESS
-	  if (killSurf)
+	  if (FaFbF.isFalse())  // kill by either removing a or using FaTbT?
 	    {
-	      if (!F.removeSignedLiteral(killSurf))
-		ELog::EM<<"FAILED TO --REMOVE "<<killSurf<<ELog::endDiag;
-	      else
-		{
-		  ELog::EM<<"REMOVED "<<killSurf<<" "
-			  <<getSurfIndex(killSurf)<<ELog::endDiag;
-		}
-	      
+	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNA)<<ELog::endDiag;
+	      ELog::EM<<"REMOVAL of "<<Acomp::strUnit(SNB)<<ELog::endDiag;
+	      ELog::EM<<"FX PRE "<<FX<<ELog::endDiag;
+	      ELog::EM<<"FF "<<FaFbF<<ELog::endDiag;
+	      ELog::EM<<"TF "<<FaFbT<<ELog::endDiag;
+	      ELog::EM<<"TT "<<FaTbT<<ELog::endDiag;
+
+	      FX=FaTbT;
+	      FX.addIntersect(SNB);
+	      ELog::EM<<"FX Now "<<FX<<ELog::endErr;
+	    }
+	  if (FaTbT.isFalse())
+	    {
+	      ELog::EM<<"REMOVAL of "<<SNB<<ELog::endDiag;
+	      FX=FaFbF;
+	      FX.addIntersect(-SNA);	      
 	    }
 	}
 	      

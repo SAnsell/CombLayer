@@ -266,7 +266,7 @@ OpticsBeamline::buildObjects(Simulation& System)
       filters[i]->createAll(System,PI,2);
     }
   //  filterBox->splitObject(filterBox->getCell("OuterSpace"),);
-  //  System.minimizeObject(filterBox->getCell("Void"));
+  System.minimizeObject(filterBox->getCell("Void"));
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
   pipeB->registerSpaceCut(1,2);
