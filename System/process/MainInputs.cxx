@@ -174,9 +174,9 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wDD","weightDD",100,1);
 
 
-  IParam.regMulti("wFCL","wFCL",25,0);
-  IParam.regMulti("wWWG","wWWG",25,0);
-  IParam.regMulti("wIMP","wIMP",25,0);
+  IParam.regMulti("wFCL","wFCL",1000,0);
+  IParam.regMulti("wWWG","wWWG",1000,0);
+  IParam.regMulti("wIMP","wIMP",1000,0);
     
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regItem("wwgVTK","wwgVTK",1,10);
