@@ -50,7 +50,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "inputParam.h"
-#include "PointOperation.h"
 #include "Quaternion.h"
 #include "Surface.h"
 #include "surfIndex.h"

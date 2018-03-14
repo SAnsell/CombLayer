@@ -3,7 +3,7 @@
  
  * File:   build/GeneralShutter.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -84,7 +83,7 @@ namespace shutterSystem
 {
 
 GeneralShutter::GeneralShutter(const size_t ID,const std::string& Key) : 
-  TwinComp(Key+StrFunc::makeString(ID),8),ContainedComp(),
+  TwinComp(Key+std::to_string(ID),8),ContainedComp(),
   shutterNumber(ID),baseName(Key),
   surfIndex(ModelSupport::objectRegister::Instance().cell(keyName,20000)),
   cellIndex(surfIndex+1),populated(0),divideSurf(0),
@@ -222,9 +221,8 @@ GeneralShutter::populate(const Simulation& System)
   ELog::RegMethod RegA("GeneralShutter","populate");
   const FuncDataBase& Control=System.getDataBase();
 
-  voidXoffset=(Control.hasVariable("voidYoffset")) ? 
-    Control.EvalVar<double>("voidYoffset") : 
-    Control.EvalVar<double>("voidXoffset");
+  voidXoffset=Control.EvalPair<double>("voidYoffset","voidXoffset");
+
   // Global from shutter size:
   if (!(populated & 2))
     {
@@ -238,8 +236,7 @@ GeneralShutter::populate(const Simulation& System)
   closed=Control.EvalDefPair<int>(keyName,baseName,"Closed",0);
   reversed=Control.EvalDefPair<int>(keyName,baseName,"Reversed",0);
 
-  const std::string keyNum=
-    StrFunc::makeString(keyName,shutterNumber+1);
+  const std::string keyNum=keyName+std::to_string(shutterNumber+1);
   
   totalWidth=Control.EvalPair<double>(keyName,baseName,"Width");
 
@@ -275,7 +272,7 @@ GeneralShutter::populate(const Simulation& System)
   clearCent.clear();
   for(size_t i=0;i<NStep;i++)
     {
-      const std::string SCent="ClearCent"+StrFunc::makeString(i);
+      const std::string SCent="ClearCent"+std::to_string(i);
       const double CD=Control.EvalPair<double>(keyName,baseName,SCent);
       clearCent.push_back(CD);
     }
