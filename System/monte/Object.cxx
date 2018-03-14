@@ -54,6 +54,7 @@
 #include "LineIntersectVisit.h"
 #include "Surface.h"
 #include "surfIndex.h"
+#include "surfImplicates.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Token.h"
@@ -686,6 +687,9 @@ Object::getImplicatePairs(const int SN) const
 {
   ELog::RegMethod RegA("Object","getImplicatePairs(int)");
 
+  const Geometry::surfImplicates& SImp=
+      Geometry::surfImplicates::Instance();
+
   const ModelSupport::surfIndex& SurI=
     ModelSupport::surfIndex::Instance();
 
@@ -699,7 +703,7 @@ Object::getImplicatePairs(const int SN) const
     {
       if (APtr!=BPtr)
 	{
-	  const int dirFlag=APtr->isImplicate(*BPtr);
+	  const int dirFlag=SImp.isImplicate(APtr,BPtr);
 	  if (dirFlag)
 	    {
 	      Out.push_back
@@ -722,6 +726,9 @@ Object::getImplicatePairs() const
 {
   ELog::RegMethod RegA("Object","getImplicatePairs");
 
+  const Geometry::surfImplicates& SImp=
+      Geometry::surfImplicates::Instance();
+
   std::vector<std::pair<int,int>> Out;
 
   for(size_t i=0;i<SurList.size();i++)
@@ -730,7 +737,7 @@ Object::getImplicatePairs() const
 	const Geometry::Surface* APtr=SurList[i];
 	const Geometry::Surface* BPtr=SurList[j];
 
-	const int dirFlag=APtr->isImplicate(*BPtr);
+	const int dirFlag=SImp.isImplicate(APtr,BPtr);
 
 	if (dirFlag)
 	  {

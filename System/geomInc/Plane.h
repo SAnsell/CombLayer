@@ -86,7 +86,6 @@ class Plane : public Quadratic
 	       const Geometry::Vec3D&,const Geometry::Vec3D&);
   int setPlane(const Geometry::Vec3D&,const double);
 
-  virtual int isImplicate(const Surface&) const;
   int side(const Geometry::Vec3D&) const;
   int onSurface(const Geometry::Vec3D&) const;
   // stuff for finding intersections etc.

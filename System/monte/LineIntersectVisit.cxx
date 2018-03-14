@@ -170,7 +170,7 @@ void
 LineIntersectVisit::Accept(const Geometry::ArbPoly& Surf)
   /*!
     Process an intersect track
-    \param Surf :: Surface to use int line Interesect
+    \param Surf :: Surface to use in the line Interesect
   */
 {
   ATrack.intersect(PtOut,Surf);
@@ -182,7 +182,7 @@ void
 LineIntersectVisit::Accept(const Geometry::Cone& Surf)
   /*!
     Process an intersect track
-    \param Surf :: Surface to use int line Interesect
+    \param Surf :: Surface to use in the line Interesect
   */
 {
   ATrack.intersect(PtOut,Surf);
@@ -194,7 +194,7 @@ void
 LineIntersectVisit::Accept(const Geometry::CylCan& Surf)
   /*!
     Process an intersect track
-    \param Surf :: Surface to use int line Interesect
+    \param Surf :: Surface to use in the line Interesect
   */
 {
   ATrack.intersect(PtOut,Surf);

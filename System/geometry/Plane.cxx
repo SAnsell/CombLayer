@@ -172,26 +172,6 @@ Plane::operator!=(const Plane& A) const
   return !(this->operator==(A));
 }
 
-int
-Plane::isImplicate(const Surface& A) const
-  /*!
-    Determine if T determine that A is true
-    or A' is true.
-    \param A :: Plane to test
-    \return 1 or -1 if A or A' are implied
-  */
-{
-  const Plane* APlane=dynamic_cast<const Plane*>(&A);
-  if (APlane)
-    {
-      if (APlane->NormV==NormV)
-	return Dist>APlane->Dist ? -1 : 1;
-      if (APlane->NormV== -NormV)
-	return Dist > APlane->Dist ? 1 : -1;
-    }
-
-  return 0;
-}
 
 int
 Plane::isEqual(const Plane& A) const

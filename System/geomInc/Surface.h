@@ -103,10 +103,6 @@ class Surface
   
   /// \endcond ABSTRACT
 
-  /// T implies A(or A')
-  virtual int isImplicate(const Surface&) const
-    { return 0; }
-  
   virtual void rotate(const Geometry::Quaternion&);
 
   void writeHeader(std::ostream&) const;
