@@ -420,22 +420,18 @@ PhysImp::write(std::ostream& OX,
 
       NRange A;
       std::vector<double> Index;
-      std::vector<int>::const_iterator cvec;
-      for(cvec=cellOutOrder.begin();cvec!=cellOutOrder.end();cvec++)
+      for(const int& CN : cellOutOrder)
 	{
-	  vc=impNum.find(*cvec);
+	  vc=impNum.find(CN);
 	  if (vc==impNum.end())
-	    {
-	      ELog::EM<<"Unable to find cell "<<*cvec<<ELog::endCrit;
-	      throw ColErr::InContainerError<int>(*cvec,"Cellnumber in i,pNum");
-	    }
+	    throw ColErr::InContainerError<int>(CN,"Cellnumber in i,pNum");
 	  Index.push_back(vc->second);
 	}
 
       A.setVector(Index);
       for(int i=0;i<nCutters;i++)
 	A.addComp(0.0);
-      A.condense();  
+      A.condense();
       A.write(cx);
       StrFunc::writeMCNPX(cx.str(),OX);
     }

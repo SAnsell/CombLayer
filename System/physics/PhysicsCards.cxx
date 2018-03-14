@@ -505,7 +505,6 @@ PhysicsCards::removePhysImp(const std::string& Type,
   */
 {
   ELog::RegMethod RegA("PhysicsCards","removePhysImp");
-  ELog::EM<<"REMOVE = "<<Type<<" :: "<<Particle<<ELog::endDiag;
   for(PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type)
