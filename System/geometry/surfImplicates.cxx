@@ -71,6 +71,8 @@ surfImplicates::surfImplicates()
     Constructor
   */
 {
+  functionMap.emplace("CylinderPlane",&surfImplicates::cylinderPlane);
+  functionMap.emplace("PlaneCylinder",&surfImplicates::planeCylinder);
   functionMap.emplace("PlanePlane",&surfImplicates::planePlane);
 }
 
@@ -85,7 +87,7 @@ surfImplicates::Instance()
   return A;
 }
 
-int
+std::pair<int,int>
 surfImplicates::isImplicate(const Surface* ASPtr,
 			    const Surface* BSPtr) const
   /*!
@@ -109,16 +111,20 @@ surfImplicates::isImplicate(const Surface* ASPtr,
     }
 
   // all else failed
-  return 0;
+  return std::pair<int,int>(0,0);
 }
 
-int
+std::pair<int,int>
 surfImplicates::planePlane(const Geometry::Surface* APtr,
 			   const Geometry::Surface* BPtr) const
   /*!
     Determine if two planes are implicates
     \param APtr :: First plane pointer
     \param BPtr :: second plane pointer
+    \retval value is a->b   1 & 1  
+    \retval value is a->b'  1 & -1 
+    \retval value is a'->b  -1 & 1 
+    \retval value is a'->b'  -1 & -1 
    */
 {
   // we already know these are planes
@@ -131,13 +137,63 @@ surfImplicates::planePlane(const Geometry::Surface* APtr,
   const double BD=BPlane->getDistance();
   
   if (ANorm==BNorm)
-    return AD>BD ? -1 : 1;
+    return (AD>BD) ? std::pair<int,int>(1,1) :
+      std::pair<int,int>(-1,-1);
   
   if (ANorm==-BNorm)
-    return AD > BD ? 1 : -1;
+    {
+      return (AD > -BD) ? std::pair<int,int>(1,-1) :
+	std::pair<int,int>(-1,1);
+    }
 
-  return 0;
 
+  return std::pair<int,int>(0,0);
+
+}
+
+std::pair<int,int>
+surfImplicates::cylinderPlane(const Geometry::Surface* APtr,
+			      const Geometry::Surface* BPtr) const
+  /*!
+    Determine if two planes are implicates
+    \param APtr :: First cylinder pointer
+    \param BPtr :: second plane pointer
+   */
+{
+  // we already know these are planes/cylinders
+  std::pair<int,int> Out=planeCylinder(BPtr,APtr);
+  Out.first*=-1;
+  Out.second*=-1;
+  return Out;
+}
+  
+std::pair<int,int>
+surfImplicates::planeCylinder(const Geometry::Surface* APtr,
+			      const Geometry::Surface* BPtr) const
+  /*!
+    Determine if two planes are implicates
+    \param APtr :: First plane pointer
+    \param BPtr :: second cylinder pointer
+   */
+{
+  // we already know these are planes/cylinders
+  const Plane* APlane=dynamic_cast<const Plane*>(APtr);
+  const Cylinder* BCyl=dynamic_cast<const Cylinder*>(BPtr);
+
+  const Geometry::Vec3D& ANorm=APlane->getNormal();
+
+  const Geometry::Vec3D& BAxis=BCyl->getNormal();
+  const Geometry::Vec3D& BCent=BCyl->getCentre();
+  const double R=BCyl->getRadius();
+
+  if (ANorm.dotProd(BAxis)<Geometry::zeroTol)
+    {
+      const double D=APlane->distance(BCent);
+      if (std::abs(D)>R)
+	return (D>0) ? std::pair<int,int>(-1,1) :
+	  std::pair<int,int>(1,1);
+    }
+  return std::pair<int,int>(0,0);
 }
   
 } // NAMESPACE Geometry

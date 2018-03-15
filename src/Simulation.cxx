@@ -909,7 +909,8 @@ Simulation::createObjSurfMap()
 {
   ELog::RegMethod RegA("Simulation","createObjSurfMap");
 
-  OSMPtr->clearAll();  
+  OSMPtr->clearAll();
+
   OTYPE::iterator mc;
   for(mc=OList.begin();mc!=OList.end();mc++)
     {

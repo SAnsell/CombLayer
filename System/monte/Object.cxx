@@ -703,13 +703,11 @@ Object::getImplicatePairs(const int SN) const
     {
       if (APtr!=BPtr)
 	{
-	  const int dirFlag=SImp.isImplicate(APtr,BPtr);
-	  if (dirFlag)
-	    {
-	      Out.push_back
-		(std::pair<int,int>(dirFlag*BPtr->getName(),
-				    dirFlag*APtr->getName()));
-	    }
+	  std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
+	  if (dirFlag.first)
+	    Out.push_back
+	      (std::pair<int,int>
+	       (dirFlag.first*SN,dirFlag.second*BPtr->getName()));
 	}
     }
 
@@ -737,14 +735,10 @@ Object::getImplicatePairs() const
 	const Geometry::Surface* APtr=SurList[i];
 	const Geometry::Surface* BPtr=SurList[j];
 
-	const int dirFlag=SImp.isImplicate(APtr,BPtr);
+	const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
 
-	if (dirFlag)
-	  {
-	    Out.push_back
-	      (std::pair<int,int>(dirFlag*BPtr->getName(),
-				  dirFlag*APtr->getName()));
-	  }
+	if (dirFlag.first)
+	  Out.push_back(dirFlag);
       }
   return Out;
 }

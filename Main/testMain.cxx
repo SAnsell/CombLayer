@@ -173,6 +173,7 @@
 #include "testSurfDivide.h"
 #include "testSurfEqual.h"
 #include "testSurfExpand.h"
+#include "testSurfImplicate.h"
 #include "testSurIntersect.h"
 #include "testSurfRegister.h"
 #include "testSVD.h"
@@ -599,6 +600,7 @@ geometryTest(const int type,const int extra)
       "testQuaternion",
       "testPlane",
       "testRecTriangle",
+      "testSurfImplicate",
       "testSurIntersect",
       "testSVD",
       "testVec3D"
@@ -690,6 +692,12 @@ geometryTest(const int type,const int extra)
       if(index==testNum++)
 	{
 	  testRecTriangle A;
+	  X=A.applyTest(extra);
+	}
+
+      if(index==testNum++)
+	{
+	  testSurfImplicate A;
 	  X=A.applyTest(extra);
 	}
 

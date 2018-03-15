@@ -43,7 +43,9 @@ class surfImplicates
  public:
 
   /// surface implicate system
-  typedef int (surfImplicates::*testImp)(const Surface*,const Surface*) const;
+  typedef std::pair<int,int> (surfImplicates::*testImp)
+    (const Surface*,const Surface*) const;
+  
   /// storage of tracking map
   typedef std::map<std::string,testImp> STYPE;  
   
@@ -58,8 +60,12 @@ class surfImplicates
   surfImplicates& operator=(const surfImplicates&);
   ////\endcond SINGLETON
 
-  int planePlane(const Geometry::Surface*,
-		 const Geometry::Surface*) const;
+  std::pair<int,int> planePlane(const Geometry::Surface*,
+				const Geometry::Surface*) const;
+  std::pair<int,int> planeCylinder(const Geometry::Surface*,
+				   const Geometry::Surface*) const;
+  std::pair<int,int> cylinderPlane(const Geometry::Surface*,
+				   const Geometry::Surface*) const;
   
   
  public:
@@ -68,9 +74,9 @@ class surfImplicates
 
   /// destructor
   ~surfImplicates() {}
-  
-
-  int isImplicate(const Geometry::Surface*,const Geometry::Surface*) const;
+ 
+  std::pair<int,int> isImplicate(const Geometry::Surface*,
+				 const Geometry::Surface*) const;
 };
 
 }

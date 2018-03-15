@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   testInclude/testPlane.h
+ * File:   testInclude/testSurfImplicate.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,37 +19,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef testPlane_h
-#define testPlane_h 
+#ifndef testSurfImplicate_h
+#define testSurfImplicate_h 
 
 /*!
-  \class testPlane
+  \class testSurfImplicate
   \brief Tests the class Plane class
   \author S. Ansell
-  \date Nov. 2005
+  \date March 2018
   \version 1.0
 
-  Test the distance of a point to the cone
+  Test the implicates on surf-surf
 */
 
-class testPlane 
+class testSurfImplicate 
 {
 private:
 
-  Geometry::Plane A;      ///< Plane object to create/work on 
-
   //Tests 
-  int testDistance();
-  int testQuaternion();
-  int testMirror();
-  int testMirrorAxis();
-  int testSet();
-  int testTransform();
+  int testPlanePlane();
+  int testPlaneCylinder();
  
 public:
 
-  testPlane();
-  ~testPlane();
+  testSurfImplicate();
+  ~testSurfImplicate();
 
   int applyTest(const int);     
 };

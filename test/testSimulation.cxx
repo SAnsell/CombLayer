@@ -81,9 +81,7 @@ testSimulation::testSimulation()
   /*!
     Constructor
   */
-{
-  initSim();
-}
+{}
 
 testSimulation::~testSimulation() 
   /*!
@@ -164,9 +162,8 @@ testSimulation::createObjects()
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:34:-15:16:(17 14))"
-				 " #4");
-  Out=ModelSupport::getComposite(surIndex,"-100 #3 #4 #2");
+  Out=ModelSupport::getComposite
+    (surIndex,"-100 (-11:12:-13:34:-15:16:(17 14)) #4");
 
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
   
@@ -237,7 +234,7 @@ testSimulation::testCreateObjSurfMap()
 {
   ELog::RegMethod RegA("testSimulation","testCreateObjSurfMap");
 
-
+  initSim();
   ASim.createObjSurfMap();
   const ModelSupport::ObjSurfMap* OPtr=ASim.getOSM();
   if (!OPtr) return -1;
@@ -245,10 +242,11 @@ testSimulation::testCreateObjSurfMap()
 
   if (MVec.size()!=1 || MVec[0]->getName()!=3)
     {
-      ModelSupport::ObjSurfMap::STYPE::const_iterator mc;
-      for(mc=MVec.begin();mc!=MVec.end();mc++)
-	ELog::EM<<"Obj == "<<(*mc)->getName()<<ELog::endDiag;
+      for(const MonteCarlo::Object* mc : MVec)
+	ELog::EM<<"Obj[2] == "<<mc->getName()<<ELog::endDiag;
+	    
       return -2;
+      
     }
 
   const ModelSupport::ObjSurfMap::STYPE& MVecB=OPtr->getObjects(5);
@@ -257,7 +255,7 @@ testSimulation::testCreateObjSurfMap()
     {
       ModelSupport::ObjSurfMap::STYPE::const_iterator mc;
       for(mc=MVecB.begin();mc!=MVecB.end();mc++)
-	ELog::EM<<"Obj == "<<(*mc)->getName()<<ELog::endDiag;
+	ELog::EM<<"Obj[5]== "<<(*mc)->getName()<<ELog::endDiag;
       return -3;
     }
 
