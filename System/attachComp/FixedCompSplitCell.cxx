@@ -119,8 +119,10 @@ FixedComp::splitObject(Simulation& System,
     is goes here but...
     Note that the NEGATIVE surface constructed is the original cell.
     and first out cell
-    \param Org :: Origin offset relative to FC
-    \param XYZ :: XYZ plane
+    \param SNoffset :: surface offset
+    \param cellN :: Cell to divide
+    \param OrgVec :: Origins offset relative to FC
+    \param XYZVec :: XYZ plane directions
 
   */
 {

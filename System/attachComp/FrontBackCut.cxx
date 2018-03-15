@@ -433,7 +433,7 @@ FrontBackCut::getShiftedBack(ModelSupport::surfRegister& SMap,
   /*!
     Support function to calculate the shifted surface fo the back
     \param SMap :: Surface register
-    \param index :: offset index
+    \param surfIndex :: offset index
     \param dFlag :: direction flag
     \param YAxis :: Axid for shift of sphere/cylinder
     \param length :: length to shift by
@@ -455,6 +455,7 @@ FrontBackCut::getShiftedSurf(ModelSupport::surfRegister& SMap,
 			     const double length)
   /*!
     Support function to calculate the shifted surface
+    \parma SMap :: local surface register
     \param HR :: HeadRule to extract plane surf
     \param index :: offset index
     \param dFlag :: direction of surface axis (relative to HR.Plane)

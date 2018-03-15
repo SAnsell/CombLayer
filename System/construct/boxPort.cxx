@@ -3,7 +3,7 @@
  
  * File:   construct/boxPort.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -337,7 +337,7 @@ boxPort::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param beamFC :: FixedComp at the beam centre
+    \param mainFC :: FixedComp at the beam centre
     \param sideIndex :: link point
   */
 {

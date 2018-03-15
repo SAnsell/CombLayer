@@ -311,7 +311,7 @@ ContainedComp::getOuterSurf() const
   /*!
     Care here because this can return a referenece
     due to ContainedGroup not having a complete outer surf
-    \retrun Outer headRule
+    \return Outer headRule
   */
 {
   return outerSurf;

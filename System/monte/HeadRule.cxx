@@ -1907,7 +1907,7 @@ HeadRule::trackSurf(const Geometry::Vec3D& Org,
     \param Org :: Origin of line
     \param Unit :: Direction of line
     \param D :: Distance travelled to surface
-    \param activeSurf :: signed avoid surf
+    \param activeNull :: signed avoid surfaces
     \return exit surface [signed??]
   */
 {
@@ -2029,7 +2029,7 @@ HeadRule::calcSurfIntersection(const Geometry::Vec3D& Org,
     Calculate a track of a line that intersects the rule.
     The surface number is the outgoing surface number.
     \param Org :: Origin of line
-    \param Unit :: Direction of line
+    \param VUnit :: Direction of line
     \param Pts :: Points
     \param SNum :: Surface number 
     \return Number of points found

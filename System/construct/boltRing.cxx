@@ -460,7 +460,7 @@ boltRing::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param beamFC :: FixedComp at the beam centre
+    \param mainFC :: FixedComp at the beam centre
     \param sideIndex :: link point
   */
 {

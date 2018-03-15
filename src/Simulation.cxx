@@ -1225,7 +1225,7 @@ Simulation::getCellWithZaid(const size_t zaidNum) const
   /*!
     Ugly function to return the current
     vector of cells with a particular zaid type
-    \param zaidNumber :: Material zaid number
+    \param zaidNum :: Material zaid number
     \return vector of cell numbers (ordered)
     \todo Make this with a transform, not a loop.
   */

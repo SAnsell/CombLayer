@@ -216,7 +216,7 @@ ContainedSpace::calcBoundary(Simulation& System,
     \param cellN :: Cell number
     \param NDivide :: division in link point
     \param ALink :: first link point
-    \param bLink :: second link point
+    \param BLink :: second link point
     \return HeadRule of bounding box [- link surf]
   */
 {
@@ -242,7 +242,7 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
     \param objHR :: Headrule of boundary
     \param NDivide :: division in link point
     \param ALink :: first link point
-    \param bLink :: second link point
+    \param BLink :: second link point
     \return HeadRule of bounding box [- link surf]
   */
 {

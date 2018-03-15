@@ -269,7 +269,7 @@ GuideLine::addGuideUnit(const size_t index,
     The direction/rotation are applied to previous fixed unit
     out track.
 
-    \param Index :: index for the unit
+    \param index :: index for the unit
     \param POrigin :: Previous Origin [link on]
     \param bX :: X shift on origin
     \param bZ :: Z shift on origin
@@ -785,7 +785,7 @@ GuideLine::getXSection(const size_t shapeIndex,
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
-    \param shapelayerIndex :: Layer number [numberd from outside]
+    \param shapeLayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {

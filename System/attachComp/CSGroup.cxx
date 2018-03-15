@@ -45,7 +45,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -197,7 +196,7 @@ CSGroup::setLinkCopy(const size_t Index,
 }
 
 void
-CSGroup::registerFC(const std::shared_ptr<FixedComp>& FCPtr)
+CSGroup::registerFC(const std::shared_ptr<attachSystem::FixedComp>& FCPtr)
   /*!
     Register a shared FixedComp
     \param FCPtr :: Fixed pointer
