@@ -166,7 +166,7 @@ template void LeadPipeGenerator::setCF<CF40>();
 template void LeadPipeGenerator::setCF<CF63>();
 template void LeadPipeGenerator::setCF<CF100>();
   
-///\end TEMPLATE
+///\endcond TEMPLATE
 
   
   

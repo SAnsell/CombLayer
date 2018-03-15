@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -289,7 +289,7 @@ lineIntersect(Simulation& System,
     \param OMap :: Object map to add extra units to
   */
 {
-  ELog::RegMethod RegA("","lineIntersect(Pt,Axis)");
+  ELog::RegMethod RegA("AttachSupportLine[F]","lineIntersect(Pt,Axis)");
 
   const long int NC(static_cast<long int>(FC.NConnect()));
 

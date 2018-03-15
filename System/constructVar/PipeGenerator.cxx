@@ -357,7 +357,7 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setBFlangeCF<CF63>();
   template void PipeGenerator::setBFlangeCF<CF100>();
   
-///\end TEMPLATE
+///\endcond TEMPLATE
 
 
 }  // NAMESPACE setVariable

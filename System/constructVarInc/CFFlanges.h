@@ -44,6 +44,14 @@ struct CF40
   static constexpr double bellowThick=1.0;
 };
 
+/*!
+  \struct CF50
+  \version 1.0
+  \author S. Ansell
+  \date January 2018
+  \brief CFFlanges for CF50
+*/
+ 
 struct CF50
 {
   static constexpr double innerRadius=2.55;
@@ -54,6 +62,13 @@ struct CF50
   static constexpr double bellowThick=1.0;
 };
 
+/*!
+  \struct CF63
+  \version 1.0
+  \author S. Ansell
+  \date January 2018
+  \brief CFFlanges for CF63
+*/
 
 struct CF63
 {
@@ -64,6 +79,14 @@ struct CF63
   static constexpr double bellowStep=1.0;
   static constexpr double bellowThick=1.0;
 };
+
+/*!
+  \struct CF100
+  \version 1.0
+  \author S. Ansell
+  \date January 2018
+  \brief CFFlanges for CF100
+*/
 
 struct CF100
 {

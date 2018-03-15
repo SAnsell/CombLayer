@@ -209,7 +209,7 @@ class Simulation
   void renumberAll();
   void renumberSurfaces(const std::vector<int>&,
 			const std::vector<int>&);
-  void splitObject(const int,const int);
+  int splitObject(const int,const int);
   void minimizeObject(const int);
   void makeObjectsDNForCNF();
   void prepareWrite();

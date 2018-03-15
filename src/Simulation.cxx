@@ -1494,12 +1494,14 @@ Simulation::voidObject(const std::string& ObjName)
   return;
 }
 
-void
+int
 Simulation::splitObject(const int CA,const int SN)
   /*!
     Split a cell into two based on surface 
+    Note the original surface is in the negative direction
     \param CA :: Cell number
     \param SN :: surface number
+    \return new cell number
    */
 {
   ELog::RegMethod RegA("Simulation","splitObject");
@@ -1513,8 +1515,7 @@ Simulation::splitObject(const int CA,const int SN)
 
   // get next cell
   const int CB=getNextCell(CA);
-
- 
+  
   // headrules +/- surface
   HeadRule CHead=CPtr->getHeadRule();
   HeadRule DHead(CHead);
@@ -1534,7 +1535,7 @@ Simulation::splitObject(const int CA,const int SN)
 
   // get implicates relative to a surface:
   const std::vector<std::pair<int,int>>
-    IP=CPtr->getImplicatePairs(SN);
+    IP=CPtr->getImplicatePairs(std::abs(SN));
 
   // Now make two cells and replace this cell with A + B
 
@@ -1560,7 +1561,7 @@ Simulation::splitObject(const int CA,const int SN)
     }
   ELog::EM<<"Lit count "<<preLit<<" "<<minusLit<<" "<<plusLit<<ELog::endDiag;
   
-  return;
+  return CB;
 
 }
 

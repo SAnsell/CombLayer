@@ -344,6 +344,6 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   template void PortTubeGenerator::setBPortCF<CF63>();
   template void PortTubeGenerator::setBPortCF<CF100>();
   
-///\end TEMPLATE
+///\endcond TEMPLATE
 
 }  // NAMESPACE setVariable

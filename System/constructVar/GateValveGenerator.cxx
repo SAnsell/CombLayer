@@ -218,4 +218,6 @@ template void GateValveGenerator::setCF<CF40>();
 template void GateValveGenerator::setCF<CF63>();
 template void GateValveGenerator::setCF<CF100>();
 
+///\endcond TEMPLATE
+
 }  // NAMESPACE setVariable

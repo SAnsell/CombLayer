@@ -450,6 +450,51 @@ PortTube::addInsertPortCells(const int CN)
   portCells.insert(CN);
   return;
 }
+
+void
+PortTube::splitVoidPorts(Simulation& System,const std::string& splitName,
+			 const int offsetCN,const int CN)
+  /*!
+    Split the void cell and store divition planes
+    Only use those port that a close to orthogonal with Y axis
+    \param System :: Simulation to use
+    \param splitName :: Name for cell output
+    \param offsetCN :: output offset number
+    \param CN :: Cell number to split
+   */
+{
+  ELog::RegMethod RegA("PortTube","splitVoidPorts");
+
+  std::vector<Geometry::Vec3D> SplitOrg;
+  std::vector<Geometry::Vec3D> SplitAxis;
+
+  size_t preFlag(0);
+  for(size_t i=0;i<PCentre.size();i++)
+    {
+      if (Ports[i].getY().dotProd(Y)<Geometry::zeroTol)
+	{
+	  if (preFlag)
+	    {
+	      const Geometry::Vec3D CPt=
+		(PCentre[preFlag-1]+PCentre[i])/2.0;
+	      SplitOrg.push_back(CPt);
+	      SplitAxis.push_back(Geometry::Vec3D(0,1,0));
+	    }
+	  preFlag=i+1;
+	  
+	}
+    }
+  const std::vector<int> cells=
+    FixedComp::splitObject(System,offsetCN,CN,
+			   SplitOrg,SplitAxis);
+
+  if (!splitName.empty())
+  for(const int CN : cells)
+    CellMap::addCell(splitName,CN);
+  
+  return;
+}
+  
   
 void
 PortTube::createAll(Simulation& System,

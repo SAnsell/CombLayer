@@ -65,7 +65,7 @@ class PortTube :
   double flangeBLength;        ///< Joining Flange length
 
   int voidMat;                ///< void material
-  int wallMat;                  ///< Fe material layer
+  int wallMat;                ///< Fe material layer
 
   std::set<int> portCells;               ///< Extra cells for the port
   std::vector<Geometry::Vec3D> PCentre;  ///< Centre points [relative to origin]
@@ -86,6 +86,7 @@ class PortTube :
   PortTube& operator=(const PortTube&);
   virtual ~PortTube();
 
+  void splitVoidPorts(Simulation&,const std::string&,const int,const int);
   void addInsertPortCells(const int);
   const portItem& getPort(const size_t) const;
   void createAll(Simulation&,const attachSystem::FixedComp&,

@@ -249,29 +249,27 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeA->registerSpaceCut(1,2);
   pipeA->createAll(System,*triggerPipe,2);
 
-    
+  
   filterBox->addInsertCell(ContainedComp::getInsertCells());
   filterBox->setFront(*pipeA,2);
   filterBox->registerSpaceCut(1,2);
   filterBox->createAll(System,*pipeA,2);
-
+  
+  filterBox->splitVoidPorts(System,"SplitVoid",1001,filterBox->getCell("Void"));
+  filterBox->splitVoidPorts(System,"SplitOuter",2001,filterBox->getBuildCell());
+  filterBox->splitObject(System,-11,filterBox->getCell("SplitOuter",0));
+  filterBox->splitObject(System,12,filterBox->getCell("SplitOuter",3));
   
   for(size_t i=0;i<4;i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
-      filters[i]->addInsertCell("Flange",filterBox->getBuildCell());
+      filters[i]->addInsertCell("Flange",filterBox->getCell("SplitOuter",i));
       filters[i]->addInsertCell("Body",PI.getCell("Void"));
-      filters[i]->addInsertCell("Body",filterBox->getCell("Void"));
+      filters[i]->addInsertCell("Body",filterBox->getCell("SplitVoid",i));
       filters[i]->setBladeCentre(PI,0);
       filters[i]->createAll(System,PI,2);
     }
-  //  filterBox->splitObject(filterBox->getCell("OuterSpace"),);
-  //  System.minimizeObject(filterBox->getCell("Void"));
-  //  System.minimizeObject(filterBox->getCell("OuterSpace"));
-  filterBox->splitObject(System,1001,
-			 filterBox->getCell("OuterSpace"),
-			 Geometry::Vec3D(0,0,0),
-			 Geometry::Vec3D(0,1,0));
+
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
   pipeB->registerSpaceCut(1,2);

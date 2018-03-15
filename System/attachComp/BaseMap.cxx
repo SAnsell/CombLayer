@@ -3,7 +3,7 @@
  
  * File:   attachComp/BaseMap.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -388,6 +388,25 @@ BaseMap::removeVecUnit(const std::string& kName,
   if (SRef.empty())
     Items.erase(mc);
   return;
+}
+
+bool
+BaseMap::registerExtra(const int prevCN,const int extraCN)
+  /*!
+    Given a previous cell number find the object and 
+    add the extra cell to it 
+    \param prevCN :: Existing Cell number
+    \param extraCN :: New cell nubmer
+    \return true if insert possible
+   */
+{
+  ELog::RegMethod RegA("CellMap","registerExtra");
+
+  const std::string Unit=findCell(prevCN);
+  if (Unit.empty()) return 0;
+
+  BaseMap::addItem(Unit,extraCN);
+  return 1;
 }
 
 std::string

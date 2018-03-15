@@ -3,7 +3,7 @@
  
  * File:   supportInc/Binary.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 /*!
   \class Binary
-  \brief display class for binary numbers
+  \brief Display class for binary numbers
   \version 1.0
   \date Jan 2006 
   \author S. Ansell

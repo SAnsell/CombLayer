@@ -124,7 +124,7 @@ CellMap::insertComponent(Simulation& System,
     }
   return;
 }
-
+  
 void
 CellMap::insertComponent(Simulation& System,
 			  const std::string& Key,

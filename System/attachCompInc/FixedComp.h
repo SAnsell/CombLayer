@@ -220,8 +220,12 @@ class FixedComp
   virtual void applyRotation(const Geometry::Vec3D&,const double);
   void setExit(const Geometry::Vec3D&,const Geometry::Vec3D&);
 
-  void splitObject(Simulation&,const int,const int,
-		   const Geometry::Vec3D&,const Geometry::Vec3D&);
+  std::vector<int> splitObject(Simulation&,const int,const int);
+  std::vector<int> splitObject(Simulation&,const int,const int,
+			       const Geometry::Vec3D&,const Geometry::Vec3D&);
+  std::vector<int> splitObject(Simulation&,const int,const int,
+			       const std::vector<Geometry::Vec3D>&,
+			       const std::vector<Geometry::Vec3D>&);
 };
 
 }

@@ -222,6 +222,6 @@ SplitPipeGenerator::generatePipe(FuncDataBase& Control,
   template void SplitPipeGenerator::setBFlangeCF<CF63>();
   template void SplitPipeGenerator::setBFlangeCF<CF100>();
   
-///\end TEMPLATE
+///\endcond TEMPLATE
   
 }  // NAMESPACE setVariable

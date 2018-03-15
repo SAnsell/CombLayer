@@ -76,7 +76,7 @@
 namespace attachSystem
 {
 
-void
+std::vector<int>
 FixedComp::splitObject(Simulation& System,
 		       const int SNoffset,const int cellN,
 		       const Geometry::Vec3D& Org,
@@ -84,21 +84,101 @@ FixedComp::splitObject(Simulation& System,
   /*!
     Carries out a splitObject function -- not 100% sure
     is goes here but...
+    Note that the NEGATIVE surface constructed is the original cell.
     \param Org :: Origin offset relative to FC
     \param XYZ :: XYZ plane
+    \return cellList 
   */
 {
-  ELog::RegMethod RegA("FixedComp","splitObject");
+  ELog::RegMethod RegA("FixedComp","splitObject(org,axis)");
 
-
+  std::vector<int> OutCell;
+  
   const Geometry::Vec3D O=Origin+X*Org[0]+Y*Org[1]+Z*Org[2];
   Geometry::Vec3D Axis=X*XYZ[0]+Y*XYZ[1]+Z*XYZ[2];
   Axis.makeUnit();
   
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,O,Axis);
-  System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
-  return;
+  const int cellExtra=
+    System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
+
+  CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
+  if (CMapPtr)
+    CMapPtr->registerExtra(cellN,cellExtra);
   
+  return OutCell;  
 }
 
+std::vector<int>
+FixedComp::splitObject(Simulation& System,
+		       const int SNoffset,const int cellN,
+		       const std::vector<Geometry::Vec3D>& OrgVec,
+		       const std::vector<Geometry::Vec3D>& XYZVec)
+  /*!
+    Carries out a splitObject function -- not 100% sure
+    is goes here but...
+    Note that the NEGATIVE surface constructed is the original cell.
+    and first out cell
+    \param Org :: Origin offset relative to FC
+    \param XYZ :: XYZ plane
+
+  */
+{
+  ELog::RegMethod RegA("FixedComp","splitObject(vec)");
+
+  int SN(SNoffset);
+  int CN(cellN);
+  std::vector<int> OutCell({cellN});
+  for(size_t i=0;i<OrgVec.size();i++)
+    {
+      const Geometry::Vec3D& Org(OrgVec[i]);
+      const Geometry::Vec3D& XYZ(XYZVec[i]);
+      
+      const Geometry::Vec3D O=Origin+X*Org[0]+Y*Org[1]+Z*Org[2];
+      Geometry::Vec3D Axis=X*XYZ[0]+Y*XYZ[1]+Z*XYZ[2];
+      Axis.makeUnit();
+
+      ModelSupport::buildPlane(SMap,buildIndex+SN,O,Axis);
+      CN=System.splitObject(CN,SMap.realSurf(buildIndex+SN));
+      OutCell.push_back(CN);
+      
+      CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
+      if (CMapPtr)
+	CMapPtr->registerExtra(cellN,CN);
+      SN++;
+    }
+  
+  return OutCell;  
+}
+
+std::vector<int>
+FixedComp::splitObject(Simulation& System,const int SN,
+		       const int cellN)
+  /*!
+    Carries out a splitObject function -- not 100% sure
+    is goes here but...
+    Note that the NEGATIVE surface constructed is the original cell.
+    \param SN :: Surface number to use [already in cell]
+    \param cellN :: Cell number
+    \return cellList 
+  */
+{
+  ELog::RegMethod RegA("FixedComp","splitObject(cell)");
+
+  std::vector<int> OutCell;
+
+  const int ASN=std::abs(SN);
+  const int signSN=(SN>0) ? 1 : -1;
+  
+  const int cellExtra=
+    System.splitObject(cellN,signSN*SMap.realSurf(buildIndex+ASN));
+  
+  CellMap* CMapPtr=dynamic_cast<attachSystem::CellMap*>(this);
+  if (CMapPtr)
+    CMapPtr->registerExtra(cellN,cellExtra);
+  
+  return OutCell;  
+}
+
+  
 }  // NAMESPACE attachSystem
