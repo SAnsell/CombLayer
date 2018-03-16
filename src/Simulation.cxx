@@ -1559,7 +1559,7 @@ Simulation::splitObject(const int CA,const int SN)
       plusLit=AX.countLiterals();
       DPtr->procString(AX.writeMCNPX());
     }
-  ELog::EM<<"Lit count "<<preLit<<" "<<minusLit<<" "<<plusLit<<ELog::endDiag;
+  ELog::EM<<"] Literals: "<<preLit<<" ==> "<<minusLit<<" "<<plusLit<<ELog::endDiag;
   
   return CB;
 

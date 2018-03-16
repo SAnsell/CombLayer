@@ -123,7 +123,7 @@ ContainedSpace::~ContainedSpace()
 {}
   
 void
-ContainedSpace::setConnect(const size_t Index,
+ContainedSpace::setSpaceConnect(const size_t Index,
 			   const Geometry::Vec3D& C,
 			   const Geometry::Vec3D& A)
  /*!
@@ -144,7 +144,7 @@ ContainedSpace::setConnect(const size_t Index,
 }
 
 void
-ContainedSpace::setLinkSurf(const size_t Index,
+ContainedSpace::setSpaceLinkSurf(const size_t Index,
 			    const HeadRule& HR) 
   /*!
     Set a surface to output
@@ -152,7 +152,7 @@ ContainedSpace::setLinkSurf(const size_t Index,
     \param HR :: HeadRule to add
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","setLinkSurf(HR)");
+  ELog::RegMethod RegA("ContainedSpace","setSpaceLinkSurf(HR)");
   if (Index>=LCutters.size())
     throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU size/Index");
 
@@ -162,15 +162,15 @@ ContainedSpace::setLinkSurf(const size_t Index,
 }
 
 void
-ContainedSpace::setLinkSurf(const size_t Index,
-			    const int SN) 
+ContainedSpace::setSpaceLinkSurf(const size_t Index,
+				 const int SN) 
   /*!
     Set a surface to output
     \param Index :: Link number
     \param SN :: surf to add
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","setLinkSurf(int)");
+  ELog::RegMethod RegA("ContainedSpace","setSpaceLinkSurf(int)");
   if (Index>=LCutters.size())
     throw ColErr::IndexError<size_t>(Index,LCutters.size(),"LU size/Index");
 
@@ -180,9 +180,9 @@ ContainedSpace::setLinkSurf(const size_t Index,
 }
 
 void
-ContainedSpace::setLinkCopy(const size_t Index,
-			    const FixedComp& FC,
-			    const long int sideIndex)
+ContainedSpace::setSpaceLinkCopy(const size_t Index,
+				 const FixedComp& FC,
+				 const long int sideIndex)
   /*!
     Copy the opposite (as if joined) link surface 
     Note that the surfaces are complemented
@@ -191,7 +191,7 @@ ContainedSpace::setLinkCopy(const size_t Index,
     \param sideIndex :: link unit of other object
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","setLinkCopy");
+  ELog::RegMethod RegA("ContainedSpace","setSpaceLinkCopy");
   
   if (Index>=LCutters.size())
     throw ColErr::IndexError<size_t>(Index,LCutters.size(),
@@ -420,9 +420,9 @@ ContainedSpace::initialize()
   if (active)
     {
       if (ABLink.first)
-	ContainedSpace::setLinkCopy(0,*FC,ABLink.first);
+	ContainedSpace::setSpaceLinkCopy(0,*FC,ABLink.first);
       if (ABLink.second)
-	ContainedSpace::setLinkCopy(1,*FC,ABLink.second);
+	ContainedSpace::setSpaceLinkCopy(1,*FC,ABLink.second);
       
       if (!primaryCell && !insertCells.empty())
 	primaryCell=insertCells.front();
@@ -453,13 +453,11 @@ ContainedSpace::insertObjects(Simulation& System)
       calcBoundaryBox(System);
       buildWrapCell(System,primaryCell,buildCell);
     }
-
-  std::vector<int> IHold(insertCells);
-  StrFunc::removeItem(insertCells,primaryCell);
-  ContainedComp::insertObjects(System);
   
   if (!noPrimaryInsert && primaryCell && buildCell)
     {
+      StrFunc::removeItem(insertCells,primaryCell);
+      ContainedComp::insertObjects(System);
       MonteCarlo::Qhull* outerObj=System.findQhull(primaryCell);
       if (outerObj)
 	outerObj->addSurfString(outerCut.complement().display());
@@ -467,8 +465,9 @@ ContainedSpace::insertObjects(Simulation& System)
 	throw ColErr::InContainerError<int>(primaryCell,
 					    "Cell not in Simulation");
     }
-      
-
+  else
+    ContainedComp::insertObjects(System);
+  
   return;
 }
 

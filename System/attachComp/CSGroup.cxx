@@ -285,11 +285,9 @@ CSGroup::insertAllObjects(Simulation& System)
     {
       BBox=ContainedSpace::calcBoundary
 	(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
-      ELog::EM<<"BB == "<<BBox.display()<<ELog::endDiag;
       buildWrapCell(System,primaryCell,buildCell);
     }
 
-  ELog::EM<<"PP == "<<primaryCell<<" "<<buildCell<<ELog::endDiag;
   if (primaryCell)
     {
       MonteCarlo::Object* outerObj=System.findQhull(primaryCell);

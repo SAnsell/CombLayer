@@ -233,10 +233,10 @@ testContainedSpace::testBoundary()
   for(const TTYPE& tc : Tests)
     {
       ContainedSpace CSx;
-      CSx.setConnect(0,Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,-1,0));
-      CSx.setLinkSurf(0,1);
-      CSx.setConnect(1,Geometry::Vec3D(0,2,0),Geometry::Vec3D(0,1,0));
-      CSx.setLinkSurf(1,2);
+      CSx.setSpaceConnect(0,Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,-1,0));
+      CSx.setSpaceLinkSurf(0,1);
+      CSx.setSpaceConnect(1,Geometry::Vec3D(0,2,0),Geometry::Vec3D(0,1,0));
+      CSx.setSpaceLinkSurf(1,2);
       CSx.setPrimaryCell(std::get<0>(tc));
       CSx.calcBoundaryBox(ASim);
       
@@ -275,11 +275,11 @@ testContainedSpace::testInsert()
   ASim.addCell(10,5,0.0,Out);      
 
   ContainedSpace CSx;
-  CSx.addOuterSurf(Out);
-  CSx.setConnect(0,Geometry::Vec3D(0,-2,0),Geometry::Vec3D(0,-1,0));
-  CSx.setLinkSurf(0,-1);
-  CSx.setConnect(1,Geometry::Vec3D(0,2,0),Geometry::Vec3D(0,1,0));
-  CSx.setLinkSurf(1,2);
+  CSx.addOuterSurf(Out); 
+  CSx.setSpaceConnect(0,Geometry::Vec3D(0,-2,0),Geometry::Vec3D(0,-1,0));
+  CSx.setSpaceLinkSurf(0,-1);
+  CSx.setSpaceConnect(1,Geometry::Vec3D(0,2,0),Geometry::Vec3D(0,1,0));
+  CSx.setSpaceLinkSurf(1,2);
   CSx.setPrimaryCell(2);  // cell 2
   CSx.setBuildCell(20);  // cell 2
 

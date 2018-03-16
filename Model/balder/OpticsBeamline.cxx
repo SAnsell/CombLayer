@@ -289,6 +289,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirror->addInsertCell(mirrorBox->getCell("Void"));
   mirror->createAll(System,*mirrorBox,0);
 
+
   gateB->addInsertCell(ContainedComp::getInsertCells());
   gateB->registerSpaceCut(1,2);
   gateB->setFront(*mirrorBox,2);
@@ -299,6 +300,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeC->setFront(*gateB,2);
   pipeC->createAll(System,*gateB,2);
 
+
   driftA->addInsertCell(ContainedComp::getInsertCells());
   driftA->registerSpaceCut(1,2);
   driftA->setFront(*pipeC,2);
@@ -307,6 +309,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   driftB->addInsertCell(ContainedComp::getInsertCells());
   driftB->registerSpaceCut(1,2);
   driftB->createAll(System,*driftA,2);
+
   
   attachSystem::CSGroup UnitA(monoV,monoBellowA,monoBellowB);
   UnitA.setPrimaryCell(ContainedComp::getMainCell());
@@ -331,7 +334,11 @@ OpticsBeamline::buildObjects(Simulation& System)
   UnitA.insertAllObjects(System);
 
   monoV->constructPorts(System);
-   
+
+  monoV->splitObject(System,-101,UnitA.getBuildCell());
+  monoV->splitObject(System,201,UnitA.getBuildCell());
+
+
   gateC->addInsertCell(ContainedComp::getInsertCells());
   gateC->setFront(*driftB,2);
   gateC->registerSpaceCut(1,2);
@@ -372,6 +379,8 @@ OpticsBeamline::buildObjects(Simulation& System)
   mirrorB->addInsertCell(mirrorBoxB->getCell("Void"));
   mirrorB->createAll(System,*mirrorBoxB,0);
 
+  mirrorBoxB->splitObject(System,-11,mirrorBoxB->getCell("OuterSpace"));
+  mirrorBoxB->splitObject(System,12,mirrorBoxB->getCell("OuterSpace"));
   
   pipeE->addInsertCell(ContainedComp::getInsertCells());
   pipeE->setFront(*mirrorBoxB,2);
@@ -383,19 +392,25 @@ OpticsBeamline::buildObjects(Simulation& System)
   slitsB->registerSpaceCut(1,2);
   slitsB->createAll(System,*pipeE,2);
 
-
   viewPipe->addInsertCell(ContainedComp::getInsertCells());
   viewPipe->addInsertPortCells(slitsB->getBuildCell());
   viewPipe->setFront(*slitsB,2);
   viewPipe->registerSpaceCut(1,2);
   viewPipe->createAll(System,*slitsB,2);
 
-  
+  viewPipe->splitObject(System,1001,viewPipe->getCell("OuterSpace"),
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(1,0,0));
+  viewPipe->splitObject(System,2001,viewPipe->getCell("OuterSpace",0),
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+  viewPipe->splitObject(System,2002,viewPipe->getCell("OuterSpace",1),
+			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
+
 
   pipeF->addInsertCell(ContainedComp::getInsertCells());
   pipeF->setFront(*viewPipe,2);
   pipeF->registerSpaceCut(1,2);
   pipeF->createAll(System,*viewPipe,2);
+
 
   shutterPipe->addInsertCell(ContainedComp::getInsertCells());
   shutterPipe->setFront(*pipeF,2);
@@ -406,6 +421,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   pipeG->setFront(*shutterPipe,2);
   pipeG->registerSpaceCut(1,2);
   pipeG->createAll(System,*shutterPipe,2);
+
 
   gateE->addInsertCell(ContainedComp::getInsertCells());
   gateE->setFront(*pipeG,2);

@@ -163,13 +163,16 @@ makeBalder::build(Simulation& System,
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
   joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipe->setFront(*wigglerBox,2);
-  joinPipe->setLinkCopy(0,*opticsHut,1);
+  joinPipe->setSpaceLinkCopy(0,*opticsHut,1);
   joinPipe->registerSpaceCut(0,2);
   joinPipe->createAll(System,*wigglerBox,2);
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
 
+  // special:
+  System.removeCell(opticsHut->getCell("Void"));  
+  return;
   // SPECIAL if cut at end of optics:
   
 
@@ -177,13 +180,13 @@ makeBalder::build(Simulation& System,
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipeB->setFront(*opticsBeam,2);
-  joinPipeB->setLinkCopy(1,*opticsHut,
+  joinPipeB->setSpaceLinkCopy(1,*opticsHut,
 			 opticsHut->getSideIndex("-innerBack"));
   joinPipeB->registerSpaceCut(1,0);
   joinPipeB->createAll(System,*opticsBeam,2);
 
   System.removeCell(opticsHut->getCell("Void"));
-  return;
+
   connectZone->addInsertCell(voidCell);
   connectZone->createAll(System,*joinPipeB,2);
 

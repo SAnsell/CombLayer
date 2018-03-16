@@ -78,11 +78,11 @@ class ContainedSpace  : public ContainedComp
 		 const LinkUnit&);
 
 
-  void setConnect(const size_t,const Geometry::Vec3D&,
+  void setSpaceConnect(const size_t,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&);
-  void setLinkSurf(const size_t,const int);
-  void setLinkSurf(const size_t,const HeadRule&);
-  void setLinkCopy(const size_t,const FixedComp&,const long int);
+  void setSpaceLinkSurf(const size_t,const int);
+  void setSpaceLinkSurf(const size_t,const HeadRule&);
+  void setSpaceLinkCopy(const size_t,const FixedComp&,const long int);
 
   /// set primary cell
   void setPrimaryCell(const int C) { primaryCell=C; }
