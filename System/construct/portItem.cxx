@@ -88,7 +88,8 @@ portItem::portItem(const std::string& Key) :
   statusFlag(0),
   portIndex(ModelSupport::objectRegister::Instance().cell(Key)),
   cellIndex(portIndex+1),radius(0.0),wall(0.0),
-  flangeRadius(0.0),flangeLength(0.0),voidMat(0),wallMat(0)
+  flangeRadius(0.0),flangeLength(0.0),plateThick(0.0),
+  voidMat(0),wallMat(0),plateMat(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -367,7 +368,6 @@ portItem::constructOuterFlange(Simulation& System,
 
   Out=ModelSupport::getComposite(SMap,portIndex," 1 17 -27 -102  ");
   makeCell("OutVoid",System,cellIndex++,0,0.0,Out+midSurf);
-
 
   if (plateThick>Geometry::zeroTol)
     {
