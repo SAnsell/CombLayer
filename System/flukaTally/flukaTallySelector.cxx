@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tally/flukaTallyBuilder.cxx
+ * File:   flukaTally/flukaTallySelector.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -46,75 +46,54 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "support.h"
+
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
+#include "Simulation.h"
+#include "SimFLUKA.h"
 
 #include "userBinConstruct.h"
-#include "flukaTallyBuilder.h"
 
-namespace flukaSystem
-{
+#include "flukaTallySelector.h"
+
 
 void
-tallySelection(SimFLUKA& System,
-	       const mainSystem::inputParam& IParam)
+tallyModification(SimMCNP& System,
+		  const mainSystem::inputParam& IParam)
   /*!
-    An amalgumation of values to determine what sort of tallies to put
-    in the system.
-    \param System :: SimFLUKA to add tallies
-    \param IParam :: Input Parameters
+    Applies a large number of modifications to the tally system
+    \param System :: SimMCNP to get tallies from 
+    \param IParam :: Parameters
   */
 {
-  ELog::RegMethod RegA("flukaTallyBuilder","tallySelection(basic)");
+  ELog::RegMethod RegA("flukaTallySelector[F]","tallyModification");
+  const size_t nP=IParam.setCnt("TMod");
 
-  for(size_t i=0;i<IParam.setCnt("tally");i++)
+  for(size_t i=0;i<nP;i++)
     {
-      const std::string TType=
-	IParam.getValue<std::string>("tally",i,0);
-      
-      const size_t NItems=IParam.itemCnt("tally",i);
-      const std::string HType=(NItems>1) ?
-	IParam.getValue<std::string>("tally",i,1) : "help";
-      
-      if (TType=="help" || TType=="?")
-	helpTallyType(HType);
-      
-      else if (TType=="mesh")
-	userBinConstruct::processMesh(System,IParam,i);
-      else
-	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
+      std::vector<std::string> StrItem;
+      // This is enforced a >1
+      const size_t nV=IParam.itemCnt("TMod",i);
+      const std::string key=
+	IParam.getValue<std::string>("TMod",i,0);
+      for(size_t j=1;j<nV;j++)
+	StrItem.push_back
+	  (IParam.getValue<std::string>("TMod",i,j));
+
+      if(key=="help")
+	{
+	  ELog::EM<<"TMod Help "<<ELog::endBasic;
+
+          ELog::EM<<ELog::endBasic;
+	  ELog::EM<<ELog::endErr;
+          return;
+	}
+      ELog::EM<<"Currently no modification possible"<<ELog::endDiag;
     }
-
-  //if (IParam.flag("Txml"))
-    //   tallySystem::addXMLtally(System,IParam.getValue<std::string>("Txml"));
-      
-  return;
-}
-
-void  
-helpTallyType(const std::string& HType) 
-  /*!
-    Simple help for types
-    \param HType :: specialization if present that help is required for
-  */
-{
-  ELog::RegMethod("TallyConstructor","helpTallyType");
-
-  if (HType=="mesh")
-    //    userBinConstruct::writeHelp(ELog::EM.Estream());
-    {}
-  else
-    {
-      ELog::EM<<"Tally Types:\n\n";
-      ELog::EM<<"-- mesh : \n";
-    }
-  
-  ELog::EM<<ELog::endBasic;
   return;
 }
 
 
-} // NAMESPACE flukaSystem

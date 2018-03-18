@@ -57,17 +57,6 @@
 #include "Simulation.h"
 #include "SimMCNP.h"
 
-#include "pointConstruct.h"
-#include "meshConstruct.h"
-#include "tmeshConstruct.h"
-#include "fmeshConstruct.h"
-#include "fluxConstruct.h"
-#include "heatConstruct.h"
-#include "fissionConstruct.h"
-#include "itemConstruct.h"
-#include "surfaceConstruct.h"
-#include "sswConstruct.h"
-
 #include "TallySelector.h"
 
 

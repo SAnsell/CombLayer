@@ -125,18 +125,18 @@ testWriteSupport::testDouble()
   const std::vector<TTYPE> Tests=
     {
       //         1234567890
-      TTYPE(2.0,"         2"),
-      TTYPE(2.1,"       2.1"),
-      TTYPE(2.0000000001,"         2"),
-      TTYPE(-2.1,   "      -2.1"),
-      TTYPE(-2.1e12,"  -2.1e+12")
+      TTYPE(2.0,         "   2.00000"),
+      TTYPE(2.1,         "   2.10000"),
+      TTYPE(2.0000000001,"   2.00000"),
+      TTYPE(-2.1,        "  -2.10000"),
+      TTYPE(-2.1e12,     "  -2.1e+12")
     };
 
   int cnt(1);
   for(const TTYPE& tc : Tests)
     {
       const double tD=std::get<0>(tc);
-      const std::string out=StrFunc::flukaNumber(tD);
+      const std::string out=StrFunc::flukaNum(tD);
       const std::string TLine=std::get<1>(tc);
       if (TLine!=out)
 	{

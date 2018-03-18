@@ -36,7 +36,6 @@ class userBin : public flukaTally
 {
  private:
 
-  int outputUnit;                   ///< Fortran output number
   int meshType;                     ///< type / 10 / 0 for mesh
   std::string particle;             ///< particle
     

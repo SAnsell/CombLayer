@@ -76,11 +76,11 @@ namespace flukaSystem
 
 void 
 userBinConstruct::createTally(SimFLUKA& System,
-				const std::string& PType,
-				const int fortranTape,
-				const Geometry::Vec3D& APt,
-				const Geometry::Vec3D& BPt,
-				const std::array<size_t,3>& MPts) 
+			      const std::string& PType,
+			      const int fortranTape,
+			      const Geometry::Vec3D& APt,
+			      const Geometry::Vec3D& BPt,
+			      const std::array<size_t,3>& MPts) 
   /*!
     An amalgamation of values to determine what sort of mesh to put
     in the system.
@@ -93,7 +93,6 @@ userBinConstruct::createTally(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("userBinConstruct","createTally");
-
 
   userBin UB(fortranTape);
   UB.setParticle(PType);
@@ -108,33 +107,41 @@ std::string
 userBinConstruct::convertTallyType(const std::string& TType)
   /*!
     Construct to convert words into an index
-    \param TTYPE :: incoming value / particle
+    \param TType :: incoming value / particle
     \return particle name [upper case] or string of number
   */
 {
   ELog::RegMethod RegA("userBinConstruct","convertTallyType");
   const particleConv& pConv=particleConv::Instance();
   
-  static const std::map<std::string,int> tMap
-    ( {{ "energy",      208 },              // energy 
-      { "em-energy",   211 },           // electro magnetic energy
-      { "dose"     ,   228 },
-      { "unb-energy",  229 },           // ????
-      { "dose-eq",     240 }}            // Dose equivilent [needs auxscore]
+  static const std::set<std::string> tMap
+    ( {{ "energy",       },           // energy 
+       { "em-energy",    },           // electro magnetic energy
+       { "dose"     ,    },
+       { "unb-energy",   },           // ????
+       { "dose-eq",      } }         // Dose equivilent [needs auxscore]
       );
 
-  std::map<std::string,int>::const_iterator tc=tMap.find(TType);
+  if (TType=="help")
+    {
+      ELog::EM<<"Tally Type:"<<ELog::endDiag;
+      for(const std::set<std::string>::value_type& TC : tMap)
+	ELog::EM<<" -- "<<TC<<ELog::endDiag;
+
+      ELog::EM<<" -- Particle"<<ELog::endDiag;
+      throw ColErr::ExitAbort("Help termianted");
+    }
+      
+  
+  std::set<std::string>::const_iterator tc=tMap.find(TType);
   std::ostringstream cx;
-  if (tc!=tMap.end())
-    cx<<std::setw(10)<<std::right<<std::to_string(tc->second)+".0";
-  else if (pConv.hasFlukaName(TType))
-    cx<<std::setw(10)<<std::right<<StrFunc::toUpperString(TType);
+  if (tc!=tMap.end() || pConv.hasFlukaName(TType))
+    cx<<std::setw(10)<<StrFunc::toUpperString(TType);
   else
     throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
-  
+
   return cx.str();
 }
-
 
   
 void
@@ -146,13 +153,14 @@ userBinConstruct::processMesh(SimFLUKA& System,
     \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
-   */
+  */
 {
   ELog::RegMethod RegA("userBinConstruct","processMesh");
   
   const std::string tallyType=
     IParam.getValueError<std::string>("tally",Index,1,"tallyType");
-  const std::string what2Number=userBinConstruct::convertTallyType(tallyType);
+  const std::string tallyParticle=
+    userBinConstruct::convertTallyType(tallyType);
 
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
@@ -167,7 +175,7 @@ userBinConstruct::processMesh(SimFLUKA& System,
   else if (PType=="free")
     tallySystem::meshConstruct::getFreeMesh(IParam,Index,3,APt,BPt,Nxyz);
 
-  userBinConstruct::createTally(System,tallyType,nextId,APt,BPt,Nxyz);
+  userBinConstruct::createTally(System,tallyParticle,nextId,APt,BPt,Nxyz);
   
   return;      
 }

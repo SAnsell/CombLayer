@@ -53,8 +53,7 @@ class pointConstruct
 {
  private:
 
-
-  /// privaet constructor 
+  /// private constructor 
   pointConstruct() { }
   
  public:

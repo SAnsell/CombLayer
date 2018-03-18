@@ -57,19 +57,18 @@ namespace flukaSystem
 {
 
 userBin::userBin(const int outID) :
-  flukaTally(outID),
-  outputUnit(outID),meshType(10),
-  particle("208")                  // energy
+  flukaTally(outID),meshType(10),
+  particle("208")
   /*!
     Constructor
-    \param ID :: Identity number of tally [fortranOut]
+    \param outID :: Identity number of tally [fortranOut]
   */
 {}
 
 userBin::userBin(const userBin& A) : 
   flukaTally(A),
-  outputUnit(A.outputUnit),meshType(A.meshType),
-  particle(A.particle),Pts(A.Pts),minCoord(A.minCoord),
+  meshType(A.meshType),particle(A.particle),
+  Pts(A.Pts),minCoord(A.minCoord),
   maxCoord(A.maxCoord)
   /*!
     Copy constructor
@@ -88,7 +87,6 @@ userBin::operator=(const userBin& A)
   if (this!=&A)
     {
       flukaTally::operator=(A);
-      outputUnit=A.outputUnit;
       meshType=A.meshType;
       particle=A.particle;
       Pts=A.Pts;
@@ -114,9 +112,6 @@ userBin::~userBin()
     Destructor
   */
 {}
-
-
-
   
 void
 userBin::setParticle(const std::string& P)
@@ -184,26 +179,32 @@ userBin::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTint("%1$.1f");
-  boost::format FMTnum("%1$.4g");
+  boost::format FMTint("%1$.1f ");
+  boost::format FMTnum("%1$.4f ");
 
   std::ostringstream cx;
   
 
-  OX<<std::setw(10)<<std::left<<"USRBIN";
-  OX<<(FMTint % meshType);
-  OX<<(FMTint % outputUnit);
-  OX<<std::setw(10)<<std::right<<particle;
-  for(size_t i=0;i<3;i++)
-    OX<<(FMTnum % maxCoord[i]);
-  OX<<std::endl;
+  cx<<"USRBIN ";
+  cx<<StrFunc::flukaNum(meshType)<<" ";
+  cx<<particle<<" ";
+  cx<<StrFunc::flukaNum(outputUnit);
   
-  OX<<std::setw(10)<<std::left<<"USRBIN";
   for(size_t i=0;i<3;i++)
-    OX<<(FMTnum % minCoord[i]);
+    cx<<StrFunc::flukaNum(maxCoord[i])<<" ";
+  cx<<"mesh"<<std::to_string(outputUnit);
+
+  StrFunc::writeFLUKA(cx.str(),OX);
+
+  cx.str("");
+  cx<<"USRBIN ";
   for(size_t i=0;i<3;i++)
-    OX<<(FMTint % Pts[i]);
-  OX<<"  & "<<std::endl;
+    cx<<(FMTnum % minCoord[i]);
+  for(size_t i=0;i<3;i++)
+    cx<<(FMTint % static_cast<double>(Pts[i]));
+  cx<<"  & ";
+  ELog::EM<<"CX == "<<cx.str()<<ELog::endDiag;
+  StrFunc::writeFLUKA(cx.str(),OX);  
   
   return;
 }

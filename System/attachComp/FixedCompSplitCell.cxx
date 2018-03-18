@@ -85,6 +85,8 @@ FixedComp::splitObject(Simulation& System,
     Carries out a splitObject function -- not 100% sure
     is goes here but...
     Note that the NEGATIVE surface constructed is the original cell.
+    \param System :: Simuation for the model
+    \param SNoffset :: Number for new surface [relative to build index]
     \param Org :: Origin offset relative to FC
     \param XYZ :: XYZ plane
     \return cellList 
@@ -116,15 +118,16 @@ FixedComp::splitObject(Simulation& System,
 		       const std::vector<Geometry::Vec3D>& OrgVec,
 		       const std::vector<Geometry::Vec3D>& XYZVec)
   /*!
-    Carries out a splitObject function -- not 100% sure
-    is goes here but...
+    This split the original Cell on the -/+ side of a plane 
+    through Org,XYZ. The next point in the vector are then used
+    to split the +ve remainder cell.
     Note that the NEGATIVE surface constructed is the original cell.
     and first out cell
     \param SNoffset :: surface offset
     \param cellN :: Cell to divide
     \param OrgVec :: Origins offset relative to FC
     \param XYZVec :: XYZ plane directions
-
+    \return vector of cells [first is original]
   */
 {
   ELog::RegMethod RegA("FixedComp","splitObject(vec)");

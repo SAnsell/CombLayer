@@ -88,7 +88,8 @@ std::shared_ptr<SDef::SourceBase>
 makeActivationSource(const std::string& ASName)
   /*!
     Construct and return an activation source
-    \param ASName :: Activive sourece name
+    \param ASName :: Activive source name
+    \return Pointer to activation source.
   */
 {
   ELog::RegMethod RegA("SourceSelector","makeActivationSelection");

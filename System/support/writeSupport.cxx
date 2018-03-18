@@ -52,13 +52,27 @@ namespace  StrFunc
 {
 
 std::string
-flukaNumber(const double D)
+flukaNum(const int D)
   /*!
     Process a number into a fluka style string
     \param D :: Number to use
   */
 {
-  boost::format FMTnum("%1$10.5g");
+  return flukaNum(static_cast<double>(D));
+}
+
+std::string
+flukaNum(const double D)
+  /*!
+    Process a number into a fluka style string
+    \param D :: Number to use
+  */
+{
+  static boost::format FMTnum("%1$10.5f");
+  static boost::format FMTlnum("%1$10.5g");
+  if (D > 1e5 || D < -1e4)
+    return (FMTlnum % D).str();
+  
   return (FMTnum % D).str();
 }
 
@@ -85,7 +99,7 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 	{
 	  double D;
 	  if (StrFunc::convert(w,D))
-	    w=flukaNumber(D);
+	    w=flukaNum(D);
 	  else
 	    throw ColErr::InvalidLine(w,"String to long for FLUKA");
 	}
