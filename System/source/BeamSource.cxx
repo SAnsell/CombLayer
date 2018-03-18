@@ -43,6 +43,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -290,12 +291,25 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("BeamSource","writeFLUKA");
-  boost::format FMTnum("%1$.4g");
 
   const particleConv& PC=particleConv::Instance();
-  
+
+  // can be two for an energy range
+  if (Energy.size()!=1)
+    throw ColErr::SizeError<size_t>
+      (Energy.size(),1,"Energy only single point");
+
   std::ostringstream cx;
+  // energy : energy divirgence : angle spread [mrad]
+  // radius : innerRadius : -1 to means radius
+  cx<<"BEAM "<<-Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
+    <<" "<<radius<<" 0.0 -1.0 ";
+  cx<<particleType;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+
   cx<<"BEAMAXIS ";
+
   // beam : -energy X X X X X  : Partiles
   //  std::istringstream cx;
   //  cx<<(FMTnum % -energy);

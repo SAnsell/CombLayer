@@ -75,6 +75,7 @@
 #include "SimInput.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
+#include "flukaSourceSelector.h"
 #include "ObjectAddition.h"
 
 #include "MainProcess.h"
@@ -514,6 +515,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
    */
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
+  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
@@ -531,8 +533,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   //  tallyModification(*SimMCPtr,IParam);
 
-  ELog::EM<<"FLUKA MODEL DOES NOT SET SOURCES"<<ELog::endCrit;
-  //  SDef::sourceSelection(*SimMCPtr,IParam);
+  SDef::flukaSourceSelection(*SimFLUKAPtr,IParam);
   SimFLUKAPtr->masterSourceRotation();
   // Ensure we done loop
 

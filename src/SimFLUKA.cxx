@@ -371,7 +371,7 @@ SimFLUKA::writeSource(std::ostream& OX) const
     {
       SDef::SourceBase* SPtr=
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
-      SPtr->write(OX);
+      SPtr->writeFLUKA(OX);
     }
   OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
@@ -486,6 +486,7 @@ SimFLUKA::write(const std::string& Fname) const
   writeMaterial(OX);
   writeTally(OX);
   writePhysics(OX);
+  writeSource(OX);
 
   OX<<"STOP"<<std::endl;
   OX.close();

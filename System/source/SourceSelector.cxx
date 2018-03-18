@@ -109,7 +109,7 @@ sourceSelection(Simulation& System,
   Geometry::Vec3D DOffsetStep;
   double D;
   if (!StrFunc::convert(Dist,DOffsetStep) && 
-      !StrFunc::convert(Dist,D))
+      StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
   
   const attachSystem::FixedComp& FC=

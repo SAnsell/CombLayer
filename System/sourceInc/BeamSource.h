@@ -44,8 +44,8 @@ class BeamSource :
 {
  private:
 
-  double radius;
-  double angleSpread;           ///< Angle spread
+  double radius;                ///< spot size
+  double angleSpread;           ///< Angle spread [deg]
   
   void populate(const FuncDataBase& Control);
   void createUnitVector(const attachSystem::FixedComp&,
