@@ -113,21 +113,14 @@ createInputs(inputParam& IParam)
   IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regMulti("R","report",1000,0);
+  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
+
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
-  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
-  IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
   IParam.regItem("sdefFile","sdefFile");
   IParam.regMulti("sdefMod","sdefMod",1000,0);
-  IParam.regDefItem<int>("SI","sdefIndex",1,1);
-
-  std::vector<std::string> SItems(3,"");
-  IParam.regDefItemList<std::string>("SObj","sdefObj",3,SItems);
+  IParam.regMulti("sdefObj","sdefObj",3,SItems);
   
-  IParam.regItem("SP","sdefPos");
-  IParam.regItem("SR","sdefRadius");
-  IParam.regItem("SV","sdefVec");
-  IParam.regItem("SZ","sdefZRot");
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
@@ -239,15 +232,11 @@ createInputs(inputParam& IParam)
   IParam.setDesc("report","Report a position/axis (show info on points etc)");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("sdefFile","File(s) for source");
-  IParam.setDesc("SA","Source Angle [deg]");
-  IParam.setDesc("SI","Source Index value [1:2]");
-  IParam.setDesc("SObj","Source Initialization Object");
+  IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
+  
   IParam.setDesc("physModel","Physics Model"); 
-  IParam.setDesc("SP","Source start point");
-  IParam.setDesc("SV","Sourece direction vector");
-  IParam.setDesc("SZ","Source direction: Rotation to +ve Z [deg]");
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
