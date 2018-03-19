@@ -52,13 +52,21 @@ namespace  StrFunc
 {
 
 std::string
-flukaNum(const int D)
+flukaNum(const int I)
   /*!
     Process a number into a fluka style string
-    \param D :: Number to use
+    \param I :: Number to use
   */
 {
-  return flukaNum(static_cast<double>(D));
+
+  static boost::format FMTnum("%1$10.1f");
+  static boost::format FMTlnum("%1$10.1g");
+
+  const double D=static_cast<double>(I);
+  if (D > 1e5 || D < -1e4)
+    return (FMTlnum % D).str();
+  
+  return (FMTnum % D).str();
 }
 
 std::string
@@ -91,27 +99,31 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 				 std::istream_iterator<std::string>());
 
   size_t i(1);
+  int I;
+  double D;
   for (std::string& w : whats)
     {
       if (w=="-") w=" ";
-
-      if (w.size()>10)
-	{
-	  double D;
-	  if (StrFunc::convert(w,D))
-	    w=flukaNum(D);
-	  else
-	    throw ColErr::InvalidLine(w,"String to long for FLUKA");
-	}
-      if (i % 8==0)
+      if (i % 8==0) // never a number
 	OX<<std::setw(10)<<std::left<<w<<std::endl;
-      else if (i % 8==1)
-	OX<<std::setw(10)<<std::left<<w;	
-      else 
-	OX<<std::setw(10)<<std::right<<w;	
+      else
+	{
+	  if (StrFunc::convert(w,I))
+	    OX<<flukaNum(I);
+	  else if (StrFunc::convert(w,D))
+	    OX<<flukaNum(D);
+	  else if (w.size()>10)
+	    throw ColErr::InvalidLine(w,"String to long for FLUKA");
+	  else
+	    {
+	      if (i % 8==1)
+		OX<<std::setw(10)<<std::left<<w;	
+	      else
+		OX<<std::setw(10)<<std::right<<w;
+	    }
+	}      
       i++;
     }
-  
   if (i % 8 != 1) OX<<std::endl;
   return;
 }

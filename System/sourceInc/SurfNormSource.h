@@ -46,10 +46,11 @@ class SurfNormSource :
     
   double angleSpread;           ///< Angle from normal
   int surfNum;                  ///< Surfacte number
+
   double width;                 ///< Width of source
   double height;                ///< Height of source
     
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void setSurf(const attachSystem::FixedComp&,
 			const long int);
 
@@ -60,8 +61,9 @@ class SurfNormSource :
   SurfNormSource& operator=(const SurfNormSource&);
   SurfNormSource* clone() const;
   ~SurfNormSource();
-  
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,const long int);
 

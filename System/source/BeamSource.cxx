@@ -52,8 +52,7 @@
 #include "NRange.h"
 #include "NList.h"
 #include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
+#include "inputSupport.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -128,19 +127,20 @@ BeamSource::clone() const
   
   
 void
-BeamSource::populate(const FuncDataBase& Control)
+BeamSource::populate(const ITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("BeamSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   // default neutron
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
-  radius=Control.EvalDefVar<double>(keyName+"Radius",radius); 
+  
+  angleSpread=mainSystem::getDefInput(inputMap,"aSpread",0,0.0);
+  radius=mainSystem::getDefInput(inputMap,"radius",0,radius);
 
   return;
 }
@@ -150,7 +150,7 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int linkIndex)
   /*!
     Create the unit vector
-    \param FC :: Fixed Componenet
+    \param FC :: Fixed Component
     \param linkIndex :: Link index [signed for opposite side]
    */
 {
@@ -222,7 +222,7 @@ BeamSource::createAll(const attachSystem::FixedComp& FC,
 
   
 void
-BeamSource::createAll(const FuncDataBase& Control,
+BeamSource::createAll(const ITYPE& inputMap,
 		      const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
 
@@ -234,7 +234,7 @@ BeamSource::createAll(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
 
   return;
@@ -304,11 +304,17 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // radius : innerRadius : -1 to means radius
   cx<<"BEAM "<<-Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
     <<" "<<radius<<" 0.0 -1.0 ";
-  cx<<particleType;
+  cx<<StrFunc::toUpperString(particleType);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
 
-  cx<<"BEAMAXIS ";
+  // Y Axis is Z in fluka, X is X
+  cx<<"BEAMAXIS "<<X<<" "<<Y;
+  ELog::EM<<"CX == "<<cx.str()<<ELog::endDiag;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+  
+  
 
   // beam : -energy X X X X X  : Partiles
   //  std::istringstream cx;

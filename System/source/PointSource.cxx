@@ -46,12 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -63,7 +57,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
-
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "PointSource.h"
 
@@ -123,18 +117,18 @@ PointSource::~PointSource()
 {}
 
 void
-PointSource::populate(const FuncDataBase& Control)
+PointSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("PointSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
 
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
+  angleSpread=mainSystem::getDefInput<double>(inputMap,"aSpread",0,0.0);
 
   return;
 }
@@ -187,19 +181,19 @@ PointSource::createSource(SDef::Source& sourceCard) const
 }  
 
 void
-PointSource::createAll(const FuncDataBase& Control,
+PointSource::createAll(const mainSystem::MITYPE& inputMap,
 		       const attachSystem::FixedComp& FC,
 		       const long int linkIndex)
 
   /*!
     Create all the source
-    \param Control :: DataBase for variables
+    \param inputMap :: DataBase for variables
     \param FC :: Fixed point to get orientation from
     \param linkIndex :: link Index						
    */
 {
-  ELog::RegMethod RegA("PointSource","createAll<Control,FC,linkIndex>");
-  populate(Control);
+  ELog::RegMethod RegA("PointSource","createAll<inputMap,FC,linkIndex>");
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
   return;
 }

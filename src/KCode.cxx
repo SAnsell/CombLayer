@@ -54,6 +54,7 @@
 #include "Quadratic.h"
 #include "Plane.h"
 #include "localRotate.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "KCode.h"
 

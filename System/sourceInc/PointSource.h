@@ -46,7 +46,7 @@ class PointSource :
   
   double angleSpread;           ///< Angle spread
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -61,7 +61,8 @@ class PointSource :
   /// accessor to angle
   void setAngleSpread(const double D) { angleSpread=D; }
 
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
 

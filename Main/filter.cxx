@@ -66,7 +66,6 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "Simulation.h" 
-#include "SimPHITS.h"
 #include "ContainedComp.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
@@ -75,9 +74,6 @@
 #include "DefPhysics.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 #include "SimInput.h"
 

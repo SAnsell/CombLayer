@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,19 +63,14 @@
 #include "FixedComp.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
-#include "PhysCard.h"
-#include "LSwitchCard.h"
-#include "ModeCard.h"
-#include "PhysImp.h"
-#include "PhysicsCards.h"
 #include "Simulation.h"
+#include "inputSupport.h"
 #include "SourceCreate.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "objectRegister.h"
 #include "particleConv.h"
 #include "SourceBase.h"
-#include "WorkData.h"
 #include "World.h"
 #include "flukaSourceSelector.h"
 
@@ -95,11 +89,11 @@ flukaSourceSelection(Simulation& System,
 {
   ELog::RegMethod RegA("SourceSelector[F]","flukaSourceSelection");
   
-  const FuncDataBase& Control=System.getDataBase();
-
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
+  const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
+  
   const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
   const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
   const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
@@ -123,11 +117,12 @@ flukaSourceSelection(Simulation& System,
   ELog::EM<<"SDEF TYPE == "<<sdefType<<ELog::endDiag;
 
   if (sdefType=="Wiggler")                       // blader wiggler
-    sName=SDef::createWigglerSource(Control,FC,linkIndex);
+    {
+      sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
+    }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
-      sName=SDef::createBeamSource(Control,"beamSource",
-			     FC,linkIndex);
+      sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
     }
   else
     {

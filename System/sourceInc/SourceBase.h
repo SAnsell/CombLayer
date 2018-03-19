@@ -44,6 +44,9 @@ class SourceBase
 {
  protected:
 
+  /// populate input type
+  typedef std::map<std::string,std::vector<std::string>> ITYPE;
+
   std::string particleType;     ///< Particle Type
   double cutEnergy;             ///< Energy cut point
   
@@ -66,7 +69,7 @@ class SourceBase
   virtual SourceBase* clone() const =0;
   virtual ~SourceBase() {}        ///< Destructor
 
-  void populate(const std::string&,const FuncDataBase&);
+  virtual void populate(const mainSystem::MITYPE&);
 
   /// Set particle type
   void setParticle(const int);

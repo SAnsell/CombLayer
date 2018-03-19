@@ -47,7 +47,7 @@ class BeamSource :
   double radius;                ///< spot size
   double angleSpread;           ///< Angle spread [deg]
   
-  void populate(const FuncDataBase& Control);
+  void populate(const ITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -61,7 +61,7 @@ class BeamSource :
 
   /// Set radius
   void setRadius(const double R) { radius=R; }
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const ITYPE&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,
 		 const long int);

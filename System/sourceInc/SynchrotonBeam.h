@@ -56,7 +56,7 @@ class SynchrotonBeam :
 
   Geometry::Vec3D beamXYZ;      ///< Start point of beam [origin for emission]
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -68,7 +68,8 @@ class SynchrotonBeam :
   virtual SynchrotonBeam* clone() const;
   virtual ~SynchrotonBeam();
 
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,
 		 const long int);

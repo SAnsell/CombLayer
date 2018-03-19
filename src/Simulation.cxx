@@ -90,6 +90,7 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "Source.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "KCode.h"
@@ -1559,7 +1560,6 @@ Simulation::splitObject(const int CA,const int SN)
       plusLit=AX.countLiterals();
       DPtr->procString(AX.writeMCNPX());
     }
-  ELog::EM<<"] Literals: "<<preLit<<" ==> "<<minusLit<<" "<<plusLit<<ELog::endDiag;
   
   return CB;
 

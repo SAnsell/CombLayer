@@ -97,6 +97,7 @@
 #include "LSwitchCard.h"
 #include "PhysImp.h"
 #include "Source.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "KCode.h"

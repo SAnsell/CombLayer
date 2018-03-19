@@ -47,12 +47,6 @@
 #include "Vec3D.h"
 #include "Transform.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -65,6 +59,7 @@
 #include "WorkData.h"
 #include "World.h"
 
+#include "inputSupport.h"
 #include "particleConv.h"
 #include "SourceBase.h"
 
@@ -222,54 +217,69 @@ SourceBase::setParticle(const int T)
 }
   
 void
-SourceBase::populate(const std::string& keyName,
-		     const FuncDataBase& Control)
+SourceBase::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param keyName :: Keyname for variables as this is not a FC
-    \param Control :: Control variables
+    inputMap is vector of size>=1
+    \param inputMap :: Map keyanme : string of sdefMod
   */
 {
   ELog::RegMethod RegA("SourceBase","populate");
 
-  // default neutron
-  particleType=Control.EvalDefVar<std::string>
-    (keyName+"ParticleType",particleType);
+  mainSystem::MITYPE::const_iterator mc,mcB;
   
-  const std::string EList=
-    Control.EvalDefVar<std::string>(keyName+"Energy","");
-  const std::string EPList=
-    Control.EvalDefVar<std::string>(keyName+"EProb","");
-  const std::string EFile=
-    Control.EvalDefVar<std::string>(keyName+"EFile","");
+  int eFlag(0);
+  if (!mainSystem::findInput(inputMap,"particle",0,particleType))
+    mainSystem::findInput(inputMap,"particleType",0,particleType);
 
-  if (!populateEFile(EFile,1,11) &&
-      !populateEnergy(EList,EPList))
+  std::string EFile;
+  if (mainSystem::findInput(inputMap,"energyFile",0,EFile) ||
+      mainSystem::findInput(inputMap,"EFile",0,EFile) )
+    eFlag=populateEFile(EFile,1,11);
+
+  if ( ((mc=inputMap.find("energyProb"))!=inputMap.end() ||
+	(mc=inputMap.find("EProb"))!=inputMap.end()) &&
+       ((mcB=inputMap.find("energy"))!=inputMap.end() ||
+	(mcB=inputMap.find("Energy"))!=inputMap.end())  )
     {
-      ELog::EM<<"Inner energy"<<ELog::endDiag;
-
-      double defEnergy(1.0);
- 
-      ELog::EM<<"ENERGY::"<<Energy.size()<<ELog::endDiag;
-      if (Energy.empty() ||
-	  Control.hasVariable(keyName+"EStart") ||
-	  StrFunc::convert(EList,defEnergy))
-	{
-
-	  double E=Control.EvalDefVar<double>(keyName+"EStart",defEnergy); 
-	  const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
-	  const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
-	  const double EStep((EEnd-E)/static_cast<double>(nE+1));
-	  Energy.clear();
-	  EWeight.clear();
-	  for(size_t i=0;i<nE;i++)
-	    {
-	      Energy.push_back(E);
-	      EWeight.push_back(1.0);
-	      E+=EStep;
-	    }
-	}
+      const std::string EProb=mc->second.front();
+      const std::string EList=mcB->second.front();
+      eFlag=populateEnergy(EList,EProb);
     }
+
+  if ( !eFlag && mainSystem::hasInput(inputMap,"energyRange"))
+    {      
+      double EInit=
+	mainSystem::getDefInput<double>(inputMap,"energyRange",0,1.0);
+      double EFinal=
+	mainSystem::getDefInput<double>(inputMap,"energyRange",1,10.0);
+      const size_t nE=
+	mainSystem::getDefInput<size_t>(inputMap,"energyRange",2,0);
+      
+
+      if (EFinal<EInit)
+	std::swap(EInit,EFinal);
+
+      const double EStep((EFinal-EInit)/static_cast<double>(nE+1));
+      double E(EInit);
+      Energy.clear();
+      EWeight.clear();
+      for(size_t i=0;i<nE;i++)
+	{
+	  Energy.push_back(E);
+	  EWeight.push_back(1.0);
+	  E+=EStep;
+	}
+      eFlag=1;
+    }
+  if (!eFlag)
+    {
+      const double E=
+	mainSystem::getDefInput<double>(inputMap,"energy",0,1.0);
+      Energy.push_back(E);
+      EWeight.push_back(1.0);
+    }
+      
   return;
 }
 

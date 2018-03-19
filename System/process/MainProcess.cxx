@@ -73,6 +73,7 @@
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
+#include "inputSupport.h"
 #include "SourceCreate.h"
 #include "SourceSelector.h"
 #include "flukaSourceSelector.h"

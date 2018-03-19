@@ -48,12 +48,6 @@
 #include "Transform.h"
 #include "localRotate.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -65,6 +59,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "particleConv.h"
 #include "GammaSource.h"
@@ -180,26 +175,27 @@ GammaSource::setAngleSpread(const double A)
 }
   
 void
-GammaSource::populate(const FuncDataBase& Control)
+GammaSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("GammaSource","populate");
 
-  FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
+
   
-  shape=Control.EvalDefVar<std::string>(keyName+"Shape",shape);
+  mainSystem::findInput<std::string>(inputMap,"shape",0,shape);
   if (shape=="Circle")   // circle
-    radius=Control.EvalDefVar<double>(keyName+"Radius",radius);
+    mainSystem::findInput(inputMap,"radius",0,radius);
   else if (shape=="Rectangle")
     {
-      height=Control.EvalDefVar<double>(keyName+"Height",height);
-      width=Control.EvalDefVar<double>(keyName+"Width",width);
-    }    
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",angleSpread); 
+      mainSystem::findInput(inputMap,"height",0,height);
+      mainSystem::findInput(inputMap,"width",0,width);
+    }
+  mainSystem::findInput(inputMap,"aSpread",0,angleSpread);
   
   return;
 }
@@ -394,7 +390,7 @@ GammaSource::createRectangleSource(SDef::Source& sourceCard) const
 
 
 void
-GammaSource::createAll(const FuncDataBase& Control,
+GammaSource::createAll(const mainSystem::MITYPE& inputMap,
 		       const attachSystem::FixedComp& FC,
 		       const long int linkIndex)
 
@@ -406,7 +402,7 @@ GammaSource::createAll(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("GammaSource","createAll<FC,linkIndex>");
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
   calcPosition();
   return;

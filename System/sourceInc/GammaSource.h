@@ -55,7 +55,7 @@ class GammaSource :
   
   Geometry::Vec3D FocusPoint;   ///< Focus point
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void calcPosition();
@@ -76,7 +76,8 @@ class GammaSource :
   void setAngleSpread(const double);
   
   
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
 

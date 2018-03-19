@@ -118,6 +118,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
   IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
   IParam.regItem("sdefFile","sdefFile");
+  IParam.regMulti("sdefMod","sdefMod",1000,0);
   IParam.regDefItem<int>("SI","sdefIndex",1,1);
 
   std::vector<std::string> SItems(3,"");

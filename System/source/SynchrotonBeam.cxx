@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -46,26 +45,16 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
 #include "surfRegister.h"
-#include "ModelSupport.h"
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "WorkData.h"
-#include "World.h"
 #include "particleConv.h"
-
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "SynchrotonBeam.h"
 
@@ -131,24 +120,29 @@ SynchrotonBeam::clone() const
   
   
 void
-SynchrotonBeam::populate(const FuncDataBase& Control)
+SynchrotonBeam::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("SynchrotonBeam","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   // default neutron
-  electronEnergy=Control.EvalDefVar<double>(keyName+"ElectronEnergy",3000.0);
-  magneticField=Control.EvalVar<double>(keyName+"MagneticField");
-  lowEnergyLimit=Control.EvalDefVar<double>(keyName+"LowEnergyLimit",1e-4);
-  arcLength=Control.EvalDefVar<double>(keyName+"ArcLength",10.0); 
 
-  beamXYZ=Control.EvalDefVar<Geometry::Vec3D>
-    (keyName+"BeamXYZ",Geometry::Vec3D(0,0,0)); 
+  electronEnergy=
+    mainSystem::getDefInput<double>(inputMap,"electronEnergy",0,3000.0);
+  magneticField=
+    mainSystem::getDefInput<double>(inputMap,"magneticField",0,1.0);
+  lowEnergyLimit=
+    mainSystem::getDefInput<double>(inputMap,"lowEnergyLimit",0,1e-4);
+  arcLength=
+    mainSystem::getDefInput<double>(inputMap,"arcLength",0,10.0); 
+
+  beamXYZ=mainSystem::getDefInput<Geometry::Vec3D>
+    (inputMap,"beamXYZ",0,Geometry::Vec3D(0,0,0)); 
 
   return;
 }
@@ -199,19 +193,20 @@ void
 SynchrotonBeam::createAll(const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
   /*!
-    Create all with out using Control variables
+    Create all without using variables
     \param FC :: Fixed Point for origin/axis of beam
     \param linkIndex :: link Index				
   */
 {
   ELog::RegMethod RegA("SynchrotonBeam","createAll(FC)");
   createUnitVector(FC,linkIndex);
+  FixedOffset::applyOffset();
   return;
 }
 
   
 void
-SynchrotonBeam::createAll(const FuncDataBase& Control,
+SynchrotonBeam::createAll(const mainSystem::MITYPE& inputMap,
 		      const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
 
@@ -222,10 +217,10 @@ SynchrotonBeam::createAll(const FuncDataBase& Control,
     \param linkIndex :: link Index				
    */
 {
-  ELog::RegMethod RegA("SynchrotonBeam","createAll<FC,linkIndex>");
-  populate(Control);
+  ELog::RegMethod RegA("SynchrotonBeam","createAll<inputMap,FC,linkIndex>");
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
-
+  FixedOffset::applyOffset();
   return;
 }
 
@@ -262,7 +257,6 @@ SynchrotonBeam::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("SynchrotonBeam","writeFLUKA");
-  boost::format FMTnum("%1$.4g");
 
   const particleConv& PC=particleConv::Instance();
   

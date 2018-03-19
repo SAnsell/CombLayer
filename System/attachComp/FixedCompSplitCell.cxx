@@ -100,7 +100,6 @@ FixedComp::splitObject(Simulation& System,
   Geometry::Vec3D Axis=X*XYZ[0]+Y*XYZ[1]+Z*XYZ[2];
   Axis.makeUnit();
 
-  ELog::EM<<"["<<keyName;
   ModelSupport::buildPlane(SMap,buildIndex+SNoffset,O,Axis);
   const int cellExtra=
     System.splitObject(cellN,SMap.realSurf(buildIndex+SNoffset));
@@ -144,7 +143,6 @@ FixedComp::splitObject(Simulation& System,
       Geometry::Vec3D Axis=X*XYZ[0]+Y*XYZ[1]+Z*XYZ[2];
       Axis.makeUnit();
 
-      ELog::EM<<"["<<keyName;
       ModelSupport::buildPlane(SMap,buildIndex+SN,O,Axis);
       CN=System.splitObject(CN,SMap.realSurf(buildIndex+SN));
       OutCell.push_back(CN);
@@ -177,7 +175,6 @@ FixedComp::splitObject(Simulation& System,const int SN,
   const int ASN=std::abs(SN);
   const int signSN=(SN>0) ? 1 : -1;
 
-  ELog::EM<<"["<<keyName;
   const int cellExtra=
     System.splitObject(cellN,signSN*SMap.realSurf(buildIndex+ASN));
   

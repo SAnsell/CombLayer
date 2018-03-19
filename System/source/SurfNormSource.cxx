@@ -45,13 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -61,8 +54,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
-#include "WorkData.h"
-#include "World.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "SurfNormSource.h"
 
@@ -127,20 +119,20 @@ SurfNormSource::clone() const
 }
   
 void
-SurfNormSource::populate(const FuncDataBase& Control)
+SurfNormSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Map varaibles
    */
 {
   ELog::RegMethod RegA("SurfNormSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
 
-  angleSpread=Control.EvalDefVar<double>(keyName+"AngleSpread",0.0);
-  height=Control.EvalVar<double>(keyName+"Height");
-  width=Control.EvalVar<double>(keyName+"Width"); 
+  angleSpread=mainSystem::getDefInput<double>(inputMap,"aSpread",0,0.0);
+  height=mainSystem::getDefInput<double>(inputMap,"height",0,0.0);
+  width=mainSystem::getDefInput<double>(inputMap,"width",0,0.0);
 
   return;
 }
@@ -156,10 +148,8 @@ SurfNormSource::setSurf(const attachSystem::FixedComp& FC,
   */
 {
   ELog::RegMethod RegA("SurfNormSource","setSurf");
-  ELog::EM<<"Surface == "<<FC.getKeyName()<<" "<<sideIndex<<ELog::endDiag;
-  ELog::EM<<"STR == "<<FC.getLinkString(sideIndex)<<ELog::endDiag;
+
   surfNum=FC.getLinkSurf(sideIndex);
-  ELog::EM<<"Surface == "<<FC.getKeyName()<<ELog::endDiag;
   return;
 }
   
@@ -216,20 +206,20 @@ SurfNormSource::createSource(SDef::Source& sourceCard) const
 }  
 
 void
-SurfNormSource::createAll(const FuncDataBase& Control,
+SurfNormSource::createAll(const mainSystem::MITYPE& inputMap,
 			  const attachSystem::FixedComp& FC,
 			  const long int sideIndex)
 
   /*!
     Create all the source
-    \param Control :: DataBase for variables
+    \param inputMap :: DataBase for variables
     \param FC :: FixedComp to get surface from
     \param sideIndex :: link point for surface
   */
 {
-  ELog::RegMethod RegA("SurfNormSource","createAll<Control,FC,linkIndex>");
+  ELog::RegMethod RegA("SurfNormSource","createAll<inputMap,FC,linkIndex>");
 
-  populate(Control);
+  populate(inputMap);
   setSurf(FC,sideIndex);
   return;
 }

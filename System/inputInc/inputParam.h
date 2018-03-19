@@ -109,6 +109,8 @@ class inputParam
   T getValueError(const std::string&,const size_t,const size_t,
 		  const std::string&) const;
 
+  std::map<std::string,std::vector<std::string>>
+    getMapItems(const std::string&) const;
 
   std::vector<std::string>
     getAllItems(const std::string&) const;

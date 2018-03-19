@@ -64,6 +64,7 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "particleConv.h"
 #include "ParabolicSource.h"
@@ -134,21 +135,21 @@ ParabolicSource::clone() const
   
   
 void
-ParabolicSource::populate(const FuncDataBase& Control)
+ParabolicSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("ParabolicSource","populate");
 
-  FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   
-  decayPower=Control.EvalDefVar<double>(keyName+"DecayPower",decayPower);
-  height=Control.EvalDefVar<double>(keyName+"Height",height);
-  width=Control.EvalDefVar<double>(keyName+"Width",width);
-  angleSpread=Control.EvalDefVar<double>(keyName+"Width",angleSpread);
+  mainSystem::findInput<double>(inputMap,"decayPower",0,decayPower);
+  mainSystem::findInput<double>(inputMap,"height",0,height);
+  mainSystem::findInput<double>(inputMap,"width",0,width);
+  mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread);
   
   return;
 }
@@ -323,19 +324,19 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 }
 
 void
-ParabolicSource::createAll(const FuncDataBase& Control,
+ParabolicSource::createAll(const mainSystem::MITYPE& inputMap,
 			   const attachSystem::FixedComp& FC,
 			   const long int linkIndex)
   
   /*!
     Create all the source
-    \param Control :: DataBase for variables
+    \param inputMap :: DataBase for variables
     \param FC :: FixedComp for origin
     \param linkIndex :: link point
    */
 {
   ELog::RegMethod RegA("ParabolicSource","createAll<FC,linkIndex>");
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
 
   return;

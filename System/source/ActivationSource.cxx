@@ -79,6 +79,7 @@
 #include "localRotate.h"
 #include "activeUnit.h"
 #include "activeFluxPt.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "ActivationSource.h"
 

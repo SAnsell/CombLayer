@@ -47,7 +47,7 @@ class LensSource :
   
   double radialArea;          ///< Radial spread
 
-  void populate(const FuncDataBase&);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void rotate(const localRotate&);
@@ -62,7 +62,7 @@ class LensSource :
 
 
 
-  void createAll(const FuncDataBase&,
+  void createAll(const mainSystem::MITYPE&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 

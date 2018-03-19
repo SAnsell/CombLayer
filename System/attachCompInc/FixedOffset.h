@@ -54,6 +54,9 @@ class FixedOffset  : public FixedComp
   virtual ~FixedOffset() {}     ///< Destructor
 
   virtual void populate(const FuncDataBase&);
+  virtual void populate(const std::map<std::string,
+			std::vector<std::string>>&);
+  
   virtual void populate(const std::string&,const FuncDataBase&);
   void setOffset(const double,const double,const double);
   void setPreRotation(const double,const double);

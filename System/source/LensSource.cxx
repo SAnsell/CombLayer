@@ -61,6 +61,7 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "particleConv.h"
 #include "LensSource.h"
@@ -120,17 +121,17 @@ LensSource::clone() const
 }
 
 void
-LensSource::populate(const FuncDataBase& Control)
+LensSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate all the variables
-    \param Control :: Variables to access
+    \param inputMap :: Variables to access
   */
 {
   ELog::RegMethod RegA("LensSource","populate");
 
-  FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
-  radialArea=Control.EvalDefVar<double>(keyName+"Radial",0.0);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
+  radialArea=mainSystem::getDefInput<double>(inputMap,"Radial",0,0.0);
   
   return;
 }
@@ -155,7 +156,7 @@ LensSource::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-LensSource::createAll(const FuncDataBase& Control,
+LensSource::createAll(const mainSystem::MITYPE& inputMap,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
@@ -167,7 +168,7 @@ LensSource::createAll(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("LensSource","createAll");
 
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,sideIndex);
   
   return;

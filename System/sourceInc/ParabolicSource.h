@@ -53,7 +53,7 @@ class ParabolicSource :
   double angleSpread;           ///< Angle distribution
 
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -70,7 +70,8 @@ class ParabolicSource :
   void setRectangle(const double,const double);
   void setNPts(const size_t,const size_t);
   
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
   virtual void rotate(const localRotate&);

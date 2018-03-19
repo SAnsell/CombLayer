@@ -3,7 +3,7 @@
  
  * File:   Main/muBeam.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Goran Skoro
+ * Copyright (c) 2004-2018 by Stuart Ansell/Goran Skoro
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,13 +63,9 @@
 #include "SimInput.h"
 #include "Simulation.h"
 #include "DefPhysics.h"
-#include "mainJobs.h"
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "ImportControl.h"
-#include "SourceCreate.h"
-#include "SourceSelector.h"
-#include "TallySelector.h"
 #include "World.h"
 
 #include "makeMuon.h"

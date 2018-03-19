@@ -101,6 +101,7 @@
 #include "PhysCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "Simulation.h"

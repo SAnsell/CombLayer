@@ -46,12 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -66,6 +60,7 @@
 #include "Transform.h"
 #include "localRotate.h"
 #include "particleConv.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "GaussBeamSource.h"
 
@@ -140,7 +135,7 @@ GaussBeamSource::setSize(const double W,const double H)
 }
   
 void
-GaussBeamSource::populate(const FuncDataBase& Control)
+GaussBeamSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
     \param Control :: Control variables
@@ -148,12 +143,12 @@ GaussBeamSource::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GaussBeamSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   
-  xWidth=Control.EvalDefVar<double>(keyName+"XWidth",xWidth);
-  zWidth=Control.EvalDefVar<double>(keyName+"ZWidth",zWidth);
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
+  mainSystem::findInput<double>(inputMap,"xWidth",0,xWidth);
+  mainSystem::findInput<double>(inputMap,"zWidth",0,zWidth);
+  mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread); 
   return;
 }
 
@@ -250,7 +245,7 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
 }  
 
 void
-GaussBeamSource::createAll(const FuncDataBase& Control,
+GaussBeamSource::createAll(const mainSystem::MITYPE& inputMap,
 			   const attachSystem::FixedComp& FC,
 			   const long int linkIndex)
 
@@ -262,7 +257,7 @@ GaussBeamSource::createAll(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
   return;
 }

@@ -48,7 +48,7 @@ class GaussBeamSource :
   double zWidth;                ///< Z fwhm
   double angleSpread;           ///< Angle spread
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   
@@ -62,7 +62,8 @@ class GaussBeamSource :
 
   void setSize(const double,const double);
   
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
   virtual void rotate(const localRotate&);
