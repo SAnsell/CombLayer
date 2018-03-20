@@ -86,7 +86,7 @@ class ContainedSpace  : public ContainedComp
 
   /// set primary cell
   void setPrimaryCell(const int C) { primaryCell=C; }
-  /// set build cell
+  /// set build cell number [created]
   void setBuildCell(const int C) { buildCell=C; }
   /// access build cell
   int getBuildCell() const { return buildCell; }

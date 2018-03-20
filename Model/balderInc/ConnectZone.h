@@ -64,8 +64,12 @@ namespace xraySystem
 
 class ConnectZone :
   public attachSystem::CopiedComp,
+  public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
-  public attachSystem::FixedOffset
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap
+      
+
 {
  private:
 
@@ -79,13 +83,15 @@ class ConnectZone :
   std::shared_ptr<constructSystem::PortTube> ionPumpB;
   std::shared_ptr<constructSystem::LeadPipe> pipeD;
   std::shared_ptr<constructSystem::Bellows> bellowC;
+
+  double outerRadius;          ///< radius of contained void
   
   void populate(const FuncDataBase&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void buildObjects(Simulation&,const attachSystem::FixedComp&,
 		    const long int);
-
+  void createOuterVoid(Simulation&);
   void createLinks();
   
  public:

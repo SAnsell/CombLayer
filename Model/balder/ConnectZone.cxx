@@ -63,7 +63,6 @@
 #include "FixedOffset.h"
 #include "ContainedComp.h"
 #include "ContainedSpace.h"
-#include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -71,6 +70,8 @@
 #include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
+#include "generateSurf.h"
+#include "ModelSupport.h"
 
 #include "VacuumPipe.h"
 #include "SplitFlangePipe.h"
@@ -90,8 +91,11 @@ namespace xraySystem
   
 ConnectZone::ConnectZone(const std::string& Key) :
   attachSystem::CopiedComp(Key,Key),
-  attachSystem::ContainedComp(),
   attachSystem::FixedOffset(newName,2),
+  attachSystem::ContainedComp(),
+  attachSystem::FrontBackCut(),
+  attachSystem::CellMap(),
+
   
   bellowA(new constructSystem::Bellows(newName+"BellowA")),
   pipeA(new constructSystem::LeadPipe(newName+"PipeA")),
@@ -101,7 +105,8 @@ ConnectZone::ConnectZone(const std::string& Key) :
   pipeC(new constructSystem::LeadPipe(newName+"PipeC")),
   ionPumpB(new constructSystem::PortTube(newName+"IonPumpB")),
   pipeD(new constructSystem::LeadPipe(newName+"PipeD")),
-  bellowC(new constructSystem::Bellows(newName+"BellowC"))
+  bellowC(new constructSystem::Bellows(newName+"BellowC")),
+  outerRadius(0.0)
   /*!
     Constructor
     \param Key :: Name of construction key
@@ -133,9 +138,11 @@ void
 ConnectZone::populate(const FuncDataBase& Control)
   /*!
     Populate the intial values [movement]
+    \param Control :: DataBase for variables
    */
 {
   FixedOffset::populate(Control);
+  outerRadius=Control.EvalDefVar<double>(keyName+"OuterRadius",0.0);
   return;
 }
 
@@ -159,6 +166,29 @@ ConnectZone::createUnitVector(const attachSystem::FixedComp& FC,
   return;
 }
 
+void
+ConnectZone::createOuterVoid(Simulation& System)
+  /*!
+    Construct outer void object
+    \param System :: Simulation
+  */
+{
+  ELog::RegMethod RegA("ConnectZone","createOuterVoid");
+
+  if (outerRadius>Geometry::zeroTol)
+    {
+       std::string Out;
+      // Trick - make cell and THEN add front/back cell
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,outerRadius);
+      Out=ModelSupport::getComposite(SMap,buildIndex," -7 ");
+      Out+=frontRule()+backRule();
+      makeCell("OuterVoid",System,cellIndex++,0,0.0,Out);
+      addOuterSurf(Out);
+      insertObjects(System);
+      addInsertCell(getCell("OuterVoid"));
+    }
+  return;
+}
 
 void
 ConnectZone::buildObjects(Simulation& System,
@@ -169,48 +199,57 @@ ConnectZone::buildObjects(Simulation& System,
     point.
     \param System :: Simulation to use
     \parma FC :: Connection poitn
-    \parma sideIndex :: link piont
+    \param sideIndex :: link piont
   */
 {
   ELog::RegMethod RegA("ConnectZone","buildObjects");
 
-
   bellowA->addInsertCell(ContainedComp::getInsertCells());
   bellowA->setFront(FC,sideIndex);
+  bellowA->registerSpaceCut(1,2);
   bellowA->createAll(System,FC,sideIndex);
 
   pipeA->addInsertCell(ContainedComp::getInsertCells());
   pipeA->setFront(*bellowA,2);
+  pipeA->registerSpaceCut(1,2);
   pipeA->createAll(System,*bellowA,2);
 
   ionPumpA->addInsertCell(ContainedComp::getInsertCells());
+  ionPumpA->registerSpaceCut(1,2);
   ionPumpA->setFront(*pipeA,2);
   ionPumpA->createAll(System,*pipeA,2);
 
   pipeB->addInsertCell(ContainedComp::getInsertCells());
+  pipeB->registerSpaceCut(1,2);
   pipeB->setFront(*ionPumpA,2);
   pipeB->createAll(System,*ionPumpA,2);
 
   bellowB->addInsertCell(ContainedComp::getInsertCells());
+  bellowB->registerSpaceCut(1,2);
   bellowB->setFront(*pipeB,2);
   bellowB->createAll(System,*pipeB,2);
 
   pipeC->addInsertCell(ContainedComp::getInsertCells());
+  pipeC->registerSpaceCut(1,2);
   pipeC->setFront(*bellowB,2);
   pipeC->createAll(System,*bellowB,2);
 
   ionPumpB->addInsertCell(ContainedComp::getInsertCells());
+  ionPumpB->registerSpaceCut(1,2);
   ionPumpB->setFront(*pipeC,2);
   ionPumpB->createAll(System,*pipeC,2);
 
+  
   pipeD->addInsertCell(ContainedComp::getInsertCells());
+  pipeD->setNoPrimInsert();
+  pipeD->registerSpaceCut(1,2);
   pipeD->setFront(*ionPumpB,2);
   pipeD->createAll(System,*ionPumpB,2);
 
   bellowC->addInsertCell(ContainedComp::getInsertCells());
+  bellowC->registerSpaceCut(1,2);
   bellowC->setFront(*pipeD,2);
   bellowC->createAll(System,*pipeD,2);
-
   
   return;
 }
@@ -229,8 +268,8 @@ ConnectZone::createLinks()
   
 void 
 ConnectZone::createAll(Simulation& System,
-			  const attachSystem::FixedComp& FC,
-			  const long int sideIndex)
+		       const attachSystem::FixedComp& FC,
+		       const long int sideIndex)
   /*!
     Carry out the full build
     \param System :: Simulation system
@@ -243,6 +282,7 @@ ConnectZone::createAll(Simulation& System,
 
   populate(System.getDataBase());
   createUnitVector(FC,sideIndex);
+  createOuterVoid(System);
   buildObjects(System,FC,sideIndex);
   createLinks();
   return;

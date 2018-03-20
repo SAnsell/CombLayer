@@ -265,7 +265,7 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
     (YA+YB).unit() : (YB-YA).unit();
   const Geometry::Vec3D XX=YY.crossNormal();
   const Geometry::Vec3D ZZ=YY*XX;
-
+  
 
   if (!objHR.isValid(CPoint))
     {
@@ -393,9 +393,10 @@ ContainedSpace::buildWrapCell(Simulation& System,
   HeadRule newOuterVoid(BBox);
   for(const LinkUnit& LU : LCutters)
     newOuterVoid.addIntersection(-LU.getLinkSurf());
-  
+
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
+
 
   CellMap* CMapPtr=dynamic_cast<CellMap*>(this);
   if (CMapPtr)
@@ -447,6 +448,7 @@ ContainedSpace::insertObjects(Simulation& System)
       
   System.populateCells();
   initialize();
+  
 
   if (primaryCell && buildCell)
     {
@@ -465,7 +467,7 @@ ContainedSpace::insertObjects(Simulation& System)
 	throw ColErr::InContainerError<int>(primaryCell,
 					    "Cell not in Simulation");
     }
-  else
+  else if (!noPrimaryInsert)
     ContainedComp::insertObjects(System);
   
   return;

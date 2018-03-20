@@ -171,12 +171,8 @@ makeBalder::build(Simulation& System,
   opticsBeam->createAll(System,*joinPipe,2);
 
   // special:
-  System.removeCell(opticsHut->getCell("Void"));  
-  return;
-  // SPECIAL if cut at end of optics:
+  //  System.removeCell(opticsHut->getCell("Void"));  
   
-
-  joinPipeB->addInsertCell(voidCell);
   joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
   joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));
   joinPipeB->setFront(*opticsBeam,2);
@@ -187,17 +183,31 @@ makeBalder::build(Simulation& System,
 
   System.removeCell(opticsHut->getCell("Void"));
 
-  connectZone->addInsertCell(voidCell);
-  connectZone->createAll(System,*joinPipeB,2);
-
   exptHut->addInsertCell(voidCell);
   exptHut->createAll(System,*frontEnd,2);
+
+  connectZone->addInsertCell(voidCell);
+  connectZone->setFront(*opticsHut,2);
+  connectZone->setBack(*exptHut,1);
+  connectZone->createAll(System,*joinPipeB,2);
+
+  // horrid way ot create a SECOND register space [MAKE INTERNAL]
+  joinPipeB->setSpaceLinkCopy(0,*opticsHut,-2);
+  joinPipeB->registerSpaceIsolation(0,2);
+  joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
+  joinPipeB->setBuildCell(0);  // reinitialize
+  joinPipeB->insertObjects(System);
   
-  joinPipeC->addInsertCell(voidCell);
+  joinPipeC->addInsertCell(connectZone->getCell("OuterVoid"));
   joinPipeC->addInsertCell(exptHut->getCell("Void"));
   joinPipeC->addInsertCell(exptHut->getCell("EnteranceHole"));
   joinPipeC->setFront(*connectZone,2);
+  joinPipeC->registerSpaceCut(1,0);
+  joinPipeC->setSpaceLinkCopy(1,*exptHut,-1);
+  joinPipeC->setPrimaryCell(connectZone->getCell("OuterVoid"));
   joinPipeC->createAll(System,*connectZone,2);
+
+  System.removeCell(connectZone->getCell("OuterVoid"));
 
   return;
 }

@@ -414,6 +414,8 @@ connectingVariables(FuncDataBase& Control)
   const std::string baseName="BalderConnect";
   const Geometry::Vec3D OPos(0,0,0);
   const Geometry::Vec3D ZVec(0,0,-1);
+
+  Control.addVariable(baseName+"OuterRadius",30.0);
   
   setVariable::BellowGenerator BellowGen;
   setVariable::LeadPipeGenerator LeadPipeGen;
@@ -433,7 +435,7 @@ connectingVariables(FuncDataBase& Control)
   PTubeGen.setCF<CF40>();
   PTubeGen.setPortLength(3.0,3.0);
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,CF40::innerRadius,3.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpA",0.0,CF40::innerRadius,4.0);
   Control.addVariable(baseName+"IonPumpANPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpAPort0",OPos,ZVec);
 
@@ -444,7 +446,9 @@ connectingVariables(FuncDataBase& Control)
   LeadPipeGen.generateCladPipe(Control,baseName+"PipeC",0,188.0);
 
   // ystep/width/height/depth/length
-  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,CF40::innerRadius,3.0);
+  PTubeGen.generateTube(Control,baseName+"IonPumpB",0.0,
+			CF40::innerRadius,4.0);
+  
   Control.addVariable(baseName+"IonPumpBNPorts",1);
   PItemGen.generatePort(Control,baseName+"IonPumpBPort0",OPos,ZVec);
 
