@@ -94,9 +94,9 @@ flukaSourceSelection(Simulation& System,
 
   const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
   
-  const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
-  const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
-  const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
+  const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
+  const std::string DSnd=IParam.getDefValue<std::string>("","sdefObj",1);
+  const std::string Dist=IParam.getDefValue<std::string>("","sdefObj",2);
 
   double D;
   Geometry::Vec3D DOffsetStep(0,0,0);

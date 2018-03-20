@@ -119,7 +119,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
   IParam.regItem("sdefFile","sdefFile");
   IParam.regMulti("sdefMod","sdefMod",1000,0);
-  IParam.regMulti("sdefObj","sdefObj",3,SItems);
+  IParam.regMulti("sdefObj","sdefObj",1000,0);
   
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);

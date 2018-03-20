@@ -104,9 +104,9 @@ sourceSelection(Simulation& System,
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
-  const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
-  const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
+  const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
+  const std::string DSnd=IParam.getDefValue<std::string>("","sdefObj",1);
+  const std::string Dist=IParam.getDefValue<std::string>("","sdefObj",2);
 
   Geometry::Vec3D DOffsetStep;
   double D;
