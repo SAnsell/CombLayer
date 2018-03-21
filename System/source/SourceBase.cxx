@@ -227,6 +227,8 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
   ELog::RegMethod RegA("SourceBase","populate");
 
   mainSystem::MITYPE::const_iterator mc,mcB;
+
+
   
   int eFlag(0);
   if (!mainSystem::findInput(inputMap,"particle",0,particleType))
@@ -237,6 +239,7 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
       mainSystem::findInput(inputMap,"EFile",0,EFile) )
     eFlag=populateEFile(EFile,1,11);
 
+  
   if ( ((mc=inputMap.find("energyProb"))!=inputMap.end() ||
 	(mc=inputMap.find("EProb"))!=inputMap.end()) &&
        ((mcB=inputMap.find("energy"))!=inputMap.end() ||
@@ -249,6 +252,9 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
 
   if ( !eFlag && mainSystem::hasInput(inputMap,"energyRange"))
     {      
+      Energy.clear();
+      EWeight.clear();
+
       double EInit=
 	mainSystem::getDefInput<double>(inputMap,"energyRange",0,1.0);
       double EFinal=
@@ -262,8 +268,6 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
 
       const double EStep((EFinal-EInit)/static_cast<double>(nE+1));
       double E(EInit);
-      Energy.clear();
-      EWeight.clear();
       for(size_t i=0;i<nE;i++)
 	{
 	  Energy.push_back(E);
@@ -272,10 +276,14 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
 	}
       eFlag=1;
     }
-  if (!eFlag)
+  if (!eFlag &&
+      mainSystem::hasInput(inputMap,"energy"))  // only single
     {
+      Energy.clear();
+      EWeight.clear();
+      
       const double E=
-	mainSystem::getDefInput<double>(inputMap,"energy",0,1.0);
+	mainSystem::getInput<double>(inputMap,"energy",0);
       Energy.push_back(E);
       EWeight.push_back(1.0);
     }

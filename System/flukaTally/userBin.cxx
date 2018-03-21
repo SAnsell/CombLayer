@@ -32,7 +32,6 @@
 #include <iterator>
 #include <array>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -179,31 +178,19 @@ userBin::write(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  boost::format FMTint("%1$.1f ");
-  boost::format FMTnum("%1$.4f ");
-
   std::ostringstream cx;
   
-
-  cx<<"USRBIN ";
-  cx<<StrFunc::flukaNum(meshType)<<" ";
-  cx<<particle<<" ";
-  cx<<StrFunc::flukaNum(outputUnit);
-  
-  for(size_t i=0;i<3;i++)
-    cx<<StrFunc::flukaNum(maxCoord[i])<<" ";
-  cx<<"mesh"<<std::to_string(outputUnit);
-
+  cx<<"USRBIN "<<meshType<<" "<<particle<<" "
+    <<outputUnit<<" "<<maxCoord;  
+  cx<<" mesh"<<std::to_string(outputUnit);
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
-  cx<<"USRBIN ";
+  cx<<"USRBIN "<<minCoord<<" ";
+  
   for(size_t i=0;i<3;i++)
-    cx<<(FMTnum % minCoord[i]);
-  for(size_t i=0;i<3;i++)
-    cx<<(FMTint % static_cast<double>(Pts[i]));
+    cx<<Pts[i]<<" ";
   cx<<"  & ";
-  ELog::EM<<"CX == "<<cx.str()<<ELog::endDiag;
   StrFunc::writeFLUKA(cx.str(),OX);  
   
   return;

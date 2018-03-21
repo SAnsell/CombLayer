@@ -114,7 +114,7 @@ userDump::write(std::ostream& OX) const
 {
   std::ostringstream cx;
   
-  cx<<"USRDUMP 100 "<<outputUnit<<" "<<dumpType
+  cx<<"USERDUMP 100 "<<outputUnit<<" "<<dumpType
     <<" 0 - - "<<outputUnit;
   StrFunc::writeFLUKA(cx.str(),OX);  
   

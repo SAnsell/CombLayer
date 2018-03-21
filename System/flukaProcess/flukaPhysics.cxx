@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaTally/flukaTallySelector.cxx
+ * File:   flukaProcess/flukaPhysics.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,81 +19,81 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#include <fstream>
-#include <iomanip>
 #include <iostream>
+#include <iomanip>
+#include <fstream>
 #include <sstream>
 #include <cmath>
 #include <complex>
-#include <list>
 #include <vector>
+#include <list>
 #include <set>
 #include <map>
 #include <string>
 #include <algorithm>
-#include <iterator>
+#include <functional>
 #include <memory>
+#include <array>
 
 #include "Exception.h"
 #include "FileReport.h"
+#include "GTKreport.h"
 #include "NameStack.h"
 #include "RegMethod.h"
-#include "GTKreport.h"
 #include "OutputLog.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
+#include "support.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "support.h"
-
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
-#include "MainProcess.h"
 #include "inputParam.h"
+#include "Quaternion.h"
+#include "localRotate.h"
+#include "masterRotate.h"
+#include "Surface.h"
+#include "surfRegister.h"
+#include "objectRegister.h"
+#include "Quadratic.h"
+#include "Plane.h"
+#include "Cylinder.h"
+#include "Line.h"
+#include "Rules.h"
+#include "varList.h"
+#include "Code.h"
+#include "FuncDataBase.h"
+#include "HeadRule.h"
+#include "LinkUnit.h"
+#include "FixedComp.h"
+#include "AttachSupport.h"
+#include "LinkSupport.h"
+#include "Object.h"
+#include "Qhull.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
-#include "userBinConstruct.h"
+#include "flukaPhysics.h"
 
-#include "flukaTallySelector.h"
-
-
-void
-tallyModification(SimFLUKA& System,
-		  const mainSystem::inputParam& IParam)
+namespace flukaSystem
+{
+  
+void 
+setDefaultPhysics(SimFLUKA& System,
+		    const mainSystem::inputParam& IParam)
   /*!
-    Applies a large number of modifications to the tally system
-    \param System :: SimMCNP to get tallies from 
-    \param IParam :: Parameters
+    Set the default Physics
+    \param System :: Simulation
+    \param IParam :: Input parameter
   */
 {
-  ELog::RegMethod RegA("flukaTallySelector[F]","tallyModification");
-  const size_t nP=IParam.setCnt("TMod");
+  ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
   
-  for(size_t i=0;i<nP;i++)
-    {
-      std::vector<std::string> StrItem;
-      // This is enforced a >1
-      const size_t nV=IParam.itemCnt("TMod",i);
-      const std::string key=
-	IParam.getValue<std::string>("TMod",i,0);
-      for(size_t j=1;j<nV;j++)
-	StrItem.push_back
-	  (IParam.getValue<std::string>("TMod",i,j));
-
-      if(key=="help")
-	{
-	  ELog::EM<<"TMod Help "<<ELog::endBasic;
-
-          ELog::EM<<ELog::endBasic;
-	  ELog::EM<<ELog::endErr;
-          return;
-	}
-      ELog::EM<<"Currently no modification possible"<<ELog::endDiag;
-    }
-  return;
+  System.setNPS(IParam.getValue<size_t>("nps"));
+  System.setRND(IParam.getValue<long int>("random"));	
+  
+  
+  return; 
 }
 
 
+} // NAMESPACE ModelSupport

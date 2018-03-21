@@ -22,7 +22,7 @@
 #ifndef flukaTallySelector_h
 #define flukaTallySelector_h
 
-class SimMCNP;
+class SimFLUKA;
 
 
 void tallyModification(SimFLUKA&,const mainSystem::inputParam&);

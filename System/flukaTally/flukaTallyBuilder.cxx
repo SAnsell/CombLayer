@@ -53,6 +53,7 @@
 #include "inputParam.h"
 
 #include "userBinConstruct.h"
+#include "userDumpConstruct.h"
 #include "flukaTallyBuilder.h"
 
 namespace flukaSystem
@@ -84,6 +85,8 @@ tallySelection(SimFLUKA& System,
       
       else if (TType=="mesh")
 	userBinConstruct::processMesh(System,IParam,i);
+      else if (TType=="dump")
+	userDumpConstruct::processDump(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }
@@ -104,12 +107,12 @@ helpTallyType(const std::string& HType)
   ELog::RegMethod("TallyConstructor","helpTallyType");
 
   if (HType=="mesh")
-    //    userBinConstruct::writeHelp(ELog::EM.Estream());
     {}
   else
     {
       ELog::EM<<"Tally Types:\n\n";
       ELog::EM<<"-- mesh : \n";
+      ELog::EM<<"-- dump : \n";
     }
   
   ELog::EM<<ELog::endBasic;
