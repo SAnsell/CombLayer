@@ -35,7 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -84,22 +83,24 @@
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "flukaTally.h"
+#include "flukaProcess.h"
+#include "flukaPhysics.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
 SimFLUKA::SimFLUKA() :
   Simulation(),
-  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM")
+  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
+  nps(1000)
   /*!
     Constructor
   */
 {}
 
-
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
   alignment(A.alignment),
-  writeVariable(1)
+  writeVariable(A.writeVariable),nps(A.nps)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -118,8 +119,29 @@ SimFLUKA::operator=(const SimFLUKA& A)
     {
       Simulation::operator=(A);
       writeVariable=A.writeVariable;
+      nps=A.nps;
+      clearTally();
+      for(const FTallyTYPE::value_type& TM : A.FTItem)
+	FTItem.emplace(TM.first,TM.second->clone());
     }
   return *this;
+}
+
+SimFLUKA::~SimFLUKA()
+  /*!
+    Destructor
+  */
+{
+  clearTally();
+}
+
+void
+SimFLUKA::clearTally()
+{
+  for(FTallyTYPE::value_type& mc : FTItem)
+    delete mc.second;
+  FTItem.erase(FTItem.begin(),FTItem.end());
+  return;
 }
 
 int
@@ -254,7 +276,6 @@ SimFLUKA::writeElements(std::ostream& OX) const
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
   std::set<MonteCarlo::Zaid> setZA;
-  boost::format FMTstr("%1$d.%2$02d%3$c");
 
   for(const OTYPE::value_type& mp : OList)
     {
@@ -344,6 +365,13 @@ SimFLUKA::writePhysics(std::ostream& OX) const
 
 {  
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
+  std::ostringstream cx;
+  cx<<"START "<<nps;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+  cx<<"RANDOMIZE "<<1.0;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  
   // Remaining Physics cards
   //  PhysPtr->writeFLUKA(OX);
   return;
@@ -374,7 +402,7 @@ SimFLUKA::writeSource(std::ostream& OX) const
 	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
       SPtr->writeFLUKA(OX);
     }
-  OX<<"c ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
   return;
 }
 
@@ -483,9 +511,8 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<"GEOEND"<<std::endl;
   writeMaterial(OX);
   writeTally(OX);
-  writePhysics(OX);
   writeSource(OX);
-
+  writePhysics(OX);
   OX<<"STOP"<<std::endl;
   OX.close();
   return;

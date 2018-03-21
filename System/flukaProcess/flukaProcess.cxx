@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcess/flukaPhysics.cxx
+ * File:   flukaProcess/flukaProcess.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -72,7 +72,7 @@
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
-#include "flukaPhysics.h"
+#include "flukaProcess.h"
 
 namespace flukaSystem
 {
