@@ -94,7 +94,7 @@ setDefaultPhysics(SimFLUKA& System,
   System.setNPS(IParam.getValue<size_t>("nps"));
   System.setRND(IParam.getValue<long int>("random"));
 
-  const size_t nSet=IParam.setCnt("wIMP");
+  size_t nSet=IParam.setCnt("wIMP");
   flukaPhysics* PC=System.getPhysics();
     
   if (nSet && PC)
@@ -102,6 +102,14 @@ setDefaultPhysics(SimFLUKA& System,
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
 	A.processUnit(*PC,IParam,index);
+    }
+
+  nSet=IParam.setCnt("wEMF");
+  if (nSet && PC)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processEMF(*PC,IParam,index);
     }
   
   return; 

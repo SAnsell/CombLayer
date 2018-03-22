@@ -47,9 +47,6 @@
 #include "Vec3D.h"
 #include "Transform.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -248,6 +245,8 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
     }
   else
     {
+      // transform moves source from 0,0,0 : axis = Y
+      sourceCard.setComp("y",0.0);
       sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
       sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
     }

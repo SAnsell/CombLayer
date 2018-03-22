@@ -516,7 +516,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
    */
 {
   ELog::RegMethod RegA("MainProcess[F]","buildFullSimFLUKA");
-  ELog::EM<<"ASDFASDF "<<ELog::endDiag;
+
   // Definitions section 
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
@@ -634,7 +634,7 @@ buildFullSimulation(Simulation* SimPtr,
   SimPtr->removeComplements();
   SimPtr->removeDeadSurfaces(0);
   
-  
+  ModelSupport::setDefRotation(IParam);
   SimPtr->masterRotation();
 
   reportSelection(*SimPtr,IParam);

@@ -59,10 +59,14 @@ namespace flukaSystem
 		       
 flukaPhysics::flukaPhysics() :
   impValue({
-      { "all",      cellValueSet("all","BIAS",0.0) },
-      { "hadron",   cellValueSet("hadron","BIAS",1.0) },
-      { "electron", cellValueSet("electron","BIAS",2.0) },
-      { "low",      cellValueSet("low","BIAS",3.0) }
+      { "all",      cellValueSet<1>("all","BIAS",0.0) },
+      { "hadron",   cellValueSet<1>("hadron","BIAS",1.0) },
+      { "electron", cellValueSet<1>("electron","BIAS",2.0) },
+      { "low",      cellValueSet<1>("low","BIAS",3.0) }
+    }),
+
+  emfFlag({
+      { "emfcut",   cellValueSet<2>("emfcut","EMFCUT",0.005) }  // GeV
     })
   /*!
     Constructor
@@ -70,7 +74,8 @@ flukaPhysics::flukaPhysics() :
 {}
 
 flukaPhysics::flukaPhysics(const flukaPhysics& A) : 
-  cellN(A.cellN),impValue(A.impValue)
+  cellN(A.cellN),matN(A.matN),impValue(A.impValue),
+  emfFlag(A.emfFlag)
   /*!
     Copy constructor
     \param A :: flukaPhysics to copy
@@ -88,7 +93,9 @@ flukaPhysics::operator=(const flukaPhysics& A)
   if (this!=&A)
     {
       cellN=A.cellN;
+      matN=A.matN;
       impValue=A.impValue;
+      emfFlag=A.emfFlag;
     }
   return *this;
 }
@@ -109,7 +116,11 @@ flukaPhysics::clearAll()
   */
 {
   cellN.clear();
-  for(std::map<std::string,cellValueSet>::value_type& mc : impValue)
+  for(std::map<std::string,cellValueSet<1>>::value_type& mc : impValue)
+    mc.second.clearAll();
+
+  matN.clear();
+  for(std::map<std::string,cellValueSet<2>>::value_type& mc : emfFlag)
     mc.second.clearAll();
   
   return;
@@ -133,8 +144,31 @@ flukaPhysics::setCellNumbers(const std::vector<int>& cellInfo)
   
 void
 flukaPhysics::setImp(const std::string& keyName,
-		     const int cellN,
+		     const int cellID,
 		     const double value)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param cellID :: Cell number
+    \param value :: Value to use
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setImp");
+  
+  std::map<std::string,cellValueSet<1>>::iterator mc=
+    impValue.find(keyName);
+  if (mc==impValue.end())
+    throw ColErr::InContainerError<std::string>(keyName,"impValue");
+
+  mc->second.setValues(cellID,value);
+  return;
+}
+
+void
+flukaPhysics::setEMF(const std::string& keyName,
+		     const int matN,
+		     const double electronThres,
+		     const double electronValue)
   /*!
     Set the importance list
     \param keyName :: all/hadron/electron/low
@@ -142,14 +176,14 @@ flukaPhysics::setImp(const std::string& keyName,
     \param value :: Value to use
   */
 {
-  ELog::RegMethod RegA("flukaPhysics","setImp");
+  ELog::RegMethod RegA("flukaPhysics","setEMF");
   
-  std::map<std::string,cellValueSet>::iterator mc=
-    impValue.find(keyName);
-  if (mc==impValue.end())
-    throw ColErr::InContainerError<std::string>(keyName,"impValue");
+  std::map<std::string,cellValueSet<2>>::iterator mc=
+    emfFlag.find(keyName);
+  if (mc==emfFlag.end())
+    throw ColErr::InContainerError<std::string>(keyName,"emfValue");
 
-  mc->second.setValue(cellN,value);
+  mc->second.setValues(matN,electronThres,electronValue);
   return;
 }
 
@@ -160,8 +194,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
  */
 {
-  ELog::EM<<"Cn == "<<cellN.size()<<ELog::endDiag;
-  for(const std::map<std::string,cellValueSet>::value_type& mc : impValue)
+  for(const std::map<std::string,cellValueSet<1>>::value_type& mc : impValue)
     mc.second.writeFLUKA(OX,cellN," %0 1.0 %3 %1 %2 1.0 ");
   ELog::EM<<"Finish "<<ELog::endDiag;
   return;

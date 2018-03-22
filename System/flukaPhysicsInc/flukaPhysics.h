@@ -38,7 +38,13 @@ class flukaPhysics
  private:
 
   std::vector<int> cellN;                        ///< Cell numbers in order
-  std::map<std::string,cellValueSet> impValue;   ///< Importance values
+  std::vector<int> matN;                         ///< Material numbers in order
+
+  // CELL BIAS
+  std::map<std::string,cellValueSet<1>> impValue;   ///< Importance values
+ 
+  // MATERIAL BIAS
+  std::map<std::string,cellValueSet<2>> emfFlag;    ///< EMF flag
 
  public:
    
@@ -53,6 +59,7 @@ class flukaPhysics
   void setCellNumbers(const std::vector<int>&);
 
   void setImp(const std::string&,const int,const double);
+  void setEMF(const std::string&,const int,const double,const double);
   void writeFLUKA(std::ostream&) const;
 };
 

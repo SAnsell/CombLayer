@@ -55,8 +55,9 @@
 
 namespace flukaSystem
 {
-			
-cellValueSet::cellValueSet(const std::string& KN,const std::string& ON) :
+  
+template<size_t N>
+cellValueSet<N>::cellValueSet(const std::string& KN,const std::string& ON) :
   keyName(KN),outName(ON),whatValue(0.0)
   /*!
     Constructor
@@ -65,9 +66,10 @@ cellValueSet::cellValueSet(const std::string& KN,const std::string& ON) :
   */
 {}
 
-cellValueSet::cellValueSet(const std::string& KN,
-			   const std::string& ON,
-			   const double WValue) :
+template<size_t N>
+cellValueSet<N>::cellValueSet(const std::string& KN,
+			      const std::string& ON,
+			      const double WValue) :
   keyName(KN),outName(ON),whatValue(WValue)
   /*!
     Constructor
@@ -78,7 +80,8 @@ cellValueSet::cellValueSet(const std::string& KN,
 {}
 
 
-cellValueSet::cellValueSet(const cellValueSet& A) : 
+template<size_t N>
+cellValueSet<N>::cellValueSet(const cellValueSet& A) : 
   keyName(A.keyName),outName(A.outName),whatValue(A.whatValue)
   /*!
     Copy constructor
@@ -86,8 +89,9 @@ cellValueSet::cellValueSet(const cellValueSet& A) :
   */
 {}
 
-cellValueSet&
-cellValueSet::operator=(const cellValueSet& A)
+template<size_t N>  
+cellValueSet<N>&
+cellValueSet<N>::operator=(const cellValueSet<N>& A)
   /*!
     Assignment operator
     \param A :: cellValueSet to copy
@@ -102,15 +106,16 @@ cellValueSet::operator=(const cellValueSet& A)
   return *this;
 }
 
-
-cellValueSet::~cellValueSet()
+template<size_t N>
+cellValueSet<N>::~cellValueSet()
   /*!
     Destructor
   */
 {}
-  
+
+template<size_t N>  
 void
-cellValueSet::clearAll()
+cellValueSet<N>::clearAll()
   /*!
     The big reset
   */
@@ -119,42 +124,55 @@ cellValueSet::clearAll()
   return;
 }
 
+template<size_t N>  
 bool
-cellValueSet::cellSplit(const std::vector<int>& cellN,
-			std::vector<std::tuple<int,int,double>>& initCell) const
+cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
+			   std::vector<std::tuple<int,int>>& initCell,
+			   std::vector<std::array<double,N>>& outData) const
   /*!
     Process ranges to find for value
-    \param dataMap :: Data value to check
+    \param cellN :: Cell vlaues
     \param initCell :: initialization range
+    \param dataValue :: initialization range
     \return true if output required
    */
 {
-  typedef std::tuple<int,int,double> TITEM;
+  typedef std::tuple<int,int> TITEM;
   initCell.clear();
+  outData.clear();
   
   if (dataMap.empty() || cellN.empty()) return 0;
   
   size_t prev(0);
-  double V;
+  valTYPE V;
   for(size_t i=0;i<cellN.size();i++)
     {
       const int CN=cellN[i];
-      std::map<int,double>::const_iterator mc=dataMap.find(CN);
+      typename dataTYPE::const_iterator mc=dataMap.find(CN);
       if (mc==dataMap.end())
 	{
 	  if (prev)
 	    {
-	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1],V));
+	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1]));
+	      V=mc->second;
 	      prev=0;
 	    }
 	}
       else
 	{
-	  if (prev && std::abs(V-mc->second)>Geometry::zeroTol)
+	  if (prev)
 	    {
-	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1],V));
-	      prev=i+1;
-	      V=mc->second;
+	      for(size_t index=0;index<N;index++)
+		{
+		  if (std::abs(V[index]-mc->second[index])>Geometry::zeroTol)
+		    {
+		      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1]));
+		      outData.push_back(V);
+		      prev=i+1;
+		      V=mc->second;
+		    }
+		  break;
+		}
 	    }
 	  else if (!prev)
 	    {
@@ -163,27 +181,54 @@ cellValueSet::cellSplit(const std::vector<int>& cellN,
 	    }
 	}
     }
+  
   if (prev)
-    initCell.push_back(TITEM(cellN[prev-1],cellN.back(),V));      
+    {
+      initCell.push_back(TITEM(cellN[prev-1],cellN.back()));
+      outData.push_back(V);
+    }
   
   return (initCell.empty()) ? 0 : 1;
 }
 
 
+
+template<size_t N>
 void
-cellValueSet::setValue(const int cN,const double V)
+cellValueSet<N>::setValues(const int cN,const double V)
   /*!
     Set a value in the map
     \param cN :: Cell number   
     \param V :: value for cell
   */
 {
-  dataMap.emplace(cN,V);
+  valTYPE A;
+  A[0]=V;
+  dataMap.emplace(cN,A);
   return;
 }
 
+template<size_t N>
 void
-cellValueSet::writeFLUKA(std::ostream& OX,
+cellValueSet<N>::setValues(const int cN,const double V,
+			   const double V2)
+  /*!
+    Set a value in the map
+    \param cN :: Cell number   
+    \param V :: value for cell
+    \param V2 :: value for cell
+  */
+{
+  valTYPE A;
+  A[0]=V;
+  A[1]=V2;
+  dataMap.emplace(cN,A);
+  return;
+}
+
+template<size_t N>
+void
+cellValueSet<N>::writeFLUKA(std::ostream& OX,
 			 const std::vector<int>& cellN,
 			 const std::string& ControlStr) const 
 /*!
@@ -195,31 +240,34 @@ cellValueSet::writeFLUKA(std::ostream& OX,
 {
   ELog::RegMethod RegA("cellValueSet","writeFLUKA");
   
-  typedef std::tuple<int,int,double> TITEM;
+  typedef std::tuple<int,int> TITEM;
 
   std::ostringstream cx;
   std::vector<TITEM> Bgroup;
+  std::vector<valTYPE> Bdata;
 
-  ELog::EM<<"UN "<<ELog::endDiag;  
-  if (cellSplit(cellN,Bgroup))
+  if (cellSplit(cellN,Bgroup,Bdata))
     {
 
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(4);
       SArray[0]=std::to_string(whatValue);
-      for(const TITEM& tc : Bgroup)
+      for(size_t index=0;index<Bgroup.size();index++)
 	{
-	  SArray[1]=std::to_string(std::get<0>(tc));
-	  SArray[2]=std::to_string(std::get<1>(tc));
-	  SArray[3]=std::to_string(std::get<2>(tc));
+	  const TITEM& tc(Bgroup[index]);
+	  const valTYPE& dArray(Bdata[index]);
+
+	  SArray[1]="R"+std::to_string(std::get<0>(tc));
+	  SArray[2]="R"+std::to_string(std::get<1>(tc));
+	  for(size_t i=0;i<N;i++)
+	    SArray[3+i]=std::to_string(dArray[i]);
 	  cx.str("");
 	  cx<<outName<<" ";
 	  for(const std::string& UC : Units)
 	    {
-
 	      if (UC[0]=='%' && UC.size()==2)
 		{
-		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % 4); 
+		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % N+3); 
 		  cx<<SArray[SA]<<" ";
 		}
 	      else
@@ -231,6 +279,10 @@ cellValueSet::writeFLUKA(std::ostream& OX,
   return;
 }
 
+///\cond TEMPLATE
+template class cellValueSet<1>;
+template class cellValueSet<2>;
+///\endcond TEMPLATE
   
 } // NAMESPACE flukaSystem
       

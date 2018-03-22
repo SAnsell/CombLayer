@@ -33,21 +33,28 @@ namespace flukaSystem
   \brief Processes the physics cards in the FLUKA output
 */
 
+template <size_t N>
 class cellValueSet 
 {
  private:
 
+  /// Data type
+  typedef  std::array<double,N> valTYPE;
+  /// map type
+  typedef  std::map<int,valTYPE> dataTYPE;
+ 
   const std::string keyName;               ///< Key name
   const std::string outName;               ///< Output name for FLUKA
   double whatValue;                        ///< What [1] value 
   
-  std::map<int,double> dataMap;   ///< Values for cell
+  dataTYPE dataMap;   ///< Values for cell
 
   bool cellSplit(const std::vector<int>&,
-		 std::vector<std::tuple<int,int,double>>&) const;
+		 std::vector<std::tuple<int,int>>&,
+		 std::vector<valTYPE>&) const;
   
  public:
-   
+
   cellValueSet(const std::string&,const std::string&);
   cellValueSet(const std::string&,const std::string&,const double);
   cellValueSet(const cellValueSet&);
@@ -56,7 +63,10 @@ class cellValueSet
 
   void clearAll();
 
-  void setValue(const int,const double);
+  void setValue(const int,const size_t,const double);
+  void setValues(const int,const double);    
+  void setValues(const int,const double,const double);
+  void setValues(const int,const double,const double,const double);
   void writeFLUKA(std::ostream&,const std::vector<int>&,
 		  const std::string&) const;
 

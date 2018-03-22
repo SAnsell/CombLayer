@@ -58,6 +58,10 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "objectRegister.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 #include "inputParam.h"
 #include "cellValueSet.h"
 #include "flukaPhysics.h"
@@ -112,8 +116,75 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 
   //
   for(const int CN : Cells)
-    PC.setImp(particle,CN,value);
+    if (CN!=1)
+      PC.setImp(particle,CN,value);
 
+  return;
+}
+
+void
+flukaImpConstructor::processEMF(flukaPhysics& PC,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+/*!
+    Set individual EMFCUT based on IParam
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processEMF");
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+
+  // must have size
+  std::string material=IParam.getValueError<std::string>
+    ("wEMF",setIndex,0,"No material for wEMF ");
+  
+  if (material=="help" || material=="Help")
+    {
+      writeEMFHelp(ELog::EM.Estream());
+      ELog::EM<<ELog::endBasic;
+      return;
+    }
+
+  const std::set<int>& activeMat=DB.getActive();
+
+  const double V1=IParam.getValueError<double>
+    ("wEMF",setIndex,1,"No value[1] for wEMF ");
+  const double V2=IParam.getValueError<double>
+    ("wEMF",setIndex,2,"No value[2] for wEMF ");
+  
+  
+  if (material=="All" || material=="all")
+    {
+      for(const int MN : activeMat)
+	PC.setEMF("emfcut",MN,V1,V2);
+      return;
+    }
+
+  bool negKey(0);
+  if (material.size()>1 && material.back()=='-')
+    {
+      negKey=1;
+      material.pop_back();
+    }
+  
+  if (!DB.hasKey(material))
+    throw ColErr::InContainerError<std::string>
+      (material,"Material no present");
+
+  const int MatNum=DB.getIndex(material);
+
+  if (negKey)
+    {
+      for(const int MN : activeMat)
+	if (MN!=MatNum)
+	  PC.setEMF("emfcut",MN,V1,V2);
+      return;
+    }
+  PC.setEMF("emfcut",MatNum,V1,V2);
   return;
 }
 
@@ -136,6 +207,27 @@ flukaImpConstructor::writeHelp(std::ostream& OX) const
       "         : cell number range\n"
       "         : cell number\n"
       "         : all\n";
+  return;
+}
+
+void
+flukaImpConstructor::writeEMFHelp(std::ostream& OX) const
+  /*!
+    Write out the help
+    \param OX :: Output stream
+  */
+{
+  OX<<"wEMF help :: \n";
+
+  OX<<"-wEMF material eCut[double] gammaCut[double]  -- ::\n\n";
+  
+  OX<<"  material : "
+      "    -- material- :: All without material\n"
+      "    -- all- :: All materials\n"
+      "    -- material :: Only material\n"
+      "  eCut : value for electron cut [MeV] \n"
+      "  gammaCut : value for gamma [MeV]\n";
+
   return;
 }
 

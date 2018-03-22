@@ -51,6 +51,7 @@ class flukaImpConstructor
  private:
 
   void writeHelp(std::ostream&) const;
+  void writeEMFHelp(std::ostream&) const;
     
  public:
 
@@ -60,6 +61,9 @@ class flukaImpConstructor
   ~flukaImpConstructor() {}  ///< Destructor
 
   void processUnit(flukaPhysics&,
+		   const mainSystem::inputParam&,
+		   const size_t);
+  void processEMF(flukaPhysics&,
 		   const mainSystem::inputParam&,
 		   const size_t);
 };

@@ -52,7 +52,7 @@ namespace  StrFunc
 {
 
 std::string
-flukaNum(const int I)
+flukaNum(const long int I)
   /*!
     Process a number into a fluka style string
     \param I :: Number to use
@@ -60,10 +60,10 @@ flukaNum(const int I)
 {
 
   static boost::format FMTnum("%1$10.1f");
-  static boost::format FMTlnum("%1$10.1g");
+  static boost::format FMTlnum("%1$10.5g");
 
   const double D=static_cast<double>(I);
-  if (D > 1e5 || D < -1e4)
+  if (D > 1e8 || D < -1e7)
     return (FMTlnum % D).str();
   
   return (FMTnum % D).str();
@@ -99,7 +99,7 @@ writeFLUKA(const std::string& Line,std::ostream& OX)
 				 std::istream_iterator<std::string>());
 
   size_t i(1);
-  int I;
+  long int I;
   double D;
   for (std::string& w : whats)
     {
