@@ -220,6 +220,7 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
     }
   else
     {
+      sourceCard.setComp("y",0.0);
       sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
       sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
     }
