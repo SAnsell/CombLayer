@@ -354,11 +354,12 @@ TelescopicPipe::createAll(Simulation& System,
       TSurf=(tIndex>0) ?
 	TargetFC.getLinkString(static_cast<size_t>(tIndex)) :
 	TargetFC.getCommonRule(static_cast<size_t>(-(tIndex+1+1))).display(); // is it correct instead of getBridgeComplement?
-      if (tIndex<0)
+      ELog::EM << "tmp commented out" << ELog::endDiag;
+      /* if (tIndex<0)
 	FixedComp::setLinkComponent(0,TargetFC,
 				    static_cast<size_t>(-(tIndex-1)));
       else
-	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));
+	FixedComp::setLinkComponent(0,TargetFC,static_cast<size_t>(tIndex-1));*/
     }
   if (bIndex)
     {
@@ -367,7 +368,8 @@ TelescopicPipe::createAll(Simulation& System,
       BSurf=(bIndex>0) ?
 	BulkFC.getLinkString(lIndex+1) : // check this
 	BulkFC.getLinkString(bIndex); // at least works fine with TSMainBuokding,-1
-      FixedComp::setLinkComponent(1,BulkFC,lIndex);
+      ELog::EM << "tmp commented out" << ELog::endDiag;
+      //      FixedComp::setLinkComponent(1,BulkFC,lIndex);
     }
   createObjects(System,TSurf,BSurf);
   createLinks();
