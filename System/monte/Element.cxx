@@ -3,7 +3,7 @@
  
  * File:   monte/Element.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -220,9 +220,9 @@ Element::elm(const std::string& Astr) const
   for(i=0;i<Astr.length() && !isalpha(Astr[i]);i++) ;
   if (i!=Astr.length())
     {
-      Ts=static_cast<char>(toupper(Astr[i]));
+      Ts=static_cast<char>(std::toupper(Astr[i]));
       if ((i+1)!=Astr.length() && isalpha(Astr[i+1]))
-	Ts+=static_cast<char>(tolower(Astr[i+1]));
+	Ts+=static_cast<char>(std::tolower(Astr[i+1]));
       std::map<std::string,size_t>::const_iterator xv;
       xv=Nmap.find(Ts);
       if (xv!=Nmap.end())

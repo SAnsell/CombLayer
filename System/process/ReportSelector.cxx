@@ -59,7 +59,6 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "SecondTrack.h"
-#include "TwinComp.h"
 #include "LinkSupport.h"
 #include "inputParam.h"
 #include "Simulation.h"

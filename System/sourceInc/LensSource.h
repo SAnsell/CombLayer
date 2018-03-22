@@ -3,7 +3,7 @@
  
  * File:   lensModelInc/LensSource.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ class LensSource :
   
   double radialArea;          ///< Radial spread
 
-  void populate(const FuncDataBase&);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
   void rotate(const localRotate&);
@@ -62,12 +62,13 @@ class LensSource :
 
 
 
-  void createAll(const FuncDataBase&,
+  void createAll(const mainSystem::MITYPE&,
 		 const attachSystem::FixedComp&,
 		 const long int);
 
   virtual void createSource(SDef::Source&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
   virtual void write(std::ostream&) const;
   
 

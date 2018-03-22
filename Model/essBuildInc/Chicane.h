@@ -3,7 +3,7 @@
  
  * File:   essBuildInc/Chicane.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell/Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell/Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,15 +27,23 @@ class Simulation;
 namespace essSystem
 {
 
+/*!
+  \struct chicaneUnit 
+  \version 1.0
+  \author S. Ansell
+  \date February 2016
+  \brief Single direction unit of a chicane
+*/
+  
 struct chicaneUnit
 {
 public:
 
   Geometry::Vec3D XZoffset;  ///< Ignored Y component
-  double length;      ///< Lengths of all segments
-  double  width;     ///< Lengths of all segments
-  double height;     ///< Lengths of all segments
-  int mat;           ///< material
+  double length;             ///< Lengths of segment
+  double  width;             ///< widht [full] 
+  double height;             ///< height [full]
+  int mat;                   ///< material inside gap
 
   /// constructor
   chicaneUnit(const double l,const double w,
@@ -49,6 +57,11 @@ public:
 
   chicaneUnit&
   operator=(const chicaneUnit& A)
+    /*!
+      Assignement operator 
+      \param A :: This
+      \return *this
+    */
   {
     if (this!=&A)
       {
@@ -61,7 +74,7 @@ public:
     return *this;
   }
     
- ~chicaneUnit() {}  
+  ~chicaneUnit() {}    ///< Destructor
 };
  
   

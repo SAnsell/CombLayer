@@ -211,7 +211,7 @@ SimValid::runPoint(const Simulation& System,
       Geometry::Vec3D uVec(cos(theta)*sin(phi),
 			     sin(theta)*sin(phi),
 			     cos(phi));
-      MonteCarlo::neutron TNeut(1,Centre,uVec);
+      MonteCarlo::neutron TNeut(1,CP,uVec);
 
       MonteCarlo::Object* OPtr=InitObj;
       int SN(-initSurfNum);
@@ -223,7 +223,7 @@ SimValid::runPoint(const Simulation& System,
 	  SN= OPtr->trackOutCell(TNeut,aDist,SPtr,abs(SN));
 	  if (aDist>1e30 && Pts.size()<=1)
 	    {
-	      ELog::EM<<"Fail on Pts==1 and aDist inf"<<ELog::endDiag;
+	      ELog::EM<<"Fail on Pts==1 and aDist INF"<<ELog::endDiag;
 	      ELog::EM<<"Index == "<<Pts.size()-2<<ELog::endDiag;
 	      ELog::EM<<"Pts[0] == "<<Pts[0].Pt<<ELog::endDiag;
 	      ELog::EM<<"SN == "<<SN<<ELog::endDiag;

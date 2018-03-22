@@ -3,7 +3,7 @@
  
  * File:   construct/boltRing.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,13 +82,14 @@ namespace constructSystem
 
 boltRing::boltRing(const std::string& BKey,
 		   const std::string& PKey) :
-  attachSystem::FixedOffset(BKey+PKey,6),attachSystem::ContainedComp(),
+  attachSystem::FixedOffset(BKey+PKey,6),
+  attachSystem::ContainedComp(),
   attachSystem::CellMap(),attachSystem::SurfMap(),
   attachSystem::FrontBackCut(),
   baseName(BKey),
   ringIndex(ModelSupport::objectRegister::Instance().cell(keyName)),
   cellIndex(ringIndex+1),populated(0),innerExclude(0),
-  NBolts(0),sealRadius(0.0)
+  NBolts(0),innerRadius(1.0),sealRadius(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param BKey :: Base KeyName
@@ -96,6 +97,56 @@ boltRing::boltRing(const std::string& BKey,
   */
 {}
 
+boltRing::boltRing(const boltRing& A) : 
+  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::CellMap(A),attachSystem::SurfMap(A),
+  attachSystem::FrontBackCut(A),
+  baseName(A.baseName),ringIndex(A.ringIndex),cellIndex(A.cellIndex),
+  populated(A.populated),innerExclude(A.innerExclude),
+  NBolts(A.NBolts),boltRadius(A.boltRadius),innerRadius(A.innerRadius),
+  outerRadius(A.outerRadius),thick(A.thick),angOffset(A.angOffset),
+  sealRadius(A.sealRadius),sealThick(A.sealThick),
+  sealDepth(A.sealDepth),boltMat(A.boltMat),mainMat(A.mainMat),
+  sealMat(A.sealMat)
+  /*!
+    Copy constructor
+    \param A :: boltRing to copy
+  */
+{}
+
+boltRing&
+boltRing::operator=(const boltRing& A)
+  /*!
+    Assignment operator
+    \param A :: boltRing to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      attachSystem::FixedOffset::operator=(A);
+      attachSystem::ContainedComp::operator=(A);
+      attachSystem::CellMap::operator=(A);
+      attachSystem::SurfMap::operator=(A);
+      attachSystem::FrontBackCut::operator=(A);
+      cellIndex=A.cellIndex;
+      populated=A.populated;
+      innerExclude=A.innerExclude;
+      NBolts=A.NBolts;
+      boltRadius=A.boltRadius;
+      innerRadius=A.innerRadius;
+      outerRadius=A.outerRadius;
+      thick=A.thick;
+      angOffset=A.angOffset;
+      sealRadius=A.sealRadius;
+      sealThick=A.sealThick;
+      sealDepth=A.sealDepth;
+      boltMat=A.boltMat;
+      mainMat=A.mainMat;
+      sealMat=A.sealMat;
+    }
+  return *this;
+}
 
 boltRing::~boltRing() 
   /*!
@@ -202,6 +253,8 @@ boltRing::populate(const FuncDataBase& Control)
 	(keyName,baseName,"SealRadius",0.0);
       sealThick=Control.EvalDefPair<double>
 	(keyName,baseName,"SealThick",0.2);
+      sealDepth=Control.EvalDefPair<double>
+	(keyName,baseName,"SealDepth",sealThick);
       sealMat=ModelSupport::EvalDefMat<int>(Control,
 					    keyName+"SealMat",
 					    baseName+"SealMat",0);
@@ -241,20 +294,21 @@ boltRing::createSurfaces()
 
   ModelSupport::buildCylinder(SMap,ringIndex+7,Origin,Y,innerRadius);
   addSurf("innerRing",SMap.realSurf(ringIndex+7));
+
   ModelSupport::buildCylinder(SMap,ringIndex+17,Origin,Y,outerRadius);
   addSurf("outerRing",SMap.realSurf(ringIndex+17));
   if (!frontActive())
     {
+      ELog::EM<<"F == "<<ELog::endDiag;
       ModelSupport::buildPlane(SMap,ringIndex+1,Origin-Y*(thick/2.0),Y);
       setFront(SMap.realSurf(ringIndex+1));
     }
   if (!backActive())
     {
       ModelSupport::buildPlane(SMap,ringIndex+2,Origin+Y*(thick/2.0),Y);
-      setBack(-SMap.realSurf(ringIndex+2));
-      
+      setBack(-SMap.realSurf(ringIndex+2));      
     }
-  
+
   // BOLTS:
   if (NBolts>0)
     {
@@ -279,19 +333,28 @@ boltRing::createSurfaces()
         {
           const Geometry::Vec3D boltC(Origin+BAxis);          
           ModelSupport::buildCylinder(SMap,boltIndex+7,boltC,Y,boltRadius);
+	  
           ModelSupport::buildPlane(SMap,boltIndex+3,Origin,DPAxis);
           QSeg.rotate(DPAxis);
           QSeg.rotate(BAxis);
           boltIndex+=10;
         }
     }
-  if (sealRadius>innerRadius)
+
+	  
+  if (sealRadius>innerRadius && sealRadius>Geometry::zeroTol)
     {
+      
+      const Geometry::Vec3D FPoint=FrontBackCut::frontInterPoint(Origin,Y);
+      const Geometry::Vec3D BPoint=FrontBackCut::backInterPoint(Origin,Y);
+      const Geometry::Vec3D MidPt((FPoint+BPoint)/2.0);
+      const Geometry::Vec3D MidAxis((BPoint-FPoint).unit());
+
       ModelSupport::buildCylinder(SMap,ringIndex+1007,Origin,Y,sealRadius);
       ModelSupport::buildCylinder(SMap,ringIndex+1017,Origin,Y,
 				  sealRadius+sealThick);      
-      ModelSupport::buildPlane(SMap,ringIndex+1001,Origin-Y*sealDepth,Y);
-      ModelSupport::buildPlane(SMap,ringIndex+1002,Origin+Y*sealDepth,Y);
+      ModelSupport::buildPlane(SMap,ringIndex+1001,MidPt-MidAxis*sealDepth,MidAxis);
+      ModelSupport::buildPlane(SMap,ringIndex+1002,MidPt+MidAxis*sealDepth,MidAxis);
     }
     
   
@@ -384,6 +447,9 @@ boltRing::createLinks()
 {
   ELog::RegMethod RegA("boltRing","createLinks");
 
+  
+  FrontBackCut::createLinks(*this,Origin,Y);  //front and back
+  
   return;
 }
 
@@ -394,7 +460,7 @@ boltRing::createAll(Simulation& System,
   /*!
     Generic function to create everything
     \param System :: Simulation item
-    \param beamFC :: FixedComp at the beam centre
+    \param mainFC :: FixedComp at the beam centre
     \param sideIndex :: link point
   */
 {

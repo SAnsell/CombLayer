@@ -3,7 +3,7 @@
  
  * File:   monte/Acomp.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,14 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
+#include "mathSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
+#include "MapSupport.h"
 #include "RotCounter.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 
 namespace MonteCarlo 
@@ -64,46 +68,30 @@ operator<<(std::ostream& OX,const Acomp& A)
   OX<<A.display();
   return OX;
 }
- 
-template<typename T>
-void 
-signSplit(const int A,int& S,T& V)
-  /*!
-    Split a number into the sign and
-    positive value
-    \param A :: number to split
-    \param S :: sign value +/- 1
-    \param V :: abs(A) 
-  */
-{
-  if (A>=0)
-    {
-      S=1;
-      V=static_cast<T>(A);
-    }
-  else
-    {
-      S=-1;
-      V=static_cast<T>(-A);
-    }
-  return;
-}
 
 //
 // ------------- ACOMP ---------------- 
 //
 
 Acomp::Acomp(const JoinForm Tx) :
-  Intersect((Tx==Union) ? 0 : 1)
+  trueFlag(0),Intersect((Tx==Union) ? 0 : 1)
   /*!
     Standard Constructor 
-    \param Tx :: 1 it means intersect 0 it meanse union
+    \param Tx :: 0 it means intersect 1 it means union
+  */
+{}
+
+Acomp::Acomp(const int Tx) :
+  trueFlag(0),Intersect(Tx ? 1 : 0)
+  /*!
+    Standard Constructor 
+    \param Tx :: 0 intersect / 1 union
   */
 {}
 
 Acomp::Acomp(const Acomp& A) :
-  Intersect(A.Intersect),Units(A.Units),
-  Comp(A.Comp)
+  trueFlag(A.trueFlag),Intersect(A.Intersect),
+  Units(A.Units),Comp(A.Comp)
   /*!
     Copy constructor
     \param A :: Acomp object to copy
@@ -121,6 +109,7 @@ Acomp::operator=(const Acomp& A)
 {
   if (this!=&A)
     {
+      trueFlag=A.trueFlag;
       Intersect=A.Intersect;
       Units=A.Units;
       Comp=A.Comp;
@@ -136,7 +125,7 @@ Acomp::~Acomp()
   */
 { }
 
-int
+bool
 Acomp::operator!=(const Acomp& A) const
   /*!
     Inequality operator
@@ -147,7 +136,7 @@ Acomp::operator!=(const Acomp& A) const
   return 1-(this->operator==(A));
 }
 
-int
+bool
 Acomp::operator==(const Acomp& A) const
   /*!
     Equals operator requires that the
@@ -170,19 +159,12 @@ Acomp::operator==(const Acomp& A) const
     return 0;                               // if singular.
 
   // If Units not empty compare each and determine
-  // if equal. 
-  if (!Units.empty())
-    {
-      std::vector<int>::const_iterator vc,xc;
-      xc=A.Units.begin();
-      for(vc=Units.begin();vc!=Units.end();xc++,vc++)
-	if (*vc != *xc)
-	  return 0;
-    }
+  // if equal.
+  if (Units!=A.Units) return 0;
 
   // Both Empty :: thus equal
-  if (Comp.empty())    
-    return 1;
+  if (Comp.empty())
+    return A.trueFlag==trueFlag;
 
   // Assume that comp Units are sorted.
   std::vector<Acomp>::const_iterator acv,xcv;
@@ -192,7 +174,20 @@ Acomp::operator==(const Acomp& A) const
   return (xcv==Comp.end()) ? 1 : 0;
 }
 
-int
+bool
+Acomp::operator>(const Acomp& A) const
+  /*! 
+    Operator> takes first to last precidence.
+    Uses operator<  to obtain value.
+    Note it does not uses 1-(A<this)
+    \param  A :: object to compare
+    \returns this>A
+  */
+{
+  return A.operator<(*this);
+}
+
+bool
 Acomp::operator<(const Acomp& A) const
   /*!
     Comparitor operator:: Comparies the 
@@ -218,19 +213,12 @@ Acomp::operator<(const Acomp& A) const
     return Intersect;                  // Union==0 therefore this > A 
   
   // PROCESS Units. (order : then size)
-  std::vector<int>::const_iterator uc,ac;
-  ac=A.Units.begin();
-  uc=Units.begin();
-  for(;ac!=A.Units.end() && uc!=Units.end();uc++,ac++)
-    if (*uc!=*ac)
-      return (*uc < *ac);
 
-  if (ac!=A.Units.end())
-    return 0;
-  if (uc!=Units.end())
-    return 1;
+  if (Units!=A.Units)
+    return Units<A.Units;
+  
 
-  // PROCESS CompUnits.
+  // PROCESS CompUnits.  
   std::vector<Acomp>::const_iterator ux,ax;
   ux=Comp.begin();
   ax=A.Comp.begin();
@@ -239,7 +227,7 @@ Acomp::operator<(const Acomp& A) const
       if (*ax!=*ux)
 	return (*ux < *ax);
     }
-  if (uc!=Units.end())
+  if (ux!=Comp.end())
     return 1;
   // everything idential or A.comp bigger:
   return 0;
@@ -253,10 +241,10 @@ Acomp::operator+=(const Acomp& A)
     \returns *this
   */
 {
-  if (Intersect)                // If this is an intersection
-    {                            // we need to have a union 
-      Acomp Ax=Acomp(*this);    //make copy
-      Units.clear();                    // remove everthing else
+  if (Intersect)                       // If this is an intersection
+    {                                  // we need to have a union 
+      Acomp Ax=Acomp(*this);           //make copy
+      Units.clear();                   // remove everthing else
       Comp.clear();
       Intersect=0;                      // make this into a Union
       addComp(Ax);                     // add oldThis to the list
@@ -289,19 +277,6 @@ Acomp::operator-=(const Acomp& A)
   Acomp Aprime(A);
   Aprime.complement();
   return Acomp::operator*=(Aprime);
-}
-
-int
-Acomp::operator>(const Acomp& A) const
-  /*! 
-    Operator> takes first to last precidence.
-    Uses operator<  to obtain value.
-    Note it does not uses 1-(A<this)
-    \param  A :: object to compare
-    \returns this>A
-  */
-{
-  return A.operator<(*this);
 }
 
 
@@ -338,9 +313,96 @@ Acomp::operator*=(const Acomp& A)
   return *this;
 }
 
+Acomp&
+Acomp::addIntersect(const int U)
+  /*!
+    This carries out the intersection operation 
+    with A. e.g. a * (ced+fg) == a(ced+fg).
+    The equivilent to making the statement [this AND A]
+    \param U :: Units to intersect
+    \returns *this
+  */
+{
+  ELog::RegMethod RegA("Acomp","addIntersect");
+  if (trueFlag==-1) return *this;     // false always return
+  if (Intersect)
+    Units.insert(U);
+  else
+    {
+      Acomp Ax=Acomp(*this);    //make copy
+      Units.clear();                    // remove everthing else
+      Comp.clear();
+      Intersect=1;                      
+      addComp(Ax);                     // add old=This to the list
+      Units.insert(U);
+    }
+  trueFlag=0;
+  removeEqComp();
+  joinDepth();  
+  return *this;
+}
+
+Acomp&
+Acomp::addUnion(const int U)
+  /*!
+    This carries out the union operation 
+    with U. e.g. a + (ced(f+g)) == a+(ced(f+g)).
+    The equivilent to making the statement [this AND A]
+    \param U :: Units to union
+    \returns *this
+  */
+{
+  ELog::RegMethod RegA("Acomp","addUnion");
+
+  if (trueFlag==1) return *this;     // true always return
+  
+  if (!Intersect)
+    Units.insert(U);
+  else
+    {
+      Acomp Ax=Acomp(*this);    //make copy
+      Units.clear();            // remove everthing else
+      Comp.clear();
+      Intersect=0;                      
+      addComp(Ax);               // add old=This to the list
+      Units.insert(U);
+    }  
+  trueFlag=0;
+  removeEqComp();
+  joinDepth();  
+  return *this;
+}
+
+  
+bool
+Acomp::isEmpty() const
+  /*!
+    Determine if empty
+    \return 1 if empty /  0 otherwize
+   */
+{
+  if (!Units.empty()) return 0;
+  for(const Acomp& AC : Comp)
+    if (!AC.isEmpty()) return 0;
+
+  return 1;
+}
+
+void
+Acomp::clear()
+  /*!
+    Deletes everything 
+  */
+{
+  Units.clear();
+  Comp.clear();
+  return;
+}
+
 // ---------------------------------------------------
 //  PRIVATE FUNCTIONS 
 // ---------------------------------------------------
+
 
 void
 Acomp::deleteComp()
@@ -352,45 +414,51 @@ Acomp::deleteComp()
   return;
 }
 
+bool
+Acomp::hasUnitInUnit(const int T) const
+  /*!
+    Determine if Acomp has a unit 
+    \param 
+   */
+{
+  return (Units.find(T)!=Units.end());
+}
+
 void
-Acomp::addComp(const Acomp& AX)
+Acomp::addComp(const Acomp& AC)
   /*!
     Adds a pointer to the Comp list.
     If the pointer is singular, extracts the
     object and adds that componenet.
     Assumes that the component is sorted and inserts appropiately.
-    \param AX :: Acomp component to add
+    \param AC :: Acomp component to add
   */
 {
-  std::pair<int,int> Stype=AX.size();
+  const std::pair<size_t,size_t> Stype=AC.size();
   if (Stype.first+Stype.second==0)
-    throw ColErr::ExBase(-2,"Acomp::addComp Pair Count zero");
+    return;
 
-  if (AX.isSingle() || AX.Intersect==Intersect)       //single unit component/Conjoint
+  trueFlag=0;
+  //single unit component/Conjoint
+  if (AC.isSingle() || AC.Intersect==Intersect)       
     {
-      std::vector<int>::const_iterator aup;
-      for(aup=AX.Units.begin();aup!=AX.Units.end();aup++)
-        {
-	  std::vector<int>::iterator ipt;
-	  ipt=lower_bound(Units.begin(),Units.end(),*aup);
-	  if (ipt==Units.end() || *ipt!=*aup)                       // Only insert if new
-	    Units.insert(ipt,*aup);
-	}
+      Units.insert(AC.Units.begin(),AC.Units.end());
+
       std::vector<Acomp>::const_iterator acp;
-      for(acp=AX.Comp.begin();acp!=AX.Comp.end();acp++)
+      for(acp=AC.Comp.begin();acp!=AC.Comp.end();acp++)
         {
 	  std::vector<Acomp>::iterator cpt;
 	  cpt=lower_bound(Comp.begin(),Comp.end(),*acp);
-	  if (cpt==Comp.end() || *cpt!=*acp)                       // Only insert if new
+	  if (cpt==Comp.end() || *cpt!=*acp)     // Only insert if new
 	    Comp.insert(cpt,*acp);
 	}
       return;
     }
   // Type different insertion
   std::vector<Acomp>::iterator cpt;
-  cpt=lower_bound(Comp.begin(),Comp.end(),AX);
-  if (cpt==Comp.end() || *cpt!=AX)                       // Only insert if new
-    Comp.insert(cpt,AX);
+  cpt=lower_bound(Comp.begin(),Comp.end(),AC);
+  if (cpt==Comp.end() || *cpt!=AC)                       // Only insert if new
+    Comp.insert(cpt,AC);
   return;
 }
 
@@ -401,85 +469,7 @@ Acomp::addUnitItem(const int Item)
     \param Item :: Unit to add
   */
 {
-  // Quick and cheesy insertion if big.
-  std::vector<int>::iterator ipt;
-  ipt=lower_bound(Units.begin(),Units.end(),Item);
-  if (ipt==Units.end() || *ipt!=Item)                       // Only insert if new
-    Units.insert(ipt,Item);
-  return;
-}
-
-void
-Acomp::processIntersection2(const std::string& Ln)
-  /*!
-    Helper function :: assumes that Ln has been
-    checked for bracket consistency.
-    Units are sorted after this function is returned.
-    \param Ln :: String to processed as an intersection
-    must not contain a toplevel +
-    \throws ExBase on failure to pass string
-  */
-{
-  ELog::RegMethod RegA("Acomp","processIntersection_Original");
-
-  std::string Bexpress;           // bracket expression
-  int blevel=0;                       // this should already be zero!!
-  // find first Component to add 
-  //  std::cerr<<"Process Inter:"<<Ln<<std::endl;
-  int numItem(0);
-  for(size_t iu=0;iu<Ln.length();iu++)
-    {
-      if (blevel)       // we are in a bracket then...
-	{
-	  if (Ln[iu]==')')        // maybe closing outward..
-	    blevel--;
-	  else if (Ln[iu]=='(')
-	    blevel++;
-	  if (blevel)
-	    Bexpress+=Ln[iu];
-	  else           // Process end: of Brackets 
-	    {
-	      ELog::EM<<"PROCESS INTER:"<<Ln<<"::"<<Bexpress<<ELog::endTrace;
-	      Acomp AX(Union);   
-	      AX.setString(Bexpress);
-	      Bexpress="";     // reset string
-	      addComp(AX);          // add components
-	    }
-	}
-      else               // Not in a bracket (currently)
-	{
-	  if (Ln[iu]=='(')
-	    blevel++;
-	  else if (isalpha(Ln[iu]) || Ln[iu]=='%')
-	    {
-	      if (Ln[iu]=='%')
-	        {
-		  iu++;
-		  const size_t Nmove=StrFunc::convPartNum(Ln.substr(iu),numItem);
-		  if (!Nmove)
-		    throw ColErr::InvalidLine(Ln,"Ln",iu);
-		  numItem+=52;
-		  iu+=Nmove;
-		}
-	      else
-	        {
-		  numItem=(islower(Ln[iu])) ?
-		    static_cast<int>(1+Ln[iu]-'a') :
-		    static_cast<int>(27+Ln[iu]-'A');
-		  iu++;
-		}
-	      if (iu<Ln.length() && Ln[iu]=='\'')
-	        {
-		  addUnitItem(-numItem);
-		}
-	      else
-	        {
-		  addUnitItem(numItem);
-		  iu--;
-		}
-	    }
-	}
-    }
+  Units.insert(Item);
   return;
 }
 
@@ -496,6 +486,7 @@ Acomp::processIntersection(const std::string& Ln)
   */
 {
   ELog::RegMethod RegA("Acomp","processIntersection");
+
   if (Ln.empty()) return;
 
   // Split on first bracket level which is not the VERY first
@@ -518,9 +509,8 @@ Acomp::processIntersection(const std::string& Ln)
 		  addComp(AX);
 		}
 	      else
-		{
-		  addTokens(Express);
-		}
+		addTokens(Express);
+
 	      Express="";
 	    }
 	}
@@ -540,6 +530,7 @@ Acomp::processIntersection(const std::string& Ln)
   // Clean up at end
   if (!Express.empty())
     addTokens(Express);
+
 
   return;
 }
@@ -596,11 +587,50 @@ Acomp::processUnion(const std::string& Ln)
 	    Express[i].substr(1,Express[i].length()-2) : Express[i];
 	  Acomp AX(Inter);
 	  AX.setString(StrField);   // throws:
-	  addComp(AX);       // add components
+	  addComp(AX);              // add components
 	}
     }
   
   return;
+}
+
+int
+Acomp::merge()
+  /*!
+    If a comp / (this Inter) are same type then
+    a merge is possible
+    \return number of successful level moves
+  */
+{
+  // First remove local numbers and units:
+
+  std::vector<Acomp> extraComp;
+  int Out(0);
+  for(Acomp& AC : Comp)
+    {
+      Out+=AC.merge();
+      if (AC.Intersect==Intersect)
+	{
+	  Out++;
+	  
+	  Units.insert(AC.Units.begin(),AC.Units.end());
+	  AC.Units.clear();
+	  // move up AC.comp units
+	  if (!AC.Comp.empty())
+	    {
+	      extraComp.insert(extraComp.end(),AC.Comp.begin(),AC.Comp.end());
+	      AC.Comp.clear();
+	    }
+	}
+    }
+  Comp.insert(Comp.end(),extraComp.begin(),extraComp.end());
+  // remove nulls
+  std::vector<Acomp>::iterator ac=
+    std::remove_if(Comp.begin(),Comp.end(),
+		   [&](const Acomp& AC)->bool
+		     { return AC.isNull();});
+  Comp.erase(ac,Comp.end());
+  return Out;
 }
 
 int
@@ -617,21 +647,17 @@ Acomp::copySimilar(const Acomp& A)
   if (Intersect!=A.Intersect)
     return -1;
 
-  if (!A.Units.empty())
-    {
-      Units.insert(Units.end(),A.Units.begin(),A.Units.end());
-      sort(Units.begin(),Units.end());
-    }
+  Units.insert(A.Units.begin(),A.Units.end());
 
-  // Add components 
-  std::vector<Acomp>::const_iterator vc;
-  for(vc=A.Comp.begin();vc!=A.Comp.end();vc++)
-    addComp(*vc);
+  // Add components
+  for(const Acomp& AC : A.Comp)
+    addComp(AC);
   return 0;
 }
 
 void
-Acomp::addUnit(const std::vector<int>& Index,const BnId& BX)
+Acomp::addUnit(const std::vector<int>& Index,
+	       const BnId& BX)
   /*!
     Given a single BnId unit and an index
     adds it to the main Units object.
@@ -647,13 +673,12 @@ Acomp::addUnit(const std::vector<int>& Index,const BnId& BX)
       if (flag)
         {
 	  signSplit(flag,S,V); // sets S and V
-	  if (V>=Index.size())
+	  if (V>Index.size())
 	    throw ColErr::IndexError<size_t>(V,Index.size(),
-					       "Acomp::addUnit ");
-	  Units.push_back(S*Index[i]);
+					     "Acomp::addUnit ");
+	  Units.insert(S*Index[i]);
 	}
     }
-  sort(Units.begin(),Units.end());
   return;
 }
 
@@ -666,10 +691,8 @@ Acomp::assignDNF(const std::vector<int>& Index,const std::vector<BnId>& A)
     \param A :: Vector of BnId's that are valid
   */
 {
-  Units.clear();
-  deleteComp();
-  if (A.empty())
-    return;
+  clear();
+  if (A.empty()) return;
   
   if (A.size()==1)  //special case for single intersection 
     {
@@ -690,7 +713,8 @@ Acomp::assignDNF(const std::vector<int>& Index,const std::vector<BnId>& A)
 }
 
 void
-Acomp::assignCNF(const std::vector<int>& Index,const std::vector<BnId>& A)
+Acomp::assignCNF(const std::vector<int>& Index,
+		 const std::vector<BnId>& A)
   /*!
     Assign the object to the Essentual PI in the vector
     A. This will make the form DNF.
@@ -728,6 +752,7 @@ Acomp::assignCNF(const std::vector<int>& Index,const std::vector<BnId>& A)
 //   PUBLIC FUNCTIONS 
 // -------------------------------------
 
+
 void
 Acomp::Sort()
   /*!
@@ -735,10 +760,11 @@ Acomp::Sort()
     Decends down the Comp Tree.
   */
 {
-  std::sort(Units.begin(),Units.end());
   // Sort each decending object first
-  for_each(Comp.begin(),Comp.end(),std::mem_fun_ref(&Acomp::Sort));
-  // use the sorted components to sort our component list
+  for(Acomp& AC : Comp)
+    AC.Sort();
+
+  // comparative on unit
   std::sort(Comp.begin(),Comp.end());
   return;
 }
@@ -753,8 +779,8 @@ Acomp::makeReadOnce()
     \retval 1 if success (and sets it into the appropiate form)
   */
 {
-  std::map<int,int> LitSet;
-  getLiterals(LitSet);
+  //  std::map<int,int> LitSet;
+  //  getLiterals(LitSet);
 /*  // Process DNF
   if (isDNF())
     return makeReadOnceForDNF();
@@ -765,8 +791,134 @@ Acomp::makeReadOnce()
   return 0;
 }
 
+int
+Acomp::logicalCover(const Acomp& A) const
+  /*!
+    Determine if this is a cover for A
+    i.e. if this is true then A is true and vis versa
+    \param A :: Logical state to set
+    \return -1 :: this is the cover
+    \retval 0 :: no cover
+    \retval 1 :: A is the cover
+  */
+{
+  std::set<int> ALit;
+  std::set<int> BLit;
+  this->getAbsLiterals(ALit);
+  A.getAbsLiterals(BLit);
+
+  std::vector<int> SSDiff;
+  std::set_symmetric_difference
+    (
+     ALit.begin(),ALit.end(),
+     BLit.begin(),BLit.end(),
+     std::back_inserter(SSDiff));
+  // not possible is mis-match symbols
+  bool Aflag(0),Bflag(0);
+  for(const int SN: SSDiff)
+    {
+      if (BLit.find(SN) == BLit.end())
+	{
+	  Bflag=1;
+	  if (Aflag) return 0;
+	}
+      else
+	{
+	  Aflag=1;
+	  if (Bflag) return 0;
+	}
+    } 
+
+  std::vector<int> keyNumbers;
+  if (Aflag)  // then 
+    keyNumbers.assign(BLit.begin(),BLit.end());
+  else
+    keyNumbers.assign(ALit.begin(),ALit.end());
+
+  std::map<int,int> Base;       // keynumber :: trueth value
+  for(const int CN : keyNumbers)
+    Base.emplace(CN,0);   // all false
+  do
+    {
+      if (isTrue(Base) != A.isTrue(Base))
+	return 0;
+    } while (!MapSupport::iterateBinMap(Base));
+  
+  return 1;
+}
+
 
 int
+Acomp::logicalIntersectCover(const Acomp& A) const
+  /*!
+    Determine if T/A is a cover for the intersection
+    of T.A
+    i.e. if this is true then A is true and vis versa
+    \param A :: Logical state to set
+    \retval 0 :: no cover
+    \retval 1 :: T is the cover
+    \retval 2 :: A is the cover
+    \retval 3 :: both self cover
+  */
+{
+  std::set<int> ALit;
+  std::set<int> BLit;
+  this->getAbsLiterals(ALit);
+  A.getAbsLiterals(BLit);
+
+  std::vector<int> SSDiff;
+  std::set_symmetric_difference
+    (
+     ALit.begin(),ALit.end(),
+     BLit.begin(),BLit.end(),
+     std::back_inserter(SSDiff));
+  // not possible is mis-match symbols
+  bool ADiffFlag(0),BDiffFlag(0);
+  for(const int SN: SSDiff)
+    {
+      if (BLit.find(SN) == BLit.end())
+	{
+	  BDiffFlag=1;
+	  if (ADiffFlag) return 0;
+	}
+      else
+	{
+	  ADiffFlag=1;
+	  if (BDiffFlag) return 0;
+	}
+    } 
+
+  std::vector<int> keyNumbers;
+  Acomp pairCC(1);
+  pairCC.Comp.push_back(*this);
+  pairCC.Comp.push_back(A);
+
+  if (ADiffFlag)  // then
+    keyNumbers.assign(BLit.begin(),BLit.end());
+  else
+    keyNumbers.assign(ALit.begin(),ALit.end());
+  
+  std::map<int,int> Base;       // keynumber :: trueth value
+  for(const int CN : keyNumbers)
+    Base.emplace(CN,0);   // all false
+
+  bool tOut(1),aOut(1);
+  do
+    {
+      const bool pairCCFlag=pairCC.isTrue(Base);
+      const bool TFlag=this->isTrue(Base);
+      const bool AFlag=A.isTrue(Base);
+
+      if (TFlag!=pairCCFlag) tOut=0;
+      if (AFlag!=pairCCFlag) aOut=0;
+      if (!aOut && !tOut) return 0;
+    } while (!MapSupport::iterateBinMap(Base));
+
+  return (tOut ? 1 : 0 ) | (aOut ? 2 : 0 );
+}
+
+  
+bool
 Acomp::logicalEqual(const Acomp& A) const
   /*!
     Test that the system that is logically the same:
@@ -775,33 +927,29 @@ Acomp::logicalEqual(const Acomp& A) const
     \retval 1 :: true
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
-  getAbsLiterals(litMap);
+  // Note can't compare set sizize because some rules may be redundent
+  std::set<int> ALitMap;
+  getAbsLiterals(ALitMap);
+  A.getAbsLiterals(ALitMap);
+
   
-  A.getAbsLiterals(litMap);
-  std::map<int,int> Base;       // keynumber :: number of occurances
-  std::vector<int> keyNumbers;
+  const std::vector<int> keyNumbers(ALitMap.begin(),ALitMap.end());    
+  std::map<int,int> Base;       // keynumber :: trueth value
+  for(const int CN : ALitMap)
+    Base.emplace(CN,0);
 
-
-  std::map<int,int>::const_iterator mc;
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    {
-      Base[mc->first]=1;          // Insert and Set to true
-      keyNumbers.push_back(mc->first);
-    }
-
-  BnId State(Base.size(),0);                 //zero base
   do
     {
-      State.mapState(keyNumbers,Base);
       if (isTrue(Base) != A.isTrue(Base))
-	  return 0;
-    } while(++State);
+	return 0;
+
+    } while (!MapSupport::iterateBinMap(Base));
+
   return 1;
 }
 
 
-int
+bool
 Acomp::isNull() const
   /*!
     \returns 1 if there are no memebers
@@ -810,7 +958,7 @@ Acomp::isNull() const
   return ((!Units.size() && !Comp.size()) ? 1 : 0);
 }
 
-int
+bool
 Acomp::isDNF() const
   /*!
     Determines if the component is in
@@ -832,7 +980,7 @@ Acomp::isDNF() const
   return 1;
 }
 
-int
+bool
 Acomp::isCNF() const
   /*!
     Determines if the component is in
@@ -854,66 +1002,79 @@ Acomp::isCNF() const
   return 1;
 }
 
-void
-Acomp::getAbsLiterals(std::map<int,int>& literalMap) const
+bool
+Acomp::hasLiteral(const int literal) const
   /*!
-    get a map of the literals and the frequency
-    that they occur.
-    This does not keep the +/- part of the literals separate
-    \param literalMap :: Map the get the frequency of the 
+    Determine if has the literals
+    \param literalMap :: Set of leteral valuds
     literals 
   */
 {
-  std::vector<int>::const_iterator uc;
-  std::map<int,int>::iterator mc;
-  int S,V;
-  for(uc=Units.begin();uc!=Units.end();uc++)
-    {
-      signSplit(*uc,S,V);
-      mc=literalMap.find(V);
-      if (mc!=literalMap.end())
-	mc->second++;
-      else
-	literalMap.insert(std::pair<int,int>(V,1));
-    }
-  std::vector<Acomp>::const_iterator cc;
-  for(cc=Comp.begin();cc!=Comp.end();cc++)
-    cc->getAbsLiterals(literalMap);
+  if (Units.find(literal)!=Units.end())
+    return 1;
+  for(const Acomp& AC : Comp)
+    if (AC.hasLiteral(literal))
+      return 1;
+
+  return 0;
+}
+
+bool
+Acomp::hasAbsLiteral(const int literal) const
+  /*!
+    Determine if has the literals
+    \param literalMap :: Set of leteral valuds
+    literals 
+    \param literal :: absolute literal value
+  */
+{
+  if (Units.find(literal)!=Units.end())
+    return 1;
+  if (Units.find(-literal)!=Units.end())
+    return 1;
+  for(const Acomp& AC : Comp)
+    if (AC.hasAbsLiteral(literal))
+      return 1;
+
+  return 0;
+}
+  
+void
+Acomp::getAbsLiterals(std::set<int>& literalMap) const
+  /*!
+    Get a map of the literals and the frequency
+    that they occur.
+    This does not keep the +/- part of the literals separate
+    \param literalMap :: Set of leteral valuds
+    literals 
+  */
+{
+  for(const int u : Units)
+    literalMap.insert(std::abs(u));
+
+  for(const Acomp& CC : Comp)
+    CC.getAbsLiterals(literalMap);
   return;
 }
 
 void
-Acomp::getLiterals(std::map<int,int>& literalMap) const
+Acomp::getLiterals(std::set<int>& literalMap) const
   /*!
     Get a map of the literals and the frequency
     that they occur.
     This keeps + and - literals separate
-    \param literalMap :: Map the get the frequency of the 
-    literals 
+    \param literalMap :: Set the get the literals 
   */
 {
-  std::vector<int>::const_iterator uc;
-  std::map<int,int>::iterator mc;
-  for(uc=Units.begin();uc!=Units.end();uc++)
-    {
-      mc=literalMap.find(*uc);
-      if (mc!=literalMap.end())
-	mc->second++;
-      else
-	literalMap.insert(std::pair<int,int>(*uc,1));
-    }
-  std::vector<Acomp>::const_iterator cc;
-  for(cc=Comp.begin();cc!=Comp.end();cc++)
-    {
-      cc->getLiterals(literalMap);
-    }
-  // Doesn't work because literal map is a reference
-  //  for_each(Comp.begin(),Comp.end(),
-  // std::bind2nd(std::mem_fun(&Acomp::getLiterals),literalMap));
+  literalMap.insert(Units.begin(),Units.end());
+
+  for(const Acomp& CC : Comp)
+    CC.getLiterals(literalMap);
+
   return;
 }
 
-int
+bool
 Acomp::isSimple() const
   /*!
     Determines if there are not complex components.
@@ -924,7 +1085,7 @@ Acomp::isSimple() const
   return (Comp.empty() ? 1 : 0);
 }
 
-int
+bool
 Acomp::isSingle() const
   /*!
     Deterimines if the item's singular
@@ -947,17 +1108,13 @@ Acomp::removeEqComp()
   // First check all the Comp units:
   long int cnt(0);
   std::vector<Acomp>::iterator dx;
+
   sort(Comp.begin(),Comp.end());
   dx=unique(Comp.begin(),Comp.end());
   cnt+=std::distance(dx,Comp.end());
   Comp.erase(dx,Comp.end());
 
   // Units are sorted
-
-  sort(Units.begin(),Units.end());
-  std::vector<int>::iterator ux=unique(Units.begin(),Units.end());
-  cnt+=std::distance(ux,Units.end());
-  Units.erase(ux,Units.end());
   return static_cast<int>(cnt);
 }
 
@@ -985,7 +1142,7 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
   std::vector<BnId>::iterator uend;     // itor to remove unique
   // Need to make an initial copy.
   Work=DNFobj;
-  
+
   int cnt(0);
   do
     {
@@ -995,6 +1152,7 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
       uend=unique(Work.begin(),Work.end());
       Work.erase(uend,Work.end());
       Tmod.clear();                  // erase all at the start
+
       //set PI status to 1
       for_each( Work.begin(),Work.end(),
 		std::bind2nd(std::mem_fun_ref(&BnId::setPI),1) );
@@ -1007,9 +1165,12 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 	{
 	  const size_t GrpIndex(vc->TrueCount()+1);
 	  std::vector<BnId>::iterator oc=vc+1;
+
 	  for(oc=vc+1;oc!=Work.end();oc++)
 	    {
 	      const size_t OCnt=oc->TrueCount();
+			
+
 	      if (OCnt>GrpIndex)
 		break;
 	      if (OCnt==GrpIndex)
@@ -1025,15 +1186,15 @@ Acomp::makePI(std::vector<BnId>& DNFobj) const
 		}
 	    }
 	}
+
+      for(const BnId& BI : Work)
+	if (BI.PIstatus()==1)
+	  PIComp.push_back(BI);
       
-      for(vc=Work.begin();vc!=Work.end();vc++)
-	if (vc->PIstatus()==1)
-	  PIComp.push_back(*vc);
       Work=Tmod;
-      
     } while (!Tmod.empty());
   // Copy over the unit.
-  
+
   return makeEPI(DNFobj,PIComp);
 }
 
@@ -1071,11 +1232,11 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   //Populate
   for(size_t pc=0;pc!=PIform.size();pc++)
     PIactive[pc]=pc;
-
+  
   for(size_t ic=0;ic!=DNFobj.size();ic++)
     {
       DNFactive[ic]=ic;                            //populate (avoid a loop)
-      for(unsigned int pc=0;pc!=PIform.size();pc++)
+      for(size_t pc=0;pc!=PIform.size();pc++)
 	{
 	  if (PIform[pc].equivalent(DNFobj[ic]))
 	    {
@@ -1086,16 +1247,16 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
       if (DNFscore[ic]==0)
 	{
 	  ELog::EM<<"PIForm:"<<ELog::endCrit;
-	  copy(PIform.begin(),PIform.end(),
-	       std::ostream_iterator<BnId>(ELog::EM.Estream(),"\n"));
+	  for(const BnId& BI : PIform)
+	    ELog::EM<<BI<<ELog::endDiag;
+
 	  ELog::EM<<"Error with DNF / EPI determination at "<<ic<<ELog::endCrit;
 	  ELog::EM<<" Items "<<DNFobj[ic]<<ELog::endCrit;
 	  return 0;
 	}
     }
   /// DEBUG PRINT 
-  if (debug)
-    printImplicates(PIform,Grid);
+  //  printImplicates(PIform,Grid);
   /// END DEBUG
 
   std::vector<size_t>::iterator dx;
@@ -1197,6 +1358,7 @@ Acomp::makeEPI(std::vector<BnId>& DNFobj,
   for(px=PIactive.begin();px!=PIactive.end();px++)
     EPI.push_back(PIform[*px]);
   DNFobj=EPI;
+
   return 1;
 }
 
@@ -1207,14 +1369,9 @@ Acomp::getKeys() const
     \return Key of literals
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
-  std::vector<int> keyNumbers;
+  std::set<int> litMap;       // keynumbers
   getAbsLiterals(litMap);
-  std::map<int,int>::const_iterator mc;
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    keyNumbers.push_back(mc->first);
-
-  return keyNumbers;
+  return std::vector<int>(litMap.begin(),litMap.end());
 }
 
 int
@@ -1232,31 +1389,30 @@ Acomp::getDNFobject(std::vector<int>& keyNumbers,
     \retval -1 :: on error.
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
+  std::set<int> litMap;       // keynumber
   std::map<int,int> Base;         // keynumber :: value
   getAbsLiterals(litMap);
   
   if (litMap.empty())
     return -1;
+  
+  keyNumbers.assign(litMap.begin(),litMap.end());
 
-  keyNumbers.clear();
-  std::map<int,int>::iterator mc;
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    {
-      Base[mc->first]=1;          // Set to true
-      keyNumbers.push_back(mc->first);
-    }
+  for(const int CN : litMap)
+    Base.emplace(CN,0);
 
-  DNFobj.clear();
-  BnId State(Base.size(),0);                 //zero base
+  DNFobj.clear();  
+  BnId State(keyNumbers.size(),0);                 //zero base
+
   do
     {
-      State.mapState(keyNumbers,Base);
       if (isTrue(Base))
-        {
+	{
+	  State.setState(keyNumbers,Base);
 	  DNFobj.push_back(State);
 	}
-    } while(++State);
+    } while (!MapSupport::iterateBinMap(Base));
+
   return 0;
 }
  
@@ -1272,9 +1428,10 @@ Acomp::makeDNFobject()
   std::vector<BnId> DNFobj;
   std::vector<int> keyNumbers;
   if (!getDNFobject(keyNumbers,DNFobj))
-    {
+    {      
       if (makePI(DNFobj))
 	assignDNF(keyNumbers,DNFobj);
+
       return static_cast<int>(DNFobj.size());
     }
   return 0;
@@ -1315,18 +1472,15 @@ Acomp::getDNFpart(std::vector<Acomp>& Parts) const
   */
   if (isDNF())
     {
-      std::vector<int>::const_iterator vc;
-      std::vector<Acomp>::const_iterator xc;
-
       Parts.clear();
-      for(vc=Units.begin();vc!=Units.end();vc++)
+      for(const int v : Units)
 	{
 	  Acomp Aitem(Inter);  // Intersection (doesn't matter since 1 object)
-	  Aitem.addUnitItem(*vc);
+	  Aitem.addUnitItem(v);
 	  Parts.push_back(Aitem);
 	}
-      for(xc=Comp.begin();xc!=Comp.end();xc++)
-	Parts.push_back(*xc);
+      for(const Acomp& AC : Comp)
+	Parts.push_back(AC);
       return static_cast<int>(Parts.size());
     }
   
@@ -1336,12 +1490,11 @@ Acomp::getDNFpart(std::vector<Acomp>& Parts) const
     {
       if (makePI(DNFobj))
 	{
-	  std::vector<BnId>::const_iterator vc;
-	  for(vc=DNFobj.begin();vc!=DNFobj.end();vc++)
+	  for(const BnId& BI : DNFobj)
 	    {
 	      // make an intersection and add components
 	      Acomp Aitem(Inter); 
-	      Aitem.addUnit(keyNumbers,*vc);
+	      Aitem.addUnit(keyNumbers,BI);
 	      Parts.push_back(Aitem);
 	    }
 	}	  
@@ -1365,32 +1518,26 @@ Acomp::getCNFobject(std::vector<int>& keyNumbers,
     \retval -1 :: on error.
   */
 {
-  std::map<int,int> litMap;       // keynumber :: number of occurances
+  std::set<int> litMap;       // keynumber :: number of occurances
   std::map<int,int> Base;         // keynumber :: value
   getAbsLiterals(litMap);
   
   if (litMap.size()<1)
     return -1;
 
-  keyNumbers.clear();
-  std::map<int,int>::iterator mc;
-  int cnt(0);
+  keyNumbers.assign(litMap.begin(),litMap.end());
+  for(const int CN : keyNumbers)
+    Base.emplace(CN,1);
 
-
-  for(mc=litMap.begin();mc!=litMap.end();mc++)
-    {
-      mc->second=cnt++;
-      Base[mc->first]=1;          // Set to true
-      keyNumbers.push_back(mc->first);
-    }
-  
   CNFobj.clear();
-  BnId State(Base.size(),0);    //zero base
+  BnId State(Base.size(),0);    //zero base  
   do
     {
       State.mapState(keyNumbers,Base);
       if (!isTrue(Base))
-	CNFobj.push_back(State);
+	{
+	  CNFobj.push_back(State);
+	}
     } while(++State);
  
   return 0;
@@ -1405,38 +1552,54 @@ Acomp::isTrue(const std::map<int,int>& Base) const
     \returns 1 if true and 0 if false
   */
 {
-  if (Units.empty() &&  Comp.empty())
-    return 1;
-
-  // Deal with case of a single object (then join
-  // doesn't matter  (single unit is alway ok )
-  const int retJoin=
-    (Units.size()+Comp.size()!=1 && Intersect) ? 0 : 1;
-
-  long int aimTruth;
   int S,V;
-  std::map<int,int>::const_iterator bv;
-  std::vector<int>::const_iterator uc;
-  // e.g. a'b   1 1  (retJoin ==1)
-  for(uc=Units.begin();uc!=Units.end();uc++)
+  std::map<int,int>::const_iterator mc;
+
+  if (Units.empty() && Comp.empty())
+    return (trueFlag == -1) ? 0 : 1;
+
+  if (Intersect)
     {
-      signSplit(*uc,S,V);
-      bv=Base.find(V);
-      if (bv==Base.end())
-	throw ColErr::ExBase(-10,"Acomp::isTrue Base unit not found");
-      aimTruth= (S<0) ? 1-retJoin : retJoin;
+      // all must be true:
+      for(const	int uv : Units)
+	{
+	  signSplit(uv,S,V);
+	  mc=Base.find(V);
+
+	  if (mc==Base.end())
+	    throw ColErr::InContainerError<int>
+	      (uv,"Acomp::isTrue Base unit not found");
+	  if ((S>0 && !mc->second) ||
+	      (S<0 && mc->second)) return 0;
+	}
+      for(const Acomp& AC : Comp)
+	if (!AC.isTrue(Base))
+	  return 0;
+
+      // everything else true
+      return 1;
+    }
+  // UNION
+  // any must be true:
+  for(const int uv : Units)
+    {
+      signSplit(uv,S,V);
+      mc=Base.find(V);
       
-      if (bv->second == aimTruth)          // any true then return true
-	return retJoin;
+      if (mc==Base.end())
+	throw ColErr::InContainerError<int>
+	  (uv,"Acomp::isTrue Base unit not found");
+      
+      if ((S>0 && mc->second) ||
+	  (S<0 && !mc->second)) return 1;
     }
 
-  std::vector<Acomp>::const_iterator cc;
-  for(cc=Comp.begin();cc!=Comp.end();cc++)
-    if (cc->isTrue(Base)==retJoin)
-      return retJoin;
-  
-  // Finally not true then
-  return 1-retJoin;    
+  for(const Acomp& AC : Comp)
+    if (AC.isTrue(Base))
+      return 1;
+
+  // Everything else false
+  return 0;
 }
 
 std::pair<Acomp,Acomp>
@@ -1454,8 +1617,8 @@ Acomp::algDiv(const Acomp& G)
   //First make completely DNF (if necessary)
   if (!isDNF() && !makeDNFobject())
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
-
-  std::map<int,int> Gmap; // get map of literals and frequency
+  
+  std::set<int> Gmap; // get map of literals and frequency
   G.getLiterals(Gmap);
   if (Gmap.empty())
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
@@ -1465,41 +1628,40 @@ Acomp::algDiv(const Acomp& G)
   // U is ste to be 
   std::vector<Acomp> U;
   std::vector<Acomp> V;
+
   std::map<int,int>::const_iterator mc;
   // Only have First level components to consider
   std::vector<Acomp>::const_iterator cc; 
-  int cell;
+
   
   std::vector<Acomp> Flist,Glist;
   if (!getDNFpart(Flist) || !G.getDNFpart(Glist))
     return std::pair<Acomp,Acomp>(Acomp(Union),Acomp(Union));
 
-  for(cc=Flist.begin();cc!=Flist.end();cc++) 
+  for(const Acomp& CC : Flist)
     {
-      size_t itemCnt(0);
       U.push_back(Acomp(Inter)); 
       V.push_back(Acomp(Inter)); 
       Acomp& Uitem= U.back();
       Acomp& Vitem= V.back();
-      while( (cell = cc->itemN(itemCnt)) )
-        {
+      for(const int cell : CC.Units)
+	{
 	  if (Gmap.find(cell)!=Gmap.end())
 	    Uitem.addUnitItem(cell);
 	  else
 	    Vitem.addUnitItem(cell);
-	  itemCnt++;
 	}
     }
 
   Acomp H(Inter);       // H is an intersection group
   Acomp Hpart(Union);    //Hpart is a union group
-  for(cc=Glist.begin();cc!=Glist.end();cc++)
+  for(const Acomp& CC : Glist)
     {
       std::vector<Acomp>::const_iterator ux,vx;
       vx=V.begin();
       for(ux=U.begin();ux!=U.end() && vx!=V.end();vx++,ux++)
 	{
-	  if (!vx->isNull() && ux->contains(*cc))
+	  if (!vx->isNull() && ux->contains(CC))
 	    {
 	      Hpart.addComp(*vx);
 	    }
@@ -1511,7 +1673,7 @@ Acomp::algDiv(const Acomp& G)
 	  H.joinDepth();        // Up shift suitable objects.
 	  Hpart.Comp.clear();
 	  Hpart.Units.clear();   // Just in case
-
+	  
 	}
 
     }
@@ -1528,21 +1690,16 @@ int
 Acomp::contains(const Acomp& A) const
   /*!
     Checks the Units of A to  see if they are in this->Units.
-    Assumes that Units is sorted.
+    *this can contain MORE signed-literals than A.
     \param A :: Object to cross compare
-    \retval 0 :: all literals in A are in this
+    \retval 0 :: All literals in A are in this
     \retval 1 :: A is unique from this
   */
 {
-  std::vector<int>::const_iterator vc,tc;
-  tc=Units.begin();
-  for(vc=A.Units.begin();vc!=A.Units.end();vc++)
-    {
-      while(tc!=Units.end() && *tc<*vc)
-	tc++;
-      if (tc==Units.end() || *tc!=*vc)
-	return 0;
-    }
+  for(const int AU : A.Units)
+    if (Units.find(AU)==Units.end())
+      return 0;
+  
   return 1;
 }
 
@@ -1558,7 +1715,7 @@ Acomp::joinDepth()
   ELog::RegMethod RegA("Acomp","joinDepth");
   
   // Deal with case that this is a singular object::
-  const std::pair<int,int> topSize(this->size());
+  const std::pair<size_t,size_t> topSize(this->size());
   if ((topSize.first+topSize.second)==0)
     throw ColErr::ExBase(-2,"Pair Count wrong");
    //SINGULAR
@@ -1580,14 +1737,14 @@ Acomp::joinDepth()
   for(size_t ix=0;ix<Comp.size();ix++)
     {
       const Acomp& AX=Comp[ix];
-      const std::pair<int,int> compSize(AX.size());
+      const std::pair<size_t,size_t> compSize(AX.size());
       if ((compSize.first+compSize.second)==0)      
 	throw ColErr::ExBase(-2,"Pair Count wrong");
 
       // If Singular then can be up premoted.
       if (compSize.first==1 && compSize.second==0)         // UNITS only
 	{
-	  Units.push_back(AX.itemN(0));
+	  Units.insert(AX.getSinglet());
 	  // delete memory and the component.
 	  Comp.erase(Comp.begin()+static_cast<long int>(ix));
 	  ix--;
@@ -1604,7 +1761,7 @@ Acomp::joinDepth()
       // Same type thus use the bits.
       else if (Intersect==AX.Intersect)    
 	{
-	  Units.insert(Units.end(),AX.Units.begin(),AX.Units.end());
+	  Units.insert(AX.Units.begin(),AX.Units.end());
 	  Comp.insert(Comp.end(),AX.Comp.begin(),AX.Comp.end());
 	  Comp.erase(Comp.begin()+static_cast<long int>(ix));
 	  ix--;
@@ -1631,12 +1788,26 @@ Acomp::setString(const std::string& Line)
     \param Line :: string of for abc'.
   */
 {
-  ELog::RegMethod RegA("AComp","setString");
+  ELog::RegMethod RegA("Acomp","setString");
 
   Acomp CM(Union);            /// Complementary object
   // DELETE ALL
+  trueFlag=0;
   deleteComp();
   Units.clear();
+  // Simple true/false
+  if (Line=="!!")
+    {
+      trueFlag=-1;
+      return;
+    }
+  if (Line=="~~")
+    {
+      trueFlag=1;
+      return;
+    }
+      
+
   // 
   // Process #( ) sub units
   // 
@@ -1661,6 +1832,7 @@ Acomp::setString(const std::string& Line)
 				  static_cast<size_t>(sPos));
 
       // std::string Part= Ln.substr(sPos,ePos-sPos);
+
       CM.setString(Ln.substr(sPos+2,ePos-sPos-3));
       CM.complement();
       Ln.replace(sPos,ePos-sPos,"("+CM.display()+")");
@@ -1732,7 +1904,6 @@ Acomp::setString(const std::string& Line)
   else
     processUnion(Ln);
 
-  sort(Units.begin(),Units.end());      /// Resort the list.
   return;
 }
 
@@ -1750,29 +1921,53 @@ Acomp::orString(const std::string& Line)
   return;
 }
 
-std::pair<int,int>
+size_t
+Acomp::countComponents() const
+  /*!
+    Recursive method of counting components
+    \return number of components
+  */
+{
+  size_t out(!Units.empty() ? 1 : 0);
+  for(const Acomp& AC : Comp)
+    out+=AC.countComponents();
+
+  return out;
+}    
+
+std::pair<size_t,size_t>
 Acomp::size() const
   /*!
     Gets the size of the Units and the Comp
     \returns size of Unit, Comp
   */
 {
-  return std::pair<int,int>(static_cast<int>(Units.size()),
-			    static_cast<int>(Comp.size()));
+  return std::pair<size_t,size_t>(Units.size(),Comp.size());
+}
+
+bool
+Acomp::isSinglet() const
+  /*!
+    Detemine if the constructoin is a true singlet
+    \return 1 if singlet / 0 if not
+  */
+{
+  return (Units.size()!=1 || !Comp.empty()) ? 0 : 1;
 }
 
 int
-Acomp::itemN(const size_t Index) const
+Acomp::getSinglet() const
   /*!
-    Assessor function to get a unit number
-    \param Index :: Number of Unit to aquire
-    \returns Units[Index] or 0 on failure
-  */
+    Get a single value as an item
+    \return value
+   */
 {
-  if (Index<Units.size())
-    return Units[Index];
-  return 0;
+  if (Units.size()!=1 || !Comp.empty())
+    throw ColErr::InContainerError<size_t>
+      (Units.size(),"Units or Comp not sigular:"+display());
+  return *Units.begin();
 }
+  
 
 const Acomp*
 Acomp::itemC(const size_t Index) const
@@ -1787,6 +1982,81 @@ Acomp::itemC(const size_t Index) const
   return &Comp[Index];
 }
 
+void
+Acomp::upMoveComp()
+  /*!
+    Move the comp unit up if it is singular
+  */
+{
+  ELog::RegMethod RegA("Acomp","upMoveComp");
+  if (Comp.size()==1)
+    {
+      const Acomp& AC = Comp.front();
+      if (Units.empty())
+	{
+	  Units=AC.Units;
+	  // add in and then remove first [necessary ??]
+	  Intersect=AC.Intersect;
+	  Comp.insert(Comp.end(),AC.Comp.begin(),AC.Comp.end());
+	  Comp.erase(Comp.begin());
+	}
+      else if (AC.isSinglet())
+	{
+	  Units.insert(AC.getSinglet());
+	  Comp.erase(Comp.begin());
+	}
+    }
+  return;
+}
+
+bool
+Acomp::clearNulls()
+  /*!
+    Remove Nulls
+    Currently a very very simple system to remove null intersects
+    \return true if object is found null and all lower components are
+    deleted [necessary???]
+  */
+{
+  // ASSUMES sorted
+  if (Intersect)
+    {
+      for(const int N : Units)
+	{
+	  if (Units.find(-N)!=Units.end())
+	    {
+	      trueFlag=-1;
+	      clear();
+	      return 1;
+	    }
+	}
+    }
+  else // UNION
+    {
+      for(const int N : Units)
+	{
+	  // always true
+	  if (Units.find(-N)!=Units.end())
+	    {
+	      clear();
+	      trueFlag=1;
+	      return 1;
+	    }
+	}
+    }
+  
+  // this must be carried out since Acomp might be intersect
+  // even if above is not
+  std::vector<Acomp>::iterator ac=
+    std::remove_if(Comp.begin(),Comp.end(),
+		   [&](Acomp& AC)->bool
+		   { return AC.clearNulls();});
+  Comp.erase(ac,Comp.end());
+
+  return 0;
+}
+
+
 
 void
 Acomp::complement() 
@@ -1799,12 +2069,15 @@ Acomp::complement()
 {
   ELog::RegMethod RegA("Acomp","complement");
   Intersect=1-Intersect;
-  transform(Units.begin(),Units.end(),
-            Units.begin(),std::bind2nd(std::multiplies<int>(),-1) );
-  sort(Units.begin(),Units.end());      /// Resort the list. use reverse?
 
-  for_each(Comp.begin(),Comp.end(),
-	    std::mem_fun_ref(&Acomp::complement) );
+  UTYPE newUSet;
+  for(const int UN : Units)
+    newUSet.insert(-UN);
+  Units=newUSet;
+
+  for(Acomp& AC : Comp)
+    AC.complement();
+
   sort(Comp.begin(),Comp.end());
   return;
 }
@@ -1833,87 +2106,6 @@ Acomp::writeFull(std::ostream& OXF,const int Indent) const
   return;
 }
 
-std::string
-Acomp::display() const
-  /*!
-    Real pretty print out statement  
-    \returns Full string of the output in abc+efg type form
-  */
-{
-  std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-  int sign,val;      // sign and value of unit
-  for(ic=Units.begin();ic!=Units.end();ic++)
-    {
-      if (!Intersect && ic!=Units.begin())
-	cx<<'+';
-      signSplit(*ic,sign,val);
-      if (val<27)
-	cx<<static_cast<char>(static_cast<int>('a')+(val-1));
-      else if (val<53)
-	cx<<static_cast<char>(static_cast<int>('A')+(val-27));
-      else
-	cx<<"%"<<val-52;
-      if (sign<0)
-	cx<<'\'';
-    }
-  // Now do composites
-  std::vector<Acomp>::const_iterator vc;
-  for(vc=Comp.begin();vc!=Comp.end();vc++)
-    {
-      if (!Intersect && (vc!=Comp.begin() || !Units.empty()))
-	cx<<'+';
-      //      if ( join && (*vc)->type() )
-      if ( !vc->Intersect )
-	cx<<'('<<vc->display()<<')';
-      else
-	//	cx<<'('<<vc->display()<<')';
-	cx<<vc->display();
-    }
-  return cx.str();
-}
-
-std::string
-Acomp::displayDepth(const int dval) const
-  /*!
-    Real pretty print out statement  :-)
-    \param dval :: parameter to keep track of depth
-    \returns Full string of print line
-  */
-{
-  std::stringstream cx;
-  std::vector<int>::const_iterator ic;
-  int sign,val;      // sign and value of unit
-  for(ic=Units.begin();ic!=Units.end();ic++)
-    {
-      if (!Intersect && ic!=Units.begin())
-	cx<<'+';
-      signSplit(*ic,sign,val);
-      if (val<27)
-	cx<<static_cast<char>(static_cast<int>('a')+(val-1));
-      else if (val<53)
-	cx<<static_cast<char>(static_cast<int>('A')+(val-27));
-      else
-	cx<<"%"<<val-52;
-      if (sign<0)
-	cx<<'\'';
-    }
-  // Now do composites
-  std::vector<Acomp>::const_iterator vc;
-  for(vc=Comp.begin();vc!=Comp.end();vc++)
-    {
-      if (!Intersect && (vc!=Comp.begin() || !Units.empty()))
-	cx<<'+';
-      //      if ( join && (*vc)->type() )
-      if ( !vc->Intersect )
-	cx<<"Dc"<<dval<<" "<<
-	  '('<<vc->displayDepth(dval+1)<<')'<<" "<<dval<<"Ec";
-      else
-	cx<<"Dc"<<dval<<" "<<vc->displayDepth(dval+1)<<" "<<dval<<"Ec";
-
-    }
-  return cx.str();
-}
 
 void
 Acomp::printImplicates(const std::vector<BnId>& PIform,
@@ -1948,19 +2140,21 @@ Acomp::removeOuterBracket(std::string& Item)
   */
 {
   ELog::RegMethod RegA("Acomp","removeOuterBracket");
-  if (Item.size()>2 || Item[0]!='(')
+  if (Item.size()<2 || Item[0]!='(')
     return;
   
   int bLevel(1);
-  for(size_t i=1;i<Item.size()-1;i++)
+  for(size_t i=1;i+1<Item.size();i++)
     {
       if (Item[i]=='(')
 	bLevel++;
       else if (Item[i]==')')
 	{
+	  
 	  bLevel--;
-	  if (bLevel==0)       // Internal bracket 
+	  if (bLevel==0)       // Internal bracket
 	    return;
+	      
 	}
     }
   Item=Item.substr(1,Item.size()-2);
@@ -1976,41 +2170,27 @@ Acomp::addTokens(const std::string& Ln)
 {
   ELog::RegMethod RegA("Acomp","addTokens");
 
+  // no string/no work
+  if (Ln.empty()) return;
   int numItem;
-  size_t iu(0);
+  size_t iu(1);
+  std::string unit(1,Ln[0]);
+    
   while(iu<Ln.size())
     {
+      // new key [end old and process
       if (isalpha(Ln[iu]) || Ln[iu]=='%')
 	{
-	  if (Ln[iu]=='%')
-	    {
-	      iu++;
-	      const size_t Nmove=
-		StrFunc::convPartNum(Ln.substr(iu),numItem);
-	      if (!Nmove)
-		throw ColErr::InvalidLine(Ln,RegA.getFull(),
-					  static_cast<size_t>(iu));
-	      numItem+=52;
-	      iu+=Nmove; 
-	    }
-	  else
-	    {
-	      numItem=(islower(Ln[iu])) ?
-		static_cast<int>(1+Ln[iu]-'a') :
-		static_cast<int>(27+Ln[iu]-'A');
-	      iu++;
-	    }
-	  // iu looks at next item:
-	  if (iu<Ln.length() && Ln[iu]=='\'')   // neg item
-	    { 
-	      numItem*=-1;
-	      iu++;
-	    }
+	  numItem=Acomp::unitStr(unit);
 	  addUnitItem(numItem);
+	  unit="";
 	}
-      else
-	iu++;
+      unit+=Ln[iu];
+      iu++;
     }
+  if (!unit.empty())
+    addUnitItem(Acomp::unitStr(unit));
+  
   return;
 }
 
@@ -2060,6 +2240,175 @@ Acomp::checkWrongChar(const std::string& Ln)
 
   return (percent==1) ? Ln.size()-1 : 0;
 }
+
+std::string
+Acomp::mapLogic(const std::map<int,int>& M)
+  /*!
+    Form a string of the logical state
+    \param M :: Map
+    \return :: letter map
+  */
+{
+  std::ostringstream cx;
+  for(const std::map<int,int>::value_type& mc : M)
+    {
+      const int MVal=(mc.second==0) ? -mc.first : mc.first;
+      cx<<Acomp::strUnit(MVal)<<" ";
+    }
+  return cx.str();
+}
+
+int
+Acomp::unitStr(std::string SR)
+  /*!
+    Convert a string into a literal
+    \param rule to convert
+  */
+{
+  if (SR.empty()) return 0;
+  int index(0);
+  if (SR[0]=='%')
+    {
+      SR[0]=' ';
+      const size_t id=StrFunc::convPartNum(SR,index);
+      index+=52;
+      if (id)
+	{
+	  if (SR.size()!=id && SR[id]=='\'')
+	    index*= -1;
+	}
+      return index;
+    }
+  index=static_cast<int>(StrFunc::revAlphaToIndex(SR[0])+1);
+  if (SR.size()>1 && SR[1]=='\'')
+    index*= -1;
+  return index;
+}
+  
+std::string
+Acomp::strUnit(const int IC)
+  /*!
+    Place a index into a letter for easier viewing
+    \param IC :: Index 
+    \return :: letter index
+  */
+{
+  std::ostringstream cx;
+  int sign,val;
+  signSplit(IC,sign,val);
+  if (val>52)
+    cx<<"%"<<val-52;
+  else
+    cx<<StrFunc::indexToRevAlpha(val-1);
+  
+  if (sign<0) cx<<'\'';
+  return cx.str();
+}
+  
+std::string
+Acomp::unitsDisplay() const
+  /*!
+    Real pretty print out statement  
+    \returns Head only string of the output in abc+efg type form
+  */
+{
+  std::ostringstream cx;
+
+  std::string unionPlus;
+  
+  for(const int IC : Units)
+    {
+      cx<<unionPlus;
+      cx<<strUnit(IC);
+      if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
+
+std::string
+Acomp::compDisplay(std::string unionPlus) const
+  /*!
+    Real pretty print out statement  
+    \param unionPlus :: extra join flag
+    \returns Just the component part
+  */
+{
+  // Now do composites
+  std::ostringstream cx;
+  for(const Acomp& AC : Comp)
+    {
+      cx<<unionPlus;
+      if ( !AC.Intersect )           // UNION
+	cx<<'('<<AC.display()<<')';
+      else
+	cx<<AC.display();
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
+
+std::string
+Acomp::display() const
+  /*!
+    Real pretty print out statement  
+    \returns Full string of the output in abc+efg type form
+  */
+{
+  std::stringstream cx;
+
+  if (trueFlag==1)
+    cx<<"~~";
+  else if (trueFlag==-1)
+    cx<<"!!";
+  else
+    {
+      cx<<unitsDisplay();
+      if ( Intersect==0 && !Units.empty() )
+	cx<<compDisplay("+");
+      else
+    cx<<compDisplay();
+    }
+    
+  return cx.str();
+}
+
+std::string
+Acomp::displayDepth(const int dval) const
+  /*!
+    Real pretty print out statement  :-)
+    \param dval :: parameter to keep track of depth
+    \returns Full string of print line
+  */
+{
+  std::stringstream cx;
+  std::vector<int>::const_iterator ic;
+
+
+  cx<<unitsDisplay();
+
+  // Now do composites
+  std::string unionPlus;
+  if ( Intersect==0 && !Units.empty() )
+    unionPlus="+";
+
+  for(const Acomp& AC : Comp)
+    {
+
+      cx<<unionPlus;
+      //      if ( join && (*vc)->type() )
+      if ( !AC.Intersect )
+	cx<<"D["<<dval<<"][U]"
+	  <<'('<<AC.displayDepth(dval+1)<<')';
+      else
+	cx<<"D["<<dval<<"][I]"
+	  <<AC.displayDepth(dval+1);
+
+      cx<<" EEE["<<dval<<"]";
+     if (!Intersect) unionPlus="+";
+    }
+  return cx.str();
+}
+
 
 
 } // NAMESPACE MonteCarlo

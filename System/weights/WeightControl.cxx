@@ -3,7 +3,7 @@
  
  * File:   weights/WeightControl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -380,6 +380,8 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   ELog::RegMethod RegA("WeightControl","procParam");
 
   const size_t nItem=IParam.setCnt(unitName);
+
+
   if (iSet>nItem)
     throw ColErr::IndexError<size_t>(iSet,nItem,"iSet/nItem:"+unitName);
     
@@ -391,39 +393,19 @@ WeightControl::procParam(const mainSystem::inputParam& IParam,
   r2Length=IParam.getDefValue<double>(1.0,unitName,iSet,index++);
   r2Power=IParam.getDefValue<double>(2.0,unitName,iSet,index++);
 
-  ELog::EM<<"SCALE == "<<energyCut<<" "<<scaleFactor<<" "
-	  <<density<<ELog::endDiag;
-  if (scaleFactor>1.0)
-    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
-  
   ELog::EM<<"Param("<<unitName<<")["<<iSet<<"] eC:"<<energyCut
 	  <<" sF:"<<scaleFactor
     	  <<" rho:"<<density
     	  <<" r2Len:"<<r2Length
 	  <<" r2Pow:"<<r2Power<<ELog::endDiag;
+  if (r2Power>0.1)
+    weightPower=1.0/r2Power;
+  if (scaleFactor>1.0)
+    ELog::EM<<"density scale factor > 1.0 "<<ELog::endWarn;
   return;
 }
     
 
-
-void
-WeightControl::normWeights(Simulation& System,
-                           const mainSystem::inputParam& IParam)
-  /*!
-    Normalize the weights after the main processing event
-    \param System :: simulation to use
-    \param IParam :: Parameter
-  */
-    
-{
-  ELog::RegMethod RegA("WeightControl","normWeights");
-  
-  // This shoudl be elsewhere
-  if (IParam.flag("tallyWeight"))
-    tallySystem::addPointPD(System);
-
-  return;
-}
 
 void
 WeightControl::processWeights(Simulation& System,

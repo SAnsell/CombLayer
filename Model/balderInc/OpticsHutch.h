@@ -31,7 +31,7 @@ namespace xraySystem
   \class OpticsHutch
   \version 1.0
   \author S. Ansell
-  \date July 2016
+  \date January 2018
   \brief OpticsHutch unit  
 
   Built around the central beam axis
@@ -41,7 +41,6 @@ class OpticsHutch :
   public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
-  
 {
  private:
   
@@ -50,16 +49,22 @@ class OpticsHutch :
 
   double depth;                 ///< void height 
   double height;                ///< void deptth
-  double length;              ///< void out side width
+  double length;                ///< void out side width
   double ringWidth;             ///< void flat part to ring
   double ringWallLen;           ///< void flat length [before angle]
   double ringWallAngle;         ///< angle on ring side wall
   double outWidth;              ///< out side width
 
   double innerThick;            ///< Inner wall/roof skin
-  double pbThick;               ///< Thickness of lead in walls
+  double pbWallThick;           ///< Thickness of lead in walls
+  double pbBackThick;           ///< Thickness of lead in back plate
+  double pbRoofThick;           ///< Thickness of lead in Roof
   double outerThick;            ///< Outer wall/roof skin
   double floorThick;            ///< Floor thickness
+
+  double holeXStep;            ///< Hole XStep
+  double holeZStep;            ///< Hole ZStep  
+  double holeRadius;           ///< Hole radius
   
   int skinMat;                ///< Fe layer material for walls
   int pbMat;                  ///< pb layer material for walls 

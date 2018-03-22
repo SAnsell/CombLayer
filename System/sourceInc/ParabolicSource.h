@@ -3,7 +3,7 @@
  
  * File:   sourceInc/ParabolicSource.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class ParabolicSource :
   double angleSpread;           ///< Angle distribution
 
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -70,13 +70,15 @@ class ParabolicSource :
   void setRectangle(const double,const double);
   void setNPts(const size_t,const size_t);
   
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
 };
 
 }

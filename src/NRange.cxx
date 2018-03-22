@@ -319,14 +319,12 @@ NRange::setVector(const std::vector<double>& Vec)
   ELog::RegMethod RegA("NRange","setVector");
   
   Items.erase(Items.begin(),Items.end());
-  
-  std::vector<double>::const_iterator vc;
-  for(vc=Vec.begin();vc!=Vec.end();vc++)
-    Items.push_back(NRunit(0,0,*vc));	 
+
+  for(const double V : Vec)
+    Items.push_back(NRunit(0,0,V));	 
   
   double TValue(mathFunc::minDifference(Vec,1e-15)/10.0);
   if (TValue>1e-6) TValue=1e-6;
-  condense(TValue);
   return;
 }
 
@@ -342,11 +340,9 @@ NRange::setVector(const std::vector<int>& Vec)
 
   Items.erase(Items.begin(),Items.end());
   
-  std::vector<int>::const_iterator vc;
-  for(vc=Vec.begin();vc!=Vec.end();vc++)
-    Items.push_back(NRunit(0,0,*vc));	 
+  for(const double V : Vec)
+    Items.push_back(NRunit(0,0,V));	 
   
-  condense(1e-3);
   return;
 }
 
@@ -375,7 +371,7 @@ NRange::condense(const double Tol)
   writeVector(Values);
   if (Values.size()<2)
     return;
-  
+
   std::list<NRunit> Out;
   // Extra value here a guard item
   std::vector<int> type(Values.size()+1,0);
@@ -385,14 +381,12 @@ NRange::condense(const double Tol)
       if (identVal(Tol,Values[i],Values[i-1]))
 	type[i]=1;
       else if (i>1 && intervalVal(Tol,Values[i-2],Values[i-1],Values[i]))
-	{
-	  type[i-1]=2;
-	}
+	type[i-1]=2;    // linear interval
       else if (i>1 && logIntVal(Tol/100.0,Values[i-2],Values[i-1],Values[i]))
-	{
-	  type[i-1]=3;
-	}
+	type[i-1]=3;   // log intervale
     }
+
+  
   size_t cnt(0);
   while(cnt<Values.size())
     {

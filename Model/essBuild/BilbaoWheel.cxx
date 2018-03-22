@@ -770,7 +770,7 @@ BilbaoWheel::createRadialSurfaces(const int SI, const size_t n,const double w)
 
   int SJ(SI);
   double theta(0.0);
-  const double dTheta = 360.0/n;
+  const double dTheta = 360.0/static_cast<double>(n);
 
   for (size_t j=0; j<n; j++)
     {
@@ -907,7 +907,7 @@ BilbaoWheel::buildHoles(Simulation& System,
 
   // create surfaces
   int SI(SI0);
-  double theta(0.0);
+  double theta(xyAngle);
 
   // angular length of hole+mat
   const double dTheta = 360.0/static_cast<double>(nSectors);
@@ -915,10 +915,10 @@ BilbaoWheel::buildHoles(Simulation& System,
 
   for (size_t j=0; j<nSectors; j++)
     {
-      theta = j*dTheta+xyAngle;
+      theta += dTheta;
       ModelSupport::buildPlaneRotAxis(SMap, SI+1, Origin, X, Z, theta);
-      theta += dThetaHole;
-      ModelSupport::buildPlaneRotAxis(SMap, SI+2, Origin, X, Z, theta);
+      ModelSupport::buildPlaneRotAxis
+	(SMap, SI+2, Origin, X, Z, theta+dThetaHole);
 
       SI += SIstep;
     }

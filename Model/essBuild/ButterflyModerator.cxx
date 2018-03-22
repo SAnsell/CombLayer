@@ -3,7 +3,7 @@
 
  * File:   essBuild/ButterflyModerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -311,9 +311,9 @@ ButterflyModerator::createLinks()
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
   // copy surface top/bottom from H2Wing and Origin from center
+  FixedComp::setLinkSignedCopy(4,*LeftUnit,5);
+  FixedComp::setLinkSignedCopy(5,*LeftUnit,6);
 
-  FixedComp::setLinkCopy(4,*LeftUnit,4);
-  FixedComp::setLinkCopy(5,*LeftUnit,5);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
@@ -321,8 +321,8 @@ ButterflyModerator::createLinks()
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
 
-  FixedComp::setLinkCopy(6,*MidWater,12);
-
+  FixedComp::setLinkSignedCopy(6,*MidWater,13);  
+  
   return;
 }
 

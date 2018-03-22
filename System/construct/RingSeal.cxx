@@ -3,7 +3,7 @@
  
  * File:   construct/RingSeal.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ RingSeal::RingSeal(const std::string& Key) :
   attachSystem::FixedOffset(Key,6),
   attachSystem::ContainedComp(),attachSystem::CellMap(),
   ringIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(ringIndex+1),setFlag(0)
+  cellIndex(ringIndex+1),standardInsert(0),setFlag(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,6 +95,7 @@ RingSeal::RingSeal(const RingSeal& A) :
   ringIndex(A.ringIndex),cellIndex(A.cellIndex),
   NSection(A.NSection),NTrack(A.NTrack),radius(A.radius),
   deltaRad(A.deltaRad),thick(A.thick),mat(A.mat),
+  standardInsert(A.standardInsert),
   setFlag(A.setFlag),innerStruct(A.innerStruct),
   outerStruct(A.outerStruct)
   /*!
@@ -123,6 +124,7 @@ RingSeal::operator=(const RingSeal& A)
       deltaRad=A.deltaRad;
       thick=A.thick;
       mat=A.mat;
+      standardInsert=A.standardInsert;
       setFlag=A.setFlag;
       innerStruct=A.innerStruct;
       outerStruct=A.outerStruct;
@@ -230,7 +232,6 @@ RingSeal::createObjects(Simulation& System)
   */
 {
   ELog::RegMethod RegA("RingSeal","createObjects");
-
   
   std::string Out,SealStr;
 
@@ -273,7 +274,10 @@ RingSeal::generateInsert(Simulation& System)
   ELog::RegMethod RegA("RingSeal","generateInsert");
 
   if (standardInsert) return;
-  
+
+  //System.populateCells();
+  //  System.validateObjSurfMap();
+
   const size_t maxN(std::max<size_t>(NTrack,12));
   const double angleR=360.0/static_cast<double>(maxN);
   const Geometry::Quaternion QSeg=
@@ -291,7 +295,8 @@ RingSeal::generateInsert(Simulation& System)
       cellActive.insert(OPtr->getName());
       QSeg.rotate(BAxis);
     }
-  
+
+
   for(const int CN : cellActive)
     addInsertCell(CN);
 

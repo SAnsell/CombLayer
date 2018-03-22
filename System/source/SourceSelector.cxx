@@ -3,7 +3,7 @@
  
  * File:   source/SourceSelector.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,10 +70,13 @@
 #include "PhysImp.h"
 #include "PhysicsCards.h"
 #include "Simulation.h"
+#include "inputSupport.h"
 #include "SourceCreate.h"
 #include "localRotate.h"
 #include "masterRotate.h"
 #include "objectRegister.h"
+#include "particleConv.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "WorkData.h"
 #include "World.h"
@@ -95,78 +98,81 @@ sourceSelection(Simulation& System,
   */
 {
   ELog::RegMethod RegA("SourceSelector[F]","sourceSelection");
-  
-  const FuncDataBase& Control=System.getDataBase();
+
+  const mainSystem::MITYPE inputMap=IParam.getMapItems("sdefMod");
 
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  const std::string DObj=IParam.getValue<std::string>("sdefObj",0);
-  const std::string DSnd=IParam.getValue<std::string>("sdefObj",1);
-  const std::string Dist=IParam.getValue<std::string>("sdefObj",2);
+  const std::string DObj=IParam.getDefValue<std::string>("","sdefObj",0);
+  const std::string DSnd=IParam.getDefValue<std::string>("","sdefObj",1);
+  const std::string Dist=IParam.getDefValue<std::string>("","sdefObj",2);
 
   Geometry::Vec3D DOffsetStep;
   double D;
   if (!StrFunc::convert(Dist,DOffsetStep) && 
-      !StrFunc::convert(Dist,D))
+      StrFunc::convert(Dist,D))
     DOffsetStep[1]=D;
   
   const attachSystem::FixedComp& FC=
     (DObj.empty()) ?  World::masterOrigin() :
     *(OR.getObjectThrow<attachSystem::FixedComp>(DObj,"Object not found"));
-  
+
+
   const long int linkIndex=(DSnd.empty()) ?  0 :
-    attachSystem::getLinkIndex(DSnd)/1000;
+    attachSystem::getLinkIndex(DSnd) % 1000;
 
   // NOTE: No return to allow active SSW systems  
-  std::string sdefType=IParam.getValue<std::string>("sdefType");
+  const std::string sdefType=IParam.getValue<std::string>("sdefType");
   std::string sName;
   
-
 
   if (sdefType.empty() && IParam.hasKey("kcode") &&
       IParam.flag("kcode"))
     sName="kcode";
 
   else if (sdefType=="TS1")                            // parabolic source
-    sName=SDef::createTS1Source(Control,FC,linkIndex);
+    sName=SDef::createTS1Source(inputMap,FC,linkIndex);
 
   else if (sdefType=="TS1Gauss")                   // TS1Gauss
-    sName=SDef::createTS1GaussianSource(Control,FC,linkIndex); 
+    sName=SDef::createTS1GaussianSource(inputMap,FC,linkIndex); 
 
   else if (sdefType=="TS1GaussNew")                // TS1NewGauss
-    sName=SDef::createTS1GaussianNewSource(Control,FC,linkIndex);     
+    sName=SDef::createTS1GaussianNewSource(inputMap,FC,linkIndex);     
 
   else if (sdefType=="TS1Muon")                    // TS1Muon
-    sName=SDef::createTS1MuonSource(Control,FC,linkIndex); 
+    sName=SDef::createTS1MuonSource(inputMap,FC,linkIndex); 
 
   else if (sdefType=="TS3Expt")                    
-    sName=SDef::createTS3ExptSource(Control,FC,linkIndex); 
+    sName=SDef::createTS3ExptSource(inputMap,FC,linkIndex); 
 
   else if (sdefType=="TS1EPBColl" || sdefType=="TS1EpbColl")
-    sName=SDef::createTS1EPBCollSource(Control,FC,linkIndex); 
+    sName=SDef::createTS1EPBCollSource(inputMap,FC,linkIndex); 
 
   else if (sdefType=="Bilbao")                    // bilbauSource
-    sName=SDef::createBilbaoSource(Control,FC,linkIndex);
+    sName=SDef::createBilbaoSource(inputMap,FC,linkIndex);
+
+  else if (sdefType=="Wiggler")                       // blader wiggler
+    sName=SDef::createWigglerSource(inputMap,FC,linkIndex);
 
   else if (sdefType=="ess")                       // essSource
-    sName=SDef::createESSSource(Control,FC,linkIndex);
+    sName=SDef::createESSSource(inputMap,FC,linkIndex);
 
   else if (sdefType=="essLinac")                 // essLinacSource
-    sName=SDef::createESSLinacSource(Control,FC,linkIndex);
+    sName=SDef::createESSLinacSource(inputMap,FC,linkIndex);
   
   else if (sdefType=="D4C")
-    sName=SDef::createD4CSource(Control,FC,linkIndex);
+    sName=SDef::createD4CSource(inputMap,FC,linkIndex);
 
   else if (sdefType=="Sinbad" || sdefType=="sinbad")
-    sName=SDef::createSinbadSource(Control,FC,linkIndex);
+    sName=SDef::createSinbadSource(inputMap,FC,linkIndex);
 
   else if (sdefType=="Gamma" || sdefType=="gamma")
-    sName=SDef::createGammaSource(Control,"gammaSource",
+    sName=SDef::createGammaSource(inputMap,"gammaSource",
 				  FC,linkIndex);
   
   else if (sdefType=="Laser" || sdefType=="laser")
-    sName=SDef::createGammaSource(Control,"laserSource",
+    sName=SDef::createGammaSource(inputMap,"laserSource",
 				  FC,linkIndex);
   
   else if (sdefType=="Activation" || sdefType=="activation")
@@ -174,28 +180,28 @@ sourceSelection(Simulation& System,
 
   else if (sdefType=="Point" || sdefType=="point")
     {
-      sName=SDef::createPointSource(Control,"pointSource",
+      sName=SDef::createPointSource(inputMap,"pointSource",
 			      FC,linkIndex);
     }
   else if (sdefType=="Disk" || sdefType=="disk")
     {
-      sName=SDef::createGammaSource(Control,"diskSource",FC,
+      sName=SDef::createGammaSource(inputMap,"diskSource",FC,
 				    linkIndex);
     }
   else if (sdefType=="Beam" || sdefType=="beam")
     {
-      sName=SDef::createBeamSource(Control,"beamSource",
+      sName=SDef::createBeamSource(inputMap,"beamSource",
 			     FC,linkIndex);
     }
   else if (sdefType=="LENS" || sdefType=="lens")
     {
-      sName=SDef::createLensSource(Control,FC,linkIndex);
+      sName=SDef::createLensSource(inputMap,FC,linkIndex);
     }
   else if (sdefType=="TS2")
     {  
       // Basic TS2 source
       // NOTE THIS IS the old stupid TS2 origin system
-      sName=SDef::createTS2Source(Control,World::masterTS2Origin(),0);
+      sName=SDef::createTS2Source(inputMap,World::masterTS2Origin(),0);
     }
   else if (sdefType=="kcode")
     {
@@ -216,6 +222,7 @@ sourceSelection(Simulation& System,
 	"Laser :: Laser D/T fussion source\n"
 	"Point :: Test point source\n"
 	"Beam :: Test Beam [Radial] source \n"
+	"Wiggler :: Wiggler Source for balder \n"
 	"D4C :: D4C neutron beam"<<ELog::endBasic;
     }
 
@@ -243,7 +250,8 @@ activationSelection(Simulation& System,
   std::string OName="Data.ssw";
   std::string cellDir="Cell";
   size_t timeSeg(1);
-  size_t nVol=System.getPC().getNPS();
+
+  size_t nVol=IParam.getValue<size_t>("nps");
   Geometry::Vec3D weightPt;
   double weightDist(-1.0);
   double scale(1.0);

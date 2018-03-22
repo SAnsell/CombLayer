@@ -3,7 +3,7 @@
  
  * File:   tallyInc/fmeshConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ namespace mainSystem
 }
 
 class Simulation;
+class SimMCNPx;
 
 namespace tallySystem
 {
@@ -41,7 +42,7 @@ namespace tallySystem
   \class fmeshConstruct
   \version 1.0
   \author S. Ansell
-  \date September 2017
+  \date September 2018
   \brief Constructs a mesh tally from inputParam
 */
 
@@ -49,20 +50,24 @@ class fmeshConstruct : public meshConstruct
 {
  private:
 
+  /// private constructor
+  
+  fmeshConstruct() {}
+  
  public:
 
-  fmeshConstruct();
-  fmeshConstruct(const fmeshConstruct&);
-  fmeshConstruct& operator=(const fmeshConstruct&);
-  virtual ~fmeshConstruct() {}  ///< Destructor
 
-  virtual void rectangleMesh(Simulation&,const int,
-			     const std::string&,
-			     const Geometry::Vec3D&,
-			     const Geometry::Vec3D&,
-			     const std::array<size_t,3>&) const;
+  static void processMesh(SimMCNP&,
+			  const mainSystem::inputParam&,
+			  const size_t);
+
+  static void rectangleMesh(SimMCNP&,const int,
+			    const std::string&,
+			    const Geometry::Vec3D&,
+			    const Geometry::Vec3D&,
+			    const std::array<size_t,3>&);
   
-  virtual void writeHelp(std::ostream&) const;
+  static void writeHelp(std::ostream&);
 };
 
 }

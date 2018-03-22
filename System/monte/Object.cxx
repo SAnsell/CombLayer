@@ -3,7 +3,7 @@
  
  * File:   monte/Object.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,23 +43,22 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Transform.h"
 #include "Track.h"
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Surface.h"
 #include "surfIndex.h"
+#include "surfImplicates.h"
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Token.h"
 #include "neutron.h"
-#include "RuleCheck.h"
 #include "objectRegister.h"
 #include "masterWrite.h"
 #include "Element.h"
@@ -169,8 +168,8 @@ Object::startLine(const std::string& Line)
 }
 
 Object::Object() :
-  ObjName(0),listNum(-1),Tmp(300),MatN(-1),fill(0),trcl(0),
-  universe(0),imp(1),density(0.0),placehold(0),populated(0),
+  ObjName(0),listNum(-1),Tmp(300),MatN(-1),trcl(0),
+  imp(1),density(0.0),placehold(0),populated(0),
   objSurfValid(0)
  /*!
    Defaut constuctor, set temperature to 300C and material to vacuum
@@ -179,8 +178,8 @@ Object::Object() :
 
 Object::Object(const int N,const int M,const double T,
 	       const std::string& Line) :
-  ObjName(N),listNum(-1),Tmp(T),MatN(M),fill(0),trcl(0),
-  universe(0),imp(1),density(0.0),placehold(0),
+  ObjName(N),listNum(-1),Tmp(T),MatN(M),trcl(0),
+  imp(1),density(0.0),placehold(0),
   populated(0),objSurfValid(0)
  /*!
    Constuctor, set temperature to 300C 
@@ -195,7 +194,7 @@ Object::Object(const int N,const int M,const double T,
 
 Object::Object(const Object& A) :
   ObjName(A.ObjName),listNum(A.listNum),Tmp(A.Tmp),MatN(A.MatN),
-  fill(A.fill),trcl(A.trcl),universe(A.universe),imp(A.imp),
+  trcl(A.trcl),imp(A.imp),
   density(A.density),placehold(A.placehold),populated(A.populated),
   HRule(A.HRule),objSurfValid(0),SurList(A.SurList),SurSet(A.SurSet)
   /*!
@@ -218,9 +217,7 @@ Object::operator=(const Object& A)
       listNum=A.listNum;
       Tmp=A.Tmp;
       MatN=A.MatN;
-      fill=A.fill;
       trcl=A.trcl;
-      universe=A.universe;
       imp=A.imp;
       density=A.density;
       placehold=A.placehold;
@@ -371,15 +368,9 @@ Object::setObject(std::string Ln)
       if (Extract=="tmp" && 
 	  StrFunc::convert(Value,tval) && tval>=0.0)
 	Tmp=tval;
-      else if (Extract=="fill" && 
-	       StrFunc::convert(Value,iVal))
-	fill=iVal;
       else if (Extract=="trcl" && 
 	       StrFunc::convert(Value,iVal))
 	trcl=iVal;
-      else if (Extract=="u" && 
-	       StrFunc::convert(Value,iVal))
-	universe=iVal;
       else if (Extract=="imp:n" && 
 	       StrFunc::convert(Value,iVal))
 	imp=iVal;
@@ -397,7 +388,7 @@ Object::setObject(std::string Ln)
     }
 
   populated=0;
-  if (HRule.procString(Ln))     // this currently does not fail:
+  if (HRule.procString(Ln))   // fails on empty
     {
       SurList.clear();
       SurSet.erase(SurSet.begin(),SurSet.end());
@@ -420,6 +411,19 @@ Object::procString(const std::string& cellStr)
 {
   populated=0;
   return HRule.procString(cellStr);
+}
+
+int
+Object::procHeadRule(const HeadRule& cellRule)
+  /*!
+    Process a cell string
+    \param cellStr :: Object string
+    \return -ve on error
+   */
+{
+  populated=0;
+  HRule=cellRule;
+  return 1;
 }
 
 int
@@ -673,6 +677,72 @@ Object::isValid(const Geometry::Vec3D& Pt,
   return HRule.isValid(Pt,ExSN);
 }
 
+std::vector<std::pair<int,int>>
+Object::getImplicatePairs(const int SN) const
+  /*!
+    Determine all the implicate pairs for the object
+    The map is plane A has (sign A) implies plane B has (sign B)
+    \return Map of surf -> surf
+  */
+{
+  ELog::RegMethod RegA("Object","getImplicatePairs(int)");
+
+  const Geometry::surfImplicates& SImp=
+      Geometry::surfImplicates::Instance();
+
+  const ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+
+  std::vector<std::pair<int,int>> Out;
+
+  const Geometry::Surface* APtr=SurI.getSurf(SN);
+  if (!APtr)
+    throw ColErr::InContainerError<int>(SN,"Surface not found");
+
+  for(const Geometry::Surface* BPtr : SurList)
+    {
+      if (APtr!=BPtr)
+	{
+	  std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
+	  if (dirFlag.first)
+	    Out.push_back
+	      (std::pair<int,int>
+	       (dirFlag.first*SN,dirFlag.second*BPtr->getName()));
+	}
+    }
+
+  return Out;
+}
+
+std::vector<std::pair<int,int>>
+Object::getImplicatePairs() const
+  /*!
+    Determine all the implicate pairs for the object
+    The map is plane A has (sign A) implies plane B has (sign B)
+    \return Map of surf -> surf
+  */
+{
+  ELog::RegMethod RegA("Object","getImplicatePairs");
+
+  const Geometry::surfImplicates& SImp=
+      Geometry::surfImplicates::Instance();
+
+  std::vector<std::pair<int,int>> Out;
+
+  for(size_t i=0;i<SurList.size();i++)
+    for(size_t j=i+1;j<SurList.size();j++)
+      {
+	const Geometry::Surface* APtr=SurList[i];
+	const Geometry::Surface* BPtr=SurList[j];
+
+	const std::pair<int,int> dirFlag=SImp.isImplicate(APtr,BPtr);
+
+	if (dirFlag.first)
+	  Out.push_back(dirFlag);
+      }
+  return Out;
+}
+
 int
 Object::isValid(const std::map<int,int>& SMap) const
 /*! 
@@ -902,12 +972,13 @@ Object::hasIntercept(const Geometry::Vec3D& IP,
 
     \param IP :: Initial point
     \param UV :: Forward going vector
-    \return True(1)  / Fail(0)
+    \return True(1) / Fail(0)
   */
 {
   ELog::RegMethod RegA("Object","hadIntercept");
 
   MonteCarlo::LineIntersectVisit LI(IP,UV);
+ 
   std::vector<const Geometry::Surface*>::const_iterator vc;
   for(vc=SurList.begin();vc!=SurList.end();vc++)
     (*vc)->acceptVisitor(LI);
@@ -938,7 +1009,6 @@ Object::forwardIntercept(const Geometry::Vec3D& IP,
 {
   ELog::RegMethod RegA("Object","forwardIntercept");
   
-
   MonteCarlo::LineIntersectVisit LI(IP,UV);
   std::vector<const Geometry::Surface*>::const_iterator vc;
   for(vc=SurList.begin();vc!=SurList.end();vc++)
@@ -1254,12 +1324,8 @@ Object::write(std::ostream& OX) const
   cx<<str();
   if (Tmp>1.0 && fabs(Tmp-300.0)>1.0)
     cx<<" "<<"tmp="<<Tmp*8.6173422e-11;
-  if (fill)
-    cx<<" "<<"fill="<<fill;
   if (trcl)
     cx<<" "<<"trcl="<<trcl;
-  if (universe)
-    cx<<" "<<"u="<<universe;
 
   if (placehold)
     StrFunc::writeMCNPXcomment(cx.str(),OX);
@@ -1286,10 +1352,12 @@ Object::writeFLUKAmat(std::ostream& OX) const
       std::ostringstream cx;
       cx<<"ASSIGNMAT ";
 
-      if (MatN)
+      if (!imp)
+	cx<<"BLCKHOLE";
+      else if (MatN)
 	cx<<"M"+std::to_string(MatN);
-      else   // this should test imp:0 and imp:-1
-	cx<<((ObjName==1)?"BLCKHOLE":"VACUUM");
+      else
+	cx<<"VACUUM";
 
       cx<<" R"+std::to_string(ObjName);
       StrFunc::writeFLUKA(cx.str(),OX);
@@ -1313,12 +1381,10 @@ Object::writeFLUKA(std::ostream& OX) const
   if (!placehold)
     {
       std::string objName=OR.inRenumberRange(ObjName);
-      if (objName.empty())
-	objName="global";
+      if (objName.empty()) objName="global";
+
       std::ostringstream cx;
       cx<<"* "<<objName<<" "<<ObjName<<std::endl;
-      cx.precision(10);
-
       cx<<"R"<<ObjName<<" "<<SurList.size()<<" ";
       cx<<HRule.displayFluka()<<std::endl;
       StrFunc::writeMCNPX(cx.str(),OX);

@@ -3,7 +3,7 @@
  
  * File:   test/testPlane.cxx
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,19 +129,17 @@ testPlane::testDistance()
   ELog::RegMethod RegA("testPlane","testDistance");
 
   typedef std::tuple<std::string,Geometry::Vec3D,double> TTYPE;
-  std::vector<TTYPE> Tests;
+  std::vector<TTYPE> Tests=
+    {
+      TTYPE("px 1",Geometry::Vec3D(1.2,0.6,0.4),0.2),
+      TTYPE("p 0.0 0.5 0.5 1.0",Geometry::Vec3D(7,1,1),0.0),
+      TTYPE("p 0.0 0.5 0.5 1.0",Geometry::Vec3D(7,2,0),0.0),
+      // Note the negative since coming from the reverse of the axis
+      TTYPE("p 0.0 0.5 0.5 1.0",Geometry::Vec3D(1.2,0.8,0.4),
+	    -sqrt(2*0.16))
+    };
   
-  Tests.push_back(TTYPE("px 1",Geometry::Vec3D(1.2,0.6,0.4),0.2));
-  Tests.push_back(TTYPE("p 0.0 0.5 0.5 1.0",
-			Geometry::Vec3D(7,1,1),0.0));
-  Tests.push_back(TTYPE("p 0.0 0.5 0.5 1.0",
-			Geometry::Vec3D(7,2,0),0.0));
-  // Note the negative since coming from the reverse of the 
-  Tests.push_back(TTYPE("p 0.0 0.5 0.5 1.0",              
-			Geometry::Vec3D(1.2,0.8,0.4),
-			-sqrt(2*0.16)));
-		  
-  
+		    
   for(const TTYPE& tc : Tests)
     {
       Plane A;

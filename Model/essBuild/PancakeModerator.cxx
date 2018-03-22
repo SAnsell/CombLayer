@@ -300,16 +300,14 @@ PancakeModerator::createLinks()
 
   // copy surface top/bottom from H2Wing and Origin from center
 
-  FixedComp::setLinkCopy(4,*MidH2,4);
-  FixedComp::setLinkCopy(5,*MidH2,5);
+  FixedComp::setLinkSignedCopy(4,*MidH2,5);
+  FixedComp::setLinkSignedCopy(5,*MidH2,6);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);
   const Geometry::Vec3D HighPt(Origin.X(),Origin.Y(),HighV);
   FixedComp::setConnect(4,LowPt,-Z);
   FixedComp::setConnect(5,HighPt,Z);
-
-  //  FixedComp::setLinkCopy(6,*MidH2,12); ELog::EM << "is it correct?" << ELog::endDiag;
 
   return;
 }

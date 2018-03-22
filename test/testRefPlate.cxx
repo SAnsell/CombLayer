@@ -3,7 +3,7 @@
  
  * File:   test/testRefPlate.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "FixedComp.h"
 #include "simpleObj.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "World.h"
 #include "refPlate.h"
 
@@ -298,7 +299,6 @@ testRefPlate::testArrayBlocks()
   
   for(size_t i=4;i<6;i++)
     {
-      ELog::EM<<"RVE == "<<i<<ELog::endDiag;
       RVec[i]->setOrigin(*SObj,static_cast<long int>(i));
       RVec[i]->setPlane("-X",*RVec[0],4);
       RVec[i]->setPlane("X",*RVec[2],4);
@@ -309,7 +309,6 @@ testRefPlate::testArrayBlocks()
 
   for(size_t i=0;i<6;i++)
     {
-      ELog::EM<<"ITEM:"<<i<<ELog::endDiag;
       RVec[i]->setInsertCell(SObj->getCell());
       RVec[i]->createAll(ASim);
     }

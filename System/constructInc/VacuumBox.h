@@ -37,15 +37,13 @@ namespace constructSystem
 
 class VacuumBox :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::FrontBackCut
 {
  private:
 
   const bool centreOrigin;      ///< Construct on the centre line
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
 
   double voidHeight;            ///< void height [top only]
   double voidWidth;             ///< void width [total]
@@ -58,12 +56,22 @@ class VacuumBox :
   double feFront;             ///< fe front 
   double feBack;              ///< fe back
 
-  double portWallThick;     ///< Flange wall thickness
-  double portTubeLength;    ///< Port tube
-  double portTubeRadius;    ///< Port tube length
-  
-  double flangeRadius;        ///< Joining Flange radius
-  double flangeLength;        ///< Joining Flange length
+  double portAXStep;          ///< XStep of port
+  double portAZStep;          ///< ZStep of port
+  double portAWallThick;      ///< Flange wall thickness
+  double portATubeLength;     ///< Port tube
+  double portATubeRadius;     ///< Port tube length
+
+  double portBXStep;          ///< XStep of port
+  double portBZStep;          ///< ZStep of port
+  double portBWallThick;      ///< Flange wall thickness
+  double portBTubeLength;     ///< Port tube
+  double portBTubeRadius;     ///< Port tube length
+
+  double flangeARadius;        ///< Joining Flange radius
+  double flangeALength;        ///< Joining Flange length
+  double flangeBRadius;        ///< Joining Flange radius
+  double flangeBLength;        ///< Joining Flange length
   
   int voidMat;                ///< void material
   int feMat;                  ///< Fe material layer

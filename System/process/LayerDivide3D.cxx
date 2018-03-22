@@ -389,11 +389,11 @@ LayerDivide3D::checkDivide() const
    */
 {
   ELog::RegMethod RegA("LayerDivide3D","checkDivide");
-  if (!(AWall.first*AWall.second))
+  if (AWall.first*AWall.second==0)
     throw ColErr::EmptyValue<int>("Section A not set");
-  if (!(BWall.first*BWall.second))
+  if (BWall.first*BWall.second==0)
     throw ColErr::EmptyValue<int>("Section B not set");
-  if (!(CWall.first*CWall.second))
+  if (CWall.first*CWall.second==0)
     throw ColErr::EmptyValue<int>("Section C not set");
   return;
 }
@@ -546,11 +546,9 @@ LayerDivide3D::divideCell(Simulation& System,const int cellN)
 	      const std::string CCut=
 		ModelSupport::getComposite(SMap,cIndex," 1 -2 ")+BCut;
 	      const int Mat=DGPtr->getMaterial(i+1,j+1,k+1);
-	      
-	      System.addCell(MonteCarlo::Qhull(cellIndex++,Mat,0.0,
-					       CCut+divider));
-	      attachSystem::CellMap::addCell
-                ("LD3:"+layerNum,cellIndex-1);
+
+	      CellMap::makeCell("LD3:"+layerNum,System,
+				cellIndex++,Mat,0.0,CCut+divider);
       	    }
 	}
     }

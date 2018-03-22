@@ -70,6 +70,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -85,10 +86,9 @@ namespace constructSystem
 
 VacuumPipe::VacuumPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,11),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
+  attachSystem::ContainedSpace(),attachSystem::CellMap(),
   attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1),frontJoin(0),backJoin(0)
+  frontJoin(0),backJoin(0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -96,10 +96,10 @@ VacuumPipe::VacuumPipe(const std::string& Key) :
 {}
 
 VacuumPipe::VacuumPipe(const VacuumPipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),frontJoin(A.frontJoin),
+  frontJoin(A.frontJoin),
   FPt(A.FPt),FAxis(A.FAxis),backJoin(A.backJoin),
   BPt(A.BPt),BAxis(A.BAxis),radius(A.radius),height(A.height),
   width(A.width),length(A.length),feThick(A.feThick),
@@ -127,7 +127,7 @@ VacuumPipe::operator=(const VacuumPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
@@ -242,7 +242,13 @@ VacuumPipe::populate(const FuncDataBase& Control)
     (keyName+"WindowBackWidth",keyName+"WindowWidth",-1.0);
   windowBack.mat=ModelSupport::EvalDefMat<int>
     (Control,keyName+"WindowBackMat",keyName+"WindowMat",0);
-  
+
+  if ((activeWindow & 1) && windowFront.thick<Geometry::zeroTol)
+    activeWindow ^= 1;
+  if ((activeWindow & 2) && windowBack.thick<Geometry::zeroTol)
+    activeWindow ^= 2;
+
+
   if ((activeWindow & 1) &&
       (windowFront.radius<0.0 &&
        (windowFront.width<0.0 || windowFront.height<0.0)))
@@ -254,7 +260,7 @@ VacuumPipe::populate(const FuncDataBase& Control)
        (windowBack.width<0.0 || windowBack.height<0.0)))
     throw ColErr::EmptyContainer("Pipe:["+keyName+"] has neither "
                                  "windowBack:Radius or Height/Width");
-  
+
   voidMat=ModelSupport::EvalDefMat<int>(Control,keyName+"VoidMat",0);
   feMat=ModelSupport::EvalMat<int>(Control,keyName+"FeMat");
   claddingMat=ModelSupport::EvalDefMat<int>(Control,keyName+"CladdingMat",0);
@@ -335,60 +341,60 @@ VacuumPipe::createSurfaces()
   // Inner void
   if (frontActive())
     {
-      getShiftedFront(SMap,vacIndex+101,1,Y,flangeALength);
+      getShiftedFront(SMap,buildIndex+101,1,Y,flangeALength);
       if (activeWindow & 1)
 	{
-	  getShiftedFront(SMap,vacIndex+1001,1,Y,
+	  getShiftedFront(SMap,buildIndex+1001,1,Y,
 			 (flangeALength-windowFront.thick)/2.0);
-	  getShiftedFront(SMap,vacIndex+1002,1,Y,
+	  getShiftedFront(SMap,buildIndex+1002,1,Y,
 			 (flangeALength+windowFront.thick)/2.0);
 	}
     }
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*(length/2.0),Y);
-      ModelSupport::buildPlane(SMap,vacIndex+101,
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+101,
 			       Origin-Y*(length/2.0-flangeALength),Y);
       if (activeWindow & 1)
 	{
 
-	  ModelSupport::buildPlane(SMap,vacIndex+1001,
+	  ModelSupport::buildPlane(SMap,buildIndex+1001,
         	   Origin-Y*(midAFlange+windowFront.thick/2.0),Y);
-	  ModelSupport::buildPlane(SMap,vacIndex+1002,
+	  ModelSupport::buildPlane(SMap,buildIndex+1002,
 		   Origin-Y*(midAFlange-windowFront.thick/2.0),Y);
 	}	    
     }
   // add data to surface
   if (activeWindow & 1)
     {
-      addSurf("FrontWindow",SMap.realSurf(vacIndex+1001));
-      addSurf("FrontWindow",SMap.realSurf(vacIndex+1002));
+      addSurf("FrontWindow",SMap.realSurf(buildIndex+1001));
+      addSurf("FrontWindow",SMap.realSurf(buildIndex+1002));
     }
   
     // Inner void
   if (backActive())
     {
-      FrontBackCut::getShiftedBack(SMap,vacIndex+102,-1,Y,flangeBLength);
+      FrontBackCut::getShiftedBack(SMap,buildIndex+102,-1,Y,flangeBLength);
       if (activeWindow & 2)
 	{
-	  getShiftedBack(SMap,vacIndex+1101,-1,Y,
+	  getShiftedBack(SMap,buildIndex+1101,-1,Y,
 			 (flangeBLength-windowBack.thick)/2.0);
-	  getShiftedBack(SMap,vacIndex+1102,-1,Y,
+	  getShiftedBack(SMap,buildIndex+1102,-1,Y,
 			 (flangeBLength+windowBack.thick)/2.0);
 	}
     }
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*(length/2.0),Y);
-      ModelSupport::buildPlane(SMap,vacIndex+102,
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
+      ModelSupport::buildPlane(SMap,buildIndex+102,
 			       Origin+Y*(length/2.0-flangeBLength),Y);
 	    
       if (activeWindow & 2)
 	{
 
-	  ModelSupport::buildPlane(SMap,vacIndex+1101,
+	  ModelSupport::buildPlane(SMap,buildIndex+1101,
   		   Origin+Y*(midBFlange+windowBack.thick/2.0),Y);
-	  ModelSupport::buildPlane(SMap,vacIndex+1102,
+	  ModelSupport::buildPlane(SMap,buildIndex+1102,
 		   Origin+Y*(midBFlange-windowBack.thick/2.0),Y);
 	}	    
 
@@ -397,8 +403,8 @@ VacuumPipe::createSurfaces()
   // add data to surface
   if (activeWindow & 1)
     {
-      addSurf("BackWindow",vacIndex+1101);
-      addSurf("BackWindow",vacIndex+1102);
+      addSurf("BackWindow",buildIndex+1101);
+      addSurf("BackWindow",buildIndex+1102);
     }
 
 
@@ -406,72 +412,72 @@ VacuumPipe::createSurfaces()
   // MAIN SURFACES:
   if (radius>Geometry::zeroTol)
     {
-      ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,radius);
-      ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,radius+feThick);
-      ModelSupport::buildCylinder(SMap,vacIndex+27,Origin,Y,radius+feThick+claddingThick);
+      ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,radius);
+      ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,radius+feThick);
+      ModelSupport::buildCylinder(SMap,buildIndex+27,Origin,Y,radius+feThick+claddingThick);
     }
   else
     {
       double H(height/2.0);
       double W(width/2.0);
-      ModelSupport::buildPlane(SMap,vacIndex+3,Origin-X*W,X);
-      ModelSupport::buildPlane(SMap,vacIndex+4,Origin+X*W,X);
-      ModelSupport::buildPlane(SMap,vacIndex+5,Origin-Z*H,Z);
-      ModelSupport::buildPlane(SMap,vacIndex+6,Origin+Z*H,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+3,Origin-X*W,X);
+      ModelSupport::buildPlane(SMap,buildIndex+4,Origin+X*W,X);
+      ModelSupport::buildPlane(SMap,buildIndex+5,Origin-Z*H,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+6,Origin+Z*H,Z);
 
       H+=feThick;
       W+=feThick;
-      ModelSupport::buildPlane(SMap,vacIndex+13,Origin-X*W,X);
-      ModelSupport::buildPlane(SMap,vacIndex+14,Origin+X*W,X);
-      ModelSupport::buildPlane(SMap,vacIndex+15,Origin-Z*H,Z);
-      ModelSupport::buildPlane(SMap,vacIndex+16,Origin+Z*H,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+13,Origin-X*W,X);
+      ModelSupport::buildPlane(SMap,buildIndex+14,Origin+X*W,X);
+      ModelSupport::buildPlane(SMap,buildIndex+15,Origin-Z*H,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+16,Origin+Z*H,Z);
 
       H+=claddingThick;
       W+=claddingThick;
-      ModelSupport::buildPlane(SMap,vacIndex+23,Origin-X*W,X);
-      ModelSupport::buildPlane(SMap,vacIndex+24,Origin+X*W,X);
-      ModelSupport::buildPlane(SMap,vacIndex+25,Origin-Z*H,Z);
-      ModelSupport::buildPlane(SMap,vacIndex+26,Origin+Z*H,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+23,Origin-X*W,X);
+      ModelSupport::buildPlane(SMap,buildIndex+24,Origin+X*W,X);
+      ModelSupport::buildPlane(SMap,buildIndex+25,Origin-Z*H,Z);
+      ModelSupport::buildPlane(SMap,buildIndex+26,Origin+Z*H,Z);
 
     }
 
   // FLANGE SURFACES FRONT:
   if (flangeARadius>0.0)
-    ModelSupport::buildCylinder(SMap,vacIndex+107,Origin,Y,flangeARadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeARadius);
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+103,Origin-X*(flangeAWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+104,Origin+X*(flangeAWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+105,Origin-Z*(flangeAHeight/2.0),Z);
-      ModelSupport::buildPlane(SMap,vacIndex+106,Origin+Z*(flangeAHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+103,Origin-X*(flangeAWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+104,Origin+X*(flangeAWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+105,Origin-Z*(flangeAHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+106,Origin+Z*(flangeAHeight/2.0),Z);
     }
 
   // FLANGE SURFACES BACK:
   if (flangeBRadius>0.0)
-    ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Y,flangeBRadius);
+    ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Y,flangeBRadius);
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+203,Origin-X*(flangeBWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+204,Origin+X*(flangeBWidth/2.0),X);
-      ModelSupport::buildPlane(SMap,vacIndex+205,Origin-Z*(flangeBHeight/2.0),Z);
-      ModelSupport::buildPlane(SMap,vacIndex+206,Origin+Z*(flangeBHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+203,Origin-X*(flangeBWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+204,Origin+X*(flangeBWidth/2.0),X);
+      ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*(flangeBHeight/2.0),Z);
+      ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*(flangeBHeight/2.0),Z);
     }
 
   // FRONT WINDOW SURFACES:  
   if (activeWindow & 1)
     {
       if (windowFront.radius>0.0)
-	ModelSupport::buildCylinder(SMap,vacIndex+1007,Origin,Y,
+	ModelSupport::buildCylinder(SMap,buildIndex+1007,Origin,Y,
                                     windowFront.radius);
       else
 	{
-	  ModelSupport::buildPlane(SMap,vacIndex+1003,
+	  ModelSupport::buildPlane(SMap,buildIndex+1003,
                                    Origin-X*(windowFront.width/2.0),X);
-	  ModelSupport::buildPlane(SMap,vacIndex+1004,
+	  ModelSupport::buildPlane(SMap,buildIndex+1004,
                                    Origin+X*(windowFront.width/2.0),X);
-	  ModelSupport::buildPlane(SMap,vacIndex+1005,
+	  ModelSupport::buildPlane(SMap,buildIndex+1005,
                                    Origin-Z*(windowFront.height/2.0),Z);
-	  ModelSupport::buildPlane(SMap,vacIndex+1006,
+	  ModelSupport::buildPlane(SMap,buildIndex+1006,
                                    Origin+Z*(windowFront.height/2.0),Z);
 	}
     }
@@ -480,17 +486,17 @@ VacuumPipe::createSurfaces()
   if (activeWindow & 2)
     {
       if (windowBack.radius>0.0)
-	ModelSupport::buildCylinder(SMap,vacIndex+1107,Origin,Y,
+	ModelSupport::buildCylinder(SMap,buildIndex+1107,Origin,Y,
                                     windowBack.radius);
       else
 	{
-	  ModelSupport::buildPlane(SMap,vacIndex+1103,
+	  ModelSupport::buildPlane(SMap,buildIndex+1103,
                                    Origin-X*(windowBack.width/2.0),X);
-	  ModelSupport::buildPlane(SMap,vacIndex+1104,
+	  ModelSupport::buildPlane(SMap,buildIndex+1104,
                                    Origin+X*(windowBack.width/2.0),X);
-	  ModelSupport::buildPlane(SMap,vacIndex+1105,
+	  ModelSupport::buildPlane(SMap,buildIndex+1105,
                                    Origin-Z*(windowBack.height/2.0),Z);
-	  ModelSupport::buildPlane(SMap,vacIndex+1106,
+	  ModelSupport::buildPlane(SMap,buildIndex+1106,
                                    Origin+Z*(windowBack.height/2.0),Z);
 	}
     }
@@ -511,16 +517,16 @@ VacuumPipe::createObjects(Simulation& System)
   
   const std::string frontStr=
     frontActive() ? frontRule() :
-    ModelSupport::getComposite(SMap,vacIndex," 1 ");
+    ModelSupport::getComposite(SMap,buildIndex," 1 ");
   const std::string backStr=
     backActive() ? backRule() :
-     ModelSupport::getComposite(SMap,vacIndex," -2 ");
+     ModelSupport::getComposite(SMap,buildIndex," -2 ");
 
   std::string windowFrontExclude;
   std::string windowBackExclude;
   if (activeWindow & 1)      // FRONT
     { 
-      Out=ModelSupport::getSetComposite(SMap,vacIndex,"-1007 1003 -1004 1005 -1006 1001 -1002 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-1007 1003 -1004 1005 -1006 1001 -1002 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,windowFront.mat,0.0,
 				       Out+frontBridgeRule()));
       addCell("Window",cellIndex-1);
@@ -531,7 +537,7 @@ VacuumPipe::createObjects(Simulation& System)
     }
   if (activeWindow & 2)
     { 
-      Out=ModelSupport::getSetComposite(SMap,vacIndex,"-1107 1103 -1104 1105 -1106 1102 -1101 ");
+      Out=ModelSupport::getSetComposite(SMap,buildIndex,"-1107 1103 -1104 1105 -1106 1102 -1101 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,windowBack.mat,0.0,
 				       Out+backBridgeRule()));
       addCell("Window",cellIndex-1);
@@ -540,9 +546,8 @@ VacuumPipe::createObjects(Simulation& System)
       windowBackExclude=WHR.display();
     }
 
-  
   // Void
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," -7 3 -4 5 -6");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -7 3 -4 5 -6");
   HeadRule InnerVoid(Out);
   InnerVoid.makeComplement();
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,
@@ -550,13 +555,13 @@ VacuumPipe::createObjects(Simulation& System)
 				   windowFrontExclude+windowBackExclude));
   addCell("Void",cellIndex-1);
 
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," -17 13 -14 15 -16");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -17 13 -14 15 -16");
   HeadRule WallLayer(Out);
   
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," -27 23 -24 25 -26");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -27 23 -24 25 -26");
   HeadRule CladdingLayer(Out);
 
-  Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 ");
   Out+=WallLayer.display()+InnerVoid.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
@@ -565,33 +570,33 @@ VacuumPipe::createObjects(Simulation& System)
   // cladding
   if (claddingThick>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex,"101 -102 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex,"101 -102 ");
       Out+=WallLayer.complement().display()+CladdingLayer.display();
       System.addCell(MonteCarlo::Qhull(cellIndex++,claddingMat,0.0,Out));
       addCell("Cladding",cellIndex-1);
     }
 
   // FLANGE: 107 OR 103-106 valid 
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," -101 -107 103 -104 105 -106 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
   Out+=InnerVoid.display();
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+
 				   frontStr+windowFrontExclude));
   addCell("Steel",cellIndex-1);
 
   // FLANGE: 207 OR 203-206 valid 
-  Out=ModelSupport::getSetComposite(SMap,vacIndex,"102 -207 203 -204 205 -106 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex,"102 -207 203 -204 205 -106 ");
   Out+=InnerVoid.display()+backStr+windowBackExclude;
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Steel",cellIndex-1);
 
   // outer boundary [flange front]
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," -101 -107 103 -104 105 -106 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," -101 -107 103 -104 105 -106 ");
   addOuterSurf(Out+frontStr);
   // outer boundary [flange back]
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," 102 -207 203 -204 205 -206 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 102 -207 203 -204 205 -206 ");
   addOuterUnionSurf(Out+backStr);
   // outer boundary mid tube
-  Out=ModelSupport::getSetComposite(SMap,vacIndex," 101 -102 ");
+  Out=ModelSupport::getSetComposite(SMap,buildIndex," 101 -102 ");
   Out+=CladdingLayer.display();
   addOuterUnionSurf(Out);
 
@@ -614,9 +619,9 @@ VacuumPipe::createDivision(Simulation& System)
       
       DA.init();
       DA.setCellN(getCell("MainSteel"));
-      DA.setOutNum(cellIndex,vacIndex+1000);
-      DA.makePair<Geometry::Plane>(SMap.realSurf(vacIndex+101),
-				   SMap.realSurf(vacIndex+102));
+      DA.setOutNum(cellIndex,buildIndex+1000);
+      DA.makePair<Geometry::Plane>(SMap.realSurf(buildIndex+101),
+				   SMap.realSurf(buildIndex+102));
 
       DA.activeDivide(System);
       cellIndex=DA.getCellNum();
@@ -642,13 +647,13 @@ VacuumPipe::createLinks()
   FrontBackCut::createLinks(*this,Origin,Y);  //front and back
   if (!frontActive())
     {
-      FixedComp::setLinkSurf(0,-SMap.realSurf(vacIndex+1));
+      FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
       FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
     }
 
   if (!backActive())
     {
-      FixedComp::setLinkSurf(1,SMap.realSurf(vacIndex+2));
+      FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));
       FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
     }
 
@@ -659,15 +664,15 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(3,Origin+X*radius,X);
       FixedComp::setConnect(4,Origin-Z*radius,-Z);
       FixedComp::setConnect(5,Origin+Z*radius,Z);
-      FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
-      FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
-      FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+7));
-      FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+7));
+      FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+      FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+      FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+7));
+      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+7));
 
       FixedComp::setConnect(7,Origin-Z*(radius+feThick),-Z);
       FixedComp::setConnect(8,Origin+Z*(radius+feThick),Z);
-      FixedComp::setLinkSurf(7,SMap.realSurf(vacIndex+17));
-      FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+17));
+      FixedComp::setLinkSurf(7,SMap.realSurf(buildIndex+17));
+      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+17));
       
     }
   else // rectangular pipe
@@ -676,15 +681,15 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(3,Origin+X*(width/2.0),X);
       FixedComp::setConnect(4,Origin-Z*(height/2.0),-Z);
       FixedComp::setConnect(5,Origin+Z*(height/2.0),Z);
-      FixedComp::setLinkSurf(2,-SMap.realSurf(vacIndex+3));
-      FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+4));
-      FixedComp::setLinkSurf(4,-SMap.realSurf(vacIndex+5));
-      FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+6));
+      FixedComp::setLinkSurf(2,-SMap.realSurf(buildIndex+3));
+      FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+4));
+      FixedComp::setLinkSurf(4,-SMap.realSurf(buildIndex+5));
+      FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
       FixedComp::setConnect(7,Origin-Z*(height/2.0+feThick),-Z);
       FixedComp::setConnect(8,Origin+Z*(height/2.0+feThick),Z);
-      FixedComp::setLinkSurf(7,-SMap.realSurf(vacIndex+15));
-      FixedComp::setLinkSurf(8,SMap.realSurf(vacIndex+16));
+      FixedComp::setLinkSurf(7,-SMap.realSurf(buildIndex+15));
+      FixedComp::setLinkSurf(8,SMap.realSurf(buildIndex+16));
       }
   
   // MID Point: [NO SURF]
@@ -697,15 +702,15 @@ VacuumPipe::createLinks()
       FixedComp::setConnect(9,Origin-Z*flangeARadius,-Z);
       FixedComp::setConnect(10,Origin+Z*flangeARadius,Z);
       
-      FixedComp::setLinkSurf(9,SMap.realSurf(vacIndex+107));
-      FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+107));
+      FixedComp::setLinkSurf(9,SMap.realSurf(buildIndex+107));
+      FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+107));
     }
   else
     {
       FixedComp::setConnect(9,Origin-Z*(flangeAHeight/2.0),-Z);
       FixedComp::setConnect(10,Origin+Z*(flangeAHeight/2.0),Z);
-      FixedComp::setLinkSurf(9,-SMap.realSurf(vacIndex+105));
-      FixedComp::setLinkSurf(10,SMap.realSurf(vacIndex+106));
+      FixedComp::setLinkSurf(9,-SMap.realSurf(buildIndex+105));
+      FixedComp::setLinkSurf(10,SMap.realSurf(buildIndex+106));
     }
 
   return;

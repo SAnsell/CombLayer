@@ -48,43 +48,23 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "surfExpand.h"
+
+#include "CFFlanges.h"
 #include "VacBoxGenerator.h"
 
 namespace setVariable
 {
 
 VacBoxGenerator::VacBoxGenerator() :
-  wallThick(0.5),portWallThick(0.5),
-  portTubeLength(5.0),portTubeRadius(4.0),
-  flangeLen(1.0),flangeRadius(1.0),
+  wallThick(0.5),
+  portAXStep(0.0),portAZStep(0.0),
+  portAWallThick(0.5),portATubeLength(5.0),portATubeRadius(4.0),
+  portBXStep(0.0),portBZStep(0.0),
+  portBWallThick(0.5),portBTubeLength(5.0),portBTubeRadius(4.0),
+  flangeALen(1.0),flangeARadius(1.0),flangeBLen(1.0),flangeBRadius(1.0),
   voidMat("Void"),wallMat("Stainless304")
   /*!
     Constructor and defaults
@@ -92,10 +72,15 @@ VacBoxGenerator::VacBoxGenerator() :
 {}
 
 VacBoxGenerator::VacBoxGenerator(const VacBoxGenerator& A) : 
-  wallThick(A.wallThick),portWallThick(A.portWallThick),
-  portTubeLength(A.portTubeLength),portTubeRadius(A.portTubeRadius),
-  flangeLen(A.flangeLen),flangeRadius(A.flangeRadius),
-  voidMat(A.voidMat),wallMat(A.wallMat)
+  wallThick(A.wallThick),portAXStep(A.portAXStep),
+  portAZStep(A.portAZStep),portAWallThick(A.portAWallThick),
+  portATubeLength(A.portATubeLength),portATubeRadius(A.portATubeRadius),
+  portBXStep(A.portBXStep),portBZStep(A.portBZStep),
+  portBWallThick(A.portBWallThick),portBTubeLength(A.portBTubeLength),
+  portBTubeRadius(A.portBTubeRadius),flangeALen(A.flangeALen),
+  flangeARadius(A.flangeARadius),flangeBLen(A.flangeBLen),
+  flangeBRadius(A.flangeBRadius),voidMat(A.voidMat),
+  wallMat(A.wallMat)
   /*!
     Copy constructor
     \param A :: VacBoxGenerator to copy
@@ -113,23 +98,89 @@ VacBoxGenerator::operator=(const VacBoxGenerator& A)
   if (this!=&A)
     {
       wallThick=A.wallThick;
-      portWallThick=A.portWallThick;
-      portTubeLength=A.portTubeLength;
-      portTubeRadius=A.portTubeRadius;
-      flangeLen=A.flangeLen;
-      flangeRadius=A.flangeRadius;
+      portAXStep=A.portAXStep;
+      portAZStep=A.portAZStep;
+      portAWallThick=A.portAWallThick;
+      portATubeLength=A.portATubeLength;
+      portATubeRadius=A.portATubeRadius;
+      portBXStep=A.portBXStep;
+      portBZStep=A.portBZStep;
+      portBWallThick=A.portBWallThick;
+      portBTubeLength=A.portBTubeLength;
+      portBTubeRadius=A.portBTubeRadius;
+      flangeALen=A.flangeALen;
+      flangeARadius=A.flangeARadius;
+      flangeBLen=A.flangeBLen;
+      flangeBRadius=A.flangeBRadius;
       voidMat=A.voidMat;
       wallMat=A.wallMat;
     }
   return *this;
 }
-  
+
 VacBoxGenerator::~VacBoxGenerator() 
  /*!
    Destructor
  */
 {}
 
+template<typename CF>
+void
+VacBoxGenerator::setAPortCF()
+  /*!
+    Setter for Port A
+   */
+{
+  portATubeRadius=CF::innerRadius;
+  portAWallThick=CF::wallThick;
+  // extra only 
+  flangeARadius=CF::flangeRadius; 
+  flangeALen=CF::flangeLength;
+  
+  return;
+}
+
+template<typename CF>
+void
+VacBoxGenerator::setBPortCF()
+  /*!
+    Setter for prot B
+   */
+{
+  portBTubeRadius=CF::innerRadius;
+  portBWallThick=CF::wallThick;
+  // extra only 
+  flangeBRadius=CF::flangeRadius; 
+  flangeBLen=CF::flangeLength;
+  
+  return;
+}
+
+template<typename CF>
+void
+VacBoxGenerator::setCF()
+  /*!
+    Set pipe/flange to CF-X format
+  */
+{
+  setAPortCF<CF>();
+  setBPortCF<CF>();
+  return;
+}
+
+void
+VacBoxGenerator::setPortLength(const double LA,const double LB)
+  /*!
+    Set both the ports lengths
+    \param LA :: Length of port A
+    \param LB :: Length of port A
+
+   */
+{
+  portATubeLength=LA;
+  portBTubeLength=LB;
+  return;
+}
 
 void
 VacBoxGenerator::setPort(const double R,const double L,
@@ -141,12 +192,73 @@ VacBoxGenerator::setPort(const double R,const double L,
     \param T :: Thickness of port tube
    */
 {
-  portTubeRadius=R;
-  portTubeLength=L;
-  portWallThick=T;
+  portATubeRadius=R;
+  portATubeLength=L;
+  portAWallThick=T;
+  portBTubeRadius=R;
+  portBTubeLength=L;
+  portBWallThick=T;
   return;
 }
 
+void
+VacBoxGenerator::setAPort(const double R,const double L,
+			  const double T)
+  /*!
+    Set both the ports
+    \param R :: radius of port tube
+    \param R :: lenght of port tube
+    \param T :: Thickness of port tube
+   */
+{
+  portATubeRadius=R;
+  portATubeLength=L;
+  portAWallThick=T;
+  return;
+}
+
+void
+VacBoxGenerator::setBPort(const double R,const double L,
+			  const double T)
+  /*!
+    Set both the ports
+    \param R :: radius of port tube
+    \param R :: lenght of port tube
+    \param T :: Thickness of port tube
+   */
+{
+  portBTubeRadius=R;
+  portBTubeLength=L;
+  portBWallThick=T;
+  return;
+}
+
+void
+VacBoxGenerator::setAPortOffset(const double XS,const double ZS)
+  /*!
+    Set the port offset relative to the origin line
+    \param XS :: X Step
+    \param ZS :: Z Step
+   */
+{
+  portAXStep=XS;
+  portAZStep=ZS;
+  return;
+}
+
+void
+VacBoxGenerator::setBPortOffset(const double XS,const double ZS)
+  /*!
+    Set the port offset relative to the origin line
+    \param XS :: X Step
+    \param ZS :: Z Step
+   */
+{
+  portBXStep=XS;
+  portBZStep=ZS;
+  return;
+}
+  
 void
 VacBoxGenerator::setFlange(const double R,const double L)
   /*!
@@ -155,8 +267,10 @@ VacBoxGenerator::setFlange(const double R,const double L)
     \param L :: length
    */
 {
-  flangeRadius=R;
-  flangeLen=L;
+  flangeARadius=R;
+  flangeALen=L;
+  flangeBRadius=R;
+  flangeBLen=L;
   return;
 }
 
@@ -188,12 +302,22 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 
   Control.addVariable(keyName+"WallThick",wallThick);
 	
-  Control.addVariable(keyName+"PortWallThick",portWallThick);
-  Control.addVariable(keyName+"PortTubeRadius",portTubeRadius);
-  Control.addVariable(keyName+"PortTubeLength",portTubeLength);
+  Control.addVariable(keyName+"PortAXStep",portAXStep);
+  Control.addVariable(keyName+"PortAZStep",portAZStep);
+  Control.addVariable(keyName+"PortAWallThick",portAWallThick);
+  Control.addVariable(keyName+"PortATubeRadius",portATubeRadius);
+  Control.addVariable(keyName+"PortATubeLength",portATubeLength);
 
-  Control.addVariable(keyName+"FlangeRadius",flangeRadius);
-  Control.addVariable(keyName+"FlangeLength",flangeLen);
+  Control.addVariable(keyName+"PortBXStep",portBXStep);
+  Control.addVariable(keyName+"PortBZStep",portBZStep);
+  Control.addVariable(keyName+"PortBWallThick",portBWallThick);
+  Control.addVariable(keyName+"PortBTubeRadius",portBTubeRadius);
+  Control.addVariable(keyName+"PortBTubeLength",portBTubeLength);
+
+  Control.addVariable(keyName+"FlangeARadius",flangeARadius);
+  Control.addVariable(keyName+"FlangeALength",flangeALen);
+  Control.addVariable(keyName+"FlangeBRadius",flangeBRadius);
+  Control.addVariable(keyName+"FlangeBLength",flangeBLen);
 
   Control.addVariable(keyName+"VoidMat",voidMat);
   Control.addVariable(keyName+"FeMat",wallMat);
@@ -202,4 +326,18 @@ VacBoxGenerator::generateBox(FuncDataBase& Control,const std::string& keyName,
 
 }
 
+///\cond  TEMPLATE
+  template void VacBoxGenerator::setCF<CF40>();
+  template void VacBoxGenerator::setCF<CF63>();
+  template void VacBoxGenerator::setCF<CF100>();
+  template void VacBoxGenerator::setAPortCF<CF40>();
+  template void VacBoxGenerator::setAPortCF<CF63>();
+  template void VacBoxGenerator::setAPortCF<CF100>();
+  template void VacBoxGenerator::setBPortCF<CF40>();
+  template void VacBoxGenerator::setBPortCF<CF63>();
+  template void VacBoxGenerator::setBPortCF<CF100>();
+
+///\endcond  TEMPLATE
+
+  
 }  // NAMESPACE setVariable

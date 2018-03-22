@@ -3,7 +3,7 @@
  
  * File:   src/SimPHITS.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,7 +65,6 @@
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -89,6 +88,7 @@
 #include "SurInter.h"
 #include "Debug.h"
 #include "BnId.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "HeadRule.h"
@@ -101,13 +101,15 @@
 #include "PhysCard.h"
 #include "PhysImp.h"
 #include "PhysicsCards.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
 
 
-SimPHITS::SimPHITS() : Simulation()
+SimPHITS::SimPHITS() :
+  Simulation(),nps(10000),rndSeed(1234567871)
   /*!
     Constructor
   */
@@ -115,7 +117,7 @@ SimPHITS::SimPHITS() : Simulation()
 
 
 SimPHITS::SimPHITS(const SimPHITS& A) :
-  Simulation(A)
+  Simulation(A),nps(A.nps),rndSeed(A.rndSeed)
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -133,6 +135,8 @@ SimPHITS::operator=(const SimPHITS& A)
   if (this!=&A)
     {
       Simulation::operator=(A);
+      nps=A.nps;
+      rndSeed=A.rndSeed;
     }
   return *this;
 }
@@ -176,8 +180,8 @@ SimPHITS::writeTally(std::ostream& OX) const
   // It iterats over the Titems and since they are a map
   // uses the mathSupport:::PSecond
   // _1 refers back to the TItem pair<int,tally*>
-  for(const TallyTYPE::value_type& TI : TItem)
-    TI.second->write(OX);
+  //  for(const TallyTYPE::value_type& TI : TItem)
+  //    TI.second->write(OX);
 
   return;
 }
@@ -266,8 +270,8 @@ SimPHITS::writeMaterial(std::ostream& OX) const
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
 
-  if (!PhysPtr->getMode().hasElm("h"))
-    DB.deactivateParticle("h");
+  //  if (!PhysPtr->getMode().hasElm("h"))
+  //    DB.deactivateParticle("h");
   
   OTYPE::const_iterator mp;
   for(mp=OList.begin();mp!=OList.end();mp++)
@@ -316,14 +320,15 @@ SimPHITS::writePhysics(std::ostream& OX) const
   OX<<"[Parameters]"<<std::endl;
 
   OX<<" icntl       =        "<<(FMT % 0)<<std::endl;
-  OX<<" maxcas      =        "<<(FMT % (PhysPtr->getNPS()/10))<<std::endl;
+  OX<<" maxcas      =        "<<(FMT % (nps/10))<<std::endl;
   OX<<" maxbch      =        "<<(FMT % 10)<<std::endl;
   OX<<" negs        =        "<<(FMT % 0)<<std::endl;  // photo nuclear?
   OX<<" file(1)     = /home/stuartansell/phits"<<std::endl;  
   OX<<" file(6)     = phits.out"<<std::endl;
-  OX<<" rseed       =        "<<(FMT % PhysPtr->getRNDseed())<<std::endl;  
-  
-  PhysPtr->writePHITS(OX);
+  OX<<" rseed       =        "<<(FMT % rndSeed)<<std::endl;  
+
+  ELog::EM<<"NOTE NOT WRITING PHYSICS"<<ELog::endDiag;
+  //  PhysPtr->writePHITS(OX);
 
 
   if (WM.hasParticle("n"))

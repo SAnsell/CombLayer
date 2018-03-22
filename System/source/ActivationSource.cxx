@@ -3,7 +3,7 @@
  
  * File:   source/ActivationSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,6 +79,7 @@
 #include "localRotate.h"
 #include "activeUnit.h"
 #include "activeFluxPt.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "ActivationSource.h"
 
@@ -568,6 +569,7 @@ ActivationSource::write(std::ostream&) const
   return;
 }
 
+
 void
 ActivationSource::writePHITS(std::ostream& OX) const
   /*!
@@ -575,7 +577,20 @@ ActivationSource::writePHITS(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ActivationSource","write");
+  ELog::RegMethod RegA("ActivationSource","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+ActivationSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("ActivationSource","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;

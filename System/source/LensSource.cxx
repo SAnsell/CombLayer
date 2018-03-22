@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   lensModel/LensSource.cxx
+ * File:   source/LensSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,9 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
+#include "particleConv.h"
 #include "LensSource.h"
 
 namespace SDef
@@ -119,17 +121,17 @@ LensSource::clone() const
 }
 
 void
-LensSource::populate(const FuncDataBase& Control)
+LensSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate all the variables
-    \param Control :: Variables to access
+    \param inputMap :: Variables to access
   */
 {
   ELog::RegMethod RegA("LensSource","populate");
 
-  FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
-  radialArea=Control.EvalDefVar<double>(keyName+"Radial",0.0);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
+  radialArea=mainSystem::getDefInput<double>(inputMap,"Radial",0,0.0);
   
   return;
 }
@@ -154,7 +156,7 @@ LensSource::createUnitVector(const attachSystem::FixedComp& FC,
 
 
 void
-LensSource::createAll(const FuncDataBase& Control,
+LensSource::createAll(const mainSystem::MITYPE& inputMap,
 		      const attachSystem::FixedComp& FC,
 		      const long int sideIndex)
   /*!
@@ -166,7 +168,7 @@ LensSource::createAll(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("LensSource","createAll");
 
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,sideIndex);
   
   return;
@@ -194,7 +196,10 @@ LensSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("LensSource","createSource");
 
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
+
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
   sourceCard.setComp("ara",M_PI*radialArea*radialArea);         
@@ -547,6 +552,19 @@ LensSource::writePHITS(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("LensSource","write");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+LensSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("LensSource","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;

@@ -3,7 +3,7 @@
  
  * File:   physics/ZoneUnit.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,39 +40,12 @@
 #include "RegMethod.h"
 #include "GTKreport.h"
 #include "OutputLog.h"
-#include "BaseVisit.h"
-#include "BaseModVisit.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "MapRange.h"
-#include "Triple.h"
 #include "support.h"
-#include "mathSupport.h"
-#include "stringCombine.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "TallyCreate.h"
-#include "Transform.h"
-#include "Quaternion.h"
-#include "localRotate.h"
-#include "masterRotate.h"
-#include "Surface.h"
-#include "surfRegister.h"
 #include "objectRegister.h"
-#include "Line.h"
-#include "Rules.h"
-#include "HeadRule.h"
-#include "Code.h"
-#include "varList.h"
-#include "FuncDataBase.h"
-#include "MainProcess.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "LinkSupport.h"
-#include "Simulation.h"
-#include "inputParam.h"
 #include "permSort.h"
 #include "ZoneUnit.h" 
 

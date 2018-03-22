@@ -3,7 +3,7 @@
  
  * File:   src/KCode.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,16 +45,16 @@
 #include "MapSupport.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Transform.h"
 #include "Surface.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "localRotate.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "KCode.h"
 
@@ -168,7 +168,20 @@ KCode::writePHITS(std::ostream&) const
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("KCode","write");
+  ELog::RegMethod RegA("KCode","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  return;
+}
+
+void
+KCode::writeFLUKA(std::ostream&) const
+  /*!
+    Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("KCode","writeFLUKA");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;

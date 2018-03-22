@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysImp.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,16 +58,19 @@ class PhysImp
 
   void clear();
 
+  /// set type
+  void setType(const std::string& T) { type=T; }
   int hasElm(const std::string&) const;
   std::string getParticles() const;
   const std::list<std::string>& getParticleList() const;
   /// Type accessor
   const std::string& getType() const { return type; }
-  
+
   ///< Get particle count
   size_t particleCount() const { return particles.size(); }
   bool isEmpty() const { return impNum.empty(); }
   int removeParticle(const std::string&);
+  void setParticle(const std::string&);
   
   double getValue(const int) const;
   void setValue(const int,const double);
@@ -75,7 +78,11 @@ class PhysImp
   void addElm(const std::string&);
   void setAllCells(const double =1.0);
   void setAllCells(const std::vector<int>&,const std::vector<double>&);
+  void setAllCells(const std::vector<std::pair<int,int>>&);
   void setCells(const std::vector<int>&,const double =1.0);
+
+  std::vector<int> getCellVector() const;
+  
   void updateCells(const ZoneUnit<double>&);
   void modifyCells(const std::vector<int>&,const double =1.0);
   void removeCell(const int);

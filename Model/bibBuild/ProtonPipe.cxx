@@ -3,7 +3,7 @@
  
  * File:   bibBuild/ProtonPipe.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,7 +179,7 @@ ProtonPipe::createSurfaces(const attachSystem::FixedComp& TarFC,
   /*!
     Create planes for the silicon and Polyethene layers
     \param TarFC :: Target Object
-    \param tarIndex :: Target side index 
+    \param targetIndex :: Target side index 
   */
 {
   ELog::RegMethod RegA("ProtonPipe","createSurfaces");

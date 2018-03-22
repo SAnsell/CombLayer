@@ -3,7 +3,7 @@
  
  * File:   Main/ess.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 #include "MainInputs.h"
 #include "SimProcess.h"
 #include "SimInput.h"
+#include "SimImportance.h"
 #include "SurInter.h"
 #include "Simulation.h"
 #include "SimPHITS.h"
@@ -130,8 +131,8 @@ main(int argc,char* argv[])
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
-      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
-      SimPtr->getPC().setPrdmp("1e7 1e7 1 1 1e7");
+      //      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+      //      SimPtr->getPC().setPrdmp("1e7 1e7 1 1 1e7");
 
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);

@@ -105,6 +105,11 @@ class FrontBackCut
   const HeadRule& getFrontBridgeRule() const { return frontDivider; }
   /// accessor
   const HeadRule& getBackBridgeRule() const { return backDivider; }
+
+  Geometry::Vec3D frontInterPoint(const Geometry::Vec3D&,
+				  const Geometry::Vec3D&) const;
+  Geometry::Vec3D backInterPoint(const Geometry::Vec3D&,
+				 const Geometry::Vec3D&) const;
 };
 
 }

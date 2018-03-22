@@ -3,7 +3,7 @@
  
  * File:   processInc/SimInput.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 #define SimProcess_SimInput_h
 
 class Simulation;
+class SimFLUKA;
+class SimMCNP;
+class SimPHITS;
 
 namespace physicsSystem
 {
@@ -37,11 +40,17 @@ namespace mainSystem
 namespace SimProcess
 {
 
+  // Generic
   void importanceSim(Simulation&,const mainSystem::inputParam&);
   void inputProcessForSim(Simulation&,const mainSystem::inputParam&);
   int processExitChecks(Simulation&,const mainSystem::inputParam&);
+
+  // MCNP only
+  void inputProcessForSimMCNP(SimMCNP&,const mainSystem::inputParam&);
+
   void processPTrack(const mainSystem::inputParam&,
 		     physicsSystem::PhysicsCards&);
+  
   void processEvent(const std::string&,
 		    const mainSystem::inputParam&,
 		    physicsSystem::PhysicsCards&);

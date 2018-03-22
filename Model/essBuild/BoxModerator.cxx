@@ -297,10 +297,10 @@ BoxModerator::createLinks()
   FixedComp::setLinkSurf(2,SMap.realSurf(flyIndex+7));
   FixedComp::setLinkSurf(3,SMap.realSurf(flyIndex+7));
 
-  // copy surface top/bottom from H2Wing and Origin from center
-
-  FixedComp::setLinkCopy(4,*MidH2,4);
-  FixedComp::setLinkCopy(5,*MidH2,5);
+  // copy surface top/bottom from H2Wing and Orign from center
+  
+  FixedComp::setLinkSignedCopy(4,*MidH2,5);
+  FixedComp::setLinkSignedCopy(5,*MidH2,6);
   const double LowV= LU[4].getConnectPt().Z();
   const double HighV= LU[5].getConnectPt().Z();
   const Geometry::Vec3D LowPt(Origin.X(),Origin.Y(),LowV);

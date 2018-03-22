@@ -3,7 +3,7 @@
  
  * File:   tallyInc/pointConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,14 @@ namespace mainSystem
 
 
 class Simulation;
+class SimMCNP;
 
 namespace tallySystem
 {
 
 /*!
   \class pointConstruct
-  \version 1.0
+  \version 2.0
   \author S. Ansell
   \date April 2012
   \brief Holds everthing for tallies
@@ -50,32 +51,33 @@ namespace tallySystem
 
 class pointConstruct
 {
- public:
+ private:
 
-  pointConstruct();
-  pointConstruct(const pointConstruct&);
-  pointConstruct& operator=(const pointConstruct&);
-  virtual ~pointConstruct() {}  ///< Destructor
+  /// private constructor 
+  pointConstruct() { }
   
-  // Point Stuff
-  virtual void processPoint(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
-  void processPointFree(Simulation&,const Geometry::Vec3D&,
-			const std::vector<Geometry::Vec3D>&) const;
-  void processPointFree(Simulation&,const std::string&,
-			  const long int,const double) const;
-  void processPointFree(Simulation&,const std::string&,
-			const long int,const Geometry::Vec3D&) const;
-  void processPointWindow(Simulation&,const std::string&,
-			  long int,const double,
-			  const double,const double) const;
-
-
-  virtual void writeHelp(std::ostream&) const;
+ public:
 
   static std::vector<Geometry::Vec3D> 
     calcWindowIntercept(const int,const std::vector<int>,
 			const Geometry::Vec3D&);
+
+  // Point Stuff
+  static void processPoint(SimMCNP&,const mainSystem::inputParam&,
+			   const size_t);
+  static void processPointFree(SimMCNP&,const Geometry::Vec3D&,
+			const std::vector<Geometry::Vec3D>&);
+  static void processPointFree(SimMCNP&,const std::string&,
+			  const long int,const double);
+  static void processPointFree(SimMCNP&,const std::string&,
+			const long int,const Geometry::Vec3D&);
+  static void processPointWindow(SimMCNP&,const std::string&,
+			  long int,const double,
+			  const double,const double);
+
+
+  static void writeHelp(std::ostream&);
+
 };
 
 }

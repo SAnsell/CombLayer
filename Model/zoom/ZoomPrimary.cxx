@@ -3,7 +3,7 @@
  
  * File:   zoom/ZoomPrimary.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,6 @@
 #include "Cylinder.h"
 #include "Rules.h"
 #include "HeadRule.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "surfDBase.h"
 #include "mergeTemplate.h"

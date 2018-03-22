@@ -3,7 +3,7 @@
  
  * File:   monte/Material.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "RefCon.h"
@@ -206,7 +207,7 @@ Material::operator+=(const Material& A)
       if (sqSet.find(LItem)==sqSet.end())
 	Libs.push_back(LItem);
     }
-  
+
   calcAtomicDensity();
   return *this;
 }
@@ -508,7 +509,6 @@ Material::setMaterial(const int MIndex,
   // PROCESS LIBS
   std::vector<std::string> LibItems=StrFunc::StrParts(LibLine);
   Libs.insert(Libs.end(),LibItems.begin(),LibItems.end());
-
   calcAtomicDensity();
 
   return 0;
@@ -608,9 +608,10 @@ Material::setDensity(const double D)
   for(zcc=zaidVec.begin();zcc!=zaidVec.end();zcc++)
     FSum+=zcc->getDensity();
 
-  if (fabs(FSum)<1e-7)
+  if (std::abs(FSum)<1e-7)
     throw ColErr::NumericalAbort("Sum of zaidDensity: zero");
-      
+
+
   if (D>0.0)
     {
       for(Zaid& ZC : zaidVec)
@@ -632,21 +633,26 @@ Material::setDensity(const double D)
 
       atomDensity=aRho;
     }
+
   return;
 }
 
 double
 Material::getMacroDensity() const
   /*!
-    Return the macroscopic density (g/cc)
+    Calc the macroscopic density (g/cc)
+    \return Density [g/cc]
    */
 {
   double AW(0.0);
   double sumDens(0.0);
   for(const Zaid& ZC : zaidVec)
     {
-      AW+=ZC.getAtomicMass()*ZC.getDensity();
-      sumDens+=ZC.getDensity();
+      if (ZC.getZ())
+	{
+	  AW+=ZC.getAtomicMass()*ZC.getDensity();
+	  sumDens+=ZC.getDensity();
+	}
     }
   if (sumDens<1e-10) return 0.0;
   AW/=sumDens;
@@ -681,11 +687,9 @@ Material::calcAtomicDensity()
 {
   atomDensity=0.0;
   for(const Zaid& ZC : zaidVec)
-    {
-      if (ZC.getZ())
-	atomDensity+=ZC.getDensity();
-    }
-
+    if (ZC.getZ())
+      atomDensity+=ZC.getDensity();
+  
   return;
 }
 
@@ -865,47 +869,28 @@ Material::writeFLUKA(std::ostream& OX) const
   */
 {
   ELog::RegMethod RegA("Material","writeFLUKA");
+  boost::format FMTnum("%1$.4g");
 
-  const std::string mat(" M"+std::to_string(Mnum));
-  typedef std::map<std::string,MXcards> MXTYPE;
+  const std::string matName("M"+std::to_string(Mnum));
   
   std::ostringstream cx;
   cx<<"*\n* Material : "<<Name<<" rho="<<getMacroDensity()<<" g/cc";
   StrFunc::writeMCNPX(cx.str(),OX);
   cx.str("");
 
-  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<mat<<std::endl;
-
-  std::vector<Zaid>::const_iterator zc;
-  std::vector<std::string>::const_iterator vc;
-  cx<<"COMPOUND ";
-  cx<<std::setprecision(5);
-  size_t i(0);
-  const size_t n(zaidVec.size());
-  for(const Zaid& ZItem: zaidVec)
-    {
-      cx<<ZItem.getDensity()<<
-	" E"+std::to_string(ZItem.getZaidNum())+" ";
-    i++;
-    if (!(i%3))
-      {
-	cx<<mat;
-	if (i!=n) cx<<" COMPOUND ";
-      }
-    }
-
-  // Add additional empty WHAT cards and SDEF in the end
-  // if the COMPOUND line is not complete
-  if (i%3)
-    {
-      while (i++%3)
-	  cx<< " - - ";
-      cx<<mat;
-    }
-
+  cx<<"MATERIAL -  - "<<getMacroDensity()<<" -  -  - "<<matName<<std::endl;
   StrFunc::writeFLUKA(cx.str(),OX);
 
+  cx.str("");
+  for(const Zaid& ZItem: zaidVec)
+    {
+      if (ZItem.getZ())
+	cx<<(FMTnum % ZItem.getDensity())<<" "
+	  <<ZItem.getFlukaName()<<" ";
+    }
+  StrFunc::writeFLUKAhead("COMPOUND",matName,cx.str(),OX);
   return;
+
 } 
 
 void 

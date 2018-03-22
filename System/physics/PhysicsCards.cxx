@@ -3,7 +3,7 @@
  
  * File:   physics/PhysicsCards.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MapRange.h"
 #include "Triple.h"
 #include "MatrixBase.h"
@@ -252,7 +253,21 @@ PhysicsCards::hasWImpFlag(const std::string& particleType) const
   return (wImpOut.find(particleType) == wImpOut.end()) ? 0 : 1;
 }
 
-  
+bool
+PhysicsCards::hasImpFlag(const std::string& particleType) const
+  /*!
+    Find the imp than are in the imp
+    \param particleType :: particle type
+    \return true if particle exists
+  */
+{
+  for(const PhysImp& PI : ImpCards)
+    if (PI.getType()=="imp" && PI.hasElm(particleType))
+      return 1;
+
+  return 0;
+}
+
 void
 PhysicsCards::addHistpCells(const std::vector<int>& AL)
   /*!
@@ -440,13 +455,16 @@ PhysicsCards::setEnergyCut(const double E)
 }
 
 PhysImp&
-PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
+PhysicsCards::addPhysImp(const std::string& Type,
+			 const std::string& Particle,
+			 const double defValue)
   /*!
     Adds / returns the imporance and particle type
     This can also separate a particular particle from 
     a list
     \param Type :: Type to use [imp:vol etc]
     \param Particle :: Particle to add [n,p,e] etc
+    \param defValue :: default Value
     \return PhysImp item
   */
 {    
@@ -458,12 +476,21 @@ PhysicsCards::addPhysImp(const std::string& Type,const std::string& Particle)
 	return FImp;
       // remove particle so a new PhysImp can be specialised
       FImp.removeParticle(Particle);
+      PhysImp isoPI(FImp);
+      isoPI.setParticle(Particle);
+      ImpCards.push_back(isoPI);
+      return ImpCards.back();
     }
   catch (ColErr::InContainerError<std::string>&)
     { }       
-  // Create a new object
-  ImpCards.push_back(PhysImp(Type));
-  ImpCards.back().addElm(Particle);
+
+  // Create a new object (based on volume)
+  // use default value
+  PhysImp isoPI(Volume);
+  isoPI.setType(Type);
+  isoPI.setParticle(Particle);
+  isoPI.setAllCells(defValue);
+  ImpCards.push_back(isoPI);
   return ImpCards.back();
 }
 
@@ -478,7 +505,6 @@ PhysicsCards::removePhysImp(const std::string& Type,
   */
 {
   ELog::RegMethod RegA("PhysicsCards","removePhysImp");
-  ELog::EM<<"REMOVE = "<<Type<<" :: "<<Particle<<ELog::endDiag;
   for(PhysImp& PI : ImpCards)
     {
       if (PI.getType()==Type)
@@ -597,6 +623,27 @@ PhysicsCards::setCellNumbers(const std::vector<int>& cellInfo,
   return;
 }
 
+
+void
+PhysicsCards::setCellNumbers(const std::vector<std::pair<int,int>>& cellInfo)
+
+  /*!
+    Process the list of the valid cells 
+    over each importance group.
+    \param cellInfo :: list of cells/importance
+  */
+
+{
+  ELog::RegMethod RegA("PhysicsCards","setCellNumbers");
+  
+  for(PhysImp& PI : ImpCards)
+    PI.setAllCells(cellInfo);
+
+  Volume.setAllCells(cellInfo);
+  Volume.setAllCells(1.0);
+  return;
+}
+
 // General object [All Particles]:
 void
 PhysicsCards::setCells(const std::string& Type,
@@ -625,7 +672,8 @@ PhysicsCards::setCells(const std::string& Type,
 
 void
 PhysicsCards::setCells(const std::string& Type,
-		       const int cellID,const double defValue)
+		       const int cellID,
+		       const double defValue)
   /*!
     Process the list of the valid cells 
     over each importance group.
@@ -649,6 +697,37 @@ PhysicsCards::setCells(const std::string& Type,
 
 // Specific : Particle + Type
 
+void
+PhysicsCards::isolateCell(const std::string& Type,
+			  const std::string& Particle)
+  /*!
+    Build a PhysImp card for a given particle 
+    If it already exists as a equal value then remove
+    \param Type :: imp type (vol/imp)
+    \param Particle :: particle naem
+  */
+{
+  ELog::RegMethod RegA("PhysicsCards","isolateCells");
+
+  for(PhysImp& PI : ImpCards)
+    {
+      if (PI.getType()==Type &&
+	  PI.hasElm(Particle))
+	{
+	  if (PI.particleCount()!=1)
+	    {
+	      PhysImp isoPI(PI);
+	      isoPI.setParticle(Particle);
+	      PI.removeParticle(Particle);
+	      ImpCards.push_back(isoPI);
+	    }
+	  return;
+	}
+    }
+  throw ColErr::InContainerError<std::string>(Particle+":"+Type,
+					      "Particle not in list");
+}
+  
 void
 PhysicsCards::setCells(const std::string& Type,
 		       const std::string& Particle,
@@ -932,8 +1011,24 @@ PhysicsCards::setMode(std::string Particles)
 	  addPhysImp("imp",item);
 	}
     }
+  else
+    {
+      // complex as we need to keep importance for each 
+      const std::string AItem=mode.getFirstElm();
+      PhysImp& PI=getPhysImp("imp",AItem);
+      mode.clear();
+
+      std::string item;
+      while(StrFunc::section(Particles,item))
+	{
+	  mode.addElm(item);
+	  if (!hasImpFlag(item))
+	    PI.addElm(item);
+	}
+    }
   return;
 }
+      
 
 void
 PhysicsCards::rotateMaster()

@@ -3,7 +3,7 @@
  
  * File:   buildInc/beamTallyConstruct.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,45 +38,47 @@ namespace tallySystem
   \version 1.0
   \author S. Ansell
   \date April 2012
-  \brief Holds everthing for tallies
+  \brief Creates tallies based on beamline information
 
-  Provides linkage to its outside on FixedComp[0]
+
 */
 
-class beamTallyConstruct : virtual public pointConstruct
+class beamTallyConstruct 
 {
  private:
   
   static void calcBeamDirection(const attachSystem::FixedComp&,
 				Geometry::Vec3D&,
 				Geometry::Vec3D&);
-			  
+
+  /// private constructor
+  beamTallyConstruct() {}
+
  public:
 
-  beamTallyConstruct();
-  beamTallyConstruct(const beamTallyConstruct&);
-  beamTallyConstruct& operator=(const beamTallyConstruct&);
-  virtual ~beamTallyConstruct() {}  ///< Destructor
 
+  static void processPoint(SimMCNP&,
+			   const mainSystem::inputParam&,
+			   const size_t);
 
-  virtual void processPoint(Simulation&,const mainSystem::inputParam&,
-		    const size_t) const;
-
-  virtual void writeHelp(std::ostream&) const;
 
   // Additions:
 
-  void addBeamLineTally(Simulation&,const int,const double,
-			const std::string&,const long int,
-			const double,const double) const;
-  void addViewLineTally(Simulation&,const int,const double,
-			const double,const double,const double) const;
-  void addViewInnerTally(Simulation&,const int,const long int,const double,
-			const double,const double,const double) const;
-  void addShutterTally(Simulation&,const int,const double,
-			const std::string&,const long int,
-			const double,const double) const;
+  static void addBeamLineTally(SimMCNP&,const int,const double,
+			       const std::string&,const long int,
+			       const double,const double);
+  static void addViewLineTally(SimMCNP&,const int,const double,
+			       const double,const double,const double);
+  static void addViewInnerTally(SimMCNP&,const int,const long int,
+				const double,const double,
+				const double,const double);
+  static void addShutterTally(SimMCNP&,const int,const double,
+			      const std::string&,const long int,
+			      const double,const double);
 
+
+  static void writeHelp(std::ostream&);
+    
 };
 
 }

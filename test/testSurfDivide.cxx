@@ -3,7 +3,7 @@
  
  * File:   test/testSurfDivide.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,6 +63,7 @@
 #include "surfRegister.h"
 #include "ModelSupport.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "surfDBase.h"
 #include "mergeMulti.h"
 #include "mergeTemplate.h"

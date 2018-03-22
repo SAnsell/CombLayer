@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   photonInc/makeBalder.h
+ * File:   balderInc/makeBalder.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -27,7 +27,14 @@ namespace constructSystem
   class SupplyPipe;
   class CrossPipe;
   class VacuumPipe;
+  class Bellows;
+  class LeadPipe;
   class VacuumBox;
+  class portItem;
+  class PortTube;
+  class GateValve;
+  class JawValve;
+    
 }
 
 
@@ -43,7 +50,15 @@ namespace constructSystem
 namespace xraySystem
 {
   class OpticsHutch;
+  class ExperimentalHutch;
   class MonoVessel;
+  class MonoCrystals;
+  class FlangeMount;
+  class OpticsBeamline;
+  class FrontEndCave;
+  class ConnectZone;
+  class Wiggler;
+  
   /*!
     \class makeBalder
     \version 1.0
@@ -56,48 +71,37 @@ class makeBalder
 {
  private:
 
+  std::string startPoint;       ///< Start point
+  std::string stopPoint;        ///< End point
+  /// Front end cave volume
+  std::shared_ptr<FrontEndCave> frontEnd;
+  /// Wiggler in vacuum box
+  std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
+  /// Wiggler in vacuum box
+  std::shared_ptr<Wiggler> wiggler;
+
+  /// Pipe joining frontend to optics hut
+  std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
+
   /// Optics hutch
   std::shared_ptr<OpticsHutch> opticsHut;
-
-  /// Trigger Unit (pipe):
-  std::shared_ptr<constructSystem::CrossPipe> triggerPipe;
-
-  /// Joining Bellows (pipe):
-  std::shared_ptr<constructSystem::VacuumPipe> pipeA;
-
-  /// Filter box
-  std::shared_ptr<constructSystem::VacuumBox> filterBox;
-
-  /// Joining Bellows (pipe):
-  std::shared_ptr<constructSystem::VacuumPipe> pipeB;
-
-  /// Straight value cross piece (ion pump)
-  std::shared_ptr<constructSystem::CrossPipe> ionPumpA;
-
-  /// Vertical mirror box
-  std::shared_ptr<constructSystem::VacuumBox> mirrorBox;
-
-  /// Straight value cross piece (ion pump)
-  std::shared_ptr<constructSystem::CrossPipe> ionPumpB;
-
-  /// Joining Bellows from mirror box
-  std::shared_ptr<constructSystem::VacuumPipe> pipeC;
-
-  /// Large drift chamber
-  std::shared_ptr<constructSystem::VacuumPipe> driftA;
-
-  /// Large drift chamber post mono
-  std::shared_ptr<constructSystem::VacuumPipe> driftB;
-
-  /// Mono Vessel
-  std::shared_ptr<xraySystem::MonoVessel> monoV;
   
-  /// Huge Bellows to Mono
-  std::shared_ptr<constructSystem::VacuumPipe> monoBellowA;
-  /// Huge Bellows from Mono
-  std::shared_ptr<constructSystem::VacuumPipe> monoBellowB;
+  /// Beamline
+  std::shared_ptr<OpticsBeamline> opticsBeam;
 
-      
+  /// Pipe joining optics hut to outer 
+  std::shared_ptr<constructSystem::LeadPipe> joinPipeB;
+
+  /// Connection between hutches
+  std::shared_ptr<xraySystem::ConnectZone> connectZone;
+
+  /// Pipe joining optics hut to outer 
+  std::shared_ptr<constructSystem::LeadPipe> joinPipeC;
+
+  /// Pipe joining optics hut to outer 
+  std::shared_ptr<xraySystem::ExperimentalHutch> exptHut;
+  
+  
  public:
   
   makeBalder();

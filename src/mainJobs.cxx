@@ -3,7 +3,7 @@
  
  * File:   src/mainJobs.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "SimProcess.h"
 #include "SurInter.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "TallyCreate.h"
 #include "NList.h"
 #include "NRange.h"
@@ -69,6 +70,51 @@
 #include "mainJobs.h"
 
 
+bool
+getTallyMesh(const Simulation* SimPtr,
+	     Geometry::Vec3D& MeshA,
+	     Geometry::Vec3D& MeshB,
+	     std::array<size_t,3>& MPts)
+  /*!
+    Get a mesh from a tally 
+    \param SimPtr :: Simulation
+    \param MeshA :: Lower bound point
+    \param MeshB :: Upper bound point
+    \param MPts :: Points 
+    \return true if point found
+  */
+{
+  ELog::RegMethod RegA("mainJobs[F]","getTallyMesh");
+
+  const SimMCNP* SimMCPtr=
+    dynamic_cast<const SimMCNP*>(SimPtr);
+
+  if (SimMCPtr)
+    {
+      const tallySystem::tmeshTally* MPtr;
+      MPtr=dynamic_cast<const tallySystem::tmeshTally*>(SimMCPtr->getTally(1));
+
+      // try tally 3 if tally 1 fails
+      if (!MPtr)
+	{
+	  MPtr=dynamic_cast<const tallySystem::tmeshTally*>
+	    (SimMCPtr->getTally(3));
+	}
+      // success!
+      if (MPtr) 
+	{
+	  MeshA=MPtr->getMinPt();
+	  MeshB=MPtr->getMaxPt();
+	  MPts=MPtr->getNPt();
+	  return 1;
+	}
+    }
+
+  
+  // failed
+  return 0;
+}
+	     
 int
 createVTK(const mainSystem::inputParam& IParam,
 	  const Simulation* SimPtr,
@@ -85,60 +131,76 @@ createVTK(const mainSystem::inputParam& IParam,
 {
   ELog::RegMethod RegA("createVTK","createVTK");
 
-  if (IParam.flag("md5") || IParam.flag("vtk"))
+  const SimMCNP* SimMCPtr=dynamic_cast<const SimMCNP*>(SimPtr);
+  if (IParam.flag("vtk"))
     {
-      const tallySystem::tmeshTally* MPtr=
-	dynamic_cast<const tallySystem::tmeshTally*>(SimPtr->getTally(1));
-      if (!MPtr)
-	MPtr=dynamic_cast<const tallySystem::tmeshTally*>(SimPtr->getTally(3));
-      if (!MPtr)
-	{
-	  ELog::EM<<"Tally == "<<SimPtr->getTally(1)<<ELog::endCrit;
-	  ELog::EM<<"No mesh tally for Contruction of VTK mesh:"<<ELog::endErr;
-	  
-	  return -1;
-	}
-
-      const std::array<size_t,3>& MPts=MPtr->getNPt();
-      const Geometry::Vec3D& MeshA=MPtr->getMinPt();
-      const Geometry::Vec3D& MeshB=MPtr->getMaxPt();
+      std::array<size_t,3> MPts;
+      Geometry::Vec3D MeshA;
+      Geometry::Vec3D MeshB;
       
-      if (IParam.flag("md5"))
+      if (IParam.flag("vtkMesh"))
 	{
-	  ELog::EM<<"Processing MD5:"<<ELog::endBasic;
-	  MD5sum MM(60);
-	  MM.setBox(MeshA,MeshB);
-	  MM.setIndex(MPts[0],MPts[1],MPts[2]);
-	  MM.populate(SimPtr);
-	  return 1;
-	}
-
-      if (IParam.flag("vtk"))
-	{
-	  ELog::EM<<"Processing VTK:"<<ELog::endBasic;
-	  Visit VTK;
-
-	  if (IParam.flag("vcell"))
-	    VTK.setType(Visit::VISITenum::cellID);
-	  else
-	    VTK.setType(Visit::VISITenum::material);
-	  
-	  std::set<std::string> Active;
-	  for(size_t i=0;i<15;i++)
+	  size_t cntIndex(0);
+	  MeshA=IParam.getCntVec3D("vtkMesh",0,cntIndex,"MeshA point failed");
+	  MeshB=IParam.getCntVec3D("vtkMesh",0,cntIndex,"MeshB point failed");
+	  for(size_t i=0;i<3;i++)
 	    {
-	      const std::string Item=IParam.getValue<std::string>("vmat",i);
-	      if (Item.empty()) break;
-	      Active.insert(Item);
+	      ELog::EM<<"i == "<<i<<ELog::endDiag;
+	      MPts[i]=IParam.getValueError<size_t>
+		("vtkMesh",0,cntIndex++,"MPts[] point failed");
 	    }
-
-	  // PROCESS VTK:
-	  VTK.setBox(MeshA,MeshB);
-	  VTK.setIndex(MPts[0],MPts[1],MPts[2]);
-	  VTK.populate(SimPtr,Active);
-	  
-	  VTK.writeVTK(Oname);
-	  return 2;
 	}
+      else if (!getTallyMesh(SimPtr,MeshA,MeshB,MPts))
+	{
+	  ELog::EM<<"No (tally) mesh for vtk"<<ELog::endErr;
+	  return 0;
+	}
+
+      ELog::EM<<"Processing VTK:"<<ELog::endBasic;
+      Visit VTK;
+      
+      if (IParam.flag("vcell"))
+	VTK.setType(Visit::VISITenum::cellID);
+      else
+	VTK.setType(Visit::VISITenum::material);
+      
+      std::set<std::string> Active;
+      for(size_t i=0;i<15;i++)
+	{
+	  const std::string Item=IParam.getValue<std::string>("vmat",i);
+	  if (Item.empty()) break;
+	  Active.insert(Item);
+	}
+      
+      // PROCESS VTK:
+      VTK.setBox(MeshA,MeshB);
+      VTK.setIndex(MPts[0],MPts[1],MPts[2]);
+      VTK.populate(SimPtr,Active);
+      
+      VTK.writeVTK(Oname);
+      return 2;
     }
+
+  /*
+  if (IParam.flag("md5"))
+  
+    }
+
+
+    }
+
+  
+  if (IParam.flag("md5"))
+    {
+      ELog::EM<<"Processing MD5:"<<ELog::endBasic;
+      MD5sum MM(60);
+      MM.setBox(MeshA,MeshB);
+      MM.setIndex(MPts[0],MPts[1],MPts[2]);
+      MM.populate(SimPtr);
+      return 1;
+    }
+  
+    }
+  */
   return 0;
 }

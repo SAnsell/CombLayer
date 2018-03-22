@@ -3,7 +3,7 @@
  
  * File:   test/testSimulation.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,9 +62,6 @@
 #include "FItem.h"
 #include "FuncDataBase.h"
 #include "SurInter.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
@@ -72,8 +69,10 @@
 #include "ReadFunctions.h"
 #include "surfRegister.h"
 #include "ModelSupport.h"
+#include "DefPhysics.h"
 #include "neutron.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 
 #include "testFunc.h"
 #include "testSimulation.h"
@@ -82,9 +81,7 @@ testSimulation::testSimulation()
   /*!
     Constructor
   */
-{
-  initSim();
-}
+{}
 
 testSimulation::~testSimulation() 
   /*!
@@ -113,6 +110,7 @@ testSimulation::createSurfaces()
   ELog::RegMethod RegA("testSimulation","createSurfaces");
 
   ModelSupport::surfIndex& SurI=ModelSupport::surfIndex::Instance();
+  SurI.reset();
   
   // First box :
   SurI.createSurface(1,"px -1");
@@ -130,6 +128,8 @@ testSimulation::createSurfaces()
   SurI.createSurface(15,"pz -3");
   SurI.createSurface(16,"pz 3");
 
+  SurI.createSurface(17,"c/y 2.0 0.0 0.5");
+  SurI.createSurface(34,"py 10.0");
   // Far box :
   SurI.createSurface(21,"px 10");
   SurI.createSurface(22,"px 15");
@@ -155,15 +155,16 @@ testSimulation::createObjects()
   Out=ModelSupport::getComposite(surIndex,"1 -2 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,3,0.0,Out));      // steel object
 
-  Out=ModelSupport::getComposite(surIndex,"11 -12 13 -14 15 -16"
+  Out=ModelSupport::getComposite(surIndex,"11 -12 (-17:-14) 13 -34 15 -16 "
 				 " (-1:2:-3:4:-5:6) ");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,5,0.0,Out));      // Al container
 
   Out=ModelSupport::getComposite(surIndex,"21 -22 3 -4 5 -6");
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,8,0.0,Out));      // Gd box 
 
-  Out=ModelSupport::getComposite(surIndex,"-100 (-11:12:-13:14:-15:16)"
-				 " #4");
+  Out=ModelSupport::getComposite
+    (surIndex,"-100 (-11:12:-13:34:-15:16:(17 14)) #4");
+
   ASim.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));      // Void
   
   ASim.removeComplements();
@@ -189,12 +190,14 @@ testSimulation::applyTest(const int extra)
   testPtr TPtr[]=
     {
       &testSimulation::testCreateObjSurfMap,
-      &testSimulation::testInCell
+      &testSimulation::testInCell,
+      &testSimulation::testSplitCell
     };
   const std::string TestName[]=
     {
       "CreateObjSurfMap",
       "InCell",
+      "SplitCell"
     };
   
   const int TSize(sizeof(TPtr)/sizeof(testPtr));
@@ -221,6 +224,7 @@ testSimulation::applyTest(const int extra)
   return 0;
 }
 
+
 int
 testSimulation::testCreateObjSurfMap()
   /*!
@@ -229,7 +233,8 @@ testSimulation::testCreateObjSurfMap()
   */
 {
   ELog::RegMethod RegA("testSimulation","testCreateObjSurfMap");
-  
+
+  initSim();
   ASim.createObjSurfMap();
   const ModelSupport::ObjSurfMap* OPtr=ASim.getOSM();
   if (!OPtr) return -1;
@@ -237,10 +242,11 @@ testSimulation::testCreateObjSurfMap()
 
   if (MVec.size()!=1 || MVec[0]->getName()!=3)
     {
-      ModelSupport::ObjSurfMap::STYPE::const_iterator mc;
-      for(mc=MVec.begin();mc!=MVec.end();mc++)
-	ELog::EM<<"Obj == "<<(*mc)->getName()<<ELog::endDiag;
+      for(const MonteCarlo::Object* mc : MVec)
+	ELog::EM<<"Obj[2] == "<<mc->getName()<<ELog::endDiag;
+	    
       return -2;
+      
     }
 
   const ModelSupport::ObjSurfMap::STYPE& MVecB=OPtr->getObjects(5);
@@ -249,7 +255,7 @@ testSimulation::testCreateObjSurfMap()
     {
       ModelSupport::ObjSurfMap::STYPE::const_iterator mc;
       for(mc=MVecB.begin();mc!=MVecB.end();mc++)
-	ELog::EM<<"Obj == "<<(*mc)->getName()<<ELog::endDiag;
+	ELog::EM<<"Obj[5]== "<<(*mc)->getName()<<ELog::endDiag;
       return -3;
     }
 
@@ -265,40 +271,71 @@ testSimulation::testInCell()
 {
   ELog::RegMethod RegA("testSimulation","testInCell");
 
-  std::vector<Geometry::Vec3D> Pts;
-  std::vector<int> CellN;
-  
-  Pts.push_back(Geometry::Vec3D(0,0,0));
-  Pts.push_back(Geometry::Vec3D(0,26,0));
-  Pts.push_back(Geometry::Vec3D(0,2,0));
-  Pts.push_back(Geometry::Vec3D(12.5,0.3,0));
-  Pts.push_back(Geometry::Vec3D(0,5,0));
-
-
-  CellN.push_back(2);
-  CellN.push_back(1);
-  CellN.push_back(3);
-  CellN.push_back(4);  
-  CellN.push_back(5);
-
-  for(size_t i=0;i<Pts.size();i++)
+  typedef std::tuple<Geometry::Vec3D,int> TTYPE;
+  const std::vector<TTYPE> Tests=
     {
-      MonteCarlo::Object* OPtr=ASim.findCell(Pts[i],0);
+      TTYPE(Geometry::Vec3D(0,0,0),2),
+      TTYPE(Geometry::Vec3D(0,26,0),1),
+      TTYPE(Geometry::Vec3D(0,2,0),3),
+      TTYPE(Geometry::Vec3D(12.5,0.3,0),4),
+      TTYPE(Geometry::Vec3D(0,5,0),5)
+    };
 
-      if (OPtr && CellN[i]!=OPtr->getName())
+  for(const TTYPE& tc : Tests)
+    {
+      const Geometry::Vec3D& Pt=std::get<0>(tc);
+      const int CN(std::get<1>(tc));
+      MonteCarlo::Object* OPtr=ASim.findCell(Pt,0);
+
+      if (OPtr && CN!=OPtr->getName())
 	{
-	  ELog::EM<<"Failed on point:"<<Pts[i]<<ELog::endWarn;
-	  ELog::EM<<"  Cell == "<<CellN[i]<<" != "
+	  ELog::EM<<"Failed on point:"<<Pt<<ELog::endWarn;
+	  ELog::EM<<"  Cell == "<<CN<<" != "
 		  <<*OPtr<<ELog::endDebug;
 	  return -1;
 	}
-      else if (!OPtr && CellN[i])
+      else if (!OPtr && CN)
 	{
-	  ELog::EM<<"Failed on point:"<<Pts[i]<<ELog::endWarn;
-	  ELog::EM<<"  Cell == "<<CellN[i]<<" != Null"<<ELog::endWarn;
+	  ELog::EM<<"Failed on point:"<<Pt<<ELog::endWarn;
+	  ELog::EM<<"  Cell == "<<CN<<" != Null"<<ELog::endWarn;
 	  return -1;
 	}
     }
       
+  return 0;
+}
+
+int
+testSimulation::testSplitCell()
+  /*!
+    Framework test to test splitting of a cell
+    \return 0 on success / -1 on failure
+  */
+{
+  ELog::RegMethod RegA("testSimulation","testSplitCell");
+
+  // divide plane : cell : OutName "
+  typedef std::tuple<std::string,int,std::string> TTYPE;
+  const std::vector<TTYPE> Tests=
+    {
+      //      TTYPE("px 0",2,"testA.x"),
+      //      TTYPE("px 0",3,"testB.x"),
+      TTYPE("py 0",3,"testC.x")
+    };
+
+  ModelSupport::surfIndex& SurI=
+    ModelSupport::surfIndex::Instance();
+  
+  for(const TTYPE& tc : Tests)
+    {
+      initSim();
+      SurI.createSurface(1001,std::get<0>(tc));
+
+      ASim.splitObject(std::get<1>(tc),1001);
+      ModelSupport::setGenericPhysics(ASim,"CEM03");
+      ASim.prepareWrite();
+      ASim.write(std::get<2>(tc));
+    }
+  
   return 0;
 }

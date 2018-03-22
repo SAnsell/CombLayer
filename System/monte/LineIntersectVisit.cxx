@@ -3,7 +3,7 @@
  
  * File:   monte/LineIntersectVisit.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "Surface.h"
-#include "surfFunctors.h"
 #include "Quadratic.h"
 #include "Plane.h"
 #include "ArbPoly.h"
@@ -171,7 +170,7 @@ void
 LineIntersectVisit::Accept(const Geometry::ArbPoly& Surf)
   /*!
     Process an intersect track
-    \param Surf :: Surface to use int line Interesect
+    \param Surf :: Surface to use in the line Interesect
   */
 {
   ATrack.intersect(PtOut,Surf);
@@ -183,7 +182,7 @@ void
 LineIntersectVisit::Accept(const Geometry::Cone& Surf)
   /*!
     Process an intersect track
-    \param Surf :: Surface to use int line Interesect
+    \param Surf :: Surface to use in the line Interesect
   */
 {
   ATrack.intersect(PtOut,Surf);
@@ -195,7 +194,7 @@ void
 LineIntersectVisit::Accept(const Geometry::CylCan& Surf)
   /*!
     Process an intersect track
-    \param Surf :: Surface to use int line Interesect
+    \param Surf :: Surface to use in the line Interesect
   */
 {
   ATrack.intersect(PtOut,Surf);
@@ -406,30 +405,25 @@ LineIntersectVisit::getPoint(const std::string& RuleStr,
 Geometry::Vec3D
 LineIntersectVisit::getPoint(const Geometry::Surface* SPtr,
 			     const Geometry::Surface* CntlPtr,
-			     const int sign) 
+			     const int signV) 
   /*!
     Calculate the pont at the closest point along the line
     to the surface SPtr
     \param SPtr :: surface to intersect
     \param CntlPtr :: control/guard surface to check intersects
-    \param sign :: sign on control surface
+    \param signV :: sign on control surface
     \throw EmptyValue if no intersections possible
     \return Point of intersection
   */
 {
   clearTrack();
   SPtr->acceptVisitor(*this);
-  std::vector<Geometry::Vec3D>::iterator vc=
-    remove_if(PtOut.begin(),PtOut.end(),
-	      std::bind(&Geometry::surfaceCheck,sign,CntlPtr,
-			std::placeholders::_1));
-  PtOut.erase(vc,PtOut.end());
 
-  if (PtOut.empty())
-    throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
-				   SPtr->className()+">");
+  for(const Geometry::Vec3D& Pt : PtOut)
+    if (CntlPtr->side(Pt)*signV>0) return Pt;
 
-  return PtOut[0];
+  throw ColErr::EmptyValue<void>("LineIntersecVisit::getPoint<"+
+				 SPtr->className()+">");
 }
 
 
@@ -449,7 +443,7 @@ LineIntersectVisit::getPoints(const Geometry::Surface* SPtr)
 const std::vector<Geometry::Vec3D>&
 LineIntersectVisit::getPoints(const Geometry::Surface* SPtr,
 			      const Geometry::Surface* CntlPtr,
-			      const int sign)
+			      const int signV)
   /*!
     Calculate the Points along the trace
     to the surface SPtr
@@ -460,11 +454,13 @@ LineIntersectVisit::getPoints(const Geometry::Surface* SPtr,
   */
 {
   SPtr->acceptVisitor(*this);
+
   std::vector<Geometry::Vec3D>::iterator vc=
     remove_if(PtOut.begin(),PtOut.end(),
-	      std::bind(&Geometry::surfaceCheck,sign,CntlPtr,
-			std::placeholders::_1));
-
+	      [&](const Geometry::Vec3D& Pt) -> bool
+	      {
+		return CntlPtr->side(Pt)*signV<0;
+	      });
   PtOut.erase(vc,PtOut.end());
   return PtOut;
 }

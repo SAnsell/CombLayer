@@ -172,7 +172,7 @@ SimPOVRay::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimPOVRay","write");
-
+  ELog::EM<<"WRITE"<<ELog::endDiag;
   std::ofstream OX(Fname.c_str()); 
   OX << "// POV-Ray model from CombLayer."<<std::endl;
   OX << "// This file contains only geomety." << std::endl;

@@ -3,7 +3,7 @@
  
  * File:   beamline/GuideLine.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@
 #include "Line.h"
 #include "LineIntersectVisit.h"
 #include "Rules.h"
-#include "surfFunctors.h"
 #include "SurInter.h"
 #include "varList.h"
 #include "Code.h"
@@ -271,7 +270,7 @@ GuideLine::addGuideUnit(const size_t index,
     The direction/rotation are applied to previous fixed unit
     out track.
 
-    \param Index :: index for the unit
+    \param index :: index for the unit
     \param POrigin :: Previous Origin [link on]
     \param bX :: X shift on origin
     \param bZ :: Z shift on origin
@@ -787,7 +786,7 @@ GuideLine::getXSection(const size_t shapeIndex,
   /*!
     Get the cross-section rule
     \param shapeIndex :: Shape number
-    \param shapelayerIndex :: Layer number [numberd from outside]
+    \param shapeLayerIndex :: Layer number [numberd from outside]
     \return HeadRule of XSection
   */
 {

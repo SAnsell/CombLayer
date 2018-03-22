@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   Main/reactor.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,11 +71,6 @@
 #include "variableSetup.h"
 #include "World.h"
 
-#include "fissionConstruct.h"
-#include "reactorTallyConstruct.h"
-#include "tallyConstructFactory.h" 
-#include "tallyConstruct.h" 
-
 #include "makeDelft.h"
 
 MTRand RNG(12345UL);
@@ -124,10 +119,6 @@ main(int argc,char* argv[])
 
       RObj.setSource(*SimPtr,IParam);
 
-      tallySystem::tallyConstructFactory FC;
-      tallySystem::tallyConstruct& TC=
-	tallySystem::tallyConstruct::Instance(&FC);
-      TC.setFission(new tallySystem::reactorTallyConstruct);
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
 
 

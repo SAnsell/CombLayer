@@ -3,7 +3,7 @@
  
  * File:   commonVarInc/TwinBaseGenerator.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ class TwinBaseGenerator
   double innerTopStep;     ///< Step above centre for top disk
   double innerLowStep;     ///< Step below centre for lower disk
 
-  double motorRadius;   ///< Flange Inner radius
+  double motorRadius;        ///< Flange Inner radius
   double motorFlangeInner;   ///< Flange Inner radius
   double motorFlangeOuter;   ///< Flange Outer radius
   double motorOuter;         ///< Motor outer
@@ -53,17 +53,17 @@ class TwinBaseGenerator
   size_t motorNBolt;         ///< Number of bolts
   double motorBoltRadius;    ///< Radius of bolts
   double motorSealThick;     ///< Seal thickness
-  bool motorRevFlagA;         ///< Motor rotated A
-  bool motorRevFlagB;         ///< Motor rotated B
+  bool motorRevFlagA;        ///< Motor rotated A
+  bool motorRevFlagB;        ///< Motor rotated B
   std::string motorSealMat;  ///< Seal material
 
-  size_t ringNBolt;         ///< Bolts in outer ring
-  size_t lineNBolt;         ///< Bolts in outer line
-  double outerStep;         ///< Bolts step from outer edge
-  double outerBoltRadius;   ///< Radius of outer bolts
-  std::string outerBoltMat;     ///< Main wall material
+  size_t ringNBolt;          ///< Bolts in outer ring
+  size_t lineNBolt;          ///< Bolts in outer line
+  double outerStep;          ///< Bolts step from outer edge
+  double outerBoltRadius;    ///< Radius of outer bolts
+  std::string outerBoltMat;  ///< Main wall material
   
-  std::string wallMat;     ///< Main wall material
+  std::string wallMat;       ///< Main wall material
   
  public:
 

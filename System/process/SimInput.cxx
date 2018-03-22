@@ -3,7 +3,7 @@
  
  * File:   process/SimInput.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "Triple.h"
 #include "NList.h"
 #include "NRange.h"
@@ -78,38 +79,9 @@
 namespace SimProcess
 {
 
-void
-importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
-  /*!
-    Apply importances/renumber and weights
-     \param System :: Simuation object 
-     \param IParam :: Input parameters
-   */
-{
-  ELog::RegMethod RegA("SimInput","importanceSim");
-
-  System.populateCells();
-  System.createObjSurfMap();
-
-  WeightSystem::simulationImp(System,IParam);
-
-  WeightSystem::ExtField(System,IParam);
-  WeightSystem::FCL(System,IParam);
-  WeightSystem::IMP(System,IParam);
-  WeightSystem::DXT(System,IParam);
-  WeightSystem::PWT(System,IParam);
-  WeightSystem::EnergyCellCut(System,IParam);
-  mainSystem::renumberCells(System,IParam);
-  WeightSystem::WCellControl WCell;
-  WeightSystem::WWGControl WWGC;
-  WCell.processWeights(System,IParam);
-  WWGC.processWeights(System,IParam);
-  
-  return;
-}
-
 int
-processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
+processExitChecks(Simulation& System,
+		  const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 
@@ -130,12 +102,23 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
 	{
 	  const Geometry::Vec3D CPoint=
 	    IParam.getValue<Geometry::Vec3D>("validPoint");
+
 	  if (!SValidCheck.runPoint(System,CPoint,
 				    IParam.getValue<size_t>("validCheck")))
 	    errFlag += -1;
 	}
-    }
+      else if (IParam.flag("validFC"))
+	{
 
+	}
+      else 
+	{
+	  if (!SValidCheck.runPoint(System,Geometry::Vec3D(0,0,0),
+				    IParam.getValue<size_t>("validCheck")))
+	    errFlag += -1;
+	}
+
+    }
   
   const size_t NLine = IParam.setCnt("validLine");
   for(size_t i=0;i<NLine;i++)
@@ -156,43 +139,56 @@ processExitChecks(Simulation& System,const mainSystem::inputParam& IParam)
       LTR.calculate(System);
     }
   
-	
-  if (IParam.flag("cinder"))
-    System.writeCinder();
+  if (IParam.flag("cinder")) System.writeCinder();
 
   return errFlag;
 }
 
-
 void
 inputProcessForSim(Simulation& System,
-                const mainSystem::inputParam& IParam)
+		   const mainSystem::inputParam& IParam)
   /*!
     Check the validity of the simulation
     \param System :: Simuation object 
     \param IParam :: Inpute parameters
   */
 {
-  ELog::RegMethod RegA("SimInput[F]","inputPatterSim");
-  
-  if (IParam.flag("cinder"))
-    System.setForCinder();
-  
+  ELog::RegMethod RegA("SimInput[F]","inputProcessForSim");
+
   // Cut energy tallies:
   if (IParam.flag("ECut"))
     System.setEnergy(IParam.getValue<double>("ECut"));
 
+  return;
+}
+
+void
+inputProcessForSimMCNP(SimMCNP& System,
+		       const mainSystem::inputParam& IParam)
+  /*!
+    Check the validity of the simulation
+    \param System :: Simuation object 
+    \param IParam :: Inpute parameters
+  */
+{
+  ELog::RegMethod RegA("SimInput[F]","inputProcessForSimMCNP");
+
+  inputProcessForSim(System,IParam);
+  
+  if (IParam.flag("cinder"))
+    System.setForCinder();
+  
   if (IParam.flag("endf"))
     System.setENDF7();
 
   if (IParam.flag("ptrac"))
-    processPTrack(IParam,System.getPC());
+    SimProcess::processPTrack(IParam,System.getPC());
 
   if (IParam.flag("event"))
-    processEvent("event",IParam,System.getPC());
+    SimProcess::processEvent("event",IParam,System.getPC());
 
   if (IParam.flag("dbcn"))
-    processEvent("dbcn",IParam,System.getPC());
+    SimProcess::processEvent("dbcn",IParam,System.getPC());
   
   return;
 }

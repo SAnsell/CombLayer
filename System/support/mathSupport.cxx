@@ -3,7 +3,7 @@
  
  * File:   support/mathSupport.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,32 @@
 /*! 
   \file mathSupport.cxx 
 */
+
+template<typename T,typename U>
+void
+signSplit(const T& aNumber,T& aSign,U& aValue)
+  /*!
+    Split a number into the sign and
+    positive value
+    \param aNumber :: number to split
+    \param aSign :: sign value +/- 1
+    \param aValue :: abs(A) 
+  */
+{
+  if (aNumber>=0)
+    {
+      aSign = 1;
+      aValue=static_cast<U>(aNumber);
+    }
+  else
+    {
+      aSign = -1;
+      aValue=static_cast<U>(-aNumber);
+    }
+  return;
+}
+
+
 
 double
 mathFunc::logFromLinear(const double A,const double B,const size_t N,
@@ -328,6 +354,29 @@ indexSort(const std::vector<T>& pVec,std::vector<U>& Index)
   
   return;
 }
+
+
+template<typename T>
+size_t
+inUnorderedRange(const std::vector<T>& VOffset,
+		 const std::vector<T>& VRange,
+		 const T& Item)
+  /*!
+    Determine if the Item is in the range VOffset[] + VRange[]
+    \param VOffset :: start values						
+    \param VRange :: range values
+    \param Item :: test value
+    \return index point+1 [or 0 on failure]
+   */
+{
+  for(size_t i=0;i<VOffset.size() && i<VRange.size();i++)
+    {
+      if (Item>=VOffset[i] &&  Item<=VOffset[i]+VRange[i])
+	return i+1;
+    }
+  return 0;
+}
+
 
 template<typename T> 
 typename std::vector<T>::const_iterator
@@ -858,5 +907,16 @@ template long int mathFunc::binSearch(
 
 template double mathFunc::minDifference(const std::vector<double>&,
 					const double&);
+
+
+template
+size_t inUnorderedRange(const std::vector<int>&,const std::vector<int>&,
+			const int&);
+
+
+template void signSplit(const long int&,long int&,size_t&);
+template void signSplit(const long int&,long int&,long int&);
+template void signSplit(const int&,int&,size_t&);
+template void signSplit(const int&,int&,int&);
 
 ///\endcond TEMPLATE

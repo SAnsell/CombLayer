@@ -3,7 +3,7 @@
  
  * File:   construct/PipeCollimator.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -78,10 +79,9 @@ namespace constructSystem
 {
 
 PipeCollimator::PipeCollimator(const std::string& Key) :
-  attachSystem::ContainedComp(),attachSystem::FixedOffset(Key,2),
+  attachSystem::ContainedSpace(),attachSystem::FixedOffset(Key,2),
   attachSystem::CellMap(),attachSystem::SurfMap(),
-  collIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(collIndex+1),setFlag(0)
+  setFlag(0)
   /*!
     Default constructor
     \param Key :: Key name for variables
@@ -90,9 +90,8 @@ PipeCollimator::PipeCollimator(const std::string& Key) :
   
 
 PipeCollimator::PipeCollimator(const PipeCollimator& A) : 
-  attachSystem::ContainedComp(A),attachSystem::FixedOffset(A),
+  attachSystem::ContainedSpace(A),attachSystem::FixedOffset(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
-  collIndex(A.collIndex),cellIndex(A.cellIndex),
   setFlag(A.setFlag),innerStruct(A.innerStruct),
   outerStruct(A.outerStruct),length(A.length),mat(A.mat)
   /*!
@@ -111,11 +110,10 @@ PipeCollimator::operator=(const PipeCollimator& A)
 {
   if (this!=&A)
     {
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
       attachSystem::FixedOffset::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
-      cellIndex=A.cellIndex;
       setFlag=A.setFlag;
       innerStruct=A.innerStruct;
       outerStruct=A.outerStruct;
@@ -168,8 +166,8 @@ PipeCollimator::createSurfaces()
 {
   ELog::RegMethod RegA("PipeCollimator","createSurface");
 
-  ModelSupport::buildPlane(SMap,collIndex+1,Origin-Y*(length/2.0),Y);
-  ModelSupport::buildPlane(SMap,collIndex+2,Origin+Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*(length/2.0),Y);
+  ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*(length/2.0),Y);
   
   return;
 }
@@ -187,13 +185,13 @@ PipeCollimator::createObjects(Simulation& System)
   if ((setFlag & 2) !=2)
     throw ColErr::EmptyContainer("outerStruct not set");
 
-  Out=ModelSupport::getComposite(SMap,collIndex,"1 -2");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
   Out+=innerStruct.display()+outerStruct.display();
   
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   addCell("Main",cellIndex-1);
   
-  Out=ModelSupport::getComposite(SMap,collIndex,"1 -2");
+  Out=ModelSupport::getComposite(SMap,buildIndex,"1 -2");
   addOuterSurf(Out);
   return;
 }
@@ -207,9 +205,9 @@ PipeCollimator::createLinks()
   ELog::RegMethod RegA("PipeCollimator","createLinks");
 
   FixedComp::setConnect(0,Origin-Y*(length/2.0),-Y);
-  FixedComp::setLinkSurf(0,-SMap.realSurf(collIndex+1));
+  FixedComp::setLinkSurf(0,-SMap.realSurf(buildIndex+1));
   FixedComp::setConnect(1,Origin+Y*(length/2.0),Y);
-  FixedComp::setLinkSurf(1,SMap.realSurf(collIndex+2));      
+  FixedComp::setLinkSurf(1,SMap.realSurf(buildIndex+2));      
   
   return;
 }

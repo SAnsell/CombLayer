@@ -3,7 +3,7 @@
  
  * File:   attachCompInc/ContainedComp.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ namespace attachSystem
 
 class ContainedComp  
 {
- private:
+ protected:
 
   HeadRule boundary;        ///< Boundary object [Imposed containment]
   HeadRule outerSurf;       ///< Outer surfaces [Excluding boundary]
@@ -62,7 +62,8 @@ class ContainedComp
   ContainedComp(const ContainedComp&);
   ContainedComp& operator=(const ContainedComp&);
   virtual ~ContainedComp();
-  
+
+  virtual const HeadRule& getOuterSurf() const;
   virtual std::string getExclude() const;
   virtual std::string getCompExclude() const;
   virtual std::string getContainer() const;
@@ -109,9 +110,9 @@ class ContainedComp
   void setInsertCell(const int);
   void setInsertCell(const std::vector<int>&);
 
-  void insertObjects(Simulation&);
   void insertInCell(Simulation&,const int) const;
   void insertInCell(Simulation&,const std::vector<int>&) const;
+  virtual void insertObjects(Simulation&);
 
   /// Accessor to surface [ugly]
   std::vector<Geometry::Surface*> getSurfaces() const;
@@ -121,6 +122,8 @@ class ContainedComp
   const std::vector<int>& getInsertCells() const 
     { return insertCells; }
 
+  int getMainCell() const;
+  
   void write(std::ostream&) const;
 
 };

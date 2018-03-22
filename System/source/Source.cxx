@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   src/Source.cxx 
+ * File:   source/Source.cxx 
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #include "MapSupport.h"
 #include "mathSupport.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -232,6 +232,22 @@ Source::addComp(const std::string& Key,const SrcBase* BPtr)
   else
     sdMap.insert(sdMapTYPE::value_type(Key,SBasePtr(BPtr->clone())));
   return;
+}
+
+size_t
+Source::getFreeDataIndex() const
+  /*!
+    Determine the next free number
+    \return max number+1
+  */
+{
+  size_t maxN(0);
+  for(const dvecTYPE::value_type& DPtr : DVec)
+    {
+      if (DPtr->getIndex()>maxN)
+	maxN=DPtr->getIndex();
+    }
+  return maxN+1;
 }
 
 
@@ -488,8 +504,7 @@ Source::write(std::ostream& OX) const
     out+=mc->second->getString();
   
   if (transPTR)
-    out+=StrFunc::makeString(std::string(" tr="),
-			     transPTR->getName());
+    out+=" tr="+std::to_string(transPTR->getName());
   
   StrFunc::writeMCNPX(out,OX);
   

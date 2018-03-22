@@ -169,16 +169,10 @@ ObjSurfMap::addSurfaces(MonteCarlo::Object* OPtr)
   
   // signed set
   const std::set<int>& sSet=OPtr->getSurfSet();
+
   std::set<int>::const_iterator sc;
   for(sc=sSet.begin();sc!=sSet.end();sc++)
-    {
-      addSurface(*sc,OPtr);
-      /* Remove for simple test [REVSURF]
-       const int oSurf= -SurI.hasOpposite(*sc);
-       if (oSurf)
-       	addSurface(oSurf,OPtr);
-      */
-    }
+    addSurface(*sc,OPtr);
 
   return;
 }
@@ -268,7 +262,6 @@ ObjSurfMap::findNextObject(const int SN,
   ELog::RegMethod RegA("ObjSurfMap","findNextObject");
 
   const STYPE& MVec=getObjects(SN);
-  STYPE::const_iterator mc;
 
   for(MonteCarlo::Object* MPtr : MVec)
     {
@@ -298,11 +291,9 @@ ObjSurfMap::findNextObject(const int SN,
     {
       ELog::EM<<"Failed to get == "<<SN<<ELog::endErr;
     }
-
-
-  
-  for(mc=MVec.begin();mc!=MVec.end();mc++)
-    ELog::EM<<"Common surf Cell  == "<<(*mc)->getName()<<ELog::endDiag;
+    
+  for(const MonteCarlo::Object* MPtr : MVec)
+    ELog::EM<<"Common surf Cell  == "<<MPtr->getName()<<ELog::endDiag;
 
   return 0;
 }

@@ -542,7 +542,7 @@ Bunker::createMainWall(Simulation& System)
   const std::string Out=ModelSupport::getComposite(SMap,bnkIndex," 1 ");
 
   wallObj->initialize(System.getDataBase(),*this,0);
-  wallObj->setVertSurf(SMap.realSurf(bnkIndex+5),SMap.realSurf(bnkIndex+106));  //XXX
+  wallObj->setVertSurf(SMap.realSurf(bnkIndex+5),SMap.realSurf(bnkIndex+106));
   wallObj->setRadialSurf(SMap.realSurf(innerSurf),SMap.realSurf(outerSurf));
   wallObj->setDivider(Out);
 

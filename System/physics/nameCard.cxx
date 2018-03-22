@@ -3,7 +3,7 @@
  
  * File:   physics/nameCard.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "stringCombine.h"
+#include "writeSupport.h"
 #include "nameCard.h"
 
 namespace physicsSystem
@@ -325,7 +325,7 @@ nameCard::setRegItem(const std::string& kN,
     }
   else if (AType==MData::STR)
     {
-      setItem(kN,StrFunc::makeString(Item));
+      setItem(kN,std::to_string(Item));
       return;
     }
   throw ColErr::InContainerError<long int>
@@ -363,7 +363,7 @@ nameCard::setRegItem(const std::string& kN,
     }
   else if (AType==MData::STR)
     {
-      setItem(kN,StrFunc::makeString(Item));
+      setItem(kN,std::to_string(Item));
       return;
     }
   throw ColErr::InContainerError<double>

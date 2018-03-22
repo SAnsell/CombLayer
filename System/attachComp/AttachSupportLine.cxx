@@ -3,7 +3,7 @@
  
  * File:   attachComp/AttachSupportLine.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -282,14 +282,14 @@ lineIntersect(Simulation& System,
 	      const FixedComp& FC,
 	      std::map<int,MonteCarlo::Object*>& OMap)
   /*!
-    For the line from APt to BPt Axis find all the intercepts
-    in the model and add them to cells
+    For all the tracks between fixed points in the FC 
+    find the cell in the model the tracks intersect.
     \param System :: Simualation to use
     \param FC :: Fixed Comp
     \param OMap :: Object map to add extra units to
   */
 {
-  ELog::RegMethod RegA("","lineIntersect(Pt,Axis)");
+  ELog::RegMethod RegA("AttachSupportLine[F]","lineIntersect(Pt,Axis)");
 
   const long int NC(static_cast<long int>(FC.NConnect()));
 
@@ -340,8 +340,5 @@ lineIntersect(Simulation& System,
     }
   return;
 }
-	      
-	      
 
-  
 }  // NAMESPACE attachSystem

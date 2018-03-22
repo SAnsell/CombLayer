@@ -3,7 +3,7 @@
  
  * File:   commonVar/ShieldGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,34 +48,9 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Quaternion.h"
-#include "Surface.h"
-#include "surfIndex.h"
-#include "surfRegister.h"
-#include "objectRegister.h"
-#include "surfEqual.h"
-#include "Quadratic.h"
-#include "Plane.h"
-#include "Cylinder.h"
-#include "Line.h"
-#include "Rules.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
-#include "HeadRule.h"
-#include "Object.h"
-#include "Qhull.h"
-#include "Simulation.h"
-#include "ModelSupport.h"
-#include "MaterialSupport.h"
-#include "generateSurf.h"
-#include "LinkUnit.h"
-#include "FixedComp.h"
-#include "ContainedComp.h"
-#include "ContainedGroup.h"
-#include "BaseMap.h"
-#include "CellMap.h"
-#include "surfExpand.h"
 #include "ShieldGenerator.h"
 
 namespace setVariable
@@ -172,6 +147,10 @@ ShieldGenerator::setLayers(MLTYPE& lenMap,MSTYPE& matMap,
                            const std::vector<std::string>& matName)
  /*!
    Given a set of values set the wall
+   \param lenMap :: map of specificed layer index + layer thickness 
+   \param matMap :: map of specificed layer index + layer material
+   \param primThick :: total thickness of layers
+   \param nLayer :: next active layer
    \param NL :: Number of layers 
    \param voidThick :: Thickness of inner void [half]
    \param thick :: Layer thickness

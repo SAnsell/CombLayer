@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/shortNMX/shortNMX.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,10 +82,7 @@ class shortNMX : public attachSystem::CopiedComp
 
   // Piece after wall
   std::shared_ptr<constructSystem::LineShield> ShieldA;
-  
-  void setBeamAxis(const FuncDataBase&,
-		   const GuideItem&,const bool);
-  
+    
  public:
   
   shortNMX(const std::string&);

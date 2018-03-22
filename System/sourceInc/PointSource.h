@@ -3,8 +3,7 @@
  
  * File:   sourceInc/PointSource.h
  *
- *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +46,7 @@ class PointSource :
   
   double angleSpread;           ///< Angle spread
   
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -62,7 +61,8 @@ class PointSource :
   /// accessor to angle
   void setAngleSpread(const double D) { angleSpread=D; }
 
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
 
 
@@ -70,6 +70,7 @@ class PointSource :
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
 };
 
 }

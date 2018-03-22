@@ -3,7 +3,7 @@
  
  * File:   physicsInc/PhysicsCards.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,7 @@ class PhysicsCards
 
   // ALL systems setup
   void setCellNumbers(const std::vector<int>&,const std::vector<double>&);
+  void setCellNumbers(const std::vector<std::pair<int,int>>&);
 
   // General [All particles] :
   void setCells(const std::string&,const std::vector<int>&,const double =1.0);
@@ -109,6 +110,8 @@ class PhysicsCards
 		const int, const double);
   double getValue(const std::string&,const std::string&,const int) const;
 
+  void isolateCell(const std::string&,const std::string&);
+  
   /// Get Mode card
   ModeCard& getMode() { return mode; }
   /// Get LEA card
@@ -117,12 +120,13 @@ class PhysicsCards
   const PhysImp& getPhysImp(const std::string&,const std::string&) const;
   PhysImp& getPhysImp(const std::string&,const std::string&);
 
-  PhysImp& addPhysImp(const std::string&,const std::string&);
+  PhysImp& addPhysImp(const std::string&,const std::string&,const double =1.0);
   void removePhysImp(const std::string&,const std::string&);
   /// allows setting of flag
   void clearWImpFlag(const std::string&);
   void setWImpFlag(const std::string&);
   bool hasWImpFlag(const std::string&) const;
+  bool hasImpFlag(const std::string&) const;
   
   template<typename T>
   T* addPhysCard(const std::string&,const std::string&);
@@ -149,8 +153,10 @@ class PhysicsCards
   
   void setPWT(const std::vector<int>&,const double =1.0);
   void setPWT(const int,const double);
+
   void setNPS(const size_t N) { nps=N; }      ///< Set the Number of particles
   void setRND(const long int,const long int =0);
+  
   template<typename T>
   void setPTRAC(const std::string&,const T&);
   template<typename T>

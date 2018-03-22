@@ -3,7 +3,7 @@
  
  * File:   source/GaussBeamSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,12 +46,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -65,7 +59,8 @@
 #include "World.h"
 #include "Transform.h"
 #include "localRotate.h"
-
+#include "particleConv.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "GaussBeamSource.h"
 
@@ -140,7 +135,7 @@ GaussBeamSource::setSize(const double W,const double H)
 }
   
 void
-GaussBeamSource::populate(const FuncDataBase& Control)
+GaussBeamSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
     \param Control :: Control variables
@@ -148,12 +143,12 @@ GaussBeamSource::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("GaussBeamSource","populate");
 
-  attachSystem::FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  attachSystem::FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   
-  xWidth=Control.EvalDefVar<double>(keyName+"XWidth",xWidth);
-  zWidth=Control.EvalDefVar<double>(keyName+"ZWidth",zWidth);
-  angleSpread=Control.EvalDefVar<double>(keyName+"ASpread",0.0); 
+  mainSystem::findInput<double>(inputMap,"xWidth",0,xWidth);
+  mainSystem::findInput<double>(inputMap,"zWidth",0,zWidth);
+  mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread); 
   return;
 }
 
@@ -208,7 +203,9 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("GaussBeamSource","createSource");
 
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
 
   // are we aligned on the master direction:
@@ -223,6 +220,7 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
     }
   else
     {
+      sourceCard.setComp("y",0.0);
       sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
       sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
     }
@@ -248,7 +246,7 @@ GaussBeamSource::createSource(SDef::Source& sourceCard) const
 }  
 
 void
-GaussBeamSource::createAll(const FuncDataBase& Control,
+GaussBeamSource::createAll(const mainSystem::MITYPE& inputMap,
 			   const attachSystem::FixedComp& FC,
 			   const long int linkIndex)
 
@@ -260,7 +258,7 @@ GaussBeamSource::createAll(const FuncDataBase& Control,
    */
 {
   ELog::RegMethod RegA("GaussBeamSource","createAll<FC,linkIndex>");
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
   return;
 }
@@ -322,6 +320,20 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
 	const Geometry::Vec3D Pt=Origin+X*x+Z*z;
       }
      
+  return;
+}
+
+
+void
+GaussBeamSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("GaussBeamSource","writeFLUKA");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
   return;
 }
 

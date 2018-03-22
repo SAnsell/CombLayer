@@ -608,14 +608,14 @@ EssInstrumentVariables(const std::set<std::string>& BL,
      {"TESTBEAM",    &TESTBEAMvariables},
      {"VESPA",       &VESPAvariables},
      {"VOR",         &VORvariables},
-     {"SHORTNMX",     &NMXvariables},
-     {"SHORTNMX",     &shortNMXvariables},
-     {"SHORTDREAM",   &DREAMvariables},
-     {"SHORTDREAM",   &shortDREAMvariables},
-     {"SHORTDREAM2",  &DREAMvariables},
-     {"SHORTDREAM2",  &shortDREAM2variables},
-     {"SHORTODIN",    &ODINvariables},
-     {"SHORTODIN",    &shortODINvariables}
+     {"SHORTNMX",    &NMXvariables},
+     {"SHORTNMX",    &shortNMXvariables},
+     {"SHORTDREAM",  &DREAMvariables},
+     {"SHORTDREAM",  &shortDREAMvariables},
+     {"SHORTDREAM2", &DREAMvariables},
+     {"SHORTDREAM2", &shortDREAM2variables},
+     {"SHORTODIN",   &ODINvariables},
+     {"SHORTODIN",   &shortODINvariables}
 
        
    });

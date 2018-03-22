@@ -3,7 +3,7 @@
  
  * File:   essBuild/CylPreMod.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -755,7 +755,8 @@ CylPreMod::createAll(Simulation& System,
   Geometry::Vec3D IPt=calcViewIntercept(0,aSide);
   ExtAObj->setActive(blockActiveA);
   ExtAObj->setCentRotate(Origin);
-  ExtAObj->setEdgeSurf(SMap.realSurf(modIndex+102+aSide));  // 103/104
+  ExtAObj->setEdgeSurf
+    (SMap.realSurf(modIndex+102+static_cast<int>(aSide)));  // 103/104
 
   ExtAObj->copyInterObj(this->getCC("Main"));
   ExtAObj->createAll(System,IPt,*this,nLayers-2,4+aSide);   //5/6
@@ -764,7 +765,8 @@ CylPreMod::createAll(Simulation& System,
   // CREATE BLOCK ADDITION
   IPt=calcViewIntercept(1,3-bSide);   // view : side (2/1 from 1/2)
   ExtBObj->setActive(blockActiveB);
-  ExtBObj->setEdgeSurf(SMap.realSurf(modIndex+205-bSide)); // 204/203
+  ExtBObj->setEdgeSurf
+    (SMap.realSurf(modIndex+205-static_cast<int>(bSide))); // 204/203
 
   ExtBObj->setCentRotate(Origin);
   ExtBObj->copyInterObj(this->getCC("Main"));

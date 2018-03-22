@@ -3,7 +3,7 @@
  
  * File:   attachComp/FixedOffset.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@
 #include "HeadRule.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
+#include "inputSupport.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -135,6 +136,27 @@ FixedOffset::populate(const FuncDataBase& Control)
   xyAngle=Control.EvalDefVar<double>(keyName+"XYAngle",xyAngle);
   zAngle=Control.EvalDefVar<double>(keyName+"ZAngle",zAngle);
   
+  return;
+  
+}
+
+void
+FixedOffset::populate(const std::map<std::string,
+		      std::vector<std::string>>& inputMap)
+  /*!
+    Populate the variables
+    \param inputMap :: Moifications from input stream
+   */
+{
+  ELog::RegMethod RegA("FixedOffset","populate(map)");
+
+  mainSystem::findInput(inputMap,"preXYAngle",0,preXYAngle);
+  mainSystem::findInput(inputMap,"preZAngle",0,preZAngle);
+  mainSystem::findInput(inputMap,"xyAngle",0,xyAngle);
+  mainSystem::findInput(inputMap,"zAngle",0,zAngle);
+  mainSystem::findInput(inputMap,"xStep",0,xStep);
+  mainSystem::findInput(inputMap,"yStep",0,yStep);
+  mainSystem::findInput(inputMap,"zStep",0,zStep);
   return;
   
 }
@@ -228,7 +250,7 @@ FixedOffset::applyOffset()
 }
 
 void
-FixedOffset::linkShift(const long int sideIndex)
+FixedOffset::linkShift(const size_t sideIndex)
   /*!
     Apply a rotation to a link point axis
     \param sideIndex :: link point index [signed]
@@ -241,7 +263,7 @@ FixedOffset::linkShift(const long int sideIndex)
 }
 
 void
-FixedOffset::linkAngleRotate(const long int sideIndex)
+FixedOffset::linkAngleRotate(const size_t sideIndex)
   /*!
     Apply a rotation to a link point axis
     \param sideIndex :: link point index [signed]

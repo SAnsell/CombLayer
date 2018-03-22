@@ -3,7 +3,7 @@
  
  * File:   commonVar/TwinGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -75,6 +74,50 @@ TwinGenerator::TwinGenerator() :
     most changes
   */
 {}
+
+TwinGenerator::TwinGenerator(const TwinGenerator& A) : 
+  TwinBaseGenerator(A),
+  portRadius(A.portRadius),portOuter(A.portOuter),
+  portNBolt(A.portNBolt),portBoltRadius(A.portBoltRadius),
+  viewWidth(A.viewWidth),viewHeight(A.viewHeight),
+  viewLength(A.viewLength),viewWindowThick(A.viewWindowThick),
+  viewBoltStep(A.viewBoltStep),viewNBolt(A.viewNBolt),
+  viewBoltRadius(A.viewBoltRadius),viewWindowMat(A.viewWindowMat),
+  viewMat(A.viewMat),viewBoltMat(A.viewBoltMat)
+  /*!
+    Copy constructor
+    \param A :: TwinGenerator to copy
+  */
+{}
+
+TwinGenerator&
+TwinGenerator::operator=(const TwinGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: TwinGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      TwinBaseGenerator::operator=(A);
+      portRadius=A.portRadius;
+      portOuter=A.portOuter;
+      portNBolt=A.portNBolt;
+      portBoltRadius=A.portBoltRadius;
+      viewWidth=A.viewWidth;
+      viewHeight=A.viewHeight;
+      viewLength=A.viewLength;
+      viewWindowThick=A.viewWindowThick;
+      viewBoltStep=A.viewBoltStep;
+      viewNBolt=A.viewNBolt;
+      viewBoltRadius=A.viewBoltRadius;
+      viewWindowMat=A.viewWindowMat;
+      viewMat=A.viewMat;
+      viewBoltMat=A.viewBoltMat;
+    }
+  return *this;
+}
 
 
 TwinGenerator::~TwinGenerator() 
@@ -163,7 +206,8 @@ TwinGenerator::generateChopper(FuncDataBase& Control,
   Control.addVariable(keyName+"PortStep",0.0); // estimate
   Control.addVariable(keyName+"PortNBolt",portNBolt); 
   Control.addVariable(keyName+"PortBoltRadius",portBoltRadius); //M8 inc
-  Control.addVariable(keyName+"PortBoltAngOff",180.0/portNBolt);
+  Control.addVariable(keyName+"PortBoltAngOff",
+		      180.0/static_cast<double>(portNBolt));
   Control.addVariable(keyName+"PortSealThick",0.2);
   Control.addVariable(keyName+"PortSealMat","Poly");
 

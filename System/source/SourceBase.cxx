@@ -3,7 +3,7 @@
  
  * File:   source/SourceBase.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,12 +47,6 @@
 #include "Vec3D.h"
 #include "Transform.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
-#include "varList.h"
-#include "Code.h"
-#include "FuncDataBase.h"
 #include "Source.h"
 #include "SrcItem.h"
 #include "SrcData.h"
@@ -65,6 +59,7 @@
 #include "WorkData.h"
 #include "World.h"
 
+#include "inputSupport.h"
 #include "particleConv.h"
 #include "SourceBase.h"
 
@@ -72,7 +67,7 @@ namespace SDef
 {
 
 SourceBase::SourceBase() : 
-  particleType(1),cutEnergy(0.0),
+  particleType("neutron"),cutEnergy(0.0),
   Energy({14}),EWeight({1.0}),weight(1.0),
   TransPtr(0)
   /*!
@@ -209,56 +204,90 @@ SourceBase::populateEnergy(std::string EPts,std::string EProb)
     }
   return (EWeight.empty()) ? 0 : 1;
 }
+
+void
+SourceBase::setParticle(const int T)
+  /*!
+    Get particle type
+    \param T :: index
+  */
+{
+  particleType=particleConv::Instance().mcnpToPHITS(T);
+  return;
+}
   
 void
-SourceBase::populate(const std::string& keyName,
-		     const FuncDataBase& Control)
+SourceBase::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param keyName :: Keyname for variables as this is not a FC
-    \param Control :: Control variables
+    inputMap is vector of size>=1
+    \param inputMap :: Map keyanme : string of sdefMod
   */
 {
   ELog::RegMethod RegA("SourceBase","populate");
 
-  // default neutron
-  particleType=Control.EvalDefVar<int>(keyName+"ParticleType",particleType);
+  mainSystem::MITYPE::const_iterator mc,mcB;
 
 
-  const std::string EList=
-    Control.EvalDefVar<std::string>(keyName+"Energy","");
-  const std::string EPList=
-    Control.EvalDefVar<std::string>(keyName+"EProb","");
-  const std::string EFile=
-    Control.EvalDefVar<std::string>(keyName+"EFile","");
+  
+  int eFlag(0);
+  if (!mainSystem::findInput(inputMap,"particle",0,particleType))
+    mainSystem::findInput(inputMap,"particleType",0,particleType);
 
-  if (!populateEFile(EFile,1,11) &&
-      !populateEnergy(EList,EPList))
+  std::string EFile;
+  if (mainSystem::findInput(inputMap,"energyFile",0,EFile) ||
+      mainSystem::findInput(inputMap,"EFile",0,EFile) )
+    eFlag=populateEFile(EFile,1,11);
+
+  
+  if ( ((mc=inputMap.find("energyProb"))!=inputMap.end() ||
+	(mc=inputMap.find("EProb"))!=inputMap.end()) &&
+       ((mcB=inputMap.find("energy"))!=inputMap.end() ||
+	(mcB=inputMap.find("Energy"))!=inputMap.end())  )
     {
-      ELog::EM<<"Inner energy"<<ELog::endDiag;
-
-      double defEnergy(1.0);
- 
-      ELog::EM<<"ENERGY::"<<Energy.size()<<ELog::endDiag;
-      if (Energy.empty() ||
-	  Control.hasVariable(keyName+"EStart") ||
-	  StrFunc::convert(EList,defEnergy))
-	{
-
-	  double E=Control.EvalDefVar<double>(keyName+"EStart",defEnergy); 
-	  const size_t nE=Control.EvalDefVar<size_t>(keyName+"NE",1); 
-	  const double EEnd=Control.EvalDefVar<double>(keyName+"EEnd",E); 
-	  const double EStep((EEnd-E)/static_cast<double>(nE+1));
-	  Energy.clear();
-	  EWeight.clear();
-	  for(size_t i=0;i<nE;i++)
-	    {
-	      Energy.push_back(E);
-	      EWeight.push_back(1.0);
-	      E+=EStep;
-	    }
-	}
+      const std::string EProb=mc->second.front();
+      const std::string EList=mcB->second.front();
+      eFlag=populateEnergy(EList,EProb);
     }
+
+  if ( !eFlag && mainSystem::hasInput(inputMap,"energyRange"))
+    {      
+      Energy.clear();
+      EWeight.clear();
+
+      double EInit=
+	mainSystem::getDefInput<double>(inputMap,"energyRange",0,1.0);
+      double EFinal=
+	mainSystem::getDefInput<double>(inputMap,"energyRange",1,10.0);
+      const size_t nE=
+	mainSystem::getDefInput<size_t>(inputMap,"energyRange",2,0);
+      
+
+      if (EFinal<EInit)
+	std::swap(EInit,EFinal);
+
+      const double EStep((EFinal-EInit)/static_cast<double>(nE+1));
+      double E(EInit);
+      for(size_t i=0;i<nE;i++)
+	{
+	  Energy.push_back(E);
+	  EWeight.push_back(1.0);
+	  E+=EStep;
+	}
+      eFlag=1;
+    }
+  if (!eFlag &&
+      mainSystem::hasInput(inputMap,"energy"))  // only single
+    {
+      Energy.clear();
+      EWeight.clear();
+      
+      const double E=
+	mainSystem::getInput<double>(inputMap,"energy",0);
+      Energy.push_back(E);
+      EWeight.push_back(1.0);
+    }
+      
   return;
 }
 
@@ -309,7 +338,42 @@ SourceBase::setEnergy(const double E)
   ELog::EM<<"Single Energy Source == "<<E<<ELog::endDiag;
   return;
 }
-    
+
+void
+SourceBase::setEnergy(const std::vector<double>& EBin,
+		      const std::vector<double>& EProb)
+  /*!
+    Set a range of energies
+    \param EBin :: energy bins
+    \param EProb :: energy probability 
+  */
+{
+  ELog::RegMethod RegA("SourceBase","setEnergy(Vec,Vec)");
+
+  
+  if (EBin.empty() || EProb.empty())
+    throw ColErr::EmptyContainer("EBin/EProb empty");
+  
+  if (EBin.size()==EProb.size())
+    {
+      Energy=EBin;
+      EWeight=EProb;
+    }
+  else if (EBin.size()==EProb.size()+1)
+    {
+      Energy=EBin;
+      EWeight.clear();
+      EWeight.push_back(0.0);
+      EWeight.insert(EWeight.end(),EProb.begin(),EProb.end());
+    }
+  else
+    {
+      throw ColErr::MisMatch<size_t>(EBin.size(),EProb.size(),
+				     "Energy Bin mismatch");
+    }
+  return;
+}
+
 void
 SourceBase::createEnergySource(SDef::Source& sourceCard) const
   /*!
@@ -317,15 +381,17 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("SourceBase","createSource");
-  
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
-    
+  ELog::RegMethod RegA("SourceBase","createEnergySource");
 
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
+  
   // Energy:
   if (Energy.size()>1)
     {
-      SDef::SrcData D2(2);
+      const size_t ND=sourceCard.getFreeDataIndex();
+      SDef::SrcData D2(ND);
       SDef::SrcInfo SI2('A');
       SDef::SrcProb SP2;
       SP2.setData(EWeight);
@@ -339,7 +405,7 @@ SourceBase::createEnergySource(SDef::Source& sourceCard) const
 
   return;
 }  
-  
+
 void
 SourceBase::writePHITS(std::ostream& OX) const
   /*!
@@ -351,7 +417,7 @@ SourceBase::writePHITS(std::ostream& OX) const
 
   const particleConv& partCV=particleConv::Instance();
  
-  OX<<"    proj = "<<partCV.mcnpToPhits(particleType)<<std::endl;
+  OX<<"    proj = "<<particleType<<std::endl;
   OX<<"    wgt  = "<<weight<<std::endl;
   if (Energy.size()==1)
     OX<<"    e0  = "<<Energy.front()<<std::endl;

@@ -72,6 +72,14 @@ class CrossGenerator
 		     const double,const double,const double,
 		     const double,const double) const;
 
+  template<typename HCF>
+  void generateCF(FuncDataBase&,const std::string&,
+		  const double,const double,
+		  const double,const double);
+  template<typename HCF,typename VCF>
+  void generateDoubleCF(FuncDataBase&,const std::string&,
+			const double,const double,const double);
+
 };
 
 }

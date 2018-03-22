@@ -3,7 +3,7 @@
  
  * File:   weights/WWGControl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "WCells.h"
 #include "CellWeight.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "PositionSupport.h"
@@ -497,7 +498,10 @@ WWGControl::processWeights(Simulation& System,
 	{
 	  // don't write a wwp:particle card
 	  WM.getParticle(P)->setActiveWWP(0);
-	  clearWImp(System,P);
+	  SimMCNP* SimPtr=dynamic_cast<SimMCNP*>(&System);
+	  if (SimPtr)
+	    clearWImp(SimPtr->getPC(),P);
+
 	}
     }
 

@@ -3,7 +3,7 @@
  
  * File:   src/SimFLUKA.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell / Konstantin Batkov
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include <iterator>
 #include <memory>
 #include <array>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -47,9 +46,9 @@
 #include "BaseModVisit.h"
 #include "mathSupport.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "version.h"
 #include "Element.h"
-#include "MapSupport.h"
 #include "MXcards.h"
 #include "Element.h"
 #include "Zaid.h"
@@ -66,56 +65,46 @@
 #include "cellFluxTally.h"
 #include "pointTally.h"
 #include "heatTally.h"
-#include "tallyFactory.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
 #include "Quadratic.h"
 #include "Plane.h"
-#include "ArbPoly.h"
-#include "Cylinder.h"
-#include "Cone.h"
-#include "MBrect.h"
-#include "NullSurface.h"
-#include "Sphere.h"
-#include "Torus.h"
-#include "General.h"
-#include "surfaceFactory.h"
-#include "surfProg.h"
 #include "Rules.h"
 #include "varList.h"
 #include "Code.h"
-#include "FItem.h"
 #include "FuncDataBase.h"
-#include "SurInter.h"
-#include "Debug.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "HeadRule.h"
 #include "Object.h"
 #include "Qhull.h"
 #include "weightManager.h"
-#include "ModeCard.h"
-#include "LSwitchCard.h"
-#include "PhysCard.h"
-#include "PhysImp.h"
-#include "PhysicsCards.h"
+#include "Source.h"
+#include "inputSupport.h"
+#include "SourceBase.h"
+#include "sourceDataBase.h"
+#include "cellValueSet.h"
+#include "flukaTally.h"
+#include "flukaProcess.h"
+#include "flukaPhysics.h"
 #include "Simulation.h"
 #include "SimFLUKA.h"
 
 SimFLUKA::SimFLUKA() :
   Simulation(),
-  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM")
+  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
+  nps(1000),rndSeed(237489791),
+  PhysPtr(new flukaSystem::flukaPhysics())
   /*!
     Constructor
   */
 {}
 
-
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
-  alignment(A.alignment)
+  alignment(A.alignment),
+  writeVariable(A.writeVariable),nps(A.nps),
+  rndSeed(A.rndSeed),
+  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -133,10 +122,73 @@ SimFLUKA::operator=(const SimFLUKA& A)
   if (this!=&A)
     {
       Simulation::operator=(A);
+      writeVariable=A.writeVariable;
+      nps=A.nps;
+      rndSeed=A.rndSeed;
+      clearTally();
+      for(const FTallyTYPE::value_type& TM : A.FTItem)
+	FTItem.emplace(TM.first,TM.second->clone());
+      *PhysPtr= *A.PhysPtr;
     }
   return *this;
 }
 
+SimFLUKA::~SimFLUKA()
+  /*!
+    Destructor
+  */
+{
+  clearTally();
+  delete PhysPtr;
+}
+
+void
+SimFLUKA::clearTally()
+{
+  for(FTallyTYPE::value_type& mc : FTItem)
+    delete mc.second;
+  FTItem.erase(FTItem.begin(),FTItem.end());
+  return;
+}
+
+int
+SimFLUKA::getNextFTape() const
+ /*! 
+   Horrible function to find the next availabe ftape unit 
+   note that we should start from >25 
+   \return available number
+ */
+{
+  ELog::RegMethod RegA("SimFLUKA","getNextFTape");
+  
+  // max for fortran output stream 98 ??
+  for(int i=25;i<98;i++)
+    {
+      if (FTItem.find(i)==FTItem.end())
+	return i;
+    }
+  throw ColErr::InContainerError<int>
+    (98,"Tallies have exhaused available ftapes [25-98]");
+
+}
+  
+void
+SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
+  /*!
+    Add a tally to main stack
+    \param TI :: Fluka tally to add
+  */
+{
+  ELog::RegMethod RegA("SimFluka","addTally");
+
+  // Fluka cannot share output [and fOutput > 25 ]
+  const int fOutput=std::abs(TI.getOutUnit());
+  if (FTItem.find(fOutput)!=FTItem.end())
+    throw ColErr::InContainerError<int>(fOutput,"Foutput for tally");
+  FTItem.emplace(fOutput,TI.clone());
+  return;
+}
+  
 
 void
 SimFLUKA::writeTally(std::ostream& OX) const
@@ -146,14 +198,14 @@ SimFLUKA::writeTally(std::ostream& OX) const
     \param OX :: Output stream
    */
 {
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  OX<<"c ------------------- TALLY CARDS ---------------------------"<<std::endl;
-  OX<<"c -----------------------------------------------------------"<<std::endl;
-  // The totally insane line below does the following
-  // It iterats over the Titems and since they are a map
-  // uses the mathSupport:::PSecond
-  // _1 refers back to the TItem pair<int,tally*>
-  for(const TallyTYPE::value_type& TI : TItem)
+  ELog::RegMethod RegA("SimFluka","addTally");
+  
+  OX<<"* ------------------------------------------------------"<<std::endl;
+  OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;
+  OX<<"* ------------------------------------------------------"<<std::endl;
+
+  ELog::EM<<"TALLY Size == :"<<FTItem.size()<<ELog::endDiag;
+  for(const FTallyTYPE::value_type& TI : FTItem)
     TI.second->write(OX);
 
   return;
@@ -218,10 +270,11 @@ SimFLUKA::writeSurfaces(std::ostream& OX) const
 
 void
 SimFLUKA::writeElements(std::ostream& OX) const
-/*!
-  Write all the used isotopes.
-  To be used by material definitions in the COMPOUND cards.
- */
+  /*!
+    Write all the used isotopes.
+    To be used by material definitions in the COMPOUND cards.
+    \param OX :: Output stream
+  */
 {
   ELog::RegMethod RegA("SimFLUKA","writeElements");
 
@@ -229,32 +282,29 @@ SimFLUKA::writeElements(std::ostream& OX) const
   OX<<alignment<<std::endl;
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();
 
-  size_t za;
-  std::set<size_t> setZA;
-  //  for(mp=OList.begin();mp!=OList.end();mp++)
+  std::set<MonteCarlo::Zaid> setZA;
+
   for(const OTYPE::value_type& mp : OList)
     {
-      MonteCarlo::Material m = DB.getMaterial(mp.second->getMat());
-      std::vector<MonteCarlo::Zaid> zaidVec = m.getZaidVec();
+      const MonteCarlo::Material& m = DB.getMaterial(mp.second->getMat());
+      const std::vector<MonteCarlo::Zaid>& zaidVec = m.getZaidVec();
       for (const MonteCarlo::Zaid& ZC : zaidVec)
 	{
-	  za = ZC.getZaidNum();
-	  setZA.insert(za);
+	  setZA.insert(ZC);
 	}
     }
 
   std::ostringstream cx,lowmat;
-  for (const size_t &za : setZA)
+  for (const MonteCarlo::Zaid& za : setZA)
     {
-      if (!za) continue;
-      const std::string mat("E"+std::to_string(za));
-      cx<<"MATERIAL "<<za / 1000<<". - "<<" 1."<<" - - "<<
-	za%1000<<". "<<mat<<" ";
-      lowmat<<"LOW-MAT "<<mat<<" - - - - - - "; // \todo define it correctly
+      if (za.getZaid().empty()) continue;
+      cx<<"MATERIAL "<<za.getZ()<<". - "<<" 1."
+	<<" - - "<<za.getIso()<<". "<<za.getFlukaName()<<" ";
+      lowmat<<getLowMat(za.getZ(),za.getIso(),za.getFlukaName());
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
-  //  StrFunc::writeFLUKA(lowmat.str(),OX);
+  StrFunc::writeFLUKA(lowmat.str(),OX);
 
   OX<<alignment<<std::endl;
 
@@ -305,7 +355,7 @@ SimFLUKA::writeWeights(std::ostream& OX) const
   WeightSystem::weightManager& WM=
     WeightSystem::weightManager::Instance();
   
-  OX<<"[weight]"<<std::endl;
+  OX<<"* [weight]"<<std::endl;
   WM.write(OX);
   return;
 }
@@ -322,33 +372,125 @@ SimFLUKA::writePhysics(std::ostream& OX) const
 
 {  
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
-  // Processing for point tallies
-  std::map<int,tallySystem::Tally*>::const_iterator mc;
-  std::vector<int> Idum;
-  std::vector<Geometry::Vec3D> Rdum;
-  for(mc=TItem.begin();mc!=TItem.end();mc++)
-    {
-      const tallySystem::pointTally* Ptr=
-	dynamic_cast<const tallySystem::pointTally*>(mc->second);
-      if(Ptr && Ptr->hasRdum())
-        {
-	  Idum.push_back(Ptr->getKey());
-	  for(size_t i=0;i<4;i++)
-	    Rdum.push_back(Ptr->getWindowPt(i));
-	}
-    }
-  if (!Idum.empty())
-    {
-      OX<<"idum "<<Idum.size()<<" ";
-      copy(Idum.begin(),Idum.end(),std::ostream_iterator<int>(OX," "));
-      OX<<std::endl;
-      OX<<"rdum       "<<Rdum.front()<<std::endl;
-      for(const Geometry::Vec3D& rN : Rdum)
-	OX<<"           "<<rN<<std::endl;	
-    }
-
+  std::ostringstream cx;
+  cx<<"START "<<nps;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+  cx<<"RANDOMIZE "<<1.0;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  
   // Remaining Physics cards
   PhysPtr->writeFLUKA(OX);
+  return;
+}
+
+
+void
+SimFLUKA::writeSource(std::ostream& OX) const
+  /*!
+    Write the source into standard FLUKA format.
+    Most of these sources are limited. 
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","writeSource");
+  
+  SDef::sourceDataBase& SDB=
+    SDef::sourceDataBase::Instance();
+
+  OX<<"* -------------------------------------------------------"<<std::endl;
+  OX<<"* --------------- SOURCE CARDS --------------------------"<<std::endl;
+  OX<<"* -------------------------------------------------------"<<std::endl;
+
+  if (!sourceName.empty())
+    {
+      SDef::SourceBase* SPtr=
+	SDB.getSourceThrow<SDef::SourceBase>(sourceName,"Source not known");
+      SPtr->writeFLUKA(OX);
+    }
+  OX<<"* ++++++++++++++++++++++ END ++++++++++++++++++++++++++++"<<std::endl;
+  return;
+}
+
+
+const std::string&
+SimFLUKA::getLowMatName(const size_t Z) const
+/*!
+  Return low energy FLUKA material name for the given Z
+  \param Z :: Atomic number
+  \todo : Currently this function return the standard low material name
+    as if standard FLUKA names were used without the LOW-MAT card.
+    This is fine for most of the cases.
+    However, this name actually sometimes depends on temperature and mass
+    number - to be implemented.
+ */
+{
+  ELog::RegMethod RegA("SimFLUKA","getLowMatName");
+
+  const static std::string empty(" - ");
+  const static std::vector<std::string> lm = {"z=0",
+    "HYDROGEN", "HELIUM",   "LITHIUM",  "BERYLLIU", "BORON",
+    "CARBON",   "NITROGEN", "OXYGEN",   "FLUORINE", "NEON",
+    "SODIUM",   "MAGNESIU", "ALUMINUM", "SILICON",  "PHOSPHO",
+    "SULFUR",   "CHLORINE", "ARGON",    "POTASSIU", "CALCIUM",
+    "SCANDIUM", "TITANIUM", "VANADIUM", "CHROMIUM", "MANGANES",
+    "IRON",     "COBALT",   "NICKEL",   "COPPER",   "ZINC",
+    "GALLIUM",  "GERMANIU", "ARSENIC",  "",         "BROMINE",
+    "KRYPTON",  "",         "STRONTIU", "YTTRIUM",  "ZIRCONIU",
+    "NIOBIUM",  "MOLYBDEN", "99-TC",    "",         "",
+    "PALLADIU", "SILVER",   "CADMIUM",  "INDIUM",   "TIN",     // 50
+    "ANTIMONY", "",         "IODINE",   "XENON",    "CESIUM",
+    "BARIUM",   "LANTHANU", "CERIUM",   "",         "NEODYMIU",
+    "",         "SAMARIUM", "EUROPIUM", "GADOLINI", "TERBIUM", // 65
+    "",         "",         "",         "",         "",
+    "LUTETIUM", "HAFNIUM",  "TANTALUM", "TUNGSTEN", "RHENIUM",
+    "",         "IRIDIUM",  "PLATINUM", "GOLD",     "MERCURY", // 80
+    "",         "LEAD",     "BISMUTH",  "",         "",
+    "",         "",         "",         "",         "230-TH", // 90
+    "",         "233-U",    "",         "239-PU",   "241-AM"
+  };
+
+  const static std::set<size_t> excludeLM
+    ( { 34,37,44,45,52,59,61,66,67,68,69,70,
+	76,81,84,85,86,87,88,89,91,93});
+
+  if (excludeLM.find(Z)!=excludeLM.end())
+    {
+      ELog::EM << "No low energy FLUKA material for Z="<<Z<<ELog::endCrit;
+      return empty;
+    }
+
+  if (Z>=lm.size())
+    throw ColErr::IndexError<size_t>
+      (Z,lm.size(),"No low energy FLUKA material for Z>lm.size");
+
+  return lm[Z];
+}
+
+std::string
+SimFLUKA::getLowMat(const size_t Z,const size_t A,
+		    const std::string& mat) const
+  /*!
+    Return the LOW-MAT card definition for the given Element
+    \param Z :: Atomic number
+    \param A :: Mass number
+    \param mat :: Material name in the MATERIAL card
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","getLowMat");
+
+  return std::string("LOW-MAT "+mat+" - - - - - "+getLowMatName(Z)+" ");  
+}
+
+void
+SimFLUKA::prepareWrite()
+  /*!
+    Stuff that should be done once before output 
+   */
+{
+  ELog::RegMethod RegA("","prepareWrite");
+  Simulation::prepareWrite();
+  PhysPtr->setCellNumbers(cellOutOrder);
   return;
 }
 
@@ -373,20 +515,23 @@ SimFLUKA::write(const std::string& Fname) const
 
   StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells),OX);
   OX<<"TITLE"<<std::endl;
-  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"<<std::endl;
-  Simulation::writeVariables(OX,'*');
-  StrFunc::writeFLUKA("DEFAULTS - - - - - - EM-CASCADE",OX);
-  ELog::EM<<"FLUKA defaults is EM-CASCADE. No low energy neutrons transported."<<ELog::endCrit;
-  StrFunc::writeFLUKA("BEAM -2.0 - - 14.0 3.2 1.0 PROTON",OX);
-  StrFunc::writeFLUKA("BEAMPOS 0.0 -50.0 0.0 0.0 1.0 0.0",OX);
+  OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
+    <<std::endl;
 
+  if (writeVariable)
+    Simulation::writeVariables(OX,'*');
+  
+  StrFunc::writeFLUKA("DEFAULTS - - - - - - PRECISION",OX);
   StrFunc::writeFLUKA("GEOBEGIN - - - - - - COMBNAME",OX);
   OX<<"  0 0 FLUKA Geometry from CombLayer"<<std::endl;
   writeSurfaces(OX);
   writeCells(OX);
   OX<<"GEOEND"<<std::endl;
   writeMaterial(OX);
+  writeTally(OX);
+  writeSource(OX);
   writePhysics(OX);
+  OX<<"STOP"<<std::endl;
   OX.close();
   return;
 }

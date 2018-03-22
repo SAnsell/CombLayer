@@ -3,7 +3,7 @@
  
  * File:   sourceInc/BeamSource.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,10 +44,10 @@ class BeamSource :
 {
  private:
 
-  double radius;
-  double angleSpread;           ///< Angle spread
+  double radius;                ///< spot size
+  double angleSpread;           ///< Angle spread [deg]
   
-  void populate(const FuncDataBase& Control);
+  void populate(const ITYPE&);
   void createUnitVector(const attachSystem::FixedComp&,
 			const long int);
 
@@ -59,8 +59,9 @@ class BeamSource :
   virtual BeamSource* clone() const;
   virtual ~BeamSource();
 
+  /// Set radius
   void setRadius(const double R) { radius=R; }
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+  void createAll(const ITYPE&,const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,
 		 const long int);
@@ -69,6 +70,7 @@ class BeamSource :
   virtual void createSource(SDef::Source&) const;
   virtual void write(std::ostream&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
     
 };
 

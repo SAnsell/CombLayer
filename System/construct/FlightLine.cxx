@@ -3,7 +3,7 @@
  
  * File:   construct/FlightLine.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -333,11 +333,9 @@ FlightLine::removeObjects(Simulation& System)
 {
   ELog::RegMethod RegA("FlightLine","removeObjects");
 
-  if (cellIndex!=flightIndex+1)
-    {
-      System.removeCells(flightIndex+1,cellIndex-1);
-      cellIndex=flightIndex+1;
-    }
+  for(int i=flightIndex+1;i<cellIndex;i++)
+    System.removeCell(i);
+  cellIndex=flightIndex+1;
   return;
 }
 

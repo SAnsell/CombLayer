@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   construct/SingleChopper.cxx
+ * File:   essConstruct/SingleChopper.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *

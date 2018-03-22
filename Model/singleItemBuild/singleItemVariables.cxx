@@ -3,7 +3,7 @@
  
  * File:   singleItemBuild/singleItemVariables.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@
 #include "TwinBaseGenerator.h"
 #include "TwinGenerator.h"
 #include "TwinFlatGenerator.h"
+#include "ChopperGenerator.h"
 
 namespace setVariable
 {
@@ -116,7 +117,13 @@ SingleItemVariables(FuncDataBase& Control)
   setVariable::RectPipeGenerator PipeGen;
   PipeGen.generatePipe(Control,"singleBoxPipeA",0.0,80.0);
   PipeGen.generatePipe(Control,"singleBoxPipeB",0.0,80.0);
+
+  setVariable::ChopperGenerator CGen;
+  CGen.setMotorRadius(10.0);
+  CGen.generateChopper(Control,"singleChopper",10.0,12.0,5.55);
+  Control.addVariable("singleChopperMotorBodyLength",15.0);
   
+
   setVariable::BladeGenerator BGen;
   // Single Blade chopper
   BGen.setThick({0.2});

@@ -3,7 +3,7 @@
  
  * File:   monteInc/HeadRule.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ namespace Geometry
 {
   class Surface;
 }
-
 
 /*!
   \class HeadRule
@@ -89,6 +88,8 @@ class HeadRule
   
   int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
 		double&) const;
+  int trackSurf(const Geometry::Vec3D&,const Geometry::Vec3D&,
+		double&,const std::set<int>&) const;
   size_t calcSurfIntersection
     (const Geometry::Vec3D&,const Geometry::Vec3D&,
      std::vector<Geometry::Vec3D>&,std::vector<int>&) const;

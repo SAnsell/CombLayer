@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SourceBase.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,10 @@ class SourceBase
 {
  protected:
 
-  int particleType;             ///< Particle Type
+  /// populate input type
+  typedef std::map<std::string,std::vector<std::string>> ITYPE;
+
+  std::string particleType;     ///< Particle Type
   double cutEnergy;             ///< Energy cut point
   
   std::vector<double> Energy;   ///< Energies [MeV]
@@ -66,21 +69,26 @@ class SourceBase
   virtual SourceBase* clone() const =0;
   virtual ~SourceBase() {}        ///< Destructor
 
-  void populate(const std::string&,const FuncDataBase&);
+  virtual void populate(const mainSystem::MITYPE&);
 
   /// Set particle type
-  void setParticle(const int T) { particleType=T; }
+  void setParticle(const int);
+  /// Set particle type
+  void setParticle(const std::string&);
   /// Set cut energy
   void setCutEnergy(const double E) { cutEnergy=E; }
   void setEnergy(const double);
+  void setEnergy(const std::vector<double>&,const std::vector<double>&);
   void createEnergySource(SDef::Source&) const;
 
+  
   /// No-op to substitue
   virtual void substituteSurface(const int,const int) {}
   /// No-op to rotate
   virtual void rotate(const localRotate&) { } 
   virtual void createSource(SDef::Source&) const =0;
   virtual void writePHITS(std::ostream&) const =0;
+  virtual void writeFLUKA(std::ostream&) const =0;
   virtual void write(std::ostream&) const =0;
 };
 

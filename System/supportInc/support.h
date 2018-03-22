@@ -3,7 +3,7 @@
  
  * File:   supportInc/support.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 
 namespace StrFunc
 {
+  
 /// determine if a character group exists in a string
 int confirmStr(const std::string&,const std::string&);
 /// Get a word from a string
@@ -55,8 +56,11 @@ long int hasComment(const std::string&);
 long int hasComment(const std::string&,const std::string&,const std::string&);
 /// strip trialing comments
 int stripComment(std::string&);
-/// make lower
+
+void upperString(std::string&);
 void lowerString(std::string&);
+std::string toUpperString(const std::string&);
+std::string toLowerString(const std::string&);
 /// Determines if a string is only spaces
 int isEmpty(const std::string&);
 /// Get a line 
@@ -90,16 +94,13 @@ template<typename T> int itemize(std::string&,std::string&,T&);
 void writeControl(const std::string&,std::ostream&,
 		  const size_t,const int);
 
-/// Write file in standard FLUKA input form 
-void writeFLUKA(const std::string&,std::ostream&);
-
-/// Write file in standard MCNPX input form 
-void writeMCNPX(const std::string&,std::ostream&);
-void writeMCNPXcont(const std::string&,std::ostream&);
-void writeMCNPXcomment(const std::string&,std::ostream&);
 template<typename T> void writeLine(std::ostream&,const T&,
 				     size_t&,const size_t);
 
+
+template<template<typename T,typename Alloc> class V,typename T,typename Alloc> 
+bool removeItem(V<T,Alloc>&,const T&);
+ 
 std::vector<std::string> StrParts(std::string);
 std::vector<std::string>
 splitParts(const std::string&,const char delim);

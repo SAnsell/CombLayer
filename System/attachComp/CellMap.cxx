@@ -51,9 +51,6 @@
 #include "Rules.h"
 #include "HeadRule.h"
 #include "Object.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Line.h"
 #include "Qhull.h"
 #include "varList.h"
@@ -127,7 +124,7 @@ CellMap::insertComponent(Simulation& System,
     }
   return;
 }
-
+  
 void
 CellMap::insertComponent(Simulation& System,
 			  const std::string& Key,

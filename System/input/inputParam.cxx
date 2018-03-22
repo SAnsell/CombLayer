@@ -3,7 +3,7 @@
  
  * File:   input/inputParam.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -457,11 +457,11 @@ inputParam::getDefValue(const T& DefVal,
 {
   ELog::RegMethod RegA("inputParam","getDefValue(setIndex,index)");
 
-  const IItem* IPtr=getIndex(K);
-  if (!IPtr)
-    return DefVal;
+  const IItem* IPtr=getIndex(K);  
+  if (!IPtr) return DefVal;
+  
   const size_t NItems=IPtr->getNItems(setIndex);
-
+  
   return (NItems>itemIndex) ?
     IPtr->getObj<T>(setIndex,itemIndex) : DefVal;
 }
@@ -559,8 +559,38 @@ inputParam::getCntVec3D(const std::string& K,
   const IItem* IPtr=getIndex(K);
   if (!IPtr)
     throw ColErr::EmptyValue<void>(K+":IPtr");
-  
+
   return IPtr->getCntVec3D(setIndex,itemIndex);
+}
+
+std::map<std::string,std::vector<std::string>>
+inputParam::getMapItems(const std::string& K) const
+  /*!
+    Accessor to the whole raw string as a map
+    Note that ONLY non-empty vectors are used
+    \param K :: Key to seach
+    \return Map of raw-strings
+  */
+{
+  ELog::RegMethod Rega("inputParam","getMapItems");
+
+  const IItem* IPtr=getIndex(K);
+  if (!IPtr)
+    throw ColErr::EmptyValue<void>(K+":IPtr");
+  const size_t nSet=IPtr->getNSets();
+
+  std::map<std::string,std::vector<std::string>> Out;
+  for(size_t index=0;index<nSet;index++)
+    {
+      const std::vector<std::string>& IVec=
+	IPtr->getObjectItems(index);
+      if (!IVec.empty())
+	{
+	  Out.emplace(IVec.front(),
+		      std::vector<std::string>(IVec.begin()+1,IVec.end()));
+	}
+    }
+  return Out;
 }
 
 std::vector<std::string>
@@ -617,6 +647,7 @@ inputParam::outputItem(const std::string& K,
 		       const size_t itemIndex,
 		       const std::string& ErrMessage) const
   /*!
+    \todo REPLACE WITH getValueError
     Get a value based on key
     \param K :: Key to seach
     \param setIndex :: set Value

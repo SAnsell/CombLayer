@@ -183,6 +183,7 @@ Motor::populate(const FuncDataBase& Control)
   bodyLength=Control.EvalVar<double>(keyName+"BodyLength");
   plateThick=Control.EvalVar<double>(keyName+"PlateThick");
 
+  
   revFlag=Control.EvalDefVar<int>(keyName+"Reverse",0);
   bodyRadius=Control.EvalVar<double>(keyName+"BodyRadius");
   axleRadius=Control.EvalVar<double>(keyName+"AxleRadius");

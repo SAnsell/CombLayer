@@ -3,7 +3,7 @@
  
  * File:   commonVar/TwinBaseGenerator.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -79,6 +78,61 @@ TwinBaseGenerator::TwinBaseGenerator() :
   */
 {}
 
+TwinBaseGenerator::TwinBaseGenerator(const TwinBaseGenerator& A) : 
+  stepHeight(A.stepHeight),mainRadius(A.mainRadius),
+  innerRadius(A.innerRadius),innerTopStep(A.innerTopStep),
+  innerLowStep(A.innerLowStep),motorRadius(A.motorRadius),
+  motorFlangeInner(A.motorFlangeInner),motorFlangeOuter(A.motorFlangeOuter),
+  motorOuter(A.motorOuter),motorLength(A.motorLength),
+  motorNBolt(A.motorNBolt),motorBoltRadius(A.motorBoltRadius),
+  motorSealThick(A.motorSealThick),motorRevFlagA(A.motorRevFlagA),
+  motorRevFlagB(A.motorRevFlagB),motorSealMat(A.motorSealMat),
+  ringNBolt(A.ringNBolt),lineNBolt(A.lineNBolt),
+  outerStep(A.outerStep),outerBoltRadius(A.outerBoltRadius),
+  outerBoltMat(A.outerBoltMat),wallMat(A.wallMat)
+  /*!
+    Copy constructor
+    \param A :: TwinBaseGenerator to copy
+  */
+{}
+
+TwinBaseGenerator&
+TwinBaseGenerator::operator=(const TwinBaseGenerator& A)
+  /*!
+    Assignment operator
+    \param A :: TwinBaseGenerator to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      stepHeight=A.stepHeight;
+      mainRadius=A.mainRadius;
+      innerRadius=A.innerRadius;
+      innerTopStep=A.innerTopStep;
+      innerLowStep=A.innerLowStep;
+      motorRadius=A.motorRadius;
+      motorFlangeInner=A.motorFlangeInner;
+      motorFlangeOuter=A.motorFlangeOuter;
+      motorOuter=A.motorOuter;
+      motorLength=A.motorLength;
+      motorNBolt=A.motorNBolt;
+      motorBoltRadius=A.motorBoltRadius;
+      motorSealThick=A.motorSealThick;
+      motorRevFlagA=A.motorRevFlagA;
+      motorRevFlagB=A.motorRevFlagB;
+      motorSealMat=A.motorSealMat;
+      ringNBolt=A.ringNBolt;
+      lineNBolt=A.lineNBolt;
+      outerStep=A.outerStep;
+      outerBoltRadius=A.outerBoltRadius;
+      outerBoltMat=A.outerBoltMat;
+      wallMat=A.wallMat;
+    }
+  return *this;
+}
+
+  
 
 TwinBaseGenerator::~TwinBaseGenerator() 
  /*!
@@ -179,13 +233,15 @@ TwinBaseGenerator::generateChopper(FuncDataBase& Control,
       Control.addVariable(keyName+itemName+"PlateMat",wallMat);    
       Control.addVariable(keyName+itemName+"InnerRadius",motorFlangeInner); // [5691.2]
       Control.addVariable(keyName+itemName+"OuterRadius",motorFlangeOuter); // [5691.2]
-      Control.addVariable(keyName+itemName+"BoltRadius",0.50);       //M10 inc thread
+      Control.addVariable(keyName+itemName+"BoltRadius",motorBoltRadius);   //M10 inc thread
       Control.addVariable(keyName+itemName+"MainMat",wallMat);
       Control.addVariable(keyName+itemName+"BoltMat","ChipIRSteel");  
       Control.addVariable(keyName+itemName+"SealMat","Poly");
       Control.addVariable(keyName+itemName+"NBolts",24);
-      Control.addVariable(keyName+itemName+"SealRadius",
-			  (motorRadius+motorOuter)/2.0);
+      const double sealRad=(motorRadius+motorOuter)/2.0-
+	2.0*motorBoltRadius-0.2;
+      Control.addVariable(keyName+itemName+"SealRadius",sealRad);
+
       Control.addVariable(keyName+itemName+"SealThick",0.2);  
       Control.addVariable(keyName+itemName+"SealMat",motorSealMat);
     }

@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   essBuild/BIFROST.cxx
+ * File:   ESSBuild/bifrost/BIFROST.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "stringCombine.h"
 #include "inputParam.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -67,6 +66,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "CopiedComp.h"
 #include "BaseMap.h"
@@ -171,7 +171,7 @@ BIFROST::BIFROST(const std::string& keyName) :
 
   for(size_t i=0;i<nGuideSection;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
       RecPipe[i]=std::shared_ptr<constructSystem::VacuumPipe>
         (new constructSystem::VacuumPipe(newName+"PipeR"+strNum));
       RecFocus[i]=std::shared_ptr<beamlineSystem::GuideLine>
@@ -182,7 +182,7 @@ BIFROST::BIFROST(const std::string& keyName) :
 
   for(size_t i=0;i<nSndSection;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
       SndPipe[i]=std::shared_ptr<constructSystem::VacuumPipe>
         (new constructSystem::VacuumPipe(newName+"PipeS"+strNum));
       SndFocus[i]=std::shared_ptr<beamlineSystem::GuideLine>
@@ -193,7 +193,7 @@ BIFROST::BIFROST(const std::string& keyName) :
 
   for(size_t i=0;i<nEllSection;i++)
     {
-      const std::string strNum(StrFunc::makeString(i));
+      const std::string strNum(std::to_string(i));
       EllPipe[i]=std::shared_ptr<constructSystem::VacuumPipe>
         (new constructSystem::VacuumPipe(newName+"PipeE"+strNum));
       EllFocus[i]=std::shared_ptr<beamlineSystem::GuideLine>

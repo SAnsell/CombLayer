@@ -43,7 +43,6 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
-#include "stringCombine.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -70,6 +69,7 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
@@ -84,10 +84,8 @@ namespace constructSystem
 
 CrossPipe::CrossPipe(const std::string& Key) : 
   attachSystem::FixedOffset(Key,6),
-  attachSystem::ContainedComp(),attachSystem::CellMap(),
-  attachSystem::SurfMap(),attachSystem::FrontBackCut(),
-  vacIndex(ModelSupport::objectRegister::Instance().cell(Key)),
-  cellIndex(vacIndex+1)
+  attachSystem::ContainedSpace(),attachSystem::CellMap(),
+  attachSystem::SurfMap(),attachSystem::FrontBackCut()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param Key :: KeyName
@@ -95,10 +93,10 @@ CrossPipe::CrossPipe(const std::string& Key) :
 {}
 
 CrossPipe::CrossPipe(const CrossPipe& A) : 
-  attachSystem::FixedOffset(A),attachSystem::ContainedComp(A),
+  attachSystem::FixedOffset(A),attachSystem::ContainedSpace(A),
   attachSystem::CellMap(A),attachSystem::SurfMap(A),
   attachSystem::FrontBackCut(A),
-  vacIndex(A.vacIndex),cellIndex(A.cellIndex),horrRadius(A.horrRadius),
+  horrRadius(A.horrRadius),
   vertRadius(A.vertRadius),height(A.height),depth(A.depth),
   frontLength(A.frontLength),backLength(A.backLength),
   feThick(A.feThick),topPlate(A.topPlate),basePlate(A.basePlate),
@@ -121,11 +119,10 @@ CrossPipe::operator=(const CrossPipe& A)
   if (this!=&A)
     {
       attachSystem::FixedOffset::operator=(A);
-      attachSystem::ContainedComp::operator=(A);
+      attachSystem::ContainedSpace::operator=(A);
       attachSystem::CellMap::operator=(A);
       attachSystem::SurfMap::operator=(A);
       attachSystem::FrontBackCut::operator=(A);
-      cellIndex=A.cellIndex;
       horrRadius=A.horrRadius;
       vertRadius=A.vertRadius;
       height=A.height;
@@ -216,48 +213,47 @@ CrossPipe::createSurfaces()
   // Inner void
   if (frontActive())
     // create surface 101:
-    FrontBackCut::getShiftedFront(SMap,vacIndex+101,1,Y,flangeLength);
+    FrontBackCut::getShiftedFront(SMap,buildIndex+101,1,Y,flangeLength);
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+1,Origin-Y*frontLength,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+1,Origin-Y*frontLength,Y);
       ModelSupport::buildPlane
-	(SMap,vacIndex+101,Origin-Y*(frontLength-flangeLength),Y);
-      FrontBackCut::setFront(SMap.realSurf(vacIndex+1));
+	(SMap,buildIndex+101,Origin-Y*(frontLength-flangeLength),Y);
+      FrontBackCut::setFront(SMap.realSurf(buildIndex+1));
     }
   
   // Inner void
   if (backActive())
     // create surface 102:
-    FrontBackCut::getShiftedFront(SMap,vacIndex+102,-1,Y,flangeLength);
+    FrontBackCut::getShiftedFront(SMap,buildIndex+102,-1,Y,flangeLength);
   else
     {
-      ModelSupport::buildPlane(SMap,vacIndex+2,Origin+Y*backLength,Y);
+      ModelSupport::buildPlane(SMap,buildIndex+2,Origin+Y*backLength,Y);
       ModelSupport::buildPlane
-	(SMap,vacIndex+102,Origin+Y*(backLength-flangeLength),Y);
-      FrontBackCut::setBack(-SMap.realSurf(vacIndex+2));
+	(SMap,buildIndex+102,Origin+Y*(backLength-flangeLength),Y);
+      FrontBackCut::setBack(-SMap.realSurf(buildIndex+2));
     }
 
   
   // MAIN SURFACES axial:
-  ModelSupport::buildCylinder(SMap,vacIndex+7,Origin,Y,horrRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+17,Origin,Y,horrRadius+feThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+7,Origin,Y,horrRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+17,Origin,Y,horrRadius+feThick);
 
   // FLANGE SURFACES:
-  if (flangeRadius>Geometry::zeroTol && flangeLength>Geometry::zeroTol)
-    ModelSupport::buildCylinder(SMap,vacIndex+107,
-				Origin,Y,horrRadius+flangeRadius);
+  if (flangeRadius>horrRadius && flangeLength>Geometry::zeroTol)
+    ModelSupport::buildCylinder(SMap,buildIndex+107,Origin,Y,flangeRadius);
 
   // Secondary SURFACES:
-  ModelSupport::buildCylinder(SMap,vacIndex+207,Origin,Z,vertRadius);
-  ModelSupport::buildCylinder(SMap,vacIndex+217,Origin,Z,vertRadius+feThick);
+  ModelSupport::buildCylinder(SMap,buildIndex+207,Origin,Z,vertRadius);
+  ModelSupport::buildCylinder(SMap,buildIndex+217,Origin,Z,vertRadius+feThick);
 
   // top plates
-  ModelSupport::buildPlane(SMap,vacIndex+206,Origin+Z*height,Z);
-  ModelSupport::buildPlane(SMap,vacIndex+216,Origin+Z*(height+topPlate),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+206,Origin+Z*height,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+216,Origin+Z*(height+topPlate),Z);
 
   // base plates
-  ModelSupport::buildPlane(SMap,vacIndex+205,Origin-Z*depth,Z);
-  ModelSupport::buildPlane(SMap,vacIndex+215,Origin-Z*(depth+basePlate),Z);
+  ModelSupport::buildPlane(SMap,buildIndex+205,Origin-Z*depth,Z);
+  ModelSupport::buildPlane(SMap,buildIndex+215,Origin-Z*(depth+basePlate),Z);
 
   return;
 }
@@ -277,48 +273,48 @@ CrossPipe::createObjects(Simulation& System)
   const std::string backStr=backRule();
   
   // Void [want a single void]
-  Out=ModelSupport::getComposite(SMap,vacIndex," (-7 : -207) 205 -206  ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," (-7 : -207) 205 -206  ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,voidMat,0.0,Out+frontStr+backStr));
   addCell("Void",cellIndex-1);
 
   // Main steel pipe
-  Out=ModelSupport::getComposite(SMap,vacIndex," -17 7 207 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -17 7 207 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr+backStr));
   addCell("Pipe",cellIndex-1);
 
   // Vert steel pipe
-  Out=ModelSupport::getComposite(SMap,vacIndex," 17 -217 207 205 -206 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," 17 -217 207 205 -206 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("Pipe",cellIndex-1);
 
   // BasePlate
-  Out=ModelSupport::getComposite(SMap,vacIndex," -217 215 -205 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -217 215 -205 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("BasePlate",cellIndex-1);
 
   // BasePlate
-  Out=ModelSupport::getComposite(SMap,vacIndex," -217 206 -216 ");
+  Out=ModelSupport::getComposite(SMap,buildIndex," -217 206 -216 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out));
   addCell("TopPlate",cellIndex-1);
   
 
   if (flangeRadius>Geometry::zeroTol && flangeLength>Geometry::zeroTol)
     {
-      Out=ModelSupport::getComposite(SMap,vacIndex," 17 -107 -101 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 -101 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+frontStr));
       addCell("Flange",cellIndex-1);
 
-      Out=ModelSupport::getComposite(SMap,vacIndex," 17 -107 102 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 102 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,feMat,0.0,Out+backStr));
       addCell("Flange",cellIndex-1);
 
-      Out=ModelSupport::getComposite(SMap,vacIndex," 17 -107 101 -102 217 ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," 17 -107 101 -102 217 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
       addCell("FlangeVoid",cellIndex-1);
-      Out=ModelSupport::getComposite(SMap,vacIndex," (-107 : -217) 215 -216  ");
+      Out=ModelSupport::getComposite(SMap,buildIndex," (-107 : -217) 215 -216  ");
     }
   else
-    Out=ModelSupport::getComposite(SMap,vacIndex," (-17 : -217) 215 -216  ");
+    Out=ModelSupport::getComposite(SMap,buildIndex," (-17 : -217) 215 -216  ");
 
 
   addOuterSurf(Out+frontStr+backStr);
@@ -345,10 +341,10 @@ CrossPipe::createLinks()
   FixedComp::setConnect(4,Origin-Z*depth,-Z);
   FixedComp::setConnect(5,Origin+Z*height,Z);
   
-  FixedComp::setLinkSurf(2,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(3,SMap.realSurf(vacIndex+7));
-  FixedComp::setLinkSurf(4,SMap.realSurf(vacIndex+5));
-  FixedComp::setLinkSurf(5,SMap.realSurf(vacIndex+6));
+  FixedComp::setLinkSurf(2,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(3,SMap.realSurf(buildIndex+7));
+  FixedComp::setLinkSurf(4,SMap.realSurf(buildIndex+5));
+  FixedComp::setLinkSurf(5,SMap.realSurf(buildIndex+6));
 
   return;
 }

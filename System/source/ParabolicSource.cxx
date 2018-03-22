@@ -3,7 +3,7 @@
  
  * File:   source/ParabolicSource.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,6 @@
 #include "Vec3D.h"
 #include "Transform.h"
 #include "doubleErr.h"
-#include "Triple.h"
-#include "NRange.h"
-#include "NList.h"
 #include "varList.h"
 #include "Code.h"
 #include "FuncDataBase.h"
@@ -64,7 +61,9 @@
 #include "FixedOffset.h"
 #include "WorkData.h"
 #include "World.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
+#include "particleConv.h"
 #include "ParabolicSource.h"
 
 namespace SDef
@@ -133,21 +132,21 @@ ParabolicSource::clone() const
   
   
 void
-ParabolicSource::populate(const FuncDataBase& Control)
+ParabolicSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
-    \param Control :: Control variables
+    \param inputMap :: Control variables
    */
 {
   ELog::RegMethod RegA("ParabolicSource","populate");
 
-  FixedOffset::populate(Control);
-  SourceBase::populate(keyName,Control);
+  FixedOffset::populate(inputMap);
+  SourceBase::populate(inputMap);
   
-  decayPower=Control.EvalDefVar<double>(keyName+"DecayPower",decayPower);
-  height=Control.EvalDefVar<double>(keyName+"Height",height);
-  width=Control.EvalDefVar<double>(keyName+"Width",width);
-  angleSpread=Control.EvalDefVar<double>(keyName+"Width",angleSpread);
+  mainSystem::findInput<double>(inputMap,"decayPower",0,decayPower);
+  mainSystem::findInput<double>(inputMap,"height",0,height);
+  mainSystem::findInput<double>(inputMap,"width",0,width);
+  mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread);
   
   return;
 }
@@ -228,7 +227,10 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 {
   ELog::RegMethod RegA("ParabolicSource","createSource");
 
-  sourceCard.setComp("par",particleType);   // neutron (1)/photon(2)
+  const particleConv& pConv=particleConv::Instance();
+  const int mcnpPIndex=pConv.mcnpITYP(particleType);
+
+  sourceCard.setComp("par",mcnpPIndex);   // neutron (1)/photon(2)
   sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));         /// 
   
     // are we aligned on the master direction:
@@ -243,6 +245,8 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
     }
   else
     {
+      // transform moves source from 0,0,0 : axis = Y
+      sourceCard.setComp("y",0.0);
       sourceCard.setComp("vec",Geometry::Vec3D(0,1.0,0));
       sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
     }
@@ -319,19 +323,19 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 }
 
 void
-ParabolicSource::createAll(const FuncDataBase& Control,
+ParabolicSource::createAll(const mainSystem::MITYPE& inputMap,
 			   const attachSystem::FixedComp& FC,
 			   const long int linkIndex)
   
   /*!
     Create all the source
-    \param Control :: DataBase for variables
+    \param inputMap :: DataBase for variables
     \param FC :: FixedComp for origin
     \param linkIndex :: link point
    */
 {
   ELog::RegMethod RegA("ParabolicSource","createAll<FC,linkIndex>");
-  populate(Control);
+  populate(inputMap);
   createUnitVector(FC,linkIndex);
 
   return;
@@ -359,6 +363,21 @@ void
 ParabolicSource::writePHITS(std::ostream& OX) const
   /*!
     Write out as a PHITS source system
+    \param OX :: Output stream
+  */
+{
+  ELog::RegMethod RegA("ParabolicSource","writePHITS");
+
+  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+    const long int nStep(20);
+  
+  return;
+}
+
+void
+ParabolicSource::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out as a FLUKA source system
     \param OX :: Output stream
   */
 {

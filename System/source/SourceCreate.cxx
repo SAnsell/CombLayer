@@ -62,6 +62,8 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "World.h"
+#include "particleConv.h"
+#include "inputSupport.h"
 #include "SourceBase.h"
 #include "BeamSource.h"
 #include "GammaSource.h"
@@ -87,7 +89,8 @@ std::shared_ptr<SDef::SourceBase>
 makeActivationSource(const std::string& ASName)
   /*!
     Construct and return an activation source
-    \param ASName :: Activive sourece name
+    \param ASName :: Activive source name
+    \return Pointer to activation source.
   */
 {
   ELog::RegMethod RegA("SourceSelector","makeActivationSelection");
@@ -104,13 +107,13 @@ makeActivationSource(const std::string& ASName)
   
 
 std::string
-createBilbaoSource(const FuncDataBase& Control,
+createBilbaoSource(const mainSystem::MITYPE& inputMap,
 		   const attachSystem::FixedComp& FC,
 		   const long int sideIndex)
   /*!
     Creates a target 1 proton source:
     FWHM == 1.5*2.35482 ==> 3.53223
-    \param Control :: Control system
+    \param inputMap :: inputMap system
     \param FC :: Link point
     \param sideIndex :: Link point [signed] 
     \return keyName of source
@@ -120,31 +123,28 @@ createBilbaoSource(const FuncDataBase& Control,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
 
-  const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-
   GaussBeamSource bilSource("bilbauSource");
   
-  bilSource.setEnergy(E);
+  bilSource.setEnergy(50.0);
   bilSource.setParticle(9);
-  bilSource.setOffset(0,yStart,0);
+  bilSource.setOffset(0,-10.0,0);
   bilSource.setPreRotation(-45,0);
   bilSource.setSize(5.887,8.326);
 
-  bilSource.createAll(Control,FC,sideIndex);
+  bilSource.createAll(inputMap,FC,sideIndex);
 
   SDB.registerSource(bilSource.getKeyName(),bilSource);
   return bilSource.getKeyName();
 }
 
 std::string
-createESSSource(const FuncDataBase& Control,
+createESSSource(const mainSystem::MITYPE& inputMap,
 		const attachSystem::FixedComp& FC,
 		const long int sideIndex)
   /*!
     Creates a target 1 proton source:
     FWHM == 1.5*2.35482 ==> 3.53223
-    \param Control :: Control system
+    \param inputMap :: inputMap system
     \param FC :: Link point
     \param sideIndex :: Link point [signed] 
     \return keyName of source
@@ -153,33 +153,97 @@ createESSSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createESSSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  const double E=Control.EvalDefVar<double>("sdefEnergy",2000.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-30.0);
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",14.0);
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",3.2);
- 
+   
   ParabolicSource PSource("essSource");
   
-  PSource.setEnergy(E);
+  PSource.setEnergy(2000.0);
   PSource.setParticle(9);
-  PSource.setOffset(0,yStart,0);
-  PSource.setRectangle(xRange,zRange);
+  PSource.setOffset(0,-30.0,0);
+  PSource.setRectangle(14.0,3.2);
   PSource.setPower(0.0);
   PSource.setNPts(1,1);
-  PSource.createAll(Control,FC,sideIndex);
+  PSource.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(PSource.getKeyName(),PSource);
   return PSource.getKeyName();
 }
 
+
 std::string
-createESSPortSource(const FuncDataBase& Control,
+createWigglerSource(const mainSystem::MITYPE& inputMap,
+		    const attachSystem::FixedComp& FC,
+		    const long int sideIndex)
+  /*!
+    Creates a wiggler spectrum and position source
+    Currenly linear distribution and exp energy decay.
+    \param inputMap :: inputMap system
+    \param FC :: Link point
+    \param sideIndex :: Link point [signed] 
+    \return keyName of source
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createWigglerSource");
+
+  const particleConv& PC=particleConv::Instance();
+  
+  sourceDataBase& SDB=sourceDataBase::Instance();
+
+  // These are very stange min/max.
+  // fit from prob = exp(a+b energy)
+
+  
+  const size_t EN=mainSystem::getDefInput<size_t>(inputMap,"energyBin",0,100);
+  // units of eV
+  const double PB=
+    mainSystem::getDefInput<double>(inputMap,"energyPB",0,-9.6e-5);
+  
+  const double Emin=
+    mainSystem::getDefInput<double>(inputMap,"energyMin",0,1e-3); // 1keV
+  const double Emax=
+    mainSystem::getDefInput<double>(inputMap,"energyMax",0,1e-4); // 10keV
+  
+ 
+  ParabolicSource PSource("wigglerSource");
+  
+  //  TKEFLK (NPFLKA) = 1.0E-9 * (1.0/WHASOU(3)) * 
+  //     & LOG( FLRNDM(XDUMMY) *  ( 
+  //     & EXP( WHASOU(3)*WHASOU(2) ) - EXP( WHASOU(3) * WHASOU(1) ) ) + 
+  //     & EXP( WHASOU(3)*WHASOU(1) ) ) 
+
+  // Ebin ( y = exp(-be)
+  std::vector<double> EBin;
+  std::vector<double> EP;
+  const double EStep((Emax-Emin)/static_cast<double>(EN));
+  double EValue(Emin);
+  
+  EBin.push_back(Emin);
+  for(size_t i=1;i<EN;i++)
+    {
+      EValue+=EStep;
+      EBin.push_back(EValue);
+      EP.push_back(exp(1e6 * PB * (EValue-0.5*EStep)));
+    }
+  PSource.setEnergy(EBin,EP);
+
+  PSource.setParticle(PC.mcnpITYP("photon"));
+  PSource.setOffset(0,0,0);
+  PSource.setRectangle(1.09,0.27);
+  PSource.setPower(0.0);
+  PSource.setNPts(1,1);
+  PSource.createAll(inputMap,FC,sideIndex);
+  
+  SDB.registerSource(PSource.getKeyName(),PSource);
+  return PSource.getKeyName();
+}
+
+  
+std::string
+createESSPortSource(const mainSystem::MITYPE& inputMap,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
   /*!
     Create a port source on a set of beam ports
-    \param Control :: Control system
+    \param inputMap :: inputMap system
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
@@ -193,19 +257,19 @@ createESSPortSource(const FuncDataBase& Control,
 
   PSource.setParticle(9);
   PSource.setPower(0.0);
-  PSource.createAll(Control,FC,sideIndex);
+  PSource.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(PSource.getKeyName(),PSource);
   return PSource.getKeyName();    
 }
 
 std::string
-createESSLinacSource(const FuncDataBase& Control,
+createESSLinacSource(const mainSystem::MITYPE& inputMap,
 		     const attachSystem::FixedComp& FC,
 		     const long int sideIndex)
   /*!
     Creates a ESS Linac source
-    \param Control :: Control system
+    \param inputMap :: inputMap system
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
@@ -214,18 +278,13 @@ createESSLinacSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createESSLinacSource");
   sourceDataBase& SDB=sourceDataBase::Instance();
 
-  const double E=Control.EvalDefVar<double>("sdefEnergy",      75.0);
-  const double xStart=Control.EvalDefVar<double>("sdefXPos",  -15.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos", -100.0);
-  const double zStart=Control.EvalDefVar<double>("sdefZPos",    0.0);
-
 
   PointSource PSource("essLinac");
     
-  PSource.setEnergy(E);
+  PSource.setEnergy(75);
   PSource.setParticle(9);
-  PSource.setOffset(xStart,yStart,zStart);
-  PSource.createAll(Control,FC,sideIndex);
+  PSource.setOffset(-15.0,-100,0.0);
+  PSource.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(PSource.getKeyName(),PSource);
 
@@ -234,12 +293,12 @@ createESSLinacSource(const FuncDataBase& Control,
 
 
 std::string
-createD4CSource(const FuncDataBase& Control,
+createD4CSource(const mainSystem::MITYPE& inputMap,
 		const attachSystem::FixedComp& FC,
 		const long int sideIndex)
   /*!
     Creates a neutron beam 
-    \param Control :: Control system
+    \param inputMap :: inputMap system
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \param Card :: Source system
@@ -249,21 +308,15 @@ createD4CSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createD4CSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  const double E=Control.EvalDefVar<double>("sdefEnergy",175e-6);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",1.0);
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",1.25);
-
 
   ParabolicSource PSource("D4CSource");
   
-  PSource.setEnergy(E);
+  PSource.setEnergy(175e-6);
   PSource.setParticle(1);
-  PSource.setOffset(0,yStart,0);
-  PSource.setRectangle(xRange,zRange);
+  PSource.setOffset(0,-10,0);
+  PSource.setRectangle(1,1.25);
   PSource.setPower(2.0);
-  PSource.createAll(Control,FC,sideIndex);
+  PSource.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(PSource.getKeyName(),PSource);
 
@@ -271,13 +324,13 @@ createD4CSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS1Source(const FuncDataBase& Control,
+createTS1Source(const mainSystem::MITYPE& inputMap,
 		const attachSystem::FixedComp& FC,
 		const long int sideIndex)
   /*!
     Creates a target 1 proton source:
     FWHM == 1.5*2.35482 ==> 3.53223
-    \param Control :: Control system
+    \param inputMap :: inputMap system
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \param sourceCard :: Source system
@@ -287,24 +340,15 @@ createTS1Source(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createTS1Source");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-
-  const double xShift=Control.EvalDefVar<double>("sdefXOffset",0.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-  const double zShift=Control.EvalDefVar<double>("sdefZOffset",0.0);
-
-  const double xRange=Control.EvalDefVar<double>("sdefWidth",4.5);
-  const double zRange=Control.EvalDefVar<double>("sdefHeight",4.5);
-  
+    
   ParabolicSource ts1Beam("TS1Source");
 
   ts1Beam.setParticle(9);
-  ts1Beam.setEnergy(E);
-  ts1Beam.setOffset(xShift,yStart,zShift);
-  ts1Beam.setRectangle(xRange,zRange);
+  ts1Beam.setEnergy(800.0);
+  ts1Beam.setOffset(0,-10,0);
+  ts1Beam.setRectangle(4.5,4.5);
 
-  ts1Beam.createAll(Control,FC,sideIndex);
+  ts1Beam.createAll(inputMap,FC,sideIndex);
 
   SDB.registerSource(ts1Beam.getKeyName(),ts1Beam);
   
@@ -312,14 +356,14 @@ createTS1Source(const FuncDataBase& Control,
 }
 
 std::string
-createPointSource(const FuncDataBase& Control,
+createPointSource(const mainSystem::MITYPE& inputMap,
 		  const std::string& keyName,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex)
   /*!
     Create the point source -- currently a copy of the photo
     nuclear experiment source
-    \param Control :: Variables data base
+    \param inputMap :: Variables data base
     \param keyName :: keyname for source
     \param FC :: Link point
     \param linkIndex :: Link point [signed] 
@@ -330,33 +374,26 @@ createPointSource(const FuncDataBase& Control,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-
-  const double xShift=Control.EvalDefVar<double>("sdefXOffset",0.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-10.0);
-  const double zShift=Control.EvalDefVar<double>("sdefZOffset",0.0);
-
-
   PointSource GX(keyName);
   GX.setParticle(1);
-  GX.setEnergy(E);
-  GX.setOffset(xShift,yStart,zShift);
+  GX.setEnergy(800.0);
+  GX.setOffset(0,0,0);
 
-  GX.createAll(Control,FC,linkIndex);
+  GX.createAll(inputMap,FC,linkIndex);
   
   SDB.registerSource(GX.getKeyName(),GX);  
   return GX.getKeyName();      
 }
   
 std::string
-createBeamSource(const FuncDataBase& Control,
+createBeamSource(const mainSystem::MITYPE& inputMap,
 		 const std::string& keyName,
 		 const attachSystem::FixedComp& FC,
 		 const long int sideIndex)
   /*!
     Create the photon source for gamma-nuclear spectrum
     nuclear experiment source
-    \param Control :: Variables data base
+    \param inputMap :: Variables data base
     \param keyName :: keyname for Gamma source
     \param FC :: link surface for origin
     \param sideIndex ::surface number
@@ -368,21 +405,21 @@ createBeamSource(const FuncDataBase& Control,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   BeamSource GX(keyName);
-  
-  GX.createAll(Control,FC,sideIndex);
+
+  GX.createAll(inputMap,FC,sideIndex);
 
   SDB.registerSource(GX.getKeyName(),GX);  
   return GX.getKeyName();      
 }
 
 std::string
-createLaserSource(const FuncDataBase& Control,
+createLaserSource(const mainSystem::MITYPE& inputMap,
 		  const attachSystem::FixedComp& FC,
 		  const long int sideIndex)
   /*!
     Create the photon source for gamma-nuclea spectrum
     nuclear experiment source
-    \param Control :: Variables data base
+    \param inputMap :: Variables data base
     \param keyName :: keyname for Gamma source
     \param FC :: link surface for origin
     \param sideIndex ::surface number
@@ -393,13 +430,12 @@ createLaserSource(const FuncDataBase& Control,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
 
-  const double E=Control.EvalDefVar<double>("sdefEnergy",50.0);
 
   GammaSource laserSource("laserSource");
   laserSource.setParticle(1);
-  laserSource.setEnergy(E);
+  laserSource.setEnergy(50.0);
   
-  laserSource.createAll(Control,FC,sideIndex);
+  laserSource.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(laserSource.getKeyName(),laserSource);
 
@@ -408,14 +444,14 @@ createLaserSource(const FuncDataBase& Control,
   
 
 std::string
-createGammaSource(const FuncDataBase& Control,
+createGammaSource(const mainSystem::MITYPE& inputMap,
 		  const std::string& keyName,
 		  const attachSystem::FixedComp& FC,
 		  const long int linkIndex)
   /*!
     Create the gamma-point source -- currently a copy of the photo
     nuclear experiment source
-    \param Control :: Variables data base
+    \param inputMap :: Variables data base
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
@@ -426,7 +462,7 @@ createGammaSource(const FuncDataBase& Control,
   sourceDataBase& SDB=sourceDataBase::Instance();
   GammaSource GX(keyName);
 
-  GX.createAll(Control,FC,linkIndex);
+  GX.createAll(inputMap,FC,linkIndex);
 
   SDB.registerSource(GX.getKeyName(),GX);
   
@@ -434,13 +470,13 @@ createGammaSource(const FuncDataBase& Control,
 }
 
 std::string
-createLensSource(const FuncDataBase& Control,
+createLensSource(const mainSystem::MITYPE& inputMap,
 		 const attachSystem::FixedComp& FC,
 		 const long int sideIndex)
   /*!
     Create the laser source -- currently a copy of the photo
     nuclear experiment source
-    \param Control :: Variables data base
+    \param inputMap :: Variables data base
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
@@ -452,7 +488,7 @@ createLensSource(const FuncDataBase& Control,
   
   LensSource LS("lensSource");
 
-  LS.createAll(Control,FC,sideIndex);
+  LS.createAll(inputMap,FC,sideIndex);
 
   SDB.registerSource(LS.getKeyName(),LS);
   
@@ -460,13 +496,13 @@ createLensSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS1GaussianSource(const FuncDataBase& Control,
+createTS1GaussianSource(const mainSystem::MITYPE& inputMap,
 			const attachSystem::FixedComp& FC,
 			const long int sideIndex)
   /*!
     Creates a target 1 proton source [gaussian]
     FWHM == 1.5*2.35482 ==> 3.53223 <----------- "OLD" VALUE          
-    \param Control :: Database for variables
+    \param inputMap :: Database for variables
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
@@ -474,16 +510,13 @@ createTS1GaussianSource(const FuncDataBase& Control,
 {
   ELog::RegMethod RegA("SourceCreate","createTS1GaussianSource");
   sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
-  
+    
   GaussBeamSource GBeam("TS1Gauss");
   GBeam.setParticle(9);
-  GBeam.setOffset(0,yStart,0);
-  GBeam.setEnergy(E);
+  GBeam.setOffset(0,-20.0,0);
+  GBeam.setEnergy(800.0);
   GBeam.setSize(3.5322,3.5322);
-  GBeam.createAll(Control,FC,sideIndex);
+  GBeam.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(GBeam.getKeyName(),GBeam);
 
@@ -491,7 +524,7 @@ createTS1GaussianSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS1GaussianNewSource(const FuncDataBase& Control,
+createTS1GaussianNewSource(const mainSystem::MITYPE& inputMap,
 			   const attachSystem::FixedComp& FC,
 			   const long int sideIndex)
   /*
@@ -499,7 +532,7 @@ createTS1GaussianNewSource(const FuncDataBase& Control,
     FWHM == 1.8*2.35482 ==> 4.23868 <----------- "NEW" VALUE  // Goran
     (see B. Jones, D.J. Adams, Design and operational 
     experience of delivering beam to ISIS TS1, November 2013)          
-    \param Control :: DataBase of variables
+    \param inputMap :: DataBase of variables
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \return keyName of source
@@ -510,15 +543,13 @@ createTS1GaussianNewSource(const FuncDataBase& Control,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-20.0);
   
   GaussBeamSource GBeam("TS1NewGauss");
   GBeam.setParticle(9);
-  GBeam.setOffset(0,yStart,0);
-  GBeam.setEnergy(E);
+  GBeam.setOffset(0,-20.0,0);
+  GBeam.setEnergy(800.0);
   GBeam.setSize(4.23686,4.23868);
-  GBeam.createAll(Control,FC,sideIndex);
+  GBeam.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(GBeam.getKeyName(),GBeam);
 
@@ -526,14 +557,14 @@ createTS1GaussianNewSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS1MuonSource(const FuncDataBase& Control,
+createTS1MuonSource(const mainSystem::MITYPE& inputMap,
 		    const attachSystem::FixedComp& FC,
 		    const long int sideIndex)
   /*!
     Creates a intermediate target proton source [gaussian]
     FWHM == 0.5*2.35482 ==> 1.17741   // Goran
     (see B. Jones, D.J. Adams, Design and operational experience of delivering beam to ISIS TS1, November 2013)      
-    \param Control :: DataBase of variables
+    \param inputMap :: DataBase of variables
     \param FC :: link surface for origin
     \param sideIndex ::surface number
    */
@@ -541,16 +572,13 @@ createTS1MuonSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","TS1MuonSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",-15.0);
-  
+    
   GaussBeamSource GBeam("TS1Muon");
   GBeam.setParticle(9);
-  GBeam.setOffset(0,yStart,0);
-  GBeam.setEnergy(E);
+  GBeam.setOffset(0,-15.0,0);
+  GBeam.setEnergy(800);
   GBeam.setSize(1.17741,1.17741);
-  GBeam.createAll(Control,FC,sideIndex);
+  GBeam.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(GBeam.getKeyName(),GBeam);
 
@@ -558,12 +586,12 @@ createTS1MuonSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS3ExptSource(const FuncDataBase& Control,
-		    const attachSystem::FixedComp& FC,
-		    const long int linkIndex)
+createTS3ExptSource(const mainSystem::MITYPE& ,
+		    const attachSystem::FixedComp& ,
+		    const long int )
   /*!
     Creates a uniform spherical source for TS3 testing
-    \param Control :: DataBase of variables
+    \param inputMap :: DataBase of variables 
     \param FC :: link surface for origin
     \param sideIndex ::surface number
     \param Card :: Source system
@@ -572,8 +600,8 @@ createTS3ExptSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createTS3ExptSource");
 
   /*
-  const double E=Control.EvalDefVar<double>("sdefEnergy",2.0);
-  const double radius=Control.EvalDefVar<double>("sdefRadius",20.0);
+  const double E=mainSystem::getDefInput<double>("sdefEnergy",2.0);
+  const double radius=mainSystem::getDefInput<double>("sdefRadius",20.0);
 
   const Geometry::Vec3D OPt(FC.getLinkPt(linkIndex));
   sourceCard.setActive();
@@ -601,13 +629,13 @@ createTS3ExptSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS1EPBCollSource(const FuncDataBase& Control,
+createTS1EPBCollSource(const mainSystem::MITYPE& inputMap,
 		       const attachSystem::FixedComp& FC,
 		       const long int sideIndex)
   /*!
     Creates a proton source [gaussian] for 3rd collimator in TS1 EPB
     FWHM == 1.0*2.35482 ==> 2.35482   // Goran - Find the value !!! 
-    \param Control :: DataBase of variables
+    \param inputMap :: DataBase of variables
     \param FC :: link surface for origin
     \param sideIndex ::surface number
    */
@@ -615,16 +643,13 @@ createTS1EPBCollSource(const FuncDataBase& Control,
   ELog::RegMethod RegA("SourceCreate","createTS1EPBCollSource");
 
   sourceDataBase& SDB=sourceDataBase::Instance();
-  
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefYPos",80.0);
-  
+    
   GaussBeamSource GBeam("TS1EPB");
   GBeam.setParticle(9);
-  GBeam.setOffset(0,yStart,0);
-  GBeam.setEnergy(E);
+  GBeam.setOffset(0,80.0,0);
+  GBeam.setEnergy(800.0);
   GBeam.setSize(2.35482,2.35482);
-  GBeam.createAll(Control,FC,sideIndex);
+  GBeam.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(GBeam.getKeyName(),GBeam);
 
@@ -632,12 +657,12 @@ createTS1EPBCollSource(const FuncDataBase& Control,
 }
 
 std::string
-createTS2Source(const FuncDataBase& Control,
+createTS2Source(const mainSystem::MITYPE& inputMap,
 		const attachSystem::FixedComp& FC,
 		const long int sideIndex)
   /*!
     Creates a target 2 proton source
-    \param Control :: DataBase of variables
+    \param inputMap :: DataBase of variables
     \param FC :: link surface for origin
     \param sideIndex ::surface number
    */
@@ -647,15 +672,12 @@ createTS2Source(const FuncDataBase& Control,
   ELog::EM<<"Create TS2 beam "<<ELog::endDiag;
   sourceDataBase& SDB=sourceDataBase::Instance();
   
-  const double E=Control.EvalDefVar<double>("sdefEnergy",800.0);
-  const double yStart=Control.EvalDefVar<double>("sdefOffset",-5.0);
-
   GaussBeamSource GBeam("TS2Proton");
   GBeam.setParticle(9);
-  GBeam.setOffset(0,yStart,0);
-  GBeam.setEnergy(E);
+  GBeam.setOffset(0,-5.0,0);
+  GBeam.setEnergy(800.0);
   GBeam.setSize(1.3344,1.3344);
-  GBeam.createAll(Control,FC,sideIndex);
+  GBeam.createAll(inputMap,FC,sideIndex);
   
   SDB.registerSource(GBeam.getKeyName(),GBeam);
 
@@ -664,12 +686,12 @@ createTS2Source(const FuncDataBase& Control,
 
 
 std::string
-createSinbadSource(const FuncDataBase&,
-		   const attachSystem::FixedComp& FC,
-		   const long int linkIndex)
+createSinbadSource(const mainSystem::MITYPE&,
+		   const attachSystem::FixedComp& ,
+		   const long int )
   /*!
     Create a distributed source for the Sinbad experiment
-    \param Control :: Funcdat data base for values
+    \param inputMap :: Data base for values
     \param sourceCard :: Source system
   */
 {  

@@ -3,7 +3,7 @@
  
  * File:   supportInc/mathSupport.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@ struct IncSeq{
 IncSeq():v(0){}                      ///< Constructor
 };
 
+template<typename T,typename U>
+void signSplit(const T&,T&,U&);
+
 size_t lowBitIndex(const unsigned int&);
 size_t lowBitIndex(const size_t&);
 size_t countBits(const size_t&);
@@ -44,6 +47,12 @@ double factorialDB(const int);
 double fibonacci(const int);
 double normalDist(const double); ///< convert a number 0->1 into a normal distribute
 double invErf(const double);    ///< Inverse error function
+
+template<typename T>
+size_t
+inUnorderedRange(const std::vector<T>&,
+		 const std::vector<T>&,
+		 const T&);
 
 template<typename T>
 int 

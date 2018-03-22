@@ -54,7 +54,7 @@ class ExcludedComp
 
   std::vector<std::string> ExcludeObj;   ///< Fixed object to use
   /// Boundary object [Encloses cut volume]
-  Rule* boundary;                         
+  HeadRule boundary;                         
 
  public:
 
@@ -70,7 +70,7 @@ class ExcludedComp
 
   void clearRules();
   /// Test if has rule
-  bool hasExclude() const { return (boundary) ? 1 : 0; }
+  bool hasExclude() const { return boundary.hasRule(); }
   int isExcludeUnitValid(const Geometry::Vec3D&) const;
 
   void addExcludeCell(const int);

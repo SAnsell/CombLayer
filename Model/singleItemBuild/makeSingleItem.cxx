@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   singleBuildItemBuild/makeSingleItem.cxx
+ * File:   singleItemBuild/makeSingleItem.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "FixedGroup.h"
 #include "FixedOffsetGroup.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "FrontBackCut.h"
 #include "LayerComp.h"
@@ -78,6 +79,7 @@
 #include "TwinBase.h"
 #include "TwinChopper.h"
 #include "TwinChopperFlat.h"
+#include "SingleChopper.h"
 #include "DiskChopper.h"
 #include "VacuumPipe.h"
 
@@ -115,10 +117,13 @@ makeSingleItem::build(Simulation& System,
 
   int voidCell(74123);
 
+  constructSystem::SingleChopper AS("singleChopper");
+  AS.addInsertCell(voidCell);
+  AS.createAll(System,World::masterOrigin(),0);
 
-  constructSystem::CryoMagnetBase A("CryoB");
-  A.addInsertCell(voidCell);
-  A.createAll(System,World::masterOrigin(),0);
+//  constructSystem::CryoMagnetBase A("CryoB");
+//  A.addInsertCell(voidCell);
+//  A.createAll(System,World::masterOrigin(),0);
 }
 
 

@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MNCPX Input builder
+  CombLayer : MCNP(X) Input builder
  
  * File:   monte/RuleSupport.cxx
  *
- * Copyright (c) 2004-2014 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,11 +51,7 @@
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
-#include "BnId.h"
-#include "Acomp.h"
-#include "Algebra.h"
 #include "Rules.h"
-#include "RuleCheck.h"
 #include "HeadRule.h"
 #include "RuleSupport.h"
 

@@ -53,7 +53,6 @@
 #include "Plane.h"
 #include "Tally.h"
 #include "pointTally.h"
-#include "tallyFactory.h"
 
 #include "testFunc.h"
 #include "testTally.h"

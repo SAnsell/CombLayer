@@ -3,7 +3,7 @@
  
  * File:   ESSBeam/simpleItem/SimpleITEM.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@
 #include "BunkerInsert.h"
 #include "insertObject.h"
 #include "insertPlate.h"
+#include "beamlineSupport.h"
 
 #include "simpleITEM.h"
 
@@ -114,35 +115,6 @@ simpleITEM::~simpleITEM()
     Destructor
   */
 {}
-
-void
-simpleITEM::setBeamAxis(const FuncDataBase& Control,
-		  const GuideItem& GItem,
-		  const bool reverseZ)
-  /*!
-    Set the primary direction object
-    \param Control :: Data base of info on variables
-    \param GItem :: Guide Item to 
-    \param reverseZ :: Reverse the z-direction 
-   */
-{
-  ELog::RegMethod RegA("simpleITEM","setBeamAxis");
-
-  simpleAxis->populate(Control);
-  simpleAxis->createUnitVector(GItem);
-  simpleAxis->setLinkCopy(0,GItem.getKey("Main"),0);
-  simpleAxis->setLinkCopy(1,GItem.getKey("Main"),1);
-
-  simpleAxis->setLinkCopy(2,GItem.getKey("Beam"),0);
-  simpleAxis->setLinkCopy(3,GItem.getKey("Beam"),1);
-  // BEAM needs to be rotated:
-  simpleAxis->linkAngleRotate(3);
-  simpleAxis->linkAngleRotate(4);
-  
-  if (reverseZ)
-    simpleAxis->reverseZ();
-  return;
-}
   
 void 
 simpleITEM::build(Simulation& System,
@@ -165,7 +137,7 @@ simpleITEM::build(Simulation& System,
   CopiedComp::process(Control);
   stopPoint=Control.EvalDefVar<int>(newName+"StopPoint",0);
 
-  setBeamAxis(System.getDataBase(),GItem,0);
+  essBeamSystem::setBeamAxis(*simpleAxis,System.getDataBase(),GItem,0);
   
 
   if (stopPoint==1) return;                // STOP At monolith edge

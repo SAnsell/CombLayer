@@ -3,7 +3,7 @@
  
  * File:   physicsInc/ELPTConstructor.h
  *
- * Copyright (c) 2004-2015 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ class Simulation;
 
 namespace physicsSystem
 {
+  class PhysicsCards;
   class ExtControl;
   
 /*!
@@ -58,7 +59,8 @@ class ELPTConstructor
   ELPTConstructor& operator=(const ELPTConstructor&);
   ~ELPTConstructor() {}  ///< Destructor
 
-  void processUnit(Simulation&,const mainSystem::inputParam&,
+  void processUnit(PhysicsCards&,const Simulation&,
+		   const mainSystem::inputParam&,
 		   const size_t);
 };
 

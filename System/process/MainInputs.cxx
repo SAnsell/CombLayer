@@ -3,7 +3,7 @@
  
  * File:   process/MainInputs.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,8 @@ createInputs(inputParam& IParam)
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
   IParam.regFlag("cinder","cinder");
+  IParam.regItem("cellDNF","cellDNF");
+  IParam.regItem("cellCNF","cellCNF");
   IParam.regItem("d","debug");
   IParam.regItem("dbcn","dbcn");
   IParam.regItem("defaultConfig","defaultConfig");
@@ -87,13 +89,16 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("matDB","materialDatabase",1,
                                  std::string("shielding"));  
   IParam.regItem("matFile","matFile");
+  IParam.regItem("maxEnergy","maxEnergy");   // default max energy
   IParam.regFlag("M","mesh");
   IParam.regItem("MA","meshA");
   IParam.regItem("MB","meshB");
   IParam.regItem("MN","meshNPS",3,3);
   IParam.regFlag("md5","md5");
+  IParam.regItem("md5Mesh","md5Mesh");
   IParam.regItem("memStack","memStack");
   IParam.regDefItem<int>("n","nps",1,10000);
+  IParam.regItem("noVariables","noVariables");
   IParam.regFlag("p","PHITS");
   IParam.regFlag("fluka","FLUKA");
   IParam.regItem("povray","PovRay");
@@ -108,25 +113,19 @@ createInputs(inputParam& IParam)
   IParam.regItem("PTRAC","ptrac");
   IParam.regDefItemList<std::string>("r","renum",10,RItems);
   IParam.regMulti("R","report",1000,0);
+  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
+
   IParam.regFlag("sdefVoid","sdefVoid");
   IParam.regDefItem<std::string>("sdefType","sdefType",1,"");
-  IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
-  IParam.regDefItem<double>("SA","sdefAngle",1,35.0);
   IParam.regItem("sdefFile","sdefFile");
-  IParam.regDefItem<int>("SI","sdefIndex",1,1);
-
-  std::vector<std::string> SItems(3,"");
-  IParam.regDefItemList<std::string>("SObj","sdefObj",3,SItems);
+  IParam.regMulti("sdefMod","sdefMod",1000,0);
+  IParam.regMulti("sdefObj","sdefObj",1000,0);
   
-  IParam.regItem("SP","sdefPos");
-  IParam.regItem("SR","sdefRadius");
-  IParam.regItem("SV","sdefVec");
-  IParam.regItem("SZ","sdefZRot");
   IParam.regDefItem<long int>("s","random",1,375642321L);
   // std::vector<std::string> AItems(15);
   // IParam.regDefItemList<std::string>("T","tally",15,AItems);
   IParam.regMulti("T","tally",1000,0);
-  IParam.regMulti("TAdd","tallyAdd",1000);
+  IParam.regMulti("OAdd","objectAddition",1000);
   IParam.regMulti("TC","tallyCells",10000,2,3);
   IParam.regMulti("TGrid","TGrid",10000,2,3);
   IParam.regMulti("TMod","tallyMod",8,1);
@@ -135,6 +134,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("targetType","targetType",1);
   IParam.regDefItem<int>("u","units",1,0);
   IParam.regItem("validCheck","validCheck",1);
+  IParam.regItem("validFC","validFC",1);
   IParam.regMulti("validLine","validLine",1000);
   IParam.regItem("validPoint","validPoint",1);
   IParam.regFlag("um","voidUnMask");
@@ -144,6 +144,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("volCell","volCells",100,1,100);
     
   IParam.regFlag("void","void");
+  IParam.regItem("vtkMesh","vtkMesh",1);
   IParam.regFlag("vtk","vtk");
   IParam.regFlag("vcell","vcell");
   std::vector<std::string> VItems(15,"");
@@ -167,9 +168,10 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wDD","weightDD",100,1);
 
 
-  IParam.regMulti("wFCL","wFCL",25,0);
-  IParam.regMulti("wWWG","wWWG",25,0);
-  IParam.regMulti("wIMP","wIMP",25,0);
+  IParam.regMulti("wFCL","wFCL",1000,0);
+  IParam.regMulti("wWWG","wWWG",1000,0);
+  IParam.regMulti("wIMP","wIMP",1000,0);
+  IParam.regMulti("wEMF","wEMF",1000,0);
     
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regItem("wwgVTK","wwgVTK",1,10);
@@ -214,8 +216,10 @@ createInputs(inputParam& IParam)
   IParam.setDesc("MB","Upper Point in mesh tally");
   IParam.setDesc("MN","Number of points [3]");
   IParam.setDesc("md5","MD5 track of cells");
+  IParam.setDesc("md5Mesh","Define mesh for MD5/VTK");
   IParam.setDesc("memStack","Memstack verbrosity value");
   IParam.setDesc("n","Number of starting particles");
+  IParam.setDesc("noVariables","NO variables to written to file");
   IParam.setDesc("MCNP","MCNP version");
   IParam.setDesc("FLUKA","FLUKA output");
   IParam.setDesc("PovRay","PovRay output");
@@ -229,20 +233,16 @@ createInputs(inputParam& IParam)
   IParam.setDesc("report","Report a position/axis (show info on points etc)");
   IParam.setDesc("s","RND Seed");
   IParam.setDesc("sdefFile","File(s) for source");
-  IParam.setDesc("SA","Source Angle [deg]");
-  IParam.setDesc("SI","Source Index value [1:2]");
-  IParam.setDesc("SObj","Source Initialization Object");
+  IParam.setDesc("sdefObj","Source Initialization Object");
   IParam.setDesc("sdefType","Source Type (TS1/TS2)");
   IParam.setDesc("sdefVoid","Remove sdef card [to use source.F]");
+  
   IParam.setDesc("physModel","Physics Model"); 
-  IParam.setDesc("SP","Source start point");
-  IParam.setDesc("SV","Sourece direction vector");
-  IParam.setDesc("SZ","Source direction: Rotation to +ve Z [deg]");
   IParam.setDesc("T","Tally type [set to -1 to see all help]");
   IParam.setDesc("TC","Tally cells for a f4 cinder tally");
   //  IParam.setDesc("TNum","Tally ");
   IParam.setDesc("TMod","Modify tally [help for description]");
-  IParam.setDesc("TAdd","Add a component (cell)");
+  IParam.setDesc("OAdd","Add a component (cell)");
   IParam.setDesc("TGrid","Set a grid on a point tally [tallyN NXpts NZPts]");
   IParam.setDesc("TW","Activate tally pd weight system");
   IParam.setDesc("Txml","Tally xml file");
@@ -254,6 +254,7 @@ createInputs(inputParam& IParam)
   IParam.setDesc("volCells","Cells [object/range]");
   IParam.setDesc("volCard","set/delete the vol card");
   IParam.setDesc("vtk","Write out VTK plot mesh");
+  IParam.setDesc("vtkMesh","Define mesh for MD5/VTK");
   IParam.setDesc("vcell","Use cell id rather than material");
   IParam.setDesc("vmat","Material sections to be written by vtk output");
   IParam.setDesc("VN","Number of points in the volume integration");

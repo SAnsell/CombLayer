@@ -3,7 +3,7 @@
  
  * File:   include/SimFLUKA.h
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,12 @@
 #ifndef SimFLUKA_h
 #define SimFLUKA_h
 
+namespace flukaSystem
+{
+  class flukaTally;
+  class flukaPhysics;
+}
+
 /*!
   \class SimFLUKA
   \brief Modifides Simulation to output a Fluka input file
@@ -31,8 +37,21 @@
  */
 class SimFLUKA : public Simulation
 {
+ public:
+
+  /// Tally fortranIO : tally
+  typedef std::map<int,flukaSystem::flukaTally*> FTallyTYPE;
+  
  private:
-  const std::string alignment;
+
+  const std::string alignment;    ///< the alignemnt string
+  bool writeVariable;             ///< Prevent the writing of variables
+  size_t nps;                     ///< Number of particles
+  long int rndSeed;               ///< Random number seed
+  
+  FTallyTYPE FTItem;              ///< Fluka tally map
+
+  flukaSystem::flukaPhysics* PhysPtr;   ///< Fluka physics
 
   // ALL THE sub-write stuff
   void writeCells(std::ostream&) const;
@@ -43,15 +62,43 @@ class SimFLUKA : public Simulation
   void writeTransform(std::ostream&) const;
   void writeTally(std::ostream&) const;
   void writePhysics(std::ostream&) const;
+  void writeSource(std::ostream&) const;
   void writeVariables(std::ostream&) const;
+
+  const std::string& getLowMatName(const size_t) const;
+  std::string getLowMat(const size_t,const size_t,const std::string&) const;
+  void clearTally();
   
  public:
   
   SimFLUKA();
   SimFLUKA(const SimFLUKA&);
   SimFLUKA& operator=(const SimFLUKA&);
-  virtual ~SimFLUKA() {}           ///< Destructor
+  virtual ~SimFLUKA();
 
+  // TALLY PROcessing 
+  void addTally(const flukaSystem::flukaTally&);
+  flukaSystem::flukaTally* getTally(const int) const;
+  flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
+
+  /// Access tally items
+  FTallyTYPE& getTallyMap() { return FTItem; }
+
+  /// Access constant
+  const FTallyTYPE& getTallyMap() const { return FTItem; }
+  int getNextFTape() const;
+
+  /// set nps [move to physics]
+  void setNPS(const size_t N) { nps=N; }
+  /// set rndseed [move to physics]
+  void setRND(const long int N) { rndSeed=N; }
+
+  virtual void prepareWrite();
+  /// no write variable
+  void setNoVariables() { writeVariable=0; }
+  void setForCinder();
+
+  
   virtual void write(const std::string&) const;
 
 };

@@ -3,7 +3,7 @@
  
  * File:   weights/WCellControl.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,6 +65,7 @@
 #include "WCells.h"
 #include "CellWeight.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "objectRegister.h"
 #include "inputParam.h"
 #include "PositionSupport.h"
@@ -155,7 +156,7 @@ WCellControl::procRebase(const Simulation& System,
 
 void
 WCellControl::procObject(const Simulation& System,
-                          const mainSystem::inputParam& IParam)
+			 const mainSystem::inputParam& IParam)
 
 /*!
   Function to set up the weights system.
@@ -199,7 +200,7 @@ WCellControl::procObject(const Simulation& System,
       bool adjointFlag;
       processPtString(sourceKey,ptType,ptIndex,adjointFlag);
       procParam(IParam,"weightObject",iSet,2);
-      
+
       objectList.insert(objectKey);      
       const std::vector<int> objCells=OR.getObjectRange(objectKey);
     
@@ -214,7 +215,6 @@ WCellControl::procObject(const Simulation& System,
                                              "planePt.size() < activePtIndex");
           CellWeight CW;
           calcCellTrack(System,planePt[ptIndex],objCells,CW);
-	  ELog::EM<<"ADJOINT == "<<adjointFlag<<ELog::endDiag;
           if (!adjointFlag)
             CW.updateWM(energyCut,scaleFactor,minWeight,weightPower);
           else
@@ -535,6 +535,7 @@ WCellControl::calcCellTrack(const Simulation& System,
   cTrack(System,initPt,Pts,index,CTrack);
   return;
 }
+
 void
 WCellControl::setWeights(Simulation& System,
 			 const std::string& particleType)
@@ -563,7 +564,11 @@ WCellControl::setWeights(Simulation& System,
   WF->maskCell(1);
 
   // mask imp:n etc
-  setWImp(System,particleType);
+
+  SimMCNP* SimPtr=dynamic_cast<SimMCNP*>(&System);
+  if (SimPtr)
+    setWImp(SimPtr->getPC(),particleType);
+  
   
   return;
 }

@@ -3,7 +3,7 @@
  
  * File:   sourceInc/SurfNormSource.h
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,11 @@ class SurfNormSource :
     
   double angleSpread;           ///< Angle from normal
   int surfNum;                  ///< Surfacte number
+
   double width;                 ///< Width of source
   double height;                ///< Height of source
     
-  void populate(const FuncDataBase& Control);
+  void populate(const mainSystem::MITYPE&);
   void setSurf(const attachSystem::FixedComp&,
 			const long int);
 
@@ -60,14 +61,16 @@ class SurfNormSource :
   SurfNormSource& operator=(const SurfNormSource&);
   SurfNormSource* clone() const;
   ~SurfNormSource();
-  
-  void createAll(const FuncDataBase&,const attachSystem::FixedComp&,
+
+  void createAll(const mainSystem::MITYPE&,
+		 const attachSystem::FixedComp&,
 		 const long int);
   void createAll(const attachSystem::FixedComp&,const long int);
 
   virtual void rotate(const localRotate&);
   virtual void createSource(SDef::Source&) const;
   virtual void writePHITS(std::ostream&) const;
+  virtual void writeFLUKA(std::ostream&) const;
   virtual void write(std::ostream&) const;
 
   

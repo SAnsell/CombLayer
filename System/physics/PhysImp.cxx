@@ -3,7 +3,7 @@
  
  * File:   physics/PhysImp.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #include "GTKreport.h"
 #include "OutputLog.h"
 #include "support.h"
-#include "mathSupport.h"
+#include "writeSupport.h"
 #include "Triple.h"
 #include "NRange.h"
 #include "MapSupport.h"
@@ -150,6 +150,18 @@ PhysImp::setAllCells(const double value)
 }
 
 void
+PhysImp::setParticle(const std::string& P)
+ /*!
+   Set the particles to be just P
+   \param P :: PArticle 
+ */
+{
+  particles.clear();
+  particles.push_back(P);
+  return;
+}
+  
+void
 PhysImp::removeCell(const int ID)
   /*!
     Remove cell form list
@@ -241,14 +253,31 @@ PhysImp::setAllCells(const std::vector<int>& cellOrder,
 {
   std::vector<int>::const_iterator vc;
   std::vector<double>::const_iterator ic;
-  std::map<int,double>::const_iterator ac;
   std::map<int,double> nMap;
+
   ic=impValue.begin();
-  for(vc=cellOrder.begin();vc!=cellOrder.end();vc++,ic++)
+  for(const int cIndex : cellOrder)
     {
-      nMap[*vc]=*ic;
+      nMap.emplace(cIndex,*ic++);
     }
   impNum=nMap;
+  return;
+}
+
+void
+PhysImp::setAllCells(const std::vector<std::pair<int,int>>& cellImp)
+  /*!
+    Process the ordered list of the cells.
+    If the cell number does not exists a default value
+    of 1 is added.
+    \param cellImp :: list of cells / 0:1 flag on importance
+  */
+{
+  std::map<int,double> newMap;
+  for(const std::pair<int,int>& cIndex : cellImp)
+    newMap.emplace(cIndex.first,static_cast<double>(cIndex.second));
+
+  impNum=newMap;
   return;
 }
 
@@ -391,22 +420,18 @@ PhysImp::write(std::ostream& OX,
 
       NRange A;
       std::vector<double> Index;
-      std::vector<int>::const_iterator cvec;
-      for(cvec=cellOutOrder.begin();cvec!=cellOutOrder.end();cvec++)
+      for(const int& CN : cellOutOrder)
 	{
-	  vc=impNum.find(*cvec);
+	  vc=impNum.find(CN);
 	  if (vc==impNum.end())
-	    {
-	      ELog::EM<<"Unable to find cell "<<*cvec<<ELog::endCrit;
-	      throw ColErr::InContainerError<int>(*cvec,"Cellnumber in i,pNum");
-	    }
+	    throw ColErr::InContainerError<int>(CN,"Cellnumber in i,pNum");
 	  Index.push_back(vc->second);
 	}
 
       A.setVector(Index);
       for(int i=0;i<nCutters;i++)
 	A.addComp(0.0);
-      A.condense();  
+      A.condense();
       A.write(cx);
       StrFunc::writeMCNPX(cx.str(),OX);
     }

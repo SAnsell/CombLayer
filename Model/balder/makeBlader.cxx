@@ -62,41 +62,53 @@
 #include "FixedComp.h"
 #include "FixedOffset.h"
 #include "ContainedComp.h"
+#include "ContainedSpace.h"
 #include "ContainedGroup.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "SurfMap.h"
 #include "FrontBackCut.h"
+#include "CopiedComp.h"
 #include "World.h"
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
+#include "SplitFlangePipe.h"
+#include "Bellows.h"
+#include "LeadPipe.h"
 #include "VacuumBox.h"
+#include "portItem.h"
+#include "PortTube.h"
 
 #include "OpticsHutch.h"
+#include "ExperimentalHutch.h"
 #include "CrossPipe.h"
 #include "MonoVessel.h"
+#include "MonoCrystals.h"
+#include "GateValve.h"
+#include "JawUnit.h"
+#include "JawValve.h"
+#include "FlangeMount.h"
+#include "FrontEndCave.h"
+#include "Wiggler.h"
+#include "OpticsBeamline.h"
+#include "ConnectZone.h"
 #include "makeBalder.h"
 
 namespace xraySystem
 {
 
 makeBalder::makeBalder() :
-  opticsHut(new OpticsHutch("Optics")),
-  triggerPipe(new constructSystem::CrossPipe("TriggerPipe")),
-  pipeA(new constructSystem::VacuumPipe("BellowA")),
-  filterBox(new constructSystem::VacuumBox("FilterBox")),
-  pipeB(new constructSystem::VacuumPipe("BellowB")),
-  ionPumpA(new constructSystem::CrossPipe("IonPumpA")),
-  mirrorBox(new constructSystem::VacuumBox("MirrorBox")),
-  ionPumpB(new constructSystem::CrossPipe("IonPumpB")),
-  pipeC(new constructSystem::VacuumPipe("BellowC")),
-  driftA(new constructSystem::VacuumPipe("DriftA")),
-  driftB(new constructSystem::VacuumPipe("DriftB")),
-  monoV(new xraySystem::MonoVessel("MonoVac")),
-  monoBellowA(new constructSystem::VacuumPipe("MonoBellowA")),
-  monoBellowB(new constructSystem::VacuumPipe("MonoBellowB"))
-
+  frontEnd(new FrontEndCave("BalderFrontEnd")),
+  wigglerBox(new constructSystem::VacuumBox("BalderWigglerBox",1)),
+  wiggler(new Wiggler("BalderWiggler")),
+  joinPipe(new constructSystem::VacuumPipe("BalderJoinPipe")),
+  opticsHut(new OpticsHutch("BalderOptics")),
+  opticsBeam(new OpticsBeamline("Balder")),
+  joinPipeB(new constructSystem::LeadPipe("BalderJoinPipeB")),
+  connectZone(new ConnectZone("BalderConnect")),
+  joinPipeC(new constructSystem::LeadPipe("BalderJoinPipeC")),
+  exptHut(new ExperimentalHutch("BalderExpt"))
   /*!
     Constructor
   */
@@ -104,21 +116,14 @@ makeBalder::makeBalder() :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
   
+  OR.addObject(frontEnd);
+  OR.addObject(wigglerBox);
+  OR.addObject(wiggler);
+  OR.addObject(joinPipe);
   OR.addObject(opticsHut);
-  OR.addObject(triggerPipe);
-  OR.addObject(pipeA);
-  OR.addObject(filterBox);
-  OR.addObject(pipeB);
-  OR.addObject(ionPumpA);
-  OR.addObject(mirrorBox);
-  OR.addObject(ionPumpB);
-  OR.addObject(pipeC);
-  OR.addObject(driftA);
-  OR.addObject(driftB);
-  OR.addObject(monoV);
-  OR.addObject(monoBellowA);
-  OR.addObject(monoBellowB);
-
+  OR.addObject(joinPipeB);
+  OR.addObject(joinPipeC);
+  OR.addObject(exptHut);
 }
 
 makeBalder::~makeBalder()
@@ -141,62 +146,69 @@ makeBalder::build(Simulation& System,
 
   int voidCell(74123);
  
+  frontEnd->addInsertCell(voidCell);
+  frontEnd->createAll(System,World::masterOrigin(),0);
+
+  wigglerBox->addInsertCell(frontEnd->getCell("Void"));
+  wigglerBox->createAll(System,*frontEnd,0);
+
+  wiggler->addInsertCell(wigglerBox->getCell("Void"));
+  wiggler->createAll(System,*wigglerBox,0);
+
   opticsHut->addInsertCell(voidCell);
-  opticsHut->createAll(System,World::masterOrigin(),0);
+  opticsHut->createAll(System,*frontEnd,2);
 
-  triggerPipe->addInsertCell(opticsHut->getCell("Void"));
-  triggerPipe->createAll(System,*opticsHut,0);
+  joinPipe->addInsertCell(frontEnd->getCell("Void"));
+  joinPipe->addInsertCell(frontEnd->getCell("FrontWallHole"));
+  joinPipe->addInsertCell(opticsHut->getCell("Void"));
+  joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
+  joinPipe->setFront(*wigglerBox,2);
+  joinPipe->setSpaceLinkCopy(0,*opticsHut,1);
+  joinPipe->registerSpaceCut(0,2);
+  joinPipe->createAll(System,*wigglerBox,2);
 
-  pipeA->addInsertCell(opticsHut->getCell("Void"));
-  pipeA->setFront(*triggerPipe,2);
-  pipeA->createAll(System,*triggerPipe,2);
+  opticsBeam->addInsertCell(opticsHut->getCell("Void"));
+  opticsBeam->createAll(System,*joinPipe,2);
 
-  filterBox->addInsertCell(opticsHut->getCell("Void"));
-  filterBox->setFront(*pipeA,2);
-  filterBox->createAll(System,*pipeA,2);
-
-  pipeB->addInsertCell(opticsHut->getCell("Void"));
-  pipeB->setFront(*filterBox,2);
-  pipeB->createAll(System,*filterBox,2);
-
-  ionPumpA->addInsertCell(opticsHut->getCell("Void"));
-  ionPumpA->setFront(*pipeB,2);
-  ionPumpA->createAll(System,*pipeB,2);
-
-  mirrorBox->addInsertCell(opticsHut->getCell("Void"));
-  mirrorBox->setFront(*ionPumpA,2);
-  mirrorBox->createAll(System,*ionPumpA,2);
-
-  ionPumpB->addInsertCell(opticsHut->getCell("Void"));
-  ionPumpB->setFront(*mirrorBox,2);
-  ionPumpB->createAll(System,*mirrorBox,2);
-
-  pipeC->addInsertCell(opticsHut->getCell("Void"));
-  pipeC->setFront(*ionPumpB,2);
-  pipeC->createAll(System,*ionPumpB,2);
-
-  driftA->addInsertCell(opticsHut->getCell("Void"));
-  driftA->setFront(*pipeC,2);
-  driftA->createAll(System,*pipeC,2);
-
-  driftB->addInsertCell(opticsHut->getCell("Void"));
-  driftB->createAll(System,*driftA,2);
+  // special:
+  //  System.removeCell(opticsHut->getCell("Void"));  
   
-  monoV->addInsertCell(opticsHut->getCell("Void"));
-  monoV->createAll(System,*driftA,2);
+  joinPipeB->addInsertCell(opticsHut->getCell("ExitHole"));
+  joinPipeB->setPrimaryCell(opticsHut->getCell("Void"));
+  joinPipeB->setFront(*opticsBeam,2);
+  joinPipeB->setSpaceLinkCopy(1,*opticsHut,
+			 opticsHut->getSideIndex("-innerBack"));
+  joinPipeB->registerSpaceCut(1,0);
+  joinPipeB->createAll(System,*opticsBeam,2);
 
-  // Note : join flag so can rotate on front/back
-  monoBellowA->addInsertCell(opticsHut->getCell("Void"));
-  monoBellowA->setFront(*driftA,2,1);
-  monoBellowA->setBack(*monoV,1,1);
-  monoBellowA->createAll(System,*driftA,2);
+  System.removeCell(opticsHut->getCell("Void"));
 
-  // Note : join flag so can rotate on front/back
-  monoBellowB->addInsertCell(opticsHut->getCell("Void"));
-  monoBellowB->setFront(*monoV,2,1); 
-  monoBellowB->setBack(*driftB,1,1); 
-  monoBellowB->createAll(System,*driftB,-1);
+  exptHut->addInsertCell(voidCell);
+  exptHut->createAll(System,*frontEnd,2);
+
+  connectZone->addInsertCell(voidCell);
+  connectZone->setFront(*opticsHut,2);
+  connectZone->setBack(*exptHut,1);
+  connectZone->createAll(System,*joinPipeB,2);
+
+  // horrid way ot create a SECOND register space [MAKE INTERNAL]
+  joinPipeB->setSpaceLinkCopy(0,*opticsHut,-2);
+  joinPipeB->registerSpaceIsolation(0,2);
+  joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
+  joinPipeB->setBuildCell(0);  // reinitialize
+  joinPipeB->insertObjects(System);
   
+  joinPipeC->addInsertCell(connectZone->getCell("OuterVoid"));
+  joinPipeC->addInsertCell(exptHut->getCell("Void"));
+  joinPipeC->addInsertCell(exptHut->getCell("EnteranceHole"));
+  joinPipeC->setFront(*connectZone,2);
+  joinPipeC->registerSpaceCut(1,0);
+  joinPipeC->setSpaceLinkCopy(1,*exptHut,-1);
+  joinPipeC->setPrimaryCell(connectZone->getCell("OuterVoid"));
+  joinPipeC->createAll(System,*connectZone,2);
+
+  System.removeCell(connectZone->getCell("OuterVoid"));
+
   return;
 }
 

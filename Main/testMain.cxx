@@ -1,9 +1,9 @@
 /********************************************************************* 
-  CombLayer : MCNP(X) Input builder
+  Comblayer : MCNP(X) Input builder
  
  * File:   Main/testMain.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,6 +67,7 @@
 #include "Surface.h"
 #include "Rules.h"
 #include "RuleBinary.h"
+#include "AcompTools.h"
 #include "Acomp.h"
 #include "Algebra.h"
 #include "surfRegister.h"
@@ -94,6 +95,7 @@
 #include "varList.h"
 #include "FuncDataBase.h"
 #include "Simulation.h"
+#include "SimMCNP.h"
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "ContainedComp.h"
@@ -110,6 +112,7 @@
 #include "testBoxLine.h"
 #include "testCone.h"
 #include "testContained.h"
+#include "testContainedSpace.h"
 #include "testConvex.h"
 #include "testConvex2D.h"
 #include "testCylinder.h"
@@ -170,6 +173,7 @@
 #include "testSurfDivide.h"
 #include "testSurfEqual.h"
 #include "testSurfExpand.h"
+#include "testSurfImplicate.h"
 #include "testSurIntersect.h"
 #include "testSurfRegister.h"
 #include "testSVD.h"
@@ -179,6 +183,7 @@
 #include "testVolumes.h"
 #include "testWorkData.h"
 #include "testWrapper.h"
+#include "testWriteSupport.h"
 #include "testXML.h"
 
 //
@@ -236,7 +241,7 @@ main(int argc,char* argv[])
       else
 	retVal=startTest(section,type,extra);
 
-      if (section*type*extra)
+      if ( section*type*extra != 0)
 	{
 	  ELog::EM<<ELog::endDiag;
       
@@ -595,6 +600,7 @@ geometryTest(const int type,const int extra)
       "testQuaternion",
       "testPlane",
       "testRecTriangle",
+      "testSurfImplicate",
       "testSurIntersect",
       "testSVD",
       "testVec3D"
@@ -686,6 +692,12 @@ geometryTest(const int type,const int extra)
       if(index==testNum++)
 	{
 	  testRecTriangle A;
+	  X=A.applyTest(extra);
+	}
+
+      if(index==testNum++)
+	{
+	  testSurfImplicate A;
 	  X=A.applyTest(extra);
 	}
 
@@ -875,6 +887,7 @@ attachCompTest(const int type,const int extra)
       TestFunc::Instance().reportTest(std::cout);
       std::cout<<"testAttachSupport          (1)"<<std::endl;
       std::cout<<"testContained              (2)"<<std::endl;
+      std::cout<<"testContainedSpace         (3)"<<std::endl;
     }
   if(type==1 || type<0)
     {
@@ -885,6 +898,12 @@ attachCompTest(const int type,const int extra)
   if(type==2 || type<0)
     {
       testContained A;
+      const int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==3 || type<0)
+    {
+      testContainedSpace A;
       const int X=A.applyTest(extra);
       if (X) return X;
     }
@@ -1154,6 +1173,7 @@ supportTest(const int type,const int extra)
       std::cout<<"testModelSupport        (5)"<<std::endl;
       std::cout<<"testSimpson             (6)"<<std::endl;
       std::cout<<"testSupport             (7)"<<std::endl;
+      std::cout<<"testWriteSupport        (8)"<<std::endl;
       return 0;
     }
 
@@ -1199,6 +1219,12 @@ supportTest(const int type,const int extra)
   if(type==7 || type<0)
     {
       testSupport A;
+      int X=A.applyTest(extra);
+      if (X) return X;
+    }
+  if(type==8 || type<0)
+    {
+      testWriteSupport A;
       int X=A.applyTest(extra);
       if (X) return X;
     }

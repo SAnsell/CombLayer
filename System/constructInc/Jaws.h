@@ -35,7 +35,7 @@ namespace constructSystem
   \brief Jaws unit  
 */
 
-class Jaws : public attachSystem::FixedComp,
+class Jaws : public attachSystem::FixedOffset,
   public attachSystem::ContainedComp,
   public attachSystem::CellMap
 {
@@ -43,13 +43,6 @@ class Jaws : public attachSystem::FixedComp,
   
   const int jawIndex;           ///< Index of surface offset
   int cellIndex;                ///< Cell index
-
-  double xStep;                 ///< step in X 
-  double yStep;                 ///< step in Y 
-  double zStep;                 ///< step in Z 
-  double xAngle;                ///< rotation about X [last]
-  double yAngle;                ///< rotation about Y [mid]
-  double zAngle;                ///< rotation about Z [first]
   
   double zOpen;                 ///< Z-opening
   double zThick;                ///< Blade thickness

@@ -37,16 +37,13 @@ namespace constructSystem
 
 class CrossPipe :
   public attachSystem::FixedOffset,
-  public attachSystem::ContainedComp,
+  public attachSystem::ContainedSpace,
   public attachSystem::CellMap,
   public attachSystem::SurfMap,
   public attachSystem::FrontBackCut
 {
  private:
   
-  const int vacIndex;           ///< Index of surface offset
-  int cellIndex;                ///< Cell index  
-
   double horrRadius;            ///< horrizontal radius [inner]
   double vertRadius;            ///< vertical radius [inner]
   double height;                ///< void height

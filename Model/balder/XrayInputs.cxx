@@ -59,8 +59,8 @@ createXrayInputs(inputParam& IParam)
 {
   ELog::RegMethod RegA("blader::","createXrayInputs");
   createInputs(IParam);
-  
-  IParam.setValue("sdefType",std::string("wiggler"));  
+ 
+  IParam.setValue("sdefType",std::string("Wiggler"));  
   return;
 }
 
