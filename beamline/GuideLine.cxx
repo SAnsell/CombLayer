@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <numeric>
 #include <memory>
-#include <numeric>
 
 #include "Exception.h"
 #include "FileReport.h"
