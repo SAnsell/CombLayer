@@ -82,6 +82,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "cellValueSet.h"
 #include "flukaTally.h"
 #include "flukaProcess.h"
 #include "flukaPhysics.h"
@@ -91,7 +92,8 @@
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
-  nps(1000)
+  nps(1000),rndSeed(237489791),
+  PhysPtr(new flukaSystem::flukaPhysics())
   /*!
     Constructor
   */
@@ -100,7 +102,9 @@ SimFLUKA::SimFLUKA() :
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
   alignment(A.alignment),
-  writeVariable(A.writeVariable),nps(A.nps)
+  writeVariable(A.writeVariable),nps(A.nps),
+  rndSeed(A.rndSeed),
+  PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
    \param A :: Simulation to copy
@@ -120,9 +124,11 @@ SimFLUKA::operator=(const SimFLUKA& A)
       Simulation::operator=(A);
       writeVariable=A.writeVariable;
       nps=A.nps;
+      rndSeed=A.rndSeed;
       clearTally();
       for(const FTallyTYPE::value_type& TM : A.FTItem)
 	FTItem.emplace(TM.first,TM.second->clone());
+      *PhysPtr= *A.PhysPtr;
     }
   return *this;
 }
@@ -133,6 +139,7 @@ SimFLUKA::~SimFLUKA()
   */
 {
   clearTally();
+  delete PhysPtr;
 }
 
 void
@@ -373,7 +380,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   StrFunc::writeFLUKA(cx.str(),OX);
   
   // Remaining Physics cards
-  //  PhysPtr->writeFLUKA(OX);
+  PhysPtr->writeFLUKA(OX);
   return;
 }
 
@@ -385,7 +392,6 @@ SimFLUKA::writeSource(std::ostream& OX) const
     Most of these sources are limited. 
     \param OX :: Output stream
   */
-
 {
   ELog::RegMethod RegA("SimFLUKA","writeSource");
   
@@ -474,6 +480,18 @@ SimFLUKA::getLowMat(const size_t Z,const size_t A,
   ELog::RegMethod RegA("SimFLUKA","getLowMat");
 
   return std::string("LOW-MAT "+mat+" - - - - - "+getLowMatName(Z)+" ");  
+}
+
+void
+SimFLUKA::prepareWrite()
+  /*!
+    Stuff that should be done once before output 
+   */
+{
+  ELog::RegMethod RegA("","prepareWrite");
+  Simulation::prepareWrite();
+  PhysPtr->setCellNumbers(cellOutOrder);
+  return;
 }
 
 void

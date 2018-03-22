@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/cellValueSet.h
+ * File:   weightsInc/flukaImpConstructor.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,49 +19,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_cellValueSet_h
-#define flukaSystem_cellValueSet_h
+#ifndef physicsSystem_flukaImpConstructor_h
+#define physicsSystem_flukaImpConstructor_h
+
+///\file 
+
+class Simulation;
+namespace Geometry
+{
+  class Plane;
+}
+
+namespace mainSystem
+{
+  class inputParam;
+}
 
 namespace flukaSystem
 {
-  
+  class flukaPhysics;
 /*!
-  \class cellValueSet
+  \class flukaImpConstructor
+  \brief Controls importance of cells in fluka
+  \author S. Ansell
   \version 1.0
   \date March 2018
-  \author S.Ansell
-  \brief Processes the physics cards in the FLUKA output
 */
 
-class cellValueSet 
+class flukaImpConstructor 
 {
  private:
 
-  const std::string keyName;               ///< Key name
-  const std::string outName;               ///< Output name for FLUKA
-  double whatValue;                        ///< What [1] value 
-  
-  std::map<int,double> dataMap;   ///< Values for cell
-
-  bool cellSplit(const std::vector<int>&,
-		 std::vector<std::tuple<int,int,double>>&) const;
-  
+  void writeHelp(std::ostream&) const;
+    
  public:
-   
-  cellValueSet(const std::string&,const std::string&);
-  cellValueSet(const std::string&,const std::string&,const double);
-  cellValueSet(const cellValueSet&);
-  cellValueSet& operator=(const cellValueSet&);
-  virtual ~cellValueSet();
 
-  void clearAll();
+  flukaImpConstructor() {}
+  flukaImpConstructor(const flukaImpConstructor&) {}
+  flukaImpConstructor& operator=(const flukaImpConstructor&) { return *this; }
+  ~flukaImpConstructor() {}  ///< Destructor
 
-  void setValue(const int,const double);
-  void writeFLUKA(std::ostream&,const std::vector<int>&,
-		  const std::string&) const;
-
+  void processUnit(flukaPhysics&,
+		   const mainSystem::inputParam&,
+		   const size_t);
 };
 
 }
 
 #endif
+ 

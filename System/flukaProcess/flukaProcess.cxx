@@ -70,8 +70,11 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
-#include "SimFLUKA.h"
 
+#include "SimFLUKA.h"
+#include "cellValueSet.h"
+#include "flukaPhysics.h"
+#include "flukaImpConstructor.h"
 #include "flukaProcess.h"
 
 namespace flukaSystem
@@ -79,7 +82,7 @@ namespace flukaSystem
   
 void 
 setDefaultPhysics(SimFLUKA& System,
-		    const mainSystem::inputParam& IParam)
+		  const mainSystem::inputParam& IParam)
   /*!
     Set the default Physics
     \param System :: Simulation
@@ -89,11 +92,20 @@ setDefaultPhysics(SimFLUKA& System,
   ELog::RegMethod RegA("DefPhysics[F]","setDefaultPhysics");
   
   System.setNPS(IParam.getValue<size_t>("nps"));
-  System.setRND(IParam.getValue<long int>("random"));	
-  
+  System.setRND(IParam.getValue<long int>("random"));
+
+  const size_t nSet=IParam.setCnt("wIMP");
+  flukaPhysics* PC=System.getPhysics();
+    
+  if (nSet && PC)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processUnit(*PC,IParam,index);
+    }
   
   return; 
 }
 
 
-} // NAMESPACE ModelSupport
+} // NAMESPACE flukaSystem

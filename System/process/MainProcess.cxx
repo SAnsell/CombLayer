@@ -529,8 +529,8 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
-   // 
-  //  SimProcess::importanceSim(*SimMCPtr,IParam);
+  //
+  SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   //  tallyModification(*SimMCPtr,IParam);
 

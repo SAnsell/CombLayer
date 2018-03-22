@@ -51,16 +51,48 @@
 #include "Vec3D.h"
 
 #include "particleConv.h"
+#include "cellValueSet.h"
 #include "flukaPhysics.h"
 
 namespace flukaSystem
 {
-			
-flukaPhysics::flukaPhysics() 
+		       
+flukaPhysics::flukaPhysics() :
+  impValue({
+      { "all",      cellValueSet("all","BIAS",0.0) },
+      { "hadron",   cellValueSet("hadron","BIAS",1.0) },
+      { "electron", cellValueSet("electron","BIAS",2.0) },
+      { "low",      cellValueSet("low","BIAS",3.0) }
+    })
   /*!
     Constructor
   */
 {}
+
+flukaPhysics::flukaPhysics(const flukaPhysics& A) : 
+  cellN(A.cellN),impValue(A.impValue)
+  /*!
+    Copy constructor
+    \param A :: flukaPhysics to copy
+  */
+{}
+
+flukaPhysics&
+flukaPhysics::operator=(const flukaPhysics& A)
+  /*!
+    Assignment operator
+    \param A :: flukaPhysics to copy
+    \return *this
+  */
+{
+  if (this!=&A)
+    {
+      cellN=A.cellN;
+      impValue=A.impValue;
+    }
+  return *this;
+}
+
 
 
 flukaPhysics::~flukaPhysics()
@@ -77,61 +109,12 @@ flukaPhysics::clearAll()
   */
 {
   cellN.clear();
-  allImp.erase(allImp.begin(),allImp.end());
-  hadronImp.erase(hadronImp.begin(),hadronImp.end());
-  electronImp.erase(electronImp.begin(),electronImp.end());
-  lowImp.erase(lowImp.begin(),lowImp.end());
+  for(std::map<std::string,cellValueSet>::value_type& mc : impValue)
+    mc.second.clearAll();
   
   return;
 }
 
-bool
-flukaPhysics::cellSplit(const std::map<int,double>& DataMap,
-			std::vector<std::tuple<int,int,double>>& initCell) const
-  /*!
-    Process ranges to find for value
-    \param DataMap :: Data value to check
-    \param initCell :: initialization range
-   */
-{
-  typedef std::tuple<int,int,double> TITEM;
-  if (DataMap.empty()) return 0;
-  
-  initCell.clear();
-  size_t prev(0);
-  double V;
-  for(size_t i=0;i<cellN.size();i++)
-    {
-      const int CN=cellN[i];
-      std::map<int,double>::const_iterator mc=DataMap.find(CN);
-      if (mc==DataMap.end())
-	{
-	  if (prev)
-	    {
-	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1],V));
-	      prev=0;
-	    }
-	}
-      else
-	{
-	  if (prev && std::abs(V-mc->second)>Geometry::zeroTol)
-	    {
-	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1],V));
-	      prev=i+1;
-	      V=mc->second;
-	    }
-	  else if (!prev)
-	    {
-	      prev=i+1;
-	      V=mc->second;
-	    }
-	}
-    }
-  if (prev)
-    initCell.push_back(TITEM(cellN[prev-1],cellN.back(),V));      
-	  
-  return 1;
-}
 
 void
 flukaPhysics::setCellNumbers(const std::vector<int>& cellInfo)
@@ -159,18 +142,30 @@ flukaPhysics::setImp(const std::string& keyName,
     \param value :: Value to use
   */
 {
-  if (keyName=="all")
-    allImp.emplace(cellN,value);
-  else if (keyName=="hadron")
-    hadronImp.emplace(cellN,value);
-  else if (keyName=="electron")
-    electronImp.emplace(cellN,value);
-  else if (keyName=="low")
-    lowImp.emplace(cellN,value);
+  ELog::RegMethod RegA("flukaPhysics","setImp");
+  
+  std::map<std::string,cellValueSet>::iterator mc=
+    impValue.find(keyName);
+  if (mc==impValue.end())
+    throw ColErr::InContainerError<std::string>(keyName,"impValue");
+
+  mc->second.setValue(cellN,value);
   return;
 }
 
-
+void
+flukaPhysics::writeFLUKA(std::ostream& OX) const
+  /*!
+    Write out all the FLUKA physics
+    \param OX :: Output stream
+ */
+{
+  ELog::EM<<"Cn == "<<cellN.size()<<ELog::endDiag;
+  for(const std::map<std::string,cellValueSet>::value_type& mc : impValue)
+    mc.second.writeFLUKA(OX,cellN," %0 1.0 %3 %1 %2 1.0 ");
+  ELog::EM<<"Finish "<<ELog::endDiag;
+  return;
+}
 
   
 } // NAMESPACE flukaSystem

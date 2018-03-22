@@ -212,7 +212,7 @@ class Simulation
   int splitObject(const int,const int);
   void minimizeObject(const int);
   void makeObjectsDNForCNF();
-  void prepareWrite();
+  virtual void prepareWrite();
 
   virtual void substituteAllSurface(const int,const int);
   virtual std::map<int,int> renumberCells(const std::vector<int>&,

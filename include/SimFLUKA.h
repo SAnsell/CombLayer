@@ -79,6 +79,7 @@ class SimFLUKA : public Simulation
   // TALLY PROcessing 
   void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
+  flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
 
   /// Access tally items
   FTallyTYPE& getTallyMap() { return FTItem; }
@@ -91,7 +92,8 @@ class SimFLUKA : public Simulation
   void setNPS(const size_t N) { nps=N; }
   /// set rndseed [move to physics]
   void setRND(const long int N) { rndSeed=N; }
-  
+
+  virtual void prepareWrite();
   /// no write variable
   void setNoVariables() { writeVariable=0; }
   void setForCinder();

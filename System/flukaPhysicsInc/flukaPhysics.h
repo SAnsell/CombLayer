@@ -37,14 +37,8 @@ class flukaPhysics
 {
  private:
 
-  std::vector<int> cellN;            ///< Cell numbers in order
-  std::map<int,double> allImp;       ///< all particle
-  std::map<int,double> hadronImp;    ///< hadron
-  std::map<int,double> electronImp;  ///< electron
-  std::map<int,double> lowImp;       ///< lowImp
-
-  bool cellSplit(const std::map<int,double>&,
-		 std::vector<std::tuple<int,int,double>>&) const;
+  std::vector<int> cellN;                        ///< Cell numbers in order
+  std::map<std::string,cellValueSet> impValue;   ///< Importance values
 
  public:
    
@@ -57,7 +51,6 @@ class flukaPhysics
   
   // ALL systems setup
   void setCellNumbers(const std::vector<int>&);
-
 
   void setImp(const std::string&,const int,const double);
   void writeFLUKA(std::ostream&) const;

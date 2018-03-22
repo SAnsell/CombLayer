@@ -57,7 +57,7 @@ namespace flukaSystem
 {
 			
 cellValueSet::cellValueSet(const std::string& KN,const std::string& ON) :
-  keyName(KN),outName(ON)
+  keyName(KN),outName(ON),whatValue(0.0)
   /*!
     Constructor
     \param KN :: Indentifier
@@ -65,9 +65,21 @@ cellValueSet::cellValueSet(const std::string& KN,const std::string& ON) :
   */
 {}
 
+cellValueSet::cellValueSet(const std::string& KN,
+			   const std::string& ON,
+			   const double WValue) :
+  keyName(KN),outName(ON),whatValue(WValue)
+  /*!
+    Constructor
+    \param KN :: Indentifier
+    \param ON :: Output id for FLUKA
+    \param WValue :: What value
+  */
+{}
+
 
 cellValueSet::cellValueSet(const cellValueSet& A) : 
-  keyName(A.keyName),outName(A.outName)
+  keyName(A.keyName),outName(A.outName),whatValue(A.whatValue)
   /*!
     Copy constructor
     \param A :: cellValueSet to copy
@@ -84,6 +96,7 @@ cellValueSet::operator=(const cellValueSet& A)
 {
   if (this!=&A)
     {
+      whatValue=A.whatValue;
       dataMap=A.dataMap;
     }
   return *this;
@@ -95,7 +108,6 @@ cellValueSet::~cellValueSet()
     Destructor
   */
 {}
-
   
 void
 cellValueSet::clearAll()
@@ -188,27 +200,30 @@ cellValueSet::writeFLUKA(std::ostream& OX,
   std::ostringstream cx;
   std::vector<TITEM> Bgroup;
 
-  
+  ELog::EM<<"UN "<<ELog::endDiag;  
   if (cellSplit(cellN,Bgroup))
     {
+
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
-      std::vector<std::string> SArray(3);
+      std::vector<std::string> SArray(4);
+      SArray[0]=std::to_string(whatValue);
       for(const TITEM& tc : Bgroup)
 	{
-	  SArray[0]=std::to_string(std::get<0>(tc));
-	  SArray[1]=std::to_string(std::get<1>(tc));
-	  SArray[2]=std::to_string(std::get<2>(tc));
+	  SArray[1]=std::to_string(std::get<0>(tc));
+	  SArray[2]=std::to_string(std::get<1>(tc));
+	  SArray[3]=std::to_string(std::get<2>(tc));
 	  cx.str("");
 	  cx<<outName<<" ";
 	  for(const std::string& UC : Units)
 	    {
+
 	      if (UC[0]=='%' && UC.size()==2)
 		{
-		  const size_t SA=static_cast<size_t>(UC[1]-'0');
-		  cx<<SArray[SA];
+		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % 4); 
+		  cx<<SArray[SA]<<" ";
 		}
 	      else
-		cx<<UC;
+		cx<<UC<<" ";
 	    }
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}

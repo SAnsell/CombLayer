@@ -68,6 +68,7 @@
 #include "SimPHITS.h"
 #include "SimFLUKA.h"
 #include "MainProcess.h"
+#include "flukaProcess.h"
 #include "ImportControl.h"
 #include "WeightControl.h"
 #include "WCellControl.h"
@@ -96,6 +97,14 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
       importanceSim(*mcnpPtr,IParam);
       return;
     }
+  SimFLUKA* flukaPtr=dynamic_cast<SimFLUKA*>(&System);
+
+  if (flukaPtr)
+    {
+      flukaSystem::setDefaultPhysics(*flukaPtr,IParam);
+      return;
+    }
+
   ELog::EM<<"Unknown Sim for importance sampling"<<ELog::endDiag;
   return;
   
