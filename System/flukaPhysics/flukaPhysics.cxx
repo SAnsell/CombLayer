@@ -141,6 +141,20 @@ flukaPhysics::setCellNumbers(const std::vector<int>& cellInfo)
   cellN=cellInfo;
   return;
 }
+
+void
+flukaPhysics::setMatNumbers(const std::set<int>& matInfo)
+  /*!
+    Process the list of the valid cells 
+    over each importance group.
+    \param cellInfo :: list of cells
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setCellNumbers");
+
+  matN.assign(matInfo.begin(),matInfo.end());
+  return;
+}
   
 void
 flukaPhysics::setImp(const std::string& keyName,
@@ -196,6 +210,11 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 {
   for(const std::map<std::string,cellValueSet<1>>::value_type& mc : impValue)
     mc.second.writeFLUKA(OX,cellN," %0 1.0 %3 %1 %2 1.0 ");
+
+
+  for(const std::map<std::string,cellValueSet<2>>::value_type& mc : emfFlag)
+    mc.second.writeFLUKA(OX,matN," %0 1.0 %3 %1 %2 1.0 ");
+
   ELog::EM<<"Finish "<<ELog::endDiag;
   return;
 }

@@ -57,6 +57,8 @@ class flukaPhysics
   
   // ALL systems setup
   void setCellNumbers(const std::vector<int>&);
+  // ALL systems setup
+  void setMatNumbers(const std::set<int>&);
 
   void setImp(const std::string&,const int,const double);
   void setEMF(const std::string&,const int,const double,const double);

@@ -3,7 +3,7 @@
  
  * File:   weights/weightManager.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -235,7 +235,7 @@ weightManager::writePHITS(std::ostream& OX) const
           const std::vector<double>& Evec=wf.second->getEnergy();
 
           OX<<"  part = "
-	    <<PConv.phitsType(wf.second->getParticle())
+	    <<PConv.nameToPHITS(wf.second->getParticle())
 	    <<std::endl;
 
           OX<<"  eng = "<<Evec.size()<<std::endl;

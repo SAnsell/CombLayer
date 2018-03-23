@@ -129,7 +129,7 @@ bool
 cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 			   std::vector<std::tuple<int,int>>& initCell,
 			   std::vector<std::array<double,N>>& outData) const
-  /*!
+/*!
     Process ranges to find for value
     \param cellN :: Cell vlaues
     \param initCell :: initialization range
@@ -140,7 +140,8 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
   typedef std::tuple<int,int> TITEM;
   initCell.clear();
   outData.clear();
-  
+
+    
   if (dataMap.empty() || cellN.empty()) return 0;
   
   size_t prev(0);
@@ -148,6 +149,7 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
   for(size_t i=0;i<cellN.size();i++)
     {
       const int CN=cellN[i];
+	
       typename dataTYPE::const_iterator mc=dataMap.find(CN);
       if (mc==dataMap.end())
 	{
@@ -248,14 +250,14 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 
   if (cellSplit(cellN,Bgroup,Bdata))
     {
-
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
-      std::vector<std::string> SArray(4);
+      std::vector<std::string> SArray(3+N);
       SArray[0]=std::to_string(whatValue);
       for(size_t index=0;index<Bgroup.size();index++)
 	{
 	  const TITEM& tc(Bgroup[index]);
 	  const valTYPE& dArray(Bdata[index]);
+      
 
 	  SArray[1]="R"+std::to_string(std::get<0>(tc));
 	  SArray[2]="R"+std::to_string(std::get<1>(tc));
@@ -273,6 +275,9 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	      else
 		cx<<UC<<" ";
 	    }
+	  if (N==2)
+	    ELog::EM<<"CELL Split == "<<cx.str()<<ELog::endDiag;
+
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
     }

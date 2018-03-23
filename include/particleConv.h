@@ -35,14 +35,16 @@ struct pName
   const std::string mcnpName;         ///< MCNP [single character]
   const int mcnpITYP;                 ///< MCNP particle number
   const std::string flukaName;        ///< FLUKA word name
+  const int flukaITYP;                ///< iTyp number from fluka
   const std::string phitsName;        ///< PHITS word name 
   const int phitsITYP;                ///< iTyp number from phits
   const int mcplNumber;               ///< MCPL number
   const int nucleon;                  ///< number of nucleons
   
-  pName(const std::string&,const int,const std::string&,
-	const std::string&,const int,const int,
-	const int );
+  pName(const std::string&,const int,
+	const std::string&,const int,
+	const std::string&,const int,
+	const int,const int);
 
   pName(const pName&);
   ~pName() {}          ///< Destructor
@@ -60,39 +62,60 @@ struct pName
 class particleConv
 {
  private:
-  
-  std::map<std::string,pName> indexLookup;      ///< lookup via mcnpName
+
+  std::vector<pName> particleVec;               ///< Particle vector
+  std::map<std::string,size_t> mcnpIndex;       ///< mcnp  index
+  std::map<std::string,size_t> flukaIndex;      ///< fluka Index
+  std::map<std::string,size_t> phitsIndex;      ///< phits index
 
   particleConv();  
   particleConv(const particleConv&);
   particleConv& operator=(const particleConv&);
 
-  const pName& getPItem(const std::string&) const;
-  const pName& getMCNPitypePItem(const int) const;
-  const pName& getPHITSPItem(const std::string&) const;
-  const pName& getFLUKAPItem(const std::string&) const;
+  size_t getMCNPIndex(const int) const;
+  size_t getPHITSIndex(const int) const;
+  size_t getFLUKAIndex(const int) const;
+
+  const pName& getMCNPpItem(const std::string&) const;
+  const pName& getPHITSpItem(const std::string&) const;
+  const pName& getFLUKApItem(const std::string&) const;
+
+  size_t getMCNPIndex(const std::string&) const;
+  size_t getPHITSIndex(const std::string&) const;
+  size_t getFLUKAIndex(const std::string&) const;
+
+  size_t getNameIndex(const std::string&) const;
+  const pName& getNamePItem(const std::string&) const;
+
   
  public:
 
   static const particleConv& Instance();
   
-  const std::string& phitsType(const char) const;
-  int phitsITYP(const char) const;
-  int nucleon(const char) const;
+  /* const std::string& phitsType(const char) const; */
+  /* int phitsITYP(const char) const; */
+  /* int nucleon(const char) const; */
 
-  const std::string& phitsType(const std::string&) const;
-  int phitsITYP(const std::string&) const;
+  //  const std::string& phitsType(const std::string&) const;
+
   int nucleon(const std::string&) const;
-
   int mcnpITYP(const std::string&) const;
+  int flukaITYP(const std::string&) const;
+  int phitsITYP(const std::string&) const;
+  //  int flukaITYP(const std::string&) const;
+  //  int phitsITYP(const std::string&) const;
 
-  bool hasFlukaName(const std::string&) const;
+
+  bool hasName(const std::string&) const;
+
+  const std::string& nameToPHITS(const std::string&) const;
+  const std::string& nameToFLUKA(const std::string&) const;
   
-  const std::string& mcnpToPHITS(const int) const;
-  const std::string& mcnpToFluka(const int) const;
+  const std::string& mcnpToFLUKA(const int) const;
+  //  const std::string& mcnpToFluka(const int) const;
 
 };
-
+ 
 
 
 #endif 

@@ -212,7 +212,7 @@ SourceBase::setParticle(const int T)
     \param T :: index
   */
 {
-  particleType=particleConv::Instance().mcnpToPHITS(T);
+  particleType=particleConv::Instance().mcnpToFLUKA(T);
   return;
 }
   

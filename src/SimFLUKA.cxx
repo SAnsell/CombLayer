@@ -188,7 +188,23 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
   FTItem.emplace(fOutput,TI.clone());
   return;
 }
-  
+
+void
+SimFLUKA::processActiveMaterials() const
+  /*!
+    Set materials as active in DBMaterai Database
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
+  ELog::EM<<"ASDFSADF"<<ELog::endDiag;
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+  OTYPE::const_iterator mp;
+  for(mp=OList.begin();mp!=OList.end();mp++)
+    DB.setActive(mp->second->getMat());
+  return;
+}
+
 
 void
 SimFLUKA::writeTally(std::ostream& OX) const
@@ -489,8 +505,13 @@ SimFLUKA::prepareWrite()
    */
 {
   ELog::RegMethod RegA("","prepareWrite");
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();  
   Simulation::prepareWrite();
+
   PhysPtr->setCellNumbers(cellOutOrder);
+  PhysPtr->setMatNumbers(DB.getActive());
+
   return;
 }
 

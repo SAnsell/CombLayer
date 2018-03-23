@@ -97,7 +97,7 @@ class SimFLUKA : public Simulation
   /// no write variable
   void setNoVariables() { writeVariable=0; }
   void setForCinder();
-
+  void processActiveMaterials() const;
   
   virtual void write(const std::string&) const;
 

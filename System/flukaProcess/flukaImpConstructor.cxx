@@ -156,9 +156,10 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
   const double V2=IParam.getValueError<double>
     ("wEMF",setIndex,2,"No value[2] for wEMF ");
   
-  
   if (material=="All" || material=="all")
     {
+      ELog::EM<<"MAT == "<<material<<ELog::endDiag;
+      ELog::EM<<"Active size == "<<activeMat.size()<<ELog::endDiag;
       for(const int MN : activeMat)
 	PC.setEMF("emfcut",MN,V1,V2);
       return;
