@@ -568,7 +568,6 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   
   ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
   SimMCPtr->prepareWrite();
-  SimMCPtr->write("testCE1.x");
 
   // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);

@@ -368,7 +368,7 @@ particleConv::mcnpToFLUKA(const int ID) const
     \param ID :: MCNP ID
   */
 {
-  const size_t index=getFLUKAIndex(ID);
+  const size_t index=getMCNPIndex(ID);
   if (!index)
     throw ColErr::InContainerError<int>(ID,"ID no in particleDataBase");
   return particleVec[index-1].flukaName;

@@ -630,7 +630,6 @@ DBMaterial::setActive(const int M)
     \param M :: Material number
    */
 {
-  ELog::EM<<"CALL "<<ELog::endErr;
   active.insert(M);
   return;
 }
