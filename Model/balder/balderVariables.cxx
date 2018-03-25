@@ -168,6 +168,7 @@ monoVariables(FuncDataBase& Control,
   Control.addVariable("BalderMonoVacRingWidth",21.5);
   Control.addVariable("BalderMonoVacOutWidth",16.5);
   Control.addVariable("BalderMonoVacWallThick",1.0);
+
   Control.addVariable("BalderMonoVacDoorThick",2.54);
   Control.addVariable("BalderMonoVacBackThick",2.54);
   Control.addVariable("BalderMonoVacDoorFlangeRad",4.0);
@@ -404,7 +405,16 @@ opticsVariables(FuncDataBase& Control)
   PItemGen.generatePort(Control,nameView+"2",-YAxis*2.0,ZAxis);
   PItemGen.generatePort(Control,nameView+"3",-YAxis*2.0,
 			Geometry::Vec3D(1,-1,0));
-    
+
+
+  // centre of mid point
+  const std::string fname="BalderViewMount"+std::to_string(0);      
+  const int upFlag(1);
+  FlangeGen.setCF<setVariable::CF40>();
+  FlangeGen.generateMount(Control,fname,upFlag);  // in beam
+
+
+  
   // small flange bellows
   BellowGen.setCF<setVariable::CF63>(); 
   BellowGen.setAFlangeCF<setVariable::CF100>(); 

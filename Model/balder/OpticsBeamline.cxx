@@ -143,12 +143,18 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // can this be in an initializer??
+  // can these be in the initializer??
   for(size_t i=0;i<4;i++)
     {
       filters[i]=std::make_shared<xraySystem::FlangeMount>
 	(newName+"Filter"+std::to_string(i));
       OR.addObject(filters[i]);
+    }
+  for(size_t i=0;i<1;i++)
+    {
+      viewMount[i]=std::make_shared<xraySystem::FlangeMount>
+	(newName+"ViewMount"+std::to_string(i));
+      OR.addObject(viewMount[i]);
     }
   
   OR.addObject(pipeInit);
@@ -405,6 +411,15 @@ OpticsBeamline::buildObjects(Simulation& System)
   viewPipe->splitObject(System,2002,viewPipe->getCell("OuterSpace",1),
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
 
+  for(size_t i=0;i<1;i++)
+    {
+      const constructSystem::portItem& PI=viewPipe->getPort(i);
+      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",1));
+      viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
+      viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
+      viewMount[i]->setBladeCentre(PI,0);
+      viewMount[i]->createAll(System,PI,2);
+    }
 
   pipeF->addInsertCell(ContainedComp::getInsertCells());
   pipeF->setFront(*viewPipe,2);

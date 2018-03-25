@@ -156,6 +156,9 @@ class OpticsBeamline :
   /// Pipe for diamond filter
   std::shared_ptr<constructSystem::PortTube> viewPipe;
 
+  /// ViewPipe mounts
+  std::shared_ptr<xraySystem::FlangeMount> viewMount[4];
+
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeF;
 
