@@ -69,8 +69,22 @@ cellValueSet<N>::cellValueSet(const std::string& KN,const std::string& ON) :
 template<size_t N>
 cellValueSet<N>::cellValueSet(const std::string& KN,
 			      const std::string& ON,
+			      const std::string& TT) :
+  keyName(KN),outName(ON),tag(TT),whatValue(0.0)
+  /*!
+    Constructor
+    \param KN :: Indentifier
+    \param ON :: Output id for FLUKA
+    \param TT :: Tag name
+  */
+{}
+
+template<size_t N>
+cellValueSet<N>::cellValueSet(const std::string& KN,
+			      const std::string& ON,
+			      const std::string& TT,
 			      const double WValue) :
-  keyName(KN),outName(ON),whatValue(WValue)
+  keyName(KN),outName(ON),tag(TT),whatValue(WValue)
   /*!
     Constructor
     \param KN :: Indentifier
@@ -82,7 +96,8 @@ cellValueSet<N>::cellValueSet(const std::string& KN,
 
 template<size_t N>
 cellValueSet<N>::cellValueSet(const cellValueSet& A) : 
-  keyName(A.keyName),outName(A.outName),whatValue(A.whatValue)
+  keyName(A.keyName),outName(A.outName),tag(A.tag),
+  whatValue(A.whatValue)
   /*!
     Copy constructor
     \param A :: cellValueSet to copy
@@ -197,6 +212,19 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 
 template<size_t N>
 void
+cellValueSet<N>::setValues(const int cN)
+  /*!
+    Set a value in the map
+    \param cN :: Cell number   
+  */
+{
+  valTYPE A;
+  dataMap.emplace(cN,A);
+  return;
+}
+
+template<size_t N>
+void
 cellValueSet<N>::setValues(const int cN,const double V)
   /*!
     Set a value in the map
@@ -230,6 +258,26 @@ cellValueSet<N>::setValues(const int cN,const double V,
 
 template<size_t N>
 void
+cellValueSet<N>::setValues(const int cN,const double V,
+			   const double V2,const double V3)
+  /*!
+    Set a value in the map
+    \param cN :: Cell number   
+    \param V :: value for cell
+    \param V2 :: value for cell
+    \param V3 :: value for cell
+  */
+{
+  valTYPE A;
+  A[0]=V;
+  A[1]=V2;
+  A[2]=V3;
+  dataMap.emplace(cN,A);
+  return;
+}
+
+template<size_t N>
+void
 cellValueSet<N>::writeFLUKA(std::ostream& OX,
 			 const std::vector<int>& cellN,
 			 const std::string& ControlStr) const 
@@ -253,31 +301,35 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
       SArray[0]=std::to_string(whatValue);
+
       for(size_t index=0;index<Bgroup.size();index++)
 	{
 	  const TITEM& tc(Bgroup[index]);
 	  const valTYPE& dArray(Bdata[index]);
       
 
-	  SArray[1]="R"+std::to_string(std::get<0>(tc));
-	  SArray[2]="R"+std::to_string(std::get<1>(tc));
+	  SArray[1]=std::to_string(std::get<0>(tc));
+	  SArray[2]=std::to_string(std::get<1>(tc));
 	  for(size_t i=0;i<N;i++)
 	    SArray[3+i]=std::to_string(dArray[i]);
 	  cx.str("");
 	  cx<<outName<<" ";
+
 	  for(const std::string& UC : Units)
 	    {
-	      if (UC[0]=='%' && UC.size()==2)
+	      if (UC.size()==2 &&
+		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
 		{
-		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % N+3); 
-		  cx<<SArray[SA]<<" ";
+		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+3));
+		  if (UC[0]=='%')
+		    cx<<SArray[SA]<<" ";
+		  else if (UC[0]=='M' || UC[0]=='R')
+		    cx<<UC[0]<<SArray[SA]<<" ";
 		}
 	      else
 		cx<<UC<<" ";
 	    }
-	  if (N==2)
-	    ELog::EM<<"CELL Split == "<<cx.str()<<ELog::endDiag;
-
+	  cx<<tag;
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
     }
@@ -285,8 +337,10 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 }
 
 ///\cond TEMPLATE
+template class cellValueSet<0>;
 template class cellValueSet<1>;
 template class cellValueSet<2>;
+template class cellValueSet<3>;
 ///\endcond TEMPLATE
   
 } // NAMESPACE flukaSystem

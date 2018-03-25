@@ -65,7 +65,7 @@ flukaNum(const long int I)
   const double D=static_cast<double>(I);
   if (D > 1e8 || D < -1e7)
     return (FMTlnum % D).str();
-  
+
   return (FMTnum % D).str();
 }
 

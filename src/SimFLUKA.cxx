@@ -196,7 +196,7 @@ SimFLUKA::processActiveMaterials() const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
-  ELog::EM<<"ASDFSADF"<<ELog::endDiag;
+
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
   OTYPE::const_iterator mp;
@@ -534,7 +534,8 @@ SimFLUKA::write(const std::string& Fname) const
       ELog::EM<<"See the GLOBAL card documentation"<<ELog::endCrit;
     }
 
-  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells),OX);
+  // cell/names(not numbers)/free geometry
+  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells)+" - 1.0 1.0",OX);
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
     <<std::endl;

@@ -102,6 +102,11 @@ makeBalder::makeBalder() :
   frontEnd(new FrontEndCave("BalderFrontEnd")),
   wigglerBox(new constructSystem::VacuumBox("BalderWigglerBox",1)),
   wiggler(new Wiggler("BalderWiggler")),
+  dipolePipe(new constructSystem::VacuumPipe("BalderDipolePipe")),
+  collTubeA(new constructSystem::PortTube("BalderCollimatorTubeA")),
+  collABPipe(new constructSystem::VacuumPipe("BalderCollABPipe")),
+  collTubeB(new constructSystem::PortTube("BalderCollimatorTubeB")),
+  flightPipe(new constructSystem::VacuumPipe("BalderFlightPipe")),
   joinPipe(new constructSystem::VacuumPipe("BalderJoinPipe")),
   opticsHut(new OpticsHutch("BalderOptics")),
   opticsBeam(new OpticsBeamline("Balder")),
@@ -119,7 +124,13 @@ makeBalder::makeBalder() :
   OR.addObject(frontEnd);
   OR.addObject(wigglerBox);
   OR.addObject(wiggler);
+  OR.addObject(dipolePipe);
+  OR.addObject(collTubeA);
+  OR.addObject(collABPipe);
+  OR.addObject(collTubeB);
+  OR.addObject(flightPipe);
   OR.addObject(joinPipe);
+  
   OR.addObject(opticsHut);
   OR.addObject(joinPipeB);
   OR.addObject(joinPipeC);
@@ -149,11 +160,32 @@ makeBalder::build(Simulation& System,
   frontEnd->addInsertCell(voidCell);
   frontEnd->createAll(System,World::masterOrigin(),0);
 
+
   wigglerBox->addInsertCell(frontEnd->getCell("Void"));
-  wigglerBox->createAll(System,*frontEnd,0);
+  wigglerBox->createAll(System,*frontEnd,-1);
 
   wiggler->addInsertCell(wigglerBox->getCell("Void"));
   wiggler->createAll(System,*wigglerBox,0);
+
+  dipolePipe->addInsertCell(frontEnd->getCell("Void"));
+  dipolePipe->setFront(*wigglerBox,2);
+  dipolePipe->createAll(System,*wigglerBox,2);
+
+  collTubeA->addInsertCell(frontEnd->getCell("Void"));
+  collTubeA->setFront(*dipolePipe,2);
+  collTubeA->createAll(System,*dipolePipe,2);
+
+  collABPipe->addInsertCell(frontEnd->getCell("Void"));
+  collABPipe->setFront(*collTubeA,2);
+  collABPipe->createAll(System,*collTubeA,2);
+
+  collTubeB->addInsertCell(frontEnd->getCell("Void"));
+  collTubeB->setFront(*collABPipe,2);
+  collTubeB->createAll(System,*collABPipe,2);
+
+  flightPipe->addInsertCell(frontEnd->getCell("Void"));
+  flightPipe->setFront(*collTubeB,2);
+  flightPipe->createAll(System,*collTubeB,2);
 
   opticsHut->addInsertCell(voidCell);
   opticsHut->createAll(System,*frontEnd,2);
@@ -162,10 +194,10 @@ makeBalder::build(Simulation& System,
   joinPipe->addInsertCell(frontEnd->getCell("FrontWallHole"));
   joinPipe->addInsertCell(opticsHut->getCell("Void"));
   joinPipe->setPrimaryCell(opticsHut->getCell("Void"));
-  joinPipe->setFront(*wigglerBox,2);
+  joinPipe->setFront(*flightPipe,2);
   joinPipe->setSpaceLinkCopy(0,*opticsHut,1);
   joinPipe->registerSpaceCut(0,2);
-  joinPipe->createAll(System,*wigglerBox,2);
+  joinPipe->createAll(System,*flightPipe,2);
 
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);

@@ -79,7 +79,17 @@ class makeBalder
   std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
   /// Wiggler in vacuum box
   std::shared_ptr<Wiggler> wiggler;
+  /// dipole connection pipe
+  std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
+  /// box for collimator
+  std::shared_ptr<constructSystem::PortTube> collTubeA;
+  /// dipole connection pipe
+  std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
+  /// box for collimator
+  std::shared_ptr<constructSystem::PortTube> collTubeB;
 
+  /// Pipe from collimator B to join pipe
+  std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 

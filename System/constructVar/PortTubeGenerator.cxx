@@ -337,12 +337,15 @@ PortTubeGenerator::generateTube(FuncDataBase& Control,
   template void PortTubeGenerator::setCF<CF40>();
   template void PortTubeGenerator::setCF<CF63>();
   template void PortTubeGenerator::setCF<CF100>();
+  template void PortTubeGenerator::setCF<CF120>();
   template void PortTubeGenerator::setAPortCF<CF40>();
   template void PortTubeGenerator::setAPortCF<CF63>();
   template void PortTubeGenerator::setAPortCF<CF100>();
+  template void PortTubeGenerator::setAPortCF<CF120>();
   template void PortTubeGenerator::setBPortCF<CF40>();
   template void PortTubeGenerator::setBPortCF<CF63>();
   template void PortTubeGenerator::setBPortCF<CF100>();
+  template void PortTubeGenerator::setBPortCF<CF120>();
   
 ///\endcond TEMPLATE
 

@@ -45,7 +45,9 @@ class cellValueSet
  
   const std::string keyName;               ///< Key name
   const std::string outName;               ///< Output name for FLUKA
-  double whatValue;                        ///< What [1] value 
+  const std::string tag;                   ///< Tag name
+  double whatValue;                        ///< What [1] value
+
   
   dataTYPE dataMap;   ///< Values for cell
 
@@ -56,7 +58,10 @@ class cellValueSet
  public:
 
   cellValueSet(const std::string&,const std::string&);
-  cellValueSet(const std::string&,const std::string&,const double);
+  cellValueSet(const std::string&,const std::string&,const std::string&);
+  cellValueSet(const std::string&,const std::string&,
+	       const std::string&,const double);
+
   cellValueSet(const cellValueSet&);
   cellValueSet& operator=(const cellValueSet&);
   virtual ~cellValueSet();
@@ -64,6 +69,7 @@ class cellValueSet
   void clearAll();
 
   void setValue(const int,const size_t,const double);
+  void setValues(const int);    
   void setValues(const int,const double);    
   void setValues(const int,const double,const double);
   void setValues(const int,const double,const double,const double);

@@ -58,15 +58,38 @@ namespace flukaSystem
 {
 		       
 flukaPhysics::flukaPhysics() :
+  flagValue({
+      { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","",1.0) }
+    }),
+
   impValue({
-      { "all",      cellValueSet<1>("all","BIAS",0.0) },
-      { "hadron",   cellValueSet<1>("hadron","BIAS",1.0) },
-      { "electron", cellValueSet<1>("electron","BIAS",2.0) },
-      { "low",      cellValueSet<1>("low","BIAS",3.0) }
+      { "all",      cellValueSet<1>("all","BIAS","",0.0) },
+      { "hadron",   cellValueSet<1>("hadron","BIAS","",1.0) },
+      { "electron", cellValueSet<1>("electron","BIAS","",2.0) },
+      { "low",      cellValueSet<1>("low","BIAS","",3.0) }
     }),
 
   emfFlag({
-      { "emfcut",   cellValueSet<2>("emfcut","EMFCUT",0.005) }  // GeV
+      { "emfcut",     cellValueSet<2>("emfcut","EMFCUT","") },
+      { "prodcut",    cellValueSet<2>("prodcut","EMFCUT","PROD-CUT") },
+      { "elpothr",    cellValueSet<2>("elpothr","EMFCUT","ELPO-THR") },
+      { "pairbrem",   cellValueSet<2>("pairbrem","PAIRBREM","",3.0) } 
+    }),
+
+  threeFlag({
+      { "elpothr",    cellValueSet<3>("elpothr","EMFCUT","ELPO-THR") }
+    }),
+
+  formatMap({
+      { "all", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
+      { "hadron", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
+      { "electron", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
+      { "low", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
+      { "emfcut", unitTYPE(0," %3 %4 0.0 R1 R2 ") },
+      { "prodcut", unitTYPE(1," %3 %4 1.0 M1 M2 1.0") },
+      { "elpothr", unitTYPE(1," %3 %4 %5 M1 M2 1.0") },
+      { "pairbrem", unitTYPE(1,"%0 %3 %4 M1 M2 1.0") },
+      { "photonuc", unitTYPE(1,"%0 - - M1 M2 1.0 ") }
     })
   /*!
     Constructor
@@ -74,8 +97,11 @@ flukaPhysics::flukaPhysics() :
 {}
 
 flukaPhysics::flukaPhysics(const flukaPhysics& A) : 
-  cellN(A.cellN),matN(A.matN),impValue(A.impValue),
-  emfFlag(A.emfFlag)
+  cellVec(A.cellVec),matVec(A.matVec),
+  flagValue(A.flagValue),impValue(A.impValue),
+  emfFlag(A.emfFlag),threeFlag(A.threeFlag),
+  formatMap(A.formatMap)
+  
   /*!
     Copy constructor
     \param A :: flukaPhysics to copy
@@ -92,10 +118,13 @@ flukaPhysics::operator=(const flukaPhysics& A)
 {
   if (this!=&A)
     {
-      cellN=A.cellN;
-      matN=A.matN;
+      cellVec=A.cellVec;      
+      matVec=A.matVec;
+      flagValue=A.flagValue;
       impValue=A.impValue;
       emfFlag=A.emfFlag;
+      threeFlag=A.threeFlag;
+      formatMap=A.formatMap;
     }
   return *this;
 }
@@ -115,12 +144,19 @@ flukaPhysics::clearAll()
     The big reset
   */
 {
-  cellN.clear();
+  cellVec.clear();
+  matVec.clear();
+  for(std::map<std::string,cellValueSet<0>>::value_type& mc : flagValue)
+    mc.second.clearAll();
+
   for(std::map<std::string,cellValueSet<1>>::value_type& mc : impValue)
     mc.second.clearAll();
 
-  matN.clear();
+
   for(std::map<std::string,cellValueSet<2>>::value_type& mc : emfFlag)
+    mc.second.clearAll();
+
+  for(std::map<std::string,cellValueSet<3>>::value_type& mc : threeFlag)
     mc.second.clearAll();
   
   return;
@@ -138,7 +174,7 @@ flukaPhysics::setCellNumbers(const std::vector<int>& cellInfo)
 {
   ELog::RegMethod RegA("flukaPhysics","setCellNumbers");
 
-  cellN=cellInfo;
+  cellVec=cellInfo;
   return;
 }
 
@@ -152,9 +188,31 @@ flukaPhysics::setMatNumbers(const std::set<int>& matInfo)
 {
   ELog::RegMethod RegA("flukaPhysics","setCellNumbers");
 
-  matN.assign(matInfo.begin(),matInfo.end());
+  matVec.assign(matInfo.begin(),matInfo.end());
   return;
 }
+
+void
+flukaPhysics::setFlag(const std::string& keyName,
+		      const int cellID)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param cellID :: Cell number
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setFlag");
+  
+  std::map<std::string,cellValueSet<0>>::iterator mc=
+    flagValue.find(keyName);
+  if (mc==flagValue.end())
+    throw ColErr::InContainerError<std::string>(keyName,"flagValue");
+
+  mc->second.setValues(cellID);
+  return;
+}
+
+
   
 void
 flukaPhysics::setImp(const std::string& keyName,
@@ -180,24 +238,53 @@ flukaPhysics::setImp(const std::string& keyName,
 
 void
 flukaPhysics::setEMF(const std::string& keyName,
-		     const int matN,
-		     const double electronThres,
-		     const double electronValue)
+		     const int cellNumber,
+		     const double electronCut,
+		     const double photonCut)
   /*!
     Set the importance list
     \param keyName :: all/hadron/electron/low
-    \param cellN :: Cell number
-    \param value :: Value to use
+    \param cellNumber :: Cell number
+    \param electronCut :: Electron cut values
+    \param photonCut :: Electron cut values
   */
 {
   ELog::RegMethod RegA("flukaPhysics","setEMF");
   
   std::map<std::string,cellValueSet<2>>::iterator mc=
     emfFlag.find(keyName);
-  if (mc==emfFlag.end())
-    throw ColErr::InContainerError<std::string>(keyName,"emfValue");
 
-  mc->second.setValues(matN,electronThres,electronValue);
+  if (mc==emfFlag.end())
+    throw ColErr::InContainerError<std::string>(keyName,"keyName");
+
+  mc->second.setValues(cellNumber,electronCut,photonCut);
+  return;
+}
+
+void
+flukaPhysics::setTHR(const std::string& keyName,
+		     const int cellNumber,
+		     const double V1,
+		     const double V2,
+		     const double V3)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param cellNumber :: Cell number
+    \param V1 :: Electron cut values
+    \param V2 :: photon cut values
+    \param V3 :: some cut values
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setTHR");
+  
+  std::map<std::string,cellValueSet<3>>::iterator mc=
+    threeFlag.find(keyName);
+
+  if (mc==threeFlag.end())
+    throw ColErr::InContainerError<std::string>(keyName,"keyName");
+
+  mc->second.setValues(cellNumber,V1,V2,V3);
   return;
 }
 
@@ -208,14 +295,55 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
  */
 {
-  for(const std::map<std::string,cellValueSet<1>>::value_type& mc : impValue)
-    mc.second.writeFLUKA(OX,cellN," %0 1.0 %3 %1 %2 1.0 ");
+  typedef std::map<std::string,unitTYPE> FMAP;
+  
+  for(const std::map<std::string,cellValueSet<0>>::value_type& flagV : flagValue)
+    {
+      FMAP::const_iterator mc=formatMap.find(flagV.first);
+      const bool materialFlag(std::get<0>(mc->second));
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      if (!materialFlag)  // cell
+	flagV.second.writeFLUKA(OX,cellVec,fmtSTR);
+      else
+	flagV.second.writeFLUKA(OX,matVec,fmtSTR);
+    }
 
+  for(const std::map<std::string,cellValueSet<1>>::value_type& impV : impValue)
+    {
+      FMAP::const_iterator mc=formatMap.find(impV.first);
+      const bool materialFlag(std::get<0>(mc->second));
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      if (!materialFlag)  // cell
+	impV.second.writeFLUKA(OX,cellVec,fmtSTR);
+      else
+	impV.second.writeFLUKA(OX,matVec,fmtSTR);
 
-  for(const std::map<std::string,cellValueSet<2>>::value_type& mc : emfFlag)
-    mc.second.writeFLUKA(OX,matN," %0 1.0 %3 %1 %2 1.0 ");
+    }
 
-  ELog::EM<<"Finish "<<ELog::endDiag;
+  for(const std::map<std::string,cellValueSet<2>>::value_type& empV : emfFlag)
+    {
+      FMAP::const_iterator mc=formatMap.find(empV.first);
+      const bool flag(std::get<0>(mc->second));
+      const std::string& fmtSTR(std::get<1>(mc->second));
+
+      if (!flag)  // cell
+	empV.second.writeFLUKA(OX,cellVec,fmtSTR);
+      else       // mat
+	empV.second.writeFLUKA(OX,matVec,fmtSTR);
+    }
+
+  for(const std::map<std::string,cellValueSet<3>>::value_type& thrV : threeFlag)
+    {
+      FMAP::const_iterator mc=formatMap.find(thrV.first);
+      const bool flag(std::get<0>(mc->second));
+      const std::string& fmtSTR(std::get<1>(mc->second));
+
+      if (!flag)  // cell
+	thrV.second.writeFLUKA(OX,cellVec,fmtSTR);
+      else       // mat
+	thrV.second.writeFLUKA(OX,matVec,fmtSTR);
+    }
+ELog::EM<<"Finish "<<ELog::endDiag;
   return;
 }
 

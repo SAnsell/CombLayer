@@ -350,12 +350,15 @@ PipeGenerator::generatePipe(FuncDataBase& Control,const std::string& keyName,
   template void PipeGenerator::setCF<CF40>();
   template void PipeGenerator::setCF<CF63>();
   template void PipeGenerator::setCF<CF100>();
+  template void PipeGenerator::setCF<CF120>();
   template void PipeGenerator::setAFlangeCF<CF40>();
   template void PipeGenerator::setAFlangeCF<CF63>();
   template void PipeGenerator::setAFlangeCF<CF100>();
+  template void PipeGenerator::setAFlangeCF<CF120>();
   template void PipeGenerator::setBFlangeCF<CF40>();
   template void PipeGenerator::setBFlangeCF<CF63>();
   template void PipeGenerator::setBFlangeCF<CF100>();
+  template void PipeGenerator::setBFlangeCF<CF120>();
   
 ///\endcond TEMPLATE
 

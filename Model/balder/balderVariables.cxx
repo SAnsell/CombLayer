@@ -73,14 +73,19 @@ frontEndVariables(FuncDataBase& Control,
   */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontEndVariables");
+
+  setVariable::PipeGenerator PipeGen;
+  setVariable::PortTubeGenerator PTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
   
+  PipeGen.setWindow(-2.0,0.0);   // no window
+
   Control.addVariable("BalderFrontEndWallYStep",YStep);
-  Control.addVariable("BalderFrontEndFrontWallThick",60.0);
+  Control.addVariable("BalderFrontEndFrontWallThick",160.0);
   
-  Control.addVariable("BalderFrontEndLength",200.0);
+  Control.addVariable("BalderFrontEndLength",2100.0);
   Control.addVariable("BalderFrontEndRingGap",75.0);
-  Control.addVariable("BalderFrontEndRingRadius",400.0);
+  Control.addVariable("BalderFrontEndRingRadius",4000.0);
   Control.addVariable("BalderFrontEndRingThick",80.0);
 
   Control.addVariable("BalderFrontEndOuterGap",75.0);
@@ -102,15 +107,15 @@ frontEndVariables(FuncDataBase& Control,
 
   VBoxGen.setMat("Stainless304");
   VBoxGen.setWallThick(1.0);
-  VBoxGen.setCF<CF63>();
+  VBoxGen.setCF<CF120>();
   VBoxGen.setPortLength(5.0,5.0); // La/Lb
   // ystep/width/height/depth/length
-  VBoxGen.generateBox(Control,"BalderWigglerBox",0.0,30.0,15.0,15.0,160.0);
-
+  VBoxGen.generateBox(Control,"BalderWigglerBox",
+		      110.0,30.0,15.0,15.0,210.0);
 
   // Wiggler
-  Control.addVariable("BalderWigglerLength",150.0);
-  Control.addVariable("BalderWigglerBlockWidth",10.0);
+  Control.addVariable("BalderWigglerLength",200.0);
+  Control.addVariable("BalderWigglerBlockWidth",8.0);
   Control.addVariable("BalderWigglerBlockHeight",8.0);
   Control.addVariable("BalderWigglerBlockDepth",8.0);
   Control.addVariable("BalderWigglerBlockHGap",0.2);
@@ -122,7 +127,27 @@ frontEndVariables(FuncDataBase& Control,
   
   Control.addVariable("BalderWigglerVoidMat",0);
   Control.addVariable("BalderWigglerBlockMat","Iron_10H2O");
-	
+
+  PipeGen.setCF<CF120>();
+  PipeGen.generatePipe(Control,"BalderDipolePipe",0,700.0);
+  
+  PTubeGen.setMat("Stainless304");
+  PTubeGen.setWallThick(1.0);
+  PTubeGen.setCF<CF120>();
+  PTubeGen.setPortLength(5.0,5.0); // La/Lb
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,"BalderCollimatorTubeA",
+		       0.0,30.0,200.0);
+  Control.addVariable("BalderCollimatorTubeANPorts",0);
+
+  PipeGen.setCF<CF120>();
+  PipeGen.generatePipe(Control,"BalderCollABPipe",0,400.0);
+
+
+  // ystep/width/height/depth/length
+  PTubeGen.generateTube(Control,"BalderCollimatorTubeB",
+		       0.0,30.0,200.0);
+  Control.addVariable("BalderCollimatorTubeBNPorts",0);
 
   return;
 }
@@ -501,11 +526,16 @@ balderVariables(FuncDataBase& Control)
   Control.addVariable("BalderOpticsHoleZStep",5.0);
   Control.addVariable("BalderOpticsHoleRadius",7.0);
 
-  frontEndVariables(Control,100.0);  // Set to middle
+  frontEndVariables(Control,500.0);  // Set to middle
+
+  PipeGen.setMat("Stainless304");
+  PipeGen.setCF<setVariable::CF120>(); // was 2cm (why?)
+  PipeGen.generatePipe(Control,"BalderFlightPipe",0,325.0);
 
   PipeGen.setMat("Stainless304");
   PipeGen.setCF<setVariable::CF63>(); // was 2cm (why?)
-  PipeGen.generatePipe(Control,"BalderJoinPipe",0,88.0);
+  PipeGen.setAFlangeCF<setVariable::CF120>(); 
+  PipeGen.generatePipe(Control,"BalderJoinPipe",0,195.0);
   
   opticsVariables(Control);
 
