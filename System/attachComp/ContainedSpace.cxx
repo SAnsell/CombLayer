@@ -77,7 +77,8 @@ namespace attachSystem
 
 ContainedSpace::ContainedSpace()  :
   ContainedComp(),active(0),noPrimaryInsert(0),
-  nDirection(8),primaryCell(0),buildCell(0),LCutters(2)
+  nDirection(8),instepFrac(0.05),
+  primaryCell(0),buildCell(0),LCutters(2)
   /*!
     Constructor 
   */
@@ -86,7 +87,8 @@ ContainedSpace::ContainedSpace()  :
 ContainedSpace::ContainedSpace(const ContainedSpace& A) : 
   ContainedComp(A),FCName(A.FCName),active(A.active),
   noPrimaryInsert(A.noPrimaryInsert),
-  nDirection(A.nDirection),primaryCell(A.primaryCell),
+  nDirection(A.nDirection),instepFrac(A.instepFrac),
+  primaryCell(A.primaryCell),
   buildCell(0),BBox(A.BBox),LCutters(A.LCutters)
   /*!
     Copy constructor
@@ -109,6 +111,7 @@ ContainedSpace::operator=(const ContainedSpace& A)
       active=A.active;
       noPrimaryInsert=A.noPrimaryInsert;
       nDirection=A.nDirection;
+      instepFrac=A.instepFrac;
       primaryCell=A.primaryCell;
       BBox=A.BBox;
       LCutters=A.LCutters;
@@ -202,9 +205,41 @@ ContainedSpace::setSpaceLinkCopy(const size_t Index,
   return;
 }
 
+void
+ContainedSpace::setPrimaryCell(const HeadRule& objHR)
+  /*!
+    Set the primary cell AND holds CURRENT bounding box 
+    \param objHR :: HeadRule to dset
+    \param cellN :: Cell number
+   */
+{
+  ELog::RegMethod RegA("ContainedSpace","setPrimaryCell");
 
+  primaryBBox=objHR;
+  return;
+}
+
+void
+ContainedSpace::setPrimaryCell(const Simulation& System,
+			       const int cellN)
+  /*!
+    Set the primary cell AND holds CURRENT bounding box 
+    \param System :: Simulation to use for cells
+    \param cellN :: Cell number
+   */
+{
+  ELog::RegMethod RegA("ContainedSpace","setPrimaryCell");
+
+  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  if (!outerObj)
+    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+
+  primaryBBox=outerObj->getHeadRule();
+  return;
+}
+  
 HeadRule
-ContainedSpace::calcBoundary(Simulation& System,
+ContainedSpace::calcBoundary(const Simulation& System,
 			     const int cellN,
 			     const size_t NDivide,
 			     const LinkUnit& ALink,
@@ -246,7 +281,7 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
     \return HeadRule of bounding box [- link surf]
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","calcBoundary");
+  ELog::RegMethod RegA("ContainedSpace","calcBoundary(headRule)");
 
   std::set<int> linkSN;
 
@@ -335,15 +370,17 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
 }
   
 void
-ContainedSpace::calcBoundaryBox(Simulation& System)
+ContainedSpace::calcBoundaryBox(const Simulation& System)
   /*!
     Boundary calculator
-    \param System :: Simulation
+    \param System :: Simulation for objects [if needed]
   */
 {
   ELog::RegMethod RegA("ContainedSpace","calcBoundaryBox");
-  BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
-
+  if (!primaryBBox.hasRule())
+    BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
+  else 
+    BBox=calcBoundary(primaryBBox,nDirection,LCutters[0],LCutters[1]);
   return;
 }
 
@@ -391,12 +428,19 @@ ContainedSpace::buildWrapCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedSpace","buildWrapCell");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(pCell,"Primary cell does not exist");
+  MonteCarlo::Qhull* outerObj(0);
+  int matN=0;
+  double matTemp=0.0;
+  if (pCell)
+    {
+      outerObj=System.findQhull(pCell);
+      if (!outerObj)
+	throw ColErr::InContainerError<int>
+	  (pCell,"Primary cell does not exist");
+      matN=outerObj->getMat();
+      matTemp=outerObj->getTemp();
+    }
 
-  const int matN=outerObj->getMat();
-  const double matTemp=outerObj->getTemp();
 
   // First make inner vacuum
   // removeing front/back surfaces
@@ -444,6 +488,8 @@ ContainedSpace::clear()
   ABLink.second=0;
   LCutters[0]=LinkUnit();
   LCutters[1]=LinkUnit();
+  buildCell=0;
+  primaryCell=0;
   return;
 }
 
@@ -489,9 +535,8 @@ ContainedSpace::insertObjects(Simulation& System)
       
   System.populateCells();
   initialize();
-  
-
-  if (primaryCell && buildCell)
+    
+  if ((primaryCell || primaryBBox.hasRule()) && buildCell)
     {
       calcBoundaryBox(System);
       buildWrapCell(System,primaryCell,buildCell);

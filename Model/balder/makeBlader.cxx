@@ -147,7 +147,8 @@ makeBalder::build(Simulation& System,
  
   frontCave->addInsertCell(voidCell);
   frontCave->createAll(System,World::masterOrigin(),0);
-
+  const HeadRule caveVoid=frontCave->getCellHR(System,"Void");
+  
   frontBeam->addInsertCell(frontCave->getCell("Void"));
   frontBeam->createAll(System,*frontCave,-1);
 
@@ -165,11 +166,11 @@ makeBalder::build(Simulation& System,
   joinPipe->createAll(System,*frontBeam,2);
 
   joinPipe->clear();
-  joinPipe->registerSpaceCut(-1,0);
-  joinPipe->setPrimaryCell(frontCave->getCell("Void"));
-  joinPipe->setBuildCell(0);  // reinitialize
+  joinPipe->setPrimaryCell(caveVoid);
+  joinPipe->registerSpaceCut(1,0);
   joinPipe->insertObjects(System);
-  return;
+
+  System.removeCell(frontCave->getCell("Void"));
   
   opticsBeam->addInsertCell(opticsHut->getCell("Void"));
   opticsBeam->createAll(System,*joinPipe,2);
@@ -196,10 +197,10 @@ makeBalder::build(Simulation& System,
   connectZone->createAll(System,*joinPipeB,2);
 
   // horrid way to create a SECOND register space [MAKE INTERNAL]
+  joinPipeB->clear();  // reinitialize
   joinPipeB->setSpaceLinkCopy(0,*opticsHut,-2);
   joinPipeB->registerSpaceIsolation(0,2);
   joinPipeB->setPrimaryCell(connectZone->getCell("OuterVoid"));
-  joinPipeB->setBuildCell(0);  // reinitialize
   joinPipeB->insertObjects(System);
   
   joinPipeC->addInsertCell(connectZone->getCell("OuterVoid"));

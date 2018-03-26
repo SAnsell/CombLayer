@@ -301,6 +301,50 @@ CellMap::deleteCell(Simulation& System,
   return;
 }
 
+HeadRule
+CellMap::getCellsHR(const Simulation& System,
+		    const std::string& Key) const
+  /*!
+    Get the main head rules for all the cells [UNION]
+    \param System :: Simulation to get cell from 
+    \param Key :: cell key name
+   */
+
+{
+  ELog::RegMethod RegA("CellMap","getCellsHR");
+
+  HeadRule Out;
+  const std::vector<int> cells=getCells(Key);
+  for(const int cellN : cells)
+    {
+      const MonteCarlo::Object* cellObj=System.findQhull(cellN);
+      if (!cellObj)
+	throw ColErr::InContainerError<int>(cellN,"cellN on found");
+      Out.addUnion(cellObj->getHeadRule());
+    }
+  return Out;
+}
+
+const HeadRule&
+CellMap::getCellHR(const Simulation& System,
+		   const std::string& Key,
+		   const size_t Index) const
+  /*!
+    Get the main head rule for the cell
+    \param System :: Simulation to get cell from 
+    \param Key :: cell key name
+    \param Index :: index of keyname unit
+   */
+{
+  ELog::RegMethod RegA("CellMap","getCellHR");
+
+  const int cellN=getCell(Key,Index);
+  const MonteCarlo::Object* cellObj=System.findQhull(cellN);
+  if (!cellObj)
+    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+  return cellObj->getHeadRule();
+}
+  
 std::pair<int,double>
 CellMap::deleteCellWithData(Simulation& System,
 			    const std::string& Key,
