@@ -20,6 +20,7 @@
  *
  ****************************************************************************/
 #include <fstream>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -428,12 +429,11 @@ ContainedSpace::buildWrapCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedSpace","buildWrapCell");
 
-  MonteCarlo::Qhull* outerObj(0);
   int matN=0;
   double matTemp=0.0;
   if (pCell)
     {
-      outerObj=System.findQhull(pCell);
+      const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
       if (!outerObj)
 	throw ColErr::InContainerError<int>
 	  (pCell,"Primary cell does not exist");
