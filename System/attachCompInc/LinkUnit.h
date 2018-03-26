@@ -68,6 +68,8 @@ class LinkUnit
   const HeadRule& getMainRule() const;
   const HeadRule& getCommonRule() const;
 
+  /// Check is complete
+  bool isComplete() const { return ((populated & 3) == 3); }
   /// Check Axis 
   bool hasAxis() const { return (populated & 1); }
   /// Check Connection

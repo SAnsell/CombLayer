@@ -77,7 +77,8 @@ class ContainedSpace  : public ContainedComp
 		 const size_t,const LinkUnit&,
 		 const LinkUnit&);
 
-
+  void clear();
+  
   void setSpaceConnect(const size_t,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&);
   void setSpaceLinkSurf(const size_t,const int);

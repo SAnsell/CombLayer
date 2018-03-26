@@ -145,7 +145,7 @@ ContainedSpace::setSpaceConnect(const size_t Index,
 
 void
 ContainedSpace::setSpaceLinkSurf(const size_t Index,
-			    const HeadRule& HR) 
+				 const HeadRule& HR) 
   /*!
     Set a surface to output
     \param Index :: Link number
@@ -209,7 +209,7 @@ ContainedSpace::calcBoundary(Simulation& System,
 			     const size_t NDivide,
 			     const LinkUnit& ALink,
 			     const LinkUnit& BLink)
-  /*!
+/*!
     Construct a bounding box in a cell based on the 
     link surfaces
     \param System :: Simulation to use
@@ -249,23 +249,34 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
   ELog::RegMethod RegA("ContainedSpace","calcBoundary");
 
   std::set<int> linkSN;
+
   for(const LinkUnit& LU : {ALink,BLink})
     {
-      const int SN=LU.getLinkSurf();
-      linkSN.insert(SN);
+      if (LU.isComplete())
+	{
+	  const int SN=LU.getLinkSurf();
+	  linkSN.insert(SN);
+	}
     }
-
+  if (linkSN.empty())
+    throw ColErr::EmptyContainer("LinkPoints empty");
+  
   std::set<int> surfN;
   // mid points moved in by 10% of distance
-  const Geometry::Vec3D CPoint=
-    (ALink.getConnectPt()+BLink.getConnectPt())/2.0;
-  const Geometry::Vec3D& YA=ALink.getAxis();
-  const Geometry::Vec3D& YB=BLink.getAxis();
+  const Geometry::Vec3D& APoint=(ALink.isComplete()) ?
+    ALink.getConnectPt() : BLink.getConnectPt();
+  const Geometry::Vec3D& BPoint=(BLink.isComplete()) ?
+    BLink.getConnectPt() : ALink.getConnectPt();
+  const Geometry::Vec3D& YA=(ALink.isComplete()) ?
+    ALink.getAxis() : BLink.getAxis();
+  const Geometry::Vec3D& YB=(BLink.isComplete()) ?
+    BLink.getAxis() : ALink.getAxis();
+
+  const Geometry::Vec3D CPoint((APoint+BPoint)/2.0);
   const Geometry::Vec3D YY= (YA.dotProd(YB)>0.0) ?
     (YA+YB).unit() : (YB-YA).unit();
   const Geometry::Vec3D XX=YY.crossNormal();
-  const Geometry::Vec3D ZZ=YY*XX;
-  
+      const Geometry::Vec3D ZZ=YY*XX;
 
   if (!objHR.isValid(CPoint))
     {
@@ -278,8 +289,8 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
   const std::vector<Geometry::Vec3D> CP=
     {
       CPoint,
-      ALink.getConnectPt()*0.95+CPoint*0.05,
-      BLink.getConnectPt()*0.95+CPoint*0.05
+      APoint*0.95+CPoint*0.05,
+      BPoint*0.95+CPoint*0.05
     };
   for(const Geometry::Vec3D& Org : CP)
     {
@@ -295,6 +306,16 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
 	  angle+=angleStep;
 	}
     }
+  // forward going trajectory
+  if (!ALink.isComplete() || !BLink.isComplete())
+    {
+      double D;
+      const int SN=objHR.trackSurf(CPoint,-YA,D);
+      if (SN)
+	surfN.insert(-SN);
+    } 	
+
+  
   // NOW eliminate all surfaces NOT in surfN
   const std::set<int> fullSurfN=objHR.getSurfSet();
   HeadRule outBox=objHR;
@@ -322,12 +343,13 @@ ContainedSpace::calcBoundaryBox(Simulation& System)
 {
   ELog::RegMethod RegA("ContainedSpace","calcBoundaryBox");
   BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
+
   return;
 }
 
 void
-ContainedSpace::registerSpaceCut(const long int linkA,const long int linkB)
-				
+ContainedSpace::registerSpaceCut(const long int linkA,
+				 const long int linkB)
   /*!
     Register the surface space
     \param linkA :: Signed link point
@@ -384,15 +406,21 @@ ContainedSpace::buildWrapCell(Simulation& System,
   HeadRule innerVacuum(outerSurf);
   for(const LinkUnit& LU : LCutters)
     {
-      const int SN=LU.getLinkSurf();
-      innerVacuum.removeItems(-SN);
-      outerCut.addIntersection(-SN);
+      if (LU.isComplete())
+	{
+	  const int SN=LU.getLinkSurf();
+	  innerVacuum.removeItems(-SN);
+	  outerCut.addIntersection(-SN);
+	}
     }
 
   // Make new outer void
   HeadRule newOuterVoid(BBox);
   for(const LinkUnit& LU : LCutters)
-    newOuterVoid.addIntersection(-LU.getLinkSurf());
+    {
+      if (LU.isComplete())
+	newOuterVoid.addIntersection(-LU.getLinkSurf());
+    }
 
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
@@ -403,6 +431,19 @@ ContainedSpace::buildWrapCell(Simulation& System,
     CMapPtr->addCell("OuterSpace",cCell);
 
   
+  return;
+}
+
+void
+ContainedSpace::clear()
+  /*!
+    Reset link units
+   */
+{
+  ABLink.first=0;
+  ABLink.second=0;
+  LCutters[0]=LinkUnit();
+  LCutters[1]=LinkUnit();
   return;
 }
 
