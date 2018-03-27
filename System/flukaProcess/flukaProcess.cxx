@@ -143,6 +143,8 @@ getActiveCell(const std::string& cell)
   if (Cells.empty())
     throw ColErr::InContainerError<std::string>(cell,"Empty cell");
   std::set<int> activeCell(Cells.begin(),Cells.end());
+
+  activeCell.erase(1);
   return activeCell;
 }
   

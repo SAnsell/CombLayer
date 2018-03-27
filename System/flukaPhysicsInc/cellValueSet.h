@@ -49,7 +49,7 @@ class cellValueSet
   double whatValue;                        ///< What [1] value
 
   
-  dataTYPE dataMap;   ///< Values for cell
+  dataTYPE dataMap;                   ///< Values for cell
 
   bool cellSplit(const std::vector<int>&,
 		 std::vector<std::tuple<int,int>>&,

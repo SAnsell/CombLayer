@@ -296,7 +296,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
  */
 {
   typedef std::map<std::string,unitTYPE> FMAP;
-  
+
   for(const std::map<std::string,cellValueSet<0>>::value_type& flagV : flagValue)
     {
       FMAP::const_iterator mc=formatMap.find(flagV.first);
@@ -313,6 +313,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       FMAP::const_iterator mc=formatMap.find(impV.first);
       const bool materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
+
       if (!materialFlag)  // cell
 	impV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else
@@ -343,7 +344,8 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       else       // mat
 	thrV.second.writeFLUKA(OX,matVec,fmtSTR);
     }
-ELog::EM<<"Finish "<<ELog::endDiag;
+  
+  ELog::EM<<"Finish "<<ELog::endDiag;
   return;
 }
 

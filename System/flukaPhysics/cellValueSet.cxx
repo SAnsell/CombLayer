@@ -155,8 +155,7 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
   typedef std::tuple<int,int> TITEM;
   initCell.clear();
   outData.clear();
-
-    
+ 
   if (dataMap.empty() || cellN.empty()) return 0;
   
   size_t prev(0);
@@ -164,13 +163,13 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
   for(size_t i=0;i<cellN.size();i++)
     {
       const int CN=cellN[i];
-	
       typename dataTYPE::const_iterator mc=dataMap.find(CN);
       if (mc==dataMap.end())
 	{
 	  if (prev)
 	    {
 	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1]));
+	      outData.push_back(V);
 	      V=mc->second;
 	      prev=0;
 	    }
@@ -279,8 +278,8 @@ cellValueSet<N>::setValues(const int cN,const double V,
 template<size_t N>
 void
 cellValueSet<N>::writeFLUKA(std::ostream& OX,
-			 const std::vector<int>& cellN,
-			 const std::string& ControlStr) const 
+			    const std::vector<int>& cellN,
+			    const std::string& ControlStr) const 
 /*!
     Process is to write keyName ControlStr units 
     \param OX :: Output stream
@@ -307,7 +306,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  const TITEM& tc(Bgroup[index]);
 	  const valTYPE& dArray(Bdata[index]);
       
-
 	  SArray[1]=std::to_string(std::get<0>(tc));
 	  SArray[2]=std::to_string(std::get<1>(tc));
 	  for(size_t i=0;i<N;i++)

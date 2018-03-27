@@ -392,10 +392,9 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   cx<<"START "<<nps;
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
-  cx<<"RANDOMIZE "<<1.0;
+  cx<<"RANDOMIZE 1.0 "<<rndSeed;
   StrFunc::writeFLUKA(cx.str(),OX);
-  
-  // Remaining Physics cards
+  // Remaining Physics cards           
   PhysPtr->writeFLUKA(OX);
   return;
 }
@@ -523,6 +522,7 @@ SimFLUKA::write(const std::string& Fname) const
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
+
 
   std::ofstream OX(Fname.c_str());
   const size_t nCells(OList.size());

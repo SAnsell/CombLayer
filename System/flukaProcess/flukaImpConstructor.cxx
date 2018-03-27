@@ -74,7 +74,6 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 /*!
     Set individual IMP based on Iparam
     \param PC :: PhysicsCards
-    \param System :: Simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
@@ -109,9 +108,8 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
     throw ColErr::InContainerError<std::string>(objName,"Empty cell");
 
   for(const int CN : activeCells)
-    if (CN!=1)
-      PC.setImp(particle,CN,value);
-  
+    PC.setImp(particle,CN,value);
+
   return;
 }
 
