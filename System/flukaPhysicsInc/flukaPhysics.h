@@ -70,10 +70,11 @@ class flukaPhysics
   void setMatNumbers(const std::set<int>&);
 
   void setFlag(const std::string&,const int);
-  void setImp(const std::string&,const int,const double);
-  void setEMF(const std::string&,const int,const double,const double);
-  void setTHR(const std::string&,const int,const double,
-	      const double,const double);
+  void setImp(const std::string&,const int,const std::string&);
+  void setEMF(const std::string&,const int,const std::string&,
+	      const std::string&);
+  void setTHR(const std::string&,const int,const std::string&,
+	      const std::string&,const std::string&);
   void writeFLUKA(std::ostream&) const;
 };
 

@@ -70,7 +70,7 @@ flukaPhysics::flukaPhysics() :
     }),
 
   emfFlag({
-      { "emfcut",     cellValueSet<2>("emfcut","EMFCUT","") },
+      { "emfcut",     cellValueSet<2>("emfcut","EMFCUT","",0.0,{-1e-3,1e-3}) },
       { "prodcut",    cellValueSet<2>("prodcut","EMFCUT","PROD-CUT") },
       { "elpothr",    cellValueSet<2>("elpothr","EMFCUT","ELPO-THR") },
       { "pairbrem",   cellValueSet<2>("pairbrem","PAIRBREM","",3.0) } 
@@ -217,7 +217,7 @@ flukaPhysics::setFlag(const std::string& keyName,
 void
 flukaPhysics::setImp(const std::string& keyName,
 		     const int cellID,
-		     const double value)
+		     const std::string& value)
   /*!
     Set the importance list
     \param keyName :: all/hadron/electron/low
@@ -239,8 +239,8 @@ flukaPhysics::setImp(const std::string& keyName,
 void
 flukaPhysics::setEMF(const std::string& keyName,
 		     const int cellNumber,
-		     const double electronCut,
-		     const double photonCut)
+		     const std::string& electronCut,
+		     const std::string& photonCut)
   /*!
     Set the importance list
     \param keyName :: all/hadron/electron/low
@@ -264,9 +264,9 @@ flukaPhysics::setEMF(const std::string& keyName,
 void
 flukaPhysics::setTHR(const std::string& keyName,
 		     const int cellNumber,
-		     const double V1,
-		     const double V2,
-		     const double V3)
+		     const std::string& V1,
+		     const std::string& V2,
+		     const std::string& V3)
   /*!
     Set the importance list
     \param keyName :: all/hadron/electron/low

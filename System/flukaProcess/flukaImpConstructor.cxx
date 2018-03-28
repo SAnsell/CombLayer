@@ -91,7 +91,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       return;
     }
   
-  size_t index(1);
+  /*  size_t index(1);
   if (StrFunc::convert(particle,value))
     particle="all";
   else
@@ -109,7 +109,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 
   for(const int CN : activeCells)
     PC.setImp(particle,CN,value);
-
+  */
   return;
 }
 
@@ -130,15 +130,15 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 
   // cell/mat : tag name /  scale V1 / scale V2 [if used]
   typedef std::tuple<size_t,bool,std::string,double,double,double> emfTYPE;
-  ELog::EM<<"EMF == "<<ELog::endDiag;
+
   static const std::map<std::string,emfTYPE> EMap
     ({
       { "cut",emfTYPE(2,0,"emfcut",-0.001,0.001,0) },   // cell: S2 : -GeV : GeV
 
       { "prodcut",emfTYPE(2,1,"prodcut",-0.001,0.001,0) }, 
       { "elpothr",emfTYPE(3,1,"elpothr",0.001,0.001,0.001) },
-      { "pair",emfTYPE(2,1,"pairbrem",0.001,0.001,0) }, // mat   GeV : GeV
-      { "photonuc",emfTYPE(2,1,"photonuc",0,0,0) },     // mat 
+      { "pairbrem",emfTYPE(2,1,"pairbrem",0.001,0.001,0) }, // mat   GeV : GeV
+      { "photonuc",emfTYPE(0,1,"photonuc",0,0,0) },     // mat 
     });
   
   // must have size
@@ -167,28 +167,35 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
   const double scaleB(std::get<4>(mc->second));
   const double scaleC(std::get<5>(mc->second));
 
-
-  double VV[3];
+  std::string VV[3];
   for(size_t i=0;i<cellSize;i++)
-    VV[i]=IParam.getValueError<double>
+    VV[i]=IParam.getValueError<std::string>
       ("wEMF",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wEMF ");      
   
   std::set<int> activeCell=
     (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
 
-  if (cellSize==2)
-    for(const int MN : activeCell)
-      PC.setEMF(keyName,MN,VV[0]*scaleA,VV[1]*scaleB);
-  else if (cellSize==3)
-    for(const int MN : activeCell)
-      PC.setTHR(keyName,MN,VV[0]*scaleA,VV[1]*scaleB,VV[2]*scaleC);
-  else if (cellSize==0)
-    for(const int MN : activeCell)
-      PC.setFlag(keyName,MN);
-  else if (cellSize==1)
-    for(const int MN : activeCell)
-      PC.setImp(keyName,MN,VV[0]*scaleA);
+  switch (cellSize)
+    {
+    case 0:
+      for(const int MN : activeCell)
+	PC.setFlag(keyName,MN);
+      break;
+    case 1:
+      for(const int MN : activeCell)
+	PC.setImp(keyName,MN,VV[0]);
+      break;
+    case 2:
+      for(const int MN : activeCell)
+	PC.setEMF(keyName,MN,VV[0],VV[1]);
+      break;
+    case 3:
+      for(const int MN : activeCell)
+	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
+      break;
+    }
+  
   return;
 }
 
@@ -226,8 +233,8 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX) const
     " - types \n"
     " -- cut \n"
     "      Cell-Range electronCut[MeV] gammaCut[MeV]\n"
-    " -- pair \n"
-    "      Mat-Range  \n";
+    " -- pairbrem \n"
+    "      Mat-Range   \n";
   return;
 }
 

@@ -39,7 +39,7 @@ class cellValueSet
  private:
 
   /// Data type
-  typedef  std::array<double,N> valTYPE;
+  typedef  std::array<std::pair<bool,double>,N> valTYPE;  
   /// map type
   typedef  std::map<int,valTYPE> dataTYPE;
  
@@ -48,7 +48,8 @@ class cellValueSet
   const std::string tag;                   ///< Tag name
   double whatValue;                        ///< What [1] value
 
-  
+
+  std::array<double,N> scaleVec;      ///< Scaling for values
   dataTYPE dataMap;                   ///< Values for cell
 
   bool cellSplit(const std::vector<int>&,
@@ -58,9 +59,13 @@ class cellValueSet
  public:
 
   cellValueSet(const std::string&,const std::string&);
-  cellValueSet(const std::string&,const std::string&,const std::string&);
+  cellValueSet(const std::string&,const std::string&,
+	       const std::string&);
   cellValueSet(const std::string&,const std::string&,
 	       const std::string&,const double);
+  cellValueSet(const std::string&,const std::string&,
+	       const std::string&,const double,
+	       const std::array<double,N>&);
 
   cellValueSet(const cellValueSet&);
   cellValueSet& operator=(const cellValueSet&);
@@ -73,6 +78,10 @@ class cellValueSet
   void setValues(const int,const double);    
   void setValues(const int,const double,const double);
   void setValues(const int,const double,const double,const double);
+  void setValues(const int,const std::string&);    
+  void setValues(const int,const std::string&,const std::string&);
+  void setValues(const int,const std::string&,const std::string&,
+		 const std::string&);
   void writeFLUKA(std::ostream&,const std::vector<int>&,
 		  const std::string&) const;
 

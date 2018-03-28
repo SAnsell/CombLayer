@@ -362,7 +362,7 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 void
 SimFLUKA::writeWeights(std::ostream& OX) const
   /*!
-    Write all the used Weight in standard MCNPX output 
+    Write all the used Weight in standard FLUKA output 
     type.
     \param OX :: Output stream
   */
@@ -433,6 +433,7 @@ SimFLUKA::getLowMatName(const size_t Z) const
 /*!
   Return low energy FLUKA material name for the given Z
   \param Z :: Atomic number
+  \return fluka name
   \todo : Currently this function return the standard low material name
     as if standard FLUKA names were used without the LOW-MAT card.
     This is fine for most of the cases.
@@ -490,6 +491,7 @@ SimFLUKA::getLowMat(const size_t Z,const size_t A,
     \param Z :: Atomic number
     \param A :: Mass number
     \param mat :: Material name in the MATERIAL card
+    \return fluka ouput card [pre-write format]
   */
 {
   ELog::RegMethod RegA("SimFLUKA","getLowMat");
@@ -503,13 +505,15 @@ SimFLUKA::prepareWrite()
     Stuff that should be done once before output 
    */
 {
-  ELog::RegMethod RegA("","prepareWrite");
+  ELog::RegMethod RegA("SimFLUKA","prepareWrite");
   const ModelSupport::DBMaterial& DB=
     ModelSupport::DBMaterial::Instance();  
   Simulation::prepareWrite();
 
   PhysPtr->setCellNumbers(cellOutOrder);
-  PhysPtr->setMatNumbers(DB.getActive());
+  std::set<int> matActive=DB.getActive();
+  matActive.erase(0);
+  PhysPtr->setMatNumbers(matActive);
 
   return;
 }
@@ -517,7 +521,7 @@ SimFLUKA::prepareWrite()
 void
 SimFLUKA::write(const std::string& Fname) const
   /*!
-    Write out all the system (in PHITS output format)
+    Write out all the system (in FLUKA output format)
     \param Fname :: Output file 
   */
 {
