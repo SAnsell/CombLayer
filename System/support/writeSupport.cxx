@@ -65,7 +65,7 @@ flukaNum(const long int I)
   const double D=static_cast<double>(I);
   if (D > 1e8 || D < -1e7)
     return (FMTlnum % D).str();
-  
+
   return (FMTnum % D).str();
 }
 
@@ -78,10 +78,16 @@ flukaNum(const double D)
 {
   static boost::format FMTnum("%1$10.5f");
   static boost::format FMTlnum("%1$10.5g");
-  if (D > 1e5 || D < -1e4)
-    return (FMTlnum % D).str();
+
+  if (D < 1e5 && D > -1e4)
+    {
+      // test if 1 dp sufficiently accurate
+      if ( std::abs(std::round(D*10000.0)-D*10000.0)
+	   <Geometry::zeroTol*1000)
+	return (FMTnum % D).str();
+    }
   
-  return (FMTnum % D).str();
+  return (FMTlnum % D).str();
 }
 
 void

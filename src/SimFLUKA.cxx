@@ -92,7 +92,7 @@
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
-  nps(1000),rndSeed(237489791),
+  nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics())
   /*!
     Constructor
@@ -188,7 +188,23 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
   FTItem.emplace(fOutput,TI.clone());
   return;
 }
-  
+
+void
+SimFLUKA::processActiveMaterials() const
+  /*!
+    Set materials as active in DBMaterai Database
+  */
+{
+  ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
+
+  ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
+  DB.resetActive();
+  OTYPE::const_iterator mp;
+  for(mp=OList.begin();mp!=OList.end();mp++)
+    DB.setActive(mp->second->getMat());
+  return;
+}
+
 
 void
 SimFLUKA::writeTally(std::ostream& OX) const
@@ -346,7 +362,7 @@ SimFLUKA::writeMaterial(std::ostream& OX) const
 void
 SimFLUKA::writeWeights(std::ostream& OX) const
   /*!
-    Write all the used Weight in standard MCNPX output 
+    Write all the used Weight in standard FLUKA output 
     type.
     \param OX :: Output stream
   */
@@ -376,10 +392,9 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   cx<<"START "<<nps;
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
-  cx<<"RANDOMIZE "<<1.0;
+  cx<<"RANDOMIZE 1.0 "<<std::to_string(rndSeed % 1000000);
   StrFunc::writeFLUKA(cx.str(),OX);
-  
-  // Remaining Physics cards
+  // Remaining Physics cards           
   PhysPtr->writeFLUKA(OX);
   return;
 }
@@ -418,6 +433,7 @@ SimFLUKA::getLowMatName(const size_t Z) const
 /*!
   Return low energy FLUKA material name for the given Z
   \param Z :: Atomic number
+  \return fluka name
   \todo : Currently this function return the standard low material name
     as if standard FLUKA names were used without the LOW-MAT card.
     This is fine for most of the cases.
@@ -475,6 +491,7 @@ SimFLUKA::getLowMat(const size_t Z,const size_t A,
     \param Z :: Atomic number
     \param A :: Mass number
     \param mat :: Material name in the MATERIAL card
+    \return fluka ouput card [pre-write format]
   */
 {
   ELog::RegMethod RegA("SimFLUKA","getLowMat");
@@ -488,20 +505,28 @@ SimFLUKA::prepareWrite()
     Stuff that should be done once before output 
    */
 {
-  ELog::RegMethod RegA("","prepareWrite");
+  ELog::RegMethod RegA("SimFLUKA","prepareWrite");
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();  
   Simulation::prepareWrite();
+
   PhysPtr->setCellNumbers(cellOutOrder);
+  std::set<int> matActive=DB.getActive();
+  matActive.erase(0);
+  PhysPtr->setMatNumbers(matActive);
+
   return;
 }
 
 void
 SimFLUKA::write(const std::string& Fname) const
   /*!
-    Write out all the system (in PHITS output format)
+    Write out all the system (in FLUKA output format)
     \param Fname :: Output file 
   */
 {
   ELog::RegMethod RegA("SimFLUKA","write");
+
 
   std::ofstream OX(Fname.c_str());
   const size_t nCells(OList.size());
@@ -513,7 +538,8 @@ SimFLUKA::write(const std::string& Fname) const
       ELog::EM<<"See the GLOBAL card documentation"<<ELog::endCrit;
     }
 
-  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells),OX);
+  // cell/names(not numbers)/free geometry
+  StrFunc::writeFLUKA("GLOBAL "+std::to_string(nCells)+" - 1.0 1.0",OX);
   OX<<"TITLE"<<std::endl;
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
     <<std::endl;

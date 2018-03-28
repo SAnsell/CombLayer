@@ -530,6 +530,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
 
   flukaSystem::tallySelection(*SimFLUKAPtr,IParam);
   //
+  SimFLUKAPtr->processActiveMaterials();
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   //  tallyModification(*SimMCPtr,IParam);
@@ -567,7 +568,6 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   
   ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
   SimMCPtr->prepareWrite();
-  SimMCPtr->write("testCE1.x");
 
   // From tallybuilder
   tallySystem::tallySelection(*SimMCPtr,IParam);

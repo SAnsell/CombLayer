@@ -58,13 +58,10 @@
 #include "Qhull.h"
 #include "Simulation.h"
 #include "objectRegister.h"
-#include "Zaid.h"
-#include "MXcards.h"
-#include "Material.h"
-#include "DBMaterial.h"
 #include "inputParam.h"
 #include "cellValueSet.h"
 #include "flukaPhysics.h"
+#include "flukaProcess.h"
 #include "flukaImpConstructor.h"
 
 namespace flukaSystem
@@ -77,15 +74,11 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 /*!
     Set individual IMP based on Iparam
     \param PC :: PhysicsCards
-    \param System :: Simulation
     \param IParam :: input stream
     \param setIndex :: index for the importance set
   */
 {
   ELog::RegMethod RegA("flukaImpConstructor","processUnit");
-
-  const ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
 
   double value;
   std::string particle=IParam.getValueError<std::string>
@@ -98,7 +91,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       return;
     }
   
-  size_t index(1);
+  /*  size_t index(1);
   if (StrFunc::convert(particle,value))
     particle="all";
   else
@@ -110,17 +103,16 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 
   const std::string objName=IParam.getValueError<std::string>
     ("wIMP",setIndex,index,"No objName for wIMP");
-  const std::vector<int> Cells=OR.getObjectRange(objName);
-  if (Cells.empty())
+  const std::set<int> activeCells=getActiveCell(objName);
+  if (activeCells.empty())
     throw ColErr::InContainerError<std::string>(objName,"Empty cell");
 
-  //
-  for(const int CN : Cells)
-    if (CN!=1)
-      PC.setImp(particle,CN,value);
-
+  for(const int CN : activeCells)
+    PC.setImp(particle,CN,value);
+  */
   return;
 }
+
 
 void
 flukaImpConstructor::processEMF(flukaPhysics& PC,
@@ -135,58 +127,78 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processEMF");
 
-  const ModelSupport::DBMaterial& DB=
-    ModelSupport::DBMaterial::Instance();
 
-  // must have size
-  std::string material=IParam.getValueError<std::string>
-    ("wEMF",setIndex,0,"No material for wEMF ");
+  // cell/mat : tag name /  scale V1 / scale V2 [if used]
+  typedef std::tuple<size_t,bool,std::string,double,double,double> emfTYPE;
+
+  static const std::map<std::string,emfTYPE> EMap
+    ({
+      { "cut",emfTYPE(2,0,"emfcut",-0.001,0.001,0) },   // cell: S2 : -GeV : GeV
+
+      { "prodcut",emfTYPE(2,1,"prodcut",-0.001,0.001,0) }, 
+      { "elpothr",emfTYPE(3,1,"elpothr",0.001,0.001,0.001) },
+      { "pairbrem",emfTYPE(2,1,"pairbrem",0.001,0.001,0) }, // mat   GeV : GeV
+      { "photonuc",emfTYPE(0,1,"photonuc",0,0,0) },     // mat 
+    });
   
-  if (material=="help" || material=="Help")
+  // must have size
+  std::string type=IParam.getValueError<std::string>
+    ("wEMF",setIndex,0,"No type for wEMF ");
+
+  if (type=="help" || type=="Help")
     {
       writeEMFHelp(ELog::EM.Estream());
       ELog::EM<<ELog::endBasic;
       return;
     }
 
-  const std::set<int>& activeMat=DB.getActive();
+  std::map<std::string,emfTYPE>::const_iterator mc=EMap.find(type);
+  if (mc==EMap.end())
+    throw ColErr::InContainerError<std::string>(type,"emf type unknown");
 
-  const double V1=IParam.getValueError<double>
-    ("wEMF",setIndex,1,"No value[1] for wEMF ");
-  const double V2=IParam.getValueError<double>
-    ("wEMF",setIndex,2,"No value[2] for wEMF ");
+  const std::string cellM=IParam.getValueError<std::string>
+    ("wEMF",setIndex,1,"No cell/material for wEMF ");
+
+
+  const size_t cellSize(std::get<0>(mc->second));
+  const bool materialFlag(std::get<1>(mc->second));
+  const std::string keyName(std::get<2>(mc->second));
+  const double scaleA(std::get<3>(mc->second));
+  const double scaleB(std::get<4>(mc->second));
+  const double scaleC(std::get<5>(mc->second));
+
+  std::string VV[3];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i]=IParam.getValueError<std::string>
+      ("wEMF",setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for wEMF ");      
   
+  std::set<int> activeCell=
+    (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
+
+  switch (cellSize)
+    {
+    case 0:
+      for(const int MN : activeCell)
+	PC.setFlag(keyName,MN);
+      break;
+    case 1:
+      for(const int MN : activeCell)
+	PC.setImp(keyName,MN,VV[0]);
+      break;
+    case 2:
+      for(const int MN : activeCell)
+	PC.setEMF(keyName,MN,VV[0],VV[1]);
+      break;
+    case 3:
+      for(const int MN : activeCell)
+	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
+      break;
+    }
   
-  if (material=="All" || material=="all")
-    {
-      for(const int MN : activeMat)
-	PC.setEMF("emfcut",MN,V1,V2);
-      return;
-    }
-
-  bool negKey(0);
-  if (material.size()>1 && material.back()=='-')
-    {
-      negKey=1;
-      material.pop_back();
-    }
-  
-  if (!DB.hasKey(material))
-    throw ColErr::InContainerError<std::string>
-      (material,"Material no present");
-
-  const int MatNum=DB.getIndex(material);
-
-  if (negKey)
-    {
-      for(const int MN : activeMat)
-	if (MN!=MatNum)
-	  PC.setEMF("emfcut",MN,V1,V2);
-      return;
-    }
-  PC.setEMF("emfcut",MatNum,V1,V2);
   return;
 }
+
 
 void
 flukaImpConstructor::writeHelp(std::ostream& OX) const
@@ -217,17 +229,12 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX) const
     \param OX :: Output stream
   */
 {
-  OX<<"wEMF help :: \n";
-
-  OX<<"-wEMF material eCut[double] gammaCut[double]  -- ::\n\n";
-  
-  OX<<"  material : "
-      "    -- material- :: All without material\n"
-      "    -- all- :: All materials\n"
-      "    -- material :: Only material\n"
-      "  eCut : value for electron cut [MeV] \n"
-      "  gammaCut : value for gamma [MeV]\n";
-
+  OX<<"wEMF help :: \n"
+    " - types \n"
+    " -- cut \n"
+    "      Cell-Range electronCut[MeV] gammaCut[MeV]\n"
+    " -- pairbrem \n"
+    "      Mat-Range   \n";
   return;
 }
 

@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   weightsInc/flukaImpConstructor.h
+ * File:   flukaProcessInc/flukaImpConstructor.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -61,6 +61,9 @@ class flukaImpConstructor
   ~flukaImpConstructor() {}  ///< Destructor
 
   void processUnit(flukaPhysics&,
+		   const mainSystem::inputParam&,
+		   const size_t);
+  void processPAIR(flukaPhysics&,
 		   const mainSystem::inputParam&,
 		   const size_t);
   void processEMF(flukaPhysics&,

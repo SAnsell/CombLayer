@@ -20,6 +20,7 @@
  *
  ****************************************************************************/
 #include <fstream>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -77,7 +78,8 @@ namespace attachSystem
 
 ContainedSpace::ContainedSpace()  :
   ContainedComp(),active(0),noPrimaryInsert(0),
-  nDirection(8),primaryCell(0),buildCell(0),LCutters(2)
+  nDirection(8),instepFrac(0.05),
+  primaryCell(0),buildCell(0),LCutters(2)
   /*!
     Constructor 
   */
@@ -86,7 +88,8 @@ ContainedSpace::ContainedSpace()  :
 ContainedSpace::ContainedSpace(const ContainedSpace& A) : 
   ContainedComp(A),FCName(A.FCName),active(A.active),
   noPrimaryInsert(A.noPrimaryInsert),
-  nDirection(A.nDirection),primaryCell(A.primaryCell),
+  nDirection(A.nDirection),instepFrac(A.instepFrac),
+  primaryCell(A.primaryCell),
   buildCell(0),BBox(A.BBox),LCutters(A.LCutters)
   /*!
     Copy constructor
@@ -109,6 +112,7 @@ ContainedSpace::operator=(const ContainedSpace& A)
       active=A.active;
       noPrimaryInsert=A.noPrimaryInsert;
       nDirection=A.nDirection;
+      instepFrac=A.instepFrac;
       primaryCell=A.primaryCell;
       BBox=A.BBox;
       LCutters=A.LCutters;
@@ -145,7 +149,7 @@ ContainedSpace::setSpaceConnect(const size_t Index,
 
 void
 ContainedSpace::setSpaceLinkSurf(const size_t Index,
-			    const HeadRule& HR) 
+				 const HeadRule& HR) 
   /*!
     Set a surface to output
     \param Index :: Link number
@@ -202,14 +206,46 @@ ContainedSpace::setSpaceLinkCopy(const size_t Index,
   return;
 }
 
+void
+ContainedSpace::setPrimaryCell(const HeadRule& objHR)
+  /*!
+    Set the primary cell AND holds CURRENT bounding box 
+    \param objHR :: HeadRule to dset
+    \param cellN :: Cell number
+   */
+{
+  ELog::RegMethod RegA("ContainedSpace","setPrimaryCell");
 
+  primaryBBox=objHR;
+  return;
+}
+
+void
+ContainedSpace::setPrimaryCell(const Simulation& System,
+			       const int cellN)
+  /*!
+    Set the primary cell AND holds CURRENT bounding box 
+    \param System :: Simulation to use for cells
+    \param cellN :: Cell number
+   */
+{
+  ELog::RegMethod RegA("ContainedSpace","setPrimaryCell");
+
+  const MonteCarlo::Qhull* outerObj=System.findQhull(cellN);
+  if (!outerObj)
+    throw ColErr::InContainerError<int>(cellN,"cellN on found");
+
+  primaryBBox=outerObj->getHeadRule();
+  return;
+}
+  
 HeadRule
-ContainedSpace::calcBoundary(Simulation& System,
+ContainedSpace::calcBoundary(const Simulation& System,
 			     const int cellN,
 			     const size_t NDivide,
 			     const LinkUnit& ALink,
 			     const LinkUnit& BLink)
-  /*!
+/*!
     Construct a bounding box in a cell based on the 
     link surfaces
     \param System :: Simulation to use
@@ -246,26 +282,37 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
     \return HeadRule of bounding box [- link surf]
   */
 {
-  ELog::RegMethod RegA("ContainedSpace","calcBoundary");
+  ELog::RegMethod RegA("ContainedSpace","calcBoundary(headRule)");
 
   std::set<int> linkSN;
+
   for(const LinkUnit& LU : {ALink,BLink})
     {
-      const int SN=LU.getLinkSurf();
-      linkSN.insert(SN);
+      if (LU.isComplete())
+	{
+	  const int SN=LU.getLinkSurf();
+	  linkSN.insert(SN);
+	}
     }
-
+  if (linkSN.empty())
+    throw ColErr::EmptyContainer("LinkPoints empty");
+  
   std::set<int> surfN;
   // mid points moved in by 10% of distance
-  const Geometry::Vec3D CPoint=
-    (ALink.getConnectPt()+BLink.getConnectPt())/2.0;
-  const Geometry::Vec3D& YA=ALink.getAxis();
-  const Geometry::Vec3D& YB=BLink.getAxis();
+  const Geometry::Vec3D& APoint=(ALink.isComplete()) ?
+    ALink.getConnectPt() : BLink.getConnectPt();
+  const Geometry::Vec3D& BPoint=(BLink.isComplete()) ?
+    BLink.getConnectPt() : ALink.getConnectPt();
+  const Geometry::Vec3D& YA=(ALink.isComplete()) ?
+    ALink.getAxis() : BLink.getAxis();
+  const Geometry::Vec3D& YB=(BLink.isComplete()) ?
+    BLink.getAxis() : ALink.getAxis();
+
+  const Geometry::Vec3D CPoint((APoint+BPoint)/2.0);
   const Geometry::Vec3D YY= (YA.dotProd(YB)>0.0) ?
     (YA+YB).unit() : (YB-YA).unit();
   const Geometry::Vec3D XX=YY.crossNormal();
-  const Geometry::Vec3D ZZ=YY*XX;
-  
+      const Geometry::Vec3D ZZ=YY*XX;
 
   if (!objHR.isValid(CPoint))
     {
@@ -278,8 +325,8 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
   const std::vector<Geometry::Vec3D> CP=
     {
       CPoint,
-      ALink.getConnectPt()*0.95+CPoint*0.05,
-      BLink.getConnectPt()*0.95+CPoint*0.05
+      APoint*0.95+CPoint*0.05,
+      BPoint*0.95+CPoint*0.05
     };
   for(const Geometry::Vec3D& Org : CP)
     {
@@ -295,6 +342,16 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
 	  angle+=angleStep;
 	}
     }
+  // forward going trajectory
+  if (!ALink.isComplete() || !BLink.isComplete())
+    {
+      double D;
+      const int SN=objHR.trackSurf(CPoint,-YA,D);
+      if (SN)
+	surfN.insert(-SN);
+    } 	
+
+  
   // NOW eliminate all surfaces NOT in surfN
   const std::set<int> fullSurfN=objHR.getSurfSet();
   HeadRule outBox=objHR;
@@ -314,20 +371,23 @@ ContainedSpace::calcBoundary(const HeadRule& objHR,
 }
   
 void
-ContainedSpace::calcBoundaryBox(Simulation& System)
+ContainedSpace::calcBoundaryBox(const Simulation& System)
   /*!
     Boundary calculator
-    \param System :: Simulation
+    \param System :: Simulation for objects [if needed]
   */
 {
   ELog::RegMethod RegA("ContainedSpace","calcBoundaryBox");
-  BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
+  if (!primaryBBox.hasRule())
+    BBox=calcBoundary(System,primaryCell,nDirection,LCutters[0],LCutters[1]);
+  else 
+    BBox=calcBoundary(primaryBBox,nDirection,LCutters[0],LCutters[1]);
   return;
 }
 
 void
-ContainedSpace::registerSpaceCut(const long int linkA,const long int linkB)
-				
+ContainedSpace::registerSpaceCut(const long int linkA,
+				 const long int linkB)
   /*!
     Register the surface space
     \param linkA :: Signed link point
@@ -369,12 +429,18 @@ ContainedSpace::buildWrapCell(Simulation& System,
 {
   ELog::RegMethod RegA("ContainedSpace","buildWrapCell");
 
-  const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
-  if (!outerObj)
-    throw ColErr::InContainerError<int>(pCell,"Primary cell does not exist");
+  int matN=0;
+  double matTemp=0.0;
+  if (pCell)
+    {
+      const MonteCarlo::Qhull* outerObj=System.findQhull(pCell);
+      if (!outerObj)
+	throw ColErr::InContainerError<int>
+	  (pCell,"Primary cell does not exist");
+      matN=outerObj->getMat();
+      matTemp=outerObj->getTemp();
+    }
 
-  const int matN=outerObj->getMat();
-  const double matTemp=outerObj->getTemp();
 
   // First make inner vacuum
   // removeing front/back surfaces
@@ -384,15 +450,21 @@ ContainedSpace::buildWrapCell(Simulation& System,
   HeadRule innerVacuum(outerSurf);
   for(const LinkUnit& LU : LCutters)
     {
-      const int SN=LU.getLinkSurf();
-      innerVacuum.removeItems(-SN);
-      outerCut.addIntersection(-SN);
+      if (LU.isComplete())
+	{
+	  const int SN=LU.getLinkSurf();
+	  innerVacuum.removeItems(-SN);
+	  outerCut.addIntersection(-SN);
+	}
     }
 
   // Make new outer void
   HeadRule newOuterVoid(BBox);
   for(const LinkUnit& LU : LCutters)
-    newOuterVoid.addIntersection(-LU.getLinkSurf());
+    {
+      if (LU.isComplete())
+	newOuterVoid.addIntersection(-LU.getLinkSurf());
+    }
 
   newOuterVoid.addIntersection(innerVacuum.complement());
   System.addCell(cCell,matN,matTemp,newOuterVoid.display());
@@ -403,6 +475,21 @@ ContainedSpace::buildWrapCell(Simulation& System,
     CMapPtr->addCell("OuterSpace",cCell);
 
   
+  return;
+}
+
+void
+ContainedSpace::clear()
+  /*!
+    Reset link units
+   */
+{
+  ABLink.first=0;
+  ABLink.second=0;
+  LCutters[0]=LinkUnit();
+  LCutters[1]=LinkUnit();
+  buildCell=0;
+  primaryCell=0;
   return;
 }
 
@@ -448,9 +535,8 @@ ContainedSpace::insertObjects(Simulation& System)
       
   System.populateCells();
   initialize();
-  
-
-  if (primaryCell && buildCell)
+    
+  if ((primaryCell || primaryBBox.hasRule()) && buildCell)
     {
       calcBoundaryBox(System);
       buildWrapCell(System,primaryCell,buildCell);

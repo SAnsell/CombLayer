@@ -106,14 +106,19 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   triggerPipe(new constructSystem::CrossPipe(newName+"TriggerPipe")),
   pipeA(new constructSystem::Bellows(newName+"BellowA")),
   filterBox(new constructSystem::PortTube(newName+"FilterBox")),
+  filters({
+	std::make_shared<xraySystem::FlangeMount>(newName+"Filter0"),
+        std::make_shared<xraySystem::FlangeMount>(newName+"Filter1"),
+        std::make_shared<xraySystem::FlangeMount>(newName+"Filter2"),
+        std::make_shared<xraySystem::FlangeMount>(newName+"Filter3")}),
+
   pipeB(new constructSystem::Bellows(newName+"BellowB")),
   gateA(new constructSystem::GateValve(newName+"GateA")),
   mirrorBox(new constructSystem::VacuumBox(newName+"MirrorBox")),
   mirror(new xraySystem::Mirror(newName+"Mirror")),
   gateB(new constructSystem::GateValve(newName+"GateB")),
   pipeC(new constructSystem::Bellows(newName+"BellowC")),
-  driftA(new constructSystem::VacuumPipe(newName+"DriftA")),
-  
+  driftA(new constructSystem::VacuumPipe(newName+"DriftA")),  
   driftB(new constructSystem::VacuumPipe(newName+"DriftB")),
   monoV(new xraySystem::MonoVessel(newName+"MonoVac")),
   monoXtal(new xraySystem::MonoCrystals(newName+"MonoXtal")),
@@ -130,6 +135,9 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   pipeE(new constructSystem::Bellows(newName+"BellowE")),
   slitsB(new constructSystem::JawValve(newName+"SlitsB")),
   viewPipe(new constructSystem::PortTube(newName+"ViewTube")),
+  viewMount({
+      std::make_shared<xraySystem::FlangeMount>(newName+"ViewMount0")
+	}),
   pipeF(new constructSystem::Bellows(newName+"BellowF")),
   shutterPipe(new constructSystem::CrossPipe(newName+"ShutterPipe")),
   pipeG(new constructSystem::Bellows(newName+"BellowG")),
@@ -143,13 +151,11 @@ OpticsBeamline::OpticsBeamline(const std::string& Key) :
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
-  // can this be in an initializer??
-  for(size_t i=0;i<4;i++)
-    {
-      filters[i]=std::make_shared<xraySystem::FlangeMount>
-	(newName+"Filter"+std::to_string(i));
-      OR.addObject(filters[i]);
-    }
+  // can these be in the initializer??
+  for(const auto& FM : filters)
+    OR.addObject(FM);
+  for(const auto& FM : viewMount)
+    OR.addObject(FM);
   
   OR.addObject(pipeInit);
   OR.addObject(ionPA);
@@ -238,7 +244,6 @@ OpticsBeamline::buildObjects(Simulation& System)
   ionPA->registerSpaceCut(1,2);
   ionPA->createAll(System,*pipeInit,2);
 
-
   triggerPipe->addInsertCell(ContainedComp::getInsertCells());
   triggerPipe->setFront(*ionPA,2);
   triggerPipe->registerSpaceCut(1,2);
@@ -260,7 +265,7 @@ OpticsBeamline::buildObjects(Simulation& System)
   filterBox->splitObject(System,-11,filterBox->getCell("SplitOuter",0));
   filterBox->splitObject(System,12,filterBox->getCell("SplitOuter",3));
   
-  for(size_t i=0;i<4;i++)
+  for(size_t i=0;i<filters.size();i++)
     {
       const constructSystem::portItem& PI=filterBox->getPort(i);
       filters[i]->addInsertCell("Flange",filterBox->getCell("SplitOuter",i));
@@ -405,6 +410,16 @@ OpticsBeamline::buildObjects(Simulation& System)
   viewPipe->splitObject(System,2002,viewPipe->getCell("OuterSpace",1),
 			Geometry::Vec3D(0,0,0),Geometry::Vec3D(0,0,1));
 
+  for(size_t i=0;i<viewMount.size();i++)
+    {
+      const constructSystem::portItem& PI=viewPipe->getPort(i);
+      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",1));
+      viewMount[i]->addInsertCell("Flange",viewPipe->getCell("OuterSpace",3));
+      viewMount[i]->addInsertCell("Body",PI.getCell("Void"));
+      viewMount[i]->addInsertCell("Body",viewPipe->getCell("Void"));
+      viewMount[i]->setBladeCentre(PI,0);
+      viewMount[i]->createAll(System,PI,2);
+    }
 
   pipeF->addInsertCell(ContainedComp::getInsertCells());
   pipeF->setFront(*viewPipe,2);

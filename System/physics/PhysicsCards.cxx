@@ -1123,14 +1123,14 @@ PhysicsCards::writePHITS(std::ostream& OX)
 		    {
 		      OX<<" emin("<<std::setw(2)<<pConv.phitsITYP(PItem)
 			<<")    ="<<ECut;
-		      OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
+		      OX<<"   # "<<pConv.nameToPHITS(PItem)<<std::endl;
 		    }
 		}
 	      for(const std::string& PItem : PS->getParticles())
 		{
 		  OX<<" tmax("<<std::setw(2)<<pConv.phitsITYP(PItem)
 		    <<")    ="<<TCut;
-		  OX<<"   # "<<pConv.phitsType(PItem)<<std::endl;
+		  OX<<"   # "<<pConv.nameToPHITS(PItem)<<std::endl;
 		}
 	    }
 	}

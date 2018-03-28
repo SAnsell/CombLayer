@@ -41,18 +41,20 @@
 #include "OutputLog.h"
 #include "particleConv.h"
 
-pName::pName(const std::string& MChar,const int mcnpN,
-	     const std::string& flukaN,
+pName::pName(const std::string& mcnpN,const int mI,
+	     const std::string& flukaN,const int fI,
 	     const std::string& phitsN,const int pI,
 	     const int mcplN,const int N) :
-  mcnpName(MChar),mcnpITYP(mcnpN),flukaName(flukaN),
-      phitsName(phitsN),phitsITYP(pI),
-      mcplNumber(mcplN),nucleon(N)
+  mcnpName(mcnpN),mcnpITYP(mI),
+  flukaName(flukaN),flukaITYP(fI),
+  phitsName(phitsN),phitsITYP(pI),
+  mcplNumber(mcplN),nucleon(N)
   /*
     Constructor 
-    \param MChar :: MCNP Name
-    \param mcnpN :: MCNP number
+    \param mcnpN :: MCNP Name
+    \param mI :: MCNP itype number
     \param flukaN :: FLUKA name
+    \param fI :: FLUKA itype number
     \param phitsN :: PHITS name
     \param pI :: PHITS ityp number
     \param mcplN :: kf/mcpl number
@@ -61,45 +63,51 @@ pName::pName(const std::string& MChar,const int mcnpN,
 {}
 
 pName::pName(const pName& A) :
-      mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
-      flukaName(A.flukaName),phitsName(A.phitsName),
-      phitsITYP(A.phitsITYP),mcplNumber(A.mcplNumber),
-      nucleon(A.nucleon)
+  mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
+  flukaName(A.flukaName),flukaITYP(A.flukaITYP),
+  phitsName(A.phitsName),phitsITYP(A.phitsITYP),
+  mcplNumber(A.mcplNumber),nucleon(A.nucleon)
   /*
     Copy Constructor 
     \param A :: Object to copy
   */
 {}
 
-// mcnpChar : mcnpI : fluka : phits : phitsI : mcplNumber : nucleons
+// mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
 particleConv::particleConv() : 
-  indexLookup{
-  {"h",{"h", 9,  "proton",  "proton",   1,  2212,     1}},
-  {"n",{"n", 1,  "neutron", "neutron",  2,  2112,     1}},   
-  {"/",{"/", 20, "pion+",   "pion+",    3,  211,      1}},
-  {"z",{"z", 21, "pion0",   "pion0",    4,  111,      1}},
-  {"*",{"*", 1,  "pion-",   "pion-",    5,  -211,     1}},
-  {"!",{"!", 16, "muon+",   "muon+",    6,  -13,      1}},
-  {"|",{"|", 4,  "muon-",   "muon-",    7,  13,       1}},
-  {"k",{"k", 22, "kaon+",   "kaon+",    8,  321,      1}},
-  {"%",{"%", 23, "kaon0",   "kaon0",    9,  311,      1}},  // short version
-  {"^",{"^", 24, "kaon0",   "kaon0",    9,  311,      1}},  // long version
-  {"?",{"?", 36, "kaon-",   "kaon-",    10, -321,     1}},
-  {"e",{"e", 3,  "electron","electron", 11, 11,       1}},
-  {"f",{"f", 8,  "positron","positron", 13, -11,      1}},
-  {"p",{"p", 2,  "photon",  "photon",   14, 22,       1}},
-  {"d",{"d", 31, "deuteron","deuteron", 15, 1000002,  2}},
-  {"t",{"t", 32, "triton",  "triton",   16, 1000003,  3}},
-  {"s",{"s", 33, "3he",     "3he",      17, 2000003,  3}},
-  {"a",{"a", 34, "alpha",   "alpha",    18, 2000004,  4}},
-
-   {"g",{"g",19,"antiproton","antiproton", 11, -2212, 1}}       // no direct phits
-
-}
+  particleVec({
+  {"h", 9,  "proton",     1,  "proton",     1,    2212,       1},
+  {"n", 1,  "neutron",    8,  "neutron",    2,    2112,       1},   
+  {"/", 20, "pion+",     13,  "pion+",      3,     211,       1},
+  {"z", 21, "pizero",    23,  "pion0",      4,     111,       1},
+  {"*", 11, "pion-",     14,  "pion-",      5,    -211,       1},
+  {"!", 16, "muon+",     10,  "muon+",      6,     -13,       1},
+  {"|", 4,  "muon-",     11,  "muon-",      7,      13,       1},
+  {"k", 22, "kaon+",     15,  "kaon+",      8,     321,       1},
+  {"%", 23, "kaonzero",  24,  "kaon0",      9,     311,       1},  // k0 version
+  {"^", 24, "kaonlong",  12,  "kaon0",      9,     130,       1},  // long version
+  {"?", 36, "kaon-",     16,  "kaon-",     10,    -321,       1},
+  {"e", 3,  "electron",   3,  "electron",  11,      11,       1},
+  {"f", 8,  "positron",   4,  "positron",  13,     -11,       1},
+  {"p", 2,  "photon",     7,  "photon",    14,      22,       1},
+  {"d", 31, "deuteron",  -3,  "deuteron",  15, 1000002,       2},
+  {"t", 32, "triton",    -4,  "triton",    16, 1000003,       3},
+  {"s", 33, "3-helium",  -5,   "3he",      17, 2000003,       3},
+  {"a", 34, "4-helium",  -6,  "alpha",     18, 2000004,       4},
+  {"g", 19, "antiproton", 2,  "antiproton",11,   -2212,       1}       // no direct phits
+    })
   /*!
     Constructor
   */
-{}
+{
+  for(size_t index=0;index<particleVec.size();index++)
+    {
+      const pName& PN=particleVec[index];
+      mcnpIndex.emplace(PN.mcnpName,index);
+      flukaIndex.emplace(PN.flukaName,index);
+      phitsIndex.emplace(PN.phitsName,index);
+    }
+}
 
 const particleConv&
 particleConv::Instance()
@@ -112,227 +120,282 @@ particleConv::Instance()
   return MR;
 }
 
+size_t
+particleConv::getMCNPIndex(const int ID) const
+  /*!
+    Get the PName index item from the system
+    \param ID :: Particle id
+    \return index+1 
+  */
+{
+  std::vector<pName>::const_iterator vc=
+    std::find_if(particleVec.begin(),particleVec.end(),
+	    [&ID](const pName& PN) -> bool
+		 {
+		   return (ID == PN.mcnpITYP);
+		 } );
+
+  if (vc==particleVec.end()) return 0;
+  return static_cast<size_t>(vc-particleVec.begin())+1;
+}
+
+size_t
+particleConv::getPHITSIndex(const int ID) const
+  /*!
+    Get the PName index item from the system
+    \param ID :: Particle id
+    \return index+1 
+  */
+{
+  std::vector<pName>::const_iterator vc=
+    std::find_if(particleVec.begin(),particleVec.end(),
+	    [&ID](const pName& PN) -> bool
+		 {
+		   return (ID == PN.phitsITYP);
+		 } );
+  if (vc==particleVec.end()) return 0;
+  return static_cast<size_t>(vc-particleVec.begin())+1;
+}
+
+size_t
+particleConv::getFLUKAIndex(const int ID) const
+  /*!
+    Get the PName index item from the system
+    \param ID :: Particle id
+    \return index+1 
+  */
+{
+  std::vector<pName>::const_iterator vc=
+    std::find_if(particleVec.begin(),particleVec.end(),
+	    [&ID](const pName& PN) -> bool
+		 {
+		   return (ID == PN.flukaITYP);
+		 } );
+  if (vc==particleVec.end()) return 0;
+  return static_cast<size_t>(vc-particleVec.begin())+1;
+}
+
+size_t
+particleConv::getMCNPIndex(const std::string& MC) const
+  /*!
+    Get the PName index item from the system
+    \param MC :: Particle char [mcnp]
+    \return index+1 
+  */
+{
+  std::map<std::string,size_t>::const_iterator mc;
+  mc=mcnpIndex.find(MC);
+  if (mc == mcnpIndex.end()) return 0;
+  return mc->second+1;
+}
+
+size_t
+particleConv::getFLUKAIndex(const std::string& MC) const
+  /*!
+    Get the PName index item from the system
+    \param MC :: Particle [fluka]
+    \return index+1 
+  */
+{
+  std::map<std::string,size_t>::const_iterator mc;
+  mc=flukaIndex.find(MC);
+  if (mc == flukaIndex.end()) return 0;
+  return mc->second+1;
+}
+
+size_t
+particleConv::getPHITSIndex(const std::string& MC) const
+  /*!
+    Get the PName index item from the system
+    \param MC :: Particle char [mcnp]
+    \return index+1 
+  */
+{
+  std::map<std::string,size_t>::const_iterator mc;
+  mc=phitsIndex.find(MC);
+  if (mc == phitsIndex.end()) return 0;
+  return mc->second+1;
+}
+
  // MCNP CHAR:
 const pName&
-particleConv::getPItem(const std::string& MC) const
+particleConv::getMCNPpItem(const std::string& MC) const
   /*!
     Get  the PName item from the system
     \param MC :: Particle char [mcnp]
     \return pName found
   */
 {
-  std::map<std::string,pName>::const_iterator mc;
-  mc=indexLookup.find(MC);
-  if (mc == indexLookup.end())
+  std::map<std::string,size_t>::const_iterator mc;
+  mc=mcnpIndex.find(MC);
+  if (mc == mcnpIndex.end())
     throw ColErr::InContainerError<std::string>
-      (MC,"MCNPname not in particleDataBase");
-  return mc->second;
+      (MC,"MCNP particle not in particleDataBase");
+  return particleVec[mc->second];
 }
-
-  
-const pName&
-particleConv::getPHITSPItem(const std::string& particleName) const
-  /*!
-    Get  the PName item from the system
-    \param particleName :: PHITS 
-    \return pName found
-  */
-{
-  ELog::RegMethod RegA("particleConv","getPHITSItem");
-  
-  typedef std::map<std::string,pName>  PMAP;
-  PMAP::const_iterator mc=
-    std::find_if(indexLookup.begin(),indexLookup.end(),
-		 [&particleName](const PMAP::value_type& PN) -> bool
-		 {
-		   return (particleName == PN.second.phitsName);
-		 } );
-
-  if (mc==indexLookup.end())
-    throw ColErr::InContainerError<std::string>
-      (particleName,"ParticleName number not in particle list");
-
-  return mc->second;
-}
-
-const pName&
-particleConv::getFLUKAPItem(const std::string& particleName) const
-  /*!
-    Get  the PName item from the system
-    \param particleName :: FLUKA name
-    \return pName found
-  */
-{
-  ELog::RegMethod RegA("particleConv","getFLUKAItem");
-  
-  typedef std::map<std::string,pName>  PMAP;
-  PMAP::const_iterator mc=
-    std::find_if(indexLookup.begin(),indexLookup.end(),
-		 [&particleName](const PMAP::value_type& PN) -> bool
-		 {
-		   return (particleName == PN.second.flukaName);
-		 } );
-
-  if (mc==indexLookup.end())
-    throw ColErr::InContainerError<std::string>
-      (particleName,"ParticleName number not in particle list");
-
-  return mc->second;
-}
-
-bool
-particleConv::hasFlukaName(const std::string& particleName) const
-  /*!
-    Get  the PName item from the 
-    \param particleName :: FLUKA name
-    \return true if found
-  */
-{
-  ELog::RegMethod RegA("particleConv","hasFlukaName");
-  
-  typedef std::map<std::string,pName> PMAP;
-  PMAP::const_iterator mc=
-    std::find_if(indexLookup.begin(),indexLookup.end(),
-		 [&particleName](const PMAP::value_type& PN) -> bool
-		 {
-		   return (particleName == PN.second.flukaName);
-		 } );
-
-  return (mc==indexLookup.end()) ? 0 : 1;
-}
-
 
 
 const pName&
-particleConv::getMCNPitypePItem(const int particleID) const
+particleConv::getPHITSpItem(const std::string& MC) const
   /*!
     Get  the PName item from the system
-    \param particleID :: mcnpITYPE number
+    \param MC :: Particle char [phits]
     \return pName found
   */
 {
-  ELog::RegMethod RegA("particleConv","getMCNPitypePItem");
+  std::map<std::string,size_t>::const_iterator mc;
+  mc=phitsIndex.find(MC);
+  if (mc == phitsIndex.end())
+    throw ColErr::InContainerError<std::string>
+      (MC,"PHITS particle not in particleDataBase");
+  return particleVec[mc->second];
+}
+
+const pName&
+particleConv::getFLUKApItem(const std::string& MC) const
+  /*!
+    Get  the PName item from the system
+    \param MC :: Particle char [fluka]
+    \return pName found
+  */
+{
+  std::map<std::string,size_t>::const_iterator mc;
+  mc=flukaIndex.find(MC);
+  if (mc == flukaIndex.end())
+    throw ColErr::InContainerError<std::string>
+      (MC,"FLUKA particle not in particleDataBase");
+  return particleVec[mc->second];
+}
+
+size_t
+particleConv::getNameIndex(const std::string& particleName) const
+  /*!
+    Access a particle name from any name
+    \param particleName :: Particle to look for
+    \return index+1 / 0 on failuire
+  */
+{
+  size_t index=getMCNPIndex(particleName);
+  if (!index)
+    index=getFLUKAIndex(particleName);
+  if (!index)
+    index=getPHITSIndex(particleName);
+  return index;
+}
   
-  typedef std::map<std::string,pName>  PMAP;
-  PMAP::const_iterator mc=
-    std::find_if(indexLookup.begin(),indexLookup.end(),
-		 [&particleID](const PMAP::value_type& PN) -> bool
-		 {
-		   return (particleID == PN.second.mcnpITYP);
-		 } );
 
-  if (mc==indexLookup.end())
-    throw ColErr::InContainerError<int>
-      (particleID,"ParticleID number not in particle list");
 
-  return mc->second;
-}
-  
-const std::string&
-particleConv::phitsType(const char MChar) const
-  /*
-    Accessor to phitsType 
-    \param MChar :: MCNP Name
-    \return phits named particle
+const pName&
+particleConv::getNamePItem(const std::string& particleName) const
+  /*!
+    Access a particle name from any name
+    \param particleName :: Particle to look for
+    \return pName found
   */
 {
-  return phitsType(std::string(1,MChar));
-}
+  const size_t index=getNameIndex(particleName);
+  if (!index)
+    throw ColErr::InContainerError<std::string>
+      (particleName,"Particle not in particleDataBase");
 
-int 
-particleConv::phitsITYP(const char MChar) const
-  /*
-    Accessor to physIType
-    \param MChar :: MCNP Name
-    \return phits ityp number
-  */
-{
-  return phitsITYP(std::string(1,MChar));
-}
-
-int 
-particleConv::nucleon(const char MChar) const
-  /*
-    Accessor to physIType
-    \param MChar :: MCNP Name
-    \return phits ityp number
-  */
-{
-  return nucleon(std::string(1,MChar));
-}
-
-const std::string&
-particleConv::phitsType(const std::string& MC) const
-  /*
-    Accessor to phitsType 
-    \param MC :: MCNP Name
-    
-  */
-{
-  const pName& PItem=getPItem(MC);
-  return PItem.phitsName;
-}
-
-int 
-particleConv::phitsITYP(const std::string& MC) const
-  /*
-    Accessor to phits ITYP
-    \param MC :: MCNP Name
-    \return ITYP
-  */
-{ 
-  const pName& PItem=getPItem(MC);
-  return PItem.phitsITYP;
-}
-
-int 
-particleConv::nucleon(const std::string& MC) const
-  /*
-    Accessor to nucleon number
-    \param MC :: MCNP Name
-    \return nucleon number
-  */
-{
-  const pName& PN = getPItem(MC);
-  return PN.nucleon;
+  return particleVec[index-1];
 }
 
 int 
 particleConv::mcnpITYP(const std::string& particleName) const
   /*
-    Accessor to mcnpITYP number by full name
+    Accessor to mcnpITYP number by fluka/phits/mcnp name
     \param particleName :: full name
     \return mcnpITYP
   */
 {
-  const pName& PN=getPHITSPItem(particleName);
+  const pName& PN=getNamePItem(particleName);
   return PN.mcnpITYP;
 }
 
-const std::string&
-particleConv::mcnpToPHITS(const int mcnpNum) const
-  /*!
-    Convert mcnp number to Phits
-    \param mcnpNum :: mcnpNumber
-    \return phits string
+int 
+particleConv::flukaITYP(const std::string& particleName) const
+  /*
+    Accessor to mcnpITYP number by fluka/phits/mcnp name
+    \param particleName :: full name
+    \return mcnpITYP
   */
 {
-  ELog::RegMethod RegA("particleConv","mcnpToPHITS");
-
-  typedef std::map<std::string,pName>  PMAP;
-
-  PMAP::const_iterator mc=
-    std::find_if(indexLookup.begin(),indexLookup.end(),
-		 [&mcnpNum](const PMAP::value_type& PN) -> bool
-		 {
-		   return (mcnpNum == PN.second.mcnpITYP);
-		 } );
-  
-  if (mc==indexLookup.end())
-    throw ColErr::InContainerError<int>
-      (mcnpNum,"MCNP number not in particle list");
-  
-  return mc->second.phitsName;  
+  const pName& PN=getNamePItem(particleName);
+  return PN.flukaITYP;
 }
 
+int 
+particleConv::phitsITYP(const std::string& particleName) const
+  /*
+    Accessor to mcnpITYP number by fluka/phits/mcnp name
+    \param particleName :: full name
+    \return mcnpITYP
+  */
+{
+  const pName& PN=getNamePItem(particleName);
+  return PN.phitsITYP;
+}
+
+
+int 
+particleConv::nucleon(const std::string& particleName) const
+  /*
+    Accessor to nucleon number by name
+    \param particleName :: full name
+    \return nucleon count
+  */
+{
+  const pName& PN=getFLUKApItem(particleName);
+  return PN.nucleon;
+}
+
+bool
+particleConv::hasName(const std::string& particleName) const
+  /*!
+    See if we have the name in the data base
+    \param particleName to search
+  */
+{
+  const size_t index=getNameIndex(particleName);
+  return (index) ? 1 : 0;
+}
+
+const std::string&
+particleConv::mcnpToFLUKA(const int ID) const
+  /*!
+    Get PHITS name base on mcnp id number
+    \param ID :: MCNP ID
+  */
+{
+  const size_t index=getMCNPIndex(ID);
+  if (!index)
+    throw ColErr::InContainerError<int>(ID,"ID no in particleDataBase");
+  return particleVec[index-1].flukaName;
+}
+ 
+
+const std::string&
+particleConv::nameToPHITS(const std::string& particleName) const
+  /*!
+    Get PHITS name base on particle name
+    \param particleName :: generic name to find
+    \return phits name
+  */
+{
+  const pName& PN = getNamePItem(particleName);
+  return PN.phitsName;
+}
+
+const std::string&
+particleConv::nameToFLUKA(const std::string& particleName) const
+  /*!
+    Get FLUKA name base on particle name
+    \param particleName :: generic name to find
+    \return phits name
+  */
+{
+  const pName& PN = getNamePItem(particleName);
+  return PN.flukaName;
+}
  

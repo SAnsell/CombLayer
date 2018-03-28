@@ -51,13 +51,10 @@ namespace xraySystem
 {
   class OpticsHutch;
   class ExperimentalHutch;
-  class MonoVessel;
-  class MonoCrystals;
-  class FlangeMount;
   class OpticsBeamline;
   class FrontEndCave;
   class ConnectZone;
-  class Wiggler;
+  class FrontEnd;
   
   /*!
     \class makeBalder
@@ -74,12 +71,11 @@ class makeBalder
   std::string startPoint;       ///< Start point
   std::string stopPoint;        ///< End point
   /// Front end cave volume
-  std::shared_ptr<FrontEndCave> frontEnd;
-  /// Wiggler in vacuum box
-  std::shared_ptr<constructSystem::VacuumBox> wigglerBox;
-  /// Wiggler in vacuum box
-  std::shared_ptr<Wiggler> wiggler;
+  std::shared_ptr<FrontEndCave> frontCave;
 
+  /// the components in the front end
+  std::shared_ptr<FrontEnd> frontBeam;
+  
   /// Pipe joining frontend to optics hut
   std::shared_ptr<constructSystem::VacuumPipe> joinPipe;
 

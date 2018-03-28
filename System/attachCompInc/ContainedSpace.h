@@ -52,6 +52,8 @@ class ContainedSpace  : public ContainedComp
   double instepFrac;                   ///< Step between FC points
   int primaryCell;                     ///< Master cell [for BBox]
   int buildCell;                       ///< Space for new cell
+
+  HeadRule primaryBBox;                ///< Boundary of primary 
   HeadRule BBox;                       ///< Bounding box
   HeadRule outerCut;                   ///< Outer Cut surfaces
   
@@ -69,7 +71,7 @@ class ContainedSpace  : public ContainedComp
   virtual ~ContainedSpace();
 
   static HeadRule
-    calcBoundary(Simulation&,const int,
+    calcBoundary(const Simulation&,const int,
 		 const size_t,const LinkUnit&,
 		 const LinkUnit&);
   static HeadRule
@@ -77,7 +79,8 @@ class ContainedSpace  : public ContainedComp
 		 const size_t,const LinkUnit&,
 		 const LinkUnit&);
 
-
+  void clear();
+  
   void setSpaceConnect(const size_t,const Geometry::Vec3D&,
 		  const Geometry::Vec3D&);
   void setSpaceLinkSurf(const size_t,const int);
@@ -86,6 +89,9 @@ class ContainedSpace  : public ContainedComp
 
   /// set primary cell
   void setPrimaryCell(const int C) { primaryCell=C; }
+  void setPrimaryCell(const Simulation&,const int);
+  void setPrimaryCell(const HeadRule&);
+  
   /// set build cell number [created]
   void setBuildCell(const int C) { buildCell=C; }
   /// access build cell
@@ -101,7 +107,7 @@ class ContainedSpace  : public ContainedComp
   void registerSpaceIsolation(const long int,const long int);
 
   void buildWrapCell(Simulation&,const int,const int);
-  void calcBoundaryBox(Simulation&);
+  void calcBoundaryBox(const Simulation&);
   void insertObjects(Simulation&);
 
   static void insertPair(Simulation&,const std::vector<int>&,const FixedComp&,

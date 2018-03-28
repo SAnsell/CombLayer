@@ -82,6 +82,9 @@ class CellMap  : public BaseMap
   std::vector<int> getCells() const
     { return BaseMap::getItems(); }
 
+  HeadRule getCellsHR(const Simulation&,const std::string&) const;
+  const HeadRule& getCellHR(const Simulation&,const std::string&,
+		     const size_t =0) const;
 
   /// remmove a cell number [index is offset]
   std::string removeCellNumber(const int CN,const size_t Index =0)

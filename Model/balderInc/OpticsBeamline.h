@@ -87,7 +87,8 @@ class OpticsBeamline :
   std::shared_ptr<constructSystem::PortTube> filterBox;
 
   /// Filter box
-  std::shared_ptr<xraySystem::FlangeMount> filters[4];
+  
+  std::array<std::shared_ptr<xraySystem::FlangeMount>,4> filters;
 
   /// Joining Bellows (pipe):
   std::shared_ptr<constructSystem::Bellows> pipeB;
@@ -155,6 +156,9 @@ class OpticsBeamline :
 
   /// Pipe for diamond filter
   std::shared_ptr<constructSystem::PortTube> viewPipe;
+
+  /// ViewPipe mounts
+  std::array<std::shared_ptr<xraySystem::FlangeMount>,1> viewMount;
 
   /// Joining Bellows (pipe large):
   std::shared_ptr<constructSystem::Bellows> pipeF;

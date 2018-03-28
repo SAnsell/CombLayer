@@ -70,6 +70,10 @@
 #include "Object.h"
 #include "Qhull.h"
 #include "Simulation.h"
+#include "Zaid.h"
+#include "MXcards.h"
+#include "Material.h"
+#include "DBMaterial.h"
 
 #include "SimFLUKA.h"
 #include "cellValueSet.h"
@@ -79,6 +83,70 @@
 
 namespace flukaSystem
 {
+
+std::set<int>
+getActiveMaterial(std::string material)
+  /*!
+    Given a material find the active cells
+    \param material : material name to use
+    \return set of active components
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","getActiveMaterial");
+
+  const ModelSupport::DBMaterial& DB=
+    ModelSupport::DBMaterial::Instance();
+    
+  const std::set<int>& activeMat=DB.getActive();
+  
+  if (material=="All" || material=="all")
+    return activeMat;
+  
+  bool negKey(0);
+  if (material.size()>1 && material.back()=='-')
+    {
+      negKey=1;
+      material.pop_back();
+    }
+  
+  if (!DB.hasKey(material))
+    throw ColErr::InContainerError<std::string>
+      (material,"Material no present");
+
+  const int MatNum=DB.getIndex(material);
+
+  if (negKey)
+    {
+      std::set<int> activeOut(activeMat);
+      activeOut.erase(MatNum);
+      return activeOut;
+    }
+  std::set<int> activeOut;
+  activeOut.insert(MatNum);
+  return activeOut;
+}
+
+std::set<int>
+getActiveCell(const std::string& cell)
+  /*!
+    Given a cell find the active cells
+    \param cell : cell0 name to use
+    \return set of active components
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","getActiveCell");
+
+  const ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+  
+  const std::vector<int> Cells=OR.getObjectRange(cell);
+  if (Cells.empty())
+    throw ColErr::InContainerError<std::string>(cell,"Empty cell");
+  std::set<int> activeCell(Cells.begin(),Cells.end());
+
+  activeCell.erase(1);
+  return activeCell;
+}
   
 void 
 setDefaultPhysics(SimFLUKA& System,
@@ -103,7 +171,6 @@ setDefaultPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processUnit(*PC,IParam,index);
     }
-
   nSet=IParam.setCnt("wEMF");
   if (nSet && PC)
     {

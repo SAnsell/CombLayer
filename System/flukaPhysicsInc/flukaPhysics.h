@@ -37,14 +37,23 @@ class flukaPhysics
 {
  private:
 
-  std::vector<int> cellN;                        ///< Cell numbers in order
-  std::vector<int> matN;                         ///< Material numbers in order
+  /// storage for cell system
+  typedef std::tuple<bool,std::string> unitTYPE;
+  
+  std::vector<int> cellVec;                     ///< Cell numbers in order
+  std::vector<int> matVec;                      ///< Material numbers in order
 
-  // CELL BIAS
+  
+  // ZERO VLAUE
+  std::map<std::string,cellValueSet<0>> flagValue;   ///< flag values
+  // ONE VLAUE
   std::map<std::string,cellValueSet<1>> impValue;   ///< Importance values
- 
-  // MATERIAL BIAS
+  // TWO VALUE
   std::map<std::string,cellValueSet<2>> emfFlag;    ///< EMF flag
+  // THREE VALUE
+  std::map<std::string,cellValueSet<3>> threeFlag;    ///< EMF flag
+
+  std::map<std::string,unitTYPE> formatMap;     ///< Layout and cell/mat
 
  public:
    
@@ -57,9 +66,15 @@ class flukaPhysics
   
   // ALL systems setup
   void setCellNumbers(const std::vector<int>&);
+  // ALL systems setup
+  void setMatNumbers(const std::set<int>&);
 
-  void setImp(const std::string&,const int,const double);
-  void setEMF(const std::string&,const int,const double,const double);
+  void setFlag(const std::string&,const int);
+  void setImp(const std::string&,const int,const std::string&);
+  void setEMF(const std::string&,const int,const std::string&,
+	      const std::string&);
+  void setTHR(const std::string&,const int,const std::string&,
+	      const std::string&,const std::string&);
   void writeFLUKA(std::ostream&) const;
 };
 

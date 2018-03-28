@@ -33,6 +33,8 @@ namespace mainSystem
 
 namespace flukaSystem
 {
+  std::set<int> getActiveMaterial(std::string);
+  std::set<int> getActiveCell(const std::string&);
   void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
 }
 
