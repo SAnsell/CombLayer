@@ -130,7 +130,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 
   // cell/mat : tag name /  scale V1 / scale V2 [if used]
   typedef std::tuple<size_t,bool,std::string,double,double,double> emfTYPE;
-  
+  ELog::EM<<"EMF == "<<ELog::endDiag;
   static const std::map<std::string,emfTYPE> EMap
     ({
       { "cut",emfTYPE(2,0,"emfcut",-0.001,0.001,0) },   // cell: S2 : -GeV : GeV

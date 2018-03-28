@@ -92,7 +92,7 @@
 SimFLUKA::SimFLUKA() :
   Simulation(),
   alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
-  nps(1000),rndSeed(237489791),
+  nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics())
   /*!
     Constructor
@@ -392,7 +392,7 @@ SimFLUKA::writePhysics(std::ostream& OX) const
   cx<<"START "<<nps;
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
-  cx<<"RANDOMIZE 1.0 "<<rndSeed;
+  cx<<"RANDOMIZE 1.0 "<<std::to_string(rndSeed % 1000000);
   StrFunc::writeFLUKA(cx.str(),OX);
   // Remaining Physics cards           
   PhysPtr->writeFLUKA(OX);

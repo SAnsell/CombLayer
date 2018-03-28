@@ -171,7 +171,6 @@ setDefaultPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processUnit(*PC,IParam,index);
     }
-
   nSet=IParam.setCnt("wEMF");
   if (nSet && PC)
     {
