@@ -573,7 +573,7 @@ buildFullSimMCNP(SimMCNP* SimMCPtr,
   tallySystem::tallySelection(*SimMCPtr,IParam);
    //
 
-  //SimProcess::importanceSim(*SimMCPtr,IParam);
+  SimProcess::importanceSim(*SimMCPtr,IParam);
 
   SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   tallyModification(*SimMCPtr,IParam);
