@@ -346,7 +346,7 @@ SimMCNP::substituteAllSurface(const int oldSurfN,const int newSurfN)
 				 
 std::map<int,int>
 SimMCNP::renumberCells(const std::vector<int>& cOffset,
-			  const std::vector<int>& cRange)
+		       const std::vector<int>& cRange)
   /*!
     Re-arrange all the cell numbers to be sequentual from 1-N.
     \param cOffset :: Protected start

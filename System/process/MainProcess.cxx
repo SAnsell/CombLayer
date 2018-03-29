@@ -264,14 +264,13 @@ renumberCells(Simulation& System,const inputParam& IParam)
 	    (i+1<dataCnt) ? IParam.getValue<std::string>("renum",i+1) : "";
 
 	  int xOffset(0);
-	  int xRange(10000);
-	  
+	  int xRange(10000);	  
 	  i+=2;
 	  if (!StrFunc::convert(Name,xOffset) || 
 	      !StrFunc::convert(Range,xRange))
 	    {
 	      xOffset=OR.getCell(Name);
-	      xRange=OR.getRange(Name);
+	      xRange=OR.getRange(Name);			
 	      i--;              // using names
 	    }
 	  

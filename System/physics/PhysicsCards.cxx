@@ -985,8 +985,10 @@ PhysicsCards::substituteCell(const int oldCell,const int newCell)
   ELog::RegMethod RegA("PhysicsCards","substituteCell");
   histpCells.changeItem(oldCell,newCell);
   for(PhysImp& PI : ImpCards)
-    PI.renumberCell(oldCell,newCell);
-  
+    {
+      const std::vector<int> CVec=PI.getCellVector();
+      PI.renumberCell(oldCell,newCell);
+    }
   Volume.renumberCell(oldCell,newCell);
   PWTCard->renumberCell(oldCell,newCell);
   ExtCard->renumberCell(oldCell,newCell);

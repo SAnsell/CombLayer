@@ -1338,16 +1338,15 @@ Simulation::calcCellRenumber(const std::vector<int>& cOffset,
 	    }
 	  while(renumberMap.find(nNum)!=renumberMap.end())
 	    nNum += 10000;
-	  
 	  renumberMap.emplace(cNum,nNum);
 	  nNum++;
 	}
       else
 	{
-	  int nnNum(cNum-cOffset[cIndex-1]+cRange[cIndex-1]);
-	  while(renumberMap.find(nnNum)!=renumberMap.end())
-	    nnNum += 10000;
-	  renumberMap.emplace(cNum,nNum);
+	  int offsetNNum(cNum-cOffset[cIndex-1]+cRange[cIndex-1]);
+	  while(renumberMap.find(offsetNNum)!=renumberMap.end())
+	    offsetNNum += 10000;
+	  renumberMap.emplace(cNum,offsetNNum);
 	}
     }
   return renumberMap;
@@ -1373,7 +1372,7 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
     WeightSystem::weightManager::Instance();
 
   const std::map<int,int> RMap=calcCellRenumber(cOffset,cRange);
-
+  
   std::string oldUnit,keyUnit;
   int orStartNumber(0);
   const attachSystem::CellMap* CMapPtr(0);
