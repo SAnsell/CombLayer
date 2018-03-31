@@ -80,36 +80,67 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processUnit");
 
-  double value;
-  std::string particle=IParam.getValueError<std::string>
-    ("wIMP",setIndex,0,"No particle for wIMP ");
-
-  if (particle=="help" || particle=="Help")
-    {
-      writeHelp(ELog::EM.Estream());
-      ELog::EM<<ELog::endBasic;
-      return;
-    }
   
-  /*  size_t index(1);
-  if (StrFunc::convert(particle,value))
-    particle="all";
-  else
+  // cell/mat : tag name /  scale V1 / scale V2 [if used]
+  typedef std::tuple<size_t,bool,std::string> impTYPE;
+  static const std::map<std::string,impTYPE> IMap
+    ({
+      { "all",impTYPE(1,1,"all") },   // cell: 
+      { "hadron",impTYPE(1,1,"hadron") },  
+      { "electron",impTYPE(1,1,"electron") },
+      { "low",impTYPE(1,1,"low") }
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wIMP",setIndex,0,"No type for wIMP ");
+
+  
+  if (type=="help" || type=="Help")
+    return writeIMPHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  std::map<std::string,impTYPE>::const_iterator mc=IMap.find(type);
+  if (mc==IMap.end())
+    throw ColErr::InContainerError<std::string>(type,"imp type unknown");
+
+  const std::string cellM=IParam.getValueError<std::string>
+    ("wIMP",setIndex,1,"No cell/material for wIMP ");
+
+  const size_t cellSize(std::get<0>(mc->second));
+  const bool materialFlag(std::get<1>(mc->second));
+  const std::string keyName(std::get<2>(mc->second));
+
+  std::string VV[3];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i]=IParam.getValueError<std::string>
+      ("wIMP",setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for wIMP ");      
+
+  std::set<int> activeCell=
+    (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
+
+  if (activeCell.empty())
+    throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
+
+  switch (cellSize)
     {
-      value=IParam.getValueError<double>
-	("wIMP",setIndex,index,"No value for wIMP");
-      index++;
+    case 0:
+      for(const int MN : activeCell)
+	PC.setFlag(keyName,MN);
+      break;
+    case 1:
+      for(const int MN : activeCell)
+	PC.setImp(keyName,MN,VV[0]);
+      break;
+    case 2:
+      for(const int MN : activeCell)
+	PC.setEMF(keyName,MN,VV[0],VV[1]);
+      break;
+    case 3:
+      for(const int MN : activeCell)
+	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
+      break;
     }
 
-  const std::string objName=IParam.getValueError<std::string>
-    ("wIMP",setIndex,index,"No objName for wIMP");
-  const std::set<int> activeCells=getActiveCell(objName);
-  if (activeCells.empty())
-    throw ColErr::InContainerError<std::string>(objName,"Empty cell");
-
-  for(const int CN : activeCells)
-    PC.setImp(particle,CN,value);
-  */
   return;
 }
 
@@ -129,28 +160,26 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 
 
   // cell/mat : tag name /  scale V1 / scale V2 [if used]
-  typedef std::tuple<size_t,bool,std::string,double,double,double> emfTYPE;
+  typedef std::tuple<size_t,bool,std::string> emfTYPE;
 
   static const std::map<std::string,emfTYPE> EMap
     ({
-      { "cut",emfTYPE(2,0,"emfcut",-0.001,0.001,0) },   // cell: S2 : -GeV : GeV
-
-      { "prodcut",emfTYPE(2,1,"prodcut",-0.001,0.001,0) }, 
-      { "elpothr",emfTYPE(3,1,"elpothr",0.001,0.001,0.001) },
-      { "pairbrem",emfTYPE(2,1,"pairbrem",0.001,0.001,0) }, // mat   GeV : GeV
-      { "photonuc",emfTYPE(0,1,"photonuc",0,0,0) },     // mat 
+      { "cut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "emfcut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
+      { "prodcut",emfTYPE(2,1,"prodcut") }, 
+      { "elpothr",emfTYPE(3,1,"elpothr") },  //
+      { "pho2thr",emfTYPE(2,1,"pho2thr") },  // photo-nuclear
+      { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
+      { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
+      { "muphoton",emfTYPE(0,1,"muphoton") }      // mat 
     });
   
   // must have size
-  std::string type=IParam.getValueError<std::string>
+  const std::string type=IParam.getValueError<std::string>
     ("wEMF",setIndex,0,"No type for wEMF ");
 
   if (type=="help" || type=="Help")
-    {
-      writeEMFHelp(ELog::EM.Estream());
-      ELog::EM<<ELog::endBasic;
-      return;
-    }
+    return writeEMFHelp(ELog::EM.Estream(),&ELog::endBasic);
 
   std::map<std::string,emfTYPE>::const_iterator mc=EMap.find(type);
   if (mc==EMap.end())
@@ -163,15 +192,13 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
   const size_t cellSize(std::get<0>(mc->second));
   const bool materialFlag(std::get<1>(mc->second));
   const std::string keyName(std::get<2>(mc->second));
-  const double scaleA(std::get<3>(mc->second));
-  const double scaleB(std::get<4>(mc->second));
-  const double scaleC(std::get<5>(mc->second));
 
+ 
   std::string VV[3];
   for(size_t i=0;i<cellSize;i++)
     VV[i]=IParam.getValueError<std::string>
       ("wEMF",setIndex,2+i,
-       "No value["+std::to_string(i+1)+"] for wEMF ");      
+       "No value["+std::to_string(i+1)+"] for wEMF: "+type);      
   
   std::set<int> activeCell=
     (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
@@ -201,10 +228,12 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 
 
 void
-flukaImpConstructor::writeHelp(std::ostream& OX) const
+flukaImpConstructor::writeIMPHelp(std::ostream& OX,
+				  ENDL endDL) const
   /*!
     Write out the help
     \param OX :: Output stream
+    \param endDL :: End of line type
   */
 {
   OX<<"wIMP help :: \n";
@@ -219,14 +248,17 @@ flukaImpConstructor::writeHelp(std::ostream& OX) const
       "         : cell number range\n"
       "         : cell number\n"
       "         : all\n";
+  OX<< (*endDL);
   return;
 }
 
 void
-flukaImpConstructor::writeEMFHelp(std::ostream& OX) const
+flukaImpConstructor::writeEMFHelp(std::ostream& OX,
+				  ENDL endDL) const
   /*!
     Write out the help
     \param OX :: Output stream
+    \param endDL :: End of line type
   */
 {
   OX<<"wEMF help :: \n"
@@ -235,6 +267,13 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX) const
     "      Cell-Range electronCut[MeV] gammaCut[MeV]\n"
     " -- pairbrem \n"
     "      Mat-Range   \n";
+    " -- elpothr \n"
+    "      compton photoelc gammpair Mat-Range   \n";
+    " -- prodcut \n"
+    "      compton photoelc gammpair Mat-Range   \n";
+    " -- pho2-thr \n"
+    "      photonuc-threshhold Mat-Range   \n";
+  OX << (*endDL);
   return;
 }
 

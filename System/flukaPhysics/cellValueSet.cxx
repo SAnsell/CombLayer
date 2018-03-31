@@ -432,8 +432,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  SArray[2]=std::to_string(std::get<1>(tc));
 	  for(size_t i=0;i<N;i++)
 	    {
-	      ELog::EM<<"DARRA == "<<dArray[i].first<<" "
-		      <<dArray[i].second<<" "<<scaleVec[i]<<ELog::endDiag;
 	      if (!dArray[i].first)
 		SArray[3+i]=std::to_string(dArray[i].second*scaleVec[i]);
 	      else

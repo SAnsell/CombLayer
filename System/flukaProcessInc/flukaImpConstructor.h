@@ -50,8 +50,13 @@ class flukaImpConstructor
 {
  private:
 
-  void writeHelp(std::ostream&) const;
-  void writeEMFHelp(std::ostream&) const;
+  /// Typedef for ENDL type in help
+  typedef ELog::OutputLog<ELog::EReport>& (*ENDL)
+    (ELog::OutputLog<ELog::EReport>&);
+
+  void writeIMPHelp(std::ostream&,ENDL) const;
+
+  void writeEMFHelp(std::ostream&,ENDL) const;
     
  public:
 
