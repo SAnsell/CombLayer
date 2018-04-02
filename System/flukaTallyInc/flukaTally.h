@@ -25,6 +25,8 @@
 namespace flukaSystem
 {
 
+  class auxScore;
+  
 /*!
   \class flukaTally
   \version 1.0
@@ -37,10 +39,14 @@ namespace flukaSystem
 class flukaTally
 {
  protected:
-  
+
+  std::string keyName;              ///< tally name
   int outputUnit;                   ///< Fortran output number
-  std::string comments;                  ///< comment line
-    
+  std::string comments;             ///< comment line
+
+  std::string particle;             ///< Auxillary particle
+  std::string doseType;             ///< Auxillary dose type if used
+  
  public:
   
   explicit flukaTally(const int);
@@ -49,10 +55,13 @@ class flukaTally
   virtual flukaTally* clone() const; 
   virtual ~flukaTally();
   
+  void setKeyName(const std::string&);
   void setComment(const std::string&);
+  /// access out unit
   int getOutUnit() const { return outputUnit; }
   
   virtual void write(std::ostream&) const;
+  virtual void writeAuxScore(std::ostream&) const;
 };
 
 std::ostream&

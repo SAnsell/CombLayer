@@ -56,8 +56,9 @@ namespace flukaSystem
 {
   
 template<size_t N>
-cellValueSet<N>::cellValueSet(const std::string& KN,const std::string& ON) :
-  keyName(KN),outName(ON),whatValue(0.0)
+cellValueSet<N>::cellValueSet(const std::string& KN,
+			      const std::string& ON) :
+  keyName(KN),outName(ON)
   /*!
     Constructor
     \param KN :: Indentifier
@@ -71,7 +72,7 @@ template<size_t N>
 cellValueSet<N>::cellValueSet(const std::string& KN,
 			      const std::string& ON,
 			      const std::string& TT) :
-  keyName(KN),outName(ON),tag(TT),whatValue(0.0)
+  keyName(KN),outName(ON),tag(TT)
   /*!
     Constructor
     \param KN :: Indentifier
@@ -82,35 +83,17 @@ cellValueSet<N>::cellValueSet(const std::string& KN,
   scaleVec.fill(1.0);
 }
 
-template<size_t N>
-cellValueSet<N>::cellValueSet(const std::string& KN,
-			      const std::string& ON,
-			      const std::string& TT,
-			      const double WValue) :
-  keyName(KN),outName(ON),tag(TT),whatValue(WValue)
-  /*!
-    Constructor
-    \param KN :: Indentifier
-    \param ON :: Output id for FLUKA
-    \param WValue :: What value
-  */
-{
-  scaleVec.fill(1.0);
-}
 
 template<size_t N>
 cellValueSet<N>::cellValueSet(const std::string& KN,
 			      const std::string& ON,
 			      const std::string& TT,
-			      const double WValue,
 			      const std::array<double,N>& scaleV) :
-  keyName(KN),outName(ON),tag(TT),whatValue(WValue),
-  scaleVec(scaleV)
+  keyName(KN),outName(ON),tag(TT),scaleVec(scaleV)
   /*!
     Constructor
     \param KN :: Indentifier
     \param ON :: Output id for FLUKA
-    \param WValue :: What value
   */
 {}
 
@@ -118,7 +101,7 @@ cellValueSet<N>::cellValueSet(const std::string& KN,
 template<size_t N>
 cellValueSet<N>::cellValueSet(const cellValueSet& A) : 
   keyName(A.keyName),outName(A.outName),tag(A.tag),
-  whatValue(A.whatValue),scaleVec(A.scaleVec)
+  scaleVec(A.scaleVec)
   /*!
     Copy constructor
     \param A :: cellValueSet to copy
@@ -136,7 +119,6 @@ cellValueSet<N>::operator=(const cellValueSet<N>& A)
 {
   if (this!=&A)
     {
-      whatValue=A.whatValue;
       dataMap=A.dataMap;
       scaleVec=A.scaleVec;
     }
@@ -202,14 +184,19 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 	    {
 	      for(size_t index=0;index<N;index++)
 		{
-		  const bool& VDef=V[index].first;
-		  const double& VV=V[index].second;
-		  const bool& ADef=mc->second[index].first;
-		  const double& AV=mc->second[index].second;
+		  const int& VDef=V[index].first;
+		  const std::string& VS=V[index].second;
+		  const int& ADef=mc->second[index].first;
+		  const std::string& AS=mc->second[index].second;
 
-		  // only if not def
-		  if (VDef!=ADef || 
-		      (VDef==0 && (std::abs(VV-AV)>Geometry::zeroTol))) 
+		  double VV,AV;
+		  int sumFlag=(VDef>1) ? 0 : StrFunc::convert(VS,VV);
+		  sumFlag+= (ADef>1) ? 0 : StrFunc::convert(AS,AV);
+
+		  if (VDef!=ADef ||           // diff flag
+		      (VDef &&                // def = def is a pass
+		       ((sumFlag!=2 && AS!=VS) ||
+			(sumFlag==2 && (std::abs(VV-AV)>Geometry::zeroTol))) ))
 		    {
 		      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1]));
 		      outData.push_back(V);
@@ -261,8 +248,8 @@ cellValueSet<N>::setValues(const int cN,const double V)
   */
 {
   valTYPE A;
-  A[0].first=0;
-  A[0].second=V;
+  A[0].first=1;
+  A[0].second=std::to_string(V);
   dataMap.emplace(cN,A);
   return;
 }
@@ -279,10 +266,10 @@ cellValueSet<N>::setValues(const int cN,const double V,
   */
 {
   valTYPE A;
-  A[0].first=0;
-  A[0].second=V;
-  A[1].first=0;
-  A[1].second=V2;
+  A[0].first=1;
+  A[0].second=std::to_string(V);
+  A[1].first=1;
+  A[1].second=std::to_string(V2);
   dataMap.emplace(cN,A);
   return;
 }
@@ -300,12 +287,12 @@ cellValueSet<N>::setValues(const int cN,const double V,
   */
 {
   valTYPE A;
-  A[0].first=0;
-  A[0].second=V;
-  A[1].first=0;
-  A[1].second=V2;
-  A[2].first=0;
-  A[2].second=V3;
+  A[0].first=1;
+  A[0].second=std::to_string(V);
+  A[1].first=1;
+  A[1].second=std::to_string(V2);
+  A[2].first=1;
+  A[2].second=std::to_string(V3);
   dataMap.emplace(cN,A);
   return;
 }
@@ -321,14 +308,12 @@ cellValueSet<N>::setValues(const int cN,const std::string& V)
 {
   valTYPE A;
   if (V=="def" || V=="Def")
-    A[0].first=1;
+    A[0].first=0;
   else
     {
       double D;
-      if (!StrFunc::convert(V,D))
-	throw ColErr::InvalidLine(V,"No convertion to number");
-      A[0].first=0;
-      A[0].second=D;
+      A[0].first= (StrFunc::convert(V,D)) ? 1 : -1;
+      A[0].second=V;
     }
   dataMap.emplace(cN,A);
   return;
@@ -347,17 +332,15 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
 {
   valTYPE A;
   const std::vector<const std::string*> VStr({&V1,&V2});
-  for(size_t i=0;i<VStr.size();i++)
+  for(size_t i=0;i<VStr.size() && i<N;i++)
     {
       if (*VStr[i]=="def" || *VStr[i]=="Def")
-	A[i].first=1;
+	A[i].first=0;
       else
 	{
 	  double D;
-	  if (!StrFunc::convert(*VStr[i],D))
-	    throw ColErr::InvalidLine(*VStr[i],"No convertion to number");
-	  A[i].first=0;
-	  A[i].second=D;
+	  A[i].first= (StrFunc::convert(*VStr[i],D)) ? 1 : -1;
+	  A[i].second= *VStr[i];
 	}
     }
   dataMap.emplace(cN,A);
@@ -367,7 +350,8 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
 template<size_t N>
 void
 cellValueSet<N>::setValues(const int cN,const std::string& V1,
-			   const std::string& V2,const std::string& V3)
+			   const std::string& V2,
+			   const std::string& V3)
   /*!
     Set a value in the map
     \param cN :: Cell number   
@@ -378,17 +362,15 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
 {
   valTYPE A;
   const std::vector<const std::string*> VStr({&V1,&V2,&V3});
-  for(size_t i=0;i<VStr.size();i++)
+  for(size_t i=0;i<VStr.size() && i<N;i++)
     {
       if (*VStr[i]=="def" || *VStr[i]=="Def")
-	A[i].first=1;
+	A[i].first=0;
       else
 	{
 	  double D;
-	  if (!StrFunc::convert(*VStr[i],D))
-	    throw ColErr::InvalidLine(*VStr[i],"No convertion to number");
-	  A[i].first=0;
-	  A[i].second=D;
+	  A[i].first= (StrFunc::convert(*VStr[i],D)) ? 1 : -1;
+	  A[i].second= *VStr[i];
 	}
     }
   dataMap.emplace(cN,A);
@@ -421,21 +403,27 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
     {
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
-      SArray[0]=std::to_string(whatValue);
 
       for(size_t index=0;index<Bgroup.size();index++)
 	{
 	  const TITEM& tc(Bgroup[index]);
 	  const valTYPE& dArray(Bdata[index]);
 
-	  SArray[1]=std::to_string(std::get<0>(tc));
-	  SArray[2]=std::to_string(std::get<1>(tc));
+	  SArray[0]=std::to_string(std::get<0>(tc));
+	  SArray[1]=std::to_string(std::get<1>(tc));
 	  for(size_t i=0;i<N;i++)
 	    {
-	      if (!dArray[i].first)
-		SArray[3+i]=std::to_string(dArray[i].second*scaleVec[i]);
+	      if (dArray[i].first==1)
+		{
+		  double D;
+
+		  StrFunc::convert(dArray[i].second,D);
+		  SArray[2+i]=std::to_string(D*scaleVec[i]);
+		}
+	      else if (dArray[i].first == -1)
+		SArray[2+i]=dArray[i].second;
 	      else
-		SArray[3+i]="-";
+		SArray[2+i]="-";
 	    }
 	  cx.str("");
 	  cx<<outName<<" ";
@@ -445,7 +433,7 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	      if (UC.size()==2 &&
 		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
 		{
-		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+3));
+		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
 		  if (UC[0]=='%')
 		    cx<<SArray[SA]<<" ";
 		  else if (UC[0]=='M' || UC[0]=='R')

@@ -59,47 +59,43 @@ namespace flukaSystem
 		       
 flukaPhysics::flukaPhysics() :
   flagValue({
-      { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","",1.0) },
-      { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","",1.0) }
+      { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
+      { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") }
     }),
 
   impValue({
-      { "all",      cellValueSet<1>("all","BIAS","",0.0) },
-      { "hadron",   cellValueSet<1>("hadron","BIAS","",1.0) },
-      { "electron", cellValueSet<1>("electron","BIAS","",2.0) },
-      { "low",      cellValueSet<1>("low","BIAS","",3.0) }
+      { "all",      cellValueSet<1>("all","BIAS","") },
+      { "hadron",   cellValueSet<1>("hadron","BIAS","") },
+      { "electron", cellValueSet<1>("electron","BIAS","") },
+      { "low",      cellValueSet<1>("low","BIAS","") }
     }),
 
   emfFlag({
-      { "emfcut",  cellValueSet<2>("emfcut","EMFCUT","",
-				   0.0,{-1e-3,1e-3}) },
-      { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",
-				     0.0,{-1e-3,1e-3})},
-      { "elpothr", cellValueSet<2>("elpothr","EMFCUT","ELPO-THR",
-				   0.0,{1e-3,1e-3})},
-      { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",
-				   0.0,{1e-3,1e-3})},
-      { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",
-				    3.0,{1e-3,1e-3})} 
+      { "emfcut",  cellValueSet<2>("emfcut","EMFCUT","",{-1e-3,1e-3}) },
+      { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{1e-3,1e-3})},
+      { "elpothr", cellValueSet<2>("elpothr","EMFCUT","ELPO-THR",{1e-3,1e-3})},
+      { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",{1e-3,1e-3})},
+      { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})} 
     }),
 
   threeFlag({
       { "elpothr",cellValueSet<3>("elpothr","EMFCUT","ELPO-THR",
-				  0.0,{1e-3,1e-3,1e-3}) }
+	{1e-3,1e-3,1e-3}) }
     }),
 
   formatMap({
-      { "all", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
-      { "hadron", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
-      { "electron", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
-      { "low", unitTYPE(0," %0 1.0 %3 R1 R2 1.0 ") },
-      { "emfcut", unitTYPE(0," %3 %4 0.0 R1 R2 1.0") },
-      { "prodcut", unitTYPE(1," %3 %4 1.0 M1 M2 1.0") },
-      { "pho2thr", unitTYPE(1," %3 %4 -  M1 M2 1.0") },
-      { "elpothr", unitTYPE(1," %3 %4 %5 M1 M2 1.0") },
-      { "pairbrem", unitTYPE(1,"%0 %3 %4 M1 M2 1.0") },
-      { "photonuc", unitTYPE(1,"%0 - - M1 M2 1.0 ") },
-      { "muphoton", unitTYPE(1,"%0 - - M1 M2 1.0 ") }
+      { "all", unitTYPE(0," 0.0 1.0 %2 R0 R1 1.0 ") },
+      { "hadron", unitTYPE(0," 1.0 1.0 %3 R0 R1 1.0 ") },
+      { "electron", unitTYPE(0," 2.0 %2 1.0 %3 R0 R1 1.0 ") },
+      { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
+	
+      { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
+      { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
+      { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },
+      { "elpothr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
+      { "pairbrem", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
+      { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+      { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") }
     })
   /*!
     Constructor

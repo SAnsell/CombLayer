@@ -88,7 +88,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       { "all",impTYPE(1,1,"all") },   // cell: 
       { "hadron",impTYPE(1,1,"hadron") },  
       { "electron",impTYPE(1,1,"electron") },
-      { "low",impTYPE(1,1,"low") }
+      { "low",impTYPE(1,1,"low") } 
     });
 
   const std::string type=IParam.getValueError<std::string>
@@ -266,11 +266,11 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
     " -- cut \n"
     "      Cell-Range electronCut[MeV] gammaCut[MeV]\n"
     " -- pairbrem \n"
-    "      Mat-Range   \n";
+    "      Mat-Range   \n"
     " -- elpothr \n"
-    "      compton photoelc gammpair Mat-Range   \n";
+    "      compton photoelc gammpair Mat-Range   \n"
     " -- prodcut \n"
-    "      compton photoelc gammpair Mat-Range   \n";
+    "      compton photoelc gammpair Mat-Range   \n"
     " -- pho2-thr \n"
     "      photonuc-threshhold Mat-Range   \n";
   OX << (*endDL);
