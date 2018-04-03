@@ -1069,6 +1069,10 @@ makeESS::buildTwister(Simulation& System)
 
   attachSystem::addToInsertSurfCtrl(System,*Twister,TopAFL->getCC("outer"));
   attachSystem::addToInsertSurfCtrl(System,*Twister,TopBFL->getCC("outer"));
+
+  attachSystem::addToInsertSurfCtrl(System,*Twister,LowAFL->getCC("outer"));
+  attachSystem::addToInsertSurfCtrl(System,*Twister,LowBFL->getCC("outer"));
+
   attachSystem::addToInsertSurfCtrl(System,*Twister, Target->getCC("Wheel"));
 
   return;
