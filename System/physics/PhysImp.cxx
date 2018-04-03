@@ -103,9 +103,23 @@ const std::list<std::string>&
 PhysImp::getParticleList() const
   /*!
     Accessor to particle list
+    \return list of particles [MCNP names]
   */
 {
   return particles;
+}
+
+std::vector<int>
+PhysImp::getCellVector() const
+  /*!
+    Accessor to cells
+    \return list of cells
+  */
+{
+  std::vector<int> Out;
+  for(const std::map<int,double>::value_type& MC : impNum)
+    Out.push_back(MC.first);
+  return Out;
 }
   
 void
@@ -352,7 +366,7 @@ PhysImp::renumberCell(const int oldCellN,const int newCellN)
   typedef std::map<int,double> ITYPE;
   ITYPE::iterator mc;
   if (impNum.find(newCellN)!=impNum.end())
-    throw ColErr::InContainerError<int>(oldCellN,"New cell not found");
+    throw ColErr::InContainerError<int>(newCellN,"New cell exists");
   mc=impNum.find(oldCellN);
   if (mc==impNum.end())
     throw ColErr::InContainerError<int>(oldCellN,"Old cell not found "+

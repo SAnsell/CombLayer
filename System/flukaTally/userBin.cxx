@@ -170,6 +170,24 @@ userBin::setCoordinates(const Geometry::Vec3D& A,
   return;
 }
 
+void
+userBin::writeAuxScore(std::ostream& OX) const
+  /*!
+    Write an auxScore card
+    \param OX :: Ouput stream
+  */
+{
+  if (!particle.empty())
+    {
+      const std::string meshName="mesh"+std::to_string(outputUnit);
+      std::ostringstream cx;
+      cx<<"AUXSCORE USRBIN "<<particle<<" - "<<meshName
+	<<" "<<meshName<<" - "<<doseType;
+      StrFunc::writeFLUKA(cx.str(),OX);  
+    }
+  return;
+}
+
   
 void
 userBin::write(std::ostream& OX) const
@@ -183,6 +201,7 @@ userBin::write(std::ostream& OX) const
   cx<<"USRBIN "<<meshType<<" "<<particle<<" "
     <<outputUnit<<" "<<maxCoord;  
   cx<<" mesh"<<std::to_string(outputUnit);
+  
   StrFunc::writeFLUKA(cx.str(),OX);
 
   cx.str("");
@@ -192,7 +211,7 @@ userBin::write(std::ostream& OX) const
     cx<<Pts[i]<<" ";
   cx<<"  & ";
   StrFunc::writeFLUKA(cx.str(),OX);  
-  
+  writeAuxScore(OX);
   return;
 }
 

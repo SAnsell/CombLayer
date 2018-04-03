@@ -441,12 +441,10 @@ ContainedSpace::buildWrapCell(Simulation& System,
       matTemp=outerObj->getTemp();
     }
 
-
   // First make inner vacuum
   // removeing front/back surfaces
 
-  outerCut.reset();
-  
+  outerCut.reset();  
   HeadRule innerVacuum(outerSurf);
   for(const LinkUnit& LU : LCutters)
     {

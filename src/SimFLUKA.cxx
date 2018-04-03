@@ -189,6 +189,22 @@ SimFLUKA::addTally(const flukaSystem::flukaTally& TI)
   return;
 }
 
+flukaSystem::flukaTally*
+SimFLUKA::getTally(const int TI) const
+  /*!
+    Get a tally to main stack
+    \param TI :: Fluka tally to return
+    \return tally Pointer
+  */
+{
+  ELog::RegMethod RegA("SimFluka","getTally");
+
+  FTallyTYPE::const_iterator mc=FTItem.find(TI);
+  if (mc==FTItem.end())
+    throw ColErr::InContainerError<int>(TI,"Fluka Tally");
+  return mc->second;
+}
+
 void
 SimFLUKA::processActiveMaterials() const
   /*!

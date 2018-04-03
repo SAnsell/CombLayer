@@ -72,6 +72,7 @@ class userBin : public flukaTally
   const std::array<size_t,3>& getNPt() const { return Pts; }
 
   void writeCoordinates(std::ostream&) const;
+  virtual void writeAuxScore(std::ostream&) const;
   virtual void write(std::ostream&) const;
   
 };

@@ -39,15 +39,13 @@ class cellValueSet
  private:
 
   /// Data type
-  typedef  std::array<std::pair<bool,double>,N> valTYPE;  
+  typedef  std::array<std::pair<int,std::string>,N> valTYPE;  
   /// map type
   typedef  std::map<int,valTYPE> dataTYPE;
  
   const std::string keyName;               ///< Key name
   const std::string outName;               ///< Output name for FLUKA
   const std::string tag;                   ///< Tag name
-  double whatValue;                        ///< What [1] value
-
 
   std::array<double,N> scaleVec;      ///< Scaling for values
   dataTYPE dataMap;                   ///< Values for cell
@@ -62,10 +60,7 @@ class cellValueSet
   cellValueSet(const std::string&,const std::string&,
 	       const std::string&);
   cellValueSet(const std::string&,const std::string&,
-	       const std::string&,const double);
-  cellValueSet(const std::string&,const std::string&,
-	       const std::string&,const double,
-	       const std::array<double,N>&);
+	       const std::string&,const std::array<double,N>&);
 
   cellValueSet(const cellValueSet&);
   cellValueSet& operator=(const cellValueSet&);

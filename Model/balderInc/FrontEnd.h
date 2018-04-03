@@ -47,7 +47,9 @@ namespace constructSystem
 
 namespace xraySystem
 {
+  class SqrCollimator;
   class Wiggler;
+
     
   /*!
     \class FrontEnd
@@ -75,10 +77,14 @@ class FrontEnd :
   std::shared_ptr<constructSystem::VacuumPipe> dipolePipe;
   /// box for collimator
   std::shared_ptr<constructSystem::PortTube> collTubeA;
+  /// collimator A
+  std::shared_ptr<xraySystem::SqrCollimator> collA;
   /// dipole connection pipe
   std::shared_ptr<constructSystem::VacuumPipe> collABPipe;
   /// box for collimator
   std::shared_ptr<constructSystem::PortTube> collTubeB;
+  /// collimator B
+  std::shared_ptr<xraySystem::SqrCollimator> collB;
   /// Pipe from collimator B to join pipe
   std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
 

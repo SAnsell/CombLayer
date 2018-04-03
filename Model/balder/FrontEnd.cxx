@@ -80,6 +80,7 @@
 #include "portItem.h"
 #include "PortTube.h"
 #include "Wiggler.h"
+#include "SqrCollimator.h"
 
 #include "FrontEnd.h"
 
@@ -97,8 +98,10 @@ FrontEnd::FrontEnd(const std::string& Key) :
   wiggler(new Wiggler(newName+"Wiggler")),
   dipolePipe(new constructSystem::VacuumPipe(newName+"DipolePipe")),
   collTubeA(new constructSystem::PortTube(newName+"CollimatorTubeA")),
+  collA(new xraySystem::SqrCollimator(newName+"CollA")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   collTubeB(new constructSystem::PortTube(newName+"CollimatorTubeB")),
+  collB(new xraySystem::SqrCollimator(newName+"CollB")),  
   flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe"))
   /*!
     Constructor
@@ -113,8 +116,10 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(wiggler);
   OR.addObject(dipolePipe);
   OR.addObject(collTubeA);
+  OR.addObject(collA);
   OR.addObject(collABPipe);
   OR.addObject(collTubeB);
+  OR.addObject(collB);
   OR.addObject(flightPipe);
 }
   
@@ -182,6 +187,9 @@ FrontEnd::buildObjects(Simulation& System)
   collTubeA->setFront(*dipolePipe,2);
   collTubeA->createAll(System,*dipolePipe,2);
 
+  collA->addInsertCell(collTubeA->getCell("Void"));
+  collA->createAll(System,*collTubeA,0);
+
   collABPipe->addInsertCell(ContainedComp::getInsertCells());
   collABPipe->registerSpaceCut(1,2);
   collABPipe->setFront(*collTubeA,2);
@@ -191,6 +199,9 @@ FrontEnd::buildObjects(Simulation& System)
   collTubeB->registerSpaceCut(1,2);
   collTubeB->setFront(*collABPipe,2);
   collTubeB->createAll(System,*collABPipe,2);
+
+  collB->addInsertCell(collTubeB->getCell("Void"));
+  collB->createAll(System,*collTubeB,0);
 
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
   flightPipe->registerSpaceCut(1,2);

@@ -60,6 +60,7 @@
 #include "VacBoxGenerator.h"
 #include "FlangeMountGenerator.h"
 #include "MirrorGenerator.h"
+#include "CollGenerator.h"
 
 namespace setVariable
 {
@@ -67,6 +68,11 @@ namespace setVariable
 void
 frontCaveVariables(FuncDataBase& Control,
 		   const double YStep)
+  /*!
+    Variable for the main ring front shielding
+    \param Control :: Database
+    \param YStep :: offset
+  */
 {
   ELog::RegMethod RegA("balderVariables[F]","frontCaveVariables");
   
@@ -111,6 +117,7 @@ frontEndVariables(FuncDataBase& Control,
   setVariable::PipeGenerator PipeGen;
   setVariable::PortTubeGenerator PTubeGen;
   setVariable::VacBoxGenerator VBoxGen;
+  setVariable::CollGenerator CollGen;
   
   PipeGen.setWindow(-2.0,0.0);   // no window
 
@@ -152,7 +159,12 @@ frontEndVariables(FuncDataBase& Control,
   PipeGen.setCF<CF120>();
   PipeGen.generatePipe(Control,frontKey+"CollABPipe",0,400.0);
 
-
+  // collimator block
+  CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
+  CollGen.generateColl(Control,frontKey+"CollB",0.0,34.0);
+    
+  
+  
   // ystep/width/height/depth/length
   PTubeGen.generateTube(Control,frontKey+"CollimatorTubeB",
 		       0.0,30.0,200.0);

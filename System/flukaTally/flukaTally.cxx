@@ -59,6 +59,7 @@ operator<<(std::ostream& OX,const flukaTally& TX)
    */
 {
   TX.write(OX);
+  TX.writeAuxScore(OX);
   return OX;
 }
 
@@ -71,7 +72,9 @@ flukaTally::flukaTally(const int ID)  :
 {}
 
 flukaTally::flukaTally(const flukaTally& A)  :
-  outputUnit(A.outputUnit),comments(A.comments)
+  keyName(A.keyName),outputUnit(A.outputUnit),
+  comments(A.comments),particle(A.particle),
+  doseType(A.doseType)
   /*!
     Copy constructor
     \param A :: flukaTally object to copy
@@ -98,8 +101,11 @@ flukaTally::operator=(const flukaTally& A)
 {
   if (this!=&A)
     {
+      keyName=A.keyName;
       outputUnit=A.outputUnit;
       comments=A.comments;
+      particle=A.particle;
+      doseType=A.doseType;
     }
   return *this;
 }
@@ -111,6 +117,17 @@ flukaTally::~flukaTally()
 {}
 
 void
+flukaTally::setKeyName(const std::string& K)
+  /*!
+    Set the keyname
+    \param K :: Keyname
+  */
+{
+  keyName=K;
+  return;
+}
+
+void
 flukaTally::setComment(const std::string& C)
   /*!
     Set the comment line
@@ -118,6 +135,18 @@ flukaTally::setComment(const std::string& C)
   */
 {
   comments=C;
+  return;
+}
+  
+void
+flukaTally::writeAuxScore(std::ostream&) const
+  /*!
+    Writes out the flukaTally depending on the 
+    fields that have been set.
+    \param OX :: Output Stream
+  */
+{
+  
   return;
 }
 
@@ -128,7 +157,8 @@ flukaTally::write(std::ostream&) const
     fields that have been set.
     \param OX :: Output Stream
   */
-{  
+{
+  
   return;
 }
 

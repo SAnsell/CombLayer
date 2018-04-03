@@ -111,7 +111,8 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("print","printTable",1,
 				 "10 20 40 50 110 120");  
   IParam.regItem("PTRAC","ptrac");
-  IParam.regDefItemList<std::string>("r","renum",10,RItems);
+
+  IParam.regItem("r","renum");
   IParam.regMulti("R","report",1000,0);
   IParam.regDefItem<std::string>("physModel","physicsModel",1,"CEM03"); 
 
