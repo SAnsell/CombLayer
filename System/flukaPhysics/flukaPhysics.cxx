@@ -67,7 +67,9 @@ flukaPhysics::flukaPhysics() :
       { "all",      cellValueSet<1>("all","BIAS","") },
       { "hadron",   cellValueSet<1>("hadron","BIAS","") },
       { "electron", cellValueSet<1>("electron","BIAS","") },
-      { "low",      cellValueSet<1>("low","BIAS","") }
+      { "low",      cellValueSet<1>("low","BIAS","") },
+      { "exptrans", cellValueSet<1>("exptrans","EXPTRANS","") },
+      { "exppart",  cellValueSet<1>("exppart","EXPTRANS","") }
     }),
 
   emfFlag({
@@ -85,9 +87,11 @@ flukaPhysics::flukaPhysics() :
 
   formatMap({
       { "all", unitTYPE(0," 0.0 1.0 %2 R0 R1 1.0 ") },
-      { "hadron", unitTYPE(0," 1.0 1.0 %3 R0 R1 1.0 ") },
-      { "electron", unitTYPE(0," 2.0 %2 1.0 %3 R0 R1 1.0 ") },
+      { "hadron", unitTYPE(0," 1.0 1.0 %2 R0 R1 1.0 ") },
+      { "electron", unitTYPE(0," 2.0 1.0 %2 R0 R1 1.0 ") },
       { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
+      { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
+      { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
 	
       { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
       { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
@@ -335,7 +339,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 
       if (!flag)  // cell
 	empV.second.writeFLUKA(OX,cellVec,fmtSTR);
-      else       // mat
+      else        // mat
 	empV.second.writeFLUKA(OX,matVec,fmtSTR);
     }
 

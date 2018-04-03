@@ -80,21 +80,19 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processUnit");
 
-  
-  // cell/mat : tag name /  scale V1 / scale V2 [if used]
+  // cell/mat : tag name 
   typedef std::tuple<size_t,bool,std::string> impTYPE;
   static const std::map<std::string,impTYPE> IMap
     ({
-      { "all",impTYPE(1,1,"all") },   // cell: 
-      { "hadron",impTYPE(1,1,"hadron") },  
-      { "electron",impTYPE(1,1,"electron") },
-      { "low",impTYPE(1,1,"low") } 
+      { "all",impTYPE(1,0,"all") },   // cell: 
+      { "hadron",impTYPE(1,0,"hadron") },  
+      { "electron",impTYPE(1,0,"electron") },
+      { "low",impTYPE(1,0,"low") } 
     });
 
   const std::string type=IParam.getValueError<std::string>
     ("wIMP",setIndex,0,"No type for wIMP ");
 
-  
   if (type=="help" || type=="Help")
     return writeIMPHelp(ELog::EM.Estream(),&ELog::endBasic);
 
@@ -121,6 +119,80 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
   if (activeCell.empty())
     throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
 
+  switch (cellSize)
+    {
+    case 0:
+      for(const int MN : activeCell)
+	PC.setFlag(keyName,MN);
+      break;
+    case 1:
+      for(const int MN : activeCell)
+	PC.setImp(keyName,MN,VV[0]);
+      break;
+    case 2:
+      for(const int MN : activeCell)
+	PC.setEMF(keyName,MN,VV[0],VV[1]);
+      break;
+    case 3:
+      for(const int MN : activeCell)
+	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
+      break;
+    }
+  return;
+}
+
+void
+flukaImpConstructor::processEXP(flukaPhysics& PC,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+/*!
+    Set individual EXP based on Iparam
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processEXP");
+
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,bool,std::string> impTYPE;
+  static const std::map<std::string,impTYPE> IMap
+    ({
+      { "exp",impTYPE(1,0,"exptrans") },   // cell:
+      { "particle",impTYPE(1,0,"exppart") }   // cell: 
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wEXP",setIndex,0,"No type for wEXP ");
+
+    
+  if (type=="help" || type=="Help")
+    return writeEXPHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  std::map<std::string,impTYPE>::const_iterator mc=IMap.find(type);
+  if (mc==IMap.end())
+    throw ColErr::InContainerError<std::string>(type,"exp type unknown");
+
+  const std::string cellM=IParam.getValueError<std::string>
+    ("wEXP",setIndex,1,"No cell/material for wEXP ");
+
+  const size_t cellSize(std::get<0>(mc->second));
+  const bool materialFlag(std::get<1>(mc->second));
+  const std::string keyName(std::get<2>(mc->second));
+
+  std::string VV[3];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i]=IParam.getValueError<std::string>
+      ("wEXP",setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for wEXP ");      
+
+  std::set<int> activeCell=
+    (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
+
+  if (activeCell.empty())
+    throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
+
+  ELog::EM<<"EXT == "<<cellSize<<ELog::endDiag;
   switch (cellSize)
     {
     case 0:
@@ -248,6 +320,32 @@ flukaImpConstructor::writeIMPHelp(std::ostream& OX,
       "         : cell number range\n"
       "         : cell number\n"
       "         : all\n";
+  OX<< (*endDL);
+  return;
+}
+
+void
+flukaImpConstructor::writeEXPHelp(std::ostream& OX,
+				  ENDL endDL) const
+  /*!
+    Write out the help
+    \param OX :: Output stream
+    \param endDL :: End of line type
+  */
+{
+  OX<<"wEXP help :: \n";
+
+  OX<<"-wEXP type   -- ::\n\n";
+  
+  OX<<"  particle : "
+      "    -- particle name "
+      "  exp : "
+      "    value objectName" 
+      "        objectAll : object name  \n"
+      "             : object name:cellname\n"
+      "             : cell number range\n"
+      "             : cell number\n"
+      "             : all\n";
   OX<< (*endDL);
   return;
 }

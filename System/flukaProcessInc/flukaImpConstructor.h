@@ -57,6 +57,8 @@ class flukaImpConstructor
   void writeIMPHelp(std::ostream&,ENDL) const;
 
   void writeEMFHelp(std::ostream&,ENDL) const;
+
+  void writeEXPHelp(std::ostream&,ENDL) const;
     
  public:
 
@@ -68,9 +70,9 @@ class flukaImpConstructor
   void processUnit(flukaPhysics&,
 		   const mainSystem::inputParam&,
 		   const size_t);
-  void processPAIR(flukaPhysics&,
-		   const mainSystem::inputParam&,
-		   const size_t);
+  void processEXP(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
   void processEMF(flukaPhysics&,
 		   const mainSystem::inputParam&,
 		   const size_t);

@@ -38,7 +38,7 @@ class cellValueSet
 {
  private:
 
-  /// Data type
+  /// Data type [-1:string / 0:def / 1 double]
   typedef  std::array<std::pair<int,std::string>,N> valTYPE;  
   /// map type
   typedef  std::map<int,valTYPE> dataTYPE;

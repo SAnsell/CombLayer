@@ -161,7 +161,6 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
   outData.clear();
  
   if (dataMap.empty() || cellN.empty()) return 0;
-  
   size_t prev(0);
   valTYPE V;
   for(size_t i=0;i<cellN.size();i++)
@@ -174,7 +173,6 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 	    {
 	      initCell.push_back(TITEM(cellN[prev-1],cellN[i-1]));
 	      outData.push_back(V);
-	      V=mc->second;
 	      prev=0;
 	    }
 	}
@@ -190,8 +188,8 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 		  const std::string& AS=mc->second[index].second;
 
 		  double VV,AV;
-		  int sumFlag=(VDef>1) ? 0 : StrFunc::convert(VS,VV);
-		  sumFlag+= (ADef>1) ? 0 : StrFunc::convert(AS,AV);
+		  int sumFlag=(VDef<1) ? 0 : StrFunc::convert(VS,VV);
+		  sumFlag+= (ADef<1) ? 0 : StrFunc::convert(AS,AV);
 
 		  if (VDef!=ADef ||           // diff flag
 		      (VDef &&                // def = def is a pass
@@ -213,13 +211,14 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 	    }
 	}
     }
-  
+
+
   if (prev)
     {
       initCell.push_back(TITEM(cellN[prev-1],cellN.back()));
       outData.push_back(V);
     }
-  
+
   return (initCell.empty()) ? 0 : 1;
 }
 
@@ -401,6 +400,7 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 
   if (cellSplit(cellN,Bgroup,Bdata))
     {
+      ELog::EM<<"SPLIT C== "<<keyName<<ELog::endDiag;
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 
@@ -416,7 +416,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	      if (dArray[i].first==1)
 		{
 		  double D;
-
 		  StrFunc::convert(dArray[i].second,D);
 		  SArray[2+i]=std::to_string(D*scaleVec[i]);
 		}
@@ -443,6 +442,8 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 		cx<<UC<<" ";
 	    }
 	  cx<<tag;
+	  ELog::EM<<"CX == "<<cx.str()<<ELog::endDiag;
+		      
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}
     }

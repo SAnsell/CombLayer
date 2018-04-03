@@ -154,6 +154,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
   IParam.regMulti("wExt","wExt",25,0);
+  IParam.regMulti("wEXP","wEXP",25,0);
   IParam.regMulti("wECut","wECut",100,0);
   IParam.regMulti("wPWT","wPWT",25,0);
   IParam.regItem("WControl","weightControl",1,10);

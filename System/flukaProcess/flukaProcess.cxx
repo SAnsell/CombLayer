@@ -178,6 +178,13 @@ setDefaultPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processEMF(*PC,IParam,index);
     }
+  nSet=IParam.setCnt("wEXP");
+  if (nSet && PC)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processEXP(*PC,IParam,index);
+    }
   
   return; 
 }

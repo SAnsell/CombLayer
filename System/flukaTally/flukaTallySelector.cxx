@@ -65,7 +65,7 @@ tallyModification(SimFLUKA& System,
 		  const mainSystem::inputParam& IParam)
   /*!
     Applies a large number of modifications to the tally system
-    \param System :: SimMCNP to get tallies from 
+    \param System :: SimFLUKA holding tallies to change
     \param IParam :: Parameters
   */
 {
