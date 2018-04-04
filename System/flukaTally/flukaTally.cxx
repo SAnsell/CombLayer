@@ -27,6 +27,7 @@
 #include <cmath>
 #include <string>
 #include <list>
+#include <set>
 #include <map>
 #include <vector>
 #include <iterator>
@@ -73,7 +74,7 @@ flukaTally::flukaTally(const int ID)  :
 
 flukaTally::flukaTally(const flukaTally& A)  :
   keyName(A.keyName),outputUnit(A.outputUnit),
-  comments(A.comments),particle(A.particle),
+  comments(A.comments),auxParticle(A.auxParticle),
   doseType(A.doseType)
   /*!
     Copy constructor
@@ -104,7 +105,7 @@ flukaTally::operator=(const flukaTally& A)
       keyName=A.keyName;
       outputUnit=A.outputUnit;
       comments=A.comments;
-      particle=A.particle;
+      auxParticle=A.auxParticle;
       doseType=A.doseType;
     }
   return *this;
@@ -137,6 +138,43 @@ flukaTally::setComment(const std::string& C)
   comments=C;
   return;
 }
+
+void
+flukaTally::setAuxParticles(const std::string& P)
+  /*!
+    Set the auxParticle [can be a range?]
+    \param P :: auxParticle (or key name) 
+  */
+{
+  auxParticle=P;
+  return;
+}
+
+void
+flukaTally::setDoseType(const std::string& P,
+			const std::string& D)
+  /*!
+    Set the auxParticle [can be a range?]
+    \param D :: set dose type
+  */
+{
+  ELog::RegMethod RegA("flukaTally","setDoseType");
+
+  static const std::set<std::string> validDose
+    ({
+      "EAP74","ERT74","EWT74",
+      "EAPMP","ERTMP","EWTMP",
+      "AMB74","AMBGS"
+      });
+
+  auxParticle=P;
+  const std::string Dupper=StrFunc::toUpperString(D);
+  if (validDose.find(Dupper)==validDose.end())
+    throw ColErr::InContainerError<std::string>(D,"Dose type not known");
+
+  doseType=D;
+  return;
+}
   
 void
 flukaTally::writeAuxScore(std::ostream&) const
@@ -146,7 +184,6 @@ flukaTally::writeAuxScore(std::ostream&) const
     \param OX :: Output Stream
   */
 {
-  
   return;
 }
 
@@ -158,7 +195,6 @@ flukaTally::write(std::ostream&) const
     \param OX :: Output Stream
   */
 {
-  
   return;
 }
 

@@ -57,6 +57,7 @@
 
 #include "userBinConstruct.h"
 
+#include "flukaTallyModification.h"
 #include "flukaTallySelector.h"
 
 
@@ -79,19 +80,31 @@ tallyModification(SimFLUKA& System,
       const size_t nV=IParam.itemCnt("TMod",i);
       const std::string key=
 	IParam.getValue<std::string>("TMod",i,0);
+      // why this:
       for(size_t j=1;j<nV;j++)
 	StrItem.push_back
 	  (IParam.getValue<std::string>("TMod",i,j));
 
       if(key=="help")
 	{
-	  ELog::EM<<"TMod Help "<<ELog::endBasic;
-
+	  ELog::EM<<"TMod Help "
+	    "  -- particle {tallyNameNumber} [newtype] \n";
           ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;
 	}
-      ELog::EM<<"Currently no modification possible"<<ELog::endDiag;
+
+      if(key=="doseType")
+        {
+	  const int tNumber=IParam.getValueError<int>
+	    ("TMod",i,1,"No tally number for doseType");
+	  const std::string PT=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No particle for doseType");
+	  const std::string DT=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No standard for doseType");
+          flukaSystem::setDoseType(System,tNumber,PT,DT);
+        }
+      ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;
     }
   return;
 }
