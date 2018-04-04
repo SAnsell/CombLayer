@@ -276,12 +276,10 @@ makeESS::createGuides(Simulation& System)
       GB->createAll(System,*ShutterBayObj,0);
       attachSystem::addToInsertSurfCtrl(System,*GB,Target->getCC("Wheel"));
       GBArray.push_back(GB);
+
+      GB->createGuideItems(System,"Top",Target->getKeyName());
+      GB->createGuideItems(System,"Low",Target->getKeyName());
     }
-  
-  GBArray[0]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[0]->createGuideItems(System,"Low",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Top",Target->getKeyName());
-  GBArray[1]->createGuideItems(System,"Low",Target->getKeyName());
 
   return;
 }
@@ -1215,11 +1213,15 @@ makeESS::build(Simulation& System,
 
   // Empty area above target
   TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
+  TargetLowClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetLowClearance"));
 
   if (engActive)
     {
       buildTwister(System);
       TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+      TargetLowClearance->createAll(System,*Target,5,3,13,*Twister,-16,
 				    *GBArray[0],4,
 				    *GBArray[1],3);
     }
@@ -1228,19 +1230,30 @@ makeESS::build(Simulation& System,
       TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
 				    *GBArray[0],4,
 				    *GBArray[1],3);
+      TargetLowClearance->createAll(System,*Target,5,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
     }
-  for (const std::shared_ptr<GuideBay> GB : GBArray)
-    attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
 
+  for (const std::shared_ptr<GuideBay> GB : GBArray)
+    {
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
+    }
 
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
 
   OR.addObject(TargetTopClearance);
+  OR.addObject(TargetLowClearance);
+
   attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
   attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
-  ///
+
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetLowClearance);
+  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*TargetLowClearance);
+  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*TargetLowClearance);
 
   makeBunker(System,IParam);
 

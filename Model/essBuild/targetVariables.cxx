@@ -66,7 +66,10 @@ EssWheel(FuncDataBase& Control)
 
   Control.addVariable("TargetTopClearanceHeight", 3.0);
   Control.addVariable("TargetTopClearanceMat", "Void");
-  
+
+  Control.addVariable("TargetLowClearanceHeight", 3.0);
+  Control.addVariable("TargetLowClearanceMat", "Void");
+
   Control.addVariable("BilbaoWheelNShaftLayers",6);
   Control.addVariable("BilbaoWheelShaftRadius1",5.0);
   Control.addVariable("BilbaoWheelShaftMat1","SS316L");

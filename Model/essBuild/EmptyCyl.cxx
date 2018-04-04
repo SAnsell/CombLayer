@@ -184,7 +184,8 @@ EmptyCyl::createSurfaces()
 {
   ELog::RegMethod RegA("EmptyCyl","createSurfaces");
 
-  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Y*(height),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+5,Origin+Y*(height),Y);
+  ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z,Z);
 
   return;
 }
@@ -218,19 +219,38 @@ EmptyCyl::createObjects(Simulation& System,const attachSystem::FixedComp& FC,
 
   std::string Out;
 
-  ELog::EM << "Target inner lp not needed. Now this cylinder cuts EmptyCyl, but I have to increase the angle of triangle (adjust GuideBay)" << ELog::endDiag;
+  if (Origin[2]>0.0)
+    ELog::EM << "Target inner lp not needed. Now this cylinder cuts EmptyCyl, but I have to increase the angle of triangle (adjust GuideBay)" << ELog::endDiag;
 
-  Out=ModelSupport::getComposite(SMap,surfIndex," -6 ");
-  Out += std::to_string(FC.getLinkSurf(-side)) + " " +
-    FC.getLinkString(floor) + " " +
-    std::to_string(FC.getLinkSurf(inner)) + " " +
-    BC.getLinkString(bulk) + " (" +
-    GB1.getLinkString(gb1lp) + " : " +
-    GB2.getLinkString(gb2lp) + " )";
+  const std::string topBot(ModelSupport::getComposite(SMap,surfIndex," -5 ")+
+			   " "+FC.getLinkString(floor)+" ");
+  const std::string common(topBot+BC.getLinkString(bulk)+" "+
+			   std::to_string(FC.getLinkSurf(inner)));
+
+  // main clearance
+  Out=common+std::to_string(FC.getLinkSurf(-side))+
+    " ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+")";
 
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
 
-  addOuterSurf(Out);
+  if (Origin[2]>0.0)
+    {
+      addOuterSurf(Out);
+      return;
+    }
+  else // triangle cut below target
+    {
+      Out=common+ModelSupport::getComposite(SMap,surfIndex," -6 ") +
+	GB1.getLinkString(-gb1lp)+" "+GB2.getLinkString(-gb2lp);
+
+      System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
+
+      Out=common+std::to_string(FC.getLinkSurf(-side))+
+	" ("+GB1.getLinkString(gb1lp)+" : "+GB2.getLinkString(gb2lp)+
+	" : "+ModelSupport::getComposite(SMap,surfIndex," -6 ")+")";
+
+      addOuterSurf(Out);
+    }
 
   return;
 }
