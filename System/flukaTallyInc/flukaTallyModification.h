@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTallySelector.h
+ * File:   tallyInc/flukaTallyModification.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,15 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaTallySelector_h
-#define flukaTallySelector_h
+#ifndef flukaSystem_flukaTallyModification_h
+#define flukaSystem_flukaTallyModification_h
 
+class Simulation;
 class SimFLUKA;
 
+namespace flukaSystem
+{  
+  int setDoseType(SimFLUKA&,const int,const std::string&,const std::string&);
+  int setParticleType(SimFLUKA&,const int,const std::string&);
 
-
-void tallyModification(SimFLUKA&,const mainSystem::inputParam&);
-
+}  // namespace tallySystem 
 
 #endif
- 
