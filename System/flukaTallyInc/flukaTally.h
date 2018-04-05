@@ -58,7 +58,7 @@ class flukaTally
   void setKeyName(const std::string&);
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);
-  void setDoseType(const std::string&,const std::string&);
+  virtual void setDoseType(const std::string&,const std::string&);
 
   /// access out unit
   int getOutUnit() const { return outputUnit; }

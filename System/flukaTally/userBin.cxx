@@ -122,6 +122,23 @@ userBin::setParticle(const std::string& P)
   particle=P;
   return;
 }
+
+void
+userBin::setDoseType(const std::string& P,
+			const std::string& D)
+  /*!
+    Set the auxParticle [can be a range?]
+    \param P :: particle to use
+    \param D :: set dose type
+  */
+{
+  ELog::RegMethod RegA("userBin","setDoseType");
+
+  setParticle("DOSE-EQ");
+  flukaTally::setDoseType(P,D);
+  return;
+}
+
   
 void
 userBin::setIndex(const std::array<size_t,3>& IDX)

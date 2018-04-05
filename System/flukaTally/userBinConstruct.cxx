@@ -156,7 +156,7 @@ userBinConstruct::processMesh(SimFLUKA& System,
 			      const size_t Index) 
   /*!
     Add mesh tally (s) as needed
-    \param System :: SimMCNP to add tallies
+    \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */
