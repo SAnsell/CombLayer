@@ -3,7 +3,7 @@
 
  * File:   essBuild/TelescopicPipe.cxx
  *
- * Copyright (c) 2004-2018 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell / Konstantin Batkov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -351,8 +351,8 @@ TelescopicPipe::createAll(Simulation& System,
   if (tIndex)
     {
       TSurf=(tIndex>0) ?
-	TargetFC.getLinkString(static_cast<size_t>(tIndex)) :
-	TargetFC.getCommonRule(static_cast<size_t>(-(tIndex+1+1))).display(); // is it correct instead of getBridgeComplement?
+	TargetFC.getLinkString(tIndex) :
+	TargetFC.getCommonRule(-(tIndex+1+1)).display(); // is it correct instead of getBridgeComplement?
       ELog::EM << "tmp commented out" << ELog::endDiag;
       /* if (tIndex<0)
 	FixedComp::setLinkComponent(0,TargetFC,
@@ -362,7 +362,7 @@ TelescopicPipe::createAll(Simulation& System,
     }
   if (bIndex)
     {
-      const size_t lIndex(static_cast<size_t>(std::abs(bIndex))-1);
+      const long int lIndex(std::abs(bIndex)-1);
 
       BSurf=(bIndex>0) ?
 	BulkFC.getLinkString(lIndex+1) : // check this
