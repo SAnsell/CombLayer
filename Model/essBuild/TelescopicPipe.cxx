@@ -342,7 +342,6 @@ TelescopicPipe::createAll(Simulation& System,
   */
 {
   ELog::RegMethod RegA("TelescopicPipe","createAll");
-  //  populate(System);
   populate(System.getDataBase());
 
   createUnitVector(TargetFC,tIndex);

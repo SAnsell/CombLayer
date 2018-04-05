@@ -140,8 +140,8 @@ ProtonTube::populate(const FuncDataBase& Control)
 {
   ELog::RegMethod RegA("ProtonTube","populate");
 
-    // Master values
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
+
   return;
 }
 
@@ -166,14 +166,14 @@ ProtonTube::createAll(Simulation& System,
   ELog::RegMethod RegA("ProtonTube","createAll");
 
   TelescopicPipe::createAll(System,TargetFC,tIndex,BulkFC,bIndex,SB);
+  populate(System.getDataBase());
   
-  //if (engActive)
+  if (engActive)
     {
       pbw->createAll(System, World::masterOrigin(), 0, SB,sbIndex);
       attachSystem::addToInsertSurfCtrl(System,SB,*pbw);
       attachSystem::addToInsertLineCtrl(System,*this, *pbw);
     }
-
 
   return;
 }
