@@ -1567,7 +1567,9 @@ Simulation::splitObject(const int CA,const int SN)
 void
 Simulation::minimizeObject(const int CN)
   /*
-    Carry out minimization
+    Carry out minimization of a cell to remove 
+    literals which can be removed due to implicates [e.g. a->b etc]
+    due to parallel surfaces
     \param CN :: Cell to minimize
    */
 {

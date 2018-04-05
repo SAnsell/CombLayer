@@ -149,7 +149,13 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 			   std::vector<std::tuple<int,int>>& initCell,
 			   std::vector<valTYPE>& outData) const
 /*!
-    Process ranges to find for value
+    Group the individual values into equal ranges. The 
+    outData is a list of ranges with equal value. The
+    goal of this method is to minimize the number of fluka cards. e.g
+    cell 1 to 10 might all have the same importance values, so they can
+    be expressed in FLUKA as a single importance/bias card with a range 
+    of cells.
+
     \param cellN :: Cell vlaues
     \param initCell :: initialization range
     \param dataValue :: initialization range
@@ -286,7 +292,7 @@ cellValueSet<N>::setValues(const int cN,const double V,
   */
 {
   valTYPE A;
-  A[0].first=1;
+  A[0].first=1;         // 1: values
   A[0].second=std::to_string(V);
   A[1].first=1;
   A[1].second=std::to_string(V2);
@@ -400,7 +406,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 
   if (cellSplit(cellN,Bgroup,Bdata))
     {
-      ELog::EM<<"SPLIT C== "<<keyName<<ELog::endDiag;
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 

@@ -567,8 +567,6 @@ setDefaultPhysics(SimMCNP& System,
 	PC.addPhysCard<physicsSystem::PStandard>("cut","e");
       elcCut->setValues(2,1e+8,elcEnergy);
     }
-
-
   
   const std::string EMax=StrFunc::makeString(maxEnergy);
   const std::string PHMax=StrFunc::makeString(phtModel);
