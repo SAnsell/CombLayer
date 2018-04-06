@@ -129,7 +129,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("OAdd","objectAddition",1000);
   IParam.regMulti("TC","tallyCells",10000,2,3);
   IParam.regMulti("TGrid","TGrid",10000,2,3);
-  IParam.regMulti("TMod","tallyMod",8,1);
+  IParam.regMulti("TMod","tallyMod",100,1); // max number of TMod cards is 100
   IParam.regFlag("TW","tallyWeight");
   IParam.regItem("TX","Txml",1);
   IParam.regItem("targetType","targetType",1);
