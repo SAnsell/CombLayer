@@ -234,6 +234,8 @@ TelescopicPipe::createSurfaces()
      ModelSupport::buildCylinder(SMap,PT+17,Origin,Y,radius[i]+thick[i]);
 
      ModelSupport::buildPlane(SMap,PT+2,Origin+Y*length[i],Y);
+     ModelSupport::buildPlane(SMap,PT+3,Origin+Y*(length[i]+thick[i]),Y);
+     
      if (zCut[i]>0.0)
        {
 	 ModelSupport::buildPlane(SMap,PT+5,Origin-Z*(radius[i]-zCut[i]),Z);
@@ -287,7 +289,7 @@ TelescopicPipe::createObjects(Simulation& System,
 
       Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
       attachSystem::ContainedGroup::addCC(SName);
-      addOuterSurf(SName,Out+EndCap+FrontCap);
+      addOuterSurf(SName,      Out+EndCap+FrontCap);
       addOuterUnionSurf("Full",Out+EndCap+FrontCap);
 
       PT+=100;
