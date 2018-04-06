@@ -97,7 +97,7 @@ flukaPhysics::flukaPhysics() :
       { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
       { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },
       { "elpothr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
-      { "pairbrem", unitTYPE(1,"%2 %3 %4 M0 M1 1.0") },
+      { "pairbrem", unitTYPE(1,"3.0 %2 %3  M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") }
     })
