@@ -240,10 +240,12 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
       { "emfcut",emfTYPE(2,0,"emfcut") },   // cell: S2 : -GeV : GeV
       { "prodcut",emfTYPE(2,1,"prodcut") }, 
       { "elpothr",emfTYPE(3,1,"elpothr") },  //
+      { "photthr",emfTYPE(3,1,"photthr") },  // comp/photoeelec/gamma-pair
       { "pho2thr",emfTYPE(2,1,"pho2thr") },  // photo-nuclear
       { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
       { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
-      { "muphoton",emfTYPE(0,1,"muphoton") }      // mat 
+      { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
+      { "mulsopt",emfTYPE(3,1,"mulsopt") }       // mat
     });
   
   // must have size
@@ -335,11 +337,8 @@ flukaImpConstructor::writeEXPHelp(std::ostream& OX,
 {
   OX<<"wEXP help :: \n";
 
-  OX<<"-wEXP type   -- ::\n\n";
-  
-  OX<<"  particle : "
-      "    -- particle name "
-      "  exp : "
+  OX<<"-wEXP particle -- ::\n\n";
+  OX<<"  exp : "
       "    value objectName" 
       "        objectAll : object name  \n"
       "             : object name:cellname\n"
@@ -359,18 +358,17 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
     \param endDL :: End of line type
   */
 {
-  OX<<"wEMF help :: \n"
-    " - types \n"
-    " -- cut \n"
-    "      Cell-Range electronCut[MeV] gammaCut[MeV]\n"
-    " -- pairbrem \n"
-    "      Mat-Range   \n"
-    " -- elpothr \n"
-    "      compton photoelc gammpair Mat-Range   \n"
-    " -- prodcut \n"
-    "      compton photoelc gammpair Mat-Range   \n"
-    " -- pho2-thr \n"
-    "      photonuc-threshhold Mat-Range   \n";
+  OX<<"wEMF hell :: \n"
+    " -- type : values : Mat/Cell\n\n";
+  OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL "
+      "    prodcut - e+/e-prod  gamma-prod  MAT "
+      "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT "
+      "    photthr - compton photoelec gamma-pair MAT "
+      "    pho2thr - rayliegh gamma-photonuc MAT "
+      "    pairbrem - explit-pair-prod photon-bremst-prod MAT "
+      "    photonuc - [FLAG] turn photonuclear on MAT "
+      "    muphoton - [FLAG] mu-interaction MAT "  ;
+      "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]"  ;      
   OX << (*endDL);
   return;
 }

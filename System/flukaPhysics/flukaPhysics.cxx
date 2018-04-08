@@ -75,14 +75,19 @@ flukaPhysics::flukaPhysics() :
   emfFlag({
       { "emfcut",  cellValueSet<2>("emfcut","EMFCUT","",{-1e-3,1e-3}) },
       { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{1e-3,1e-3})},
-      { "elpothr", cellValueSet<2>("elpothr","EMFCUT","ELPO-THR",{1e-3,1e-3})},
       { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",{1e-3,1e-3})},
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})} 
     }),
 
   threeFlag({
+
       { "elpothr",cellValueSet<3>("elpothr","EMFCUT","ELPO-THR",
+	{1e-3,1e-3,1e-3}) },
+      { "photthr", cellValueSet<3>("pho2thr","EMFCUT","PHOT-THR",
+	{1e-3,1e-3,1e-3}) },
+      { "mulsopt", cellValueSet<3>("mulsopt","MULSOPT","",
 	{1e-3,1e-3,1e-3}) }
+
     }),
 
   formatMap({
@@ -95,11 +100,13 @@ flukaPhysics::flukaPhysics() :
 	
       { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
       { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
+      { "photthr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
       { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },
       { "elpothr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
       { "pairbrem", unitTYPE(1,"3.0 %2 %3  M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
-      { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") }
+      { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
+      { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") }
     })
   /*!
     Constructor
