@@ -492,7 +492,7 @@ void
 exitDelete(Simulation* SimPtr)
  /*!
    Final deletion including singletons
-   \param Simulation to delete
+   \param SimPtr :: Simulation to delete
  */
 {
   delete SimPtr;
@@ -520,9 +520,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
   if (IParam.flag("noVariables"))
-    {
-      SimFLUKAPtr->setNoVariables();
-    }
+    SimFLUKAPtr->setNoVariables();
 
   ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
   //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);

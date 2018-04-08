@@ -447,7 +447,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 		cx<<UC<<" ";
 	    }
 	  cx<<tag;
-	  ELog::EM<<"CX == "<<cx.str()<<ELog::endDiag;
 		      
 	  StrFunc::writeFLUKA(cx.str(),OX);
 	}

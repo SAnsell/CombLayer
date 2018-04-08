@@ -221,8 +221,6 @@ flukaPhysics::setFlag(const std::string& keyName,
   mc->second.setValues(cellID);
   return;
 }
-
-
   
 void
 flukaPhysics::setImp(const std::string& keyName,

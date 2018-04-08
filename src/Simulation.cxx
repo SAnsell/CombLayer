@@ -1402,6 +1402,8 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	      oldUnit=keyUnit;
 	      orStartNumber=nNum;
 	    }
+	  OR.renumberActiveCell(cNum,nNum);
+	  
           CMapPtr=OR.getObject<attachSystem::CellMap>(keyUnit);
 	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
 		  <<" Object:"<<keyUnit;

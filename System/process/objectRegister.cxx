@@ -225,7 +225,7 @@ objectRegister::renumberActiveCell(const int oldCellN,
     \param newCellN :: new cell number
   */
 {
-  ELog::RegMethod RegA("objectRegister","renumberActive");
+  ELog::RegMethod RegA("objectRegister","renumberActiveCell");
 
   std::set<int>::iterator sc=activeCells.find(oldCellN);
   if (sc==activeCells.end())
