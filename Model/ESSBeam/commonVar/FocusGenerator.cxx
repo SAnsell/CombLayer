@@ -233,7 +233,7 @@ FocusGenerator::generateRectangle(FuncDataBase& Control,
     \param V :: Vertical 
    */
 {
-  ELog::RegMethod RegA("FocusGenerator","generateTaper");
+  ELog::RegMethod RegA("FocusGenerator","generateRectangle");
   writeLayers(Control,keyName,length);
   
   Control.addVariable(keyName+"0TypeID","Rectangle");
