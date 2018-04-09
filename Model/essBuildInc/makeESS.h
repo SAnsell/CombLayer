@@ -178,6 +178,7 @@ class makeESS
   void buildToperPipe(Simulation&,const std::string&);
 
   void makeTarget(Simulation&,const std::string&);
+  void makeTargetClearance(Simulation&, const int);
   void makeBunker(Simulation&,const mainSystem::inputParam&);
 
   void makeBeamLine(Simulation&,

@@ -106,6 +106,8 @@
 #include "TwisterModule.h"
 #include "ShutterBay.h"
 #include "GuideBay.h"
+#include "FixedOffsetGroup.h"
+#include "GuideItem.h"
 #include "DiskLayerMod.h"
 #include "Bunker.h"
 #include "pillarInfo.h"
@@ -250,6 +252,72 @@ makeESS::makeTarget(Simulation& System,
   Target->createAll(System,World::masterOrigin(),0);
 
   OR.addObject(Target);
+  return;
+}
+
+void
+makeESS::makeTargetClearance(Simulation& System, const int engActive)
+{
+  /*!
+    Build clearance above and below the taret wheel
+    \param System :: Simulation
+    \param engActive :: Engineering active flag
+   */
+
+  TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
+  TargetLowClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetLowClearance"));
+
+  if (engActive)
+    {
+      buildTwister(System);
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+      TargetLowClearance->createAll(System,*Target,5,3,13,*Twister,-16,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+    }
+  else
+    {
+      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+      TargetLowClearance->createAll(System,*Target,5,3,13,*Bulk,-9,
+				    *GBArray[0],4,
+				    *GBArray[1],3);
+    }
+
+  for (const std::shared_ptr<GuideBay> GB : GBArray)
+    {
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
+      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
+
+      std::vector<std::shared_ptr<GuideItem> > GUnit = GB->GetGuideItems();
+      for (const std::shared_ptr<GuideItem> GA : GUnit)
+	{
+	  if (GA->isActive())
+	    {
+	      ELog::EM << GA->getKeyName() << ELog::endDiag;
+	      attachSystem::addToInsertSurfCtrl(System,*GA,*TargetTopClearance);
+	    }
+	}
+    }
+
+
+  ModelSupport::objectRegister& OR=
+    ModelSupport::objectRegister::Instance();
+
+  OR.addObject(TargetTopClearance);
+  OR.addObject(TargetLowClearance);
+
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
+  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
+
+  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetLowClearance);
+  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*TargetLowClearance);
+  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*TargetLowClearance);
+
   return;
 }
 
@@ -1211,50 +1279,7 @@ makeESS::build(Simulation& System,
 
   createGuides(System);
 
-  // Empty area above target
-  TargetTopClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetTopClearance"));
-  TargetLowClearance = std::shared_ptr<EmptyCyl>(new EmptyCyl("TargetLowClearance"));
-
-  if (engActive)
-    {
-      buildTwister(System);
-      TargetTopClearance->createAll(System,*Target,6,3,13,*Twister,-16,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-      TargetLowClearance->createAll(System,*Target,5,3,13,*Twister,-16,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-    }
-  else
-    {
-      TargetTopClearance->createAll(System,*Target,6,3,13,*Bulk,-9,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-      TargetLowClearance->createAll(System,*Target,5,3,13,*Bulk,-9,
-				    *GBArray[0],4,
-				    *GBArray[1],3);
-    }
-
-  for (const std::shared_ptr<GuideBay> GB : GBArray)
-    {
-      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetTopClearance);
-      attachSystem::addToInsertSurfCtrl(System,*GB,*TargetLowClearance);
-    }
-
-  ModelSupport::objectRegister& OR=
-    ModelSupport::objectRegister::Instance();
-
-  OR.addObject(TargetTopClearance);
-  OR.addObject(TargetLowClearance);
-
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetTopClearance);
-  attachSystem::addToInsertSurfCtrl(System,*TopAFL,*TargetTopClearance);
-  attachSystem::addToInsertSurfCtrl(System,*TopBFL,*TargetTopClearance);
-
-  attachSystem::addToInsertSurfCtrl(System,*Bulk,*TargetLowClearance);
-  attachSystem::addToInsertSurfCtrl(System,*LowAFL,*TargetLowClearance);
-  attachSystem::addToInsertSurfCtrl(System,*LowBFL,*TargetLowClearance);
-
+  makeTargetClearance(System,engActive);
   makeBunker(System,IParam);
 
   TSMainBuildingObj->addInsertCell(voidCell);
