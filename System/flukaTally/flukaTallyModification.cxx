@@ -90,26 +90,24 @@ setParticleType(SimFLUKA& Sim,const int tNumber,
 }
 
 int
-setDoseType(SimFLUKA& Sim,const int tNumber,
+setDoseType(SimFLUKA& Sim,const std::string& tName,
 	    const std::string& particle,
 	    const std::string& doseType) 
 /*!
     Get the last tally point based on the tallynumber
     \param Sim :: System to access tally tables
-    \param tNumber :: Tally number [0 for all]
+    \param tName :: Tally number [0 for all]
     \param doseType :: Dose type
     \return tally number [0 on fail]
   */
 {
-  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setParticleType");
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setDoseType");
 
-  
   SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
   for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
     {
-      if (tNumber==0 || mc.first==tNumber ||
-          (tNumber<0 && (mc.first % 10) == -tNumber))
+      if (mc.second->getKeyName()==tName)
 	{
           mc.second->setDoseType(particle,doseType);
           fnum++;

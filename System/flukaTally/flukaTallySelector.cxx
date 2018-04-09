@@ -72,7 +72,7 @@ tallyModification(SimFLUKA& System,
 {
   ELog::RegMethod RegA("flukaTallySelector[F]","tallyModification");
   const size_t nP=IParam.setCnt("TMod");
-  
+
   for(size_t i=0;i<nP;i++)
     {
       std::vector<std::string> StrItem;
@@ -88,7 +88,8 @@ tallyModification(SimFLUKA& System,
       if(key=="help")
 	{
 	  ELog::EM<<"TMod Help "
-	    "  -- particle {tallyNameNumber} [newtype] \n";
+	    "  -- particle {tallyNameNumber} [newtype] \n"
+	    "  -- doseType {tallyNameNumber} [newtype] \n";
           ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;
@@ -96,15 +97,16 @@ tallyModification(SimFLUKA& System,
 
       if(key=="doseType")
         {
-	  const int tNumber=IParam.getValueError<int>
-	    ("TMod",i,1,"No tally number for doseType");
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for doseType");
 	  const std::string PT=IParam.getValueError<std::string>
-	    ("TMod",i,1,"No particle for doseType");
+	    ("TMod",i,2,"No particle for doseType");
 	  const std::string DT=IParam.getValueError<std::string>
-	    ("TMod",i,1,"No standard for doseType");
-          flukaSystem::setDoseType(System,tNumber,PT,DT);
+	    ("TMod",i,3,"No standard for doseType");
+          flukaSystem::setDoseType(System,tName,PT,DT);
         }
-      ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;
+      else
+	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;
     }
   return;
 }

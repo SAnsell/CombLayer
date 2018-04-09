@@ -50,6 +50,7 @@ class flukaTally
  public:
   
   explicit flukaTally(const int);
+  flukaTally(const std::string&,const int);
   flukaTally(const flukaTally&);
   flukaTally& operator=(const flukaTally&);
   virtual flukaTally* clone() const; 
@@ -60,6 +61,7 @@ class flukaTally
   void setAuxParticles(const std::string&);
   virtual void setDoseType(const std::string&,const std::string&);
 
+  const std::string& getKeyName() const;
   /// access out unit
   int getOutUnit() const { return outputUnit; }
 

@@ -56,8 +56,8 @@ namespace flukaSystem
 {
 
 userBin::userBin(const int outID) :
-  flukaTally(outID),meshType(10),
-  particle("208")
+  flukaTally("mesh"+std::to_string(outID),outID),
+  meshType(10),particle("208")
   /*!
     Constructor
     \param outID :: Identity number of tally [fortranOut]
@@ -194,12 +194,11 @@ userBin::writeAuxScore(std::ostream& OX) const
     \param OX :: Ouput stream
   */
 {
-  if (!particle.empty())
+  if (!auxParticle.empty())
     {
-      const std::string meshName="mesh"+std::to_string(outputUnit);
       std::ostringstream cx;
-      cx<<"AUXSCORE USRBIN "<<particle<<" - "<<meshName
-	<<" "<<meshName<<" - "<<doseType;
+      cx<<"AUXSCORE USRBIN "<<auxParticle<<" - "<<keyName
+	<<" "<<keyName<<" - "<<doseType;
       StrFunc::writeFLUKA(cx.str(),OX);  
     }
   return;

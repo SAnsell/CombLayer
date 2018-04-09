@@ -70,6 +70,7 @@
 #include "TallySelector.h"
 #include "TallyBuilder.h"
 #include "flukaTallyBuilder.h"
+#include "flukaTallySelector.h"
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
@@ -530,7 +531,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   SimFLUKAPtr->processActiveMaterials();
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
-  //  tallyModification(*SimMCPtr,IParam);
+  tallyModification(*SimFLUKAPtr,IParam);
 
   SDef::flukaSourceSelection(*SimFLUKAPtr,IParam);
   SimFLUKAPtr->masterSourceRotation();

@@ -64,6 +64,15 @@ operator<<(std::ostream& OX,const flukaTally& TX)
   return OX;
 }
 
+flukaTally::flukaTally(const std::string& MK,const int ID)  :
+  keyName(MK),outputUnit(ID)
+  /*!
+    Constructor 
+    \param MK :: Keyname
+    \param ID :: flukaTally ID number
+  */
+{}
+
 flukaTally::flukaTally(const int ID)  :
   outputUnit(ID)
   /*!
@@ -139,6 +148,15 @@ flukaTally::setComment(const std::string& C)
   return;
 }
 
+const std::string&
+flukaTally::getKeyName() const
+  /*!
+    Get full name including output number
+  */
+{
+  return keyName;
+}
+  
 void
 flukaTally::setAuxParticles(const std::string& P)
   /*!
