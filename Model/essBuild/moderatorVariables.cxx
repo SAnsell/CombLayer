@@ -387,18 +387,22 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   const std::string lowModType=IParam.getValue<std::string>("lowMod");
   const std::string topModType=IParam.getValue<std::string>("topMod");
 
-  std::set<std::string> allowedModTypes={"BF1","BF2","Pancake","Box","None"};
-  std::ostringstream stream; // to convert set to str
-  std::copy(allowedModTypes.begin(), allowedModTypes.end(),
+  std::set<std::string> allowedTopModTypes={"BF1","BF2","Pancake","Box","None"};
+  std::set<std::string> allowedLowModTypes={"BF1","BF2","None"};
+  std::ostringstream stream;
+  
+  std::copy(allowedTopModTypes.begin(), allowedTopModTypes.end(),
 	    std::ostream_iterator<std::string>(stream, " "));
-
-  if (allowedModTypes.find(topModType)==allowedModTypes.end())
+  if (allowedTopModTypes.find(topModType)==allowedTopModTypes.end())
     throw ColErr::InvalidLine(topModType,
 			      "Wrong top moderator type. Supported types: " + stream.str());
 
-  if (allowedModTypes.find(lowModType)==allowedModTypes.end())
+  std::copy(allowedLowModTypes.begin(), allowedLowModTypes.end(),
+	    std::ostream_iterator<std::string>(stream, " "));
+  if (allowedLowModTypes.find(lowModType)==allowedLowModTypes.end())
     throw ColErr::InvalidLine(lowModType,
 			      "Wrong low moderator type. Supported types: " + stream.str());
+
 
   if ((topModType=="BF1") || (lowModType=="BF1"))
     {
@@ -489,12 +493,28 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 
   if ((topModType=="BF2") || (lowModType=="BF2"))
     {
-      IParam.setValue("lowMod", std::string("Butterfly"));
-      IParam.setValue("topMod", std::string("Butterfly"));
-      // variables are set in moderatorVariables
-      // build pipes
-      IParam.setValue("topPipe", std::string("supply,return"));
-      IParam.setValue("lowPipe", std::string("supply,return"));
+      std::vector<std::string> TLfly, TLpipe;
+	
+      if (topModType=="BF2")
+	{
+	  IParam.setValue("topMod", std::string("Butterfly"));
+	  Control.addVariable("TopFlyType", 2);
+	  IParam.setValue("topPipe", std::string("supply,return"));
+	  TLfly.push_back("TopFly");
+	  TLpipe.push_back("T");
+	}
+
+      if (lowModType=="BF2")
+	{
+	  IParam.setValue("lowMod", std::string("Butterfly"));
+	  Control.addVariable("LowFlyType", 2);
+	  IParam.setValue("lowPipe", std::string("supply,return"));
+	  TLfly.push_back("LowFly");
+	  TLpipe.push_back("L");
+	}
+
+      // variables are already set in the same function above
+      ELog::EM << "Move them here" << ELog::endDiag;
     }
   
   if ((topModType=="Pancake") || (lowModType=="Pancake"))
