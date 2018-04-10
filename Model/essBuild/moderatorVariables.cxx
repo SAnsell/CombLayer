@@ -634,26 +634,28 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   IParam.setValue("matDB", std::string("neutronics"));
   IParam.setValue("physModel", std::string("BD"));
 
-  // simplify the bunkers
-  IParam.setValue("bunker", std::string("noPillar"));
-
-  std::vector<std::string> bunkerName({"A","B","C","D"});
-  for (const std::string n: bunkerName)
+  if (IParam.flag("bunkerSimple"))
     {
-      Control.setVariable(n+"BunkerWallNBasic", 1);
-      Control.setVariable(n+"BunkerRoofNBasicVert", 1);
-      Control.setVariable(n+"BunkerNSectors", 1);
-      Control.setVariable(n+"BunkerRoofMat0", std::string("Void"));
-      Control.setVariable(n+"BunkerWallMat0", std::string("Void"));
-      Control.setVariable(n+"BunkerWallMat", std::string("Void"));
-    }
+      // simplify the bunkers
+      IParam.setValue("bunker", std::string("noPillar"));
 
-  // simplify the curtain
-  Control.setVariable("CurtainNBaseLayers", 1);
-  Control.setVariable("CurtainNMidLayers", 1);
-  Control.setVariable("CurtainNTopLayers", 1);
-  Control.setVariable("CurtainWallMat", std::string("Void"));
-  
+      std::vector<std::string> bunkerName({"A","B","C","D"});
+      for (const std::string n: bunkerName)
+	{
+	  Control.setVariable(n+"BunkerWallNBasic", 1);
+	  Control.setVariable(n+"BunkerRoofNBasicVert", 1);
+	  Control.setVariable(n+"BunkerNSectors", 1);
+	  Control.setVariable(n+"BunkerRoofMat0", std::string("Void"));
+	  Control.setVariable(n+"BunkerWallMat0", std::string("Void"));
+	  Control.setVariable(n+"BunkerWallMat", std::string("Void"));
+	}
+
+      // simplify the curtain
+      Control.setVariable("CurtainNBaseLayers", 1);
+      Control.setVariable("CurtainNMidLayers", 1);
+      Control.setVariable("CurtainNTopLayers", 1);
+      Control.setVariable("CurtainWallMat", std::string("Void"));
+    }
   // sdef
   // Control.setVariable("sdefEnergy", 2000.0);
   // Control.setVariable("sdefWidth", 14);
