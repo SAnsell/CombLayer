@@ -520,35 +520,42 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   
   if ((topMod=="Pancake") || (lowMod=="Pancake"))
     {
-      IParam.setValue("lowMod", std::string("Pancake"));
-      IParam.setValue("topMod", std::string("Pancake"));
-      
-      IParam.setValue("topPipe", std::string("PancakeSupply"));
-      // straighten the pipes
-      Control.setVariable("TSupplyRightAlNSegIn", 2);
-      Control.setVariable("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      Control.setVariable("TSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
-      Control.setVariable("TSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
-      Control.setVariable("TSupplyLeftAlNSegIn", 2);
-      Control.setVariable("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      Control.setVariable("TSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
-      Control.setVariable("TSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
+      std::vector<std::string> TLpipe;
+      if (topMod=="Pancake")
+	{
+	  IParam.setValue("topMod", topMod);
+	  IParam.setValue("topPipe", std::string("PancakeSupply"));
+	  TLpipe.push_back("T");
+	}
 
-      Control.setVariable("LSupplyRightAlNSegIn", 2);
-      Control.setVariable("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      Control.setVariable("LSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
-      Control.setVariable("LSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
-      Control.setVariable("LSupplyLeftAlNSegIn", 2);
-      Control.setVariable("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      Control.setVariable("LSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
-      Control.setVariable("LSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
+      if (lowMod=="Pancake")
+	{
+	  IParam.setValue("lowMod", lowMod);
+	  IParam.setValue("lowPipe", std::string("PancakeSupply"));
+	  TLpipe.push_back("T");
+	  ELog::EM << "Low Pancake moderator variables are missing" << ELog::endCrit;
+	}
+
+      // straighten the pipes
+      for (std::string strpipe : TLpipe)
+	{
+	  const std::string s(strpipe + "Supply");
+	  Control.setVariable(s+"RightAlNSegIn", 2);
+	  Control.setVariable(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	  Control.setVariable(s+"RightAlPPt1", Geometry::Vec3D(0,30,0));
+	  Control.setVariable(s+"RightAlPPt2", Geometry::Vec3D(0,30,40));
+	  Control.setVariable(s+"LeftAlNSegIn", 2);
+	  Control.setVariable(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	  Control.setVariable(s+"LeftAlPPt1", Geometry::Vec3D(0,30,0));
+	  Control.setVariable(s+"LeftAlPPt2", Geometry::Vec3D(0,30,40));
+	}
       
-      Control.setVariable("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
-      Control.setVariable("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
-      Control.setVariable("TopCapWingThick", 1.1);
-      Control.setVariable("TopCapWingTiltAngle", 1.7);
-      Control.setVariable("TopPreWingThick", 0.8);
-      Control.setVariable("TopPreWingTiltAngle", 1.5);
+      Control.addVariable("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.addVariable("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.addVariable("TopCapWingThick", 1.1);
+      Control.addVariable("TopCapWingTiltAngle", 1.7);
+      Control.addVariable("TopPreWingThick", 0.8);
+      Control.addVariable("TopPreWingTiltAngle", 1.5);
     }
   
   if ((topMod=="Box") || (lowMod=="Box"))
