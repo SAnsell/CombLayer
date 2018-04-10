@@ -390,19 +390,19 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 
   std::set<std::string> allowedTopModTypes={"BF1","BF2","Pancake","Box","None"};
   std::set<std::string> allowedLowModTypes={"BF1","BF2","None"};
-  std::ostringstream stream;
+  std::ostringstream streamTop, streamLow;
   
   std::copy(allowedTopModTypes.begin(), allowedTopModTypes.end(),
-	    std::ostream_iterator<std::string>(stream, " "));
+	    std::ostream_iterator<std::string>(streamTop, " "));
   if (allowedTopModTypes.find(topMod)==allowedTopModTypes.end())
     throw ColErr::InvalidLine(topMod,
-			      "Wrong top moderator type. Supported types: " + stream.str());
+			      "Wrong top moderator type. Supported types: " + streamTop.str());
 
   std::copy(allowedLowModTypes.begin(), allowedLowModTypes.end(),
-	    std::ostream_iterator<std::string>(stream, " "));
+	    std::ostream_iterator<std::string>(streamLow, " "));
   if (allowedLowModTypes.find(lowMod)==allowedLowModTypes.end())
     throw ColErr::InvalidLine(lowMod,
-			      "Wrong low moderator type. Supported types: " + stream.str());
+			      "Wrong low moderator type. Supported types: " + streamLow.str());
 
 
   if ((topMod=="BF1") || (lowMod=="BF1"))
