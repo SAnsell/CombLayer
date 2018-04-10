@@ -176,10 +176,10 @@ userBdxConstruct::processBDX(SimFLUKA& System,
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
 
   const std::string FCname=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:Object/Cell");
+    IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
 
   const std::string FCindex=
-    IParam.getValueError<std::string>("tally",Index,1,"tally:linkPt/Cell");
+    IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 
   int cellA(0);
   int cellB(0);
@@ -197,7 +197,7 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   
   ELog::EM<<"Regions connected from "<<cellA<<" "<<cellB<<ELog::endDiag;  
   
-  size_t itemIndex(3);
+  size_t itemIndex(4);
   // This needs to be more sophisticated
   const int nextId=System.getNextFTape();
   

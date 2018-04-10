@@ -125,7 +125,7 @@ userBin::setParticle(const std::string& P)
 
 void
 userBin::setDoseType(const std::string& P,
-			const std::string& D)
+		     const std::string& D)
   /*!
     Set the auxParticle [can be a range?]
     \param P :: particle to use
@@ -134,7 +134,6 @@ userBin::setDoseType(const std::string& P,
 {
   ELog::RegMethod RegA("userBin","setDoseType");
 
-  setParticle("DOSE-EQ");
   flukaTally::setDoseType(P,D);
   return;
 }
@@ -194,7 +193,9 @@ userBin::writeAuxScore(std::ostream& OX) const
     \param OX :: Ouput stream
   */
 {
-  if (!auxParticle.empty())
+  ELog::EM<<"PART == "<<particle<<" == "<<auxParticle<<ELog::endDiag;
+  ELog::EM<<"Particle size == "<<particle.size()<<ELog::endDiag;
+  if (!auxParticle.empty() && particle=="DOSE-EQ")
     {
       std::ostringstream cx;
       cx<<"AUXSCORE USRBIN "<<auxParticle<<" - "<<keyName

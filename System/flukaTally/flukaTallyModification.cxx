@@ -64,7 +64,7 @@ namespace flukaSystem
 int
 setParticleType(SimFLUKA& Sim,const int tNumber,
                 const std::string& partType) 
-/*!
+  /*!
     Get the last tally point based on the tallynumber
     \param Sim :: System to access tally tables
     \param tNumber :: Tally number [0 for all]
@@ -97,6 +97,7 @@ setDoseType(SimFLUKA& Sim,const std::string& tName,
     Get the last tally point based on the tallynumber
     \param Sim :: System to access tally tables
     \param tName :: Tally number [0 for all]
+    \param particle :: auxillary particle 
     \param doseType :: Dose type
     \return tally number [0 on fail]
   */
@@ -153,7 +154,7 @@ setEnergy(SimFLUKA& Sim,const std::string& tName,
 	}
       if (KN==tName)
 	{
-          mc.second->setEnergy(EA,EB,NA,logFlag);
+          mc.second->setEnergy(logFlag,EA,EB,NA);
           fnum++;
 	}
     }

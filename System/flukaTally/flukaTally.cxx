@@ -198,7 +198,7 @@ flukaTally::setDoseType(const std::string& P,
   if (validDose.find(Dupper)==validDose.end())
     throw ColErr::InContainerError<std::string>(D,"Dose type not known");
 
-  doseType=D;
+  doseType=Dupper;
   return;
 }
   

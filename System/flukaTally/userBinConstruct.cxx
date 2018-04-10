@@ -136,16 +136,13 @@ userBinConstruct::convertTallyType(const std::string& TType)
   std::ostringstream cx;
   
   if (tc!=tMap.end())
-    cx<<std::setw(10)<<StrFunc::toUpperString(TType);
-  else if (pConv.hasName(TType))
-    {
-      cx<<std::setw(10)<<
-	StrFunc::toUpperString(pConv.nameToFLUKA(TType));
-    }
-  else
-    throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
+    return StrFunc::toUpperString(TType);
 
-  return cx.str();
+  if (pConv.hasName(TType))
+    return StrFunc::toUpperString(pConv.nameToFLUKA(TType));
+
+
+  throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
 }
 
   
