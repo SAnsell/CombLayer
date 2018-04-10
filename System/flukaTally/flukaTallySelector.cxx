@@ -90,6 +90,8 @@ tallyModification(SimFLUKA& System,
 	  ELog::EM<<"TMod Help "
 	    "  -- particle {tallyNameNumber} [newtype] \n"
 	    "  -- doseType {tallyNameNumber} [newtype] \n";
+	    "  -- energy {tallyNameNumber} Emin Emax NPts LinearFlag  \n";
+	    "  -- angle {tallyNameNumber} Amin Amax NPts LogFlag  \n";
           ELog::EM<<ELog::endBasic;
 	  ELog::EM<<ELog::endErr;
           return;
@@ -104,6 +106,21 @@ tallyModification(SimFLUKA& System,
 	  const std::string DT=IParam.getValueError<std::string>
 	    ("TMod",i,3,"No standard for doseType");
           flukaSystem::setDoseType(System,tName,PT,DT);
+	  return;
+        }
+
+      if(key=="energy")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+	  const double EA=IParam.getValueError<double>
+	    ("TMod",i,2,"Emin for "+key);
+	  const double EB=IParam.getValueError<double>
+	    ("TMod",i,3,"Emax for "+key);
+	  const size_t NE=IParam.getValueError<size_t>
+	    ("TMod",i,4,"NPTS for "+key);
+	  const int EFlag=IParam.getDefValue<int>(0,"TMod",i,5);
+          flukaSystem::setEnergy(System,tName,EA,EB,NE,EFlag);
         }
       else
 	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;

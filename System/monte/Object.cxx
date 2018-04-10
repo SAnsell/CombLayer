@@ -637,13 +637,13 @@ Object::isValid(const Geometry::Vec3D& Pt) const
 int
 Object::isValid(const Geometry::Vec3D& Pt,
 		const int ExSN) const
-/*! 
-  Determines is Pt is within the object 
-  or on the surface
-  \param Pt :: Point to be tested
-  \param ExSN :: Excluded surf Number
-  \returns 1 if true and 0 if false
-*/
+  /*! 
+    Determines is Pt is within the object 
+    or on the surface
+    \param Pt :: Point to be tested
+    \param ExSN :: Excluded surf Number [unsigned]
+    \returns 1 if true and 0 if false
+  */
 {
   return HRule.isValid(Pt,ExSN);
 }

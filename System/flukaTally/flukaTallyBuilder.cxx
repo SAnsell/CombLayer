@@ -54,6 +54,7 @@
 
 #include "userBinConstruct.h"
 #include "userDumpConstruct.h"
+#include "userBdxConstruct.h"
 #include "flukaTallyBuilder.h"
 
 namespace flukaSystem
@@ -87,6 +88,8 @@ tallySelection(SimFLUKA& System,
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")
 	userDumpConstruct::processDump(System,IParam,i);
+      else if (TType=="surface")
+	userBdxConstruct::processBDX(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
     }

@@ -169,6 +169,14 @@ flukaTally::setAuxParticles(const std::string& P)
 }
 
 void
+flukaTally::setEnergy(const bool,const double,
+		      const double,const size_t)
+  /*!
+    Null op call for non-energy detectors
+  */
+{}
+  
+void
 flukaTally::setDoseType(const std::string& P,
 			const std::string& D)
   /*!

@@ -29,8 +29,14 @@ namespace flukaSystem
 {  
   int setDoseType(SimFLUKA&,const std::string&,
 		  const std::string&,const std::string&);
+
+  int setEnergy(SimFLUKA&,const std::string&,
+		const double,const double,
+		const size_t,const bool);
+  
   int setParticleType(SimFLUKA&,const int,const std::string&);
 
+    
 }  // namespace tallySystem 
 
 #endif

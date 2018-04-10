@@ -45,7 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "surfRegister.h"

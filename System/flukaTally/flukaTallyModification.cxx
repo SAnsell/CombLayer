@@ -107,9 +107,53 @@ setDoseType(SimFLUKA& Sim,const std::string& tName,
   int fnum(0);
   for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
     {
-      if (mc.second->getKeyName()==tName)
+      std::string KN=mc.second->getKeyName();
+      if (tName.back()=='*')
+	{
+	  // method to make KN ==> stuff*
+	  KN.erase(tName.size(),std::string::npos);
+	  KN.back()='*';
+	}
+      if (KN==tName)
 	{
           mc.second->setDoseType(particle,doseType);
+          fnum++;
+	}
+    }
+  return fnum;
+}
+
+int
+setEnergy(SimFLUKA& Sim,const std::string& tName,
+	  const double EA,const double EB,
+	  const size_t NA,const bool logFlag)
+/*!
+    Get the last tally point based on the tallynumber
+    \param Sim :: System to access tally tables
+    \param tName :: Tally number [0 for all]
+    \param EA :: start energy
+    \param EB :: end enegy
+    \param NA :: number of points
+    \param logFlag :: log points
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setEnergy");
+
+  SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
+  int fnum(0);
+  for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
+    {
+      std::string KN=mc.second->getKeyName();
+      if (tName.back()=='*')
+	{
+	  // method to make KN ==> stuff*
+	  KN.erase(tName.size(),std::string::npos);
+	  KN.back()='*';
+	}
+      if (KN==tName)
+	{
+          mc.second->setEnergy(EA,EB,NA,logFlag);
           fnum++;
 	}
     }

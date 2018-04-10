@@ -586,7 +586,7 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
-    \param S :: Exclude items
+    \param S :: Exclude items [unsigned]
     \return true/false 
   */
 {

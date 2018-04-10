@@ -60,6 +60,7 @@ class flukaTally
   void setComment(const std::string&);
   void setAuxParticles(const std::string&);
   virtual void setDoseType(const std::string&,const std::string&);
+  virtual void setEnergy(const bool,const double,const double,const size_t);
 
   const std::string& getKeyName() const;
   /// access out unit
