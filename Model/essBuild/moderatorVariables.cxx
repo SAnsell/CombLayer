@@ -28,6 +28,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <numeric>
 #include <string>
 #include <algorithm>
 #include <iterator>
@@ -581,6 +582,39 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       Control.setVariable("TopCapWingTiltAngle", 1.7);
       Control.setVariable("TopPreWingThick", 0.8);
       Control.setVariable("TopPreWingTiltAngle", 1.5);
+    }
+
+  if (lowModType=="None") // single
+    {
+      Control.setVariable("BeRefLowVoidThick", 0);
+      Control.setVariable("BeRefLowRefMat", std::string("SS316L"));
+      Control.setVariable("BeRefLowWallMat", std::string("AluminiumBe"));
+      Control.addVariable("BeRefLowInnerStructureActive", 1);
+      // The 'depth' array numbers are from LZ drawing 2017-10-10
+      // and discussions with Marc 2017-10-11
+      // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/reflector/water-layers-in-lower-be-reflector/view
+      std::vector<double> depth({3.0,5.1,3.0,0.9,3.0,3.0,3.0,9.0,3.0,9.0,3.0,12.7});
+      const double BeRefDepth(std::accumulate(depth.begin(), depth.end(), 0.0));
+      const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
+      Control.setVariable("BeRefDepth", BeRefDepth+Ztop);
+      Control.addVariable("BulkDepth1", BeRefDepth+Ztop+1.0); // a bit bigger to make some clearance
+      Control.addVariable("BeRefVoidCylRadius", 15.0);
+      Control.addVariable("BeRefVoidCylDepth", std::accumulate(depth.begin(),
+							       depth.begin()+3,
+							       0.0));
+
+      const size_t nLayers(depth.size());
+      Control.setVariable("BeRefLowInnerStructureNLayers", nLayers);
+
+      // 40% water fraction based on email from Marc 13 Oct 2017
+      for (size_t i=0; i<nLayers; i++)
+	{
+	  Control.addVariable("BeRefLowInnerStructureBaseLen" + std::to_string(i+1),
+		   depth[i]/BeRefDepth);
+	  Control.addVariable("BeRefLowInnerStructureMat" + std::to_string(i),
+			      (i%2) ? std::string("SS316L") :
+			      std::string("SS316L_40H2O"));
+	}
     }
 
   IParam.setValue("matDB", std::string("neutronics"));
