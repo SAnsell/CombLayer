@@ -65,9 +65,9 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("targetType",std::string("Bilbao"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("None"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("Butterfly"));
-  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
+  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("BF1"));
+  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("supply"));
+  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("supply"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   IParam.regDefItem<int>("matmesh", "matmesh", 1, 0);
