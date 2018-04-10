@@ -38,7 +38,7 @@ namespace setVariable
   void CuVariables(FuncDataBase&);
   void D4CModel(FuncDataBase&);
   void DelftModel(FuncDataBase&);
-  void EssVariables(FuncDataBase&,const std::set<std::string>&);
+  void EssVariables(const mainSystem::inputParam&,FuncDataBase&);
   void EssLinacVariables(FuncDataBase&);
   void EssPipeVariables(FuncDataBase&);
   void EPBVariables(FuncDataBase&);
