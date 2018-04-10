@@ -47,13 +47,14 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "inputParam.h"
 #include "essVariables.h"
 
 namespace setVariable
 {
 
 void
-EssButterflyModerator(FuncDataBase& Control)
+EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   /*!
     Create all the Conic moderator option variables
     \param Control :: DataBase
@@ -381,6 +382,216 @@ EssButterflyModerator(FuncDataBase& Control)
   
   Control.copyVarSet("TopLeftPreWing", "TopRightPreWing");
   Control.addVariable("TopRightPreWingXYAngle",180.0);
+
+  // if lowMod is None then BeRefLowVoidThick must be set to 0.0
+  const std::string lowModType=IParam.getValue<std::string>("lowMod");
+  const std::string topModType=IParam.getValue<std::string>("topMod");
+
+  std::set<std::string> allowedModTypes={"BF1","BF2","Pancake","Box","None"};
+  std::ostringstream stream; // to convert set to str
+  std::copy(allowedModTypes.begin(), allowedModTypes.end(),
+	    std::ostream_iterator<std::string>(stream, " "));
+
+  if (allowedModTypes.find(topModType)==allowedModTypes.end())
+    throw ColErr::InvalidLine(topModType,
+			      "Wrong top moderator type. Supported types: " + stream.str());
+
+  if (allowedModTypes.find(lowModType)==allowedModTypes.end())
+    throw ColErr::InvalidLine(lowModType,
+			      "Wrong low moderator type. Supported types: " + stream.str());
+
+  if ((topModType=="BF1") || (lowModType=="BF1"))
+    {
+      std::vector<std::string> TLfly, TLpipe;
+
+      if (topModType=="BF1")
+	{
+	  IParam.setValue("topMod", std::string("Butterfly"));
+	  Control.addVariable("TopFlyType", 1);
+	  IParam.setValue("topPipe", std::string("supply"));
+	  TLfly.push_back("TopFly");
+	  TLpipe.push_back("T");
+	}
+
+      if (lowModType=="BF1")
+	{
+	  IParam.setValue("lowMod", std::string("Butterfly"));
+	  Control.addVariable("LowFlyType", 1);
+	  IParam.setValue("lowPipe", std::string("supply"));
+	  TLfly.push_back("LowFly");
+	  TLpipe.push_back("L");
+	}
+
+      // These variables are as in the model received from Luca 22 Feb 2017
+      // there is no engieering drawings for BF1 yet, so this email is
+      // the only reference
+      std::string s;
+      for (std::string s : TLfly) {
+	Control.setVariable(s+"LeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	Control.setVariable(s+"LeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	Control.setVariable(s+"LeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+
+	Control.setVariable(s+"RightLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	Control.setVariable(s+"RightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	Control.setVariable(s+"RightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+
+	Control.setVariable(s+"LeftLobeRadius1",1.0);
+	Control.setVariable(s+"RightLobeRadius1",1.0);
+
+	Control.setVariable(s+"LeftLobeXStep",-0.85);
+	Control.setVariable(s+"RightLobeXStep",0.85);
+
+	Control.setVariable(s+"LeftWaterCutWidth",9.6);
+	Control.setVariable(s+"RightWaterCutWidth",9.6);
+
+	Control.setVariable(s+"MidWaterLength",9.9);
+	Control.setVariable(s+"MidWaterMidYStep",6.3);
+      }
+
+      // flow guides
+      for (std::string strmod : TLfly) {
+	s = strmod + "FlowGuide";
+	Control.addVariable(s+"BaseOffset",-10.5);
+	Control.setVariable(s+"Len1L",1.2);
+	Control.setVariable(s+"Len1R",8);
+	Control.setVariable(s+"Angle1",90);
+	Control.setVariable(s+"Radius1",1);
+	Control.setVariable(s+"Len1Foot",2.3);
+	Control.setVariable(s+"Dist12",3);
+	Control.setVariable(s+"Len2L",5.0);
+	Control.setVariable(s+"Len2R",8);
+	Control.setVariable(s+"Angle2",135);
+	Control.setVariable(s+"Radius2",1);
+	Control.setVariable(s+"Len2Foot",4);
+	Control.setVariable(s+"Dist23",3);
+	Control.setVariable(s+"Len3L",2.0);
+	Control.setVariable(s+"Len3R",4.0);
+	Control.setVariable(s+"Angle3",90);
+	Control.setVariable(s+"Dist14",5);
+	Control.setVariable(s+"Len4L",8.0);
+	Control.setVariable(s+"Len4R",-5.0);
+	Control.setVariable(s+"Angle4",135+90);
+      }
+
+      for (std::string strpipe : TLpipe) {
+	s = strpipe + "Supply";
+	Control.setVariable(s+"RightAlNSegIn", 2);
+	Control.setVariable(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	Control.setVariable(s+"RightAlPPt1", Geometry::Vec3D(0,26,0));
+	Control.setVariable(s+"RightAlPPt2", Geometry::Vec3D(0,26,40));
+
+	Control.setVariable(s+"LeftAlNSegIn", 2);
+	Control.setVariable(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	Control.setVariable(s+"LeftAlPPt1", Geometry::Vec3D(0,25.3,0));
+	Control.setVariable(s+"LeftAlPPt2", Geometry::Vec3D(0,25.3,40));
+      }
+    }
+
+  if ((topModType=="BF2") || (lowModType=="BF2"))
+    {
+      IParam.setValue("lowMod", std::string("Butterfly"));
+      IParam.setValue("topMod", std::string("Butterfly"));
+      // variables are set in moderatorVariables
+      // build pipes
+      IParam.setValue("topPipe", std::string("supply,return"));
+      IParam.setValue("lowPipe", std::string("supply,return"));
+    }
+  
+  if ((topModType=="Pancake") || (lowModType=="Pancake"))
+    {
+      IParam.setValue("lowMod", std::string("Pancake"));
+      IParam.setValue("topMod", std::string("Pancake"));
+      
+      IParam.setValue("topPipe", std::string("PancakeSupply"));
+      // straighten the pipes
+      Control.setVariable("TSupplyRightAlNSegIn", 2);
+      Control.setVariable("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("TSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
+      Control.setVariable("TSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
+      Control.setVariable("TSupplyLeftAlNSegIn", 2);
+      Control.setVariable("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("TSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
+      Control.setVariable("TSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
+
+      Control.setVariable("LSupplyRightAlNSegIn", 2);
+      Control.setVariable("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("LSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
+      Control.setVariable("LSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
+      Control.setVariable("LSupplyLeftAlNSegIn", 2);
+      Control.setVariable("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("LSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
+      Control.setVariable("LSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
+      
+      Control.setVariable("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.setVariable("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.setVariable("TopCapWingThick", 1.1);
+      Control.setVariable("TopCapWingTiltAngle", 1.7);
+      Control.setVariable("TopPreWingThick", 0.8);
+      Control.setVariable("TopPreWingTiltAngle", 1.5);
+    }
+  
+  if ((topModType=="Box") || (lowModType=="Box"))
+    {
+      IParam.setValue("lowMod", std::string("Box"));
+      IParam.setValue("topMod", std::string("Box"));
+
+      IParam.setValue("topPipe", std::string("BoxSupply"));
+      // straighten the pipes
+      Control.setVariable("TSupplyRightAlNSegIn", 2);
+      Control.setVariable("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("TSupplyRightAlPPt1", Geometry::Vec3D(0,40,0));
+      Control.setVariable("TSupplyRightAlPPt2", Geometry::Vec3D(0,40,40));
+      Control.setVariable("TSupplyLeftAlNSegIn", 2);
+      Control.setVariable("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("TSupplyLeftAlPPt1", Geometry::Vec3D(0,40,0));
+      Control.setVariable("TSupplyLeftAlPPt2", Geometry::Vec3D(0,40,40));
+
+      Control.setVariable("LSupplyRightAlNSegIn", 2);
+      Control.setVariable("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("LSupplyRightAlPPt1", Geometry::Vec3D(0,40,0));
+      Control.setVariable("LSupplyRightAlPPt2", Geometry::Vec3D(0,40,40));
+      Control.setVariable("LSupplyLeftAlNSegIn", 2);
+      Control.setVariable("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
+      Control.setVariable("LSupplyLeftAlPPt1", Geometry::Vec3D(0,40,0));
+      Control.setVariable("LSupplyLeftAlPPt2", Geometry::Vec3D(0,40,40));
+      
+      Control.setVariable("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.setVariable("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.setVariable("TopCapWingThick", 1.1);
+      Control.setVariable("TopCapWingTiltAngle", 1.7);
+      Control.setVariable("TopPreWingThick", 0.8);
+      Control.setVariable("TopPreWingTiltAngle", 1.5);
+    }
+
+  IParam.setValue("matDB", std::string("neutronics"));
+  IParam.setValue("physModel", std::string("BD"));
+
+  // simplify the bunkers
+  IParam.setValue("bunker", std::string("noPillar"));
+
+  std::vector<std::string> bunkerName({"A","B","C","D"});
+  for (const std::string n: bunkerName)
+    {
+      Control.setVariable(n+"BunkerWallNBasic", 1);
+      Control.setVariable(n+"BunkerRoofNBasicVert", 1);
+      Control.setVariable(n+"BunkerNSectors", 1);
+      Control.setVariable(n+"BunkerRoofMat0", std::string("Void"));
+      Control.setVariable(n+"BunkerWallMat0", std::string("Void"));
+      Control.setVariable(n+"BunkerWallMat", std::string("Void"));
+    }
+
+  // simplify the curtain
+  Control.setVariable("CurtainNBaseLayers", 1);
+  Control.setVariable("CurtainNMidLayers", 1);
+  Control.setVariable("CurtainNTopLayers", 1);
+  Control.setVariable("CurtainWallMat", std::string("Void"));
+  
+  // sdef
+  // Control.setVariable("sdefEnergy", 2000.0);
+  // Control.setVariable("sdefWidth", 14);
+  // Control.setVariable("sdefHeight", 3.2);
+  // Control.setVariable("sdefYPos", -500);
+  // Control.setVariable("sdefPDF", std::string("uniform"));
 
   return;
 }

@@ -34,7 +34,7 @@ namespace setVariable
   // Structure
   void EssBeamLinesVariables(FuncDataBase&);
   void EssBunkerVariables(FuncDataBase&);
-  void EssButterflyModerator(FuncDataBase&);
+  void EssButterflyModerator(mainSystem::inputParam&,FuncDataBase&);
   void EssWheel(FuncDataBase&);
   void EssProtonBeam(FuncDataBase&);
   void EssIradVariables(FuncDataBase&);

@@ -56,7 +56,7 @@ namespace setVariable
 {
 
 void
-EssVariables(const mainSystem::inputParam& IParam,FuncDataBase& Control)
+EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
     -- This version is for ESS ()
@@ -243,9 +243,9 @@ EssVariables(const mainSystem::inputParam& IParam,FuncDataBase& Control)
   EssBeamLinesVariables(Control);
   EssPipeVariables(Control);
   
-  EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);
+  EssButterflyModerator(IParam,Control);
   EssIradVariables(Control);
   EssFlightLineVariables(Control);
   F5Variables(Control);
