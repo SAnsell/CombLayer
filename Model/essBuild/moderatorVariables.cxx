@@ -385,8 +385,8 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("TopRightPreWingXYAngle",180.0);
 
   // if lowMod is None then BeRefLowVoidThick must be set to 0.0
-  const std::string lowModType=IParam.getValue<std::string>("lowMod");
-  const std::string topModType=IParam.getValue<std::string>("topMod");
+  const std::string lowMod=IParam.getValue<std::string>("lowMod");
+  const std::string topMod=IParam.getValue<std::string>("topMod");
 
   std::set<std::string> allowedTopModTypes={"BF1","BF2","Pancake","Box","None"};
   std::set<std::string> allowedLowModTypes={"BF1","BF2","None"};
@@ -394,22 +394,22 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   
   std::copy(allowedTopModTypes.begin(), allowedTopModTypes.end(),
 	    std::ostream_iterator<std::string>(stream, " "));
-  if (allowedTopModTypes.find(topModType)==allowedTopModTypes.end())
-    throw ColErr::InvalidLine(topModType,
+  if (allowedTopModTypes.find(topMod)==allowedTopModTypes.end())
+    throw ColErr::InvalidLine(topMod,
 			      "Wrong top moderator type. Supported types: " + stream.str());
 
   std::copy(allowedLowModTypes.begin(), allowedLowModTypes.end(),
 	    std::ostream_iterator<std::string>(stream, " "));
-  if (allowedLowModTypes.find(lowModType)==allowedLowModTypes.end())
-    throw ColErr::InvalidLine(lowModType,
+  if (allowedLowModTypes.find(lowMod)==allowedLowModTypes.end())
+    throw ColErr::InvalidLine(lowMod,
 			      "Wrong low moderator type. Supported types: " + stream.str());
 
 
-  if ((topModType=="BF1") || (lowModType=="BF1"))
+  if ((topMod=="BF1") || (lowMod=="BF1"))
     {
       std::vector<std::string> TLfly, TLpipe;
 
-      if (topModType=="BF1")
+      if (topMod=="BF1")
 	{
 	  IParam.setValue("topMod", std::string("Butterfly"));
 	  Control.addVariable("TopFlyType", 1);
@@ -418,7 +418,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	  TLpipe.push_back("T");
 	}
 
-      if (lowModType=="BF1")
+      if (lowMod=="BF1")
 	{
 	  IParam.setValue("lowMod", std::string("Butterfly"));
 	  Control.addVariable("LowFlyType", 1);
@@ -492,11 +492,11 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       }
     }
 
-  if ((topModType=="BF2") || (lowModType=="BF2"))
+  if ((topMod=="BF2") || (lowMod=="BF2"))
     {
       std::vector<std::string> TLfly, TLpipe;
 	
-      if (topModType=="BF2")
+      if (topMod=="BF2")
 	{
 	  IParam.setValue("topMod", std::string("Butterfly"));
 	  Control.addVariable("TopFlyType", 2);
@@ -505,7 +505,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	  TLpipe.push_back("T");
 	}
 
-      if (lowModType=="BF2")
+      if (lowMod=="BF2")
 	{
 	  IParam.setValue("lowMod", std::string("Butterfly"));
 	  Control.addVariable("LowFlyType", 2);
@@ -518,7 +518,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       ELog::EM << "Move them here" << ELog::endDiag;
     }
   
-  if ((topModType=="Pancake") || (lowModType=="Pancake"))
+  if ((topMod=="Pancake") || (lowMod=="Pancake"))
     {
       IParam.setValue("lowMod", std::string("Pancake"));
       IParam.setValue("topMod", std::string("Pancake"));
@@ -551,7 +551,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       Control.setVariable("TopPreWingTiltAngle", 1.5);
     }
   
-  if ((topModType=="Box") || (lowModType=="Box"))
+  if ((topMod=="Box") || (lowMod=="Box"))
     {
       IParam.setValue("lowMod", std::string("Box"));
       IParam.setValue("topMod", std::string("Box"));
@@ -584,7 +584,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       Control.setVariable("TopPreWingTiltAngle", 1.5);
     }
 
-  if (lowModType=="None") // single
+  if (lowMod=="None") // single
     {
       Control.setVariable("BeRefLowVoidThick", 0);
       Control.setVariable("BeRefLowRefMat", std::string("SS316L"));
