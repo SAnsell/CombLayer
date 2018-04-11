@@ -74,6 +74,7 @@
 #include "Volumes.h"
 #include "variableSetup.h"
 #include "defaultConfig.h"
+#include "DBModify.h"
 #include "DefUnitsESS.h"
 #include "ImportControl.h"
 #include "World.h"
@@ -118,6 +119,7 @@ main(int argc,char* argv[])
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
+      ModelSupport::addESSMaterial(); // matDB neutronics - used by default
 
       essSystem::makeESS ESSObj;
       World::createOuterObjects(*SimPtr);

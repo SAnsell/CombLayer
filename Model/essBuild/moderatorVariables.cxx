@@ -630,7 +630,6 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	}
     }
 
-  IParam.setValue("matDB", std::string("neutronics"));
   IParam.setValue("physModel", std::string("BD"));
 
   if (IParam.flag("bunkerSimple"))
