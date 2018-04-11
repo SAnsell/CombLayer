@@ -71,7 +71,6 @@ createESSInputs(inputParam& IParam)
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   IParam.regDefItem<int>("matmesh", "matmesh", 1, 0);
-  IParam.regFlag("bunkerSimple", "bunkerSimple");
   
   IParam.regMulti("bunkerChicane","bunkerChicane",1000,1);
   IParam.regMulti("bunkerFeed","bunkerFeed",1000,1);
@@ -79,7 +78,6 @@ createESSInputs(inputParam& IParam)
   IParam.regMulti("bunkerQuake","bunkerQuake",1000,1);
   IParam.regMulti("iradObj","iradObject",1000,3);
   IParam.setDesc("matmesh","Generate material mesh (e.g. to compare two geometries).");
-  IParam.setDesc("bunkerSimple","Simplify the bunker and set its cells to void");
   
   IParam.regDefItem<std::string>("bunker","bunkerType",1,std::string("null"));
   IParam.regMulti("beamlines","beamlines",1000);
@@ -96,7 +94,7 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("iradObj","Build an irradiation object [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
-  IParam.setDesc("bunker","Build bunker [void for none [A-D]");
+  IParam.setDesc("bunker","Build bunker [void for simpified voided version [A-D]");
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
 		 "  -- The collimators will be named as F5, F15, etc.\n"
 		 "  -- The corresponding variables must exist.");

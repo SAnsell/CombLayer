@@ -632,7 +632,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 
   IParam.setValue("physModel", std::string("BD"));
 
-  if (IParam.flag("bunkerSimple"))
+  if (IParam.getValue<std::string>("bunker")=="void")
     {
       // simplify the bunkers
       IParam.setValue("bunker", std::string("noPillar"));
