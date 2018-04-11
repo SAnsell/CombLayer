@@ -63,7 +63,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssButterflyModerator");
 
-  // Top Butterfly
+  // Top Butterfly: variables for BF2
 
   Control.addVariable("TopFlyXStep",0.0);  
   Control.addVariable("TopFlyYStep",0.0);  
@@ -515,7 +515,6 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	}
 
       // variables are already set in the same function above
-      ELog::EM << "Move them here" << ELog::endDiag;
     }
   
   if ((topMod=="Pancake") || (lowMod=="Pancake"))
