@@ -193,8 +193,6 @@ userBin::writeAuxScore(std::ostream& OX) const
     \param OX :: Ouput stream
   */
 {
-  ELog::EM<<"PART == "<<particle<<" == "<<auxParticle<<ELog::endDiag;
-  ELog::EM<<"Particle size == "<<particle.size()<<ELog::endDiag;
   if (!auxParticle.empty() && particle=="DOSE-EQ")
     {
       std::ostringstream cx;

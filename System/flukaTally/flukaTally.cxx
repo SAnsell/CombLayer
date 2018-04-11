@@ -45,6 +45,7 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
+#include "flukaGenParticle.h"
 #include "flukaTally.h"
 
 namespace flukaSystem
@@ -192,8 +193,10 @@ flukaTally::setDoseType(const std::string& P,
       "EAPMP","ERTMP","EWTMP",
       "AMB74","AMBGS"
       });
-
-  auxParticle=P;
+  const flukaGenParticle& FG=flukaGenParticle::Instance();
+  
+  auxParticle=FG.nameToFLUKA(P);
+  
   const std::string Dupper=StrFunc::toUpperString(D);
   if (validDose.find(Dupper)==validDose.end())
     throw ColErr::InContainerError<std::string>(D,"Dose type not known");

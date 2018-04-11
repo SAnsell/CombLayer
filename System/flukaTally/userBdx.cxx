@@ -173,12 +173,12 @@ userBdx::setAngle(const bool aFlag,const double aMin,
   const double minV((aFlag) ? 1e-6 : 0.0);
   const size_t minN((aFlag) ? 3 : 1);
 
-  if (aMax<4*M_PI)
-    throw ColErr::RangeError<double>(aMax,1e-6,4*M_PI,"aMax out of range");
+  if (aMax>4*M_PI)
+    throw ColErr::RangeError<double>(aMax,minV,4*M_PI,"aMax out of range");
   if (aMin<minV)
     throw ColErr::RangeError<double>(aMin,minV,4*M_PI,"aMin out of range");
   if (NA<minN)
-    throw ColErr::SizeError<size_t>(NA,3,"NA to small");
+    throw ColErr::SizeError<size_t>(NA,minN,"NA to small");
 
   aLogFlag=aFlag;
   angleA=aMin;
@@ -200,16 +200,15 @@ userBdx::setEnergy(const bool eFlag,const double eMin,
 {
   ELog::RegMethod RegE("userBdx","setEnergy");
 
-  const double minV((eFlag) ? 1e-6 : 0.0);
+  const double minV((eFlag) ? 1e-9 : 0.0);
   const size_t minN((eFlag) ? 3 : 1);
 
-  if (eMax<1e6)
-    throw ColErr::RangeError<double>(eMax,1e-6,1e6,"eMex out of renge");
+  if (eMax>1e6)
+    throw ColErr::RangeError<double>(eMax,minV,1e6,"eMax out of renge");
   if (eMin<minV)
     throw ColErr::RangeError<double>(eMin,minV,1e6,"eMin out of renge");
   if (NE<minN)
-    
-    throw ColErr::SizeError<size_t>(NE,3,"NE to small");
+    throw ColErr::SizeError<size_t>(NE,minN,"NE to small");
 
   eLogFlag=eFlag;
   energyA=eMin;
