@@ -170,3 +170,7 @@ script:
   - ./ess      -topMod BF2     -lowMod BF1  -validCheck 100000  -r BilbaoWheel bf2-bf1-test
   - ./ess -eng -topMod BF1     -lowMod BF2  -validCheck 100000 bf2-bf1-test
   - ./ess      -topMod BF1     -lowMod BF2  -validCheck 100000 bf2-bf1-test
+  - ./ess -r -defaultConfig Single NMX -bunker void --validCheck 100000 a
+  - ./ess -r -defaultConfig Single NMX -bunker void --validCheck 100000 a
+  - ./ess -r -eng -defaultConfig Single NMX VOR --validCheck 10000 a
+  - ./ess -r -eng -defaultConfig Single NMX G1BLineTop2 VOR --validCheck 10000 b
