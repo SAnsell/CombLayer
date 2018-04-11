@@ -46,7 +46,7 @@
 // mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
 flukaGenParticle::flukaGenParticle() : 
   flukaGen({
-      {"ALL-PART",208}
+      {"all-part",208}
     })
   /*!
     Constructor
@@ -103,12 +103,12 @@ flukaGenParticle::nameToFLUKA(const std::string& particleName) const
 {
   ELog::RegMethod RegA("flukaGenParticle","nameToFLUKA");
 
-  const std::string PN=StrFunc::toUpperString(particleName);
+  const std::string PN=StrFunc::toLowerString(particleName);
   std::map<std::string,int>::const_iterator mc=
-    flukaGen.find(particleName);
+    flukaGen.find(PN);
   if (mc!=flukaGen.end())
     return mc->first;
-  
+
   return particleConv::Instance().nameToFLUKA(PN);
 }
  

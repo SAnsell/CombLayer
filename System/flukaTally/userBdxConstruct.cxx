@@ -62,6 +62,7 @@
 #include "Qhull.h"
 #include "SimFLUKA.h"
 #include "particleConv.h"
+#include "flukaGenParticle.h"
 #include "TallySelector.h"
 #include "meshConstruct.h"
 #include "flukaTally.h"
@@ -116,11 +117,25 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
   
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(FCname);
-  if (!FCPtr) return 0;
 
+  if (!FCPtr) return 0;
+  // throws -- because if we have FC and no link number is that bad?
+  const long int FCI=attachSystem::getLinkIndex(FCindex);
+
+  const int surfN=FCPtr->getLinkSurf(FCI);
+  if (!surfN) return 0;
   
+  const std::pair<const MonteCarlo::Object*,
+	    const MonteCarlo::Object*> RefPair=
+    System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
   
-  return 1;
+  if (RefPair.first && RefPair.second)
+    {
+      cellA=RefPair.first->getName();
+      cellB=RefPair.second->getName();
+      return 1;
+    }
+  return 0;
 }
 
 void 
@@ -146,8 +161,10 @@ userBdxConstruct::createTally(SimFLUKA& System,
 {
   ELog::RegMethod RegA("userBdxConstruct","createTally");
 
+  const flukaGenParticle& FG=flukaGenParticle::Instance();
+    
   userBdx UD(fortranTape);
-  UD.setParticle(PType);
+  UD.setParticle(FG.nameToFLUKA(PType));
 
   UD.setCell(cellA,cellB);
   UD.setEnergy(eLog,Emin,Emax,nE);

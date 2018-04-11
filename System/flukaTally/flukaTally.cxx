@@ -195,7 +195,7 @@ flukaTally::setDoseType(const std::string& P,
       });
   const flukaGenParticle& FG=flukaGenParticle::Instance();
   
-  auxParticle=FG.nameToFLUKA(P);
+  auxParticle=StrFunc::toUpperString(FG.nameToFLUKA(P));
   
   const std::string Dupper=StrFunc::toUpperString(D);
   if (validDose.find(Dupper)==validDose.end())
