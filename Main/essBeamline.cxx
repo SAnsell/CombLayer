@@ -116,7 +116,7 @@ main(int argc,char* argv[])
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
       const std::set<std::string> beamlines=
         IParam.getComponents<std::string>("beamlines",1);            
-      setVariable::EssVariables(SimPtr->getDataBase(),beamlines);
+      setVariable::EssVariables(IParam,SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);            
       mainSystem::setMaterialsDataBase(IParam);
 
