@@ -154,15 +154,15 @@ script:
   - ./t1Real -r t1_test2
   # model valid check
   - ./fullBuild -r -validCheck 100000 fb_vtest
-  - ./ess -eng -defaultConfig neutronics Pancake single -mcnp 6 -validCheck 100000 pc-eng-test
-  - ./ess      -defaultConfig neutronics Pancake single -mcnp 6 -validCheck 100000 pc-test
-  - ./ess -eng -defaultConfig neutronics Box single -mcnp 6 -validCheck 100000 box-eng-test
-  - ./ess      -defaultConfig neutronics Box single -mcnp 6 -validCheck 100000 box-test
-  - ./ess -eng -defaultConfig neutronics BF1 single -mcnp 6 -validCheck 100000 bf1-single-eng-test
-  - ./ess      -defaultConfig neutronics BF1 single -mcnp 6 -validCheck 100000 bf1-single-test
-  - ./ess -eng -defaultConfig neutronics BF1 -mcnp 6 -validCheck 100000 bf1-eng-test
-  - ./ess      -defaultConfig neutronics BF1 -mcnp 6 -validCheck 100000 bf1-test
-  - ./ess -eng -defaultConfig neutronics BF2 single -mcnp 6 -validCheck 100000 bf2-single-eng-test
-  - ./ess      -defaultConfig neutronics BF2 single -mcnp 6 -validCheck 100000 bf2-single-test
-  - ./ess -eng -defaultConfig neutronics BF2 -mcnp 6 -validCheck 100000 bf2-eng-test
-  - ./ess      -defaultConfig neutronics BF2 -mcnp 6 -validCheck 100000 bf2-test
+  - ./ess -eng -topMod Pancake -lowMod None -validCheck 100000 pc-eng-test
+  - ./ess      -topMod Pancake -lowMod None -validCheck 100000 pc-test
+  - ./ess -eng -topMod Box     -lowMod None -validCheck 100000 box-eng-test
+  - ./ess      -topMod Box     -lowMod None -validCheck 100000 box-test
+  - ./ess -eng -topMod BF1     -lowMod None -validCheck 100000 bf1-single-eng-test
+  - ./ess      -topMod BF1     -lowMod None -validCheck 100000 bf1-single-test
+  - ./ess -eng -topMod BF1     -lowMod BF1  -validCheck 100000 bf1-eng-test
+  - ./ess      -topMod BF1     -lowMod BF1  -validCheck 100000 bf1-test
+  - ./ess -eng -topMod BF2     -lowMod None -validCheck 100000 bf2-single-eng-test
+  - ./ess      -topMod BF2     -lowMod None -validCheck 100000 bf2-single-test
+  - ./ess -eng -topMod BF2     -lowMod BF2  -validCheck 100000 bf2-eng-test
+  - ./ess      -topMod BF2     -lowMod BF2  -validCheck 100000 bf2-test
