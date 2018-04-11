@@ -113,10 +113,10 @@ main(int argc,char* argv[])
       
       SimPtr=createSimulation(IParam,Names,Oname);
       if (!SimPtr) return -1;
-      
+
       // The big variable setting
-      setVariable::EssVariables(IParam,SimPtr->getDataBase());
       mainSystem::setDefUnits(SimPtr->getDataBase(),IParam);
+      setVariable::EssVariables(IParam,SimPtr->getDataBase());
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
       ModelSupport::addESSMaterial(); // matDB neutronics - used by default
