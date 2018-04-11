@@ -141,6 +141,7 @@ setEnergy(SimFLUKA& Sim,const std::string& tName,
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setEnergy");
 
+
   SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
   int fnum(0);
   for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)

@@ -1026,27 +1026,32 @@ Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
   */
 {
   ELog::RegMethod RegA("Simulation","findCellPair");
+  
   std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*> Out(0,0);
 
   const ModelSupport::ObjSurfMap::STYPE& negType=OSMPtr->getObjects(-SN);
   const ModelSupport::ObjSurfMap::STYPE& plusType=OSMPtr->getObjects(SN);
 
+
   for(const MonteCarlo::Object* OPtr : negType)
-    if (!OPtr->isPlaceHold() &&
-	OPtr->isDirectionValid(Pt,-SN))
-      {
-	Out.first=OPtr;
-	break;
-      }
+    {
+      if (!OPtr->isPlaceHold() &&
+	  OPtr->isDirectionValid(Pt,-SN))
+	{
+	  Out.first=OPtr;
+	  break;
+	}
+    }
 
   for(const MonteCarlo::Object* OPtr : plusType)
-    if (!OPtr->isPlaceHold() &&
-	OPtr->isDirectionValid(Pt,SN))
-      {
-	Out.second=OPtr;
-	break;
-      }
-
+    {
+      if (!OPtr->isPlaceHold() &&
+	  OPtr->isDirectionValid(Pt,SN))
+	{
+	  Out.second=OPtr;
+	  break;
+	}
+    }
   return Out;
     
 }

@@ -114,7 +114,7 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
   
   const ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   const attachSystem::FixedComp* FCPtr=
     OR.getObject<attachSystem::FixedComp>(FCname);
 
@@ -124,7 +124,7 @@ userBdxConstruct::constructLinkRegion(const Simulation& System,
 
   const int surfN=FCPtr->getLinkSurf(FCI);
   if (!surfN) return 0;
-  
+
   const std::pair<const MonteCarlo::Object*,
 	    const MonteCarlo::Object*> RefPair=
     System.findCellPair(FCPtr->getLinkPt(FCI),surfN);
@@ -180,7 +180,7 @@ void
 userBdxConstruct::processBDX(SimFLUKA& System,
 			     const mainSystem::inputParam& IParam,
 			     const size_t Index) 
-/*!
+  /*!
     Add BDX tally (s) as needed
     \param System :: SimMCNP to add tallies
     \param IParam :: Main input parameters
@@ -188,13 +188,12 @@ userBdxConstruct::processBDX(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("userBdxConstruct","processBdx");
+
   
   const std::string particleType=
     IParam.getValueError<std::string>("tally",Index,1,"tally:ParticleType");
-
   const std::string FCname=
     IParam.getValueError<std::string>("tally",Index,2,"tally:Object/Cell");
-
   const std::string FCindex=
     IParam.getValueError<std::string>("tally",Index,3,"tally:linkPt/Cell");
 

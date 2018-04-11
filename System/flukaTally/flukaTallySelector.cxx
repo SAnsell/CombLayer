@@ -111,6 +111,8 @@ tallyModification(SimFLUKA& System,
 
       if(key=="energy")
         {
+	  	
+	  ELog::EM<<"HERERE "<<ELog::endDiag;
 	  const std::string tName=IParam.getValueError<std::string>
 	    ("TMod",i,1,"No tally name for "+key);
 	  const double EA=IParam.getValueError<double>
@@ -119,8 +121,10 @@ tallyModification(SimFLUKA& System,
 	    ("TMod",i,3,"Emax for "+key);
 	  const size_t NE=IParam.getValueError<size_t>
 	    ("TMod",i,4,"NPTS for "+key);
+	  ELog::EM<<"HERERE "<<ELog::endDiag;
 	  const int EFlag=IParam.getDefValue<int>(0,"TMod",i,5);
           flukaSystem::setEnergy(System,tName,EA,EB,NE,EFlag);
+	  return;
         }
       else
 	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;

@@ -530,6 +530,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   //
   SimFLUKAPtr->processActiveMaterials();
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
+  
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
   tallyModification(*SimFLUKAPtr,IParam);
 

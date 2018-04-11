@@ -2203,7 +2203,6 @@ HeadRule::Intersects(const HeadRule& A) const
 {
   ELog::RegMethod RegA("HeadRule","Intersects");
   
-  
   const std::vector<const Geometry::Surface*> 
     AVec(this->getSurfaces());
   const std::vector<const Geometry::Surface*> 

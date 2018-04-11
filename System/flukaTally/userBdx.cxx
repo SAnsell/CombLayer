@@ -56,7 +56,7 @@ namespace flukaSystem
 {
 
 userBdx::userBdx(const int outID) :
-  flukaTally("bdx"+std::to_string(outID),outID),
+  flukaTally("surf"+std::to_string(outID),outID),
   particle("208"),eLogFlag(0),aLogFlag(0),fluenceFlag(0),
   oneDirFlag(0),nE(10),energyA(0.0),energyB(1.0),nA(10),
   angleA(0),angleB(4.0*M_PI)

@@ -126,7 +126,7 @@ main(int argc,char* argv[])
       BObj.build(*SimPtr,IParam);
 
       mainSystem::buildFullSimulation(SimPtr,IParam,Oname);
-          
+
       exitFlag=SimProcess::processExitChecks(*SimPtr,IParam);
       	
       ModelSupport::calcVolumes(SimPtr,IParam);

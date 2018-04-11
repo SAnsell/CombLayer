@@ -415,11 +415,7 @@ GuideBay::createGuideItems(Simulation& System,
 
       // Add wheel to inner cell if required
       if (GA->hasItem("BodyMetal"))
-	{
-	  GA->insertComponent(System,"Body",CG->getCC("Wheel"));
-     //	  attachSystem::addToInsertSurfCtrl(System,*GA,"BodyMetal",
-     //					    CG->getCC("Wheel"));
-	}
+	GA->insertComponent(System,"Body",CG->getCC("Wheel"));
       
       GB=GA.get();
     }
