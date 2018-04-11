@@ -113,8 +113,8 @@ setESSFull(defaultConfig& A)
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSFull");
 
-  A.setOption("lowMod","Butterfly");
-  A.setOption("topMod","Butterfly");
+  A.setOption("lowMod","None");
+  A.setOption("topMod","BF1");
 
   const std::map<std::string,std::string> beamDef=
     {
@@ -168,7 +168,7 @@ setESSPortsOnly(defaultConfig& A,const std::string& lvl,
         {"farLower","G2BLineLow"}
       });
   
-  A.setOption("lowMod","Butterfly");
+  A.setOption("lowMod","None");
 
   int defaultFlag(0);
   std::string GNum;
@@ -214,7 +214,7 @@ setESSSingle(defaultConfig& A,
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
-  A.setOption("lowMod","Butterfly");
+  A.setOption("lowMod","None");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
      {"HEIMDAL","G1BLineTop18"},       // S2
@@ -324,8 +324,8 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
 
-  A.setOption("lowMod","Butterfly");
-  A.setOption("topMod","Butterfly");
+  A.setOption("lowMod","None");
+  A.setOption("topMod","BF1");
 
   const std::map<std::string,std::string> beamDef=
     {
