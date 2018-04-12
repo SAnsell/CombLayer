@@ -407,14 +407,14 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 
   if ((topMod=="BF1") || (lowMod=="BF1"))
     {
-      std::vector<std::string> TLfly, TLpipe;
+      std::vector<std::string> TL, TLpipe;
 
       if (topMod=="BF1")
 	{
 	  IParam.setValue("topMod", std::string("Butterfly"));
 	  Control.addVariable("TopFlyType", 1);
 	  IParam.setValue("topPipe", std::string("supply"));
-	  TLfly.push_back("TopFly");
+	  TL.push_back("Top");
 	  TLpipe.push_back("T");
 	}
 
@@ -423,7 +423,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	  IParam.setValue("lowMod", std::string("Butterfly"));
 	  Control.addVariable("LowFlyType", 1);
 	  IParam.setValue("lowPipe", std::string("supply"));
-	  TLfly.push_back("LowFly");
+	  TL.push_back("Low");
 	  TLpipe.push_back("L");
 	}
 
@@ -431,31 +431,40 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       // there is no engieering drawings for BF1 yet, so this email is
       // the only reference
       std::string s;
-      for (std::string s : TLfly) {
-	Control.setVariable(s+"LeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
-	Control.setVariable(s+"LeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
-	Control.setVariable(s+"LeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+      for (std::string s : TL) {
+	Control.setVariable(s+"FlyLeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	Control.setVariable(s+"FlyLeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	Control.setVariable(s+"FlyLeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
 
-	Control.setVariable(s+"RightLobeCorner1",Geometry::Vec3D(0,0.6,0));
-	Control.setVariable(s+"RightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
-	Control.setVariable(s+"RightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+	Control.setVariable(s+"FlyRightLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	Control.setVariable(s+"FlyRightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	Control.setVariable(s+"FlyRightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
 
-	Control.setVariable(s+"LeftLobeRadius1",1.0);
-	Control.setVariable(s+"RightLobeRadius1",1.0);
+	Control.setVariable(s+"RightPreWingInnerRadius",0.1);
+	Control.setVariable(s+"LeftPreWingInnerRadius",0.1);
 
-	Control.setVariable(s+"LeftLobeXStep",-0.85);
-	Control.setVariable(s+"RightLobeXStep",0.85);
+	Control.setVariable(s+"RightPreWingInnerHeight",1.4);
+	Control.setVariable(s+"LeftPreWingInnerHeight",1.4);
 
-	Control.setVariable(s+"LeftWaterCutWidth",9.6);
-	Control.setVariable(s+"RightWaterCutWidth",9.6);
+	Control.setVariable(s+"RightPreWingInnerDepth",1.8);
+	Control.setVariable(s+"LeftPreWingInnerDepth",1.8);
 
-	Control.setVariable(s+"MidWaterLength",9.9);
-	Control.setVariable(s+"MidWaterMidYStep",6.3);
+	Control.setVariable(s+"FlyLeftLobeRadius1",1.0);
+	Control.setVariable(s+"FlyRightLobeRadius1",1.0);
+
+	Control.setVariable(s+"FlyLeftLobeXStep",-0.85);
+	Control.setVariable(s+"FlyRightLobeXStep",0.85);
+
+	Control.setVariable(s+"FlyLeftWaterCutWidth",9.6);
+	Control.setVariable(s+"FlyRightWaterCutWidth",9.6);
+
+	Control.setVariable(s+"FlyMidWaterLength",9.9);
+	Control.setVariable(s+"FlyMidWaterMidYStep",6.3);
       }
 
       // flow guides
-      for (std::string strmod : TLfly) {
-	s = strmod + "FlowGuide";
+      for (std::string strmod : TL) {
+	s = strmod + "FlyFlowGuide";
 	Control.addVariable(s+"BaseOffset",-10.5);
 	Control.setVariable(s+"Len1L",1.2);
 	Control.setVariable(s+"Len1R",8);
