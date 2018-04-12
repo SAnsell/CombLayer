@@ -534,7 +534,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	{
 	  IParam.setValue("lowMod", lowMod);
 	  IParam.setValue("lowPipe", std::string("PancakeSupply"));
-	  TLpipe.push_back("T");
+	  TLpipe.push_back("L");
 	  ELog::EM << "Low Pancake moderator variables are missing" << ELog::endCrit;
 	}
 
@@ -574,7 +574,7 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	{
 	  IParam.setValue("lowMod", lowMod);
 	  IParam.setValue("lowPipe", std::string("BoxSupply"));
-	  TLpipe.push_back("T");
+	  TLpipe.push_back("L");
 	  ELog::EM << "Low Box moderator variables are missing" << ELog::endCrit;
 	}
 
