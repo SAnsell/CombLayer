@@ -432,7 +432,6 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
       // These variables are as in the model received from Luca 22 Feb 2017
       // there is no engieering drawings for BF1 yet, so this email is
       // the only reference
-      std::string s;
       for (std::string s : TL) {
 	Control.setVariable(s+"FlyLeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
 	Control.setVariable(s+"FlyLeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
@@ -462,11 +461,8 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 
 	Control.setVariable(s+"FlyMidWaterLength",9.9);
 	Control.setVariable(s+"FlyMidWaterMidYStep",6.3);
-      }
 
-      // flow guides
-      for (std::string strmod : TL) {
-	s = strmod + "FlyFlowGuide";
+	s += "FlyFlowGuide";
 	Control.addVariable(s+"BaseOffset",-10.5);
 	Control.setVariable(s+"Len1L",1.2);
 	Control.setVariable(s+"Len1R",8);
@@ -489,8 +485,8 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	Control.setVariable(s+"Angle4",135+90);
       }
 
-      for (std::string strpipe : TLpipe) {
-	s = strpipe + "Supply";
+      for (std::string s : TLpipe) {
+	s += "Supply";
 	Control.setVariable(s+"RightAlNSegIn", 2);
 	Control.setVariable(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
 	Control.setVariable(s+"RightAlPPt1", Geometry::Vec3D(0,26,0));
