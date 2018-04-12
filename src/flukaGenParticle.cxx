@@ -46,10 +46,21 @@
 // mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
 flukaGenParticle::flukaGenParticle() : 
   flukaGen({
-      {"all-part",208}
-    })
+      {"all-part",201}, {"all-char",202}, {"all-neut",203}, {"all-nega",204},
+      {"all-posi",205}, {"nucleons",206}, {"nuc&pi+-",207}, {"energy ",208},
+      {"pions+-",209}, {"beampart",210}, {"em-enrgy",211}, {"muons",212},
+      {"e+&e-",213}, {"ap&an",214}, {"kaons",215}, {"strange",216},
+      {"kaons+-",217}, {"had-char",218}, {"fissions",219}, {"he-fiss",220},
+      {"le-fiss",221}, {"neu-bala ",222}, {"had-neut",223}, {"kaons0",224},
+      {"c-mesons",225}, {"c-(a)bar",226}, {"charmed",227}, {"dose",228},
+      {"unb-ener",229}, {"unb-emen",230}, {"x-moment",231}, {"y-moment",232},
+      {"z-moment",233}, {"activity",234}, {"actomass",235}, {"si1mevne",236},
+      {"hadgt20m ",237}, {"niel-dep",238}, {"dpa-sco",239}, {"dose-eq",240},
+      {"dose-em",241}, {"net-chrg",242}, {"doseqlet",243}, {"res-niel",244},
+      {"hehad-eq",245}, {"thneu-eq",246} 
+      })
   /*!
-    Constructor
+    constructor
   */
 {}
 

@@ -60,6 +60,37 @@
 
 namespace flukaSystem
 {
+
+std::set<flukaTally*>
+getActiveTally(SimFLUKA& Sim,const std::string& tName)
+  /*!
+    Get a set of points to matching tallys
+    \param Simulation :: Si
+    \param tName :: tally name [or wild card componenet]
+    \return Points to tallys
+   */
+{
+  ELog::RegMethod RegA("flukaTallyModification[F]","getActiveTally");
+
+  std::set<flukaTally*> Out;
+  SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
+
+  for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
+    {
+      std::string KN=mc.second->getKeyName();
+      if (tName.back()=='*')
+	{
+	  // method to make KN ==> stuff*
+	  KN.erase(tName.size(),std::string::npos);
+	  KN.back()='*';
+	}
+      if (KN==tName)
+	{
+	  Out.insert(mc.second);
+	}
+    }
+  return Out;
+}
   
 int
 setParticleType(SimFLUKA& Sim,const int tNumber,
@@ -104,25 +135,37 @@ setDoseType(SimFLUKA& Sim,const std::string& tName,
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setDoseType");
 
-  SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
-  int fnum(0);
-  for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
-    {
-      std::string KN=mc.second->getKeyName();
-      if (tName.back()=='*')
-	{
-	  // method to make KN ==> stuff*
-	  KN.erase(tName.size(),std::string::npos);
-	  KN.back()='*';
-	}
-      if (KN==tName)
-	{
-          mc.second->setDoseType(particle,doseType);
-          fnum++;
-	}
-    }
-  return fnum;
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
+
+  for(flukaTally* mc: ATallySet)
+    mc->setDoseType(particle,doseType);
+
+  return static_cast<int>(ATallySet.size());
 }
+
+int
+setAuxParticle(SimFLUKA& Sim,const std::string& tName,
+	       const std::string& particle)
+/*!
+    Get the last tally point based on the tallynumber
+    \param Sim :: System to access tally tables
+    \param tName :: Tally number [0 for all]
+    \param particle :: auxillary particle 
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setDoseType");
+
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
+
+  for(flukaTally* mc: ATallySet)
+    mc->setAuxParticles(particle);
+
+  return static_cast<int>(ATallySet.size());
+}
+  
 
 int
 setEnergy(SimFLUKA& Sim,const std::string& tName,
@@ -141,25 +184,39 @@ setEnergy(SimFLUKA& Sim,const std::string& tName,
 {
   ELog::RegMethod RegA("flukaTallyModificaiton[F]","setEnergy");
 
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
 
-  SimFLUKA::FTallyTYPE& tmap=Sim.getTallyMap();
-  int fnum(0);
-  for(SimFLUKA::FTallyTYPE::value_type& mc : tmap)
-    {
-      std::string KN=mc.second->getKeyName();
-      if (tName.back()=='*')
-	{
-	  // method to make KN ==> stuff*
-	  KN.erase(tName.size(),std::string::npos);
-	  KN.back()='*';
-	}
-      if (KN==tName)
-	{
-          mc.second->setEnergy(logFlag,EA,EB,NA);
-          fnum++;
-	}
-    }
-  return fnum;
+  for(flukaTally* mc: ATallySet)
+    mc->setEnergy(logFlag,EA,EB,NA);
+
+  return static_cast<int>(ATallySet.size());
+}
+
+int
+setAngle(SimFLUKA& Sim,const std::string& tName,
+	 const double AA,const double AB,
+	 const size_t NA,const bool logFlag)
+/*!
+    Get the last tally point based on the tallynumber
+    \param Sim :: System to access tally tables
+    \param tName :: Tally number [0 for all]
+    \param AA :: start energy
+    \param AB :: end enegy
+    \param NA :: number of points
+    \param logFlag :: log points
+    \return tally number [0 on fail]
+  */
+{
+  ELog::RegMethod RegA("flukaTallyModificaiton[F]","setEnergy");
+
+  const std::set<flukaTally*> ATallySet=
+    getActiveTally(Sim,tName);
+
+  for(flukaTally* mc: ATallySet)
+    mc->setAngle(logFlag,AA,AB,NA);
+
+  return static_cast<int>(ATallySet.size());
 }
 
 }  // NAMESPACE flukaSystem

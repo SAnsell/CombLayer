@@ -208,16 +208,16 @@ SimFLUKA::getTally(const int TI) const
 void
 SimFLUKA::processActiveMaterials() const
   /*!
-    Set materials as active in DBMaterai Database
+    Set materials as active in DBMaterail Database
   */
 {
   ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
+
+  for(const OTYPE::value_type& mc : OList)
+    DB.setActive(mc.second->getMat());
   return;
 }
 

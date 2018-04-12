@@ -26,17 +26,29 @@ class Simulation;
 class SimFLUKA;
 
 namespace flukaSystem
-{  
+{
+
+  std::set<flukaTally*>
+    getActiveTally(SimFLUKA&,const std::string&);
+
+  
   int setDoseType(SimFLUKA&,const std::string&,
 		  const std::string&,const std::string&);
+
+  int setAuxParticle(SimFLUKA&,const std::string&,
+		     const std::string&);
 
   int setEnergy(SimFLUKA&,const std::string&,
 		const double,const double,
 		const size_t,const bool);
+
+  int setAngle(SimFLUKA&,const std::string&,
+	       const double,const double,
+	       const size_t,const bool);
   
   int setParticleType(SimFLUKA&,const int,const std::string&);
 
     
-}  // namespace tallySystem 
+}  // namespace flukaSystem 
 
 #endif

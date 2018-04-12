@@ -67,7 +67,7 @@ class userBdx : public flukaTally
   
   void setParticle(const std::string&);
   void setCell(const int,const int);
-  void setAngle(const bool,const double,
+  virtual void setAngle(const bool,const double,
 		const double,const size_t);
   virtual void setEnergy(const bool,const double,
 			 const double,const size_t);
