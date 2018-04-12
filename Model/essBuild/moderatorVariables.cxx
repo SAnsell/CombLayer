@@ -510,8 +510,6 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	  IParam.setValue("topMod", std::string("Butterfly"));
 	  Control.addVariable("TopFlyType", 2);
 	  IParam.setValue("topPipe", std::string("supply,return"));
-	  TLfly.push_back("TopFly");
-	  TLpipe.push_back("T");
 	}
 
       if (lowMod=="BF2")
@@ -519,11 +517,9 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
 	  IParam.setValue("lowMod", std::string("Butterfly"));
 	  Control.addVariable("LowFlyType", 2);
 	  IParam.setValue("lowPipe", std::string("supply,return"));
-	  TLfly.push_back("LowFly");
-	  TLpipe.push_back("L");
 	}
 
-      // variables are already set in the same function above
+      // BF2 variables are already set in the same function above
     }
   
   if ((topMod=="Pancake") || (lowMod=="Pancake"))
