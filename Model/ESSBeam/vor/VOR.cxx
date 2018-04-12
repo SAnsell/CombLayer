@@ -350,6 +350,8 @@ VOR::build(Simulation& System,
   attachSystem::addToInsertLineCtrl(System,bunkerObj,"frontWall",
 				    *BInsert,*BInsert);
 
+  //inserted line
+  
   VPipeWall->addInsertCell(BInsert->getCell("Void"));
   VPipeWall->createAll(System,*BInsert,-1);
 
