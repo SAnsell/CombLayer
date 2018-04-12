@@ -382,6 +382,8 @@ EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingSurfMat3","SS316L");
   
   Control.copyVarSet("TopLeftPreWing", "TopRightPreWing");
+  Control.copyVarSet("TopLeftPreWing", "LowLeftPreWing");
+  Control.copyVarSet("TopRightPreWing","LowRightPreWing");
   Control.addVariable("TopRightPreWingXYAngle",180.0);
 
   // if lowMod is None then BeRefLowVoidThick must be set to 0.0
