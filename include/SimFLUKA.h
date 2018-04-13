@@ -46,6 +46,7 @@ class SimFLUKA : public Simulation
 
   const std::string alignment;    ///< the alignemnt string
   bool writeVariable;             ///< Prevent the writing of variables
+  bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
   
@@ -96,6 +97,8 @@ class SimFLUKA : public Simulation
   virtual void prepareWrite();
   /// no write variable
   void setNoVariables() { writeVariable=0; }
+  /// no low energy neturon
+  void setNoThermal() { lowEnergyNeutron=0; }
   void setForCinder();
   void processActiveMaterials() const;
   

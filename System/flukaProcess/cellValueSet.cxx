@@ -94,14 +94,16 @@ cellValueSet<N>::cellValueSet(const std::string& KN,
     Constructor
     \param KN :: Indentifier
     \param ON :: Output id for FLUKA
+    \param TT :: Tag name
+    \param scaleV :: Scale for double values
   */
 {}
 
 
 template<size_t N>
-cellValueSet<N>::cellValueSet(const cellValueSet& A) : 
+cellValueSet<N>::cellValueSet(const cellValueSet<N>& A) : 
   keyName(A.keyName),outName(A.outName),tag(A.tag),
-  scaleVec(A.scaleVec)
+  scaleVec(A.scaleVec),dataMap(A.dataMap)
   /*!
     Copy constructor
     \param A :: cellValueSet to copy
@@ -143,6 +145,77 @@ cellValueSet<N>::clearAll()
   return;
 }
 
+template<size_t N>  
+bool
+cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
+			     std::vector<valTYPE>& outData) const
+/*!
+    Group the individual values into equal ranges. The 
+    outData is a list of ranges with equal value. The
+    goal of this method is to minimize the number of fluka cards. e.g
+    cell 1 to 10 might all have the same importance values, so they can
+    be expressed in FLUKA as a single importance/bias card with a range 
+    of cells.
+
+    \param initCell :: initialization range
+    \param dataValue :: initialization range
+    \return true if output required
+   */
+{
+  typedef std::tuple<int,int> TITEM;
+  initCell.clear();
+  outData.clear();
+
+  if (dataMap.empty()) return 0;
+  const int lastCN=dataMap.rbegin()->first+1;       //ordered map
+
+  size_t prev(0);
+  valTYPE V;
+  for(int CN=dataMap.begin()->first;CN!=lastCN;CN++)
+    {
+      typename dataTYPE::const_iterator mc=dataMap.find(CN);
+      if (mc==dataMap.end())
+	{
+	  if (prev)
+	    {
+	      initCell.push_back(TITEM(prev-1,CN-1));
+	      outData.push_back(V);
+	      prev=0;
+	    }
+	}
+      else
+	{
+	  if (prev)
+	    {
+	      for(size_t index=0;index<N;index++)
+		{
+		  const int& VDef=V[index].first;
+		  const std::string& VS=V[index].second;
+		  const int& ADef=mc->second[index].first;
+		  const std::string& AS=mc->second[index].second;
+
+		  double VV,AV;
+		  int sumFlag=(VDef<1) ? 0 : StrFunc::convert(VS,VV);
+		  sumFlag+= (ADef<1) ? 0 : StrFunc::convert(AS,AV);
+
+		  if (VDef!=ADef ||           // diff flag
+		      (VDef &&                // def = def is a pass
+		       ((sumFlag!=2 && AS!=VS) ||
+			(sumFlag==2 && (std::abs(VV-AV)>Geometry::zeroTol))) ))
+		    {
+		      initCell.push_back(TITEM(prev-1,CN-1));
+		      outData.push_back(V);
+		      prev=CN;
+		      V=mc->second;
+		      break;
+		    }
+		}
+	    }
+	}
+    }
+  return (initCell.empty()) ? 0 : 1;
+}
+  
 template<size_t N>  
 bool
 cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
@@ -227,7 +300,6 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 
   return (initCell.empty()) ? 0 : 1;
 }
-
 
 
 template<size_t N>
@@ -383,6 +455,74 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
 }
 
 
+
+template<size_t N>
+void
+cellValueSet<N>::writeFLUKA(std::ostream& OX,
+			    const std::string& ControlStr) const 
+/*!
+    Process is to write keyName ControlStr units 
+    \param OX :: Output stream
+    \param ControlStr units [%0/%1/%2] for cell range/Value
+  */
+{
+  ELog::RegMethod RegA("cellValueSet","writeFLUKA[no-cell]");
+  
+  typedef std::tuple<int,int> TITEM;
+
+  std::ostringstream cx;
+  std::vector<TITEM> Bgroup;
+  std::vector<valTYPE> Bdata;
+
+  if (simpleSplit(Bgroup,Bdata))
+    {
+      const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
+      std::vector<std::string> SArray(3+N);
+
+      for(size_t index=0;index<Bgroup.size();index++)
+	{
+	  const TITEM& tc(Bgroup[index]);
+	  const valTYPE& dArray(Bdata[index]);
+
+	  SArray[0]=std::to_string(std::get<0>(tc));
+	  SArray[1]=std::to_string(std::get<1>(tc));
+	  for(size_t i=0;i<N;i++)
+	    {
+	      if (dArray[i].first==1)
+		{
+		  double D;
+		  StrFunc::convert(dArray[i].second,D);
+		  SArray[2+i]=std::to_string(D*scaleVec[i]);
+		}
+	      else if (dArray[i].first == -1)
+		SArray[2+i]=dArray[i].second;
+	      else
+		SArray[2+i]="-";
+	    }
+	  cx.str("");
+	  cx<<outName<<" ";
+
+	  for(const std::string& UC : Units)
+	    {
+	      if (UC.size()==2 &&
+		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
+		{
+		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
+		  if (UC[0]=='%')
+		    cx<<SArray[SA]<<" ";
+		  else if (UC[0]=='M' || UC[0]=='R')
+		    cx<<UC[0]<<SArray[SA]<<" ";
+		}
+	      else
+		cx<<UC<<" ";
+	    }
+	  cx<<tag;
+		      
+	  StrFunc::writeFLUKA(cx.str(),OX);
+	}
+    }
+  return;
+}
 
 template<size_t N>
 void

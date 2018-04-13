@@ -54,6 +54,8 @@ class flukaImpConstructor
   typedef ELog::OutputLog<ELog::EReport>& (*ENDL)
     (ELog::OutputLog<ELog::EReport>&);
 
+  void writeCUTHelp(std::ostream&,ENDL) const;
+
   void writeIMPHelp(std::ostream&,ENDL) const;
 
   void writeEMFHelp(std::ostream&,ENDL) const;
@@ -70,6 +72,9 @@ class flukaImpConstructor
   void processUnit(flukaPhysics&,
 		   const mainSystem::inputParam&,
 		   const size_t);
+  void processCUT(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
   void processEXP(flukaPhysics&,
 		  const mainSystem::inputParam&,
 		  const size_t);

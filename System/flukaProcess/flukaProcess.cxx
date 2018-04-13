@@ -75,7 +75,9 @@
 #include "Material.h"
 #include "DBMaterial.h"
 
+#include "flukaGenParticle.h"
 #include "SimFLUKA.h"
+#include "strValueSet.h"
 #include "cellValueSet.h"
 #include "flukaPhysics.h"
 #include "flukaImpConstructor.h"
@@ -83,6 +85,42 @@
 
 namespace flukaSystem
 {
+
+std::set<int>
+getActiveUnit(const int typeFlag,const std::string& cellM)
+  /*!
+    Based on the typeFlag get teh cell/material/particle set
+    \param typeFlag :: -1 : partilce / cell /material 
+    \param cellM :: string to use as id
+    \return set of index(s0
+  */
+{
+  switch (typeFlag)
+    {
+    case -1:
+      return getActiveParticle(cellM);
+    case 0:
+      return getActiveCell(cellM);
+    }
+  return getActiveMaterial(cellM);
+}
+  
+std::set<int>
+getActiveParticle(const std::string& particle)
+  /*!
+    Given a material find the active particle
+    \param particle : name of particle to use
+    \return set of active components
+  */
+{
+  ELog::RegMethod RegA("flukaProcess[F]","getActiveParticle");
+
+  const flukaGenParticle& GP=flukaGenParticle::Instance();
+
+  std::set<int> activeOut;
+  activeOut.emplace(GP.flukaITYP(particle));
+  return activeOut;
+}
 
 std::set<int>
 getActiveMaterial(std::string material)
@@ -162,24 +200,36 @@ setDefaultPhysics(SimFLUKA& System,
   System.setNPS(IParam.getValue<size_t>("nps"));
   System.setRND(IParam.getValue<long int>("random"));
 
-  size_t nSet=IParam.setCnt("wIMP");
+
   flukaPhysics* PC=System.getPhysics();
-    
-  if (nSet && PC)
+  if (!PC) return;
+
+  size_t nSet=IParam.setCnt("wIMP");
+  if (nSet)
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
 	A.processUnit(*PC,IParam,index);
     }
+  
+  nSet=IParam.setCnt("wCUT");    
+  if (nSet)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processCUT(*PC,IParam,index);
+    }
+  
   nSet=IParam.setCnt("wEMF");
-  if (nSet && PC)
+  if (nSet)
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)
 	A.processEMF(*PC,IParam,index);
     }
+  
   nSet=IParam.setCnt("wEXP");
-  if (nSet && PC)
+  if (nSet)
     {
       flukaSystem::flukaImpConstructor A;
       for(size_t index=0;index<nSet;index++)

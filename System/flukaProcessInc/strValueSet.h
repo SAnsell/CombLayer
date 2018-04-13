@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   physicsInc/cellValueSet.h
+ * File:   physicsInc/strValueSet.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_cellValueSet_h
-#define flukaSystem_cellValueSet_h
+#ifndef flukaSystem_strValueSet_h
+#define flukaSystem_strValueSet_h
 
 namespace flukaSystem
 {
   
 /*!
-  \class cellValueSet
+  \class strValueSet
   \version 1.0
   \date March 2018
   \author S.Ansell
@@ -34,14 +34,14 @@ namespace flukaSystem
 */
 
 template <size_t N>
-class cellValueSet 
+class strValueSet 
 {
  private:
 
   /// Data type [-1:string / 0:def / 1 double]
   typedef  std::array<std::pair<int,std::string>,N> valTYPE;  
   /// map type
-  typedef  std::map<int,valTYPE> dataTYPE;
+  typedef std::map<std::string,valTYPE> dataTYPE;   // key is ?
  
   const std::string keyName;               ///< Key name
   const std::string outName;               ///< Output name for FLUKA
@@ -49,35 +49,29 @@ class cellValueSet
 
   std::array<double,N> scaleVec;      ///< Scaling for values
   dataTYPE dataMap;                   ///< Values for cell
-
-  bool simpleSplit(std::vector<std::tuple<int,int>>&,
-		   std::vector<valTYPE>&) const;
-  bool cellSplit(const std::vector<int>&,
-		 std::vector<std::tuple<int,int>>&,
-		 std::vector<valTYPE>&) const;
   
  public:
 
-  cellValueSet(const std::string&,const std::string&);
-  cellValueSet(const std::string&,const std::string&,
+  strValueSet(const std::string&,const std::string&);
+  strValueSet(const std::string&,const std::string&,
 	       const std::string&);
-  cellValueSet(const std::string&,const std::string&,
+  strValueSet(const std::string&,const std::string&,
 	       const std::string&,const std::array<double,N>&);
 
-  cellValueSet(const cellValueSet&);
-  cellValueSet& operator=(const cellValueSet&);
-  virtual ~cellValueSet();
+  strValueSet(const strValueSet&);
+  strValueSet& operator=(const strValueSet&);
+  virtual ~strValueSet();
 
   void clearAll();
 
-  void setValue(const int,const size_t,const double);
-  void setValues(const int);    
-  void setValues(const int,const double);    
-  void setValues(const int,const double,const double);
-  void setValues(const int,const double,const double,const double);
-  void setValues(const int,const std::string&);    
-  void setValues(const int,const std::string&,const std::string&);
-  void setValues(const int,const std::string&,const std::string&,
+  void setValue(const std::string&,const size_t,const double);
+  void setValues(const std::string&);    
+  void setValues(const std::string&,const double);    
+  void setValues(const std::string&,const double,const double);
+  void setValues(const std::string&,const double,const double,const double);
+  void setValues(const std::string&,const std::string&);    
+  void setValues(const std::string&,const std::string&,const std::string&);
+  void setValues(const std::string&,const std::string&,const std::string&,
 		 const std::string&);
   void writeFLUKA(std::ostream&,const std::string&) const;
   void writeFLUKA(std::ostream&,const std::vector<int>&,

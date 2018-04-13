@@ -58,13 +58,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -82,6 +75,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "strValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "flukaProcess.h"
@@ -91,7 +85,7 @@
 
 SimFLUKA::SimFLUKA() :
   Simulation(),
-  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
+  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),lowEnergyNeutron(1),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics())
   /*!
@@ -101,9 +95,9 @@ SimFLUKA::SimFLUKA() :
 
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
-  alignment(A.alignment),
-  writeVariable(A.writeVariable),nps(A.nps),
-  rndSeed(A.rndSeed),
+  alignment(A.alignment),writeVariable(A.writeVariable),
+  lowEnergyNeutron(A.lowEnergyNeutron),
+  nps(A.nps),rndSeed(A.rndSeed),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
@@ -123,6 +117,7 @@ SimFLUKA::operator=(const SimFLUKA& A)
     {
       Simulation::operator=(A);
       writeVariable=A.writeVariable;
+      lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
       clearTally();
@@ -336,7 +331,8 @@ SimFLUKA::writeElements(std::ostream& OX) const
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
-  StrFunc::writeFLUKA(lowmat.str(),OX);
+  if (lowEnergyNeutron)
+    StrFunc::writeFLUKA(lowmat.str(),OX);
 
   OX<<alignment<<std::endl;
 

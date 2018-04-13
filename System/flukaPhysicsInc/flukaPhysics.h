@@ -38,15 +38,17 @@ class flukaPhysics
  private:
 
   /// storage for cell system
-  typedef std::tuple<bool,std::string> unitTYPE;
+  typedef std::tuple<int,std::string> unitTYPE;
   
   std::vector<int> cellVec;                     ///< Cell numbers in order
   std::vector<int> matVec;                      ///< Material numbers in order
 
-  
-  // ZERO VLAUE
+  // ONE VALUE string
+  std::map<std::string,strValueSet<1>> cutValue;   ///< cut values
+
+  // ZERO VALUE
   std::map<std::string,cellValueSet<0>> flagValue;   ///< flag values
-  // ONE VLAUE
+  // ONE VALUE
   std::map<std::string,cellValueSet<1>> impValue;   ///< Importance values
   // TWO VALUE
   std::map<std::string,cellValueSet<2>> emfFlag;    ///< EMF flag

@@ -51,6 +51,7 @@
 #include "Vec3D.h"
 
 #include "particleConv.h"
+#include "strValueSet.h"
 #include "cellValueSet.h"
 #include "flukaPhysics.h"
 
@@ -58,6 +59,11 @@ namespace flukaSystem
 {
 		       
 flukaPhysics::flukaPhysics() :
+
+  cutValue({
+      { "partthr",  strValueSet<1>("partthr","PART-THR","",{-1e-3}) }
+    }),
+  
   flagValue({
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
       { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") }
@@ -315,7 +321,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
   for(const std::map<std::string,cellValueSet<0>>::value_type& flagV : flagValue)
     {
       FMAP::const_iterator mc=formatMap.find(flagV.first);
-      const bool materialFlag(std::get<0>(mc->second));
+      const int materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
       if (!materialFlag)  // cell
 	flagV.second.writeFLUKA(OX,cellVec,fmtSTR);

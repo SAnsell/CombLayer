@@ -59,6 +59,7 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
+#include "strValueSet.h"
 #include "cellValueSet.h"
 #include "flukaPhysics.h"
 #include "flukaProcess.h"
@@ -67,6 +68,77 @@
 namespace flukaSystem
 {
   
+void
+flukaImpConstructor::processCUT(flukaPhysics& PC,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+/*!
+    Set individual IMP based on Iparam
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processUnit");
+
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,int,std::string> cutTYPE;
+  static const std::map<std::string,cutTYPE> ICut
+    ({
+      { "partthr",cutTYPE(1,-1,"partthr") }   // particle
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wCUT",setIndex,0,"No type for wCUT ");
+
+  if (type=="help" || type=="Help")
+    return writeCUTHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  std::map<std::string,cutTYPE>::const_iterator mc=ICut.find(type);
+  if (mc==ICut.end())
+    throw ColErr::InContainerError<std::string>(type,"imp type unknown");
+
+  const std::string cellM=IParam.getValueError<std::string>
+    ("wCUT",setIndex,1,"No cell/material/particle for wCUT ");
+
+  const size_t cellSize(std::get<0>(mc->second));
+  const bool materialFlag(std::get<1>(mc->second));
+  const std::string keyName(std::get<2>(mc->second));
+
+  const std::set<int> activeCell=
+    getActiveUnit(materialFlag,cellM);
+
+  std::string VV[3];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i]=IParam.getValueError<std::string>
+      ("wCUT",setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for wCUT ");      
+
+  if (activeCell.empty())
+    throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
+
+  switch (cellSize)
+    {
+    case 0:
+      for(const int MN : activeCell)
+	PC.setFlag(keyName,MN);
+      break;
+    case 1:
+      for(const int MN : activeCell)
+	PC.setImp(keyName,MN,VV[0]);
+      break;
+    case 2:
+      for(const int MN : activeCell)
+	PC.setEMF(keyName,MN,VV[0],VV[1]);
+      break;
+    case 3:
+      for(const int MN : activeCell)
+	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
+      break;
+    }
+  return;
+}
+
 void
 flukaImpConstructor::processUnit(flukaPhysics& PC,
 				 const mainSystem::inputParam& IParam,
@@ -89,6 +161,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       { "electron",impTYPE(1,0,"electron") },
       { "low",impTYPE(1,0,"low") } 
     });
+
 
   const std::string type=IParam.getValueError<std::string>
     ("wIMP",setIndex,0,"No type for wIMP ");
@@ -113,8 +186,9 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       ("wIMP",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wIMP ");      
 
-  std::set<int> activeCell=
-    (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
+  const std::set<int> activeCell=
+    getActiveUnit(materialFlag,cellM);
+
 
   if (activeCell.empty())
     throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
@@ -300,6 +374,23 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
   return;
 }
 
+void
+flukaImpConstructor::writeCUTHelp(std::ostream& OX,
+				  ENDL endDL) const
+  /*!
+    Write out the help
+    \param OX :: Output stream
+    \param endDL :: End of line type
+  */
+{
+  OX<<"wCUT help :: \n";
+  OX<<"wCUT  :: \n"
+    " -- type : particle : values \n\n";
+
+  OX<<"    prodthr - energy-ctu PARTICLE \n"
+    << (*endDL);
+  return;
+}
 
 void
 flukaImpConstructor::writeIMPHelp(std::ostream& OX,
@@ -321,8 +412,8 @@ flukaImpConstructor::writeIMPHelp(std::ostream& OX,
       "         : object name:cellname\n"
       "         : cell number range\n"
       "         : cell number\n"
-      "         : all\n";
-  OX<< (*endDL);
+    "         : all\n"
+    << (*endDL);
   return;
 }
 
@@ -344,8 +435,8 @@ flukaImpConstructor::writeEXPHelp(std::ostream& OX,
       "             : object name:cellname\n"
       "             : cell number range\n"
       "             : cell number\n"
-      "             : all\n";
-  OX<< (*endDL);
+      "             : all\n"
+    << (*endDL);
   return;
 }
 
@@ -358,18 +449,18 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
     \param endDL :: End of line type
   */
 {
-  OX<<"wEMF hell :: \n"
+  OX<<"wEMF help :: \n"
     " -- type : values : Mat/Cell\n\n";
-  OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL "
-      "    prodcut - e+/e-prod  gamma-prod  MAT "
-      "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT "
-      "    photthr - compton photoelec gamma-pair MAT "
-      "    pho2thr - rayliegh gamma-photonuc MAT "
+  OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL \n"
+      "    prodcut - e+/e-prod  gamma-prod  MAT \n"
+      "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT \n"
+      "    photthr - compton photoelec gamma-pair MAT \n"
+      "    pho2thr - rayliegh gamma-photonuc MAT \n"
       "    pairbrem - explit-pair-prod photon-bremst-prod MAT "
-      "    photonuc - [FLAG] turn photonuclear on MAT "
-      "    muphoton - [FLAG] mu-interaction MAT "  ;
-      "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]"  ;      
-  OX << (*endDL);
+      "    photonuc - [FLAG] turn photonuclear on MAT \n"
+      "    muphoton - [FLAG] mu-interaction MAT \n"  
+      "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]\n"        
+  << (*endDL);
   return;
 }
 

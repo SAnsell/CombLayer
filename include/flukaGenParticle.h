@@ -48,6 +48,7 @@ class flukaGenParticle
   int flukaITYP(const std::string&) const;
 
   const std::string& nameToFLUKA(const std::string&) const;
+
   
 };
  
