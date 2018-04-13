@@ -28,6 +28,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <numeric>
 #include <string>
 #include <algorithm>
 #include <iterator>
@@ -47,13 +48,14 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "inputParam.h"
 #include "essVariables.h"
 
 namespace setVariable
 {
 
 void
-EssButterflyModerator(FuncDataBase& Control)
+EssButterflyModerator(mainSystem::inputParam& IParam,FuncDataBase& Control)
   /*!
     Create all the Conic moderator option variables
     \param Control :: DataBase
@@ -61,7 +63,7 @@ EssButterflyModerator(FuncDataBase& Control)
 {
   ELog::RegMethod RegA("essVariables[F]","EssButterflyModerator");
 
-  // Top Butterfly
+  // Top Butterfly: variables for BF2
 
   Control.addVariable("TopFlyXStep",0.0);  
   Control.addVariable("TopFlyYStep",0.0);  
@@ -380,7 +382,287 @@ EssButterflyModerator(FuncDataBase& Control)
   Control.addVariable("TopLeftPreWingSurfMat3","SS316L");
   
   Control.copyVarSet("TopLeftPreWing", "TopRightPreWing");
+  Control.copyVarSet("TopLeftPreWing", "LowLeftPreWing");
+  Control.copyVarSet("TopRightPreWing","LowRightPreWing");
   Control.addVariable("TopRightPreWingXYAngle",180.0);
+
+  // if lowMod is None then BeRefLowVoidThick must be set to 0.0
+  const std::string lowMod=IParam.getValue<std::string>("lowMod");
+  const std::string topMod=IParam.getValue<std::string>("topMod");
+
+  std::set<std::string> allowedTopModTypes={"BF1","BF2","Pancake","Box","None"};
+  std::set<std::string> allowedLowModTypes={"BF1","BF2","None"};
+  std::ostringstream streamTop, streamLow;
+  
+  std::copy(allowedTopModTypes.begin(), allowedTopModTypes.end(),
+	    std::ostream_iterator<std::string>(streamTop, " "));
+  if (allowedTopModTypes.find(topMod)==allowedTopModTypes.end())
+    throw ColErr::InvalidLine(topMod,
+			      "Wrong top moderator type. Supported types: " + streamTop.str());
+
+  std::copy(allowedLowModTypes.begin(), allowedLowModTypes.end(),
+	    std::ostream_iterator<std::string>(streamLow, " "));
+  if (allowedLowModTypes.find(lowMod)==allowedLowModTypes.end())
+    throw ColErr::InvalidLine(lowMod,
+			      "Wrong low moderator type. Supported types: " + streamLow.str());
+
+
+  if ((topMod=="BF1") || (lowMod=="BF1"))
+    {
+      std::vector<std::string> TL, TLpipe;
+
+      if (topMod=="BF1")
+	{
+	  IParam.setValue("topMod", std::string("Butterfly"));
+	  Control.addVariable("TopFlyType", 1);
+	  IParam.setValue("topPipe", std::string("supply"));
+	  TL.push_back("Top");
+	  TLpipe.push_back("T");
+	}
+
+      if (lowMod=="BF1")
+	{
+	  IParam.setValue("lowMod", std::string("Butterfly"));
+	  Control.addVariable("LowFlyType", 1);
+	  IParam.setValue("lowPipe", std::string("supply"));
+	  TL.push_back("Low");
+	  TLpipe.push_back("L");
+	}
+
+      // These variables are as in the model received from Luca 22 Feb 2017
+      // there is no engieering drawings for BF1 yet, so this email is
+      // the only reference
+      for (std::string s : TL) {
+	Control.setVariable(s+"FlyLeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	Control.setVariable(s+"FlyLeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	Control.setVariable(s+"FlyLeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+
+	Control.setVariable(s+"FlyRightLobeCorner1",Geometry::Vec3D(0,0.6,0));
+	Control.setVariable(s+"FlyRightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
+	Control.setVariable(s+"FlyRightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
+
+	Control.setVariable(s+"RightPreWingInnerRadius",0.1);
+	Control.setVariable(s+"LeftPreWingInnerRadius",0.1);
+
+	Control.setVariable(s+"RightPreWingInnerHeight",1.4);
+	Control.setVariable(s+"LeftPreWingInnerHeight",1.4);
+
+	Control.setVariable(s+"RightPreWingInnerDepth",1.8);
+	Control.setVariable(s+"LeftPreWingInnerDepth",1.8);
+
+	Control.setVariable(s+"FlyLeftLobeRadius1",1.0);
+	Control.setVariable(s+"FlyRightLobeRadius1",1.0);
+
+	Control.setVariable(s+"FlyLeftLobeXStep",-0.85);
+	Control.setVariable(s+"FlyRightLobeXStep",0.85);
+
+	Control.setVariable(s+"FlyLeftWaterCutWidth",9.6);
+	Control.setVariable(s+"FlyRightWaterCutWidth",9.6);
+
+	Control.setVariable(s+"FlyMidWaterLength",9.9);
+	Control.setVariable(s+"FlyMidWaterMidYStep",6.3);
+
+	s += "FlyFlowGuide";
+	Control.addVariable(s+"BaseOffset",-10.5);
+	Control.setVariable(s+"Len1L",1.2);
+	Control.setVariable(s+"Len1R",8);
+	Control.setVariable(s+"Angle1",90);
+	Control.setVariable(s+"Radius1",1);
+	Control.setVariable(s+"Len1Foot",2.3);
+	Control.setVariable(s+"Dist12",3);
+	Control.setVariable(s+"Len2L",5.0);
+	Control.setVariable(s+"Len2R",8);
+	Control.setVariable(s+"Angle2",135);
+	Control.setVariable(s+"Radius2",1);
+	Control.setVariable(s+"Len2Foot",4);
+	Control.setVariable(s+"Dist23",3);
+	Control.setVariable(s+"Len3L",2.0);
+	Control.setVariable(s+"Len3R",4.0);
+	Control.setVariable(s+"Angle3",90);
+	Control.setVariable(s+"Dist14",5);
+	Control.setVariable(s+"Len4L",8.0);
+	Control.setVariable(s+"Len4R",-5.0);
+	Control.setVariable(s+"Angle4",135+90);
+      }
+
+      for (std::string s : TLpipe) {
+	s += "Supply";
+	Control.setVariable(s+"RightAlNSegIn", 2);
+	Control.setVariable(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	Control.setVariable(s+"RightAlPPt1", Geometry::Vec3D(0,26,0));
+	Control.setVariable(s+"RightAlPPt2", Geometry::Vec3D(0,26,40));
+
+	Control.setVariable(s+"LeftAlNSegIn", 2);
+	Control.setVariable(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	Control.setVariable(s+"LeftAlPPt1", Geometry::Vec3D(0,25.3,0));
+	Control.setVariable(s+"LeftAlPPt2", Geometry::Vec3D(0,25.3,40));
+      }
+    }
+
+  if ((topMod=="BF2") || (lowMod=="BF2"))
+    {
+      std::vector<std::string> TLfly, TLpipe;
+	
+      if (topMod=="BF2")
+	{
+	  IParam.setValue("topMod", std::string("Butterfly"));
+	  Control.addVariable("TopFlyType", 2);
+	  IParam.setValue("topPipe", std::string("supply,return"));
+	}
+
+      if (lowMod=="BF2")
+	{
+	  IParam.setValue("lowMod", std::string("Butterfly"));
+	  Control.addVariable("LowFlyType", 2);
+	  IParam.setValue("lowPipe", std::string("supply,return"));
+	}
+
+      // BF2 variables are already set in the same function above
+    }
+  
+  if ((topMod=="Pancake") || (lowMod=="Pancake"))
+    {
+      std::vector<std::string> TLpipe;
+      if (topMod=="Pancake")
+	{
+	  IParam.setValue("topMod", topMod);
+	  IParam.setValue("topPipe", std::string("PancakeSupply"));
+	  TLpipe.push_back("T");
+	}
+
+      if (lowMod=="Pancake")
+	{
+	  IParam.setValue("lowMod", lowMod);
+	  IParam.setValue("lowPipe", std::string("PancakeSupply"));
+	  TLpipe.push_back("L");
+	  ELog::EM << "Low Pancake moderator variables are missing" << ELog::endCrit;
+	}
+
+      // straighten the pipes
+      for (std::string strpipe : TLpipe)
+	{
+	  const std::string s(strpipe + "Supply");
+	  Control.setVariable(s+"RightAlNSegIn", 2);
+	  Control.setVariable(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	  Control.setVariable(s+"RightAlPPt1", Geometry::Vec3D(0,30,0));
+	  Control.setVariable(s+"RightAlPPt2", Geometry::Vec3D(0,30,40));
+	  Control.setVariable(s+"LeftAlNSegIn", 2);
+	  Control.setVariable(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	  Control.setVariable(s+"LeftAlPPt1", Geometry::Vec3D(0,30,0));
+	  Control.setVariable(s+"LeftAlPPt2", Geometry::Vec3D(0,30,40));
+	}
+      
+      Control.addVariable("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.addVariable("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.addVariable("TopCapWingThick", 1.1);
+      Control.addVariable("TopCapWingTiltAngle", 1.7);
+      Control.addVariable("TopPreWingThick", 0.8);
+      Control.addVariable("TopPreWingTiltAngle", 1.5);
+    }
+  
+  if ((topMod=="Box") || (lowMod=="Box"))
+    {
+      std::vector<std::string> TLpipe;
+      if (topMod=="Box")
+	{
+	  IParam.setValue("topMod", topMod);
+	  IParam.setValue("topPipe", std::string("BoxSupply"));
+	  TLpipe.push_back("T");
+	}
+
+      if (lowMod=="Box")
+	{
+	  IParam.setValue("lowMod", lowMod);
+	  IParam.setValue("lowPipe", std::string("BoxSupply"));
+	  TLpipe.push_back("L");
+	  ELog::EM << "Low Box moderator variables are missing" << ELog::endCrit;
+	}
+
+      // straighten the pipes
+      for (std::string strpipe : TLpipe)
+	{
+	  const std::string s(strpipe + "Supply");
+	  Control.setVariable(s+"RightAlNSegIn", 2);
+	  Control.setVariable(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
+	  Control.setVariable(s+"RightAlPPt1", Geometry::Vec3D(0,40,0));
+	  Control.setVariable(s+"RightAlPPt2", Geometry::Vec3D(0,40,40));
+	  Control.setVariable(s+"LeftAlNSegIn", 2);
+	  Control.setVariable(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
+	  Control.setVariable(s+"LeftAlPPt1", Geometry::Vec3D(0,40,0));
+	  Control.setVariable(s+"LeftAlPPt2", Geometry::Vec3D(0,40,40));
+	}
+
+      Control.addVariable("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.addVariable("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
+      Control.addVariable("TopCapWingThick", 1.1);
+      Control.addVariable("TopCapWingTiltAngle", 1.7);
+      Control.addVariable("TopPreWingThick", 0.8);
+      Control.addVariable("TopPreWingTiltAngle", 1.5);
+    }
+
+  if (lowMod=="None") // single
+    {
+      Control.setVariable("BeRefLowVoidThick", 0);
+      Control.setVariable("BeRefLowRefMat", std::string("SS316L"));
+      Control.setVariable("BeRefLowWallMat", std::string("AluminiumBe"));
+      Control.addVariable("BeRefLowInnerStructureActive", 1);
+      // The 'depth' array numbers are from LZ drawing 2017-10-10
+      // and discussions with Marc 2017-10-11
+      // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/reflector/water-layers-in-lower-be-reflector/view
+      std::vector<double> depth({3.0,5.1,3.0,0.9,3.0,3.0,3.0,9.0,3.0,9.0,3.0,12.7});
+      const double BeRefDepth(std::accumulate(depth.begin(), depth.end(), 0.0));
+      const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
+      Control.setVariable("BeRefDepth", BeRefDepth+Ztop);
+      Control.addVariable("BulkDepth1", BeRefDepth+Ztop+1.0); // a bit bigger to make some clearance
+      Control.addVariable("BeRefVoidCylRadius", 15.0);
+      Control.addVariable("BeRefVoidCylDepth", std::accumulate(depth.begin(),
+							       depth.begin()+3,
+							       0.0));
+
+      const size_t nLayers(depth.size());
+      Control.setVariable("BeRefLowInnerStructureNLayers", nLayers);
+
+      // 40% water fraction based on email from Marc 13 Oct 2017
+      for (size_t i=0; i<nLayers; i++)
+	{
+	  Control.addVariable("BeRefLowInnerStructureBaseLen" + std::to_string(i+1),
+		   depth[i]/BeRefDepth);
+	  Control.addVariable("BeRefLowInnerStructureMat" + std::to_string(i),
+			      (i%2) ? std::string("SS316L") :
+			      std::string("SS316L_40H2O"));
+	}
+    }
+
+  IParam.setValue("physModel", std::string("BD"));
+
+  if (IParam.getValue<std::string>("bunker")=="void")
+    {
+      // simplify the bunkers
+      IParam.setValue("bunker", std::string("noPillar"));
+
+      std::vector<std::string> bunkerName({"A","B","C","D"});
+      for (const std::string n: bunkerName)
+	{
+	  Control.setVariable(n+"BunkerWallNBasic", 1);
+	  Control.setVariable(n+"BunkerRoofNBasicVert", 1);
+	  Control.setVariable(n+"BunkerNSectors", 1);
+	  Control.setVariable(n+"BunkerRoofMat0", std::string("Void"));
+	  Control.setVariable(n+"BunkerWallMat0", std::string("Void"));
+	  Control.setVariable(n+"BunkerWallMat", std::string("Void"));
+	}
+
+      // simplify the curtain
+      Control.setVariable("CurtainNBaseLayers", 1);
+      Control.setVariable("CurtainNMidLayers", 1);
+      Control.setVariable("CurtainNTopLayers", 1);
+      Control.setVariable("CurtainWallMat", std::string("Void"));
+    }
+  // sdef
+  // Control.setVariable("sdefEnergy", 2000.0);
+  // Control.setVariable("sdefWidth", 14);
+  // Control.setVariable("sdefHeight", 3.2);
+  // Control.setVariable("sdefYPos", -500);
+  // Control.setVariable("sdefPDF", std::string("uniform"));
 
   return;
 }

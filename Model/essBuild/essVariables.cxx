@@ -47,6 +47,7 @@
 #include "Code.h"
 #include "varList.h"
 #include "FuncDataBase.h"
+#include "inputParam.h"
 #include "variableSetup.h"
 #include "Exception.h"
 #include "essVariables.h"
@@ -55,13 +56,12 @@ namespace setVariable
 {
 
 void
-EssVariables(FuncDataBase& Control,
-             const std::set<std::string>& beamNames)
+EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   /*!
     Function to set the control variables and constants
     -- This version is for ESS ()
+    \param IParam :: Input parameters
     \param Control :: Function data base to add constants too
-    \param beamName :: Set of beamline names
   */
 {
 // -----------
@@ -243,12 +243,16 @@ EssVariables(FuncDataBase& Control,
   EssBeamLinesVariables(Control);
   EssPipeVariables(Control);
   
-  EssButterflyModerator(Control);
   EssWheel(Control);
   EssBunkerVariables(Control);
+  EssButterflyModerator(IParam,Control);
   EssIradVariables(Control);
   EssFlightLineVariables(Control);
   F5Variables(Control);
+
+  // Set of beamline names:
+  const std::set<std::string>&
+    beamNames(IParam.getComponents<std::string>("beamlines",1));
 
   EssInstrumentVariables(beamNames,Control);
   

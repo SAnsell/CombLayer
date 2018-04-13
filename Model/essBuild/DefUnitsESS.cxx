@@ -29,7 +29,6 @@
 #include <list>
 #include <map>
 #include <string>
-#include <numeric>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -83,8 +82,6 @@ setDefUnits(FuncDataBase& Control,
 	setESSPortsOnly(A,sndItem,extraItem);
       else if (Key=="Single")
 	setESSSingle(A,LItems);
-      else if (Key=="neutronics")
-	setESSNeutronics(A,sndItem,extraItem);
       else if (Key=="help")
 	{
 	  ELog::EM<<"Options : "<<ELog::endDiag;
@@ -94,7 +91,6 @@ setDefUnits(FuncDataBase& Control,
 		  <<ELog::endDiag;
 	  ELog::EM<<"  Single  beamLine : Single beamline [for BL devel] "
 		  <<ELog::endDiag;
-	  ELog::EM<<"  neutronics {BF1,BF2} [single]: configuration for neutronics calculations " << ELog::endDiag;
 	  throw ColErr::ExitAbort("Iparam.defaultConfig");	  
 	}
       else 
@@ -117,8 +113,8 @@ setESSFull(defaultConfig& A)
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSFull");
 
-  A.setOption("lowMod","Butterfly");
-  A.setOption("topMod","Butterfly");
+  A.setOption("lowMod","None");
+  A.setOption("topMod","BF1");
 
   const std::map<std::string,std::string> beamDef=
     {
@@ -172,7 +168,7 @@ setESSPortsOnly(defaultConfig& A,const std::string& lvl,
         {"farLower","G2BLineLow"}
       });
   
-  A.setOption("lowMod","Butterfly");
+  A.setOption("lowMod","None");
 
   int defaultFlag(0);
   std::string GNum;
@@ -218,7 +214,7 @@ setESSSingle(defaultConfig& A,
 {
   ELog::RegMethod RegA("DefUnitsESS[F]","setESSSingle");
 
-  A.setOption("lowMod","Butterfly");
+  A.setOption("lowMod","None");
   const std::map<std::string,std::string> beamDefNotSet=
     { 
      {"HEIMDAL","G1BLineTop18"},       // S2
@@ -319,247 +315,6 @@ setESSSingle(defaultConfig& A,
 }
 
 void
-setESSNeutronics(defaultConfig& A, const std::string& modtype, const std::string& single)
-
-  /*!
-    Default configuration for ESS for testing single beamlines
-    for building
-    \param A :: Paramter for default config
-    \param modtype :: Moderator type: either BF1 or BF2
-    \param single :: if "single" then only top moderator is built;
-                     if not specified then both moderators are built.
-   */
-{
-  ELog::RegMethod RegA("DefUnitsESS[F]","setESSNeutronics");
-
-  A.setOption("mcnp", "10");
-
-  size_t bfType=0;
-
-  if (modtype=="BF1")
-    {
-      bfType = 1;
-      A.setOption("lowMod", "Butterfly");
-      A.setOption("topMod", "Butterfly");
-      A.setOption("topPipe", "supply");
-
-      // These variables are as in the model received from Luca 22 Feb 2017
-      // there is no engieering drawings for BF1 yet, so this email is
-      // the only reference
-      const std::vector<std::string> TLfly = {"TopFly", "LowFly"};
-      std::string s;
-      for (std::string s : TLfly) {
-	A.setVar(s+"LeftLobeCorner1",Geometry::Vec3D(0,0.6,0));
-	A.setVar(s+"LeftLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
-	A.setVar(s+"LeftLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
-	
-	A.setVar(s+"RightLobeCorner1",Geometry::Vec3D(0,0.6,0));
-	A.setVar(s+"RightLobeCorner2",Geometry::Vec3D(-14.4,-12.95,0));
-	A.setVar(s+"RightLobeCorner3",Geometry::Vec3D(14.4,-12.95,0));
-	
-	A.setVar(s+"LeftLobeRadius1",1.0);
-	A.setVar(s+"RightLobeRadius1",1.0);
-	
-	A.setVar(s+"LeftLobeXStep",-0.85);
-	A.setVar(s+"RightLobeXStep",0.85);
-	
-	A.setVar(s+"LeftWaterCutWidth",9.6);
-	A.setVar(s+"RightWaterCutWidth",9.6);
-	
-	A.setVar(s+"MidWaterLength",9.9);
-	A.setVar(s+"MidWaterMidYStep",6.3);
-      }
-
-      // flow guides
-      for (std::string strmod : TLfly) {
-	s = strmod + "FlowGuide";
-	A.setVar(s+"BaseOffset",-10.5);
-	A.setVar(s+"Len1L",1.2);
-	A.setVar(s+"Len1R",8);
-	A.setVar(s+"Angle1",90);
-	A.setVar(s+"Radius1",1);
-	A.setVar(s+"Len1Foot",2.3);
-	A.setVar(s+"Dist12",3);
-	A.setVar(s+"Len2L",5.0);
-	A.setVar(s+"Len2R",8);
-	A.setVar(s+"Angle2",135);
-	A.setVar(s+"Radius2",1);
-	A.setVar(s+"Len2Foot",4);
-	A.setVar(s+"Dist23",3);
-	A.setVar(s+"Len3L",2.0);
-	A.setVar(s+"Len3R",4.0);
-	A.setVar(s+"Angle3",90);
-	A.setVar(s+"Dist14",5);
-	A.setVar(s+"Len4L",8.0);
-	A.setVar(s+"Len4R",-5.0);
-	A.setVar(s+"Angle4",135+90);
-      }
-
-      // pipes
-      A.setOption("topPipe", "supply");
-      A.setOption("lowPipe", "supply");
-
-      const std::vector<std::string> TLpipe = {"T", "L"};
-      for (std::string strpipe : TLpipe) {
-	s = strpipe + "Supply";
-	A.setVar(s+"RightAlNSegIn", 2);
-	A.setVar(s+"RightAlPPt0", Geometry::Vec3D(0,0,0));
-	A.setVar(s+"RightAlPPt1", Geometry::Vec3D(0,26,0));
-	A.setVar(s+"RightAlPPt2", Geometry::Vec3D(0,26,40));
-
-	A.setVar(s+"LeftAlNSegIn", 2);
-	A.setVar(s+"LeftAlPPt0", Geometry::Vec3D(0,0,0));
-	A.setVar(s+"LeftAlPPt1", Geometry::Vec3D(0,25.3,0));
-	A.setVar(s+"LeftAlPPt2", Geometry::Vec3D(0,25.3,40));
-      }
-    } else if (modtype=="BF2")
-    {
-      bfType = 2;
-      A.setOption("lowMod", "Butterfly");
-      A.setOption("topMod", "Butterfly");
-      // variables are set in moderatorVariables
-      // build pipes
-      A.setOption("topPipe", "supply,return");
-      A.setOption("lowPipe", "supply,return");
-    } else if (modtype=="Pancake")
-    {
-      A.setOption("lowMod", "Pancake");
-      A.setOption("topMod", "Pancake");
-      
-      A.setOption("topPipe", "PancakeSupply");
-      // straighten the pipes
-      A.setVar("TSupplyRightAlNSegIn", 2);
-      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
-      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
-      A.setVar("TSupplyLeftAlNSegIn", 2);
-      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
-      A.setVar("TSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
-
-      A.setVar("LSupplyRightAlNSegIn", 2);
-      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,30,0));
-      A.setVar("LSupplyRightAlPPt2", Geometry::Vec3D(0,30,40));
-      A.setVar("LSupplyLeftAlNSegIn", 2);
-      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,30,0));
-      A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,30,40));
-      
-      A.setVar("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
-      A.setVar("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
-      A.setVar("TopCapWingThick", 1.1);
-      A.setVar("TopCapWingTiltAngle", 1.7);
-      A.setVar("TopPreWingThick", 0.8);
-      A.setVar("TopPreWingTiltAngle", 1.5);
-    } else if (modtype=="Box")
-    {
-      A.setOption("lowMod", "Box");
-      A.setOption("topMod", "Box");
-
-      A.setOption("topPipe", "BoxSupply");
-      // straighten the pipes
-      A.setVar("TSupplyRightAlNSegIn", 2);
-      A.setVar("TSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyRightAlPPt1", Geometry::Vec3D(0,40,0));
-      A.setVar("TSupplyRightAlPPt2", Geometry::Vec3D(0,40,40));
-      A.setVar("TSupplyLeftAlNSegIn", 2);
-      A.setVar("TSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("TSupplyLeftAlPPt1", Geometry::Vec3D(0,40,0));
-      A.setVar("TSupplyLeftAlPPt2", Geometry::Vec3D(0,40,40));
-
-      A.setVar("LSupplyRightAlNSegIn", 2);
-      A.setVar("LSupplyRightAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyRightAlPPt1", Geometry::Vec3D(0,40,0));
-      A.setVar("LSupplyRightAlPPt2", Geometry::Vec3D(0,40,40));
-      A.setVar("LSupplyLeftAlNSegIn", 2);
-      A.setVar("LSupplyLeftAlPPt0", Geometry::Vec3D(0,0,0));
-      A.setVar("LSupplyLeftAlPPt1", Geometry::Vec3D(0,40,0));
-      A.setVar("LSupplyLeftAlPPt2", Geometry::Vec3D(0,40,40));
-      
-      A.setVar("TopCapWingTiltRadius", 10+0.3+0.5+0.3);
-      A.setVar("TopPreWingTiltRadius", 10+0.3+0.5+0.3);
-      A.setVar("TopCapWingThick", 1.1);
-      A.setVar("TopCapWingTiltAngle", 1.7);
-      A.setVar("TopPreWingThick", 0.8);
-      A.setVar("TopPreWingTiltAngle", 1.5);
-    } else throw ColErr::InvalidLine(modtype,
-				     "Either BF1, BF2, Pancake or Box are supported in defaultConfig");
-
-  if (single=="")
-    {
-      // pass
-    } else if (single=="single")
-    {
-      A.setOption("lowMod", "None");
-
-      A.setVar("BeRefLowVoidThick", 0);
-      A.setVar("BeRefLowRefMat", "SS316L");
-      A.setVar("BeRefLowWallMat", "AluminiumBe");
-      A.setVar("BeRefLowInnerStructureActive", 1);
-      // The 'depth' array numbers are from LZ drawing 2017-10-10
-      // and discussions with Marc 2017-10-11
-      // https://plone.esss.lu.se/docs/neutronics/engineering/drawings/reflector/water-layers-in-lower-be-reflector/view
-      std::vector<double> depth({3.0,5.1,3.0,0.9,3.0,3.0,3.0,9.0,3.0,9.0,3.0,12.7});
-      const double BeRefDepth(std::accumulate(depth.begin(), depth.end(), 0.0));
-      const double Ztop(7.8);// z-coordinate of LowBeRef upper plane
-      A.setVar("BeRefDepth", BeRefDepth+Ztop);
-      A.setVar("BulkDepth1", BeRefDepth+Ztop+1.0); // a bit bigger to make some clearance
-      A.setVar("BeRefVoidCylRadius", 15.0);
-      A.setVar("BeRefVoidCylDepth", std::accumulate(depth.begin(),
-						    depth.begin()+3, 0.0));
-
-      const size_t nLayers(depth.size());
-      A.setVar("BeRefLowInnerStructureNLayers", nLayers);
-
-      // 40% water fraction based on email from Marc 13 Oct 2017
-      for (size_t i=0; i<nLayers; i++)
-	{
-	  A.setVar("BeRefLowInnerStructureBaseLen" + std::to_string(i+1),
-		   depth[i]/BeRefDepth);
-	  A.setVar("BeRefLowInnerStructureMat" + std::to_string(i),
-		   (i%2) ? "SS316L": "SS316L_40H2O");
-	}
-    } else
-    throw ColErr::InvalidLine(single,"Either 'single' or nothing are supported in defaultConfig");
-
-  A.setVar("LowFlyType", bfType);
-  A.setVar("TopFlyType", bfType);
-
-  A.setOption("matDB", "neutronics");
-  A.setOption("physModel", "BD");
-
-  // simplify the bunkers
-  A.setOption("bunker", "noPillar");
-
-  std::vector<std::string> bunkerName({"A","B","C","D"});
-  for (const std::string n: bunkerName)
-    {
-      A.setVar(n+"BunkerWallNBasic", 1);
-      A.setVar(n+"BunkerRoofNBasicVert", 1);
-      A.setVar(n+"BunkerNSectors", 1);
-      A.setVar(n+"BunkerRoofMat0", "Void");
-      A.setVar(n+"BunkerWallMat0", "Void");
-      A.setVar(n+"BunkerWallMat", "Void");
-    }
-
-  // simplify the curtain
-  A.setVar("CurtainNBaseLayers", 1);
-  A.setVar("CurtainNMidLayers", 1);
-  A.setVar("CurtainNTopLayers", 1);
-  A.setVar("CurtainWallMat", "Void");
-  
-  // sdef
-  A.setVar("sdefEnergy", 2000.0);
-  A.setVar("sdefWidth", 14);
-  A.setVar("sdefHeight", 3.2);
-  A.setVar("sdefYPos", -500);
-  A.setVar("sdefPDF", "uniform");
-  
-  return;
-}
-
-void
 setESS(defaultConfig& A)
   /*!
     Default configuration for ESS
@@ -569,8 +324,8 @@ setESS(defaultConfig& A)
   ELog::RegMethod RegA("DefUnitsESS[F]","setESS");
 
 
-  A.setOption("lowMod","Butterfly");
-  A.setOption("topMod","Butterfly");
+  A.setOption("lowMod","None");
+  A.setOption("topMod","BF1");
 
   const std::map<std::string,std::string> beamDef=
     {

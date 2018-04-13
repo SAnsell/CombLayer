@@ -79,6 +79,7 @@ class GuideBay : public attachSystem::ContainedGroup,
   virtual ~GuideBay();
 
   void setCylBoundary(const int,const int);
+  std::vector<std::shared_ptr<GuideItem> > GetGuideItems() const {return GUnit;}
 
   void outerMerge(Simulation&,GuideBay&);
   void createGuideItems(Simulation&,const std::string&,const std::string&);

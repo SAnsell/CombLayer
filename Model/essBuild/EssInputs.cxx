@@ -65,9 +65,9 @@ createESSInputs(inputParam& IParam)
   IParam.setValue("targetType",std::string("Bilbao"));
   
   IParam.regDefItem<std::string>("lowMod","lowModType",1,std::string("None"));
-  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("Butterfly"));
-  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("side"));
-  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("side"));
+  IParam.regDefItem<std::string>("topMod","topModType",1,std::string("BF1"));
+  IParam.regDefItem<std::string>("lowPipe","lowPipeType",1,std::string("supply"));
+  IParam.regDefItem<std::string>("topPipe","topPipeType",1,std::string("supply"));
   IParam.regDefItem<std::string>("iradLine","iradLineType",1,
                                  std::string("void"));
   IParam.regDefItem<int>("matmesh", "matmesh", 1, 0);
@@ -94,7 +94,7 @@ createESSInputs(inputParam& IParam)
   IParam.setDesc("iradLine","Build an irradiation line [void for none]");
   IParam.setDesc("iradObj","Build an irradiation object [void for none]");
   IParam.setDesc("beamlines","Build beamlines [void for none]");
-  IParam.setDesc("bunker","Build bunker [void for none [A-D]");
+  IParam.setDesc("bunker","Build bunker [void for simpified voided version [A-D]");
   IParam.setDesc("nF5","Number of F5 collimators to build. \n"
 		 "  -- The collimators will be named as F5, F15, etc.\n"
 		 "  -- The corresponding variables must exist.");

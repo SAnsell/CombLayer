@@ -83,6 +83,7 @@ class GuideItem : public attachSystem::ContainedGroup,
   const Geometry::Plane* getPlane(const int) const;
 
  public:
+  int isActive() const {return active;}
 
   GuideItem(const std::string&,const size_t);
   GuideItem(const GuideItem&);
