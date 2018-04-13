@@ -61,7 +61,15 @@ class flukaImpConstructor
   void writeEMFHelp(std::ostream&,ENDL) const;
 
   void writeEXPHelp(std::ostream&,ENDL) const;
-    
+
+  void insertCell(flukaPhysics&,const size_t,
+		  const std::set<int>&,const std::string&,
+		  const std::string*) const;
+  void insertParticle(flukaPhysics&,const size_t,
+		      const std::string&,const std::string&,
+		      const std::string*) const;
+  
+  
  public:
 
   flukaImpConstructor() {}

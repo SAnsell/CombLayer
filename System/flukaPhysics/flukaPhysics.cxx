@@ -60,7 +60,7 @@ namespace flukaSystem
 		       
 flukaPhysics::flukaPhysics() :
 
-  cutValue({
+  impSVal({
       { "partthr",  strValueSet<1>("partthr","PART-THR","",{-1e-3}) }
     }),
   
@@ -206,15 +206,113 @@ flukaPhysics::setMatNumbers(const std::set<int>& matInfo)
   /*!
     Process the list of the valid cells 
     over each importance group.
-    \param cellInfo :: list of cells
+    \param matInfo :: list of materials
   */
 {
-  ELog::RegMethod RegA("flukaPhysics","setCellNumbers");
+  ELog::RegMethod RegA("flukaPhysics","setMatNumbers");
 
   matVec.assign(matInfo.begin(),matInfo.end());
   return;
 }
 
+void
+flukaPhysics::setFlag(const std::string& keyName,
+		      const std::string& nameID)
+  /*!
+    Set the importance list
+    \param keyName :: typename 
+    \param cellID :: Cell number
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setFlag(string)");
+  
+  std::map<std::string,strValueSet<0>>::iterator mc=
+    flagSVal.find(keyName);
+  if (mc==flagSVal.end())
+    throw ColErr::InContainerError<std::string>(keyName,"flagSVal");
+  
+  mc->second.setValues(nameID);
+  return;
+}
+  
+
+void
+flukaPhysics::setImp(const std::string& keyName,
+		     const std::string& nameID,
+		     const std::string& value)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param nameID :: Name of particle/object
+    \param value :: Value to use
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setImp(string)");
+  
+  std::map<std::string,strValueSet<1>>::iterator mc=
+    impSVal.find(keyName);
+  
+  if (mc==impSVal.end())
+    throw ColErr::InContainerError<std::string>(keyName,"impSVal");
+
+  mc->second.setValues(nameID,value);
+  return;
+}
+
+void
+flukaPhysics::setEMF(const std::string& keyName,
+		     const std::string& cellNumber,
+		     const std::string& electronCut,
+		     const std::string& photonCut)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param cellNumber :: Cell number
+    \param electronCut :: Electron cut values
+    \param photonCut :: Electron cut values
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setEMF(string)");
+  
+  std::map<std::string,strValueSet<2>>::iterator mc=
+    emfSVal.find(keyName);
+
+  if (mc==emfSVal.end())
+    throw ColErr::InContainerError<std::string>(keyName,"keyName");
+
+  mc->second.setValues(cellNumber,electronCut,photonCut);
+  return;
+}
+
+
+void
+flukaPhysics::setTHR(const std::string& keyName,
+		     const std::string& cellName,
+		     const std::string& V1,
+		     const std::string& V2,
+		     const std::string& V3)
+  /*!
+    Set the importance list
+    \param keyName :: all/hadron/electron/low
+    \param cellName :: Cell number
+    \param V1 :: Electron cut values
+    \param V2 :: photon cut values
+    \param V3 :: some cut values
+  */
+{
+  ELog::RegMethod RegA("flukaPhysics","setTHR(str)");
+  
+  std::map<std::string,strValueSet<3>>::iterator mc=
+    threeSVal.find(keyName);
+
+  if (mc==threeSVal.end())
+    throw ColErr::InContainerError<std::string>(keyName,"keyName");
+
+  mc->second.setValues(cellName,V1,V2,V3);
+  return;
+}
+
+  
 void
 flukaPhysics::setFlag(const std::string& keyName,
 		      const int cellID)
@@ -309,6 +407,7 @@ flukaPhysics::setTHR(const std::string& keyName,
   return;
 }
 
+  
 void
 flukaPhysics::writeFLUKA(std::ostream& OX) const
   /*!

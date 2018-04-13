@@ -363,10 +363,10 @@ strValueSet<N>::writeFLUKA(std::ostream& OX,
 
 
 ///\cond TEMPLATE
-//template class strValueSet<0>;
+template class strValueSet<0>;
 template class strValueSet<1>;
-//template class strValueSet<2>;
-//template class strValueSet<3>;
+template class strValueSet<2>;
+template class strValueSet<3>;
 ///\endcond TEMPLATE
   
 } // NAMESPACE flukaSystem

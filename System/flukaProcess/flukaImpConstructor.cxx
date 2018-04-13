@@ -61,62 +61,66 @@
 #include "inputParam.h"
 #include "strValueSet.h"
 #include "cellValueSet.h"
+#include "flukaGenParticle.h"
 #include "flukaPhysics.h"
 #include "flukaProcess.h"
 #include "flukaImpConstructor.h"
 
 namespace flukaSystem
 {
-  
+
+
 void
-flukaImpConstructor::processCUT(flukaPhysics& PC,
-				const mainSystem::inputParam& IParam,
-				const size_t setIndex)
-/*!
-    Set individual IMP based on Iparam
-    \param PC :: PhysicsCards
-    \param IParam :: input stream
-    \param setIndex :: index for the importance set
-  */
+flukaImpConstructor::insertParticle(flukaPhysics& PC,
+				    const size_t cellSize,
+				    const std::string& pName,
+				    const std::string& keyName,
+				    const std::string* VV) const
+ /*!
+   Process the actual insert 
+   \param PC :: Physcis to insert to
+   \param cellSize :: cell Unit size
+   \param pName :: particle name
+   \param keyName :: component keyname
+   \param VV :: variables
+ */
 {
-  ELog::RegMethod RegA("flukaImpConstructor","processUnit");
+  ELog::RegMethod RegA("flukaImpConstructor","insertParticle");
+  
+  switch (cellSize)
+    {
+    case 0:
+      PC.setFlag(keyName,pName);
+      break;
+    case 1:
+      PC.setImp(keyName,pName,VV[0]);
+      break;
+    case 2:
+      PC.setEMF(keyName,pName,VV[0],VV[1]);
+      break;
+    case 3:
+      PC.setTHR(keyName,pName,VV[0],VV[1],VV[2]);
+      break;
+    }
+  return;
+}
 
-  // cell/mat : tag name 
-  typedef std::tuple<size_t,int,std::string> cutTYPE;
-  static const std::map<std::string,cutTYPE> ICut
-    ({
-      { "partthr",cutTYPE(1,-1,"partthr") }   // particle
-    });
-
-  const std::string type=IParam.getValueError<std::string>
-    ("wCUT",setIndex,0,"No type for wCUT ");
-
-  if (type=="help" || type=="Help")
-    return writeCUTHelp(ELog::EM.Estream(),&ELog::endBasic);
-
-  std::map<std::string,cutTYPE>::const_iterator mc=ICut.find(type);
-  if (mc==ICut.end())
-    throw ColErr::InContainerError<std::string>(type,"imp type unknown");
-
-  const std::string cellM=IParam.getValueError<std::string>
-    ("wCUT",setIndex,1,"No cell/material/particle for wCUT ");
-
-  const size_t cellSize(std::get<0>(mc->second));
-  const bool materialFlag(std::get<1>(mc->second));
-  const std::string keyName(std::get<2>(mc->second));
-
-  const std::set<int> activeCell=
-    getActiveUnit(materialFlag,cellM);
-
-  std::string VV[3];
-  for(size_t i=0;i<cellSize;i++)
-    VV[i]=IParam.getValueError<std::string>
-      ("wCUT",setIndex,2+i,
-       "No value["+std::to_string(i+1)+"] for wCUT ");      
-
-  if (activeCell.empty())
-    throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
-
+void
+flukaImpConstructor::insertCell(flukaPhysics& PC,
+				const size_t cellSize,
+				const std::set<int>& activeCell,
+				const std::string& keyName,
+				const std::string* VV) const
+ /*!
+   Process the actual insert 
+   \param PC :: Physcis to insert to
+   \param cellSize :: cell Unit size
+   \param keyName :: component keyname
+   \param VV :: variables
+ */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","insertCell");
+  
   switch (cellSize)
     {
     case 0:
@@ -138,7 +142,64 @@ flukaImpConstructor::processCUT(flukaPhysics& PC,
     }
   return;
 }
+  
+void
+flukaImpConstructor::processCUT(flukaPhysics& PC,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+/*!
+    Set individual IMP based on Iparam
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processCUT");
 
+  const flukaGenParticle& FG=flukaGenParticle::Instance();
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,int,std::string> cutTYPE;
+  static const std::map<std::string,cutTYPE> ICut
+    ({
+      { "partthr",cutTYPE(1,-1,"partthr") }   // particle
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wCUT",setIndex,0,"No type for wCUT ");
+
+  if (type=="help" || type=="Help")
+    return writeCUTHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  std::map<std::string,cutTYPE>::const_iterator mc=ICut.find(type);
+  if (mc==ICut.end())
+    throw ColErr::InContainerError<std::string>(type,"imp type unknown");
+
+  const std::string cellM=IParam.getValueError<std::string>
+    ("wCUT",setIndex,1,"No cell/material/particle for wCUT ");
+
+  const size_t cellSize(std::get<0>(mc->second));
+  const int materialFlag(std::get<1>(mc->second));
+  const std::string keyName(std::get<2>(mc->second));
+
+  std::string VV[3];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i]=IParam.getValueError<std::string>
+      ("wCUT",setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for wCUT ");      
+
+  const std::set<int> activeCell=
+    getActiveUnit(materialFlag,cellM);
+
+  if (materialFlag<0)
+    {
+      const std::string& pName=FG.nameToFLUKA(cellM);
+      insertParticle(PC,cellSize,pName,keyName,VV);
+    }
+  return;
+}
+
+
+  
 void
 flukaImpConstructor::processUnit(flukaPhysics& PC,
 				 const mainSystem::inputParam& IParam,
@@ -162,7 +223,6 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       { "low",impTYPE(1,0,"low") } 
     });
 
-
   const std::string type=IParam.getValueError<std::string>
     ("wIMP",setIndex,0,"No type for wIMP ");
 
@@ -177,7 +237,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
     ("wIMP",setIndex,1,"No cell/material for wIMP ");
 
   const size_t cellSize(std::get<0>(mc->second));
-  const bool materialFlag(std::get<1>(mc->second));
+  const int materialFlag(std::get<1>(mc->second));
   const std::string keyName(std::get<2>(mc->second));
 
   std::string VV[3];
@@ -186,31 +246,13 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       ("wIMP",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wIMP ");      
 
-  const std::set<int> activeCell=
-    getActiveUnit(materialFlag,cellM);
-
-
-  if (activeCell.empty())
-    throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
-
-  switch (cellSize)
+  if (materialFlag>=0)
     {
-    case 0:
-      for(const int MN : activeCell)
-	PC.setFlag(keyName,MN);
-      break;
-    case 1:
-      for(const int MN : activeCell)
-	PC.setImp(keyName,MN,VV[0]);
-      break;
-    case 2:
-      for(const int MN : activeCell)
-	PC.setEMF(keyName,MN,VV[0],VV[1]);
-      break;
-    case 3:
-      for(const int MN : activeCell)
-	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
-      break;
+      const std::set<int> activeCell=
+	getActiveUnit(materialFlag,cellM);
+      if (activeCell.empty())
+	throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
+      insertCell(PC,cellSize,activeCell,keyName,VV);
     }
   return;
 }
@@ -219,7 +261,7 @@ void
 flukaImpConstructor::processEXP(flukaPhysics& PC,
 				const mainSystem::inputParam& IParam,
 				const size_t setIndex)
-/*!
+  /*!
     Set individual EXP based on Iparam
     \param PC :: PhysicsCards
     \param IParam :: input stream
@@ -238,7 +280,6 @@ flukaImpConstructor::processEXP(flukaPhysics& PC,
 
   const std::string type=IParam.getValueError<std::string>
     ("wEXP",setIndex,0,"No type for wEXP ");
-
     
   if (type=="help" || type=="Help")
     return writeEXPHelp(ELog::EM.Estream(),&ELog::endBasic);
@@ -251,7 +292,7 @@ flukaImpConstructor::processEXP(flukaPhysics& PC,
     ("wEXP",setIndex,1,"No cell/material for wEXP ");
 
   const size_t cellSize(std::get<0>(mc->second));
-  const bool materialFlag(std::get<1>(mc->second));
+  const int materialFlag(std::get<1>(mc->second));
   const std::string keyName(std::get<2>(mc->second));
 
   std::string VV[3];
@@ -260,33 +301,14 @@ flukaImpConstructor::processEXP(flukaPhysics& PC,
       ("wEXP",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wEXP ");      
 
-  std::set<int> activeCell=
-    (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
-
-  if (activeCell.empty())
-    throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
-
-  ELog::EM<<"EXT == "<<cellSize<<ELog::endDiag;
-  switch (cellSize)
+  if (materialFlag>0)
     {
-    case 0:
-      for(const int MN : activeCell)
-	PC.setFlag(keyName,MN);
-      break;
-    case 1:
-      for(const int MN : activeCell)
-	PC.setImp(keyName,MN,VV[0]);
-      break;
-    case 2:
-      for(const int MN : activeCell)
-	PC.setEMF(keyName,MN,VV[0],VV[1]);
-      break;
-    case 3:
-      for(const int MN : activeCell)
-	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
-      break;
+      const std::set<int> activeCell=
+	(!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
+      if (activeCell.empty())
+	throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
+      insertCell(PC,cellSize,activeCell,keyName,VV);
     }
-
   return;
 }
 
@@ -338,7 +360,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 
 
   const size_t cellSize(std::get<0>(mc->second));
-  const bool materialFlag(std::get<1>(mc->second));
+  const int materialFlag(std::get<1>(mc->second));
   const std::string keyName(std::get<2>(mc->second));
 
  
@@ -347,28 +369,14 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
     VV[i]=IParam.getValueError<std::string>
       ("wEMF",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wEMF: "+type);      
-  
-  std::set<int> activeCell=
-    (!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
 
-  switch (cellSize)
+  if (materialFlag>0)
     {
-    case 0:
-      for(const int MN : activeCell)
-	PC.setFlag(keyName,MN);
-      break;
-    case 1:
-      for(const int MN : activeCell)
-	PC.setImp(keyName,MN,VV[0]);
-      break;
-    case 2:
-      for(const int MN : activeCell)
-	PC.setEMF(keyName,MN,VV[0],VV[1]);
-      break;
-    case 3:
-      for(const int MN : activeCell)
-	PC.setTHR(keyName,MN,VV[0],VV[1],VV[2]);
-      break;
+      const std::set<int> activeCell=
+	(!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
+      if (activeCell.empty())
+	throw ColErr::InContainerError<std::string>(cellM,"Empty cell");
+      insertCell(PC,cellSize,activeCell,keyName,VV);
     }
   
   return;

@@ -43,8 +43,14 @@ class flukaPhysics
   std::vector<int> cellVec;                     ///< Cell numbers in order
   std::vector<int> matVec;                      ///< Material numbers in order
 
+  // FLAG string
+  std::map<std::string,strValueSet<0>> flagSVal;   ///< cut values
   // ONE VALUE string
-  std::map<std::string,strValueSet<1>> cutValue;   ///< cut values
+  std::map<std::string,strValueSet<1>> impSVal;   ///< cut values
+  // ONE VALUE string
+  std::map<std::string,strValueSet<2>> emfSVal;   ///< cut values
+  // ONE VALUE string
+  std::map<std::string,strValueSet<3>> threeSVal;   ///< cut values
 
   // ZERO VALUE
   std::map<std::string,cellValueSet<0>> flagValue;   ///< flag values
@@ -70,6 +76,13 @@ class flukaPhysics
   void setCellNumbers(const std::vector<int>&);
   // ALL systems setup
   void setMatNumbers(const std::set<int>&);
+  
+  void setFlag(const std::string&,const std::string&);
+  void setImp(const std::string&,const std::string&,const std::string&);
+  void setEMF(const std::string&,const std::string&,const std::string&,
+	      const std::string&);
+  void setTHR(const std::string&,const std::string&,const std::string&,
+	      const std::string&,const std::string&);
 
   void setFlag(const std::string&,const int);
   void setImp(const std::string&,const int,const std::string&);
