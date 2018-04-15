@@ -74,6 +74,7 @@ flukaPhysics::flukaPhysics() :
       { "hadron",   cellValueSet<1>("hadron","BIAS","") },
       { "electron", cellValueSet<1>("electron","BIAS","") },
       { "low",      cellValueSet<1>("low","BIAS","") },
+      { "lowbias",  cellValueSet<1>("lowbias","LOW-BIAS","") },
       { "exptrans", cellValueSet<1>("exptrans","EXPTRANS","") },
       { "exppart",  cellValueSet<1>("exppart","EXPTRANS","") }
     }),
@@ -91,8 +92,7 @@ flukaPhysics::flukaPhysics() :
 	{1e-3,1e-3,1e-3}) },
       { "photthr", cellValueSet<3>("pho2thr","EMFCUT","PHOT-THR",
 	{1e-3,1e-3,1e-3}) },
-      { "mulsopt", cellValueSet<3>("mulsopt","MULSOPT","",
-	{1e-3,1e-3,1e-3}) }
+      { "mulsopt", cellValueSet<3>("mulsopt","MULSOPT","",{1,1,1}) }
 
     }),
 
@@ -101,6 +101,7 @@ flukaPhysics::flukaPhysics() :
       { "hadron", unitTYPE(0," 1.0 1.0 %2 R0 R1 1.0 ") },
       { "electron", unitTYPE(0," 2.0 1.0 %2 R0 R1 1.0 ") },
       { "low", unitTYPE(0," 3.0 1.0 %2 R0 R1 1.0 ") },
+      { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
 	
@@ -112,7 +113,9 @@ flukaPhysics::flukaPhysics() :
       { "pairbrem", unitTYPE(1,"3.0 %2 %3  M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
-      { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") }
+      { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
+
+      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 1.0 -") }
     })
   /*!
     Constructor
@@ -417,7 +420,40 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 {
   typedef std::map<std::string,unitTYPE> FMAP;
 
-  for(const std::map<std::string,cellValueSet<0>>::value_type& flagV : flagValue)
+
+  for(const std::map<std::string,strValueSet<0>>::value_type& flagV :
+	flagSVal)
+    {
+      FMAP::const_iterator mc=formatMap.find(flagV.first);      
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      flagV.second.writeFLUKA(OX,fmtSTR);
+    }
+
+  for(const std::map<std::string,strValueSet<1>>::value_type& impV :
+	impSVal)
+    {
+      FMAP::const_iterator mc=formatMap.find(impV.first);
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      impV.second.writeFLUKA(OX,fmtSTR);
+    }
+
+  for(const std::map<std::string,strValueSet<2>>::value_type& emfV :
+	emfSVal)
+    {
+      FMAP::const_iterator mc=formatMap.find(emfV.first);      
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      emfV.second.writeFLUKA(OX,fmtSTR);
+    }
+  for(const std::map<std::string,strValueSet<3>>::value_type& threeV :
+	threeSVal)
+    {
+      FMAP::const_iterator mc=formatMap.find(threeV.first);      
+      const std::string& fmtSTR(std::get<1>(mc->second));
+      threeV.second.writeFLUKA(OX,fmtSTR);
+    }
+
+  for(const std::map<std::string,cellValueSet<0>>::value_type& flagV :
+	flagValue)
     {
       FMAP::const_iterator mc=formatMap.find(flagV.first);
       const int materialFlag(std::get<0>(mc->second));
@@ -453,7 +489,8 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
 	empV.second.writeFLUKA(OX,matVec,fmtSTR);
     }
 
-  for(const std::map<std::string,cellValueSet<3>>::value_type& thrV : threeFlag)
+  for(const std::map<std::string,cellValueSet<3>>::value_type& thrV :
+	threeFlag)
     {
       FMAP::const_iterator mc=formatMap.find(thrV.first);
       const bool flag(std::get<0>(mc->second));

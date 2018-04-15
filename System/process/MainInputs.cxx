@@ -69,6 +69,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
+  IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
   IParam.regItem("cellDNF","cellDNF");
   IParam.regItem("cellCNF","cellCNF");

@@ -74,6 +74,8 @@
 #include "AttachSupport.h"
 
 #include "VacuumPipe.h"
+#include "insertObject.h"
+#include "insertCylinder.h"
 #include "SplitFlangePipe.h"
 #include "Bellows.h"
 #include "VacuumBox.h"
@@ -101,7 +103,8 @@ FrontEnd::FrontEnd(const std::string& Key) :
   collA(new xraySystem::SqrCollimator(newName+"CollA")),
   collABPipe(new constructSystem::VacuumPipe(newName+"CollABPipe")),
   collTubeB(new constructSystem::PortTube(newName+"CollimatorTubeB")),
-  collB(new xraySystem::SqrCollimator(newName+"CollB")),  
+  collB(new xraySystem::SqrCollimator(newName+"CollB")),
+  eCutDisk(new insertSystem::insertCylinder(newName+"ECutDisk")),  
   flightPipe(new constructSystem::VacuumPipe(newName+"FlightPipe"))
   /*!
     Constructor
@@ -120,6 +123,7 @@ FrontEnd::FrontEnd(const std::string& Key) :
   OR.addObject(collABPipe);
   OR.addObject(collTubeB);
   OR.addObject(collB);
+  OR.addObject(eCutDisk);
   OR.addObject(flightPipe);
 }
   
@@ -203,6 +207,11 @@ FrontEnd::buildObjects(Simulation& System)
   collB->addInsertCell(collTubeB->getCell("Void"));
   collB->createAll(System,*collTubeB,0);
 
+  eCutDisk->setNoInsert();
+  eCutDisk->addInsertCell(collTubeB->getCell("Void"));
+  eCutDisk->createAll(System,*collB,2);
+  
+  
   flightPipe->addInsertCell(ContainedComp::getInsertCells());
   flightPipe->registerSpaceCut(1,2);
   flightPipe->setFront(*collTubeB,2);

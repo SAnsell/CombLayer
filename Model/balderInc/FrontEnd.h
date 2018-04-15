@@ -22,6 +22,11 @@
 #ifndef xraySystem_FrontEnd_h
 #define xraySystem_FrontEnd_h
 
+namespace insertSystem
+{
+  class insertCylinder;
+}
+
 namespace constructSystem
 {
   class SupplyPipe;
@@ -85,6 +90,8 @@ class FrontEnd :
   std::shared_ptr<constructSystem::PortTube> collTubeB;
   /// collimator B
   std::shared_ptr<xraySystem::SqrCollimator> collB;
+  /// electron cut cell
+  std::shared_ptr<insertSystem::insertCylinder> eCutDisk;
   /// Pipe from collimator B to join pipe
   std::shared_ptr<constructSystem::VacuumPipe> flightPipe;
 

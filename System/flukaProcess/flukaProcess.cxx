@@ -97,7 +97,6 @@ getActiveUnit(const int typeFlag,const std::string& cellM)
 {
   ELog::RegMethod RegA("flukaProcess[F]","getActiveUnit");
   
-  ELog::EM<<"Unit == "<<typeFlag<<ELog::endDiag;
   switch (typeFlag)
     {
     case -1:
