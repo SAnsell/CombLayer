@@ -334,7 +334,7 @@ TelescopicPipe::createLinks()
       ml -= (i==0) ? length[i]/2.0 : (length[i]-length[i-1])/2.0;
 
       FixedComp::setConnect(i+2,Origin+Y*ml+Z*(radius[i]+thick[i]),Z);
-      FixedComp::setLinkSurf(i+2,SMap.realSurf(PT+7));
+      FixedComp::setLinkSurf(i+2,SMap.realSurf(PT+17));
 
       PT+=100;
     }
