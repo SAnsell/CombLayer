@@ -260,6 +260,7 @@ TelescopicPipe::createObjects(Simulation& System,
   ELog::RegMethod RegA("TelescopicPipe","createObjects");
 
   std::string Out,EndCap,FrontCap;
+  std::string WallEndCap,WallFrontCap;
   int PT(ptIndex);
   std::string lastEndCup(outerSurfBoundary);
 
@@ -277,20 +278,32 @@ TelescopicPipe::createObjects(Simulation& System,
       EndCap=(i+1 == nSec) ? lastEndCup :
 	ModelSupport::getComposite(SMap,PT, " -2 ");
 
+      WallFrontCap=ModelSupport::getComposite(SMap,PT, " 2 ");
+      WallEndCap=(i+1 == nSec) ? lastEndCup :
+	ModelSupport::getComposite(SMap,PT,  " -3 ");
+
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,
 				       Out+FrontCap+EndCap));
+
       if (thick[i]>Geometry::zeroTol)
 	{
 	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
 					   Out+FrontCap+EndCap));
+	  if ((i+1!=nSec) && (std::abs(radius[i]-radius[i+1])>Geometry::zeroTol))
+	    {
+	      Out=ModelSupport::getSetComposite(SMap,PT,PT+100," 17M -17 5 -6");
+	      System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
+					       Out+WallEndCap+WallFrontCap));
+	    }
 	}
 
-      Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
       attachSystem::ContainedGroup::addCC(SName);
-      addOuterSurf(SName,      Out+EndCap+FrontCap);
-      addOuterUnionSurf("Full",Out+EndCap+FrontCap);
+      Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ")
+	+ WallEndCap+FrontCap;
+      addOuterSurf(SName,      Out);
+      addOuterUnionSurf("Full",Out);
 
       PT+=100;
     }
