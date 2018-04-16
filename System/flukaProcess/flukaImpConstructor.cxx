@@ -395,7 +395,7 @@ flukaImpConstructor::writeCUTHelp(std::ostream& OX,
   OX<<"wCUT  :: \n"
     " -- type : particle : values \n\n";
 
-  OX<<"    prodthr - energy-ctu PARTICLE \n"
+  OX<<"    partthr - energy-cut PARTICLE \n"
     << (*endDL);
   return;
 }

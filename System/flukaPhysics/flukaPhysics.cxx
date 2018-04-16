@@ -115,7 +115,7 @@ flukaPhysics::flukaPhysics() :
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
 
-      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 1.0 -") }
+      { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") }
     })
   /*!
     Constructor
