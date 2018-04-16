@@ -431,9 +431,15 @@ ActivationSource::processFluxFiles(const std::vector<std::string>& fluxFiles,
                                     "Failed to get totalFlux");
               
           ELog::EM<<"Gamma total == "<<totalFlux<<ELog::endDiag;
-          
-	  cellFlux.emplace(cellNumbers[index],
-                           activeUnit(totalFlux,energy,gamma));
+
+	  std::map<int,activeUnit>::iterator mc=
+	    cellFlux.find(cellNumbers[index]);
+	  if (mc==cellFlux.end())
+	      cellFlux.emplace(cellNumbers[index],
+			       activeUnit(totalFlux,energy,gamma));
+	  else
+	    mc->second=activeUnit(totalFlux,energy,gamma);
+	  
 	}
       IX.close();
     }

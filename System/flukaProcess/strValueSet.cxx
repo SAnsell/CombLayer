@@ -154,7 +154,7 @@ strValueSet<N>::setValues(const std::string& cN)
   */
 {
   valTYPE A;
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
 
@@ -170,7 +170,7 @@ strValueSet<N>::setValues(const std::string& cN,const double V)
   valTYPE A;
   A[0].first=1;
   A[0].second=std::to_string(V);
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
 
@@ -190,7 +190,7 @@ strValueSet<N>::setValues(const std::string& cN,const double V,
   A[0].second=std::to_string(V);
   A[1].first=1;
   A[1].second=std::to_string(V2);
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
 
@@ -213,7 +213,7 @@ strValueSet<N>::setValues(const std::string& cN,const double V,
   A[1].second=std::to_string(V2);
   A[2].first=1;
   A[2].second=std::to_string(V3);
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
 
@@ -235,7 +235,7 @@ strValueSet<N>::setValues(const std::string& cN,const std::string& V)
       A[0].first= (StrFunc::convert(V,D)) ? 1 : -1;
       A[0].second=V;
     }
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
   
@@ -263,7 +263,7 @@ strValueSet<N>::setValues(const std::string& cN,const std::string& V1,
 	  A[i].second= *VStr[i];
 	}
     }
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
 
@@ -292,7 +292,7 @@ strValueSet<N>::setValues(const std::string& cN,const std::string& V1,
 	  A[i].second= *VStr[i];
 	}
     }
-  dataMap.emplace(cN,A);
+  dataMap[cN]=A;
   return;
 }
 

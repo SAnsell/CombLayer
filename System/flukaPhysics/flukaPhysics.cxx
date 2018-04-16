@@ -282,7 +282,6 @@ flukaPhysics::setEMF(const std::string& keyName,
 
   if (mc==emfSVal.end())
     throw ColErr::InContainerError<std::string>(keyName,"keyName");
-
   mc->second.setValues(cellNumber,electronCut,photonCut);
   return;
 }
@@ -371,7 +370,7 @@ flukaPhysics::setEMF(const std::string& keyName,
     \param photonCut :: Electron cut values
   */
 {
-  ELog::RegMethod RegA("flukaPhysics","setEMF");
+  ELog::RegMethod RegA("flukaPhysics","setEMF(int)");
   
   std::map<std::string,cellValueSet<2>>::iterator mc=
     emfFlag.find(keyName);

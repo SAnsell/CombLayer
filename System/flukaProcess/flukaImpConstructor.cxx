@@ -112,15 +112,17 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
 				const std::string& keyName,
 				const std::string* VV) const
  /*!
-   Process the actual insert 
+   Process the actual insert of cells/materials along with
+   values into the phyics object
    \param PC :: Physcis to insert to
    \param cellSize :: cell Unit size
+   \param activeCell :: Cells this applies to
    \param keyName :: component keyname
    \param VV :: variables
  */
 {
   ELog::RegMethod RegA("flukaImpConstructor","insertCell");
-  
+
   switch (cellSize)
     {
     case 0:
@@ -326,7 +328,6 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processEMF");
 
-
   // cell/mat : tag name /  scale V1 / scale V2 [if used]
   typedef std::tuple<size_t,bool,std::string> emfTYPE;
 
@@ -358,7 +359,6 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
   const std::string cellM=IParam.getValueError<std::string>
     ("wEMF",setIndex,1,"No cell/material for wEMF ");
 
-
   const size_t cellSize(std::get<0>(mc->second));
   const int materialFlag(std::get<1>(mc->second));
   const std::string keyName(std::get<2>(mc->second));
@@ -370,7 +370,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
       ("wEMF",setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for wEMF: "+type);      
 
-  if (materialFlag>0)
+  if (materialFlag>=0)
     {
       const std::set<int> activeCell=
 	(!materialFlag) ? getActiveCell(cellM) : getActiveMaterial(cellM);
