@@ -66,7 +66,8 @@ flukaPhysics::flukaPhysics() :
   
   flagValue({
       { "photonuc",cellValueSet<0>("photonuc","PHOTONUC","") },
-      { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") }
+      { "muphoton",cellValueSet<0>("muphoton","MUPHOTON","") },
+      { "emffluo",cellValueSet<0>("emffluo","EMFFLUO","") }
     }),
 
   impValue({
@@ -106,6 +107,7 @@ flukaPhysics::flukaPhysics() :
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
 	
       { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
+      { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },	
       { "prodcut", unitTYPE(1," %2 %3 1.0 M0 M1 1.0") },
       { "photthr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
       { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },

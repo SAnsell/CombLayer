@@ -45,6 +45,8 @@ class SimFLUKA : public Simulation
  private:
 
   const std::string alignment;    ///< the alignemnt string
+
+  std::string defType;            ///< Default physics type
   bool writeVariable;             ///< Prevent the writing of variables
   bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
@@ -99,6 +101,7 @@ class SimFLUKA : public Simulation
   void setNoVariables() { writeVariable=0; }
   /// no low energy neturon
   void setNoThermal() { lowEnergyNeutron=0; }
+  void setDefaultPhysics(const std::string&);
   void setForCinder();
   void processActiveMaterials() const;
   

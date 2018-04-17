@@ -342,6 +342,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
       { "pairbrem",emfTYPE(2,1,"pairbrem") }, // mat   GeV : GeV
       { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
       { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
+      { "emffluo",emfTYPE(0,1,"emffluo") },      // mat
       { "mulsopt",emfTYPE(3,1,"mulsopt") }       // mat
     });
   
@@ -461,6 +462,7 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
     " -- type : values : Mat/Cell\n\n";
   OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL \n"
       "    prodcut - e+/e-prod  gamma-prod  MAT \n"
+      "    emffluo - [FLAG] turns off x-ray fluorescence MAT \n"
       "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT \n"
       "    photthr - compton photoelec gamma-pair MAT \n"
       "    pho2thr - rayliegh gamma-photonuc MAT \n"
