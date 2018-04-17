@@ -1,8 +1,0 @@
-Discuss with SA: how to pass focal points (actually, link points) from ButterflyModerator to F5Collimator.
-The problem is that TopMod and LowMod are of type ModBase, and I am not sure whether it is a good idea
-to add "virtual getLinkPts()" to ModBase... or how else to do it?
-
-ess branch:
-a4f9ff1 - before merging with master and renaming of ButterflyEngineering-merge-master to 'ess'
-
-baae39e - last commit of ButterflyEngineering before deletion
