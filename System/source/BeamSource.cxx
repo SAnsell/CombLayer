@@ -299,7 +299,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   std::ostringstream cx;
   // energy : energy divirgence : angle spread [mrad]
   // radius : innerRadius : -1 t o means radius
-  cx<<"BEAM "<<-Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
+  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
     <<" "<<radius<<" 0.0 -1.0 ";
   cx<<StrFunc::toUpperString(particleType);
   StrFunc::writeFLUKA(cx.str(),OX);
