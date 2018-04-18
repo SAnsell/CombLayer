@@ -35,6 +35,7 @@ namespace SDef
   std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
 			       const attachSystem::FixedComp&,const long int);
 
+
   
   std::string createBilbaoSource(const mainSystem::MITYPE&,
 				 const attachSystem::FixedComp&,const long int);
@@ -69,6 +70,9 @@ namespace SDef
 				const attachSystem::FixedComp&,
 				const long int);
   
+  std::string createRectSource(const mainSystem::MITYPE&,const std::string&,
+			       const attachSystem::FixedComp&,const long int);
+
   std::string createSinbadSource(const mainSystem::MITYPE&,
 				 const attachSystem::FixedComp&,
 				 const long int);
