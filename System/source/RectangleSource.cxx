@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/ParabolicSource.cxx
+ * File:   source/RectangleSource.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -64,15 +65,14 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "particleConv.h"
-#include "ParabolicSource.h"
+#include "RectangleSource.h"
 
 namespace SDef
 {
 
-ParabolicSource::ParabolicSource(const std::string& keyName) : 
+RectangleSource::RectangleSource(const std::string& keyName) : 
   attachSystem::FixedOffset(keyName,0),
-  SourceBase(),decayPower(2.0),
-  nWidth(5),nHeight(5),
+  SourceBase(),
   width(1.0),height(1.0),angleSpread(0.0)
   /*!
     Constructor BUT ALL variable are left unpopulated.
@@ -80,23 +80,21 @@ ParabolicSource::ParabolicSource(const std::string& keyName) :
   */
 {}
 
-ParabolicSource::ParabolicSource(const ParabolicSource& A) : 
+RectangleSource::RectangleSource(const RectangleSource& A) : 
   attachSystem::FixedOffset(A),SourceBase(A),
-  decayPower(A.decayPower),
-  nWidth(A.nWidth),nHeight(A.nHeight),
   width(A.width),height(A.height),
   angleSpread(A.angleSpread)
   /*!
     Copy constructor
-    \param A :: ParabolicSource to copy
+    \param A :: RectangleSource to copy
   */
 {}
 
-ParabolicSource&
-ParabolicSource::operator=(const ParabolicSource& A)
+RectangleSource&
+RectangleSource::operator=(const RectangleSource& A)
   /*!
     Assignment operator
-    \param A :: ParabolicSource to copy
+    \param A :: RectangleSource to copy
     \return *this
   */
 {
@@ -104,9 +102,6 @@ ParabolicSource::operator=(const ParabolicSource& A)
     {
       attachSystem::FixedOffset::operator=(A);
       SourceBase::operator=(A);
-      decayPower=A.decayPower;
-      nWidth=A.nWidth;
-      nHeight=A.nHeight;
       width=A.width;
       height=A.height;
       angleSpread=A.angleSpread;
@@ -114,36 +109,35 @@ ParabolicSource::operator=(const ParabolicSource& A)
   return *this;
 }
 
-ParabolicSource::~ParabolicSource() 
+RectangleSource::~RectangleSource() 
   /*!
     Destructor
   */
 {}
 
-ParabolicSource*
-ParabolicSource::clone() const
+RectangleSource*
+RectangleSource::clone() const
   /*!
     Clone constructor
     \return copy of this
   */
 {
-  return new ParabolicSource(*this);
+  return new RectangleSource(*this);
 }
   
   
 void
-ParabolicSource::populate(const mainSystem::MITYPE& inputMap)
+RectangleSource::populate(const mainSystem::MITYPE& inputMap)
   /*!
     Populate Varaibles
     \param inputMap :: Control variables
    */
 {
-  ELog::RegMethod RegA("ParabolicSource","populate");
+  ELog::RegMethod RegA("RectangleSource","populate");
 
   FixedOffset::populate(inputMap);
   SourceBase::populate(inputMap);
   
-  mainSystem::findInput<double>(inputMap,"decayPower",0,decayPower);
   mainSystem::findInput<double>(inputMap,"height",0,height);
   mainSystem::findInput<double>(inputMap,"width",0,width);
   mainSystem::findInput<double>(inputMap,"aSpread",0,angleSpread);
@@ -152,7 +146,7 @@ ParabolicSource::populate(const mainSystem::MITYPE& inputMap)
 }
 
 void
-ParabolicSource::createUnitVector(const attachSystem::FixedComp& FC,
+RectangleSource::createUnitVector(const attachSystem::FixedComp& FC,
 				  const long int linkIndex)
   /*!
     Create the unit vector
@@ -160,7 +154,7 @@ ParabolicSource::createUnitVector(const attachSystem::FixedComp& FC,
     \param linkIndex :: Link index [signed for opposite side]
    */
 {
-  ELog::RegMethod RegA("ParabolicSource","createUnitVector");
+  ELog::RegMethod RegA("RectangleSource","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
@@ -168,7 +162,7 @@ ParabolicSource::createUnitVector(const attachSystem::FixedComp& FC,
 }
   
 void
-ParabolicSource::setRectangle(const double W,const double H)
+RectangleSource::setRectangle(const double W,const double H)
   /*!
     Set the width/height
     \param W :: Width (full)
@@ -181,26 +175,13 @@ ParabolicSource::setRectangle(const double W,const double H)
 }
 
 void
-ParabolicSource::setNPts(const size_t NW,const size_t NH)
-  /*!
-    Set the width / height number of points
-    \param NW :: number of point in width
-    \param NH :: number of point in height
-   */
-{
-  nWidth=(NW) ? NW : 1;
-  nHeight=(NH) ? NH : 1;
-  return;
-}
-
-void
-ParabolicSource::rotate(const localRotate& LR)
+RectangleSource::rotate(const localRotate& LR)
   /*!
     Rotate the source
     \param LR :: Rotation to apply
   */
 {
-  ELog::RegMethod Rega("ParabolicSource","rotate");
+  ELog::RegMethod Rega("RectangleSource","rotate");
   FixedComp::applyRotation(LR);
 
   if (!X.masterDir() || !Y.masterDir() || !Z.masterDir() ||
@@ -218,14 +199,14 @@ ParabolicSource::rotate(const localRotate& LR)
 
 
 void
-ParabolicSource::createSource(SDef::Source& sourceCard) const
+RectangleSource::createSource(SDef::Source& sourceCard) const
   /*!
     Creates a parabolic source
     - note that nWidth / nHeight are never 0
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","createSource");
+  ELog::RegMethod RegA("RectangleSource","createSource");
 
   const particleConv& pConv=particleConv::Instance();
   const int mcnpPIndex=pConv.mcnpITYP(particleType);
@@ -251,43 +232,10 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
       sourceCard.setComp("axs",Geometry::Vec3D(0,1.0,0));
     }
   
-  
-  std::vector<double> XPts(nWidth+1);
-  std::vector<double> XProb(nWidth+1);
-  const double xRange=width/2.0;
-  const double xPower(std::pow(xRange,decayPower));
-  const double xStep=(2.0*xRange)/static_cast<double>(nWidth);
-  
-  double XValue= -xRange;
-  double pValue(0.0);
-  for(size_t i=0;i<=nWidth;i++)
-    {
-      XPts[i]  = XValue;
-      XProb[i] = pValue;
-      XValue += xStep/2.0;
-      pValue = (std::abs(decayPower)>Geometry::zeroTol) ?
-	1.0-std::pow(std::abs<double>(XValue),decayPower)/xPower : 1.0;
-      XValue += xStep/2.0;
-    }
-
-  std::vector<double> ZPts(nHeight+1);
-  std::vector<double> ZProb(nHeight+1);
-  const double zRange=height/2.0;
-  const double zPower(std::pow(zRange,decayPower));
-  const double zStep=(2.0*zRange)/static_cast<double>(nHeight);
-  
-  double ZValue= -zRange;
-  pValue=0.0;
-  for(size_t i=0;i<=nHeight;i++)
-    {
-      ZPts[i]  = ZValue;
-      ZProb[i] = pValue;
-      ZValue += zStep/2.0;
-      pValue = (std::abs(decayPower)>Geometry::zeroTol) ?
-	1.0-std::pow(std::abs<double>(ZValue),decayPower)/zPower : 1.0;
-
-      ZValue += zStep/2.0;
-    }
+  const std::vector<double> XPts({-width/2.0,width/2.0});
+  const std::vector<double> XProb({0.0,1.0});
+  const std::vector<double> ZPts({-height/2.0,height/2.0});
+  const std::vector<double> ZProb({0.0,1.0});
     
   SrcData D1(1);  
   SrcData D2(2);
@@ -307,10 +255,11 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
   D1.addUnit(SP1);
   D2.addUnit(SP2);
 
+
   sourceCard.setData(xyz[(aR+1) % 3],D1); // equiv of +2/-1
   sourceCard.setData(xyz[aR % 3],D2);
-  sourceCard.setComp("ara",4.0*xRange*zRange);
-  
+  sourceCard.setComp("ara",height*width);
+
   if (TransPtr)
     sourceCard.setComp("tr",TransPtr->getName());
   
@@ -320,7 +269,7 @@ ParabolicSource::createSource(SDef::Source& sourceCard) const
 }
 
 void
-ParabolicSource::createAll(const mainSystem::MITYPE& inputMap,
+RectangleSource::createAll(const mainSystem::MITYPE& inputMap,
 			   const attachSystem::FixedComp& FC,
 			   const long int linkIndex)
   
@@ -331,7 +280,7 @@ ParabolicSource::createAll(const mainSystem::MITYPE& inputMap,
     \param linkIndex :: link point
    */
 {
-  ELog::RegMethod RegA("ParabolicSource","createAll<FC,linkIndex>");
+  ELog::RegMethod RegA("RectangleSource","createAll<FC,linkIndex>");
   populate(inputMap);
   createUnitVector(FC,linkIndex);
 
@@ -339,13 +288,13 @@ ParabolicSource::createAll(const mainSystem::MITYPE& inputMap,
 }
 
 void
-ParabolicSource::write(std::ostream& OX) const
+RectangleSource::write(std::ostream& OX) const
   /*!
     Write out as a MCNP source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","write");
+  ELog::RegMethod RegA("RectangleSource","write");
 
   Source sourceCard;
   createSource(sourceCard);
@@ -357,31 +306,58 @@ ParabolicSource::write(std::ostream& OX) const
 }
 
 void
-ParabolicSource::writePHITS(std::ostream& OX) const
+RectangleSource::writePHITS(std::ostream& OX) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","writePHITS");
+  ELog::RegMethod RegA("RectangleSource","writePHITS");
 
   ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
-    const long int nStep(20);
   
   return;
 }
 
 void
-ParabolicSource::writeFLUKA(std::ostream& OX) const
+RectangleSource::writeFLUKA(std::ostream& OX) const
   /*!
     Write out as a FLUKA source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("ParabolicSource","writePHITS");
+  ELog::RegMethod RegA("RectangleSource","writePHITS");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
-    const long int nStep(20);
+  // can be two for an energy range not more
+  const size_t NE=Energy.size();
+  if (NE!=1 || NE!=2)
+    throw ColErr::SizeError<size_t>
+      (NE,2,"Energy only single point or range [2 points]");
+
+  std::ostringstream cx;
+  // energy : energy divirgence : angle spread [mrad]
+  // width : height : - means rectangel
+  if (NE==1)
+    cx<<"BEAM "<<-0.001*Energy[0]<<" 0.0 ";
+  else
+    {
+      const double EMid=(Energy[1]+Energy[0])/2.0;
+      const double ERange= Energy[1]-Energy[0];
+      cx<<"BEAM "<<-0.001*EMid<<" "<<0.001*ERange;
+    }
+  cx<<M_PI*angleSpread/0.180<<" "<<width<<" "<<height<<" - ";
+  cx<<StrFunc::toUpperString(particleType);
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+
+  // Y Axis is Z in fluka, X is X
+  cx<<"BEAMAXES "<<X<<" "<<Y;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+  cx<<"BEAMPOS "<<Origin;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+
   
   return;
 }

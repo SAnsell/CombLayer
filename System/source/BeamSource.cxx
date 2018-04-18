@@ -294,7 +294,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   // can be two for an energy range
   if (Energy.size()!=1)
     throw ColErr::SizeError<size_t>
-      (Energy.size(),1,"Energy only single point");
+      (Energy.size(),1,"Energy only single point supported");
 
   std::ostringstream cx;
   // energy : energy divirgence : angle spread [mrad]
@@ -311,16 +311,7 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   cx.str("");
   cx<<"BEAMPOS "<<Origin;
   StrFunc::writeFLUKA(cx.str(),OX);
-  cx.str("");
-  
-  
-
-  // beam : -energy X X X X X  : Partiles
-  //  std::istringstream cx;
-  //  cx<<(FMTnum % -energy);
-  //  StrFunc::writeFLUKAhead("BEAM",PC.mcnpToPhits(particleType),cx.str(),OX)
-  //  cx.str("");
-  
+  cx.str("");  
   
   return;
 }

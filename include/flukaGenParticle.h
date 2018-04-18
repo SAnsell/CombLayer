@@ -49,7 +49,8 @@ class flukaGenParticle
 
   const std::string& nameToFLUKA(const std::string&) const;
 
-  
+  double momentumFromKE(const std::string&,const double) const; 
+
 };
  
 

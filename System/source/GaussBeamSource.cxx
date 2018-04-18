@@ -42,6 +42,7 @@
 #include "BaseVisit.h"
 #include "BaseModVisit.h"
 #include "support.h"
+#include "writeSupport.h"
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
@@ -313,7 +314,6 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
       {
 	const double x= static_cast<double>(i)*xStep;
 	const double z= static_cast<double>(j)*zStep;
-
 	const double expTerm=
 	  exp(-( x*x/(2.0*xSigma*xSigma)+z*z/(2.0*zSigma*zSigma) ));
 	// coordinate
@@ -322,7 +322,6 @@ GaussBeamSource::writePHITS(std::ostream& OX) const
      
   return;
 }
-
 
 void
 GaussBeamSource::writeFLUKA(std::ostream& OX) const
@@ -333,7 +332,28 @@ GaussBeamSource::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("GaussBeamSource","writeFLUKA");
 
-  ELog::EM<<"NOT YET WRITTEN "<<ELog::endCrit;
+  // can be two for an energy range
+  if (Energy.size()!=1)
+    throw ColErr::SizeError<size_t>
+      (Energy.size(),1,"Energy only single point supported");
+
+  std::ostringstream cx;
+  // energy : energy divirgence : angle spread [mrad]
+  // radius : innerRadius : -1 t o means radius
+  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
+    <<" "<<-xWidth<<" "<<-zWidth<<" -1.0 ";
+  cx<<StrFunc::toUpperString(particleType);
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+
+  // Y Axis is Z in fluka, X is X
+  cx<<"BEAMAXES "<<X<<" "<<Y;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+  cx<<"BEAMPOS "<<Origin;
+  StrFunc::writeFLUKA(cx.str(),OX);
+  cx.str("");
+
   return;
 }
 
