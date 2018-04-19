@@ -128,9 +128,9 @@ flukaGenParticle::momentumFromKE(const std::string& particleName,
 				 const double KE) const
   /*!
     Convert the kenetic energy to momenum
-    \param KE :: Kenetic energy [MeV]
+    \param KE :: Kenetic energy [MeV/c2]
     \return momentum [MeV/c]
   */
 {
-  return 0.0;
+  return particleConv::Instance().momentumFromKE(particleName,KE); 
 }
