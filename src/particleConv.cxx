@@ -44,11 +44,11 @@
 pName::pName(const std::string& mcnpN,const int mI,
 	     const std::string& flukaN,const int fI,
 	     const std::string& phitsN,const int pI,
-	     const int mcplN,const int N) :
+	     const int mcplN,const double M,const int N) :
   mcnpName(mcnpN),mcnpITYP(mI),
   flukaName(flukaN),flukaITYP(fI),
   phitsName(phitsN),phitsITYP(pI),
-  mcplNumber(mcplN),nucleon(N)
+  mcplNumber(mcplN),mass(M),nucleon(N)
   /*
     Constructor 
     \param mcnpN :: MCNP Name
@@ -58,6 +58,7 @@ pName::pName(const std::string& mcnpN,const int mI,
     \param phitsN :: PHITS name
     \param pI :: PHITS ityp number
     \param mcplN :: kf/mcpl number
+    \param M :: particle mass [MeV/c2]
     \param N :: nucleon number
   */
 {}
@@ -66,7 +67,8 @@ pName::pName(const pName& A) :
   mcnpName(A.mcnpName),mcnpITYP(A.mcnpITYP),
   flukaName(A.flukaName),flukaITYP(A.flukaITYP),
   phitsName(A.phitsName),phitsITYP(A.phitsITYP),
-  mcplNumber(A.mcplNumber),nucleon(A.nucleon)
+  mcplNumber(A.mcplNumber),mass(A.mass),
+  nucleon(A.nucleon)
   /*
     Copy Constructor 
     \param A :: Object to copy
@@ -76,25 +78,25 @@ pName::pName(const pName& A) :
 // mcnpChar : mcnpI : fluka : flukaI : phits : phitsI : mcplNumber : nucleons
 particleConv::particleConv() : 
   particleVec({
-  {"h", 9,  "proton",     1,  "proton",     1,    2212,       1},
-  {"n", 1,  "neutron",    8,  "neutron",    2,    2112,       1},   
-  {"/", 20, "pion+",     13,  "pion+",      3,     211,       1},
-  {"z", 21, "pizero",    23,  "pion0",      4,     111,       1},
-  {"*", 11, "pion-",     14,  "pion-",      5,    -211,       1},
-  {"!", 16, "muon+",     10,  "muon+",      6,     -13,       1},
-  {"|", 4,  "muon-",     11,  "muon-",      7,      13,       1},
-  {"k", 22, "kaon+",     15,  "kaon+",      8,     321,       1},
-  {"%", 23, "kaonzero",  24,  "kaon0",      9,     311,       1},  // k0 version
-  {"^", 24, "kaonlong",  12,  "kaon0",      9,     130,       1},  // long version
-  {"?", 36, "kaon-",     16,  "kaon-",     10,    -321,       1},
-  {"e", 3,  "electron",   3,  "electron",  11,      11,       1},
-  {"f", 8,  "positron",   4,  "positron",  13,     -11,       1},
-  {"p", 2,  "photon",     7,  "photon",    14,      22,       1},
-  {"d", 31, "deuteron",  -3,  "deuteron",  15, 1000002,       2},
-  {"t", 32, "triton",    -4,  "triton",    16, 1000003,       3},
-  {"s", 33, "3-helium",  -5,   "3he",      17, 2000003,       3},
-  {"a", 34, "4-helium",  -6,  "alpha",     18, 2000004,       4},
-  {"g", 19, "antiproton", 2,  "antiproton",11,   -2212,       1}       // no direct phits
+  {"h", 9,  "proton",     1,  "proton",     1,    2212,   938.2720813,  1},
+  {"n", 1,  "neutron",    8,  "neutron",    2,    2112,   939.5654133,  1},   
+  {"/", 20, "pion+",     13,  "pion+",      3,     211,   139.57018,    1},
+  {"z", 21, "pizero",    23,  "pion0",      4,     111,   134.9770,     1},
+  {"*", 11, "pion-",     14,  "pion-",      5,    -211,   139.57018,    1},
+  {"!", 16, "muon+",     10,  "muon+",      6,     -13,   105.6583745,   1},
+  {"|", 4,  "muon-",     11,  "muon-",      7,      13,   105.6583745,   1},
+  {"k", 22, "kaon+",     15,  "kaon+",      8,     321,   493.677,    1},
+  {"%", 23, "kaonzero",  24,  "kaon0",      9,     311,   493.677,    1},  // k0 version
+  {"^", 24, "kaonlong",  12,  "kaon0",      9,     130,   497.611,    1},  // long version
+  {"?", 36, "kaon-",     16,  "kaon-",     10,    -321,   493.677,    1},
+  {"e", 3,  "electron",   3,  "electron",  11,      11,   0.5109989461, 1},
+  {"f", 8,  "positron",   4,  "positron",  13,     -11,   0.5109989461, 1},
+  {"p", 2,  "photon",     7,  "photon",    14,      22,   0.0,          1},
+  {"d", 31, "deuteron",  -3,  "deuteron",  15, 1000002,   1875.612793,  2},
+  {"t", 32, "triton",    -4,  "triton",    16, 1000003,   2808.921112,   3},
+  {"s", 33, "3-helium",  -5,   "3he",      17, 2000003,   2808.391586,    3},
+  {"a", 34, "4-helium",  -6,  "alpha",     18, 2000004,   3727.379378,    4},
+  {"g", 19, "antiproton", 2,  "antiproton",11,   -2212,   938.2720813,   1}       // no direct phits
     })
   /*!
     Constructor
@@ -398,4 +400,19 @@ particleConv::nameToFLUKA(const std::string& particleName) const
   const pName& PN = getNamePItem(particleName);
   return PN.flukaName;
 }
- 
+
+
+double
+particleConv::momentumFromKE(const std::string& particleName,
+			     const double KE) const
+  /*!
+    Convert the kenetic energy to momenum
+    Convertions from E_tot=m(1+(p/m)^2)^0.5
+    \param KE :: Kenetic energy [MeV/c2]
+    \return momentum [MeV/c]
+  */
+{
+  const pName& PN = getNamePItem(particleName);
+  return sqrt(KE*KE+2.0*PN.mass*KE);
+}
+

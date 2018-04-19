@@ -328,6 +328,8 @@ RectangleSource::writeFLUKA(std::ostream& OX) const
 {
   ELog::RegMethod RegA("RectangleSource","writePHITS");
 
+  const particleConv& pConv=particleConv::Instance();
+
   // can be two for an energy range not more
   const size_t NE=Energy.size();
   if (NE!=1 || NE!=2)
@@ -341,9 +343,11 @@ RectangleSource::writeFLUKA(std::ostream& OX) const
     cx<<"BEAM "<<-0.001*Energy[0]<<" 0.0 ";
   else
     {
+      // Note have to give particle momentum range here
       const double EMid=(Energy[1]+Energy[0])/2.0;
       const double ERange= Energy[1]-Energy[0];
-      cx<<"BEAM "<<-0.001*EMid<<" "<<0.001*ERange;
+      cx<<"BEAM "<<0.001*pConv.momentumFromKE(particleType,EMid)
+	<<" "<<0.001*pConv.momentumFromKE(particleType,ERange);
     }
   cx<<M_PI*angleSpread/0.180<<" "<<width<<" "<<height<<" - ";
   cx<<StrFunc::toUpperString(particleType);
