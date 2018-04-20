@@ -3,7 +3,7 @@
  
  * File:   insertUnit/addInsertObj.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -265,11 +265,11 @@ addInsertPlateCell(Simulation& System,const std::string& objName,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-
+ 
   const attachSystem::FixedComp* mainFCPtr=
     OR.getObjectThrow<attachSystem::FixedComp>(FCname,"FixedComp");
   const long int linkIndex=attachSystem::getLinkIndex(linkName);
-  
+ 
   System.populateCells();
   System.validateObjSurfMap();
 
@@ -465,10 +465,11 @@ addInsertSphereCell(Simulation& System,
   
   ModelSupport::objectRegister& OR=
     ModelSupport::objectRegister::Instance();
-  
+
   System.populateCells();
   System.validateObjSurfMap();
 
+  
   std::shared_ptr<insertSystem::insertSphere>
     TSphere(new insertSystem::insertSphere(objName));
 
