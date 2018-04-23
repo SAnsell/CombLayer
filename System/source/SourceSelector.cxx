@@ -188,6 +188,9 @@ sourceSelection(Simulation& System,
   else if (sdefType=="Beam" || sdefType=="beam")
     sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
 
+  else if (sdefType=="FlukaSource" || sdefType=="flukaSource")
+    sName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+
   else if (sdefType=="Rectangle" || sdefType=="rectangle")
     sName=SDef::createRectSource(inputMap,"rectSource",FC,linkIndex);
 

@@ -228,8 +228,6 @@ SourceBase::populate(const mainSystem::MITYPE& inputMap)
 
   mainSystem::MITYPE::const_iterator mc,mcB;
 
-
-  
   int eFlag(0);
   if (!mainSystem::findInput(inputMap,"particle",0,particleType))
     mainSystem::findInput(inputMap,"particleType",0,particleType);

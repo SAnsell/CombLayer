@@ -66,6 +66,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "BeamSource.h"
+#include "FlukaSource.h"
 #include "RectangleSource.h"
 #include "GammaSource.h"
 #include "GaussBeamSource.h"
@@ -334,7 +335,6 @@ createTS1Source(const mainSystem::MITYPE& inputMap,
     \param inputMap :: inputMap system
     \param FC :: link surface for origin
     \param sideIndex ::surface number
-    \param sourceCard :: Source system
     \return keyName of source
   */
 {
@@ -392,13 +392,11 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
 		 const attachSystem::FixedComp& FC,
 		 const long int sideIndex)
   /*!
-    Create the photon source for gamma-nuclear spectrum
-    nuclear experiment source
+    Create a beam source along an axis
     \param inputMap :: Variables data base
     \param keyName :: keyname for Gamma source
     \param FC :: link surface for origin
     \param sideIndex ::surface number
-    \param Card :: Source system
     \return keyName of source
    */
 {
@@ -406,6 +404,32 @@ createBeamSource(const mainSystem::MITYPE& inputMap,
 
   sourceDataBase& SDB=sourceDataBase::Instance();
   BeamSource GX(keyName);
+
+  GX.createAll(inputMap,FC,sideIndex);
+
+  SDB.registerSource(GX.getKeyName(),GX);  
+  return GX.getKeyName();      
+}
+
+std::string
+createFlukaSource(const mainSystem::MITYPE& inputMap,
+		  const std::string& keyName,
+		  const attachSystem::FixedComp& FC,
+		  const long int sideIndex)
+/*!
+    Create the fluka source driven by the source.f routine
+     Note this still can use both BEAM and BEAMAXIS
+    \param inputMap :: Variables data base
+    \param keyName :: keyname for FlukaSource
+    \param FC :: link surface for origin
+    \param sideIndex ::surface number
+    \return keyName of source
+   */
+{
+  ELog::RegMethod RegA("SourceCreate","createFlukaSource");
+
+  sourceDataBase& SDB=sourceDataBase::Instance();
+  FlukaSource GX(keyName);
 
   GX.createAll(inputMap,FC,sideIndex);
 
@@ -424,7 +448,6 @@ createRectSource(const mainSystem::MITYPE& inputMap,
     \param keyName :: keyname for Gamma source
     \param FC :: link surface for origin
     \param sideIndex ::surface number
-    \param Card :: Source system
     \return keyName of source
    */
 {
@@ -621,7 +644,7 @@ createTS3ExptSource(const mainSystem::MITYPE& ,
     \param inputMap :: DataBase of variables 
     \param FC :: link surface for origin
     \param sideIndex ::surface number
-    \param Card :: Source system
+    \return keyName of source
    */
 {
   ELog::RegMethod RegA("SourceCreate","createTS3ExptSource");

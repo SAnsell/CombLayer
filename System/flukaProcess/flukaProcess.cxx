@@ -206,7 +206,15 @@ setDefaultPhysics(SimFLUKA& System,
   flukaPhysics* PC=System.getPhysics();
   if (!PC) return;
 
-  size_t nSet=IParam.setCnt("wIMP");
+  size_t nSet=IParam.setCnt("wMAT");
+  if (nSet)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processMAT(*PC,IParam,index);
+    }
+
+  nSet=IParam.setCnt("wIMP");
   if (nSet)
     {
       flukaSystem::flukaImpConstructor A;

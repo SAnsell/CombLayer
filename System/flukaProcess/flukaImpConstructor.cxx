@@ -143,6 +143,48 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
       break;
     }
   return;
+}				    
+
+
+void
+flukaImpConstructor::processGeneral(flukaPhysics& PC,
+				    const mainSystem::inputParam& IParam,
+				    const size_t setIndex,
+				    const std::string& keyName,
+				    const impTYPE& cutTuple) const
+  /*!
+    Handler for constructor of physics cards
+    \param PC :: Physics cards
+    \param IParam :: input stream
+    \param setIndex :: index value for item
+    \param keyName :: wTYPE card
+    \param cutTuple :: system for cellStr construction
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processGeneral");
+  
+  const std::string cellM=IParam.getValueError<std::string>
+    (keyName,setIndex,1,"No cell/material for "+keyName);
+
+  const size_t cellSize(std::get<0>(cutTuple));
+  const int materialFlag(std::get<1>(cutTuple));
+  const std::string cardName(std::get<2>(cutTuple));
+
+  std::string VV[3];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i]=IParam.getValueError<std::string>
+      (keyName,setIndex,2+i,
+       "No value["+std::to_string(i+1)+"] for "+keyName);      
+
+  if (materialFlag>=0)
+    {
+      const std::set<int> activeCell=
+	getActiveUnit(materialFlag,cellM);
+      if (activeCell.empty())
+	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
+      insertCell(PC,cellSize,activeCell,cardName,VV);
+    }
+  return;
 }
   
 void
@@ -199,9 +241,46 @@ flukaImpConstructor::processCUT(flukaPhysics& PC,
     }
   return;
 }
+ 
+void
+flukaImpConstructor::processMAT(flukaPhysics& PC,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+ /*!
+    Set individual wMAT based on IParam
+    This is to set mat-prop mainly for correct to density 
+    so that we correctly loose the correct amount of dE/dx 
+    but can enhance the bremstauhlung collision etc.
 
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processMat");
 
-  
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,int,std::string> impTYPE;
+  static const std::map<std::string,impTYPE> IMap
+    ({
+      { "gas",impTYPE(1,1,"gas") },   // material : set gas
+      { "rho",impTYPE(1,1,"rho") }
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wMAT",setIndex,0,"No type for wMAT ");
+
+  if (type=="help" || type=="Help")
+    return writeMATHelp(ELog::EM.Estream(),&ELog::endBasic);
+
+  std::map<std::string,impTYPE>::const_iterator mc=IMap.find(type);
+  if (mc==IMap.end())
+    throw ColErr::InContainerError<std::string>(type,"imp type unknown");
+
+  processGeneral(PC,IParam,setIndex,"wMAT",mc->second);
+  return;
+}
+
 void
 flukaImpConstructor::processUnit(flukaPhysics& PC,
 				 const mainSystem::inputParam& IParam,
@@ -216,7 +295,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
   ELog::RegMethod RegA("flukaImpConstructor","processUnit");
 
   // cell/mat : tag name 
-  typedef std::tuple<size_t,bool,std::string> impTYPE;
+  typedef std::tuple<size_t,int,std::string> impTYPE;
   static const std::map<std::string,impTYPE> IMap
     ({
       { "all",impTYPE(1,0,"all") },   // cell: 
@@ -427,6 +506,27 @@ flukaImpConstructor::writeIMPHelp(std::ostream& OX,
 }
 
 void
+flukaImpConstructor::writeMATHelp(std::ostream& OX,
+				  ENDL endDL) const
+  /*!
+    Write out the help
+    \param OX :: Output stream
+    \param endDL :: End of line type
+  */
+{
+  OX<<"wMAT help :: \n";
+
+  OX<<"-wMAT type value[double] materials  -- ::\n\n";
+  
+  OX<<"  gas : \n"
+      "    -- material pressure[bar] \n"
+      "  rho :  \n"
+      "    -- material density-factor \n"
+    << (*endDL);
+  return;
+}
+
+void
 flukaImpConstructor::writeEXPHelp(std::ostream& OX,
 				  ENDL endDL) const
   /*!
@@ -459,8 +559,9 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
   */
 {
   OX<<"wEMF help :: \n"
-    " -- type : values : Mat/Cell\n\n";
+    " -- type : Mat/Cell : Values \n\n";
   OX<<"    emfcut - electron-transport-cut photon-trans-cut CELL \n"
+      "    lpbbias[LeadParticleBias] - type e+/e-thresh photon-thresh  CELL \n"
       "    prodcut - e+/e-prod  gamma-prod  MAT \n"
       "    emffluo - [FLAG] turns off x-ray fluorescence MAT \n"
       "    elpothr - e+/e-brem-thresh MollerScat  e-photonuc MAT \n"

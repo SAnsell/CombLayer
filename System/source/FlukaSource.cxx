@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   source/BeamSource.cxx
+ * File:   source/FlukaSource.cxx
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -32,7 +32,6 @@
 #include <string>
 #include <algorithm>
 #include <memory>
-#include <boost/format.hpp>
 
 #include "Exception.h"
 #include "FileReport.h"
@@ -64,34 +63,36 @@
 #include "particleConv.h"
 
 #include "SourceBase.h"
-#include "BeamSource.h"
+#include "FlukaSource.h"
 
 namespace SDef
 {
 
-BeamSource::BeamSource(const std::string& keyName) : 
-  FixedOffset(keyName,0),SourceBase(),
-  radius(1.0),angleSpread(0)
+FlukaSource::FlukaSource(const std::string& keyName) : 
+  FixedOffset(keyName,0),SourceBase()
   /*!
     Constructor BUT ALL variable are left unpopulated.
     \param keyName :: main name
   */
-{}
+{
+  for(size_t i=0;i<12;i++)
+    sValues[i]=unitTYPE(0,"");
+}
 
-BeamSource::BeamSource(const BeamSource& A) : 
+FlukaSource::FlukaSource(const FlukaSource& A) : 
   attachSystem::FixedOffset(A),SourceBase(A),
-  radius(A.radius),angleSpread(A.angleSpread)
+  sourceName(A.sourceName),sValues(A.sValues)
   /*!
     Copy constructor
-    \param A :: BeamSource to copy
+    \param A :: FlukaSource to copy
   */
 {}
 
-BeamSource&
-BeamSource::operator=(const BeamSource& A)
+FlukaSource&
+FlukaSource::operator=(const FlukaSource& A)
   /*!
     Assignment operator
-    \param A :: BeamSource to copy
+    \param A :: FlukaSource to copy
     \return *this
   */
 {
@@ -99,51 +100,67 @@ BeamSource::operator=(const BeamSource& A)
     {
       attachSystem::FixedOffset::operator=(A);
       SourceBase::operator=(A);
-      radius=A.radius;
-      angleSpread=A.angleSpread;
+      sourceName=A.sourceName;
+      sValues=A.sValues;
     }
   return *this;
 }
 
-BeamSource::~BeamSource() 
+FlukaSource::~FlukaSource() 
   /*!
     Destructor
   */
 {}
 
-BeamSource*
-BeamSource::clone() const
+FlukaSource*
+FlukaSource::clone() const
   /*!
     Clone constructor
     \return copy of this
   */
 {
-  return new BeamSource(*this);
+  return new FlukaSource(*this);
 }
   
   
   
 void
-BeamSource::populate(const ITYPE& inputMap)
+FlukaSource::populate(const ITYPE& inputMap)
   /*!
     Populate Varaibles
     \param inputMap :: Control variables
    */
 {
-  ELog::RegMethod RegA("BeamSource","populate");
+  ELog::RegMethod RegA("FlukaSource","populate");
 
   attachSystem::FixedOffset::populate(inputMap);
   SourceBase::populate(inputMap);
-  // default neutron
-  
-  angleSpread=mainSystem::getDefInput(inputMap,"aSpread",0,0.0);
-  radius=mainSystem::getDefInput(inputMap,"radius",0,radius);
 
+
+  const size_t NPts=mainSystem::sizeInput(inputMap,"sourceVar");
+  for(size_t index=0;index<NPts && index<12;index++)
+    {
+      double D;
+      const std::string IStr=
+	mainSystem::getInput<std::string>(inputMap,"sourceVar",index);
+      
+      if (StrFunc::convert(IStr,D))
+	sValues[index]=unitTYPE(1,IStr);
+      else if (!IStr.empty() &&
+	       IStr!="-" &&
+	       StrFunc::toUpperString(IStr)!="DEF")
+	sValues[index]=unitTYPE(-1,IStr);
+    }
+  
+  sourceName=mainSystem::getDefInput<std::string>
+			   (inputMap,"sourceName",0,"");
+  
+  
   return;
 }
 
 void
-BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
+FlukaSource::createUnitVector(const attachSystem::FixedComp& FC,
 			      const long int linkIndex)
   /*!
     Create the unit vector
@@ -151,7 +168,7 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
     \param linkIndex :: Link index [signed for opposite side]
    */
 {
-  ELog::RegMethod RegA("BeamSource","createUnitVector");
+  ELog::RegMethod RegA("FlukaSource","createUnitVector");
 
   attachSystem::FixedComp::createUnitVector(FC,linkIndex);
   applyOffset();
@@ -159,52 +176,39 @@ BeamSource::createUnitVector(const attachSystem::FixedComp& FC,
 }
 
 void
-BeamSource::rotate(const localRotate& LR)
+FlukaSource::rotate(const localRotate& LR)
   /*!
     Rotate the source
     \param LR :: Rotation to apply
   */
 {
-  ELog::RegMethod Rega("BeamSource","rotate");
+  ELog::RegMethod Rega("FlukaSource","rotate");
   FixedComp::applyRotation(LR);  
   return;
 }
   
 void
-BeamSource::createSource(SDef::Source& sourceCard) const
+FlukaSource::createSource(SDef::Source& sourceCard) const
   /*!
     Creates a simple beam sampled uniformly in a
     circle
     \param sourceCard :: Source system
   */
 {
-  ELog::RegMethod RegA("BeamSource","createSource");
+  ELog::RegMethod RegA("FlukaSource","createSource");
 
-  sourceCard.setComp("dir",cos(angleSpread*M_PI/180.0));
   sourceCard.setComp("vec",Y);
   sourceCard.setComp("axs",Y);
-  sourceCard.setComp("ara",M_PI*radius*radius);         
     
   sourceCard.setComp("pos",Origin);
   
-  // RAD
-  SDef::SrcData D1(1);
-  SDef::SrcInfo SI1;
-  SDef::SrcProb SP1;
-  SI1.addData(0.0);
-  SI1.addData(radius);
-  SP1.setFminus(-21,1.0);
-  D1.addUnit(SI1);
-  D1.addUnit(SP1);
-  sourceCard.setData("rad",D1);
-
   SourceBase::createEnergySource(sourceCard);
 
   return;
 }  
 
 void
-BeamSource::createAll(const attachSystem::FixedComp& FC,
+FlukaSource::createAll(const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
   /*!
     Create all with out using Control variables
@@ -212,14 +216,14 @@ BeamSource::createAll(const attachSystem::FixedComp& FC,
     \param linkIndex :: link Index				
   */
 {
-  ELog::RegMethod RegA("BeamSource","createAll(FC)");
+  ELog::RegMethod RegA("FlukaSource","createAll(FC)");
   createUnitVector(FC,linkIndex);
   return;
 }
 
   
 void
-BeamSource::createAll(const ITYPE& inputMap,
+FlukaSource::createAll(const ITYPE& inputMap,
 		      const attachSystem::FixedComp& FC,
 		      const long int linkIndex)
 
@@ -230,7 +234,7 @@ BeamSource::createAll(const ITYPE& inputMap,
     \param linkIndex :: link Index				
    */
 {
-  ELog::RegMethod RegA("BeamSource","createAll<FC,linkIndex>");
+  ELog::RegMethod RegA("FlukaSource","createAll<FC,linkIndex>");
   populate(inputMap);
   createUnitVector(FC,linkIndex);
 
@@ -238,13 +242,13 @@ BeamSource::createAll(const ITYPE& inputMap,
 }
 
 void
-BeamSource::write(std::ostream& OX) const
+FlukaSource::write(std::ostream& OX) const
   /*!
     Write out as a MCNP source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("BeamSource","write");
+  ELog::RegMethod RegA("FlukaSource","write");
 
   Source sourceCard;
   createSource(sourceCard);
@@ -253,41 +257,25 @@ BeamSource::write(std::ostream& OX) const
 }
 
 void
-BeamSource::writePHITS(std::ostream& OX) const
+FlukaSource::writePHITS(std::ostream& OX) const
   /*!
     Write out as a PHITS source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("BeamSource","writePHITS");
+  ELog::RegMethod RegA("FlukaSource","writePHITS");
 
-  boost::format fFMT("%1$11.6g%|14t|");
-
-  const double phi=180.0*acos(Y[0])/M_PI;
-  
-  OX<<"  s-type =  1        # axial source \n";
-  OX<<"  r0 =   "<<(fFMT % radius)   <<"   # radius [cm]\n";
-  OX<<"  x0 =   "<<(fFMT % Origin[0])<<"  #  center position of x-axis [cm]\n";
-  OX<<"  y0 =   "<<(fFMT % Origin[1])<<"  #  center position of y-axis [cm]\n";
-  OX<<"  z0 =   "<<(fFMT % Origin[2])<<"  #  mininium of z-axis [cm]\n";
-  OX<<"  z1 =   "<<(fFMT % Origin[2])<<"  #  maximum of z-axis [cm]\n";
-  OX<<" dir =   "<<(fFMT % Y[2])     <<" dir cosine direction of Z\n";
-  OX<<" phi =   "<<(fFMT % phi)      <<" phi angle to X axis [deg]\n";
-  if (angleSpread>Geometry::zeroTol)
-    OX<<" dom =   "<<(fFMT % angleSpread)<<" solid angle to X axis [deg]\n";
-
-  OX<<std::endl;
   return;
 }
 
 void
-BeamSource::writeFLUKA(std::ostream& OX) const
+FlukaSource::writeFLUKA(std::ostream& OX) const
   /*!
     Write out as a FLUKA source system
     \param OX :: Output stream
   */
 {
-  ELog::RegMethod RegA("BeamSource","writeFLUKA");
+  ELog::RegMethod RegA("FlukaSource","writeFLUKA");
 
   const particleConv& PC=particleConv::Instance();
 
@@ -299,8 +287,8 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   std::ostringstream cx;
   // energy : energy divirgence : angle spread [mrad]
   // radius : innerRadius : -1 t o means radius
-  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<M_PI*angleSpread/0.180
-    <<" "<<radius<<" 0.0 -1.0 ";
+  cx<<"BEAM "<<-0.001*Energy.front()<<" 0.0 "<<" - "
+    <<" "<<" - "<<" - - ";
   cx<<StrFunc::toUpperString(particleType);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
@@ -311,7 +299,8 @@ BeamSource::writeFLUKA(std::ostream& OX) const
   cx.str("");
   cx<<"BEAMPOS "<<Origin;
   StrFunc::writeFLUKA(cx.str(),OX);
-  cx.str("");  
+  cx.str("");
+  OX<<"SOURCE"<<std::endl;
   
   return;
 }

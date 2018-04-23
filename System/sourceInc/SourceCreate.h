@@ -34,8 +34,6 @@ namespace SDef
   
   std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
 			       const attachSystem::FixedComp&,const long int);
-
-
   
   std::string createBilbaoSource(const mainSystem::MITYPE&,
 				 const attachSystem::FixedComp&,const long int);
@@ -52,11 +50,12 @@ namespace SDef
 		       const attachSystem::FixedComp&,const long int);
   
   std::string createESSPortSource(const mainSystem::MITYPE&,
-			   const attachSystem::FixedComp&,
+				  const attachSystem::FixedComp&,
 				  const long int);
   
-  std::string createBeamSource(const mainSystem::MITYPE&,const std::string&,
-			       const attachSystem::FixedComp&,const long int);
+  std::string createFlukaSource(const mainSystem::MITYPE&,const std::string&,
+				const attachSystem::FixedComp&,const long int);
+
 
   std::string createLaserSource(const mainSystem::MITYPE&,const std::string&);
   std::string createGammaSource(const mainSystem::MITYPE&,const std::string&,
