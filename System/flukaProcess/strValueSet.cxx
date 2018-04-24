@@ -42,6 +42,7 @@
 #include "RegMethod.h"
 #include "OutputLog.h"
 #include "support.h"
+#include "stringCombine.h"
 #include "writeSupport.h"
 #include "MapRange.h"
 #include "Triple.h"
@@ -169,7 +170,7 @@ strValueSet<N>::setValues(const std::string& cN,const double V)
 {
   valTYPE A;
   A[0].first=1;
-  A[0].second=std::to_string(V);
+  A[0].second=StrFunc::makeString(V);
   dataMap[cN]=A;
   return;
 }
@@ -187,9 +188,9 @@ strValueSet<N>::setValues(const std::string& cN,const double V,
 {
   valTYPE A;
   A[0].first=1;
-  A[0].second=std::to_string(V);
+  A[0].second=StrFunc::makeString(V);
   A[1].first=1;
-  A[1].second=std::to_string(V2);
+  A[1].second=StrFunc::makeString(V2);
   dataMap[cN]=A;
   return;
 }
@@ -208,11 +209,11 @@ strValueSet<N>::setValues(const std::string& cN,const double V,
 {
   valTYPE A;
   A[0].first=1;         // 1: values
-  A[0].second=std::to_string(V);
+  A[0].second=StrFunc::makeString(V);
   A[1].first=1;
-  A[1].second=std::to_string(V2);
+  A[1].second=StrFunc::makeString(V2);
   A[2].first=1;
-  A[2].second=std::to_string(V3);
+  A[2].second=StrFunc::makeString(V3);
   dataMap[cN]=A;
   return;
 }
@@ -329,7 +330,7 @@ strValueSet<N>::writeFLUKA(std::ostream& OX,
 	    {
 	      double D;
 	      StrFunc::convert(dArray[i].second,D);
-	      SArray[2+i]=std::to_string(D*scaleVec[i]);
+	      SArray[2+i]=StrFunc::makeString(D*scaleVec[i]);
 	    }
 	  else if (dArray[i].first == -1)
 	    SArray[2+i]=dArray[i].second;

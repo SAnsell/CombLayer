@@ -352,7 +352,7 @@ setNeutronPhysics(physicsSystem::PhysicsCards& PC,
   ELog::RegMethod RegA("DefPhysics","setNeutronPhysics");
 
   
-  const std::string EMax=std::to_string(maxEnergy);
+  const std::string EMax=StrFunc::makeString(maxEnergy);
 
   PC.setMode("n");
   PC.setPrintNum("10 20 50 110 120");
@@ -412,8 +412,8 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
     }
 
   
-  const std::string EMax=std::to_string(maxEnergy);
-  const std::string PHMax=std::to_string(phtModel);
+  const std::string EMax=StrFunc::makeString(maxEnergy);
+  const std::string PHMax=StrFunc::makeString(phtModel);
   
   physicsSystem::PStandard* pn=
     PC.addPhysCard<physicsSystem::PStandard>("phys","n");
@@ -438,7 +438,7 @@ setReactorPhysics(physicsSystem::PhysicsCards& PC,
     {
       physicsSystem::PStandard* pe=
 	PC.addPhysCard<physicsSystem::PStandard>("phys","e");
-      pe->setValues(std::to_string(elcEnergy));
+      pe->setValues(StrFunc::makeString(elcEnergy));
     }
 
   return; 
@@ -542,8 +542,8 @@ setDefaultPhysics(SimMCNP& System,
 
   if (std::abs(cutUp)<=std::abs(cutMin))
     throw ColErr::NumericalAbort
-      ("CutUp<=cutMin: "+std::to_string(cutUp)+
-       "<="+std::to_string(cutMin));
+      ("CutUp<=cutMin: "+StrFunc::makeString(cutUp)+
+       "<="+StrFunc::makeString(cutMin));
   
   PC.setMode("n p "+PList+elcAdd);
   //  PC.setCellNumbers(cellImp);

@@ -59,7 +59,7 @@ namespace flukaSystem
 {
 		       
 flukaPhysics::flukaPhysics() :
-
+  // note flag: -1 particle / 0 cell / 1 material
   impSVal({
       { "partthr",  strValueSet<1>("partthr","PART-THR","",{-1e-3}) }
     }),
@@ -71,6 +71,8 @@ flukaPhysics::flukaPhysics() :
     }),
 
   impValue({
+      { "gas",      cellValueSet<1>("gas","MAT-PROP","") },
+      { "rho",      cellValueSet<1>("rho","MAT-PROP","") },
       { "all",      cellValueSet<1>("all","BIAS","") },
       { "hadron",   cellValueSet<1>("hadron","BIAS","") },
       { "electron", cellValueSet<1>("electron","BIAS","") },
@@ -116,6 +118,9 @@ flukaPhysics::flukaPhysics() :
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
+
+      { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
+      { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
 
       { "partthr", unitTYPE(-1,"%2 P0 P1 1.0 0.0 -") }
     })
@@ -470,7 +475,6 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       FMAP::const_iterator mc=formatMap.find(impV.first);
       const bool materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
-
       if (!materialFlag)  // cell
 	impV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else

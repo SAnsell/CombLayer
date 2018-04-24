@@ -178,8 +178,7 @@ flukaImpConstructor::processGeneral(flukaPhysics& PC,
 
   if (materialFlag>=0)
     {
-      const std::set<int> activeCell=
-	getActiveUnit(materialFlag,cellM);
+      const std::set<int> activeCell=getActiveUnit(materialFlag,cellM);
       if (activeCell.empty())
 	throw ColErr::InContainerError<std::string>(cellM,"Empty cell:");
       insertCell(PC,cellSize,activeCell,cardName,VV);
