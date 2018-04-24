@@ -607,11 +607,12 @@ PBW::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);
 
-  /*
-  shield->createAll(System,*this,6,SB,sblp,SB);
-  attachSystem::addToInsertSurfCtrl(System,SB,
-				    shield->getCC("Full"));
-  */
+  if (engActive)
+    {
+      shield->createAll(System,*this,8,SB,sblp,SB);
+      attachSystem::addToInsertSurfCtrl(System,SB,
+					shield->getCC("Full"));
+    }
 
   return;
 }

@@ -507,7 +507,7 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWShieldLength4",98.5); // m2634, c10007
   Control.addVariable("ProtonTubePBWShieldLength5",50.0); // m2634, c10006
   Control.addVariable("ProtonTubePBWShieldLength6",50.0); // !!! remove me
-  Control.addVariable("ProtonTubePBWShieldRadius1",63.0/2.0); // !! remove me
+  Control.addVariable("ProtonTubePBWShieldRadius1",30.0); // TSV32IS
   Control.addVariable("ProtonTubePBWShieldRadius2",63.0/2.0); // ESS-0066872.1 page 7
   Control.addVariable("ProtonTubePBWShieldRadius3",73.0/2.0); // ESS-0066872.1 page 7
   Control.addVariable("ProtonTubePBWShieldRadius4",83.0/2.0); // ESS-0066872.1 page 7
@@ -517,8 +517,8 @@ EssProtonBeam(FuncDataBase& Control)
   for (int i=1; i<=6; i++)
     {
       Control.addVariable("ProtonTubePBWShieldZcut" + std::to_string(i),0);
-      Control.addVariable("ProtonTubePBWShieldWallThick" + std::to_string(i),1);
-      Control.addVariable("ProtonTubePBWShieldInnerMat" + std::to_string(i),"Void");
+      Control.addVariable("ProtonTubePBWShieldWallThick" + std::to_string(i),1.5); // TSV32IS
+      Control.addVariable("ProtonTubePBWShieldInnerMat" + std::to_string(i),"CastIron");
       Control.addVariable("ProtonTubePBWShieldWallMat" + std::to_string(i),"Void");
     }
 
