@@ -311,8 +311,6 @@ strValueSet<N>::writeFLUKA(std::ostream& OX,
 {
   ELog::RegMethod RegA("strValueSet","writeFLUKA[no-cell]");
   
-  typedef std::tuple<int,int> TITEM;
-
   std::ostringstream cx;
 
   const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
