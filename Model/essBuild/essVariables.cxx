@@ -368,12 +368,13 @@ EssFlightLineVariables(FuncDataBase& Control)
   // Full height = TopFlyTotalHeight
   Control.addVariable("TopAFlightHeight", 2.9);     // old: 4.6
   Control.addVariable("TopAFlightWidth", 10.7);     // Full width
-  Control.addVariable("TopAFlightNLiner",1);      
-  Control.addVariable("TopAFlightLinerThick1",0.3);      
-  Control.addVariable("TopAFlightLinerMat1","Aluminium");      
+  Control.addVariable("TopAFlightNLiner",0); // TSV32IS
+  //  Control.addVariable("TopAFlightLinerThick1",0.3);      
+  //  Control.addVariable("TopAFlightLinerMat1","Aluminium");      
 
   // LOWER flight lines
   // B FLIGHT CORRECTED
+  Control.addVariable("TopBFlightTapSurf", "cone");
   Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
   Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
@@ -384,9 +385,9 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addParse<double>("TopBFlightAngleZBase","TopAFlightAngleZBase");
   Control.addParse<double>("TopBFlightHeight","TopAFlightHeight");
   Control.addParse<double>("TopBFlightWidth","TopAFlightWidth");
-  Control.addParse<double>("TopBFlightLinerThick1","TopAFlightLinerThick1");
-  Control.addVariable("TopBFlightNLiner",1); ELog::EM << "Implement addParse<double>" << ELog::endCrit;
-  Control.addVariable("TopBFlightLinerMat1","Aluminium");
+  Control.addParse<double>("TopBFlightNLiner","TopAFlightNLiner");
+  //Control.addParse<double>("TopBFlightLinerThick1","TopAFlightLinerThick1");
+  //  Control.addVariable("TopBFlightLinerMat1","Aluminium");
 
   
   // The moderator focal points are (89,54)
@@ -463,26 +464,6 @@ EssFlightLineVariables(FuncDataBase& Control)
       Control.addVariable(baseKey+"Mat","SS316L");
     }
 
-  Control.addVariable("TopBFlightTapSurf", "cone");
-  Control.addVariable("TopBFlightXStep", 0.0);      // Step from centre
-  Control.addVariable("TopBFlightZStep", 0.0);      // Step from centre
-  Control.addVariable("TopBFlightAngleXY1", 60.0);  // Angle out
-  Control.addVariable("TopBFlightAngleXY2", 60.0);  // Angle out
-  Control.addVariable("TopBFlightXYangle", 0.0);
-  Control.addVariable("TopBFlightZangle", 0.0);
-  Control.Parse("TopAFlightAngleZTop");
-  Control.addVariable("TopBFlightAngleZTop");  //   // Step down angle
-  Control.Parse("TopAFlightAngleZBase");
-  Control.addVariable("TopBFlightAngleZBase"); // Step up angle
-  Control.Parse("TopAFlightHeight");
-  Control.addVariable("TopBFlightHeight");     // Full height = TopFlyTotalHeight
-  Control.Parse("TopAFlightWidth");
-  Control.addVariable("TopBFlightWidth");     // Full width
-  Control.addVariable("TopBFlightNLiner", 1);     
-  Control.Parse("TopAFlightLinerThick1"); 
-  Control.addVariable("TopBFlightLinerThick1"); 
-  Control.addVariable("TopBFlightLinerMat1","Aluminium");
-
   const int TopBFlightNWedges = 0; // originally 12
   Control.addVariable("TopBFlightNWedges",TopBFlightNWedges);
   std::vector<double> TopBFlightWedgeTheta;
@@ -548,9 +529,9 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowAFlightAngleZBase",0.9); // Step up angle ESS-0032315.3
   Control.addVariable("LowAFlightHeight",6.1);     // Full height = LowFlyTotalHeight
   Control.addVariable("LowAFlightWidth",10.7);     // Full width
-  Control.addVariable("LowAFlightNLiner",1);      // Liner
-  Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
-  Control.addVariable("LowAFlightLinerMat1","Aluminium");      // Liner
+  Control.addVariable("LowAFlightNLiner",0);      // TSV32IS
+  //  Control.addVariable("LowAFlightLinerThick1",0.4);      // Liner
+  //  Control.addVariable("LowAFlightLinerMat1","Aluminium");      // Liner
   Control.addVariable("LowAFlightLinerThick2",1.5);      // Liner
   Control.addVariable("LowAFlightLinerMat2","H2O");      // Liner
   Control.addVariable("LowAFlightLinerThick3",0.2);      // Liner
@@ -569,9 +550,9 @@ EssFlightLineVariables(FuncDataBase& Control)
   Control.addVariable("LowBFlightAngleZBase",0.9); // Step up angle
   Control.addVariable("LowBFlightHeight",6.1);     // Full height = LowFlyTotalHeight
   Control.addVariable("LowBFlightWidth",10.7);     // Full width
-  Control.addVariable("LowBFlightNLiner",1);      // Liner
-  Control.addVariable("LowBFlightLinerThick1",0.4);   
-  Control.addVariable("LowBFlightLinerMat1","Aluminium");      
+  Control.addParse<double>("LowBFlightNLiner","LowAFlightNLiner");      // TSV32IS
+  //  Control.addVariable("LowBFlightLinerThick1",0.4);
+  //  Control.addVariable("LowBFlightLinerMat1","Aluminium");
 
 
   return;
