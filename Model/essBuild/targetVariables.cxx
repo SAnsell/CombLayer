@@ -64,7 +64,7 @@ EssWheel(FuncDataBase& Control)
   const size_t nSectors(36);
   const std::string ss316l("SS316L");
 
-  Control.addVariable("TargetTopClearanceHeight", 2.3); // TSV32IS
+  Control.addVariable("TargetTopClearanceHeight", 6.0); // TSV32IS
   Control.addVariable("TargetTopClearanceMat", "Void");
 
   Control.addVariable("TargetLowClearanceHeight", 9.2); // TSV32IS
