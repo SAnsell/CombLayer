@@ -547,7 +547,7 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::vector<valTYPE> Bdata;
 
   if (cellSplit(cellN,Bgroup,Bdata))
-    {
+    {      
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 

@@ -86,7 +86,9 @@ flukaPhysics::flukaPhysics() :
       { "emfcut",  cellValueSet<2>("emfcut","EMFCUT","",{-1e-3,1e-3}) },
       { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{1e-3,1e-3})},
       { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",{1e-3,1e-3})},
-      { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})} 
+      { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
+      { "emflpb",  cellValueSet<2>("emflpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
+      { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
     }),
 
   threeFlag({
@@ -95,7 +97,9 @@ flukaPhysics::flukaPhysics() :
 	{1e-3,1e-3,1e-3}) },
       { "photthr", cellValueSet<3>("pho2thr","EMFCUT","PHOT-THR",
 	{1e-3,1e-3,1e-3}) },
-      { "mulsopt", cellValueSet<3>("mulsopt","MULSOPT","",{1,1,1}) }
+      { "mulsopt", cellValueSet<3>("mulsopt","MULSOPT","",{1,1,1}) },
+      { "lambemf",cellValueSet<3>("lambemf","EMF-BIAS","LAMBEMF",
+				  {1.0,1.0,1.0}) }
 
     }),
 
@@ -118,6 +122,9 @@ flukaPhysics::flukaPhysics() :
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
+      { "emflpb", unitTYPE(0,"1022 %2 %3 R0 R1 1.0 ") },
+      { "lambbrem", unitTYPE(1,"%2 0.0 %3 M0 M1 1.0 ") },
+      { "lambemf", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
 
       { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
       { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
@@ -316,7 +323,6 @@ flukaPhysics::setTHR(const std::string& keyName,
 
   if (mc==threeSVal.end())
     throw ColErr::InContainerError<std::string>(keyName,"keyName");
-
   mc->second.setValues(cellName,V1,V2,V3);
   return;
 }

@@ -176,6 +176,7 @@ flukaImpConstructor::processGeneral(flukaPhysics& PC,
       (keyName,setIndex,2+i,
        "No value["+std::to_string(i+1)+"] for "+keyName);      
 
+
   if (materialFlag>=0)
     {
       const std::set<int> activeCell=getActiveUnit(materialFlag,cellM);
@@ -188,11 +189,10 @@ flukaImpConstructor::processGeneral(flukaPhysics& PC,
       const flukaGenParticle& FG=flukaGenParticle::Instance();
       const std::string& pName=FG.nameToFLUKA(cellM);
       insertParticle(PC,cellSize,pName,cardName,VV);
-
     }
   return;
 }
-  
+
 void
 flukaImpConstructor::processCUT(flukaPhysics& PC,
 				const mainSystem::inputParam& IParam,
@@ -370,8 +370,10 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
       { "photonuc",emfTYPE(0,1,"photonuc") },     // mat
       { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
       { "emffluo",emfTYPE(0,1,"emffluo") },      // mat
-      { "mulsopt",emfTYPE(3,1,"mulsopt") }       // mat
-
+      { "mulsopt",emfTYPE(3,1,"mulsopt") },       // mat
+      { "emflpb",emfTYPE(2,0,"lpbemf") },        // regions
+      { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
+      { "lambemf",emfTYPE(3,1,"lambemf") }      // mat 
     });
   
   // must have size
@@ -497,7 +499,12 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
       "    pairbrem - explit-pair-prod photon-bremst-prod MAT "
       "    photonuc - [FLAG] turn photonuclear on MAT \n"
       "    muphoton - [FLAG] mu-interaction MAT \n"  
-      "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]\n"        
+      "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]\n"
+      "    lambbrem - brem-bias weight (e+/e-) [0.0 - 1.0] : \n"
+      "               number of collisions\n"
+      "    lambemf - brem-bias-weight (e+/e-) [0.0 - 1.0] : \n"
+      "              compton-bias-weight (e+/e-) [0.0 - 1.0] : \n"
+      "              number of collisions\n"
   << (*endDL);
   return;
 }
