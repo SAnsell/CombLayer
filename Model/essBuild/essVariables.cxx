@@ -191,7 +191,7 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   Control.addVariable("GuideBayViewAngle",128.0); 
   Control.addVariable("GuideBayInnerHeight",40.0);
   Control.addVariable("GuideBayInnerDepth",40.0);
-  Control.addVariable("GuideBayMidRadius",170.0);
+  Control.addVariable("GuideBayMidRadius",170.0-0.6); // 0.6 is G1BLineTopSideGap
   Control.addVariable("GuideBayHeight",50.0);
   Control.addVariable("GuideBayDepth",50.0);
   Control.addVariable("GuideBayMat","CastIron");

@@ -306,7 +306,10 @@ GuideItem::createSurfaces()
   for(size_t i=0;i<nSegment;i++)
     {
       if (i!=nSegment-1)
-	ModelSupport::buildCylinder(SMap,GI+57,mainOrigin,Z,length[i]);
+	{
+	  ModelSupport::buildCylinder(SMap,GI+57,mainOrigin,Z,length[i]);
+	  ModelSupport::buildCylinder(SMap,GI+58,mainOrigin,Z,length[i]-sideGap);
+	}
 
       ModelSupport::buildPlane(SMap,GI+3,beamOrigin-bX*(width[i]/2.0),bX);
       ModelSupport::buildPlane(SMap,GI+4,beamOrigin+bX*(width[i]/2.0),bX);
@@ -394,7 +397,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
   if (!active) return;
   
   const std::string edgeStr=getEdgeStr(GPtr);
-  std::string Out;  
+  std::string Out;
 
   int GI(guideIndex);
   for(size_t i=0;i<nSegment;i++)
@@ -406,7 +409,7 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	  Out+=edgeStr;
 	}
       else 
-	Out=ModelSupport::getComposite(SMap,GI,guideIndex,"1M 7 3 -4 5 -6 -57");
+	Out=ModelSupport::getComposite(SMap,GI,guideIndex,"1M 8 3 -4 5 -6 -57");
 
       if (!i)
 	addOuterSurf("Inner",Out);
@@ -426,9 +429,16 @@ GuideItem::createObjects(Simulation& System,const GuideItem* GPtr)
 	    (SMap,guideIndex,"1 7 13 -14 15 -16 -57");
 	  Out+=edgeStr;
 	}
-      else 
-	Out=ModelSupport::getComposite
-	  (SMap,GI,guideIndex,"1M 7 13 -14 15 -16 -57");
+      else
+	{
+	  // step
+	  Out=ModelSupport::getComposite(SMap,GI,guideIndex,GI-50,
+					  "1M 8 -7 (-3N:4N:-5N:6N) 13 -14 15 -16 ");
+	  System.addCell(MonteCarlo::Qhull(cellIndex++,0,0.0,Out));
+
+	  Out=ModelSupport::getComposite(SMap,GI,guideIndex,
+					 "1M 7 13 -14 15 -16 -57");
+	}
 
       // Inner metal:
       if (!filled)
