@@ -161,9 +161,7 @@ ProtonTube::populate(const FuncDataBase& Control)
 void
 ProtonTube::createAll(Simulation& System,
 		      const attachSystem::FixedComp& TargetFC,const long int tIndex,
-		      const attachSystem::FixedComp& BulkFC,const long int bIndex,
-		      const attachSystem::FixedComp& SB,const long int sbIndex,
-		      const attachSystem::FixedComp& Bulk)
+		      const attachSystem::FixedComp& SB,const long int sbIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to

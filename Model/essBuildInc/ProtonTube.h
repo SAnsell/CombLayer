@@ -37,9 +37,7 @@ class ProtonTube :  public attachSystem::CopiedComp,
 
   void createAll(Simulation&,
 		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&,const long int,
-		 const attachSystem::FixedComp&);
+		 const attachSystem::FixedComp&,const long int);
 
 };
  

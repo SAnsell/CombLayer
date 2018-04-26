@@ -1308,7 +1308,7 @@ makeESS::build(Simulation& System,
 
   PBeam->setFront(*Bulk,4);
   PBeam->setBack(*TSMainBuildingObj,-1);
-  PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
+  PBeam->createAll(System,*Bulk,4,*ShutterBayObj,-6);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
 				    PBeam->getCC("Full"));
