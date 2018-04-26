@@ -287,7 +287,7 @@ flukaImpConstructor::processUnit(flukaPhysics& PC,
       { "all",impTYPE(1,0,"all") },   // cell: 
       { "hadron",impTYPE(1,0,"hadron") },  
       { "electron",impTYPE(1,0,"electron") },
-      { "low",impTYPE(1,0,"low") } 
+      { "low",impTYPE(1,0,"low") }
     });
 
   const std::string type=IParam.getValueError<std::string>
@@ -340,8 +340,67 @@ flukaImpConstructor::processEXP(flukaPhysics& PC,
 }
 
 
-
+void
+flukaImpConstructor::processLAM(flukaPhysics& PC,
+				const mainSystem::inputParam& IParam,
+				const size_t setIndex)
+/*!
+    Set individual LAM based on IParam
+    \param PC :: PhysicsCards
+    \param IParam :: input stream
+    \param setIndex :: index for the importance set
+  */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","processLAM");
   
+  const flukaGenParticle& FG=flukaGenParticle::Instance();
+  // cell/mat : tag name 
+  typedef std::tuple<size_t,int,std::string> lamTYPE;
+  static const std::map<std::string,lamTYPE> IMap
+    ({
+      { "length",lamTYPE(1,-1,"lamlength") }   // material 
+    });
+
+  const std::string type=IParam.getValueError<std::string>
+    ("wLAM",setIndex,0,"No type for wLAM ");
+
+  if (type=="help" || type=="Help")
+    return writeLAMHelp(ELog::EM.Estream(),&ELog::endBasic);
+  
+  std::map<std::string,lamTYPE>::const_iterator mc=IMap.find(type);
+  if (mc==IMap.end())
+    throw ColErr::InContainerError<std::string>(type,"wLAM type unknown");
+
+  const std::string partName=IParam.getValueError<std::string>
+    ("wLAM",setIndex,1,"No particle for wLAM:partName");
+
+  const std::string cellM=IParam.getValueError<std::string>
+    ("wLAM",setIndex,2,"No material for wLAM:cellM");
+
+  const size_t cellSize(std::get<0>(mc->second));
+  const int materialFlag(std::get<1>(mc->second));
+  const std::string cardName(std::get<2>(mc->second));
+
+  std::string VV[4];
+  for(size_t i=0;i<cellSize;i++)
+    VV[i+1]=IParam.getValueError<std::string>
+      ("wLAM",setIndex,3+i,
+       "No value["+std::to_string(i+3)+"] for wLAM");      
+
+  const std::set<int> activeMat=getActiveUnit(1,cellM);
+  if (activeMat.empty())
+    throw ColErr::InContainerError<std::string>(cellM,"Empty Materials:");
+  
+  //  VV[0]=FG.nameToFLUKA(partName);
+  for(const int CN : activeMat)
+    {
+      ELog::EM<<"Part name == "<<partName<<ELog::endDiag;
+      VV[0]=std::to_string(CN);
+      insertParticle(PC,cellSize+1,partName,cardName,VV);
+    }
+  return;
+}
+
 void
 flukaImpConstructor::processEMF(flukaPhysics& PC,
 				const mainSystem::inputParam& IParam,
@@ -371,9 +430,12 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
       { "muphoton",emfTYPE(0,1,"muphoton") },      // mat
       { "emffluo",emfTYPE(0,1,"emffluo") },      // mat
       { "mulsopt",emfTYPE(3,1,"mulsopt") },       // mat
-      { "emflpb",emfTYPE(2,0,"lpbemf") },        // regions
+      { "lpb",emfTYPE(2,0,"lpb") },        // regions
       { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
-      { "lambemf",emfTYPE(3,1,"lambemf") }      // mat 
+      { "lambemf",emfTYPE(2,1,"lambemf") },      // mat
+      { "plambias",emfTYPE(1,1,"plambias") },    // primary lam-bias
+      { "lambias",emfTYPE(1,1,"lambias") }      // mat
+
     });
   
   // must have size
@@ -385,7 +447,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
 
   std::map<std::string,emfTYPE>::const_iterator mc=EMap.find(type);
   if (mc==EMap.end())
-    throw ColErr::InContainerError<std::string>(type,"emf type unknown");
+    throw ColErr::InContainerError<std::string>(type,"wEMF type unknown");
 
   processGeneral(PC,IParam,setIndex,"wEMF",mc->second);
   return;
@@ -479,6 +541,29 @@ flukaImpConstructor::writeEXPHelp(std::ostream& OX,
 }
 
 void
+flukaImpConstructor::writeLAMHelp(std::ostream& OX,
+				  ENDL endDL) const
+  /*!
+    Write out the help for wLAM
+    \param OX :: Output stream
+    \param endDL :: End of line type
+  */
+{
+  OX<<"wLAM help :: \n";
+
+  OX<<"-wLAM cell particle  -- ::\n\n";
+  OX<<"  exp : "
+      "    value objectName" 
+      "        objectAll : object name  \n"
+      "             : object name:cellname\n"
+      "             : cell number range\n"
+      "             : cell number\n"
+      "             : all\n"
+    << (*endDL);
+  return;
+}
+
+void
 flukaImpConstructor::writeEMFHelp(std::ostream& OX,
 				  ENDL endDL) const
   /*!
@@ -500,6 +585,8 @@ flukaImpConstructor::writeEMFHelp(std::ostream& OX,
       "    photonuc - [FLAG] turn photonuclear on MAT \n"
       "    muphoton - [FLAG] mu-interaction MAT \n"  
       "    mulsopt - multscat-flag[-3:3] e+/e- multFlag[ -1:3]\n"
+      "    lpb - (e+/e-) top Energy for e/e+  : \n"
+      "               top Energy for photon \n"
       "    lambbrem - brem-bias weight (e+/e-) [0.0 - 1.0] : \n"
       "               number of collisions\n"
       "    lambemf - brem-bias-weight (e+/e-) [0.0 - 1.0] : \n"

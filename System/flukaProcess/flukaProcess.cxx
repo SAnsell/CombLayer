@@ -245,6 +245,14 @@ setDefaultPhysics(SimFLUKA& System,
       for(size_t index=0;index<nSet;index++)
 	A.processEXP(*PC,IParam,index);
     }
+
+  nSet=IParam.setCnt("wLAM");    
+  if (nSet)
+    {
+      flukaSystem::flukaImpConstructor A;
+      for(size_t index=0;index<nSet;index++)
+	A.processLAM(*PC,IParam,index);
+    }
   
   return; 
 }

@@ -118,6 +118,36 @@ FrontBackCut::~FrontBackCut()
 {}
 
 void
+FrontBackCut::setFront(const FrontBackCut& FSurf)
+  /*!
+    Set a front wall
+    \param FSurf :: Front object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+
+  frontCut=FSurf.frontCut;
+  frontDivider=FSurf.frontDivider;
+  activeFront=1;
+  return;
+}
+
+void
+FrontBackCut::setBack(const FrontBackCut& BSurf)
+  /*!
+    Set a back wall
+    \param BSurf :: back object
+  */
+{
+  ELog::RegMethod RegA("FrontBackCut","setFront(int)");
+
+  backCut=BSurf.backCut;
+  backDivider=BSurf.backDivider;
+  activeBack=1;
+  return;
+}
+
+void
 FrontBackCut::setFront(const int FSurf)
   /*!
     Set a front wall

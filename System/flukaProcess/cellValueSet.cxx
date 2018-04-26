@@ -104,7 +104,8 @@ cellValueSet<N>::cellValueSet(const std::string& KN,
 template<size_t N>
 cellValueSet<N>::cellValueSet(const cellValueSet<N>& A) : 
   keyName(A.keyName),outName(A.outName),tag(A.tag),
-  scaleVec(A.scaleVec),dataMap(A.dataMap)
+  scaleVec(A.scaleVec),dataMap(A.dataMap),
+  strRegister(A.strRegister),intRegister(A.intRegister)
   /*!
     Copy constructor
     \param A :: cellValueSet to copy
@@ -123,6 +124,8 @@ cellValueSet<N>::operator=(const cellValueSet<N>& A)
   if (this!=&A)
     {
       dataMap=A.dataMap;
+      strRegister=A.strRegister;
+      intRegister=A.intRegister;
       scaleVec=A.scaleVec;
     }
   return *this;
@@ -142,10 +145,33 @@ cellValueSet<N>::clearAll()
     The big reset
   */
 {
-  dataMap.erase(dataMap.begin(),dataMap.end());  
+  dataMap.erase(dataMap.begin(),dataMap.end());
+  strRegister.erase(strRegister.begin(),strRegister.end());
+  intRegister.erase(intRegister.begin(),intRegister.end());
   return;
 }
 
+template<size_t N>    
+int
+cellValueSet<N>::makeStrIndex(const std::string& CName)
+  /*!
+    Add a new strRegister entry and return a unique 
+    negative index
+    \return index number
+   */
+{
+  ELog::RegMethod RegA("cellValueSet","makeStrIndex");
+  
+  std::map<std::string,int>::const_iterator mc=
+    intRegister.find(CName);
+  if (mc!=intRegister.end()) return mc->second;
+
+  const int index=1+static_cast<int>(intRegister.size());
+  intRegister.emplace(CName,-index);
+  strRegister.emplace(-index,CName);
+  return -index;
+}
+  
 template<size_t N>  
 bool
 cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
@@ -163,6 +189,7 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
     \return true if output required
    */
 {
+  ELog::RegMethod RegA("cellValueSet","simpleSplit ");
   typedef std::tuple<int,int> TITEM;
   initCell.clear();
   outData.clear();
@@ -170,9 +197,10 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
   if (dataMap.empty()) return 0;
   const int lastCN=dataMap.rbegin()->first+1;       //ordered map
 
+
   size_t prev(0);
   valTYPE V;
-  for(int CN=dataMap.begin()->first;CN!=lastCN;CN++)
+  for(int CN=dataMap.begin()->first;CN<=lastCN;CN++)
     {
       typename dataTYPE::const_iterator mc=dataMap.find(CN);
       if (mc==dataMap.end())
@@ -212,8 +240,15 @@ cellValueSet<N>::simpleSplit(std::vector<std::tuple<int,int>>& initCell,
 		    }
 		}
 	    }
+	  else // new thing just initializs
+	    {
+	      prev=CN;
+	      V=mc->second;
+	    }
 	}
     }
+  ELog::EM<<"END == "<<keyName<<" "<<initCell.size()<<ELog::endDiag;
+	
   return (initCell.empty()) ? 0 : 1;
 }
   
@@ -456,6 +491,54 @@ cellValueSet<N>::setValues(const int cN,const std::string& V1,
   return;
 }
 
+template<size_t N>
+void
+cellValueSet<N>::setValues(const std::string& cStr,
+			   const std::string& V)
+  /*!
+    Set a value in the map
+    \param cStr :: Cell number   
+    \param V :: value for cell
+  */
+{
+  const int cN=makeStrIndex(cStr);
+  setValues(cN,V);
+}
+  
+template<size_t N>
+void
+cellValueSet<N>::setValues(const std::string& cStr,const std::string& V1,
+			   const std::string& V2)
+  /*!
+    Set a value in the map
+    \param cN :: Cell number   
+    \param V1 :: value for cell
+    \param V2 :: value for cell
+  */
+{
+  const int cN=makeStrIndex(cStr);
+  setValues(cN,V1,V2);
+  return;
+}
+
+template<size_t N>
+void
+cellValueSet<N>::setValues(const std::string& cStr,
+			   const std::string& V1,
+			   const std::string& V2,
+			   const std::string& V3)
+  /*!
+    Set a value in the map
+    \param cStr :: Cell number   
+    \param V1 :: value for cell
+    \param V2 :: value for cell
+    \param V3 :: value for cell    
+  */
+{
+  const int cN=makeStrIndex(cStr);
+  setValues(cN,V1,V2,V3);
+  return;
+}
 
 
 template<size_t N>
@@ -476,8 +559,10 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
 
+  ELog::EM<<"Key == "<<keyName<<ELog::endDiag;
   if (simpleSplit(Bgroup,Bdata))
     {
+      ELog::EM<<"XKey == "<<keyName<<ELog::endDiag;
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 
@@ -507,13 +592,16 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  for(const std::string& UC : Units)
 	    {
 	      if (UC.size()==2 &&
-		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
+		  (UC[0]=='%' || UC[0]=='R' ||
+		   UC[0]=='M' || UC[0]=='P'))
 		{
 		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
 		  if (UC[0]=='%')
 		    cx<<SArray[SA]<<" ";
 		  else if (UC[0]=='M' || UC[0]=='R')
 		    cx<<UC[0]<<SArray[SA]<<" ";
+		  else if (UC[0]=='P')
+		    cx<<StrFunc::toUpperString(SArray[SA])<<" ";
 		}
 	      else
 		cx<<UC<<" ";
@@ -546,8 +634,13 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
 
+  if (keyName=="lamlength")
+    ELog::EM<<"S == "<<keyName<<ELog::endDiag;
   if (cellSplit(cellN,Bgroup,Bdata))
-    {      
+    {
+      if (keyName=="lamlength")
+	ELog::EM<<"T == "<<keyName<<ELog::endDiag;
+
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 
@@ -577,13 +670,16 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  for(const std::string& UC : Units)
 	    {
 	      if (UC.size()==2 &&
-		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
+		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'
+		   || UC[0]=='P'))
 		{
 		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
 		  if (UC[0]=='%')
 		    cx<<SArray[SA]<<" ";
 		  else if (UC[0]=='M' || UC[0]=='R')
 		    cx<<UC[0]<<SArray[SA]<<" ";
+		  else if (UC[0]=='P')
+		    cx<<StrFunc::toUpperString(SArray[SA])<<" ";
 		}
 	      else
 		cx<<UC<<" ";

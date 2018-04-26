@@ -65,6 +65,8 @@ class flukaImpConstructor
 
   void writeEXPHelp(std::ostream&,ENDL) const;
 
+  void writeLAMHelp(std::ostream&,ENDL) const;
+
   void writeMATHelp(std::ostream&,ENDL) const;
   
   void insertCell(flukaPhysics&,const size_t,
@@ -99,6 +101,9 @@ class flukaImpConstructor
 		  const mainSystem::inputParam&,
 		  const size_t);
   void processEMF(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
+  void processLAM(flukaPhysics&,
 		  const mainSystem::inputParam&,
 		  const size_t);
   void processMAT(flukaPhysics&,

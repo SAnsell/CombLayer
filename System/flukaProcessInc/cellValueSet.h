@@ -40,21 +40,26 @@ class cellValueSet
 
   /// Data type [-1:string / 0:def / 1 double]
   typedef  std::array<std::pair<int,std::string>,N> valTYPE;  
-  /// map type
+  /// map type [-ve int for string type]
   typedef  std::map<int,valTYPE> dataTYPE;
- 
+
   const std::string keyName;               ///< Key name
   const std::string outName;               ///< Output name for FLUKA
   const std::string tag;                   ///< Tag name
 
-  std::array<double,N> scaleVec;      ///< Scaling for values
-  dataTYPE dataMap;                   ///< Values for cell
+  std::array<double,N> scaleVec;           ///< Scaling for values
+  dataTYPE dataMap;                        ///< Values for cell
 
+  std::map<int,std::string> strRegister;   ///< string register
+  std::map<std::string,int> intRegister;   ///< string to int regier
+  
   bool simpleSplit(std::vector<std::tuple<int,int>>&,
 		   std::vector<valTYPE>&) const;
   bool cellSplit(const std::vector<int>&,
 		 std::vector<std::tuple<int,int>>&,
 		 std::vector<valTYPE>&) const;
+
+  int makeStrIndex(const std::string&);
   
  public:
 
@@ -75,10 +80,17 @@ class cellValueSet
   void setValues(const int,const double);    
   void setValues(const int,const double,const double);
   void setValues(const int,const double,const double,const double);
+
   void setValues(const int,const std::string&);    
   void setValues(const int,const std::string&,const std::string&);
   void setValues(const int,const std::string&,const std::string&,
 		 const std::string&);
+
+  void setValues(const std::string&,const std::string&);    
+  void setValues(const std::string&,const std::string&,const std::string&);
+  void setValues(const std::string&,const std::string&,const std::string&,
+		 const std::string&);
+
   void writeFLUKA(std::ostream&,const std::string&) const;
   void writeFLUKA(std::ostream&,const std::vector<int>&,
 		  const std::string&) const;

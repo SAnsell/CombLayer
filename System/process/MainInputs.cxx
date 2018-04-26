@@ -175,6 +175,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wWWG","wWWG",1000,0);
   IParam.regMulti("wIMP","wIMP",1000,0);
   IParam.regMulti("wEMF","wEMF",1000,0);
+  IParam.regMulti("wLAM","wLAM",1000,0);
   IParam.regMulti("wCUT","wCUT",1000,0);
   IParam.regMulti("wMAT","wMAT",1000,0);
   
