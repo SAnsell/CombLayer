@@ -208,7 +208,13 @@ TelescopicPipe::createSurfaces()
      ModelSupport::buildCylinder(SMap,PT+7,Origin,Y,radius[i]);  
      ModelSupport::buildCylinder(SMap,PT+17,Origin,Y,radius[i]+thick[i]); 
 
-     ModelSupport::buildPlane(SMap,PT+2,Origin+Y*length[i],Y);  
+     ModelSupport::buildPlane(SMap,PT+2,Origin+Y*length[i],Y);
+
+     if (radius[i]<radius[i+1])
+       ModelSupport::buildPlane(SMap,PT+3,Origin+Y*(length[i]-thick[i]),Y);
+     else
+       ModelSupport::buildPlane(SMap,PT+3,Origin+Y*(length[i]+thick[i]),Y);
+
      if (zCut[i]>0.0)
        {
 	 ModelSupport::buildPlane(SMap,PT+5,Origin-Z*(radius[i]-zCut[i]),Z);
@@ -228,7 +234,10 @@ TelescopicPipe::createObjects(Simulation& System)
 {
   ELog::RegMethod RegA("TelescopicPipe","createObjects");
 
-  std::string Out,EndCap,FrontCap;
+  std::string Out;
+  std::string EndCap,FrontCap; //< inner front/end
+  std::string WallEndCap,WallFrontCap; //< wall front/end
+  std::string OutEndCap,OutFrontCap;   //< outer front/end
 
   int PT(ptIndex);
   attachSystem::ContainedGroup::addCC("Full");
@@ -239,7 +248,17 @@ TelescopicPipe::createObjects(Simulation& System)
 	ModelSupport::getComposite(SMap,PT-100, " 2 ");
       EndCap=(i+1 == nSec) ? backRule() : 
 	ModelSupport::getComposite(SMap,PT, " -2 ");
-      
+
+      OutFrontCap = (!i) ? FrontCap :
+        ModelSupport::getComposite(SMap,PT-100, " 3 ");
+      OutEndCap = (i+1 == nSec) ? EndCap:
+        ModelSupport::getComposite(SMap,PT, " -3 ");
+
+      const bool rInc(radius[i+1]>radius[i]);
+      WallFrontCap=ModelSupport::getComposite(SMap,PT, rInc ? " 3 " : " 2 ");
+      WallEndCap=(i+1 == nSec) ? backRule() :
+	ModelSupport::getComposite(SMap,PT, rInc ? " -2 " : " -3 ");
+
       Out=ModelSupport::getSetComposite(SMap,PT, " -7 5 -6 ");
       System.addCell(MonteCarlo::Qhull(cellIndex++,inMat[i],0.0,
 				       Out+FrontCap+EndCap));
@@ -248,12 +267,21 @@ TelescopicPipe::createObjects(Simulation& System)
 	  Out=ModelSupport::getSetComposite(SMap,PT, " 7 -17 5 -6");
 	  System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
 					   Out+FrontCap+EndCap));
+         if ((i+1!=nSec) && (std::abs(radius[i]-radius[i+1])>Geometry::zeroTol))
+            {
+              Out=(radius[i+1]>radius[i]) ?
+                ModelSupport::getSetComposite(SMap,PT,PT+100," 17 -17M 5 -6") :
+                ModelSupport::getSetComposite(SMap,PT,PT+100," 17M -17 5 -6");
+              System.addCell(MonteCarlo::Qhull(cellIndex++,wallMat[i],0.0,
+                                               Out+WallEndCap+WallFrontCap));
+            }
 	}
 
-      Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
       attachSystem::ContainedGroup::addCC(SName);
-      addOuterSurf(SName,Out+EndCap+FrontCap);
-      addOuterUnionSurf("Full",Out+EndCap+FrontCap);
+      Out=ModelSupport::getSetComposite(SMap,PT, " -17 5 -6 ");
+      Out += OutEndCap + OutFrontCap;
+      addOuterSurf(SName,Out);
+      addOuterUnionSurf("Full",Out);
 
       PT+=100;
     }
