@@ -160,25 +160,24 @@ ProtonTube::populate(const FuncDataBase& Control)
 
 void
 ProtonTube::createAll(Simulation& System,
-		      const attachSystem::FixedComp& TargetFC,const long int tIndex,
-		      const attachSystem::FixedComp& SB,const long int sbIndex)
+		      const attachSystem::FixedComp& originFC,
+		      const long int originIndex,
+		      const attachSystem::FixedComp& SB,
+		      const long int sbIndex)
   /*!
     Global creation of the hutch
     \param System :: Simulation to add vessel to
-    \param TargetFC :: FixedComp for origin and target outer surf (tube start)
-    \param tIndex :: Target plate surface [signed]
-    \param BulkFC :: FixedComp for tube end (not used if next arg is 0)
-    \param bIndex :: Tube end link point (not used if 0 - then the tube ends at its max length)
+    \param originFC :: FixedComp for origin
+    \param originIndex :: Target plate surface [signed]
     \param SB :: FixedComp for Monolith Shielding (shutter bay object)
     \param sbIndex :: ShutterBay roof link point
-    \param Bulk :: Bulk object (to remove BeamMonitor from)						
   */
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
 
   tube->setFront(frontRule());
   tube->setBack(backRule());
-  tube->createAll(System,TargetFC,tIndex);
+  tube->createAll(System,originFC,originIndex);
 
   attachSystem::ContainedGroup::operator=(*tube);
 
