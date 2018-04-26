@@ -109,11 +109,11 @@ ProtonTube::ProtonTube(const std::string& Key) :
 }
 
 ProtonTube::ProtonTube(const ProtonTube& A) :
-  engActive(A.engActive),
   attachSystem::CopiedComp(A),
   attachSystem::ContainedGroup(A),
   attachSystem::FixedOffset(A),
   attachSystem::FrontBackCut(A),
+  engActive(A.engActive),
   tube(A.tube->clone()),
   pbw(A.pbw->clone())
   /*!
@@ -181,6 +181,8 @@ ProtonTube::createAll(Simulation& System,
   tube->createAll(System,TargetFC,tIndex);
 
   attachSystem::ContainedGroup::operator=(*tube);
+
+  populate(System.getDataBase());
   
   if (engActive)
     {
