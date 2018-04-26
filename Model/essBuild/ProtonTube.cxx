@@ -74,6 +74,9 @@
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "FrontBackCut.h"
 
 #include "PBW.h"
 #include "TelescopicPipe.h"
@@ -139,7 +142,7 @@ ProtonTube::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ProtonTube","populate");
-
+  TelescopicPipe::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   return;
@@ -165,8 +168,7 @@ ProtonTube::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
 
-  TelescopicPipe::createAll(System,TargetFC,tIndex,BulkFC,bIndex,SB);
-  populate(System.getDataBase());
+  TelescopicPipe::createAll(System,TargetFC,tIndex);
   
   if (engActive)
     {

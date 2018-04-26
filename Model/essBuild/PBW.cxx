@@ -81,6 +81,9 @@
 #include "AttachSupport.h"
 
 #include "ContainedGroup.h"
+#include "BaseMap.h"
+#include "CellMap.h"
+#include "FrontBackCut.h"
 #include "TelescopicPipe.h"
 #include "PBW.h"
 
@@ -607,12 +610,12 @@ PBW::createAll(Simulation& System,
   createObjects(System);
   insertObjects(System);
 
-  if (engActive)
-    {
-      shield->createAll(System,*this,8,SB,sblp,SB);
-      attachSystem::addToInsertSurfCtrl(System,SB,
-					shield->getCC("Full"));
-    }
+  // if (engActive)
+  //   {
+  //     shield->createAll(System,*this,8,SB,sblp,SB);
+  //     attachSystem::addToInsertSurfCtrl(System,SB,
+  // 					shield->getCC("Full"));
+  //   }
 
   return;
 }

@@ -1304,7 +1304,9 @@ makeESS::build(Simulation& System,
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("main"));
   attachSystem::addToInsertSurfCtrl(System,*Bulk,pbip->getCC("after"));
   Reflector->insertComponent(System, "targetVoid", pbip->getCC("after"));
-  
+
+  PBeam->setFront(*Bulk,4);
+  PBeam->setBack(*TSMainBuildingObj,-1);
   PBeam->createAll(System,*Bulk,4,*TSMainBuildingObj,-1,*ShutterBayObj,-6,*Bulk);
 
   attachSystem::addToInsertSurfCtrl(System,*ShutterBayObj,
