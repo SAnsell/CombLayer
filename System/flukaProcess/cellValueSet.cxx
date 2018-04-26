@@ -507,13 +507,16 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  for(const std::string& UC : Units)
 	    {
 	      if (UC.size()==2 &&
-		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
+		  (UC[0]=='%' || UC[0]=='R' ||
+		   UC[0]=='M' || UC[0]=='P'))
 		{
 		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
 		  if (UC[0]=='%')
 		    cx<<SArray[SA]<<" ";
 		  else if (UC[0]=='M' || UC[0]=='R')
 		    cx<<UC[0]<<SArray[SA]<<" ";
+		  else if (UC[0]=='P')
+		    cx<<StrFunc::toUpperString(SArray[SA])<<" ";
 		}
 	      else
 		cx<<UC<<" ";
@@ -577,13 +580,16 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
 	  for(const std::string& UC : Units)
 	    {
 	      if (UC.size()==2 &&
-		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'))
+		  (UC[0]=='%' || UC[0]=='R' || UC[0]=='M'
+		   || UC[0]=='P'))
 		{
 		  const size_t SA=(static_cast<size_t>(UC[1]-'0') % (N+2));
 		  if (UC[0]=='%')
 		    cx<<SArray[SA]<<" ";
 		  else if (UC[0]=='M' || UC[0]=='R')
 		    cx<<UC[0]<<SArray[SA]<<" ";
+		  else if (UC[0]=='P')
+		    cx<<StrFunc::toUpperString(SArray[SA])<<" ";
 		}
 	      else
 		cx<<UC<<" ";

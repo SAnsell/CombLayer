@@ -79,7 +79,10 @@ flukaPhysics::flukaPhysics() :
       { "low",      cellValueSet<1>("low","BIAS","") },
       { "lowbias",  cellValueSet<1>("lowbias","LOW-BIAS","") },
       { "exptrans", cellValueSet<1>("exptrans","EXPTRANS","") },
-      { "exppart",  cellValueSet<1>("exppart","EXPTRANS","") }
+      { "exppart",  cellValueSet<1>("exppart","EXPTRANS","") },
+      { "plambias", cellValueSet<1>("plambias","LAM-BIAS","INEPRI",{1.0}) },
+      { "lambias",  cellValueSet<1>("lambias","LAM-BIAS","",{1.0}) }
+
     }),
 
   emfFlag({
@@ -87,8 +90,9 @@ flukaPhysics::flukaPhysics() :
       { "prodcut", cellValueSet<2>("prodcut","EMFCUT","PROD-CUT",{1e-3,1e-3})},
       { "pho2thr", cellValueSet<2>("pho2thr","EMFCUT","PHO2-THR",{1e-3,1e-3})},
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
-      { "emflpb",  cellValueSet<2>("emflpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
+      { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
       { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
+      { "lamlength",cellValueSet<2>("lamlength","LAM-BIAS","") }
     }),
 
   threeFlag({
@@ -111,6 +115,9 @@ flukaPhysics::flukaPhysics() :
       { "lowbias", unitTYPE(0," %2 0.0 - R0 R1 1.0 ") },
       { "exptrans", unitTYPE(0," 1.0 %2 R0 R1 1.0 - ") },
       { "exppart", unitTYPE(0," -1.0 %2 %2 1.0 - - ") },
+      { "lambias", unitTYPE(1," 0.0 %2 M0 M1 1.0") },
+      { "plambias", unitTYPE(1," 0.0 %2 M1 M1 1.0") },
+	
 	
       { "emfcut", unitTYPE(0," %2 %3 0.0 R0 R1 1.0") },
       { "emffluo", unitTYPE(1,"-1.0 M0 M1 1.0 - - ") },	
@@ -118,13 +125,15 @@ flukaPhysics::flukaPhysics() :
       { "photthr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
       { "pho2thr", unitTYPE(1," %2 %3 -  M0 M1 1.0") },
       { "elpothr", unitTYPE(1," %2 %3 %4 M0 M1 1.0") },
-      { "pairbrem", unitTYPE(1,"3.0 %2 %3  M0 M1 1.0") },
+      { "pairbrem", unitTYPE(1,"3.0 %2 %3 M0 M1 1.0") },
       { "photonuc", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "muphoton", unitTYPE(1,"1.0 - - M0 M1 1.0 ") },
       { "mulsopt", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
-      { "emflpb", unitTYPE(0,"1022 %2 %3 R0 R1 1.0 ") },
+      { "lpb", unitTYPE(0,"1022 %2 %3 R0 R1 1.0 ") },
       { "lambbrem", unitTYPE(1,"%2 0.0 %3 M0 M1 1.0 ") },
       { "lambemf", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
+
+      { "lamlength", unitTYPE(1,"0.0 %3 P2 M0 M1 1.0 ") },
 
       { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
       { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
