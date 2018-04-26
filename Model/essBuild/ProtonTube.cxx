@@ -3,7 +3,7 @@
 
  * File:   essBuild/ProtonTube.cxx
  *
- * Copyright (c) 2004-2016 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,12 +71,14 @@
 #include "LinkUnit.h"
 #include "FixedComp.h"
 #include "FixedOffset.h"
+#include "FrontBackCut.h"
 #include "ContainedComp.h"
 #include "ContainedGroup.h"
 #include "AttachSupport.h"
 #include "BaseMap.h"
 #include "CellMap.h"
 #include "FrontBackCut.h"
+#include "CopiedComp.h"
 
 #include "PBW.h"
 #include "TelescopicPipe.h"
@@ -87,8 +89,12 @@ namespace essSystem
 {
 
 ProtonTube::ProtonTube(const std::string& Key) :
-  TelescopicPipe(Key),
-  pbw(new PBW(Key+"PBW"))
+  attachSystem::CopiedComp(Key,Key),
+  attachSystem::ContainedGroup(),
+  attachSystem::FixedOffset(newName,2),
+  attachSystem::FrontBackCut(),
+  tube(new TelescopicPipe(newName+"Pipe")),
+  pbw(new PBW(newName+"PBW"))
   /*!
     Constructor
   */
@@ -96,14 +102,19 @@ ProtonTube::ProtonTube(const std::string& Key) :
   ELog::RegMethod RegA("ProtonTube","ProtonTube(const std::string&)");
   
   ModelSupport::objectRegister& OR = ModelSupport::objectRegister::Instance();
+  OR.addObject(tube);
   OR.addObject(pbw);
   
   return;
 }
 
 ProtonTube::ProtonTube(const ProtonTube& A) :
-  TelescopicPipe(A),
   engActive(A.engActive),
+  attachSystem::CopiedComp(A),
+  attachSystem::ContainedGroup(A),
+  attachSystem::FixedOffset(A),
+  attachSystem::FrontBackCut(A),
+  tube(A.tube->clone()),
   pbw(A.pbw->clone())
   /*!
     Copy constructor
@@ -121,8 +132,8 @@ ProtonTube::operator=(const ProtonTube& A)
 {
   if (this!=&A)
     {
-      TelescopicPipe::operator=(A);
       engActive=A.engActive;
+      *tube=*A.tube;
       *pbw=*A.pbw;
     }
   return *this;
@@ -142,7 +153,6 @@ ProtonTube::populate(const FuncDataBase& Control)
   */
 {
   ELog::RegMethod RegA("ProtonTube","populate");
-  TelescopicPipe::populate(Control);
   engActive=Control.EvalPair<int>(keyName,"","EngineeringActive");
 
   return;
@@ -168,13 +178,17 @@ ProtonTube::createAll(Simulation& System,
 {
   ELog::RegMethod RegA("ProtonTube","createAll");
 
-  TelescopicPipe::createAll(System,TargetFC,tIndex);
+  tube->setFront(frontRule());
+  tube->setBack(backRule());
+  tube->createAll(System,TargetFC,tIndex);
+
+  attachSystem::ContainedGroup::operator=(*tube);
   
   if (engActive)
     {
       pbw->createAll(System, World::masterOrigin(), 0, SB,sbIndex);
       attachSystem::addToInsertSurfCtrl(System,SB,*pbw);
-      attachSystem::addToInsertLineCtrl(System,*this, *pbw);
+      attachSystem::addToInsertLineCtrl(System,*tube, *pbw);
     }
 
   return;

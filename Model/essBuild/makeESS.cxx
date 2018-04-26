@@ -79,6 +79,7 @@
 #include "LinkSupport.h"
 #include "pipeUnit.h"
 #include "PipeLine.h"
+#include "CopiedComp.h"
 
 #include "FocusPoints.h"
 #include "beamlineConstructor.h"

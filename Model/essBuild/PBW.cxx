@@ -145,9 +145,9 @@ PBW::PBW(const PBW& A) :
   foilCylOffset(A.foilCylOffset),
   foilWaterThick(A.foilWaterThick),
   foilWaterLength(A.foilWaterLength),
-  protonTubeRad(A.protonTubeRad),
-  protonTubeMatBefore(A.protonTubeMatBefore),
-  protonTubeMatAfter(A.protonTubeMatAfter),
+  pipeRad(A.pipeRad),
+  pipeMatBefore(A.pipeMatBefore),
+  pipeMatAfter(A.pipeMatAfter),
   coolingMat(A.coolingMat),mat(A.mat),
   shield(A.shield->clone())
   /*!
@@ -201,9 +201,9 @@ PBW::operator=(const PBW& A)
       foilCylOffset=A.foilCylOffset;
       foilWaterThick=A.foilWaterThick;
       foilWaterLength=A.foilWaterLength;
-      protonTubeRad=A.protonTubeRad;
-      protonTubeMatBefore=A.protonTubeMatBefore;
-      protonTubeMatAfter=A.protonTubeMatAfter;
+      pipeRad=A.pipeRad;
+      pipeMatBefore=A.pipeMatBefore;
+      pipeMatAfter=A.pipeMatAfter;
       coolingMat=A.coolingMat;
       mat=A.mat;
       *shield=*A.shield;
@@ -270,9 +270,9 @@ PBW::populate(const FuncDataBase& Control)
   foilCylOffset=Control.EvalVar<double>(keyName+"FoilCylOffset");
   foilWaterThick=Control.EvalVar<double>(keyName+"FoilWaterThick");
   foilWaterLength=Control.EvalVar<double>(keyName+"FoilWaterLength");
-  protonTubeRad=Control.EvalVar<double>(keyName+"ProtonTubeRadius");
-  protonTubeMatBefore=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMatBefore");
-  protonTubeMatAfter=ModelSupport::EvalMat<int>(Control,keyName+"ProtonTubeMatAfter");
+  pipeRad=Control.EvalVar<double>(keyName+"PipeRadius");
+  pipeMatBefore=ModelSupport::EvalMat<int>(Control,keyName+"PipeMatBefore");
+  pipeMatAfter=ModelSupport::EvalMat<int>(Control,keyName+"PipeMatAfter");
 
   coolingMat=ModelSupport::EvalMat<int>(Control,keyName+"CoolingMat");
   mat=ModelSupport::EvalMat<int>(Control,keyName+"Mat");
@@ -321,7 +321,7 @@ PBW::createSurfaces()
   ModelSupport::buildPlane(SMap,surfIndex+6,Origin+Z*(plugHeight),Z);
 
   // proton tube rad
-  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,protonTubeRad);
+  ModelSupport::buildCylinder(SMap,surfIndex+7,Origin,Y,pipeRad);
 
   // plug void
   ModelSupport::buildPlane(SMap,surfIndex+11,Origin-Y*(plugVoidLength/2.0),Y);
@@ -430,7 +430,7 @@ PBW::createObjects(Simulation& System)
   // plug
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 11 -12 13 -14 15 -16 28 (-71:72:-73:74:-75:76) "); // outer void
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex,
 				 " 1 -2 3 -4 5 -6 7 (-11:12:-13:14:-15:16) ");
@@ -438,9 +438,9 @@ PBW::createObjects(Simulation& System)
 
   // proton tube void
   Out=ModelSupport::getComposite(SMap,surfIndex, " -7 12 -2");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " -7 1 -11");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatBefore,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
 
   // flange cylinder
   // inner steel
@@ -481,18 +481,18 @@ PBW::createObjects(Simulation& System)
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -41 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 41 -42 47 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex," 62 -61 47 -28 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 61 -12 30 -28 ");
   System.addCell(MonteCarlo::Qhull(cellIndex++,plugMat,0.0,Out));
 
   // void inside PBW main cell
   Out=ModelSupport::getComposite(SMap,surfIndex," 11 -81 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatBefore,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex," 82 -12 -27 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   // PBW Al plate
   Out=ModelSupport::getComposite(SMap,surfIndex," 71 -81 27 -87 ");
@@ -511,15 +511,15 @@ PBW::createObjects(Simulation& System)
 
   // PBW foil
   Out=ModelSupport::getComposite(SMap,surfIndex, " 81 -101 108 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatBefore,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatBefore,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " -107 -102 93 -94 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   Out=ModelSupport::getComposite(SMap,surfIndex, " 101 -102 93 -94 95 -96 107");
   System.addCell(MonteCarlo::Qhull(cellIndex++,mat,0.0,Out));
   Out=ModelSupport::getComposite(SMap,surfIndex, " 102 -82 93 -94 95 -96 ");
-  System.addCell(MonteCarlo::Qhull(cellIndex++,protonTubeMatAfter,0.0,Out));
+  System.addCell(MonteCarlo::Qhull(cellIndex++,pipeMatAfter,0.0,Out));
 
   // cylindrical segment:
   //                      sides

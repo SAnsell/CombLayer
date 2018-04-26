@@ -358,42 +358,42 @@ EssProtonBeam(FuncDataBase& Control)
     \param Control :: DataBase for variables
   */
 {
-  Control.addVariable("ProtonTubeXStep",0.0);  
-  Control.addVariable("ProtonTubeYStep",0.0);  
-  Control.addVariable("ProtonTubeZStep",0.0);
-  Control.addVariable("ProtonTubeXYangle",0.0); 
-  Control.addVariable("ProtonTubeZangle",0.0);
+  Control.addVariable("ProtonTubePipeXStep",0.0);  
+  Control.addVariable("ProtonTubePipeYStep",0.0);  
+  Control.addVariable("ProtonTubePipeZStep",0.0);
+  Control.addVariable("ProtonTubePipeXYangle",0.0); 
+  Control.addVariable("ProtonTubePipeZangle",0.0);
 
-  Control.addVariable("ProtonTubeNSection",4);
+  Control.addVariable("ProtonTubePipeNSection",4);
 
-  Control.addVariable("ProtonTubeRadius1",20.0); // MK170207
-  Control.addVariable("ProtonTubeLength1",37.0); // MK170207
-  Control.addVariable("ProtonTubeZcut1",0.0);  // to have the same height as BeRef::targetVoid
-  Control.addVariable("ProtonTubeWallThick1",1.0);
-  Control.addVariable("ProtonTubeInnerMat1","Helium");  // mat : 2000
-  Control.addVariable("ProtonTubeWallMat1","SS316L"); // mat : 26316
+  Control.addVariable("ProtonTubePipeRadius1",20.0); // MK170207
+  Control.addVariable("ProtonTubePipeLength1",37.0); // MK170207
+  Control.addVariable("ProtonTubePipeZcut1",0.0);  // to have the same height as BeRef::targetVoid
+  Control.addVariable("ProtonTubePipeWallThick1",1.0);
+  Control.addVariable("ProtonTubePipeInnerMat1","Helium");  // mat : 2000
+  Control.addVariable("ProtonTubePipeWallMat1","SS316L"); // mat : 26316
 
-  Control.addVariable("ProtonTubeRadius2",32.5/2.0); // MK170207
-  Control.addVariable("ProtonTubeLength2",35.0); // MK170207
-  Control.addVariable("ProtonTubeZcut2",0.0); 
-  Control.addVariable("ProtonTubeWallThick2",1.0);
-  Control.addVariable("ProtonTubeInnerMat2","Helium");  // mat : 2000
-  Control.addVariable("ProtonTubeWallMat2","SS316L");  // differs from TSV30: M2636
+  Control.addVariable("ProtonTubePipeRadius2",32.5/2.0); // MK170207
+  Control.addVariable("ProtonTubePipeLength2",35.0); // MK170207
+  Control.addVariable("ProtonTubePipeZcut2",0.0); 
+  Control.addVariable("ProtonTubePipeWallThick2",1.0);
+  Control.addVariable("ProtonTubePipeInnerMat2","Helium");  // mat : 2000
+  Control.addVariable("ProtonTubePipeWallMat2","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius3",21.0/2.0); // MK170207
-  Control.addVariable("ProtonTubeLength3",127.5);
-  Control.addVariable("ProtonTubeZcut3",0.0);
-  Control.addVariable("ProtonTubeWallThick3",4.0);
-  Control.addVariable("ProtonTubeInnerMat3","Helium");   // mat : 2000
-  Control.addVariable("ProtonTubeWallMat3","SS316L");  // differs from TSV30: M2636
+  Control.addVariable("ProtonTubePipeRadius3",21.0/2.0); // MK170207
+  Control.addVariable("ProtonTubePipeLength3",127.5);
+  Control.addVariable("ProtonTubePipeZcut3",0.0);
+  Control.addVariable("ProtonTubePipeWallThick3",4.0);
+  Control.addVariable("ProtonTubePipeInnerMat3","Helium");   // mat : 2000
+  Control.addVariable("ProtonTubePipeWallMat3","SS316L");  // differs from TSV30: M2636
 
-  Control.addVariable("ProtonTubeRadius4",10.5);  // same as in TSV30
-  // Control.addVariable("ProtonTubeLength4",147.5);
-  Control.addVariable("ProtonTubeLength4",152.5);
-  Control.addVariable("ProtonTubeZcut4",0.0);
-  Control.addVariable("ProtonTubeWallThick4",4.0);
-  Control.addVariable("ProtonTubeInnerMat4","Void");
-  Control.addVariable("ProtonTubeWallMat4","SS316L");  // differs from TSV30: M2636
+  Control.addVariable("ProtonTubePipeRadius4",10.5);  // same as in TSV30
+  // Control.addVariable("ProtonTubePipeLength4",147.5);
+  Control.addVariable("ProtonTubePipeLength4",152.5);
+  Control.addVariable("ProtonTubePipeZcut4",0.0);
+  Control.addVariable("ProtonTubePipeWallThick4",4.0);
+  Control.addVariable("ProtonTubePipeInnerMat4","Void");
+  Control.addVariable("ProtonTubePipeWallMat4","SS316L");  // differs from TSV30: M2636
 
 
   Control.addVariable("BeamMonitorXStep",0.0);
@@ -467,10 +467,10 @@ EssProtonBeam(FuncDataBase& Control)
   Control.addVariable("ProtonTubePBWPlugAlGapHeight", 20.75); // ESS-0066872.1 page 3 and 4
   Control.addVariable("ProtonTubePBWPlugAlGapWidth", 19.8); // ESS-0058437.3 and ESS-0066872.1 page 3 (there is a frame which is inserted into gap, but in this (and Alan's) geometries it is not modelled, just gap width reduced)
 
-  Control.Parse("ProtonTubeRadius4");
-  Control.addVariable("ProtonTubePBWProtonTubeRadius");
-  Control.addVariable("ProtonTubePBWProtonTubeMatBefore", "Void");
-  Control.addVariable("ProtonTubePBWProtonTubeMatAfter", "Helium");
+  Control.Parse("ProtonTubePipeRadius4");
+  Control.addVariable("ProtonTubePBWPipeRadius");
+  Control.addVariable("ProtonTubePBWPipeMatBefore", "Void");
+  Control.addVariable("ProtonTubePBWPipeMatAfter", "Helium");
 
   Control.addVariable("ProtonTubePBWFlangeRadius",29.0/2); // ESS-0066872.1 page 5
   Control.addVariable("ProtonTubePBWFlangeThick",(45.0-29.0)/2.0); // ESS-0066872.1 page 5
