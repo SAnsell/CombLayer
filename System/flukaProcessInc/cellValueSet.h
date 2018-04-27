@@ -60,6 +60,7 @@ class cellValueSet
 		 std::vector<valTYPE>&) const;
 
   int makeStrIndex(const std::string&);
+  const std::string& getStrIndex(const int) const;
   
  public:
 
@@ -86,6 +87,7 @@ class cellValueSet
   void setValues(const int,const std::string&,const std::string&,
 		 const std::string&);
 
+  void setValues(const std::string&);
   void setValues(const std::string&,const std::string&);    
   void setValues(const std::string&,const std::string&,const std::string&);
   void setValues(const std::string&,const std::string&,const std::string&,

@@ -93,7 +93,7 @@ flukaImpConstructor::insertParticle(flukaPhysics& PC,
       PC.setFlag(keyName,pName);
       break;
     case 1:
-      PC.setImp(keyName,pName,VV[0]);
+      PC.setIMP(keyName,pName,VV[0]);
       break;
     case 2:
       PC.setEMF(keyName,pName,VV[0],VV[1]);
@@ -131,7 +131,7 @@ flukaImpConstructor::insertCell(flukaPhysics& PC,
       break;
     case 1:
       for(const int MN : activeCell)
-	PC.setImp(keyName,MN,VV[0]);
+	PC.setIMP(keyName,MN,VV[0]);
       break;
     case 2:
       for(const int MN : activeCell)
@@ -205,7 +205,6 @@ flukaImpConstructor::processCUT(flukaPhysics& PC,
   */
 {
   ELog::RegMethod RegA("flukaImpConstructor","processCUT");
-
 
   // cell/mat : tag name 
   typedef std::tuple<size_t,int,std::string> cutTYPE;
@@ -353,12 +352,12 @@ flukaImpConstructor::processLAM(flukaPhysics& PC,
 {
   ELog::RegMethod RegA("flukaImpConstructor","processLAM");
   
-  const flukaGenParticle& FG=flukaGenParticle::Instance();
   // cell/mat : tag name 
   typedef std::tuple<size_t,int,std::string> lamTYPE;
   static const std::map<std::string,lamTYPE> IMap
     ({
-      { "length",lamTYPE(1,-1,"lamlength") }   // material 
+      { "length",lamTYPE(1,-1,"lamlength") },   // particle
+      { "primlen",lamTYPE(1,-1,"lamPrime") }   // particle
     });
 
   const std::string type=IParam.getValueError<std::string>
@@ -378,7 +377,7 @@ flukaImpConstructor::processLAM(flukaPhysics& PC,
     ("wLAM",setIndex,2,"No material for wLAM:cellM");
 
   const size_t cellSize(std::get<0>(mc->second));
-  const int materialFlag(std::get<1>(mc->second));
+  //  const int materialFlag(std::get<1>(mc->second));
   const std::string cardName(std::get<2>(mc->second));
 
   std::string VV[4];
@@ -388,13 +387,13 @@ flukaImpConstructor::processLAM(flukaPhysics& PC,
        "No value["+std::to_string(i+3)+"] for wLAM");      
 
   const std::set<int> activeMat=getActiveUnit(1,cellM);
+  ELog::EM<<"Size == "<<activeMat.size()<<ELog::endDiag;
   if (activeMat.empty())
     throw ColErr::InContainerError<std::string>(cellM,"Empty Materials:");
   
   //  VV[0]=FG.nameToFLUKA(partName);
   for(const int CN : activeMat)
     {
-      ELog::EM<<"Part name == "<<partName<<ELog::endDiag;
       VV[0]=std::to_string(CN);
       insertParticle(PC,cellSize+1,partName,cardName,VV);
     }
@@ -432,9 +431,7 @@ flukaImpConstructor::processEMF(flukaPhysics& PC,
       { "mulsopt",emfTYPE(3,1,"mulsopt") },       // mat
       { "lpb",emfTYPE(2,0,"lpb") },        // regions
       { "lambbrem",emfTYPE(2,1,"lambbrem") },      // mat
-      { "lambemf",emfTYPE(2,1,"lambemf") },      // mat
-      { "plambias",emfTYPE(1,1,"plambias") },    // primary lam-bias
-      { "lambias",emfTYPE(1,1,"lambias") }      // mat
+      { "lambemf",emfTYPE(2,1,"lambemf") }      // mat
 
     });
   
