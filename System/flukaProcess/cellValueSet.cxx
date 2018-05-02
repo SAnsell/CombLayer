@@ -282,7 +282,7 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
     be expressed in FLUKA as a single importance/bias card with a range 
     of cells.
 
-    \param cellN :: Cell vlaues
+    \param cellN :: Cell values [normally excluding 0]
     \param initCell :: initialization range
     \param dataValue :: initialization range
     \return true if output required

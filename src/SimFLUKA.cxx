@@ -75,7 +75,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "strValueSet.h"
+#include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "flukaProcess.h"

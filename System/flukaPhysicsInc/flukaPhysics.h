@@ -52,6 +52,9 @@ class flukaPhysics
   // THREE VALUE
   std::map<std::string,cellValueSet<3>> threeFlag;    ///< EMF flag
 
+  // PAIR SYSTEM
+  std::map<std::string,pairValueSet<6>> lamPair;    ///< LAM pair
+  
   std::map<std::string,unitTYPE> formatMap;     ///< Layout and cell/mat
 
  public:
@@ -81,6 +84,11 @@ class flukaPhysics
 	      const std::string&);
   void setTHR(const std::string&,const int,const std::string&,
 	      const std::string&,const std::string&);
+
+  void setLAMPair(const std::string&,const std::string&,
+		  const int,const std::string&,const std::string&);
+
+
   void writeFLUKA(std::ostream&) const;
 };
 

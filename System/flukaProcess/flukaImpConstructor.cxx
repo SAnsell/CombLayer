@@ -59,8 +59,8 @@
 #include "Simulation.h"
 #include "objectRegister.h"
 #include "inputParam.h"
-#include "strValueSet.h"
 #include "cellValueSet.h"
+#include "pairValueSet.h"
 #include "flukaGenParticle.h"
 #include "flukaPhysics.h"
 #include "flukaProcess.h"
@@ -69,6 +69,42 @@
 namespace flukaSystem
 {
 
+
+void
+flukaImpConstructor::insertPair(flukaPhysics& PC,
+				const size_t cellSize,
+				const std::string& pName,
+				const int cellName,
+				const std::string& keyName,
+				const std::string* VV) const
+ /*!
+   Process the actual insert 
+   \param PC :: Physcis to insert to
+   \param pName :: particle name
+   \param cellName :: cell name
+   \param keyName :: component keyname
+   \param VV :: variables
+ */
+{
+  ELog::RegMethod RegA("flukaImpConstructor","insertPair");
+
+  switch (cellSize)
+    {
+    case 0:
+      //      PC.setFlag(keyName,pName);
+      break;
+    case 1:
+      PC.setLAMPair(keyName,pName,cellName,VV[0],"");
+      break;
+    case 2:
+      PC.setLAMPair(keyName,pName,cellName,VV[0],VV[1]);
+      break;
+    case 3:
+      //      PC.setTHR(keyName,pName,VV[0],VV[1],VV[2]);
+      break;
+    }
+  return;
+}
 
 void
 flukaImpConstructor::insertParticle(flukaPhysics& PC,
@@ -382,21 +418,19 @@ flukaImpConstructor::processLAM(flukaPhysics& PC,
 
   std::string VV[4];
   for(size_t i=0;i<cellSize;i++)
-    VV[i+1]=IParam.getValueError<std::string>
+    VV[i]=IParam.getValueError<std::string>
       ("wLAM",setIndex,3+i,
        "No value["+std::to_string(i+3)+"] for wLAM");      
 
   const std::set<int> activeMat=getActiveUnit(1,cellM);
-  ELog::EM<<"Size == "<<activeMat.size()<<ELog::endDiag;
   if (activeMat.empty())
     throw ColErr::InContainerError<std::string>(cellM,"Empty Materials:");
   
   //  VV[0]=FG.nameToFLUKA(partName);
   for(const int CN : activeMat)
-    {
-      VV[0]=std::to_string(CN);
-      insertParticle(PC,cellSize+1,partName,cardName,VV);
-    }
+    if (CN)
+      insertPair(PC,cellSize,partName,CN,cardName,VV);
+
   return;
 }
 

@@ -34,48 +34,46 @@ namespace flukaSystem
 */
 
 template <size_t N>
-class strValueSet 
+class pairValueSet 
 {
  private:
 
   /// Data type [-1:string / 0:def / 1 double]
   typedef  std::array<std::pair<int,std::string>,N> valTYPE;  
-  /// map type
-  typedef std::map<std::string,valTYPE> dataTYPE;   // key is ?
- 
+  /// basic type of all
+  typedef std::vector<valTYPE> dataTYPE;   
+
   const std::string keyName;               ///< Key name
   const std::string outName;               ///< Output name for FLUKA
   const std::string tag;                   ///< Tag name
 
-  std::array<double,N> scaleVec;      ///< Scaling for values
+  std::array<double,N> scaleVec;      ///< Scaling for all values
   dataTYPE dataMap;                   ///< Values for cell
-  
+
+  static std::string pairUnit(const double&,
+			      const std::pair<int,std::string>&);
  public:
 
-  strValueSet(const std::string&,const std::string&);
-  strValueSet(const std::string&,const std::string&,
+  pairValueSet(const std::string&,const std::string&);
+  pairValueSet(const std::string&,const std::string&,
 	       const std::string&);
-  strValueSet(const std::string&,const std::string&,
+  pairValueSet(const std::string&,const std::string&,
 	       const std::string&,const std::array<double,N>&);
 
-  strValueSet(const strValueSet&);
-  strValueSet& operator=(const strValueSet&);
-  virtual ~strValueSet();
+  pairValueSet(const pairValueSet&);
+  pairValueSet& operator=(const pairValueSet&);
+  virtual ~pairValueSet();
 
   void clearAll();
 
   void setValue(const std::string&,const size_t,const double);
-  void setValues(const std::string&);    
-  void setValues(const std::string&,const double);    
-  void setValues(const std::string&,const double,const double);
-  void setValues(const std::string&,const double,const double,const double);
-  void setValues(const std::string&,const std::string&);    
-  void setValues(const std::string&,const std::string&,const std::string&);
   void setValues(const std::string&,const std::string&,const std::string&,
-		 const std::string&);
+		 const double,const double,const double);
+  void setValues(const std::string&,const std::string&,const std::string&,
+		 const std::string&,const std::string&,const std::string&);
+
+
   void writeFLUKA(std::ostream&,const std::string&) const;
-  void writeFLUKA(std::ostream&,const std::vector<int>&,
-		  const std::string&) const;
 
 };
 

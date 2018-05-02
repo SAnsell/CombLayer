@@ -75,6 +75,9 @@ class flukaImpConstructor
   void insertParticle(flukaPhysics&,const size_t,
 		      const std::string&,const std::string&,
 		      const std::string*) const;
+  void insertPair(flukaPhysics&,const size_t,
+		  const std::string&,const int,
+		  const std::string&,const std::string*) const;
   
   void processGeneral(flukaPhysics&,
 		      const mainSystem::inputParam&,
