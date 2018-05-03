@@ -45,7 +45,6 @@
 #include "MatrixBase.h"
 #include "Matrix.h"
 #include "Vec3D.h"
-#include "Triple.h"
 #include "support.h"
 #include "stringCombine.h"
 #include "surfRegister.h"
@@ -137,16 +136,13 @@ userBinConstruct::convertTallyType(const std::string& TType)
   std::ostringstream cx;
   
   if (tc!=tMap.end())
-    cx<<std::setw(10)<<StrFunc::toUpperString(TType);
-  else if (pConv.hasName(TType))
-    {
-      cx<<std::setw(10)<<
-	StrFunc::toUpperString(pConv.nameToFLUKA(TType));
-    }
-  else
-    throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
+    return StrFunc::toUpperString(TType);
 
-  return cx.str();
+  if (pConv.hasName(TType))
+    return StrFunc::toUpperString(pConv.nameToFLUKA(TType));
+
+
+  throw ColErr::InContainerError<std::string>(TType,"TType not in TMap");
 }
 
   
@@ -156,7 +152,7 @@ userBinConstruct::processMesh(SimFLUKA& System,
 			      const size_t Index) 
   /*!
     Add mesh tally (s) as needed
-    \param System :: SimMCNP to add tallies
+    \param System :: SimFLUKA to add tallies
     \param IParam :: Main input parameters
     \param Index :: index of the -T card
   */

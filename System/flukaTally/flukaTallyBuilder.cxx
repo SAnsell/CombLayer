@@ -51,9 +51,14 @@
 #include "FuncDataBase.h"
 #include "MainProcess.h"
 #include "inputParam.h"
+#include "Rules.h"
+#include "HeadRule.h"
+#include "Simulation.h"
+#include "SimFLUKA.h"
 
 #include "userBinConstruct.h"
 #include "userDumpConstruct.h"
+#include "userBdxConstruct.h"
 #include "flukaTallyBuilder.h"
 
 namespace flukaSystem
@@ -70,6 +75,9 @@ tallySelection(SimFLUKA& System,
   */
 {
   ELog::RegMethod RegA("flukaTallyBuilder","tallySelection(basic)");
+  
+  System.populateCells();
+  System.createObjSurfMap();
 
   for(size_t i=0;i<IParam.setCnt("tally");i++)
     {
@@ -79,7 +87,7 @@ tallySelection(SimFLUKA& System,
       const size_t NItems=IParam.itemCnt("tally",i);
       const std::string HType=(NItems>1) ?
 	IParam.getValue<std::string>("tally",i,1) : "help";
-      
+
       if (TType=="help" || TType=="?")
 	helpTallyType(HType);
       
@@ -87,8 +95,11 @@ tallySelection(SimFLUKA& System,
 	userBinConstruct::processMesh(System,IParam,i);
       else if (TType=="dump")
 	userDumpConstruct::processDump(System,IParam,i);
+      else if (TType=="surface")
+	userBdxConstruct::processBDX(System,IParam,i);
       else
 	ELog::EM<<"Unable to understand tally type :"<<TType<<ELog::endErr;
+
     }
 
   //if (IParam.flag("Txml"))

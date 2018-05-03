@@ -97,10 +97,11 @@ importanceSim(Simulation& System,const mainSystem::inputParam& IParam)
       importanceSim(*mcnpPtr,IParam);
       return;
     }
+  
   SimFLUKA* flukaPtr=dynamic_cast<SimFLUKA*>(&System);
-
   if (flukaPtr)
     {
+      mainSystem::renumberCells(*flukaPtr,IParam);
       flukaSystem::setDefaultPhysics(*flukaPtr,IParam);
       return;
     }

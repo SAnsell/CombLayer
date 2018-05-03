@@ -162,7 +162,12 @@ frontEndVariables(FuncDataBase& Control,
   // collimator block
   CollGen.generateColl(Control,frontKey+"CollA",0.0,34.0);
   CollGen.generateColl(Control,frontKey+"CollB",0.0,34.0);
-    
+
+  Control.addVariable(frontKey+"ECutDiskYStep",2.0);
+  Control.addVariable(frontKey+"ECutDiskLength",1.0);
+  Control.addVariable(frontKey+"ECutDiskRadius",6.0);
+  Control.addVariable(frontKey+"ECutDiskDefMat","H2Gas#0.1");
+  
   
   
   // ystep/width/height/depth/length

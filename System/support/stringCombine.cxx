@@ -54,7 +54,8 @@ indexToAlpha(const size_t index)
     \return [A-z] based on index '?' on error
   */
 {
-  static const char cmap[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  static const char cmap[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
   return (index>=52) ? '?' : cmap[index];
 }
@@ -67,10 +68,26 @@ indexToRevAlpha(const size_t index)
     \return [a-Z] based on index 
   */
 {
-  static const char cmap[] = "abcdefghijklmnopqrstuvwxyz"
+  static const char cmap[] =
+    "abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   return cmap[index % 52];
+}
+
+size_t
+alphaToIndex(const char C)
+  /*!
+    Convert an index to  a-z / A-Z
+    \param index :: index value
+    \return [a-Z] based on index 
+  */
+{
+  static const char cmap[]=
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+  size_t pos=(strchr(cmap,C)-cmap);
+  return pos;
 }
 
 size_t

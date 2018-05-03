@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   flukaProcessInc/flukaProcess.h
+ * File:   tallyInc/userBdxConstruct.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,27 +19,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaSystem_flukaProcess_h
-#define flukaSystem_flukaProcess_h
+#ifndef tallySystem_userBdxConstruct_h
+#define tallySystem_userBdxConstruct_h
 
-class Simulation;
-class SimFLUKA;
-class FuncDataBase;
+namespace attachSystem
+{
+  class FixedComp;
+}
 
 namespace mainSystem
 {
   class inputParam;
 }
 
+class Simulation;
+
 namespace flukaSystem
 {
-  std::set<int> getActiveUnit(const int,const std::string&);
-  std::set<int> getActiveMaterial(std::string);
-  std::set<int> getActiveCell(const std::string&);
-  std::set<int> getActiveParticle(const std::string&);
-  void setDefaultPhysics(SimFLUKA&,const mainSystem::inputParam&);
-}
 
+/*!
+  \class userBdxConstruct
+  \version 1.0
+  \author S. Ansell
+  \date July 2012
+  \brief Constructs a mesh tally from inputParam
+*/
+
+class userBdxConstruct 
+{
+  private:
+  
+  /// Private constructor
+  userBdxConstruct() {}
+
+  static bool constructLinkRegion(const Simulation&,const std::string&,
+				  const std::string&,int&,int&);
+
+  static bool checkLinkCells(const Simulation&,const int,const int);
+  
+  static void createTally(SimFLUKA&,const std::string&,const int,
+			  const int,const int,
+			  const bool,const double,const double,const size_t,
+			  const bool,const double,const double,const size_t);
+  
+ public:
+
+  static void processBDX(SimFLUKA&,const mainSystem::inputParam&,
+			 const size_t);
+  
+  static void writeHelp(std::ostream&);
+};
+
+}
 
 #endif
  

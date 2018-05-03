@@ -145,8 +145,8 @@ ObjSurfMap::getObj(const int SNum,const size_t Index) const
 const ObjSurfMap::STYPE&
 ObjSurfMap::getObjects(const int SNum) const
   /*!
-    Get vector of object 
-    \param SNum :: Surface number
+    Get vector of objects which have a surface SNum.
+    \param SNum :: Surface number [signed]
     \return empty set if SNum doesn't match
    */
 {

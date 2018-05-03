@@ -179,20 +179,21 @@ sourceSelection(Simulation& System,
     activationSelection(System,IParam);
 
   else if (sdefType=="Point" || sdefType=="point")
-    {
-      sName=SDef::createPointSource(inputMap,"pointSource",
-			      FC,linkIndex);
-    }
+    sName=SDef::createPointSource(inputMap,"pointSource",FC,linkIndex);
+
   else if (sdefType=="Disk" || sdefType=="disk")
-    {
-      sName=SDef::createGammaSource(inputMap,"diskSource",FC,
-				    linkIndex);
-    }
+    sName=SDef::createGammaSource(inputMap,"diskSource",FC,linkIndex);
+
+  
   else if (sdefType=="Beam" || sdefType=="beam")
-    {
-      sName=SDef::createBeamSource(inputMap,"beamSource",
-			     FC,linkIndex);
-    }
+    sName=SDef::createBeamSource(inputMap,"beamSource",FC,linkIndex);
+
+  else if (sdefType=="FlukaSource" || sdefType=="flukaSource")
+    sName=SDef::createFlukaSource(inputMap,"flukaSource",FC,linkIndex);
+
+  else if (sdefType=="Rectangle" || sdefType=="rectangle")
+    sName=SDef::createRectSource(inputMap,"rectSource",FC,linkIndex);
+
   else if (sdefType=="LENS" || sdefType=="lens")
     {
       sName=SDef::createLensSource(inputMap,FC,linkIndex);

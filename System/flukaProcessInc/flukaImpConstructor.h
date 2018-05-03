@@ -54,26 +54,61 @@ class flukaImpConstructor
   typedef ELog::OutputLog<ELog::EReport>& (*ENDL)
     (ELog::OutputLog<ELog::EReport>&);
 
+  /// Typedef for tuple
+  typedef std::tuple<size_t,int,std::string> impTYPE;
+
+  void writeCUTHelp(std::ostream&,ENDL) const;
+
   void writeIMPHelp(std::ostream&,ENDL) const;
 
   void writeEMFHelp(std::ostream&,ENDL) const;
-    
+
+  void writeEXPHelp(std::ostream&,ENDL) const;
+
+  void writeLAMHelp(std::ostream&,ENDL) const;
+
+  void writeMATHelp(std::ostream&,ENDL) const;
+  
+  void insertCell(flukaPhysics&,const size_t,
+		  const std::set<int>&,const std::string&,
+		  const std::string*) const;
+  void insertParticle(flukaPhysics&,const size_t,
+		      const std::string&,const std::string&,
+		      const std::string*) const;
+  
+  void processGeneral(flukaPhysics&,
+		      const mainSystem::inputParam&,
+		      const size_t,const std::string&,
+		      const impTYPE&) const;
+
  public:
 
+  /// null constructor
   flukaImpConstructor() {}
+  /// null copy constructor
   flukaImpConstructor(const flukaImpConstructor&) {}
+  /// null assignment operator
   flukaImpConstructor& operator=(const flukaImpConstructor&) { return *this; }
   ~flukaImpConstructor() {}  ///< Destructor
 
   void processUnit(flukaPhysics&,
 		   const mainSystem::inputParam&,
 		   const size_t);
-  void processPAIR(flukaPhysics&,
-		   const mainSystem::inputParam&,
-		   const size_t);
+  void processCUT(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
+  void processEXP(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
   void processEMF(flukaPhysics&,
-		   const mainSystem::inputParam&,
-		   const size_t);
+		  const mainSystem::inputParam&,
+		  const size_t);
+  void processLAM(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
+  void processMAT(flukaPhysics&,
+		  const mainSystem::inputParam&,
+		  const size_t);
 };
 
 }

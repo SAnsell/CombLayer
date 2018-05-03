@@ -16,7 +16,8 @@ namespace essSystem
 
 class TelescopicPipe : public attachSystem::ContainedGroup,
   public attachSystem::FixedOffset,
-  public attachSystem::FrontBackCut
+  public attachSystem::FrontBackCut,
+  public attachSystem::CellMap
 {
  private:
 

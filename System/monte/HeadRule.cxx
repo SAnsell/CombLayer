@@ -586,7 +586,7 @@ HeadRule::isValid(const Geometry::Vec3D& Pt,
   /*!
     Calculate if an object is valid
     \param Pt :: Point to test
-    \param S :: Exclude items
+    \param S :: Exclude items [unsigned]
     \return true/false 
   */
 {
@@ -2202,7 +2202,6 @@ HeadRule::Intersects(const HeadRule& A) const
    */
 {
   ELog::RegMethod RegA("HeadRule","Intersects");
-  
   
   const std::vector<const Geometry::Surface*> 
     AVec(this->getSurfaces());

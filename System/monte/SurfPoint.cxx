@@ -1,9 +1,9 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   monte/RuleItems.cxx
+ * File:   monte/SurfPoint.cxx
  *
- * Copyright (c) 2004-2017 by Stuart Ansell
+ * Copyright (c) 2004-2018 by Stuart Ansell
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,7 +233,7 @@ SurfPoint::isValid(const Geometry::Vec3D& Pt,
   /*! 
     Determines if a point  is valid.  
     \param Pt :: Point to test
-    \param ExSN :: Exclude surf number 
+    \param ExSN :: Exclude surf number  [unsigned]
     \retval 1 :: Pt is the +ve side of the 
     surface or on the surface
     \retval 0 :: Pt is on the -ve side of the surface

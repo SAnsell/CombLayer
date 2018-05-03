@@ -60,6 +60,8 @@ class FrontBackCut
   FrontBackCut& operator=(const FrontBackCut&);
   virtual ~FrontBackCut();
 
+  void setFront(const FrontBackCut&);
+  void setBack(const FrontBackCut&);
   void setFront(const int);
   void setBack(const int);
   void setFront(const std::string&);

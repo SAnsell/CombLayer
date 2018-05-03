@@ -57,13 +57,26 @@ namespace mainSystem
 bool
 hasInput(const MITYPE& inputMap,const std::string& keyName)
   /*!
-    Has map go key
+    Has map got a key
     \param inputMap :: Map of vector to search
     \param keyName :: keyname
   */
 {
   MITYPE::const_iterator mc = inputMap.find(keyName);
   return (mc==inputMap.end()) ? 0 : 1;
+}
+
+size_t
+sizeInput(const MITYPE& inputMap,const std::string& keyName)
+  /*!
+    Size of item in the key [if exists]
+    \param inputMap :: Map of vector to search
+    \param keyName :: keyname
+    \return number of entries
+  */
+{
+  MITYPE::const_iterator mc = inputMap.find(keyName);
+  return (mc==inputMap.end()) ? 0 : mc->second.size();
 }
   
   

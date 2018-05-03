@@ -70,6 +70,7 @@
 #include "TallySelector.h"
 #include "TallyBuilder.h"
 #include "flukaTallyBuilder.h"
+#include "flukaTallySelector.h"
 #include "ReportSelector.h"
 #include "mainJobs.h"
 #include "SimInput.h"
@@ -492,7 +493,7 @@ void
 exitDelete(Simulation* SimPtr)
  /*!
    Final deletion including singletons
-   \param Simulation to delete
+   \param SimPtr :: Simulation to delete
  */
 {
   delete SimPtr;
@@ -520,9 +521,7 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   int MCIndex(0);
   const int multi=IParam.getValue<int>("multi");
   if (IParam.flag("noVariables"))
-    {
-      SimFLUKAPtr->setNoVariables();
-    }
+    SimFLUKAPtr->setNoVariables();
 
   ELog::EM<<"FLUKA MODEL DOES NOT SET DEFAULT PHYSICS"<<ELog::endCrit;
   //  ModelSupport::setDefaultPhysics(*SimMCPtr,IParam);
@@ -531,8 +530,9 @@ buildFullSimFLUKA(SimFLUKA* SimFLUKAPtr,
   //
   SimFLUKAPtr->processActiveMaterials();
   SimProcess::importanceSim(*SimFLUKAPtr,IParam);
+  
   //  SimProcess::inputProcessForSim(*SimMCPtr,IParam); // energy cut etc
-  //  tallyModification(*SimMCPtr,IParam);
+  tallyModification(*SimFLUKAPtr,IParam);
 
   SDef::flukaSourceSelection(*SimFLUKAPtr,IParam);
   SimFLUKAPtr->masterSourceRotation();

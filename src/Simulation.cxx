@@ -1015,9 +1015,50 @@ Simulation::getCellMaterial(const int cellNumber) const
 
   return QH->getMat();
 }
+
+std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*>
+Simulation::findCellPair(const Geometry::Vec3D& Pt,const int SN) const
+  /*!
+    Find a cell pair (or 1) that have -/+SN as a valid cell 
+    \param Pt :: Point to test
+    \param SN :: Surface number
+    \return Pair Object valid for -SN : Object valid for +SN 
+  */
+{
+  ELog::RegMethod RegA("Simulation","findCellPair");
+  
+  std::pair<const MonteCarlo::Object*,const MonteCarlo::Object*> Out(0,0);
+
+  const ModelSupport::ObjSurfMap::STYPE& negType=OSMPtr->getObjects(-SN);
+  const ModelSupport::ObjSurfMap::STYPE& plusType=OSMPtr->getObjects(SN);
+
+
+  for(const MonteCarlo::Object* OPtr : negType)
+    {
+      if (!OPtr->isPlaceHold() &&
+	  OPtr->isDirectionValid(Pt,-SN))
+	{
+	  Out.first=OPtr;
+	  break;
+	}
+    }
+
+  for(const MonteCarlo::Object* OPtr : plusType)
+    {
+      if (!OPtr->isPlaceHold() &&
+	  OPtr->isDirectionValid(Pt,SN))
+	{
+	  Out.second=OPtr;
+	  break;
+	}
+    }
+  return Out;
+    
+}
 				 
 int
-Simulation::isValidCell(const int cellNumber,const Geometry::Vec3D& Pt) const
+Simulation::isValidCell(const int cellNumber,
+			const Geometry::Vec3D& Pt) const
   /*!
     Check if a point is in the cell
     \param cellNumber :: number of cell to check
@@ -1026,7 +1067,6 @@ Simulation::isValidCell(const int cellNumber,const Geometry::Vec3D& Pt) const
     \retval 1 if valid
   */
 {
-  
   /* Does Oi correspond to an object */
   const MonteCarlo::Qhull* QH=findQhull(cellNumber);
   if (!QH)
@@ -1402,6 +1442,8 @@ Simulation::renumberCells(const std::vector<int>& cOffset,
 	      oldUnit=keyUnit;
 	      orStartNumber=nNum;
 	    }
+	  OR.renumberActiveCell(cNum,nNum);
+	  
           CMapPtr=OR.getObject<attachSystem::CellMap>(keyUnit);
 	  ELog::RN<<"Cell Changed :"<<cNum<<" "<<nNum
 		  <<" Object:"<<keyUnit;
@@ -1541,22 +1583,16 @@ Simulation::splitObject(const int CA,const int SN)
 
   MonteCarlo::Algebra AX;
   AX.setFunctionObjStr(CHead.display());
-
-  const size_t preLit=AX.countLiterals();
-  size_t minusLit(preLit);
-  size_t plusLit(preLit);
   
   AX.addImplicates(IP);
   if (AX.constructShannonDivision(-SN))
     {
-      minusLit=AX.countLiterals();
       CPtr->procString(AX.writeMCNPX());
     }
 
   AX.setFunctionObjStr(DHead.display());
   if (AX.constructShannonDivision(SN))
     {
-      plusLit=AX.countLiterals();
       DPtr->procString(AX.writeMCNPX());
     }
   
@@ -1567,7 +1603,9 @@ Simulation::splitObject(const int CA,const int SN)
 void
 Simulation::minimizeObject(const int CN)
   /*
-    Carry out minimization
+    Carry out minimization of a cell to remove 
+    literals which can be removed due to implicates [e.g. a->b etc]
+    due to parallel surfaces
     \param CN :: Cell to minimize
    */
 {

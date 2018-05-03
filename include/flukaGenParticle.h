@@ -1,7 +1,7 @@
 /********************************************************************* 
   CombLayer : MCNP(X) Input builder
  
- * File:   tallyInc/flukaTallySelector.h
+ * File:   include/flukaGenParticle.h
  *
  * Copyright (c) 2004-2018 by Stuart Ansell
  *
@@ -19,15 +19,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  ****************************************************************************/
-#ifndef flukaTallySelector_h
-#define flukaTallySelector_h
+#ifndef flukaGenParticle_h
+#define flukaGenParticle_h
 
-class SimFLUKA;
+/*!
+  \class flukaGenParticle
+  \version 1.0
+  \author S. Ansell
+  \date October 2017
+  \brief Singleton for particle name change
+*/
 
+class flukaGenParticle
+{
+ private:
 
+  std::map<std::string,int> flukaGen;            ///< General fluka particle
 
-void tallyModification(SimFLUKA&,const mainSystem::inputParam&);
+  flukaGenParticle();  
+  flukaGenParticle(const flukaGenParticle&);
+  flukaGenParticle& operator=(const flukaGenParticle&);
+  
+ public:
 
+  static const flukaGenParticle& Instance();
 
-#endif
+  bool hasName(const std::string&) const;
+  int flukaITYP(const std::string&) const;
+
+  const std::string& nameToFLUKA(const std::string&) const;
+  double momentumFromKE(const std::string&,const double) const; 
+
+};
  
+
+
+#endif 

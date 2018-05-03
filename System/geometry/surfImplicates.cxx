@@ -66,7 +66,6 @@ namespace Geometry
 {
 
 surfImplicates::surfImplicates() 
-  //  functionMap({"PlanePlane",&surfImplicates::planePlane})
   /*!
     Constructor
   */

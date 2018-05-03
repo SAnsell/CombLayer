@@ -194,10 +194,8 @@ const size_t nP=IParam.setCnt("OAdd");
 	  size_t ptI;
 	  if (PType=="object")
 	    {
-	      const std::string FName=
-		IParam.getValueError<std::string>("OAdd",index,2,eMess);
-	      const std::string LName=
-		IParam.getValueError<std::string>("OAdd",index,3,eMess);
+	      FName=IParam.getValueError<std::string>("OAdd",index,2,eMess);
+	      LName=IParam.getValueError<std::string>("OAdd",index,3,eMess);
 	      ptI=4;
 	    }
 	  else

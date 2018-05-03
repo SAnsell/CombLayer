@@ -58,13 +58,6 @@
 #include "Matrix.h"
 #include "Vec3D.h"
 #include "Quaternion.h"
-#include "Triple.h"
-#include "NList.h"
-#include "NRange.h"
-#include "Tally.h"
-#include "cellFluxTally.h"
-#include "pointTally.h"
-#include "heatTally.h"
 #include "Transform.h"
 #include "Surface.h"
 #include "surfIndex.h"
@@ -82,6 +75,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
+#include "strValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "flukaProcess.h"
@@ -91,7 +85,8 @@
 
 SimFLUKA::SimFLUKA() :
   Simulation(),
-  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),writeVariable(1),
+  alignment("*...+.WHAT....+....1....+....2....+....3....+....4....+....5....+....6....+.SDUM"),
+  defType("PRECISION"),writeVariable(1),lowEnergyNeutron(1),
   nps(1000),rndSeed(2374891),
   PhysPtr(new flukaSystem::flukaPhysics())
   /*!
@@ -101,9 +96,10 @@ SimFLUKA::SimFLUKA() :
 
 SimFLUKA::SimFLUKA(const SimFLUKA& A) :
   Simulation(A),
-  alignment(A.alignment),
-  writeVariable(A.writeVariable),nps(A.nps),
-  rndSeed(A.rndSeed),
+  alignment(A.alignment),defType(A.defType),
+  writeVariable(A.writeVariable),
+  lowEnergyNeutron(A.lowEnergyNeutron),
+  nps(A.nps),rndSeed(A.rndSeed),
   PhysPtr(new flukaSystem::flukaPhysics(*PhysPtr))
  /*! 
    Copy constructor
@@ -122,7 +118,9 @@ SimFLUKA::operator=(const SimFLUKA& A)
   if (this!=&A)
     {
       Simulation::operator=(A);
+      defType=A.defType;
       writeVariable=A.writeVariable;
+      lowEnergyNeutron=A.lowEnergyNeutron;
       nps=A.nps;
       rndSeed=A.rndSeed;
       clearTally();
@@ -141,6 +139,40 @@ SimFLUKA::~SimFLUKA()
   clearTally();
   delete PhysPtr;
 }
+
+void
+SimFLUKA::setDefaultPhysics(const std::string& dName)
+  /*!
+    Set the default physics name if valid
+    \param dName :: Name to set [lower/upper case]
+   */
+{
+  // short name / full name
+  const static std::map<std::string,std::string>
+    validItem({{"PRECISIO","PRECISION"},
+	       {"EM-CASCAD","EM-CASCADE"},
+	       {"CALORIME","CALORIMETRY"},
+	       {"SHIELDIN","SHIELDING"},
+	       {"NEW-DEF","NEW-DEFAULTS"},
+	       {"HADROTHE","HADRONTHE"},
+	       {"NEUTRONS","NEUTRONS"}
+      });
+
+  if (dName.empty())
+    {
+      defType="";
+      return;
+    }
+      
+  const std::string item=StrFunc::toUpperString(dName.substr(0,8));
+  std::map<std::string,std::string>::const_iterator mc=
+    validItem.find(item);
+  if (mc==validItem.end())
+    throw ColErr::InContainerError<std::string>(dName,"Default item not known");
+  defType=mc->second;
+  return;
+}
+  
 
 void
 SimFLUKA::clearTally()
@@ -169,7 +201,6 @@ SimFLUKA::getNextFTape() const
     }
   throw ColErr::InContainerError<int>
     (98,"Tallies have exhaused available ftapes [25-98]");
-
 }
   
 void
@@ -208,16 +239,16 @@ SimFLUKA::getTally(const int TI) const
 void
 SimFLUKA::processActiveMaterials() const
   /*!
-    Set materials as active in DBMaterai Database
+    Set materials as active in DBMaterail Database
   */
 {
   ELog::RegMethod RegA("SimFLUKA","processActiveMaterials");
 
   ModelSupport::DBMaterial& DB=ModelSupport::DBMaterial::Instance();  
   DB.resetActive();
-  OTYPE::const_iterator mp;
-  for(mp=OList.begin();mp!=OList.end();mp++)
-    DB.setActive(mp->second->getMat());
+
+  for(const OTYPE::value_type& mc : OList)
+    DB.setActive(mc.second->getMat());
   return;
 }
 
@@ -336,7 +367,8 @@ SimFLUKA::writeElements(std::ostream& OX) const
     }
 
   StrFunc::writeFLUKA(cx.str(),OX);
-  StrFunc::writeFLUKA(lowmat.str(),OX);
+  if (lowEnergyNeutron)
+    StrFunc::writeFLUKA(lowmat.str(),OX);
 
   OX<<alignment<<std::endl;
 

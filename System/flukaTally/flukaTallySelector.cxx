@@ -57,6 +57,7 @@
 
 #include "userBinConstruct.h"
 
+#include "flukaTallyModification.h"
 #include "flukaTallySelector.h"
 
 
@@ -65,13 +66,13 @@ tallyModification(SimFLUKA& System,
 		  const mainSystem::inputParam& IParam)
   /*!
     Applies a large number of modifications to the tally system
-    \param System :: SimMCNP to get tallies from 
+    \param System :: SimFLUKA holding tallies to change
     \param IParam :: Parameters
   */
 {
   ELog::RegMethod RegA("flukaTallySelector[F]","tallyModification");
   const size_t nP=IParam.setCnt("TMod");
-  
+	  	
   for(size_t i=0;i<nP;i++)
     {
       std::vector<std::string> StrItem;
@@ -79,19 +80,71 @@ tallyModification(SimFLUKA& System,
       const size_t nV=IParam.itemCnt("TMod",i);
       const std::string key=
 	IParam.getValue<std::string>("TMod",i,0);
+      // why this:
       for(size_t j=1;j<nV;j++)
 	StrItem.push_back
 	  (IParam.getValue<std::string>("TMod",i,j));
 
       if(key=="help")
 	{
-	  ELog::EM<<"TMod Help "<<ELog::endBasic;
-
-          ELog::EM<<ELog::endBasic;
-	  ELog::EM<<ELog::endErr;
+	  ELog::EM<<"TMod Help "
+	    "  -- particle {tallyNameNumber} [newtype] \n"
+	    "  -- auxParticle {tallyNameNumber} [newtype] \n"
+	    "  -- doseType {tallyNameNumber} [newtype] \n"
+	    "  -- energy {tallyNameNumber} Emin Emax NPts LinearFlag  \n"
+	    "  -- angle {tallyNameNumber} Amin Amax NPts LogFlag  \n"
+		  <<ELog::endBasic
+		  <<ELog::endErr;
           return;
 	}
-      ELog::EM<<"Currently no modification possible"<<ELog::endDiag;
+      
+      if(key=="doseType")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for doseType");
+	  const std::string PT=IParam.getValueError<std::string>
+	    ("TMod",i,2,"No particle for doseType");
+	  const std::string DT=IParam.getValueError<std::string>
+	    ("TMod",i,3,"No standard for doseType");
+          flukaSystem::setDoseType(System,tName,PT,DT);
+        }
+      else if(key=="auxParticle")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+	  const std::string PT=IParam.getValueError<std::string>
+	    ("TMod",i,2,"Particle for "+key);
+          flukaSystem::setAuxParticle(System,tName,PT);
+        }
+      else if(key=="energy")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+	  const double EA=IParam.getValueError<double>
+	    ("TMod",i,2,"Emin for "+key);
+	  const double EB=IParam.getValueError<double>
+	    ("TMod",i,3,"Emax for "+key);
+	  const size_t NE=IParam.getValueError<size_t>
+	    ("TMod",i,4,"NPTS for "+key);
+	  const int EFlag=IParam.getDefValue<int>(0,"TMod",i,5);
+          flukaSystem::setEnergy(System,tName,EA,EB,NE,EFlag);
+        }
+      else if(key=="angle")
+        {
+	  const std::string tName=IParam.getValueError<std::string>
+	    ("TMod",i,1,"No tally name for "+key);
+	  const double AA=IParam.getValueError<double>
+	    ("TMod",i,2,"Amin for "+key);
+	  const double AB=IParam.getValueError<double>
+	    ("TMod",i,3,"Amax for "+key);
+	  const size_t NA=IParam.getValueError<size_t>
+	    ("TMod",i,4,"NPTS for "+key);
+
+	  const int AFlag=IParam.getDefValue<int>(0,"TMod",i,5);
+          flukaSystem::setAngle(System,tName,AA,AB,NA,AFlag);
+        }
+      else
+	ELog::EM<<"Currently no modification possible for:"<<key<<ELog::endDiag;
     }
   return;
 }

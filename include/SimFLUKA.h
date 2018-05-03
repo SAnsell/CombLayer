@@ -45,7 +45,10 @@ class SimFLUKA : public Simulation
  private:
 
   const std::string alignment;    ///< the alignemnt string
+
+  std::string defType;            ///< Default physics type
   bool writeVariable;             ///< Prevent the writing of variables
+  bool lowEnergyNeutron;          ///< Low energy neutron assigned
   size_t nps;                     ///< Number of particles
   long int rndSeed;               ///< Random number seed
   
@@ -76,7 +79,7 @@ class SimFLUKA : public Simulation
   SimFLUKA& operator=(const SimFLUKA&);
   virtual ~SimFLUKA();
 
-  // TALLY PROcessing 
+  // TALLY Processing 
   void addTally(const flukaSystem::flukaTally&);
   flukaSystem::flukaTally* getTally(const int) const;
   flukaSystem::flukaPhysics* getPhysics() { return PhysPtr; }
@@ -96,6 +99,9 @@ class SimFLUKA : public Simulation
   virtual void prepareWrite();
   /// no write variable
   void setNoVariables() { writeVariable=0; }
+  /// no low energy neturon
+  void setNoThermal() { lowEnergyNeutron=0; }
+  void setDefaultPhysics(const std::string&);
   void setForCinder();
   void processActiveMaterials() const;
   

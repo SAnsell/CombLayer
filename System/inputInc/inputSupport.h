@@ -29,6 +29,9 @@ namespace mainSystem
 /// populate input type
 typedef std::map<std::string,std::vector<std::string>> MITYPE;
 
+size_t
+sizeInput(const MITYPE&,const std::string&);
+  
 bool
 hasInput(const MITYPE&,const std::string&);
   

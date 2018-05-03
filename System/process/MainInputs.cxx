@@ -69,6 +69,7 @@ createInputs(inputParam& IParam)
   IParam.regDefItem<double>("cutWeight","cutWeight",2,0.5,0.25);
   IParam.regMulti("cutTime","cutTime",100,1);
   IParam.regItem("mode","mode");
+  IParam.regMulti("comment","comment",1000,0);
   IParam.regFlag("cinder","cinder");
   IParam.regItem("cellDNF","cellDNF");
   IParam.regItem("cellCNF","cellCNF");
@@ -129,7 +130,7 @@ createInputs(inputParam& IParam)
   IParam.regMulti("OAdd","objectAddition",1000);
   IParam.regMulti("TC","tallyCells",10000,2,3);
   IParam.regMulti("TGrid","TGrid",10000,2,3);
-  IParam.regMulti("TMod","tallyMod",100,1); // max number of TMod cards is 100
+  IParam.regMulti("TMod","tallyMod",1000,1);
   IParam.regFlag("TW","tallyWeight");
   IParam.regItem("TX","Txml",1);
   IParam.regItem("targetType","targetType",1);
@@ -154,6 +155,7 @@ createInputs(inputParam& IParam)
   IParam.regItem("w","weight");
   IParam.regItem("WP","weightPt");
   IParam.regMulti("wExt","wExt",25,0);
+  IParam.regMulti("wEXP","wEXP",25,0);
   IParam.regMulti("wECut","wECut",100,0);
   IParam.regMulti("wPWT","wPWT",25,0);
   IParam.regItem("WControl","weightControl",1,10);
@@ -173,7 +175,10 @@ createInputs(inputParam& IParam)
   IParam.regMulti("wWWG","wWWG",1000,0);
   IParam.regMulti("wIMP","wIMP",1000,0);
   IParam.regMulti("wEMF","wEMF",1000,0);
-    
+  IParam.regMulti("wLAM","wLAM",1000,0);
+  IParam.regMulti("wCUT","wCUT",1000,0);
+  IParam.regMulti("wMAT","wMAT",1000,0);
+  
   IParam.regMulti("wwgE","wwgE",25,0);
   IParam.regItem("wwgVTK","wwgVTK",1,10);
   IParam.regItem("wwgNorm","wwgNorm",0,30);
