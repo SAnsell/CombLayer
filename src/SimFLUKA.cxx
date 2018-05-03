@@ -75,7 +75,7 @@
 #include "inputSupport.h"
 #include "SourceBase.h"
 #include "sourceDataBase.h"
-#include "strValueSet.h"
+#include "pairValueSet.h"
 #include "cellValueSet.h"
 #include "flukaTally.h"
 #include "flukaProcess.h"
@@ -437,7 +437,8 @@ SimFLUKA::writePhysics(std::ostream& OX) const
 {  
   ELog::RegMethod RegA("SimFLUKA","writePhysics");
   std::ostringstream cx;
-  cx<<"START "<<nps;
+
+  cx<<"START "<<static_cast<double>(nps);
   StrFunc::writeFLUKA(cx.str(),OX);
   cx.str("");
   cx<<"RANDOMIZE 1.0 "<<std::to_string(rndSeed % 1000000);

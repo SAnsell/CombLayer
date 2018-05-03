@@ -77,8 +77,8 @@
 
 #include "flukaGenParticle.h"
 #include "SimFLUKA.h"
-#include "strValueSet.h"
 #include "cellValueSet.h"
+#include "pairValueSet.h"
 #include "flukaPhysics.h"
 #include "flukaImpConstructor.h"
 #include "flukaProcess.h"
