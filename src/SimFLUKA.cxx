@@ -267,7 +267,6 @@ SimFLUKA::writeTally(std::ostream& OX) const
   OX<<"* ------------------- TALLY CARDS ----------------------"<<std::endl;
   OX<<"* ------------------------------------------------------"<<std::endl;
 
-  ELog::EM<<"TALLY Size == :"<<FTItem.size()<<ELog::endDiag;
   for(const FTallyTYPE::value_type& TI : FTItem)
     TI.second->write(OX);
 

@@ -665,12 +665,6 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::ostringstream cx;
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
-
-  if (keyName=="mulsopt")
-    {
-      ELog::EM<<"WRITE == "<<keyName<<ELog::endDiag;
-      ELog::EM<<"Cell ="<<cellN.size()<<ELog::endDiag;
-    }
 	
   if (cellSplit(cellN,Bgroup,Bdata))
     {	

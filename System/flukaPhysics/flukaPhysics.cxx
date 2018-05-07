@@ -471,7 +471,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
  */
 {
   ELog::RegMethod RegA("flukaPhysics","writeFLUKA");
-  ELog::EM<<"WRITE FLUKA:"<<matVec.size()<<" "<<cellVec.size()<<ELog::endDiag;  
+
   typedef std::map<std::string,unitTYPE> FMAP;
 
   for(const std::map<std::string,cellValueSet<0>>::value_type& flagV :
@@ -539,7 +539,6 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       lamV.second.writeFLUKA(OX,fmtSTR);
     }
   
-  ELog::EM<<"Finish "<<ELog::endDiag;
   return;
 }
 
