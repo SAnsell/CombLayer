@@ -354,7 +354,7 @@ cellValueSet<N>::cellSplit(const std::vector<int>& cellN,
 }
 
 
-template<size_t N>
+template<size_t N> 
 void
 cellValueSet<N>::setValues(const int cN)
   /*!
