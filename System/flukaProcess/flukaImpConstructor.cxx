@@ -393,7 +393,7 @@ flukaImpConstructor::processLAM(flukaPhysics& PC,
   static const std::map<std::string,lamTYPE> IMap
     ({
       { "length",lamTYPE(1,-1,"lamlength") },   // particle
-      { "primlen",lamTYPE(1,-1,"lamPrime") }   // particle
+      { "primlen",lamTYPE(1,-1,"lamprimary") }   // particle
     });
 
   const std::string type=IParam.getValueError<std::string>

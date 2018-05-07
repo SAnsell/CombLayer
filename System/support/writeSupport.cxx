@@ -251,7 +251,8 @@ writeControl(const std::string& Line,std::ostream& OX,
 }
 
 void
-writeMCNPXcomment(const std::string& Line,std::ostream& OX)
+writeMCNPXcomment(const std::string& Line,std::ostream& OX,
+		  const std::string commentString)
 /*!
   Write out the line in the limited form for MCNPX
   ie initial line from 0->72 after that 8 to 72
@@ -259,6 +260,7 @@ writeMCNPXcomment(const std::string& Line,std::ostream& OX)
   so lines are cut by 2
   \param Line :: full MCNPX line
   \param OX :: ostream to write to
+  \param commentString :: standard comment pre-string
 */
 {
   const size_t MaxLine(72);
@@ -276,7 +278,7 @@ writeMCNPXcomment(const std::string& Line,std::ostream& OX)
       const std::string Out=X.substr(0,posB);
       if (!isEmpty(Out))
         {
-	  OX<<"c ";
+	  OX<<commentString;
 	  if (spc)
 	    OX<<std::string(spc,' ');
 	  OX<<X.substr(0,posB)<<std::endl;
@@ -287,12 +289,42 @@ writeMCNPXcomment(const std::string& Line,std::ostream& OX)
     }
   if (!isEmpty(X))
     {
-      OX<<"c ";
+      OX<<commentString;
       if (spc)
 	OX<<std::string(spc,' ');
       OX<<X<<std::endl;
     }
   return;
+}
+
+std::vector<std::string>
+splitComandLine(std::string Line)
+/*!
+  Split the line based on "-Not a number" commands
+  \param Line :: full MCNPX line
+  \return vector of components
+*/
+{
+  std::vector<std::string> outVec;
+  std::string unit;
+  std::string part;
+  size_t offset(0);
+  while(StrFunc::section(Line,part))
+    {
+      if (part.size()>=2 && part[0]=='-' &&
+	  !std::isdigit(part[1]))
+	{
+	  if (offset)
+	    {
+	      outVec.push_back(unit);
+	      unit=std::string(offset,' ');
+	    }
+	  offset=3;
+	}
+      unit+=" "+part;
+    }
+  outVec.push_back(unit);
+  return outVec;
 }
 
 }  // NAMESPACE StrFunc

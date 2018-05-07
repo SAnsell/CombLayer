@@ -666,8 +666,14 @@ cellValueSet<N>::writeFLUKA(std::ostream& OX,
   std::vector<TITEM> Bgroup;
   std::vector<valTYPE> Bdata;
 
-  if (cellSplit(cellN,Bgroup,Bdata))
+  if (keyName=="mulsopt")
     {
+      ELog::EM<<"WRITE == "<<keyName<<ELog::endDiag;
+      ELog::EM<<"Cell ="<<cellN.size()<<ELog::endDiag;
+    }
+	
+  if (cellSplit(cellN,Bgroup,Bdata))
+    {	
       const std::vector<std::string> Units=StrFunc::StrParts(ControlStr);
       std::vector<std::string> SArray(3+N);
 

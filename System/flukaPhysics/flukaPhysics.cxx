@@ -88,7 +88,6 @@ flukaPhysics::flukaPhysics() :
       { "pairbrem", cellValueSet<2>("pairbrem","PAIRBREM","",{1e-3,1e-3})},
       { "lpb",  cellValueSet<2>("lpb","EMF-BIAS","LPBEMF",{1e-3,1e-3}) },
       { "lambbrem",cellValueSet<2>("lambbrem","EMF-BIAS","LAMBBREM",{1.0,1}) },
-      { "lamPrime",cellValueSet<2>("lamPrime","LAM-BIAS","INEPRI") }
     }),
 
   threeFlag({
@@ -105,7 +104,10 @@ flukaPhysics::flukaPhysics() :
 
   lamPair({
       { "lamlength",pairValueSet<6>("lamlength","LAM-BIAS","",
+				    {1.0,1.0,1.0,1.0,1.0,1.0}) },
+      { "lamprimary",pairValueSet<6>("lamprimary","LAM-BIAS","INEPRI",
 				    {1.0,1.0,1.0,1.0,1.0,1.0}) }
+
     }),
   
   formatMap({
@@ -132,7 +134,7 @@ flukaPhysics::flukaPhysics() :
       { "lambemf", unitTYPE(1,"%2 %3 %4 M0 M1 1.0 ") },
 
       { "lamlength", unitTYPE(-1,"0.0 %2 M1 P0 P0 1.0 ") },
-      { "lamPrime", unitTYPE(-1,"0.0 %3 M2 P0 P1 1.0 ") },
+      { "lamprimary", unitTYPE(-1,"0.0 %2 M1 P0 P0 1.0 ") },
 
       { "gas", unitTYPE(1," %2 0.0 0.0 M0 M1 1.0 ") },
       { "rho", unitTYPE(1," 0.0 %2 0.0 M0 M1 1.0 ") },
@@ -468,6 +470,8 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
     \param OX :: Output stream
  */
 {
+  ELog::RegMethod RegA("flukaPhysics","writeFLUKA");
+  ELog::EM<<"WRITE FLUKA:"<<matVec.size()<<" "<<cellVec.size()<<ELog::endDiag;  
   typedef std::map<std::string,unitTYPE> FMAP;
 
   for(const std::map<std::string,cellValueSet<0>>::value_type& flagV :
@@ -503,7 +507,7 @@ flukaPhysics::writeFLUKA(std::ostream& OX) const
       FMAP::const_iterator mc=formatMap.find(empV.first);
       const int materialFlag(std::get<0>(mc->second));
       const std::string& fmtSTR(std::get<1>(mc->second));
-
+      
       if (!materialFlag)  // cell
 	empV.second.writeFLUKA(OX,cellVec,fmtSTR);
       else if (materialFlag>0)       // mat

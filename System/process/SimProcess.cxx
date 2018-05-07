@@ -129,9 +129,8 @@ writeIndexSimFLUKA(SimFLUKA& System,
    */
 {
   ELog::RegMethod RegA("SimProcess[F]","writeIndexSimFLUKA");
-  
-  System.prepareWrite();
-  System.makeObjectsDNForCNF();
+
+  System.setRND(System.getRNDseed()+Number*11);
   System.write(OName+std::to_string(Number+1)+".inp");
   
   return;

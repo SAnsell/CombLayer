@@ -593,6 +593,13 @@ SimFLUKA::write(const std::string& Fname) const
   OX<<" Fluka model from CombLayer http://github.com/SAnsell/CombLayer"
     <<std::endl;
 
+  StrFunc::writeMCNPXcomment("RunCmd:",OX,"* ");
+  const std::vector<std::string> SCL=
+    StrFunc::splitComandLine(cmdLine);
+  for(const std::string& cmd : SCL)
+    StrFunc::writeMCNPXcomment(cmd,OX,"* ");
+  StrFunc::writeMCNPXcomment("",OX,"* ");
+  
   if (writeVariable)
     Simulation::writeVariables(OX,'*');
   

@@ -30,6 +30,8 @@ namespace StrFunc
 std::string flukaNum(const int);
 std::string flukaNum(const double);
 
+std::vector<std::string> splitComandLine(std::string);
+ 
 // Write file in standard MCNPX input form
 void writeControl(const std::string&,std::ostream&,
 		  const size_t,const int);
@@ -40,7 +42,8 @@ void writeFLUKA(const std::string&,std::ostream&);
 /// Write file in standard MCNPX input form 
 void writeMCNPX(const std::string&,std::ostream&);
 void writeMCNPXcont(const std::string&,std::ostream&);
-void writeMCNPXcomment(const std::string&,std::ostream&);
+void writeMCNPXcomment(const std::string&,std::ostream&,
+			const std::string="c ");
 
 void writeFLUKAhead(const std::string&,const std::string&,
 		    const std::string&,std::ostream&);

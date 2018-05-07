@@ -90,6 +90,8 @@ class SimFLUKA : public Simulation
   /// Access constant
   const FTallyTYPE& getTallyMap() const { return FTItem; }
   int getNextFTape() const;
+  /// get RND seed
+  long int getRNDseed() const { return rndSeed; }
 
   /// set nps [move to physics]
   void setNPS(const size_t N) { nps=N; }
