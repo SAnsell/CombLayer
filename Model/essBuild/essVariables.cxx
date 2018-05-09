@@ -247,7 +247,7 @@ EssVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   EssBunkerVariables(Control);
   EssButterflyModerator(IParam,Control);
   EssIradVariables(Control);
-  EssFlightLineVariables(Control);
+  EssFlightLineVariables(IParam,Control);
   F5Variables(Control);
 
   // Set of beamline names:
@@ -343,7 +343,7 @@ EssBeamLinesVariables(FuncDataBase& Control)
 }
 
 void
-EssFlightLineVariables(FuncDataBase& Control)
+EssFlightLineVariables(mainSystem::inputParam& IParam,FuncDataBase& Control)
   /*!
     Set the flightline variables
     \param Control :: Database for variables
@@ -517,11 +517,26 @@ EssFlightLineVariables(FuncDataBase& Control)
 
 
   // lower flight lines
+  const std::string lowMod=IParam.getValue<std::string>("lowMod");
+  if (lowMod=="None")
+    {
+      Control.addVariable("LowAFlightXYAngle",-90.0);
+      Control.addVariable("LowAFlightZStep",-14.95);
+
+      Control.addVariable("LowBFlightXYAngle",90.0);
+      Control.addParse<double>("LowBFlightZStep","LowAFlightZStep");
+    }
+  else
+    {
+      Control.addVariable("LowAFlightXYAngle",0.0);
+      Control.addVariable("LowAFlightZStep",0.0);
+
+      Control.addVariable("LowBFlightXYAngle",180.0);
+      Control.addParse<double>("LowBFlightZStep","LowAFlightZStep");
+    }
 
   Control.addVariable("LowAFlightTapSurf", "cone");
   Control.addVariable("LowAFlightXStep",0.0); // Step from centre
-  Control.addVariable("LowAFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowAFlightXYAngle",0.0);  // Angle out
   Control.addVariable("LowAFlightZAngle",0.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowAFlightAngleXY2",60.0);  // Angle out
@@ -541,8 +556,6 @@ EssFlightLineVariables(FuncDataBase& Control)
 
   Control.addVariable("LowBFlightTapSurf", "cone");
   Control.addVariable("LowBFlightXStep",0.0);     // Angle
-  Control.addVariable("LowBFlightZStep",0.0);      // Step from centre
-  Control.addVariable("LowBFlightXYAngle",180.0);  // Angle out
   Control.addVariable("LowBFlightZAngle",0.0);     // Angle out
   Control.addVariable("LowBFlightAngleXY1",60.0);  // Angle out
   Control.addVariable("LowBFlightAngleXY2",60.0);  // Angle out

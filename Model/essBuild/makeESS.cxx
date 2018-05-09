@@ -1256,15 +1256,24 @@ makeESS::build(Simulation& System,
       LowAFL->createAll(System,*LowMod,0,*Reflector,4,*Bulk,-3);
       LowBFL->createAll(System,*LowMod,0,*Reflector,3,*Bulk,-3);
     }
+  else
+    {
+      // If LowMod is not built then still create Low[AB],
+      // but with respect to TopMod. In this case their ZStep and XYAngle
+      // are adjusted in moderatorVariables.cxx in order to place them
+      // in the original position with LowMod.
+      LowAFL->createAll(System,World::masterOrigin(),0,*Reflector,4,*Bulk,-3);
+      LowBFL->createAll(System,World::masterOrigin(),0,*Reflector,3,*Bulk,-3);
+    }
 
   // THESE calls correct the MAIN volume so pipe work MUST be after here:
   attachSystem::addToInsertSurfCtrl(System,*Bulk,Target->getCC("Wheel"));
+  ELog::EM << "Forced" << ELog::endDiag;
   attachSystem::addToInsertForced(System,*Bulk,Target->getCC("Shaft"));
-  if (lowModType != "None")
-    {
-      attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
-      attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
-    }
+
+  attachSystem::addToInsertForced(System,*Bulk,LowAFL->getCC("outer"));
+  attachSystem::addToInsertForced(System,*Bulk,LowBFL->getCC("outer"));
+
   attachSystem::addToInsertForced(System,*Bulk,TopAFL->getCC("outer"));
   attachSystem::addToInsertForced(System,*Bulk,TopBFL->getCC("outer"));
 
@@ -1273,6 +1282,7 @@ makeESS::build(Simulation& System,
   // Full surround object
   ShutterBayObj->addInsertCell(voidCell);
   ShutterBayObj->createAll(System,*Bulk,*Bulk);
+  ELog::EM << "Forced" << ELog::endDiag;
   attachSystem::addToInsertForced(System,*ShutterBayObj,
 				  Target->getCC("Wheel"));
   attachSystem::addToInsertForced(System,*ShutterBayObj,
