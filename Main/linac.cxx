@@ -119,7 +119,7 @@ main(int argc,char* argv[])
       InputModifications(SimPtr,IParam,Names);
       mainSystem::setMaterialsDataBase(IParam);
 
-      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
+      //      SimPtr->setMCNPversion(IParam.getValue<int>("mcnp"));
 
       essSystem::makeLinac linacObj;
       World::createOuterObjects(*SimPtr);

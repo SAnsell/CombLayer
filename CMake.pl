@@ -7,7 +7,7 @@ use strict;
 
 ## EXECUTABLES
 my @masterprog=("fullBuild","ess","muBeam","pipe","photonMod2","t1Real",
-		"sns","reactor","t1MarkII","essBeamline","bilbau",
+		"sns","reactor","t1MarkII","essBeamline","bilbau","linac",
 		"filter","singleItem","balder","testMain"); 
 
 
@@ -86,16 +86,20 @@ $gM->addDepUnit("ess",      ["essBuild","beamline","support","input",
 			     "source","instrument","work"
     	 	             ]);
 
-#$gM->addDepUnit("linac",
-#		["essLinac","visit","src","simMC",
-#		 "beamline","physics","support",
-#		 "input","instrument","source","monte",
-#		 "funcBase","log","tally","construct",
-#		 "crystal","transport","scatMat","md5",
-#		 "endf","process","world","work",
-#		 "monte","geometry","mersenne","src","xml","poly",
-#		 "weights","global","attachComp","visit"
-#		]);
+
+$gM->addDepUnit("linac", ["essLinac","support","input",
+			  "funcBase","log","construct","md5",
+			  "process","world","monte","geometry",
+			  "mersenne","src","xml","poly",
+			  "weights","global","attachComp","visit",
+			  "common","commonVar",
+			  "simpleItem","physics","simMC",
+			  "transport","scatMat","endf","crystal",
+			  "insertUnit","flukaProcess","flukaPhysics","flukaTally","tally",
+			  "source","work"
+		]);
+
+
 
 $gM->addDepUnit("essBeamline",
                              ["essBuild","beamline","support","input",

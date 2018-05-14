@@ -296,7 +296,7 @@ Linac::layerProcess(Simulation& System, const std::string& cellName,
 				 SMap.realSurf(sS));
 
 	std::string OutA = getLinkString(lpS);
-	std::string OutB = getLinkComplement(lsS);
+	std::string OutB = getLinkString(-lsS);
 
 	surroundRule.setInnerRule(OutA);
 	surroundRule.setOuterRule(OutB);
